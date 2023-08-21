@@ -60,11 +60,11 @@ export function RefreshObjectExplorerError(error: string): string {
 	}, "An error occurred while refreshing the object explorer. {0}", error);
 }
 
-export function DeleteObjectConfirmationText(objectType: string, objectName: string): string {
+export function DropObjectConfirmationText(objectType: string, objectName: string): string {
 	return localize({
-		key: 'objectManagement.deleteObjectConfirmation',
+		key: 'objectManagement.dropObjectConfirmation',
 		comment: ['{0} object type, {1}: object name.']
-	}, "Are you sure you want to delete the {0}: {1}?", objectType, objectName);
+	}, "Are you sure you want to drop the {0}: {1}?", objectType, objectName);
 }
 
 export function CreateObjectOperationDisplayName(objectType: string): string {
@@ -81,18 +81,18 @@ export function UpdateObjectOperationDisplayName(objectType: string, objectName:
 	}, "Update {0} '{1}'", objectType, objectName);
 }
 
-export function DeleteObjectOperationDisplayName(objectType: string, objectName: string): string {
+export function DropObjectOperationDisplayName(objectType: string, objectName: string): string {
 	return localize({
-		key: 'objectManagement.deleteObjectOperationName',
+		key: 'objectManagement.dropObjectOperationName',
 		comment: ['{0} object type, {1}: object name.']
-	}, "Delete {0} '{1}'", objectType, objectName);
+	}, "Drop {0} '{1}'", objectType, objectName);
 }
 
-export function DeleteObjectError(objectType: string, objectName: string, error: string): string {
+export function DropObjectError(objectType: string, objectName: string, error: string): string {
 	return localize({
-		key: 'objectManagement.deleteObjectError',
+		key: 'objectManagement.dropObjectError',
 		comment: ['{0} object type, {1}: object name, {2}: error message.']
-	}, "An error occurred while deleting the {0}: {1}. {2}", objectType, objectName, error);
+	}, "An error occurred while dropping the {0}: {1}. {2}", objectType, objectName, error);
 }
 
 export function OpenDetachDatabaseDialogError(error: string): string {
@@ -102,11 +102,11 @@ export function OpenDetachDatabaseDialogError(error: string): string {
 	}, "An error occurred while opening the detach database dialog. {0}", error);
 }
 
-export function OpenDeleteDatabaseDialogError(error: string): string {
+export function OpenDropDatabaseDialogError(error: string): string {
 	return localize({
-		key: 'objectManagement.openDeleteDatabaseDialogError',
+		key: 'objectManagement.openDropDatabaseDialogError',
 		comment: ['{0}: error message.']
-	}, "An error occurred while opening the delete database dialog. {0}", error);
+	}, "An error occurred while opening the drop database dialog. {0}", error);
 }
 
 export function OpenObjectPropertiesDialogError(objectType: string, objectName: string, error: string): string {
@@ -190,16 +190,16 @@ export const DatabaseFilePathLabel = localize('objectManagement.databaseFilePath
 export const DatabaseFileGroupLabel = localize('objectManagement.databaseFileGroup', "File Group");
 export const DetachDatabaseOptions = localize('objectManagement.detachDatabaseOptions', "Detach Database Options");
 export const DetachButtonLabel = localize('objectManagement.detachButtonLabel', "Detach");
-export const DeleteDatabaseDialogTitle = (dbName: string) => localize('objectManagement.deleteDatabaseDialogTitle', "Delete Database - {0} (Preview)", dbName);
-export const DeleteButtonLabel = localize('objectManagement.deleteButtonLabel', "Delete");
-export const DeleteDatabaseOptions = localize('objectManagement.deleteDatabaseOptions', "Delete Database Options");
-export const DeleteDropConnections = localize('objectManagement.deleteDropConnections', "Close existing connections");
-export const DeleteDropBackupHistory = localize('objectManagement.deleteDropBackupHistory', "Delete backup and restore history information for database");
+export const DropDatabaseDialogTitle = (dbName: string) => localize('objectManagement.dropDatabaseDialogTitle', "Drop Database - {0} (Preview)", dbName);
+export const DropButtonLabel = localize('objectManagement.dropButtonLabel', "Drop");
+export const DropDatabaseOptions = localize('objectManagement.dropDatabaseOptions', "Drop Database Options");
+export const CloseConnections = localize('objectManagement.closeConnections', "Close existing connections");
+export const DeleteBackupHistory = localize('objectManagement.deleteBackupHistory', "Delete backup and restore history information for database");
 export const DatabaseDetailsLabel = localize('objectManagement.databaseDetails', "Database Details");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");
-export const DeleteLoginConfirmationText: string = localize('objectManagement.deleteLoginConfirmation', "Deleting server logins does not delete the database users associated with the logins. To complete the process, delete the users in each database. It may be necessary to first transfer the ownership of schemas to new users.");
+export const DropLoginConfirmationText: string = localize('objectManagement.dropLoginConfirmation', "Dropping server logins does not drop the database users associated with the logins. To complete the process, drop the users in each database. It may be necessary to first transfer the ownership of schemas to new users.");
 export const SQLAuthenticationSectionHeader = localize('objectManagement.login.sqlAuthSectionHeader', "SQL Authentication");
 export const ServerRoleSectionHeader = localize('objectManagement.login.serverRoleSectionHeader', "Server Roles");
 export const AuthTypeText = localize('objectManagement.login.authenticateType', "Authentication");

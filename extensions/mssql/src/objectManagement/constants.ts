@@ -39,13 +39,13 @@ export const DatabaseFilesPropertiesDocUrl = 'https://learn.microsoft.com/sql/re
 
 export const enum TelemetryActions {
 	CreateObject = 'CreateObject',
-	DeleteObject = 'DeleteObject',
+	DropObject = 'DropObject',
 	OpenNewObjectDialog = 'OpenNewObjectDialog',
 	OpenPropertiesDialog = 'OpenPropertiesDialog',
 	RenameObject = 'RenameObject',
 	UpdateObject = 'UpdateObject',
 	OpenDetachDatabaseDialog = 'OpenDetachDatabaseDialog',
-	OpenDeleteDatabaseDialog = 'OpenDeleteDatabaseDialog'
+	OpenDropDatabaseDialog = 'OpenDropDatabaseDialog'
 }
 
 export const ObjectManagementViewName = 'ObjectManagement';

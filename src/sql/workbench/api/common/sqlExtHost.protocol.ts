@@ -827,10 +827,18 @@ export interface ExtHostWorkspaceShape {
 	$saveAndEnterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 }
 
+export interface ExtHostWindowShape {
+	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string | undefined>;
+}
+
 export interface MainThreadWorkspaceShape {
 	$createAndEnterWorkspace(folder: vscode.Uri, workspaceFile: vscode.Uri): Promise<void>;
 	$enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 	$saveAndEnterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
+}
+
+export interface MainThreadWindowShape {
+	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string | undefined>;
 }
 
 export interface MainThreadBackgroundTaskManagementShape extends IDisposable {

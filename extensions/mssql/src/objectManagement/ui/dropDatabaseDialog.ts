@@ -7,15 +7,15 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { DropDatabaseDocUrl } from '../constants';
-import { DeleteButtonLabel, DeleteDatabaseDialogTitle, DeleteDropBackupHistory, DeleteDropConnections, DeleteDatabaseOptions, NameText, OwnerText, StatusText, DatabaseDetailsLabel } from '../localizedConstants';
+import { DropButtonLabel, DropDatabaseDialogTitle, DeleteBackupHistory, CloseConnections, DropDatabaseOptions, NameText, OwnerText, StatusText, DatabaseDetailsLabel } from '../localizedConstants';
 
-export class DeleteDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
+export class DropDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private _dropConnections = false;
 	private _deleteBackupHistory = false;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options, DeleteDatabaseDialogTitle(options.database), 'DeleteDatabase');
-		this.dialogObject.okButton.label = DeleteButtonLabel;
+		super(objectManagementService, options, DropDatabaseDialogTitle(options.database), 'DropDatabase');
+		this.dialogObject.okButton.label = DropButtonLabel;
 	}
 
 	protected override get isDirty(): boolean {
@@ -32,13 +32,13 @@ export class DeleteDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		components.push(tableGroup);
 
 		if (!this.viewInfo.isAzureDB && !this.viewInfo.isManagedInstance && !this.viewInfo.isSqlOnDemand) {
-			let connCheckbox = this.createCheckbox(DeleteDropConnections, async checked => {
+			let connCheckbox = this.createCheckbox(CloseConnections, async checked => {
 				this._dropConnections = checked;
 			});
-			let updateCheckbox = this.createCheckbox(DeleteDropBackupHistory, async checked => {
+			let updateCheckbox = this.createCheckbox(DeleteBackupHistory, async checked => {
 				this._deleteBackupHistory = checked;
 			});
-			let checkboxGroup = this.createGroup(DeleteDatabaseOptions, [connCheckbox, updateCheckbox], false);
+			let checkboxGroup = this.createGroup(DropDatabaseOptions, [connCheckbox, updateCheckbox], false);
 			components.push(checkboxGroup);
 		}
 		this.formContainer.addItems(components);
