@@ -84,16 +84,16 @@
     <trans-unit id="objectManagement.ObjectSelectionMethodDialog_AllObjectsOfTypes">
       <source xml:lang="en">All objects of certain types</source>
     </trans-unit>
-    <trans-unit id="objectManagement.deleteObjectError">
-      <source xml:lang="en">An error occurred while deleting the {0}: {1}. {2}</source>
+    <trans-unit id="objectManagement.dropObjectError">
+      <source xml:lang="en">An error occurred while dropping the {0}: {1}. {2}</source>
       <note>{0} object type, {1}: object name, {2}: error message.</note>
-    </trans-unit>
-    <trans-unit id="objectManagement.openDeleteDatabaseDialogError">
-      <source xml:lang="en">An error occurred while opening the delete database dialog. {0}</source>
-      <note>{0}: error message.</note>
     </trans-unit>
     <trans-unit id="objectManagement.openDetachDatabaseDialogError">
       <source xml:lang="en">An error occurred while opening the detach database dialog. {0}</source>
+      <note>{0}: error message.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.openDropDatabaseDialogError">
+      <source xml:lang="en">An error occurred while opening the drop database dialog. {0}</source>
       <note>{0}: error message.</note>
     </trans-unit>
     <trans-unit id="objectManagement.openNewObjectDialogError">
@@ -118,8 +118,8 @@
     <trans-unit id="objectManagement.applyUpdatesLabel">
       <source xml:lang="en">Apply</source>
     </trans-unit>
-    <trans-unit id="objectManagement.deleteObjectConfirmation">
-      <source xml:lang="en">Are you sure you want to delete the {0}: {1}?</source>
+    <trans-unit id="objectManagement.dropObjectConfirmation">
+      <source xml:lang="en">Are you sure you want to drop the {0}: {1}?</source>
       <note>{0} object type, {1}: object name.</note>
     </trans-unit>
     <trans-unit id="objectManagement.user.aadAuth">
@@ -167,7 +167,7 @@
     <trans-unit id="objectManagement.browseText">
       <source xml:lang="en">Browse…</source>
     </trans-unit>
-    <trans-unit id="objectManagement.deleteDropConnections">
+    <trans-unit id="objectManagement.closeConnections">
       <source xml:lang="en">Close existing connections</source>
     </trans-unit>
     <trans-unit id="objectManagement.collationLabel">
@@ -240,24 +240,8 @@
     <trans-unit id="objectManagement.user.defaultSchemaLabel">
       <source xml:lang="en">Default schema</source>
     </trans-unit>
-    <trans-unit id="objectManagement.deleteButtonLabel">
-      <source xml:lang="en">Delete</source>
-    </trans-unit>
-    <trans-unit id="objectManagement.deleteDatabaseDialogTitle">
-      <source xml:lang="en">Delete Database - {0} (Preview)</source>
-    </trans-unit>
-    <trans-unit id="objectManagement.deleteDatabaseOptions">
-      <source xml:lang="en">Delete Database Options</source>
-    </trans-unit>
-    <trans-unit id="objectManagement.deleteDropBackupHistory">
+    <trans-unit id="objectManagement.deleteBackupHistory">
       <source xml:lang="en">Delete backup and restore history information for database</source>
-    </trans-unit>
-    <trans-unit id="objectManagement.deleteObjectOperationName">
-      <source xml:lang="en">Delete {0} &apos;{1}&apos;</source>
-      <note>{0} object type, {1}: object name.</note>
-    </trans-unit>
-    <trans-unit id="objectManagement.deleteLoginConfirmation">
-      <source xml:lang="en">Deleting server logins does not delete the database users associated with the logins. To complete the process, delete the users in each database. It may be necessary to first transfer the ownership of schemas to new users.</source>
     </trans-unit>
     <trans-unit id="objectManagement.denyColumnHeader">
       <source xml:lang="en">Deny</source>
@@ -271,8 +255,24 @@
     <trans-unit id="objectManagement.detachDatabaseOptions">
       <source xml:lang="en">Detach Database Options</source>
     </trans-unit>
+    <trans-unit id="objectManagement.dropButtonLabel">
+      <source xml:lang="en">Drop</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.dropDatabaseDialogTitle">
+      <source xml:lang="en">Drop Database - {0} (Preview)</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.dropDatabaseOptions">
+      <source xml:lang="en">Drop Database Options</source>
+    </trans-unit>
     <trans-unit id="objectManagement.detachDropConnections">
       <source xml:lang="en">Drop connnections</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.dropObjectOperationName">
+      <source xml:lang="en">Drop {0} &apos;{1}&apos;</source>
+      <note>{0} object type, {1}: object name.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.dropLoginConfirmation">
+      <source xml:lang="en">Dropping server logins does not drop the database users associated with the logins. To complete the process, drop the users in each database. It may be necessary to first transfer the ownership of schemas to new users.</source>
     </trans-unit>
     <trans-unit id="objectManagement.editionLabel">
       <source xml:lang="en">Edition</source>
@@ -867,9 +867,6 @@
     <trans-unit id="mssql.connectionOptions.connectRetryInterval.description">
       <source xml:lang="en">Delay between attempts to restore connection</source>
     </trans-unit>
-    <trans-unit id="title.deleteObject">
-      <source xml:lang="en">Delete (Preview)</source>
-    </trans-unit>
     <trans-unit id="title.designTable">
       <source xml:lang="en">Design</source>
     </trans-unit>
@@ -881,6 +878,9 @@
     </trans-unit>
     <trans-unit id="mssql.disabled">
       <source xml:lang="en">Disabled</source>
+    </trans-unit>
+    <trans-unit id="title.dropObject">
+      <source xml:lang="en">Drop (Preview)</source>
     </trans-unit>
     <trans-unit id="cloud.databaseProperties.azureEdition">
       <source xml:lang="en">Edition</source>

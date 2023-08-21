@@ -51,12 +51,6 @@
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
-    	{
-          "SourceFile": "resources\\xlf\\en\\Microsoft.context-builder.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.context-builder.xlf.lcl",
-          "CopyOption": "LangIDOnPath",
-          "OutputPath": "resources\\xlf"
-        },
 		{
           "SourceFile": "resources\\xlf\\en\\Microsoft.dacpac.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.dacpac.xlf.lcl",

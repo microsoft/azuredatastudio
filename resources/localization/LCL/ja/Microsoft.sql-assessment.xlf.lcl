@@ -113,7 +113,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Severity]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[重要度]]></Val>
+            <Val><![CDATA[重大度]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

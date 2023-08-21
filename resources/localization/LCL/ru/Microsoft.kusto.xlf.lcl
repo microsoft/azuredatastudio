@@ -53,7 +53,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Downloading {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Скачивание {0}]]></Val>
+            <Val><![CDATA[Идет загрузка {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -71,7 +71,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Downloading {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Скачивание {0}]]></Val>
+            <Val><![CDATA[Идет загрузка {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -107,7 +107,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Installing {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Установка {0}]]></Val>
+            <Val><![CDATA[Установка (0)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -116,7 +116,7 @@
         <Str Cat="Text">
           <Val><![CDATA[{0} Started]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Запущено: {0}]]></Val>
+            <Val><![CDATA[{0} запущен]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -125,7 +125,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Starting {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Запуск {0}]]></Val>
+            <Val><![CDATA[Запуск (0)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -665,7 +665,7 @@
         <Str Cat="Text">
           <Val><![CDATA[New Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Новая записная книжка]]></Val>
+            <Val><![CDATA[Создать записную книжку]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

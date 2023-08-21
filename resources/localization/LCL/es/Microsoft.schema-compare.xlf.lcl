@@ -310,7 +310,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Schema Compare]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Comparación de esquemas]]></Val>
+            <Val><![CDATA[Comparar esquemas]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -679,7 +679,7 @@
         <Str Cat="Text">
           <Val><![CDATA[default]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[predeterminado]]></Val>
+            <Val><![CDATA[Predeterminado]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -904,7 +904,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Schema Compare]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Comparación de esquemas]]></Val>
+            <Val><![CDATA[Comparar esquemas]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

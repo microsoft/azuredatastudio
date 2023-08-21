@@ -53,7 +53,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Downloading {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} をダウンロードしています]]></Val>
+            <Val><![CDATA[{0} のダウンロード中]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -71,7 +71,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Downloading {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} をダウンロードしています]]></Val>
+            <Val><![CDATA[{0} のダウンロード中]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
