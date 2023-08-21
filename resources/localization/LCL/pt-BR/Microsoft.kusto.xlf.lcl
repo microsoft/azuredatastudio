@@ -116,7 +116,7 @@
         <Str Cat="Text">
           <Val><![CDATA[{0} Started]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} Iniciado]]></Val>
+            <Val><![CDATA[{0} iniciado]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -125,7 +125,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Starting {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[A partir de {0}]]></Val>
+            <Val><![CDATA[Iniciando {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -233,7 +233,7 @@
         <Str Cat="Text">
           <Val><![CDATA[View Known Issues]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Exibir Problemas Conhecidos]]></Val>
+            <Val><![CDATA[Exibir os Problemas Conhecidos]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -323,7 +323,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Application name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nome da Aplicação]]></Val>
+            <Val><![CDATA[Nome do aplicativo]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -368,7 +368,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Authentication type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Tipo de Autenticação]]></Val>
+            <Val><![CDATA[Tipo de autenticação]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -386,7 +386,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Connect retry count]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Contagem de tentativas de conexão]]></Val>
+            <Val><![CDATA[Contagem de nova tentativa de conexão]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -404,7 +404,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Connect retry interval]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Intervalo de tentativa de conexão]]></Val>
+            <Val><![CDATA[Intervalo de nova tentativa de conexão]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -458,7 +458,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Base de dados]]></Val>
+            <Val><![CDATA[Banco de dados]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -521,7 +521,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Fonte]]></Val>
+            <Val><![CDATA[Origem]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -593,7 +593,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Workstation Id]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Id da Estação de trabalho]]></Val>
+            <Val><![CDATA[ID da estação de trabalho]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -674,7 +674,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Open Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Abrir Notebook]]></Val>
+            <Val><![CDATA[Abrir o Notebook]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

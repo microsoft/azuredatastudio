@@ -239,7 +239,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Installed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Установлено]]></Val>
+            <Val><![CDATA[Установлен]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -302,7 +302,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Learn more]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Дополнительные сведения]]></Val>
+            <Val><![CDATA[Подробнее]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1136,7 +1136,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Learn more.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Дополнительные сведения.]]></Val>
+            <Val><![CDATA[Подробнее.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1676,7 +1676,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Select database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите базу данных]]></Val>
+            <Val><![CDATA[Выберите базу данных.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

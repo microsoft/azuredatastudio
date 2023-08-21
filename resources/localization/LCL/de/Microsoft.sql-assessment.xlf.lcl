@@ -104,7 +104,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Message]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Meldung]]></Val>
+            <Val><![CDATA[Nachricht]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

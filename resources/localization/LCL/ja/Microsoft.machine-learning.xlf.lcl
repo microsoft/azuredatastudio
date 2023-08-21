@@ -1136,7 +1136,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Learn more.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[詳細を表示。]]></Val>
+            <Val><![CDATA[詳細情報。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

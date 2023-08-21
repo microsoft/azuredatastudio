@@ -23,7 +23,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Non riuscito]]></Val>
+            <Val><![CDATA[Non riuscita]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -32,7 +32,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Succeeded]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Riuscito]]></Val>
+            <Val><![CDATA[Operazione riuscita]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

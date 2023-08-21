@@ -1163,7 +1163,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Installing extension '{0}'...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Установка расширения "{0}"…]]></Val>
+            <Val><![CDATA[Установка расширения "{0}"...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2937,10 +2937,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.arc/dist/localizedConstants.clusterContextConfigNoLongerValid" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:]D;]A;	{2}]D;]A; Do you want to update this information?]]></Val>
+          <Val><![CDATA[The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:]A;	{2}]A; Do you want to update this information?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Сведения о контексте кластера, указанные в файле конфигурации: {0} и контекст кластера: {1} больше не действительны. Ошибка:]D;]A;	{2}]D;]A; Вы хотите обновить эти сведения?]]></Val>
+            <Val><![CDATA[Сведения о контексте кластера, указанные в файле конфигурации {0} и контекст кластера {1} больше не действительны. Ошибка:]A;	{2}]A; Обновить эти сведения?]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:]D;]A;	{2}]D;]A; Do you want to update this information?]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3065,7 +3068,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Learn more]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Подробнее]]></Val>
+            <Val><![CDATA[Дополнительные сведения]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3090,10 +3093,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.arc/package.arc.agreement.postgres.help.text" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[PostgreSQL Server - Azure Arc is one of the database engines available as part of Azure Arc-enabled data services and it can be deployed on the infrastructure of your choice. {0}. ]D;]A; ]D;]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
+          <Val><![CDATA[PostgreSQL Server - Azure Arc is one of the database engines available as part of Azure Arc-enabled data services and it can be deployed on the infrastructure of your choice. {0}. ]A; ]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Управляемый экземпляр с поддержкой Azure Arc обеспечивает доступ к SQL Server и совместимость функций, которые можно развернуть в любой инфраструктуре по вашему вкусу. {0}. ]D;]A; ]D;]A; Нажимая кнопку "Сохранить сценарий в записную книжку" или "Развернуть", я (а) соглашаюсь с юридическими условиями и заявлениями о конфиденциальности, связанными с указанными ниже предложениями Marketplace; (б) разрешаю корпорации Майкрософт выставлять мне счета по сборам, связанным с этими предложениями, с использованием моего текущего метода оплаты и с той же периодичностью, что и для моей подписки Azure; и (в) соглашаюсь, что корпорация Майкрософт имеет право передавать мои контактные данные, а также сведения об использовании и транзакциях поставщикам предложений для целей предоставления поддержки, выставления счетов и других действий с транзакциями. Корпорация Майкрософт не предоставляет права на сторонние предложения. Дополнительные сведения см. в {1}, {2} и {3}.]]></Val>
+            <Val><![CDATA[PostgreSQL Server — Azure Arc является одним из ядер СУБД, доступных в рамках служб данных с поддержкой Azure Arc, которое можно развернуть в любой удобной инфраструктуре. {0}. ]A; ]A; Нажимая "Сохранить сценарий в записную книжку" или "Развернуть", я (а) соглашаюсь с юридическими условиями и заявлениями о конфиденциальности, связанными с указанными ниже предложениями Marketplace; (б) разрешаю корпорации Майкрософт выставлять мне счета по сборам, связанным с этими предложениями, с использованием моего текущего метода оплаты и с той же периодичностью, что и для моей подписки Azure; и (в) соглашаюсь, что корпорация Майкрософт имеет право передавать мои контактные данные, а также сведения об использовании и транзакциях поставщикам предложений для целей предоставления поддержки, выставления счетов и других действий с транзакциями. Корпорация Майкрософт не предоставляет права на сторонние предложения. Дополнительные сведения см. в {1}, {2} и {3}.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[PostgreSQL Server - Azure Arc is one of the database engines available as part of Azure Arc-enabled data services and it can be deployed on the infrastructure of your choice. {0}. ]D;]A; ]D;]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3120,12 +3126,12 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.arc/package.arc.agreement.sql.help.text" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Arc-enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. ]D;]A; ]D;]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
+          <Val><![CDATA[Azure Arc-enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. ]A; ]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Управляемый экземпляр с поддержкой Azure Arc обеспечивает доступ к SQL Server и совместимость функций, которые можно развернуть в любой инфраструктуре по вашему вкусу. {0}. ]D;]A; ]D;]A; Щелкая "Сохранить сценарий в записную книжку" или "Развернуть", я (а) соглашаюсь с юридическими условиями и заявлениями о конфиденциальности, связанными с указанными ниже предложениями Marketplace; (б) разрешаю корпорации Майкрософт выставлять мне счета по сборам, связанным с этими предложениями, с использованием моего текущего метода оплаты и с той же периодичностью, что и для моей подписки Azure; и (в) соглашаюсь, что корпорация Майкрософт имеет право передавать мои контактные данные, а также сведения об использовании и транзакциях поставщикам предложений для целей предоставления поддержки, выставления счетов и других действий с транзакциями. Корпорация Майкрософт не предоставляет права на сторонние предложения. Дополнительные сведения см. в {1}, {2} и {3}.]]></Val>
+            <Val><![CDATA[Управляемый экземпляр с поддержкой Azure Arc обеспечивает доступ к SQL Server и совместимость функций, которые можно развернуть в любой удобной инфраструктуре. {0}. ]A; ]A; Нажимая "Сохранить сценарий в записную книжку" или "Развернуть", я (а) соглашаюсь с юридическими условиями и заявлениями о конфиденциальности, связанными с указанными ниже предложениями Marketplace; (б) разрешаю корпорации Майкрософт выставлять мне счета по сборам, связанным с этими предложениями, с использованием моего текущего метода оплаты и с той же периодичностью, что и для моей подписки Azure; и (в) соглашаюсь, что корпорация Майкрософт имеет право передавать мои контактные данные, а также сведения об использовании и транзакциях поставщикам предложений для целей предоставления поддержки, выставления счетов и других действий с транзакциями. Корпорация Майкрософт не предоставляет права на сторонние предложения. Дополнительные сведения см. в {1}, {2} и {3}.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. ]D;]A; ]D;]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
+            <Val><![CDATA[Azure Arc-enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. ]D;]A; ]D;]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -3182,7 +3188,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Azure information]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Информация Azure]]></Val>
+            <Val><![CDATA[Информация об Azure]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3530,7 +3536,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Confirm password]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Подтвердить пароль]]></Val>
+            <Val><![CDATA[Подтверждение пароля]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5058,10 +5064,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.arc/package.arc.view.welcome.connect" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No Azure Arc controllers registered. [Learn More]5D;(https://azure.microsoft.com/services/azure-arc/)]D;]A;[Connect Controller]5D;(command:arc.connectToController)]]></Val>
+          <Val><![CDATA[No Azure Arc controllers registered. [Learn More]5D;(https://azure.microsoft.com/services/azure-arc/)]A;[Connect Controller]5D;(command:arc.connectToController)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Контроллеры Azure Arc не зарегистрированы. [Подробнее]5D;(https://azure.microsoft.com/services/azure-arc/)]D;]A;[Подключение контроллера]5D;(command:arc.connectToController)]]></Val>
+            <Val><![CDATA[Контроллеры Azure Arc не зарегистрированы. [Подробнее]5D;(https://azure.microsoft.com/services/azure-arc/)]A;[Подключение контроллера]5D;(command:arc.connectToController)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[No Azure Arc controllers registered. [Learn More]5D;(https://azure.microsoft.com/services/azure-arc/)]D;]A;[Connect Controller]5D;(command:arc.connectToController)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5114,7 +5123,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Refresh]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Обновление]]></Val>
+            <Val><![CDATA[Обновить]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5150,7 +5159,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Script to notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Сохранить скрипт в записную книжку]]></Val>
+            <Val><![CDATA[Скрипт в записную книжку]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5168,7 +5177,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Microsoft Privacy Statement]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Заявление о конфиденциальности корпорации Майкрософт]]></Val>
+            <Val><![CDATA[Заявление о конфиденциальности Майкрософт]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
