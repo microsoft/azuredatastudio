@@ -35,6 +35,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	private fileSizeInput: azdata.InputBoxComponent;
 	private fileNameWithExtension: azdata.InputBoxComponent;
 	private fileGroupDropdown: azdata.DropDownComponent;
+	private AutogrowthGroup: azdata.GroupContainer;
 	private fileGrowthGroup: azdata.GroupContainer;
 	private maxSizeGroup: azdata.GroupContainer;
 	private pathContainer: azdata.FlexContainer;
@@ -58,15 +59,13 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	}
 
 	protected override async initialize(): Promise<void> {
-		let components: azdata.Component[] = [];
 		this.dialogObject.okButton.enabled = false;
 		this.autogrowthInPercentValue = this.options.defaultFileConstants.defaultFileGrowthInPercent;
 		this.autogrowthInMegabytesValue = this.options.defaultFileConstants.defaultFileGrowthInMb;
 		this.result = deepClone(this.options.databaseFile);
 		this.originalName = this.options.databaseFile.name;
 		this.originalFileName = this.options.databaseFile.fileNameWithExtension;
-		components.push(this.InitializeAddDatabaseFileDialog());
-		this.formContainer.addItems(components);
+		await this.InitializeAddDatabaseFileDialog();
 	}
 
 	/**
@@ -112,7 +111,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		return errors;
 	}
 
-	private InitializeAddDatabaseFileDialog(): azdata.GroupContainer {
+	private async InitializeAddDatabaseFileDialog(): Promise<void> {
 		let containers: azdata.Component[] = [];
 		// Logical Name of the file
 		const logicalname = this.createInputBox(async (newValue) => {
@@ -159,17 +158,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		containers.push(fileSizeContainer);
 
 		// Auto Growth and Max Size
-		this.enableAutoGrowthCheckbox = this.createCheckbox(localizedConstants.EnableAutogrowthText, async (checked) => {
-			this.inPercentAutogrowth.enabled
-				= this.inMegabytesAutogrowth.enabled
-				= this.autoFilegrowthInput.enabled
-				= this.limitedToMbFileSize.enabled
-				= this.limitedToMbFileSizeInput.enabled
-				= this.unlimitedFileSize.enabled
-				= this.result.isAutoGrowthEnabled = checked;
-		}, true, true);
-		const autogrowthContainer = this.createGroup(localizedConstants.AutogrowthMaxsizeText, [this.enableAutoGrowthCheckbox, this.InitializeAutogrowthSection(), this.InitializeMaxFileSizeSection()], true);
-		containers.push(autogrowthContainer);
+		containers.push(await this.InitializeAutogrowthSection());
 
 		// Path
 		this.filePathTextBox = this.createInputBox(async (newValue) => {
@@ -200,15 +189,27 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		const fileNameWithExtensionContainer = this.createLabelInputContainer(localizedConstants.FileNameText, this.fileNameWithExtension);
 		containers.push(fileNameWithExtensionContainer);
 
-		return this.createGroup('', containers, false);
+		this.formContainer.addItems(containers);
 	}
 
 	/**
-	 * Initialized file growth section
+	 * Initialized file growth and max file size sections
 	 * @returns a group container with 'auto file growth' options
 	 */
-	private InitializeAutogrowthSection(): azdata.GroupContainer {
-		const radioGroupName = 'autogrowthRadioGroup';
+	private async InitializeAutogrowthSection(): Promise<azdata.GroupContainer> {
+		// Autogrowth checkbox
+		this.enableAutoGrowthCheckbox = this.createCheckbox(localizedConstants.EnableAutogrowthText, async (checked) => {
+			this.inPercentAutogrowth.enabled
+				= this.inMegabytesAutogrowth.enabled
+				= this.autoFilegrowthInput.enabled
+				= this.limitedToMbFileSize.enabled
+				= this.limitedToMbFileSizeInput.enabled
+				= this.unlimitedFileSize.enabled
+				= this.result.isAutoGrowthEnabled = checked;
+		}, true, true);
+
+		// Autogrowth radio button and input section
+		let radioGroupName = 'autogrowthRadioGroup';
 		const isFileAutoGrowthInKB = this.options.databaseFile.autoFileGrowthType === 'KB';
 		this.inPercentAutogrowth = this.createRadioButton(localizedConstants.InPercentAutogrowthText, radioGroupName, !isFileAutoGrowthInKB, async (checked) => { await this.handleAutogrowthTypeChange(checked); });
 		this.inMegabytesAutogrowth = this.createRadioButton(localizedConstants.InMegabytesAutogrowthText, radioGroupName, isFileAutoGrowthInKB, async (checked) => { await this.handleAutogrowthTypeChange(checked); });
@@ -226,21 +227,16 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 			inputType: 'number',
 			enabled: true,
 			value: String(this.options.databaseFile.autoFileGrowth),
-			width: DefaultInputWidth - 20,
+			width: DefaultInputWidth - 10,
 			min: 1
 		});
 		const autogrowthContainer = this.createLabelInputContainer(localizedConstants.FileGrowthText, this.autoFilegrowthInput);
+		this.fileGrowthGroup = this.createGroup('', [this.enableAutoGrowthCheckbox
+			, autogrowthContainer, this.inPercentAutogrowth, this.inMegabytesAutogrowth], true);
+		await this.fileGrowthGroup.updateCssStyles({ 'margin': '10px 0px -10px -10px' });
 
-		this.fileGrowthGroup = this.createGroup('', [autogrowthContainer, this.inPercentAutogrowth, this.inMegabytesAutogrowth], false);
-		return this.fileGrowthGroup;
-	}
-
-	/**
-	 * Initialized max file size section
-	 * @returns a group container with 'max file size' options
-	 */
-	private InitializeMaxFileSizeSection(): azdata.GroupContainer {
-		const radioGroupName = 'maxFileSizeRadioGroup';
+		// Autogrowth radio button and input section
+		radioGroupName = 'maxFileSizeRadioGroup';
 		const isFileSizeLimited = this.options.isNewFile ? false : this.options.databaseFile.maxSizeLimit !== -1;
 		this.limitedToMbFileSize = this.createRadioButton(localizedConstants.LimitedToMBFileSizeText, radioGroupName, isFileSizeLimited, async (checked) => { await this.handleMaxFileSizeTypeChange(checked); });
 		this.unlimitedFileSize = this.createRadioButton(localizedConstants.UnlimitedFileSizeText, radioGroupName, !isFileSizeLimited, async (checked) => { await this.handleMaxFileSizeTypeChange(checked); });
@@ -255,14 +251,16 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 			inputType: 'number',
 			enabled: true,
 			value: this.options.databaseFile.maxSizeLimit === -1 ? String(this.options.defaultFileConstants.defaultMaxFileSizeLimitedToInMb) : String(this.options.databaseFile.maxSizeLimit),
-			width: DefaultInputWidth - 20,
+			width: DefaultInputWidth - 10,
 			min: 1,
 			max: this.options.databaseFile.type === this.options.viewInfo.fileTypesOptions[1] ? fileSizeInputMaxValueInMbForLogType : fileSizeInputMaxValueInMbForDataType
 		});
 		const fileSizeContainer = this.createLabelInputContainer(localizedConstants.MaximumFileSizeText, this.limitedToMbFileSizeInput);
+		this.maxSizeGroup = this.createGroup('', [fileSizeContainer, this.limitedToMbFileSize, this.unlimitedFileSize], true);
+		await this.maxSizeGroup.updateCssStyles({ 'margin': '10px 0px -10px -10px' });
 
-		this.maxSizeGroup = this.createGroup('', [fileSizeContainer, this.limitedToMbFileSize, this.unlimitedFileSize], false);
-		return this.maxSizeGroup;
+		this.AutogrowthGroup = this.createGroup(localizedConstants.AutogrowthMaxsizeText, [this.fileGrowthGroup, this.maxSizeGroup], false);
+		return this.AutogrowthGroup;
 	}
 
 	private async handleAutogrowthTypeChange(checked: boolean): Promise<void> {
@@ -329,7 +327,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 			fileGroupDdValue = this.result.fileGroup;
 			visibility = 'hidden';
 			maxSizeGroupMarginTop = '-130px';
-			pathContainerMarginTop = '-10px';
+			pathContainerMarginTop = '-35px';
 			enableInputs = false;
 			this.fileNameWithExtension.value = '';
 		}
@@ -338,7 +336,6 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		await this.fileGroupDropdown.updateProperties({
 			values: fileGroupDdOptions, value: fileGroupDdValue
 		});
-		await this.enableAutoGrowthCheckbox.updateCssStyles({ 'visibility': visibility });
 		await this.fileGrowthGroup.updateCssStyles({ 'visibility': visibility });
 		await this.maxSizeGroup.updateCssStyles({ 'margin-top': maxSizeGroupMarginTop });
 		await this.pathContainer.updateCssStyles({ 'margin-top': pathContainerMarginTop });
