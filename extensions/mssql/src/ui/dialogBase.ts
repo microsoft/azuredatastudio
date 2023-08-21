@@ -153,7 +153,7 @@ export abstract class DialogBase<DialogResult> {
 	}
 
 	/**
-	 * Creates an input box. If properties are not passed in, then an input box is created with the following default properties: 
+	 * Creates an input box. If properties are not passed in, then an input box is created with the following default properties:
 	 * inputType - text
 	 * width - DefaultInputWidth
 	 * value - empty
