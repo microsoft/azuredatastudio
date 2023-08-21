@@ -227,12 +227,12 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 			else if (Services.DBCellValue.isDBCellValue(value)) {
 				// If a cell is not edited and retrieved direct from the SQL server, it would be in the form of a DBCellValue.
-				// We use the DBCellValue's displayValue as the text value.
-				returnVal = this.replaceLinebreaks(value.displayValue);
+				// We use the DBCellValue's raw displayValue as the text value.
+				returnVal = value.displayValue;
 			}
 			else if (typeof value === 'string') {
 				// Once a cell has been edited, the cell value will no longer be a DBCellValue until refresh.
-				returnVal = this.replaceLinebreaks(value);
+				returnVal = value;
 			}
 			return returnVal;
 		};

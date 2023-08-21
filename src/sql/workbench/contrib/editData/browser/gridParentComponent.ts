@@ -30,7 +30,6 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { ResolvedKeybinding } from 'vs/base/common/keybindings';
-import { shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
 
 
 export abstract class GridParentComponent extends Disposable {
@@ -74,7 +73,8 @@ export abstract class GridParentComponent extends Disposable {
 	protected table: Table<any>;
 
 	// Variable for the newline replacement character
-	protected newlineCharacter: string;
+	// allow-any-unicode-next-line
+	protected newlineCharacter = '↵';
 
 	set messageActive(input: boolean) {
 		this.messageActiveBool = input;
@@ -106,13 +106,6 @@ export abstract class GridParentComponent extends Disposable {
 			let sqlConfig = this.configurationService.getValue('sql');
 			if (sqlConfig) {
 				this.messageActiveBool = sqlConfig['messagesDefaultOpen'];
-			}
-			if (shouldRemoveNewLines(this.configurationService)) {
-				// allow-any-unicode-next-line
-				this.newlineCharacter = '↵';
-			}
-			else {
-				this.newlineCharacter = '\u0000';
 			}
 		}
 		this.toDispose.add(this.dataService.gridContent(type => {
