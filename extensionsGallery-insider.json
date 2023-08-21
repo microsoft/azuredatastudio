@@ -3019,7 +3019,7 @@
 					"extensionId": "62",
 					"extensionName": "schema-visualization",
 					"displayName": "Schema Visualization",
-					"shortDescription": "Visualization of databases",
+					"shortDescription": "Visualization of databases. Er-diagram, erd",
 					"publisher": {
 						"displayName": "Jens Hunt",
 						"publisherId": "R0tenur",
@@ -3027,14 +3027,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.8.2",
-							"lastUpdated": "9/22/2021",
+							"version": "0.9.1",
+							"lastUpdated": "8/21/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/R0tenur/visualization/releases/tag/v0.8.2"
+									"source": "https://github.com/R0tenur/visualization/releases/tag/v0.9.1"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
