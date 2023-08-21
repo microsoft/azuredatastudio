@@ -102,12 +102,12 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		}
 
 		// When maxsize is limited and size should not be greater than maxSize allowed
-		if (this.result.maxSizeLimit !== -1 && this.result.maxSizeLimit < this.result.sizeInMb) {
+		if (this.result.maxSizeLimitInMb !== -1 && this.result.maxSizeLimitInMb < this.result.sizeInMb) {
 			errors.push(localizedConstants.FileSizeLimitError);
 		}
 		// When maxsize is limited and fileGrowth should not be greater than maxSize allowed
-		if (this.result.maxSizeLimit !== -1 && this.result.autoFileGrowthType !== localizedConstants.PercentText
-			&& this.result.maxSizeLimit < this.result.autoFileGrowth) {
+		if (this.result.maxSizeLimitInMb !== -1 && this.result.autoFileGrowthType !== localizedConstants.PercentText
+			&& this.result.maxSizeLimitInMb < this.result.autoFileGrowth) {
 			errors.push(localizedConstants.FilegrowthLimitError);
 		}
 		return errors;
@@ -243,20 +243,20 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 
 		// Autogrowth radio button and input section
 		radioGroupName = 'maxFileSizeRadioGroup';
-		const isFileSizeLimited = this.options.isNewFile ? false : this.options.databaseFile.maxSizeLimit !== -1;
+		const isFileSizeLimited = this.options.isNewFile ? false : this.options.databaseFile.maxSizeLimitInMb !== -1;
 		this.limitedToMbFileSize = this.createRadioButton(localizedConstants.LimitedToMBFileSizeText, radioGroupName, isFileSizeLimited, async (checked) => { await this.handleMaxFileSizeTypeChange(checked); });
 		this.unlimitedFileSize = this.createRadioButton(localizedConstants.UnlimitedFileSizeText, radioGroupName, !isFileSizeLimited, async (checked) => { await this.handleMaxFileSizeTypeChange(checked); });
 		this.limitedToMbFileSizeInput = this.createInputBox(async (newValue) => {
 			this.fileSizeValue = Number(newValue);
-			this.result.maxSizeLimit = this.fileSizeValue;
+			this.result.maxSizeLimitInMb = this.fileSizeValue;
 			if (this.unlimitedFileSize.checked) {
-				this.result.maxSizeLimit = -1;
+				this.result.maxSizeLimitInMb = -1;
 			}
 		}, {
 			ariaLabel: localizedConstants.MaximumFileSizeText,
 			inputType: 'number',
 			enabled: true,
-			value: this.options.databaseFile.maxSizeLimit === -1 ? String(this.options.defaultFileConstants.defaultMaxFileSizeLimitedToInMb) : String(this.options.databaseFile.maxSizeLimit),
+			value: this.options.databaseFile.maxSizeLimitInMb === -1 ? String(this.options.defaultFileConstants.defaultMaxFileSizeLimitedToInMb) : String(this.options.databaseFile.maxSizeLimitInMb),
 			width: DefaultInputWidth - 10,
 			min: 1,
 			max: this.options.databaseFile.type === this.options.viewInfo.fileTypesOptions[1] ? fileSizeInputMaxValueInMbForLogType : fileSizeInputMaxValueInMbForDataType
@@ -278,10 +278,10 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	private async handleMaxFileSizeTypeChange(checked: boolean): Promise<void> {
 		if (this.limitedToMbFileSize.checked) {
 			this.limitedToMbFileSizeInput.enabled = true;
-			this.result.maxSizeLimit = this.fileSizeValue;
+			this.result.maxSizeLimitInMb = this.fileSizeValue;
 		} else if (this.unlimitedFileSize.checked) {
 			this.limitedToMbFileSizeInput.enabled = false;
-			this.result.maxSizeLimit = -1; //Unlimited
+			this.result.maxSizeLimitInMb = -1; //Unlimited
 		}
 	}
 

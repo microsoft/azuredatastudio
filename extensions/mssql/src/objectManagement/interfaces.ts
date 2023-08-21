@@ -560,5 +560,5 @@ export interface DatabaseFile {
 	isAutoGrowthEnabled: boolean;
 	autoFileGrowth: number;
 	autoFileGrowthType: string;
-	maxSizeLimit: number
+	maxSizeLimitInMb: number
 }
