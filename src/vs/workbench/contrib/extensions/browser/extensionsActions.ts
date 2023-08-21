@@ -432,8 +432,12 @@ export abstract class AbstractInstallAction extends ExtensionAction {
 
 		const extension = await this.install(this.extension);
 
-		if (extension && extension?.local) {
+		// {{SQL CARBON EDIT}} Announce extension is finished being installed even if extension.local is undefined
+		if (extension) {
 			alert(localize('installExtensionComplete', "Installing extension {0} is completed.", this.extension.displayName));
+		}
+
+		if (extension && (extension?.local)) {
 			const runningExtension = await this.getRunningExtension(extension.local);
 			if (runningExtension && !(runningExtension.activationEvents && runningExtension.activationEvents.some(activationEent => activationEent.startsWith('onLanguage')))) {
 				const action = await this.getThemeAction(extension);
