@@ -26,6 +26,9 @@ export interface NewDatabaseFileDialogOptions {
 	};
 }
 
+const fileSizeInputMaxValueInMbForDataType = 16776192; // Row type supports up to 16 TB (SSMS allows =~ 15.99TB)
+const fileSizeInputMaxValueInMbForLogType = 2 * 1024 * 1024; // Row type supports up to 2 TB
+const fileSizeInputMaxValueInPercent = 100; // SSMS allows more than 100, but we are limiting to 100 in ADS
 
 export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	private result: DatabaseFile;
@@ -244,7 +247,8 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 			enabled: true,
 			value: this.options.databaseFile.maxSizeLimit === -1 ? String(this.options.defaultFileConstants.defaultMaxFileSizeLimitedToInMb) : String(this.options.databaseFile.maxSizeLimit),
 			width: DefaultInputWidth - 20,
-			min: 1
+			min: 1,
+			max: this.options.databaseFile.type === this.options.viewInfo.fileTypesOptions[1] ? fileSizeInputMaxValueInMbForLogType : fileSizeInputMaxValueInMbForDataType
 		});
 		const fileSizeContainer = this.createLabelInputContainer(localizedConstants.MaximumFileSizeText, this.limitedToMbFileSizeInput);
 
@@ -254,6 +258,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 
 	private async handleAutogrowthTypeChange(checked: boolean): Promise<void> {
 		this.autoFilegrowthInput.value = this.options.isNewFile ? (this.inPercentAutogrowth.checked ? this.autogrowthInPercentValue?.toString() : this.autogrowthInMegabytesValue?.toString()) : this.options.databaseFile.autoFileGrowth?.toString();
+		this.autoFilegrowthInput.max = this.inPercentAutogrowth.checked ? fileSizeInputMaxValueInPercent : (this.result.type === this.options.viewInfo.fileTypesOptions[1] ? fileSizeInputMaxValueInMbForLogType / 2 : fileSizeInputMaxValueInMbForDataType / 2);
 		this.result.autoFileGrowthType = this.inPercentAutogrowth.checked ? 'Percent' : 'KB';
 	}
 
@@ -302,10 +307,12 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		let maxSizeGroupMarginTop = '0px';
 		let pathContainerMarginTop = '0px';
 		let enableInputs = true;
+		let fileSizeInputMaxValue = fileSizeInputMaxValueInMbForDataType;
 		// Log
 		if (selectedOption === this.options.viewInfo.fileTypesOptions[1]) {
 			fileGroupDdOptions = [localizedConstants.FileGroupForLogTypeText];
 			fileGroupDdValue = localizedConstants.FileGroupForLogTypeText;
+			fileSizeInputMaxValue = fileSizeInputMaxValueInMbForLogType
 		}
 		// File Stream
 		else if (selectedOption === this.options.viewInfo.fileTypesOptions[2]) {
@@ -327,6 +334,8 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		await this.maxSizeGroup.updateCssStyles({ 'margin-top': maxSizeGroupMarginTop });
 		await this.pathContainer.updateCssStyles({ 'margin-top': pathContainerMarginTop });
 		this.fileNameWithExtension.enabled = this.fileSizeInput.enabled = enableInputs;
+		this.autoFilegrowthInput.max = this.inPercentAutogrowth.checked ? fileSizeInputMaxValueInPercent : fileSizeInputMaxValue / 2;
+		this.fileSizeInput.max = fileSizeInputMaxValue;
 	}
 
 	/**
