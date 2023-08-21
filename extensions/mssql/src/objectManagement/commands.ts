@@ -284,6 +284,7 @@ async function handleDetachDatabase(context: azdata.ObjectExplorerContext, servi
 		};
 		const dialog = new DetachDatabaseDialog(service, options);
 		await dialog.open();
+		await refreshParentNode(context);
 	}
 	catch (err) {
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenDetachDatabaseDialog, err).withAdditionalProperties({
@@ -291,6 +292,35 @@ async function handleDetachDatabase(context: azdata.ObjectExplorerContext, servi
 		}).send();
 		console.error(err);
 		await vscode.window.showErrorMessage(objectManagementLoc.OpenDetachDatabaseDialogError(getErrorMessage(err)));
+	}
+}
+
+async function handleAttachDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+	const connectionUri = await getConnectionUri(context);
+	if (!connectionUri) {
+		return;
+	}
+	try {
+		const parentUrn = await getParentUrn(context);
+		const options: ObjectManagementDialogOptions = {
+			connectionUri: connectionUri,
+			isNewObject: true,
+			database: context.connectionProfile!.databaseName!,
+			objectType: ObjectManagement.NodeType.Database,
+			objectName: '',
+			parentUrn: parentUrn,
+			objectExplorerContext: context
+		};
+		const dialog = new AttachDatabaseDialog(service, options);
+		await dialog.open();
+		await refreshParentNode(context);
+	}
+	catch (err) {
+		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenAttachDatabaseDialog, err).withAdditionalProperties({
+			objectType: context.nodeInfo!.nodeType
+		}).send();
+		console.error(err);
+		await vscode.window.showErrorMessage(objectManagementLoc.OpenAttachDatabaseDialogError(getErrorMessage(err)));
 	}
 }
 
@@ -320,34 +350,6 @@ async function handleDropDatabase(context: azdata.ObjectExplorerContext, service
 		}).send();
 		console.error(err);
 		await vscode.window.showErrorMessage(objectManagementLoc.OpenDropDatabaseDialogError(getErrorMessage(err)));
-	}
-}
-
-async function handleAttachDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
-	const connectionUri = await getConnectionUri(context);
-	if (!connectionUri) {
-		return;
-	}
-	try {
-		const parentUrn = await getParentUrn(context);
-		const options: ObjectManagementDialogOptions = {
-			connectionUri: connectionUri,
-			isNewObject: true,
-			database: context.connectionProfile!.databaseName!,
-			objectType: ObjectManagement.NodeType.Database,
-			objectName: '',
-			parentUrn: parentUrn,
-			objectExplorerContext: context
-		};
-		const dialog = new AttachDatabaseDialog(service, options);
-		await dialog.open();
-	}
-	catch (err) {
-		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenAttachDatabaseDialog, err).withAdditionalProperties({
-			objectType: context.nodeInfo!.nodeType
-		}).send();
-		console.error(err);
-		await vscode.window.showErrorMessage(objectManagementLoc.OpenAttachDatabaseDialogError(getErrorMessage(err)));
 	}
 }
 
