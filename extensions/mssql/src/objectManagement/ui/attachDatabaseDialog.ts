@@ -15,16 +15,17 @@ import path = require('path');
 
 export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private _databasesToAttach: DatabaseFileData[] = [];
+	private _currentDatabaseFile: DatabaseFileData;
 	private _databasesTable: azdata.TableComponent;
 	private _associatedFilesTable: azdata.TableComponent;
 	private _databaseFiles: string[][] = [];
-	private readonly fileFilters: azdata.window.FileFilters[] = [{ label: loc.DatabaseFilesFilterLabel, filters: ['*.mdf'] }];
+	private readonly _fileFilters: azdata.window.FileFilters[] = [{ label: loc.DatabaseFilesFilterLabel, filters: ['*.mdf'] }];
 
-	private nameField: azdata.InputBoxComponent;
-	private nameContainer: azdata.FlexContainer;
+	private _nameField: azdata.InputBoxComponent;
+	private _nameContainer: azdata.FlexContainer;
 
-	private ownerDropdown: azdata.DropDownComponent;
-	private ownerContainer: azdata.FlexContainer;
+	private _ownerDropdown: azdata.DropDownComponent;
+	private _ownerContainer: azdata.FlexContainer;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options, loc.AttachDatabaseDialogTitle, 'AttachDatabase');
@@ -49,29 +50,25 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		const buttonContainer = this.addButtonsForTable(this._databasesTable, loc.AddFileAriaLabel, RemoveText,
 			async () => await this.onAddFilesButtonClicked(), async () => await this.onRemoveFilesButtonClicked());
 
-		this.nameField = this.createInputBox(async newValue => {
-			let selectedRow = this._databasesTable.selectedRows[0];
-			let dbFile = this._databasesToAttach[selectedRow];
-			if (dbFile) {
-				dbFile.databaseName = newValue;
+		this._nameField = this.createInputBox(async newValue => {
+			if (this._currentDatabaseFile) {
+				this._currentDatabaseFile.databaseName = newValue;
 			}
 		}, {});
-		this.nameContainer = this.createLabelInputContainer(loc.AttachAsText, this.nameField);
+		this._nameContainer = this.createLabelInputContainer(loc.AttachAsText, this._nameField);
 
-		this.ownerDropdown = this.createDropdown(loc.OwnerText, async newValue => {
-			let selectedRow = this._databasesTable.selectedRows[0];
-			let dbFile = this._databasesToAttach[selectedRow];
-			if (dbFile) {
-				dbFile.owner = newValue;
+		this._ownerDropdown = this.createDropdown(loc.OwnerText, async newValue => {
+			if (this._currentDatabaseFile) {
+				this._currentDatabaseFile.owner = newValue;
 			}
 		}, this.viewInfo.loginNames.options, this.viewInfo.loginNames.options[this.viewInfo.loginNames.defaultValueIndex]);
-		this.ownerContainer = this.createLabelInputContainer(loc.OwnerText, this.ownerDropdown);
+		this._ownerContainer = this.createLabelInputContainer(loc.OwnerText, this._ownerDropdown);
 
 		// Hide input controls until we have files in the table
-		this.nameContainer.display = 'none';
-		this.ownerContainer.display = 'none';
+		this._nameContainer.display = 'none';
+		this._ownerContainer.display = 'none';
 
-		return this.createGroup(loc.DatabasesToAttachLabel, [this._databasesTable, buttonContainer, this.nameContainer, this.ownerContainer], false);
+		return this.createGroup(loc.DatabasesToAttachLabel, [this._databasesTable, buttonContainer, this._nameContainer, this._ownerContainer], false);
 	}
 
 	private initializeAssociatedFilesSection(): azdata.GroupContainer {
@@ -84,6 +81,11 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		if (this._databasesTable.selectedRows?.length > 0) {
 			let selectedRow = this._databasesTable.selectedRows[0];
 			let dbFile = this._databasesToAttach[selectedRow];
+
+			this._nameField.value = dbFile.databaseName;
+			this._ownerDropdown.value = dbFile.owner;
+			this._currentDatabaseFile = dbFile;
+
 			let filePaths = dbFile.databaseFilePaths.slice(1);
 			await this.updateAssociatedFilesTable(filePaths);
 		} else {
@@ -106,7 +108,7 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	private async onAddFilesButtonClicked(): Promise<void> {
 		let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
-		let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, this.fileFilters);
+		let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, this._fileFilters);
 		if (filePath) {
 			let owner = this.viewInfo.loginNames?.options[this.viewInfo.loginNames.defaultValueIndex];
 			let fileName = path.basename(filePath, path.extname(filePath));
@@ -118,10 +120,10 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			this._databaseFiles.push(tableRow);
 			this._databasesToAttach.push({ databaseName: fileName, databaseFilePaths: associatedFiles, owner });
 
-			this.nameContainer.display = 'block';
-			this.ownerContainer.display = 'block';
-			this.nameField.value = fileName;
-			this.ownerDropdown.value = owner;
+			this._nameContainer.display = 'block';
+			this._ownerContainer.display = 'block';
+			this._nameField.value = fileName;
+			this._ownerDropdown.value = owner;
 
 			await this.updateTableData();
 			await this.updateAssociatedFilesTable(associatedFiles);
@@ -138,8 +140,9 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			deletedRowCount++;
 		}
 		if (this._databasesToAttach.length === 0) {
-			this.nameContainer.display = 'none';
-			this.ownerContainer.display = 'none';
+			this._nameContainer.display = 'none';
+			this._ownerContainer.display = 'none';
+			this._currentDatabaseFile = undefined;
 		}
 		await this.updateTableData();
 	}
