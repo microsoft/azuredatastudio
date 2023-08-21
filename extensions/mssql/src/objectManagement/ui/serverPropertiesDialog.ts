@@ -278,6 +278,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			enabled: isEnabled,
 			max: this.objectInfo.minServerMemory.maximumValue,
 			min: this.objectInfo.minServerMemory.minimumValue,
+			value: this.objectInfo.minServerMemory.value.toString(),
 			required: true
 		};
 		this.minServerMemoryInput = this.createInputBox(async (newValue) => {
@@ -291,6 +292,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			enabled: isEnabled,
 			max: this.objectInfo.maxServerMemory.maximumValue,
 			min: this.objectInfo.maxServerMemory.minimumValue,
+			value: this.objectInfo.maxServerMemory.value.toString(),
 			required: true
 		};
 		this.maxServerMemoryInput = this.createInputBox(async (newValue) => {
@@ -349,6 +351,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 					}
 				}
 				await this.setTableData(table, newData);
+				this.resetNumaNodes();
 			}
 		}, this.objectInfo.autoProcessorAffinityIOMaskForAll, isEnabled);
 
@@ -408,13 +411,24 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 					this.autoSetProcessorAffinityMaskForAllCheckbox.checked = false;
 					this.objectInfo.autoProcessorAffinityMaskForAll = false;
 					this.objectInfo.numaNodes[+numaNode.numaNodeId].processors[checkboxState.row].affinity = checkboxState.checked;
-				} else {
+					this.objectInfo.numaNodes[+numaNode.numaNodeId].processors[checkboxState.row].ioAffinity = false;
+				}
+				if (checkboxState.column === AffinityType.IOAffinity) {
 					this.autoSetProcessorIOAffinityMaskForAllCheckbox.checked = false;
 					this.objectInfo.autoProcessorAffinityIOMaskForAll = false;
 					this.objectInfo.numaNodes[+numaNode.numaNodeId].processors[checkboxState.row].ioAffinity = checkboxState.checked;
+					this.objectInfo.numaNodes[+numaNode.numaNodeId].processors[checkboxState.row].affinity = false;
 				}
 			}
 		}));
 		return processorTable;
+	}
+
+	private resetNumaNodes(): void {
+		for (let node of this.objectInfo.numaNodes) {
+			for (let cpu of node.processors) {
+				cpu.ioAffinity = false;
+			}
+		}
 	}
 }
