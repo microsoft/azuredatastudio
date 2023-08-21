@@ -15,7 +15,6 @@ import path = require('path');
 
 export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private _databasesToAttach: DatabaseFileData[] = [];
-	private _currentDatabaseFile: DatabaseFileData;
 	private _databasesTable: azdata.TableComponent;
 	private _associatedFilesTable: azdata.TableComponent;
 	private _databaseFiles: string[][] = [];
@@ -51,16 +50,16 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			async () => await this.onAddFilesButtonClicked(), async () => await this.onRemoveFilesButtonClicked());
 
 		this._nameField = this.createInputBox(async newValue => {
-			if (this._currentDatabaseFile) {
-				this._currentDatabaseFile.databaseName = newValue;
-			}
+			let selectedRow = this._databasesTable.selectedRows[0];
+			let dbFile = this._databasesToAttach[selectedRow];
+			dbFile.databaseName = newValue;
 		}, {});
 		this._nameContainer = this.createLabelInputContainer(loc.AttachAsText, this._nameField);
 
 		this._ownerDropdown = this.createDropdown(loc.OwnerText, async newValue => {
-			if (this._currentDatabaseFile) {
-				this._currentDatabaseFile.owner = newValue;
-			}
+			let selectedRow = this._databasesTable.selectedRows[0];
+			let dbFile = this._databasesToAttach[selectedRow];
+			dbFile.owner = newValue;
 		}, this.viewInfo.loginNames.options, this.viewInfo.loginNames.options[this.viewInfo.loginNames.defaultValueIndex]);
 		this._ownerContainer = this.createLabelInputContainer(loc.OwnerText, this._ownerDropdown);
 
@@ -84,7 +83,6 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 			this._nameField.value = dbFile.databaseName;
 			this._ownerDropdown.value = dbFile.owner;
-			this._currentDatabaseFile = dbFile;
 
 			await this.updateAssociatedFilesTable(dbFile.databaseFilePaths);
 		} else {
@@ -139,7 +137,6 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		if (this._databasesToAttach.length === 0) {
 			this._nameContainer.display = 'none';
 			this._ownerContainer.display = 'none';
-			this._currentDatabaseFile = undefined;
 		} else {
 			this._databasesTable.setActiveCell(0, 0);
 		}
