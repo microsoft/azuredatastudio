@@ -467,17 +467,7 @@ export interface WizardPageEventInfo {
 
 interface DisposableTab extends azdata.Tab, vscode.Disposable { }
 
-interface DisposableDashboardTab extends azdata.DashboardTab, vscode.Disposable { }
-
 interface DisposableTabGroup extends azdata.TabGroup, vscode.Disposable { }
-
-interface DisposableDashboardTabGroup extends azdata.DashboardTabGroup, vscode.Disposable {
-
-	/**
-	 * Child tabs of the tab group
-	 */
-	tabs: DisposableDashboardTab[];
-}
 
 class WizardImpl implements azdata.window.Wizard {
 	private _currentPage: number = undefined;
@@ -639,7 +629,7 @@ class ModelViewDashboardImpl extends Disposable implements azdata.window.ModelVi
 		this._tabbedPanel.updateTabs(this.createTabs(tabs, this._view));
 	}
 
-	registerTabs(handler: (view: azdata.ModelView) => Thenable<(DisposableDashboardTab | DisposableDashboardTabGroup)[]>): void {
+	registerTabs(handler: (view: azdata.ModelView) => Thenable<(DashboardTab | DashboardTabGroup)[]>): void {
 		this._editor.registerContent(async (view) => {
 			this._view = view;
 			const dashboardTabs = await handler(view);
