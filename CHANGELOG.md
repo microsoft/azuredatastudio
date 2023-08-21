@@ -1,5 +1,34 @@
 # Change Log
 
+## July 2023 (Hotfix)
+
+Azure Data Studio 1.45.1 is the latest general availability (GA) release.
+
+- Release number: 1.45.1
+- Release date: August 7, 2023
+
+### Bug fixes in 1.45.1
+
+| New Item | Details |
+| --- | --- |
+| Connection | Fixed an issue that prevented all connections from appearing in the server tree view. |
+| Connection | Updated recent connections list to include connections that are not saved. |
+| Database Migration Assessment for Oracle | Resolved issue where links to open the assessment output were no longer working. |
+| Database Schema Conversion Toolkit | Resolved issue where links to open the conversion output were no longer working. |
+| Installation | Addressed error "gyp WARN install" for Windows arm64. |
+| Profiler | Fixed an issue where the session dropdown was not populated when an XEL file is opened. |
+| Profiler | Addressed issue where running state was incorrectly set after a session was started. |
+
+For a full list of bug fixes addressed for the July 2023 hotfix release, visit the [July 2023 Hotfix Release on GitHub](https://github.com/microsoft/azuredatastudio/milestone/104?closed=1).
+
+### Known issues in 1.45.1
+
+ New Item | Details | Workaround |
+| --- | --- | --- |
+| Installation | Azure Data Studio installation fails on RHEL 8 | Use RHEL 9, or manually install glibc-2.29 and add it to the Library Path and then re-install ADS |
+
+For a list of the current known issues, visit the [issues list on GitHub](https://github.com/microsoft/azuredatastudio/issues?q=is%3Aissue).
+
 ## July 2023
 
 Azure Data Studio 1.45.0 is the latest general availability (GA) release.

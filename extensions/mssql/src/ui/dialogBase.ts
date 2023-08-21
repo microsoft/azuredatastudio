@@ -10,6 +10,7 @@ import * as uiLoc from '../ui/localizedConstants';
 
 export const DefaultLabelWidth = 150;
 export const DefaultInputWidth = 300;
+export const DefaultColumnCheckboxWidth = 150;
 export const DefaultTableWidth = DefaultInputWidth + DefaultLabelWidth;
 export const DefaultMaxTableRowCount = 10;
 export const DefaultMinTableRowCount = 1;
@@ -143,10 +144,26 @@ export abstract class DialogBase<DialogResult> {
 	}
 
 	protected createPasswordInputBox(ariaLabel: string, textChangeHandler: (newValue: string) => Promise<void>, value: string = '', enabled: boolean = true, width: number = DefaultInputWidth): azdata.InputBoxComponent {
-		return this.createInputBox(ariaLabel, textChangeHandler, value, enabled, 'password', width);
+		return this.createInputBox(textChangeHandler, {
+			ariaLabel: ariaLabel,
+			value: value,
+			enabled: enabled,
+			inputType: 'password',
+			width: width
+		});
 	}
 
-	protected createInputBoxWithProperties(textChangeHandler: (newValue: string) => Promise<void>, properties: azdata.InputBoxProperties, customValidation?: () => Promise<boolean>): azdata.InputBoxComponent {
+	/**
+	 * Creates an input box. If properties are not passed in, then an input box is created with the following default properties: 
+	 * inputType - text
+	 * width - DefaultInputWidth
+	 * value - empty
+	 * enabled - true
+	 * @param textChangeHandler - Function called on text changed.
+	 * @param properties - Inputbox properties.
+	 * @param customValidation - Dynamic validation function.
+	 */
+	protected createInputBox(textChangeHandler: (newValue: string) => Promise<void>, properties: azdata.InputBoxProperties, customValidation?: () => Promise<boolean>): azdata.InputBoxComponent {
 		properties.width = properties.width ?? DefaultInputWidth;
 		properties.inputType = properties.inputType ?? 'text';
 		properties.value = properties.value ?? '';
@@ -162,16 +179,6 @@ export abstract class DialogBase<DialogResult> {
 			await this.runValidation(false);
 		}));
 		return inputBoxComponent;
-	}
-
-	protected createInputBox(ariaLabel: string, textChangeHandler: (newValue: string) => Promise<void>, value: string = '', enabled: boolean = true, type: azdata.InputBoxInputType = 'text', width: number = DefaultInputWidth, required?: boolean, min?: number, max?: number): azdata.InputBoxComponent {
-		const inputbox = this.modelView.modelBuilder.inputBox().withProps({ inputType: type, enabled: enabled, ariaLabel: ariaLabel, value: value, width: width, required: required, min: min, max: max }).component();
-		this.disposables.push(inputbox.onTextChanged(async () => {
-			await textChangeHandler(inputbox.value!);
-			this.onFormFieldChange();
-			await this.runValidation(false);
-		}));
-		return inputbox;
 	}
 
 	protected createGroup(header: string, items: azdata.Component[], collapsible: boolean = true, collapsed: boolean = false): azdata.GroupContainer {
@@ -251,19 +258,6 @@ export abstract class DialogBase<DialogResult> {
 
 	protected createTable(ariaLabel: string, columns: string[] | azdata.TableColumn[], data: any[][], maxRowCount: number = DefaultMaxTableRowCount): azdata.TableComponent {
 		const table = this.modelView.modelBuilder.table().withProps(
-			{
-				ariaLabel: ariaLabel,
-				data: data,
-				columns: columns,
-				width: DefaultTableWidth,
-				height: getTableHeight(data.length, DefaultMinTableRowCount, maxRowCount)
-			}
-		).component();
-		return table;
-	}
-
-	protected createTable2(ariaLabel: string, columns: azdata.DeclarativeTableColumn[], data: any[][], maxRowCount: number = DefaultMaxTableRowCount): azdata.DeclarativeTableComponent {
-		const table = this.modelView.modelBuilder.declarativeTable().withProps(
 			{
 				ariaLabel: ariaLabel,
 				data: data,

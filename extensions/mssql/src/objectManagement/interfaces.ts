@@ -458,6 +458,8 @@ export interface Database extends ObjectManagement.SqlObject {
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
 	isAzureDB: boolean;
+	isManagedInstance: boolean;
+	isSqlOnDemand: boolean;
 	loginNames?: OptionsCollection;
 	collationNames?: OptionsCollection;
 	compatibilityLevels?: OptionsCollection;
@@ -491,6 +493,11 @@ export interface ProcessorAffinity {
 export interface NumaNode {
 	numaNodeId: string
 	processors: ProcessorAffinity[]
+}
+
+export enum AffinityType {
+	ProcessorAffinity = 1,
+	IOAffinity = 2,
 }
 
 export interface Server extends ObjectManagement.SqlObject {
@@ -544,9 +551,7 @@ export interface NumericServerProperty {
 	value: number;
 }
 
-
 export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
-	processorList: NumaNode[];
 }
 
 export interface DatabaseFile {
