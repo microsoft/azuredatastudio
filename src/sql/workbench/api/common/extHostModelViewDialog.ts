@@ -16,6 +16,8 @@ import { IExtensionDescription } from 'vs/platform/extensions/common/extensions'
 import { TabOrientation, DialogWidth, DialogStyle, DialogPosition, IDialogProperties } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { DashboardTab } from 'azdata';
+import { DashboardTabGroup } from 'azdata';
 
 const DONE_LABEL = nls.localize('dialogDoneLabel', "Done");
 const CANCEL_LABEL = nls.localize('dialogCancelLabel', "Cancel");
@@ -629,7 +631,7 @@ class ModelViewDashboardImpl extends Disposable implements azdata.window.ModelVi
 		this._register(this._editor);
 	}
 
-	updateTabs(tabs: (DisposableDashboardTab | DisposableDashboardTabGroup)[]): void {
+	updateTabs(tabs: (DashboardTab | DashboardTabGroup)[]): void {
 		if (this._tabbedPanel === undefined || this._view === undefined) {
 			throw new Error(nls.localize('dashboardNotInitialized', "Tabs are not initialized"));
 		}
@@ -660,7 +662,7 @@ class ModelViewDashboardImpl extends Disposable implements azdata.window.ModelVi
 		return this._editor.closeEditor();
 	}
 
-	createTab(dashboardTab: DisposableDashboardTab, view: azdata.ModelView): DisposableTab {
+	createTab(dashboardTab: DashboardTab, view: azdata.ModelView): DisposableTab {
 		let tab: DisposableTab;
 		if (dashboardTab.toolbar) {
 			const flexContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
@@ -687,9 +689,9 @@ class ModelViewDashboardImpl extends Disposable implements azdata.window.ModelVi
 		return tab;
 	}
 
-	createTabs(dashboardTabs: (DisposableDashboardTab | DisposableDashboardTabGroup)[], view: azdata.ModelView): (DisposableTabGroup | DisposableTab)[] {
+	createTabs(dashboardTabs: (DashboardTab | DashboardTabGroup)[], view: azdata.ModelView): (DisposableTabGroup | DisposableTab)[] {
 		const tabs: (DisposableTabGroup | DisposableTab)[] = [];
-		dashboardTabs.forEach((item: DisposableDashboardTab | DisposableDashboardTabGroup) => {
+		dashboardTabs.forEach((item: DashboardTab | DashboardTabGroup) => {
 			if ('tabs' in item) {
 				let disposableTabs = item.tabs.map(tab => {
 					return this.createTab(tab, view);
