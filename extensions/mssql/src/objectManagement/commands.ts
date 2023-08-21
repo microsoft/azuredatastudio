@@ -284,7 +284,6 @@ async function handleDetachDatabase(context: azdata.ObjectExplorerContext, servi
 		};
 		const dialog = new DetachDatabaseDialog(service, options);
 		await dialog.open();
-		await refreshParentNode(context);
 	}
 	catch (err) {
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenDetachDatabaseDialog, err).withAdditionalProperties({
@@ -313,7 +312,6 @@ async function handleAttachDatabase(context: azdata.ObjectExplorerContext, servi
 		};
 		const dialog = new AttachDatabaseDialog(service, options);
 		await dialog.open();
-		await refreshParentNode(context);
 	}
 	catch (err) {
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenAttachDatabaseDialog, err).withAdditionalProperties({
