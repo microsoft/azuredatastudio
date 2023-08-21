@@ -671,18 +671,16 @@ class ModelViewDashboardImpl extends Disposable implements azdata.window.ModelVi
 				id: dashboardTab.id,
 				content: flexContainer,
 				icon: dashboardTab.icon,
-				dispose: () => {
-					dashboardTab.toolbar.dispose();
-					dashboardTab.content.dispose();
-				},
+				dispose: () => flexContainer.dispose(),
 			};
 		} else {
+			let content = dashboardTab.content;
 			tab = {
-				content: dashboardTab.content,
+				content: content,
 				id: dashboardTab.id,
 				title: dashboardTab.title,
 				icon: dashboardTab.icon,
-				dispose: () => dashboardTab.content.dispose()
+				dispose: () => content.dispose()
 			}
 		}
 		this._register(tab);
