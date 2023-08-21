@@ -86,8 +86,7 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			this._ownerDropdown.value = dbFile.owner;
 			this._currentDatabaseFile = dbFile;
 
-			let filePaths = dbFile.databaseFilePaths.slice(1);
-			await this.updateAssociatedFilesTable(filePaths);
+			await this.updateAssociatedFilesTable(dbFile.databaseFilePaths);
 		} else {
 			await this.updateAssociatedFilesTable([]);
 		}
@@ -122,11 +121,9 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 			this._nameContainer.display = 'block';
 			this._ownerContainer.display = 'block';
-			this._nameField.value = fileName;
-			this._ownerDropdown.value = owner;
 
 			await this.updateTableData();
-			await this.updateAssociatedFilesTable(associatedFiles);
+			this._databasesTable.setActiveCell(this._databasesToAttach.length - 1, 0);
 		}
 	}
 
@@ -143,6 +140,8 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			this._nameContainer.display = 'none';
 			this._ownerContainer.display = 'none';
 			this._currentDatabaseFile = undefined;
+		} else {
+			this._databasesTable.setActiveCell(0, 0);
 		}
 		await this.updateTableData();
 	}
