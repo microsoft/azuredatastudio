@@ -203,6 +203,7 @@ export const NoDatabaseFilesError = localize('objectManagement.doDatabaseFilesEr
 export const DatabasesToAttachLabel = localize('objectManagement.databasesToAttach', "Databases to Attach");
 export const AssociatedFilesLabel = localize('objectManagement.associatedDatabaseFiles', "Associated Database Files");
 export const MdfFileLocation = localize('objectManagement.mdfFileLocation', "MDF File Location");
+export const DatabaseFilesFilterLabel = localize('objectManagement.databaseFilesFilterLabel', "Database Data Files")
 export const DatabaseName = localize('objectManagement.databaseName', "DB Name");
 export const AttachAsText = localize('objectManagement.attachAsText', "Attach As");
 export const AttachButtonLabel = localize('objectManagement.attachButtonLabel', "Attach");
