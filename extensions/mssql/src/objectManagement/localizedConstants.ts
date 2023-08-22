@@ -51,6 +51,8 @@ export const AddFileAriaLabel = localize('objectManagement.addFileText', "Add da
 export const RemoveFileAriaLabel = localize('objectManagement.removeFileText', "Remove database file");
 export const CreateObjectLabel = localize('objectManagement.createObjectLabel', "Create");
 export const ApplyUpdatesLabel = localize('objectManagement.applyUpdatesLabel', "Apply");
+export const DataFileLabel = localize('objectManagement.dataFileLabel', "Data");
+export const LogFileLabel = localize('objectManagement.logFileLabel', "Log");
 
 export function ExplicitPermissionsTableLabelSelected(name: string): string { return localize('objectManagement.explicitPermissionsTableLabelSelected', "Explicit permissions for: {0}", name); }
 export function EffectivePermissionsTableLabelSelected(name: string): string { return localize('objectManagement.effectivePermissionsTableLabelSelected', "Effective permissions for: {0}", name); }
