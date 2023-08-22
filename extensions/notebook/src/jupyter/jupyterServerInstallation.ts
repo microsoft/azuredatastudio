@@ -569,7 +569,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 			packages.forEach(pkg => {
 				let installedPkgVersion = pipVersionMap.get(pkg.name);
-				if (!installedPkgVersion || utils.compareVersions(installedPkgVersion, pkg.version) < 0) {
+				if (!installedPkgVersion || utils.compareVersions(installedPkgVersion, pkg.version) < 0 || (pkg.installExactVersion && installedPkgVersion !== pkg.version)) {
 					packagesToInstall.push(pkg);
 				}
 			});
