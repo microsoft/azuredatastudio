@@ -8,7 +8,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultMaxTableRowCount, getTableHeight } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl } from '../constants';
+import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl, DatabaseFileGroupsPropertiesDocUrl } from '../constants';
 import { Database, DatabaseFile, DatabaseScopedConfigurationsInfo, DatabaseViewInfo } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
@@ -23,6 +23,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	// Database Properties tabs
 	private generalTab: azdata.Tab;
 	private optionsTab: azdata.Tab;
+	private fileGroupsTab: azdata.Tab;
 	private dscTab: azdata.Tab;
 	private optionsTabSectionsContainer: azdata.Component[] = [];
 	private activeTabId: string;
@@ -47,6 +48,11 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	// Files Tab
 	private readonly filesTabId: string = 'filesDatabaseId';
 	private databaseFilesTable: azdata.TableComponent;
+	// fileGroups Tab
+	private readonly fileGroupsTabId: string = 'fileGroupsDatabaseId';
+	private rowsFilegroupsTable: azdata.TableComponent;
+	private filestreamFilegroupsTable: azdata.TableComponent;
+	private memoryOptimizedFilegroupsTable: azdata.TableComponent;
 	// Options Tab
 	private readonly optionsTabId: string = 'optionsDatabaseId';
 	private autoCreateIncrementalStatisticsInput: azdata.CheckBoxComponent;
@@ -97,6 +103,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				break;
 			case this.filesTabId:
 				helpUrl = DatabaseFilesPropertiesDocUrl;
+				break;
+			case this.fileGroupsTabId:
+				helpUrl = DatabaseFileGroupsPropertiesDocUrl;
 				break;
 			case this.optionsTabId:
 				helpUrl = DatabaseOptionsPropertiesDocUrl;
@@ -161,6 +170,20 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					content: this.createGroup('', [filesGeneralSection, databaseFilesSection], false)
 				};
 				tabs.push(this.optionsTab);
+			}
+
+			// Initilaize FileGroups Tab
+			// Since fullTextIndexing is only enabled for SQL Server, using the same to determine the fileGroups tab
+			if (!isUndefinedOrNull(this.objectInfo.fullTextIndexing)) {
+				const rowsFileGroupSection = this.initializeRowsFileGroupSection();
+				const fileStreamFileGroupSection = this.initializeFileStreamFileGroupSection();
+				const memoryOptimizedFileGroupSection = this.initializeMemoryOptimizedFileGroupSection();
+				this.fileGroupsTab = {
+					title: localizedConstants.FileGroupsSectionHeader,
+					id: this.fileGroupsTabId,
+					content: this.createGroup('', [rowsFileGroupSection, fileStreamFileGroupSection, memoryOptimizedFileGroupSection], false)
+				};
+				tabs.push(this.fileGroupsTab);
 			}
 
 			// Initilaize Options Tab
@@ -508,7 +531,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		file.isAutoGrowthEnabled ? localizedConstants.AutoGrowthValueStringGenerator(file.type !== this.viewInfo.fileTypesOptions[2]
 			, file.autoFileGrowth.toString()
 			, file.autoFileGrowthType === localizedConstants.PercentText
-			, file.maxSizeLimit) : localizedConstants.NoneText,
+			, file.maxSizeLimitInMb) : localizedConstants.NoneText,
 		file.path,
 		file.fileNameWithExtension];
 	}
@@ -597,7 +620,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			isAutoGrowthEnabled: true,
 			autoFileGrowth: defaultFileGrowthInMb,
 			autoFileGrowthType: 'KB',
-			maxSizeLimit: defaultMaxFileSizeLimitedToInMb
+			maxSizeLimitInMb: defaultMaxFileSizeLimitedToInMb
 		} : selectedFile;
 
 		const dialog = new DatabaseFileDialog({
@@ -618,6 +641,92 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		return await dialog.waitForClose();
 	}
 
+	//#endregion
+
+	//#region Database Properties - FileGroups Tab
+	private initializeRowsFileGroupSection(): azdata.GroupContainer {
+		this.rowsFilegroupsTable = this.modelView.modelBuilder.table().withProps({
+			columns: [{
+				type: azdata.ColumnType.text,
+				value: localizedConstants.NameText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.FilesText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.ReadOnlyText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.DefaultText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.AutogrowAllFilesText
+			}],
+			data: [],
+			height: getTableHeight(this.objectInfo.files?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
+			width: DefaultTableWidth,
+			forceFitColumns: azdata.ColumnSizingMode.DataFit,
+			CSSStyles: {
+				'margin-left': '10px'
+			}
+		}).component();
+		const rowsFileGroupButtonContainer = this.addButtonsForTable(this.rowsFilegroupsTable, localizedConstants.AddFilegroupText, localizedConstants.RemoveButton,
+			(button) => this.onAddDatabaseFilesButtonClicked(button), () => this.onRemoveDatabaseFilesButtonClicked());
+
+		return this.createGroup(localizedConstants.RowsFileGroupsSectionText, [this.rowsFilegroupsTable, rowsFileGroupButtonContainer], true, true);
+	}
+
+	private initializeFileStreamFileGroupSection(): azdata.GroupContainer {
+		this.filestreamFilegroupsTable = this.modelView.modelBuilder.table().withProps({
+			columns: [{
+				type: azdata.ColumnType.text,
+				value: localizedConstants.NameText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.FilestreamFilesText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.ReadOnlyText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.DefaultText
+			}],
+			data: [],
+			height: getTableHeight(this.objectInfo.files?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
+			width: DefaultTableWidth,
+			forceFitColumns: azdata.ColumnSizingMode.DataFit,
+			CSSStyles: {
+				'margin-left': '10px'
+			}
+		}).component();
+		const filestreamFileGroupButtonContainer = this.addButtonsForTable(this.filestreamFilegroupsTable, localizedConstants.AddFilegroupText, localizedConstants.RemoveButton,
+			(button) => this.onAddDatabaseFilesButtonClicked(button), () => this.onRemoveDatabaseFilesButtonClicked());
+
+		return this.createGroup(localizedConstants.FileStreamFileGroupsSectionText, [this.filestreamFilegroupsTable, filestreamFileGroupButtonContainer], true, true);
+	}
+
+	private initializeMemoryOptimizedFileGroupSection(): azdata.GroupContainer {
+		this.memoryOptimizedFilegroupsTable = this.modelView.modelBuilder.table().withProps({
+			columns: [{
+				type: azdata.ColumnType.text,
+				value: localizedConstants.NameText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.FilestreamFilesText
+			}],
+			data: [],
+			height: getTableHeight(this.objectInfo.files?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
+			width: DefaultTableWidth,
+			forceFitColumns: azdata.ColumnSizingMode.DataFit,
+			CSSStyles: {
+				'margin-left': '10px'
+			}
+		}).component();
+		const memoryOptimizedFileGroupButtonContainer = this.addButtonsForTable(this.memoryOptimizedFilegroupsTable, localizedConstants.AddFilegroupText, localizedConstants.RemoveButton,
+			(button) => this.onAddDatabaseFilesButtonClicked(button), () => this.onRemoveDatabaseFilesButtonClicked());
+
+		return this.createGroup(localizedConstants.MemoryOptimizedFileGroupsSectionText, [this.memoryOptimizedFilegroupsTable, memoryOptimizedFileGroupButtonContainer], true, true);
+	}
 	//#endregion
 
 	//#region Database Properties - Options Tab

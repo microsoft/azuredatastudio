@@ -156,6 +156,7 @@ export const GeneralSectionHeader = localize('objectManagement.generalSectionHea
 export const AdvancedSectionHeader = localize('objectManagement.advancedSectionHeader', "Advanced");
 export const OptionsSectionHeader = localize('objectManagement.optionsSectionHeader', "Options");
 export const FilesSectionHeader = localize('objectManagement.optionsSectionHeader', "Files");
+export const FileGroupsSectionHeader = localize('objectManagement.filegroupsSectionHeader', "Filegroups");
 export const PasswordText = localize('objectManagement.passwordLabel', "Password");
 export const ConfirmPasswordText = localize('objectManagement.confirmPasswordLabel', "Confirm password");
 export const EnabledText = localize('objectManagement.enabledLabel', "Enabled");
@@ -363,6 +364,15 @@ export const FileNameExistsError = (name: string) => localize('objectManagement.
 export const FileAlreadyExistsError = (fullFilePath: string) => localize('objectManagement.databaseProperties.fileNameExistsError', "Cannot create file '{0}' because it already exists.", fullFilePath);
 export const FileSizeLimitError = localize('objectManagement.databaseProperties.fileSizeLimitError', "Maximum file size cannot be less than size");
 export const FilegrowthLimitError = localize('objectManagement.databaseProperties.filegrowthLimitError', "Filegrowth cannot be greater than the Maximum file size for a file");
+export const RowsFileGroupsSectionText = localize('objectManagement.databaseProperties.rowsFileGroupsSectionText', "Rows");
+export const FileStreamFileGroupsSectionText = localize('objectManagement.databaseProperties.fileStreamFileGroupsSectionText', "FileStream");
+export const MemoryOptimizedFileGroupsSectionText = localize('objectManagement.databaseProperties.memoryOptimizedFileGroupsSectionText', "Memory Optimized Data");
+export const FilesText = localize('objectManagement.databaseProperties.filesText', "Files");
+export const ReadOnlyText = localize('objectManagement.databaseProperties.readOnlyText', "Read-Only");
+export const DefaultText = localize('objectManagement.databaseProperties.defaultText', "Default");
+export const AutogrowAllFilesText = localize('objectManagement.databaseProperties.autogrowAllFilesText', "Autogrow All Files");
+export const FilestreamFilesText = localize('objectManagement.databaseProperties.filestreamFilesText', "Filestream Files");
+export const AddFilegroupText = localize('objectManagement.databaseProperties.addFilegroupButtonText', "Add Filegroup");
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
