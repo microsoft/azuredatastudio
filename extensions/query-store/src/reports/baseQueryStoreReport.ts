@@ -143,6 +143,5 @@ export abstract class BaseQueryStoreReport {
 
 	protected abstract createViews(_view: azdata.ModelView): Promise<azdata.FlexContainer[]>;
 	protected abstract configureButtonClick(configureDialog: ConfigureDialog): Promise<void>;
-	//protected abstract updateTimePeriod(_view: azdata.ModelView): Promise<void>;
 }
 

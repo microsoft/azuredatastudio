@@ -6,7 +6,9 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
+import { cssStyles } from '../common/uiConstants';
 import { ConfigInfo } from '../common/utils';
+import { css } from 'jquery';
 
 interface Deferred<T> {
 	resolve: (result: T | Promise<T>) => void;
@@ -369,10 +371,12 @@ export class ConfigureDialog {
 
 		this.timeIntervalOptionsOverallReport = [constants.lastHourLabel, constants.lastDayLabel, constants.last2DaysLabel, constants.lastWeekLabel, constants.lastMonthLabel, constants.last6MonthsLabel, constants.lastYearLabel, constants.customLabel];
 
-		this.timeIntervalOptionsDropdown = this._view.modelBuilder.dropDown().withProps({
-			editable: false,
-			fireOnTextChange: true
-		}).component();
+		this.timeIntervalOptionsDropdown = this._view.modelBuilder.dropDown()
+			.withProps({
+				width: cssStyles.configureDialogDropdownWidth,
+				editable: false,
+				fireOnTextChange: true
+			}).component();
 
 		this.timeIntervalOptionsDropdown.onValueChanged(async () => {
 			if (this.timeIntervalOptionsDropdown?.value === constants.customLabel) {
@@ -400,23 +404,29 @@ export class ConfigureDialog {
 
 		const customTimeFromLabel = this._view.modelBuilder.text()
 			.withProps({
-				value: constants.fromLabel
+				value: constants.fromLabel,
+				width: cssStyles.configureDialogLabelWidth
 			}).component();
 
-		this.customTimeFromTextBox = this._view.modelBuilder.inputBox().withProps({
-			ariaLabel: constants.fromLabel,
-			enabled: false
-		}).component();
+		this.customTimeFromTextBox = this._view.modelBuilder.inputBox()
+			.withProps({
+				ariaLabel: constants.fromLabel,
+				width: cssStyles.configureDialogTextboxWidth,
+				enabled: false
+			}).component();
 
 		const customTimeToLabel = this._view.modelBuilder.text()
 			.withProps({
-				value: constants.toLabel
+				value: constants.toLabel,
+				width: cssStyles.configureDialogLabelWidth
 			}).component();
 
-		this.customTimeToTextBox = this._view.modelBuilder.inputBox().withProps({
-			ariaLabel: constants.toLabel,
-			enabled: false
-		}).component();
+		this.customTimeToTextBox = this._view.modelBuilder.inputBox()
+			.withProps({
+				ariaLabel: constants.toLabel,
+				width: cssStyles.configureDialogTextboxWidth,
+				enabled: false
+			}).component();
 
 		this.localTimeFormatRadioButton = this._view.modelBuilder.radioButton()
 			.withProps({
@@ -437,12 +447,14 @@ export class ConfigureDialog {
 
 		this.localTimeFormatRadioButton.checked = true;
 
-		const aggregationSizeDropdown = this._view.modelBuilder.dropDown().withProps({
-			editable: false,
-			fireOnTextChange: true,
-			values: [constants.minuteLabel, constants.hourLabel, constants.dayLabel, constants.automaticLabel],
-			value: constants.automaticLabel
-		}).component();
+		const aggregationSizeDropdown = this._view.modelBuilder.dropDown()
+			.withProps({
+				editable: false,
+				fireOnTextChange: true,
+				values: [constants.minuteLabel, constants.hourLabel, constants.dayLabel, constants.automaticLabel],
+				value: constants.automaticLabel,
+				width: cssStyles.configureDialogDropdownWidth
+			}).component();
 
 		const aggregationSizeLabel = this._view.modelBuilder.text()
 			.withProps({
@@ -517,10 +529,12 @@ export class ConfigureDialog {
 			}
 		});
 
-		this.returnDataTopInputBox = this._view.modelBuilder.inputBox().withProps({
-			value: '25',
-			ariaLabel: constants.returnLabel
-		}).component();
+		this.returnDataTopInputBox = this._view.modelBuilder.inputBox()
+			.withProps({
+				value: '25',
+				ariaLabel: constants.returnLabel,
+				width: cssStyles.configureDialogTextboxWidthSmall
+			}).component();
 
 		this.criteriaRadioButtons = [this.returnDataAllRadioButton, this.returnDataTopRadioButton];
 
@@ -543,14 +557,17 @@ export class ConfigureDialog {
 	}
 
 	private createFilterComponent(): azdata.FormComponent {
-		const filterMinPlanLabel = this._view.modelBuilder.text().withProps({
-			value: constants.filterMinPlanLabel
-		}).component();
+		const filterMinPlanLabel = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.filterMinPlanLabel
+			}).component();
 
-		this.filtersInputBox = this._view.modelBuilder.inputBox().withProps({
-			value: '1',
-			ariaLabel: constants.returnLabel
-		}).component();
+		this.filtersInputBox = this._view.modelBuilder.inputBox()
+			.withProps({
+				value: '1',
+				ariaLabel: constants.returnLabel,
+				width: cssStyles.configureDialogTextboxWidthSmall,
+			}).component();
 
 		const filterRow = this._view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'row' })
