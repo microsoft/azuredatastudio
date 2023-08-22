@@ -93,7 +93,7 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	private async updateAssociatedFilesTable(filePaths: string[]): Promise<void> {
 		let tableRows = filePaths.map(filePath => {
 			let ext = path.extname(filePath);
-			let fileType = ext === '.mdf' ? 'Data' : 'Log';
+			let fileType = ext === '.ldf' ? 'Log' : 'Data';
 			let fileName = path.basename(filePath, ext);
 			return [fileName, fileType, filePath];
 		});
