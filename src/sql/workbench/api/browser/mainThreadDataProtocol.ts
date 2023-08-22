@@ -33,6 +33,7 @@ import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/comm
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { IServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -64,7 +65,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		@IDataGridProviderService private _dataGridProviderService: IDataGridProviderService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 		@ITableDesignerService private _tableDesignerService: ITableDesignerService,
-		@IExecutionPlanService private _executionPlanService: IExecutionPlanService
+		@IExecutionPlanService private _executionPlanService: IExecutionPlanService,
+		@IServerContextualizationService private _serverContextualizationService: IServerContextualizationService
 	) {
 		super();
 		if (extHostContext) {
@@ -568,6 +570,14 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			getExecutionPlan: (planFile: azdata.executionPlan.ExecutionPlanGraphInfo) => this._proxy.$getExecutionPlan(handle, planFile),
 			compareExecutionPlanGraph: (firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo) => this._proxy.$compareExecutionPlanGraph(handle, firstPlanFile, secondPlanFile),
 			isExecutionPlan: (value: string) => this._proxy.$isExecutionPlan(handle, value)
+		});
+	}
+
+	// Database server contextualization handler
+	public $registerServerContextualizationProvider(providerId: string, handle: number): void {
+		this._serverContextualizationService.registerProvider(providerId, <azdata.contextualization.ServerContextualizationProvider>{
+			generateServerContextualization: (ownerUri: string) => this._proxy.$generateServerContextualization(handle, ownerUri),
+			getServerContextualization: (ownerUri: string) => this._proxy.$getServerContextualization(handle, ownerUri)
 		});
 	}
 
