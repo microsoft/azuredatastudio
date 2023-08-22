@@ -68,11 +68,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		return helpUrl;
 	}
 
-	protected override onFormFieldChange(): void {
-		this.dialogObject.customButtons[1].enabled = this.isDirty;
-		this.dialogObject.okButton.enabled = this.isDirty;
-	}
-
 	protected async initializeUI(): Promise<void> {
 		const serverInfo = await azdata.connection.getServerInfo(this.options.objectExplorerContext.connectionProfile.id);
 		this.engineEdition = serverInfo.engineEditionId;
