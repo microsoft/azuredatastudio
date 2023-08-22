@@ -214,7 +214,7 @@ export class PerFolderServerInstance implements IServerInstance {
 		let notebookDirectory = this.getNotebookDirectory();
 		this._token = await utils.getRandomToken();
 		const allowRootParam = allowRoot ? '--allow-root' : '';
-		startCommand = `"${this.options.install.pythonExecutable}" "${this.notebookScriptPath}" --no-browser --ip=127.0.0.1 ${allowRootParam} --no-mathjax --notebook-dir "${notebookDirectory}" --NotebookApp.token=${this._token}`;
+		startCommand = `"${this.options.install.pythonExecutable}" "${this.notebookScriptPath}" --no-browser --ip=127.0.0.1 ${allowRootParam} --notebook-dir "${notebookDirectory}" --NotebookApp.token=${this._token}`;
 		this.notifyStarting(this.options.install, startCommand);
 
 		// Execute the command
