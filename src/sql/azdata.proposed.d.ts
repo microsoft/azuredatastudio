@@ -887,12 +887,19 @@ declare module 'azdata' {
 
 	export enum DataProviderType {
 		TableDesignerProvider = 'TableDesignerProvider',
-		ExecutionPlanProvider = 'ExecutionPlanProvider'
+		ExecutionPlanProvider = 'ExecutionPlanProvider',
+		ServerContextualizationProvider = 'ServerContextualizationProvider'
 	}
 
 	export namespace dataprotocol {
 		export function registerTableDesignerProvider(provider: designers.TableDesignerProvider): vscode.Disposable;
 		export function registerExecutionPlanProvider(provider: executionPlan.ExecutionPlanProvider): vscode.Disposable;
+		/**
+		 * Registers a server contextualization provider, which can provide context about a server to extensions like GitHub
+		 * Copilot for improved suggestions.
+		 * @param provider The provider to register
+		 */
+		export function registerServerContextualizationProvider(provider: contextualization.ServerContextualizationProvider): vscode.Disposable
 	}
 
 	export namespace designers {
@@ -1770,6 +1777,29 @@ declare module 'azdata' {
 			 * Cell value for the top operation data item
 			 */
 			displayValue: string | number | boolean;
+		}
+	}
+
+	export namespace contextualization {
+		export interface GetServerContextualizationResult {
+			/**
+			 * An array containing the generated server context.
+			 */
+			context: string[];
+		}
+
+		export interface ServerContextualizationProvider extends DataProvider {
+			/**
+			 * Generates server context.
+			 * @param ownerUri The URI of the connection to generate context for.
+			 */
+			generateServerContextualization(ownerUri: string): void;
+
+			/**
+			 * Gets server context, which can be in the form of create scripts but is left up each provider.
+			 * @param ownerUri The URI of the connection to get context for.
+			 */
+			getServerContextualization(ownerUri: string): Thenable<GetServerContextualizationResult>;
 		}
 	}
 

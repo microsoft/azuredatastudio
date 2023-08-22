@@ -1560,6 +1560,22 @@ export namespace ExecutionPlanComparisonRequest {
 
 // ------------------------------- < Execution Plan > ------------------------------------
 
+// ------------------------------- < Server Contextualization API > ------------------------------------
+
+export interface ServerContextualizationParams {
+	ownerUri: string;
+}
+
+export namespace GenerateServerContextualizationNotification {
+	export const type = new NotificationType<ServerContextualizationParams, void>('metadata/generateServerContext');
+}
+
+export namespace GetServerContextualizationRequest {
+	export const type = new RequestType<ServerContextualizationParams, azdata.contextualization.GetServerContextualizationResult, void, void>('metadata/getServerContext');
+}
+
+// ------------------------------- < Database Server Contextualization API > ------------------------------------
+
 // ------------------------------- < Object Management > ------------------------------------
 export interface InitializeViewRequestParams {
 	connectionUri: string;

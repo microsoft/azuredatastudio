@@ -316,6 +316,8 @@ suite('SQL QueryEditor Tests', () => {
 				configurationService.object,
 				testinstantiationService,
 				undefined,
+				undefined,
+				undefined,
 				undefined
 			);
 		});
