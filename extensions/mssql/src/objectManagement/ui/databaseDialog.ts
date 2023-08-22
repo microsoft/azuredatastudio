@@ -22,6 +22,7 @@ const DscTableRowLength = 15;
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
 	private generalTab: azdata.Tab;
+	private filesTab: azdata.Tab;
 	private optionsTab: azdata.Tab;
 	private dscTab: azdata.Tab;
 	private optionsTabSectionsContainer: azdata.Component[] = [];
@@ -155,12 +156,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			if (!isUndefinedOrNull(this.objectInfo.fullTextIndexing)) {
 				const filesGeneralSection = this.initializeFilesGeneralSection();
 				const databaseFilesSection = this.initializeDatabaseFilesSection();
-				this.optionsTab = {
+				this.filesTab = {
 					title: localizedConstants.FilesSectionHeader,
 					id: this.filesTabId,
 					content: this.createGroup('', [filesGeneralSection, databaseFilesSection], false)
 				};
-				tabs.push(this.optionsTab);
+				tabs.push(this.filesTab);
 			}
 
 			// Initilaize Options Tab
@@ -457,26 +458,25 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		this.databaseFilesTable = this.modelView.modelBuilder.table().withProps({
 			columns: [{
 				type: azdata.ColumnType.text,
-				value: localizedConstants.LogicalNameText,
-				width: 120
+				value: localizedConstants.LogicalNameText
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.FileTypeText,
+				value: localizedConstants.FileTypeText
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.FilegroupText,
+				value: localizedConstants.FilegroupText
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.SizeInMbText,
+				value: localizedConstants.SizeInMbText
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.AutogrowthMaxsizeText,
+				value: localizedConstants.AutogrowthMaxsizeText
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.PathText,
+				value: localizedConstants.PathText
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.FileNameText,
+				value: localizedConstants.FileNameText
 			}],
 			data: this.objectInfo.files?.map(file => {
 				return this.convertToDataView(file);
@@ -508,7 +508,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		file.isAutoGrowthEnabled ? localizedConstants.AutoGrowthValueStringGenerator(file.type !== this.viewInfo.fileTypesOptions[2]
 			, file.autoFileGrowth.toString()
 			, file.autoFileGrowthType === localizedConstants.PercentText
-			, file.maxSizeLimit) : localizedConstants.NoneText,
+			, file.maxSizeLimitInMb) : localizedConstants.NoneText,
 		file.path,
 		file.fileNameWithExtension];
 	}
@@ -597,7 +597,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			isAutoGrowthEnabled: true,
 			autoFileGrowth: defaultFileGrowthInMb,
 			autoFileGrowthType: 'KB',
-			maxSizeLimit: defaultMaxFileSizeLimitedToInMb
+			maxSizeLimitInMb: defaultMaxFileSizeLimitedToInMb
 		} : selectedFile;
 
 		const dialog = new DatabaseFileDialog({
