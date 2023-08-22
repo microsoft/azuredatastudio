@@ -440,6 +440,14 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		return processorTable;
 	}
 
+	private resetNumaNodes(): void {
+		for (let node of this.objectInfo.numaNodes) {
+			for (let cpu of node.processors) {
+				cpu.ioAffinity = false;
+			}
+		}
+	}
+
 	private initializeSecuritySection(): void {
 		// cannot change auth mode in sql managed instance or non windows instances
 		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance || this.objectInfo.platform !== 'Windows';
@@ -474,12 +482,5 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	}
 
 	private async handleTypeChange(checked: boolean): Promise<void> {
-	}
-	private resetNumaNodes(): void {
-		for (let node of this.objectInfo.numaNodes) {
-			for (let cpu of node.processors) {
-				cpu.ioAffinity = false;
-			}
-		}
 	}
 }
