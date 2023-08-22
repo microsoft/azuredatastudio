@@ -95,7 +95,7 @@ export class FileBrowserDialog extends Modal {
 		});
 
 		let filterLabel = localize('fileFilter', "Files of type");
-		this._fileFilterSelectBox = new SelectBox(['*'], '*', defaultSelectBoxStyles, this._contextViewService);
+		this._fileFilterSelectBox = this._register(new SelectBox(['*'], '*', defaultSelectBoxStyles, this._contextViewService));
 		this._fileFilterSelectBox.setAriaLabel(filterLabel);
 		let filterBuilder = DialogHelper.appendRow(tableContainer, filterLabel, 'file-input-label', 'file-input-box');
 		DialogHelper.appendInputSelectBox(filterBuilder, this._fileFilterSelectBox);

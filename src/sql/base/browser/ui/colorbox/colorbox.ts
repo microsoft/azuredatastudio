@@ -19,7 +19,7 @@ export class Colorbox extends Widget {
 	readonly colorElement: HTMLDivElement;
 	private labelNode: HTMLLabelElement;
 
-	private _onSelect = new Emitter<void>();
+	private _onSelect = this._register(new Emitter<void>());
 	public readonly onSelect: Event<void> = this._onSelect.event;
 
 	constructor(container: HTMLElement, opts: ColorboxOptions) {

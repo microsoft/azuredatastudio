@@ -19,11 +19,6 @@ import * as vfs from 'vinyl-fs';
  * If you need to compile this file for any changes, please run: yarn tsc -p ./build/tsconfig.json
  */
 
-//List of extensions that we changed from vscode, so we can exclude them from having "Microsoft." appended in front.
-const alteredVSCodeExtensions = [
-	'git'
-];
-
 const root = path.dirname(path.dirname(__dirname));
 
 // Modified packageLocalExtensionsStream from extensions.ts, but for langpacks.
@@ -154,12 +149,7 @@ export function modifyI18nPackFiles(existingTranslationFolder: string, resulting
 				for (let extension in extensionsPacks) {
 					const translatedExtFile = i18n.createI18nFile(`extensions/${extension}`, extensionsPacks[extension]);
 					this.queue(translatedExtFile);
-
-					// exclude altered vscode extensions from having a new path even if we provide a new I18n file.
-					if (alteredVSCodeExtensions.indexOf(extension) === -1) {
-						let adsExtensionId = 'Microsoft.' + extension;
-						resultingTranslationPaths.push({ id: adsExtensionId, resourceName: `extensions/${extension}.i18n.json` });
-					}
+					resultingTranslationPaths.push({ id: extension, resourceName: `extensions/${extension}.i18n.json` });
 				}
 				this.queue(null);
 			})
@@ -186,12 +176,11 @@ const VSCODEExtensions = [
 	"builtin-notebook-renderers", // notebook renderers
 	"configuration-editing",
 	"docker",
-	"git",
 	"git-base",
 	"github",
 	"github-authentication",
-	"image-preview",
 	"ipynb",
+	"javascript",
 	"json",
 	"json-language-features",
 	"markdown", // markdown-basics

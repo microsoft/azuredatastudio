@@ -454,10 +454,13 @@ export interface Database extends ObjectManagement.SqlObject {
 	databaseReadOnly?: boolean;
 	encryptionEnabled: boolean;
 	restrictAccess?: string;
+	databaseScopedConfigurations: DatabaseScopedConfigurationsInfo[];
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
 	isAzureDB: boolean;
+	isManagedInstance: boolean;
+	isSqlOnDemand: boolean;
 	loginNames?: OptionsCollection;
 	collationNames?: OptionsCollection;
 	compatibilityLevels?: OptionsCollection;
@@ -470,6 +473,16 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	azureMaxSizes?: AzureEditionDetails[];
 	pageVerifyOptions?: string[];
 	restrictAccessOptions?: string[];
+	dscOnOffOptions?: string[];
+	dscElevateOptions?: string[];
+	dscEnableDisableOptions?: string[];
+}
+
+export interface DatabaseScopedConfigurationsInfo {
+	id: number;
+	name: string;
+	valueForPrimary: string;
+	valueForSecondary: string;
 }
 
 export interface OptionsCollection {
@@ -480,6 +493,22 @@ export interface OptionsCollection {
 export interface AzureEditionDetails {
 	editionDisplayName: string;
 	editionOptions: OptionsCollection;
+}
+
+export interface ProcessorAffinity {
+	processorId: string;
+	affinity: boolean;
+	ioAffinity: boolean;
+}
+
+export interface NumaNode {
+	numaNodeId: string
+	processors: ProcessorAffinity[]
+}
+
+export enum AffinityType {
+	ProcessorAffinity = 1,
+	IOAffinity = 2,
 }
 
 export interface Server extends ObjectManagement.SqlObject {
@@ -502,6 +531,9 @@ export interface Server extends ObjectManagement.SqlObject {
 	storageSpaceUsageInMB: number;
 	minServerMemory: NumericServerProperty;
 	maxServerMemory: NumericServerProperty;
+	autoProcessorAffinityMaskForAll: boolean;
+	autoProcessorAffinityIOMaskForAll: boolean;
+	numaNodes: NumaNode[];
 }
 
 export interface NumericServerProperty {

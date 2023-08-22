@@ -106,7 +106,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		});
 		this._profilerTable.setSelectionModel(new RowSelectionModel());
 		const copyKeybind = new CopyKeybind();
-		copyKeybind.onCopy((e) => {
+		this._register(copyKeybind.onCopy((e) => {
 			// in context of this table, the selection mode is row selection, copy the whole row will get a lot of unwanted data
 			// ignore the passed in range and create a range so that it only copies the currently selected cell value.
 			const activeCell = this._profilerTable.activeCell;
@@ -114,7 +114,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 				const fieldName = this._input.columns[cell].field;
 				return this._input.data.getItem(row)[fieldName];
 			});
-		});
+		}));
 		this._profilerTable.registerPlugin(copyKeybind);
 		this._register(this._componentContextService.registerTable(this._profilerTable));
 

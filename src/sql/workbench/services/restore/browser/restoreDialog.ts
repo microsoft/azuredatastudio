@@ -268,17 +268,17 @@ export class RestoreDialog extends Modal {
 				...defaultEditableDropdownStyles
 			}
 		));
-		this._databaseDropdown.onValueChange(s => {
+		this._register(this._databaseDropdown.onValueChange(s => {
 			this.databaseSelected(s);
-		});
+		}));
 
-		this._databaseDropdown.onBlur(() => {
+		this._register(this._databaseDropdown.onBlur(() => {
 			this.databaseSelected(this._databaseDropdown!.value);
-		});
+		}));
 
-		this._databaseDropdown.onFocus(() => {
+		this._register(this._databaseDropdown.onFocus(() => {
 			this._onDatabaseListFocused.fire();
-		});
+		}));
 
 		this._databaseDropdown.value = this.viewModel.targetDatabaseName!;
 
@@ -402,7 +402,7 @@ export class RestoreDialog extends Modal {
 
 		const restorePanel = DOM.$('.restore-panel');
 		container.appendChild(restorePanel);
-		this._panel = new TabbedPanel(restorePanel);
+		this._panel = this._register(new TabbedPanel(restorePanel));
 		attachTabbedPanelStyler(this._panel, this._themeService);
 		this._generalTab = {
 			identifier: 'general',
@@ -725,16 +725,18 @@ export class RestoreDialog extends Modal {
 			.then(url => this._urlInputBox!.value = url);
 	}
 
-	private onFileBrowsed(filepath: string): void {
-		const oldFilePath = this._filePathInputBox!.value;
-		if (strings.isFalsyOrWhitespace(this._filePathInputBox!.value)) {
-			this._filePathInputBox!.value = filepath;
-		} else {
-			this._filePathInputBox!.value = this._filePathInputBox!.value + ', ' + filepath;
-		}
+	private onFileBrowsed(filepath?: string): void {
+		if (filepath) {
+			const oldFilePath = this._filePathInputBox!.value;
+			if (strings.isFalsyOrWhitespace(this._filePathInputBox!.value)) {
+				this._filePathInputBox!.value = filepath;
+			} else {
+				this._filePathInputBox!.value = this._filePathInputBox!.value + ', ' + filepath;
+			}
 
-		if (oldFilePath !== this._filePathInputBox!.value) {
-			this.onFilePathChanged(this._filePathInputBox!.value);
+			if (oldFilePath !== this._filePathInputBox!.value) {
+				this.onFilePathChanged(this._filePathInputBox!.value);
+			}
 		}
 	}
 

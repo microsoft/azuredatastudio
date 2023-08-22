@@ -46,6 +46,7 @@ export interface IQueryEditorConfiguration {
 	readonly tabColorMode: 'off' | 'border' | 'fill';
 	readonly showConnectionInfoInTitle: boolean;
 	readonly promptToSaveGeneratedFiles: boolean;
+	readonly githubCopilotContextualizationEnabled: boolean;
 }
 
 export interface IResultGridConfiguration {

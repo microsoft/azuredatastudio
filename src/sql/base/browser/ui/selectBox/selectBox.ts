@@ -50,8 +50,8 @@ export class SelectBox extends vsSelectBox implements AdsWidget {
 		let optionItems: SelectOptionItemSQL[] = SelectBox.createOptions(options);
 		super(optionItems, 0, contextViewProvider, _styles, selectBoxOptions);
 
-		this._onDidSelect = new Emitter<ISelectData>();
-		this._onDidFocus = new Emitter<void>();
+		this._onDidSelect = this._register(new Emitter<ISelectData>());
+		this._onDidFocus = this._register(new Emitter<void>());
 		this._optionsDictionary = new Map<string, number>();
 		this.populateOptionsDictionary(optionItems);
 		this._dialogOptions = optionItems;
