@@ -23,6 +23,7 @@ export function topResourceConsumingQueriesToolbarLabel(databaseName: string): s
 export const configure = localize('configure', "Configure");
 export const okButtonText = localize('okButtonText', "Ok");
 export const cancelButtonText = localize('cancelButtonText', "Cancel");
+export const applyButtonText = localize('applyButtonText', "Apply");
 export const criteria = localize('criteria', "Criteria");
 export const executionCountLabel = localize('executionCountLabel', "Execution Count");
 export const durationLabel = localize('durationLabel', "Duration (ms)");
@@ -59,6 +60,24 @@ export const fromLabel = localize('fromLabel', "From");
 export const toLabel = localize('toLabel', "To");
 export const localLabel = localize('localLabel', "Local");
 export const UTCLabel = localize('UTCLabel', "UTC");
-export const timeFormatLabel = localize('timeFormatLabel', "Time Format");
+export const timeFormatLabel = localize('timeFormatLabel', "Time Format:");
 export const timeIntervalLabel = localize('timeIntervalLabel', "Time Interval");
+export const aggregationSizeLabel = localize('aggregationSizeLabel', "Aggregation Size:");
+export const minuteLabel = localize('minuteLabel', "Minute");
+export const hourLabel = localize('hourLabel', "Hour");
+export const dayLabel = localize('dayLabel', "Day");
+export const automaticLabel = localize('automaticLabel', "Automatic");
 
+export const basedOnLabel = localize('basedOnLabel', "Based on:");
+export const avgLabel = localize('avgLabel', "Avg");
+export const maxLabel = localize('maxLabel', "Max");
+export const minLabel = localize('minLabel', "Min");
+export const stdDevLabel = localize('stdDevLabel', "Std Dev");
+export const totalLabel = localize('totalLabel', "Total");
+
+export const returnLabel = localize('returnLabel', "Return");
+export const allLabel = localize('allLabel', "All");
+export const topLabel = localize('topLabel', "Top");
+
+export const filterLabel = localize('filterLabel', "Filters");
+export const filterMinPlanLabel = localize('filterMinPlanLabel', "Minimum number of query plans:");

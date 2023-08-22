@@ -9,6 +9,7 @@ import * as constants from '../common/constants';
 import { BaseQueryStoreReport } from './baseQueryStoreReport';
 import { QueryStoreView } from './queryStoreView';
 import { ConfigureDialog } from '../settings/configureDialog';
+import { ConfigInfo } from '../common/utils';
 
 export class TopResourceConsumingQueries extends BaseQueryStoreReport {
 	private queries: QueryStoreView;
@@ -30,9 +31,11 @@ export class TopResourceConsumingQueries extends BaseQueryStoreReport {
 		return [queriesContainer, planSummaryContainer, planContainer];
 	}
 
-	public override async configureButtonClick(view: azdata.ModelView): Promise<void> {
-		this.configureDialog = new ConfigureDialog(view);
-		await this.configureDialog.openDialog();
-		await this.configureDialog.addConsumptionCriteriaComponent();
+	public override async configureButtonClick(configureDialog: ConfigureDialog): Promise<void> {
+		configureDialog.setConfigInfo(ConfigInfo.topResourceConfig);
+		await configureDialog.addConsumptionCriteriaComponent();
+		await configureDialog.addTimeIntervalComponent();
+		configureDialog.addReturnComponent();
+		configureDialog.addFilterComponent();
 	}
 }

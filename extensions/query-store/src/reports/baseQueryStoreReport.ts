@@ -117,7 +117,9 @@ export abstract class BaseQueryStoreReport {
 		this.configureButton.enabled = true;
 
 		this.configureButton.onDidClick(async () => {
-			await this.configureButtonClick(view);
+			this.configureDialog = new ConfigureDialog();
+			await this.configureDialog.openDialog();
+			await this.configureButtonClick(this.configureDialog);
 		});
 
 		await this.configureButton.updateCssStyles({ 'margin-top': '5px' });
@@ -140,7 +142,7 @@ export abstract class BaseQueryStoreReport {
 	}
 
 	protected abstract createViews(_view: azdata.ModelView): Promise<azdata.FlexContainer[]>;
-	protected abstract configureButtonClick(_view: azdata.ModelView): Promise<void>;
+	protected abstract configureButtonClick(configureDialog: ConfigureDialog): Promise<void>;
 	//protected abstract updateTimePeriod(_view: azdata.ModelView): Promise<void>;
 }
 

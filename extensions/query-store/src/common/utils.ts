@@ -74,3 +74,8 @@ export function createSplitView(view: azdata.ModelView, firstComponent: azdata.C
 
 	return splitview;
 }
+
+export enum ConfigInfo {
+	overallResourceConfig,
+	topResourceConfig
+}
