@@ -12,6 +12,7 @@ import * as loc from '../localizedConstants';
 import { RemoveText } from '../../ui/localizedConstants';
 import { DefaultMinTableRowCount, getTableHeight } from '../../ui/dialogBase';
 import path = require('path');
+import { getErrorMessage } from '../../utils';
 
 export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private _databasesToAttach: DatabaseFileData[] = [];
@@ -104,24 +105,31 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	private async onAddFilesButtonClicked(): Promise<void> {
-		let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
-		let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, this._fileFilters);
-		if (filePath) {
-			let owner = this.viewInfo.loginNames?.options[this.viewInfo.loginNames.defaultValueIndex];
-			let fileName = path.basename(filePath, path.extname(filePath));
-			let tableRow = [filePath, fileName];
+		try {
+			let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
+			let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, this._fileFilters);
+			if (filePath) {
+				let owner = this.viewInfo.loginNames?.options[this.viewInfo.loginNames.defaultValueIndex];
+				let fileName = path.basename(filePath, path.extname(filePath));
+				let tableRow = [filePath, fileName];
 
-			// Associated files will also include the primary file, so we don't need to add it to the array again
-			let associatedFiles = await this.objectManagementService.getAssociatedFiles(this.options.connectionUri, filePath) ?? [];
+				// Associated files will also include the primary file, so we don't need to add it to the array again
+				let associatedFiles = await this.objectManagementService.getAssociatedFiles(this.options.connectionUri, filePath) ?? [];
 
-			this._databaseFiles.push(tableRow);
-			this._databasesToAttach.push({ databaseName: fileName, databaseFilePaths: associatedFiles, owner });
+				this._databaseFiles.push(tableRow);
+				this._databasesToAttach.push({ databaseName: fileName, databaseFilePaths: associatedFiles, owner });
 
-			this._nameContainer.display = 'block';
-			this._ownerContainer.display = 'block';
+				this._nameContainer.display = 'block';
+				this._ownerContainer.display = 'block';
 
-			await this.updateTableData();
-			this._databasesTable.setActiveCell(this._databasesToAttach.length - 1, 0);
+				await this.updateTableData();
+				this._databasesTable.setActiveCell(this._databasesToAttach.length - 1, 0);
+			}
+		} catch (error) {
+			this.dialogObject.message = {
+				text: getErrorMessage(error),
+				level: azdata.window.MessageLevel.Error
+			};
 		}
 	}
 
