@@ -7,7 +7,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { DefaultColumnCheckboxWidth } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { ViewGeneralServerPropertiesDocUrl, ViewMemoryServerPropertiesDocUrl, ViewProcessorsServerPropertiesDocUrl } from '../constants';
+import { ViewGeneralServerPropertiesDocUrl, ViewMemoryServerPropertiesDocUrl, ViewProcessorsServerPropertiesDocUrl, ViewSecurityServerPropertiesDocUrl } from '../constants';
 import { Server, ServerViewInfo, NumaNode, AffinityType } from '../interfaces';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
@@ -46,6 +46,19 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private processorsSection: azdata.GroupContainer;
 	private autoSetProcessorAffinityMaskForAllCheckbox: azdata.CheckBoxComponent;
 	private autoSetProcessorIOAffinityMaskForAllCheckbox: azdata.CheckBoxComponent;
+
+	private securityTab: azdata.Tab;
+	private readonly securityTabId: string = 'securityId';
+	private securitySection: azdata.GroupContainer;
+	// Server authentication radio buttons
+	private onlyWindowsAuthRadioButton: azdata.RadioButtonComponent;
+	private sqlServerAndWindowsAuthRadioButton: azdata.RadioButtonComponent;
+	// Login auditing radio buttons
+	private noneRadioButton: azdata.RadioButtonComponent;
+	private failedLoginsOnlyRadioButton: azdata.RadioButtonComponent;
+	private successfulLoginsOnlyRadioButton: azdata.RadioButtonComponent;
+	private bothFailedAndSuccessfulLoginsRadioButton: azdata.RadioButtonComponent;
+
 	private activeTabId: string;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
@@ -63,6 +76,8 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 				helpUrl = ViewMemoryServerPropertiesDocUrl;
 			case this.processorsTabId:
 				helpUrl = ViewProcessorsServerPropertiesDocUrl;
+			case this.securityTabId:
+				helpUrl = ViewSecurityServerPropertiesDocUrl;
 			default:
 				break;
 		}
@@ -80,7 +95,8 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.initializeGeneralSection();
 		this.initializeMemorySection();
 		this.initializeProcessorsSection();
-		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab, this.processorsTab] };
+		this.initializeSecuritySection();
+		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab, this.processorsTab, this.securityTab] };
 		const serverPropertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 			.withTabs([serverPropertiesTabGroup])
 			.withProps({
@@ -424,6 +440,41 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		return processorTable;
 	}
 
+	private initializeSecuritySection(): void {
+		// cannot change auth mode in sql managed instance or non windows instances
+		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance || this.objectInfo.platform !== 'Windows';
+		const radioServerGroupName = 'serverAuthenticationRadioGroup';
+		this.onlyWindowsAuthRadioButton = this.createRadioButton(localizedConstants.onlyWindowsAuthModeText, radioServerGroupName, true, async (checked) => { await this.handleTypeChange(checked); });
+		this.sqlServerAndWindowsAuthRadioButton = this.createRadioButton(localizedConstants.sqlServerAndWindowsAuthText, radioServerGroupName, false, async (checked) => { await this.handleTypeChange(checked); });
+		this.onlyWindowsAuthRadioButton.enabled = isEnabled;
+		this.sqlServerAndWindowsAuthRadioButton.enabled = isEnabled;
+		const serverAuthSection = this.createGroup(localizedConstants.serverAuthenticationText, [
+			this.onlyWindowsAuthRadioButton,
+			this.sqlServerAndWindowsAuthRadioButton
+		], true);
+
+		const radioLoginsGroupName = 'serverLoginsRadioGroup';
+		this.noneRadioButton = this.createRadioButton(localizedConstants.noLoginAuditingText, radioLoginsGroupName, true, async (checked) => { await this.handleTypeChange(checked); });
+		this.failedLoginsOnlyRadioButton = this.createRadioButton(localizedConstants.failedLoginsOnlyText, radioLoginsGroupName, false, async (checked) => { await this.handleTypeChange(checked); });
+		this.successfulLoginsOnlyRadioButton = this.createRadioButton(localizedConstants.successfulLoginsOnlyText, radioLoginsGroupName, false, async (checked) => { await this.handleTypeChange(checked); });
+		this.bothFailedAndSuccessfulLoginsRadioButton = this.createRadioButton(localizedConstants.bothFailedAndSuccessfulLoginsText, radioLoginsGroupName, false, async (checked) => { await this.handleTypeChange(checked); });
+		const serverLoginSection = this.createGroup(localizedConstants.loginAuditingText, [
+			this.noneRadioButton,
+			this.failedLoginsOnlyRadioButton,
+			this.successfulLoginsOnlyRadioButton,
+			this.bothFailedAndSuccessfulLoginsRadioButton
+		], true);
+
+		this.securitySection = this.createGroup('', [
+			serverAuthSection,
+			serverLoginSection
+		], true);
+
+		this.securityTab = this.createTab(this.securityTabId, localizedConstants.securityText, this.securitySection);
+	}
+
+	private async handleTypeChange(checked: boolean): Promise<void> {
+	}
 	private resetNumaNodes(): void {
 		for (let node of this.objectInfo.numaNodes) {
 			for (let cpu of node.processors) {
