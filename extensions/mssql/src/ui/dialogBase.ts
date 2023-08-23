@@ -72,7 +72,7 @@ export abstract class DialogBase<DialogResult> {
 
 	protected onFormFieldChange(): void { }
 
-	protected removeButtonOnRowSelected(): boolean { return true; }
+	protected removeButtonOnRowSelected(table: azdata.TableComponent): boolean { return true; }
 
 	protected validateInput(): Promise<string[]> { return Promise.resolve([]); }
 
@@ -307,7 +307,7 @@ export abstract class DialogBase<DialogResult> {
 		buttonComponent.push(removeButton);
 
 		this.disposables.push(table.onRowSelected(() => {
-			const isRemoveButtonEnabled = this.removeButtonOnRowSelected();
+			const isRemoveButtonEnabled = this.removeButtonOnRowSelected(table);
 			updateButtons(isRemoveButtonEnabled);
 		}));
 
