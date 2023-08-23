@@ -156,7 +156,7 @@ export abstract class DialogBase<DialogResult> {
 	}
 
 	/**
-	 * Creates an input box. If properties are not passed in, then an input box is created with the following default properties: 
+	 * Creates an input box. If properties are not passed in, then an input box is created with the following default properties:
 	 * inputType - text
 	 * width - DefaultInputWidth
 	 * value - empty
@@ -238,7 +238,7 @@ export abstract class DialogBase<DialogResult> {
 		return table;
 	}
 
-	protected async setTableData(table: azdata.TableComponent, data: any[][], maxRowCount: number = DefaultMaxTableRowCount) {
+	protected async setTableData(table: azdata.TableComponent, data: any[][], maxRowCount: number = DefaultMaxTableRowCount): Promise<void> {
 		await table.updateProperties({
 			data: data,
 			height: getTableHeight(data.length, DefaultMinTableRowCount, maxRowCount)
