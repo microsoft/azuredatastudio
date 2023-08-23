@@ -8,7 +8,7 @@ import { DefaultColumnCheckboxWidth } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { ViewGeneralServerPropertiesDocUrl, ViewMemoryServerPropertiesDocUrl, ViewProcessorsServerPropertiesDocUrl, ViewSecurityServerPropertiesDocUrl } from '../constants';
-import { Server, ServerViewInfo, NumaNode, AffinityType } from '../interfaces';
+import { Server, ServerViewInfo, NumaNode, AffinityType, ServerLoginMode, AuditLevel } from '../interfaces';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
 	private generalTab: azdata.Tab;
@@ -452,8 +452,8 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		// cannot change auth mode in sql managed instance or non windows instances
 		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance || this.objectInfo.platform !== 'Windows';
 		const radioServerGroupName = 'serverAuthenticationRadioGroup';
-		this.onlyWindowsAuthRadioButton = this.createRadioButton(localizedConstants.onlyWindowsAuthModeText, radioServerGroupName, true, async (checked) => { await this.handleTypeChange(checked); });
-		this.sqlServerAndWindowsAuthRadioButton = this.createRadioButton(localizedConstants.sqlServerAndWindowsAuthText, radioServerGroupName, false, async (checked) => { await this.handleTypeChange(checked); });
+		this.onlyWindowsAuthRadioButton = this.createRadioButton(localizedConstants.onlyWindowsAuthModeText, radioServerGroupName, this.objectInfo.authenticationMode === ServerLoginMode.Integrated, async () => { await this.handleAuthModeChange(); });
+		this.sqlServerAndWindowsAuthRadioButton = this.createRadioButton(localizedConstants.sqlServerAndWindowsAuthText, radioServerGroupName, this.objectInfo.authenticationMode === ServerLoginMode.Mixed, async () => { await this.handleAuthModeChange(); });
 		this.onlyWindowsAuthRadioButton.enabled = isEnabled;
 		this.sqlServerAndWindowsAuthRadioButton.enabled = isEnabled;
 		const serverAuthSection = this.createGroup(localizedConstants.serverAuthenticationText, [
@@ -462,10 +462,10 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		], true);
 
 		const radioLoginsGroupName = 'serverLoginsRadioGroup';
-		this.noneRadioButton = this.createRadioButton(localizedConstants.noLoginAuditingText, radioLoginsGroupName, true, async (checked) => { await this.handleTypeChange(checked); });
-		this.failedLoginsOnlyRadioButton = this.createRadioButton(localizedConstants.failedLoginsOnlyText, radioLoginsGroupName, false, async (checked) => { await this.handleTypeChange(checked); });
-		this.successfulLoginsOnlyRadioButton = this.createRadioButton(localizedConstants.successfulLoginsOnlyText, radioLoginsGroupName, false, async (checked) => { await this.handleTypeChange(checked); });
-		this.bothFailedAndSuccessfulLoginsRadioButton = this.createRadioButton(localizedConstants.bothFailedAndSuccessfulLoginsText, radioLoginsGroupName, false, async (checked) => { await this.handleTypeChange(checked); });
+		this.noneRadioButton = this.createRadioButton(localizedConstants.noLoginAuditingText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.None, async () => { await this.handleAuditLevelChange(); });
+		this.failedLoginsOnlyRadioButton = this.createRadioButton(localizedConstants.failedLoginsOnlyText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.Failure, async () => { await this.handleAuditLevelChange(); });
+		this.successfulLoginsOnlyRadioButton = this.createRadioButton(localizedConstants.successfulLoginsOnlyText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.Success, async () => { await this.handleAuditLevelChange(); });
+		this.bothFailedAndSuccessfulLoginsRadioButton = this.createRadioButton(localizedConstants.bothFailedAndSuccessfulLoginsText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.All, async () => { await this.handleAuditLevelChange(); });
 		const serverLoginSection = this.createGroup(localizedConstants.loginAuditingText, [
 			this.noneRadioButton,
 			this.failedLoginsOnlyRadioButton,
@@ -481,6 +481,27 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.securityTab = this.createTab(this.securityTabId, localizedConstants.securityText, this.securitySection);
 	}
 
-	private async handleTypeChange(checked: boolean): Promise<void> {
+	private async handleAuthModeChange(): Promise<void> {
+		if (this.onlyWindowsAuthRadioButton.checked) {
+			this.objectInfo.authenticationMode = ServerLoginMode.Integrated;
+		}
+		if (this.sqlServerAndWindowsAuthRadioButton.checked) {
+			this.objectInfo.authenticationMode = ServerLoginMode.Mixed;
+		}
+	}
+
+	private async handleAuditLevelChange(): Promise<void> {
+		if (this.noneRadioButton.checked) {
+			this.objectInfo.loginAuditing = AuditLevel.None;
+		}
+		if (this.failedLoginsOnlyRadioButton.checked) {
+			this.objectInfo.loginAuditing = AuditLevel.Failure;
+		}
+		if (this.successfulLoginsOnlyRadioButton.checked) {
+			this.objectInfo.loginAuditing = AuditLevel.Success;
+		}
+		if (this.bothFailedAndSuccessfulLoginsRadioButton.checked) {
+			this.objectInfo.loginAuditing = AuditLevel.All;
+		}
 	}
 }

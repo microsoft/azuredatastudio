@@ -535,7 +535,7 @@ export interface Server extends ObjectManagement.SqlObject {
 	autoProcessorAffinityIOMaskForAll: boolean;
 	numaNodes: NumaNode[];
 	authenticationMode: ServerLoginMode;
-	auditLevel: ServerAuditLevel;
+	loginAuditing: AuditLevel;
 }
 
 /**
@@ -549,7 +549,7 @@ export const enum ServerLoginMode {
 /**
  * The server audit levels.
  */
-export const enum ServerAuditLevel {
+export const enum AuditLevel {
 	None,
 	Success,
 	Failure,
