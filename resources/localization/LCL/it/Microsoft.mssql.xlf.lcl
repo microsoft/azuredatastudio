@@ -4134,9 +4134,6 @@
           <Prev Cat="Text">
             <Val><![CDATA[Rename]]></Val>
           </Prev>
-          <Prev Cat="Text">
-            <Val><![CDATA[Rename]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
