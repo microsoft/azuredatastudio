@@ -1911,9 +1911,6 @@
           <Prev Cat="Text">
             <Val><![CDATA[Reserved Storage Size]]></Val>
           </Prev>
-          <Prev Cat="Text">
-            <Val><![CDATA[Reserved Storage Size]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2304,9 +2301,6 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Carregamento da caixa de diálogo concluído]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Loading dialog...]]></Val>
-          </Prev>
           <Prev Cat="Text">
             <Val><![CDATA[Loading dialog...]]></Val>
           </Prev>
@@ -4095,12 +4089,6 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Novo Banco de Dados (Versão Prévia)]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/package.title.newDatabase" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[New Database (Preview)]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>

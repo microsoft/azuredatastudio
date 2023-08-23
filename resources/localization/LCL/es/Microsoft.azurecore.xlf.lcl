@@ -1275,9 +1275,6 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[La caché de token se ha borrado correctamente, vuelva a cargar Azure Data Studio.]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Authentication Library has changed, please reload Azure Data Studio.]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
