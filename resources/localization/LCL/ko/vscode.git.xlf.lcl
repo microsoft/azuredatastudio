@@ -5176,9 +5176,6 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
           <Val><![CDATA[git 리포지토리가 작업 영역의 부모 폴더 또는 열린 파일에서 발견되었습니다.]A; [리포지토리 열기]5D;(command:git.openRepositoriesInParentFolders)]A; [git.openRepositoryInParentFolders]5D;(command:workbench.action.openSettings?%5B%22git.openRepositoryInParentFolders%22%5D) 설정을 사용하여 작업 영역의 부모 폴더 또는 열린 파일의 git 리포지토리를 열지 여부를 제어합니다. 자세한 내용은 [문서를 읽어보세요]5D;(https://aka.ms/vscode-git-repository-in-parent-folders).]]></Val>
           </Tgt>
-					<Prev Cat="Text">
-            <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.]D;]A;[Initialize Repository]5D;(command:git.init)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
