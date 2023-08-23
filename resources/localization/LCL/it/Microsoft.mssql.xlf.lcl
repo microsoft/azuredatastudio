@@ -16,7 +16,6 @@
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
       <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.ApplicationRoleTypeDisplayNa" ItemType="0" PsrId="308" Leaf="false">
-      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.ApplicationRoleTypeDisplayNa" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) me" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
@@ -44,28 +43,6 @@
             <Val><![CDATA[Database Role]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Ruolo del database]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.ObjectSelectionMethodDialog_" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) AllObjectsOfSchema" ItemType="0" PsrId="308" Leaf="true">
-        <Item ItemId=";(...) me" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[application role]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[ruolo applicazione]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-        <Item ItemId=";(...) meInTitle" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[Application Role]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Ruolo applicazione]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -95,7 +72,6 @@
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) AllObjectsOfTypes" ItemType="0" PsrId="308" Leaf="true">
-        <Item ItemId=";(...) AllObjectsOfTypes" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[All objects of certain types]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -105,7 +81,6 @@
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) SelectSchemaDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Item ItemId=";(...) SelectSchemaDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Schema]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -114,7 +89,6 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-        <Item ItemId=";(...) SpecificObjects" ItemType="0" PsrId="308" Leaf="true">
         <Item ItemId=";(...) SpecificObjects" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Specific objects…]]></Val>
