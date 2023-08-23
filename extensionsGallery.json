@@ -5206,6 +5206,66 @@
 				],
 				"statistics": [],
 				"flags": ""
+			},{
+					"extensionId": "102",
+					"extensionName": "storeprocdure2SQL",
+					"displayName": "Store Procdure To SQL",
+					"shortDescription": "tore Procdure,Convert",
+					"publisher": {
+						"displayName": "lozn",
+						"publisherId": "lozn",
+						"publisherName": "lozn"
+					},
+					"versions": [
+						{
+							"version": "1.0.0",
+							"lastUpdated": "08/23/2023",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/lozn00/AzureSQLProcConvertSQL/raw/master/StoredProcedureConverter-0.0.1.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/lozn00/AzureSQLProcConvertSQL/master/png/search.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/lozn00/AzureSQLProcConvertSQL/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
+									"source": "https://raw.githubusercontent.com/lozn00/AzureSQLProcConvertSQL/master/CHANGELOG.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/lozn00/AzureSQLProcConvertSQL/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/lozn00/AzureSQLProcConvertSQL/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/lozn00/AzureSQLProcConvertSQL"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 			}
 			],
 			"resultMetadata": [
