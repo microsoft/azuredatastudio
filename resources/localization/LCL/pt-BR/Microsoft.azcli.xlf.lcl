@@ -235,6 +235,9 @@
           <Prev Cat="Text">
             <Val><![CDATA[Failed to parse the JSON of contents at: {0}.]D;]A;File contents:]D;]A;{1}]D;]A;Error: {2}]]></Val>
           </Prev>
+          <Prev Cat="Text">
+            <Val><![CDATA[Failed to parse the JSON of contents at: {0}.]D;]A;File contents:]D;]A;{1}]D;]A;Error: {2}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

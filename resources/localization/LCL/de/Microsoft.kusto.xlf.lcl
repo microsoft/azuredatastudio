@@ -53,7 +53,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Downloading {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA["{0}" wird heruntergeladen]]></Val>
+            <Val><![CDATA["{0}" wird heruntergeladen.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -71,7 +71,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Downloading {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA["{0}" wird heruntergeladen]]></Val>
+            <Val><![CDATA["{0}" wird heruntergeladen.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -89,7 +89,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Installed {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA["{0}" wurde installiert]]></Val>
+            <Val><![CDATA["{0}" wurde installiert.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -107,7 +107,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Installing {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA["{0}" wird installiert]]></Val>
+            <Val><![CDATA["{0}" wird installiert.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -116,7 +116,7 @@
         <Str Cat="Text">
           <Val><![CDATA[{0} Started]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA["{0}" wurde gestartet]]></Val>
+            <Val><![CDATA["{0}" wurde gestartet.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

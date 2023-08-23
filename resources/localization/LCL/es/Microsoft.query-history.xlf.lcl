@@ -23,7 +23,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Erróneo]]></Val>
+            <Val><![CDATA[Error]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

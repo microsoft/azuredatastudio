@@ -910,7 +910,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Email]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[E-mail]]></Val>
+            <Val><![CDATA[Adresse e-mail]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

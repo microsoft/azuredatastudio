@@ -256,9 +256,9 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) ntsLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[No Tenants found.]]></Val>
+            <Val><![CDATA[Sign in to Azure...]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Nenhum Locatário encontrado.]]></Val>
+              <Val><![CDATA[Entrar no Azure...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -438,6 +438,9 @@
           <Prev Cat="Text">
             <Val><![CDATA[Unable to find account info when acquiring token.]]></Val>
           </Prev>
+          <Prev Cat="Text">
+            <Val><![CDATA[Unable to find account info when acquiring token.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -555,6 +558,9 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[{0} ocorreu ao adquirir o token. ]A;{1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[{0} occurred when acquiring token. ]D;]A;{1}]]></Val>
+          </Prev>
           <Prev Cat="Text">
             <Val><![CDATA[{0} occurred when acquiring token. ]D;]A;{1}]]></Val>
           </Prev>
@@ -747,6 +753,9 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Shell fechado.]A;]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Shell closed.]D;]A;]]></Val>
+          </Prev>
           <Prev Cat="Text">
             <Val><![CDATA[Shell closed.]D;]A;]]></Val>
           </Prev>
@@ -1275,6 +1284,15 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[O cache de token foi limpo com êxito, recarregue o Azure Data Studio.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Authentication Library has changed, please reload Azure Data Studio.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.azurecore/dist/localizedConstants.azurecore.reloadPromptCacheClear" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Token cache has been cleared successfully, please reload Azure Data Studio.]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>

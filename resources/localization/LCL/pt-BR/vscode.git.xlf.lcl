@@ -1903,6 +1903,7 @@
       <Item ItemId=";extensions/vscode.git/bundle.++CODE++c393643a0d2b8afb59b5368249e1aa94ac44dbd6aab25347a4c8788acf7065a1" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Checking Out Branch/Tag...]]></Val>
+          <Val><![CDATA[Checking Out Branch/Tag...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Fazendo check-out do branch/tag...]]></Val>
           </Tgt>
@@ -5215,7 +5216,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/vscode.git/package.view.workbench.scm.workspace" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+      <Item ItemId=";extensions/vscode.git/package.view.workbench.scm.repositoryInParentFolders" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.]A;[Initialize Repository]5D;(command:git.init)]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">

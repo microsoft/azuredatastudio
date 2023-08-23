@@ -256,9 +256,9 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) ntsLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[No Tenants found.]]></Val>
+            <Val><![CDATA[Sign in to Azure...]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[找不到租户。]]></Val>
+              <Val><![CDATA[登录到 Azure…]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -1275,6 +1275,15 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[令牌缓存已成功清除，请重新加载 Azure Data Studio。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Authentication Library has changed, please reload Azure Data Studio.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.azurecore/dist/localizedConstants.azurecore.reloadPromptCacheClear" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Token cache has been cleared successfully, please reload Azure Data Studio.]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>

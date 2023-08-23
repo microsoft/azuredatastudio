@@ -98,10 +98,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.admin-tool-ext-win/package.adminToolExtWin.propertiesMenuItem" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Properties]]></Val>
+          <Val><![CDATA[Properties (Admin Tools)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Propriedades]]></Val>
+            <Val><![CDATA[Propriedades (Ferramentas de Administração)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Properties]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

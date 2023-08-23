@@ -298,7 +298,7 @@
         <Str Cat="Text">
           <Val><![CDATA[default]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[по умолчанию]]></Val>
+            <Val><![CDATA[По умолчанию]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

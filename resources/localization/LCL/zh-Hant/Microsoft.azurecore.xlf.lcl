@@ -256,9 +256,9 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) ntsLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[No Tenants found.]]></Val>
+            <Val><![CDATA[Sign in to Azure...]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[找不到任何租用戶。]]></Val>
+              <Val><![CDATA[登入 Azure…]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
