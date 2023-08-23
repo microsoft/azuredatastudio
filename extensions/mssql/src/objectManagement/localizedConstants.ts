@@ -373,6 +373,7 @@ export const DefaultText = localize('objectManagement.databaseProperties.default
 export const AutogrowAllFilesText = localize('objectManagement.databaseProperties.autogrowAllFilesText', "Autogrow All Files");
 export const FilestreamFilesText = localize('objectManagement.databaseProperties.filestreamFilesText', "Filestream Files");
 export const AddFilegroupText = localize('objectManagement.databaseProperties.addFilegroupButtonText', "Add Filegroup");
+export const FilegroupExistsError = (name: string) => localize('objectManagement.databaseProperties.FilegroupExistsError', "File group '{0}' could not be added to the collection, because it already exists.", name);
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {

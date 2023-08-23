@@ -235,6 +235,20 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		if (collationNames?.length > 0 && !collationNames.some(name => name.toLowerCase() === this.objectInfo.collationName?.toLowerCase())) {
 			errors.push(localizedConstants.CollationNotValidError(this.objectInfo.collationName ?? ''));
 		}
+
+		// Validate Rows Filegroup names
+		if (this.objectInfo.rowDataFilegroups?.length > 0) {
+			let seenFilegroup = new Set(this.objectInfo.rowDataFilegroups.map(function (item) { return item.name }));
+			if (seenFilegroup.size !== this.objectInfo.rowDataFilegroups?.length) {
+				this.objectInfo.rowDataFilegroups.forEach((item) => {
+					if (seenFilegroup.has(item.name)) {
+						seenFilegroup.delete(item.name);
+					} else {
+						errors.push(localizedConstants.FilegroupExistsError(item.name));
+					}
+				});
+			}
+		}
 		return errors;
 	}
 
@@ -516,7 +530,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 		}).component();
 		const databaseFilesButtonContainer = this.addButtonsForTable(this.databaseFilesTable, localizedConstants.AddButton, localizedConstants.RemoveButton,
-			(button) => this.onAddDatabaseFilesButtonClicked(button), (button) => this.onEditDatabaseFilesButtonClicked(button), localizedConstants.EditButton, () => this.onRemoveDatabaseFilesButtonClicked());
+			(button) => this.onAddDatabaseFilesButtonClicked(button), () => this.onRemoveDatabaseFilesButtonClicked(), localizedConstants.EditButton, (button) => this.onEditDatabaseFilesButtonClicked(button));
 
 		return this.createGroup(localizedConstants.DatabaseFilesText, [this.databaseFilesTable, databaseFilesButtonContainer], true);
 	}
