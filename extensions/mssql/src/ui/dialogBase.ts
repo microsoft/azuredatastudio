@@ -156,7 +156,7 @@ export abstract class DialogBase<DialogResult> {
 	}
 
 	/**
-	 * Creates an input box. If properties are not passed in, then an input box is created with the following default properties: 
+	 * Creates an input box. If properties are not passed in, then an input box is created with the following default properties:
 	 * inputType - text
 	 * width - DefaultInputWidth
 	 * value - empty
@@ -271,47 +271,32 @@ export abstract class DialogBase<DialogResult> {
 		return table;
 	}
 
-	protected addButtonsForTable(table: azdata.TableComponent, addButtonAriaLabel: string, removeButtonAriaLabel: string, addHandler: (button: azdata.ButtonComponent) => Promise<void>, removeHandler: (button: azdata.ButtonComponent) => Promise<void>): azdata.FlexContainer {
-		let addButton: azdata.ButtonComponent;
-		let removeButton: azdata.ButtonComponent;
-		const updateButtons = () => {
-			this.onFormFieldChange();
-			removeButton.enabled = table.selectedRows?.length === 1 && table.selectedRows[0] !== -1 && table.selectedRows[0] < table.data.length;
-		}
-		addButton = this.createButton(uiLoc.AddText, addButtonAriaLabel, async () => {
-			await addHandler(addButton);
-			updateButtons();
-		});
-		removeButton = this.createButton(uiLoc.RemoveText, removeButtonAriaLabel, async () => {
-			await removeHandler(removeButton);
-			if (table.selectedRows.length === 1 && table.selectedRows[0] >= table.data.length) {
-				table.selectedRows = [table.data.length - 1];
-			}
-			updateButtons();
-		}, false);
-		this.disposables.push(table.onRowSelected(() => {
-			updateButtons();
-		}));
-		return this.createButtonContainer([addButton, removeButton]);
-	}
-
-	protected addTripleButtonsForTable(table: azdata.TableComponent, addButtonAriaLabel: string, editBurronAriaLabel: string, removeButtonAriaLabel: string, addHandler: (button: azdata.ButtonComponent) => Promise<void>, editHandler: (button: azdata.ButtonComponent) => Promise<void>, removeHandler: (button: azdata.ButtonComponent) => Promise<void>): azdata.FlexContainer {
+	protected addButtonsForTable(table: azdata.TableComponent, addButtonAriaLabel: string, removeButtonAriaLabel: string, addHandler: (button: azdata.ButtonComponent) => Promise<void>, removeHandler: (button: azdata.ButtonComponent) => Promise<void>, editButtonAriaLabel: string = undefined, editHandler: (button: azdata.ButtonComponent) => Promise<void> = undefined): azdata.FlexContainer {
 		let addButton: azdata.ButtonComponent;
 		let editButton: azdata.ButtonComponent;
 		let removeButton: azdata.ButtonComponent;
+		let buttonComponent: azdata.ButtonComponent[] = [];
 		const updateButtons = (isRemoveEnabled: boolean = undefined) => {
 			this.onFormFieldChange();
-			editButton.enabled = table.selectedRows?.length === 1 && table.selectedRows[0] !== -1 && table.selectedRows[0] < table.data.length;
+			if (editButtonAriaLabel !== undefined) {
+				editButton.enabled = table.selectedRows?.length === 1 && table.selectedRows[0] !== -1 && table.selectedRows[0] < table.data.length;
+			}
 			removeButton.enabled = !!isRemoveEnabled && table.selectedRows?.length === 1 && table.selectedRows[0] !== -1 && table.selectedRows[0] < table.data.length;
 		}
 		addButton = this.createButton(uiLoc.AddText, addButtonAriaLabel, async () => {
 			await addHandler(addButton);
 			updateButtons();
 		});
-		editButton = this.createButton(uiLoc.EditText, editBurronAriaLabel, async () => {
-			await editHandler(editButton);
-			updateButtons();
-		}, false);
+		buttonComponent.push(addButton);
+
+		if (editButtonAriaLabel !== undefined) {
+			editButton = this.createButton(uiLoc.EditText, editButtonAriaLabel, async () => {
+				await editHandler(editButton);
+				updateButtons();
+			}, false);
+			buttonComponent.push(editButton);
+		}
+
 		removeButton = this.createButton(uiLoc.RemoveText, removeButtonAriaLabel, async () => {
 			await removeHandler(removeButton);
 			if (table.selectedRows.length === 1 && table.selectedRows[0] >= table.data.length) {
@@ -319,11 +304,14 @@ export abstract class DialogBase<DialogResult> {
 			}
 			updateButtons();
 		}, false);
+		buttonComponent.push(removeButton);
+
 		this.disposables.push(table.onRowSelected(() => {
 			const isRemoveButtonEnabled = this.removeButtonOnRowSelected();
 			updateButtons(isRemoveButtonEnabled);
 		}));
-		return this.createButtonContainer([addButton, editButton, removeButton]);
+
+		return this.createButtonContainer(buttonComponent)
 	}
 
 	protected createDropdown(ariaLabel: string, handler: (newValue: string) => Promise<void>, values: string[], value: string | undefined, enabled: boolean = true, width: number = DefaultInputWidth, editable?: boolean, strictSelection?: boolean): azdata.DropDownComponent {

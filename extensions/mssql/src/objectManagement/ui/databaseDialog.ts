@@ -489,8 +489,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				'margin-left': '10px'
 			}
 		}).component();
-		const databaseFilesButtonContainer = this.addTripleButtonsForTable(this.databaseFilesTable, localizedConstants.AddButton, localizedConstants.EditButton, localizedConstants.RemoveButton,
-			(button) => this.onAddDatabaseFilesButtonClicked(button), (button) => this.onEditDatabaseFilesButtonClicked(button), () => this.onRemoveDatabaseFilesButtonClicked());
+		const databaseFilesButtonContainer = this.addButtonsForTable(this.databaseFilesTable, localizedConstants.AddButton, localizedConstants.RemoveButton,
+			(button) => this.onAddDatabaseFilesButtonClicked(button), (button) => this.onEditDatabaseFilesButtonClicked(button), localizedConstants.EditButton, () => this.onRemoveDatabaseFilesButtonClicked());
 
 		return this.createGroup(localizedConstants.DatabaseFilesText, [this.databaseFilesTable, databaseFilesButtonContainer], true);
 	}
@@ -501,16 +501,18 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * @returns data view object
 	 */
 	private convertToDataView(file: DatabaseFile): any[] {
-		return [file.name,
-		file.type,
-		file.fileGroup,
-		file.sizeInMb,
-		file.isAutoGrowthEnabled ? localizedConstants.AutoGrowthValueStringGenerator(file.type !== this.viewInfo.fileTypesOptions[2]
-			, file.autoFileGrowth.toString()
-			, file.autoFileGrowthType === localizedConstants.PercentText
-			, file.maxSizeLimitInMb) : localizedConstants.NoneText,
-		file.path,
-		file.fileNameWithExtension];
+		return [
+			file.name,
+			file.type,
+			file.fileGroup,
+			file.sizeInMb,
+			file.isAutoGrowthEnabled ? localizedConstants.AutoGrowthValueStringGenerator(file.type !== this.viewInfo.fileTypesOptions[2]
+				, file.autoFileGrowth.toString()
+				, file.autoFileGrowthType === localizedConstants.PercentText
+				, file.maxSizeLimitInMb) : localizedConstants.NoneText,
+			file.path,
+			file.fileNameWithExtension
+		];
 	}
 
 	private async onAddDatabaseFilesButtonClicked(button: azdata.ButtonComponent): Promise<void> {
@@ -520,7 +522,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.objectInfo.files?.push(result);
 			var newData = this.objectInfo.files?.map(file => {
 				return this.convertToDataView(file);
-			})
+			});
 			await this.setTableData(this.databaseFilesTable, newData, DefaultMaxTableRowCount)
 		}
 	}
@@ -532,7 +534,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				this.objectInfo.files[this.databaseFilesTable.selectedRows[0]] = result;
 				var newData = this.objectInfo.files?.map(file => {
 					return this.convertToDataView(file);
-				})
+				});
 				await this.setTableData(this.databaseFilesTable, newData, DefaultMaxTableRowCount)
 			}
 		}
@@ -546,7 +548,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.objectInfo.files?.splice(this.databaseFilesTable.selectedRows[0], 1);
 			var newData = this.objectInfo.files?.map(file => {
 				return this.convertToDataView(file);
-			})
+			});
 			await this.setTableData(this.databaseFilesTable, newData, DefaultMaxTableRowCount)
 		}
 	}
@@ -571,7 +573,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				}
 			});
 		}
-
 		return isEnabled;
 	}
 
