@@ -275,7 +275,7 @@ async function validateVersion(galleryFilePath, extensionName, extensionJson, ex
         throw new Error(`${galleryFilePath} - ${extensionName} - Invalid version files\n${JSON.stringify(extensionVersionJson)}`)
     }
 
-    await validateHasRequiredAssets(galleryFilePath, extensionName, extensionVersionJson.files);
+    await validateHasRequiredAssets(galleryFilePath, extensionName, extensionJson.publisher.publisherId, extensionVersionJson.files);
 
     for (const file of extensionVersionJson.files) {
         await validateExtensionFile(galleryFilePath, extensionName, extensionJson, file);
@@ -343,9 +343,10 @@ const extensionsToSkipLicenseHeaderCheck = [
  * Going forward all new extensions should provide these files.
  * @param {string} galleryFilePath
  * @param {string} extensionName
+ * @param {string} publisherId
  * @param {IRawGalleryExtensionFile[]} filesJson
  */
-async function validateHasRequiredAssets(galleryFilePath, extensionName, filesJson) {
+async function validateHasRequiredAssets(galleryFilePath, extensionName, publisherId, filesJson) {
     // VSIXPackage or DownloadPage
     const vsixFile = filesJson.find(file => file.assetType === MICROSOFT_VISUALSTUDIO_SERVICES_VSIXPACKAGE);
     const downloadPageFile = filesJson.find(file => file.assetType === MICROSOFT_SQLOPS_DOWNLOADPAGE);
@@ -368,10 +369,10 @@ async function validateHasRequiredAssets(galleryFilePath, extensionName, filesJs
         throw new Error(`${galleryFilePath} - ${extensionName} - Must have a details file (README)`);
     }
 
-    // For any non-skipped extensions check that they have a license header in their README. This is a very simple check
+    // For any non-skipped 1st party (Microsoft) extensions check that they have a license header in their README. This is a very simple check
     // (we don't actually check that the content is accurate) - but is enough for now.
     let readmeBody;
-    if (!extensionsToSkipLicenseHeaderCheck.includes(extensionName)) {
+    if (publisherId.toLowerCase() === 'microsoft' && !extensionsToSkipLicenseHeaderCheck.includes(extensionName)) {
         try {
             readmeBody = (await got.get(detailsFile.source)).body;
         } catch (err) {
