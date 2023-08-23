@@ -48,18 +48,6 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.DatabaseRoleTypeDisplayNameI" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) nTitle" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[Database Role]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Ruolo del database]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
       <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.ObjectSelectionMethodDialog_" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) AllObjectsOfSchema" ItemType="0" PsrId="308" Leaf="true">
@@ -98,17 +86,6 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-        <Item ItemId=";(...) TypeLabel" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[How do you want to add objects?]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Scegliere la modalità per aggiungere gli oggetti]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.ServerRoleTypeDisplayNameInT" ItemType="0" PsrId="308" Leaf="false">
         <Item ItemId=";(...) TypeLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[How do you want to add objects?]]></Val>
@@ -768,18 +745,14 @@
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/main.mssql.reloadChoice" ItemType="0" PsrId="308" Leaf="true">
-      <Item ItemId=";extensions/Microsoft.mssql/dist/main.mssql.reloadChoice" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Reload Azure Data Studio]]></Val>
-          <Val><![CDATA[Reload Azure Data Studio]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Scaricare Azure Data Studio]]></Val>
             <Val><![CDATA[Scaricare Azure Data Studio]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/main.mssql.reloadPrompt" ItemType="0" PsrId="308" Leaf="true">
       <Item ItemId=";extensions/Microsoft.mssql/dist/main.mssql.reloadPrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This setting requires Azure Data Studio to be reloaded to take into effect.]]></Val>
@@ -790,12 +763,9 @@
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/main.mssql.searchServers" ItemType="0" PsrId="308" Leaf="true">
-      <Item ItemId=";extensions/Microsoft.mssql/dist/main.mssql.searchServers" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Search Server Names]]></Val>
-          <Val><![CDATA[Search Server Names]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nomi dei server di ricerca]]></Val>
             <Val><![CDATA[Nomi dei server di ricerca]]></Val>
           </Tgt>
         </Str>
@@ -950,16 +920,6 @@
           <Val><![CDATA[Apply]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Applica]]></Val>
-            <Val><![CDATA[Avanzate]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.applyUpdatesLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Apply]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Applica]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1005,15 +965,6 @@
           <Val><![CDATA[Browse…]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Sfoglia…]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.closeConnections" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Close existing connections]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Chiudi connessioni esistenti]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1090,15 +1041,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.createObjectLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Create]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Crea]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.createObjectOperationName" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create {0}]]></Val>
@@ -1118,105 +1060,72 @@
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseDetails" ItemType="0" PsrId="308" Leaf="true">
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseDetails" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database Details]]></Val>
-          <Val><![CDATA[Database Details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Dettagli database]]></Val>
             <Val><![CDATA[Dettagli database]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseFileGroup" ItemType="0" PsrId="308" Leaf="true">
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseFileGroup" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File Group]]></Val>
-          <Val><![CDATA[File Group]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Gruppo di file]]></Val>
             <Val><![CDATA[Gruppo di file]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseFileName" ItemType="0" PsrId="308" Leaf="true">
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseFileName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Name]]></Val>
-          <Val><![CDATA[Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nome]]></Val>
             <Val><![CDATA[Nome]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseFilePath" ItemType="0" PsrId="308" Leaf="true">
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseFilePath" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Path]]></Val>
-          <Val><![CDATA[Path]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Percorso]]></Val>
             <Val><![CDATA[Percorso]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseFileType" ItemType="0" PsrId="308" Leaf="true">
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseFileType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Type]]></Val>
-          <Val><![CDATA[Type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Tipo]]></Val>
             <Val><![CDATA[Tipo]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseFiles" ItemType="0" PsrId="308" Leaf="true">
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseFiles" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database Files]]></Val>
-          <Val><![CDATA[Database Files]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[File di database]]></Val>
             <Val><![CDATA[File di database]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.mbUnitText" ItemType="0" PsrId="308" Leaf="true">
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.mbUnitText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} MB]]></Val>
-          <Val><![CDATA[{0} MB]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} MB]]></Val>
             <Val><![CDATA[{0} MB]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.memoryUsed" ItemType="0" PsrId="308" Leaf="true">
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.memoryUsed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Memory Used By Memory Optimized Objects]]></Val>
-          <Val><![CDATA[Memory Used By Memory Optimized Objects]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Memoria usata dagli oggetti con ottimizzazione per la memoria]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.name" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Name]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nome]]></Val>
             <Val><![CDATA[Memoria usata dagli oggetti con ottimizzazione per la memoria]]></Val>
           </Tgt>
         </Str>
@@ -1250,18 +1159,14 @@
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.status" ItemType="0" PsrId="308" Leaf="true">
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.status" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Status]]></Val>
-          <Val><![CDATA[Status]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Stato]]></Val>
             <Val><![CDATA[Stato]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.deleteBackupHistory" ItemType="0" PsrId="308" Leaf="true">
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.deleteBackupHistory" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Delete backup and restore history information for database]]></Val>
@@ -1758,7 +1663,6 @@
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.noDialogFoundError" ItemType="0" PsrId="308" Leaf="true">
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.noDialogFoundError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find a supported dialog for node type '{0}' and object type '{1}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1768,15 +1672,11 @@
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.objectPropertiesDialogTitle" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.objectPropertiesDialogTitle" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} Properties (Preview) - {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[{0} Proprietà (anteprima) - {1}]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[{0} - {1} (Preview)]]></Val>
-          </Prev>
           <Prev Cat="Text">
             <Val><![CDATA[{0} - {1} (Preview)]]></Val>
           </Prev>
@@ -1810,7 +1710,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.openDetachDatabaseDialogError" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.openDetachDatabaseDialogError" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while opening the detach database dialog. {0}]]></Val>
@@ -2012,9 +1911,6 @@
           <Prev Cat="Text">
             <Val><![CDATA[Reserved Storage Size]]></Val>
           </Prev>
-          <Prev Cat="Text">
-            <Val><![CDATA[Reserved Storage Size]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2081,7 +1977,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.storageSpaceUsageInMB" ItemType="0" PsrId="308" Leaf="true">
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.storageSpaceUsageInMB" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Storage Space Usage (MB)]]></Val>
@@ -2406,9 +2301,6 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Caricamento della finestra di dialogo completato]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Loading dialog...]]></Val>
-          </Prev>
           <Prev Cat="Text">
             <Val><![CDATA[Loading dialog...]]></Val>
           </Prev>
@@ -4165,18 +4057,14 @@
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/package.title.designTable" ItemType="0" PsrId="308" Leaf="true">
-      <Item ItemId=";extensions/Microsoft.mssql/package.title.designTable" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Design]]></Val>
-          <Val><![CDATA[Design]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Progettazione]]></Val>
             <Val><![CDATA[Progettazione]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/package.title.detachDatabase" ItemType="0" PsrId="308" Leaf="true">
       <Item ItemId=";extensions/Microsoft.mssql/package.title.detachDatabase" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Detach (Preview)]]></Val>
@@ -4201,12 +4089,6 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Nuovo database (anteprima)]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/package.title.newDatabase" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[New Database (Preview)]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>
