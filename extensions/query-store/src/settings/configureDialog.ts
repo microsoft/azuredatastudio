@@ -32,7 +32,7 @@ export class ConfigureDialog {
 	private logMemoryUsedRadioButton?: azdata.RadioButtonComponent;
 	private tempDBMermoryUsedRadioButton?: azdata.RadioButtonComponent;
 	private waitTimeRadioButton?: azdata.RadioButtonComponent;
-	private criteriaRadioButtons?: azdata.RadioButtonComponent[]
+	private criteriaRadioButtons?: azdata.RadioButtonComponent[];
 	private formBuilder?: azdata.FormBuilder;
 	private formModel?: azdata.FormContainer;
 	private criteriaBasisAvgRadioButton?: azdata.RadioButtonComponent;
@@ -59,6 +59,7 @@ export class ConfigureDialog {
 	private timeIntervalComponent?: azdata.FormComponent<azdata.Component>;
 	private aggregationSizeComponent?: azdata.FlexContainer;
 	private timeIntervalOptions?: string[];
+	private timeFormatRadioButtons?: azdata.RadioButtonComponent[];
 	private returnDataAllRadioButton?: azdata.RadioButtonComponent;
 	private returnDataTopRadioButton?: azdata.RadioButtonComponent;
 	private returnDataTopInputBox?: azdata.InputBoxComponent;
@@ -181,6 +182,22 @@ export class ConfigureDialog {
 				name: constants.criteria,
 				label: constants.executionCountLabel
 			}).component();
+
+		this.executionCountRadioButton.onDidChangeCheckedState((checked) => {
+			if (checked) {
+				this.criteriaBasisAvgRadioButton!.enabled = false;
+				this.criteriaBasisMaxRadioButton!.enabled = false;
+				this.criteriaBasisMinRadioButton!.enabled = false;
+				this.criteriaBasisStdDevRadioButton!.enabled = false;
+				this.criteriaBasisTotalRadioButton!.enabled = false;
+			} else {
+				this.criteriaBasisAvgRadioButton!.enabled = true;
+				this.criteriaBasisMaxRadioButton!.enabled = true;
+				this.criteriaBasisMinRadioButton!.enabled = true;
+				this.criteriaBasisStdDevRadioButton!.enabled = true;
+				this.criteriaBasisTotalRadioButton!.enabled = true;
+			}
+		});
 
 		this.durationRadioButton = this._view.modelBuilder.radioButton()
 			.withProps({
@@ -408,7 +425,7 @@ export class ConfigureDialog {
 
 		this.timeIntervalOptionsDropdown = this._view.modelBuilder.dropDown()
 			.withProps({
-				width: cssStyles.configureDialogDropdownWidth,
+				width: cssStyles.configureDialogObjectWidth,
 				editable: false,
 				fireOnTextChange: true,
 				values: this.timeIntervalOptions,
@@ -442,44 +459,45 @@ export class ConfigureDialog {
 		const customTimeFromLabel = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.fromLabel,
-				width: cssStyles.configureDialogLabelWidth
+				width: cssStyles.configureDialogObjectWidth
 			}).component();
 
 		this.customTimeFromTextBox = this._view.modelBuilder.inputBox()
 			.withProps({
 				ariaLabel: constants.fromLabel,
-				width: cssStyles.configureDialogTextboxWidth,
+				width: cssStyles.configureDialogObjectWidth,
 				enabled: false
 			}).component();
 
 		const customTimeToLabel = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.toLabel,
-				width: cssStyles.configureDialogLabelWidth
+				width: cssStyles.configureDialogObjectWidth
 			}).component();
 
 		this.customTimeToTextBox = this._view.modelBuilder.inputBox()
 			.withProps({
 				ariaLabel: constants.toLabel,
-				width: cssStyles.configureDialogTextboxWidth,
+				width: cssStyles.configureDialogObjectWidth,
 				enabled: false
 			}).component();
 
 		this.localTimeFormatRadioButton = this._view.modelBuilder.radioButton()
 			.withProps({
-				name: constants.localLabel,
+				name: constants.timeFormatLabel,
 				label: constants.localLabel
 			}).component();
 
 		this.UTCTimeFormatRadioButton = this._view.modelBuilder.radioButton()
 			.withProps({
-				name: constants.UTCLabel,
+				name: constants.timeFormatLabel,
 				label: constants.UTCLabel
 			}).component();
 
 		const timeFormatLabel = this._view.modelBuilder.text()
 			.withProps({
-				value: constants.timeFormatLabel
+				value: constants.timeFormatLabel,
+				width: cssStyles.configureDialogObjectWidth
 			}).component();
 
 		this.localTimeFormatRadioButton.checked = true;
@@ -490,22 +508,23 @@ export class ConfigureDialog {
 				fireOnTextChange: true,
 				values: [constants.minuteLabel, constants.hourLabel, constants.dayLabel, constants.automaticLabel],
 				value: constants.automaticLabel,
-				width: cssStyles.configureDialogDropdownWidth
+				width: cssStyles.configureDialogObjectWidth
 			}).component();
 
 		const aggregationSizeLabel = this._view.modelBuilder.text()
 			.withProps({
-				value: constants.aggregationSizeLabel
+				value: constants.aggregationSizeLabel,
+				width: cssStyles.configureDialogObjectWidth
 			}).component();
 
 		const timeIntervalFromRow = this._view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'row' })
-			.withItems([customTimeFromLabel, this.customTimeFromTextBox])
+			.withLayout({ flexFlow: 'row', alignItems: 'baseline' })
+			.withItems([customTimeFromLabel, this.customTimeFromTextBox], { CSSStyles: { flex: '0 0 auto' } })
 			.component();
 
 		const timeIntervalToRow = this._view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'row' })
-			.withItems([customTimeToLabel, this.customTimeToTextBox])
+			.withLayout({ flexFlow: 'row', alignItems: 'baseline' })
+			.withItems([customTimeToLabel, this.customTimeToTextBox], { CSSStyles: { flex: '0 0 auto' } })
 			.component();
 
 		const timeIntervalComponent = this._view.modelBuilder.flexContainer()
@@ -514,15 +533,22 @@ export class ConfigureDialog {
 			.withProps({ ariaRole: 'timeIntervalGroup' })
 			.component();
 
+		this.timeFormatRadioButtons = [this.localTimeFormatRadioButton, this.UTCTimeFormatRadioButton];
+		const timeFormatRadioButtonRow = this._view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'row', alignItems: 'baseline' })
+			.withItems(this.timeFormatRadioButtons, { CSSStyles: { flex: '0 0 auto', padding: '0 10px 0 0' } })
+			.withProps({ ariaRole: 'timeFormatRadioButtonGroup' })
+			.component();
+
 		const timeFormatRow = this._view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'row' })
-			.withItems([timeFormatLabel, this.localTimeFormatRadioButton, this.UTCTimeFormatRadioButton])
+			.withLayout({ flexFlow: 'row', alignItems: 'baseline' })
+			.withItems([timeFormatLabel, timeFormatRadioButtonRow], { CSSStyles: { flex: '0 0 auto' } })
 			.withProps({ ariaRole: 'timeFormatGroup' })
 			.component();
 
 		this.aggregationSizeComponent = this._view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'row' })
-			.withItems([aggregationSizeLabel, aggregationSizeDropdown])
+			.withLayout({ flexFlow: 'row', alignItems: 'baseline' })
+			.withItems([aggregationSizeLabel, aggregationSizeDropdown], { CSSStyles: { flex: '0 0 auto' } })
 			.withProps({ ariaRole: 'aggregationSizeGroup' })
 			.component();
 
@@ -549,13 +575,15 @@ export class ConfigureDialog {
 		this.returnDataAllRadioButton = this._view.modelBuilder.radioButton()
 			.withProps({
 				name: constants.returnLabel,
-				label: constants.allLabel
+				label: constants.allLabel,
+				width: cssStyles.configureDialogObjectWidth
 			}).component();
 
 		this.returnDataTopRadioButton = this._view.modelBuilder.radioButton()
 			.withProps({
 				name: constants.returnLabel,
-				label: constants.topLabel
+				label: constants.topLabel,
+				width: cssStyles.configureDialogObjectWidth
 			}).component();
 
 		this.returnDataTopRadioButton.checked = true;
@@ -572,21 +600,20 @@ export class ConfigureDialog {
 			.withProps({
 				value: '25',
 				ariaLabel: constants.returnLabel,
-				width: cssStyles.configureDialogTextboxWidth
+				width: cssStyles.configureDialogObjectWidth
 			}).component();
 
-		this.criteriaRadioButtons = [this.returnDataAllRadioButton, this.returnDataTopRadioButton];
-
 		const returnTopRow = this._view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'row' })
-			.withItems([this.returnDataTopRadioButton, this.returnDataTopInputBox])
+			.withLayout({ flexFlow: 'row', alignItems: 'baseline' })
+			.withItems([this.returnDataTopRadioButton], { CSSStyles: { flex: '0 0 auto' } })
 			.withProps({ ariaRole: 'returnFormatGroup' })
 			.component();
+		returnTopRow.addItem(this.returnDataTopInputBox, { CSSStyles: { 'margin-left': '145px' } });
 
 		let flexRadioButtonsModel = this._view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withItems([this.returnDataAllRadioButton, returnTopRow])
-			.withProps({ ariaRole: 'radiogroup' })
+			.withProps({ ariaRole: 'returnFormatGroup' })
 			.component();
 
 		return {
@@ -598,19 +625,20 @@ export class ConfigureDialog {
 	private createFilterComponent(): azdata.FormComponent {
 		const filterMinPlanLabel = this._view.modelBuilder.text()
 			.withProps({
-				value: constants.filterMinPlanLabel
+				value: constants.filterMinPlanLabel,
+				width: cssStyles.configureDialogObjectWidth
 			}).component();
 
 		this.filtersInputBox = this._view.modelBuilder.inputBox()
 			.withProps({
 				value: '1',
 				ariaLabel: constants.returnLabel,
-				width: cssStyles.configureDialogTextboxWidth,
+				width: cssStyles.configureDialogObjectWidth,
 			}).component();
 
 		const filterRow = this._view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'row' })
-			.withItems([filterMinPlanLabel, this.filtersInputBox])
+			.withLayout({ flexFlow: 'row', alignItems: 'baseline' })
+			.withItems([filterMinPlanLabel, this.filtersInputBox], { CSSStyles: { flex: '0 0 auto' } })
 			.withProps({ ariaRole: 'filterFormatGroup' })
 			.component();
 

@@ -5,10 +5,5 @@
 
 // CSS Styles
 export namespace cssStyles {
-	export const fontWeightBold = { 'font-weight': 'bold' };
-	export const titleFontSize = 13;
-
-	export const configureDialogLabelWidth = '30px';
-	export const configureDialogTextboxWidth = '190px';
-	export const configureDialogDropdownWidth = '150px';
+	export const configureDialogObjectWidth = '180px';
 }
