@@ -577,7 +577,8 @@ class WelcomePage extends Disposable {
 		if (btnContainer) {
 			extensionPacks.forEach((extension) => {
 				const installText = localize('welcomePage.install', "Install");
-				this._register(new Button(btnContainer, { title: installText, supportIcons: true, ...defaultButtonStyles }));
+				let dropdownBtn = this._register(new Button(btnContainer, { supportIcons: true, ...defaultButtonStyles }));
+				dropdownBtn.label = installText;
 				const classes = ['btn'];
 				const getDropdownBtn = container.querySelector('.extensionPack .monaco-button:first-of-type') as HTMLAnchorElement;
 				getDropdownBtn.id = 'dropdown-btn';
@@ -601,7 +602,7 @@ class WelcomePage extends Disposable {
 				const header = container.querySelector('.extension-pack-header');
 
 				const installedText = localize('welcomePage.installed', "Installed");
-				let installedButton = new Button(btnContainer, { title: installedText, supportIcons: true, ...defaultButtonStyles });
+				let installedButton = new Button(btnContainer, { supportIcons: true, ...defaultButtonStyles });
 				this._register(installedButton);
 
 				installedButton.label = installedText;
