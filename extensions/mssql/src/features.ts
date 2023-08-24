@@ -1304,3 +1304,58 @@ export class ExecutionPlanServiceFeature extends SqlOpsFeature<undefined> {
 		});
 	}
 }
+
+/**
+ * Server Contextualization Service Feature
+ */
+export class ServerContextualizationServiceFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		contracts.GenerateServerContextualizationNotification.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, ServerContextualizationServiceFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		const generateServerContextualization = (ownerUri: string): void => {
+			const params: contracts.ServerContextualizationParams = {
+				ownerUri: ownerUri
+			};
+
+			return client.sendNotification(contracts.GenerateServerContextualizationNotification.type, params);
+		};
+
+		const getServerContextualization = (ownerUri: string): Thenable<azdata.contextualization.GetServerContextualizationResult> => {
+			const params: contracts.ServerContextualizationParams = {
+				ownerUri: ownerUri
+			};
+
+			return client.sendRequest(contracts.GetServerContextualizationRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(contracts.GetServerContextualizationRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		return azdata.dataprotocol.registerServerContextualizationProvider({
+			providerId: client.providerId,
+			generateServerContextualization: generateServerContextualization,
+			getServerContextualization: getServerContextualization
+		});
+	}
+}
