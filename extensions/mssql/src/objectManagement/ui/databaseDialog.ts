@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultMaxTableRowCount, getTableHeight } from '../../ui/dialogBase';
+import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultMaxTableRowCount, getTableHeight, DialogButtonComponent } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl } from '../constants';
@@ -487,8 +487,19 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				'margin-left': '10px'
 			}
 		}).component();
-		const databaseFilesButtonContainer = this.addButtonsForTable(this.databaseFilesTable, localizedConstants.AddButton, localizedConstants.RemoveButton,
-			(button) => this.onAddDatabaseFilesButtonClicked(button), () => this.onRemoveDatabaseFilesButtonClicked(), localizedConstants.EditButton, (button) => this.onEditDatabaseFilesButtonClicked(button));
+		const addButtonComponent: DialogButtonComponent = {
+			buttonArialLabel: localizedConstants.AddButton,
+			buttonHandler: (button) => this.onAddDatabaseFilesButtonClicked(button)
+		};
+		const removeButtonComponent: DialogButtonComponent = {
+			buttonArialLabel: localizedConstants.RemoveButton,
+			buttonHandler: () => this.onRemoveDatabaseFilesButtonClicked()
+		};
+		const editbuttonComponent: DialogButtonComponent = {
+			buttonArialLabel: localizedConstants.EditButton,
+			buttonHandler: (button) => this.onEditDatabaseFilesButtonClicked(button)
+		};
+		const databaseFilesButtonContainer = this.addButtonsForTable(this.databaseFilesTable, addButtonComponent, removeButtonComponent, editbuttonComponent);
 
 		return this.createGroup(localizedConstants.DatabaseFilesText, [this.databaseFilesTable, databaseFilesButtonContainer], true);
 	}

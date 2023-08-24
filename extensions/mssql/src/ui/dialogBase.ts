@@ -21,6 +21,11 @@ export function getTableHeight(rowCount: number, minRowCount: number = DefaultMi
 	return Math.min(Math.max(rowCount, minRowCount), maxRowCount) * TableRowHeight + TableColumnHeaderHeight;
 }
 
+export interface DialogButtonComponent {
+	buttonArialLabel: string;
+	buttonHandler: (button: azdata.ButtonComponent) => Promise<void>
+}
+
 export type TableListItemEnabledStateGetter<T> = (item: T) => boolean;
 export type TableListItemValueGetter<T> = (item: T) => string[];
 export type TableListItemComparer<T> = (item1: T, item2: T) => boolean;
@@ -271,34 +276,34 @@ export abstract class DialogBase<DialogResult> {
 		return table;
 	}
 
-	protected addButtonsForTable(table: azdata.TableComponent, addButtonAriaLabel: string, removeButtonAriaLabel: string, addHandler: (button: azdata.ButtonComponent) => Promise<void>, removeHandler: (button: azdata.ButtonComponent) => Promise<void>, editButtonAriaLabel: string = undefined, editHandler: (button: azdata.ButtonComponent) => Promise<void> = undefined): azdata.FlexContainer {
+	protected addButtonsForTable(table: azdata.TableComponent, addbuttonComponent: DialogButtonComponent, removeButtonComponent: DialogButtonComponent, editButtonComponent: DialogButtonComponent = undefined): azdata.FlexContainer {
 		let addButton: azdata.ButtonComponent;
 		let editButton: azdata.ButtonComponent;
 		let removeButton: azdata.ButtonComponent;
 		let buttonComponent: azdata.ButtonComponent[] = [];
 		const updateButtons = (isRemoveEnabled: boolean = undefined) => {
 			this.onFormFieldChange();
-			if (editButtonAriaLabel !== undefined) {
+			if (editButtonComponent !== undefined) {
 				editButton.enabled = table.selectedRows?.length === 1 && table.selectedRows[0] !== -1 && table.selectedRows[0] < table.data.length;
 			}
 			removeButton.enabled = !!isRemoveEnabled && table.selectedRows?.length === 1 && table.selectedRows[0] !== -1 && table.selectedRows[0] < table.data.length;
 		}
-		addButton = this.createButton(uiLoc.AddText, addButtonAriaLabel, async () => {
-			await addHandler(addButton);
+		addButton = this.createButton(uiLoc.AddText, addbuttonComponent.buttonArialLabel, async () => {
+			await addbuttonComponent.buttonHandler(addButton);
 			updateButtons();
 		});
 		buttonComponent.push(addButton);
 
-		if (editButtonAriaLabel !== undefined) {
-			editButton = this.createButton(uiLoc.EditText, editButtonAriaLabel, async () => {
-				await editHandler(editButton);
+		if (editButtonComponent !== undefined) {
+			editButton = this.createButton(uiLoc.EditText, editButtonComponent.buttonArialLabel, async () => {
+				await editButtonComponent.buttonHandler(editButton);
 				updateButtons();
 			}, false);
 			buttonComponent.push(editButton);
 		}
 
-		removeButton = this.createButton(uiLoc.RemoveText, removeButtonAriaLabel, async () => {
-			await removeHandler(removeButton);
+		removeButton = this.createButton(uiLoc.RemoveText, removeButtonComponent.buttonArialLabel, async () => {
+			await removeButtonComponent.buttonHandler(removeButton);
 			if (table.selectedRows.length === 1 && table.selectedRows[0] >= table.data.length) {
 				table.selectedRows = [table.data.length - 1];
 			}
