@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { DefaultInputWidth, DialogBase } from '../../ui/dialogBase';
 import * as localizedConstants from '../localizedConstants';
-import { DatabaseFile, DatabaseViewInfo } from '../interfaces';
+import { DatabaseFile, DatabaseViewInfo, FileGrowthType } from '../interfaces';
 import { isUndefinedOrNull } from '../../types';
 import { deepClone } from '../../util/objects';
 
@@ -106,7 +106,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 			errors.push(localizedConstants.FileSizeLimitError);
 		}
 		// When maxsize is limited and fileGrowth should not be greater than maxSize allowed
-		if (this.result.maxSizeLimitInMb !== -1 && this.result.autoFileGrowthType !== localizedConstants.PercentText
+		if (this.result.maxSizeLimitInMb !== -1 && this.result.autoFileGrowthType !== FileGrowthType.Percent
 			&& this.result.maxSizeLimitInMb < this.result.autoFileGrowth) {
 			errors.push(localizedConstants.FilegrowthLimitError);
 		}
@@ -153,7 +153,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		}, {
 			ariaLabel: localizedConstants.SizeInMbText,
 			inputType: 'number',
-			enabled: this.options.databaseFile.type !== this.options.viewInfo.fileTypesOptions[2],
+			enabled: this.options.databaseFile.type !== localizedConstants.FilestreamFileType,
 			value: String(this.options.databaseFile.sizeInMb)
 		});
 		const fileSizeContainer = this.createLabelInputContainer(localizedConstants.SizeInMbText, this.fileSizeInput);
@@ -181,7 +181,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		// File Name
 		let fileNameEnabled = this.isEditingFile;
 		if (fileNameEnabled) {
-			fileNameEnabled = !(this.result.type === this.options.viewInfo.fileTypesOptions[2]);
+			fileNameEnabled = !(this.result.type === localizedConstants.FilestreamFileType);
 		}
 		this.fileNameWithExtension = this.createInputBox(async (newValue) => {
 			this.result.fileNameWithExtension = newValue;
@@ -216,7 +216,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 
 		// Autogrowth radio button and input section
 		let radioGroupName = 'autogrowthRadioGroup';
-		const isFileAutoGrowthInKB = this.options.databaseFile.autoFileGrowthType === 'KB';
+		const isFileAutoGrowthInKB = this.options.databaseFile.autoFileGrowthType === FileGrowthType.KB;
 		this.inPercentAutogrowth = this.createRadioButton(localizedConstants.InPercentAutogrowthText, radioGroupName, !isFileAutoGrowthInKB, async (checked) => { await this.handleAutogrowthTypeChange(checked); });
 		this.inMegabytesAutogrowth = this.createRadioButton(localizedConstants.InMegabytesAutogrowthText, radioGroupName, isFileAutoGrowthInKB, async (checked) => { await this.handleAutogrowthTypeChange(checked); });
 		this.autoFilegrowthInput = this.createInputBox(async (newValue) => {
@@ -259,7 +259,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 			value: this.options.databaseFile.maxSizeLimitInMb === -1 ? String(this.options.defaultFileConstants.defaultMaxFileSizeLimitedToInMb) : String(this.options.databaseFile.maxSizeLimitInMb),
 			width: DefaultInputWidth - 10,
 			min: 1,
-			max: this.options.databaseFile.type === this.options.viewInfo.fileTypesOptions[1] ? fileSizeInputMaxValueInMbForLogType : fileSizeInputMaxValueInMbForDataType
+			max: this.options.databaseFile.type === localizedConstants.LogFiletype ? fileSizeInputMaxValueInMbForLogType : fileSizeInputMaxValueInMbForDataType
 		});
 		const fileSizeContainer = this.createLabelInputContainer(localizedConstants.MaximumFileSizeText, this.limitedToMbFileSizeInput);
 		this.maxSizeGroup = this.createGroup('', [fileSizeContainer, this.limitedToMbFileSize, this.unlimitedFileSize], true);
@@ -271,8 +271,8 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 
 	private async handleAutogrowthTypeChange(checked: boolean): Promise<void> {
 		this.autoFilegrowthInput.value = this.options.isNewFile ? (this.inPercentAutogrowth.checked ? this.autogrowthInPercentValue?.toString() : this.autogrowthInMegabytesValue?.toString()) : this.options.databaseFile.autoFileGrowth?.toString();
-		this.autoFilegrowthInput.max = this.inPercentAutogrowth.checked ? fileSizeInputMaxValueInPercent : (this.result.type === this.options.viewInfo.fileTypesOptions[1] ? fileSizeInputMaxValueInMbForLogType / 2 : fileSizeInputMaxValueInMbForDataType / 2);
-		this.result.autoFileGrowthType = this.inPercentAutogrowth.checked ? 'Percent' : 'KB';
+		this.autoFilegrowthInput.max = this.inPercentAutogrowth.checked ? fileSizeInputMaxValueInPercent : (this.result.type === localizedConstants.LogFiletype ? fileSizeInputMaxValueInMbForLogType / 2 : fileSizeInputMaxValueInMbForDataType / 2);
+		this.result.autoFileGrowthType = this.inPercentAutogrowth.checked ? FileGrowthType.Percent : FileGrowthType.KB;
 	}
 
 	private async handleMaxFileSizeTypeChange(checked: boolean): Promise<void> {
@@ -322,13 +322,13 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		let enableInputs = true;
 		let fileSizeInputMaxValue = fileSizeInputMaxValueInMbForDataType;
 		// Log
-		if (selectedOption === this.options.viewInfo.fileTypesOptions[1]) {
+		if (selectedOption === localizedConstants.LogFiletype) {
 			fileGroupDdOptions = [localizedConstants.FileGroupForLogTypeText];
 			fileGroupDdValue = localizedConstants.FileGroupForLogTypeText;
 			fileSizeInputMaxValue = fileSizeInputMaxValueInMbForLogType
 		}
 		// File Stream
-		else if (selectedOption === this.options.viewInfo.fileTypesOptions[2]) {
+		else if (selectedOption === localizedConstants.FilestreamFileType) {
 			fileGroupDdOptions = this.options.viewInfo.fileStreamFileGroupsOptions;
 			fileGroupDdValue = this.result.fileGroup;
 			visibility = 'hidden';
@@ -358,13 +358,13 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		// if new file, then update the generate the fileNameWithExtenison
 		if (this.result.name !== '' && this.options.isNewFile) {
 			switch (this.result.type) {
-				case this.options.viewInfo.fileTypesOptions[0]:
+				case localizedConstants.RowsDataFileType:
 					fileNameWithExtenstion = this.result.name + '.ndf';
 					break;
-				case this.options.viewInfo.fileTypesOptions[1]:
+				case localizedConstants.LogFiletype:
 					fileNameWithExtenstion = this.result.name + '.ldf';
 					break;
-				case this.options.viewInfo.fileTypesOptions[2]:
+				case localizedConstants.FilestreamFileType:
 					fileNameWithExtenstion = '';
 					break;
 			}

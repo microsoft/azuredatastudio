@@ -5,11 +5,11 @@
 
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultMaxTableRowCount, getTableHeight } from '../../ui/dialogBase';
+import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultMaxTableRowCount, getTableHeight, DialogButtonComponent } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl, DatabaseFileGroupsPropertiesDocUrl } from '../constants';
-import { Database, DatabaseFile, DatabaseScopedConfigurationsInfo, DatabaseViewInfo, FileGroups } from '../interfaces';
+import { Database, DatabaseFile, DatabaseScopedConfigurationsInfo, DatabaseViewInfo, FileGrowthType, FileGroups } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
 import { deepClone } from '../../util/objects';
@@ -137,8 +137,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.initializeBackupSection();
 			this.initializeDatabaseSection();
 
-			//Initilailize files tab sections
-
 			//Initilaize options Tab sections
 			this.initializeOptionsGeneralSection();
 			this.initializeAutomaticSection();
@@ -152,7 +150,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 
 			const tabs: azdata.Tab[] = [];
-			// Initilaize general Tab
+			// Initialize general Tab
 			this.generalTab = {
 				title: localizedConstants.GeneralSectionHeader,
 				id: this.generalTabId,
@@ -163,7 +161,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			};
 			tabs.push(this.generalTab);
 
-			// Initilaize Files Tab
+			// Initialize Files Tab
 			// Full text Indexing is only enabled for SQL Server
 			if (!isUndefinedOrNull(this.objectInfo.fullTextIndexing)) {
 				const filesGeneralSection = this.initializeFilesGeneralSection();
@@ -190,7 +188,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				tabs.push(this.fileGroupsTab);
 			}
 
-			// Initilaize Options Tab
+			// Initialize Options Tab
 			this.optionsTab = {
 				title: localizedConstants.OptionsSectionHeader,
 				id: this.optionsTabId,
@@ -198,7 +196,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			};
 			tabs.push(this.optionsTab);
 
-			// Initilaize DSC Tab section
+			// Initialize DSC Tab section
 			if (!isUndefinedOrNull(this.objectInfo.databaseScopedConfigurations)) {
 				await this.initializeDatabaseScopedConfigurationSection();
 				this.dscTabSectionsContainer.push(await this.initializeDscValueDropdownTypeSection())
@@ -211,7 +209,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				tabs.push(this.dscTab);
 			}
 
-			// Initilaize tab group with tabbed panel
+			// Initialize tab group with tabbed panel
 			const propertiesTabGroup = { title: '', tabs: tabs };
 			const propertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 				.withTabs([propertiesTabGroup])
@@ -529,8 +527,19 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				'margin-left': '10px'
 			}
 		}).component();
-		const databaseFilesButtonContainer = this.addButtonsForTable(this.databaseFilesTable, localizedConstants.AddButton, localizedConstants.RemoveButton,
-			(button) => this.onAddDatabaseFilesButtonClicked(button), () => this.onRemoveDatabaseFilesButtonClicked(), localizedConstants.EditButton, (button) => this.onEditDatabaseFilesButtonClicked(button));
+		const addButtonComponent: DialogButtonComponent = {
+			buttonArialLabel: localizedConstants.AddButton,
+			buttonHandler: (button) => this.onAddDatabaseFilesButtonClicked(button)
+		};
+		const removeButtonComponent: DialogButtonComponent = {
+			buttonArialLabel: localizedConstants.RemoveButton,
+			buttonHandler: () => this.onRemoveDatabaseFilesButtonClicked()
+		};
+		const editbuttonComponent: DialogButtonComponent = {
+			buttonArialLabel: localizedConstants.EditButton,
+			buttonHandler: (button) => this.onEditDatabaseFilesButtonClicked(button)
+		};
+		const databaseFilesButtonContainer = this.addButtonsForTable(this.databaseFilesTable, addButtonComponent, removeButtonComponent, editbuttonComponent);
 
 		return this.createGroup(localizedConstants.DatabaseFilesText, [this.databaseFilesTable, databaseFilesButtonContainer], true);
 	}
@@ -546,9 +555,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			file.type,
 			file.fileGroup,
 			file.sizeInMb,
-			file.isAutoGrowthEnabled ? localizedConstants.AutoGrowthValueStringGenerator(file.type !== this.viewInfo.fileTypesOptions[2]
+			file.isAutoGrowthEnabled ? localizedConstants.AutoGrowthValueStringGenerator(file.type !== localizedConstants.FilestreamFileType
 				, file.autoFileGrowth.toString()
-				, file.autoFileGrowthType === localizedConstants.PercentText
+				, file.autoFileGrowthType === FileGrowthType.Percent
 				, file.maxSizeLimitInMb) : localizedConstants.NoneText,
 			file.path,
 			file.fileNameWithExtension
@@ -599,21 +608,19 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 */
 	protected override removeButtonOnRowSelected(table: azdata.TableComponent): boolean {
 		let isEnabled = true;
-		if (table === this.databaseFilesTable && this.databaseFilesTable.selectedRows !== undefined) {
-			const selectedRowId = this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].id;
-			// Cannot delete a row file if the Id is 1.
-			if (this.databaseFilesTable.selectedRows.length === 1 && selectedRowId === 1) {
-				isEnabled = false;
-			}
-			// Cannot remove a log file if there are no other log files
-			else if (this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].type === this.viewInfo.fileTypesOptions[1]) {
-				isEnabled = false;
-				this.objectInfo.files.forEach(file => {
-					if (file.id !== selectedRowId && file.type === this.viewInfo.fileTypesOptions[1]) {
-						isEnabled = true;
-					}
-				});
-			}
+		const selectedRowId = this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].id;
+		// Cannot delete a Primary row data file, Id is always 1.
+		if (this.databaseFilesTable.selectedRows.length === 1 && selectedRowId === 1) {
+			isEnabled = false;
+		}
+		// Cannot remove a log file if there are no other log files, LogFiletype is always a Log file type
+		else if (this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].type === localizedConstants.LogFiletype) {
+			isEnabled = false;
+			this.objectInfo.files.forEach(file => {
+				if (file.id !== selectedRowId && file.type === localizedConstants.LogFiletype) {
+					isEnabled = true;
+				}
+			});
 		}
 		else if (table === this.rowsFilegroupsTable && this.rowsFilegroupsTable.selectedRows !== undefined && this.rowsFilegroupsTable.selectedRows.length === 1) {
 			const selectedRow = this.objectInfo.rowDataFilegroups[this.rowsFilegroupsTable.selectedRows[0]];
@@ -631,7 +638,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		const defaultFileGrowthInPercent: number = 10;
 		const defaultMaxFileSizeLimitedToInMb: number = 100;
 		const selectedFile = this.databaseFilesTable.selectedRows !== undefined ? this.objectInfo.files[this.databaseFilesTable?.selectedRows[0]] : undefined;
-		if (!isUndefinedOrNull(selectedFile) && selectedFile.type === this.viewInfo.fileTypesOptions[2]) {
+		if (!isUndefinedOrNull(selectedFile) && selectedFile.type === localizedConstants.FilestreamFileType) {
 			selectedFile.autoFileGrowth = defaultFileGrowthInMb;
 		}
 		const isnewFile: boolean = button.ariaLabel === localizedConstants.AddButton;
@@ -639,14 +646,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		const databaseFile: DatabaseFile = isnewFile ? {
 			id: undefined,
 			name: '',
-			type: this.viewInfo.fileTypesOptions[0],
+			type: localizedConstants.RowsDataFileType,
 			path: this.objectInfo.files[0].path,
 			fileGroup: this.viewInfo.rowDataFileGroupsOptions[0],
 			fileNameWithExtension: '',
 			sizeInMb: defaultFileSizeInMb,
 			isAutoGrowthEnabled: true,
 			autoFileGrowth: defaultFileGrowthInMb,
-			autoFileGrowthType: 'KB',
+			autoFileGrowthType: FileGrowthType.KB,
 			maxSizeLimitInMb: defaultMaxFileSizeLimitedToInMb
 		} : selectedFile;
 
@@ -702,8 +709,15 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 		}).component();
 		this.rowsFilegroupNameInput = this.getFilegroupNameInput(this.rowsFilegroupsTable);
-		const rowsFileGroupButtonContainer = this.addButtonsForTable(this.rowsFilegroupsTable, localizedConstants.AddFilegroupText, localizedConstants.RemoveButton,
-			() => this.onAddDatabaseFileGroupsButtonClicked(this.rowsFilegroupsTable), () => this.onRemoveDatabaseFileGroupsButtonClicked(this.rowsFilegroupsTable));
+		const addButtonComponent: DialogButtonComponent = {
+			buttonArialLabel: localizedConstants.AddFilegroupText,
+			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.rowsFilegroupsTable)
+		};
+		const removeButtonComponent: DialogButtonComponent = {
+			buttonArialLabel: localizedConstants.RemoveButton,
+			buttonHandler: () => this.onRemoveDatabaseFileGroupsButtonClicked(this.rowsFilegroupsTable)
+		};
+		const rowsFileGroupButtonContainer = this.addButtonsForTable(this.rowsFilegroupsTable, addButtonComponent, removeButtonComponent);
 
 		this.disposables.push(
 			this.rowsFilegroupsTable.onCellAction(async (arg: azdata.ICheckboxCellActionEventArgs) => {
@@ -775,8 +789,15 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 		}).component();
 		this.filestreamFilegroupNameInput = this.getFilegroupNameInput(this.filestreamFilegroupsTable);
-		const filestreamFileGroupButtonContainer = this.addButtonsForTable(this.filestreamFilegroupsTable, localizedConstants.AddFilegroupText, localizedConstants.RemoveButton,
-			() => this.onAddDatabaseFileGroupsButtonClicked(this.filestreamFilegroupsTable), () => this.onRemoveDatabaseFileGroupsButtonClicked(this.filestreamFilegroupsTable));
+		const addButtonComponent: DialogButtonComponent = {
+			buttonArialLabel: localizedConstants.AddFilegroupText,
+			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.filestreamFilegroupsTable)
+		};
+		const removeButtonComponent: DialogButtonComponent = {
+			buttonArialLabel: localizedConstants.RemoveButton,
+			buttonHandler: () => this.onRemoveDatabaseFileGroupsButtonClicked(this.filestreamFilegroupsTable)
+		};
+		const filestreamFileGroupButtonContainer = this.addButtonsForTable(this.filestreamFilegroupsTable, addButtonComponent, removeButtonComponent);
 
 		this.disposables.push(
 			this.filestreamFilegroupsTable.onCellAction(async (arg: azdata.ICheckboxCellActionEventArgs) => {
@@ -837,8 +858,15 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 		}).component();
 		this.memoryOptimizedFilegroupNameInput = this.getFilegroupNameInput(this.memoryOptimizedFilegroupsTable);
-		const memoryOptimizedFileGroupButtonContainer = this.addButtonsForTable(this.memoryOptimizedFilegroupsTable, localizedConstants.AddFilegroupText, localizedConstants.RemoveButton,
-			() => this.onAddDatabaseFileGroupsButtonClicked(this.memoryOptimizedFilegroupsTable), () => this.onRemoveDatabaseFileGroupsButtonClicked(this.memoryOptimizedFilegroupsTable));
+		const addButtonComponent: DialogButtonComponent = {
+			buttonArialLabel: localizedConstants.AddFilegroupText,
+			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.memoryOptimizedFilegroupsTable)
+		};
+		const removeButtonComponent: DialogButtonComponent = {
+			buttonArialLabel: localizedConstants.RemoveButton,
+			buttonHandler: () => this.onRemoveDatabaseFileGroupsButtonClicked(this.memoryOptimizedFilegroupsTable)
+		};
+		const memoryOptimizedFileGroupButtonContainer = this.addButtonsForTable(this.memoryOptimizedFilegroupsTable, addButtonComponent, removeButtonComponent);
 
 		this.disposables.push(
 			this.memoryOptimizedFilegroupsTable.onRowSelected(
