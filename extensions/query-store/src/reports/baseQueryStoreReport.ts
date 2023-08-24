@@ -118,7 +118,6 @@ export abstract class BaseQueryStoreReport {
 
 		this.configureButton.onDidClick(async () => {
 			this.configureDialog = new ConfigureDialog();
-			await this.configureDialog.openDialog();
 			await this.configureButtonClick(this.configureDialog);
 		});
 

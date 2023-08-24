@@ -7,8 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { cssStyles } from '../common/uiConstants';
-import { ConfigInfo } from '../common/utils';
-import { css } from 'jquery';
+import { ConfigComponentsInfo } from '../common/utils';
 
 interface Deferred<T> {
 	resolve: (result: T | Promise<T>) => void;
@@ -17,7 +16,6 @@ interface Deferred<T> {
 
 export class ConfigureDialog {
 	private _view!: azdata.ModelView
-	private configInfo?: ConfigInfo;
 	public dialog: azdata.window.Dialog;
 	private configureTab: azdata.window.DialogTab;
 	private toDispose: vscode.Disposable[] = [];
@@ -35,7 +33,6 @@ export class ConfigureDialog {
 	private tempDBMermoryUsedRadioButton?: azdata.RadioButtonComponent;
 	private waitTimeRadioButton?: azdata.RadioButtonComponent;
 	private criteriaRadioButtons?: azdata.RadioButtonComponent[]
-	private consumptionCriteriaComponent?: azdata.FormComponent<azdata.Component>;
 	private formBuilder?: azdata.FormBuilder;
 	private formModel?: azdata.FormContainer;
 	private criteriaBasisAvgRadioButton?: azdata.RadioButtonComponent;
@@ -61,8 +58,7 @@ export class ConfigureDialog {
 	private UTCTimeFormatRadioButton?: azdata.RadioButtonComponent;
 	private timeIntervalComponent?: azdata.FormComponent<azdata.Component>;
 	private aggregationSizeComponent?: azdata.FlexContainer;
-	private timeIntervalOptionsOverallReport?: string[];
-	private timeIntervalOptionsTopResourceReport?: string[];
+	private timeIntervalOptions?: string[];
 	private returnDataAllRadioButton?: azdata.RadioButtonComponent;
 	private returnDataTopRadioButton?: azdata.RadioButtonComponent;
 	private returnDataTopInputBox?: azdata.InputBoxComponent;
@@ -84,59 +80,80 @@ export class ConfigureDialog {
 		return true;
 	}
 
-	public async openDialog(): Promise<void> {
-		await this.initializeDialog();
+	public async openDialog(configComponentsInfo: ConfigComponentsInfo[]): Promise<void> {
+		await this.initializeDialog(configComponentsInfo);
 
 		this.dialog.okButton.label = constants.okButtonText;
 		this.dialog.okButton.enabled = false;
-		this.toDispose.push(this.dialog.okButton.onClick(async () => { }));		// TODO: Add return of settings change and functionality to enable OK Button
+		this.toDispose.push(this.dialog.okButton.onClick(async () => { this.dispose(); }));		// TODO: Add return of settings change and functionality to enable OK Button
 
 		this.dialog.cancelButton.label = constants.cancelButtonText;
 		this.toDispose.push(this.dialog.cancelButton.onClick(async () => await this.cancel()));
-
-		let applyButton = azdata.window.createButton(constants.applyButtonText);
-		applyButton.enabled = false;
-		applyButton.onClick(async () => { });		// TODO: Add Apply click functionality and functionality to enable Apply button
-		this.dialog.customButtons = [applyButton];
 
 		azdata.window.openDialog(this.dialog);
 		await this.initDialogPromise;
 	}
 
-	protected async initializeDialog(): Promise<void> {
-		await this.initializeConfigureTab();
+	protected async initializeDialog(configComponentsInfo: ConfigComponentsInfo[]): Promise<void> {
+		await this.initializeConfigureTab(configComponentsInfo);
 		this.dialog.content = [this.configureTab];
 	}
 
-	private async initializeConfigureTab(): Promise<void> {
+	private async initializeConfigureTab(configComponentsInfo: ConfigComponentsInfo[]): Promise<void> {
 		this.configureTab.registerContent(async view => {
 			this._view = view;
+			let componentGroups: azdata.GroupContainer[] = [];
 
-			const consumptionCriteriaComponent = await this.createCriteriaComponent();
-			const basedOnCriteriaComponent = this.createCriteriaBasedOnComponent();
-			this.consumptionCriteriaComponent = {
-				component: this._view.modelBuilder.flexContainer()
-					.withLayout({ flexFlow: 'row' })
-					.withItems([consumptionCriteriaComponent!.component, basedOnCriteriaComponent!.component])
-					.component(),
-				title: constants.topConsumersRadioButtonsLabel
-			};
+			if (configComponentsInfo.includes(ConfigComponentsInfo.consumptionCriteriaComponentTopResource)) {
+				const consumptionCriteriaComponent = await this.createCriteriaComponent(true);
+				const basedOnCriteriaComponent = this.createCriteriaBasedOnComponent();
+				const typeGroup = this.createGroup(constants.topConsumersRadioButtonsLabel, [consumptionCriteriaComponent.component, basedOnCriteriaComponent.component]);
+				componentGroups.push(typeGroup);
+			}
 
-			this.showChartComponent = this.createShowChartComponent();
-			this.timeIntervalComponent = this.createTimeIntervalComponent();
-			this.returnComponent = this.createReturnComponent();
-			this.filterComponent = this.createFilterComponent();
+			if (configComponentsInfo.includes(ConfigComponentsInfo.chartComponent)) {
+				this.showChartComponent = this.createShowChartComponent();
+				const typeGroup = this.createGroup(constants.showChartTitle, [this.showChartComponent.component]);
+				componentGroups.push(typeGroup);
+			}
 
-			this.formBuilder = <azdata.FormBuilder>this._view.modelBuilder.formContainer()
-				.withFormItems([], {
-					horizontal: true
-				})
+			if (configComponentsInfo.includes(ConfigComponentsInfo.timeIntervalComponent)) {
+				this.timeIntervalComponent = this.createTimeIntervalComponent();
+				const typeGroup = this.createGroup(constants.timeIntervalLabel, [this.timeIntervalComponent.component]);
+				componentGroups.push(typeGroup);
+			}
+
+			if (configComponentsInfo.includes(ConfigComponentsInfo.timeIntervalComponentOverallResource)) {
+				this.timeIntervalComponent = this.createTimeIntervalComponent(true);
+				const typeGroup = this.createGroup(constants.timeIntervalLabel, [this.timeIntervalComponent.component]);
+				componentGroups.push(typeGroup);
+			}
+
+			if (configComponentsInfo.includes(ConfigComponentsInfo.returnComponent)) {
+				this.returnComponent = this.createReturnComponent();
+				const typeGroup = this.createGroup(constants.returnLabel, [this.returnComponent.component]);
+				componentGroups.push(typeGroup);
+			}
+
+			if (configComponentsInfo.includes(ConfigComponentsInfo.filterComponent)) {
+				this.filterComponent = this.createFilterComponent();
+				const typeGroup = this.createGroup(constants.filterLabel, [this.filterComponent.component]);
+				componentGroups.push(typeGroup);
+			}
+
+			const divContainer = this._view.modelBuilder.divContainer().withLayout({ width: 'calc(100% - 20px)', height: 'calc(100% - 20px)' }).withProps({
+				CSSStyles: { 'padding': '10px' }
+			}).withItems(componentGroups).component();
+
+			this.formBuilder = <azdata.FormBuilder>this._view.modelBuilder.flexContainer()
+				.withItems([divContainer])
 				.withLayout({
-					width: '100%'
+					width: '100%',
+					flexFlow: 'column'
 				});
 
-			this.formModel = this.formBuilder.component();
-			await this._view.initializeModel(this.formModel);
+			this.formModel = this.formBuilder!.component();
+			await this._view.initializeModel(this.formModel!);
 			this.initDialogComplete!.resolve();
 		});
 	}
@@ -149,7 +166,16 @@ export class ConfigureDialog {
 		this.toDispose.forEach(disposable => disposable.dispose());
 	}
 
-	private async createCriteriaComponent(): Promise<azdata.FormComponent> {
+	protected createGroup(header: string, items: azdata.Component[], collapsible: boolean = true, collapsed: boolean = false): azdata.GroupContainer {
+		return this._view.modelBuilder.groupContainer()
+			.withLayout({
+				header: header,
+				collapsible: collapsible,
+				collapsed: collapsed
+			}).withItems(items).component();
+	}
+
+	private async createCriteriaComponent(isTopResourceReport: boolean = false): Promise<azdata.FormComponent> {
 		this.executionCountRadioButton = this._view.modelBuilder.radioButton()
 			.withProps({
 				name: constants.criteria,
@@ -233,6 +259,10 @@ export class ConfigureDialog {
 
 		this.criteriaRadioButtons = [this.executionCountRadioButton, this.durationRadioButton, this.CPUTimeRadioButton, this.logicalReadsRadioButton, this.logicalWritesRadioButton, this.physicalReadsRadioButton,
 		this.CLRTimeRadioButton, this.DOPRadioButton, this.memoryConsumptionRadioButton, this.rowCountRadioButton, this.logMemoryUsedRadioButton, this.tempDBMermoryUsedRadioButton, this.waitTimeRadioButton];
+
+		if (isTopResourceReport) {
+			this.criteriaRadioButtons.unshift(this.executionCountRadioButton);
+		}
 
 		let flexRadioButtonsModel = this._view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
@@ -365,29 +395,36 @@ export class ConfigureDialog {
 		};
 	}
 
-	private createTimeIntervalComponent(): azdata.FormComponent {
-		this.timeIntervalOptionsTopResourceReport = [constants.last5MinsLabel, constants.last15MinsLabel, constants.last30MinsLabel, constants.lastHourLabel, constants.last12HoursLabel, constants.lastDayLabel, constants.last2DaysLabel,
-		constants.lastWeekLabel, constants.last2WeeksLabel, constants.lastMonthLabel, constants.last3MonthsLabel, constants.last6MonthsLabel, constants.lastYearLabel, constants.customLabel];
-
-		this.timeIntervalOptionsOverallReport = [constants.lastHourLabel, constants.lastDayLabel, constants.last2DaysLabel, constants.lastWeekLabel, constants.lastMonthLabel, constants.last6MonthsLabel, constants.lastYearLabel, constants.customLabel];
+	private createTimeIntervalComponent(isOverallResourceReport: boolean = false): azdata.FormComponent {
+		let value;
+		if (isOverallResourceReport) {
+			this.timeIntervalOptions = [constants.lastHourLabel, constants.lastDayLabel, constants.last2DaysLabel, constants.lastWeekLabel, constants.lastMonthLabel, constants.last6MonthsLabel, constants.lastYearLabel, constants.customLabel];
+			value = constants.lastMonthLabel;
+		} else {
+			this.timeIntervalOptions = [constants.last5MinsLabel, constants.last15MinsLabel, constants.last30MinsLabel, constants.lastHourLabel, constants.last12HoursLabel, constants.lastDayLabel, constants.last2DaysLabel,
+			constants.lastWeekLabel, constants.last2WeeksLabel, constants.lastMonthLabel, constants.last3MonthsLabel, constants.last6MonthsLabel, constants.lastYearLabel, constants.customLabel];
+			value = constants.last5MinsLabel;
+		}
 
 		this.timeIntervalOptionsDropdown = this._view.modelBuilder.dropDown()
 			.withProps({
 				width: cssStyles.configureDialogDropdownWidth,
 				editable: false,
-				fireOnTextChange: true
+				fireOnTextChange: true,
+				values: this.timeIntervalOptions,
+				value: value
 			}).component();
 
 		this.timeIntervalOptionsDropdown.onValueChanged(async () => {
 			if (this.timeIntervalOptionsDropdown?.value === constants.customLabel) {
 				this.customTimeFromTextBox!.enabled = true;
 				await this.customTimeFromTextBox?.updateProperties({
-					value: '5/15/2023 11:58 AM'
+					value: '5/15/2023 11:58 AM'		// TODO: Remove the hardcoded value
 				});
 
 				this.customTimeToTextBox!.enabled = true;
 				await this.customTimeToTextBox?.updateProperties({
-					value: '5/23/2023 11:58 AM'
+					value: '5/23/2023 11:58 AM'		// TODO: Removed the hardcode value
 				});
 			} else {
 				this.customTimeFromTextBox!.enabled = false;
@@ -471,14 +508,9 @@ export class ConfigureDialog {
 			.withItems([customTimeToLabel, this.customTimeToTextBox])
 			.component();
 
-		const timeIntervalFromToColumn = this._view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'column' })
-			.withItems([timeIntervalFromRow, timeIntervalToRow])
-			.component();
-
 		const timeIntervalComponent = this._view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'row' })
-			.withItems([this.timeIntervalOptionsDropdown, timeIntervalFromToColumn])
+			.withLayout({ flexFlow: 'column' })
+			.withItems([this.timeIntervalOptionsDropdown, timeIntervalFromRow, timeIntervalToRow])
 			.withProps({ ariaRole: 'timeIntervalGroup' })
 			.component();
 
@@ -488,16 +520,23 @@ export class ConfigureDialog {
 			.withProps({ ariaRole: 'timeFormatGroup' })
 			.component();
 
-		const timeIntervalModel = this._view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'column' })
-			.withItems([timeIntervalComponent, timeFormatRow])
-			.withProps({ ariaRole: 'timeIntervalGroup' })
-			.component();
-
 		this.aggregationSizeComponent = this._view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'row' })
 			.withItems([aggregationSizeLabel, aggregationSizeDropdown])
 			.withProps({ ariaRole: 'aggregationSizeGroup' })
+			.component();
+
+		let items;
+		if (isOverallResourceReport) {
+			items = [timeIntervalComponent, this.aggregationSizeComponent, timeFormatRow];
+		} else {
+			items = [timeIntervalComponent, timeFormatRow];
+		}
+
+		const timeIntervalModel = this._view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' })
+			.withItems(items)
+			.withProps({ ariaRole: 'timeIntervalGroup' })
 			.component();
 
 		return {
@@ -533,7 +572,7 @@ export class ConfigureDialog {
 			.withProps({
 				value: '25',
 				ariaLabel: constants.returnLabel,
-				width: cssStyles.configureDialogTextboxWidthSmall
+				width: cssStyles.configureDialogTextboxWidth
 			}).component();
 
 		this.criteriaRadioButtons = [this.returnDataAllRadioButton, this.returnDataTopRadioButton];
@@ -566,7 +605,7 @@ export class ConfigureDialog {
 			.withProps({
 				value: '1',
 				ariaLabel: constants.returnLabel,
-				width: cssStyles.configureDialogTextboxWidthSmall,
+				width: cssStyles.configureDialogTextboxWidth,
 			}).component();
 
 		const filterRow = this._view.modelBuilder.flexContainer()
@@ -579,48 +618,5 @@ export class ConfigureDialog {
 			component: filterRow,
 			title: constants.filterLabel
 		};
-	}
-
-	public setConfigInfo(configInfo: ConfigInfo) {
-		this.configInfo = configInfo;
-	}
-
-	public async addConsumptionCriteriaComponent() {
-		this.formBuilder!.addFormItem(this.consumptionCriteriaComponent!);
-	}
-
-	public addShowChartComponent() {
-		this.formBuilder!.addFormItem(this.showChartComponent!);
-	}
-
-	public async addTimeIntervalComponent() {
-		switch (this.configInfo) {
-			case ConfigInfo.overallResourceConfig:
-				await this.timeIntervalOptionsDropdown?.updateProperties({
-					values: this.timeIntervalOptionsOverallReport,
-					value: constants.lastMonthLabel
-				});
-				break;
-			case ConfigInfo.topResourceConfig:
-			default:
-				await this.timeIntervalOptionsDropdown?.updateProperties({
-					values: this.timeIntervalOptionsTopResourceReport,
-					value: constants.last5MinsLabel
-				});
-
-		}
-		this.formBuilder!.addFormItem(this.timeIntervalComponent!);
-
-		if (this.configInfo === ConfigInfo.overallResourceConfig) {
-			this.formBuilder!.insertFormItem({ component: this.aggregationSizeComponent! }, 2);
-		}
-	}
-
-	public addReturnComponent() {
-		this.formBuilder?.addFormItem(this.returnComponent!);
-	}
-
-	public addFilterComponent() {
-		this.formBuilder?.addFormItem(this.filterComponent!);
 	}
 }

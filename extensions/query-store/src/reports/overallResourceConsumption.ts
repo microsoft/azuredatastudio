@@ -9,7 +9,7 @@ import * as constants from '../common/constants';
 import { BaseQueryStoreReport } from './baseQueryStoreReport';
 import { QueryStoreView } from './queryStoreView';
 import { ConfigureDialog } from '../settings/configureDialog';
-import { ConfigInfo } from '../common/utils';
+import { ConfigComponentsInfo } from '../common/utils';
 
 
 export class OverallResourceConsumption extends BaseQueryStoreReport {
@@ -35,9 +35,8 @@ export class OverallResourceConsumption extends BaseQueryStoreReport {
 		return [durationContainer, executionCountContainer, cpuTimeContainer, logicalReadsContainer];
 	}
 
-	public override async configureButtonClick(configureDialog: ConfigureDialog): Promise<void> {
-		configureDialog.setConfigInfo(ConfigInfo.overallResourceConfig);
-		configureDialog.addShowChartComponent();
-		await configureDialog.addTimeIntervalComponent();
+	protected override async configureButtonClick(configureDialog: ConfigureDialog): Promise<void> {
+		const configComponentsInfo: ConfigComponentsInfo[] = [ConfigComponentsInfo.chartComponent, ConfigComponentsInfo.timeIntervalComponentOverallResource];
+		await configureDialog.openDialog(configComponentsInfo);
 	}
 }
