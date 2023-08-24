@@ -1275,6 +1275,15 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Der Tokencache wurde erfolgreich gelöscht. Laden Sie Azure Data Studio neu.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Authentication Library has changed, please reload Azure Data Studio.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.azurecore/dist/localizedConstants.azurecore.reloadPromptCacheClear" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Token cache has been cleared successfully, please reload Azure Data Studio.]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>

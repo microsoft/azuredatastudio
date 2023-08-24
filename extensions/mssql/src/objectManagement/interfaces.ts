@@ -495,6 +495,22 @@ export interface AzureEditionDetails {
 	editionOptions: OptionsCollection;
 }
 
+export interface ProcessorAffinity {
+	processorId: string;
+	affinity: boolean;
+	ioAffinity: boolean;
+}
+
+export interface NumaNode {
+	numaNodeId: string
+	processors: ProcessorAffinity[]
+}
+
+export enum AffinityType {
+	ProcessorAffinity = 1,
+	IOAffinity = 2,
+}
+
 export interface Server extends ObjectManagement.SqlObject {
 	hardwareGeneration: string;
 	language: string;
@@ -515,6 +531,9 @@ export interface Server extends ObjectManagement.SqlObject {
 	storageSpaceUsageInMB: number;
 	minServerMemory: NumericServerProperty;
 	maxServerMemory: NumericServerProperty;
+	autoProcessorAffinityMaskForAll: boolean;
+	autoProcessorAffinityIOMaskForAll: boolean;
+	numaNodes: NumaNode[];
 }
 
 export interface NumericServerProperty {

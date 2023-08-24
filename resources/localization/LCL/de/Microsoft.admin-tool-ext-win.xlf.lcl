@@ -99,8 +99,8 @@
       <Item ItemId=";extensions/Microsoft.admin-tool-ext-win/package.adminToolExtWin.propertiesMenuItem" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Properties (Admin Tools)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Eigenschaften (Verwaltungstools)]]></Val>
+          <Tgt Cat="Text" Stat="Update" Orig="New">
+            <Val><![CDATA[Eigenschaften]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Properties]]></Val>

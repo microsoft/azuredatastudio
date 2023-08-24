@@ -46,7 +46,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Column Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[列名称]]></Val>
+            <Val><![CDATA[列名]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -352,7 +352,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Column Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[列名]]></Val>
+            <Val><![CDATA[列名称]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

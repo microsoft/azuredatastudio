@@ -2937,10 +2937,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.arc/dist/localizedConstants.clusterContextConfigNoLongerValid" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:]D;]A;	{2}]D;]A; Do you want to update this information?]]></Val>
+          <Val><![CDATA[The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:]A;	{2}]A; Do you want to update this information?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[구성 파일에서 지정한 클러스터 컨텍스트 정보: {0} 및 클러스터 컨텍스트: {1}은(는) 더 이상 유효하지 않습니다. 오류:]D;]A;{2}]D;]A; 이 정보를 업데이트하시겠습니까?]]></Val>
+            <Val><![CDATA[구성 파일에서 지정한 클러스터 컨텍스트 정보: {0} 및 클러스터 컨텍스트: {1}은(는) 더 이상 유효하지 않습니다. 오류:]A;	{2}]A; 이 정보를 업데이트하시겠습니까?]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:]D;]A;	{2}]D;]A; Do you want to update this information?]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3065,7 +3068,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Learn more]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[자세한 정보]]></Val>
+            <Val><![CDATA[자세히 알아보기]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3090,10 +3093,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.arc/package.arc.agreement.postgres.help.text" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[PostgreSQL Server - Azure Arc is one of the database engines available as part of Azure Arc-enabled data services and it can be deployed on the infrastructure of your choice. {0}. ]D;]A; ]D;]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
+          <Val><![CDATA[PostgreSQL Server - Azure Arc is one of the database engines available as part of Azure Arc-enabled data services and it can be deployed on the infrastructure of your choice. {0}. ]A; ]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[PostgreSQL Server - Azure Arc는 Azure Arc 지원 데이터 서비스의 일부로 사용할 수 있는 데이터베이스 엔진 중 하나이며 원하는 인프라에 배포할 수 있습니다. {0}. ]D;]A; ]D;]A; ‘스크립트를 전자 필기장으로’ 또는 ‘배포’를 클릭함으로써 (a) 아래에 열거된 해당 Marketplace 제품 및 서비스와 관련된 약관 및 개인정보처리방침에 동의하고, (b) Microsoft가 현재 결제 방법으로 제품 및 서비스와 관련된 요금을 Azure 구독과 동일한 대금 청구 주기로 청구하도록 권한을 부여하는 데 동의합니다. 또한 (c) Microsoft가 지원, 청구 및 기타 거래 활동을 목적으로 연락처, 사용량 그리고 거래 정보를 제품 및 서비스 공급자와 공유할 수 있다는 데 동의합니다. Microsoft는 타사 제품 및 서비스에 대한 권리를 제공하지 않습니다. 자세한 내용은 {1}, {2} 및 {3}을(를) 참조하세요.]]></Val>
+            <Val><![CDATA[PostgreSQL Server - Azure Arc는 Azure Arc 지원 데이터 서비스의 일부로 사용할 수 있는 데이터베이스 엔진 중 하나이며 원하는 인프라에 배포할 수 있습니다. {0}. ]A; ]A; ‘스크립트를 전자 필기장으로’ 또는 ‘배포’를 클릭함으로써 (a) 아래에 열거된 해당 Marketplace 제품 및 서비스와 관련된 약관 및 개인정보처리방침에 동의하고, (b) Microsoft가 현재 결제 방법으로 제품 및 서비스와 관련된 요금을 Azure 구독과 동일한 대금 청구 주기로 청구하도록 권한을 부여하는 데 동의합니다. 또한 (c) Microsoft가 지원, 청구 및 기타 거래 활동을 목적으로 연락처, 사용량 그리고 거래 정보를 제품 및 서비스 공급자와 공유할 수 있다는 데 동의합니다. Microsoft는 타사 제품 및 서비스에 대한 권리를 제공하지 않습니다. 자세한 내용은 {1}, {2} 및 {3}을(를) 참조하세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[PostgreSQL Server - Azure Arc is one of the database engines available as part of Azure Arc-enabled data services and it can be deployed on the infrastructure of your choice. {0}. ]D;]A; ]D;]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3120,12 +3126,12 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.arc/package.arc.agreement.sql.help.text" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Arc-enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. ]D;]A; ]D;]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
+          <Val><![CDATA[Azure Arc-enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. ]A; ]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Arc 지원 Managed Instance는 선택한 인프라에 배포할 수 있는 SQL Server 액세스 및 기능 호환성을 제공합니다. {0}. ]D;]A; ]D;]A; ‘스크립트를 전자 필기장으로’ 또는 ‘배포’를 클릭함으로써 (a) 아래에 열거된 해당 Marketplace 제품 및 서비스와 관련된 약관 및 개인정보처리방침에 동의하고, (b) Microsoft가 현재 결제 방법으로 제품 및 서비스와 관련된 요금을 Azure 구독과 동일한 대금 청구 주기로 청구하도록 권한을 부여하는 데 동의합니다. 또한 (c) Microsoft가 지원, 청구 및 기타 거래 활동을 목적으로 연락처, 사용량 그리고 거래 정보를 제품 및 서비스 공급자와 공유할 수 있다는 데 동의합니다. Microsoft는 타사 제품 및 서비스에 대한 권리를 제공하지 않습니다. 자세한 내용은 {1}, {2} 및 {3}을(를) 참조하세요.]]></Val>
+            <Val><![CDATA[Azure Arc 지원 Managed Instance는 선택한 인프라에 배포할 수 있는 SQL Server 액세스 및 기능 호환성을 제공합니다.{0}. ]A; ]A; ‘스크립트를 전자 필기장으로’ 또는 ‘배포’를 클릭함으로써 (a) 아래에 열거된 해당 Marketplace 제품 및 서비스와 관련된 약관 및 개인정보처리방침에 동의하고, (b) Microsoft가 현재 결제 방법으로 제품 및 서비스와 관련된 요금을 Azure 구독과 동일한 대금 청구 주기로 청구하도록 권한을 부여하는 데 동의합니다. 또한 (c) Microsoft가 지원, 청구 및 기타 거래 활동을 목적으로 연락처, 사용량 그리고 거래 정보를 제품 및 서비스 공급자와 공유할 수 있다는 데 동의합니다. Microsoft는 타사 제품 및 서비스에 대한 권리를 제공하지 않습니다. 자세한 내용은 {1}, {2} 및 {3}을(를) 참조하세요.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. ]D;]A; ]D;]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
+            <Val><![CDATA[Azure Arc-enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. ]D;]A; ]D;]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -5058,10 +5064,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.arc/package.arc.view.welcome.connect" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No Azure Arc controllers registered. [Learn More]5D;(https://azure.microsoft.com/services/azure-arc/)]D;]A;[Connect Controller]5D;(command:arc.connectToController)]]></Val>
+          <Val><![CDATA[No Azure Arc controllers registered. [Learn More]5D;(https://azure.microsoft.com/services/azure-arc/)]A;[Connect Controller]5D;(command:arc.connectToController)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[등록된 Azure Arc 컨트롤러가 없습니다.[자세한 정보]5D; (https://azure.microsoft.com/services/azure-arc/)]D;]A;[컨트롤러 연결]5D;(command:arc.connectToController)]]></Val>
+            <Val><![CDATA[등록된 Azure Arc 컨트롤러가 없습니다.[자세한 정보]5D;(https://azure.microsoft.com/services/azure-arc/)]A;[컨트롤러 연결]5D;(command:arc.connectToController)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[No Azure Arc controllers registered. [Learn More]5D;(https://azure.microsoft.com/services/azure-arc/)]D;]A;[Connect Controller]5D;(command:arc.connectToController)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5150,7 +5159,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Script to notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Notebook에 스크립트]]></Val>
+            <Val><![CDATA[Notebook으로 스크립트]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

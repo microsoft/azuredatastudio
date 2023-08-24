@@ -10,6 +10,7 @@ import * as uiLoc from '../ui/localizedConstants';
 
 export const DefaultLabelWidth = 150;
 export const DefaultInputWidth = 300;
+export const DefaultColumnCheckboxWidth = 150;
 export const DefaultTableWidth = DefaultInputWidth + DefaultLabelWidth;
 export const DefaultMaxTableRowCount = 10;
 export const DefaultMinTableRowCount = 1;
@@ -80,6 +81,7 @@ export abstract class DialogBase<DialogResult> {
 				this.dialogObject.registerContent(async view => {
 					this._modelView = view;
 					this._formContainer = this.createFormContainer([]);
+					this.disposables.push(this._formContainer);
 					this._loadingComponent = view.modelBuilder.loadingComponent().withItem(this._formContainer).withProps({
 						loading: true,
 						loadingText: uiLoc.LoadingDialogText,
@@ -255,7 +257,7 @@ export abstract class DialogBase<DialogResult> {
 		});
 	}
 
-	protected createTable(ariaLabel: string, columns: string[], data: any[][], maxRowCount: number = DefaultMaxTableRowCount): azdata.TableComponent {
+	protected createTable(ariaLabel: string, columns: string[] | azdata.TableColumn[], data: any[][], maxRowCount: number = DefaultMaxTableRowCount): azdata.TableComponent {
 		const table = this.modelView.modelBuilder.table().withProps(
 			{
 				ariaLabel: ariaLabel,

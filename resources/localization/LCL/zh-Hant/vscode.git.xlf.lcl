@@ -5212,6 +5212,18 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[偵測到的 Git 存放庫可能不安全，因為資料夾是由目前使用者以外的人所擁有。]A;[管理不安全的存放庫]5D;(command:git.manageUnsafeRepositories)]A;若要深入了解不安全的存放庫，[請閱讀我們的文件]5D;(https://aka.ms/vscode-git-unsafe-repository)。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[[Download Git for Windows]5D;(https://git-scm.com/download/win)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/vscode.git/package.view.workbench.scm.repositoriesInParentFolders" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Git repositories were found in the parent folders of the workspace or the open file(s).]A;[Open Repository]5D;(command:git.openRepositoriesInParentFolders)]A;Use the [git.openRepositoryInParentFolders]5D;(command:workbench.action.openSettings?%5B%22git.openRepositoryInParentFolders%22%5D) setting to control whether git repositories in parent folders of workspace or open files are opened. To learn more [read our docs]5D;(https://aka.ms/vscode-git-repository-in-parent-folders).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[在工作區或開啟檔案的上層目錄中發現 Git 存放庫。]A;[開啟存放庫]5D;(command:git.openRepositoriesInParentFolders)]A;請使用 [git.openRepositoryInParentFolders]5D;(command:workbench.action.openSettings?%5B%22git.openRepositoryInParentFolders%22%5D) 設定控制工作區或開啟檔案上層目錄中 Git 存放庫是否開啟。若要深入了解 [請閱讀我們的文件]5D;(https://aka.ms/vscode-git-repository-in-parent-folders)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

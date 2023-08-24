@@ -20,6 +20,8 @@ import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/text
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 
 const MAX_SIZE = 13;
 
@@ -142,6 +144,8 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	private _state = this._register(new QueryEditorState());
 	public get state(): QueryEditorState { return this._state; }
 
+	private _serverContext: string[];
+
 	constructor(
 		private _description: string | undefined,
 		protected _text: AbstractTextResourceEditorInput,
@@ -149,7 +153,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IInstantiationService protected readonly instantiationService: IInstantiationService
+		@IInstantiationService protected readonly instantiationService: IInstantiationService,
+		@IServerContextualizationService private readonly serverContextualizationService: IServerContextualizationService,
+		@IExtensionService private readonly extensionService: IExtensionService
 	) {
 		super();
 
@@ -234,6 +240,27 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	// Forwarding resource functions to the inline sql file editor
 	public override isDirty(): boolean { return this._text.isDirty(); }
 	public get resource(): URI { return this._text.resource; }
+
+	public async getServerContext(): Promise<string[]> {
+		const copilotExt = await this.extensionService.getExtension('github.copilot');
+
+		if (copilotExt && this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled) {
+			if (!this._serverContext) {
+				const result = await this.serverContextualizationService.getServerContextualization(this.uri);
+				// TODO lewissanchez - Remove this from here once Copilot starts pulling context. That isn't implemented yet, so
+				// getting scripts this way for now.
+				this._serverContext = result.context;
+
+				return this._serverContext;
+			}
+			else {
+				return this._serverContext;
+			}
+		}
+		else {
+			return Promise.resolve([]);
+		}
+	}
 
 	public override getName(longForm?: boolean): string {
 		if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').showConnectionInfoInTitle) {

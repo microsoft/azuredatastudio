@@ -292,7 +292,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Banco de dados]]></Val>
+            <Val><![CDATA[Base de dados]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -814,7 +814,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Target Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Banco de Dados de Destino]]></Val>
+            <Val><![CDATA[Banco de dados de destino]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -823,7 +823,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Target Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Servidor de Destino]]></Val>
+            <Val><![CDATA[Servidor de destino]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
