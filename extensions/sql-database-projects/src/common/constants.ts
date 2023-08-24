@@ -629,7 +629,7 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 	[SqlTargetPlatform.sqlServer2022, '160'],
 	[SqlTargetPlatform.sqlAzure, 'AzureV12'],
 	[SqlTargetPlatform.sqlDW, 'Dw'],
-	[SqlTargetPlatform.sqlDwUnified, 'SqlDwUnified']
+	[SqlTargetPlatform.sqlDwUnified, 'DwUnified']
 ]);
 
 export const onPremServerVersionToTargetPlatform: Map<number, SqlTargetPlatform> = new Map<number, SqlTargetPlatform>([
