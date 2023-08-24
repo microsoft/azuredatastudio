@@ -5218,8 +5218,8 @@
       <Item ItemId=";extensions/vscode.git/package.view.workbench.scm.workspace" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.]A;[Initialize Repository]5D;(command:git.init)]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Der aktuell geöffnete Arbeitsbereich enthält keine Ordner mit Git-Repositorys. Sie können ein Repository für einen Ordner initialisieren, wodurch die Git-Features zur Quellcodeverwaltung aktiviert werden.]D;]A;[Repository initialisieren]5D;(command:git.init)]D;]A;Weitere Informationen zur Verwendung von Git und der Quellcodeverwaltung in Azure Data Studio finden Sie [ in unserer Dokumentation]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der aktuell geöffnete Arbeitsbereich enthält keine Ordner mit Git-Repositorys. Sie können ein Repository für einen Ordner initialisieren, wodurch die Git-Features zur Quellcodeverwaltung aktiviert werden.]A;[Repository initialisieren]5D;(command:git.init)]A;Weitere Informationen zur Verwendung von Git und der Quellcodeverwaltung in Azure Data Studio finden Sie [in unserer Dokumentation]5D;(https://aka.ms/vscode-scm).]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.]D;]A;[Initialize Repository]5D;(command:git.init)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>

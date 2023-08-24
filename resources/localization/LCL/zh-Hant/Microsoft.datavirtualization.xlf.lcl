@@ -736,6 +736,9 @@
       <Item ItemId=";extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/connectionDetailsPage.credentialNameDropdown" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Choose Credential]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[選擇認證]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -751,6 +754,9 @@
       <Item ItemId=";extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/connectionDetailsPage.dataSourceHelpText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The name for your External Data Source.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[外部資料來源的名稱。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -928,6 +934,9 @@
       <Item ItemId=";extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/objectMappingPage.noObjectSelectedMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No objects were selected.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[未選取任何物件。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1042,6 +1051,9 @@
       <Item ItemId=";extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/summaryPage.createSourceInfo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[External Table creation completed successfully]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[外部資料表建立已成功完成]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1084,6 +1096,9 @@
       <Item ItemId=";extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/summaryPage.summaryMasterKeyLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database Master Key]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[資料庫主要金鑰]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1126,6 +1141,9 @@
       <Item ItemId=";extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/summaryPage.summaryTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The following objects will be created in the destination database:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[下列物件將會建立在目的地資料庫中:]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1159,6 +1177,9 @@
       <Item ItemId=";extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/virtualizeDataWizard.getExtDataTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Virtualize Data]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[虛擬化資料]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

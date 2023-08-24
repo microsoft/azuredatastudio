@@ -20,6 +20,9 @@
         <Item ItemId=";(...) ror" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[An error occurred in MSAL library when requesting auth code URL. For more detailed information on error, please check 'Azure Accounts' output pane. ]A;]A;]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Fehler in MSAL-Bibliothek beim Anfordern der Authentifizierungscode-URL. Ausführlichere Informationen zum Fehler finden Sie im Ausgabebereich 'Azure-Konten'. ]A;]A;]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -53,6 +56,9 @@
         <Item ItemId=";(...) ure.resource.providers.databaseServer.treeDataProvider.cosmosDbPostgresContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Azure CosmosDB for PostgreSQL Cluster]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Azure CosmosDB for PostgreSQL-Cluster]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -357,8 +363,8 @@
       <Item ItemId=";extensions/Microsoft.azurecore/dist/account-provider/auths/azureAuth.azurecore.confirmIgnoreTenantDialog.body" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. ]A;]A;To allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.]A;]A;Do you wish to proceed?]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure Data Studio löst keine Authentifizierung für diesen Mandanten {0} ({1}) aus, und auf Ressourcen kann nicht zugegriffen werden. ]D;]A;]D;]A;Um den Zugriff auf Ressourcen für diesen Mandanten erneut zuzulassen, müssen Sie den Mandanten aus der Ausschlussliste in der Einstellung '{2}' entfernen.]D;]A;]D;]A;Möchten Sie den Vorgang fortsetzen?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio löst keine Authentifizierung für diesen Mandanten {0} ({1}) mehr aus, und der Zugriff auf Ressourcen ist nicht möglich. ]A;]A;Um den Zugriff auf Ressourcen für diesen Mandanten wieder zuzulassen, müssen Sie den Mandanten aus der Ausschlussliste in der Einstellung '{2}' entfernen.]A;]A;Möchten Sie den Vorgang fortsetzen?]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. ]D;]A;]D;]A;To allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.]D;]A;]D;]A;Do you wish to proceed?]]></Val>
@@ -426,8 +432,8 @@
       <Item ItemId=";extensions/Microsoft.azurecore/dist/account-provider/auths/azureAuth.msal.accountNotFoundError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unable to find account info when acquiring token, please remove account and add again.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Beim Abrufen des Tokens wurden keine Kontoinformationen gefunden.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Beim Abrufen von Token wurden keine Kontoinformationen gefunden. Entfernen Sie Ihr Konto, und fügen Sie es erneut hinzu.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Unable to find account info when acquiring token.]]></Val>
@@ -546,8 +552,8 @@
       <Item ItemId=";extensions/Microsoft.azurecore/dist/account-provider/azureAccountProvider.msalTokenError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} occurred when acquiring token. ]A;{1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Beim Abrufen des Tokens ist {0} aufgetreten. ]D;]A;{1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} beim Abrufen des Tokens. ]A;{1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[{0} occurred when acquiring token. ]D;]A;{1}]]></Val>
@@ -738,8 +744,8 @@
       <Item ItemId=";extensions/Microsoft.azurecore/dist/azureResource/services/terminalService.azure.shellClosed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Shell closed.]A;]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Shell geschlossen.]D;]A;]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Shell geschlossen.]A;]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Shell closed.]D;]A;]]></Val>
@@ -840,6 +846,9 @@
       <Item ItemId=";extensions/Microsoft.azurecore/dist/localizedConstants.azure.noCloudsEnabled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No clouds are enabled, please enable a cloud to continue.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Es sind keine Clouds aktiviert. Aktivieren Sie eine Cloud, um den Vorgang fortzusetzen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1038,6 +1047,9 @@
       <Item ItemId=";extensions/Microsoft.azurecore/dist/localizedConstants.azurecore.enablePublicCloud" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[enablePublicCloud]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[enablePublicCloud]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1248,8 +1260,8 @@
       <Item ItemId=";extensions/Microsoft.azurecore/dist/localizedConstants.azurecore.reloadPrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} setting changed, please reload Azure Data Studio.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Die Authentifizierungsbibliothek wurde geändert, bitte laden Sie Azure Data Studio neu.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} Einstellung geändert wurde, laden Sie Azure Data Studio neu.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Authentication Library has changed, please reload Azure Data Studio.]]></Val>
@@ -1260,6 +1272,12 @@
       <Item ItemId=";extensions/Microsoft.azurecore/dist/localizedConstants.azurecore.reloadPromptCacheClear" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Token cache has been cleared successfully, please reload Azure Data Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Tokencache wurde erfolgreich gelöscht. Laden Sie Azure Data Studio neu.]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Authentication Library has changed, please reload Azure Data Studio.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1509,12 +1527,18 @@
       <Item ItemId=";extensions/Microsoft.azurecore/dist/utils.providerSettings.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not load endpoints from settings, please check the logs for more details.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Endpunkte konnten nicht aus den Einstellungen geladen werden. Weitere Informationen finden Sie in den Protokollen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azurecore/dist/utils.providerSettings.success" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Successfully loaded custom endpoints from settings]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Benutzerdefinierte Endpunkte wurden erfolgreich aus den Einstellungen geladen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1722,6 +1746,9 @@
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.customProviderSettings" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Setting containing custom Azure authentication endpoints. Changes to this setting require a restart to take effect.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Einstellung, die benutzerdefinierte Azure-Authentifizierungsendpunkte enthält. Änderungen an dieser Einstellung erfordern einen Neustart, um wirksam zu werden.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1785,90 +1812,135 @@
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.providerSettings.endpoints.armResource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[ARM Resource Endpoint]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ARM-Ressourcenendpunkt]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.providerSettings.endpoints.azureKeyVaultResource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure KeyVault Resource Endpoint]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure KeyVault-Ressourcenendpunkt]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.providerSettings.endpoints.azureKustoResource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Kusto Resource Endpoint]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Kusto-Ressourcenendpunkt]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.providerSettings.endpoints.azureStorageResource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Storage Resource Endpoint]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Storage-Ressourcenendpunkt]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.providerSettings.endpoints.azureStorageResourceSuffix" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Storage Resource Endpoint Suffix]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Suffix für Azure Storage-Ressourcenendpunkt]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.providerSettings.endpoints.clientId" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Client ID for Azure Data Studio]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Client-ID für Azure Data Studio]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.providerSettings.endpoints.graphResource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Graph Resource Endpoint]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Graph-Ressourcenendpunkt]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.providerSettings.endpoints.host" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Host Endpoint]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Hostendpunkt]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.providerSettings.endpoints.logAnalytics" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Log Analytics Endpoint]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Log Analytics-Endpunkt]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.providerSettings.endpoints.microsoftResource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Microsoft Resource Endpoint]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Microsoft-Ressourcenendpunkt]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.providerSettings.endpoints.msGraphResource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Microsoft Graph Resource Endpoint]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Microsoft Graph-Ressourcenendpunkt]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.providerSettings.endpoints.portal" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Portal Endpoint]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure-Portalendpunkt]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.providerSettings.endpoints.powerBiResource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Power BI Resource Endpoint]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Power BI-Ressourcenendpunkt]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.providerSettings.endpoints.scopes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Scopes Endpoint]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Bereichsendpunkt]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.providerSettings.endpoints.sqlResource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Resource Endpoint]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL-Ressourcenendpunkt]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1884,12 +1956,18 @@
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.providerSettingsId" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cloud ID]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cloud-ID]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.providerSettingsMetadata" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cloud Display Name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Anzeigename der Cloud]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1905,6 +1983,9 @@
       <Item ItemId=";extensions/Microsoft.azurecore/package.config.providerSettingsTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Provider Settings]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Anbietereinstellungen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

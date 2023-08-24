@@ -31,6 +31,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.addSqlBinding" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Adding SQL Binding to function "{0}"...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL-Bindung wird der Funktion "{0}" hinzugefügt...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -55,6 +58,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.azureFunctionsProjectMustBeOpened" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A C# Azure Functions project must be present in order to create a new Azure Function with SQL binding.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Zum Erstellen einer neuen Azure-Funktion mit SQL-Bindung muss ein C#-Azure Functions-Projekt vorhanden sein.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -133,6 +139,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.dotnetResult" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Adding SQL nuget package:]A;{0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL-NuGet-Paket wird hinzugefügt:]A;{0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -157,24 +166,36 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.enterPasswordPrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[(Optional) Enter connection password to save in local.settings.json]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[(Optional) Geben Sie das Verbindungskennwort ein, das in "local.settings.json" gespeichert werden soll.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.enterTableName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter SQL table to query]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL-Tabelle für Abfrage eingeben]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.enterTableNameToUpsert" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter SQL table to upsert into]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL-Tabelle für Upsert eingeben]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.enterViewName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter SQL view to query]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL-Sicht für Abfrage eingeben]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -226,6 +247,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.hasSpecialCharacters" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Name must not include special characters]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Name darf keine Sonderzeichen enthalten.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -250,6 +274,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.inputDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Retrieves data from a database]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ruft Daten aus einer Datenbank ab.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -337,6 +364,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.outputDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save data to a database]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Daten in einer Datenbank speichern]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -388,6 +418,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.selectBindingTypeToSpecifiedFunction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select type of binding for the function '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Bindungstyp für Funktion '{0}' auswählen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -439,18 +472,27 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.selectSqlTableOrViewPrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select object type to insert or upsert into]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Objekttyp für Einfügung oder Upsert auswählen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.selectTable" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select table to use]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Zu verwendende Tabelle auswählen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.selectView" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select view to use]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Zu verwendende Sicht auswählen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -484,6 +526,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.tableListProgressTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Fetching tables for selected database...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Tabellen für die ausgewählte Datenbank werden abgerufen...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -553,6 +598,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.viewListProgressTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Fetching views for selected database...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Sichten für ausgewählte Datenbank werden abgerufen...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -568,12 +616,18 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/package.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enables users to develop and publish Azure Functions with Azure SQL bindings]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ermöglicht Benutzer*innen das Entwickeln und Veröffentlichen von Azure-Funktionen mit Azure SQL-Bindungen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/package.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Bindings]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL-Bindungen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -589,6 +643,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/package.sqlBindings.createAzureFunction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create Azure Function with SQL binding (preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure-Funktion mit SQL-Bindung erstellen (Vorschau)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
