@@ -2392,8 +2392,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.migration.status.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Login migration status: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[資料庫移轉狀態: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[登入移轉狀態: {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Database migration status: {0}]]></Val>
@@ -8620,8 +8620,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.wizard.perfCollection.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:]A;]A;{1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[收集伺服器 '{0}' 的效能資料時發生錯誤。如果這些問題持續發生，請嘗試重新啟動資料收集程式：]D;]A;]D;]A;{1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[收集伺服器 '{0}' 的效能資料時發生錯誤。如果這些問題持續發生，請嘗試重新啟動資料收集程式:]A;]A;{1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:]D;]A;]D;]A;{1}]]></Val>

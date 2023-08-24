@@ -313,6 +313,9 @@
       <Item ItemId=";extensions/Microsoft.azuremonitor/package.azuremonitor.connectionProperties.dbaPrivilege.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Administrative privileges: SYSDBA or SYSOPER]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[系統管理權限: SYSDBA 或 SYSOPER]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -343,6 +346,9 @@
       <Item ItemId=";extensions/Microsoft.azuremonitor/package.azuremonitor.connectionProperties.metadataPooling.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This attribute indicates whether the metadata information for executed queries is cached for improved performance.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[此屬性指出是否快取執行查詢的中繼資料資訊以提升效能。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -373,6 +379,9 @@
       <Item ItemId=";extensions/Microsoft.azuremonitor/package.azuremonitor.connectionProperties.proxyUserId.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User name of the proxy user.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Proxy 使用者的使用者名稱。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -454,6 +463,9 @@
       <Item ItemId=";extensions/Microsoft.azuremonitor/package.azuremonitor.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Monitor access for Azure Data Studio]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio 的 Azure 監視器存取權]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

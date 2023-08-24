@@ -3298,8 +3298,8 @@
       <Item ItemId=";extensions/Microsoft.sql-database-projects/dist/common/constants.unhandledDeleteType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unhandled item type during exclude: '{0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Tipo di elemento non gestito durante l'eliminazione: '{0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Tipo di elemento non gestito durante l'esclusione: '{0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Unhandled item type during delete: '{0}]]></Val>
@@ -3946,8 +3946,8 @@
       <Item ItemId=";extensions/Microsoft.sql-database-projects/package.sqlDatabaseProjects.welcome" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No database projects currently open.]A;[New Project]5D;(command:sqlDatabaseProjects.new)]A;[Open Project]5D;(command:sqlDatabaseProjects.open)]A;[Create Project From Database]5D;(command:sqlDatabaseProjects.importDatabase)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Nessun progetto di database attualmente open.]D;]A;[Nuovo progetto]5D;(command:sqlDatabaseProjects.new)]D;]A;[Apri progetto]5D;(command:sqlDatabaseProjects.open)]D;]A;[Crea progetto dal database]5D;(command:sqlDatabaseProjects.importDatabase)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nessun progetto di database attualmente open.]A;[Nuovo progetto]5D;(command:sqlDatabaseProjects.new)]A;[Apri progetto]5D;(command:sqlDatabaseProjects.open)]A;[Crea progetto dal database]5D;(command:sqlDatabaseProjects.importDatabase)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No database projects currently open.]D;]A;[New Project]5D;(command:sqlDatabaseProjects.new)]D;]A;[Open Project]5D;(command:sqlDatabaseProjects.open)]D;]A;[Create Project From Database]5D;(command:sqlDatabaseProjects.importDatabase)]]></Val>

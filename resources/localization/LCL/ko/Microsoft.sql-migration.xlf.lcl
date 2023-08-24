@@ -27,6 +27,9 @@
         <Item ItemId=";(...) sions" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Establishing user mappings completed.]A;]A;Currently, migrating server roles, establishing server mappings and setting permissions. This will take some time.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[사용자 매핑 설정이 완료되었습니다.]A;]A;현재 서버 역할을 마이그레이션하고, 서버 매핑을 설정하고, 권한을 설정하는 중입니다. 이 작업은 시간이 걸릴 수 있습니다.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -481,8 +484,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.establish.user.mappings" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Validating and migrating logins completed.]A;]A;Establishing user mappings.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[로그인 확인 및 마이그레이션이 완료되었습니다.]D;]D;]A;사용자 매핑을 설정하는 중입니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[로그인 확인 및 마이그레이션이 완료되었습니다.]A;]A;사용자 매핑을 설정하는 중입니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Validating and migrating logins completed.]D;]A;]D;]A;Establishing user mappings.]]></Val>
@@ -793,8 +796,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.wizard.target.data.migration.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[We recommend migrating your databases(s) to the Azure SQL target before starting the login migration to avoid failures in the process. Nevertheless, you can run this migration process whenever want you want if your goal is to update the user mapping for recently migrated databases.]A;]A; If the source and database names are not the same, then it is possible that some permissions may not be applied properly.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[로그인 마이그레이션 기능은 공개 미리 보기 모드입니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[프로세스의 오류를 방지하기 위해서 로그인 마이그레이션을 시작하기 전에 데이터베이스를 Azure SQL 대상으로 마이그레이션하는 것이 좋습니다. 최근에 마이그레이션된 데이터베이스에 대한 사용자 매핑을 업데이트하는 것이 목표라면 원할 때마다 이 마이그레이션 프로세스를 실행할 수 있습니다.]A;]A;원본 이름과 데이터베이스 이름이 같으면 일부 사용 권한이 제대로 적용되지 않을 수 있습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Please note that login migration feature is in public preview mode.]]></Val>
@@ -814,8 +817,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.wizard.target.permission.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please ensure that the current user ({0}) has sysadmin permissions to get all login information for the current instance ({1}).]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[현재 사용자에게 현재 인스턴스({0})에 대한 모든 로그인 정보를 가져올 수 있는 sysadmin 권한이 있는지 확인하세요.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[현재 사용자({0})에게 현재 인스턴스({1})에 대한 모든 로그인 정보를 가져올 수 있는 sysadmin 권한이 있는지 확인하세요.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Please ensure that the current user has sysadmin permissions to get all login information for the current instance ({0}).]]></Val>
@@ -967,8 +970,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.assessment.in.progress.content" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[We are assessing the databases in your SQL Server instance {0} to identify the right Azure SQL target.]A;]A;This may take some time.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[올바른 Azure SQL 대상을 식별하기 위해 SQL Server 인스턴스 {0}의 데이터베이스를 평가하고 있습니다.]D;]A;]D;]A;평가하는 데 시간이 걸릴 수 있습니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[올바른 Azure SQL 대상을 식별하기 위해 SQL Server 인스턴스 {0}의 데이터베이스를 평가하고 있습니다.]A;]A;평가하는 데 시간이 걸릴 수 있습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[We are assessing the databases in your SQL Server instance {0} to identify the right Azure SQL target.]D;]A;]D;]A;This may take some time.]]></Val>
@@ -1489,8 +1492,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.cannot.retry" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Migration cannot be restarted.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[마이그레이션을 다시 시도하지 못했습니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[마이그레이션을 다시 시작하지 못했습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Migration cannot be retried.]]></Val>
@@ -5521,8 +5524,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.service.ready" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}]A;]A;For improved performance and high availability, you can register additional nodes.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure Database Migration Service '{0}'이(가) 노드에서 실행되는 자체 호스팅 통합 런타임에 연결됨 - {1}]D;]A;]D;]A;향상된 성능과 고가용성을 위해 추가 노드를 등록할 수 있습니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Database Migration Service '{0}'이(가) 노드에서 실행되는 자체 호스팅 통합 런타임에 연결됨 - {1}]A;]A;향상된 성능과 고가용성을 위해 추가 노드를 등록할 수 있습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}]D;]A;]D;]A;For improved performance and high availability, you can register additional nodes.]]></Val>
@@ -7750,12 +7753,18 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.cert.migration.info" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You must click the '{0}' button before proceeding to the next page of the wizard.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[마법사의 다음 페이지로 넘어가기 전에 '{0}' 단추를 클릭해야 합니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.cert.network.info" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please enter a network path where SQL Server will export the certificates. Also verify that SQL Server service has write access to this path and the current user should have administrator privileges on the computer where this network path is.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server 인증서를 내보낼 네트워크 경로를 입력하세요. SQL Server 서비스가 이 경로에 대한 쓰기 권한을 가지고 있으며 현재 사용자에게 이 네트워크 경로가 있는 컴퓨터에 대한 관리자 권한이 있어야 하는지도 확인하세요.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7951,8 +7960,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.msg.manual" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You have not given Azure Data Studio access to migrate the encryption certificates.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[인증서를 수동으로 마이그레이션하도록 선택했습니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[암호화 인증서 및 데이터베이스를 마이그레이션하기 위한 Azure Data Studio 액세스 권한을 부여받지 않았습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[You have chosen to manually migrate certificates.]]></Val>
@@ -7963,8 +7972,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.msg.tde" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You have given Azure Data Studio access to migrate the encryption certificates and database.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure Data Studio에 암호화 인증서 및 데이터베이스를 마이그레이션하기 위한 액세스 권한을 부여했습니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[암호화 인증서 및 데이터베이스를 마이그레이션하기 위한 Azure Data Studio 액세스 권한을 부여받았습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[You have given access to Azure Data Studio to migrate the encryption certificates and database.]]></Val>
@@ -8029,7 +8038,7 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.wizard.optionads" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Export my certificates and private keys to the target.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[내 인증서와 프라이빗 키를 대상으로 내보냅니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -8062,8 +8071,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.wizard.optionmanual.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Certificates must be migrated before proceeding with the database migration otherwise a failure will occur. {0} about manually migrating TDE certificates.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[마이그레이션을 계속하기 전에 인증서를 마이그레이션해야 합니다. 그러지 않으면 마이그레이션이 실패합니다. {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[데이터베이스 마이그레이션을 계속하기 전에 인증서를 마이그레이션해야 합니다. 그렇지 않으면 오류가 발생하게 됩니다. TDE 인증서를 수동으로 마이그레이션하는 방법에 대해 {0}.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[You must migrate the certificates before proceeding with the migration otherwise the migration will fail. {0}.]]></Val>
@@ -8374,8 +8383,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.validation.dialog.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Certificates Migration]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[유효성 검사 실행]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[인증서 마이그레이션]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Running validation]]></Val>
