@@ -88,6 +88,7 @@ export abstract class DialogBase<DialogResult> {
 				this.dialogObject.registerContent(async view => {
 					this._modelView = view;
 					this._formContainer = this.createFormContainer([]);
+					this.disposables.push(this._formContainer);
 					this._loadingComponent = view.modelBuilder.loadingComponent().withItem(this._formContainer).withProps({
 						loading: true,
 						loadingText: uiLoc.LoadingDialogText,

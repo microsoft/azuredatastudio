@@ -133,11 +133,11 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 			this.formContainer.addItems(components);
 		} else {
-			// Initilaize general Tab sections
+			// Initialize general Tab sections
 			this.initializeBackupSection();
 			this.initializeDatabaseSection();
 
-			//Initilaize options Tab sections
+			//Initialize options Tab sections
 			this.initializeOptionsGeneralSection();
 			this.initializeAutomaticSection();
 			if (!isUndefinedOrNull(this.objectInfo.isLedgerDatabase)) {

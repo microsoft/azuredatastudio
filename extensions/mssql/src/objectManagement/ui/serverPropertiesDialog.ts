@@ -50,7 +50,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
-		this.dialogObject.customButtons[1].enabled = false;
 	}
 
 	protected override get helpUrl(): string {
@@ -67,11 +66,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 				break;
 		}
 		return helpUrl;
-	}
-
-	protected override onFormFieldChange(): void {
-		this.dialogObject.customButtons[1].enabled = false;
-		this.dialogObject.okButton.enabled = this.isDirty;
 	}
 
 	protected async initializeUI(): Promise<void> {
