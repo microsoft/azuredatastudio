@@ -346,14 +346,12 @@ export const InPercentAutogrowthText = localize('objectManagement.databaseProper
 export const InMegabytesAutogrowthText = localize('objectManagement.databaseProperties.inMegabytesAutogrowthText', "In Megabytes");
 export const LimitedToMBFileSizeText = localize('objectManagement.databaseProperties.limitedToMBFileSizeText', "Limited to (MB)");
 export const UnlimitedFileSizeText = localize('objectManagement.databaseProperties.unlimitedFileSizeText', "Unlimited");
-export const PercentText = localize('objectManagement.databaseProperties.percentText', "Percent");
-export const MBText = localize('objectManagement.databaseProperties.mb', "MB");
 export const NoneText = localize('objectManagement.databaseProperties.noneText', "None");
 export function AutoGrowthValueStringGenerator(isFileGrowthSupported: boolean, fileGrowth: string, isFleGrowthInPercent: boolean, maxFileSize: number): string {
 	const maxSizelimitation = maxFileSize === -1
 		? localize('objectManagement.databaseProperties.autoGrowthValueConversion.unlimited', "Unlimited")
 		: localize('objectManagement.databaseProperties.autoGrowthValueConversion.limitation', "Limited to {0} MB", maxFileSize);
-	return isFileGrowthSupported ? localize('objectManagement.databaseProperties.autoGrowthValueConversion', "By {0} {1}, {2}", fileGrowth, isFleGrowthInPercent ? PercentText : MBText, maxSizelimitation)
+	return isFileGrowthSupported ? localize('objectManagement.databaseProperties.autoGrowthValueConversion', "By {0} {1}, {2}", fileGrowth, isFleGrowthInPercent ? "Percent" : "MB", maxSizelimitation)
 		: localize('objectManagement.databaseProperties.autoGrowthValueConversion', "{0}", maxSizelimitation);
 }
 export const FileGroupForLogTypeText = localize('objectManagement.databaseProperties.fileGroupNotApplicableText', "Not Applicable");
@@ -363,6 +361,9 @@ export const FileNameExistsError = (name: string) => localize('objectManagement.
 export const FileAlreadyExistsError = (fullFilePath: string) => localize('objectManagement.databaseProperties.fileNameExistsError', "Cannot create file '{0}' because it already exists.", fullFilePath);
 export const FileSizeLimitError = localize('objectManagement.databaseProperties.fileSizeLimitError', "Maximum file size cannot be less than size");
 export const FilegrowthLimitError = localize('objectManagement.databaseProperties.filegrowthLimitError', "Filegrowth cannot be greater than the Maximum file size for a file");
+export const RowsDataFileType = localize('objectManagement.databaseProperties.rowsDataFileType', "ROWS Data");
+export const LogFiletype = localize('objectManagement.databaseProperties.logfiletype', "LOG");
+export const FilestreamFileType = localize('objectManagement.databaseProperties.filestreamFileType', "FILESTREAM Data");
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {

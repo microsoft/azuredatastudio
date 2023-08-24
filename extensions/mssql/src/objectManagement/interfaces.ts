@@ -477,9 +477,9 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	dscOnOffOptions?: string[];
 	dscElevateOptions?: string[];
 	dscEnableDisableOptions?: string[];
-	rowDataFileGroupsOptions: string[];
-	fileStreamFileGroupsOptions: string[];
-	fileTypesOptions: string[];
+	rowDataFileGroupsOptions?: string[];
+	fileStreamFileGroupsOptions?: string[];
+	fileTypesOptions?: string[];
 }
 
 export interface DatabaseScopedConfigurationsInfo {
@@ -549,6 +549,12 @@ export interface NumericServerProperty {
 export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
 }
 
+export const enum FileGrowthType {
+	KB = 0,
+	Percent = 1,
+	None = 99
+}
+
 export interface DatabaseFile {
 	id: number;
 	name: string;
@@ -559,6 +565,6 @@ export interface DatabaseFile {
 	sizeInMb: number;
 	isAutoGrowthEnabled: boolean;
 	autoFileGrowth: number;
-	autoFileGrowthType: string;
+	autoFileGrowthType: FileGrowthType;
 	maxSizeLimitInMb: number
 }

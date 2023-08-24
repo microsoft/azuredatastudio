@@ -9,7 +9,7 @@ import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultM
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl } from '../constants';
-import { Database, DatabaseFile, DatabaseScopedConfigurationsInfo, DatabaseViewInfo } from '../interfaces';
+import { Database, DatabaseFile, DatabaseScopedConfigurationsInfo, DatabaseViewInfo, FileGrowthType } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
 import { deepClone } from '../../util/objects';
@@ -125,8 +125,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.initializeBackupSection();
 			this.initializeDatabaseSection();
 
-			//Initilailize files tab sections
-
 			//Initilaize options Tab sections
 			this.initializeOptionsGeneralSection();
 			this.initializeAutomaticSection();
@@ -140,7 +138,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 
 			const tabs: azdata.Tab[] = [];
-			// Initilaize general Tab
+			// Initialize general Tab
 			this.generalTab = {
 				title: localizedConstants.GeneralSectionHeader,
 				id: this.generalTabId,
@@ -151,7 +149,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			};
 			tabs.push(this.generalTab);
 
-			// Initilaize Files Tab
+			// Initialize Files Tab
 			// Full text Indexing is only enabled for SQL Server
 			if (!isUndefinedOrNull(this.objectInfo.fullTextIndexing)) {
 				const filesGeneralSection = this.initializeFilesGeneralSection();
@@ -164,7 +162,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				tabs.push(this.filesTab);
 			}
 
-			// Initilaize Options Tab
+			// Initialize Options Tab
 			this.optionsTab = {
 				title: localizedConstants.OptionsSectionHeader,
 				id: this.optionsTabId,
@@ -172,7 +170,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			};
 			tabs.push(this.optionsTab);
 
-			// Initilaize DSC Tab section
+			// Initialize DSC Tab section
 			if (!isUndefinedOrNull(this.objectInfo.databaseScopedConfigurations)) {
 				await this.initializeDatabaseScopedConfigurationSection();
 				this.dscTabSectionsContainer.push(await this.initializeDscValueDropdownTypeSection())
@@ -185,7 +183,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				tabs.push(this.dscTab);
 			}
 
-			// Initilaize tab group with tabbed panel
+			// Initialize tab group with tabbed panel
 			const propertiesTabGroup = { title: '', tabs: tabs };
 			const propertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 				.withTabs([propertiesTabGroup])
@@ -490,7 +488,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 		}).component();
 		const databaseFilesButtonContainer = this.addButtonsForTable(this.databaseFilesTable, localizedConstants.AddButton, localizedConstants.RemoveButton,
-			(button) => this.onAddDatabaseFilesButtonClicked(button), (button) => this.onEditDatabaseFilesButtonClicked(button), localizedConstants.EditButton, () => this.onRemoveDatabaseFilesButtonClicked());
+			(button) => this.onAddDatabaseFilesButtonClicked(button), () => this.onRemoveDatabaseFilesButtonClicked(), localizedConstants.EditButton, (button) => this.onEditDatabaseFilesButtonClicked(button));
 
 		return this.createGroup(localizedConstants.DatabaseFilesText, [this.databaseFilesTable, databaseFilesButtonContainer], true);
 	}
@@ -506,9 +504,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			file.type,
 			file.fileGroup,
 			file.sizeInMb,
-			file.isAutoGrowthEnabled ? localizedConstants.AutoGrowthValueStringGenerator(file.type !== this.viewInfo.fileTypesOptions[2]
+			file.isAutoGrowthEnabled ? localizedConstants.AutoGrowthValueStringGenerator(file.type !== localizedConstants.FilestreamFileType
 				, file.autoFileGrowth.toString()
-				, file.autoFileGrowthType === localizedConstants.PercentText
+				, file.autoFileGrowthType === FileGrowthType.Percent
 				, file.maxSizeLimitInMb) : localizedConstants.NoneText,
 			file.path,
 			file.fileNameWithExtension
@@ -560,15 +558,15 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	protected override removeButtonOnRowSelected(): boolean {
 		let isEnabled = true;
 		const selectedRowId = this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].id;
-		// Cannot delete a row file if the Id is 1.
+		// Cannot delete a Primary row data file, Id is always 1.
 		if (this.databaseFilesTable.selectedRows.length === 1 && selectedRowId === 1) {
 			isEnabled = false;
 		}
-		// Cannot remove a log file if there are no other log files
-		else if (this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].type === this.viewInfo.fileTypesOptions[1]) {
+		// Cannot remove a log file if there are no other log files, LogFiletype is always a Log file type
+		else if (this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].type === localizedConstants.LogFiletype) {
 			isEnabled = false;
 			this.objectInfo.files.forEach(file => {
-				if (file.id !== selectedRowId && file.type === this.viewInfo.fileTypesOptions[1]) {
+				if (file.id !== selectedRowId && file.type === localizedConstants.LogFiletype) {
 					isEnabled = true;
 				}
 			});
@@ -582,7 +580,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		const defaultFileGrowthInPercent: number = 10;
 		const defaultMaxFileSizeLimitedToInMb: number = 100;
 		const selectedFile = this.databaseFilesTable.selectedRows !== undefined ? this.objectInfo.files[this.databaseFilesTable?.selectedRows[0]] : undefined;
-		if (!isUndefinedOrNull(selectedFile) && selectedFile.type === this.viewInfo.fileTypesOptions[2]) {
+		if (!isUndefinedOrNull(selectedFile) && selectedFile.type === localizedConstants.FilestreamFileType) {
 			selectedFile.autoFileGrowth = defaultFileGrowthInMb;
 		}
 		const isnewFile: boolean = button.ariaLabel === localizedConstants.AddButton;
@@ -590,14 +588,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		const databaseFile: DatabaseFile = isnewFile ? {
 			id: undefined,
 			name: '',
-			type: this.viewInfo.fileTypesOptions[0],
+			type: localizedConstants.RowsDataFileType,
 			path: this.objectInfo.files[0].path,
 			fileGroup: this.viewInfo.rowDataFileGroupsOptions[0],
 			fileNameWithExtension: '',
 			sizeInMb: defaultFileSizeInMb,
 			isAutoGrowthEnabled: true,
 			autoFileGrowth: defaultFileGrowthInMb,
-			autoFileGrowthType: 'KB',
+			autoFileGrowthType: FileGrowthType.KB,
 			maxSizeLimitInMb: defaultMaxFileSizeLimitedToInMb
 		} : selectedFile;
 
