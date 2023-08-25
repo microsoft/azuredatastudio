@@ -173,6 +173,7 @@ export function updateCustomCloudProviderSettings(defaultSettings: ProviderSetti
 		const impactProvider = changeEvent.affectsConfiguration(constants.CustomProviderSettingsSection);
 		if (impactProvider === true) {
 			await displayReloadAds(constants.CustomProviderSettingsSection);
+			TelemetryReporter.sendTelemetryEvent('reloadAdsCustomEndpoints');
 		}
 	});
 	if (providerSettingsJson && providerSettingsJson.length > 0) {
