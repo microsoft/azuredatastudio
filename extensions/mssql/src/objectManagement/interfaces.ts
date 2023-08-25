@@ -457,9 +457,7 @@ export interface Database extends ObjectManagement.SqlObject {
 	databaseScopedConfigurations: DatabaseScopedConfigurationsInfo[];
 	fullTextIndexing?: boolean;
 	files?: DatabaseFile[];
-	rowDataFilegroups?: FileGroups[];
-	filestreamDataFilegroups?: FileGroups[];
-	memoryOptimizedFilegroups?: FileGroups[];
+	filegroups?: FileGroups[];
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
@@ -558,6 +556,12 @@ export const enum FileGrowthType {
 	None = 99
 }
 
+export const enum FileGroupType {
+	RowsFileGroup = 0,
+	FileStreamDataFileGroup = 2,
+	MemoryOptimizedDataFileGroup = 3
+}
+
 export interface DatabaseFile {
 	id: number;
 	name: string;
@@ -575,8 +579,9 @@ export interface DatabaseFile {
 export interface FileGroups {
 	id?: number;
 	name: string;
+	type: FileGroupType;
 	filesCount: number;
-	isReadOnly?: boolean;
-	isDefault?: boolean;
-	autogrowAllFiles?: boolean;
+	isReadOnly: boolean;
+	isDefault: boolean;
+	autogrowAllFiles: boolean;
 }

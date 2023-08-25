@@ -9,7 +9,7 @@ import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultM
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl, DatabaseFileGroupsPropertiesDocUrl } from '../constants';
-import { Database, DatabaseFile, DatabaseScopedConfigurationsInfo, DatabaseViewInfo, FileGrowthType, FileGroups } from '../interfaces';
+import { Database, DatabaseFile, DatabaseScopedConfigurationsInfo, DatabaseViewInfo, FileGrowthType, FileGroups, FileGroupType } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
 import { deepClone } from '../../util/objects';
@@ -57,6 +57,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private rowsFilegroupNameInput: azdata.InputBoxComponent;
 	private filestreamFilegroupNameInput: azdata.InputBoxComponent;
 	private memoryOptimizedFilegroupNameInput: azdata.InputBoxComponent;
+	private newFileGroupTemporaryId: number = 0;
+	private rowDataFileGroupsTableRows: FileGroups[] = [];
+	private filestreamDataFileGroupsTableRows: FileGroups[] = [];
+	private memoryoptimizedFileGroupsTableRows: FileGroups[] = [];
 	// Options Tab
 	private readonly optionsTabId: string = 'optionsDatabaseId';
 	private autoCreateIncrementalStatisticsInput: azdata.CheckBoxComponent;
@@ -177,6 +181,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			// Initilaize FileGroups Tab
 			// Since fullTextIndexing is only enabled for SQL Server, using the same to determine the fileGroups tab
 			if (!isUndefinedOrNull(this.objectInfo.fullTextIndexing)) {
+				// Prepare the copies of individual tables data
+				this.prepareIndividualTableRows();
 				const rowsFileGroupSection = await this.initializeRowsFileGroupSection();
 				const fileStreamFileGroupSection = this.initializeFileStreamFileGroupSection();
 				const memoryOptimizedFileGroupSection = this.initializeMemoryOptimizedFileGroupSection();
@@ -235,12 +241,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 
 		// Validate Rows Filegroup names
-		if (this.objectInfo.rowDataFilegroups?.length > 0) {
-			let seenFilegroup = new Set(this.objectInfo.rowDataFilegroups.map(function (item) { return item.name }));
-			if (seenFilegroup.size !== this.objectInfo.rowDataFilegroups?.length) {
-				this.objectInfo.rowDataFilegroups.forEach((item) => {
-					if (seenFilegroup.has(item.name)) {
-						seenFilegroup.delete(item.name);
+		if (this.objectInfo.filegroups?.length > 0) {
+			let seenFilegroups = new Set(this.objectInfo.filegroups.map(function (item) { return item.name }));
+			if (seenFilegroups.size !== this.objectInfo.filegroups.length) {
+				this.objectInfo.filegroups.forEach((item) => {
+					if (seenFilegroups.has(item.name)) {
+						seenFilegroups.delete(item.name);
 					} else {
 						errors.push(localizedConstants.FilegroupExistsError(item.name));
 					}
@@ -608,24 +614,26 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 */
 	protected override removeButtonOnRowSelected(table: azdata.TableComponent): boolean {
 		let isEnabled = true;
-		const selectedRowId = this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].id;
-		// Cannot delete a Primary row data file, Id is always 1.
-		if (this.databaseFilesTable.selectedRows.length === 1 && selectedRowId === 1) {
-			isEnabled = false;
-		}
-		// Cannot remove a log file if there are no other log files, LogFiletype is always a Log file type
-		else if (this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].type === localizedConstants.LogFiletype) {
-			isEnabled = false;
-			this.objectInfo.files.forEach(file => {
-				if (file.id !== selectedRowId && file.type === localizedConstants.LogFiletype) {
-					isEnabled = true;
-				}
-			});
+		if (this.databaseFilesTable.selectedRows !== undefined) {
+			const selectedRowId = this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].id;
+			// Cannot delete a Primary row data file, Id is always 1.
+			if (this.databaseFilesTable.selectedRows.length === 1 && selectedRowId === 1) {
+				isEnabled = false;
+			}
+			// Cannot remove a log file if there are no other log files, LogFiletype is always a Log file type
+			else if (this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].type === localizedConstants.LogFiletype) {
+				isEnabled = false;
+				this.objectInfo.files.forEach(file => {
+					if (file.id !== selectedRowId && file.type === localizedConstants.LogFiletype) {
+						isEnabled = true;
+					}
+				});
+			}
 		}
 		else if (table === this.rowsFilegroupsTable && this.rowsFilegroupsTable.selectedRows !== undefined && this.rowsFilegroupsTable.selectedRows.length === 1) {
-			const selectedRow = this.objectInfo.rowDataFilegroups[this.rowsFilegroupsTable.selectedRows[0]];
-			// Cannot delete a row file if the Id exists.
-			if (selectedRow.name === 'PRIMARY') {
+			const selectedRow = this.rowDataFileGroupsTableRows[this.rowsFilegroupsTable.selectedRows[0]];
+			// Cannot delete a row file if the fileGroup is Primary.
+			if (selectedRow.name === 'PRIMARY' && selectedRow.id > 0) {
 				isEnabled = false;
 			}
 		}
@@ -683,6 +691,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * @returns Row data filegroups container
 	 */
 	private async initializeRowsFileGroupSection(): Promise<azdata.GroupContainer> {
+		const data = this.getTableData(FileGroupType.RowsFileGroup);
 		this.rowsFilegroupsTable = this.modelView.modelBuilder.table().withProps({
 			columns: [{
 				type: azdata.ColumnType.text,
@@ -700,15 +709,15 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				type: azdata.ColumnType.checkBox,
 				value: localizedConstants.AutogrowAllFilesText
 			}],
-			data: this.getTableData(this.objectInfo.rowDataFilegroups, this.rowsFilegroupsTable),
-			height: getTableHeight(this.objectInfo.rowDataFilegroups?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
+			data: data,
+			height: getTableHeight(data.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
 			width: DefaultTableWidth,
 			forceFitColumns: azdata.ColumnSizingMode.DataFit,
 			CSSStyles: {
 				'margin-left': '10px'
 			}
 		}).component();
-		this.rowsFilegroupNameInput = this.getFilegroupNameInput(this.rowsFilegroupsTable);
+		this.rowsFilegroupNameInput = this.getFilegroupNameInput(this.rowsFilegroupsTable, FileGroupType.RowsFileGroup);
 		const addButtonComponent: DialogButtonComponent = {
 			buttonArialLabel: localizedConstants.AddFilegroupText,
 			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.rowsFilegroupsTable)
@@ -721,36 +730,32 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		this.disposables.push(
 			this.rowsFilegroupsTable.onCellAction(async (arg: azdata.ICheckboxCellActionEventArgs) => {
-				let fileGroup = this.objectInfo.rowDataFilegroups[arg.row];
+				let filegroup = this.rowDataFileGroupsTableRows[arg.row];
 				// Read-Only column
 				if (arg.column === 2) {
-					fileGroup.isReadOnly = arg.checked;
+					filegroup.isReadOnly = arg.checked;
 				}
 				// Default column
 				if (arg.column === 3) {
-					if (arg.checked) {
-						this.objectInfo.rowDataFilegroups.forEach(fileGroup => {
-							fileGroup.isDefault = fileGroup.name === this.rowsFilegroupsTable.data[arg.row][0] ? arg.checked : !arg.checked;
-						});
-					} else {
-						fileGroup.isDefault = arg.checked;
-					}
+					this.updateDefaultValue(arg, filegroup, FileGroupType.RowsFileGroup);
 				}
 				// Autogrow all files column
 				if (arg.column === 4) {
-					fileGroup.autogrowAllFiles = arg.checked;
+					filegroup.autogrowAllFiles = arg.checked;
 				}
 
 				// Refresh the table with updated data
-				let data = this.getTableData(this.objectInfo.rowDataFilegroups, this.rowsFilegroupsTable);
+				let data = this.getTableData(FileGroupType.RowsFileGroup);
 				await this.setTableData(this.rowsFilegroupsTable, data);
+				this.onFormFieldChange();
 			}),
 			this.rowsFilegroupsTable.onRowSelected(
 				async () => {
 					if (this.rowsFilegroupsTable.selectedRows.length === 1) {
-						let fileGroup = this.objectInfo.rowDataFilegroups[this.rowsFilegroupsTable.selectedRows[0]];
-						await this.rowsFilegroupNameInput.updateCssStyles({ 'visibility': fileGroup.id === undefined ? 'visible' : 'hidden' });
+						const fileGroup = this.rowDataFileGroupsTableRows[this.rowsFilegroupsTable.selectedRows[0]];
+						await this.rowsFilegroupNameInput.updateCssStyles({ 'visibility': fileGroup.id < 0 ? 'visible' : 'hidden' });
 						this.rowsFilegroupNameInput.value = fileGroup.name;
+						this.onFormFieldChange();
 					}
 				}
 			)
@@ -766,6 +771,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * @returns filestream data filegroups container
 	 */
 	private initializeFileStreamFileGroupSection(): azdata.GroupContainer {
+		const data = this.getTableData(FileGroupType.FileStreamDataFileGroup);
 		this.filestreamFilegroupsTable = this.modelView.modelBuilder.table().withProps({
 			columns: [{
 				type: azdata.ColumnType.text,
@@ -780,15 +786,15 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				type: azdata.ColumnType.checkBox,
 				value: localizedConstants.DefaultText
 			}],
-			data: this.getTableData(this.objectInfo.filestreamDataFilegroups, this.filestreamFilegroupsTable),
-			height: getTableHeight(this.objectInfo.filestreamDataFilegroups?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
+			data: data,
+			height: getTableHeight(data.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
 			width: DefaultTableWidth,
 			forceFitColumns: azdata.ColumnSizingMode.DataFit,
 			CSSStyles: {
 				'margin-left': '10px'
 			}
 		}).component();
-		this.filestreamFilegroupNameInput = this.getFilegroupNameInput(this.filestreamFilegroupsTable);
+		this.filestreamFilegroupNameInput = this.getFilegroupNameInput(this.filestreamFilegroupsTable, FileGroupType.FileStreamDataFileGroup);
 		const addButtonComponent: DialogButtonComponent = {
 			buttonArialLabel: localizedConstants.AddFilegroupText,
 			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.filestreamFilegroupsTable)
@@ -801,31 +807,28 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		this.disposables.push(
 			this.filestreamFilegroupsTable.onCellAction(async (arg: azdata.ICheckboxCellActionEventArgs) => {
+				let filegroup = this.filestreamDataFileGroupsTableRows[arg.row];
 				// Read-Only column
 				if (arg.column === 2) {
-					this.objectInfo.filestreamDataFilegroups[arg.row].isReadOnly = arg.checked;
+					filegroup.isReadOnly = arg.checked;
 				}
 				// Default column
 				else if (arg.column === 3) {
-					if (arg.checked) {
-						this.objectInfo.filestreamDataFilegroups.forEach(fileGroup => {
-							fileGroup.isDefault = fileGroup.name === this.filestreamFilegroupsTable.data[arg.row][0] ? arg.checked : !arg.checked;
-						});
-					} else {
-						this.objectInfo.filestreamDataFilegroups[arg.row].isDefault = arg.checked;
-					}
+					this.updateDefaultValue(arg, filegroup, FileGroupType.FileStreamDataFileGroup);
 				}
 
 				// Refresh the table with updated data
-				let data = this.getTableData(this.objectInfo.filestreamDataFilegroups, this.filestreamFilegroupsTable);
+				let data = this.getTableData(FileGroupType.FileStreamDataFileGroup);
 				await this.setTableData(this.filestreamFilegroupsTable, data);
+				this.onFormFieldChange();
 			}),
 			this.filestreamFilegroupsTable.onRowSelected(
 				async () => {
 					if (this.filestreamFilegroupsTable.selectedRows.length === 1) {
-						let fileGroup = this.objectInfo.filestreamDataFilegroups[this.filestreamFilegroupsTable.selectedRows[0]];
-						await this.filestreamFilegroupNameInput.updateCssStyles({ 'visibility': fileGroup.id === undefined ? 'visible' : 'hidden' });
+						const fileGroup = this.filestreamDataFileGroupsTableRows[this.filestreamFilegroupsTable.selectedRows[0]];
+						await this.filestreamFilegroupNameInput.updateCssStyles({ 'visibility': fileGroup.id < 0 ? 'visible' : 'hidden' });
 						this.filestreamFilegroupNameInput.value = fileGroup.name;
+						this.onFormFieldChange();
 					}
 				}
 			)
@@ -841,6 +844,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * @returns Memory optimized filegroups container
 	 */
 	private initializeMemoryOptimizedFileGroupSection(): azdata.GroupContainer {
+		const data = this.getTableData(FileGroupType.MemoryOptimizedDataFileGroup);
 		this.memoryOptimizedFilegroupsTable = this.modelView.modelBuilder.table().withProps({
 			columns: [{
 				type: azdata.ColumnType.text,
@@ -849,15 +853,15 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				type: azdata.ColumnType.text,
 				value: localizedConstants.FilestreamFilesText
 			}],
-			data: this.getTableData(this.objectInfo.memoryOptimizedFilegroups, this.memoryOptimizedFilegroupsTable),
-			height: getTableHeight(this.objectInfo.memoryOptimizedFilegroups?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
+			data: data,
+			height: getTableHeight(data.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
 			width: DefaultTableWidth,
 			forceFitColumns: azdata.ColumnSizingMode.DataFit,
 			CSSStyles: {
 				'margin-left': '10px'
 			}
 		}).component();
-		this.memoryOptimizedFilegroupNameInput = this.getFilegroupNameInput(this.memoryOptimizedFilegroupsTable);
+		this.memoryOptimizedFilegroupNameInput = this.getFilegroupNameInput(this.memoryOptimizedFilegroupsTable, FileGroupType.MemoryOptimizedDataFileGroup);
 		const addButtonComponent: DialogButtonComponent = {
 			buttonArialLabel: localizedConstants.AddFilegroupText,
 			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.memoryOptimizedFilegroupsTable)
@@ -872,9 +876,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.memoryOptimizedFilegroupsTable.onRowSelected(
 				async () => {
 					if (this.memoryOptimizedFilegroupsTable.selectedRows.length === 1) {
-						let fileGroup = this.objectInfo.memoryOptimizedFilegroups[this.memoryOptimizedFilegroupsTable.selectedRows[0]];
-						await this.memoryOptimizedFilegroupNameInput.updateCssStyles({ 'visibility': fileGroup.id === undefined ? 'visible' : 'hidden' });
+						const fileGroup = this.memoryoptimizedFileGroupsTableRows[this.memoryOptimizedFilegroupsTable.selectedRows[0]];
+						await this.memoryOptimizedFilegroupNameInput.updateCssStyles({ 'visibility': fileGroup.id < 0 ? 'visible' : 'hidden' });
 						this.memoryOptimizedFilegroupNameInput.value = fileGroup.name;
+						this.onFormFieldChange();
 					}
 				}
 			)
@@ -885,91 +890,96 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		return this.createGroup(localizedConstants.MemoryOptimizedFileGroupsSectionText, [this.memoryOptimizedFilegroupsTable, memoryOptimizedContainer], true);
 	}
 
+	/**
+	 * Update the default value for the filegroup
+	 * @param arg selected checkbox event
+	 * @param filegroup filegroup object
+	 * @param filegroupType filegroup type
+	 */
+	private updateDefaultValue(arg: azdata.ICheckboxCellActionEventArgs, filegroup: FileGroups, filegroupType: FileGroupType): void {
+		if (arg.checked) {
+			this.objectInfo.filegroups.forEach(fg => {
+				if (fg.type === filegroupType) {
+					fg.isDefault = fg.name === filegroup.name && fg.id === filegroup.id ? arg.checked : !arg.checked;
+				}
+			});
+		} else {
+			filegroup.isDefault = arg.checked;
+		}
+	}
+
 	private async onAddDatabaseFileGroupsButtonClicked(table: azdata.TableComponent): Promise<void> {
 		let newData: any[] | undefined;
 		let newRow: FileGroups = {
-			id: undefined,
+			id: --this.newFileGroupTemporaryId,
 			name: '',
+			type: undefined,
 			filesCount: 0,
-			isReadOnly: undefined,
-			isDefault: undefined,
-			autogrowAllFiles: undefined
+			isReadOnly: false,
+			isDefault: false,
+			autogrowAllFiles: false
 		};
 		if (table === this.rowsFilegroupsTable) {
+			newRow.type = FileGroupType.RowsFileGroup;
 			newRow.isReadOnly = false;
 			newRow.isDefault = false;
 			newRow.autogrowAllFiles = false
-			this.objectInfo.rowDataFilegroups?.push(newRow);
-			newData = this.getTableData(this.objectInfo.rowDataFilegroups, table);
+			this.objectInfo.filegroups?.push(newRow);
+
+			newData = this.getTableData(FileGroupType.RowsFileGroup);
 		}
 		else if (table === this.filestreamFilegroupsTable) {
+			newRow.type = FileGroupType.FileStreamDataFileGroup;
 			newRow.isReadOnly = false;
 			newRow.isDefault = false;
-			this.objectInfo.filestreamDataFilegroups?.push(newRow);
-			newData = this.getTableData(this.objectInfo.filestreamDataFilegroups, table);
+			this.objectInfo.filegroups?.push(newRow);
+			newData = this.getTableData(FileGroupType.FileStreamDataFileGroup);
 		}
-		else if (table === this.memoryOptimizedFilegroupsTable && this.objectInfo.memoryOptimizedFilegroups.length < 1) {
-			this.objectInfo.memoryOptimizedFilegroups?.push(newRow);
-			newData = this.getTableData(this.objectInfo.memoryOptimizedFilegroups, table);
+		else if (table === this.memoryOptimizedFilegroupsTable && this.memoryoptimizedFileGroupsTableRows.length < 1) {
+			newRow.type = FileGroupType.MemoryOptimizedDataFileGroup;
+			this.objectInfo.filegroups?.push(newRow);
+			newData = this.getTableData(FileGroupType.MemoryOptimizedDataFileGroup);
 		}
 
-		// Refresh the table with new row
-		await this.setTableData(table, newData, DefaultMaxTableRowCount);
+		if (newData !== undefined) {
+			// Refresh the table with new row data
+			this.prepareIndividualTableRows()
+			await this.setTableData(table, newData, DefaultMaxTableRowCount);
+		}
+	}
+
+	private prepareIndividualTableRows(): void {
+		this.rowDataFileGroupsTableRows = this.objectInfo.filegroups?.filter(filegroup => filegroup.type === FileGroupType.RowsFileGroup);
+		this.filestreamDataFileGroupsTableRows = this.objectInfo.filegroups?.filter(filegroup => filegroup.type === FileGroupType.FileStreamDataFileGroup);
+		this.memoryoptimizedFileGroupsTableRows = this.objectInfo.filegroups?.filter(filegroup => filegroup.type === FileGroupType.MemoryOptimizedDataFileGroup);
 	}
 
 	private async onRemoveDatabaseFileGroupsButtonClicked(table: azdata.TableComponent): Promise<void> {
 		if (table === this.rowsFilegroupsTable) {
 			if (this.rowsFilegroupsTable.selectedRows.length === 1) {
-				this.objectInfo.rowDataFilegroups?.splice(this.rowsFilegroupsTable.selectedRows[0], 1);
-				var newData = this.getTableData(this.objectInfo.rowDataFilegroups, table);
+				this.objectInfo.filegroups?.splice(this.rowsFilegroupsTable.selectedRows[0], 1);
+				var newData = this.getTableData(FileGroupType.RowsFileGroup);
 				await this.rowsFilegroupNameInput.updateCssStyles({ 'visibility': 'hidden' });
 			}
 		}
 		else if (table === this.filestreamFilegroupsTable) {
 			if (this.filestreamFilegroupsTable.selectedRows.length === 1) {
-				this.objectInfo.filestreamDataFilegroups?.splice(this.filestreamFilegroupsTable.selectedRows[0], 1);
-				var newData = this.getTableData(this.objectInfo.filestreamDataFilegroups, table);
+				this.objectInfo.filegroups?.splice(this.filestreamFilegroupsTable.selectedRows[0], 1);
+				var newData = this.getTableData(FileGroupType.FileStreamDataFileGroup);
 				await this.filestreamFilegroupNameInput.updateCssStyles({ 'visibility': 'hidden' });
 			}
 		}
 		else if (table === this.memoryOptimizedFilegroupsTable) {
 			if (this.memoryOptimizedFilegroupsTable.selectedRows.length === 1) {
-				this.objectInfo.memoryOptimizedFilegroups?.splice(this.memoryOptimizedFilegroupsTable.selectedRows[0], 1);
-				var newData = this.getTableData(this.objectInfo.memoryOptimizedFilegroups, table);
+				this.objectInfo.filegroups?.splice(this.memoryOptimizedFilegroupsTable.selectedRows[0], 1);
+				var newData = this.getTableData(FileGroupType.MemoryOptimizedDataFileGroup);
 				await this.memoryOptimizedFilegroupNameInput.updateCssStyles({ 'visibility': 'hidden' });
 			}
 		}
-		await this.setTableData(table, newData)
-	}
 
-	/**
-	 * Converts objectinfo to data view object
-	 * @param fileGroup filegroup object
-	 * @param table filegroup table
-	 * @returns array of data view objects
-	 */
-	private convertFileGroupToDataView(fileGroup: FileGroups, table: azdata.TableComponent): any[] {
-		if (table === this.rowsFilegroupsTable) {
-			return [
-				fileGroup.name,
-				fileGroup.filesCount,
-				{ checked: fileGroup.isReadOnly, enabled: fileGroup.name !== 'PRIMARY' },
-				fileGroup.isDefault,
-				{ checked: fileGroup.autogrowAllFiles, enabled: fileGroup.filesCount > 0 }
-			];
-		} else if (table === this.filestreamFilegroupsTable) {
-			return [
-				fileGroup.name,
-				fileGroup.filesCount,
-				fileGroup.isReadOnly,
-				fileGroup.isDefault
-			];
-		} else {
-			return [
-				fileGroup.name,
-				fileGroup.filesCount
-			];
-		}
+		// Refresh the individual table rows object and table with updated data
+		this.prepareIndividualTableRows();
+		await this.setTableData(table, newData)
 	}
 
 	/**
@@ -977,22 +987,22 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * @param table table component
 	 * @returns input box component
 	 */
-	private getFilegroupNameInput(table: azdata.TableComponent): azdata.InputBoxComponent {
+	private getFilegroupNameInput(table: azdata.TableComponent, filegroupType: FileGroupType): azdata.InputBoxComponent {
 		return this.createInputBox(async (value) => {
-			if (table === this.rowsFilegroupsTable && table.selectedRows.length === 1) {
-				this.objectInfo.rowDataFilegroups[this.rowsFilegroupsTable.selectedRows[0]].name = value;
-				let data = this.getTableData(this.objectInfo.rowDataFilegroups, table);
-				await this.setTableData(this.rowsFilegroupsTable, data);
-			}
-			else if (table === this.filestreamFilegroupsTable && table.selectedRows.length === 1) {
-				this.objectInfo.filestreamDataFilegroups[this.filestreamFilegroupsTable.selectedRows[0]].name = value;
-				let data = this.getTableData(this.objectInfo.filestreamDataFilegroups, table);
-				await this.setTableData(this.filestreamFilegroupsTable, data);
-			}
-			else if (table === this.memoryOptimizedFilegroupsTable && table.selectedRows.length === 1) {
-				this.objectInfo.memoryOptimizedFilegroups[this.memoryOptimizedFilegroupsTable.selectedRows[0]].name = value;
-				let data = this.getTableData(this.objectInfo.memoryOptimizedFilegroups, table);
-				await this.setTableData(this.memoryOptimizedFilegroupsTable, data);
+			if (table.selectedRows.length === 1) {
+				let fg = null;
+				if (table === this.rowsFilegroupsTable) {
+					fg = this.rowDataFileGroupsTableRows[table.selectedRows[0]];
+				} else if (table === this.filestreamFilegroupsTable) {
+					fg = this.filestreamDataFileGroupsTableRows[table.selectedRows[0]];
+				} else if (table === this.memoryOptimizedFilegroupsTable) {
+					fg = this.memoryoptimizedFileGroupsTableRows[table.selectedRows[0]];
+				}
+				if (fg !== null && fg.id < 0) {
+					fg.name = value;
+					let data = this.getTableData(filegroupType);
+					await this.setTableData(table, data);
+				}
 			}
 		}, {
 			ariaLabel: '',
@@ -1006,14 +1016,35 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	/**
 	 * Converts the filegroup object to a data view object
-	 * @param filegroupObject filegroup object
-	 * @param table filegroup table component
 	 * @returns object ingo to table data format
 	 */
-	private getTableData(filegroupObject: FileGroups[], table: azdata.TableComponent): any[] {
-		return filegroupObject?.map(filegroup => {
-			return this.convertFileGroupToDataView(filegroup, table);
+	private getTableData(filegroupType: FileGroupType): any[] {
+		let data: any[] = [];
+		this.objectInfo.filegroups?.map(fileGroup => {
+			if (filegroupType === FileGroupType.RowsFileGroup && fileGroup.type === filegroupType) {
+				data.push([
+					fileGroup.name,
+					fileGroup.filesCount,
+					{ checked: fileGroup.isReadOnly, enabled: fileGroup.name !== 'PRIMARY' },
+					fileGroup.isDefault,
+					{ checked: fileGroup.autogrowAllFiles, enabled: fileGroup.filesCount > 0 }
+				]);
+			} else if (fileGroup.type === FileGroupType.FileStreamDataFileGroup && fileGroup.type === filegroupType) {
+				data.push([
+					fileGroup.name,
+					fileGroup.filesCount,
+					fileGroup.isReadOnly,
+					fileGroup.isDefault
+				]);
+			} else if (fileGroup.type === FileGroupType.MemoryOptimizedDataFileGroup && fileGroup.type === filegroupType) {
+				data.push([
+					fileGroup.name,
+					fileGroup.filesCount
+				]);
+			}
 		});
+
+		return data;
 	}
 	//#endregion
 
