@@ -40,9 +40,9 @@ export class AddAccountAction extends Action {
 		super(AddAccountAction.ID, AddAccountAction.LABEL);
 		this.class = 'add-linked-account-action';
 
-		this._addAccountCompleteEmitter = new Emitter<void>();
-		this._addAccountErrorEmitter = new Emitter<string>();
-		this._addAccountStartEmitter = new Emitter<void>();
+		this._addAccountCompleteEmitter = this._register(new Emitter<void>());
+		this._addAccountErrorEmitter = this._register(new Emitter<string>());
+		this._addAccountStartEmitter = this._register(new Emitter<void>());
 	}
 
 	public override async run(): Promise<void> {

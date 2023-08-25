@@ -48,7 +48,7 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 				items: [],
 				...defaultListBoxStyles
 			}, this.contextViewService);
-			this._input.onKeyDown(e => {
+			this._register(this._input.onKeyDown(e => {
 				if (this._input.selectedOptions.length > 0) {
 					const key = e.keyCode;
 					const ctrlOrCmd = e.ctrlKey || e.metaKey;
@@ -65,7 +65,7 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 						e.stopPropagation();
 					}
 				}
-			});
+			}));
 			this._input.render(this._inputContainer.nativeElement);
 
 			this._register(this._input);

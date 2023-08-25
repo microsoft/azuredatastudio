@@ -1120,6 +1120,44 @@ Default Skipped Commands:
       <source xml:lang="en">Update</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/common/backup/constants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="backup.asymmetricKey">
+      <source xml:lang="en">Asymmetric Key</source>
+    </trans-unit>
+    <trans-unit id="backup.compressBackup">
+      <source xml:lang="en">Compress backup</source>
+    </trans-unit>
+    <trans-unit id="backup.defaultCompression">
+      <source xml:lang="en">Use the default server setting</source>
+    </trans-unit>
+    <trans-unit id="backup.doNotCompress">
+      <source xml:lang="en">Do not compress backup</source>
+    </trans-unit>
+    <trans-unit id="backup.labelDatabase">
+      <source xml:lang="en">Database</source>
+    </trans-unit>
+    <trans-unit id="backup.labelDifferential">
+      <source xml:lang="en">Differential</source>
+    </trans-unit>
+    <trans-unit id="backup.labelDisk">
+      <source xml:lang="en">Disk</source>
+    </trans-unit>
+    <trans-unit id="backup.labelFilegroup">
+      <source xml:lang="en">Files and filegroups</source>
+    </trans-unit>
+    <trans-unit id="backup.labelFull">
+      <source xml:lang="en">Full</source>
+    </trans-unit>
+    <trans-unit id="backup.labelLog">
+      <source xml:lang="en">Transaction Log</source>
+    </trans-unit>
+    <trans-unit id="backup.labelUrl">
+      <source xml:lang="en">Url</source>
+    </trans-unit>
+    <trans-unit id="backup.serverCertificate">
+      <source xml:lang="en">Server Certificate</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/common/constants" source-language="en" datatype="plaintext"><body>
     <trans-unit id="notebookMultipleRequestsError">
       <source xml:lang="en">Cannot execute code cell. Another cell is currently being executed.</source>
@@ -1443,44 +1481,6 @@ Default Skipped Commands:
       <source xml:lang="en">Backup database - {0}:{1}</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/contrib/backup/common/constants" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="backup.asymmetricKey">
-      <source xml:lang="en">Asymmetric Key</source>
-    </trans-unit>
-    <trans-unit id="backup.compressBackup">
-      <source xml:lang="en">Compress backup</source>
-    </trans-unit>
-    <trans-unit id="backup.defaultCompression">
-      <source xml:lang="en">Use the default server setting</source>
-    </trans-unit>
-    <trans-unit id="backup.doNotCompress">
-      <source xml:lang="en">Do not compress backup</source>
-    </trans-unit>
-    <trans-unit id="backup.labelDatabase">
-      <source xml:lang="en">Database</source>
-    </trans-unit>
-    <trans-unit id="backup.labelDifferential">
-      <source xml:lang="en">Differential</source>
-    </trans-unit>
-    <trans-unit id="backup.labelDisk">
-      <source xml:lang="en">Disk</source>
-    </trans-unit>
-    <trans-unit id="backup.labelFilegroup">
-      <source xml:lang="en">Files and filegroups</source>
-    </trans-unit>
-    <trans-unit id="backup.labelFull">
-      <source xml:lang="en">Full</source>
-    </trans-unit>
-    <trans-unit id="backup.labelLog">
-      <source xml:lang="en">Transaction Log</source>
-    </trans-unit>
-    <trans-unit id="backup.labelUrl">
-      <source xml:lang="en">Url</source>
-    </trans-unit>
-    <trans-unit id="backup.serverCertificate">
-      <source xml:lang="en">Server Certificate</source>
-    </trans-unit>
-</body></file>
   <file original="src/sql/workbench/contrib/charts/browser/actions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="chartNotFound">
       <source xml:lang="en">Could not find chart to save</source>
@@ -1646,7 +1646,7 @@ Default Skipped Commands:
       <source xml:lang="en">Don't Show Again</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/contrib/commandLine/electron-browser/commandLine" source-language="en" datatype="plaintext"><body>
+  <file original="src/sql/workbench/contrib/commandLine/electron-sandbox/commandLine" source-language="en" datatype="plaintext"><body>
     <trans-unit id="commandline.propertiesFormatError">
       <source xml:lang="en">Advanced connection properties could not be parsed as JSON, error occurred: {0} Received properties value: {1}</source>
     </trans-unit>
@@ -4574,6 +4574,9 @@ Error: {1}</source>
     <trans-unit id="queryEditor.chart.defaultChartType">
       <source xml:lang="en">The default chart type to use when opening Chart Viewer from a Query Results</source>
     </trans-unit>
+    <trans-unit id="queryEditor.githubCopilotContextualizationEnabled">
+      <source xml:lang="en">(Preview) Enable contextualization of queries for GitHub Copilot. This setting helps GitHub Copilot to return improved suggestions, if the Copilot extension is installed and providers have implemented contextualization.</source>
+    </trans-unit>
     <trans-unit id="queryEditor.inMemoryDataProcessingThreshold">
       <source xml:lang="en">Controls the max number of rows allowed to do filtering and sorting in memory. If the number is exceeded, sorting and filtering will be disabled. Warning: Increasing this may impact performance.</source>
     </trans-unit>
@@ -4636,6 +4639,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.showActionBar">
       <source xml:lang="en">Whether to show the action bar in the query results view</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.showCopyCompletedNotification">
+      <source xml:lang="en">Whether to show notifications when a results grid copy operation is completed.</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.skipNewLineAfterTrailingLineBreak">
       <source xml:lang="en">Whether to skip adding a line break between rows when copying results if the previous row already has a trailing line break. The default value is false.</source>
@@ -5009,6 +5015,17 @@ Error: {1}</source>
       <source xml:lang="en">Script</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/telemetry/browser/telemetryOptOut" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="telemetryOptOut.optInNotice">
+      <source xml:lang="en">Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt in]({1}).</source>
+    </trans-unit>
+    <trans-unit id="telemetryOptOut.optOutNotice">
+      <source xml:lang="en">Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt out]({1}).</source>
+    </trans-unit>
+    <trans-unit id="telemetryOptOut.readMore">
+      <source xml:lang="en">Read More</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/tsgops/browser/tsgopsActions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="hideActivityBarViewContainers">
       <source xml:lang="en">Hide the extension viewlet</source>
@@ -5051,7 +5068,7 @@ Error: {1}</source>
       <source xml:lang="en">OK</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/contrib/welcome/gettingStarted/browser/abstractEnablePreviewFeatures" source-language="en" datatype="plaintext"><body>
+  <file original="src/sql/workbench/contrib/welcome/browser/abstractEnablePreviewFeatures" source-language="en" datatype="plaintext"><body>
     <trans-unit id="enablePreviewFeatures.never">
       <source xml:lang="en">No, don't show again</source>
     </trans-unit>
@@ -5065,16 +5082,7 @@ Error: {1}</source>
       <source xml:lang="en">Yes (recommended)</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="miGettingStarted">
-      <source xml:lang="en">Getting &amp;&amp;Started</source>
-      <note>&amp;&amp; denotes a mnemonic</note>
-    </trans-unit>
-    <trans-unit id="showReleaseNotes">
-      <source xml:lang="en">Show Getting Started</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page" source-language="en" datatype="plaintext"><body>
+  <file original="src/sql/workbench/contrib/welcome/browser/az_data_welcome_page" source-language="en" datatype="plaintext"><body>
     <trans-unit id="welcomePage.createConnection">
       <source xml:lang="en">Create a connection</source>
     </trans-unit>
@@ -5151,7 +5159,7 @@ Error: {1}</source>
       <source xml:lang="en">Videos</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/contrib/welcome/page/browser/gettingStartedTour" source-language="en" datatype="plaintext"><body>
+  <file original="src/sql/workbench/contrib/welcome/browser/gettingStartedTour" source-language="en" datatype="plaintext"><body>
     <trans-unit id="GuidedTour.addExtensions">
       <source xml:lang="en">Extend the functionality of Azure Data Studio by installing extensions developed by us/Microsoft as well as the third-party community (you!).</source>
     </trans-unit>
@@ -5213,7 +5221,7 @@ Error: {1}</source>
       <source xml:lang="en">Hide Welcome Tour</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/contrib/welcome/page/browser/welcomePage" source-language="en" datatype="plaintext"><body>
+  <file original="src/sql/workbench/contrib/welcome/browser/welcomePage" source-language="en" datatype="plaintext"><body>
     <trans-unit id="WelcomePage.TakeATour">
       <source xml:lang="en">Would you like to take a quick tour of Azure Data Studio?</source>
     </trans-unit>
@@ -5338,7 +5346,7 @@ Error: {1}</source>
       <source xml:lang="en">The window will reload after installing additional support for {0}.</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/contrib/welcome/page/browser/welcomePage.contribution" source-language="en" datatype="plaintext"><body>
+  <file original="src/sql/workbench/contrib/welcome/browser/welcomePage.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="miWelcome">
       <source xml:lang="en">&amp;&amp;Welcome</source>
       <note>&amp;&amp; denotes a mnemonic</note>
@@ -5371,15 +5379,13 @@ Error: {1}</source>
       <note>This is the description for a setting. Values surrounded by single quotes are not to be translated.</note>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="telemetryOptOut.optInNotice">
-      <source xml:lang="en">Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt in]({1}).</source>
+  <file original="src/sql/workbench/contrib/welcome/electron-sandbox/gettingStarted" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="miGettingStarted">
+      <source xml:lang="en">Getting &amp;&amp;Started</source>
+      <note>&amp;&amp; denotes a mnemonic</note>
     </trans-unit>
-    <trans-unit id="telemetryOptOut.optOutNotice">
-      <source xml:lang="en">Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt out]({1}).</source>
-    </trans-unit>
-    <trans-unit id="telemetryOptOut.readMore">
-      <source xml:lang="en">Read More</source>
+    <trans-unit id="showReleaseNotes">
+      <source xml:lang="en">Show Getting Started</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/accountManagement/browser/accountDialog" source-language="en" datatype="plaintext"><body>
@@ -6576,8 +6582,14 @@ Error Message: {1}</source>
     <trans-unit id="gridDataProvider.copying">
       <source xml:lang="en">Copying...</source>
     </trans-unit>
+    <trans-unit id="gridDataProvider.disableCopyNotification">
+      <source xml:lang="en">Don't show again</source>
+    </trans-unit>
     <trans-unit id="gridDataProvider.loadingRowsInProgress">
       <source xml:lang="en">Loading the rows to be copied ({0}/{1})...</source>
+    </trans-unit>
+    <trans-unit id="gridDataProvider.turnOnCopyNotificationsMessage">
+      <source xml:lang="en">Copy completed notifications are now disabled. To re-enable, modify the setting: queryEditor.results.showCopyCompletedNotification</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/query/common/queryManagement" source-language="en" datatype="plaintext"><body>
