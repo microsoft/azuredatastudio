@@ -150,8 +150,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			tabs.push(this.generalTab);
 
 			// Initialize Files Tab
-			// Full text Indexing is only enabled for SQL Server
-			if (!isUndefinedOrNull(this.objectInfo.fullTextIndexing)) {
+			// Files tab is only enabled for SQL Server properties view
+			if (!isUndefinedOrNull(this.objectInfo.isFilesTabSupported)) {
 				const filesGeneralSection = this.initializeFilesGeneralSection();
 				const databaseFilesSection = this.initializeDatabaseFilesSection();
 				this.filesTab = {
@@ -444,11 +444,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}, loginNames, this.objectInfo.owner);
 			containers.push(this.createLabelInputContainer(localizedConstants.OwnerText, ownerDropbox));
 		}
-
-		// This check box is checked and disabled because full-text indexing is always enabled in SQL Server
-		const useFullTextIndexing = this.createCheckbox(localizedConstants.UseFullTextIndexingText, async () => { }, this.objectInfo.fullTextIndexing, false);
-		containers.push(useFullTextIndexing);
-
 		return this.createGroup('', containers, false);
 	}
 
@@ -568,19 +563,21 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 */
 	protected override removeButtonOnRowSelected(): boolean {
 		let isEnabled = true;
-		const selectedRowId = this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].id;
-		// Cannot delete a Primary row data file, Id is always 1.
-		if (this.databaseFilesTable.selectedRows.length === 1 && selectedRowId === 1) {
-			isEnabled = false;
-		}
-		// Cannot remove a log file if there are no other log files, LogFiletype is always a Log file type
-		else if (this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].type === localizedConstants.LogFiletype) {
-			isEnabled = false;
-			this.objectInfo.files.forEach(file => {
-				if (file.id !== selectedRowId && file.type === localizedConstants.LogFiletype) {
-					isEnabled = true;
-				}
-			});
+		if (this.databaseFilesTable.selectedRows !== undefined) {
+			const selectedRowId = this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].id;
+			// Cannot delete a Primary row data file, Id is always 1.
+			if (this.databaseFilesTable.selectedRows.length === 1 && selectedRowId === 1) {
+				isEnabled = false;
+			}
+			// Cannot remove a log file if there are no other log files, LogFiletype is always a Log file type
+			else if (this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].type === localizedConstants.LogFiletype) {
+				isEnabled = false;
+				this.objectInfo.files.forEach(file => {
+					if (file.id !== selectedRowId && file.type === localizedConstants.LogFiletype) {
+						isEnabled = true;
+					}
+				});
+			}
 		}
 		return isEnabled;
 	}
