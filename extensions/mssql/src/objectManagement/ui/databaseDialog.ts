@@ -166,8 +166,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			tabs.push(this.generalTab);
 
 			// Initialize Files Tab
-			// Full text Indexing is only enabled for SQL Server
-			if (!isUndefinedOrNull(this.objectInfo.fullTextIndexing)) {
+			// Files tab is only enabled for SQL Server properties view
+			if (!isUndefinedOrNull(this.objectInfo.isFilesTabSupported)) {
 				const filesGeneralSection = this.initializeFilesGeneralSection();
 				const databaseFilesSection = this.initializeDatabaseFilesSection();
 				this.filesTab = {
@@ -179,8 +179,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 
 			// Initilaize FileGroups Tab
-			// Since fullTextIndexing is only enabled for SQL Server, using the same to determine the fileGroups tab
-			if (!isUndefinedOrNull(this.objectInfo.fullTextIndexing)) {
+			if (!isUndefinedOrNull(this.objectInfo.filegroups)) {
 				// Prepare the copies of individual tables data
 				this.prepareIndividualTableRows();
 				const rowsFileGroupSection = await this.initializeRowsFileGroupSection();
@@ -490,11 +489,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}, loginNames, this.objectInfo.owner);
 			containers.push(this.createLabelInputContainer(localizedConstants.OwnerText, ownerDropbox));
 		}
-
-		// This check box is checked and disabled because full-text indexing is always enabled in SQL Server
-		const useFullTextIndexing = this.createCheckbox(localizedConstants.UseFullTextIndexingText, async () => { }, this.objectInfo.fullTextIndexing, false);
-		containers.push(useFullTextIndexing);
-
 		return this.createGroup('', containers, false);
 	}
 
