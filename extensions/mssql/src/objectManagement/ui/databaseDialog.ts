@@ -731,7 +731,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				}
 				// Default column
 				if (arg.column === 3) {
-					this.updateDefaultValue(arg, filegroup, FileGroupType.RowsFileGroup);
+					this.updateFilegroupsDefaultColumnValues(arg, filegroup, FileGroupType.RowsFileGroup);
 				}
 				// Autogrow all files column
 				if (arg.column === 4) {
@@ -808,7 +808,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				}
 				// Default column
 				else if (arg.column === 3) {
-					this.updateDefaultValue(arg, filegroup, FileGroupType.FileStreamDataFileGroup);
+					this.updateFilegroupsDefaultColumnValues(arg, filegroup, FileGroupType.FileStreamDataFileGroup);
 				}
 
 				// Refresh the table with updated data
@@ -890,7 +890,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * @param filegroup filegroup object
 	 * @param filegroupType filegroup type
 	 */
-	private updateDefaultValue(arg: azdata.ICheckboxCellActionEventArgs, filegroup: FileGroups, filegroupType: FileGroupType): void {
+	private updateFilegroupsDefaultColumnValues(arg: azdata.ICheckboxCellActionEventArgs, filegroup: FileGroups, filegroupType: FileGroupType): void {
 		if (arg.checked) {
 			this.objectInfo.filegroups.forEach(fg => {
 				if (fg.type === filegroupType) {
@@ -902,6 +902,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 	}
 
+	/**
+	 * Adding new row to the respective table on its add button click
+	 * @param table table component
+	 */
 	private async onAddDatabaseFileGroupsButtonClicked(table: azdata.TableComponent): Promise<void> {
 		let newData: any[] | undefined;
 		let newRow: FileGroups = {
@@ -942,30 +946,41 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 	}
 
+	/**
+	 * Prepares the individual table rows for each filegroup type
+	 * This will be useful to get the selected row data from the table to get the filegroup property details, helps when have duplicate rows added
+	 */
 	private prepareIndividualTableRows(): void {
 		this.rowDataFileGroupsTableRows = this.objectInfo.filegroups?.filter(filegroup => filegroup.type === FileGroupType.RowsFileGroup);
 		this.filestreamDataFileGroupsTableRows = this.objectInfo.filegroups?.filter(filegroup => filegroup.type === FileGroupType.FileStreamDataFileGroup);
 		this.memoryoptimizedFileGroupsTableRows = this.objectInfo.filegroups?.filter(filegroup => filegroup.type === FileGroupType.MemoryOptimizedDataFileGroup);
 	}
 
+	/**
+	 * Removed the selected row from the respective table on its remove button click
+	 * @param table table component
+	 */
 	private async onRemoveDatabaseFileGroupsButtonClicked(table: azdata.TableComponent): Promise<void> {
 		if (table === this.rowsFilegroupsTable) {
 			if (this.rowsFilegroupsTable.selectedRows.length === 1) {
-				this.objectInfo.filegroups?.splice(this.rowsFilegroupsTable.selectedRows[0], 1);
+				const removeFilegroupIndex = this.objectInfo.filegroups.indexOf(this.rowDataFileGroupsTableRows[this.rowsFilegroupsTable.selectedRows[0]]);
+				this.objectInfo.filegroups?.splice(removeFilegroupIndex, 1);
 				var newData = this.getTableData(FileGroupType.RowsFileGroup);
 				await this.rowsFilegroupNameInput.updateCssStyles({ 'visibility': 'hidden' });
 			}
 		}
 		else if (table === this.filestreamFilegroupsTable) {
 			if (this.filestreamFilegroupsTable.selectedRows.length === 1) {
-				this.objectInfo.filegroups?.splice(this.filestreamFilegroupsTable.selectedRows[0], 1);
+				const removeFilegroupIndex = this.objectInfo.filegroups.indexOf(this.filestreamDataFileGroupsTableRows[this.filestreamFilegroupsTable.selectedRows[0]]);
+				this.objectInfo.filegroups?.splice(removeFilegroupIndex, 1);
 				var newData = this.getTableData(FileGroupType.FileStreamDataFileGroup);
 				await this.filestreamFilegroupNameInput.updateCssStyles({ 'visibility': 'hidden' });
 			}
 		}
 		else if (table === this.memoryOptimizedFilegroupsTable) {
 			if (this.memoryOptimizedFilegroupsTable.selectedRows.length === 1) {
-				this.objectInfo.filegroups?.splice(this.memoryOptimizedFilegroupsTable.selectedRows[0], 1);
+				const removeFilegroupIndex = this.objectInfo.filegroups.indexOf(this.memoryoptimizedFileGroupsTableRows[this.memoryOptimizedFilegroupsTable.selectedRows[0]]);
+				this.objectInfo.filegroups?.splice(removeFilegroupIndex, 1);
 				var newData = this.getTableData(FileGroupType.MemoryOptimizedDataFileGroup);
 				await this.memoryOptimizedFilegroupNameInput.updateCssStyles({ 'visibility': 'hidden' });
 			}
@@ -979,7 +994,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	/**
 	 * Creates input box for filegroup name
 	 * @param table table component
-	 * @returns input box component
+	 * @param filegroupType filegroup type
+	 * @returns Input component
 	 */
 	private getFilegroupNameInput(table: azdata.TableComponent, filegroupType: FileGroupType): azdata.InputBoxComponent {
 		return this.createInputBox(async (value) => {
@@ -1010,7 +1026,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	/**
 	 * Converts the filegroup object to a data view object
-	 * @returns object ingo to table data format
+	 * Note: Cannot change properties(Read-only, Default, Autogrow All files) of empty Rows data filegroups, the filegroup must contain at least one file
+	 * Note: Cannot change properties(Read-only) of empty Filestream data filegroups, the filegroup must contain at least one file
+	 * @param filegroupType filegroup type
+	 * @returns data view object
 	 */
 	private getTableData(filegroupType: FileGroupType): any[] {
 		let data: any[] = [];
@@ -1019,15 +1038,15 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				data.push([
 					fileGroup.name,
 					fileGroup.filesCount,
-					{ checked: fileGroup.isReadOnly, enabled: fileGroup.name !== 'PRIMARY' },
-					fileGroup.isDefault,
+					{ checked: fileGroup.isReadOnly, enabled: (fileGroup.name !== 'PRIMARY' && fileGroup.filesCount > 0) },
+					{ checked: fileGroup.isDefault, enabled: fileGroup.filesCount > 0 },
 					{ checked: fileGroup.autogrowAllFiles, enabled: fileGroup.filesCount > 0 }
 				]);
 			} else if (fileGroup.type === FileGroupType.FileStreamDataFileGroup && fileGroup.type === filegroupType) {
 				data.push([
 					fileGroup.name,
 					fileGroup.filesCount,
-					fileGroup.isReadOnly,
+					{ checked: fileGroup.isReadOnly, enabled: fileGroup.filesCount > 0 },
 					fileGroup.isDefault
 				]);
 			} else if (fileGroup.type === FileGroupType.MemoryOptimizedDataFileGroup && fileGroup.type === filegroupType) {
