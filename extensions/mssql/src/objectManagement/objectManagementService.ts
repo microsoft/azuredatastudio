@@ -515,7 +515,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 					{ name: 'batch_mode_adaptive_joins', valueForPrimary: 'OFF', valueForSecondary: 'ON' },
 					{ name: 'tsql_scalar_udf_inlining', valueForPrimary: 'ON', valueForSecondary: 'ON' }
 				],
-				fullTextIndexing: true,
+				isFilesTabSupported: true,
 				files: [
 					{ id: 1, name: 'databasefile1', type: 'ROWS Data', path: 'C:\\Temp\\', fileGroup: 'PRIMARY', fileNameWithExtension: 'databasefile1.mdf', sizeInMb: 62, isAutoGrowthEnabled: true, autoFileGrowth: 64, autoFileGrowthType: 0, maxSizeLimitInMb: -1 },
 					{ id: 2, name: 'databasefile1_Log', type: 'Log', path: 'C:\\Temp\\', fileGroup: 'Not Applicable', fileNameWithExtension: 'databasefile1_log.ldf', sizeInMb: 62, isAutoGrowthEnabled: true, autoFileGrowth: 64, autoFileGrowthType: 1, maxSizeLimitInMb: -1 },
