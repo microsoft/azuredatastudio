@@ -985,9 +985,9 @@ declare module 'mssql' {
 		 */
 		detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Thenable<string>;
 		/**
-		 * Attach a database.
+		 * Attach one or more databases.
 		 * @param connectionUri The URI of the server connection.
-		 * @param databases The name and file paths for each database that will be attached.
+		 * @param databases The name, owner, and file paths for each database that will be attached.
 		 * @param generateScript Whether to generate a TSQL script for the operation instead of detaching the database.
 		 * @returns A string value representing the generated TSQL query if generateScript was set to true, and an empty string otherwise.
 		 */
@@ -1008,7 +1008,12 @@ declare module 'mssql' {
 		 * @returns The file path to the data folder.
 		 */
 		getDataFolder(connectionUri: string): Thenable<string>;
-
+		/**
+		 * Retrieves other database files associated with a specified primary file, such as Data, Log, and FileStream files.
+		 * @param connectionUri The URI of the connection for the specific server.
+		 * @param primaryFilePath The file path for the primary database file on the target server.
+		 * @returns An array of file path strings for each of the associated files.
+		 */
 		getAssociatedFiles(connectionUri: string, primaryFilePath: string): Thenable<string[]>;
 	}
 
