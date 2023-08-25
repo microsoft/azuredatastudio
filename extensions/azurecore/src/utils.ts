@@ -17,6 +17,7 @@ import { HttpsProxyAgentOptions } from 'https-proxy-agent';
 import { ProviderSettings, ProviderSettingsJson, SettingIds } from './account-provider/interfaces';
 import { AzureResource } from 'azdata';
 import { Logger } from './utils/Logger';
+import { TelemetryReporter } from './telemetry';
 
 const localize = nls.loadMessageBundle();
 const configProxy = 'proxy';
@@ -183,10 +184,12 @@ export function updateCustomCloudProviderSettings(defaultSettings: ProviderSetti
 				Logger.info(`Custom provider settings loaded for ${cloudProvider.settings.metadata.displayName}`);
 			}
 			void vscode.window.showInformationMessage(localize('providerSettings.success', 'Successfully loaded custom endpoints from settings'));
+			TelemetryReporter.sendTelemetryEvent('loadCustomEndpointsSuccess');
 
 		} catch (error) {
 			void vscode.window.showErrorMessage(localize('providerSettings.error', 'Could not load endpoints from settings, please check the logs for more details.'));
 			console.error(error.message);
+			TelemetryReporter.sendTelemetryEvent('loadCustomEndpointsError');
 			throw Error(error.message);
 		}
 	}
@@ -298,6 +301,23 @@ export function getResourceTypeIcon(appContext: AppContext, type: string): strin
 	return '';
 }
 
+export interface IPackageInfo {
+	name: string;
+	version: string;
+	aiKey: string;
+}
+
+export function getPackageInfo(packageJson: IPackageInfo): IPackageInfo | undefined {
+	if (packageJson) {
+		return {
+			name: packageJson.name,
+			version: packageJson.version,
+			aiKey: packageJson.aiKey
+		};
+	}
+
+	return undefined;
+}
 
 export function getProxyEnabledHttpClient(): HttpClient {
 	const proxy = <string>getHttpConfiguration().get(configProxy);
