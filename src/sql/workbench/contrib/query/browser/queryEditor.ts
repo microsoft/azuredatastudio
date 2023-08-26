@@ -337,11 +337,11 @@ export class QueryEditor extends EditorPane {
 				{ element: Taskbar.createTaskbarSeparator() },
 				{ action: this._estimatedQueryPlanAction },
 				{ action: this._toggleActualExecutionPlanMode },
-				{ action: this._parseQueryAction },
-				{ action: this._toggleSqlcmdMode }
+				{ action: this._parseQueryAction }
 			);
 			if (previewFeaturesEnabled) {
 				content.push(
+					{ action: this._toggleSqlcmdMode },
 					{ action: this._exportAsNotebookAction }
 				);
 			}
