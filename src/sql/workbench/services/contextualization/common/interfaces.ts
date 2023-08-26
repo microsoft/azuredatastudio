@@ -40,4 +40,8 @@ export interface IServerContextualizationService {
 	 * @param ownerUri The URI of the connection to get context for.
 	 */
 	getServerContextualization(ownerUri: string): Promise<azdata.contextualization.GetServerContextualizationResult>;
+	/**
+	 * Handles onGenerateServerContextualizationComplete events
+	 */
+	onGenerateServerContextualizationComplete(handle: number, serverContextualizationCompleteParams: azdata.contextualization.GenerateServerContextualizationCompleteParams): void
 }

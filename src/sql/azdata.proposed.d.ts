@@ -901,7 +901,7 @@ declare module 'azdata' {
 		 * Copilot for improved suggestions.
 		 * @param provider The provider to register
 		 */
-		export function registerServerContextualizationProvider(provider: contextualization.ServerContextualizationProvider): vscode.Disposable
+		export function registerServerContextualizationProvider(provider: contextualization.ServerContextualizationProvider): vscode.Disposable;
 	}
 
 	export namespace designers {
@@ -1790,6 +1790,22 @@ declare module 'azdata' {
 			context: string[];
 		}
 
+		export interface GenerateServerContextualizationCompleteParams {
+			/**
+			 * The URI identifying the owner of the connection
+			 */
+			ownerUri: string;
+			/**
+			 * Indicates if generating context completed successfully
+			 */
+			completedGeneratingContext: boolean;
+			/**
+			 * Holds an error message, if errors were encountered while
+			 * generating context
+			 */
+			errorMessage?: string | undefined;
+		}
+
 		export interface ServerContextualizationProvider extends DataProvider {
 			/**
 			 * Generates server context.
@@ -1802,6 +1818,12 @@ declare module 'azdata' {
 			 * @param ownerUri The URI of the connection to get context for.
 			 */
 			getServerContextualization(ownerUri: string): Thenable<GetServerContextualizationResult>;
+
+			/**
+			 * Registers a handler for the GenerateServerContextualizationComplete notification.
+			 * @param handler The handler to be registered
+			 */
+			registerOnGenerateContextualizationComplete(handler: (contextualizationCompleteParams: GenerateServerContextualizationCompleteParams) => any): void;
 		}
 	}
 

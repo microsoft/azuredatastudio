@@ -1352,10 +1352,15 @@ export class ServerContextualizationServiceFeature extends SqlOpsFeature<undefin
 			);
 		};
 
+		const registerOnGenerateContextualizationComplete = (handler: (contextualizationCompleteParams: azdata.contextualization.GenerateServerContextualizationCompleteParams) => any): void => {
+			client.onNotification(contracts.GenerateServerContextualizationCompleteNotification.type, handler);
+		};
+
 		return azdata.dataprotocol.registerServerContextualizationProvider({
 			providerId: client.providerId,
 			generateServerContextualization: generateServerContextualization,
-			getServerContextualization: getServerContextualization
+			getServerContextualization: getServerContextualization,
+			registerOnGenerateContextualizationComplete: registerOnGenerateContextualizationComplete
 		});
 	}
 }

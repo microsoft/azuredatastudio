@@ -7,9 +7,12 @@ import * as azdata from 'azdata';
 import { invalidProvider } from 'sql/base/common/errors';
 import { IConnectionManagementService, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { IServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 
 export class ServerContextualizationService extends Disposable implements IServerContextualizationService {
@@ -19,7 +22,9 @@ export class ServerContextualizationService extends Disposable implements IServe
 	constructor(
 		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
-		@IExtensionService private readonly _extensionService: IExtensionService
+		@IExtensionService private readonly _extensionService: IExtensionService,
+		@ICommandService private readonly _commandService: ICommandService,
+		@IEditorService private readonly _editorService: IEditorService,
 	) {
 		super();
 
@@ -28,7 +33,15 @@ export class ServerContextualizationService extends Disposable implements IServe
 
 			if (copilotExt && this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled) {
 				const ownerUri = e.connectionUri;
-				await this.generateServerContextualization(ownerUri);
+				this.generateServerContextualization(ownerUri);
+			}
+		}));
+
+		this._register(this._editorService.onDidActiveEditorChange(async () => {
+			const queryEditorInput = this._editorService.activeEditorPane.input as QueryEditorInput;
+			const uri = queryEditorInput?.uri;
+			if (uri) {
+				await this.sendServerContextualizationToCopilot(uri);
 			}
 		}));
 	}
@@ -88,6 +101,28 @@ export class ServerContextualizationService extends Disposable implements IServe
 		else {
 			return Promise.resolve({
 				context: []
+			});
+		}
+	}
+
+	public async onGenerateServerContextualizationComplete(handle: number, serverContextualizationCompleteParams: azdata.contextualization.GenerateServerContextualizationCompleteParams): Promise<void> {
+		if (serverContextualizationCompleteParams.completedGeneratingContext) {
+			await this.sendServerContextualizationToCopilot(serverContextualizationCompleteParams.ownerUri);
+		}
+	}
+
+	private async sendServerContextualizationToCopilot(ownerUri: string): Promise<void> {
+		if (this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled) {
+			const result = await this.getServerContextualization(ownerUri);
+
+			// Compressing scripts down to just create statements.
+			const createsOnly = result.context.filter(c => c.includes('CREATE'));
+			createsOnly.forEach((c, index, myArray) => myArray[index] = myArray[index].replace('\t', '')); // LEWISSANCHEZ TODO: Remove tabs completely as scripts don't need any formatting to be understood by Copilot.
+			const conjoinedCreateScript = createsOnly.join('\n');
+
+			// LEWISSANCHEZ TODO: Find way to set context on untitled query editor files. Need to save first for Copilot status to say "Has Context"
+			await this._commandService.executeCommand('github.copilot.provideContext', '**/*.sql', {
+				value: conjoinedCreateScript
 			});
 		}
 	}

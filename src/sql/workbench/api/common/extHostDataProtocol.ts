@@ -216,6 +216,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	override $onGenerateServerContextualizationComplete(handle: number, generateContextualizationCompleteParams: azdata.contextualization.GenerateServerContextualizationCompleteParams): void {
+		if (this.uriTransformer) {
+			generateContextualizationCompleteParams.ownerUri = this._getTransformedUri(generateContextualizationCompleteParams.ownerUri, this.uriTransformer.transformOutgoing);
+		}
+		this._proxy.$onGenerateServerContextualizationComplete(handle, generateContextualizationCompleteParams);
+	}
+
 	// Capabilities Discovery handlers
 	override $getServerCapabilities(handle: number, client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> {
 		return this._resolveProvider<azdata.CapabilitiesProvider>(handle).getServerCapabilities(client);
