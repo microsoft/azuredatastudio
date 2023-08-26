@@ -2478,8 +2478,8 @@ Default Skipped Commands:
     <trans-unit id="disposeEditFailure">
       <source xml:lang="en">Dispose Edit Failed With Error: </source>
     </trans-unit>
-    <trans-unit id="editData.closeSql">
-      <source xml:lang="en">Close SQL Pane</source>
+    <trans-unit id="editData.hideSql">
+      <source xml:lang="en">Hide SQL Pane</source>
     </trans-unit>
     <trans-unit id="editData.run">
       <source xml:lang="en">Run</source>
