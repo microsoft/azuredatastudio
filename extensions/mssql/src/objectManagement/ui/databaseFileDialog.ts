@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { DefaultInputWidth, DialogBase } from '../../ui/dialogBase';
 import * as localizedConstants from '../localizedConstants';
 import { DatabaseFile, DatabaseViewInfo, FileGrowthType } from '../interfaces';
@@ -89,15 +90,15 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 				errors.push(localizedConstants.FileNameExistsError(this.result.name.trim()));
 			}
 			// If new file, verify if the file name with extension already exists
-			if (this.options.isNewFile && !!this.options.files.find(file => { return (file.path + '\\' + file.fileNameWithExtension) === (this.result.path + '\\' + this.result.fileNameWithExtension) })) {
-				errors.push(localizedConstants.FileAlreadyExistsError(this.result.path + '\\' + this.result.fileNameWithExtension));
+			if (this.options.isNewFile && !!this.options.files.find(file => { return (path.join(file.path, file.fileNameWithExtension) === path.join(this.result.path, this.result.fileNameWithExtension)) })) {
+				errors.push(localizedConstants.FileAlreadyExistsError(path.join(this.result.path, this.result.fileNameWithExtension)));
 			}
 		}
 
 		// If editing a new file and the file name with extension is modified, verify if the file name with extension already exists
 		if (this.options.isEditingNewFile && this.result.fileNameWithExtension !== this.originalFileName) {
-			if (this.options.files.filter(file => { return (file.path + '\\' + file.fileNameWithExtension) === (this.result.path + '\\' + this.result.fileNameWithExtension) }).length !== 0) {
-				errors.push(localizedConstants.FileAlreadyExistsError(this.result.path + '\\' + this.result.fileNameWithExtension));
+			if (this.options.files.filter(file => { return (path.join(file.path, file.fileNameWithExtension)) === (path.join(this.result.path, this.result.fileNameWithExtension)) }).length !== 0) {
+				errors.push(localizedConstants.FileAlreadyExistsError(path.join(this.result.path, this.result.fileNameWithExtension)));
 			}
 		}
 
