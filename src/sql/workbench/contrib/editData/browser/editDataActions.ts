@@ -220,7 +220,7 @@ export class ShowQueryPaneAction extends EditDataAction {
 	private static EnabledClass = 'filterLabel';
 	public static ID = 'showQueryPaneAction';
 	private readonly showSqlLabel = nls.localize('editData.showSql', "Show SQL Pane");
-	private readonly closeSqlLabel = nls.localize('editData.closeSql', "Close SQL Pane");
+	private readonly closeSqlLabel = nls.localize('editData.hideSql', "Hide SQL Pane");
 
 	constructor(editor: EditDataEditor,
 		@IConnectionManagementService _connectionManagementService: IConnectionManagementService
