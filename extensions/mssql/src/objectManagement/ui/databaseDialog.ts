@@ -633,7 +633,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 */
 	protected override removeButtonOnRowSelected(table: azdata.TableComponent): boolean {
 		let isEnabled = true;
-		if (this.databaseFilesTable.selectedRows !== undefined) {
+		if (table === this.databaseFilesTable && this.databaseFilesTable.selectedRows !== undefined) {
 			const selectedRowId = this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].id;
 			// Cannot delete a Primary row data file, Id is always 1.
 			if (this.databaseFilesTable.selectedRows.length === 1 && selectedRowId === 1) {
