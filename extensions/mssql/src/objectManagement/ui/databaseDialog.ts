@@ -49,6 +49,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	// Files Tab
 	private readonly filesTabId: string = 'filesDatabaseId';
 	private databaseFilesTable: azdata.TableComponent;
+	private rowDatafileGroupsOptions: string[];
+	private filestreamDatafileGroupsOptions: string[];
 	// fileGroups Tab
 	private readonly fileGroupsTabId: string = 'fileGroupsDatabaseId';
 	private rowsFilegroupsTable: azdata.TableComponent;
@@ -165,6 +167,11 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			};
 			tabs.push(this.generalTab);
 
+			// Prepare the copies of individual filegroups tables data and filegroups options for files tab
+			if (!isUndefinedOrNull(this.objectInfo.filegroups)) {
+				this.updateFileGroupsOptionsAndTableRows();
+			}
+
 			// Initialize Files Tab
 			// Files tab is only enabled for SQL Server properties view
 			if (!isUndefinedOrNull(this.objectInfo.isFilesTabSupported)) {
@@ -180,8 +187,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 			// Initilaize FileGroups Tab
 			if (!isUndefinedOrNull(this.objectInfo.filegroups)) {
-				// Prepare the copies of individual tables data
-				this.prepareIndividualTableRows();
 				const rowsFileGroupSection = await this.initializeRowsFileGroupSection();
 				const fileStreamFileGroupSection = this.initializeFileStreamFileGroupSection();
 				const memoryOptimizedFileGroupSection = this.initializeMemoryOptimizedFileGroupSection();
@@ -572,7 +577,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			var newData = this.objectInfo.files?.map(file => {
 				return this.convertToDataView(file);
 			});
-			await this.setTableData(this.databaseFilesTable, newData, DefaultMaxTableRowCount)
+			await this.setTableData(this.databaseFilesTable, newData, DefaultMaxTableRowCount);
+			await this.updateFileGroupsTablesfileCount(result.type);
 		}
 	}
 
@@ -584,7 +590,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				var newData = this.objectInfo.files?.map(file => {
 					return this.convertToDataView(file);
 				});
-				await this.setTableData(this.databaseFilesTable, newData, DefaultMaxTableRowCount)
+				await this.setTableData(this.databaseFilesTable, newData, DefaultMaxTableRowCount);
+				await this.updateFileGroupsTablesfileCount(result.type);
 			}
 		}
 	}
@@ -594,11 +601,29 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 */
 	private async onRemoveDatabaseFilesButtonClicked(): Promise<void> {
 		if (this.databaseFilesTable.selectedRows.length === 1) {
+			await this.updateFileGroupsTablesfileCount(this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].type);
 			this.objectInfo.files?.splice(this.databaseFilesTable.selectedRows[0], 1);
 			var newData = this.objectInfo.files?.map(file => {
 				return this.convertToDataView(file);
 			});
-			await this.setTableData(this.databaseFilesTable, newData, DefaultMaxTableRowCount)
+			await this.setTableData(this.databaseFilesTable, newData, DefaultMaxTableRowCount);
+		}
+	}
+
+	/**
+	 * Updating the filegroups tables number of files count for each action of adding/editing/removing a database file
+	 * @param fileType type of the file to get the data for the table
+	 */
+	private async updateFileGroupsTablesfileCount(fileType: string): Promise<void> {
+		if (fileType === localizedConstants.RowsDataFileType) {
+			let data = this.getTableData(FileGroupType.RowsFileGroup);
+			await this.setTableData(this.rowsFilegroupsTable, data);
+		}
+		else if (fileType === localizedConstants.FilestreamFileType) {
+			let data = this.getTableData(FileGroupType.FileStreamDataFileGroup);
+			await this.setTableData(this.filestreamFilegroupsTable, data);
+			data = this.getTableData(FileGroupType.MemoryOptimizedDataFileGroup);
+			await this.setTableData(this.memoryOptimizedFilegroupsTable, data);
 		}
 	}
 
@@ -650,7 +675,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			name: '',
 			type: localizedConstants.RowsDataFileType,
 			path: this.objectInfo.files[0].path,
-			fileGroup: this.viewInfo.rowDataFileGroupsOptions[0],
+			fileGroup: this.rowDatafileGroupsOptions.find(option => option === 'PRIMARY'),
 			fileNameWithExtension: '',
 			sizeInMb: defaultFileSizeInMb,
 			isAutoGrowthEnabled: true,
@@ -663,6 +688,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			title: (isnewFile || isEditingNewFile) ? localizedConstants.AddDatabaseFilesText : localizedConstants.EditDatabaseFilesText(databaseFile.name),
 			viewInfo: this.viewInfo,
 			files: this.objectInfo.files,
+			rowFilegroups: this.rowDatafileGroupsOptions,
+			filestreamFilegroups: this.filestreamDatafileGroupsOptions,
 			isNewFile: isnewFile,
 			isEditingNewFile: isEditingNewFile,
 			databaseFile: databaseFile,
@@ -923,7 +950,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			newRow.isDefault = false;
 			newRow.autogrowAllFiles = false
 			this.objectInfo.filegroups?.push(newRow);
-
 			newData = this.getTableData(FileGroupType.RowsFileGroup);
 		}
 		else if (table === this.filestreamFilegroupsTable) {
@@ -941,19 +967,28 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		if (newData !== undefined) {
 			// Refresh the table with new row data
-			this.prepareIndividualTableRows()
+			this.updateFileGroupsOptionsAndTableRows()
 			await this.setTableData(table, newData, DefaultMaxTableRowCount);
 		}
 	}
 
 	/**
-	 * Prepares the individual table rows for each filegroup type
+	 * Prepares the individual table rows for each filegroup type and list of filegroups options
 	 * This will be useful to get the selected row data from the table to get the filegroup property details, helps when have duplicate rows added
 	 */
-	private prepareIndividualTableRows(): void {
+	private updateFileGroupsOptionsAndTableRows(): void {
+		// Filegroups rows for filegroups tab
 		this.rowDataFileGroupsTableRows = this.objectInfo.filegroups?.filter(filegroup => filegroup.type === FileGroupType.RowsFileGroup);
 		this.filestreamDataFileGroupsTableRows = this.objectInfo.filegroups?.filter(filegroup => filegroup.type === FileGroupType.FileStreamDataFileGroup);
 		this.memoryoptimizedFileGroupsTableRows = this.objectInfo.filegroups?.filter(filegroup => filegroup.type === FileGroupType.MemoryOptimizedDataFileGroup);
+
+		// Filegroups options for files tab
+		this.filestreamDatafileGroupsOptions = this.objectInfo.filegroups?.filter(filegroup => filegroup.type === FileGroupType.FileStreamDataFileGroup || filegroup.type === FileGroupType.MemoryOptimizedDataFileGroup).map(filegroup => filegroup.name);
+		this.rowDatafileGroupsOptions = this.objectInfo.filegroups?.filter(filegroup => filegroup.type === FileGroupType.RowsFileGroup).map(filegroup => filegroup.name);
+		let index: number;
+		if ((index = this.rowDatafileGroupsOptions.indexOf('PRIMARY')) !== -1) {
+			this.rowDatafileGroupsOptions.unshift(this.rowDatafileGroupsOptions.splice(index, 1)[0]);
+		}
 	}
 
 	/**
@@ -987,7 +1022,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 
 		// Refresh the individual table rows object and table with updated data
-		this.prepareIndividualTableRows();
+		this.updateFileGroupsOptionsAndTableRows();
 		await this.setTableData(table, newData)
 	}
 
@@ -1037,7 +1072,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			if (filegroupType === FileGroupType.RowsFileGroup && fileGroup.type === filegroupType) {
 				data.push([
 					fileGroup.name,
-					fileGroup.filesCount,
+					this.objectInfo.files?.filter(file => file.fileGroup === fileGroup.name).length,
 					{ checked: fileGroup.isReadOnly, enabled: (fileGroup.name !== 'PRIMARY' && fileGroup.filesCount > 0) },
 					{ checked: fileGroup.isDefault, enabled: fileGroup.filesCount > 0 },
 					{ checked: fileGroup.autogrowAllFiles, enabled: fileGroup.filesCount > 0 }
@@ -1045,14 +1080,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			} else if (fileGroup.type === FileGroupType.FileStreamDataFileGroup && fileGroup.type === filegroupType) {
 				data.push([
 					fileGroup.name,
-					fileGroup.filesCount,
+					this.objectInfo.files?.filter(file => file.fileGroup === fileGroup.name).length,
 					{ checked: fileGroup.isReadOnly, enabled: fileGroup.filesCount > 0 },
 					fileGroup.isDefault
 				]);
 			} else if (fileGroup.type === FileGroupType.MemoryOptimizedDataFileGroup && fileGroup.type === filegroupType) {
 				data.push([
 					fileGroup.name,
-					fileGroup.filesCount
+					this.objectInfo.files?.filter(file => file.fileGroup === fileGroup.name).length
 				]);
 			}
 		});

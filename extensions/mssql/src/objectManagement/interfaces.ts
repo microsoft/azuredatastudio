@@ -478,8 +478,6 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	dscOnOffOptions?: string[];
 	dscElevateOptions?: string[];
 	dscEnableDisableOptions?: string[];
-	rowDataFileGroupsOptions?: string[];
-	fileStreamFileGroupsOptions?: string[];
 	fileTypesOptions?: string[];
 }
 

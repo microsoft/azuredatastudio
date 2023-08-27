@@ -477,8 +477,6 @@ export class TestObjectManagementService implements IObjectManagementService {
 			dscElevateOptions: ['OFF', 'WHEN_SUPPORTED', 'FAIL_UNSUPPORTED'],
 			dscEnableDisableOptions: ['ENABLED', 'DISABLED'],
 			dscOnOffOptions: ['ON', 'OFF'],
-			rowDataFileGroupsOptions: ['PRIMARY', 'RowDataGroup1', 'RowDataGroup2'],
-			fileStreamFileGroupsOptions: ['PRIMARY', 'FileStreamGroup1', 'FileStreamGroup2'],
 			fileTypesOptions: ['ROWS', 'LOG', 'FILESTREAM'],
 			objectInfo: {
 				name: 'Database Properties1',
