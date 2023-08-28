@@ -763,7 +763,8 @@ export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.
  * @returns True if the server name matches a known domain for Microsoft Fabric DW, otherwise false
  */
 export function isSqlDwUnifiedServer(server?: string): boolean | undefined {
-	return server?.toLowerCase().includes("datawarehouse.pbidedicated.windows.net") || server?.toLowerCase().includes("datawarehouse.fabric.microsoft.com");
+	const serverLowerCase = server?.toLowerCase();
+	return serverLowerCase?.includes("datawarehouse.pbidedicated.windows.net") || serverLowerCase?.includes("datawarehouse.fabric.microsoft.com");
 }
 
 /**
