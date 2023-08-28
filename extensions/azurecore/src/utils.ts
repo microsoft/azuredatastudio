@@ -17,7 +17,7 @@ import { HttpsProxyAgentOptions } from 'https-proxy-agent';
 import { ProviderSettings, ProviderSettingsJson, SettingIds } from './account-provider/interfaces';
 import { AzureResource } from 'azdata';
 import { Logger } from './utils/Logger';
-import { TelemetryReporter } from './telemetry';
+import { TelemetryReporter, TelemetryViews } from './telemetry';
 
 const localize = nls.loadMessageBundle();
 const configProxy = 'proxy';
@@ -191,6 +191,7 @@ export function updateCustomCloudProviderSettings(defaultSettings: ProviderSetti
 			void vscode.window.showErrorMessage(localize('providerSettings.error', 'Could not load endpoints from settings, please check the logs for more details.'));
 			console.error(error.message);
 			TelemetryReporter.sendTelemetryEvent('loadCustomEndpointsError');
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.AzureCore, 'loadCustomEndpointsError', error.message)
 			throw Error(error.message);
 		}
 	}
