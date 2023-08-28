@@ -629,6 +629,7 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 	[SqlTargetPlatform.sqlServer2022, '160'],
 	[SqlTargetPlatform.sqlAzure, 'AzureV12'],
 	[SqlTargetPlatform.sqlDW, 'Dw'],
+	[SqlTargetPlatform.sqlDwServerless, 'Serverless'],
 	[SqlTargetPlatform.sqlDwUnified, 'DwUnified']
 ]);
 
