@@ -321,7 +321,8 @@ declare module 'sqldbproj' {
 		sqlServer2022 = 'SQL Server 2022',
 		sqlAzure = 'Azure SQL Database',
 		sqlDW = 'Azure Synapse SQL Pool',
-		sqlEdge = 'Azure SQL Edge'
+		sqlEdge = 'Azure SQL Edge',
+		sqlDwUnified = 'Synapse Data Warehouse in Microsoft Fabric'
 	}
 
 	export interface ISqlConnectionProperties {

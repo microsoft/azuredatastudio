@@ -1559,7 +1559,7 @@ export class ProjectsController {
 		if (utils.getAzdataApi()) {
 			let createProjectFromDatabaseDialog = this.getCreateProjectFromDatabaseDialog(profile as azdataType.IConnectionProfile);
 
-			createProjectFromDatabaseDialog.createProjectFromDatabaseCallback = async (model, connectionId) => await this.createProjectFromDatabaseCallback(model, connectionId);
+			createProjectFromDatabaseDialog.createProjectFromDatabaseCallback = async (model, connectionId) => await this.createProjectFromDatabaseCallback(model, connectionId, (profile as azdataType.IConnectionProfile)?.serverName);
 
 			await createProjectFromDatabaseDialog.openDialog();
 
@@ -1575,7 +1575,7 @@ export class ProjectsController {
 			}
 			const model = await createNewProjectFromDatabaseWithQuickpick(profile as mssqlVscode.IConnectionInfo);
 			if (model) {
-				await this.createProjectFromDatabaseCallback(model, profile as mssqlVscode.IConnectionInfo);
+				await this.createProjectFromDatabaseCallback(model, profile as mssqlVscode.IConnectionInfo, (profile as mssqlVscode.IConnectionInfo)?.server);
 			}
 			return undefined;
 		}
@@ -1586,7 +1586,7 @@ export class ProjectsController {
 		return new CreateProjectFromDatabaseDialog(profile);
 	}
 
-	public async createProjectFromDatabaseCallback(model: ImportDataModel, connectionInfo?: string | mssqlVscode.IConnectionInfo) {
+	public async createProjectFromDatabaseCallback(model: ImportDataModel, connectionInfo?: string | mssqlVscode.IConnectionInfo, serverName?: string) {
 		try {
 
 			const newProjFolderUri = model.filePath;
@@ -1601,7 +1601,7 @@ export class ProjectsController {
 			}
 
 			if (serverInfo) {
-				targetPlatform = await utils.getTargetPlatformFromServerVersion(serverInfo);
+				targetPlatform = await utils.getTargetPlatformFromServerVersion(serverInfo, serverName);
 			}
 
 			const newProjFilePath = await this.createNewProject({
