@@ -20,8 +20,6 @@ import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/text
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
-import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 
 const MAX_SIZE = 13;
 
@@ -153,9 +151,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IInstantiationService protected readonly instantiationService: IInstantiationService,
-		@IServerContextualizationService private readonly serverContextualizationService: IServerContextualizationService,
-		@IExtensionService private readonly extensionService: IExtensionService
+		@IInstantiationService protected readonly instantiationService: IInstantiationService
 	) {
 		super();
 
