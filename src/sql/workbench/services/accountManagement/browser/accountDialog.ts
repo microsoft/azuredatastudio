@@ -340,6 +340,7 @@ export class AccountDialog extends Modal {
 			AddAccountAction,
 			newProvider.addedProvider.id
 		);
+		this._register(addAccountAction);
 		addAccountAction.addAccountErrorEvent(msg => this._onAddAccountErrorEmitter.fire(msg));
 
 		let providerView = new AccountPanel(

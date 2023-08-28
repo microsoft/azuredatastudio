@@ -1560,6 +1560,22 @@ export namespace ExecutionPlanComparisonRequest {
 
 // ------------------------------- < Execution Plan > ------------------------------------
 
+// ------------------------------- < Server Contextualization API > ------------------------------------
+
+export interface ServerContextualizationParams {
+	ownerUri: string;
+}
+
+export namespace GenerateServerContextualizationNotification {
+	export const type = new NotificationType<ServerContextualizationParams, void>('metadata/generateServerContext');
+}
+
+export namespace GetServerContextualizationRequest {
+	export const type = new RequestType<ServerContextualizationParams, azdata.contextualization.GetServerContextualizationResult, void, void>('metadata/getServerContext');
+}
+
+// ------------------------------- < Database Server Contextualization API > ------------------------------------
+
 // ------------------------------- < Object Management > ------------------------------------
 export interface InitializeViewRequestParams {
 	connectionUri: string;
@@ -1643,6 +1659,18 @@ export interface DetachDatabaseRequestParams {
 
 export namespace DetachDatabaseRequest {
 	export const type = new RequestType<DetachDatabaseRequestParams, string, void, void>('objectManagement/detachDatabase');
+}
+
+export interface DropDatabaseRequestParams {
+	connectionUri: string;
+	objectUrn: string;
+	dropConnections: boolean;
+	deleteBackupHistory: boolean;
+	generateScript: boolean;
+}
+
+export namespace DropDatabaseRequest {
+	export const type = new RequestType<DropDatabaseRequestParams, string, void, void>('objectManagement/dropDatabase');
 }
 
 // ------------------------------- < Object Management > ------------------------------------
