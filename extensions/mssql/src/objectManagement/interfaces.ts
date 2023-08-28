@@ -578,7 +578,6 @@ export interface FileGroups {
 	id?: number;
 	name: string;
 	type: FileGroupType;
-	filesCount: number;
 	isReadOnly: boolean;
 	isDefault: boolean;
 	autogrowAllFiles: boolean;

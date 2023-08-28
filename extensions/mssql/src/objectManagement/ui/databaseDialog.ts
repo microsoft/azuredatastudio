@@ -939,7 +939,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			id: --this.newFileGroupTemporaryId,
 			name: '',
 			type: undefined,
-			filesCount: 0,
 			isReadOnly: false,
 			isDefault: false,
 			autogrowAllFiles: false
@@ -1069,25 +1068,26 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private getTableData(filegroupType: FileGroupType): any[] {
 		let data: any[] = [];
 		this.objectInfo.filegroups?.map(fileGroup => {
+			const filesCount = this.objectInfo.files?.filter(file => file.fileGroup === fileGroup.name).length;
 			if (filegroupType === FileGroupType.RowsFileGroup && fileGroup.type === filegroupType) {
 				data.push([
 					fileGroup.name,
-					this.objectInfo.files?.filter(file => file.fileGroup === fileGroup.name).length,
-					{ checked: fileGroup.isReadOnly, enabled: (fileGroup.name !== 'PRIMARY' && fileGroup.filesCount > 0) },
-					{ checked: fileGroup.isDefault, enabled: fileGroup.filesCount > 0 },
-					{ checked: fileGroup.autogrowAllFiles, enabled: fileGroup.filesCount > 0 }
+					filesCount,
+					{ checked: fileGroup.isReadOnly, enabled: (fileGroup.name !== 'PRIMARY' && filesCount > 0) },
+					{ checked: fileGroup.isDefault, enabled: filesCount > 0 },
+					{ checked: fileGroup.autogrowAllFiles, enabled: filesCount > 0 }
 				]);
 			} else if (fileGroup.type === FileGroupType.FileStreamDataFileGroup && fileGroup.type === filegroupType) {
 				data.push([
 					fileGroup.name,
-					this.objectInfo.files?.filter(file => file.fileGroup === fileGroup.name).length,
-					{ checked: fileGroup.isReadOnly, enabled: fileGroup.filesCount > 0 },
+					filesCount,
+					{ checked: fileGroup.isReadOnly, enabled: filesCount > 0 },
 					fileGroup.isDefault
 				]);
 			} else if (fileGroup.type === FileGroupType.MemoryOptimizedDataFileGroup && fileGroup.type === filegroupType) {
 				data.push([
 					fileGroup.name,
-					this.objectInfo.files?.filter(file => file.fileGroup === fileGroup.name).length
+					filesCount
 				]);
 			}
 		});
