@@ -966,7 +966,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		if (newData !== undefined) {
 			// Refresh the table with new row data
-			this.updateFileGroupsOptionsAndTableRows()
+			this.updateFileGroupsOptionsAndTableRows();
 			await this.setTableData(table, newData, DefaultMaxTableRowCount);
 		}
 	}
@@ -1046,6 +1046,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					fg.name = value;
 					let data = this.getTableData(filegroupType);
 					await this.setTableData(table, data);
+					this.updateFileGroupsOptionsAndTableRows();
 				}
 			}
 		}, {
