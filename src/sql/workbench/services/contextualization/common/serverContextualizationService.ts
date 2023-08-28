@@ -38,10 +38,10 @@ export class ServerContextualizationService extends Disposable implements IServe
 		}));
 
 		this._register(this._editorService.onDidActiveEditorChange(async () => {
-			const queryEditorInput = this._editorService.activeEditorPane.input as QueryEditorInput;
-			const uri = queryEditorInput?.uri;
+			const activeQueryEditorInput = this._editorService.activeEditorPane.input as QueryEditorInput;
+			const uri = activeQueryEditorInput?.uri;
 			if (uri) {
-				await this.sendServerContextualizationToCopilot(uri);
+				await this.sendServerContextualizationToCopilot(uri, activeQueryEditorInput.serverContext);
 			}
 		}));
 	}
@@ -106,23 +106,33 @@ export class ServerContextualizationService extends Disposable implements IServe
 	}
 
 	public async onGenerateServerContextualizationComplete(handle: number, serverContextualizationCompleteParams: azdata.contextualization.GenerateServerContextualizationCompleteParams): Promise<void> {
-		if (serverContextualizationCompleteParams.completedGeneratingContext) {
-			await this.sendServerContextualizationToCopilot(serverContextualizationCompleteParams.ownerUri);
+		if (serverContextualizationCompleteParams.context) {
+			const activeQueryEditorInput = this._editorService.activeEditorPane.input as QueryEditorInput;
+			if (activeQueryEditorInput) {
+				activeQueryEditorInput.serverContext = serverContextualizationCompleteParams.context;
+			}
+
+			await this.sendServerContextualizationToCopilot(serverContextualizationCompleteParams.ownerUri, serverContextualizationCompleteParams.context);
 		}
 	}
 
-	private async sendServerContextualizationToCopilot(ownerUri: string): Promise<void> {
+	private async sendServerContextualizationToCopilot(ownerUri: string, serverContext: string[] | undefined): Promise<void> {
 		if (this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled) {
-			const result = await this.getServerContextualization(ownerUri);
+			var flattenedServerContext = '';
 
-			// Compressing scripts down to just create statements.
-			const createsOnly = result.context.filter(c => c.includes('CREATE'));
-			createsOnly.forEach((c, index, myArray) => myArray[index] = myArray[index].replace('\t', '')); // LEWISSANCHEZ TODO: Remove tabs completely as scripts don't need any formatting to be understood by Copilot.
-			const conjoinedCreateScript = createsOnly.join('\n');
+			if (serverContext) {
+				// Flattening scripts from string[] to just a string
+				flattenedServerContext = serverContext.filter(c => c.includes('CREATE')).join('\n');
+			}
+			else {
+				const result = await this.getServerContextualization(ownerUri);
+				// Flattening scripts from string[] to just a string
+				flattenedServerContext = result.context.filter(c => c.includes('CREATE')).join('\n');
+			}
 
 			// LEWISSANCHEZ TODO: Find way to set context on untitled query editor files. Need to save first for Copilot status to say "Has Context"
 			await this._commandService.executeCommand('github.copilot.provideContext', '**/*.sql', {
-				value: conjoinedCreateScript
+				value: flattenedServerContext // value is expecting a string and not a string[]
 			});
 		}
 	}

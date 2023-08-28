@@ -1796,9 +1796,9 @@ declare module 'azdata' {
 			 */
 			ownerUri: string;
 			/**
-			 * Indicates if generating context completed successfully
+			 * An array containing the generated server context.
 			 */
-			completedGeneratingContext: boolean;
+			context: string[] | undefined;
 			/**
 			 * Holds an error message, if errors were encountered while
 			 * generating context
