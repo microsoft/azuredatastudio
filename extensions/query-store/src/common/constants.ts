@@ -61,6 +61,7 @@ export const toLabel = localize('toLabel', "To");
 export const localLabel = localize('localLabel', "Local");
 export const UTCLabel = localize('UTCLabel', "UTC");
 export const timeFormatLabel = localize('timeFormatLabel', "Time Format:");
+export const timeSettingsLabel = localize('timeSettingsLabel', "Time Settings");
 export const timeIntervalLabel = localize('timeIntervalLabel', "Time Interval");
 export const aggregationSizeLabel = localize('aggregationSizeLabel', "Aggregation Size:");
 export const minuteLabel = localize('minuteLabel', "Minute");
