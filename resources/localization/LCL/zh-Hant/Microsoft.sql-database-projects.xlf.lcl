@@ -3304,8 +3304,8 @@
       <Item ItemId=";extensions/Microsoft.sql-database-projects/dist/common/constants.unhandledDeleteType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unhandled item type during exclude: '{0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[刪除期間未處理的項目類型: '{0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[排除期間未處理的項目類型: '{0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Unhandled item type during delete: '{0}]]></Val>
@@ -3952,8 +3952,8 @@
       <Item ItemId=";extensions/Microsoft.sql-database-projects/package.sqlDatabaseProjects.welcome" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No database projects currently open.]A;[New Project]5D;(command:sqlDatabaseProjects.new)]A;[Open Project]5D;(command:sqlDatabaseProjects.open)]A;[Create Project From Database]5D;(command:sqlDatabaseProjects.importDatabase)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[目前沒有開啟的資料庫專案。]D;]A;[New Project]5D;(command:sqlDatabaseProjects.new)]D;]A;[Open Project]5D;(command:sqlDatabaseProjects.open)]D;]A;[Create Project From Database]5D;(command:sqlDatabaseProjects.importDatabase)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[目前沒有開啟的資料庫專案。]A;[新專案]5D;(command:sqlDatabaseProjects.new)]A;[開啟的專案]5D;(command:sqlDatabaseProjects.open)]A;[從資料庫建立專案]5D;(command:sqlDatabaseProjects.importDatabase)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No database projects currently open.]D;]A;[New Project]5D;(command:sqlDatabaseProjects.new)]D;]A;[Open Project]5D;(command:sqlDatabaseProjects.open)]D;]A;[Create Project From Database]5D;(command:sqlDatabaseProjects.importDatabase)]]></Val>

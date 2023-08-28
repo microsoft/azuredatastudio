@@ -31,6 +31,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.addSqlBinding" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Adding SQL Binding to function "{0}"...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在将 SQL 绑定添加到函数“{0}”...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -55,6 +58,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.azureFunctionsProjectMustBeOpened" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A C# Azure Functions project must be present in order to create a new Azure Function with SQL binding.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[必须存在 C# Azure Functions 项目才能使用创建包含 SQL 绑定的新的 Azure 函数。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -133,6 +139,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.dotnetResult" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Adding SQL nuget package:]A;{0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在添加 SQL nuget 包: ]A;{0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -157,24 +166,36 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.enterPasswordPrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[(Optional) Enter connection password to save in local.settings.json]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[(可选) 输入连接密码以保存在 local.settings.json 中]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.enterTableName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter SQL table to query]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[输入要查询的 SQL 表]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.enterTableNameToUpsert" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter SQL table to upsert into]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[输入要更新插入到的 SQL 表]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.enterViewName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter SQL view to query]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[输入要查询的 SQL 视图]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -226,6 +247,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.hasSpecialCharacters" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Name must not include special characters]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[名称不得包含特殊字符]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -340,6 +364,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.outputDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save data to a database]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[将数据保存到数据库]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -391,6 +418,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.selectBindingTypeToSpecifiedFunction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select type of binding for the function '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[选择函数“{0}”的绑定类型]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -451,12 +481,18 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.selectTable" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select table to use]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[选择要使用的表]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.selectView" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select view to use]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[选择要使用的视图]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -490,6 +526,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.tableListProgressTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Fetching tables for selected database...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在提取所选数据库的表...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -577,12 +616,18 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/package.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enables users to develop and publish Azure Functions with Azure SQL bindings]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[使用户能够开发和发布包含 Azure SQL 绑定的 Azure Functions]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/package.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Bindings]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL 绑定]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -598,6 +643,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/package.sqlBindings.createAzureFunction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create Azure Function with SQL binding (preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[创建包含 SQL 绑定的 Azure 函数 (预览版)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

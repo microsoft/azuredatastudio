@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <LCX SchemaVersion="6.0" Name="D:\a\1\s\resources\xlf\en\vscode.git.xlf" PsrId="308" FileType="1" SrcCul="en-US" TgtCul="ko-KR" xmlns="http://schemas.microsoft.com/locstudio/2006/6/lcx">
   <OwnedComments>
     <Cmt Name="Dev" />
@@ -193,6 +193,9 @@
       <Item ItemId=";extensions/vscode.git/bundle.++CODE++0d956bc1273b2c3663c075e95965229e067e6aa8baf635905a73feec866b0ce6" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Would you like {0} to [periodically run "git fetch"]5D;({1})?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0}에서 ["git fetch"를 정기적으로 실행]5D;({1})하도록 하시겠습니까?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5215,8 +5218,8 @@
       <Item ItemId=";extensions/vscode.git/package.view.workbench.scm.workspace" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.]A;[Initialize Repository]5D;(command:git.init)]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[현재 열린 작업 영역에 Git 리포지토리가 포함된 폴더가 없습니다. Git에서 제공하는 소스 제어 기능을 사용하도록 설정할 폴더의 리포지토리를 초기화할 수 있습니다.]D;]A;[리포지토리 초기화]5D;(command:git.init)]D;]A;Azure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs]5D;(https://aka.ms/vscode-scm)를 읽어보세요.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[현재 열린 작업 영역에 Git 리포지토리가 포함된 폴더가 없습니다. Git에서 제공하는 소스 제어 기능을 사용하도록 설정할 폴더의 리포지토리를 초기화할 수 있습니다.]A;[리포지토리 초기화]5D;(command:git.init)]A;Azure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs]5D;(https://aka.ms/vscode-scm)를 읽어보세요.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.]D;]A;[Initialize Repository]5D;(command:git.init)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>

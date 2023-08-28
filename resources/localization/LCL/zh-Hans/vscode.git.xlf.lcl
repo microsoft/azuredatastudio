@@ -949,6 +949,9 @@
       <Item ItemId=";extensions/vscode.git/bundle.++CODE++5fd10738fc1c6f99d48f2d972e7a4c4fa0ffa39ff4f89ae5cba4055c08eb98d4" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The last commit was a merge commit. Are you sure you want to undo it?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[最后一个提交是合并提交。是否确实要撤消它?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5215,8 +5218,8 @@
       <Item ItemId=";extensions/vscode.git/package.view.workbench.scm.workspace" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.]A;[Initialize Repository]5D;(command:git.init)]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[当前打开的工作区没有任何包含 git 存储库的文件夹。可以初始化文件夹上将启用由 git 支持的源代码管理功能的存储库。]D;]A;[初始化存储库]5D;(command:git.init)]D;]A;要详细了解如何在 Azure Data Studio 中使用 git 和源代码管理，请 [阅读我们的文档]5D;(https://aka.ms/vscode-scm)。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[当前打开的工作区没有任何包含 git 存储库的文件夹。可以初始化文件夹上将启用由 git 支持的源代码管理功能的存储库。]A;[初始化存储库]5D;(command:git.init)]A;要详细了解如何在 Azure Data Studio 中使用 git 和源代码管理，请 [阅读我们的文档]5D;(https://aka.ms/vscode-scm)。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.]D;]A;[Initialize Repository]5D;(command:git.init)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>

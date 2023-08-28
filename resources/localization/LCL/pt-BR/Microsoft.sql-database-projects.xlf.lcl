@@ -3304,7 +3304,7 @@
       <Item ItemId=";extensions/Microsoft.sql-database-projects/dist/common/constants.unhandledDeleteType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unhandled item type during exclude: '{0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Tipo de item não tratado durante a exclusão: '{0}]]></Val>
           </Tgt>
           <Prev Cat="Text">

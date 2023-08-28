@@ -641,6 +641,9 @@
         <Item ItemId=";(...) NoServerError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[No servers found in current subscription.]A;Select a different subscription containing at least one server]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[No se encontraron servidores en la suscripción actual.]A;Seleccione otra suscripción que contenga al menos un servidor]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -2352,8 +2355,8 @@
       <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/modelViewUtils.azure.accessError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[]A; Error Details: {0}.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[]D;]A; Detalles del error: {0}. ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[]A; Detalles del error: {0}.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[]D;]A; Error Details: {0}.]]></Val>

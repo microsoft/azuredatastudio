@@ -229,8 +229,8 @@
       <Item ItemId=";extensions/Microsoft.azcli/dist/localizedConstants.az.failedToParseReleaseInfo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to parse the JSON of contents at: {0}.]A;File contents:]A;{1}]A;Error: {2}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Falha ao analisar o JSON de conteúdo em: {0}.]D;]A;Conteúdo do arquivo:]D;]A;{1}]D;]A;Erro: {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Falha ao analisar o JSON de conteúdo em: {0}.]A;Conteúdo do arquivo:]A;{1}]A;Erro: {2}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Failed to parse the JSON of contents at: {0}.]D;]A;File contents:]D;]A;{1}]D;]A;Error: {2}]]></Val>
@@ -361,8 +361,8 @@
       <Item ItemId=";extensions/Microsoft.azcli/dist/localizedConstants.az.noReleaseVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No release version available for platform '{0}']A;Release info: ${1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Nenhuma versão de lançamento disponível para a plataforma ' {0} ']D;]A;Informações sobre a versão: ${1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nenhuma versão de lançamento disponível para a plataforma "{0}"]A;Informações sobre a versão: ${1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No release version available for platform '{0}']D;]A;Release info: ${1}]]></Val>

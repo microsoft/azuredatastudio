@@ -229,8 +229,8 @@
       <Item ItemId=";extensions/Microsoft.azcli/dist/localizedConstants.az.failedToParseReleaseInfo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to parse the JSON of contents at: {0}.]A;File contents:]A;{1}]A;Error: {2}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[{0}에서 콘텐츠의 JSON을 구문 분석하지 못했습니다.]D;]A;파일 내용:]D;]A;{1}]D;]A;오류: {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0}에서 콘텐츠의 JSON을 구문 분석하지 못했습니다.]A;파일 내용:]A;{1}]A;오류: {2}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Failed to parse the JSON of contents at: {0}.]D;]A;File contents:]D;]A;{1}]D;]A;Error: {2}]]></Val>
@@ -349,8 +349,8 @@
       <Item ItemId=";extensions/Microsoft.azcli/dist/localizedConstants.az.noDownloadLink" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No download link available for platform '{0}']A;Release info: ${1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[플랫폼 '{0}']D;]A;릴리스 정보: ${1}에 사용할 수 있는 다운로드 링크가 없습니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[플랫폼 '{0}']A;릴리스 정보: ${1}에 사용할 수 있는 다운로드 링크가 없습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No download link available for platform '{0}']D;]A;Release info: ${1}]]></Val>
@@ -361,8 +361,8 @@
       <Item ItemId=";extensions/Microsoft.azcli/dist/localizedConstants.az.noReleaseVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No release version available for platform '{0}']A;Release info: ${1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[플랫폼 '{0}']D;]A;릴리스 정보: ${1}에 사용할 수 있는 릴리스 버전이 없습니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[플랫폼 '{0}']A;릴리스 정보: ${1}에 사용할 수 있는 릴리스 버전이 없습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No release version available for platform '{0}']D;]A;Release info: ${1}]]></Val>
