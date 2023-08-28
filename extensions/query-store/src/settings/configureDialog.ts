@@ -83,8 +83,7 @@ export class ConfigureDialog {
 
 	/**
 	 * Method to add components to the report.
-	 * The sequence of the components defined in enum list in utils.ts is the order that will be followed for addition to the report.
-	 * @param configComponentsInfo components to be added to the report
+	 * @param configComponentsInfo components to be added to the report. The sequence of the components in this array determines their placement in the report.
 	 */
 	public async openDialog(configComponentsInfo: ConfigComponentsInfo[]): Promise<void> {
 		await this.initializeDialog(configComponentsInfo);
@@ -110,41 +109,43 @@ export class ConfigureDialog {
 			this._view = view;
 			let componentGroups: azdata.GroupContainer[] = [];
 
-			if (configComponentsInfo.includes(ConfigComponentsInfo.consumptionCriteriaComponentTopResource)) {
-				const consumptionCriteriaComponent = await this.createCriteriaComponent(true);
-				const basedOnCriteriaComponent = this.createCriteriaBasedOnComponent();
-				const typeGroup = this.createGroup(constants.topConsumersRadioButtonsLabel, [consumptionCriteriaComponent.component, basedOnCriteriaComponent.component]);
-				componentGroups.push(typeGroup);
-			}
+			for (let config of configComponentsInfo) {
+				if (config === ConfigComponentsInfo.consumptionCriteriaComponentTopResource) {
+					const consumptionCriteriaComponent = await this.createCriteriaComponent(true);
+					const basedOnCriteriaComponent = this.createCriteriaBasedOnComponent();
+					const typeGroup = this.createGroup(constants.topConsumersRadioButtonsLabel, [consumptionCriteriaComponent.component, basedOnCriteriaComponent.component]);
+					componentGroups.push(typeGroup);
+				}
 
-			if (configComponentsInfo.includes(ConfigComponentsInfo.chartComponent)) {
-				this.showChartComponent = this.createShowChartComponent();
-				const typeGroup = this.createGroup(constants.showChartTitle, [this.showChartComponent.component]);
-				componentGroups.push(typeGroup);
-			}
+				if (config === ConfigComponentsInfo.chartComponent) {
+					this.showChartComponent = this.createShowChartComponent();
+					const typeGroup = this.createGroup(constants.showChartTitle, [this.showChartComponent.component]);
+					componentGroups.push(typeGroup);
+				}
 
-			if (configComponentsInfo.includes(ConfigComponentsInfo.timeIntervalComponentOverallResource)) {
-				this.timeIntervalComponent = this.createTimeIntervalComponent(true);
-				const typeGroup = this.createGroup(constants.timeSettingsLabel, [this.timeIntervalComponent.component]);
-				componentGroups.push(typeGroup);
-			}
+				if (config === ConfigComponentsInfo.timeIntervalComponentOverallResource) {
+					this.timeIntervalComponent = this.createTimeIntervalComponent(true);
+					const typeGroup = this.createGroup(constants.timeSettingsLabel, [this.timeIntervalComponent.component]);
+					componentGroups.push(typeGroup);
+				}
 
-			if (configComponentsInfo.includes(ConfigComponentsInfo.timeIntervalComponent)) {
-				this.timeIntervalComponent = this.createTimeIntervalComponent();
-				const typeGroup = this.createGroup(constants.timeIntervalLabel, [this.timeIntervalComponent.component]);
-				componentGroups.push(typeGroup);
-			}
+				if (config === ConfigComponentsInfo.timeIntervalComponent) {
+					this.timeIntervalComponent = this.createTimeIntervalComponent();
+					const typeGroup = this.createGroup(constants.timeIntervalLabel, [this.timeIntervalComponent.component]);
+					componentGroups.push(typeGroup);
+				}
 
-			if (configComponentsInfo.includes(ConfigComponentsInfo.returnComponent)) {
-				this.returnComponent = this.createReturnComponent();
-				const typeGroup = this.createGroup(constants.returnLabel, [this.returnComponent.component]);
-				componentGroups.push(typeGroup);
-			}
+				if (config === ConfigComponentsInfo.returnComponent) {
+					this.returnComponent = this.createReturnComponent();
+					const typeGroup = this.createGroup(constants.returnLabel, [this.returnComponent.component]);
+					componentGroups.push(typeGroup);
+				}
 
-			if (configComponentsInfo.includes(ConfigComponentsInfo.filterComponent)) {
-				this.filterComponent = this.createFilterComponent();
-				const typeGroup = this.createGroup(constants.filterLabel, [this.filterComponent.component]);
-				componentGroups.push(typeGroup);
+				if (config === ConfigComponentsInfo.filterComponent) {
+					this.filterComponent = this.createFilterComponent();
+					const typeGroup = this.createGroup(constants.filterLabel, [this.filterComponent.component]);
+					componentGroups.push(typeGroup);
+				}
 			}
 
 			const divContainer = this._view.modelBuilder.divContainer().withLayout({ width: 'calc(100% - 20px)', height: 'calc(100% - 20px)' }).withProps({
@@ -433,7 +434,7 @@ export class ConfigureDialog {
 		const timeIntervalLabel = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.timeIntervalLabel,
-				width: cssStyles.configureDialogObjectWidth
+				width: cssStyles.configureDialogLabelWidth
 			}).component();
 
 		this.timeIntervalOptionsDropdown = this._view.modelBuilder.dropDown()
@@ -472,7 +473,7 @@ export class ConfigureDialog {
 		const customTimeFromLabel = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.fromLabel,
-				width: cssStyles.configureDialogObjectWidth
+				width: cssStyles.configureDialogLabelWidth
 			}).component();
 
 		this.customTimeFromTextBox = this._view.modelBuilder.inputBox()
@@ -485,7 +486,7 @@ export class ConfigureDialog {
 		const customTimeToLabel = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.toLabel,
-				width: cssStyles.configureDialogObjectWidth
+				width: cssStyles.configureDialogLabelWidth
 			}).component();
 
 		this.customTimeToTextBox = this._view.modelBuilder.inputBox()
@@ -510,7 +511,7 @@ export class ConfigureDialog {
 		const timeFormatLabel = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.timeFormatLabel,
-				width: cssStyles.configureDialogObjectWidth
+				width: cssStyles.configureDialogLabelWidth
 			}).component();
 
 		this.localTimeFormatRadioButton.checked = true;
@@ -527,7 +528,7 @@ export class ConfigureDialog {
 		const aggregationSizeLabel = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.aggregationSizeLabel,
-				width: cssStyles.configureDialogObjectWidth
+				width: cssStyles.configureDialogLabelWidth
 			}).component();
 
 		const timeIntervalFromRow = this._view.modelBuilder.flexContainer()
@@ -626,7 +627,7 @@ export class ConfigureDialog {
 			.withItems([this.returnDataTopRadioButton], { CSSStyles: { flex: '0 0 auto' } })
 			.withProps({ ariaRole: 'radiogroup' })
 			.component();
-		returnTopRow.addItem(this.returnDataTopInputBox, { CSSStyles: { 'margin-left': '145px' } });
+		returnTopRow.addItem(this.returnDataTopInputBox, { CSSStyles: { 'margin-left': '105px' } });
 
 		let flexRadioButtonsModel = this._view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
@@ -644,7 +645,7 @@ export class ConfigureDialog {
 		const filterMinPlanLabel = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.filterMinPlanLabel,
-				width: cssStyles.configureDialogObjectWidth
+				width: cssStyles.configureDialogLabelWidth
 			}).component();
 
 		this.filtersInputBox = this._view.modelBuilder.inputBox()

@@ -5,5 +5,6 @@
 
 // CSS Styles
 export namespace cssStyles {
+	export const configureDialogLabelWidth = '140px';
 	export const configureDialogObjectWidth = '180px';
 }
