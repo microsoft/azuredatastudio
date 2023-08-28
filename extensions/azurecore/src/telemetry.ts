@@ -5,11 +5,11 @@
 
 import AdsTelemetryReporter from '@microsoft/ads-extension-telemetry';
 
-import * as Utils from './utils';
+import { getPackageInfo, IPackageInfo } from './utils';
 
 const packageJson = require('../package.json') as { name: string, version: string, aiKey: string };
 
-let packageInfo: Utils.IPackageInfo | undefined = Utils.getPackageInfo(packageJson);
+let packageInfo: IPackageInfo | undefined = getPackageInfo(packageJson);
 
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 export const TelemetryReporter = new AdsTelemetryReporter<TelemetryViews, TelemetryAction>(packageInfo!.name, packageInfo!.version, packageInfo!.aiKey);
