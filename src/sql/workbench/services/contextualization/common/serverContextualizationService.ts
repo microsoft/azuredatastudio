@@ -111,9 +111,9 @@ export class ServerContextualizationService extends Disposable implements IServe
 			if (activeQueryEditorInput) {
 				activeQueryEditorInput.serverContext = serverContextualizationCompleteParams.context;
 			}
-
-			await this.sendServerContextualizationToCopilot(serverContextualizationCompleteParams.ownerUri, serverContextualizationCompleteParams.context);
 		}
+
+		await this.sendServerContextualizationToCopilot(serverContextualizationCompleteParams.ownerUri, serverContextualizationCompleteParams.context);
 	}
 
 	private async sendServerContextualizationToCopilot(ownerUri: string, serverContext: string[] | undefined): Promise<void> {
