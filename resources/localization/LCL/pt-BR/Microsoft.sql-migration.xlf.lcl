@@ -731,7 +731,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Login migration completed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Migração de logon concluída]]></Val>
+            <Val><![CDATA[Migração de login concluída]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Migrate logins]]></Val>
@@ -796,8 +796,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.wizard.target.data.migration.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[We recommend migrating your databases(s) to the Azure SQL target before starting the login migration to avoid failures in the process. Nevertheless, you can run this migration process whenever want you want if your goal is to update the user mapping for recently migrated databases.]A;]A; If the source and database names are not the same, then it is possible that some permissions may not be applied properly.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Observe que o recurso de migração de logon está no modo de visualização pública.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Recomendamos migrar seus bancos de dados para o destino do SQL do Azure antes de iniciar a migração de login para evitar falhas no processo. No entanto, você pode executar esse processo de migração sempre que quiser se o seu objetivo for atualizar o mapeamento de usuário para bancos de dados migrados recentemente.]A;]A; Se os nomes de origem e banco de dados não forem os mesmos, é possível que algumas permissões não sejam aplicadas adequadamente.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Please note that login migration feature is in public preview mode.]]></Val>
@@ -817,8 +817,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.wizard.target.permission.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please ensure that the current user ({0}) has sysadmin permissions to get all login information for the current instance ({1}).]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Verifique se o usuário atual tem permissões de administrador de sistema para obter todas as informações de logon da instância atual ({0}).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Certifique-se de que o usuário atual ({0}) tenha permissões de administrador de sistema para obter todas as informações de login da instância atual ({1}).]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Please ensure that the current user has sysadmin permissions to get all login information for the current instance ({0}).]]></Val>
@@ -1492,8 +1492,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.cannot.retry" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Migration cannot be restarted.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[A migração não pode ser repetida.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[A migração não pôde ser reiniciada.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Migration cannot be retried.]]></Val>
@@ -2395,8 +2395,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.migration.status.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Login migration status: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Status de migração de banco de dados: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Status da migração do login: {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Database migration status: {0}]]></Val>
@@ -7852,6 +7852,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.migrate.required" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[TDE certificate migration must be successful before continuing.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[A migração do certificado TDE deve ser bem-sucedida antes de continuar.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8056,8 +8059,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.wizard.optionmanual" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[I have already migrated my certificates and private keys to the target.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Não quero que o Azure Data Studio exporte os certificados.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Já migrei meus certificados e chaves privadas para o destino.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[I don't want Azure Data Studio to export the certificates.]]></Val>

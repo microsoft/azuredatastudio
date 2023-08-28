@@ -3304,8 +3304,8 @@
       <Item ItemId=";extensions/Microsoft.sql-database-projects/dist/common/constants.unhandledDeleteType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unhandled item type during exclude: '{0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[삭제하는 동안 처리되지 않는 항목 종류: '{0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[제외하는 동안 처리되지 않는 항목 종류: '{0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Unhandled item type during delete: '{0}]]></Val>
@@ -3952,8 +3952,8 @@
       <Item ItemId=";extensions/Microsoft.sql-database-projects/package.sqlDatabaseProjects.welcome" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No database projects currently open.]A;[New Project]5D;(command:sqlDatabaseProjects.new)]A;[Open Project]5D;(command:sqlDatabaseProjects.open)]A;[Create Project From Database]5D;(command:sqlDatabaseProjects.importDatabase)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[현재 열려 있는 데이터베이스 프로젝트가 없습니다.]D;]A;[새 프로젝트]5D; (command: sqlDatabaseProjects.new)]D;]A;[프로젝트 열기]5D; (command: sqlDatabaseProjects)]D;]A;[데이터베이스에서 프로젝트 만들기]5D; (command: sqlDatabaseProjects. importDatabase)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[현재 열려 있는 데이터베이스 프로젝트가 없습니다.]A;[새 프로젝트]5D;(command: sqlDatabaseProjects.new)]A;[프로젝트 열기]5D;(command: sqlDatabaseProjects)]A;[데이터베이스에서 프로젝트 만들기]5D;(command: sqlDatabaseProjects. importDatabase)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No database projects currently open.]D;]A;[New Project]5D;(command:sqlDatabaseProjects.new)]D;]A;[Open Project]5D;(command:sqlDatabaseProjects.open)]D;]A;[Create Project From Database]5D;(command:sqlDatabaseProjects.importDatabase)]]></Val>

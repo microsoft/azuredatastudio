@@ -274,6 +274,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.inputDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Retrieves data from a database]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[從資料庫擷取資料]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -469,6 +472,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.selectSqlTableOrViewPrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select object type to insert or upsert into]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[選取要插入或向上插入的物件類型]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -592,6 +598,9 @@
       <Item ItemId=";extensions/ms-mssql.sql-bindings-vscode/dist/common/constants.viewListProgressTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Fetching views for selected database...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在擷取所選資料庫的檢視...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

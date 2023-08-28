@@ -700,8 +700,8 @@
       <Item ItemId=";extensions/Microsoft.data-workspace/package.projects-view-no-project-content" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No projects open in current workspace.]A;[Create new]5D;(command:projects.new)]A;[Open existing]5D;(command:projects.openExisting)]A;To learn more about projects [read our docs]5D;(https://aka.ms/azuredatastudio-projects).]A;]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[目前工作區未開啟任何專案。]D;]A;[建立新的]5D; (command:projects.new)]D;]A;[開啟現有的]5D;(command:projects.openExisting)]D;]A;若要深入了解專案，請[閱讀我們的文件]5D;(https://aka.ms/azuredatastudio-projects)。]D;]A;]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[目前工作區未開啟任何專案。]A;[建立新的]5D;(command:projects.new)]A;[開啟現有的]5D;(command:projects.openExisting)]A;若要深入了解專案，請[閱讀我們的文件]5D;(https://aka.ms/azuredatastudio-projects)。]A;]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No projects open in current workspace.]D;]A;[Create new]5D;(command:projects.new)]D;]A;[Open existing]5D;(command:projects.openExisting)]D;]A;To learn more about projects [read our docs]5D;(https://aka.ms/azuredatastudio-projects).]D;]A;]]></Val>
@@ -712,8 +712,8 @@
       <Item ItemId=";extensions/Microsoft.data-workspace/package.projects-view-no-workspace-content" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create new or open existing to get started.]A;[Create new]5D;(command:projects.new)]A;[Open existing]5D;(command:projects.openExisting)]A;To learn more about projects [read our docs]5D;(https://aka.ms/azuredatastudio-projects).]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[建立新的或開啟現有的以開始使用。]D;]A;[建立新的]5D; (command:projects.new)]D;]A;[開啟現有的]5D;(command:projects.openExisting)]D;]A;若要深入了解專案，請[閱讀我們的文件]5D;(https://aka.ms/azuredatastudio-projects)。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[建立新的或開啟現有的以開始使用。]A;[建立新的]5D;(command:projects.new)]A;[開啟現有的]5D;(command:projects.openExisting)]A;若要深入了解專案，請[閱讀我們的文件]5D;(https://aka.ms/azuredatastudio-projects)。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Create new or open existing to get started.]D;]A;[Create new]5D;(command:projects.new)]D;]A;[Open existing]5D;(command:projects.openExisting)]D;]A;To learn more about projects [read our docs]5D;(https://aka.ms/azuredatastudio-projects).]]></Val>

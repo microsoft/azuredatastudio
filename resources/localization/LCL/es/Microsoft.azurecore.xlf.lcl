@@ -56,6 +56,9 @@
         <Item ItemId=";(...) ure.resource.providers.databaseServer.treeDataProvider.cosmosDbPostgresContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Azure CosmosDB for PostgreSQL Cluster]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Clúster Azure CosmosDB para PostgreSQL]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -843,6 +846,9 @@
       <Item ItemId=";extensions/Microsoft.azurecore/dist/localizedConstants.azure.noCloudsEnabled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No clouds are enabled, please enable a cloud to continue.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No hay nubes habilitadas, habilite una nube para continuar.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1041,6 +1047,9 @@
       <Item ItemId=";extensions/Microsoft.azurecore/dist/localizedConstants.azurecore.enablePublicCloud" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[enablePublicCloud]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[enablePublicCloud]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1251,8 +1260,8 @@
       <Item ItemId=";extensions/Microsoft.azurecore/dist/localizedConstants.azurecore.reloadPrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} setting changed, please reload Azure Data Studio.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[La biblioteca de autenticación ha cambiado. Vuelva a cargar Azure Data Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} ha cambiado, vuelva a cargar Azure Data Studio.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Authentication Library has changed, please reload Azure Data Studio.]]></Val>
@@ -1263,6 +1272,9 @@
       <Item ItemId=";extensions/Microsoft.azurecore/dist/localizedConstants.azurecore.reloadPromptCacheClear" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Token cache has been cleared successfully, please reload Azure Data Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La caché de token se ha borrado correctamente, vuelva a cargar Azure Data Studio.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1512,12 +1524,18 @@
       <Item ItemId=";extensions/Microsoft.azurecore/dist/utils.providerSettings.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not load endpoints from settings, please check the logs for more details.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se han podido cargar los puntos de conexión desde la configuración, compruebe los registros para obtener más detalles.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azurecore/dist/utils.providerSettings.success" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Successfully loaded custom endpoints from settings]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Puntos de conexión personalizados cargados correctamente desde la configuración]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

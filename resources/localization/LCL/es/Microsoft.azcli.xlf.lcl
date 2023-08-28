@@ -349,8 +349,8 @@
       <Item ItemId=";extensions/Microsoft.azcli/dist/localizedConstants.az.noDownloadLink" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No download link available for platform '{0}']A;Release info: ${1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[No hay ningún vínculo de descarga disponible para la plataforma \"{0}\"]D;]A;Información de la versión: ${1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No hay ningún vínculo de descarga disponible para la plataforma “{0}"]A;Información de la versión: ${1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No download link available for platform '{0}']D;]A;Release info: ${1}]]></Val>
