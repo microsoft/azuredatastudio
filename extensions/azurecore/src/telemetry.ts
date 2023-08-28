@@ -3,13 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as vscode from 'vscode';
 import AdsTelemetryReporter from '@microsoft/ads-extension-telemetry';
+import { IPackageInfo } from './utils';
+import * as Constants from './constants';
 
-import { getPackageInfo, IPackageInfo } from './utils';
 
-const packageJson = require('../package.json') as { name: string, version: string, aiKey: string };
-
-let packageInfo: IPackageInfo | undefined = getPackageInfo(packageJson);
+const packageInfo = vscode.extensions.getExtension(Constants.PackageName)?.packageJSON as IPackageInfo | undefined;
 
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 export const TelemetryReporter = new AdsTelemetryReporter<TelemetryViews, TelemetryAction>(packageInfo!.name, packageInfo!.version, packageInfo!.aiKey);

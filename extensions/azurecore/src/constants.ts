@@ -53,6 +53,8 @@ export const CustomProviderSettings = 'customProviderSettings';
 
 export const CustomProviderSettingsSection = AzureSection + '.' + CustomProviderSettings;
 
+export const PackageName = 'Microsoft.azurecore';
+
 /** MSAL Account version */
 export const AccountVersion = '2.0';
 
