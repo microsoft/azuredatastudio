@@ -20,6 +20,9 @@
         <Item ItemId=";(...) ror" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[An error occurred in MSAL library when requesting auth code URL. For more detailed information on error, please check 'Azure Accounts' output pane. ]A;]A;]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[要求驗證碼 URL 時，MSAL 程式庫發生錯誤。如需錯誤的詳細資訊，請檢查 [Azure 帳戶]5D; 輸出窗格。 ]A;]A;]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -253,9 +256,9 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) ntsLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[No Tenants found.]]></Val>
+            <Val><![CDATA[Sign in to Azure...]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[找不到任何租用戶。]]></Val>
+              <Val><![CDATA[登入 Azure…]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -360,8 +363,8 @@
       <Item ItemId=";extensions/Microsoft.azurecore/dist/account-provider/auths/azureAuth.azurecore.confirmIgnoreTenantDialog.body" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. ]A;]A;To allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.]A;]A;Do you wish to proceed?]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure Data Studio 不會再觸發此租用戶 {0} ({1}) 的驗證，且資源無法存取。]D;]A;]D;]A;若要再次允許存取此租用戶的資源，您必須從 '{2}' 設定的排除清單中移除該租用戶。]D;]A;]D;]A;是否要繼續?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio 不會再觸發此租用戶 {0} ({1}) 的驗證，且資源將無法存取。. ]A;]A;若要再次允許此租用戶存取資源，您必須從 '{2}' 設定的排除清單中移除該租用戶。]A;]A;是否要繼續?]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. ]D;]A;]D;]A;To allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.]D;]A;]D;]A;Do you wish to proceed?]]></Val>
@@ -429,8 +432,8 @@
       <Item ItemId=";extensions/Microsoft.azurecore/dist/account-provider/auths/azureAuth.msal.accountNotFoundError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unable to find account info when acquiring token, please remove account and add again.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[取得權杖時找不到帳戶資訊。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[取得權杖時找不到帳戶資訊，請移除帳戶，然後再新增一次。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Unable to find account info when acquiring token.]]></Val>
@@ -549,8 +552,8 @@
       <Item ItemId=";extensions/Microsoft.azurecore/dist/account-provider/azureAccountProvider.msalTokenError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} occurred when acquiring token. ]A;{1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[取得權杖時發生{0}。]D;]A;{1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[取得權杖時發生 {0}。]A;{1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[{0} occurred when acquiring token. ]D;]A;{1}]]></Val>
@@ -741,8 +744,8 @@
       <Item ItemId=";extensions/Microsoft.azurecore/dist/azureResource/services/terminalService.azure.shellClosed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Shell closed.]A;]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Shell 已關閉。]D;]A;]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Shell 已關閉。]A;]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Shell closed.]D;]A;]]></Val>

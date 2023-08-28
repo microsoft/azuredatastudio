@@ -796,8 +796,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.wizard.target.data.migration.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[We recommend migrating your databases(s) to the Azure SQL target before starting the login migration to avoid failures in the process. Nevertheless, you can run this migration process whenever want you want if your goal is to update the user mapping for recently migrated databases.]A;]A; If the source and database names are not the same, then it is possible that some permissions may not be applied properly.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[请注意，登录迁移功能处于公共预览模式。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[建议在开始登录迁移之前，先将数据库迁移到 Azure SQL 目标，以避免过程中出现故障。但是，如果目标是更新最近迁移的数据库的用户映射，你可以根据需要随时运行此迁移过程。]A;]A;如果源名称和数据库名称不同，则某些权限可能无法正确应用。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Please note that login migration feature is in public preview mode.]]></Val>
@@ -817,8 +817,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.wizard.target.permission.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please ensure that the current user ({0}) has sysadmin permissions to get all login information for the current instance ({1}).]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[请确保当前用户具有获取当前实例({0})的所有登录信息的系统管理员权限。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[请确保当前用户 ({0}) 具有获取当前实例 ({1}) 的所有登录信息的系统管理员权限。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Please ensure that the current user has sysadmin permissions to get all login information for the current instance ({0}).]]></Val>
@@ -1492,8 +1492,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.cannot.retry" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Migration cannot be restarted.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[无法重试迁移。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[无法启动迁移。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Migration cannot be retried.]]></Val>
@@ -4912,8 +4912,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.retry.migration.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while restarting the migration.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[重试迁移时出现错误。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[开始迁移时出现错误。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[An error occurred while retrying the migration.]]></Val>
@@ -5503,8 +5503,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.service.not.ready.below" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.]A;]A;See below for registration instructions.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[未注册 Azure 数据库迁移服务。Azure 数据库迁移服务 "{0}" 需要向任意节点上的自承载集成运行时进行注册。]D;]A;]D;]A;请参阅下面的注册说明。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[未注册 Azure 数据库迁移服务。Azure 数据库迁移服务“{0}”需要向任意节点上的自承载集成运行时进行注册。]A;]A;请参阅下面的注册说明。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.]D;]A;]D;]A;See below for registration instructions.]]></Val>
@@ -5524,8 +5524,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.service.ready" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}]A;]A;For improved performance and high availability, you can register additional nodes.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure 数据库迁移服务 "{0}" 连接到在节点上运行的自承载集成运行时 - {1}]D;]A;]D;]A;为了提高性能和高可用性，你可以注册其他节点。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure 数据库迁移服务 "{0}" 连接到在节点上运行的自承载集成运行时 - {1}]A;]A;为了提高性能和高可用性，你可以注册其他节点。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}]D;]A;]D;]A;For improved performance and high availability, you can register additional nodes.]]></Val>
@@ -5536,8 +5536,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.service.ready.below" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}]A;]A;For improved performance and high availability, you can register additional nodes. See below for registration instructions.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure 数据库迁移服务 "{0}" 连接到在节点上运行的自承载集成运行时 - {1}]D;]A;]D;]A;为了提高性能和高可用性，你可以注册其他节点。请参阅下面的注册说明。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure 数据库迁移服务“{0}”连接到在节点上运行的自承载集成运行时 - {1}]A;]A;为了提高性能和高可用性，你可以注册其他节点。请参阅下面的注册说明。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}]D;]A;]D;]A;For improved performance and high availability, you can register additional nodes. See below for registration instructions.]]></Val>
@@ -7753,12 +7753,18 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.cert.migration.info" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You must click the '{0}' button before proceeding to the next page of the wizard.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[必须点击“{0}”按钮，然后才能继续转到向导的下一页。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.cert.network.info" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please enter a network path where SQL Server will export the certificates. Also verify that SQL Server service has write access to this path and the current user should have administrator privileges on the computer where this network path is.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[请输入 SQL Server 将导出证书的网络路径。还要验证 SQL Server 服务是否具有对此路径的写入访问权限，并且当前用户应具有此网络路径所在的计算机的管理员权限。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7846,6 +7852,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.migrate.required" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[TDE certificate migration must be successful before continuing.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[必须先成功迁移 TDE 证书，然后才能继续。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7951,8 +7960,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.msg.manual" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You have not given Azure Data Studio access to migrate the encryption certificates.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[你已选择手动迁移证书。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[你尚未授予 Azure Data Studio 迁移加密证书和数据库的访问权限。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[You have chosen to manually migrate certificates.]]></Val>
@@ -7963,8 +7972,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.msg.tde" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You have given Azure Data Studio access to migrate the encryption certificates and database.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[你已授予迁移加密证书和数据库 Azure Data Studio 的访问权限。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[你已授予 Azure Data Studio 迁移加密证书和数据库的访问权限。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[You have given access to Azure Data Studio to migrate the encryption certificates and database.]]></Val>
@@ -8029,7 +8038,7 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.wizard.optionads" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Export my certificates and private keys to the target.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[将我的证书和私钥导出到目标。]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -8050,8 +8059,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.wizard.optionmanual" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[I have already migrated my certificates and private keys to the target.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[我不希望 Azure Data Studio 导出证书。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[我已将证书和私钥迁移到目标。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[I don't want Azure Data Studio to export the certificates.]]></Val>
@@ -8062,8 +8071,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.wizard.optionmanual.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Certificates must be migrated before proceeding with the database migration otherwise a failure will occur. {0} about manually migrating TDE certificates.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[必须先迁移证书，然后再继续迁移，否则迁移将失败。{0}。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[必须先迁移证书，然后才能继续数据库迁移，否则将发生故障。{0} 有关手动迁移 TDE 证书的信息。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[You must migrate the certificates before proceeding with the migration otherwise the migration will fail. {0}.]]></Val>
@@ -8374,8 +8383,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.validation.dialog.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Certificates Migration]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[正在运行验证]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[证书迁移]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Running validation]]></Val>

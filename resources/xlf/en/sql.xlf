@@ -2478,8 +2478,8 @@ Default Skipped Commands:
     <trans-unit id="disposeEditFailure">
       <source xml:lang="en">Dispose Edit Failed With Error: </source>
     </trans-unit>
-    <trans-unit id="editData.closeSql">
-      <source xml:lang="en">Close SQL Pane</source>
+    <trans-unit id="editData.hideSql">
+      <source xml:lang="en">Hide SQL Pane</source>
     </trans-unit>
     <trans-unit id="editData.run">
       <source xml:lang="en">Run</source>
@@ -4573,6 +4573,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="queryEditor.chart.defaultChartType">
       <source xml:lang="en">The default chart type to use when opening Chart Viewer from a Query Results</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.githubCopilotContextualizationEnabled">
+      <source xml:lang="en">(Preview) Enable contextualization of queries for GitHub Copilot. This setting helps GitHub Copilot to return improved suggestions, if the Copilot extension is installed and providers have implemented contextualization.</source>
     </trans-unit>
     <trans-unit id="queryEditor.inMemoryDataProcessingThreshold">
       <source xml:lang="en">Controls the max number of rows allowed to do filtering and sorting in memory. If the number is exceeded, sorting and filtering will be disabled. Warning: Increasing this may impact performance.</source>

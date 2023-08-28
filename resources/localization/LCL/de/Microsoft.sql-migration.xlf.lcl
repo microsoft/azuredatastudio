@@ -27,6 +27,9 @@
         <Item ItemId=";(...) sions" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Establishing user mappings completed.]A;]A;Currently, migrating server roles, establishing server mappings and setting permissions. This will take some time.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Das Einrichten von Benutzerzuordnungen wurde abgeschlossen.]A;]A;Aktuell werden Serverrollen migriert, Serverzuordnungen eingerichtet und Berechtigungen festgelegt. Dies nimmt einige Zeit in Anspruch.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -481,8 +484,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.establish.user.mappings" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Validating and migrating logins completed.]A;]A;Establishing user mappings.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Das Überprüfen und Migrieren von Anmeldungen wurde abgeschlossen.]D;]D;]A;Benutzerzuordnungen werden eingerichtet.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Das Überprüfen und Migrieren von Anmeldungen wurde abgeschlossen.]A;]A;Benutzerzuordnungen werden eingerichtet.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Validating and migrating logins completed.]D;]A;]D;]A;Establishing user mappings.]]></Val>
@@ -793,8 +796,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.wizard.target.data.migration.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[We recommend migrating your databases(s) to the Azure SQL target before starting the login migration to avoid failures in the process. Nevertheless, you can run this migration process whenever want you want if your goal is to update the user mapping for recently migrated databases.]A;]A; If the source and database names are not the same, then it is possible that some permissions may not be applied properly.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Bitte beachten Sie, dass sich das Feature für die Anmeldemigration im öffentlichen Vorschaumodus befindet.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Wir empfehlen, Ihre Datenbanken vor Beginn der Benutzernamenmigration zum Azure SQL-Ziel zu migrieren, um Fehler während des Prozesses zu vermeiden. Unabhängig davon können Sie diesen Migrationsprozess jederzeit durchführen, wenn Sie die Benutzerzuordnung für kürzlich migrierte Datenbanken aktualisieren möchten.]A;]A;Wenn die Namen von Quelle und Datenbank nicht übereinstimmen, werden einige Berechtigungen möglicherweise nicht richtig angewendet.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Please note that login migration feature is in public preview mode.]]></Val>
@@ -814,8 +817,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.wizard.target.permission.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please ensure that the current user ({0}) has sysadmin permissions to get all login information for the current instance ({1}).]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Stellen Sie sicher, dass der aktuelle Benutzer über Berechtigungen als Systemadministrator verfügt, um alle Anmeldeinformationen für die aktuelle Instanz ({0}) abzurufen.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Stellen Sie sicher, dass der*die aktuelle Benutzer*in ({0}) über Berechtigungen als Systemadministrator*in verfügt, um alle Anmeldeinformationen für die aktuelle Instanz ({1}) abzurufen.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Please ensure that the current user has sysadmin permissions to get all login information for the current instance ({0}).]]></Val>
@@ -967,8 +970,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.assessment.in.progress.content" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[We are assessing the databases in your SQL Server instance {0} to identify the right Azure SQL target.]A;]A;This may take some time.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Wir bewerten die Datenbanken in Ihrer SQL Server-Instanz {0}, um das richtige Azure SQL-Ziel zu identifizieren.]D;]A;]D;]A;Dies kann einige Zeit dauern.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Wir bewerten die Datenbanken in Ihrer SQL Server-Instanz "{0}", um das richtige Azure SQL-Ziel zu identifizieren.]A;]A;Dies kann einige Zeit dauern.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[We are assessing the databases in your SQL Server instance {0} to identify the right Azure SQL target.]D;]A;]D;]A;This may take some time.]]></Val>
@@ -1489,8 +1492,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.cannot.retry" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Migration cannot be restarted.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Die Migration kann nicht wiederholt werden.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Migration kann nicht erneut gestartet werden.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Migration cannot be retried.]]></Val>
@@ -2392,8 +2395,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.migration.status.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Login migration status: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Status der Datenbankmigration: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Status der Benutzernamenmigration: {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Database migration status: {0}]]></Val>
@@ -4909,8 +4912,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.retry.migration.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while restarting the migration.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Fehler beim Wiederholen der Migration.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim erneuten Starten der Migration.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[An error occurred while retrying the migration.]]></Val>
@@ -5500,8 +5503,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.service.not.ready.below" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.]A;]A;See below for registration instructions.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure Database Migration Service ist nicht registriert. Azure Database Migration Service "{0}" muss bei selbstgehosteten Integration Runtime auf jedem Knoten registriert werden.]D;]A;]D;]A;Registrierungsanweisungen finden Sie unten.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Database Migration Service ist nicht registriert. Azure Database Migration Service '{0}' muss mit einer selbstgehosteten Integration Runtime auf einem beliebigen Knoten registriert werden.]A;]A;Anweisungen zur Registrierung finden Sie unten.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.]D;]A;]D;]A;See below for registration instructions.]]></Val>
@@ -5521,8 +5524,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.service.ready" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}]A;]A;For improved performance and high availability, you can register additional nodes.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure Database Migration Service "{0}" ist mit einer selbstgehosteten Integration Runtime verbunden, die auf Knoten ausgeführt wird – {1}]D;]A;]D;]A;Um die Leistung und Hochverfügbarkeit zu verbessern, können Sie zusätzliche Knoten registrieren.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Database Migration Service "{0}" ist mit einer selbstgehosteten Integration Runtime verbunden, die auf Knoten ausgeführt wird – {1}]A;]A;Um die Leistung und Hochverfügbarkeit zu verbessern, können Sie zusätzliche Knoten registrieren.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}]D;]A;]D;]A;For improved performance and high availability, you can register additional nodes.]]></Val>
@@ -5533,8 +5536,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.service.ready.below" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}]A;]A;For improved performance and high availability, you can register additional nodes. See below for registration instructions.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure Database Migration Service "{0}" ist mit einer selbstgehosteten Integration Runtime verbunden, die auf Knoten ausgeführt wird – {1}]D;]A;]D;]A;Um die Leistung und Hochverfügbarkeit zu verbessern, können Sie zusätzliche Knoten registrieren. Registrierungsanweisungen finden Sie unten.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Database Migration Service '{0}' ist mit einer selbstgehosteten Integration Runtime verbunden, die auf einem oder mehreren Knoten ausgeführt wird – {1}]A;]A;Für bessere Leistung und Hochverfügbarkeit können Sie zusätzliche Knoten registrieren. Anweisungen zur Registrierung finden Sie unten.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}]D;]A;]D;]A;For improved performance and high availability, you can register additional nodes. See below for registration instructions.]]></Val>
@@ -7750,12 +7753,18 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.cert.migration.info" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You must click the '{0}' button before proceeding to the next page of the wizard.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Sie müssen auf die Schaltfläche "{0}" klicken, bevor Sie mit der nächsten Seite des Assistenten fortfahren.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.cert.network.info" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please enter a network path where SQL Server will export the certificates. Also verify that SQL Server service has write access to this path and the current user should have administrator privileges on the computer where this network path is.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Geben Sie einen Netzwerkpfad ein, in den SQL Server die Zertifikate exportieren. Stellen Sie außerdem sicher, dass SQL Server Dienst Schreibzugriff auf diesen Pfad hat und der aktuelle Benutzer über Administratorrechte auf dem Computer verfügen sollte, auf dem sich dieser Netzwerkpfad befindet.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7843,6 +7852,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.migrate.required" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[TDE certificate migration must be successful before continuing.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Bevor Sie fortfahren können, muss die TDE-Zertifikatmigration erfolgreich durchgeführt worden sein.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7948,8 +7960,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.msg.manual" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You have not given Azure Data Studio access to migrate the encryption certificates.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Sie haben sich entschieden, Zertifikate manuell zu migrieren.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Sie haben keinen Zugriff auf Azure Data Studio, um die Verschlüsselungszertifikate zu migrieren.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[You have chosen to manually migrate certificates.]]></Val>
@@ -7960,7 +7972,7 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.msg.tde" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You have given Azure Data Studio access to migrate the encryption certificates and database.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Sie haben den Zugriff auf Azure Data Studio gewährt, um die Verschlüsselungszertifikate und die Datenbank zu migrieren.]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -8026,8 +8038,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.wizard.optionads" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Export my certificates and private keys to the target.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Exportieren Sie meine Zertifikate und den privaten Schlüssel in das Ziel.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Exportieren Sie meine Zertifikate und privaten Schlüssel in das Ziel.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Export my certificates and private key to the target.]]></Val>
@@ -8047,8 +8059,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.wizard.optionmanual" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[I have already migrated my certificates and private keys to the target.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Ich möchte nicht, dass Azure Data Studio die Zertifikate exportiert.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ich habe meine Zertifikate und privaten Schlüssel bereits zum Ziel migriert.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[I don't want Azure Data Studio to export the certificates.]]></Val>
@@ -8059,8 +8071,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.wizard.optionmanual.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Certificates must be migrated before proceeding with the database migration otherwise a failure will occur. {0} about manually migrating TDE certificates.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Sie müssen die Zertifikate migrieren, bevor Sie mit der Migration fortfahren. Andernfalls schlägt die Migration fehl. {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Zertifikate müssen migriert werden, bevor mit der Datenbankmigration fortgefahren wird. Andernfalls tritt ein Fehler auf. {0} zur manuellen Migration von TDE-Zertifikaten.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[You must migrate the certificates before proceeding with the migration otherwise the migration will fail. {0}.]]></Val>
@@ -8371,8 +8383,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.validation.dialog.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Certificates Migration]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Validierung wird ausgeführt]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Zertifikatmigration]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Running validation]]></Val>
@@ -8614,8 +8626,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.wizard.perfCollection.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:]A;]A;{1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Fehler beim Erfassen von Leistungsdaten für den Server '{0}'. Wenn diese Probleme weiterhin bestehen, starten Sie den Datensammlungsprozess neu:]D;]A;]D;]A;{1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Erfassen von Leistungsdaten für den Server '{0}'. Wenn diese Probleme weiterhin bestehen, starten Sie den Datensammlungsprozess neu:]A;]A;{1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:]D;]A;]D;]A;{1}]]></Val>
