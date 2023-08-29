@@ -214,7 +214,7 @@ export const PermissionToConnectText = localize('objectManagement.login.permissi
 export const LoginLockedOutText = localize('objectManagement.login.lockedOutLabel', "Login is locked out");
 export const WindowsAuthenticationTypeDisplayText = localize('objectManagement.login.windowsAuthenticationType', "Windows Authentication");
 export const SQLAuthenticationTypeDisplayText = localize('objectManagement.login.sqlAuthenticationType', "SQL Authentication");
-export const AADAuthenticationTypeDisplayText = localize('objectManagement.login.aadAuthenticationType', "Azure Active Directory Authentication");
+export const AADAuthenticationTypeDisplayText = localize('objectManagement.login.aadAuthenticationType', "Microsoft Entra ID Authentication");
 export const OldPasswordCannotBeEmptyError = localize('objectManagement.login.oldPasswordCannotBeEmptyError', "Old password cannot be empty.");
 
 // User
@@ -222,7 +222,7 @@ export const UserTypeText = localize('objectManagement.user.type', "Type");
 export const UserType_LoginMapped = localize('objectManagement.user.loginMapped', "Mapped to a server login");
 export const UserType_WindowsUser = localize('objectManagement.user.windowsUser', "Mapped to a Windows user/group");
 export const UserType_SqlAuthentication = localize('objectManagement.user.sqlAuth', "Authenticate with password");
-export const UserType_AADAuthentication = localize('objectManagement.user.aadAuth', "Authenticate with Azure Active Directory");
+export const UserType_AADAuthentication = localize('objectManagement.user.aadAuth', "Authenticate with Microsoft Entra");
 export const UserType_NoLoginAccess = localize('objectManagement.user.noLogin', "No Login Access");
 export const DefaultSchemaText = localize('objectManagement.user.defaultSchemaLabel', "Default schema");
 export const LoginText = localize('objectManagement.user.loginLabel', "Login");
