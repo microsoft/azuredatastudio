@@ -8,10 +8,13 @@ import * as azdata from 'azdata';
 import * as path from 'path';
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
+import { ConfigureDialog } from '../settings/configureDialog';
 
 export abstract class BaseQueryStoreReport {
 	protected editor: azdata.workspace.ModelViewEditor;
 	protected flexModel?: azdata.FlexContainer;
+	protected configureDialog?: ConfigureDialog;
+	protected configureButton?: azdata.ButtonComponent;
 
 	constructor(reportName: string, private reportTitle: string, protected resizeable: boolean, private extensionContext: vscode.ExtensionContext) {
 		this.editor = azdata.workspace.createModelViewEditor(reportName, { retainContextWhenHidden: true, supportsSave: false }, reportName);
@@ -103,7 +106,7 @@ export abstract class BaseQueryStoreReport {
 			CSSStyles: { 'margin-top': '5px', 'margin-bottom': '5px', 'margin-right': '15px' }
 		}).component();
 
-		const configureButton = view.modelBuilder.button().withProps({
+		this.configureButton = view.modelBuilder.button().withProps({
 			label: constants.configure,
 			title: constants.configure,
 			iconPath: {
@@ -111,16 +114,14 @@ export abstract class BaseQueryStoreReport {
 				dark: path.join(this.extensionContext.extensionPath, 'images', 'dark', 'gear.svg')
 			}
 		}).component();
+		this.configureButton.enabled = true;
 
-		// TODO: enable after the configuration dialog is implemented
-		configureButton.enabled = false;
-
-		configureButton.onDidClick(() => {
-			// TODO: implement configuration dialog
-			console.error('configuration dialog not implemented')
+		this.configureButton.onDidClick(async () => {
+			this.configureDialog = new ConfigureDialog();
+			await this.configureButtonClick(this.configureDialog);
 		});
 
-		await configureButton.updateCssStyles({ 'margin-top': '5px' });
+		await this.configureButton.updateCssStyles({ 'margin-top': '5px' });
 
 		toolBar.addToolbarItems([
 			{
@@ -132,7 +133,7 @@ export abstract class BaseQueryStoreReport {
 				toolbarSeparatorAfter: true
 			},
 			{
-				component: configureButton
+				component: this.configureButton
 			}
 		]);
 
@@ -140,5 +141,6 @@ export abstract class BaseQueryStoreReport {
 	}
 
 	protected abstract createViews(_view: azdata.ModelView): Promise<azdata.FlexContainer[]>;
+	protected abstract configureButtonClick(configureDialog: ConfigureDialog): Promise<void>;
 }
 
