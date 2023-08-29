@@ -5,25 +5,25 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as utils from '../api/utils';
-import { MigrationTargetType } from '../api/utils';
-import * as contracts from '../service/contracts';
-import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, PerformanceDataSourceOptions, StateChangeEvent, AssessmentRuleId } from '../models/stateMachine';
-import { AssessmentResultsDialog } from '../dialog/assessment/assessmentResultsDialog';
-import { SkuRecommendationResultsDialog } from '../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
-import { GetAzureRecommendationDialog } from '../dialog/skuRecommendationResults/getAzureRecommendationDialog';
-import * as constants from '../constants/strings';
+import * as utils from '../../api/utils';
+import { MigrationTargetType } from '../../api/utils';
+import * as contracts from '../../service/contracts';
+import { MigrationWizardPage } from '../../models/migrationWizardPage';
+import { MigrationStateModel, PerformanceDataSourceOptions, StateChangeEvent, AssessmentRuleId } from '../../models/stateMachine';
+import { AssessmentResultsDialog } from '../../dialog/assessment/assessmentResultsDialog';
+import { SkuRecommendationResultsDialog } from '../../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
+import { GetAzureRecommendationDialog } from '../../dialog/skuRecommendationResults/getAzureRecommendationDialog';
+import * as constants from '../../constants/strings';
 import { EOL } from 'os';
-import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
-import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import * as styles from '../constants/styles';
-import { SkuEditParametersDialog } from '../dialog/skuRecommendationResults/skuEditParametersDialog';
-import { logError, TelemetryViews, TelemetryAction, sendSqlMigrationActionEvent, getTelemetryProps } from '../telemetry';
-import { TdeConfigurationDialog } from '../dialog/tdeConfiguration/tdeConfigurationDialog';
-import { TdeMigrationModel } from '../models/tdeModels';
-import { getSourceConnectionProfile } from '../api/sqlUtils';
-import { ConfigDialogSetting } from '../models/tdeModels'
+import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
+import { WIZARD_INPUT_COMPONENT_WIDTH } from '../wizardController';
+import * as styles from '../../constants/styles';
+import { SkuEditParametersDialog } from '../../dialog/skuRecommendationResults/skuEditParametersDialog';
+import { logError, TelemetryViews, TelemetryAction, sendSqlMigrationActionEvent, getTelemetryProps } from '../../telemetry';
+import { TdeConfigurationDialog } from '../../dialog/tdeConfiguration/tdeConfigurationDialog';
+import { TdeMigrationModel } from '../../models/tdeModels';
+import { getSourceConnectionProfile } from '../../api/sqlUtils';
+import { ConfigDialogSetting } from '../../models/tdeModels'
 
 export interface Product {
 	type: MigrationTargetType;
