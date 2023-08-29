@@ -8,7 +8,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { DefaultInputWidth, DefaultTableWidth, getTableHeight } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl } from '../constants';
+import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl, QueryStorePropertiesDocUrl } from '../constants';
 import { Database, DatabaseScopedConfigurationsInfo, DatabaseViewInfo } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
@@ -23,6 +23,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private generalTab: azdata.Tab;
 	private optionsTab: azdata.Tab;
 	private dscTab: azdata.Tab;
+	private queryStoreTab: azdata.Tab;
 	private optionsTabSectionsContainer: azdata.Component[] = [];
 	private activeTabId: string;
 
@@ -76,6 +77,24 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private dscSecondaryCheckboxForInputGroup: azdata.GroupContainer;
 	private setFocusToInput: azdata.InputBoxComponent = undefined;
 	private currentRowObjectInfo: DatabaseScopedConfigurationsInfo;
+	// Query store Tab
+	private readonly queryStoreTabId: string = 'queryStoreTabId';
+	private queryStoreTabSectionsContainer: azdata.Component[] = [];
+	private areQueryStoreOptionsEnabled: boolean;
+	private requestedOperationMode: azdata.DropDownComponent;
+	private dataFlushIntervalInMinutes: azdata.InputBoxComponent;
+	private statisticsCollectionInterval: azdata.DropDownComponent;
+	private maxPlansPerQuery: azdata.InputBoxComponent;
+	private maxSizeinMB: azdata.InputBoxComponent;
+	private queryStoreCaptureMode: azdata.DropDownComponent;
+	private sizeBasedCleanupMode: azdata.DropDownComponent;
+	private stateQueryThresholdInDays: azdata.InputBoxComponent;
+	private waitStatisticsCaptureMode: azdata.CheckBoxComponent;
+	private executionCount: azdata.InputBoxComponent;
+	private staleThreshold: azdata.DropDownComponent;
+	private totalCompileCPUTimeInMS: azdata.InputBoxComponent;
+	private totalExecutionCPUTimeInMS: azdata.InputBoxComponent;
+
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
@@ -96,6 +115,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				break;
 			case this.dscTabId:
 				helpUrl = DatabaseScopedConfigurationPropertiesDocUrl;
+				break;
+			case this.queryStoreTabId:
+				helpUrl = QueryStorePropertiesDocUrl;
 				break;
 			default:
 				break;
@@ -161,6 +183,18 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				}
 				tabs.push(this.dscTab);
 			}
+
+			// Initilaize Query Store Tab
+			this.initializeQueryStoreGeneralSection();
+			this.initializeQueryStoreMonitoringSection();
+			this.initializeQueryStoreRetentionSection();
+			this.initializeQueryStoreCapturePolicySection();
+			this.queryStoreTab = {
+				title: localizedConstants.QueryStoreTabHeader,
+				id: this.queryStoreTabId,
+				content: this.createGroup('', this.queryStoreTabSectionsContainer, false)
+			}
+			tabs.push(this.queryStoreTab);
 
 			// Initilaize tab group with tabbed panel
 			const propertiesTabGroup = { title: '', tabs: tabs };
@@ -874,6 +908,175 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		this.dscTable.setActiveCell(this.currentRowId, 0);
 	}
 	// #endregion
+
+	//#region Database Properties - Query Store Tab
+	private initializeQueryStoreGeneralSection(): void {
+		let containers: azdata.Component[] = [];
+		const actualOperationMode = this.objectInfo.queryStoreOptions.actualMode;
+		this.areQueryStoreOptionsEnabled = this.objectInfo.queryStoreOptions.actualMode !== 'OFF';
+		// Operation Mode (Actual)
+		const operationModeActual = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.ActualOperationModeText,
+			inputType: 'text',
+			enabled: false,
+			value: actualOperationMode
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.ActualOperationModeText, operationModeActual));
+
+		// Operation Mode (Requested)
+		this.requestedOperationMode = this.createDropdown(localizedConstants.RequestedOperationModeText, async (newValue) => {
+			this.objectInfo.queryStoreOptions.actualMode = newValue as string;
+			this.areQueryStoreOptionsEnabled = newValue !== 'OFF';
+			await this.toggleQueryStoreOptions();
+		}, this.viewInfo.operationModeOptions, String(this.objectInfo.queryStoreOptions.actualMode), true, DefaultInputWidth, true, true);
+		containers.push(this.createLabelInputContainer(localizedConstants.RequestedOperationModeText, this.requestedOperationMode));
+
+		const stateSection = this.createGroup(localizedConstants.GeneralSectionHeader, containers, true);
+		this.queryStoreTabSectionsContainer.push(stateSection);
+	}
+
+	private initializeQueryStoreMonitoringSection(): void {
+		let containers: azdata.Component[] = [];
+		// Data Flush Interval (Minutes)
+		this.dataFlushIntervalInMinutes = this.createInputBox(async (newValue) => {
+			this.objectInfo.queryStoreOptions.dataFlushIntervalInMinutes = Number(newValue);
+		}, {
+			ariaLabel: localizedConstants.DataFlushIntervalInMinutesText,
+			inputType: 'number',
+			enabled: this.areQueryStoreOptionsEnabled,
+			value: String(this.objectInfo.queryStoreOptions.dataFlushIntervalInMinutes),
+			min: 0
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.DataFlushIntervalInMinutesText, this.dataFlushIntervalInMinutes));
+
+		// Statistics Collection Interval
+		this.statisticsCollectionInterval = this.createDropdown(localizedConstants.StatisticsCollectionInterval, async (newValue) => {
+			this.objectInfo.queryStoreOptions.statisticsCollectionInterval = String(newValue);
+		}, ['1 Minute', '5 Minutes', '10 Minutes', '15 Minute', '30 Minutes', '1 Hour', '1 Day'], '5 Minutes', this.areQueryStoreOptionsEnabled, DefaultInputWidth, true, true);
+		containers.push(this.createLabelInputContainer(localizedConstants.StatisticsCollectionInterval, this.statisticsCollectionInterval));
+
+		const stateSection = this.createGroup(localizedConstants.MonitoringSectionText, containers, true);
+		this.queryStoreTabSectionsContainer.push(stateSection);
+	}
+
+	private initializeQueryStoreRetentionSection(): void {
+		let containers: azdata.Component[] = [];
+		// Max Plans Per Query
+		this.maxPlansPerQuery = this.createInputBox(async (newValue) => { }, {
+			ariaLabel: localizedConstants.MaxPlansPerQueryText,
+			inputType: 'number',
+			enabled: this.areQueryStoreOptionsEnabled,
+			value: String(this.objectInfo.queryStoreOptions.maxPlansPerQuery),
+			min: 0
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.MaxPlansPerQueryText, this.maxPlansPerQuery));
+
+		// Max size (MB)
+		this.maxSizeinMB = this.createInputBox(async (newValue) => { }, {
+			ariaLabel: localizedConstants.MaxSizeInMbText,
+			inputType: 'number',
+			enabled: this.areQueryStoreOptionsEnabled,
+			value: String(this.objectInfo.queryStoreOptions.maxSizeInMB),
+			min: 0
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.MaxSizeInMbText, this.maxSizeinMB));
+
+		// Query Store Capture Mode
+		this.queryStoreCaptureMode = this.createDropdown(localizedConstants.QueryStoreCaptureModeText, async (newValue) => {
+			this.objectInfo.collationName = newValue as string;
+			await this.toggleQueryCapturePolicySection(newValue);
+		}, this.viewInfo.queryStoreCaptureModeOptions, this.objectInfo.queryStoreOptions.queryStoreCaptureMode, this.areQueryStoreOptionsEnabled, DefaultInputWidth, true, true);
+		containers.push(this.createLabelInputContainer(localizedConstants.QueryStoreCaptureModeText, this.queryStoreCaptureMode));
+
+		// Size Based Cleanup Mode
+		this.sizeBasedCleanupMode = this.createDropdown(localizedConstants.SizeBasedCleanupModeText, async (newValue) => {
+			this.objectInfo.collationName = newValue as string;
+		}, ['OFF', 'Auto'], this.objectInfo.queryStoreOptions.sizeBasedCleanupMode, this.areQueryStoreOptionsEnabled, DefaultInputWidth, true, true);
+		containers.push(this.createLabelInputContainer(localizedConstants.SizeBasedCleanupModeText, this.sizeBasedCleanupMode));
+
+		// State Query Threshold (Days)
+		this.stateQueryThresholdInDays = this.createInputBox(async (newValue) => { }, {
+			ariaLabel: localizedConstants.StateQueryThresholdInDaysText,
+			inputType: 'number',
+			enabled: this.areQueryStoreOptionsEnabled,
+			value: String(this.objectInfo.queryStoreOptions.staleQueryThresholdInDays),
+			min: 0
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.StateQueryThresholdInDaysText, this.stateQueryThresholdInDays));
+
+		// Wait Statistics Capture Mode
+		this.waitStatisticsCaptureMode = this.createCheckbox(localizedConstants.WaitStatisticsCaptureModeText, async (checked) => {
+		}, this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode, this.areQueryStoreOptionsEnabled);
+		containers.push(this.waitStatisticsCaptureMode);
+
+		const stateSection = this.createGroup(localizedConstants.WaitStatisticsCaptureModeText, containers, true);
+		this.queryStoreTabSectionsContainer.push(stateSection);
+	}
+
+	private initializeQueryStoreCapturePolicySection(): void {
+		let containers: azdata.Component[] = [];
+		// Execution Count
+		this.executionCount = this.createInputBox(async (newValue) => { }, {
+			ariaLabel: localizedConstants.ExecutionCountText,
+			inputType: 'number',
+			enabled: this.areQueryStoreOptionsEnabled,
+			value: String(this.objectInfo.queryStoreOptions.capturePolicyExecutionCount),
+			min: 0
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.ExecutionCountText, this.executionCount));
+
+		// Stale Threshold
+		this.staleThreshold = this.createDropdown(localizedConstants.StaleThresholdText, async (newValue) => {
+			this.objectInfo.collationName = newValue as string;
+		}, this.viewInfo.StaleThresholdOptions, this.objectInfo.queryStoreOptions.capturePolicyStaleThreshold, this.areQueryStoreOptionsEnabled, DefaultInputWidth, true, true);
+		containers.push(this.createLabelInputContainer(localizedConstants.StaleThresholdText, this.staleThreshold));
+
+		// Total Compile CPU Time (ms)
+		this.totalCompileCPUTimeInMS = this.createInputBox(async (newValue) => { }, {
+			ariaLabel: localizedConstants.TotalCompileCPUTimeInMsText,
+			inputType: 'number',
+			enabled: this.areQueryStoreOptionsEnabled,
+			value: String(this.objectInfo.queryStoreOptions.capturePolicyTotalCompileCPUTimeInMS),
+			min: 0
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.TotalCompileCPUTimeInMsText, this.totalCompileCPUTimeInMS));
+
+		// Total Execution CPU Time (ms)
+		this.totalExecutionCPUTimeInMS = this.createInputBox(async (newValue) => { }, {
+			ariaLabel: localizedConstants.TotalExecutionCPUTimeInMsText,
+			inputType: 'number',
+			enabled: this.areQueryStoreOptionsEnabled,
+			value: String(this.objectInfo.queryStoreOptions.capturePolicyTotalExecutionCPUTimeInMS),
+			min: 0
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.TotalExecutionCPUTimeInMsText, this.totalExecutionCPUTimeInMS));
+
+		const stateSection = this.createGroup(localizedConstants.QueryStoreCapturePolicySectionText, containers, true);
+		this.queryStoreTabSectionsContainer.push(stateSection);
+	}
+
+	private async toggleQueryStoreOptions(): Promise<void> {
+		this.dataFlushIntervalInMinutes.enabled
+			= this.statisticsCollectionInterval.enabled
+			= this.maxPlansPerQuery.enabled
+			= this.maxSizeinMB.enabled
+			= this.queryStoreCaptureMode.enabled
+			= this.sizeBasedCleanupMode.enabled
+			= this.stateQueryThresholdInDays.enabled
+			= this.waitStatisticsCaptureMode.enabled
+			= this.executionCount.enabled
+			= this.staleThreshold.enabled
+			= this.totalCompileCPUTimeInMS.enabled
+			= this.totalExecutionCPUTimeInMS.enabled = this.areQueryStoreOptionsEnabled;
+	}
+
+	private async toggleQueryCapturePolicySection(queryStoreCaptureValue: string): Promise<void> {
+		this.executionCount.enabled
+			= this.staleThreshold.enabled
+			= this.totalCompileCPUTimeInMS.enabled
+			= this.totalExecutionCPUTimeInMS.enabled = queryStoreCaptureValue === 'Custom';
+	}
+	//#endregion
 
 	private initializeConfigureSLOSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];

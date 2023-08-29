@@ -455,6 +455,7 @@ export interface Database extends ObjectManagement.SqlObject {
 	encryptionEnabled: boolean;
 	restrictAccess?: string;
 	databaseScopedConfigurations: DatabaseScopedConfigurationsInfo[];
+	queryStoreOptions?: QueryStoreOptions;
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
@@ -476,6 +477,28 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	dscOnOffOptions?: string[];
 	dscElevateOptions?: string[];
 	dscEnableDisableOptions?: string[];
+	operationModeOptions?: string[];
+	statisticsCollectionIntervalOptions?: string[];
+	queryStoreCaptureModeOptions?: string[];
+	sizeBasedCleanupModeOptions?: string[];
+	StaleThresholdOptions?: string[];
+}
+
+export interface QueryStoreOptions {
+	actualMode: string;
+	dataFlushIntervalInMinutes: number;
+	statisticsCollectionInterval: string;
+	maxPlansPerQuery: number;
+	maxSizeInMB: number;
+	queryStoreCaptureMode: string;
+	sizeBasedCleanupMode: string;
+	staleQueryThresholdInDays: number;
+	waitStatisticsCaptureMode: boolean;
+	capturePolicyExecutionCount: number;
+	capturePolicyStaleThreshold: string;
+	capturePolicyTotalCompileCPUTimeInMS: number;
+	capturePolicyTotalExecutionCPUTimeInMS: number;
+
 }
 
 export interface DatabaseScopedConfigurationsInfo {
