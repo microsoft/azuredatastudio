@@ -3,12 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { DefaultColumnCheckboxWidth } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { ViewGeneralServerPropertiesDocUrl, ViewMemoryServerPropertiesDocUrl, ViewProcessorsServerPropertiesDocUrl } from '../constants';
-import { Server, ServerViewInfo, NumaNode, AffinityType } from '../interfaces';
+import { ViewGeneralServerPropertiesDocUrl, ViewMemoryServerPropertiesDocUrl, ViewProcessorsServerPropertiesDocUrl, ViewSecurityServerPropertiesDocUrl } from '../constants';
+import { Server, ServerViewInfo, NumaNode, AffinityType, ServerLoginMode, AuditLevel } from '../interfaces';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
 	private generalTab: azdata.Tab;
@@ -46,6 +47,19 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private processorsSection: azdata.GroupContainer;
 	private autoSetProcessorAffinityMaskForAllCheckbox: azdata.CheckBoxComponent;
 	private autoSetProcessorIOAffinityMaskForAllCheckbox: azdata.CheckBoxComponent;
+
+	private securityTab: azdata.Tab;
+	private readonly securityTabId: string = 'securityId';
+	private securitySection: azdata.GroupContainer;
+	// Server authentication radio buttons
+	private onlyWindowsAuthRadioButton: azdata.RadioButtonComponent;
+	private sqlServerAndWindowsAuthRadioButton: azdata.RadioButtonComponent;
+	// Login auditing radio buttons
+	private noneRadioButton: azdata.RadioButtonComponent;
+	private failedLoginsOnlyRadioButton: azdata.RadioButtonComponent;
+	private successfulLoginsOnlyRadioButton: azdata.RadioButtonComponent;
+	private bothFailedAndSuccessfulLoginsRadioButton: azdata.RadioButtonComponent;
+
 	private activeTabId: string;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
@@ -62,6 +76,8 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 				helpUrl = ViewMemoryServerPropertiesDocUrl;
 			case this.processorsTabId:
 				helpUrl = ViewProcessorsServerPropertiesDocUrl;
+			case this.securityTabId:
+				helpUrl = ViewSecurityServerPropertiesDocUrl;
 			default:
 				break;
 		}
@@ -74,7 +90,8 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.initializeGeneralSection();
 		this.initializeMemorySection();
 		this.initializeProcessorsSection();
-		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab, this.processorsTab] };
+		this.initializeSecuritySection();
+		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab, this.processorsTab, this.securityTab] };
 		const serverPropertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 			.withTabs([serverPropertiesTabGroup])
 			.withProps({
@@ -423,6 +440,63 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			for (let cpu of node.processors) {
 				cpu.ioAffinity = false;
 			}
+		}
+	}
+
+	private initializeSecuritySection(): void {
+		// cannot change auth mode in sql managed instance or non windows instances
+		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance && this.objectInfo.platform !== 'Windows';
+		const radioServerGroupName = 'serverAuthenticationRadioGroup';
+		this.onlyWindowsAuthRadioButton = this.createRadioButton(localizedConstants.onlyWindowsAuthModeText, radioServerGroupName, this.objectInfo.authenticationMode === ServerLoginMode.Integrated, async () => { await this.handleAuthModeChange(); });
+		this.sqlServerAndWindowsAuthRadioButton = this.createRadioButton(localizedConstants.sqlServerAndWindowsAuthText, radioServerGroupName, this.objectInfo.authenticationMode === ServerLoginMode.Mixed, async () => { await this.handleAuthModeChange(); });
+		this.onlyWindowsAuthRadioButton.enabled = isEnabled;
+		this.sqlServerAndWindowsAuthRadioButton.enabled = isEnabled;
+		const serverAuthSection = this.createGroup(localizedConstants.serverAuthenticationText, [
+			this.onlyWindowsAuthRadioButton,
+			this.sqlServerAndWindowsAuthRadioButton
+		], true);
+
+		const radioLoginsGroupName = 'serverLoginsRadioGroup';
+		this.noneRadioButton = this.createRadioButton(localizedConstants.noLoginAuditingText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.None, async () => { await this.handleAuditLevelChange(); });
+		this.failedLoginsOnlyRadioButton = this.createRadioButton(localizedConstants.failedLoginsOnlyText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.Failure, async () => { await this.handleAuditLevelChange(); });
+		this.successfulLoginsOnlyRadioButton = this.createRadioButton(localizedConstants.successfulLoginsOnlyText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.Success, async () => { await this.handleAuditLevelChange(); });
+		this.bothFailedAndSuccessfulLoginsRadioButton = this.createRadioButton(localizedConstants.bothFailedAndSuccessfulLoginsText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.All, async () => { await this.handleAuditLevelChange(); });
+		const serverLoginSection = this.createGroup(localizedConstants.loginAuditingText, [
+			this.noneRadioButton,
+			this.failedLoginsOnlyRadioButton,
+			this.successfulLoginsOnlyRadioButton,
+			this.bothFailedAndSuccessfulLoginsRadioButton
+		], true);
+		this.securitySection = this.createGroup('', [
+			serverAuthSection,
+			serverLoginSection
+		], true);
+
+		this.securityTab = this.createTab(this.securityTabId, localizedConstants.securityText, this.securitySection);
+	}
+
+	private async handleAuthModeChange(): Promise<void> {
+		if (this.onlyWindowsAuthRadioButton.checked) {
+			this.objectInfo.authenticationMode = ServerLoginMode.Integrated;
+		}
+		if (this.sqlServerAndWindowsAuthRadioButton.checked) {
+			this.objectInfo.authenticationMode = ServerLoginMode.Mixed;
+		}
+		await vscode.window.showInformationMessage(localizedConstants.needToRestartServer, { modal: true });
+	}
+
+	private async handleAuditLevelChange(): Promise<void> {
+		if (this.noneRadioButton.checked) {
+			this.objectInfo.loginAuditing = AuditLevel.None;
+		}
+		if (this.failedLoginsOnlyRadioButton.checked) {
+			this.objectInfo.loginAuditing = AuditLevel.Failure;
+		}
+		if (this.successfulLoginsOnlyRadioButton.checked) {
+			this.objectInfo.loginAuditing = AuditLevel.Success;
+		}
+		if (this.bothFailedAndSuccessfulLoginsRadioButton.checked) {
+			this.objectInfo.loginAuditing = AuditLevel.All;
 		}
 	}
 }

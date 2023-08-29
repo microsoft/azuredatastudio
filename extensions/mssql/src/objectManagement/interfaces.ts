@@ -538,6 +538,26 @@ export interface Server extends ObjectManagement.SqlObject {
 	autoProcessorAffinityMaskForAll: boolean;
 	autoProcessorAffinityIOMaskForAll: boolean;
 	numaNodes: NumaNode[];
+	authenticationMode: ServerLoginMode;
+	loginAuditing: AuditLevel;
+}
+
+/**
+ * The server login types.
+ */
+export const enum ServerLoginMode {
+	Integrated, //windows auth only
+	Mixed // both sql server and windows auth
+}
+
+/**
+ * The server audit levels.
+ */
+export const enum AuditLevel {
+	None,
+	Success,
+	Failure,
+	All
 }
 
 export interface NumericServerProperty {
