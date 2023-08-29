@@ -21,4 +21,5 @@ export enum TelemetryViews {
 export enum TelemetryAction {
 	LoadCustomEndpointsError = 'LoadCustomEndpointsError',
 	LoadCustomEndpointsSuccess = 'LoadCustomEndpointsSuccess',
+	ReloadAdsCustomEndpoints = 'ReloadAdsCustomEndpoints'
 }

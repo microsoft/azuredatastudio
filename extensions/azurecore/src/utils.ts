@@ -173,7 +173,7 @@ export function updateCustomCloudProviderSettings(defaultSettings: ProviderSetti
 		const impactProvider = changeEvent.affectsConfiguration(constants.CustomProviderSettingsSection);
 		if (impactProvider === true) {
 			await displayReloadAds(constants.CustomProviderSettingsSection);
-			TelemetryReporter.sendTelemetryEvent('reloadAdsCustomEndpoints');
+			TelemetryReporter.sendTelemetryEvent(TelemetryAction.ReloadAdsCustomEndpoints);
 		}
 	});
 	if (providerSettingsJson && providerSettingsJson.length > 0) {
@@ -190,8 +190,7 @@ export function updateCustomCloudProviderSettings(defaultSettings: ProviderSetti
 		} catch (error) {
 			void vscode.window.showErrorMessage(localize('providerSettings.error', 'Could not load endpoints from settings, please check the logs for more details.'));
 			console.error(error.message);
-			TelemetryReporter.sendTelemetryEvent(TelemetryAction.LoadCustomEndpointsError);
-			TelemetryReporter.sendErrorEvent2(TelemetryViews.AzureCore, 'loadCustomEndpointsError', error.message);
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.AzureCore, TelemetryAction.LoadCustomEndpointsError, error);
 			throw Error(error.message);
 		}
 	}
