@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultMaxTableRowCount, getTableHeight, DialogButtonComponent } from '../../ui/dialogBase';
+import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultMaxTableRowCount, getTableHeight, DialogButton } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl } from '../constants';
@@ -482,16 +482,16 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				'margin-left': '10px'
 			}
 		}).component();
-		const addButtonComponent: DialogButtonComponent = {
-			buttonArialLabel: localizedConstants.AddButton,
+		const addButtonComponent: DialogButton = {
+			buttonAriaLabel: localizedConstants.AddButton,
 			buttonHandler: (button) => this.onAddDatabaseFilesButtonClicked(button)
 		};
-		const removeButtonComponent: DialogButtonComponent = {
-			buttonArialLabel: localizedConstants.RemoveButton,
+		const removeButtonComponent: DialogButton = {
+			buttonAriaLabel: localizedConstants.RemoveButton,
 			buttonHandler: () => this.onRemoveDatabaseFilesButtonClicked()
 		};
-		const editbuttonComponent: DialogButtonComponent = {
-			buttonArialLabel: localizedConstants.EditButton,
+		const editbuttonComponent: DialogButton = {
+			buttonAriaLabel: localizedConstants.EditButton,
 			buttonHandler: (button) => this.onEditDatabaseFilesButtonClicked(button)
 		};
 		const databaseFilesButtonContainer = this.addButtonsForTable(this.databaseFilesTable, addButtonComponent, removeButtonComponent, editbuttonComponent);
@@ -561,7 +561,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * Validate the selected row to enable/disable the remove button
 	 * @returns true if the remove button should be enabled, false otherwise
 	 */
-	protected override removeButtonOnRowSelected(): boolean {
+	protected override get removeButtonEnabled(): boolean {
 		let isEnabled = true;
 		if (this.databaseFilesTable.selectedRows !== undefined) {
 			const selectedRowId = this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].id;
@@ -591,9 +591,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		if (!isUndefinedOrNull(selectedFile) && selectedFile.type === localizedConstants.FilestreamFileType) {
 			selectedFile.autoFileGrowth = defaultFileGrowthInMb;
 		}
-		const isnewFile: boolean = button.ariaLabel === localizedConstants.AddButton;
+		const isNewFile: boolean = button.ariaLabel === localizedConstants.AddButton;
 		const isEditingNewFile: boolean = button.ariaLabel === localizedConstants.EditButton && selectedFile.id === undefined;
-		const databaseFile: DatabaseFile = isnewFile ? {
+		const databaseFile: DatabaseFile = isNewFile ? {
 			id: undefined,
 			name: '',
 			type: localizedConstants.RowsDataFileType,
@@ -608,10 +608,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		} : selectedFile;
 
 		const dialog = new DatabaseFileDialog({
-			title: (isnewFile || isEditingNewFile) ? localizedConstants.AddDatabaseFilesText : localizedConstants.EditDatabaseFilesText(databaseFile.name),
+			title: (isNewFile || isEditingNewFile) ? localizedConstants.AddDatabaseFilesText : localizedConstants.EditDatabaseFilesText(databaseFile.name),
 			viewInfo: this.viewInfo,
 			files: this.objectInfo.files,
-			isNewFile: isnewFile,
+			isNewFile: isNewFile,
 			isEditingNewFile: isEditingNewFile,
 			databaseFile: databaseFile,
 			defaultFileConstants: {

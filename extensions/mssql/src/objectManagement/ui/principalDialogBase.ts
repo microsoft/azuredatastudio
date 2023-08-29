@@ -10,7 +10,7 @@ import * as localizedConstants from '../localizedConstants';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { FindObjectDialog, FindObjectDialogResult } from './findObjectDialog';
 import { deepClone } from '../../util/objects';
-import { DefaultTableWidth, DialogButtonComponent, getTableHeight } from '../../ui/dialogBase';
+import { DefaultTableWidth, DialogButton, getTableHeight } from '../../ui/dialogBase';
 import { ObjectSelectionMethod, ObjectSelectionMethodDialog } from './objectSelectionMethodDialog';
 import { DatabaseLevelPrincipalViewInfo, SecurablePermissionItem, SecurablePermissions, SecurityPrincipalObject, SecurityPrincipalViewInfo } from '../interfaces';
 
@@ -51,12 +51,12 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends SecurityPrincip
 			securableTableColumns.splice(1, 0, localizedConstants.SchemaText);
 		}
 		this.securableTable = this.createTable(localizedConstants.SecurablesText, securableTableColumns, this.getSecurableTableData());
-		const addButtonComponent: DialogButtonComponent = {
-			buttonArialLabel: localizedConstants.AddSecurableAriaLabel,
+		const addButtonComponent: DialogButton = {
+			buttonAriaLabel: localizedConstants.AddSecurableAriaLabel,
 			buttonHandler: (button) => this.onAddSecurableButtonClicked(button)
 		};
-		const removeButtonComponent: DialogButtonComponent = {
-			buttonArialLabel: localizedConstants.RemoveSecurableAriaLabel,
+		const removeButtonComponent: DialogButton = {
+			buttonAriaLabel: localizedConstants.RemoveSecurableAriaLabel,
 			buttonHandler: () => this.onRemoveSecurableButtonClicked()
 		};
 		const buttonContainer = this.addButtonsForTable(this.securableTable, addButtonComponent, removeButtonComponent);

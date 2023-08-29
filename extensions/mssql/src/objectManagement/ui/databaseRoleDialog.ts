@@ -93,7 +93,7 @@ export class DatabaseRoleDialog extends PrincipalDialogBase<DatabaseRoleInfo, Da
 		this.memberTable = this.createTable(localizedConstants.MemberSectionHeader, [localizedConstants.NameText], this.objectInfo.members.map(m => [m]));
 		const buttonContainer = this.addButtonsForTable(this.memberTable,
 			{
-				buttonArialLabel: localizedConstants.AddMemberAriaLabel,
+				buttonAriaLabel: localizedConstants.AddMemberAriaLabel,
 				buttonHandler: async () => {
 					const dialog = new FindObjectDialog(this.objectManagementService, {
 						objectTypes: localizedConstants.getObjectTypeInfo([
@@ -112,7 +112,7 @@ export class DatabaseRoleDialog extends PrincipalDialogBase<DatabaseRoleInfo, Da
 				}
 			},
 			{
-				buttonArialLabel: localizedConstants.RemoveMemberAriaLabel,
+				buttonAriaLabel: localizedConstants.RemoveMemberAriaLabel,
 				buttonHandler: async () => {
 					if (this.memberTable.selectedRows.length === 1) {
 						await this.removeMember(this.memberTable.selectedRows[0]);
