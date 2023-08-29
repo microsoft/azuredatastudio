@@ -6,6 +6,7 @@
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { Emitter, Event } from 'vs/base/common/event';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface IObservableCollection<T> {
 	getLength(): number;
@@ -200,15 +201,15 @@ export class VirtualizedCollection<T extends Slick.SlickData> implements IObserv
 	}
 }
 
-export class AsyncDataProvider<T extends Slick.SlickData> implements IDisposableDataProvider<T> {
+export class AsyncDataProvider<T extends Slick.SlickData> extends Disposable implements IDisposableDataProvider<T> {
 
-	private _onFilterStateChange = new Emitter<void>();
+	private _onFilterStateChange = this._register(new Emitter<void>());
 	get onFilterStateChange(): Event<void> { return this._onFilterStateChange.event; }
 
-	private _onSortComplete = new Emitter<Slick.OnSortEventArgs<T>>();
+	private _onSortComplete = this._register(new Emitter<Slick.OnSortEventArgs<T>>());
 	get onSortComplete(): Event<Slick.OnSortEventArgs<T>> { return this._onSortComplete.event; }
 
-	constructor(public dataRows: IObservableCollection<T>) { }
+	constructor(public dataRows: IObservableCollection<T>) { super(); }
 
 	public get isDataInMemory(): boolean {
 		return false;
@@ -250,7 +251,8 @@ export class AsyncDataProvider<T extends Slick.SlickData> implements IDisposable
 		return this.dataRows.getLength();
 	}
 
-	dispose() {
+	override dispose() {
+		super.dispose();
 		this.dataRows.dispose();
 	}
 
