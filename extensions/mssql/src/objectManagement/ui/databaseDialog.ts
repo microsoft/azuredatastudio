@@ -5,14 +5,15 @@
 
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { DefaultInputWidth, DefaultTableWidth, getTableHeight } from '../../ui/dialogBase';
+import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultMaxTableRowCount, getTableHeight, DialogButton } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl } from '../constants';
-import { Database, DatabaseScopedConfigurationsInfo, DatabaseViewInfo } from '../interfaces';
+import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl } from '../constants';
+import { Database, DatabaseFile, DatabaseScopedConfigurationsInfo, DatabaseViewInfo, FileGrowthType } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
 import { deepClone } from '../../util/objects';
+import { DatabaseFileDialog } from './databaseFileDialog';
 
 const MAXDOP_Max_Limit = 32767;
 const PAUSED_RESUMABLE_INDEX_Max_Limit = 71582;
@@ -21,6 +22,7 @@ const DscTableRowLength = 15;
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
 	private generalTab: azdata.Tab;
+	private filesTab: azdata.Tab;
 	private optionsTab: azdata.Tab;
 	private dscTab: azdata.Tab;
 	private optionsTabSectionsContainer: azdata.Component[] = [];
@@ -43,6 +45,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private memoryAllocatedInput: azdata.InputBoxComponent;
 	private memoryUsedInput: azdata.InputBoxComponent;
 	private collationInput: azdata.InputBoxComponent;
+	// Files Tab
+	private readonly filesTabId: string = 'filesDatabaseId';
+	private databaseFilesTable: azdata.TableComponent;
 	// Options Tab
 	private readonly optionsTabId: string = 'optionsDatabaseId';
 	private autoCreateIncrementalStatisticsInput: azdata.CheckBoxComponent;
@@ -91,6 +96,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			case this.generalTabId:
 				helpUrl = DatabaseGeneralPropertiesDocUrl;
 				break;
+			case this.filesTabId:
+				helpUrl = DatabaseFilesPropertiesDocUrl;
+				break;
 			case this.optionsTabId:
 				helpUrl = DatabaseOptionsPropertiesDocUrl;
 				break;
@@ -113,11 +121,11 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 			this.formContainer.addItems(components);
 		} else {
-			// Initilaize general Tab sections
+			// Initialize general Tab sections
 			this.initializeBackupSection();
 			this.initializeDatabaseSection();
 
-			//Initilaize options Tab sections
+			//Initialize options Tab sections
 			this.initializeOptionsGeneralSection();
 			this.initializeAutomaticSection();
 			if (!isUndefinedOrNull(this.objectInfo.isLedgerDatabase)) {
@@ -130,7 +138,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 
 			const tabs: azdata.Tab[] = [];
-			// Initilaize general Tab
+			// Initialize general Tab
 			this.generalTab = {
 				title: localizedConstants.GeneralSectionHeader,
 				id: this.generalTabId,
@@ -141,7 +149,20 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			};
 			tabs.push(this.generalTab);
 
-			// Initilaize Options Tab
+			// Initialize Files Tab
+			// Files tab is only enabled for SQL Server properties view
+			if (!isUndefinedOrNull(this.objectInfo.isFilesTabSupported)) {
+				const filesGeneralSection = this.initializeFilesGeneralSection();
+				const databaseFilesSection = this.initializeDatabaseFilesSection();
+				this.filesTab = {
+					title: localizedConstants.FilesSectionHeader,
+					id: this.filesTabId,
+					content: this.createGroup('', [filesGeneralSection, databaseFilesSection], false)
+				};
+				tabs.push(this.filesTab);
+			}
+
+			// Initialize Options Tab
 			this.optionsTab = {
 				title: localizedConstants.OptionsSectionHeader,
 				id: this.optionsTabId,
@@ -149,7 +170,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			};
 			tabs.push(this.optionsTab);
 
-			// Initilaize DSC Tab section
+			// Initialize DSC Tab section
 			if (!isUndefinedOrNull(this.objectInfo.databaseScopedConfigurations)) {
 				await this.initializeDatabaseScopedConfigurationSection();
 				this.dscTabSectionsContainer.push(await this.initializeDscValueDropdownTypeSection())
@@ -162,7 +183,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				tabs.push(this.dscTab);
 			}
 
-			// Initilaize tab group with tabbed panel
+			// Initialize tab group with tabbed panel
 			const propertiesTabGroup = { title: '', tabs: tabs };
 			const propertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 				.withTabs([propertiesTabGroup])
@@ -394,6 +415,216 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			memoryUsedContainer
 		], true);
 	}
+	//#endregion
+
+	//#region Database Properties - Files Tab
+	private initializeFilesGeneralSection(): azdata.GroupContainer {
+		let containers: azdata.Component[] = [];
+		// Database name
+		this.nameInput = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.DatabaseNameText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: this.objectInfo.name
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.DatabaseNameText, this.nameInput));
+
+		// Owner
+		let loginNames = this.viewInfo.loginNames?.options;
+
+		if (loginNames?.length > 0) {
+			// Removing <default> login name from the list and adding current owner if not exists
+			if (!this.viewInfo.loginNames?.options.find(owner => owner === this.objectInfo.owner)) {
+				loginNames[0] = this.objectInfo.owner;
+			} else {
+				loginNames.splice(0, 1);
+			}
+			let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, async () => {
+				this.objectInfo.owner = ownerDropbox.value as string;
+			}, loginNames, this.objectInfo.owner);
+			containers.push(this.createLabelInputContainer(localizedConstants.OwnerText, ownerDropbox));
+		}
+		return this.createGroup('', containers, false);
+	}
+
+	private initializeDatabaseFilesSection(): azdata.GroupContainer {
+		this.databaseFilesTable = this.modelView.modelBuilder.table().withProps({
+			columns: [{
+				type: azdata.ColumnType.text,
+				value: localizedConstants.LogicalNameText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.FileTypeText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.FilegroupText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.SizeInMbText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.AutogrowthMaxsizeText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.PathText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.FileNameText
+			}],
+			data: this.objectInfo.files?.map(file => {
+				return this.convertToDataView(file);
+
+			}),
+			height: getTableHeight(this.objectInfo.files?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
+			width: DefaultTableWidth,
+			forceFitColumns: azdata.ColumnSizingMode.DataFit,
+			CSSStyles: {
+				'margin-left': '10px'
+			}
+		}).component();
+		const addButtonComponent: DialogButton = {
+			buttonAriaLabel: localizedConstants.AddButton,
+			buttonHandler: (button) => this.onAddDatabaseFilesButtonClicked(button)
+		};
+		const removeButtonComponent: DialogButton = {
+			buttonAriaLabel: localizedConstants.RemoveButton,
+			buttonHandler: () => this.onRemoveDatabaseFilesButtonClicked()
+		};
+		const editbuttonComponent: DialogButton = {
+			buttonAriaLabel: localizedConstants.EditButton,
+			buttonHandler: (button) => this.onEditDatabaseFilesButtonClicked(button)
+		};
+		const databaseFilesButtonContainer = this.addButtonsForTable(this.databaseFilesTable, addButtonComponent, removeButtonComponent, editbuttonComponent);
+
+		return this.createGroup(localizedConstants.DatabaseFilesText, [this.databaseFilesTable, databaseFilesButtonContainer], true);
+	}
+
+	/**
+	 * Converts the file object to a data view object
+	 * @param file database file object
+	 * @returns data view object
+	 */
+	private convertToDataView(file: DatabaseFile): any[] {
+		return [
+			file.name,
+			file.type,
+			file.fileGroup,
+			file.sizeInMb,
+			file.isAutoGrowthEnabled ? localizedConstants.AutoGrowthValueStringGenerator(file.type !== localizedConstants.FilestreamFileType
+				, file.autoFileGrowth.toString()
+				, file.autoFileGrowthType === FileGrowthType.Percent
+				, file.maxSizeLimitInMb) : localizedConstants.NoneText,
+			file.path,
+			file.fileNameWithExtension
+		];
+	}
+
+	private async onAddDatabaseFilesButtonClicked(button: azdata.ButtonComponent): Promise<void> {
+		// Open file dialog to create file
+		const result = await this.openDatabaseFileDialog(button);
+		if (!isUndefinedOrNull(result)) {
+			this.objectInfo.files?.push(result);
+			var newData = this.objectInfo.files?.map(file => {
+				return this.convertToDataView(file);
+			});
+			await this.setTableData(this.databaseFilesTable, newData, DefaultMaxTableRowCount)
+		}
+	}
+
+	private async onEditDatabaseFilesButtonClicked(button: azdata.ButtonComponent): Promise<void> {
+		if (this.databaseFilesTable.selectedRows.length === 1) {
+			const result = await this.openDatabaseFileDialog(button);
+			if (!isUndefinedOrNull(result)) {
+				this.objectInfo.files[this.databaseFilesTable.selectedRows[0]] = result;
+				var newData = this.objectInfo.files?.map(file => {
+					return this.convertToDataView(file);
+				});
+				await this.setTableData(this.databaseFilesTable, newData, DefaultMaxTableRowCount)
+			}
+		}
+	}
+
+	/**
+	 * Removes the selected database file from the table
+	 */
+	private async onRemoveDatabaseFilesButtonClicked(): Promise<void> {
+		if (this.databaseFilesTable.selectedRows.length === 1) {
+			this.objectInfo.files?.splice(this.databaseFilesTable.selectedRows[0], 1);
+			var newData = this.objectInfo.files?.map(file => {
+				return this.convertToDataView(file);
+			});
+			await this.setTableData(this.databaseFilesTable, newData, DefaultMaxTableRowCount)
+		}
+	}
+
+	/**
+	 * Validate the selected row to enable/disable the remove button
+	 * @returns true if the remove button should be enabled, false otherwise
+	 */
+	protected override get removeButtonEnabled(): boolean {
+		let isEnabled = true;
+		if (this.databaseFilesTable.selectedRows !== undefined) {
+			const selectedRowId = this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].id;
+			// Cannot delete a Primary row data file, Id is always 1.
+			if (this.databaseFilesTable.selectedRows.length === 1 && selectedRowId === 1) {
+				isEnabled = false;
+			}
+			// Cannot remove a log file if there are no other log files, LogFiletype is always a Log file type
+			else if (this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].type === localizedConstants.LogFiletype) {
+				isEnabled = false;
+				this.objectInfo.files.forEach(file => {
+					if (file.id !== selectedRowId && file.type === localizedConstants.LogFiletype) {
+						isEnabled = true;
+					}
+				});
+			}
+		}
+		return isEnabled;
+	}
+
+	private async openDatabaseFileDialog(button: azdata.ButtonComponent): Promise<DatabaseFile> {
+		const defaultFileSizeInMb: number = 8
+		const defaultFileGrowthInMb: number = 64
+		const defaultFileGrowthInPercent: number = 10;
+		const defaultMaxFileSizeLimitedToInMb: number = 100;
+		const selectedFile = this.databaseFilesTable.selectedRows !== undefined ? this.objectInfo.files[this.databaseFilesTable?.selectedRows[0]] : undefined;
+		if (!isUndefinedOrNull(selectedFile) && selectedFile.type === localizedConstants.FilestreamFileType) {
+			selectedFile.autoFileGrowth = defaultFileGrowthInMb;
+		}
+		const isNewFile: boolean = button.ariaLabel === localizedConstants.AddButton;
+		const isEditingNewFile: boolean = button.ariaLabel === localizedConstants.EditButton && selectedFile.id === undefined;
+		const databaseFile: DatabaseFile = isNewFile ? {
+			id: undefined,
+			name: '',
+			type: localizedConstants.RowsDataFileType,
+			path: this.objectInfo.files[0].path,
+			fileGroup: this.viewInfo.rowDataFileGroupsOptions[0],
+			fileNameWithExtension: '',
+			sizeInMb: defaultFileSizeInMb,
+			isAutoGrowthEnabled: true,
+			autoFileGrowth: defaultFileGrowthInMb,
+			autoFileGrowthType: FileGrowthType.KB,
+			maxSizeLimitInMb: defaultMaxFileSizeLimitedToInMb
+		} : selectedFile;
+
+		const dialog = new DatabaseFileDialog({
+			title: (isNewFile || isEditingNewFile) ? localizedConstants.AddDatabaseFilesText : localizedConstants.EditDatabaseFilesText(databaseFile.name),
+			viewInfo: this.viewInfo,
+			files: this.objectInfo.files,
+			isNewFile: isNewFile,
+			isEditingNewFile: isEditingNewFile,
+			databaseFile: databaseFile,
+			defaultFileConstants: {
+				defaultFileSizeInMb: defaultFileSizeInMb,
+				defaultFileGrowthInMb: defaultFileGrowthInMb,
+				defaultFileGrowthInPercent: defaultFileGrowthInPercent,
+				defaultMaxFileSizeLimitedToInMb: defaultMaxFileSizeLimitedToInMb
+			}
+		});
+		await dialog.open();
+		return await dialog.waitForClose();
+	}
+
 	//#endregion
 
 	//#region Database Properties - Options Tab

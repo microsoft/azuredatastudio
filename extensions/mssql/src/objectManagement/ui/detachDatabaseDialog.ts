@@ -23,7 +23,7 @@ export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	protected async initializeUI(): Promise<void> {
-		let tableData = this.viewInfo.files.map(file => [file.name, file.type, file.fileGroup, file.path]);
+		let tableData = this.objectInfo.files.map(file => [file.name, file.type, file.fileGroup, file.path]);
 		let columnNames = [DatabaseFileNameLabel, DatabaseFileTypeLabel, DatabaseFileGroupLabel, DatabaseFilePathLabel];
 		let fileTable = this.createTable(DatabaseFilesLabel, columnNames, tableData);
 		let tableGroup = this.createGroup(DatabaseFilesLabel, [fileTable], false);

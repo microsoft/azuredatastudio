@@ -455,6 +455,8 @@ export interface Database extends ObjectManagement.SqlObject {
 	encryptionEnabled: boolean;
 	restrictAccess?: string;
 	databaseScopedConfigurations: DatabaseScopedConfigurationsInfo[];
+	isFilesTabSupported?: boolean;
+	files?: DatabaseFile[];
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
@@ -466,7 +468,6 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	compatibilityLevels?: OptionsCollection;
 	containmentTypes?: OptionsCollection;
 	recoveryModels?: OptionsCollection;
-	files?: DatabaseFile[];
 	azureBackupRedundancyLevels?: string[];
 	azureServiceLevelObjectives?: AzureEditionDetails[];
 	azureEditions?: string[];
@@ -476,6 +477,9 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	dscOnOffOptions?: string[];
 	dscElevateOptions?: string[];
 	dscEnableDisableOptions?: string[];
+	rowDataFileGroupsOptions?: string[];
+	fileStreamFileGroupsOptions?: string[];
+	fileTypesOptions?: string[];
 }
 
 export interface DatabaseScopedConfigurationsInfo {
@@ -545,9 +549,22 @@ export interface NumericServerProperty {
 export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
 }
 
+export const enum FileGrowthType {
+	KB = 0,
+	Percent = 1,
+	None = 99
+}
+
 export interface DatabaseFile {
+	id: number;
 	name: string;
 	type: string;
 	path: string;
 	fileGroup: string;
+	fileNameWithExtension: string;
+	sizeInMb: number;
+	isAutoGrowthEnabled: boolean;
+	autoFileGrowth: number;
+	autoFileGrowthType: FileGrowthType;
+	maxSizeLimitInMb: number
 }
