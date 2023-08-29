@@ -8,15 +8,15 @@ import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { Emitter, Event } from 'vs/base/common/event';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { convertJQueryKeyDownEvent } from 'sql/base/browser/dom';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 /**
  * Implements the various additional navigation  keybindings we want out of slickgrid
  */
-export class CopyKeybind<T> implements Slick.Plugin<T> {
+export class CopyKeybind<T> extends Disposable implements Slick.Plugin<T> {
 	private grid!: Slick.Grid<T>;
 	private handler = new Slick.EventHandler();
-
-	private _onCopy = new Emitter<Slick.Range[]>();
+	private _onCopy = this._register(new Emitter<Slick.Range[]>());
 	public onCopy: Event<Slick.Range[]> = this._onCopy.event;
 
 	public init(grid: Slick.Grid<T>) {
@@ -56,5 +56,4 @@ export class CopyKeybind<T> implements Slick.Plugin<T> {
 			e.browserEvent.stopImmediatePropagation
 		}
 	}
-
 }
