@@ -66,6 +66,12 @@
     </trans-unit>
   </body></file>
   <file original="extensions/Microsoft.mssql/dist/objectManagement/localizedConstants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="objectManagement.databaseProperties.addButton">
+      <source xml:lang="en">Add</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.addDatabaseFilesText">
+      <source xml:lang="en">Add Database file</source>
+    </trans-unit>
     <trans-unit id="objectManagement.objectSelectionMethodDialogTitle">
       <source xml:lang="en">Add Objects</source>
     </trans-unit>
@@ -146,6 +152,9 @@
     <trans-unit id="objectManagement.databaseProperties.autoUpdateStatisticsAsynchronouslyText">
       <source xml:lang="en">Auto Update Statistics Asynchronously</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.autogrowthMaxsizeText">
+      <source xml:lang="en">Autogrowth / Maxsize</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.automaticSectionHeader">
       <source xml:lang="en">Automatic</source>
     </trans-unit>
@@ -167,6 +176,9 @@
     <trans-unit id="objectManagement.backupRedundancyLabel">
       <source xml:lang="en">Backup Storage Redundancy</source>
     </trans-unit>
+    <trans-unit id="objectManagement.bothFailedAndSuccessfulLoginsText">
+      <source xml:lang="en">Both failed and successful logins</source>
+    </trans-unit>
     <trans-unit id="objectManagement.browseForOwnerText">
       <source xml:lang="en">Browse for an owner</source>
     </trans-unit>
@@ -175,6 +187,12 @@
     </trans-unit>
     <trans-unit id="objectManagement.serverCPULabel">
       <source xml:lang="en">CPU {0}</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.fileNameExistsError">
+      <source xml:lang="en">Cannot create file &apos;{0}&apos; because it already exists.</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.needToRestartServer">
+      <source xml:lang="en">Changes require server restart in order to be effective</source>
     </trans-unit>
     <trans-unit id="objectManagement.closeConnections">
       <source xml:lang="en">Close existing connections</source>
@@ -210,6 +228,9 @@
     <trans-unit id="objectManagement.currentSLOLabel">
       <source xml:lang="en">Current Service Level Objective</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.fileGroupNotApplicableText">
+      <source xml:lang="en">DataFile &apos;{0}&apos; could not be added to the collection, because it already exists.</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.databaseSectionHeader">
       <source xml:lang="en">Database</source>
     </trans-unit>
@@ -221,6 +242,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.databaseFiles">
       <source xml:lang="en">Database Files</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.databaseNameLabel">
+      <source xml:lang="en">Database Name</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.databaseReadOnlyText">
       <source xml:lang="en">Database Read-Only</source>
@@ -236,6 +260,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.databaseStateText">
       <source xml:lang="en">Database State</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.databaseFilesText">
+      <source xml:lang="en">Database files</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.dateCreated">
       <source xml:lang="en">Date Created</source>
@@ -283,6 +310,12 @@
     <trans-unit id="objectManagement.dropLoginConfirmation">
       <source xml:lang="en">Dropping server logins does not drop the database users associated with the logins. To complete the process, drop the users in each database. It may be necessary to first transfer the ownership of schemas to new users.</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.editButton">
+      <source xml:lang="en">Edit</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.editDatabaseFilesText">
+      <source xml:lang="en">Edit Database file - {0}</source>
+    </trans-unit>
     <trans-unit id="objectManagement.editionLabel">
       <source xml:lang="en">Edition</source>
     </trans-unit>
@@ -291,6 +324,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.effectivePermissionsTableLabelSelected">
       <source xml:lang="en">Effective permissions for: {0}</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.enableAutogrowthText">
+      <source xml:lang="en">Enable Autogrowth</source>
     </trans-unit>
     <trans-unit id="objectManagement.enabledLabel">
       <source xml:lang="en">Enabled</source>
@@ -313,11 +349,35 @@
     <trans-unit id="objectManagement.explicitPermissionsTableLabelSelected">
       <source xml:lang="en">Explicit permissions for: {0}</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.filestreamFileType">
+      <source xml:lang="en">FILESTREAM Data</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.failedLoginsOnlyText">
+      <source xml:lang="en">Failed logins only</source>
+    </trans-unit>
     <trans-unit id="objectManagement.noConnectionUriError">
       <source xml:lang="en">Failed to retrieve the connection information, please reconnect and try again.</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseFileGroup">
       <source xml:lang="en">File Group</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.fileGrowthText">
+      <source xml:lang="en">File Growth</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.fileNameText">
+      <source xml:lang="en">File Name</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.fileTypeText">
+      <source xml:lang="en">File Type</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.filegroupText">
+      <source xml:lang="en">Filegroup</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.filegrowthLimitError">
+      <source xml:lang="en">Filegrowth cannot be greater than the Maximum file size for a file</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.optionsSectionHeader">
+      <source xml:lang="en">Files</source>
     </trans-unit>
     <trans-unit id="objectManagement.filterSectionTitle">
       <source xml:lang="en">Filters</source>
@@ -343,6 +403,12 @@
     <trans-unit id="objectManagement.processorIOAffinityColumn">
       <source xml:lang="en">I/O Affinity</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.inMegabytesAutogrowthText">
+      <source xml:lang="en">In Megabytes</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.inPercentAutogrowthText">
+      <source xml:lang="en">In Percent</source>
+    </trans-unit>
     <trans-unit id="objectManagement.isClustered">
       <source xml:lang="en">Is Clustered</source>
     </trans-unit>
@@ -358,6 +424,9 @@
     <trans-unit id="objectManagement.isXTPSupported">
       <source xml:lang="en">Is XTP Supported</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.logfiletype">
+      <source xml:lang="en">LOG</source>
+    </trans-unit>
     <trans-unit id="objectManagement.language">
       <source xml:lang="en">Language</source>
     </trans-unit>
@@ -370,17 +439,29 @@
     <trans-unit id="objectManagement.databaseProperties.ledgerSectionHeader">
       <source xml:lang="en">Ledger</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.limitedToMBFileSizeText">
+      <source xml:lang="en">Limited to (MB)</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.autoGrowthValueConversion.limitation">
+      <source xml:lang="en">Limited to {0} MB</source>
+    </trans-unit>
     <trans-unit id="objectManagement.loadingObjectsCompletedLabel">
       <source xml:lang="en">Loading objects completed, {0} objects found</source>
     </trans-unit>
     <trans-unit id="objectManagement.loadingObjectsLabel">
       <source xml:lang="en">Loading objects…</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.logicalNameText">
+      <source xml:lang="en">Logical Name</source>
+    </trans-unit>
     <trans-unit id="objectManagement.user.loginLabel">
       <source xml:lang="en">Login</source>
     </trans-unit>
     <trans-unit id="objectManagement.LoginTypeDisplayNameInTitle">
       <source xml:lang="en">Login</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.loginAuditingText">
+      <source xml:lang="en">Login auditing</source>
     </trans-unit>
     <trans-unit id="objectManagement.login.lockedOutLabel">
       <source xml:lang="en">Login is locked out</source>
@@ -397,8 +478,14 @@
     <trans-unit id="objectManagement.maxSizeLabel">
       <source xml:lang="en">Max Size</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.maximumFileSizeText">
+      <source xml:lang="en">Maximum File Size</source>
+    </trans-unit>
     <trans-unit id="objectManagement.maxServerMemoryText">
       <source xml:lang="en">Maximum Server Memory (MB)</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.fileSizeLimitError">
+      <source xml:lang="en">Maximum file size cannot be less than size</source>
     </trans-unit>
     <trans-unit id="objectManagement.serverMemoryMaxLowerThanMinInputError">
       <source xml:lang="en">Maximum server memory cannot be lower than minimum server memory</source>
@@ -436,6 +523,12 @@
     <trans-unit id="objectManagement.user.noLogin">
       <source xml:lang="en">No Login Access</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.noneText">
+      <source xml:lang="en">None</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.noLoginAuditingText">
+      <source xml:lang="en">None</source>
+    </trans-unit>
     <trans-unit id="objectManagement.serverNumaNodeLabel">
       <source xml:lang="en">Numa Node {0}</source>
     </trans-unit>
@@ -460,9 +553,6 @@
     <trans-unit id="objectManagement.operatingSystem">
       <source xml:lang="en">Operating System</source>
     </trans-unit>
-    <trans-unit id="objectManagement.optionsSectionHeader">
-      <source xml:lang="en">Options</source>
-    </trans-unit>
     <trans-unit id="objectManagement.user.ownedSchemasLabel">
       <source xml:lang="en">Owned Schemas</source>
     </trans-unit>
@@ -486,6 +576,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.passwordsNotMatchError">
       <source xml:lang="en">Password must match the confirm password.</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.pathText">
+      <source xml:lang="en">Path</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseFilePath">
       <source xml:lang="en">Path</source>
@@ -517,11 +610,17 @@
     <trans-unit id="objectManagement.properties">
       <source xml:lang="en">Properties</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.rowsDataFileType">
+      <source xml:lang="en">ROWS Data</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.recoverySectionHeader">
       <source xml:lang="en">Recovery</source>
     </trans-unit>
     <trans-unit id="objectManagement.recoveryModelLabel">
       <source xml:lang="en">Recovery Model</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.removeButton">
+      <source xml:lang="en">Remove</source>
     </trans-unit>
     <trans-unit id="objectManagement.removeMemberText">
       <source xml:lang="en">Remove selected member</source>
@@ -548,6 +647,9 @@
     <trans-unit id="objectManagement.login.sqlAuthSectionHeader">
       <source xml:lang="en">SQL Authentication</source>
     </trans-unit>
+    <trans-unit id="objectManagement.sqlServerAndWindowsAuthText">
+      <source xml:lang="en">SQL Server and Windows Authentication mode</source>
+    </trans-unit>
     <trans-unit id="objectManagement.ObjectSelectionMethodDialog_SelectSchemaDropdownLabel">
       <source xml:lang="en">Schema</source>
     </trans-unit>
@@ -559,6 +661,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.securablesText">
       <source xml:lang="en">Securables</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.security">
+      <source xml:lang="en">Security</source>
     </trans-unit>
     <trans-unit id="objectManagement.selectText">
       <source xml:lang="en">Select</source>
@@ -590,6 +695,9 @@
     <trans-unit id="objectManagement.login.serverRoleSectionHeader">
       <source xml:lang="en">Server Roles</source>
     </trans-unit>
+    <trans-unit id="objectManagement.serverAuthenticationText">
+      <source xml:lang="en">Server authentication</source>
+    </trans-unit>
     <trans-unit id="objectManagement.serviceTier">
       <source xml:lang="en">Service Tier</source>
     </trans-unit>
@@ -597,7 +705,7 @@
       <source xml:lang="en">Set Secondary same as Primary</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.size">
-      <source xml:lang="en">Size</source>
+      <source xml:lang="en">Size (MB)</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.spaceAvailable">
       <source xml:lang="en">Space Available</source>
@@ -617,6 +725,9 @@
     <trans-unit id="objectManagement.storageSpaceUsageInMB">
       <source xml:lang="en">Storage Space Usage (MB)</source>
     </trans-unit>
+    <trans-unit id="objectManagement.successfulLoginsOnlyText">
+      <source xml:lang="en">Successful logins only</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.targetRecoveryTimeInSecondsText">
       <source xml:lang="en">Target Recovery Time (Seconds)</source>
     </trans-unit>
@@ -629,12 +740,21 @@
     <trans-unit id="objectManagement.databaseFileType">
       <source xml:lang="en">Type</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.autoGrowthValueConversion.unlimited">
+      <source xml:lang="en">Unlimited</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.unlimitedFileSizeText">
+      <source xml:lang="en">Unlimited</source>
+    </trans-unit>
     <trans-unit id="objectManagement.detachUpdateStatistics">
       <source xml:lang="en">Update statistics</source>
     </trans-unit>
     <trans-unit id="objectManagement.updateObjectOperationName">
       <source xml:lang="en">Update {0} &apos;{1}&apos;</source>
       <note>{0} object type, {1}: object name.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.useFullTextIndexingText">
+      <source xml:lang="en">Use full-text indexing</source>
     </trans-unit>
     <trans-unit id="objectManagement.UserTypeDisplayNameInTitle">
       <source xml:lang="en">User</source>
@@ -653,6 +773,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.login.windowsAuthenticationType">
       <source xml:lang="en">Windows Authentication</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.onlyWindowsAuthModeText">
+      <source xml:lang="en">Windows Authentication mode</source>
     </trans-unit>
     <trans-unit id="objectManagement.withGrantColumnHeader">
       <source xml:lang="en">With Grant</source>
@@ -683,6 +806,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.ViewDisplayName">
       <source xml:lang="en">view</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.autoGrowthValueConversion">
+      <source xml:lang="en">{0}</source>
     </trans-unit>
     <trans-unit id="objectManagement.newObjectDialogTitle">
       <source xml:lang="en">{0} - New (Preview)</source>
@@ -762,6 +888,9 @@
     </trans-unit>
     <trans-unit id="mssql.ui.scriptError">
       <source xml:lang="en">An error occurred while generating the script. {0}</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.editText">
+      <source xml:lang="en">Edit</source>
     </trans-unit>
     <trans-unit id="mssql.ui.generatingScript">
       <source xml:lang="en">Generating script...</source>
