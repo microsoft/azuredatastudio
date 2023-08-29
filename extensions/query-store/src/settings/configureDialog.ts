@@ -124,13 +124,13 @@ export class ConfigureDialog {
 				}
 
 				if (config === ConfigComponentsInfo.timeIntervalComponentOverallResource) {
-					this.timeIntervalComponent = this.createTimeIntervalComponent(true);
+					this.timeIntervalComponent = this.createTimeIntervalComponent(config);
 					const typeGroup = this.createGroup(constants.timeSettingsLabel, [this.timeIntervalComponent.component]);
 					componentGroups.push(typeGroup);
 				}
 
 				if (config === ConfigComponentsInfo.timeIntervalComponent) {
-					this.timeIntervalComponent = this.createTimeIntervalComponent();
+					this.timeIntervalComponent = this.createTimeIntervalComponent(config);
 					const typeGroup = this.createGroup(constants.timeIntervalLabel, [this.timeIntervalComponent.component]);
 					componentGroups.push(typeGroup);
 				}
@@ -420,9 +420,9 @@ export class ConfigureDialog {
 		};
 	}
 
-	private createTimeIntervalComponent(isOverallResourceReport: boolean = false): azdata.FormComponent {
+	private createTimeIntervalComponent(config: ConfigComponentsInfo): azdata.FormComponent {
 		let value;
-		if (isOverallResourceReport) {
+		if (config === ConfigComponentsInfo.timeIntervalComponentOverallResource) {
 			this.timeIntervalOptions = [constants.lastHourLabel, constants.lastDayLabel, constants.last2DaysLabel, constants.lastWeekLabel, constants.lastMonthLabel, constants.last6MonthsLabel, constants.lastYearLabel, constants.customLabel];
 			value = constants.lastMonthLabel;
 		} else {
@@ -572,7 +572,7 @@ export class ConfigureDialog {
 			.component();
 
 		let items;
-		if (isOverallResourceReport) {
+		if (config === ConfigComponentsInfo.timeIntervalComponentOverallResource) {
 			items = [timeIntervalComponent, this.aggregationSizeComponent, timeFormatRow];
 		} else {
 			items = [timeIntervalComponent, timeFormatRow];
