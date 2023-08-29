@@ -10,7 +10,7 @@ import { Database, DatabaseViewInfo } from '../interfaces';
 import { AttachDatabaseDocUrl } from '../constants';
 import * as loc from '../localizedConstants';
 import { RemoveText } from '../../ui/localizedConstants';
-import { DefaultMinTableRowCount, getTableHeight } from '../../ui/dialogBase';
+import { DefaultMinTableRowCount, DialogButton, getTableHeight } from '../../ui/dialogBase';
 import path = require('path');
 import { getErrorMessage } from '../../utils';
 
@@ -47,8 +47,15 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		this._databasesTable = this.createTable(loc.DatabasesToAttachLabel, columns, []);
 		this.disposables.push(this._databasesTable.onRowSelected(() => this.onFileRowSelected()))
 
-		const buttonContainer = this.addButtonsForTable(this._databasesTable, loc.AddFileAriaLabel, RemoveText,
-			async () => await this.onAddFilesButtonClicked(), async () => await this.onRemoveFilesButtonClicked());
+		let addButton: DialogButton = {
+			buttonAriaLabel: loc.AddFileAriaLabel,
+			buttonHandler: async () => await this.onAddFilesButtonClicked()
+		};
+		let removeButton: DialogButton = {
+			buttonAriaLabel: RemoveText,
+			buttonHandler: async () => await this.onRemoveFilesButtonClicked()
+		};
+		const buttonContainer = this.addButtonsForTable(this._databasesTable, addButton, removeButton);
 
 		this._nameField = this.createInputBox(async newValue => {
 			let selectedRow = this._databasesTable.selectedRows[0];
