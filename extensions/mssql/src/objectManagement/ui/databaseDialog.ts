@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultMaxTableRowCount, getTableHeight, DialogButtonComponent } from '../../ui/dialogBase';
+import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultMaxTableRowCount, getTableHeight, DialogButton } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl, DatabaseFileGroupsPropertiesDocUrl } from '../constants';
@@ -532,16 +532,16 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				'margin-left': '10px'
 			}
 		}).component();
-		const addButtonComponent: DialogButtonComponent = {
-			buttonArialLabel: localizedConstants.AddButton,
+		const addButtonComponent: DialogButton = {
+			buttonAriaLabel: localizedConstants.AddButton,
 			buttonHandler: (button) => this.onAddDatabaseFilesButtonClicked(button)
 		};
-		const removeButtonComponent: DialogButtonComponent = {
-			buttonArialLabel: localizedConstants.RemoveButton,
+		const removeButtonComponent: DialogButton = {
+			buttonAriaLabel: localizedConstants.RemoveButton,
 			buttonHandler: () => this.onRemoveDatabaseFilesButtonClicked()
 		};
-		const editbuttonComponent: DialogButtonComponent = {
-			buttonArialLabel: localizedConstants.EditButton,
+		const editbuttonComponent: DialogButton = {
+			buttonAriaLabel: localizedConstants.EditButton,
 			buttonHandler: (button) => this.onEditDatabaseFilesButtonClicked(button)
 		};
 		const databaseFilesButtonContainer = this.addButtonsForTable(this.databaseFilesTable, addButtonComponent, removeButtonComponent, editbuttonComponent);
@@ -631,7 +631,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * Validate the selected row to enable/disable the remove button
 	 * @returns true if the remove button should be enabled, false otherwise
 	 */
-	protected override removeButtonOnRowSelected(table: azdata.TableComponent): boolean {
+	protected override removeButtonEnabled(table: azdata.TableComponent): boolean {
 		let isEnabled = true;
 		if (table === this.databaseFilesTable && this.databaseFilesTable.selectedRows !== undefined) {
 			const selectedRowId = this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].id;
@@ -668,9 +668,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		if (!isUndefinedOrNull(selectedFile) && selectedFile.type === localizedConstants.FilestreamFileType) {
 			selectedFile.autoFileGrowth = defaultFileGrowthInMb;
 		}
-		const isnewFile: boolean = button.ariaLabel === localizedConstants.AddButton;
+		const isNewFile: boolean = button.ariaLabel === localizedConstants.AddButton;
 		const isEditingNewFile: boolean = button.ariaLabel === localizedConstants.EditButton && selectedFile.id === undefined;
-		const databaseFile: DatabaseFile = isnewFile ? {
+		const databaseFile: DatabaseFile = isNewFile ? {
 			id: undefined,
 			name: '',
 			type: localizedConstants.RowsDataFileType,
@@ -685,12 +685,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		} : selectedFile;
 
 		const dialog = new DatabaseFileDialog({
-			title: (isnewFile || isEditingNewFile) ? localizedConstants.AddDatabaseFilesText : localizedConstants.EditDatabaseFilesText(databaseFile.name),
+			title: (isNewFile || isEditingNewFile) ? localizedConstants.AddDatabaseFilesText : localizedConstants.EditDatabaseFilesText(databaseFile.name),
 			viewInfo: this.viewInfo,
 			files: this.objectInfo.files,
 			rowFilegroups: this.rowDatafileGroupsOptions,
 			filestreamFilegroups: this.filestreamDatafileGroupsOptions,
-			isNewFile: isnewFile,
+			isNewFile: isNewFile,
 			isEditingNewFile: isEditingNewFile,
 			databaseFile: databaseFile,
 			defaultFileConstants: {
@@ -739,12 +739,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 		}).component();
 		this.rowsFilegroupNameInput = this.getFilegroupNameInput(this.rowsFilegroupsTable, FileGroupType.RowsFileGroup);
-		const addButtonComponent: DialogButtonComponent = {
-			buttonArialLabel: localizedConstants.AddFilegroupText,
+		const addButtonComponent: DialogButton = {
+			buttonAriaLabel: localizedConstants.AddFilegroupText,
 			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.rowsFilegroupsTable)
 		};
-		const removeButtonComponent: DialogButtonComponent = {
-			buttonArialLabel: localizedConstants.RemoveButton,
+		const removeButtonComponent: DialogButton = {
+			buttonAriaLabel: localizedConstants.RemoveButton,
 			buttonHandler: () => this.onRemoveDatabaseFileGroupsButtonClicked(this.rowsFilegroupsTable)
 		};
 		const rowsFileGroupButtonContainer = this.addButtonsForTable(this.rowsFilegroupsTable, addButtonComponent, removeButtonComponent);
@@ -816,12 +816,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 		}).component();
 		this.filestreamFilegroupNameInput = this.getFilegroupNameInput(this.filestreamFilegroupsTable, FileGroupType.FileStreamDataFileGroup);
-		const addButtonComponent: DialogButtonComponent = {
-			buttonArialLabel: localizedConstants.AddFilegroupText,
+		const addButtonComponent: DialogButton = {
+			buttonAriaLabel: localizedConstants.AddFilegroupText,
 			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.filestreamFilegroupsTable)
 		};
-		const removeButtonComponent: DialogButtonComponent = {
-			buttonArialLabel: localizedConstants.RemoveButton,
+		const removeButtonComponent: DialogButton = {
+			buttonAriaLabel: localizedConstants.RemoveButton,
 			buttonHandler: () => this.onRemoveDatabaseFileGroupsButtonClicked(this.filestreamFilegroupsTable)
 		};
 		const filestreamFileGroupButtonContainer = this.addButtonsForTable(this.filestreamFilegroupsTable, addButtonComponent, removeButtonComponent);
@@ -883,12 +883,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 		}).component();
 		this.memoryOptimizedFilegroupNameInput = this.getFilegroupNameInput(this.memoryOptimizedFilegroupsTable, FileGroupType.MemoryOptimizedDataFileGroup);
-		const addButtonComponent: DialogButtonComponent = {
-			buttonArialLabel: localizedConstants.AddFilegroupText,
+		const addButtonComponent: DialogButton = {
+			buttonAriaLabel: localizedConstants.AddFilegroupText,
 			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.memoryOptimizedFilegroupsTable)
 		};
-		const removeButtonComponent: DialogButtonComponent = {
-			buttonArialLabel: localizedConstants.RemoveButton,
+		const removeButtonComponent: DialogButton = {
+			buttonAriaLabel: localizedConstants.RemoveButton,
 			buttonHandler: () => this.onRemoveDatabaseFileGroupsButtonClicked(this.memoryOptimizedFilegroupsTable)
 		};
 		const memoryOptimizedFileGroupButtonContainer = this.addButtonsForTable(this.memoryOptimizedFilegroupsTable, addButtonComponent, removeButtonComponent);

@@ -70,7 +70,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		this.originalName = this.options.databaseFile.name;
 		this.originalFileName = this.options.databaseFile.fileNameWithExtension;
 		this.isEditingFile = this.options.isNewFile || this.options.isEditingNewFile;
-		await this.InitializeAddDatabaseFileDialog();
+		await this.initializeAddDatabaseFileDialog();
 	}
 
 	/**
@@ -116,7 +116,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		return errors;
 	}
 
-	private async InitializeAddDatabaseFileDialog(): Promise<void> {
+	private async initializeAddDatabaseFileDialog(): Promise<void> {
 		let containers: azdata.Component[] = [];
 		// Logical Name of the file
 		const logicalname = this.createInputBox(async (newValue) => {
@@ -163,7 +163,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		containers.push(fileSizeContainer);
 
 		// Auto Growth and Max Size
-		containers.push(await this.InitializeAutogrowthSection());
+		containers.push(await this.initializeAutogrowthSection());
 
 		// Path
 		this.filePathTextBox = this.createInputBox(async (newValue) => {
@@ -205,7 +205,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	 * Initialized file growth and max file size sections
 	 * @returns a group container with 'auto file growth' options
 	 */
-	private async InitializeAutogrowthSection(): Promise<azdata.GroupContainer> {
+	private async initializeAutogrowthSection(): Promise<azdata.GroupContainer> {
 		// Autogrowth checkbox
 		this.enableAutoGrowthCheckbox = this.createCheckbox(localizedConstants.EnableAutogrowthText, async (checked) => {
 			this.inPercentAutogrowth.enabled
