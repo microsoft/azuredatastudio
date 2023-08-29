@@ -478,6 +478,8 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	dscOnOffOptions?: string[];
 	dscElevateOptions?: string[];
 	dscEnableDisableOptions?: string[];
+	rowDataFileGroupsOptions?: string[];
+	fileStreamFileGroupsOptions?: string[];
 	fileTypesOptions?: string[];
 }
 
@@ -537,6 +539,26 @@ export interface Server extends ObjectManagement.SqlObject {
 	autoProcessorAffinityMaskForAll: boolean;
 	autoProcessorAffinityIOMaskForAll: boolean;
 	numaNodes: NumaNode[];
+	authenticationMode: ServerLoginMode;
+	loginAuditing: AuditLevel;
+}
+
+/**
+ * The server login types.
+ */
+export const enum ServerLoginMode {
+	Integrated, //windows auth only
+	Mixed // both sql server and windows auth
+}
+
+/**
+ * The server audit levels.
+ */
+export const enum AuditLevel {
+	None,
+	Success,
+	Failure,
+	All
 }
 
 export interface NumericServerProperty {

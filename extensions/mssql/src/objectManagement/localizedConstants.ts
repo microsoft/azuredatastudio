@@ -288,6 +288,16 @@ export const processorLabel = localize('objectManagement.processorLabel', "Proce
 export const serverMemoryMaxLowerThanMinInputError: string = localize('objectManagement.serverMemoryMaxLowerThanMinInputError', "Maximum server memory cannot be lower than minimum server memory");
 export const serverNumaNodeLabel = (value: string) => localize('objectManagement.serverNumaNodeLabel', "Numa Node {0}", value);
 export const serverCPULabel = (value: string) => localize('objectManagement.serverCPULabel', "CPU {0}", value);
+export const securityText = localize('objectManagement.security', "Security");
+export const serverAuthenticationText = localize('objectManagement.serverAuthenticationText', "Server authentication");
+export const onlyWindowsAuthModeText = localize('objectManagement.onlyWindowsAuthModeText', "Windows Authentication mode");
+export const sqlServerAndWindowsAuthText = localize('objectManagement.sqlServerAndWindowsAuthText', "SQL Server and Windows Authentication mode");
+export const loginAuditingText = localize('objectManagement.loginAuditingText', "Login auditing");
+export const noLoginAuditingText = localize('objectManagement.noLoginAuditingText', "None");
+export const failedLoginsOnlyText = localize('objectManagement.failedLoginsOnlyText', "Failed logins only");
+export const successfulLoginsOnlyText = localize('objectManagement.successfulLoginsOnlyText', "Successful logins only");
+export const bothFailedAndSuccessfulLoginsText = localize('objectManagement.bothFailedAndSuccessfulLoginsText', "Both failed and successful logins");
+export const needToRestartServer = localize('objectManagement.needToRestartServer', "Changes require server restart in order to be effective");
 
 //Database properties Dialog
 export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");

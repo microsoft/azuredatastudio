@@ -577,12 +577,12 @@ class WelcomePage extends Disposable {
 		if (btnContainer) {
 			extensionPacks.forEach((extension) => {
 				const installText = localize('welcomePage.install', "Install");
-				this._register(new Button(btnContainer, { title: installText, supportIcons: true, ...defaultButtonStyles }));
+				let dropdownBtn = this._register(new Button(btnContainer, { supportIcons: true, ...defaultButtonStyles }));
+				dropdownBtn.label = installText;
 				const classes = ['btn'];
 				const getDropdownBtn = container.querySelector('.extensionPack .monaco-button:first-of-type') as HTMLAnchorElement;
 				getDropdownBtn.id = 'dropdown-btn';
 				getDropdownBtn.classList.add(...classes);
-				getDropdownBtn.title = extension.title || (extension.isKeymap ? localize('welcomePage.installKeymap', "Install {0} keymap", extension.name) : localize('welcomePage.installExtensionPack', "Install additional support for {0}", extension.name));
 				getDropdownBtn.setAttribute('aria-haspopup', 'true');
 				getDropdownBtn.setAttribute('aria-controls', 'dropdown');
 				getDropdownBtn.setAttribute('role', 'navigation');
@@ -602,7 +602,7 @@ class WelcomePage extends Disposable {
 				const header = container.querySelector('.extension-pack-header');
 
 				const installedText = localize('welcomePage.installed', "Installed");
-				let installedButton = new Button(btnContainer, { title: installedText, supportIcons: true, ...defaultButtonStyles });
+				let installedButton = new Button(btnContainer, { supportIcons: true, ...defaultButtonStyles });
 				this._register(installedButton);
 
 				installedButton.label = installedText;
@@ -610,7 +610,6 @@ class WelcomePage extends Disposable {
 				const getInstalledButton = container.querySelector('.extensionPack .monaco-button:nth-of-type(2)') as HTMLAnchorElement;
 
 				getInstalledButton.innerText = localize('welcomePage.installed', "Installed");
-				getInstalledButton.title = extension.isKeymap ? localize('welcomePage.installedKeymap', "{0} keymap is already installed", extension.name) : localize('welcomePage.installedExtensionPack', "{0} support is already installed", extension.name);
 				getInstalledButton.classList.add('enabledExtension');
 				getInstalledButton.classList.add(...classes);
 				getInstalledButton.setAttribute('data-extension', extension.id);
