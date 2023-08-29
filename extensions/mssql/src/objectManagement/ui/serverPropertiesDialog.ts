@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { DefaultColumnCheckboxWidth } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
@@ -82,11 +83,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 				break;
 		}
 		return helpUrl;
-	}
-
-	protected override onFormFieldChange(): void {
-		this.dialogObject.customButtons[1].enabled = false;
-		this.dialogObject.okButton.enabled = this.isDirty;
 	}
 
 	protected async initializeUI(): Promise<void> {
@@ -472,7 +468,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			this.successfulLoginsOnlyRadioButton,
 			this.bothFailedAndSuccessfulLoginsRadioButton
 		], true);
-
 		this.securitySection = this.createGroup('', [
 			serverAuthSection,
 			serverLoginSection
@@ -488,6 +483,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		if (this.sqlServerAndWindowsAuthRadioButton.checked) {
 			this.objectInfo.authenticationMode = ServerLoginMode.Mixed;
 		}
+		await vscode.window.showInformationMessage(localizedConstants.needToRestartServer, { modal: true });
 	}
 
 	private async handleAuditLevelChange(): Promise<void> {

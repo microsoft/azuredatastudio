@@ -295,6 +295,7 @@ export const noLoginAuditingText = localize('objectManagement.noLoginAuditingTex
 export const failedLoginsOnlyText = localize('objectManagement.failedLoginsOnlyText', "Failed logins only");
 export const successfulLoginsOnlyText = localize('objectManagement.successfulLoginsOnlyText', "Successful logins only");
 export const bothFailedAndSuccessfulLoginsText = localize('objectManagement.bothFailedAndSuccessfulLoginsText', "Both failed and successful logins");
+export const needToRestartServer = localize('objectManagement.needToRestartServer', "Changes require server restart in order to be effective");
 
 //Database properties Dialog
 export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");
