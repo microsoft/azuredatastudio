@@ -184,6 +184,9 @@
       <Item ItemId=";extensions/Microsoft.azuremonitor/dist/objectExplorerNodeProvider/command.progress" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[$(sync~spin) {0}...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[$(sync~spin) {0}...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -280,6 +283,9 @@
       <Item ItemId=";extensions/Microsoft.azuremonitor/package.azuremonitor.connectionProperties.authType.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies the method of authenticating with Azure Monitor]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[指定使用 Azure 監視器驗證的方法]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -313,12 +319,18 @@
       <Item ItemId=";extensions/Microsoft.azuremonitor/package.azuremonitor.connectionProperties.dbaPrivilege.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Administrative privileges: SYSDBA or SYSOPER]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[系統管理權限: SYSDBA 或 SYSOPER]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azuremonitor/package.azuremonitor.connectionProperties.dbaPrivilege.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Administrative privileges]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[必須使用系統管理權限]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -343,12 +355,18 @@
       <Item ItemId=";extensions/Microsoft.azuremonitor/package.azuremonitor.connectionProperties.metadataPooling.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This attribute indicates whether the metadata information for executed queries is cached for improved performance.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[此屬性指出是否快取執行查詢的中繼資料資訊以提升效能。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azuremonitor/package.azuremonitor.connectionProperties.metadataPooling.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Metadata Pooling]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[中繼資料共用]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -373,18 +391,27 @@
       <Item ItemId=";extensions/Microsoft.azuremonitor/package.azuremonitor.connectionProperties.proxyUserId.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User name of the proxy user.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Proxy 使用者的使用者名稱。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azuremonitor/package.azuremonitor.connectionProperties.proxyUserId.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Proxy User Id]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Proxy 使用者識別碼]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azuremonitor/package.azuremonitor.connectionProperties.proxyUserPassword.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Password of the proxy user.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Proxy 使用者的密碼。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -410,7 +437,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Workspace ID]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[工作區 ID]]></Val>
+            <Val><![CDATA[工作區識別碼]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -454,6 +481,9 @@
       <Item ItemId=";extensions/Microsoft.azuremonitor/package.azuremonitor.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Monitor access for Azure Data Studio]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio 的 Azure 監視器存取權]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

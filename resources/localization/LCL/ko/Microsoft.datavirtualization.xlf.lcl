@@ -96,6 +96,9 @@
         <Item ItemId=";(...) aSources" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[No valid external data sources were found in the specified database.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[지정한 데이터베이스에서 유효한 외부 데이터 원본을 찾을 수 없습니다.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -105,6 +108,9 @@
         <Item ItemId=";(...) emas" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[No user schemas were found in the specified database.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[지정한 데이터베이스에 테이블이 없습니다.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -138,12 +144,18 @@
         <Item ItemId=";(...) Exists" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[The specified table name already exists under the specified schema.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[지정한 테이블 이름이 이미 지정한 스키마 아래에 있습니다.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) TextboxTitle" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Name for new external table ]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[새 외부 테이블의 이름 ]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -189,6 +201,9 @@
         <Item ItemId=";(...) reviewData" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Failed to retrieve any data from the specified file.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[지정한 파일에서 데이터를 검색하지 못했습니다.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -243,6 +258,9 @@
         <Item ItemId=";(...) ta" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Virtualize Data]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[데이터 가상화]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -321,6 +339,9 @@
         <Item ItemId=";(...) vSupported" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Currently only csv files are supported for this wizard.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[현재 이 마법사에서는 CSV 파일만 지원됩니다.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -342,6 +363,9 @@
         <Item ItemId=";(...) ame" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Select the destination database for your external table]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[외부 테이블의 대상 데이터베이스를 선택하세요.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -387,6 +411,9 @@
         <Item ItemId=";(...) Name" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Virtualize Data From CSV]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[CSV에서 데이터 가상화]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -408,6 +435,9 @@
         <Item ItemId=";(...) rmError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Password values do not match.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[암호 값이 일치하지 않습니다.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -426,6 +456,9 @@
         <Item ItemId=";(...) type_title" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Unsupported Column Types found]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[지원되지 않는 열 형식]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -442,6 +475,9 @@
       <Item ItemId=";extensions/Microsoft.datavirtualization/dist/localizedConstants.externalTable.externalSchemaTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[External Schema]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[외부 스키마]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -700,6 +736,9 @@
       <Item ItemId=";extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/connectionDetailsPage.credentialNameDropdown" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Choose Credential]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[자격 증명 선택]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -715,6 +754,9 @@
       <Item ItemId=";extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/connectionDetailsPage.dataSourceHelpText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The name for your External Data Source.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[외부 데이터 원본의 이름입니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -892,6 +934,9 @@
       <Item ItemId=";extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/objectMappingPage.noObjectSelectedMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No objects were selected.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[선택된 개체가 없습니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1006,6 +1051,9 @@
       <Item ItemId=";extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/summaryPage.createSourceInfo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[External Table creation completed successfully]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[외부 테이블 만들기가 완료되었습니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1048,6 +1096,9 @@
       <Item ItemId=";extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/summaryPage.summaryMasterKeyLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database Master Key]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[데이터베이스 마스터 키]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1090,6 +1141,9 @@
       <Item ItemId=";extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/summaryPage.summaryTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The following objects will be created in the destination database:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[다음 개체가 대상 데이터베이스에 만들어집니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1123,6 +1177,9 @@
       <Item ItemId=";extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/virtualizeDataWizard.getExtDataTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Virtualize Data]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[데이터 가상화]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

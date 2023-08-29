@@ -149,6 +149,12 @@
     <trans-unit id="objectManagement.databaseProperties.automaticSectionHeader">
       <source xml:lang="en">Automatic</source>
     </trans-unit>
+    <trans-unit id="objectManagement.autoSetProcessorAffinityIOMaskForAll">
+      <source xml:lang="en">Automatically set I/O affinity mask for all processors</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.autoSetProcessorAffinityMaskForAll">
+      <source xml:lang="en">Automatically set processor affinity mask for all processors</source>
+    </trans-unit>
     <trans-unit id="objectManagement.login.aadAuthenticationType">
       <source xml:lang="en">Azure Active Directory Authentication</source>
     </trans-unit>
@@ -166,6 +172,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.browseText">
       <source xml:lang="en">Browse…</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.serverCPULabel">
+      <source xml:lang="en">CPU {0}</source>
     </trans-unit>
     <trans-unit id="objectManagement.closeConnections">
       <source xml:lang="en">Close existing connections</source>
@@ -331,6 +340,9 @@
     <trans-unit id="objectManagement.ObjectSelectionMethodDialog_TypeLabel">
       <source xml:lang="en">How do you want to add objects?</source>
     </trans-unit>
+    <trans-unit id="objectManagement.processorIOAffinityColumn">
+      <source xml:lang="en">I/O Affinity</source>
+    </trans-unit>
     <trans-unit id="objectManagement.isClustered">
       <source xml:lang="en">Is Clustered</source>
     </trans-unit>
@@ -424,6 +436,9 @@
     <trans-unit id="objectManagement.user.noLogin">
       <source xml:lang="en">No Login Access</source>
     </trans-unit>
+    <trans-unit id="objectManagement.serverNumaNodeLabel">
+      <source xml:lang="en">Numa Node {0}</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.numberOfUsers">
       <source xml:lang="en">Number of Users</source>
     </trans-unit>
@@ -483,6 +498,15 @@
     </trans-unit>
     <trans-unit id="objectManagement.platform">
       <source xml:lang="en">Platform</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.processorColumn">
+      <source xml:lang="en">Processor</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.processorAffinityColumn">
+      <source xml:lang="en">Processor Affinity</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.processorLabel">
+      <source xml:lang="en">Processor Affinity Table</source>
     </trans-unit>
     <trans-unit id="objectManagement.processors">
       <source xml:lang="en">Processors</source>

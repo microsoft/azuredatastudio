@@ -300,8 +300,8 @@
       <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.duplicateFileError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File {0} already exists in the destination folder {1} ]A; The file has been renamed to {2} to prevent data loss.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[文件 {0} 已在目标文件夹 {1} 中]D;]A; 此文件已重命名为 {2}，以防数据丢失。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[文件 {0} 已存在于目标文件夹 {1} 中]A; 此文件已重命名为 {2}，以防数据丢失。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[File {0} already exists in the destination folder {1} ]D;]A; The file has been renamed to {2} to prevent data loss.]]></Val>

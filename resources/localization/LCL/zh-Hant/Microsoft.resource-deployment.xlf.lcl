@@ -641,6 +641,9 @@
         <Item ItemId=";(...) NoServerError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[No servers found in current subscription.]A;Select a different subscription containing at least one server]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[在目前的訂用帳戶中找不到任何伺服器。]A;請選取其他至少包含一部伺服器的訂用帳戶]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>

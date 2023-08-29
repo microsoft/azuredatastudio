@@ -7971,11 +7971,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/editData/browser/editDataActions.editData.closeSql" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/contrib/editData/browser/editDataActions.editData.hideSql" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Close SQL Pane]]></Val>
+          <Val><![CDATA[Hide SQL Pane]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL 창 닫기]]></Val>
+            <Val><![CDATA[SQL 창 숨기기]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13403,6 +13403,15 @@
           <Val><![CDATA[The default chart type to use when opening Chart Viewer from a Query Results]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[쿼리 결과에서 차트 뷰어를 열 때 사용할 기본 차트 유형]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.githubCopilotContextualizationEnabled" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[(Preview) Enable contextualization of queries for GitHub Copilot. This setting helps GitHub Copilot to return improved suggestions, if the Copilot extension is installed and providers have implemented contextualization.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[(미리 보기) GitHub Copilot 쿼리의 컨텍스트화를 사용하도록 설정합니다. 이 설정을 사용하면 Copilot 확장이 설치되어 있고 공급자가 문맥화를 구현한 경우 GitHub Copilot이 개선된 제안을 반환하는 데 도움이 됩니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

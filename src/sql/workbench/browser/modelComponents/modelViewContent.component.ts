@@ -29,9 +29,9 @@ import { ILogService } from 'vs/platform/log/common/log';
 export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 	@Input() private modelViewId: string;
 
-	private _onResize = new Emitter<void>();
+	private _onResize = this._register(new Emitter<void>());
 	public readonly onResize: Event<void> = this._onResize.event;
-	private _onMessage = new Emitter<string>();
+	private _onMessage = this._register(new Emitter<string>());
 	public readonly onMessage: Event<string> = this._onMessage.event;
 
 	constructor(

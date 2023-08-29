@@ -95,7 +95,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Checking Out Changes...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Fazendo Check-out de Alterações...]]></Val>
+            <Val><![CDATA[Verificando Alterações...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -203,7 +203,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Publishing Branch "{0}"...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Publicação de Branch "{0}"...]]></Val>
+            <Val><![CDATA[Publicando do Branch "{0}"...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -392,7 +392,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Replace Local Tag(s)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Substituir Marca(s) Local]]></Val>
+            <Val><![CDATA[Substituir Tags Locais]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -617,7 +617,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Stashed Changes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Mudanças em Stash]]></Val>
+            <Val><![CDATA[Alterações armazenadas temporariamente]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -860,7 +860,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Manage Unsafe Repositories]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Gerenciar repositórios não seguros]]></Val>
+            <Val><![CDATA[Gerenciar Repositórios Não Seguros]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1292,7 +1292,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Checkout Branch/Tag...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Branch/Marca de Check-out...]]></Val>
+            <Val><![CDATA[Fazer Check-Out do Branch/Tag...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1471,6 +1471,9 @@
       <Item ItemId=";extensions/vscode.git/bundle.++CODE++93c86a252e562f412c0322b6348bae591b3c1fe7f09460fb40083f9ec8011981" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Intent to Rename]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Intenção de Renomear]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1901,7 +1904,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Checking Out Branch/Tag...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Fazendo check-out de branch/marca...]]></Val>
+            <Val><![CDATA[Fazendo check-out do branch/tag...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2080,6 +2083,9 @@
       <Item ItemId=";extensions/vscode.git/bundle.++CODE++d6bd8cfa8b318f8c3845ea4c575f6dfc48f3db10ebec956199cb5afe75ced8f7" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} (Intent to add)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} (Intenção de adicionar)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3050,7 +3056,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Delete Remote Tag]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Excluir Marca Remota]]></Val>
+            <Val><![CDATA[Excluir Tag Remota]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3095,7 +3101,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Complete Merge]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Completar Mesclagem]]></Val>
+            <Val><![CDATA[Executar Mesclagem]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Accept Merge]]></Val>
@@ -3152,7 +3158,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Manage Unsafe Repositories]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Gerenciar repositórios não seguros]]></Val>
+            <Val><![CDATA[Gerenciar Repositórios Não Seguros]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5074,8 +5080,8 @@
       <Item ItemId=";extensions/vscode.git/package.view.workbench.scm.empty" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[In order to use git features, you can open a folder containing a git repository or clone from a URL.]A;[Open Folder]5D;(command:vscode.openFolder)]A;[Clone Repository]5D;(command:git.clone)]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Para usar os recursos do git, você pode abrir uma pasta que contém um repositório git ou clonar de uma URL.]D;]A;[Abrir Pasta]5D;(command:vscode.openFolder)]D;]A;[Clonar Repositório]5D;(command:git.clone)]D;]A;Para saber mais sobre como usar o git e o controle do código-fonte no Azure Data Studio [leia nossa documentação]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Para usar os recursos do git, você pode abrir uma pasta contendo um repositório git ou clonar de um URL.]A;[Abrir Pasta]5D;(command:vscode.openFolder)]A;[Clonar Repositório]5D;(command:git.clone)]A;Para saber mais sobre como usar o git e o controle do código-fonte no Azure Data Studio [leia a nossa documentação]5D;(https://aka.ms/vscode-scm).]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[In order to use git features, you can open a folder containing a git repository or clone from a URL.]D;]A;[Open Folder]5D;(command:vscode.openFolder)]D;]A;[Clone Repository]5D;(command:git.clone)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
@@ -5086,8 +5092,8 @@
       <Item ItemId=";extensions/vscode.git/package.view.workbench.scm.emptyWorkspace" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories.]A;[Add Folder to Workspace]5D;(command:workbench.action.addRootFolder)]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[O workspace atualmente aberto não tem nenhuma pasta que contenha repositórios git.]D;]A;[Adicionar Pasta ao Workspace]5D;(command:workbench.action.addRootFolder)]D;]A;Para saber mais sobre como usar o git e o controle do código-fonte no Azure Data Studio [leia nossa documentação]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[O espaço de trabalho aberto no momento não tem nenhuma pasta contendo repositórios git.]A;[Adicionar pasta ao espaço de trabalho]5D;(command:workbench.action.addRootFolder)]A;Para saber mais sobre como usar o git e o controle do código-fonte no Azure Data Studio [leia a nossa documentação]5D;(https://aka.ms/vscode-scm).]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories.]D;]A;[Add Folder to Workspace]5D;(command:workbench.action.addRootFolder)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
@@ -5098,8 +5104,8 @@
       <Item ItemId=";extensions/vscode.git/package.view.workbench.scm.folder" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The folder currently open doesn't have a git repository. You can initialize a repository which will enable source control features powered by git.]A;[Initialize Repository]5D;(command:git.init?%5Btrue%5D)]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[A pasta aberta no momento não tem um repositório git. Você pode inicializar um repositório que habilitará os recursos de controle do código-fonte fornecidos pelo git.]D;]A;[Inicializar Repositório]5D;(command:git.init?%5Btrue%5D)]D;]A;Para saber mais sobre como usar o git e o controle do código-fonte no Azure Data Studio [leia nossa documentação]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[A pasta aberta no momento não tem um repositório git. Você pode inicializar um repositório que habilitará os recursos de controle do código-fonte alimentados pelo git.]A;[Inicializar Repositório]5D;(command:git.init?%5Btrue%5D)]A;Para saber mais sobre como usar o git e o controle do código-fonte no Azure Data Studio [leia a nossa documentação]5D;(https://aka.ms/vscode-scm).]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[The folder currently open doesn't have a git repository. You can initialize a repository which will enable source control features powered by git.]D;]A;[Initialize Repository]5D;(command:git.init?%5Btrue%5D)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
@@ -5212,8 +5218,8 @@
       <Item ItemId=";extensions/vscode.git/package.view.workbench.scm.workspace" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.]A;[Initialize Repository]5D;(command:git.init)]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[O workspace aberto atualmente não tem nenhuma pasta contendo repositórios git. Você pode inicializar um repositório em uma pasta que habilitará os recursos de controle do código-fonte fornecidos pelo git.]D;]A;[Inicializar Repositório]5D;(command:git.init)]D;]A;Para saber mais sobre como usar o git e o controle do código-fonte no Azure Data Studio [leia nossa documentação]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[O espaço de trabalho aberto no momento não tem nenhuma pasta contendo repositórios git. Você pode inicializar um repositório em uma pasta que habilitará os recursos de controle do código-fonte fornecidos pelo git.]A;[Inicializar Repositório]5D;(command:git.init)]A;Para saber mais sobre como usar o git e o controle do código-fonte no Azure Data Studio [leia a nossa documentação]5D;(https://aka.ms/vscode-scm).]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.]D;]A;[Initialize Repository]5D;(command:git.init)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>

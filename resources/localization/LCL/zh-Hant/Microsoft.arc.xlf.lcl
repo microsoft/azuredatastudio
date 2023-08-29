@@ -5065,8 +5065,8 @@
       <Item ItemId=";extensions/Microsoft.arc/package.arc.view.welcome.connect" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Azure Arc controllers registered. [Learn More]5D;(https://azure.microsoft.com/services/azure-arc/)]A;[Connect Controller]5D;(command:arc.connectToController)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[未註冊任何 Azure Arc 控制器。[深入了解]5D;(https://azure.microsoft.com/services/azure-arc/)]D;]A;[連線控制器]5D;(command:arc.connectToController)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[未註冊任何 Azure Arc 控制器。[深入了解]5D;(https://azure.microsoft.com/services/azure-arc/)]A;[連線控制器]5D;(command:arc.connectToController)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No Azure Arc controllers registered. [Learn More]5D;(https://azure.microsoft.com/services/azure-arc/)]D;]A;[Connect Controller]5D;(command:arc.connectToController)]]></Val>

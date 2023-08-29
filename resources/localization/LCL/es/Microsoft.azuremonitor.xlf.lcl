@@ -319,6 +319,9 @@
       <Item ItemId=";extensions/Microsoft.azuremonitor/package.azuremonitor.connectionProperties.dbaPrivilege.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Administrative privileges: SYSDBA or SYSOPER]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Privilegios administrativos: SYSDBA o SYSOPER]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -352,6 +355,9 @@
       <Item ItemId=";extensions/Microsoft.azuremonitor/package.azuremonitor.connectionProperties.metadataPooling.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This attribute indicates whether the metadata information for executed queries is cached for improved performance.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Este atributo indica si la información de metadatos de las consultas ejecutadas se almacena en caché para mejorar el rendimiento.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -385,6 +391,9 @@
       <Item ItemId=";extensions/Microsoft.azuremonitor/package.azuremonitor.connectionProperties.proxyUserId.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User name of the proxy user.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nombre de usuario del usuario proxy.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -472,6 +481,9 @@
       <Item ItemId=";extensions/Microsoft.azuremonitor/package.azuremonitor.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Monitor access for Azure Data Studio]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[acceso Azure Monitor para Azure Data Studio]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

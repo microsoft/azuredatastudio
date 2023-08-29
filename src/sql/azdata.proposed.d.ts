@@ -661,6 +661,8 @@ declare module 'azdata' {
 		type?: ExtensionNodeType;
 	}
 
+	export interface Component extends vscode.Disposable { }
+
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location
@@ -1971,12 +1973,18 @@ declare module 'azdata' {
 		NotEndsWith = 13
 	}
 
-	export namespace window {
-		export interface Wizard extends LoadingComponentBase {
-		}
+	export interface ModelView extends vscode.Disposable { }
 
-		export interface Dialog extends LoadingComponentBase {
-		}
+	export interface DeclarativeTableMenuCellValue extends vscode.Disposable { }
+
+	export namespace window {
+		export interface Wizard extends LoadingComponentBase { }
+
+		export interface Dialog extends LoadingComponentBase, vscode.Disposable { }
+
+		export interface ModelViewPanel extends vscode.Disposable { }
+
+		export interface ModelViewDashboard extends vscode.Disposable { }
 
 		/**
 		 * Opens the error dialog with customization options provided.
