@@ -620,6 +620,7 @@ export function differentDbDifferentServerExampleUsage(server: string, db: strin
 
 //#region Target platforms
 export const targetPlatformToVersion: Map<string, string> = new Map<string, string>([
+	// Note: the values here must match values from Microsoft.Data.Tools.Schema.SchemaModel.SqlPlatformNames
 	[SqlTargetPlatform.sqlServer2012, '110'],
 	[SqlTargetPlatform.sqlServer2014, '120'],
 	[SqlTargetPlatform.sqlServer2016, '130'],
@@ -627,7 +628,8 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 	[SqlTargetPlatform.sqlServer2019, '150'],
 	[SqlTargetPlatform.sqlServer2022, '160'],
 	[SqlTargetPlatform.sqlAzure, 'AzureV12'],
-	[SqlTargetPlatform.sqlDW, 'Dw']
+	[SqlTargetPlatform.sqlDW, 'Dw'],
+	[SqlTargetPlatform.sqlDwUnified, 'DwUnified']
 ]);
 
 export const onPremServerVersionToTargetPlatform: Map<number, SqlTargetPlatform> = new Map<number, SqlTargetPlatform>([
