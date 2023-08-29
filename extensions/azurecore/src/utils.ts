@@ -191,7 +191,7 @@ export function updateCustomCloudProviderSettings(defaultSettings: ProviderSetti
 			void vscode.window.showErrorMessage(localize('providerSettings.error', 'Could not load endpoints from settings, please check the logs for more details.'));
 			console.error(error.message);
 			TelemetryReporter.sendTelemetryEvent('loadCustomEndpointsError');
-			TelemetryReporter.sendErrorEvent2(TelemetryViews.AzureCore, 'loadCustomEndpointsError', error.message)
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.AzureCore, 'loadCustomEndpointsError', error.message);
 			throw Error(error.message);
 		}
 	}
@@ -307,18 +307,6 @@ export interface IPackageInfo {
 	name: string;
 	version: string;
 	aiKey: string;
-}
-
-export function getPackageInfo(packageJson: IPackageInfo): IPackageInfo | undefined {
-	if (packageJson) {
-		return {
-			name: packageJson.name,
-			version: packageJson.version,
-			aiKey: packageJson.aiKey
-		};
-	}
-
-	return undefined;
 }
 
 export function getProxyEnabledHttpClient(): HttpClient {
