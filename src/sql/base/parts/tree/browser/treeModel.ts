@@ -30,12 +30,10 @@ export class LockData extends Disposable {
 	}
 
 	override dispose(): void {
-		super.dispose();
 		if (this._onDispose) {
 			this._onDispose.fire();
-			this._onDispose.dispose();
-			this._onDispose = undefined;
 		}
+		super.dispose();
 	}
 }
 
@@ -693,9 +691,7 @@ export class Item extends Disposable {
 	}
 
 	public override dispose(): void {
-		super.dispose();
 		this.forEachChild((child) => child.dispose());
-
 		this.parent = null;
 		this.previous = null;
 		this.next = null;
@@ -706,19 +702,7 @@ export class Item extends Disposable {
 
 		this.registry.deregister(this);
 
-		this._onDidCreate.dispose();
-		this._onDidReveal.dispose();
-		this._onExpand.dispose();
-		this._onDidExpand.dispose();
-		this._onCollapse.dispose();
-		this._onDidCollapse.dispose();
-		this._onDidAddTrait.dispose();
-		this._onDidRemoveTrait.dispose();
-		this._onDidRefresh.dispose();
-		this._onRefreshChildren.dispose();
-		this._onDidRefreshChildren.dispose();
-		this._onDidDispose.dispose();
-
+		super.dispose();
 		this._isDisposed = true;
 	}
 }
