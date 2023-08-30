@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import { MigrationStateModel } from '../../models/stateMachine';
 import { MigrationTargetType } from '../../api/utils';
@@ -14,7 +13,6 @@ interface IActionMetadata {
 	value?: string
 }
 
-// Class defining header section of Assessment Details page
 export class AssessmentDetailsHeader {
 	private _view!: azdata.ModelView;
 	private _migrationStateModel: MigrationStateModel;
@@ -30,7 +28,6 @@ export class AssessmentDetailsHeader {
 			flexFlow: 'row',
 		}).component();
 
-		// List of card labels displayed in header section of Assessment details page.
 		const assessmentHeaderLabels = [
 			{
 				title: constants.TARGET_PLATFORM
@@ -45,13 +42,11 @@ export class AssessmentDetailsHeader {
 				title: constants.MIGRATION_TIME_LABEL
 			}];
 
-		// create individual card component for each property in above list
 		headerContainer.addItems(assessmentHeaderLabels.map(l => this.createCard(l)));
 
 		return headerContainer;
 	}
 
-	// function defining ui for card component in ui section.
 	private createCard(linkMetaData: IActionMetadata) {
 
 		const cardContainer = this._view.modelBuilder.flexContainer().withLayout({
@@ -59,14 +54,19 @@ export class AssessmentDetailsHeader {
 			width: 190,
 		}).withProps({
 			CSSStyles: {
-				...styles.CARD_CSS,
+				'width': '190px',
+				'box-shadow': '0px 1px 4px rgba(0, 0, 0, 0.13)',
+				'padding': '8px 0px 8px 12px',
+				'border-radius': '4px',
+				'margin': '8px 0px 0px 15px'
 			}
 		}).component();
 
 		const cardHeading = this._view.modelBuilder.text().withProps({
 			value: linkMetaData.title,
 			CSSStyles: {
-				...styles.BODY_CSS,
+				'font-size': '13px',
+				'line-height': '18px',
 				'margin': '0px'
 			},
 		}).component();
@@ -74,7 +74,9 @@ export class AssessmentDetailsHeader {
 		const cardText = this._view.modelBuilder.text().withProps({
 			value: linkMetaData.value,
 			CSSStyles: {
-				...styles.LABEL_CSS,
+				'font-size': '13px',
+				'line-height': '18px',
+				'font-weight': '600',
 				'overflow-wrap': 'break-word'
 			},
 		}).component();
@@ -85,7 +87,6 @@ export class AssessmentDetailsHeader {
 		return cardContainer;
 	}
 
-	// function to populate the values of properties displayed in the cards.
 	public async populateAssessmentDetailsHeader(): Promise<void> {
 
 		const assessmentHeaderValues = [
@@ -93,15 +94,13 @@ export class AssessmentDetailsHeader {
 				value: this._getTargetPlatformLabel(this._migrationStateModel?._targetType)
 			},
 			{
-				// TODO(stutijain): replace below value with recommended config
-				value: "10 available"
+				value: ""
 			},
 			{
 				value: String(this._migrationStateModel?._assessedDatabaseList.length)
 			},
 			{
-				// TODO(stutijain): confirm ready to migration value and replace here.
-				value: "8"
+				value: ""
 			}];
 
 		// iterating over each value container and filling it with the corresponding text.
@@ -110,15 +109,14 @@ export class AssessmentDetailsHeader {
 			valueContainer.value = assessmentHeaderValues[index++].value);
 	}
 
-	// function that returns a localised string for target platform based on enum MigrationTargetType.
 	private _getTargetPlatformLabel(targetType: MigrationTargetType): string {
 		switch (targetType) {
 			case MigrationTargetType.SQLDB:
-				return constants.SUMMARY_SQLDB_TYPE
+				return constants.SKU_RECOMMENDATION_SQLDB_CARD_TEXT
 			case MigrationTargetType.SQLVM:
-				return constants.SUMMARY_VM_TYPE
+				return constants.SKU_RECOMMENDATION_VM_CARD_TEXT
 			case MigrationTargetType.SQLMI:
-				return constants.SUMMARY_MI_TYPE
+				return constants.SKU_RECOMMENDATION_MI_CARD_TEXT
 			default:
 				return "--"
 		}
