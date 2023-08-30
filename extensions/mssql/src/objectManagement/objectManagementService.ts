@@ -8,7 +8,7 @@ import * as constants from '../constants';
 import * as contracts from '../contracts';
 
 import { BaseService, ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
-import { ObjectManagement, IObjectManagementService } from 'mssql';
+import { ObjectManagement, IObjectManagementService, DatabaseFileData } from 'mssql';
 import { ClientCapabilities } from 'vscode-languageclient';
 import { AppContext } from '../appContext';
 
@@ -74,6 +74,21 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 	async dropDatabase(connectionUri: string, database: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Promise<string> {
 		const params: contracts.DropDatabaseRequestParams = { connectionUri, database, objectUrn, dropConnections, deleteBackupHistory, generateScript };
 		return this.runWithErrorHandling(contracts.DropDatabaseRequest.type, params);
+	}
+
+	async attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Promise<string> {
+		const params: contracts.AttachDatabaseRequestParams = { connectionUri, databases, generateScript };
+		return this.runWithErrorHandling(contracts.AttachDatabaseRequest.type, params);
+	}
+
+	async getDataFolder(connectionUri: string): Promise<string> {
+		const params: contracts.GetDataFolderRequestParams = { connectionUri };
+		return this.runWithErrorHandling(contracts.GetDataFolderRequest.type, params);
+	}
+
+	async getAssociatedFiles(connectionUri: string, primaryFilePath: string): Promise<string[]> {
+		const params: contracts.GetAssociatedFilesRequestParams = { connectionUri, primaryFilePath };
+		return this.runWithErrorHandling(contracts.GetAssociatedFilesRequest.type, params);
 	}
 }
 
@@ -246,8 +261,20 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve('');
 	}
 
+	async attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Promise<string> {
+		return this.delayAndResolve('');
+	}
+
 	dropDatabase(connectionUri: string, database: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string> {
 		return this.delayAndResolve('');
+	}
+
+	async getDataFolder(connectionUri: string): Promise<string> {
+		return this.delayAndResolve('');
+	}
+
+	async getAssociatedFiles(connectionUri: string, primaryFilePath: string): Promise<string[]> {
+		return this.delayAndResolve([]);
 	}
 
 	private generateSearchResult(objectType: ObjectManagement.NodeType, schema: string | undefined, count: number): ObjectManagement.SearchResultItem[] {

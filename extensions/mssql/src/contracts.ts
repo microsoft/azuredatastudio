@@ -8,6 +8,7 @@ import * as telemetry from '@microsoft/ads-extension-telemetry';
 import * as azdata from 'azdata';
 import { ConnectParams } from 'dataprotocol-client/lib/protocol';
 import * as mssql from 'mssql';
+import { DatabaseFileData } from 'mssql';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
 
@@ -1673,6 +1674,33 @@ export interface DropDatabaseRequestParams {
 
 export namespace DropDatabaseRequest {
 	export const type = new RequestType<DropDatabaseRequestParams, string, void, void>('objectManagement/dropDatabase');
+}
+
+export interface AttachDatabaseRequestParams {
+	connectionUri: string;
+	databases: DatabaseFileData[];
+	generateScript: boolean;
+}
+
+export namespace AttachDatabaseRequest {
+	export const type = new RequestType<AttachDatabaseRequestParams, string, void, void>('objectManagement/attachDatabase');
+}
+
+export interface GetDataFolderRequestParams {
+	connectionUri: string;
+}
+
+export namespace GetDataFolderRequest {
+	export const type = new RequestType<GetDataFolderRequestParams, string, void, void>('admin/getdatafolder');
+}
+
+export interface GetAssociatedFilesRequestParams {
+	connectionUri: string;
+	primaryFilePath: string;
+}
+
+export namespace GetAssociatedFilesRequest {
+	export const type = new RequestType<GetAssociatedFilesRequestParams, string[], void, void>('admin/getassociatedfiles');
 }
 
 // ------------------------------- < Object Management > ------------------------------------
