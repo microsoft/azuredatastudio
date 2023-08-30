@@ -69,3 +69,10 @@ export const BIG_NUMBER_CSS = {
 	'line-height': '36px',
 	'margin': '0',
 };
+
+export const TOOLBAR_CSS = {
+	'font-size': '12px',
+	'line-height': '16px',
+	'font-weight': '400',
+	'margin': '0',
+};

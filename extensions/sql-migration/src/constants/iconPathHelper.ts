@@ -49,6 +49,11 @@ export class IconPathHelper {
 	public static breadCrumb: IconPath;
 	public static allTables: IconPath;
 	public static notFound: IconPath;
+	public static startDataCollection: IconPath;
+	public static stopDataCollection: IconPath;
+	public static newRefresh: IconPath;
+	public static importData: IconPath;
+	public static newSettings: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -203,5 +208,26 @@ export class IconPathHelper {
 			light: context.asAbsolutePath('images/notFound.svg'),
 			dark: context.asAbsolutePath('images/notFound.svg'),
 		};
+		IconPathHelper.startDataCollection = {
+			light: context.asAbsolutePath('images/new_startDataCollection.svg'),
+			dark: context.asAbsolutePath('images/new_startDataCollection.svg')
+		};
+		IconPathHelper.stopDataCollection = {
+			light: context.asAbsolutePath('images/new_stopDataCollection.svg'),
+			dark: context.asAbsolutePath('images/new_stopDataCollection.svg')
+		};
+		IconPathHelper.importData = {
+			light: context.asAbsolutePath('images/new_importData.svg'),
+			dark: context.asAbsolutePath('images/new_importData.svg')
+		};
+		IconPathHelper.newRefresh = {
+			light: context.asAbsolutePath('images/new_refresh.svg'),
+			dark: context.asAbsolutePath('images/new_refresh.svg')
+		};
+		IconPathHelper.newSettings = {
+			light: context.asAbsolutePath('images/new_Settings.svg'),
+			dark: context.asAbsolutePath('images/new_settings.svg')
+		};
+
 	}
 }
