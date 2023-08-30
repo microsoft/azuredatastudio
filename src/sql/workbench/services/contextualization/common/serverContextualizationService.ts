@@ -105,17 +105,6 @@ export class ServerContextualizationService extends Disposable implements IServe
 		}
 	}
 
-	public async onGenerateServerContextualizationComplete(handle: number, serverContextualizationCompleteParams: azdata.contextualization.GenerateServerContextualizationCompleteParams): Promise<void> {
-		if (serverContextualizationCompleteParams.context) {
-			const activeQueryEditorInput = this._editorService.activeEditorPane.input as QueryEditorInput;
-			if (activeQueryEditorInput) {
-				activeQueryEditorInput.serverContext = serverContextualizationCompleteParams.context;
-			}
-		}
-
-		await this.sendServerContextualizationToCopilot(serverContextualizationCompleteParams.ownerUri, serverContextualizationCompleteParams.context);
-	}
-
 	private async sendServerContextualizationToCopilot(ownerUri: string, serverContext: string[] | undefined): Promise<void> {
 		if (this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled) {
 			var flattenedServerContext = '';

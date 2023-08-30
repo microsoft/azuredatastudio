@@ -409,10 +409,6 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			};
 
 			let registerServerContextualizationProvider = (provider: azdata.contextualization.ServerContextualizationProvider): vscode.Disposable => {
-				provider.registerOnGenerateContextualizationComplete((contextualizationCompleteParams: azdata.contextualization.GenerateServerContextualizationCompleteParams) => {
-					extHostDataProvider.$onGenerateServerContextualizationComplete(provider.handle, contextualizationCompleteParams);
-				});
-
 				return extHostDataProvider.$registerServerContextualizationProvider(provider);
 			};
 

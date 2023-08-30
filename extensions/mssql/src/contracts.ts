@@ -1574,10 +1574,6 @@ export namespace GetServerContextualizationRequest {
 	export const type = new RequestType<ServerContextualizationParams, azdata.contextualization.GetServerContextualizationResult, void, void>('metadata/getServerContext');
 }
 
-export namespace GenerateServerContextualizationCompleteNotification {
-	export const type = new NotificationType<azdata.contextualization.GenerateServerContextualizationCompleteParams, void>('metadata/generateServerContextComplete');
-}
-
 // ------------------------------- < Database Server Contextualization API > ------------------------------------
 
 // ------------------------------- < Object Management > ------------------------------------

@@ -1790,22 +1790,6 @@ declare module 'azdata' {
 			context: string[];
 		}
 
-		export interface GenerateServerContextualizationCompleteParams {
-			/**
-			 * The URI identifying the owner of the connection
-			 */
-			ownerUri: string;
-			/**
-			 * An array containing the generated server context.
-			 */
-			context: string[] | undefined;
-			/**
-			 * Holds an error message, if errors were encountered while
-			 * generating context
-			 */
-			errorMessage?: string | undefined;
-		}
-
 		export interface ServerContextualizationProvider extends DataProvider {
 			/**
 			 * Generates server context.
@@ -1818,12 +1802,6 @@ declare module 'azdata' {
 			 * @param ownerUri The URI of the connection to get context for.
 			 */
 			getServerContextualization(ownerUri: string): Thenable<GetServerContextualizationResult>;
-
-			/**
-			 * Registers a handler for the GenerateServerContextualizationComplete notification.
-			 * @param handler The handler to be registered
-			 */
-			registerOnGenerateContextualizationComplete(handler: (contextualizationCompleteParams: GenerateServerContextualizationCompleteParams) => any): void;
 		}
 	}
 

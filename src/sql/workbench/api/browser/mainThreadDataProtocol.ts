@@ -581,10 +581,6 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		});
 	}
 
-	public $onGenerateServerContextualizationComplete(handle: number, serverContextualizationCompleteParams: azdata.contextualization.GenerateServerContextualizationCompleteParams) {
-		this._serverContextualizationService.onGenerateServerContextualizationComplete(handle, serverContextualizationCompleteParams);
-	}
-
 	// Connection Management handlers
 	public $onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
 		this._connectionManagementService.onConnectionComplete(handle, connectionInfoSummary);
