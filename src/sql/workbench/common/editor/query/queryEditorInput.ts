@@ -143,8 +143,6 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	private _state = this._register(new QueryEditorState());
 	public get state(): QueryEditorState { return this._state; }
 
-	private _serverContext: string | undefined;
-
 	constructor(
 		private _description: string | undefined,
 		protected _text: AbstractTextResourceEditorInput,
@@ -238,14 +236,6 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	// Forwarding resource functions to the inline sql file editor
 	public override isDirty(): boolean { return this._text.isDirty(); }
 	public get resource(): URI { return this._text.resource; }
-
-	public set serverContext(context: string) {
-		this._serverContext = context;
-	}
-
-	public get serverContext(): string | undefined {
-		return this._serverContext;
-	}
 
 	public override getName(longForm?: boolean): string {
 		if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').showConnectionInfoInTitle) {
