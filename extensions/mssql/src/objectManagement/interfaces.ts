@@ -540,6 +540,11 @@ export interface Server extends ObjectManagement.SqlObject {
 	numaNodes: NumaNode[];
 	authenticationMode: ServerLoginMode;
 	loginAuditing: AuditLevel;
+	checkCompressBackup: boolean;
+	checkBackupChecksum: boolean;
+	dataLocation: string;
+	logLocation: string;
+	backupLocation: string;
 }
 
 /**

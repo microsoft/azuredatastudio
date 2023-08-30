@@ -297,6 +297,10 @@ export const failedLoginsOnlyText = localize('objectManagement.failedLoginsOnlyT
 export const successfulLoginsOnlyText = localize('objectManagement.successfulLoginsOnlyText', "Successful logins only");
 export const bothFailedAndSuccessfulLoginsText = localize('objectManagement.bothFailedAndSuccessfulLoginsText', "Both failed and successful logins");
 export const needToRestartServer = localize('objectManagement.needToRestartServer', "Changes require server restart in order to be effective");
+export const logLocationText = localize('objectManagement.logLocationText', "Log");
+export const dataLocationText = localize('objectManagement.dataLocationText', "Data");
+export const backupLocationText = localize('objectManagement.backupLocationText', "Backup");
+export const defaultLocationsLabel = localize('objectManagement.defaultLocationsLabel', "Database default locations");
 
 //Database properties Dialog
 export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");
