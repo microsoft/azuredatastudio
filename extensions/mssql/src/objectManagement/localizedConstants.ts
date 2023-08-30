@@ -385,6 +385,7 @@ export const AutogrowAllFilesText = localize('objectManagement.databasePropertie
 export const FilestreamFilesText = localize('objectManagement.databaseProperties.filestreamFilesText', "Filestream Files");
 export const AddFilegroupText = localize('objectManagement.databaseProperties.addFilegroupButtonText', "Add Filegroup");
 export const FilegroupExistsError = (name: string) => localize('objectManagement.databaseProperties.FilegroupExistsError', "File group '{0}' could not be added to the collection, because it already exists.", name);
+export const EmptyFilegroupNameError = localize('objectManagement.databaseProperties.emptyFilegroupNameError', "Cannot use empty object names for filegroups.");
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {

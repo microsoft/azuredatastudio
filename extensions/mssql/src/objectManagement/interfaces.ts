@@ -457,7 +457,7 @@ export interface Database extends ObjectManagement.SqlObject {
 	databaseScopedConfigurations: DatabaseScopedConfigurationsInfo[];
 	isFilesTabSupported?: boolean;
 	files?: DatabaseFile[];
-	filegroups?: FileGroups[];
+	filegroups?: FileGroup[];
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
@@ -596,7 +596,7 @@ export interface DatabaseFile {
 	maxSizeLimitInMb: number
 }
 
-export interface FileGroups {
+export interface FileGroup {
 	id?: number;
 	name: string;
 	type: FileGroupType;

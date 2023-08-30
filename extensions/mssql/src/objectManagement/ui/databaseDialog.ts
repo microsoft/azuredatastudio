@@ -9,7 +9,7 @@ import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultM
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl, DatabaseFileGroupsPropertiesDocUrl } from '../constants';
-import { Database, DatabaseFile, DatabaseScopedConfigurationsInfo, DatabaseViewInfo, FileGrowthType, FileGroups, FileGroupType } from '../interfaces';
+import { Database, DatabaseFile, DatabaseScopedConfigurationsInfo, DatabaseViewInfo, FileGrowthType, FileGroup, FileGroupType } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
 import { deepClone } from '../../util/objects';
@@ -60,9 +60,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private filestreamFilegroupNameInput: azdata.InputBoxComponent;
 	private memoryOptimizedFilegroupNameInput: azdata.InputBoxComponent;
 	private newFileGroupTemporaryId: number = 0;
-	private rowDataFileGroupsTableRows: FileGroups[] = [];
-	private filestreamDataFileGroupsTableRows: FileGroups[] = [];
-	private memoryoptimizedFileGroupsTableRows: FileGroups[] = [];
+	private rowDataFileGroupsTableRows: FileGroup[] = [];
+	private filestreamDataFileGroupsTableRows: FileGroup[] = [];
+	private memoryoptimizedFileGroupsTableRows: FileGroup[] = [];
 	// Options Tab
 	private readonly optionsTabId: string = 'optionsDatabaseId';
 	private autoCreateIncrementalStatisticsInput: azdata.CheckBoxComponent;
@@ -246,16 +246,16 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		// Validate Rows Filegroup names
 		if (this.objectInfo.filegroups?.length > 0) {
-			let seenFilegroups = new Set(this.objectInfo.filegroups.map(function (item) { return item.name }));
-			if (seenFilegroups.size !== this.objectInfo.filegroups.length) {
-				this.objectInfo.filegroups.forEach((item) => {
-					if (seenFilegroups.has(item.name)) {
-						seenFilegroups.delete(item.name);
-					} else {
-						errors.push(localizedConstants.FilegroupExistsError(item.name));
-					}
-				});
-			}
+			let seenFilegroups = new Set<string>;
+			this.objectInfo.filegroups.map(function (item) {
+				if (item.name === '') {
+					errors.push(localizedConstants.EmptyFilegroupNameError);
+				} else if (seenFilegroups.has(item.name)) {
+					errors.push(localizedConstants.FilegroupExistsError(item.name));
+				} else {
+					seenFilegroups.add(item.name)
+				}
+			});
 		}
 		return errors;
 	}
@@ -716,19 +716,24 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		this.rowsFilegroupsTable = this.modelView.modelBuilder.table().withProps({
 			columns: [{
 				type: azdata.ColumnType.text,
-				value: localizedConstants.NameText
+				value: localizedConstants.NameText,
+				width: 120
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.FilesText
+				value: localizedConstants.FilesText,
+				width: 60
 			}, {
 				type: azdata.ColumnType.checkBox,
-				value: localizedConstants.ReadOnlyText
+				value: localizedConstants.ReadOnlyText,
+				width: 80
 			}, {
 				type: azdata.ColumnType.checkBox,
-				value: localizedConstants.DefaultText
+				value: localizedConstants.DefaultText,
+				width: 80
 			}, {
 				type: azdata.ColumnType.checkBox,
-				value: localizedConstants.AutogrowAllFilesText
+				value: localizedConstants.AutogrowAllFilesText,
+				width: 110
 			}],
 			data: data,
 			height: getTableHeight(data.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
@@ -917,7 +922,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * @param filegroup filegroup object
 	 * @param filegroupType filegroup type
 	 */
-	private updateFilegroupsDefaultColumnValues(arg: azdata.ICheckboxCellActionEventArgs, filegroup: FileGroups, filegroupType: FileGroupType): void {
+	private updateFilegroupsDefaultColumnValues(arg: azdata.ICheckboxCellActionEventArgs, filegroup: FileGroup, filegroupType: FileGroupType): void {
 		if (arg.checked) {
 			this.objectInfo.filegroups.forEach(fg => {
 				if (fg.type === filegroupType) {
@@ -935,7 +940,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 */
 	private async onAddDatabaseFileGroupsButtonClicked(table: azdata.TableComponent): Promise<void> {
 		let newData: any[] | undefined;
-		let newRow: FileGroups = {
+		let newRow: FileGroup = {
 			id: --this.newFileGroupTemporaryId,
 			name: '',
 			type: undefined,
