@@ -34,6 +34,7 @@ export interface IQueryEditorConfiguration {
 		readonly showActionBar: boolean;
 		readonly showCopyCompletedNotification: boolean;
 		readonly preferProvidersCopyHandler: boolean;
+		readonly promptForLargeRowSelection: boolean;
 	},
 	readonly messages: {
 		readonly showBatchTime: boolean;

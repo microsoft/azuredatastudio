@@ -10,6 +10,7 @@ import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import * as azdata from 'azdata';
 import { IRange } from 'vs/editor/common/core/range';
 import { ResultSetSubset } from 'sql/workbench/services/query/common/query';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export class TestQueryManagementService implements IQueryManagementService {
 	_serviceBrand: undefined;

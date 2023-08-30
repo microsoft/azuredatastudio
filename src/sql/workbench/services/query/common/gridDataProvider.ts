@@ -23,7 +23,7 @@ export interface IGridDataProvider {
 	 * @param rowStart 0-indexed start row to retrieve data from
 	 * @param numberOfRows total number of rows of data to retrieve
 	 */
-	getRowData(rowStart: number, numberOfRows: number): Thenable<ResultSetSubset>;
+	getRowData(rowStart: number, numberOfRows: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Thenable<ResultSetSubset>;
 
 	/**
 	 * Sends a copy request to copy data to the clipboard
@@ -68,13 +68,12 @@ export async function executeCopyWithNotification(notificationService: INotifica
 			infinite: true
 		},
 		actions: {
-			primary: isCancelable ? [
+			primary: cancellationTokenSource ? [
 				toAction({
 					id: 'cancelCopyResults',
 					label: nls.localize('gridDataProvider.cancelCopyResults', "Cancel"),
 					run: () => {
-						isCanceled = true;
-						onCanceled!();
+						cancellationTokenSource.cancel();
 						notificationHandle.close();
 					}
 				})] : []
@@ -82,7 +81,7 @@ export async function executeCopyWithNotification(notificationService: INotifica
 	});
 	try {
 		await copyHandler(notificationHandle, rowCount);
-		if (!isCanceled) {
+		if (cancellationTokenSource === undefined || !cancellationTokenSource.token.isCancellationRequested) {
 			notificationHandle.progress.done();
 			if (showCopyCompleteNotifications) {
 				notificationHandle.updateActions({
@@ -125,9 +124,10 @@ export async function copySelectionToClipboard(clipboardService: IClipboardServi
 		const shouldRemoveNewLines = provider.shouldRemoveNewLines();
 		const shouldSkipNewLineAfterTrailingLineBreak = provider.shouldSkipNewLineAfterTrailingLineBreak();
 
-		// Merge the selections to get the columns and rows.
-		const columnRanges: Range[] = mergeRanges(selections.map(selection => { return { start: selection.fromCell, end: selection.toCell }; }));
-		const rowRanges: Range[] = mergeRanges(selections.map(selection => { return { start: selection.fromRow, end: selection.toRow }; }));
+		// Merge the selections to get the unique columns and unique rows.
+		const gridRanges = GridRange.fromSlickRanges(selections);
+		const columnRanges = GridRange.getUniqueColumns(gridRanges);
+		const rowRanges = GridRange.getUniqueRows(gridRanges);
 
 		let processedRows = 0;
 		const getMessageText = (): string => {
@@ -145,29 +145,22 @@ export async function copySelectionToClipboard(clipboardService: IClipboardServi
 			resultString = Array.from(headers.values()).join(valueSeparator).concat(eol);
 		}
 
-		const batchResult: string[] = [];
+		const rowValues: string[] = [];
 		for (const range of rowRanges) {
+			let rows: ICellValue[][];
+			let processedRowsSnapshot = processedRows;
+			const rangeLength = range.end - range.start + 1;
 			if (tableView && tableView.isDataInMemory) {
-				const rangeLength = range.end - range.start + 1;
 				// If the data is sorted/filtered in memory, we need to get the data that is currently being displayed
 				const tableData = await tableView.getRangeAsync(range.start, rangeLength);
-				const rowSet = tableData.map(item => Object.keys(item).map(key => item[key]));
-				batchResult.push(getStringValueForRowSet(rowSet, columnRanges, selections, range.start, eol, valueSeparator, shouldRemoveNewLines));
+				rows = tableData.map(item => Object.keys(item).map(key => item[key]));
 				processedRows += rangeLength;
 				notificationHandle.updateMessage(getMessageText());
 			} else {
-				let start = range.start;
-				do {
-					const end = Math.min(start + batchSize - 1, range.end);
-					const batchLength = end - start + 1
-					const rowSet = (await provider.getRowData(start, batchLength)).rows;
-					batchResult.push(getStringValueForRowSet(rowSet, columnRanges, selections, range.start, eol, valueSeparator, shouldRemoveNewLines));
-					start = end + 1;
-					processedRows = processedRows + batchLength;
-					if (!isCanceled) {
-						notificationHandle.updateMessage(getMessageText());
-					}
-				} while (start < range.end && !isCanceled)
+				rows = (await provider.getRowData(range.start, rangeLength, cancellationTokenSource.token, (fetchedRows) => {
+					processedRows = processedRowsSnapshot + fetchedRows;
+					notificationHandle.updateMessage(getMessageText());
+				})).rows;
 			}
 			rows.forEach((values, index) => {
 				const rowIndex = index + range.start;

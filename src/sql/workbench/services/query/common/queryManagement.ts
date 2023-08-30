@@ -18,6 +18,7 @@ import { ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { isUndefined } from 'vs/base/common/types';
 import { ILogService } from 'vs/platform/log/common/log';
 import * as nls from 'vs/nls';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export const SERVICE_ID = 'queryManagementService';
 
