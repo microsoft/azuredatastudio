@@ -206,16 +206,20 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 
 			// Intialize Query Store Tab
-			this.initializeQueryStoreGeneralSection();
-			this.initializeQueryStoreMonitoringSection();
-			this.initializeQueryStoreRetentionSection();
-			this.initializeQueryStoreCapturePolicySection();
-			this.queryStoreTab = {
-				title: localizedConstants.QueryStoreTabHeader,
-				id: this.queryStoreTabId,
-				content: this.createGroup('', this.queryStoreTabSectionsContainer, false)
+			if (!isUndefinedOrNull(this.objectInfo.queryStoreOptions)) {
+				this.initializeQueryStoreGeneralSection();
+				this.initializeQueryStoreMonitoringSection();
+				this.initializeQueryStoreRetentionSection();
+				if (!isUndefinedOrNull(this.objectInfo.queryStoreOptions.capturePolicyOptions)) {
+					this.initializeQueryStoreCapturePolicySection();
+				}
+				this.queryStoreTab = {
+					title: localizedConstants.QueryStoreTabHeader,
+					id: this.queryStoreTabId,
+					content: this.createGroup('', this.queryStoreTabSectionsContainer, false)
+				}
+				tabs.push(this.queryStoreTab);
 			}
-			tabs.push(this.queryStoreTab);
 
 			// Initialize tab group with tabbed panel
 			const propertiesTabGroup = { title: '', tabs: tabs };
@@ -1144,7 +1148,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private initializeQueryStoreGeneralSection(): void {
 		let containers: azdata.Component[] = [];
 		const actualOperationMode = this.objectInfo.queryStoreOptions.actualMode;
-		this.areQueryStoreOptionsEnabled = this.objectInfo.queryStoreOptions.actualMode !== 'OFF';
+		const operationModeOffOption = 'Off'
+		this.areQueryStoreOptionsEnabled = this.objectInfo.queryStoreOptions.actualMode !== operationModeOffOption;
 		// Operation Mode (Actual)
 		const operationModeActual = this.createInputBox(async () => { }, {
 			ariaLabel: localizedConstants.ActualOperationModeText,
@@ -1157,9 +1162,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Operation Mode (Requested)
 		this.requestedOperationMode = this.createDropdown(localizedConstants.RequestedOperationModeText, async (newValue) => {
 			this.objectInfo.queryStoreOptions.actualMode = newValue as string;
-			this.areQueryStoreOptionsEnabled = newValue !== 'OFF';
+			this.areQueryStoreOptionsEnabled = newValue !== operationModeOffOption;
 			await this.toggleQueryStoreOptions();
-		}, this.viewInfo.operationModeOptions, String(this.objectInfo.queryStoreOptions.actualMode), true, DefaultInputWidth, true, true);
+		}, this.viewInfo.operationModeOptions, String(this.objectInfo.queryStoreOptions.actualMode), true, DefaultInputWidth);
 		containers.push(this.createLabelInputContainer(localizedConstants.RequestedOperationModeText, this.requestedOperationMode));
 
 		const stateSection = this.createGroup(localizedConstants.GeneralSectionHeader, containers, true);
@@ -1183,7 +1188,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Statistics Collection Interval
 		this.statisticsCollectionInterval = this.createDropdown(localizedConstants.StatisticsCollectionInterval, async (newValue) => {
 			this.objectInfo.queryStoreOptions.statisticsCollectionInterval = String(newValue);
-		}, ['1 Minute', '5 Minutes', '10 Minutes', '15 Minute', '30 Minutes', '1 Hour', '1 Day'], '5 Minutes', this.areQueryStoreOptionsEnabled, DefaultInputWidth, true, true);
+		}, this.viewInfo.statisticsCollectionIntervalOptions, this.objectInfo.queryStoreOptions.statisticsCollectionInterval, this.areQueryStoreOptionsEnabled, DefaultInputWidth);
 		containers.push(this.createLabelInputContainer(localizedConstants.StatisticsCollectionInterval, this.statisticsCollectionInterval));
 
 		const stateSection = this.createGroup(localizedConstants.MonitoringSectionText, containers, true);
@@ -1193,7 +1198,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private initializeQueryStoreRetentionSection(): void {
 		let containers: azdata.Component[] = [];
 		// Max Plans Per Query
-		this.maxPlansPerQuery = this.createInputBox(async (newValue) => { }, {
+		this.maxPlansPerQuery = this.createInputBox(async (newValue) => {
+			this.objectInfo.queryStoreOptions.maxPlansPerQuery = Number(newValue);
+		}, {
 			ariaLabel: localizedConstants.MaxPlansPerQueryText,
 			inputType: 'number',
 			enabled: this.areQueryStoreOptionsEnabled,
@@ -1203,7 +1210,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		containers.push(this.createLabelInputContainer(localizedConstants.MaxPlansPerQueryText, this.maxPlansPerQuery));
 
 		// Max size (MB)
-		this.maxSizeinMB = this.createInputBox(async (newValue) => { }, {
+		this.maxSizeinMB = this.createInputBox(async (newValue) => {
+			this.objectInfo.queryStoreOptions.maxSizeInMB = Number(newValue);
+		}, {
 			ariaLabel: localizedConstants.MaxSizeInMbText,
 			inputType: 'number',
 			enabled: this.areQueryStoreOptionsEnabled,
@@ -1214,19 +1223,21 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		// Query Store Capture Mode
 		this.queryStoreCaptureMode = this.createDropdown(localizedConstants.QueryStoreCaptureModeText, async (newValue) => {
-			this.objectInfo.collationName = newValue as string;
-			await this.toggleQueryCapturePolicySection(newValue);
-		}, this.viewInfo.queryStoreCaptureModeOptions, this.objectInfo.queryStoreOptions.queryStoreCaptureMode, this.areQueryStoreOptionsEnabled, DefaultInputWidth, true, true);
+			this.objectInfo.queryStoreOptions.queryStoreCaptureMode = newValue as string;
+			await this.toggleQueryCapturePolicySection(newValue === 'Custom');
+		}, this.viewInfo.queryStoreCaptureModeOptions, this.objectInfo.queryStoreOptions.queryStoreCaptureMode, this.areQueryStoreOptionsEnabled, DefaultInputWidth);
 		containers.push(this.createLabelInputContainer(localizedConstants.QueryStoreCaptureModeText, this.queryStoreCaptureMode));
 
 		// Size Based Cleanup Mode
 		this.sizeBasedCleanupMode = this.createDropdown(localizedConstants.SizeBasedCleanupModeText, async (newValue) => {
-			this.objectInfo.collationName = newValue as string;
-		}, ['OFF', 'Auto'], this.objectInfo.queryStoreOptions.sizeBasedCleanupMode, this.areQueryStoreOptionsEnabled, DefaultInputWidth, true, true);
+			this.objectInfo.queryStoreOptions.sizeBasedCleanupMode = newValue as string;
+		}, this.viewInfo.sizeBasedCleanupModeOptions, this.objectInfo.queryStoreOptions.sizeBasedCleanupMode, this.areQueryStoreOptionsEnabled, DefaultInputWidth);
 		containers.push(this.createLabelInputContainer(localizedConstants.SizeBasedCleanupModeText, this.sizeBasedCleanupMode));
 
 		// State Query Threshold (Days)
-		this.stateQueryThresholdInDays = this.createInputBox(async (newValue) => { }, {
+		this.stateQueryThresholdInDays = this.createInputBox(async (newValue) => {
+			this.objectInfo.queryStoreOptions.staleQueryThresholdInDays = Number(newValue);
+		}, {
 			ariaLabel: localizedConstants.StateQueryThresholdInDaysText,
 			inputType: 'number',
 			enabled: this.areQueryStoreOptionsEnabled,
@@ -1235,11 +1246,13 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		});
 		containers.push(this.createLabelInputContainer(localizedConstants.StateQueryThresholdInDaysText, this.stateQueryThresholdInDays));
 
-		// Wait Statistics Capture Mode
-		this.waitStatisticsCaptureMode = this.createCheckbox(localizedConstants.WaitStatisticsCaptureModeText, async (checked) => {
-		}, this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode, this.areQueryStoreOptionsEnabled);
-		containers.push(this.waitStatisticsCaptureMode);
-
+		// Wait Statistics Capture Mode - supported from 2017 or higher
+		if (!isUndefinedOrNull(this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode)) {
+			this.waitStatisticsCaptureMode = this.createCheckbox(localizedConstants.WaitStatisticsCaptureModeText, async (checked) => {
+				this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode = checked;
+			}, this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode, this.areQueryStoreOptionsEnabled);
+			containers.push(this.waitStatisticsCaptureMode);
+		}
 		const stateSection = this.createGroup(localizedConstants.WaitStatisticsCaptureModeText, containers, true);
 		this.queryStoreTabSectionsContainer.push(stateSection);
 	}
@@ -1247,37 +1260,43 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private initializeQueryStoreCapturePolicySection(): void {
 		let containers: azdata.Component[] = [];
 		// Execution Count
-		this.executionCount = this.createInputBox(async (newValue) => { }, {
+		this.executionCount = this.createInputBox(async (newValue) => {
+			this.objectInfo.queryStoreOptions.capturePolicyOptions.executionCount = Number(newValue);
+		}, {
 			ariaLabel: localizedConstants.ExecutionCountText,
 			inputType: 'number',
 			enabled: this.areQueryStoreOptionsEnabled,
-			value: String(this.objectInfo.queryStoreOptions.capturePolicyExecutionCount),
+			value: String(this.objectInfo.queryStoreOptions.capturePolicyOptions.executionCount),
 			min: 0
 		});
 		containers.push(this.createLabelInputContainer(localizedConstants.ExecutionCountText, this.executionCount));
 
 		// Stale Threshold
 		this.staleThreshold = this.createDropdown(localizedConstants.StaleThresholdText, async (newValue) => {
-			this.objectInfo.collationName = newValue as string;
-		}, this.viewInfo.StaleThresholdOptions, this.objectInfo.queryStoreOptions.capturePolicyStaleThreshold, this.areQueryStoreOptionsEnabled, DefaultInputWidth, true, true);
+			this.objectInfo.queryStoreOptions.capturePolicyOptions.staleThreshold = newValue as string;
+		}, this.viewInfo.staleThresholdOptions, this.objectInfo.queryStoreOptions.capturePolicyOptions.staleThreshold, this.areQueryStoreOptionsEnabled, DefaultInputWidth);
 		containers.push(this.createLabelInputContainer(localizedConstants.StaleThresholdText, this.staleThreshold));
 
 		// Total Compile CPU Time (ms)
-		this.totalCompileCPUTimeInMS = this.createInputBox(async (newValue) => { }, {
+		this.totalCompileCPUTimeInMS = this.createInputBox(async (newValue) => {
+			this.objectInfo.queryStoreOptions.capturePolicyOptions.totalCompileCPUTimeInMS = Number(newValue);
+		}, {
 			ariaLabel: localizedConstants.TotalCompileCPUTimeInMsText,
 			inputType: 'number',
 			enabled: this.areQueryStoreOptionsEnabled,
-			value: String(this.objectInfo.queryStoreOptions.capturePolicyTotalCompileCPUTimeInMS),
+			value: String(this.objectInfo.queryStoreOptions.capturePolicyOptions.totalCompileCPUTimeInMS),
 			min: 0
 		});
 		containers.push(this.createLabelInputContainer(localizedConstants.TotalCompileCPUTimeInMsText, this.totalCompileCPUTimeInMS));
 
 		// Total Execution CPU Time (ms)
-		this.totalExecutionCPUTimeInMS = this.createInputBox(async (newValue) => { }, {
+		this.totalExecutionCPUTimeInMS = this.createInputBox(async (newValue) => {
+			this.objectInfo.queryStoreOptions.capturePolicyOptions.totalExecutionCPUTimeInMS = Number(newValue);
+		}, {
 			ariaLabel: localizedConstants.TotalExecutionCPUTimeInMsText,
 			inputType: 'number',
 			enabled: this.areQueryStoreOptionsEnabled,
-			value: String(this.objectInfo.queryStoreOptions.capturePolicyTotalExecutionCPUTimeInMS),
+			value: String(this.objectInfo.queryStoreOptions.capturePolicyOptions.totalExecutionCPUTimeInMS),
 			min: 0
 		});
 		containers.push(this.createLabelInputContainer(localizedConstants.TotalExecutionCPUTimeInMsText, this.totalExecutionCPUTimeInMS));
@@ -1293,19 +1312,20 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			= this.maxSizeinMB.enabled
 			= this.queryStoreCaptureMode.enabled
 			= this.sizeBasedCleanupMode.enabled
-			= this.stateQueryThresholdInDays.enabled
-			= this.waitStatisticsCaptureMode.enabled
-			= this.executionCount.enabled
-			= this.staleThreshold.enabled
-			= this.totalCompileCPUTimeInMS.enabled
-			= this.totalExecutionCPUTimeInMS.enabled = this.areQueryStoreOptionsEnabled;
+			= this.stateQueryThresholdInDays.enabled = this.areQueryStoreOptionsEnabled;
+		if (!isUndefinedOrNull(this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode)) {
+			this.waitStatisticsCaptureMode.enabled = this.areQueryStoreOptionsEnabled
+		}
+		await this.toggleQueryCapturePolicySection(this.areQueryStoreOptionsEnabled);
 	}
 
-	private async toggleQueryCapturePolicySection(queryStoreCaptureValue: string): Promise<void> {
-		this.executionCount.enabled
-			= this.staleThreshold.enabled
-			= this.totalCompileCPUTimeInMS.enabled
-			= this.totalExecutionCPUTimeInMS.enabled = queryStoreCaptureValue === 'Custom';
+	private async toggleQueryCapturePolicySection(enable: boolean): Promise<void> {
+		if (!isUndefinedOrNull(this.objectInfo.queryStoreOptions.capturePolicyOptions)) {
+			this.executionCount.enabled
+				= this.staleThreshold.enabled
+				= this.totalCompileCPUTimeInMS.enabled
+				= this.totalExecutionCPUTimeInMS.enabled = enable;
+		}
 	}
 	//#endregion
 

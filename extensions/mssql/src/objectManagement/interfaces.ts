@@ -485,7 +485,7 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	statisticsCollectionIntervalOptions?: string[];
 	queryStoreCaptureModeOptions?: string[];
 	sizeBasedCleanupModeOptions?: string[];
-	StaleThresholdOptions?: string[];
+	staleThresholdOptions?: string[];
 }
 
 export interface QueryStoreOptions {
@@ -497,12 +497,15 @@ export interface QueryStoreOptions {
 	queryStoreCaptureMode: string;
 	sizeBasedCleanupMode: string;
 	staleQueryThresholdInDays: number;
-	waitStatisticsCaptureMode: boolean;
-	capturePolicyExecutionCount: number;
-	capturePolicyStaleThreshold: string;
-	capturePolicyTotalCompileCPUTimeInMS: number;
-	capturePolicyTotalExecutionCPUTimeInMS: number;
+	waitStatisticsCaptureMode?: boolean;
+	capturePolicyOptions?: QueryStoreCapturePolicyOptions;
+}
 
+export interface QueryStoreCapturePolicyOptions {
+	executionCount: number;
+	staleThreshold: string;
+	totalCompileCPUTimeInMS: number;
+	totalExecutionCPUTimeInMS: number;
 }
 
 export interface DatabaseScopedConfigurationsInfo {
