@@ -20,6 +20,7 @@ import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/text
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
 
 const MAX_SIZE = 13;
 
@@ -142,7 +143,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	private _state = this._register(new QueryEditorState());
 	public get state(): QueryEditorState { return this._state; }
 
-	private _serverContext: string[] | undefined;
+	private _serverContext: string | undefined;
 
 	constructor(
 		private _description: string | undefined,
@@ -151,7 +152,8 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IInstantiationService protected readonly instantiationService: IInstantiationService
+		@IInstantiationService protected readonly instantiationService: IInstantiationService,
+		@IServerContextualizationService private readonly serverContextualizationService: IServerContextualizationService
 	) {
 		super();
 
@@ -237,11 +239,11 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public override isDirty(): boolean { return this._text.isDirty(); }
 	public get resource(): URI { return this._text.resource; }
 
-	public set serverContext(context: string[]) {
+	public set serverContext(context: string) {
 		this._serverContext = context;
 	}
 
-	public get serverContext(): string[] | undefined {
+	public get serverContext(): string | undefined {
 		return this._serverContext;
 	}
 
@@ -329,6 +331,28 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			}
 		}
 		this._onDidChangeLabel.fire();
+
+		this.contextualizeEditorForCopilot();
+	}
+
+	private contextualizeEditorForCopilot(): void {
+		// Don't need to take any actions if contextualization is not enabled and can return
+		if (!this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled) {
+			return;
+		}
+
+		this.serverContextualizationService.getServerContextualization(this.uri)
+			.then(async getServerContextualizationResult => {
+				if (getServerContextualizationResult.context) {
+					await this.serverContextualizationService.sendServerContextualizationToCopilot(getServerContextualizationResult.context);
+				}
+				else {
+					const generateServerContextualizationResult = await this.serverContextualizationService.generateServerContextualization(this.uri);
+					if (generateServerContextualizationResult.context) {
+						await this.serverContextualizationService.sendServerContextualizationToCopilot(generateServerContextualizationResult.context);
+					}
+				}
+			});
 	}
 
 	public onDisconnect(): void {

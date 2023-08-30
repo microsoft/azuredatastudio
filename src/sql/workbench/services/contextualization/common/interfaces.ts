@@ -33,11 +33,17 @@ export interface IServerContextualizationService {
 	 * Generates server context
 	 * @param ownerUri The URI of the connection to generate context for.
 	 */
-	generateServerContextualization(ownerUri: string): void;
+	generateServerContextualization(ownerUri: string): Promise<azdata.contextualization.GenerateServerContextualizationResult>;
 
 	/**
 	 * Gets all database context.
 	 * @param ownerUri The URI of the connection to get context for.
 	 */
 	getServerContextualization(ownerUri: string): Promise<azdata.contextualization.GetServerContextualizationResult>;
+
+	/**
+	 * Sends server context to the Copilot extension, so it can be used to generate improved suggestions.
+	 * @param serverContext The server context to be sent to Copilot.
+	 */
+	sendServerContextualizationToCopilot(serverContext: string | undefined): Promise<void>
 }
