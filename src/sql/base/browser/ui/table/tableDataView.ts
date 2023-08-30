@@ -9,6 +9,7 @@ import { compare as stringCompare } from 'vs/base/common/strings';
 
 import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface IFindPosition {
 	col: number;
@@ -66,7 +67,7 @@ export function defaultFilter<T extends Slick.SlickData>(data: T[], columns: Fil
 	return filteredData;
 }
 
-export class TableDataView<T extends Slick.SlickData> implements IDisposableDataProvider<T> {
+export class TableDataView<T extends Slick.SlickData> extends Disposable implements IDisposableDataProvider<T> {
 	//The data exposed publicly, when filter is enabled, _data holds the filtered data.
 	private _data: Array<T>;
 	//Used when filtering is enabled, _allData holds the complete set of data.
@@ -76,16 +77,16 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 	private _filterEnabled: boolean;
 	private _currentColumnFilters: FilterableColumn<T>[];
 
-	private _onRowCountChange = new Emitter<number>();
+	private _onRowCountChange = this._register(new Emitter<number>());
 	get onRowCountChange(): Event<number> { return this._onRowCountChange.event; }
 
-	private _onFindCountChange = new Emitter<number>();
+	private _onFindCountChange = this._register(new Emitter<number>());
 	get onFindCountChange(): Event<number> { return this._onFindCountChange.event; }
 
-	private _onFilterStateChange = new Emitter<void>();
+	private _onFilterStateChange = this._register(new Emitter<void>());
 	get onFilterStateChange(): Event<void> { return this._onFilterStateChange.event; }
 
-	private _onSortComplete = new Emitter<Slick.OnSortEventArgs<T>>();
+	private _onSortComplete = this._register(new Emitter<Slick.OnSortEventArgs<T>>());
 	get onSortComplete(): Event<Slick.OnSortEventArgs<T>> { return this._onSortComplete.event; }
 
 	constructor(
@@ -95,6 +96,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		private _filterFn?: TableFilterFunc<T>,
 		private _cellValueGetter: CellValueGetter = defaultCellValueGetter
 	) {
+		super();
 		if (data) {
 			this._data = data;
 		} else {
@@ -303,7 +305,8 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		return types.isUndefinedOrNull(this._findArray) ? 0 : this._findArray.length;
 	}
 
-	dispose() {
+	override dispose() {
+		super.dispose();
 		this._data = [];
 		this._allData = [];
 		this._findArray = [];

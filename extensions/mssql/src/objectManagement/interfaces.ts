@@ -455,6 +455,8 @@ export interface Database extends ObjectManagement.SqlObject {
 	encryptionEnabled: boolean;
 	restrictAccess?: string;
 	databaseScopedConfigurations: DatabaseScopedConfigurationsInfo[];
+	isFilesTabSupported?: boolean;
+	files?: DatabaseFile[];
 	queryStoreOptions?: QueryStoreOptions;
 }
 
@@ -467,7 +469,6 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	compatibilityLevels?: OptionsCollection;
 	containmentTypes?: OptionsCollection;
 	recoveryModels?: OptionsCollection;
-	files?: DatabaseFile[];
 	azureBackupRedundancyLevels?: string[];
 	azureServiceLevelObjectives?: AzureEditionDetails[];
 	azureEditions?: string[];
@@ -477,6 +478,9 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	dscOnOffOptions?: string[];
 	dscElevateOptions?: string[];
 	dscEnableDisableOptions?: string[];
+	rowDataFileGroupsOptions?: string[];
+	fileStreamFileGroupsOptions?: string[];
+	fileTypesOptions?: string[];
 	operationModeOptions?: string[];
 	statisticsCollectionIntervalOptions?: string[];
 	queryStoreCaptureModeOptions?: string[];
@@ -557,6 +561,26 @@ export interface Server extends ObjectManagement.SqlObject {
 	autoProcessorAffinityMaskForAll: boolean;
 	autoProcessorAffinityIOMaskForAll: boolean;
 	numaNodes: NumaNode[];
+	authenticationMode: ServerLoginMode;
+	loginAuditing: AuditLevel;
+}
+
+/**
+ * The server login types.
+ */
+export const enum ServerLoginMode {
+	Integrated, //windows auth only
+	Mixed // both sql server and windows auth
+}
+
+/**
+ * The server audit levels.
+ */
+export const enum AuditLevel {
+	None,
+	Success,
+	Failure,
+	All
 }
 
 export interface NumericServerProperty {
@@ -568,9 +592,22 @@ export interface NumericServerProperty {
 export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
 }
 
+export const enum FileGrowthType {
+	KB = 0,
+	Percent = 1,
+	None = 99
+}
+
 export interface DatabaseFile {
+	id: number;
 	name: string;
 	type: string;
 	path: string;
 	fileGroup: string;
+	fileNameWithExtension: string;
+	sizeInMb: number;
+	isAutoGrowthEnabled: boolean;
+	autoFileGrowth: number;
+	autoFileGrowthType: FileGrowthType;
+	maxSizeLimitInMb: number
 }

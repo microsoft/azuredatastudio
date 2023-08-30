@@ -21,6 +21,11 @@ export function getTableHeight(rowCount: number, minRowCount: number = DefaultMi
 	return Math.min(Math.max(rowCount, minRowCount), maxRowCount) * TableRowHeight + TableColumnHeaderHeight;
 }
 
+export interface DialogButton {
+	buttonAriaLabel: string;
+	buttonHandler: (button: azdata.ButtonComponent) => Promise<void>
+}
+
 export type TableListItemEnabledStateGetter<T> = (item: T) => boolean;
 export type TableListItemValueGetter<T> = (item: T) => string[];
 export type TableListItemComparer<T> = (item1: T, item2: T) => boolean;
@@ -71,6 +76,8 @@ export abstract class DialogBase<DialogResult> {
 	protected get modelView(): azdata.ModelView { return this._modelView; }
 
 	protected onFormFieldChange(): void { }
+
+	protected get removeButtonEnabled(): boolean { return true; }
 
 	protected validateInput(): Promise<string[]> { return Promise.resolve([]); }
 
@@ -155,7 +162,7 @@ export abstract class DialogBase<DialogResult> {
 	}
 
 	/**
-	 * Creates an input box. If properties are not passed in, then an input box is created with the following default properties: 
+	 * Creates an input box. If properties are not passed in, then an input box is created with the following default properties:
 	 * inputType - text
 	 * width - DefaultInputWidth
 	 * value - empty
@@ -270,28 +277,48 @@ export abstract class DialogBase<DialogResult> {
 		return table;
 	}
 
-	protected addButtonsForTable(table: azdata.TableComponent, addButtonAriaLabel: string, removeButtonAriaLabel: string, addHandler: (button: azdata.ButtonComponent) => Promise<void>, removeHandler: (button: azdata.ButtonComponent) => Promise<void>): azdata.FlexContainer {
-		let addButton: azdata.ButtonComponent;
-		let removeButton: azdata.ButtonComponent;
-		const updateButtons = () => {
+	protected addButtonsForTable(table: azdata.TableComponent, addbutton: DialogButton, removeButton: DialogButton, editButton: DialogButton = undefined): azdata.FlexContainer {
+		let addButtonComponent: azdata.ButtonComponent;
+		let editButtonComponent: azdata.ButtonComponent;
+		let removeButtonComponent: azdata.ButtonComponent;
+		let buttonComponents: azdata.ButtonComponent[] = [];
+		const updateButtons = (isRemoveEnabled: boolean = undefined) => {
 			this.onFormFieldChange();
-			removeButton.enabled = table.selectedRows?.length === 1 && table.selectedRows[0] !== -1 && table.selectedRows[0] < table.data.length;
+			const tableSelectedRowsLengthCheck = table.selectedRows?.length === 1 && table.selectedRows[0] !== -1 && table.selectedRows[0] < table.data.length;
+			if (editButton !== undefined) {
+				editButtonComponent.enabled = tableSelectedRowsLengthCheck;
+			}
+			removeButtonComponent.enabled = !!isRemoveEnabled && tableSelectedRowsLengthCheck;
 		}
-		addButton = this.createButton(uiLoc.AddText, addButtonAriaLabel, async () => {
-			await addHandler(addButton);
+		addButtonComponent = this.createButton(uiLoc.AddText, addbutton.buttonAriaLabel, async () => {
+			await addbutton.buttonHandler(addButtonComponent);
 			updateButtons();
 		});
-		removeButton = this.createButton(uiLoc.RemoveText, removeButtonAriaLabel, async () => {
-			await removeHandler(removeButton);
+		buttonComponents.push(addButtonComponent);
+
+		if (editButton !== undefined) {
+			editButtonComponent = this.createButton(uiLoc.EditText, editButton.buttonAriaLabel, async () => {
+				await editButton.buttonHandler(editButtonComponent);
+				updateButtons();
+			}, false);
+			buttonComponents.push(editButtonComponent);
+		}
+
+		removeButtonComponent = this.createButton(uiLoc.RemoveText, removeButton.buttonAriaLabel, async () => {
+			await removeButton.buttonHandler(removeButtonComponent);
 			if (table.selectedRows.length === 1 && table.selectedRows[0] >= table.data.length) {
 				table.selectedRows = [table.data.length - 1];
 			}
 			updateButtons();
 		}, false);
+		buttonComponents.push(removeButtonComponent);
+
 		this.disposables.push(table.onRowSelected(() => {
-			updateButtons();
+			const isRemoveButtonEnabled = this.removeButtonEnabled;
+			updateButtons(isRemoveButtonEnabled);
 		}));
-		return this.createButtonContainer([addButton, removeButton]);
+
+		return this.createButtonContainer(buttonComponents)
 	}
 
 	protected createDropdown(ariaLabel: string, handler: (newValue: string) => Promise<void>, values: string[], value: string | undefined, enabled: boolean = true, width: number = DefaultInputWidth, editable?: boolean, strictSelection?: boolean): azdata.DropDownComponent {
@@ -344,11 +371,12 @@ export abstract class DialogBase<DialogResult> {
 		}).withItems(items, { flex: '0 0 auto' }).component();
 	}
 
-	protected createRadioButton(label: string, groupName: string, checked: boolean, handler: (checked: boolean) => Promise<void>): azdata.RadioButtonComponent {
+	protected createRadioButton(label: string, groupName: string, checked: boolean, handler: (checked: boolean) => Promise<void>, enabled: boolean = true): azdata.RadioButtonComponent {
 		const radio = this.modelView.modelBuilder.radioButton().withProps({
 			label: label,
 			name: groupName,
-			checked: checked
+			checked: checked,
+			enabled: enabled
 		}).component();
 		this.disposables.push(radio.onDidChangeCheckedState(async checked => {
 			await handler(checked);
