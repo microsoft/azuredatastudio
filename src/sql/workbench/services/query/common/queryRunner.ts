@@ -30,7 +30,6 @@ import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { CancellationToken } from 'vs/base/common/cancellation';
 
 /*
 * Query Runner class which handles running a query, reports the results to the content manager,
@@ -421,7 +420,7 @@ export default class QueryRunner extends Disposable {
 	 * Get more data rows from the current resultSets from the service layer
 	 * @deprecated getQueryRowsPaged should be used instead as it is much more performant
 	 */
-	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
+	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number): Promise<ResultSetSubset> {
 		let rowData: QueryExecuteSubsetParams = <QueryExecuteSubsetParams>{
 			ownerUri: this.uri,
 			resultSetIndex: resultSetIndex,
