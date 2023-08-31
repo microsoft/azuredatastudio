@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import * as styles from '../../constants/styles';
+import * as constants from '../../constants/strings';
 
 export class SkuDataCollectionToolbar implements vscode.Disposable {
 	private _disposables: vscode.Disposable[] = [];
@@ -15,29 +16,29 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		const toolbar = view.modelBuilder.toolbarContainer()
 
 		toolbar.addToolbarItems([
-			<azdata.ToolbarComponent>{ component: this.createRefreshSKURecoButton(view), toolbarSeparatorAfter: true },
+			<azdata.ToolbarComponent>{ component: this.createRefreshSKURecommendationButton(view), toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.createStartDataCollectionButton(view), toolbarSeparatorAfter: false },
 			<azdata.ToolbarComponent>{ component: this.createStopDataCollectionButton(view), toolbarSeparatorAfter: false },
 			<azdata.ToolbarComponent>{ component: this.createImportPerformanceButton(view), toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.createRecommendationParametersButton(view), toolbarSeparatorAfter: false },
 		]);
 
-		toolbar.withProps({
-			CSSStyles: {
-				'margin': '0',
-				'padding': '0',
-			}
-		});
+		// commenting this CSS Properties, we can edit this as per requirement.
+		// toolbar.withProps({
+		// 	CSSStyles: {
+		// 		'margin': '0',
+		// 		'padding': '0',
+		// 	}
+		// });
 
 		return toolbar.component();
 	}
 
-	private createRefreshSKURecoButton(view: azdata.ModelView): azdata.ButtonComponent {
-		const refreshSKURecoButton = view.modelBuilder.button()
+	private createRefreshSKURecommendationButton(view: azdata.ModelView): azdata.ButtonComponent {
+		const refreshSKURecommendationButton = view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
-				label: "Refresh",
-				description: "To start SKU Recommendation",
+				label: constants.REFRESH_SKU_RECOMMENDATION_BUTTON_LABEL,
 				height: 36,
 				iconHeight: 16,
 				iconWidth: 16,
@@ -46,21 +47,15 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 					...styles.TOOLBAR_CSS
 				}
 			}).component();
-
-		// this._disposables.push(refreshAssessmentButton.onDidClick(async () => {
-		// 	const dialog = new ImportPerformanceDataDialog();
-		// 	return await dialog.openDialog();
-		// }));
-
-		return refreshSKURecoButton;
+		// TODO - implement onDidClick and add to disposables
+		return refreshSKURecommendationButton;
 	}
 
 	private createStartDataCollectionButton(view: azdata.ModelView): azdata.ButtonComponent {
 		const startDataCollectionButton = view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
-				label: "Start Data Collection",
-				description: "To start data collection",
+				label: constants.START_DATACOLLECTION_BUTTON_LABEL,
 				width: 146,
 				height: 36,
 				iconHeight: 16,
@@ -70,11 +65,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 					...styles.TOOLBAR_CSS
 				}
 			}).component();
-		// this._disposables.push(startDataCollectionButton.onDidClick(async () => {
-		// 	const dialog = new ImportPerformanceDataDialog();
-		// 	return await dialog.openDialog();
-		// }));
-
+		// TODO - implement onDidClick and add to disposables
 		return startDataCollectionButton;
 	}
 
@@ -82,8 +73,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		const stopDataCollectionButton = view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
-				label: "Stop Data Collection",
-				description: "To stop data collection",
+				label: constants.STOP_DATACOLLECTION_BUTTON_LABEL,
 				height: 36,
 				iconHeight: 16,
 				iconWidth: 16,
@@ -92,15 +82,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 					...styles.TOOLBAR_CSS
 				}
 			}).component();
-		// this.disposables.push(
-		// 	newMigrationButton.onDidClick(async () => {
-		// 		const actionId = MenuCommands.StartMigration;
-		// 		const args = {
-		// 			extensionId: SqlMigrationExtensionId,
-		// 			issueTitle: loc.DASHBOARD_MIGRATE_TASK_BUTTON_TITLE,
-		// 		};
-		// 		return await vscode.commands.executeCommand(actionId, args);
-		// 	}));
+		// TODO - implement onDidClick and add to disposables
 		return stopDataCollectionButton;
 	}
 
@@ -108,25 +90,16 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		const importPerformanceButton = view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
-				label: "Import Performance Data",
-				description: "To import performance data",
+				label: constants.IMPORT_PERFORMANCEDATA_BUTTON_LABEL,
 				height: 36,
 				iconHeight: 16,
 				iconWidth: 16,
-				iconPath: IconPathHelper.importData,
+				iconPath: IconPathHelper.import,
 				CSSStyles: {
 					...styles.TOOLBAR_CSS
 				}
 			}).component();
-		// this.disposables.push(
-		// 	newMigrationButton.onDidClick(async () => {
-		// 		const actionId = MenuCommands.StartMigration;
-		// 		const args = {
-		// 			extensionId: SqlMigrationExtensionId,
-		// 			issueTitle: loc.DASHBOARD_MIGRATE_TASK_BUTTON_TITLE,
-		// 		};
-		// 		return await vscode.commands.executeCommand(actionId, args);
-		// 	}));
+		// TODO - implement onDidClick and add to disposables
 		return importPerformanceButton;
 	}
 
@@ -134,29 +107,21 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		const recommendationParametersButton = view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
-				label: "Recommendation Parameters",
-				description: "To edit recommendation parameters",
+				label: constants.RECOMMENDATION_PARAMETERS_BUTTON_LABEL,
 				height: 36,
 				iconHeight: 16,
 				iconWidth: 16,
-				iconPath: IconPathHelper.newSettings,
+				iconPath: IconPathHelper.settings,
 				CSSStyles: {
 					...styles.TOOLBAR_CSS
 				}
 			}).component();
-		// this.disposables.push(
-		// 	newMigrationButton.onDidClick(async () => {
-		// 		const actionId = MenuCommands.StartMigration;
-		// 		const args = {
-		// 			extensionId: SqlMigrationExtensionId,
-		// 			issueTitle: loc.DASHBOARD_MIGRATE_TASK_BUTTON_TITLE,
-		// 		};
-		// 		return await vscode.commands.executeCommand(actionId, args);
-		// 	}));
+		// TODO - implement onDidClick and add to disposables
 		return recommendationParametersButton;
 	}
 
 	public dispose(): void {
+		// TODO - need to call this at the place where toolbar is initialized
 		this._disposables.forEach(disposable => disposable.dispose());
 		this._disposables.length = 0;
 	}

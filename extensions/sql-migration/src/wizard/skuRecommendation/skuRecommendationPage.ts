@@ -123,6 +123,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this._skuDataCollectionToolbar = new SkuDataCollectionToolbar();
 		const toolbar = this._skuDataCollectionToolbar.createToolbar(view);
+		// TODO - add toolbar to disposables
+		// TODO - once new toolbar is ready for data collection, remove previous code.
 
 		const igContainer = this._view.modelBuilder.flexContainer()
 			.withProps({ CSSStyles: { 'align-items': 'center' } })
