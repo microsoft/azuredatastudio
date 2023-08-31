@@ -1224,7 +1224,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Query Store Capture Mode
 		this.queryStoreCaptureMode = this.createDropdown(localizedConstants.QueryStoreCaptureModeText, async (newValue) => {
 			this.objectInfo.queryStoreOptions.queryStoreCaptureMode = newValue as string;
-			await this.toggleQueryCapturePolicySection(newValue === 'Custom');
+			await this.toggleQueryCapturePolicySection(newValue === localizedConstants.QuerystorecapturemodeCustomText);
 		}, this.viewInfo.queryStoreCaptureModeOptions, this.objectInfo.queryStoreOptions.queryStoreCaptureMode, this.areQueryStoreOptionsEnabled, DefaultInputWidth);
 		containers.push(this.createLabelInputContainer(localizedConstants.QueryStoreCaptureModeText, this.queryStoreCaptureMode));
 

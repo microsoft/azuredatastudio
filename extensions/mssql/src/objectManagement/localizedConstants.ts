@@ -412,6 +412,7 @@ export const ExecutionCountText = localize('objectManagement.databaseProperties.
 export const StaleThresholdText = localize('objectManagement.databaseProperties.staleThresholdText', "Stale Threshold");
 export const TotalCompileCPUTimeInMsText = localize('objectManagement.databaseProperties.totalCompileCPUTimeInMs', "Total Compile CPU Time (ms)");
 export const TotalExecutionCPUTimeInMsText = localize('objectManagement.databaseProperties.totalExecutionCPUTimeInMsText', "Total Execution CPU Time (ms)");
+export const QuerystorecapturemodeCustomText = localize('objectManagement.databaseProperties.querystorecapturemodeCustomText', "Custom");
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
