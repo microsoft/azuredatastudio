@@ -30,20 +30,9 @@ export interface IServerContextualizationService {
 	getProvider(providerId: string): azdata.contextualization.ServerContextualizationProvider;
 
 	/**
-	 * Generates server context
-	 * @param ownerUri The URI of the connection to generate context for.
+	 * Contextualizes the provided URI for GitHub Copilot.
+	 * @param uri The URI to contextualize for Copilot
+	 * @returns A promise that doesn't need to be awaited since contextualization is done in the background.
 	 */
-	generateServerContextualization(ownerUri: string): Promise<azdata.contextualization.GenerateServerContextualizationResult>;
-
-	/**
-	 * Gets all database context.
-	 * @param ownerUri The URI of the connection to get context for.
-	 */
-	getServerContextualization(ownerUri: string): Promise<azdata.contextualization.GetServerContextualizationResult>;
-
-	/**
-	 * Sends server context to the Copilot extension, so it can be used to generate improved suggestions.
-	 * @param serverContext The server context to be sent to Copilot.
-	 */
-	sendServerContextualizationToCopilot(serverContext: string | undefined): Promise<void>
+	contextualizeUriForCopilot(uri: string): Promise<void>;
 }

@@ -57,14 +57,37 @@ export class ServerContextualizationService extends Disposable implements IServe
 	}
 
 	/**
+	 * Contextualizes the provided URI for GitHub Copilot.
+	 * @param uri The URI to contextualize for Copilot
+	 * @returns A promise that doesn't need to be awaited since contextualization is done in the background.
+	 */
+	public async contextualizeUriForCopilot(uri: string): Promise<void> {
+		// Don't need to take any actions if contextualization is not enabled and can return
+		const isContextualizationNeeded = await this.isContextualizationNeeded();
+		if (!isContextualizationNeeded) {
+			return;
+		}
+
+		const getServerContextualizationResult = await this.getServerContextualization(uri);
+		if (getServerContextualizationResult.context) {
+			await this.sendServerContextualizationToCopilot(getServerContextualizationResult.context);
+		}
+		else {
+			const generateServerContextualizationResult = await this.generateServerContextualization(uri);
+			if (generateServerContextualizationResult.context) {
+				await this.sendServerContextualizationToCopilot(generateServerContextualizationResult.context);
+			}
+		}
+	}
+
+	/**
 	 * Generates server context
 	 * @param ownerUri The URI of the connection to generate context for.
 	 */
-	public async generateServerContextualization(ownerUri: string): Promise<azdata.contextualization.GenerateServerContextualizationResult> {
-		const isContextualizationNeeded = await this.isContextualizationNeeded();
+	private async generateServerContextualization(ownerUri: string): Promise<azdata.contextualization.GenerateServerContextualizationResult> {
 		const providerName = this._connectionManagementService.getProviderIdFromUri(ownerUri);
 		const handler = this.getProvider(providerName);
-		if (isContextualizationNeeded && handler) {
+		if (handler) {
 			return await handler.generateServerContextualization(ownerUri);
 		}
 		else {
@@ -78,11 +101,10 @@ export class ServerContextualizationService extends Disposable implements IServe
 	 * Gets all database context.
 	 * @param ownerUri The URI of the connection to get context for.
 	 */
-	public async getServerContextualization(ownerUri: string): Promise<azdata.contextualization.GetServerContextualizationResult> {
-		const isContextualizationNeeded = await this.isContextualizationNeeded();
+	private async getServerContextualization(ownerUri: string): Promise<azdata.contextualization.GetServerContextualizationResult> {
 		const providerName = this._connectionManagementService.getProviderIdFromUri(ownerUri);
 		const handler = this.getProvider(providerName);
-		if (isContextualizationNeeded && handler) {
+		if (handler) {
 			return await handler.getServerContextualization(ownerUri);
 		}
 		else {
@@ -96,9 +118,8 @@ export class ServerContextualizationService extends Disposable implements IServe
 	 * Sends the provided context over to copilot, so that it can be used to generate improved suggestions.
 	 * @param serverContext The context to be sent over to Copilot
 	 */
-	public async sendServerContextualizationToCopilot(serverContext: string | undefined): Promise<void> {
-		const isContextualizationNeeded = await this.isContextualizationNeeded();
-		if (isContextualizationNeeded && serverContext) {
+	private async sendServerContextualizationToCopilot(serverContext: string | undefined): Promise<void> {
+		if (serverContext) {
 			// LEWISSANCHEZ TODO: Find way to set context on untitled query editor files. Need to save first for Copilot status to say "Has Context"
 			await this._commandService.executeCommand('github.copilot.provideContext', '**/*.sql', {
 				value: serverContext

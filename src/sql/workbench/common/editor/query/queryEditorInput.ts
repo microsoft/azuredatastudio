@@ -323,25 +323,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		this._onDidChangeLabel.fire();
 
 		// Intentionally not awaiting, so that contextualization can happen in the background
-		this.contextualizeEditorForCopilot();
-	}
-
-	private async contextualizeEditorForCopilot(): Promise<void> {
-		// Don't need to take any actions if contextualization is not enabled and can return
-		if (!this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled) {
-			return;
-		}
-
-		const getServerContextualizationResult = await this.serverContextualizationService.getServerContextualization(this.uri);
-		if (getServerContextualizationResult.context) {
-			await this.serverContextualizationService.sendServerContextualizationToCopilot(getServerContextualizationResult.context);
-		}
-		else {
-			const generateServerContextualizationResult = await this.serverContextualizationService.generateServerContextualization(this.uri);
-			if (generateServerContextualizationResult.context) {
-				await this.serverContextualizationService.sendServerContextualizationToCopilot(generateServerContextualizationResult.context);
-			}
-		}
+		this.serverContextualizationService.contextualizeUriForCopilot(this.uri);
 	}
 
 	public onDisconnect(): void {
