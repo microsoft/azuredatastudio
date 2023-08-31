@@ -303,7 +303,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		this.state.connecting = false;
 	}
 
-	public async onConnectSuccess(params?: INewConnectionParams): Promise<void> {
+	public onConnectSuccess(params?: INewConnectionParams): void {
 		this.state.connected = true;
 		this.state.connecting = false;
 
@@ -322,6 +322,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		}
 		this._onDidChangeLabel.fire();
 
+		// Intentionally not awaiting, so that contextualization can happen in the background
 		this.contextualizeEditorForCopilot();
 	}
 
