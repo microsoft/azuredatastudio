@@ -114,6 +114,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private staleThreshold: azdata.DropDownComponent;
 	private totalCompileCPUTimeInMS: azdata.InputBoxComponent;
 	private totalExecutionCPUTimeInMS: azdata.InputBoxComponent;
+	private operationModeOffOption: string;
 
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
@@ -1623,8 +1624,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private initializeQueryStoreGeneralSection(): void {
 		let containers: azdata.Component[] = [];
 		const actualOperationMode = this.objectInfo.queryStoreOptions.actualMode;
-		const operationModeOffOption = 'Off'
-		this.areQueryStoreOptionsEnabled = this.objectInfo.queryStoreOptions.actualMode !== operationModeOffOption;
+		this.operationModeOffOption = 'Off'
+		this.areQueryStoreOptionsEnabled = this.objectInfo.queryStoreOptions.actualMode !== this.operationModeOffOption;
 		// Operation Mode (Actual)
 		const operationModeActual = this.createInputBox(async () => { }, {
 			ariaLabel: localizedConstants.ActualOperationModeText,
@@ -1637,7 +1638,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Operation Mode (Requested)
 		this.requestedOperationMode = this.createDropdown(localizedConstants.RequestedOperationModeText, async (newValue) => {
 			this.objectInfo.queryStoreOptions.actualMode = newValue as string;
-			this.areQueryStoreOptionsEnabled = newValue !== operationModeOffOption;
+			this.areQueryStoreOptionsEnabled = newValue !== this.operationModeOffOption;
 			await this.toggleQueryStoreOptions();
 		}, this.viewInfo.operationModeOptions, String(this.objectInfo.queryStoreOptions.actualMode), true, DefaultInputWidth);
 		containers.push(this.createLabelInputContainer(localizedConstants.RequestedOperationModeText, this.requestedOperationMode));
@@ -1699,7 +1700,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Query Store Capture Mode
 		this.queryStoreCaptureMode = this.createDropdown(localizedConstants.QueryStoreCaptureModeText, async (newValue) => {
 			this.objectInfo.queryStoreOptions.queryStoreCaptureMode = newValue as string;
-			await this.toggleQueryCapturePolicySection(newValue === localizedConstants.QuerystorecapturemodeCustomText);
+			await this.toggleQueryCapturePolicySection(newValue === localizedConstants.QuerystorecapturemodeCustomText
+				&& this.requestedOperationMode.value !== this.operationModeOffOption);
 		}, this.viewInfo.queryStoreCaptureModeOptions, this.objectInfo.queryStoreOptions.queryStoreCaptureMode, this.areQueryStoreOptionsEnabled, DefaultInputWidth);
 		containers.push(this.createLabelInputContainer(localizedConstants.QueryStoreCaptureModeText, this.queryStoreCaptureMode));
 
