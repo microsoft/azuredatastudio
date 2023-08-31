@@ -11,6 +11,7 @@ import { MigrationStateModel, StateChangeEvent } from '../../models/stateMachine
 import { AssessmentDetailsHeader } from './assessmentDetailsHeader';
 import { AssessmentDetailsBody } from './assessmentDetialsBody';
 
+// Class where Assessment Details Page is executed
 export class AssessmentDetailsPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 	private _header;
@@ -27,6 +28,7 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 		this._body = new AssessmentDetailsBody(migrationStateModel);
 	}
 
+	// function to register Assessment details page content.
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
 		this._view = view;
 		const pageHeading = this._view.modelBuilder.text().withProps({
