@@ -74,3 +74,15 @@ export function createSplitView(view: azdata.ModelView, firstComponent: azdata.C
 
 	return splitview;
 }
+
+/**
+ * These are the available components that can be added to a config dialog.
+ */
+export enum ConfigComponentsInfo {
+	consumptionCriteriaComponentTopResource,
+	chartComponent,
+	timeIntervalComponentOverallResource,
+	timeIntervalComponent,
+	returnComponent,
+	filterComponent
+}

@@ -10,6 +10,7 @@ import { escape } from 'sql/base/common/strings';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { Disposable } from 'vs/base/common/lifecycle';
 import 'vs/css!./media/checkboxSelectColumn.plugin';
 import * as nls from 'vs/nls';
 
@@ -56,19 +57,19 @@ const defaultOptions: ICheckboxSelectColumnOptions = {
 	width: 30
 };
 
-export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Plugin<T> {
-
+export class CheckboxSelectColumn<T extends Slick.SlickData> extends Disposable implements Slick.Plugin<T> {
 	private _grid!: Slick.Grid<T>;
 	private _handler = new Slick.EventHandler();
 	private _options: ICheckboxSelectColumnOptions;
 	public index: number;
 	private _headerCheckbox: HTMLInputElement | undefined;
-	private _onChange = new Emitter<ICheckboxCellActionEventArgs>();
-	private _onCheckAllChange = new Emitter<ICheckAllActionEventArgs>();
+	private _onChange = this._register(new Emitter<ICheckboxCellActionEventArgs>());
+	private _onCheckAllChange = this._register(new Emitter<ICheckAllActionEventArgs>());
 	public readonly onChange: vsEvent<ICheckboxCellActionEventArgs> = this._onChange.event;
 	public readonly onCheckAllChange: vsEvent<ICheckAllActionEventArgs> = this._onCheckAllChange.event;
 
 	constructor(options?: ICheckboxSelectColumnOptions, columnIndex?: number) {
+		super();
 		this._options = mixin(options, defaultOptions, false);
 		this._options.headerCssClass = options.headerCssClass ? options.headerCssClass + ' ' + defaultOptions.headerCssClass : defaultOptions.headerCssClass;
 		this._options.cssClass = options.cssClass ? options.cssClass + ' ' + defaultOptions.cssClass : defaultOptions.cssClass;

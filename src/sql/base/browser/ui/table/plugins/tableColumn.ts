@@ -6,6 +6,7 @@ import { convertJQueryKeyDownEvent } from 'sql/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Emitter } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface TableColumn<T extends Slick.SlickData> {
 	readonly definition: Slick.Column<T>;
@@ -25,13 +26,14 @@ export interface ClickableColumnOptions {
 	enabledField?: string;
 }
 
-export abstract class BaseClickableColumn<T extends Slick.SlickData> implements Slick.Plugin<T>, TableColumn<T> {
+export abstract class BaseClickableColumn<T extends Slick.SlickData> extends Disposable implements Slick.Plugin<T>, TableColumn<T> {
 	protected _handler = new Slick.EventHandler();
 	protected _grid!: Slick.Grid<T>;
-	private _onClick = new Emitter<TableCellClickEventArgs<T>>();
+	private _onClick = this._register(new Emitter<TableCellClickEventArgs<T>>());
 	public onClick = this._onClick.event;
 
 	constructor(private readonly _options: ClickableColumnOptions) {
+		super();
 	}
 
 	public init(grid: Slick.Grid<T>): void {
@@ -45,6 +47,9 @@ export abstract class BaseClickableColumn<T extends Slick.SlickData> implements 
 		this._handler.unsubscribeAll();
 	}
 
+	public override dispose(): void {
+		this.destroy();
+	}
 	/**
 	 * Returns the column definition.
 	 * Note when implementing this abstract getter:

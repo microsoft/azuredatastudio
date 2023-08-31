@@ -5276,20 +5276,8 @@ Error: {1}</source>
     <trans-unit id="welcomePage.install">
       <source xml:lang="en">Install</source>
     </trans-unit>
-    <trans-unit id="welcomePage.installExtensionPack">
-      <source xml:lang="en">Install additional support for {0}</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.installKeymap">
-      <source xml:lang="en">Install {0} keymap</source>
-    </trans-unit>
     <trans-unit id="welcomePage.installed">
       <source xml:lang="en">Installed</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.installedExtensionPack">
-      <source xml:lang="en">{0} support is already installed</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.installedKeymap">
-      <source xml:lang="en">{0} keymap is already installed</source>
     </trans-unit>
     <trans-unit id="welcomePage.installingExtensionPack">
       <source xml:lang="en">Installing additional support for {0}...</source>
