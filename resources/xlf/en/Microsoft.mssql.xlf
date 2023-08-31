@@ -72,8 +72,14 @@
     <trans-unit id="objectManagement.databaseProperties.addDatabaseFilesText">
       <source xml:lang="en">Add Database file</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.addFilegroupButtonText">
+      <source xml:lang="en">Add Filegroup</source>
+    </trans-unit>
     <trans-unit id="objectManagement.objectSelectionMethodDialogTitle">
       <source xml:lang="en">Add Objects</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.addFileText">
+      <source xml:lang="en">Add database files</source>
     </trans-unit>
     <trans-unit id="objectManagement.addMembersText">
       <source xml:lang="en">Add members</source>
@@ -93,6 +99,10 @@
     <trans-unit id="objectManagement.dropObjectError">
       <source xml:lang="en">An error occurred while dropping the {0}: {1}. {2}</source>
       <note>{0} object type, {1}: object name, {2}: error message.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.openAttachDatabaseDialogError">
+      <source xml:lang="en">An error occurred while opening the attach database dialog. {0}</source>
+      <note>{0}: error message.</note>
     </trans-unit>
     <trans-unit id="objectManagement.openDetachDatabaseDialogError">
       <source xml:lang="en">An error occurred while opening the detach database dialog. {0}</source>
@@ -128,6 +138,18 @@
       <source xml:lang="en">Are you sure you want to drop the {0}: {1}?</source>
       <note>{0} object type, {1}: object name.</note>
     </trans-unit>
+    <trans-unit id="objectManagement.associatedDatabaseFiles">
+      <source xml:lang="en">Associated Database Files</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.attachButtonLabel">
+      <source xml:lang="en">Attach</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.attachAsText">
+      <source xml:lang="en">Attach As</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.attachDatabaseDialogTitle">
+      <source xml:lang="en">Attach Database (Preview)</source>
+    </trans-unit>
     <trans-unit id="objectManagement.user.aadAuth">
       <source xml:lang="en">Authenticate with Azure Active Directory</source>
     </trans-unit>
@@ -151,6 +173,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.autoUpdateStatisticsAsynchronouslyText">
       <source xml:lang="en">Auto Update Statistics Asynchronously</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.autogrowAllFilesText">
+      <source xml:lang="en">Autogrow All Files</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.autogrowthMaxsizeText">
       <source xml:lang="en">Autogrowth / Maxsize</source>
@@ -191,6 +216,9 @@
     <trans-unit id="objectManagement.databaseProperties.fileNameExistsError">
       <source xml:lang="en">Cannot create file &apos;{0}&apos; because it already exists.</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.emptyFilegroupNameError">
+      <source xml:lang="en">Cannot use empty object names for filegroups.</source>
+    </trans-unit>
     <trans-unit id="objectManagement.needToRestartServer">
       <source xml:lang="en">Changes require server restart in order to be effective</source>
     </trans-unit>
@@ -228,6 +256,12 @@
     <trans-unit id="objectManagement.currentSLOLabel">
       <source xml:lang="en">Current Service Level Objective</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseName">
+      <source xml:lang="en">DB Name</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.dataFileLabel">
+      <source xml:lang="en">Data</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.fileGroupNotApplicableText">
       <source xml:lang="en">DataFile &apos;{0}&apos; could not be added to the collection, because it already exists.</source>
     </trans-unit>
@@ -236,6 +270,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.DatabaseDisplayNameInTitle">
       <source xml:lang="en">Database</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseFilesFilterLabel">
+      <source xml:lang="en">Database Data Files</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseDetails">
       <source xml:lang="en">Database Details</source>
@@ -264,8 +301,14 @@
     <trans-unit id="objectManagement.databaseProperties.databaseFilesText">
       <source xml:lang="en">Database files</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databasesToAttach">
+      <source xml:lang="en">Databases to Attach</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.dateCreated">
       <source xml:lang="en">Date Created</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.defaultText">
+      <source xml:lang="en">Default</source>
     </trans-unit>
     <trans-unit id="objectManagement.login.defaultDatabaseLabel">
       <source xml:lang="en">Default database</source>
@@ -370,14 +413,29 @@
     <trans-unit id="objectManagement.databaseProperties.fileTypeText">
       <source xml:lang="en">File Type</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.FilegroupExistsError">
+      <source xml:lang="en">File group &apos;{0}&apos; could not be added to the collection, because it already exists.</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.fileStreamFileGroupsSectionText">
+      <source xml:lang="en">FileStream</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.filegroupText">
       <source xml:lang="en">Filegroup</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.filegroupsSectionHeader">
+      <source xml:lang="en">Filegroups</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.filegrowthLimitError">
       <source xml:lang="en">Filegrowth cannot be greater than the Maximum file size for a file</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.filesText">
+      <source xml:lang="en">Files</source>
+    </trans-unit>
     <trans-unit id="objectManagement.optionsSectionHeader">
       <source xml:lang="en">Files</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.filestreamFilesText">
+      <source xml:lang="en">Filestream Files</source>
     </trans-unit>
     <trans-unit id="objectManagement.filterSectionTitle">
       <source xml:lang="en">Filters</source>
@@ -451,6 +509,9 @@
     <trans-unit id="objectManagement.loadingObjectsLabel">
       <source xml:lang="en">Loading objects…</source>
     </trans-unit>
+    <trans-unit id="objectManagement.logFileLabel">
+      <source xml:lang="en">Log</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.logicalNameText">
       <source xml:lang="en">Logical Name</source>
     </trans-unit>
@@ -468,6 +529,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.loginNotSelectedError">
       <source xml:lang="en">Login is not selected.</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.mdfFileLocation">
+      <source xml:lang="en">MDF File Location</source>
     </trans-unit>
     <trans-unit id="objectManagement.user.windowsUser">
       <source xml:lang="en">Mapped to a Windows user/group</source>
@@ -502,6 +566,9 @@
     <trans-unit id="objectManagement.databaseProperties.memoryAllocated">
       <source xml:lang="en">Memory Allocated To Memory Optimized Objects</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.memoryOptimizedFileGroupsSectionText">
+      <source xml:lang="en">Memory Optimized Data</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.memoryUsed">
       <source xml:lang="en">Memory Used By Memory Optimized Objects</source>
     </trans-unit>
@@ -522,6 +589,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.user.noLogin">
       <source xml:lang="en">No Login Access</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.doDatabaseFilesError">
+      <source xml:lang="en">No database files were specified to attach to the server.</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.noneText">
       <source xml:lang="en">None</source>
@@ -613,6 +683,9 @@
     <trans-unit id="objectManagement.databaseProperties.rowsDataFileType">
       <source xml:lang="en">ROWS Data</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.readOnlyText">
+      <source xml:lang="en">Read-Only</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.recoverySectionHeader">
       <source xml:lang="en">Recovery</source>
     </trans-unit>
@@ -621,6 +694,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.removeButton">
       <source xml:lang="en">Remove</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.removeFileText">
+      <source xml:lang="en">Remove database file</source>
     </trans-unit>
     <trans-unit id="objectManagement.removeMemberText">
       <source xml:lang="en">Remove selected member</source>
@@ -640,6 +716,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.rootDirectory">
       <source xml:lang="en">Root Directory</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.rowsFileGroupsSectionText">
+      <source xml:lang="en">Rows</source>
     </trans-unit>
     <trans-unit id="objectManagement.login.sqlAuthenticationType">
       <source xml:lang="en">SQL Authentication</source>
@@ -953,6 +1032,9 @@
     </trans-unit>
     <trans-unit id="json.schemas.desc">
       <source xml:lang="en">Associate schemas to JSON files in the current project</source>
+    </trans-unit>
+    <trans-unit id="title.attachDatabase">
+      <source xml:lang="en">Attach (Preview)</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
       <source xml:lang="en">Attach DB filename</source>
