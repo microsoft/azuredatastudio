@@ -52,8 +52,8 @@ export class IconPathHelper {
 	public static startDataCollection: IconPath;
 	public static stopDataCollection: IconPath;
 	public static newRefresh: IconPath;
-	public static importData: IconPath;
-	public static newSettings: IconPath;
+	public static import: IconPath;
+	public static settings: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -209,24 +209,24 @@ export class IconPathHelper {
 			dark: context.asAbsolutePath('images/notFound.svg'),
 		};
 		IconPathHelper.startDataCollection = {
-			light: context.asAbsolutePath('images/new_startDataCollection.svg'),
-			dark: context.asAbsolutePath('images/new_startDataCollection.svg')
+			light: context.asAbsolutePath('images/startDataCollection.svg'),
+			dark: context.asAbsolutePath('images/startDataCollection.svg')
 		};
 		IconPathHelper.stopDataCollection = {
-			light: context.asAbsolutePath('images/new_stopDataCollection.svg'),
-			dark: context.asAbsolutePath('images/new_stopDataCollection.svg')
+			light: context.asAbsolutePath('images/stopDataCollection.svg'),
+			dark: context.asAbsolutePath('images/stopDataCollection.svg')
 		};
-		IconPathHelper.importData = {
-			light: context.asAbsolutePath('images/new_importData.svg'),
-			dark: context.asAbsolutePath('images/new_importData.svg')
+		IconPathHelper.import = {
+			light: context.asAbsolutePath('images/import.svg'),
+			dark: context.asAbsolutePath('images/import.svg')
 		};
 		IconPathHelper.newRefresh = {
-			light: context.asAbsolutePath('images/new_refresh.svg'),
-			dark: context.asAbsolutePath('images/new_refresh.svg')
+			light: context.asAbsolutePath('images/newRefresh.svg'),
+			dark: context.asAbsolutePath('images/newRefresh.svg')
 		};
-		IconPathHelper.newSettings = {
-			light: context.asAbsolutePath('images/new_Settings.svg'),
-			dark: context.asAbsolutePath('images/new_settings.svg')
+		IconPathHelper.settings = {
+			light: context.asAbsolutePath('images/settings.svg'),
+			dark: context.asAbsolutePath('images/settings.svg')
 		};
 
 	}
