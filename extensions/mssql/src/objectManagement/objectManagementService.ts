@@ -66,13 +66,13 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		return this.runWithErrorHandling(contracts.SearchObjectRequest.type, params);
 	}
 
-	async detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Promise<string> {
-		const params: contracts.DetachDatabaseRequestParams = { connectionUri, objectUrn, dropConnections, updateStatistics, generateScript };
+	async detachDatabase(connectionUri: string, database: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Promise<string> {
+		const params: contracts.DetachDatabaseRequestParams = { connectionUri, database, objectUrn, dropConnections, updateStatistics, generateScript };
 		return this.runWithErrorHandling(contracts.DetachDatabaseRequest.type, params);
 	}
 
-	async dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Promise<string> {
-		const params: contracts.DropDatabaseRequestParams = { connectionUri, objectUrn, dropConnections, deleteBackupHistory, generateScript };
+	async dropDatabase(connectionUri: string, database: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Promise<string> {
+		const params: contracts.DropDatabaseRequestParams = { connectionUri, database, objectUrn, dropConnections, deleteBackupHistory, generateScript };
 		return this.runWithErrorHandling(contracts.DropDatabaseRequest.type, params);
 	}
 
@@ -257,7 +257,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve(items);
 	}
 
-	async detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Promise<string> {
+	async detachDatabase(connectionUri: string, database: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Promise<string> {
 		return this.delayAndResolve('');
 	}
 
@@ -265,7 +265,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve('');
 	}
 
-	dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string> {
+	dropDatabase(connectionUri: string, database: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string> {
 		return this.delayAndResolve('');
 	}
 
