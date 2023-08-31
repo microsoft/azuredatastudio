@@ -49,6 +49,8 @@ export const DenyColumnHeader = localize('objectManagement.denyColumnHeader', "D
 export const SelectSecurablesDialogTitle = localize('objectManagement.selectSecurablesDialogTitle', "Select Securables");
 export const CreateObjectLabel = localize('objectManagement.createObjectLabel', "Create");
 export const ApplyUpdatesLabel = localize('objectManagement.applyUpdatesLabel', "Apply");
+export const allFiles = localize('objectManagement.allFiles', "All Files");
+export const labelSelectFolder = localize('objectManagement.labelSelectFolder', "Select Folder");
 
 export function ExplicitPermissionsTableLabelSelected(name: string): string { return localize('objectManagement.explicitPermissionsTableLabelSelected', "Explicit permissions for: {0}", name); }
 export function EffectivePermissionsTableLabelSelected(name: string): string { return localize('objectManagement.effectivePermissionsTableLabelSelected', "Effective permissions for: {0}", name); }
@@ -301,6 +303,10 @@ export const logLocationText = localize('objectManagement.logLocationText', "Log
 export const dataLocationText = localize('objectManagement.dataLocationText', "Data");
 export const backupLocationText = localize('objectManagement.backupLocationText', "Backup");
 export const defaultLocationsLabel = localize('objectManagement.defaultLocationsLabel', "Database default locations");
+export const databaseSettingsText = localize('objectManagement.databaseSettings', "Database Settings");
+export const compressBackupText = localize('objectManagement.compressBackupText', "Compress Backup");
+export const backupChecksumText = localize('objectManagement.backupChecksumText', "Backup checksum");
+export const backupAndRestoreText = localize('objectManagement.backupAndRestoreText', "Backup and Restore");
 
 //Database properties Dialog
 export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");
