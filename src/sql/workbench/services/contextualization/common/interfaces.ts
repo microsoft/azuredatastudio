@@ -31,8 +31,8 @@ export interface IServerContextualizationService {
 
 	/**
 	 * Contextualizes the provided URI for GitHub Copilot.
-	 * @param uri The URI to contextualize for Copilot
-	 * @returns A promise that doesn't need to be awaited since contextualization is done in the background.
+	 * @param uri The URI to contextualize for Copilot.
+	 * @returns Copilot will have the URI contextualized when the promise completes.
 	 */
 	contextualizeUriForCopilot(uri: string): Promise<void>;
 }

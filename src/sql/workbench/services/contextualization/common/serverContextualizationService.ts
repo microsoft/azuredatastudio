@@ -58,8 +58,8 @@ export class ServerContextualizationService extends Disposable implements IServe
 
 	/**
 	 * Contextualizes the provided URI for GitHub Copilot.
-	 * @param uri The URI to contextualize for Copilot
-	 * @returns A promise that doesn't need to be awaited since contextualization is done in the background.
+	 * @param uri The URI to contextualize for Copilot.
+	 * @returns Copilot will have the URI contextualized when the promise completes.
 	 */
 	public async contextualizeUriForCopilot(uri: string): Promise<void> {
 		// Don't need to take any actions if contextualization is not enabled and can return

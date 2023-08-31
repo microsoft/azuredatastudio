@@ -323,7 +323,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		this._onDidChangeLabel.fire();
 
 		// Intentionally not awaiting, so that contextualization can happen in the background
-		void this.serverContextualizationService.contextualizeUriForCopilot(this.uri);
+		void this.serverContextualizationService?.contextualizeUriForCopilot(this.uri);
 	}
 
 	public onDisconnect(): void {
