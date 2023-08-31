@@ -78,7 +78,7 @@ export abstract class DialogBase<DialogResult> {
 
 	protected onFormFieldChange(): void { }
 
-	protected get removeButtonEnabled(): boolean { return true; }
+	protected removeButtonEnabled(table: azdata.TableComponent): boolean { return true; }
 
 	protected validateInput(): Promise<string[]> { return Promise.resolve([]); }
 
@@ -251,7 +251,7 @@ export abstract class DialogBase<DialogResult> {
 		return table;
 	}
 
-	protected async setTableData(table: azdata.TableComponent, data: any[][], maxRowCount: number = DefaultMaxTableRowCount) {
+	protected async setTableData(table: azdata.TableComponent, data: any[][], maxRowCount: number = DefaultMaxTableRowCount): Promise<void> {
 		await table.updateProperties({
 			data: data,
 			height: getTableHeight(data.length, DefaultMinTableRowCount, maxRowCount)
@@ -321,7 +321,7 @@ export abstract class DialogBase<DialogResult> {
 		buttonComponents.push(removeButtonComponent);
 
 		this.disposables.push(table.onRowSelected(() => {
-			const isRemoveButtonEnabled = this.removeButtonEnabled;
+			const isRemoveButtonEnabled = this.removeButtonEnabled(table);
 			updateButtons(isRemoveButtonEnabled);
 		}));
 

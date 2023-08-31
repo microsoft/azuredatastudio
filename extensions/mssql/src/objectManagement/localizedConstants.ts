@@ -47,10 +47,14 @@ export const GrantColumnHeader = localize('objectManagement.grantColumnHeader', 
 export const WithGrantColumnHeader = localize('objectManagement.withGrantColumnHeader', "With Grant");
 export const DenyColumnHeader = localize('objectManagement.denyColumnHeader', "Deny");
 export const SelectSecurablesDialogTitle = localize('objectManagement.selectSecurablesDialogTitle', "Select Securables");
+export const AddFileAriaLabel = localize('objectManagement.addFileText', "Add database files");
+export const RemoveFileAriaLabel = localize('objectManagement.removeFileText', "Remove database file");
 export const CreateObjectLabel = localize('objectManagement.createObjectLabel', "Create");
 export const ApplyUpdatesLabel = localize('objectManagement.applyUpdatesLabel', "Apply");
 export const allFiles = localize('objectManagement.allFiles', "All Files");
 export const labelSelectFolder = localize('objectManagement.labelSelectFolder', "Select Folder");
+export const DataFileLabel = localize('objectManagement.dataFileLabel', "Data");
+export const LogFileLabel = localize('objectManagement.logFileLabel', "Log");
 
 export function ExplicitPermissionsTableLabelSelected(name: string): string { return localize('objectManagement.explicitPermissionsTableLabelSelected', "Explicit permissions for: {0}", name); }
 export function EffectivePermissionsTableLabelSelected(name: string): string { return localize('objectManagement.effectivePermissionsTableLabelSelected', "Effective permissions for: {0}", name); }
@@ -111,6 +115,13 @@ export function OpenDropDatabaseDialogError(error: string): string {
 	}, "An error occurred while opening the drop database dialog. {0}", error);
 }
 
+export function OpenAttachDatabaseDialogError(error: string): string {
+	return localize({
+		key: 'objectManagement.openAttachDatabaseDialogError',
+		comment: ['{0}: error message.']
+	}, "An error occurred while opening the attach database dialog. {0}", error);
+}
+
 export function OpenObjectPropertiesDialogError(objectType: string, objectName: string, error: string): string {
 	return localize({
 		key: 'objectManagement.openObjectPropertiesDialogError',
@@ -158,6 +169,7 @@ export const GeneralSectionHeader = localize('objectManagement.generalSectionHea
 export const AdvancedSectionHeader = localize('objectManagement.advancedSectionHeader', "Advanced");
 export const OptionsSectionHeader = localize('objectManagement.optionsSectionHeader', "Options");
 export const FilesSectionHeader = localize('objectManagement.optionsSectionHeader', "Files");
+export const FileGroupsSectionHeader = localize('objectManagement.filegroupsSectionHeader', "Filegroups");
 export const PasswordText = localize('objectManagement.passwordLabel', "Password");
 export const ConfirmPasswordText = localize('objectManagement.confirmPasswordLabel', "Confirm password");
 export const EnabledText = localize('objectManagement.enabledLabel', "Enabled");
@@ -192,6 +204,15 @@ export const DatabaseFilePathLabel = localize('objectManagement.databaseFilePath
 export const DatabaseFileGroupLabel = localize('objectManagement.databaseFileGroup', "File Group");
 export const DetachDatabaseOptions = localize('objectManagement.detachDatabaseOptions', "Detach Database Options");
 export const DetachButtonLabel = localize('objectManagement.detachButtonLabel', "Detach");
+export const AttachDatabaseDialogTitle = localize('objectManagement.attachDatabaseDialogTitle', "Attach Database (Preview)");
+export const NoDatabaseFilesError = localize('objectManagement.doDatabaseFilesError', "No database files were specified to attach to the server.");
+export const DatabasesToAttachLabel = localize('objectManagement.databasesToAttach', "Databases to Attach");
+export const AssociatedFilesLabel = localize('objectManagement.associatedDatabaseFiles', "Associated Database Files");
+export const MdfFileLocation = localize('objectManagement.mdfFileLocation', "MDF File Location");
+export const DatabaseFilesFilterLabel = localize('objectManagement.databaseFilesFilterLabel', "Database Data Files")
+export const DatabaseName = localize('objectManagement.databaseName', "DB Name");
+export const AttachAsText = localize('objectManagement.attachAsText', "Attach As");
+export const AttachButtonLabel = localize('objectManagement.attachButtonLabel', "Attach");
 export const DropDatabaseDialogTitle = (dbName: string) => localize('objectManagement.dropDatabaseDialogTitle', "Drop Database - {0} (Preview)", dbName);
 export const DropButtonLabel = localize('objectManagement.dropButtonLabel', "Drop");
 export const DropDatabaseOptions = localize('objectManagement.dropDatabaseOptions', "Drop Database Options");
@@ -384,6 +405,17 @@ export const FilegrowthLimitError = localize('objectManagement.databasePropertie
 export const RowsDataFileType = localize('objectManagement.databaseProperties.rowsDataFileType', "ROWS Data");
 export const LogFiletype = localize('objectManagement.databaseProperties.logfiletype', "LOG");
 export const FilestreamFileType = localize('objectManagement.databaseProperties.filestreamFileType', "FILESTREAM Data");
+export const RowsFileGroupsSectionText = localize('objectManagement.databaseProperties.rowsFileGroupsSectionText', "Rows");
+export const FileStreamFileGroupsSectionText = localize('objectManagement.databaseProperties.fileStreamFileGroupsSectionText', "FileStream");
+export const MemoryOptimizedFileGroupsSectionText = localize('objectManagement.databaseProperties.memoryOptimizedFileGroupsSectionText', "Memory Optimized Data");
+export const FilesText = localize('objectManagement.databaseProperties.filesText', "Files");
+export const ReadOnlyText = localize('objectManagement.databaseProperties.readOnlyText', "Read-Only");
+export const DefaultText = localize('objectManagement.databaseProperties.defaultText', "Default");
+export const AutogrowAllFilesText = localize('objectManagement.databaseProperties.autogrowAllFilesText', "Autogrow All Files");
+export const FilestreamFilesText = localize('objectManagement.databaseProperties.filestreamFilesText', "Filestream Files");
+export const AddFilegroupText = localize('objectManagement.databaseProperties.addFilegroupButtonText', "Add Filegroup");
+export const FilegroupExistsError = (name: string) => localize('objectManagement.databaseProperties.FilegroupExistsError', "File group '{0}' could not be added to the collection, because it already exists.", name);
+export const EmptyFilegroupNameError = localize('objectManagement.databaseProperties.emptyFilegroupNameError', "Cannot use empty object names for filegroups.");
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
