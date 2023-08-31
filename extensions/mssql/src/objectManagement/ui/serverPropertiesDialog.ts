@@ -8,7 +8,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { DefaultColumnCheckboxWidth } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { ViewGeneralServerPropertiesDocUrl, ViewMemoryServerPropertiesDocUrl, ViewProcessorsServerPropertiesDocUrl, ViewSecurityServerPropertiesDocUrl } from '../constants';
+import * as constants from '../constants';
 import { Server, ServerViewInfo, NumaNode, AffinityType, ServerLoginMode, AuditLevel } from '../interfaces';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
@@ -60,6 +60,15 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private successfulLoginsOnlyRadioButton: azdata.RadioButtonComponent;
 	private bothFailedAndSuccessfulLoginsRadioButton: azdata.RadioButtonComponent;
 
+	private databaseSettingsTab: azdata.Tab;
+	private readonly databaseSettingsTabId: string = 'databaseSettingsId';
+	private databaseSettingsSection: azdata.GroupContainer;
+	private compressBackupCheckbox: azdata.CheckBoxComponent;
+	private backupChecksumCheckbox: azdata.CheckBoxComponent;
+	private dataLocationInput: azdata.InputBoxComponent;
+	private logLocationInput: azdata.InputBoxComponent;
+	private backupLocationInput: azdata.InputBoxComponent;
+
 	private activeTabId: string;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
@@ -70,14 +79,20 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		let helpUrl = '';
 		switch (this.activeTabId) {
 			case this.generalTabId:
-				helpUrl = ViewGeneralServerPropertiesDocUrl;
+				helpUrl = constants.ViewGeneralServerPropertiesDocUrl;
 				break;
 			case this.memoryTabId:
-				helpUrl = ViewMemoryServerPropertiesDocUrl;
+				helpUrl = constants.ViewMemoryServerPropertiesDocUrl;
+				break;
 			case this.processorsTabId:
-				helpUrl = ViewProcessorsServerPropertiesDocUrl;
+				helpUrl = constants.ViewProcessorsServerPropertiesDocUrl;
+				break;
 			case this.securityTabId:
-				helpUrl = ViewSecurityServerPropertiesDocUrl;
+				helpUrl = constants.ViewSecurityServerPropertiesDocUrl;
+				break;
+			case this.databaseSettingsTabId:
+				helpUrl = constants.ViewDatabaseSettingsPropertiesDocUrl;
+				break;
 			default:
 				break;
 		}
@@ -91,7 +106,8 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.initializeMemorySection();
 		this.initializeProcessorsSection();
 		this.initializeSecuritySection();
-		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab, this.processorsTab, this.securityTab] };
+		this.initializeDatabaseSettingsSection();
+		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab, this.processorsTab, this.securityTab, this.databaseSettingsTab] };
 		const serverPropertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 			.withTabs([serverPropertiesTabGroup])
 			.withProps({
@@ -498,5 +514,97 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		if (this.bothFailedAndSuccessfulLoginsRadioButton.checked) {
 			this.objectInfo.loginAuditing = AuditLevel.All;
 		}
+	}
+
+	private initializeDatabaseSettingsSection(): void {
+		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance;
+		const dataLocationInputboxProps: azdata.InputBoxProperties = {
+			ariaLabel: localizedConstants.dataLocationText,
+			enabled: isEnabled,
+			value: this.objectInfo.dataLocation,
+			required: true
+		};
+		const logLocationInputboxProps: azdata.InputBoxProperties = {
+			ariaLabel: localizedConstants.logLocationText,
+			enabled: isEnabled,
+			value: this.objectInfo.logLocation,
+			required: true
+		};
+		const backupLocationInputboxProps: azdata.InputBoxProperties = {
+			ariaLabel: localizedConstants.backupLocationText,
+			enabled: isEnabled,
+			value: this.objectInfo.backupLocation,
+			required: true
+		};
+		this.compressBackupCheckbox = this.createCheckbox(localizedConstants.compressBackupText, async (newValue) => {
+			this.objectInfo.checkCompressBackup = newValue;
+		}, this.objectInfo.checkCompressBackup);
+
+		this.backupChecksumCheckbox = this.createCheckbox(localizedConstants.backupChecksumText, async (newValue) => {
+			this.objectInfo.checkBackupChecksum = newValue;
+		}, this.objectInfo.checkBackupChecksum);
+
+		const checkBoxContainer = this.createGroup(localizedConstants.backupAndRestoreText, [this.compressBackupCheckbox, this.backupChecksumCheckbox], false);
+
+		this.dataLocationInput = this.createInputBox(async (newValue) => {
+			this.objectInfo.dataLocation = newValue;
+		}, dataLocationInputboxProps);
+		const dataLocationButton = this.createBrowseButton(async () => {
+			const newPath = await this.selectFolder(this.objectInfo.dataLocation);
+			this.dataLocationInput.value = newPath;
+			this.objectInfo.dataLocation = newPath;
+		}, isEnabled);
+		const dataLocationInputContainer = this.createLabelInputContainer(localizedConstants.dataLocationText, [this.dataLocationInput, dataLocationButton])
+
+		this.logLocationInput = this.createInputBox(async (newValue) => {
+			this.objectInfo.logLocation = newValue;
+		}, logLocationInputboxProps);
+		const logLocationButton = this.createBrowseButton(async () => {
+			const newPath = await this.selectFolder(this.objectInfo.logLocation);
+			this.logLocationInput.value = newPath;
+			this.objectInfo.logLocation = newPath;
+		}, isEnabled);
+		const logLocationInputContainer = this.createLabelInputContainer(localizedConstants.logLocationText, [this.logLocationInput, logLocationButton])
+
+		this.backupLocationInput = this.createInputBox(async (newValue) => {
+			this.objectInfo.backupLocation = newValue;
+		}, backupLocationInputboxProps);
+		const backupLocationButton = this.createBrowseButton(async () => {
+			const newPath = await this.selectFolder(this.objectInfo.backupLocation);
+			this.backupLocationInput.value = newPath;
+			this.objectInfo.backupLocation = newPath;
+		}, isEnabled);
+		const backupLocationInputContainer = this.createLabelInputContainer(localizedConstants.backupLocationText, [this.backupLocationInput, backupLocationButton])
+
+		const defaultLocationsContainer = this.createGroup(localizedConstants.defaultLocationsLabel, [
+			dataLocationInputContainer,
+			logLocationInputContainer,
+			backupLocationInputContainer
+		], false);
+
+		this.databaseSettingsSection = this.createGroup('', [
+			checkBoxContainer,
+			defaultLocationsContainer
+		], false);
+
+		this.databaseSettingsTab = this.createTab(this.databaseSettingsTabId, localizedConstants.databaseSettingsText, this.databaseSettingsSection);
+	}
+
+	public async selectFolder(location: string): Promise<string | undefined> {
+		const allFilesFilter = localizedConstants.allFiles;
+		let filter: any = {};
+		filter[allFilesFilter] = '*';
+		let uris = await vscode.window.showOpenDialog({
+			filters: filter,
+			canSelectFiles: false,
+			canSelectMany: false,
+			canSelectFolders: true,
+			defaultUri: vscode.Uri.file(location),
+			openLabel: localizedConstants.labelSelectFolder
+		});
+		if (uris && uris.length > 0) {
+			return uris[0].fsPath;
+		}
+		return undefined;
 	}
 }

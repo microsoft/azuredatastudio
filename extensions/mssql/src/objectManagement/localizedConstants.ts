@@ -51,6 +51,8 @@ export const AddFileAriaLabel = localize('objectManagement.addFileText', "Add da
 export const RemoveFileAriaLabel = localize('objectManagement.removeFileText', "Remove database file");
 export const CreateObjectLabel = localize('objectManagement.createObjectLabel', "Create");
 export const ApplyUpdatesLabel = localize('objectManagement.applyUpdatesLabel', "Apply");
+export const allFiles = localize('objectManagement.allFiles', "All Files");
+export const labelSelectFolder = localize('objectManagement.labelSelectFolder', "Select Folder");
 export const DataFileLabel = localize('objectManagement.dataFileLabel', "Data");
 export const LogFileLabel = localize('objectManagement.logFileLabel', "Log");
 
@@ -318,6 +320,14 @@ export const failedLoginsOnlyText = localize('objectManagement.failedLoginsOnlyT
 export const successfulLoginsOnlyText = localize('objectManagement.successfulLoginsOnlyText', "Successful logins only");
 export const bothFailedAndSuccessfulLoginsText = localize('objectManagement.bothFailedAndSuccessfulLoginsText', "Both failed and successful logins");
 export const needToRestartServer = localize('objectManagement.needToRestartServer', "Changes require server restart in order to be effective");
+export const logLocationText = localize('objectManagement.logLocationText', "Log");
+export const dataLocationText = localize('objectManagement.dataLocationText', "Data");
+export const backupLocationText = localize('objectManagement.backupLocationText', "Backup");
+export const defaultLocationsLabel = localize('objectManagement.defaultLocationsLabel', "Database default locations");
+export const databaseSettingsText = localize('objectManagement.databaseSettings', "Database Settings");
+export const compressBackupText = localize('objectManagement.compressBackupText', "Compress Backup");
+export const backupChecksumText = localize('objectManagement.backupChecksumText', "Backup checksum");
+export const backupAndRestoreText = localize('objectManagement.backupAndRestoreText', "Backup and Restore");
 
 //Database properties Dialog
 export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");
