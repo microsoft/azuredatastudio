@@ -16,6 +16,8 @@ export interface NewDatabaseFileDialogOptions {
 	title: string;
 	viewInfo: DatabaseViewInfo;
 	files: DatabaseFile[];
+	rowFilegroups: string[];
+	filestreamFilegroups: string[];
 	isNewFile: boolean;
 	isEditingNewFile: boolean;
 	databaseFile: DatabaseFile;
@@ -144,7 +146,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		// Filegroup
 		this.fileGroupDropdown = this.createDropdown(localizedConstants.FilegroupText, async (newValue) => {
 			this.result.fileGroup = newValue;
-		}, this.options.viewInfo.rowDataFileGroupsOptions, this.options.databaseFile.fileGroup, this.isEditingFile, DefaultInputWidth);
+		}, this.options.rowFilegroups, this.options.databaseFile.fileGroup, this.isEditingFile, DefaultInputWidth);
 		const sizeContainer = this.createLabelInputContainer(localizedConstants.FilegroupText, this.fileGroupDropdown);
 		containers.push(sizeContainer);
 
@@ -315,7 +317,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	 */
 	private async updateOptionsForSelectedFileType(selectedOption: string): Promise<void> {
 		// Row Data defaults
-		let fileGroupDdOptions = this.options.viewInfo.rowDataFileGroupsOptions;
+		let fileGroupDdOptions = this.options.rowFilegroups;
 		let fileGroupDdValue = this.result.fileGroup;
 		let visibility = 'visible';
 		let maxSizeGroupMarginTop = '0px';
@@ -330,7 +332,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		}
 		// File Stream
 		else if (selectedOption === localizedConstants.FilestreamFileType) {
-			fileGroupDdOptions = this.options.viewInfo.fileStreamFileGroupsOptions;
+			fileGroupDdOptions = this.options.filestreamFilegroups;
 			fileGroupDdValue = this.result.fileGroup;
 			visibility = 'hidden';
 			maxSizeGroupMarginTop = '-130px';

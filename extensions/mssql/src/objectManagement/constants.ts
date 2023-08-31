@@ -40,6 +40,7 @@ export const DropDatabaseDocUrl = 'https://learn.microsoft.com/sql/t-sql/stateme
 export const DatabaseScopedConfigurationPropertiesDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/alter-database-scoped-configuration-transact-sql'
 export const QueryStorePropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-query-store-page'
 export const DatabaseFilesPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-files-page'
+export const DatabaseFileGroupsPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-filegroups-page'
 
 export const enum TelemetryActions {
 	CreateObject = 'CreateObject',
