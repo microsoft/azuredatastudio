@@ -90,6 +90,9 @@
     <trans-unit id="objectManagement.advancedSectionHeader">
       <source xml:lang="en">Advanced</source>
     </trans-unit>
+    <trans-unit id="objectManagement.allFiles">
+      <source xml:lang="en">All Files</source>
+    </trans-unit>
     <trans-unit id="objectManagement.ObjectSelectionMethodDialog_AllObjectsOfSchema">
       <source xml:lang="en">All objects belonging to a schema</source>
     </trans-unit>
@@ -198,8 +201,17 @@
     <trans-unit id="objectManagement.databaseProperties.backupSectionHeader">
       <source xml:lang="en">Backup</source>
     </trans-unit>
+    <trans-unit id="objectManagement.backupLocationText">
+      <source xml:lang="en">Backup</source>
+    </trans-unit>
     <trans-unit id="objectManagement.backupRedundancyLabel">
       <source xml:lang="en">Backup Storage Redundancy</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupAndRestoreText">
+      <source xml:lang="en">Backup and Restore</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupChecksumText">
+      <source xml:lang="en">Backup checksum</source>
     </trans-unit>
     <trans-unit id="objectManagement.bothFailedAndSuccessfulLoginsText">
       <source xml:lang="en">Both failed and successful logins</source>
@@ -231,6 +243,9 @@
     <trans-unit id="objectManagement.compatibilityLevelLabel">
       <source xml:lang="en">Compatibility Level</source>
     </trans-unit>
+    <trans-unit id="objectManagement.compressBackupText">
+      <source xml:lang="en">Compress Backup</source>
+    </trans-unit>
     <trans-unit id="objectManagement.configureSLOSectionHeader">
       <source xml:lang="en">Configure SLO</source>
     </trans-unit>
@@ -258,6 +273,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.databaseName">
       <source xml:lang="en">DB Name</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.dataLocationText">
+      <source xml:lang="en">Data</source>
     </trans-unit>
     <trans-unit id="objectManagement.dataFileLabel">
       <source xml:lang="en">Data</source>
@@ -295,8 +313,14 @@
     <trans-unit id="objectManagement.databaseProperties.databaseScopedOptionsColumnHeader">
       <source xml:lang="en">Database Scoped Options</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseSettings">
+      <source xml:lang="en">Database Settings</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.databaseStateText">
       <source xml:lang="en">Database State</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.defaultLocationsLabel">
+      <source xml:lang="en">Database default locations</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.databaseFilesText">
       <source xml:lang="en">Database files</source>
@@ -508,6 +532,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.loadingObjectsLabel">
       <source xml:lang="en">Loading objects…</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.logLocationText">
+      <source xml:lang="en">Log</source>
     </trans-unit>
     <trans-unit id="objectManagement.logFileLabel">
       <source xml:lang="en">Log</source>
@@ -752,6 +779,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.databaseRole.SelectOwnerDialogTitle">
       <source xml:lang="en">Select Database Role Owner</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.labelSelectFolder">
+      <source xml:lang="en">Select Folder</source>
     </trans-unit>
     <trans-unit id="objectManagement.selectSecurablesDialogTitle">
       <source xml:lang="en">Select Securables</source>
