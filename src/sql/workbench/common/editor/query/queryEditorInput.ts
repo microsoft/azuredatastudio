@@ -303,7 +303,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		this.state.connecting = false;
 	}
 
-	public onConnectSuccess(params?: INewConnectionParams): void {
+	public async onConnectSuccess(params?: INewConnectionParams): Promise<void> {
 		this.state.connected = true;
 		this.state.connecting = false;
 
@@ -325,24 +325,22 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		this.contextualizeEditorForCopilot();
 	}
 
-	private contextualizeEditorForCopilot(): void {
+	private async contextualizeEditorForCopilot(): Promise<void> {
 		// Don't need to take any actions if contextualization is not enabled and can return
 		if (!this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled) {
 			return;
 		}
 
-		this.serverContextualizationService.getServerContextualization(this.uri)
-			.then(async getServerContextualizationResult => {
-				if (getServerContextualizationResult.context) {
-					await this.serverContextualizationService.sendServerContextualizationToCopilot(getServerContextualizationResult.context);
-				}
-				else {
-					const generateServerContextualizationResult = await this.serverContextualizationService.generateServerContextualization(this.uri);
-					if (generateServerContextualizationResult.context) {
-						await this.serverContextualizationService.sendServerContextualizationToCopilot(generateServerContextualizationResult.context);
-					}
-				}
-			});
+		const getServerContextualizationResult = await this.serverContextualizationService.getServerContextualization(this.uri);
+		if (getServerContextualizationResult.context) {
+			await this.serverContextualizationService.sendServerContextualizationToCopilot(getServerContextualizationResult.context);
+		}
+		else {
+			const generateServerContextualizationResult = await this.serverContextualizationService.generateServerContextualization(this.uri);
+			if (generateServerContextualizationResult.context) {
+				await this.serverContextualizationService.sendServerContextualizationToCopilot(generateServerContextualizationResult.context);
+			}
+		}
 	}
 
 	public onDisconnect(): void {
