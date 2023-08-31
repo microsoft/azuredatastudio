@@ -61,12 +61,10 @@ export class ServerContextualizationService extends Disposable implements IServe
 	 * @param ownerUri The URI of the connection to generate context for.
 	 */
 	public async generateServerContextualization(ownerUri: string): Promise<azdata.contextualization.GenerateServerContextualizationResult> {
-		const copilotExt = await this._extensionService.getExtension('github.copilot');
-		const isContextualizationEnabled = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled;
-
+		const isContextualizationNeeded = await this.isContextualizationNeeded();
 		const providerName = this._connectionManagementService.getProviderIdFromUri(ownerUri);
 		const handler = this.getProvider(providerName);
-		if (copilotExt && isContextualizationEnabled && handler) {
+		if (isContextualizationNeeded && handler) {
 			return await handler.generateServerContextualization(ownerUri);
 		}
 		else {
@@ -81,12 +79,10 @@ export class ServerContextualizationService extends Disposable implements IServe
 	 * @param ownerUri The URI of the connection to get context for.
 	 */
 	public async getServerContextualization(ownerUri: string): Promise<azdata.contextualization.GetServerContextualizationResult> {
-		const copilotExt = await this._extensionService.getExtension('github.copilot');
-		const isContextualizationEnabled = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled;
-
+		const isContextualizationNeeded = await this.isContextualizationNeeded();
 		const providerName = this._connectionManagementService.getProviderIdFromUri(ownerUri);
 		const handler = this.getProvider(providerName);
-		if (copilotExt && isContextualizationEnabled && handler) {
+		if (isContextualizationNeeded && handler) {
 			return await handler.getServerContextualization(ownerUri);
 		}
 		else {
@@ -96,13 +92,29 @@ export class ServerContextualizationService extends Disposable implements IServe
 		}
 	}
 
+	/**
+	 * Sends the provided context over to copilot, so that it can be used to generate improved suggestions.
+	 * @param serverContext The context to be sent over to Copilot
+	 */
 	public async sendServerContextualizationToCopilot(serverContext: string | undefined): Promise<void> {
-		const copilotExt = await this._extensionService.getExtension('github.copilot');
-		if (copilotExt && serverContext && this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled) {
+		const isContextualizationNeeded = await this.isContextualizationNeeded();
+		if (isContextualizationNeeded && serverContext) {
 			// LEWISSANCHEZ TODO: Find way to set context on untitled query editor files. Need to save first for Copilot status to say "Has Context"
 			await this._commandService.executeCommand('github.copilot.provideContext', '**/*.sql', {
 				value: serverContext
 			});
 		}
+	}
+
+	/**
+	 * Checks if contextualization is needed. This is based on whether the Copilot extension is installed and the GitHub Copilot
+	 * contextualization setting is enabled.
+	 * @returns A promise that resolves to true if contextualization is needed, false otherwise.
+	 */
+	private async isContextualizationNeeded(): Promise<boolean> {
+		const copilotExt = await this._extensionService.getExtension('github.copilot');
+		const isContextualizationEnabled = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled
+
+		return (copilotExt && isContextualizationEnabled);
 	}
 }
