@@ -81,14 +81,6 @@ export const XEVENTS_ASSESSMENT_DESCRIPTION = localize('sql.migration.database.a
 export const XEVENTS_ASSESSMENT_HELPLINK = localize('sql.migration.database.assessment.xevents.link', "Learn more");
 export const XEVENTS_ASSESSMENT_OPEN_FOLDER = localize('sql.migration.database.assessment.xevents.instructions', "Select a folder where extended events session files (.xel and .xem) are stored");
 
-//SKU Recommendations - Data Collection
-export const START_DATACOLLECTION_BUTTON_LABEL = localize('sql.migration.start.datacollection.button.label', "Start data collection");
-export const STOP_DATACOLLECTION_BUTTON_LABEL = localize('sql.migration.stop.datacollection.button.label', "Stop data collection");
-export const IMPORT_PERFORMANCEDATA_BUTTON_LABEL = localize('sql.migration.import.performancedata.button.label', "Import performance data");
-export const RECOMMENDATION_PARAMETERS_BUTTON_LABEL = localize('sql.migration.recommendation.parameters.button.label', "Recommendation parameters");
-export const REFRESH_SKU_RECOMMENDATION_BUTTON_LABEL = localize('sql.migration.refresh.sku.recommendation.button.label', "Refresh");
-
-
 // Assessment results and recommendations
 export const ASSESSMENT_RESULTS_AND_RECOMMENDATIONS_PAGE_TITLE = localize('sql.migration.assessment.results.and.recommendations.title', "Assessment results and recommendations");
 export const ASSESSMENT_BLOCKING_ISSUE_TITLE = localize('sql.migration.assessments.blocking.issue', 'This is a blocking issue that will prevent the database migration from succeeding.');
@@ -179,8 +171,10 @@ export const RECOMMENDED_CONFIGURATION = localize('sql.migration.sku.recommended
 export const GET_AZURE_RECOMMENDATION = localize('sql.migration.sku.get.recommendation', "Get Azure recommendation");
 export const REFINE_AZURE_RECOMMENDATION = localize('sql.migration.sku.refine.recommendation', "Refine Azure recommendation");
 export const REFRESH_AZURE_RECOMMENDATION = localize('sql.migration.sku.refresh.recommendation', "Refresh recommendation");
+export const START_PERFORMANCE_COLLECTION = localize('sql.migration.sku.start.performance.collection', "Start data collection");
 export const STOP_PERFORMANCE_COLLECTION = localize('sql.migration.sku.stop.performance.collection', "Stop data collection");
 export const RESTART_PERFORMANCE_COLLECTION = localize('sql.migration.sku.restart.performance.collection', "Restart data collection");
+export const IMPORT_PERFORMANCE_DATA = localize('sql.migration.sku.import.performance.data', "Import performance data");
 // allow-any-unicode-next-line
 export const AZURE_RECOMMENDATION_CARD_NOT_ENABLED = localize('sql.migration.sku.card.azureRecommendation.notEnabled', "Azure recommendation is not available. Click “Get Azure recommendation” button below");
 export const AZURE_RECOMMENDATION_CARD_IN_PROGRESS = localize('sql.migration.sku.card.azureRecommendation.inProgress', "Azure recommendation will be displayed once data collection is complete.");

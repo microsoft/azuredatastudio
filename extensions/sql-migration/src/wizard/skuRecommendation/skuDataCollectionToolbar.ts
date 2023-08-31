@@ -17,19 +17,11 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 
 		toolbar.addToolbarItems([
 			<azdata.ToolbarComponent>{ component: this.createRefreshSKURecommendationButton(view), toolbarSeparatorAfter: true },
-			<azdata.ToolbarComponent>{ component: this.createStartDataCollectionButton(view), toolbarSeparatorAfter: false },
-			<azdata.ToolbarComponent>{ component: this.createStopDataCollectionButton(view), toolbarSeparatorAfter: false },
-			<azdata.ToolbarComponent>{ component: this.createImportPerformanceButton(view), toolbarSeparatorAfter: true },
+			<azdata.ToolbarComponent>{ component: this.createStartPerformanceCollectionButton(view), toolbarSeparatorAfter: false },
+			<azdata.ToolbarComponent>{ component: this.createStopPerformanceCollectionButton(view), toolbarSeparatorAfter: false },
+			<azdata.ToolbarComponent>{ component: this.createImportPerformanceDataButton(view), toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.createRecommendationParametersButton(view), toolbarSeparatorAfter: false },
 		]);
-
-		// commenting this CSS Properties, we can edit this as per requirement.
-		// toolbar.withProps({
-		// 	CSSStyles: {
-		// 		'margin': '0',
-		// 		'padding': '0',
-		// 	}
-		// });
 
 		return toolbar.component();
 	}
@@ -38,11 +30,11 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		const refreshSKURecommendationButton = view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
-				label: constants.REFRESH_SKU_RECOMMENDATION_BUTTON_LABEL,
+				label: constants.REFRESH,
 				height: 36,
 				iconHeight: 16,
 				iconWidth: 16,
-				iconPath: IconPathHelper.newRefresh,
+				iconPath: IconPathHelper.refresh,
 				CSSStyles: {
 					...styles.TOOLBAR_CSS
 				}
@@ -51,11 +43,11 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		return refreshSKURecommendationButton;
 	}
 
-	private createStartDataCollectionButton(view: azdata.ModelView): azdata.ButtonComponent {
-		const startDataCollectionButton = view.modelBuilder.button()
+	private createStartPerformanceCollectionButton(view: azdata.ModelView): azdata.ButtonComponent {
+		const startPerformanceCollectionButton = view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
-				label: constants.START_DATACOLLECTION_BUTTON_LABEL,
+				label: constants.START_PERFORMANCE_COLLECTION,
 				width: 146,
 				height: 36,
 				iconHeight: 16,
@@ -66,14 +58,14 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 				}
 			}).component();
 		// TODO - implement onDidClick and add to disposables
-		return startDataCollectionButton;
+		return startPerformanceCollectionButton;
 	}
 
-	private createStopDataCollectionButton(view: azdata.ModelView): azdata.ButtonComponent {
-		const stopDataCollectionButton = view.modelBuilder.button()
+	private createStopPerformanceCollectionButton(view: azdata.ModelView): azdata.ButtonComponent {
+		const stopPerformanceCollectionButton = view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
-				label: constants.STOP_DATACOLLECTION_BUTTON_LABEL,
+				label: constants.STOP_PERFORMANCE_COLLECTION,
 				height: 36,
 				iconHeight: 16,
 				iconWidth: 16,
@@ -82,15 +74,16 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 					...styles.TOOLBAR_CSS
 				}
 			}).component();
+		stopPerformanceCollectionButton.enabled = false;
 		// TODO - implement onDidClick and add to disposables
-		return stopDataCollectionButton;
+		return stopPerformanceCollectionButton;
 	}
 
-	private createImportPerformanceButton(view: azdata.ModelView): azdata.ButtonComponent {
-		const importPerformanceButton = view.modelBuilder.button()
+	private createImportPerformanceDataButton(view: azdata.ModelView): azdata.ButtonComponent {
+		const importPerformanceDataButton = view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
-				label: constants.IMPORT_PERFORMANCEDATA_BUTTON_LABEL,
+				label: constants.IMPORT_PERFORMANCE_DATA,
 				height: 36,
 				iconHeight: 16,
 				iconWidth: 16,
@@ -100,14 +93,14 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 				}
 			}).component();
 		// TODO - implement onDidClick and add to disposables
-		return importPerformanceButton;
+		return importPerformanceDataButton;
 	}
 
 	private createRecommendationParametersButton(view: azdata.ModelView): azdata.ButtonComponent {
 		const recommendationParametersButton = view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
-				label: constants.RECOMMENDATION_PARAMETERS_BUTTON_LABEL,
+				label: constants.RECOMMENDATION_PARAMETERS,
 				height: 36,
 				iconHeight: 16,
 				iconWidth: 16,

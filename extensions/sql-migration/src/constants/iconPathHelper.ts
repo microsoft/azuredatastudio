@@ -51,7 +51,6 @@ export class IconPathHelper {
 	public static notFound: IconPath;
 	public static startDataCollection: IconPath;
 	public static stopDataCollection: IconPath;
-	public static newRefresh: IconPath;
 	public static import: IconPath;
 	public static settings: IconPath;
 
@@ -219,10 +218,6 @@ export class IconPathHelper {
 		IconPathHelper.import = {
 			light: context.asAbsolutePath('images/import.svg'),
 			dark: context.asAbsolutePath('images/import.svg')
-		};
-		IconPathHelper.newRefresh = {
-			light: context.asAbsolutePath('images/newRefresh.svg'),
-			dark: context.asAbsolutePath('images/newRefresh.svg')
 		};
 		IconPathHelper.settings = {
 			light: context.asAbsolutePath('images/settings.svg'),
