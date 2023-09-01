@@ -1652,6 +1652,7 @@ export namespace SearchObjectRequest {
 
 export interface DetachDatabaseRequestParams {
 	connectionUri: string;
+	database: string;
 	objectUrn: string;
 	dropConnections: boolean;
 	updateStatistics: boolean;
@@ -1664,6 +1665,7 @@ export namespace DetachDatabaseRequest {
 
 export interface DropDatabaseRequestParams {
 	connectionUri: string;
+	database: string;
 	objectUrn: string;
 	dropConnections: boolean;
 	deleteBackupHistory: boolean;
