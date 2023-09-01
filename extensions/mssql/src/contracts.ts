@@ -1575,7 +1575,7 @@ export namespace GetServerContextualizationRequest {
 	export const type = new RequestType<ServerContextualizationParams, azdata.contextualization.GetServerContextualizationResult, void, void>('metadata/getServerContext');
 }
 
-// ------------------------------- < Database Server Contextualization API > ------------------------------------
+// ------------------------------- < Server Contextualization API > ------------------------------------
 
 // ------------------------------- < Object Management > ------------------------------------
 export interface InitializeViewRequestParams {
