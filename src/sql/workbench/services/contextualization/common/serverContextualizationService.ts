@@ -75,21 +75,21 @@ export class ServerContextualizationService extends Disposable implements IServe
 
 		const getServerContextualizationResult = await this.getServerContextualization(uri);
 		if (getServerContextualizationResult.context) {
-			this._logService.info('Server contextualization was previously generated for the URI connection, so sending that to Copilot for context.');
+			this._logService.info(`Server contextualization was previously generated for the URI (${uri}) connection, so sending that to Copilot for context.`);
 
 			await this.sendServerContextualizationToCopilot(getServerContextualizationResult.context);
 		}
 		else {
-			this._logService.info('Server contextualization was not previously generated for the URI connection. Generating now...');
+			this._logService.info(`Server contextualization was not previously generated for the URI (${uri}) connection. Generating now...`);
 
 			const generateServerContextualizationResult = await this.generateServerContextualization(uri);
 			if (generateServerContextualizationResult.context) {
-				this._logService.info('Server contextualization was generated for the URI connection, so sending that to Copilot.');
+				this._logService.info(`Server contextualization was generated for the URI (${uri}) connection, so sending that to Copilot.`);
 
 				await this.sendServerContextualizationToCopilot(generateServerContextualizationResult.context);
 			}
 			else {
-				this._logService.warn('Server contextualization was not generated for the URI connection, so no context will be sent to Copilot.');
+				this._logService.warn(`Server contextualization was not generated for the URI (${uri}) connection, so no context will be sent to Copilot.`);
 			}
 		}
 	}
@@ -158,7 +158,14 @@ export class ServerContextualizationService extends Disposable implements IServe
 	 */
 	private async isContextualizationNeeded(): Promise<boolean> {
 		const copilotExt = await this._extensionService.getExtension('github.copilot');
+		if (!copilotExt) {
+			this._logService.info('GitHub Copilot extension is not installed, so contextualization is not needed.');
+		}
+
 		const isContextualizationEnabled = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled
+		if (!isContextualizationEnabled) {
+			this._logService.info('GitHub Copilot contextualization is disabled, so contextualization is not needed.');
+		}
 
 		return (copilotExt && isContextualizationEnabled);
 	}
