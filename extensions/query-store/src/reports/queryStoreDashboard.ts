@@ -3,82 +3,51 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-// import * as path from 'path';
-// import * as utils from '../common/utils';
-// import * as constants from '../common/constants';
+import * as constants from '../common/constants';
+import { TopResourceConsumingQueries } from './topResourceConsumingQueries';
+import { OverallResourceConsumption } from './overallResourceConsumption';
 
 export class QueryStoreDashboard {
 	protected editor: azdata.workspace.ModelViewEditor;
 	protected flexModel?: azdata.FlexContainer;
 	protected configureButton?: azdata.ButtonComponent;
 
-	constructor(reportName: string) {
-		this.editor = azdata.workspace.createModelViewEditor(reportName, { retainContextWhenHidden: true, supportsSave: false }, reportName);
+	constructor(private dbName: string, private extensionContext: vscode.ExtensionContext) {
+		this.editor = azdata.workspace.createModelViewEditor(dbName, { retainContextWhenHidden: true, supportsSave: false }, dbName);
 	}
 
 	/**
 	 * Creates and opens the report
 	 */
 	public async open(): Promise<void> {
-		const dashboard = azdata.window.createModelViewDashboard('Overall Resource Consumption - AdventureWorks');
+		// TODO: update title based on selected tab to have the current selected report in editor tab title
+		const dashboard = azdata.window.createModelViewDashboard(constants.queryStoreDashboardTitle(this.dbName));
 		dashboard.registerTabs(async (view: azdata.ModelView) => {
+			const topResourceConsumingQueriesReport = new TopResourceConsumingQueries(this.extensionContext, this.dbName);
+			const overallResourceConsumptionReport = new OverallResourceConsumption(this.extensionContext, this.dbName);
 
-			this.flexModel = <azdata.FlexContainer>view.modelBuilder.flexContainer().component();
-
-			// this.flexModel.addItem(mainContainer, { CSSStyles: { 'width': '100%', 'height': '100%' } });
-
-			this.flexModel.setLayout({
-				flexFlow: 'column',
-				height: '100%'
-			});
-
-			// const input1 = view.modelBuilder.inputBox().withProps({ value: 'input 1' }).component();
-			// const homeTab: azdata.DashboardTab = {
-			// 	id: 'home',
-			// 	toolbar: toolbar,
-			// 	content: input1,
-			// 	title: 'Home',
-			// };
-
-			const topResourceConsumingTabText = view.modelBuilder.inputBox().withProps({ value: 'Top Resource Consuming Queries placeholder', width: '400px' }).component();
+			await Promise.all([topResourceConsumingQueriesReport.createReport(view), overallResourceConsumptionReport.createReport(view)]);
 
 			const topResourceConsumingTab: azdata.DashboardTab = {
 				id: 'TopResourceConsumingTab',
-				content: topResourceConsumingTabText,
-				title: 'Top Resource Consuming Queries'
+				content: topResourceConsumingQueriesReport.flexModel!,
+				title: constants.topResourceConsumingQueries
 			};
-
-			const overallResourceConsumptionTabText = view.modelBuilder.inputBox().withProps({ value: 'Overall Resource Consumption', width: '400px' }).component();
 
 			const overallResourceConsumptionTab: azdata.DashboardTab = {
 				id: 'OverallResourceConsumptionTab',
-				content: overallResourceConsumptionTabText,
-				title: 'Overall Resource Consumption'
-			};
-
-			const oqueriesWithForcedPlansTabText = view.modelBuilder.inputBox().withProps({ value: 'Queries With Forced Plans Placeholder', width: '400px' }).component();
-
-			const queriesWithForcedPlansTab: azdata.DashboardTab = {
-				id: 'QueriesWithForcedPlansTab',
-				content: oqueriesWithForcedPlansTabText,
-				title: 'Queries With Forced Plans'
-			};
-
-			const trackedQueriesTabText = view.modelBuilder.inputBox().withProps({ value: 'Tracked Queries', width: '400px' }).component();
-
-			const trackedQueriesTab: azdata.DashboardTab = {
-				id: 'TrackedQueriesTab',
-				content: trackedQueriesTabText,
-				title: 'Tracked Queries'
+				content: overallResourceConsumptionReport.flexModel!,
+				title: constants.overallResourceConsumption
 			};
 
 			return [
 				overallResourceConsumptionTab,
-				topResourceConsumingTab,
-				queriesWithForcedPlansTab,
-				trackedQueriesTab];
+				topResourceConsumingTab
+			];
 		});
+
 		await dashboard.open();
 	}
 }
