@@ -56,6 +56,7 @@ const dirs = [
 	'extensions/sql-database-projects',
 	'extensions/sql-migration',
 	'extensions/vscode-test-resolver',
+	'extensions/xml-language-features',
 	// {{SQL CARBON EDIT}} - End
 	'remote',
 	'remote/web',
