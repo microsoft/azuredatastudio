@@ -501,6 +501,12 @@ export class ProfilerEditor extends EditorPane {
 			if (savedViewState) {
 				this._profilerTableEditor.restoreViewState(savedViewState);
 			}
+
+			if (this.input.isFileSession && this.input.isSetupPhase) {		// Add loading indicator when opening a new file session
+				this._profilerTableEditor.loadingSpinner.loading = true;
+				this._profilerTableEditor.loadingSpinner.loadingMessage = nls.localize('Loading', "Loading...");
+				this.input.setInitializerPhase(false);
+			}
 		});
 	}
 
@@ -546,7 +552,7 @@ export class ProfilerEditor extends EditorPane {
 			if (this.input.state.isConnected) {
 				this._updateToolbar();
 
-				// Launch the create session dialog if openning a new window.
+				// Launch the create session dialog if opening a new window.
 				let uiState = this._profilerService.getSessionViewState(this.input.id);
 				let previousSessionName = uiState && uiState.previousSessionName;
 				if (!this.input.sessionName && !previousSessionName && !this.input.isFileSession) {
@@ -583,6 +589,8 @@ export class ProfilerEditor extends EditorPane {
 				this._updateToolbar();
 				if (!this.input.isFileSession) {		// skip updating session selector for File sessions to block starting another session from a non-connected file session
 					this._updateSessionSelector();
+				} else {
+					this._profilerTableEditor.loadingSpinner.loading = false;		// Remove the loading indicator when the complete file is read
 				}
 			}
 		}
