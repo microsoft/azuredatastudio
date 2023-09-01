@@ -22,7 +22,7 @@ export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		return true;
 	}
 
-	protected override get taskLabel(): string {
+	protected override get saveChangesTaskLabel(): string {
 		return loc.DetachDatabaseOperationDisplayName(this.options.objectName);
 	}
 

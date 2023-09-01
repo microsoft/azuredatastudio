@@ -62,7 +62,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		await this.objectManagementService.save(this._contextId, this.objectInfo);
 	}
 
-	protected get taskLabel(): string {
+	protected get saveChangesTaskLabel(): string {
 		const typeDisplayName = localizedConstants.getNodeTypeDisplayName(this.options.objectType);
 		return this.options.isNewObject ? localizedConstants.CreateObjectOperationDisplayName(typeDisplayName)
 			: localizedConstants.UpdateObjectOperationDisplayName(typeDisplayName, this.options.objectName);
@@ -71,7 +71,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	protected override async initialize(): Promise<void> {
 		await super.initialize();
 		this.dialogObject.registerOperation({
-			displayName: this.taskLabel,
+			displayName: this.saveChangesTaskLabel,
 			description: '',
 			isCancelable: false,
 			operation: async (operation: azdata.BackgroundOperation): Promise<void> => {

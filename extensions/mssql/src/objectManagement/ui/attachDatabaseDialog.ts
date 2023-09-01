@@ -36,7 +36,7 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		return this._databasesToAttach.length > 0;
 	}
 
-	protected override get taskLabel(): string {
+	protected override get saveChangesTaskLabel(): string {
 		return loc.AttachDatabaseOperationDisplayName(this._databasesToAttach.map(db => db.databaseName));
 	}
 
