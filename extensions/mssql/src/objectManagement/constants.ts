@@ -33,6 +33,7 @@ export const ViewMemoryServerPropertiesDocUrl = 'https://learn.microsoft.com/sql
 export const ViewProcessorsServerPropertiesDocUrl = 'https://learn.microsoft.com/sql/database-engine/configure-windows/server-properties-processors-page';
 export const ViewSecurityServerPropertiesDocUrl = 'https://learn.microsoft.com/sql/database-engine/configure-windows/server-properties-security-page';
 export const ViewDatabaseSettingsPropertiesDocUrl = 'https://learn.microsoft.com/sql/database-engine/configure-windows/server-properties-database-settings-page';
+export const ViewAdvancedServerPropertiesDocUrl = 'https://learn.microsoft.com/sql/database-engine/configure-windows/server-properties-advanced-page';
 export const DetachDatabaseDocUrl = 'https://go.microsoft.com/fwlink/?linkid=2240322';
 export const AttachDatabaseDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/attach-a-database#to-attach-a-database';
 export const DatabaseGeneralPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-general-page';
