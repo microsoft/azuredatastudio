@@ -3,6 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+/*---------------------------------------------------------------------------------------------
+* For Assessement Summary and SKU Recommendation Page.
+* This file contains the code for toolbar at the top of page with buttons for different data
+* collection functionalities.
+-----------------------------------------------------------------------------------------------*/
+
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { IconPathHelper } from '../../constants/iconPathHelper';
@@ -115,7 +121,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 
 	public dispose(): void {
 		// TODO - need to call this at the place where toolbar is initialized
-		this._disposables.forEach(disposable => disposable.dispose());
-		this._disposables.length = 0;
+		this._disposables.forEach(
+			d => { try { d.dispose(); } catch { } });
 	}
 }
