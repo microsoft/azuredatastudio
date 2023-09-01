@@ -10,13 +10,10 @@ import { TopResourceConsumingQueries } from './topResourceConsumingQueries';
 import { OverallResourceConsumption } from './overallResourceConsumption';
 
 export class QueryStoreDashboard {
-	protected editor: azdata.workspace.ModelViewEditor;
 	protected flexModel?: azdata.FlexContainer;
 	protected configureButton?: azdata.ButtonComponent;
 
-	constructor(private dbName: string, private extensionContext: vscode.ExtensionContext) {
-		this.editor = azdata.workspace.createModelViewEditor(dbName, { retainContextWhenHidden: true, supportsSave: false }, dbName);
-	}
+	constructor(private dbName: string, private extensionContext: vscode.ExtensionContext) { }
 
 	/**
 	 * Creates and opens the report
@@ -30,21 +27,21 @@ export class QueryStoreDashboard {
 
 			await Promise.all([topResourceConsumingQueriesReport.createReport(view), overallResourceConsumptionReport.createReport(view)]);
 
-			const topResourceConsumingTab: azdata.DashboardTab = {
-				id: 'TopResourceConsumingTab',
-				content: topResourceConsumingQueriesReport.flexModel!,
+			const topResourceConsumingQueriesTab: azdata.DashboardTab = {
+				id: 'TopResourceConsumingQueriesTab',
+				content: topResourceConsumingQueriesReport.ReportContent!,
 				title: constants.topResourceConsumingQueries
 			};
 
 			const overallResourceConsumptionTab: azdata.DashboardTab = {
 				id: 'OverallResourceConsumptionTab',
-				content: overallResourceConsumptionReport.flexModel!,
+				content: overallResourceConsumptionReport.ReportContent!,
 				title: constants.overallResourceConsumption
 			};
 
 			return [
 				overallResourceConsumptionTab,
-				topResourceConsumingTab
+				topResourceConsumingQueriesTab
 			];
 		});
 

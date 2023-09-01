@@ -11,11 +11,14 @@ import * as constants from '../common/constants';
 import { ConfigureDialog } from '../settings/configureDialog';
 
 export abstract class BaseQueryStoreReport {
-	public flexModel?: azdata.FlexContainer;
+	protected flexModel?: azdata.FlexContainer;
 	protected configureDialog?: ConfigureDialog;
 	protected configureButton?: azdata.ButtonComponent;
 
-	constructor(private reportTitle: string, protected resizeable: boolean, private extensionContext: vscode.ExtensionContext) {
+	constructor(private reportTitle: string, protected resizeable: boolean, private extensionContext: vscode.ExtensionContext) { }
+
+	public get ReportContent(): azdata.FlexContainer | undefined {
+		return this.flexModel;
 	}
 
 	/**

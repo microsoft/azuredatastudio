@@ -39,13 +39,7 @@
       }
     ],
     "menus": {
-      "objectExplorer/item/context": [
-        {
-          "command": "queryStore.openQueryStoreDashboard",
-          "group": "queryStore",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11"
-        }
-      ],
+      "objectExplorer/item/context": [],
       "dataExplorer/context": [],
       "commandPalette": []
     }
