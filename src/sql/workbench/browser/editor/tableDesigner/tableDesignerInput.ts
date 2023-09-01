@@ -9,7 +9,7 @@ import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { TableDesignerComponentInput } from 'sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import * as azdata from 'azdata';
-import { GroupIdentifier, IRevertOptions, ISaveOptions } from 'vs/workbench/common/editor';
+import { GroupIdentifier, IRevertOptions, ISaveOptions, EditorInputCapabilities } from 'vs/workbench/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { Schemas } from 'sql/base/common/schemas';
@@ -81,7 +81,20 @@ export class TableDesignerInput extends EditorInput {
 	}
 
 	override getTitle(): string {
-		return this._title;
+		return this._title + ' blah append';
+	}
+
+	override getDescription(): string {
+		return 'blah description'
+	}
+
+	override get capabilities(): EditorInputCapabilities {
+		let capabilities = super.capabilities;
+
+
+		capabilities |= EditorInputCapabilities.ForceDescription;
+
+		return capabilities;
 	}
 
 	override isDirty(): boolean {
