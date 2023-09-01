@@ -4,13 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { TopResourceConsumingQueries } from './reports/topResourceConsumingQueries';
-import { OverallResourceConsumption } from './reports/overallResourceConsumption';
+import { QueryStoreDashboard } from './reports/queryStoreDashboard';
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	// TODO: get db name
-	context.subscriptions.push(vscode.commands.registerCommand('queryStore.topResourceConsumingQueriesOpen', async () => { await new TopResourceConsumingQueries(context, 'WideWorldImporters').open() }));
-	context.subscriptions.push(vscode.commands.registerCommand('queryStore.overallResourceConsumptionOpen', async () => { await new OverallResourceConsumption(context, 'WideWorldImporters').open() }));
+	// TODO: add condition for command to only be visible for db's with Query Store enabled (or consider always showing and having a way to enable when dashboard is opened?)
+	context.subscriptions.push(vscode.commands.registerCommand('queryStore.openQueryStoreDashboard', async () => { await new QueryStoreDashboard('AdventureWorks').open() }));
 }
 
 export function deactivate(): void {
