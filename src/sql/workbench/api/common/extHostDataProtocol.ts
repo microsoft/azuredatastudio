@@ -972,8 +972,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	// Database Server Contextualization API
 
-	public override $generateServerContextualization(handle: number, ownerUri: string): void {
-		this._resolveProvider<azdata.contextualization.ServerContextualizationProvider>(handle).generateServerContextualization(ownerUri);
+	public override $generateServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GenerateServerContextualizationResult> {
+		return this._resolveProvider<azdata.contextualization.ServerContextualizationProvider>(handle).generateServerContextualization(ownerUri);
 	}
 
 	public override $getServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GetServerContextualizationResult> {
