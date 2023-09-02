@@ -10,9 +10,6 @@ import { TopResourceConsumingQueries } from './topResourceConsumingQueries';
 import { OverallResourceConsumption } from './overallResourceConsumption';
 
 export class QueryStoreDashboard {
-	protected flexModel?: azdata.FlexContainer;
-	protected configureButton?: azdata.ButtonComponent;
-
 	constructor(private dbName: string, private extensionContext: vscode.ExtensionContext) { }
 
 	/**
