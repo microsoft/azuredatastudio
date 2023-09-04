@@ -151,8 +151,8 @@ export class ValidateIrDialog {
 							iconPath: IconPathHelper.redo,
 							iconHeight: 18,
 							iconWidth: 18,
-							width: 150,
-							label: constants.VALIDATE_IR_FAILED_REVALIDATION,
+							width: 170,
+							label: constants.VALIDATE_IR_UNSUCCESSFUL_REVALIDATION,
 							enabled: false,
 						}).component();
 
@@ -161,7 +161,7 @@ export class ValidateIrDialog {
 							iconPath: IconPathHelper.copy,
 							iconHeight: 18,
 							iconWidth: 18,
-							width: 150,
+							width: 140,
 							label: constants.VALIDATE_IR_COPY_RESULTS,
 							enabled: false,
 						}).component();
@@ -172,7 +172,7 @@ export class ValidateIrDialog {
 
 					this._disposables.push(
 						this._revalidationButton.onDidClick(
-							async (e) => await this._runFailedRevalidation()));
+							async (e) => await this._runUnsuccessfulRevalidation()));
 					this._disposables.push(
 						this._cancelButton.onDidClick(
 							e => {
@@ -300,7 +300,7 @@ export class ValidateIrDialog {
 		}
 	}
 
-	private async _runFailedRevalidation(results?: ValidationResult[]): Promise<void> {
+	private async _runUnsuccessfulRevalidation(results?: ValidationResult[]): Promise<void> {
 		try {
 			this._startLoader.loading = true;
 			this._startButton.enabled = false;
