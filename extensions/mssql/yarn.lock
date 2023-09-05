@@ -1770,7 +1770,7 @@ xsel@^1.0.0:
   resolved "https://registry.yarnpkg.com/xsel/-/xsel-1.0.0.tgz#d8ef26fd038a5b616f24e7f29e9d32fd3f7e3bfc"
   integrity sha512-IehZBEZlDq00D5aTd5qYPRzD192cQ3MuSgDCiiWaC5Uqq5X2wxA66QBZzjF8YLgux5fajvPKEjhA4KhqA7F0HQ==
   dependencies:
-    "0" call-once
+    call-once "1.0.3"
 
 y18n@^4.0.0:
   version "4.0.3"

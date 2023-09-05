@@ -1585,5 +1585,8 @@
     "mocha": "^7.1.1",
     "should": "^13.2.3",
     "typemoq": "^2.1.0"
+  },
+  "resolutions": {
+    "xsel/call-once": "1.0.3"
   }
 }
