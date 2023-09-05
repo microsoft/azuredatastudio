@@ -38,7 +38,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				connectionString: connectionString,
 				accessToken: context.connectionProfile!.options.azureAccountToken as string,
 				tableIcon: tableIcon,
-				additionalDetails: context.connectionProfile!.connectionName ? `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName}` : ``
+				additionalDetails: context.connectionProfile!.connectionName ? `(${context.connectionProfile!.connectionName})` : ``
 			}, telemetryInfo, context);
 		} catch (error) {
 			console.error(error);
@@ -72,7 +72,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				connectionString: connectionString,
 				accessToken: context.connectionProfile!.options.azureAccountToken as string,
 				tableIcon: tableIcon,
-				additionalDetails: connName ? `${server} - ${database}` : ``
+				additionalDetails: connName ? `(${connName})` : ``
 			}, telemetryInfo, context);
 		} catch (error) {
 			console.error(error);
