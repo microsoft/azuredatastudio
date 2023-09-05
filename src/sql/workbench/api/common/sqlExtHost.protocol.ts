@@ -595,6 +595,14 @@ export abstract class ExtHostDataProtocolShape {
 	 * Determines if the provided value is an execution plan and returns the appropriate file extension.
 	 */
 	$isExecutionPlan(handle: number, value: string): Thenable<azdata.executionPlan.IsExecutionPlanResult> { throw ni(); }
+	/**
+	 * Generates server context.
+	 */
+	$generateServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GenerateServerContextualizationResult> { throw ni(); }
+	/**
+	 * Gets server context.
+	 */
+	$getServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GetServerContextualizationResult> { throw ni(); }
 }
 
 /**
@@ -687,6 +695,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerDataGridProvider(providerId: string, title: string, handle: number): void;
 	$registerTableDesignerProvider(providerId: string, handle: number): Promise<any>;
 	$registerExecutionPlanProvider(providerId: string, handle: number): void;
+	$registerServerContextualizationProvider(providerId: string, handle: number): void;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;

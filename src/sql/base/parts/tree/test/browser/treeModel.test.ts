@@ -10,6 +10,7 @@ import * as model from 'sql/base/parts/tree/browser/treeModel';
 import * as TreeDefaults from 'sql/base/parts/tree/browser/treeDefaults';
 import { Event, Emitter } from 'vs/base/common/event';
 import { timeout } from 'vs/base/common/async';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 class FakeRenderer {
 
@@ -1076,18 +1077,19 @@ suite('TreeModel - Traits', () => {
 	});
 });
 
-class DynamicModel implements _.IDataSource {
+class DynamicModel extends Disposable implements _.IDataSource {
 
 	private data: any;
 	public promiseFactory: { (): Promise<any>; } | null;
 
-	private readonly _onGetChildren = new Emitter<any>();
+	private readonly _onGetChildren = this._register(new Emitter<any>());
 	readonly onGetChildren: Event<any> = this._onGetChildren.event;
 
-	private readonly _onDidGetChildren = new Emitter<any>();
+	private readonly _onDidGetChildren = this._register(new Emitter<any>());
 	readonly onDidGetChildren: Event<any> = this._onDidGetChildren.event;
 
 	constructor() {
+		super();
 		this.data = { root: [] };
 		this.promiseFactory = null;
 	}

@@ -15,9 +15,42 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
-      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.ObjectSelectionMethodDialog_AllObjects" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.ApplicationRoleTypeDisplayNa" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) OfSchema" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) me" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[application role]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[應用程式角色]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) meInTitle" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Application Role]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[應用程式角色]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.DatabaseRoleTypeDisplayNameI" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) nTitle" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Database Role]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[資料庫角色]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.ObjectSelectionMethodDialog_" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) AllObjectsOfSchema" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[All objects belonging to a schema]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -26,7 +59,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-        <Item ItemId=";(...) OfTypes" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) AllObjectsOfTypes" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[All objects of certain types]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -35,10 +68,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.ObjectSelectionMethodDialog_SelectSche" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) maDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) SelectSchemaDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Schema]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -47,10 +77,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.ObjectSelectionMethodDialog_SpecificOb" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) jects" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) SpecificObjects" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Specific objects…]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -59,14 +86,998 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
+        <Item ItemId=";(...) TypeLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[How do you want to add objects?]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[您要如何新增物件?]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.databaseSectionHead" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.ServerRoleTypeDisplayNameInT" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) er" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) itle" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Server Role]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[伺服器角色]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.autoSetProcessorAffinityIOMa" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) skForAll" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Automatically set I/O affinity mask for all processors]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[自動設定所有處理器的 I/O 親和性遮罩]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.autoSetProcessorAffinityMask" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ForAll" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Automatically set processor affinity mask for all processors]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[自動設定所有處理器的處理器親和性遮罩]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.bothFailedAndSuccessfulLogin" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) sText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Both failed and successful logins]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[失敗和成功的登入]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.AutoCreat" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) eStatisticsText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Auto Create Statistics]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[自動建立統計資料]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.Filegroup" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ExistsError" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[File group '{0}' could not be added to the collection, because it already exists.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[因為檔案群組 '{0}' 已存在，所以無法將其新增至集合中。]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.addDataba" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) seFilesText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Add Database file]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[新增資料庫檔案]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.addFilegr" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) oupButtonText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Add Filegroup]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[新增檔案群組]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.autoCreat" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) eIncrementalStatisticsText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Auto Create Incremental Statistics]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[自動建立累加統計資料]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.autoGrowt" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) hValueConversion" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[{0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[{0}]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) hValueConversion.limitation" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Limited to {0} MB]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[限制為 {0} MB]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) hValueConversion.unlimited" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Unlimited]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[無限制]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.autoShrin" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) kText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Auto Shrink]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[自動壓縮]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.autoUpdat" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) eStatisticsAsynchronouslyText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Auto Update Statistics Asynchronously]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[自動非同步更新統計資料]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) eStatisticsText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Auto Update Statistics]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[自動更新統計資料]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.autogrowA" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) llFilesText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Autogrow All Files]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[所有檔案自動成長]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.autogrowt" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) hMaxsizeText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Autogrowth / Maxsize]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[自動成長 / 大小上限]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.automatic" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) SectionHeader" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Automatic]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[自動]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.backupSec" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) tionHeader" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Backup]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[備份]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.databaseF" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ilesText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Database files]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[資料庫檔案]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.databaseN" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ameLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Database Name]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[資料庫名稱]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.databaseP" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) roperties.databaseScopedConfigurationTabHeader" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Database Scoped Configuration]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[資料庫範圍設定]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.databaseR" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) eadOnlyText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Database Read-Only]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[資料庫唯讀]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.databaseS" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) copedOptionsColumnHeader" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Database Scoped Options]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[資料庫範圍選項]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) ectionHeader" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Database]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[資料庫]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) tateText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Database State]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[資料庫狀態]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.dateCreat" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ed" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Date Created]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[建立日期]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.defaultTe" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) xt" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Default]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[預設]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.editDatab" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) aseFilesText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Edit Database file - {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[編輯資料庫檔案 - {0}]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.emptyFile" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) groupNameError" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Cannot use empty object names for filegroups.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[不可將空的物件名稱用於檔案群組。]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.enableAut" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ogrowthText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Enable Autogrowth]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[啟用自動成長]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.encryptio" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) nEnabledText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Encryption Enabled]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[加密已啟用]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.fileGroup" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) NotApplicableText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[DataFile '{0}' could not be added to the collection, because it already exists.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[因為 DataFile '{0}' 已存在，所以無法將其新增至集合中。]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.fileGrowt" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) hText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[File Growth]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[檔案成長]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.fileNameE" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) xistsError" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Cannot create file '{0}' because it already exists.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[無法建立檔案 '{0}'，因為檔案已存在。]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.fileNameT" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ext" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[File Name]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[檔案名稱]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.fileSizeL" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) imitError" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Maximum file size cannot be less than size]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[檔案大小上限不能低於]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.fileStrea" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) mFileGroupsSectionText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[FileStream]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[FileStream]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.fileTypeT" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ext" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[File Type]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[檔案類型]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.filegroup" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) Text" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Filegroup]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[檔案群組]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.filegrowt" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) hLimitError" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Filegrowth cannot be greater than the Maximum file size for a file]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Filegrowth 不能大於檔案的檔案大小上限]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.filestrea" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) mFileType" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[FILESTREAM Data]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[FILESTREAM 資料]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) mFilesText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Filestream Files]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Filestream 檔案]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.inMegabyt" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) esAutogrowthText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[In Megabytes]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[以 MB 為單位]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.inPercent" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) AutogrowthText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[In Percent]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[以百分比為單位]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.isLedgerD" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) atabaseText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Is Ledger Database]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[為總帳資料庫]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.ledgerSec" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) tionHeader" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Ledger]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[總帳]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.limitedTo" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) MBFileSizeText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Limited to (MB)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[限制為 (MB)]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.logfilety" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) pe" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[LOG]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[記錄]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.logicalNa" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) meText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Logical Name]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[邏輯名稱]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.maximumFi" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) leSizeText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Maximum File Size]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[檔案大小上限]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.memoryAll" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ocated" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Memory Allocated To Memory Optimized Objects]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[配置給記憶體最佳化物件的記憶體]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.memoryOpt" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) imizedFileGroupsSectionText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Memory Optimized Data]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[記憶體最佳化資料]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.numberOfU" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) sers" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Number of Users]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[使用者數目]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.pageVerif" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) yText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Page Verify]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[頁面驗證]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.readOnlyT" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ext" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Read-Only]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[唯讀]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.recoveryS" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ectionHeader" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Recovery]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[復原]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.removeBut" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ton" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Remove]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[移除]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.restrictA" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ccessText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Restrict Access]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[限制存取]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.rowsDataF" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ileType" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[ROWS Data]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[資料列資料]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.rowsFileG" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) roupsSectionText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Rows]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[資料列]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.setSecond" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) aryText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Set Secondary same as Primary]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[將次要設定為與主要相同]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.spaceAvai" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) lable" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Space Available]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[可用空間]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.stateSect" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ionHeader" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[State]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[狀態]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.targetRec" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) overyTimeInSecondsText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Target Recovery Time (Seconds)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[目標復原時間 (秒)]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.unlimited" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) FileSizeText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Unlimited]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[無限制]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.useFullTe" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) xtIndexingText" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Use full-text indexing]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[使用全文檢索索引]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.valueForP" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) rimaryColumnHeader" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Value for Primary]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[主要值]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.valueForS" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) econdaryColumnHeader" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Value for Secondary]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[次要值]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseRole.SelectMemberDia" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) logTitle" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Select Database Role Members]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[選取資料庫角色成員]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseRole.SelectOwnerDial" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ogTitle" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Select Database Role Owner]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[選取資料庫角色擁有者]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.effectivePermissionsTableLab" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) el" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Effective permissions for selected securable]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[已選取安全性實體的有效權限]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) elSelected" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Effective permissions for: {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[適用於 {0} 的有效權限]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.explicitPermissionsTableLabe" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) lSelected" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Explicit permissions for: {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[適用於 {0} 的明確權限]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.login.enforcePasswordExpirat" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ionLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Enforce password expiration]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[強制執行密碼逾期]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.login.enforcePasswordPolicyL" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) abel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Enforce password policy]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[強制執行密碼原則]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.login.oldPasswordCannotBeEmp" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) tyError" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Old password cannot be empty.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[舊密碼不可為空白。]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.login.permissionToConnectLab" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) el" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Permission to connect to database engine]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[連線到資料庫引擎的權限]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.login.windowsAuthenticationT" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ype" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Windows Authentication]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Windows 驗證]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.objectSelectionMethodDialogT" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) itle" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Add Objects]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[新增物件]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.openObjectPropertiesDialogEr" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ror" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[An error occurred while opening the properties dialog for {0}: {1}. {2}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[開啟 {0} 的內容對話方塊時發生錯誤: {1}。{2}]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.serverMemoryMaxLowerThanMinI" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) nputError" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Maximum server memory cannot be lower than minimum server memory]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[伺服器記憶體最大值不能低於伺服器記憶體最小值]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.serverRole.SelectMemberDialo" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) gTitle" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Select Server Role Members]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[選取伺服器角色成員]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.serverRole.SelectOwnerDialog" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) Title" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Select Server Role Owner]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[選取伺服器角色擁有者]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -216,29 +1227,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/main.mssql.reloadChoice" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Reload Azure Data Studio]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[重新載入 Azure Data Studio]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/main.mssql.reloadPrompt" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[This setting requires Azure Data Studio to be reloaded to take into effect.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[此設定需要重新載入 Azure Data Studio 才會生效。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/main.mssql.searchServers" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Search Server Names]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[搜尋伺服器名稱]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.ApplicationRoleTypeDisplayName" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[application role]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[應用程式角色]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.ApplicationRoleTypeDisplayNameInTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Application Role]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[應用程式角色]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -279,15 +1290,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.DatabaseRoleTypeDisplayNameInTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Database Role]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[資料庫角色]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.LoginTypeDisplayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[login]]></Val>
@@ -302,15 +1304,6 @@
           <Val><![CDATA[Login]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[登入]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.ObjectSelectionMethodDialog_TypeLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[How do you want to add objects?]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[您要如何新增物件?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -336,15 +1329,6 @@
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.ServerRoleTypeDisplayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[server role]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[伺服器角色]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.ServerRoleTypeDisplayNameInTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Server Role]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[伺服器角色]]></Val>
           </Tgt>
@@ -387,6 +1371,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.addFileText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Add database files]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[新增資料庫檔案]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.addMembersText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add members]]></Val>
@@ -414,11 +1407,92 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.allFiles" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[All Files]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[所有檔案]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.applyUpdatesLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Apply]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[套用]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.associatedDatabaseFiles" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Associated Database Files]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[關聯的資料庫檔案]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.attachAsText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Attach As]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[附加為]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.attachButtonLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Attach]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[附加]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.attachDatabaseDialogTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Attach Database (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[附加資料庫 (預覽)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.azurePricingLink" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL Database pricing calculator]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure SQL 資料庫價格計算機]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.backupAndRestoreText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Backup and Restore]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[備份與還原]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.backupChecksumText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Backup checksum]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[備份總和檢查碼]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.backupLocationText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Backup]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[備份]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -459,6 +1533,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.closeConnections" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Close existing connections]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[關閉現有的連接]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.collationLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Collation]]></Val>
@@ -468,11 +1551,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.collationNotValidError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The selected collation '{0}' is not valid. Please choose a different collation.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[選取的定序 '{0}' 無效，請選擇其他定序。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.compatibilityLevelLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Compatibility Level]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[相容性層級]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.compressBackupText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Compress Backup]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[壓縮備份]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -504,6 +1605,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.createObjectLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Create]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[建立]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.createObjectOperationName" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create {0}]]></Val>
@@ -522,29 +1632,119 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseExistsError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.dataFileLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database '{0}' already exists. Choose a different database name.]]></Val>
+          <Val><![CDATA[Data]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[資料庫 '{0}' 已存在。請選擇其他資料庫名稱。]]></Val>
+            <Val><![CDATA[資料]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.backupSectionHeader" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.dataLocationText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Backup]]></Val>
+          <Val><![CDATA[Data]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[備份]]></Val>
+            <Val><![CDATA[資料]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.dateCreated" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseDetails" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Date Created]]></Val>
+          <Val><![CDATA[Database Details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[建立日期]]></Val>
+            <Val><![CDATA[資料庫詳細資料]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseFileGroup" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[File Group]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[檔案群組]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseFileName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[名稱]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseFilePath" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Path]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[路徑]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseFileType" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[類型]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseFiles" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Database Files]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[資料庫檔案]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseFilesFilterLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Database Data Files]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[資料庫資料檔案]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[DB Name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[資料庫名稱]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.addButton" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Add]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[新增]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.editButton" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Edit]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[編輯]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.filesText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Files]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[檔案]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -554,15 +1754,6 @@
           <Val><![CDATA[{0} MB]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[{0} MB]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.memoryAllocated" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Memory Allocated To Memory Optimized Objects]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[配置給記憶體最佳化物件的記憶體]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -585,11 +1776,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.numberOfUsers" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.noneText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Number of Users]]></Val>
+          <Val><![CDATA[None]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[使用者數目]]></Val>
+            <Val><![CDATA[無]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -603,21 +1794,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.size" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.pathText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Size]]></Val>
+          <Val><![CDATA[Path]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[大小]]></Val>
+            <Val><![CDATA[路徑]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.spaceAvailable" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.size" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Space Available]]></Val>
+          <Val><![CDATA[Size (MB)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[可用空間]]></Val>
+            <Val><![CDATA[大小 (MB)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Size]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -630,56 +1824,38 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseRole.SelectMemberDialogTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseSettings" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Select Database Role Members]]></Val>
+          <Val><![CDATA[Database Settings]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[選取資料庫角色成員]]></Val>
+            <Val><![CDATA[資料庫設定]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databaseRole.SelectOwnerDialogTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.databasesToAttach" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Select Database Role Owner]]></Val>
+          <Val><![CDATA[Databases to Attach]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[選取資料庫角色擁有者]]></Val>
+            <Val><![CDATA[要附加的資料庫]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.deleteLoginConfirmation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.defaultLocationsLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Deleting server logins does not delete the database users associated with the logins. To complete the process, delete the users in each database. It may be necessary to first transfer the ownership of schemas to new users.]]></Val>
+          <Val><![CDATA[Database default locations]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[刪除伺服器登入不會刪除與登入相關聯的資料庫使用者。若要完成流程，請刪除每個資料庫中的使用者。可能必須先將結構描述的擁有權轉移給新使用者。]]></Val>
+            <Val><![CDATA[資料庫預設位置]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.deleteObjectConfirmation" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.deleteBackupHistory" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Are you sure you want to delete the {0}: {1}?]]></Val>
+          <Val><![CDATA[Delete backup and restore history information for database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[確定要刪除 {0}: {1} 嗎?]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.deleteObjectError" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[An error occurred while deleting the {0}: {1}. {2}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[刪除事件時發生錯誤 {0}: {1}。{2}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.deleteObjectOperationName" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Delete {0} '{1}']]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[刪除 {0} '{1}']]></Val>
+            <Val><![CDATA[刪除資料庫的備份和還原記錄資訊]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -693,29 +1869,128 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.detachButtonLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Detach]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[中斷連結]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.detachDatabaseDialogTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Detach Database - {0} (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[卸離資料庫 - {0} (預覽)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.detachDatabaseOptions" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Detach Database Options]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[卸離資料庫選項]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.detachDropConnections" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Drop connnections]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[卸載連線]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.detachUpdateStatistics" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Update statistics]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[更新統計資料]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.doDatabaseFilesError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[No database files were specified to attach to the server.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[未指定要附加至伺服器的資料庫檔案。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.dropButtonLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Drop]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[刪除]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.dropDatabaseDialogTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Drop Database - {0} (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[刪除資料庫 - {0} (預覽)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.dropDatabaseOptions" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Drop Database Options]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[刪除資料庫選項]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.dropLoginConfirmation" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Dropping server logins does not drop the database users associated with the logins. To complete the process, drop the users in each database. It may be necessary to first transfer the ownership of schemas to new users.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[刪除伺服器登入不會刪除與登入相關聯的資料庫使用者。若要完成流程，請刪除每個資料庫中的使用者。可能必須先將結構描述的擁有權轉移給新使用者。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.dropObjectConfirmation" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Are you sure you want to drop the {0}: {1}?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[您確定要刪除 {0}: {1}嗎?]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.dropObjectError" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[An error occurred while dropping the {0}: {1}. {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[刪除 {0}: {1} 時發生錯誤。{2}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.dropObjectOperationName" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Drop {0} '{1}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[刪除 {0} '{1}']]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.editionLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Edition]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[版本]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.effectivePermissionsTableLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Effective permissions for selected securable]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[已選取安全性實體的有效權限]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.effectivePermissionsTableLabelSelected" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Effective permissions for: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[適用於 {0} 的有效權限]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -738,11 +2013,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.explicitPermissionsTableLabelSelected" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.failedLoginsOnlyText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Explicit permissions for: {0}]]></Val>
+          <Val><![CDATA[Failed logins only]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[適用於 {0} 的明確權限]]></Val>
+            <Val><![CDATA[僅限失敗的登入]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.filegroupsSectionHeader" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Filegroups]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[檔案群組]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -846,6 +2130,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.labelSelectFolder" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select Folder]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[選取資料夾]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.language" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Language]]></Val>
@@ -891,6 +2184,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.logFileLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[記錄]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.logLocationText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[記錄]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.login.aadAuthenticationType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Active Directory Authentication]]></Val>
@@ -927,24 +2238,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.login.enforcePasswordExpirationLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Enforce password expiration]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[強制執行密碼逾期]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.login.enforcePasswordPolicyLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Enforce password policy]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[強制執行密碼原則]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.login.lockedOutLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Login is locked out]]></Val>
@@ -963,29 +2256,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.login.oldPasswordCannotBeEmptyError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Old password cannot be empty.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[舊密碼不可為空白。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.login.oldPasswordLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Old password]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[舊密碼]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.login.permissionToConnectLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Permission to connect to database engine]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[連線到資料庫引擎的權限]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1026,11 +2301,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.login.windowsAuthenticationType" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.loginAuditingText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Windows Authentication]]></Val>
+          <Val><![CDATA[Login auditing]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Windows 驗證]]></Val>
+            <Val><![CDATA[登入稽核]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1058,6 +2333,15 @@
           <Val><![CDATA[Max Size]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[最大大小]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.mdfFileLocation" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[MDF File Location]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[MDF 檔案位置]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1116,6 +2400,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.needToRestartServer" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Changes require server restart in order to be effective]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[變更需要重新啟動伺服器才能生效]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.newObjectDialogTitle" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} - New (Preview)]]></Val>
@@ -1134,21 +2427,33 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.objectPropertiesDialogTitle" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.noDialogFoundError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} - {1} (Preview)]]></Val>
+          <Val><![CDATA[Could not find a supported dialog for node type '{0}' and object type '{1}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} - {1} (預覽)]]></Val>
+            <Val><![CDATA[找不到節點類型 '{0}' 和物件類型 '{1}' 支援的對話方塊。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.objectSelectionMethodDialogTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.noLoginAuditingText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Add Objects]]></Val>
+          <Val><![CDATA[None]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[新增物件]]></Val>
+            <Val><![CDATA[無]]></Val>
           </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.objectPropertiesDialogTitle" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0} Properties (Preview) - {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} 屬性 (預覽) - {1}]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[{0} - {1} (Preview)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1179,20 +2484,47 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.onlyWindowsAuthModeText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Windows Authentication mode]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Windows 驗證模式]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.openAttachDatabaseDialogError" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[An error occurred while opening the attach database dialog. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[開啟附加資料庫對話方塊時發生錯誤。{0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.openDetachDatabaseDialogError" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[An error occurred while opening the detach database dialog. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[開啟分離資料庫對話方塊時發生錯誤。{0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.openDropDatabaseDialogError" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[An error occurred while opening the drop database dialog. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[開啟刪除資料庫對話方塊時發生錯誤。{0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.openNewObjectDialogError" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while opening the new {0} dialog. {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[開啟新 {0} 對話方塊時發生錯誤。{1}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.openObjectPropertiesDialogError" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[An error occurred while opening the properties dialog for {0}: {1}. {2}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[開啟 {0} 的內容對話方塊時發生錯誤: {1}。{2}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1208,10 +2540,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.optionsSectionHeader" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Options]]></Val>
+          <Val><![CDATA[Files]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[選項]]></Val>
+            <Val><![CDATA[檔案]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Options]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1269,6 +2604,42 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.processorAffinityColumn" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Processor Affinity]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[處理器親和性]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.processorColumn" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Processor]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[處理器]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.processorIOAffinityColumn" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[I/O Affinity]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[I/O 親和性]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.processorLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Processor Affinity Table]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[處理器親和性表格]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.processors" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Processors]]></Val>
@@ -1314,6 +2685,15 @@
           <Prev Cat="Text">
             <Val><![CDATA[An error occurred while while refreshing the object explorer. {0}]]></Val>
           </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.removeFileText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Remove database file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[移除資料庫檔案]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1364,10 +2744,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.reservedStorageSizeInMB" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Reserved Storage Size]]></Val>
+          <Val><![CDATA[Reserved Storage Size (MB)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[保留儲存空間大小]]></Val>
+            <Val><![CDATA[保留儲存空間大小 (MB)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Reserved Storage Size]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1398,6 +2781,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.security" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Security]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[安全性]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.selectSecurablesDialogTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Securables]]></Val>
@@ -1416,6 +2808,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.serverAuthenticationText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Server authentication]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[伺服器驗證]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.serverCPULabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[CPU {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[CPU {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.serverCollation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server Collation]]></Val>
@@ -1425,20 +2835,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.serverRole.SelectMemberDialogTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.serverNumaNodeLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Select Server Role Members]]></Val>
+          <Val><![CDATA[Numa Node {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[選取伺服器角色成員]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.serverRole.SelectOwnerDialogTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select Server Role Owner]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[選取伺服器角色擁有者]]></Val>
+            <Val><![CDATA[Numa 節點 {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1452,11 +2853,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.storageSpaceUsageInGB" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.sqlServerAndWindowsAuthText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Storage Space Usage]]></Val>
+          <Val><![CDATA[SQL Server and Windows Authentication mode]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[儲存空間使用量]]></Val>
+            <Val><![CDATA[SQL Server 及 Windows 驗證模式]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.storageSpaceUsageInMB" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Storage Space Usage (MB)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[儲存空間使用量 (MB)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.successfulLoginsOnlyText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Successful logins only]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[僅限成功的登入]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1772,10 +3191,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/ui/localizedConstants.mssql.ui.loadingDialog" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Loading dialog...]]></Val>
+          <Val><![CDATA[Loading dialog completed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[正在載入對話方塊...]]></Val>
+            <Val><![CDATA[已完成載入對話方塊]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Loading dialog...]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1829,6 +3251,15 @@
           <Val><![CDATA[Add…]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[新增...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/dist/ui/localizedConstants.objectManagement.editText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Edit]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[編輯]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2158,7 +3589,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Connect retry count]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[連線重試計數]]></Val>
+            <Val><![CDATA[連線重試次數]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2698,7 +4129,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Secure enclaves]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[安全隔離區]]></Val>
+            <Val><![CDATA[安全記憶體保護區]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Secure Enclaves]]></Val>
@@ -2816,6 +4247,15 @@
           <Val><![CDATA[Disabled]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[已停用]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/package.mssql.enableConnectionPooling" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[在 MSSQL 連線上啟用連線共用，以改善 Azure Data Studio 連線的整體效能。預設會啟用此設定。值變更時，需要重新啟動 Azure Data Studio。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3501,6 +4941,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/package.title.attachDatabase" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Attach (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[附加 (預覽)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/package.title.changeNotebookConnection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Change SQL Notebook Connection]]></Val>
@@ -3519,15 +4968,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/package.title.deleteObject" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Delete]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[刪除]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/package.title.designTable" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Design]]></Val>
@@ -3537,12 +4977,42 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/package.title.detachDatabase" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Detach (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[分離 (預覽)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/package.title.dropObject" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Drop (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[刪除 (預覽)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/package.title.newDatabase" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[New Database (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[新資料庫 (預覽)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.mssql/package.title.newObject" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[New]]></Val>
+          <Val><![CDATA[New (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[新]]></Val>
+            <Val><![CDATA[新增 (預覽)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[New]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3569,10 +5039,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/package.title.renameObject" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Rename]]></Val>
+          <Val><![CDATA[Rename (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[重新命名]]></Val>
+            <Val><![CDATA[重新命名 (預覽)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Rename]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

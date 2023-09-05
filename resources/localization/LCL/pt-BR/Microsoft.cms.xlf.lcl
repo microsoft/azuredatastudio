@@ -15,6 +15,30 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
+      <Item ItemId=";@extensions/Microsoft.cms/dist/cmsResource/tree/cmsResourceEmptyTreeNode.cms.resource.tree.CmsTreeNode.addCmsServe" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) rLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Add Central Management Server...]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Adicionar Servidor de Gerenciamento Central...]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.cms/dist/cmsResource/tree/cmsResourceTreeNode.cms.resource.cmsResourceTreeNode.noResourcesLa" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[No resources found]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Nenhum recurso encontrado]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/cmsResourceCommands.cms.AddServerGroup" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Server Group]]></Val>
@@ -119,24 +143,6 @@
           <Val><![CDATA[Yes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Sim]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/tree/cmsResourceEmptyTreeNode.cms.resource.tree.CmsTreeNode.addCmsServerLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Add Central Management Server...]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Adicionar Servidor de Gerenciamento Central...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/tree/cmsResourceTreeNode.cms.resource.cmsResourceTreeNode.noResourcesLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[No resources found]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nenhum recurso encontrado]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

@@ -910,7 +910,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Email]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Messaggio di posta elettronica]]></Val>
+            <Val><![CDATA[Indirizzo di posta elettronica]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1153,7 +1153,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Advanced]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Avanzate]]></Val>
+            <Val><![CDATA[Avanzata]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1765,7 +1765,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Enabled]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Abilitato]]></Val>
+            <Val><![CDATA[Abilitata]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

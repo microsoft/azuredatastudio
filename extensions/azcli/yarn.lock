@@ -181,10 +181,10 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
   integrity sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
 
-"@microsoft/azdata-test@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@microsoft/azdata-test/-/azdata-test-3.0.1.tgz#a8b89a12de42f277d33aae71c277d0c8efcfbee0"
-  integrity sha512-Zrctm/zKufwIRF9jfw8TOBzr5woLdKXAGNTlbAQl0IGLzVoIGULj9Gqdc1Ikhrov3rM0NkbAF/PY6j6BHiW8Tw==
+"@microsoft/azdata-test@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@microsoft/azdata-test/-/azdata-test-3.0.3.tgz#a1b5bbead5412ac7925129e6199d724bfc8117ee"
+  integrity sha512-Whit8+MpNN/Kkx3R9CGT26FhYNzkjNyOb6dsaqkMq1scpO3JCeNJqhcSqTTsSbkRVdAKoYrJcpLZdoO9D1X/yw==
   dependencies:
     http-proxy-agent "^5.0.0"
     https-proxy-agent "^5.0.0"

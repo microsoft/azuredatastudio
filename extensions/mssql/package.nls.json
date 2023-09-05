@@ -190,5 +190,6 @@
 	"title.objectProperties": "Properties (Preview)",
 	"title.dropObject": "Drop (Preview)",
 	"title.renameObject": "Rename (Preview)",
-	"title.detachDatabase": "Detach (Preview)"
+	"title.detachDatabase": "Detach (Preview)",
+	"title.attachDatabase": "Attach (Preview)"
 }

@@ -118,6 +118,11 @@
         "title": "%title.detachDatabase%"
       },
       {
+        "command": "mssql.attachDatabase",
+        "category": "MSSQL",
+        "title": "%title.attachDatabase%"
+      },
+      {
         "command": "mssql.enableGroupBySchema",
         "category": "MSSQL",
         "title": "%mssql.objectExplorer.enableGroupBySchema%",
@@ -525,6 +530,10 @@
         {
           "command": "mssql.detachDatabase",
           "when": "false"
+        },
+        {
+          "command": "mssql.attachDatabase",
+          "when": "false"
         }
       ],
       "objectExplorer/item/context": [
@@ -577,6 +586,11 @@
         {
           "command": "mssql.detachDatabase",
           "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
+          "group": "1_objectManagement@2"
+        },
+        {
+          "command": "mssql.attachDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && !isCloud && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@2"
         },
         {
@@ -1566,7 +1580,7 @@
   "devDependencies": {
     "@types/mocha": "^7.0.2",
     "@microsoft/vscodetestcover": "^1.2.2",
-    "@microsoft/azdata-test": "^3.0.1",
+    "@microsoft/azdata-test": "^3.0.3",
     "mocha": "^7.1.1",
     "should": "^13.2.3",
     "typemoq": "^2.1.0"

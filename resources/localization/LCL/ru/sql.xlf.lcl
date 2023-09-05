@@ -7971,11 +7971,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/editData/browser/editDataActions.editData.closeSql" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/contrib/editData/browser/editDataActions.editData.hideSql" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Close SQL Pane]]></Val>
+          <Val><![CDATA[Hide SQL Pane]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Закрыть панель SQL]]></Val>
+            <Val><![CDATA[Скрыть панель SQL]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13403,6 +13403,15 @@
           <Val><![CDATA[The default chart type to use when opening Chart Viewer from a Query Results]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Тип диаграммы по умолчанию, используемый при открытии средства просмотра диаграмм из результатов запроса]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.githubCopilotContextualizationEnabled" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[(Preview) Enable contextualization of queries for GitHub Copilot. This setting helps GitHub Copilot to return improved suggestions, if the Copilot extension is installed and providers have implemented contextualization.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[(Предварительная версия) Включите контекстуализацию запросов для GitHub Copilot. Этот параметр поможет GitHub Copilot возвращать улучшенные предложения, если установлено расширение Copilot и поставщики реализовали контекстуализацию.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

@@ -62,7 +62,7 @@
         <Str Cat="Text">
           <Val><![CDATA[({0} KB)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[({0} KB)]]></Val>
+            <Val><![CDATA[({0} KB)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -143,7 +143,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Notebooks]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Cuadernos]]></Val>
+            <Val><![CDATA[Notebooks]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -575,7 +575,7 @@
         <Str Cat="Text">
           <Val><![CDATA[User name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nombre de usuario]]></Val>
+            <Val><![CDATA[Nombre del usuario]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -665,7 +665,7 @@
         <Str Cat="Text">
           <Val><![CDATA[New Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nuevo cuaderno]]></Val>
+            <Val><![CDATA[Nuevo Notebook]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -674,7 +674,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Open Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Abrir cuaderno]]></Val>
+            <Val><![CDATA[Abrir Notebook]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

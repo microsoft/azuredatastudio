@@ -107,7 +107,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Installing {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} 설치]]></Val>
+            <Val><![CDATA[{0} 설치 중]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -125,7 +125,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Starting {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} 시작]]></Val>
+            <Val><![CDATA[{0}을(를) 시작하는 중]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -143,7 +143,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Notebooks]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[전자 필기장]]></Val>
+            <Val><![CDATA[Notebook]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -440,7 +440,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Name (optional)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[이름(선택 사항)]]></Val>
+            <Val><![CDATA[이름(옵션)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -665,7 +665,7 @@
         <Str Cat="Text">
           <Val><![CDATA[New Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[새 전자 필기장]]></Val>
+            <Val><![CDATA[새 Notebook]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -674,7 +674,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Open Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[전자 필기장 열기]]></Val>
+            <Val><![CDATA[Notebook 열기]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

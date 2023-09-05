@@ -910,7 +910,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Email]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Email]]></Val>
+            <Val><![CDATA[E-mail]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1558,7 +1558,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Select Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Selecionar banco de dados]]></Val>
+            <Val><![CDATA[Selecionar Banco de Dados]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

@@ -977,23 +977,52 @@ declare module 'mssql' {
 		/**
 		 * Detach a database.
 		 * @param connectionUri The URI of the server connection.
+		 * @param database The target database.
 		 * @param objectUrn SMO Urn of the database to be detached. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
 		 * @param dropConnections Whether to drop active connections to this database.
 		 * @param updateStatistics Whether to update the optimization statistics related to this database.
 		 * @param generateScript Whether to generate a TSQL script for the operation instead of detaching the database.
 		 * @returns A string value representing the generated TSQL query if generateScript was set to true, and an empty string otherwise.
 		 */
-		detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Thenable<string>;
+		detachDatabase(connectionUri: string, database: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Thenable<string>;
+		/**
+		 * Attach one or more databases.
+		 * @param connectionUri The URI of the server connection.
+		 * @param databases The name, owner, and file paths for each database that will be attached.
+		 * @param generateScript Whether to generate a TSQL script for the operation instead of detaching the database.
+		 * @returns A string value representing the generated TSQL query if generateScript was set to true, and an empty string otherwise.
+		 */
+		attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Thenable<string>;
 		/**
 		 * Drop a database.
 		 * @param connectionUri The URI of the server connection.
+		 * @param database The target database.
 		 * @param objectUrn SMO Urn of the database to be detached. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
 		 * @param dropConnections Whether to drop active connections to this database.
 		 * @param deleteBackupHistory Whether to delete backup and restore history information for this database.
 		 * @param generateScript Whether to generate a TSQL script for the operation instead of detaching the database.
 		 * @returns A string value representing the generated TSQL query if generateScript was set to true, and an empty string otherwise.
 		 */
-		dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string>;
+		dropDatabase(connectionUri: string, database: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string>;
+		/**
+		 * Gets the file path for the default database file folder for a SQL Server instance.
+		 * @param connectionUri The URI of the connection for the specific server.
+		 * @returns The file path to the data folder.
+		 */
+		getDataFolder(connectionUri: string): Thenable<string>;
+		/**
+		 * Retrieves other database files associated with a specified primary file, such as Data, Log, and FileStream files.
+		 * @param connectionUri The URI of the connection for the specific server.
+		 * @param primaryFilePath The file path for the primary database file on the target server.
+		 * @returns An array of file path strings for each of the associated files.
+		 */
+		getAssociatedFiles(connectionUri: string, primaryFilePath: string): Thenable<string[]>;
+	}
+
+	export interface DatabaseFileData {
+		databaseName: string;
+		databaseFilePaths: string[];
+		owner: string;
 	}
 	// Object Management - End.
 }

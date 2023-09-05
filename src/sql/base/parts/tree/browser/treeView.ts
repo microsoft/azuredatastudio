@@ -447,13 +447,13 @@ export class TreeView extends HeightMap {
 	private highlightedItemWasDraggable: boolean = false;
 	private onHiddenScrollTop: number | null = null;
 
-	private readonly _onDOMFocus = new Emitter<void>();
+	private readonly _onDOMFocus = this._register(new Emitter<void>());
 	readonly onDOMFocus: Event<void> = this._onDOMFocus.event;
 
-	private readonly _onDOMBlur = new Emitter<void>();
+	private readonly _onDOMBlur = this._register(new Emitter<void>());
 	readonly onDOMBlur: Event<void> = this._onDOMBlur.event;
 
-	private readonly _onDidScroll = new Emitter<void>();
+	private readonly _onDidScroll = this._register(new Emitter<void>());
 	readonly onDidScroll: Event<void> = this._onDidScroll.event;
 
 	constructor(context: _.ITreeContext, container: HTMLElement) {
