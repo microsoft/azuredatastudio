@@ -69,3 +69,11 @@ export const BIG_NUMBER_CSS = {
 	'line-height': '36px',
 	'margin': '0',
 };
+
+export const CARD_CSS = {
+	'width': '190px',
+	'box-shadow': '0px 1px 4px rgba(0, 0, 0, 0.13)',
+	'padding': '8px 0px 8px 12px',
+	'border-radius': '4px',
+	'margin': '8px 0px 0px 15px'
+}
