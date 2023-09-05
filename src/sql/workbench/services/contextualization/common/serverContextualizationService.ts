@@ -216,13 +216,14 @@ export class ServerContextualizationService extends Disposable implements IServe
 		// context string while we are over budget. If reducedWhitespaceCtx is already
 		// under budget, we'll just return it as-is.
 		if (tokenCount(reducedWhitespaceCtx) <= tokenBudget) {
+			this._logService.info(`No compression needed for context (fit within budget)`);
 			return reducedWhitespaceCtx;
 		}
 
 		// Okay, we're over budget - let's try to compress the context string
 		// We'll start by grabbing each CREATE TABLE statement
 		const tables = reducedWhitespaceCtx.match(/CREATE TABLE.*?(\n|$)/g);
-		const columnAblations = tables?.map(table => {
+		const tableAblations = tables?.map(table => {
 			try {
 				return this.produceTableAblations(table, tokenCount);
 			} catch (e) {
@@ -235,10 +236,10 @@ export class ServerContextualizationService extends Disposable implements IServe
 		// We have 5 ablations for each table, so we'll start by trying
 		// to take the best ablation for each table (5) and work our
 		// way down to (4) -> (3) -> (2) -> and (1)
-		const maxAblations = columnAblations[0]?.length ?? 0;
+		const maxAblations = tableAblations[0]?.length ?? 0;
 		for (let i = maxAblations - 1; i >= 0; i--) {
 			// Get the best ablation for each table
-			const bestAblations = columnAblations.map(ablations => ablations[i]);
+			const bestAblations = tableAblations.map(ablations => ablations[i]);
 
 			// Now we'll try to join all the best ablations together
 			const compressedContext = bestAblations.join('\n');
@@ -255,7 +256,7 @@ export class ServerContextualizationService extends Disposable implements IServe
 		// Okay, we're still over budget so we'll try and just return
 		// as many table names as we can (with a comment on how many we elided)
 		const justTableNames = [];
-		const smallestAblations = columnAblations.map(tableAblations => tableAblations[0]);
+		const smallestAblations = tableAblations.map(tableAblations => tableAblations[0]);
 		// Take into account the elision template text
 		const elisionTemplateTextTokenCount = tokenCount('/* 0000 more tables not shown ... */');
 		const reducedTokenBudget = tokenBudget - elisionTemplateTextTokenCount;
