@@ -375,6 +375,11 @@ buffer-crc32@~0.2.3:
   resolved "https://registry.yarnpkg.com/buffer-crc32/-/buffer-crc32-0.2.13.tgz#0d333e3f00eac50aa1454abd30ef8c2a5d9a7242"
   integrity sha1-DTM+PwDqxQqhRUq9MO+MKl2ackI=
 
+call-once@:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/call-once/-/call-once-1.0.3.tgz#f150a14b341032fb47721090adbbec6a2588c4e0"
+  integrity sha512-Y40/nFP10Rnz1jGho4TEQeL7CrCdFli088mk6dmtCL1nIrfU0bpqnLKVCwPB5KGKqCVusaUzm5wYTJrqVMI0AQ==
+
 callsite@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/callsite/-/callsite-1.0.0.tgz#280398e5d664bd74038b6f0905153e6e8af1bc20"
@@ -1759,6 +1764,13 @@ xml@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/xml/-/xml-1.0.1.tgz#78ba72020029c5bc87b8a81a3cfcd74b4a2fc1e5"
   integrity sha1-eLpyAgApxbyHuKgaPPzXS0ovweU=
+
+xsel@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/xsel/-/xsel-1.0.0.tgz#d8ef26fd038a5b616f24e7f29e9d32fd3f7e3bfc"
+  integrity sha512-IehZBEZlDq00D5aTd5qYPRzD192cQ3MuSgDCiiWaC5Uqq5X2wxA66QBZzjF8YLgux5fajvPKEjhA4KhqA7F0HQ==
+  dependencies:
+    "0" call-once
 
 y18n@^4.0.0:
   version "4.0.3"
