@@ -985,6 +985,10 @@ declare module 'azdata' {
 			 * table icon.
 			 */
 			tableIcon?: TableIcon;
+			/**
+			 * Additional information about the connection so that users know the exact connection
+			 */
+			additionalDetails?: string;
 		}
 
 		/**

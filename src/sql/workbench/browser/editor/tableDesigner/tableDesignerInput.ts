@@ -25,6 +25,7 @@ export class TableDesignerInput extends EditorInput {
 	public static ID: string = 'workbench.editorinputs.tableDesignerInput';
 	private _designerComponentInput: TableDesignerComponentInput;
 	private _title: string;
+	private _additionalDetails: string = '';
 	private _name: string;
 	private _tableIcon: azdata.designers.TableIcon;
 	private _tableIconMap: Map<TableIcon, string> = new Map<TableIcon, string>([
@@ -81,11 +82,11 @@ export class TableDesignerInput extends EditorInput {
 	}
 
 	override getTitle(): string {
-		return this._title + ' blah append';
+		return this._title;
 	}
 
 	override getDescription(): string {
-		return 'blah description'
+		return this._additionalDetails;
 	}
 
 	override get capabilities(): EditorInputCapabilities {
@@ -132,6 +133,10 @@ export class TableDesignerInput extends EditorInput {
 	private setEditorLabel(): void {
 		this._name = this._designerComponentInput.tableInfo.title;
 		this._title = this._designerComponentInput.tableInfo.tooltip;
+		let addlDetails = this._designerComponentInput.tableInfo.additionalDetails
+		if (addlDetails) {
+			this._additionalDetails = addlDetails;
+		}
 		this._onDidChangeLabel.fire();
 	}
 }
