@@ -13,7 +13,7 @@ import * as azurecore from 'azurecore';
 import { getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableConnectionPoolingConfig, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, logDebug, TracingLevel } from './utils';
 import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature/*, ServerContextualizationServiceFeature*/ } from './features'; // LEWISSANCHEZ TODO: Put back ServerContextualizationServiceFeature once ready.
+import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature, ServerContextualizationServiceFeature } from './features'; // LEWISSANCHEZ TODO: Put back ServerContextualizationServiceFeature once ready.
 import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import { SchemaCompareService } from './schemaCompare/schemaCompareService';
@@ -247,7 +247,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 			SqlCredentialService.asFeature(context),
 			TableDesignerFeature,
 			ExecutionPlanServiceFeature,
-			// ServerContextualizationServiceFeature, // LEWISSANCHEZ TODO: Put this provider back once STS changes are complete
+			ServerContextualizationServiceFeature, // LEWISSANCHEZ TODO: Put this provider back once STS changes are complete
 			ErrorDiagnosticsProvider.asFeature(context),
 			ObjectManagementService.asFeature(context)
 		],
