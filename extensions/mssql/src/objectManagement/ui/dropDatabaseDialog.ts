@@ -23,7 +23,7 @@ export class DropDatabaseDialog extends ObjectManagementDialogBase<Database, Dat
 	}
 
 	protected override get saveChangesTaskLabel(): string {
-		return loc.DropObjectOperationDisplayName(loc.DatabaseTypeDisplayName, this.options.objectName);
+		return loc.DropObjectOperationDisplayName(loc.DatabaseTypeDisplayName, this.objectInfo.name);
 	}
 
 	protected async initializeUI(): Promise<void> {

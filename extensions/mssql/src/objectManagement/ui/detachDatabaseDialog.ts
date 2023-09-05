@@ -23,7 +23,7 @@ export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	protected override get saveChangesTaskLabel(): string {
-		return loc.DetachDatabaseOperationDisplayName(this.options.objectName);
+		return loc.DetachDatabaseOperationDisplayName(this.objectInfo.name);
 	}
 
 	protected async initializeUI(): Promise<void> {
