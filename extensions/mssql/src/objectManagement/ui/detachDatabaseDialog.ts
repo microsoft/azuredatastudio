@@ -23,7 +23,7 @@ export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	protected async initializeUI(): Promise<void> {
-		let tableData = this.viewInfo.files.map(file => [file.name, file.type, file.fileGroup, file.path]);
+		let tableData = this.objectInfo.files.map(file => [file.name, file.type, file.fileGroup, file.path]);
 		let columnNames = [DatabaseFileNameLabel, DatabaseFileTypeLabel, DatabaseFileGroupLabel, DatabaseFilePathLabel];
 		let fileTable = this.createTable(DatabaseFilesLabel, columnNames, tableData);
 		let tableGroup = this.createGroup(DatabaseFilesLabel, [fileTable], false);
@@ -45,11 +45,11 @@ export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	protected override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
-		await this.objectManagementService.detachDatabase(this.options.connectionUri, this.options.objectUrn, this._dropConnections, this._updateStatistics, false);
+		await this.objectManagementService.detachDatabase(this.options.connectionUri, this.options.database, this.options.objectUrn, this._dropConnections, this._updateStatistics, false);
 	}
 
 	protected override async generateScript(): Promise<string> {
-		return await this.objectManagementService.detachDatabase(this.options.connectionUri, this.options.objectUrn, this._dropConnections, this._updateStatistics, true);
+		return await this.objectManagementService.detachDatabase(this.options.connectionUri, this.options.database, this.options.objectUrn, this._dropConnections, this._updateStatistics, true);
 	}
 
 	protected override async validateInput(): Promise<string[]> {

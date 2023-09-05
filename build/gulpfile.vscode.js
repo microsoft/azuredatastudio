@@ -163,7 +163,6 @@ const extensionsFilter = filter([
 	'**/Microsoft.azurecore.xlf',
 	'**/Microsoft.azuremonitor.xlf',
 	'**/Microsoft.cms.xlf',
-	'**/Microsoft.context-builder.xlf',
 	'**/Microsoft.dacpac.xlf',
 	'**/Microsoft.data-workspace.xlf',
 	'**/Microsoft.datavirtualization.xlf',

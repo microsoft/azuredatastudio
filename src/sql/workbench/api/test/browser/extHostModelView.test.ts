@@ -387,6 +387,8 @@ suite('ExtHostModelView Validation Tests', () => {
 					rootComponent.properties.data &&
 					rootComponent.properties.data.length === 0;
 			})), Times.once());
+
+			declarativeTable.dispose();
 		});
 
 		test('initialized with string data has correct properties', async () => {
@@ -401,6 +403,8 @@ suite('ExtHostModelView Validation Tests', () => {
 					rootComponent.properties.data &&
 					rootComponent.properties.data[0][0] === testData;
 			})), Times.once());
+
+			declarativeTable.dispose();
 		});
 
 		test('initialized with component data converts to id', async () => {
@@ -416,6 +420,8 @@ suite('ExtHostModelView Validation Tests', () => {
 					rootComponent.properties.data &&
 					rootComponent.properties.data[0][0] === button.id;
 			})), Times.once());
+
+			declarativeTable.dispose();
 		});
 
 		test('when added to container with component data converts to id', async () => {
@@ -442,6 +448,8 @@ suite('ExtHostModelView Validation Tests', () => {
 					item.componentShape.properties.data &&
 					item.componentShape.properties.data[0][0] === button.id;
 			})), Times.once());
+
+			declarativeTable.dispose();
 		});
 	});
 });

@@ -1526,7 +1526,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Networking]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[網路功能]]></Val>
+            <Val><![CDATA[網路]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1727,7 +1727,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Online]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[上線]]></Val>
+            <Val><![CDATA[線上]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2567,7 +2567,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Subscription]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[訂用帳戶]]></Val>
+            <Val><![CDATA[訂閱]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2937,10 +2937,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.arc/dist/localizedConstants.clusterContextConfigNoLongerValid" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:]D;]A;	{2}]D;]A; Do you want to update this information?]]></Val>
+          <Val><![CDATA[The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:]A;	{2}]A; Do you want to update this information?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[組態檔所指定的叢集內容資訊: {0} 和叢集內容: {1} 不再有效。錯誤為: ]D;]A;	{2}]D;]A; 您要更新此資訊嗎?]]></Val>
+            <Val><![CDATA[組態檔所指定的叢集內容資訊: {0} 和叢集內容: {1} 不再有效。錯誤為:]A;	{2}]A; 您要更新此資訊嗎?]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:]D;]A;	{2}]D;]A; Do you want to update this information?]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3090,10 +3093,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.arc/package.arc.agreement.postgres.help.text" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[PostgreSQL Server - Azure Arc is one of the database engines available as part of Azure Arc-enabled data services and it can be deployed on the infrastructure of your choice. {0}. ]D;]A; ]D;]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
+          <Val><![CDATA[PostgreSQL Server - Azure Arc is one of the database engines available as part of Azure Arc-enabled data services and it can be deployed on the infrastructure of your choice. {0}. ]A; ]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[PostgreSQL 伺服器 - Azure Arc 是啟用 Azure Arc 的資料服務一部分的資料庫引擎之一，它可以部署在您選擇的基礎架構上。{0}。]D;]A; ]D;]A; 按一下 [編寫指令碼到筆記本]5D; 或 [部署]5D; 表示我 (a) 同意下方 Marketplace 供應項目的相關法律條款及隱私權聲明; (b) 授權 Microsoft 使用我目前的付款方式，收取供應項目的相關費用，帳單週期與我的 Azure 訂用帳戶相同; 並 (c) 同意 Microsoft 可以將我的連絡資料、使用方式及交易資訊，提供給供應項目的提供者，供支援、帳單及其他交易活動之用。Microsoft 不提供第三方供應項目的權利。如需其他詳細資料，請參閱 {1}、{2} 以及 {3}。]]></Val>
+            <Val><![CDATA[PostgreSQL 伺服器 - Azure Arc 是啟用 Azure Arc 的資料服務一部分的資料庫引擎之一，它可以部署在您選擇的基礎架構上。{0}。 ]A; ]A; 按一下 [編寫指令碼到筆記本]5D; 或 [部署]5D; 表示我 (a) 同意下方 Marketplace 供應項目的相關法律條款及隱私權聲明; (b) 授權 Microsoft 使用我目前的付款方式，收取供應項目的相關費用，帳單週期與我的 Azure 訂用帳戶相同; 並 (c) 同意 Microsoft 可以將我的連絡資料、使用方式及交易資訊，提供給供應項目的提供者，供支援、帳單及其他交易活動之用。Microsoft 不提供第三方供應項目的權利。如需其他詳細資料，請參閱 {1}、{2} 以及 {3}。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[PostgreSQL Server - Azure Arc is one of the database engines available as part of Azure Arc-enabled data services and it can be deployed on the infrastructure of your choice. {0}. ]D;]A; ]D;]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3120,12 +3126,12 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.arc/package.arc.agreement.sql.help.text" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Arc-enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. ]D;]A; ]D;]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
+          <Val><![CDATA[Azure Arc-enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. ]A; ]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[啟用 Azure Arc 的受控執行個體不僅可以存取 SQL Server，還提供相容的功能，可以部署到您選擇的基礎結構上。{0}。]D;]A; ]D;]A; 按一下 [編寫指令碼到筆記本]5D; 或 [部署]5D; 表示我 (a) 同意下方 Marketplace 供應項目的相關法律條款及隱私權聲明; (b) 授權 Microsoft 使用我目前的付款方式，收取供應項目的相關費用，帳單週期與我的 Azure 訂用帳戶相同; 並 (c) 同意 Microsoft 可以將我的連絡資料、使用方式及交易資訊，提供給供應項目的提供者，供支援、帳單及其他交易活動之用。Microsoft 不提供第三方供應項目的權利。如需其他詳細資料，請參閱 {1}、{2} 以及 {3}。]]></Val>
+            <Val><![CDATA[啟用 Azure Arc 的受控執行個體不僅可以存取 SQL Server，還提供相容的功能，可以部署到您選擇的基礎結構上。{0}。 ]A; ]A; 按一下 [編寫指令碼到筆記本]5D; 或 [部署]5D; 表示我 (a) 同意下方 Marketplace 供應項目的相關法律條款及隱私權聲明; (b) 授權 Microsoft 使用我目前的付款方式，收取供應項目的相關費用，帳單週期與我的 Azure 訂用帳戶相同; 並 (c) 同意 Microsoft 可以將我的連絡資料、使用方式及交易資訊，提供給供應項目的提供者，供支援、帳單及其他交易活動之用。Microsoft 不提供第三方供應項目的權利。如需其他詳細資料，請參閱 {1}、{2} 以及 {3}。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. ]D;]A; ]D;]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
+            <Val><![CDATA[Azure Arc-enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. ]D;]A; ]D;]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -3383,7 +3389,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Review your configuration]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[檢閱您的設定]]></Val>
+            <Val><![CDATA[檢閱您的組態]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3857,7 +3863,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Subscription]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[訂用帳戶]]></Val>
+            <Val><![CDATA[訂閱]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4505,7 +4511,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Subscription]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[訂用帳戶]]></Val>
+            <Val><![CDATA[訂閱]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5058,10 +5064,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.arc/package.arc.view.welcome.connect" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No Azure Arc controllers registered. [Learn More]5D;(https://azure.microsoft.com/services/azure-arc/)]D;]A;[Connect Controller]5D;(command:arc.connectToController)]]></Val>
+          <Val><![CDATA[No Azure Arc controllers registered. [Learn More]5D;(https://azure.microsoft.com/services/azure-arc/)]A;[Connect Controller]5D;(command:arc.connectToController)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[未註冊任何 Azure Arc 控制器。[深入了解]5D;(https://azure.microsoft.com/services/azure-arc/)]D;]A;[連線控制器]5D;(command:arc.connectToController)]]></Val>
+            <Val><![CDATA[未註冊任何 Azure Arc 控制器。[深入了解]5D;(https://azure.microsoft.com/services/azure-arc/)]A;[連線控制器]5D;(command:arc.connectToController)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[No Azure Arc controllers registered. [Learn More]5D;(https://azure.microsoft.com/services/azure-arc/)]D;]A;[Connect Controller]5D;(command:arc.connectToController)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

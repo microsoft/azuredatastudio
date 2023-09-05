@@ -91,26 +91,32 @@ export class DatabaseRoleDialog extends PrincipalDialogBase<DatabaseRoleInfo, Da
 
 	private initializeMemberSection(): void {
 		this.memberTable = this.createTable(localizedConstants.MemberSectionHeader, [localizedConstants.NameText], this.objectInfo.members.map(m => [m]));
-		const buttonContainer = this.addButtonsForTable(this.memberTable, localizedConstants.AddMemberAriaLabel, localizedConstants.RemoveMemberAriaLabel,
-			async () => {
-				const dialog = new FindObjectDialog(this.objectManagementService, {
-					objectTypes: localizedConstants.getObjectTypeInfo([
-						ObjectManagement.NodeType.DatabaseRole,
-						ObjectManagement.NodeType.User
-					]),
-					selectAllObjectTypes: true,
-					multiSelect: true,
-					contextId: this.contextId,
-					title: localizedConstants.SelectDatabaseRoleMemberDialogTitle,
-					showSchemaColumn: false
-				});
-				await dialog.open();
-				const result = await dialog.waitForClose();
-				await this.addMembers(result.selectedObjects.map(r => r.name));
+		const buttonContainer = this.addButtonsForTable(this.memberTable,
+			{
+				buttonAriaLabel: localizedConstants.AddMemberAriaLabel,
+				buttonHandler: async () => {
+					const dialog = new FindObjectDialog(this.objectManagementService, {
+						objectTypes: localizedConstants.getObjectTypeInfo([
+							ObjectManagement.NodeType.DatabaseRole,
+							ObjectManagement.NodeType.User
+						]),
+						selectAllObjectTypes: true,
+						multiSelect: true,
+						contextId: this.contextId,
+						title: localizedConstants.SelectDatabaseRoleMemberDialogTitle,
+						showSchemaColumn: false
+					});
+					await dialog.open();
+					const result = await dialog.waitForClose();
+					await this.addMembers(result.selectedObjects.map(r => r.name));
+				}
 			},
-			async () => {
-				if (this.memberTable.selectedRows.length === 1) {
-					await this.removeMember(this.memberTable.selectedRows[0]);
+			{
+				buttonAriaLabel: localizedConstants.RemoveMemberAriaLabel,
+				buttonHandler: async () => {
+					if (this.memberTable.selectedRows.length === 1) {
+						await this.removeMember(this.memberTable.selectedRows[0]);
+					}
 				}
 			});
 		this.memberSection = this.createGroup(localizedConstants.MemberSectionHeader, [this.memberTable, buttonContainer]);

@@ -25,7 +25,7 @@ export class TreeDataTemplate extends Disposable {
 	icon: HTMLElement;
 	private _checkbox: HTMLInputElement;
 	model: ITreeComponentItem;
-	private _onChange = new Emitter<boolean>();
+	private _onChange = this._register(new Emitter<boolean>());
 
 	public readonly onChange: Event<boolean> = this._onChange.event;
 
@@ -45,6 +45,14 @@ export class TreeDataTemplate extends Disposable {
 		} else {
 			return this.checkbox.checked ? TreeCheckboxState.Checked : TreeCheckboxState.Unchecked;
 		}
+	}
+
+	public override dispose(): void {
+		super.dispose();
+		this._checkbox.remove();
+		this.root.remove();
+		this.label.remove();
+		this.icon.remove();
 	}
 
 	public set checkboxState(value: TreeCheckboxState) {
