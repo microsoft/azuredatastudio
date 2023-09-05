@@ -1576,7 +1576,7 @@
     "find-remove": "1.2.1",
     "vscode-languageclient": "5.2.1",
     "vscode-nls": "^4.0.0",
-    "xsel": "^1.2.0"
+    "xsel": "^1.0.0"
   },
   "devDependencies": {
     "@types/mocha": "^7.0.2",
