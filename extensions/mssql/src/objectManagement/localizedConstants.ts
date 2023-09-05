@@ -108,6 +108,13 @@ export function OpenDetachDatabaseDialogError(error: string): string {
 	}, "An error occurred while opening the detach database dialog. {0}", error);
 }
 
+export function DetachDatabaseOperationDisplayName(objectName: string): string {
+	return localize({
+		key: 'objectManagement.detachDatabaseOperationName',
+		comment: ['{0}: object name.']
+	}, "Detach database '{0}'", objectName);
+}
+
 export function OpenDropDatabaseDialogError(error: string): string {
 	return localize({
 		key: 'objectManagement.openDropDatabaseDialogError',
@@ -121,6 +128,8 @@ export function OpenAttachDatabaseDialogError(error: string): string {
 		comment: ['{0}: error message.']
 	}, "An error occurred while opening the attach database dialog. {0}", error);
 }
+
+export const AttachDatabaseOperationDisplayName = localize('objectManagement.attachDatabaseOperationName', "Attach database");
 
 export function OpenObjectPropertiesDialogError(objectType: string, objectName: string, error: string): string {
 	return localize({
