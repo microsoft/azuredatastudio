@@ -504,7 +504,6 @@ export class ProfilerEditor extends EditorPane {
 
 			if (this.input.isFileSession && this.input.isSetupPhase) {		// Add loading indicator when opening a new file session
 				this._profilerTableEditor.loadingSpinner.loading = true;
-				this._profilerTableEditor.loadingSpinner.loadingMessage = nls.localize('Loading', "Loading...");
 				this.input.setInitializerPhase(false);
 			}
 		});
