@@ -228,11 +228,11 @@ export class EditDataGridPanel extends GridParentComponent {
 			else if (Services.DBCellValue.isDBCellValue(value)) {
 				// If a cell is not edited and retrieved direct from the SQL server, it would be in the form of a DBCellValue.
 				// We use the DBCellValue's raw displayValue as the text value.
-				returnVal = value.displayValue;
+				returnVal = this.replaceLinebreaks(value.displayValue);
 			}
 			else if (typeof value === 'string') {
 				// Once a cell has been edited, the cell value will no longer be a DBCellValue until refresh.
-				returnVal = value;
+				returnVal = this.replaceLinebreaks(value);
 			}
 			return returnVal;
 		};
@@ -507,14 +507,14 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	/**
-	 * Replace the line breaks with desired newline character replacement.
+	 * Replace the line breaks with space.
 	 */
 	private replaceLinebreaks(inputStr: string): string {
 		let newlineMatches = inputStr.match(/(\r\n|\n|\r)/g);
 		if (newlineMatches && newlineMatches.length > 0) {
 			this.newlinePattern = newlineMatches[0];
 		}
-		return inputStr.replace(/(\r\n|\n|\r)/g, this.newlineCharacter);
+		return inputStr.replace(/(\r\n|\n|\r)/g, '\u0000');
 	}
 
 	/**
@@ -710,7 +710,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				let sessionRowId = self.rowIdMappings[self.currentCell.row] !== undefined
 					? self.rowIdMappings[self.currentCell.row]
 					: self.currentCell.row;
-				let restoredValue = this.newlinePattern ? self.currentEditCellValue.replace(new RegExp(this.newlineCharacter), this.newlinePattern) : self.currentEditCellValue;
+				let restoredValue = this.newlinePattern ? self.currentEditCellValue.replace(/\u0000/g, this.newlinePattern) : self.currentEditCellValue;
 				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, restoredValue);
 			}).then(
 				result => {
@@ -1235,7 +1235,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private hasNullAndLinebreak(inputString: string): boolean {
 		if (inputString) {
 			let linebreakMatch = inputString.match(/(\r\n|\n|\r)/);
-			return linebreakMatch?.length > 0 && inputString.indexOf(this.newlineCharacter) !== -1;
+			return linebreakMatch?.length > 0 && inputString.indexOf('\u0000') !== -1;
 		}
 		return false;
 	}
