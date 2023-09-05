@@ -155,7 +155,12 @@ export class ServerContextualizationService extends Disposable implements IServe
 			}
 
 			// We need to "compress" context to fit within a fixed token budget
-			const compressedContext = this.compressContext(serverContext);
+			let compressedContext = serverContext;
+			try {
+				compressedContext = this.compressContext(serverContext);
+			} catch (e) {
+				this._logService.warn(`Failed to compress context: ${e}`);
+			}
 
 			await this._commandService.executeCommand('github.copilot.provideContext', uri, {
 				value: compressedContext
@@ -191,6 +196,10 @@ export class ServerContextualizationService extends Disposable implements IServe
 	 * @returns The compressed context string.
 	 */
 	private compressContext(context: string, tokenBudget: number = 1000): string {
+		if (!context) {
+			throw new Error('Context parameter cannot be null or undefined.');
+		}
+
 		// We're given a string w/ database context (tables/cols/type info/etc.)
 		// Let's clean up some irrelevant info
 		const cleanCtx = context.replace(/SET .*?(ON|OFF)/g, '');
@@ -200,7 +209,7 @@ export class ServerContextualizationService extends Disposable implements IServe
 
 		// Let's estimate tokens (instead of _actually_ doing tokenization)
 		// For now, we'll use this heuristic:
-		const tokenCount = (s) => Math.round((s ?? '').length * 0.35) + 25;
+		const tokenCount = (s: string) => Math.round((s ?? '').length * 0.35) + 25;
 
 		// We want this string to be as large as possible, but we're limited by
 		// a fixed token budget; we'll apply various strategies to compress the
@@ -212,93 +221,15 @@ export class ServerContextualizationService extends Disposable implements IServe
 
 		// Okay, we're over budget - let's try to compress the context string
 		// We'll start by grabbing each CREATE TABLE statement
-		const tables = context.match(/CREATE TABLE.*?(\n|$)/g);
+		const tables = reducedWhitespaceCtx.match(/CREATE TABLE.*?(\n|$)/g);
 		const columnAblations = tables?.map(table => {
-			// We'll do several ablations of the table strings
-			// (1) Just the `CREATE TABLE <name>`
-			// (2) The table name + first few cols (no types)
-			//     `CREATE TABLE <name> (Col1, Col2, /* x more columns */)`
-			// (3) The table + all cols (no types)
-			//     `CREATE TABLE <name> (Col1, Col2, ..., ColN)`
-			// (4) The table + all cols (w/ types)
-			//     `CREATE TABLE <name> (Col1 <type>, Col2 <type>, ..., ColN <type>)`
-			// (5) The statement as-is
-
-			// Get (1)
-			const tableName = table.match(/CREATE TABLE\s*(.*?)\s*\(/)?.[1];
-
-			// Get the rest of the create
-			let restOfCreate = table.replace(/CREATE TABLE.*?\(/, '');
-			// Remove last ')' and any trailing whitespace
-			restOfCreate = restOfCreate.replace(/\)\s*$/, '');
-
-			// Iteravitely get the cols (w/ and w/o types)
-			const justCols = [];
-			const colsWithTypes = [];
-			while (restOfCreate.length > 0) {
-				// Get the next column
-				const col = restOfCreate.match(/(.*?)\s*(,\[|$)/)?.[1];
-				if (col) {
-					// Remove the column from the rest of the create
-					restOfCreate = restOfCreate.replace(col, '');
-					// Remove the trailing comma
-					restOfCreate = restOfCreate.replace(/^\s*,/, '');
-					// Remove any leading whitespace
-					restOfCreate = restOfCreate.trim();
-
-					// Add the column to the list of columns
-					const colName = col.split(' ')[0];
-					justCols.push(colName);
-
-					// Add the column w/ type to the list of columns
-					// (trying to ignore NOT NULL / other constraints)
-					const colWithType = (colName + ' ' + col.split(' ')?.[1]) ?? col;
-					colsWithTypes.push(colWithType);
-				}
-				else {
-					// No more columns
-					break;
-				}
+			try {
+				return this.produceTableAblations(table, tokenCount);
+			} catch (e) {
+				// On failure, just return the table as-is
+				return [table, table, table, table, table];
 			}
-
-			// For (2) we'll take the first 3 cols and add a comment for the rest
-			const justFirstFewCols = justCols.slice(0, 3);
-			const justFirstFewColsWithComment = [...justFirstFewCols];
-			if (justCols.length > 3) {
-				justFirstFewColsWithComment.push(`/* ${justCols.length - 3} more cols not shown ... */`);
-			}
-
-			// Now return all the ablations
-			const ablations = [
-				`CREATE TABLE ${tableName}`,
-				`CREATE TABLE ${tableName} (${justFirstFewColsWithComment.join(', ')})`,
-				`CREATE TABLE ${tableName} (${justCols.join(', ')})`,
-				`CREATE TABLE ${tableName} (${colsWithTypes.join(', ')})`,
-				table.replace(/,\[/g, ', [')  // Add spaces after commas
-			];
-
-			// Get each ablation (trimmed) w/ it's token count
-			const ablationsWithTokenCounts = ablations.map(ablation => {
-				return {
-					ablation: ablation.trim(),
-					tokenCount: tokenCount(ablation.trim())
-				};
-			});
-
-			// If there's ever an ablation that's less than the previous ablation,
-			// we'll use that one instead (these should be strictly increasing in token count)
-			let bestAblation = ablationsWithTokenCounts[0];
-			for (let i = 1; i < ablationsWithTokenCounts.length; i++) {
-				if (ablationsWithTokenCounts[i].tokenCount < bestAblation.tokenCount) {
-					bestAblation = ablationsWithTokenCounts[i];
-					ablationsWithTokenCounts[i - 1] = bestAblation;
-				}
-			}
-
-			// Return all the ablations w/ their token counts
-			return ablationsWithTokenCounts;
 		});
-
 
 		// Okay, now to render the final (compressed) context
 		// We have 5 ablations for each table, so we'll start by trying
@@ -307,13 +238,15 @@ export class ServerContextualizationService extends Disposable implements IServe
 		const maxAblations = columnAblations[0]?.length ?? 0;
 		for (let i = maxAblations - 1; i >= 0; i--) {
 			// Get the best ablation for each table
-			const bestAblations = columnAblations.map(ablations => ablations[i].ablation);
+			const bestAblations = columnAblations.map(ablations => ablations[i]);
 
 			// Now we'll try to join all the best ablations together
 			const compressedContext = bestAblations.join('\n');
 
 			// Check if we're under budget
 			if (tokenCount(compressedContext) <= tokenBudget) {
+				// Log what level of compression we were able to achieve
+				this._logService.info(`Compressed context to level:=${i + 1}`);
 				// We're under budget, so we can return
 				return compressedContext;
 			}
@@ -322,7 +255,7 @@ export class ServerContextualizationService extends Disposable implements IServe
 		// Okay, we're still over budget so we'll try and just return
 		// as many table names as we can (with a comment on how many we elided)
 		const justTableNames = [];
-		const smallestAblations = columnAblations.map(tableAblations => tableAblations[0].ablation);
+		const smallestAblations = columnAblations.map(tableAblations => tableAblations[0]);
 		// Take into account the elision template text
 		const elisionTemplateTextTokenCount = tokenCount('/* 0000 more tables not shown ... */');
 		const reducedTokenBudget = tokenBudget - elisionTemplateTextTokenCount;
@@ -336,8 +269,102 @@ export class ServerContextualizationService extends Disposable implements IServe
 			}
 		}
 
+		// Log what level of compression we were able to achieve
+		this._logService.info(`Compressed context to level:=0`);
+		this._logService.info(`Elided ${smallestAblations.length} tables from context`);
+
 		// Now we'll add the elision template text
 		justTableNames.push(`/* ${smallestAblations.length} more tables not shown ... */`);
 		return justTableNames.join('\n').trim();
+	}
+
+	/**
+	 * Produces several ablations of the table strings
+	 * (1) Just the `CREATE TABLE <name>`
+	 * (2) The table name + first few cols (no types)
+	 *     `CREATE TABLE <name> (Col1, Col2, /* x more columns ... )`
+	 * (3) The table + all cols (no types)
+	 *     `CREATE TABLE <name> (Col1, Col2, ..., ColN)`
+	 * (4) The table + all cols (w/ types)
+	 *     `CREATE TABLE <name> (Col1 <type>, Col2 <type>, ..., ColN <type>)`
+	 * (5) The statement as-is
+	 * @param table The table string to produce ablations for
+	 * @param tokenCount A function that estimates the number of tokens in a string
+	 * @returns An array of ablations for the table string
+	 */
+	private produceTableAblations(table: string, tokenCount: (string) => number): string[] {
+		// Get (1)
+		const tableName = table.match(/CREATE TABLE\s*(.*?)\s*\(/)?.[1];
+
+		// Get the rest of the create
+		let restOfCreate = table.replace(/CREATE TABLE.*?\(/, '');
+		// Remove last ')' and any trailing whitespace
+		restOfCreate = restOfCreate.replace(/\)\s*$/, '');
+
+		// Iteravitely get the cols (w/ and w/o types)
+		const justCols = [];
+		const colsWithTypes = [];
+		while (restOfCreate.length > 0) {
+			// Get the next column
+			const col = restOfCreate.match(/(.*?)\s*(,\[|$)/)?.[1];
+			if (col) {
+				// Remove the column from the rest of the create
+				restOfCreate = restOfCreate.replace(col, '');
+				// Remove the trailing comma
+				restOfCreate = restOfCreate.replace(/^\s*,/, '');
+				// Remove any leading whitespace
+				restOfCreate = restOfCreate.trim();
+
+				// Add the column to the list of columns
+				const colName = col.split(' ')[0];
+				justCols.push(colName);
+
+				// Add the column w/ type to the list of columns
+				// (trying to ignore NOT NULL / other constraints)
+				const colWithType = (colName + ' ' + col.split(' ')?.[1]) ?? col;
+				colsWithTypes.push(colWithType);
+			}
+			else {
+				// No more columns
+				break;
+			}
+		}
+
+		// For (2) we'll take the first 3 cols and add a comment for the rest
+		const justFirstFewCols = justCols.slice(0, 3);
+		const justFirstFewColsWithComment = [...justFirstFewCols];
+		if (justCols.length > 3) {
+			justFirstFewColsWithComment.push(`/* ${justCols.length - 3} more cols not shown ... */`);
+		}
+
+		// Now return all the ablations
+		const ablations = [
+			`CREATE TABLE ${tableName}`,
+			`CREATE TABLE ${tableName} (${justFirstFewColsWithComment.join(', ')})`,
+			`CREATE TABLE ${tableName} (${justCols.join(', ')})`,
+			`CREATE TABLE ${tableName} (${colsWithTypes.join(', ')})`,
+			table.replace(/,\[/g, ', [')  // Add spaces after commas
+		];
+
+		// Get each ablation (trimmed) w/ it's token count
+		const ablationsWithTokenCounts = ablations.map(ablation => {
+			return {
+				ablation: ablation.trim(),
+				tokenCount: tokenCount(ablation.trim())
+			};
+		});
+
+		// If there's ever an ablation that's less than the previous ablation,
+		// we'll use that one instead (these should be strictly increasing in token count)
+		let bestAblation = ablationsWithTokenCounts[0];
+		for (let i = 1; i < ablationsWithTokenCounts.length; i++) {
+			if (ablationsWithTokenCounts[i].tokenCount < bestAblation.tokenCount) {
+				bestAblation = ablationsWithTokenCounts[i];
+				ablationsWithTokenCounts[i - 1] = bestAblation;
+			}
+		}
+
+		// Return all the ablations w/ their token counts
+		return ablationsWithTokenCounts.map(ablation => ablation.ablation);
 	}
 }
