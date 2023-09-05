@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import { MigrationStateModel } from '../../models/stateMachine';
 import { MigrationTargetType } from '../../api/utils';
@@ -58,19 +59,14 @@ export class AssessmentDetailsHeader {
 			width: 190,
 		}).withProps({
 			CSSStyles: {
-				'width': '190px',
-				'box-shadow': '0px 1px 4px rgba(0, 0, 0, 0.13)',
-				'padding': '8px 0px 8px 12px',
-				'border-radius': '4px',
-				'margin': '8px 0px 0px 15px'
+				...styles.CARD_CSS,
 			}
 		}).component();
 
 		const cardHeading = this._view.modelBuilder.text().withProps({
 			value: linkMetaData.title,
 			CSSStyles: {
-				'font-size': '13px',
-				'line-height': '18px',
+				...styles.BODY_CSS,
 				'margin': '0px'
 			},
 		}).component();
@@ -78,9 +74,7 @@ export class AssessmentDetailsHeader {
 		const cardText = this._view.modelBuilder.text().withProps({
 			value: linkMetaData.value,
 			CSSStyles: {
-				'font-size': '13px',
-				'line-height': '18px',
-				'font-weight': '600',
+				...styles.LABEL_CSS,
 				'overflow-wrap': 'break-word'
 			},
 		}).component();
