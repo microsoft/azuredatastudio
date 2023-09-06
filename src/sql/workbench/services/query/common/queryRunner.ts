@@ -348,7 +348,7 @@ export default class QueryRunner extends Disposable {
 			if (hasShowPlan && resultSet.rowCount > 0) {
 				this._isQueryPlan = true;
 
-				this.getQueryRows(0, 1, resultSet.batchId, resultSet.id).then(e => {
+				this.getQueryRowsPaged(0, 1, resultSet.batchId, resultSet.id).then(e => {
 					if (e.rows) {
 						this._planXml.resolve(e.rows[0][0].displayValue);
 					}
@@ -373,7 +373,7 @@ export default class QueryRunner extends Disposable {
 			let hasShowPlan = !!resultSet.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 			if (hasShowPlan) {
 				this._isQueryPlan = true;
-				this.getQueryRows(0, 1, resultSet.batchId, resultSet.id).then(e => {
+				this.getQueryRowsPaged(0, 1, resultSet.batchId, resultSet.id).then(e => {
 
 					if (e.rows) {
 						let planXmlString = e.rows[0][0].displayValue;
@@ -419,6 +419,7 @@ export default class QueryRunner extends Disposable {
 
 	/**
 	 * Get more data rows from the current resultSets from the service layer
+	 * @deprecated getQueryRowsPaged should be used instead as it is much more performant
 	 */
 	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
 		let rowData: QueryExecuteSubsetParams = <QueryExecuteSubsetParams>{
@@ -429,7 +430,22 @@ export default class QueryRunner extends Disposable {
 			batchIndex: batchIndex
 		};
 
-		return this.queryManagementService.getQueryRows(rowData, cancellationToken, onProgressCallback).then(r => r, error => {
+		return this.queryManagementService.getQueryRows(rowData);
+	}
+
+	/**
+	 * Get more data rows from the current resultSets from the service layer with paging, fetching row data in batches until all rows are retrieved.
+	 */
+	public getQueryRowsPaged(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
+		let rowData: QueryExecuteSubsetParams = <QueryExecuteSubsetParams>{
+			ownerUri: this.uri,
+			resultSetIndex: resultSetIndex,
+			rowsCount: numberOfRows,
+			rowsStartIndex: rowStart,
+			batchIndex: batchIndex
+		};
+
+		return this.queryManagementService.getQueryRowsPaged(rowData, cancellationToken, onProgressCallback).then(r => r, error => {
 			// this._notificationService.notify({
 			// 	severity: Severity.Error,
 			// 	message: nls.localize('query.gettingRowsFailedError', 'Something went wrong getting more rows: {0}', error)
@@ -566,7 +582,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 	}
 
 	getRowData(rowStart: number, numberOfRows: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
-		return this.queryRunner.getQueryRows(rowStart, numberOfRows, this.batchId, this.resultSetId, cancellationToken, onProgressCallback);
+		return this.queryRunner.getQueryRowsPaged(rowStart, numberOfRows, this.batchId, this.resultSetId, cancellationToken, onProgressCallback);
 	}
 
 	copyResults(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
@@ -581,7 +597,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 			if (preferProvidersCopyHandler && providerSupportCopyResults && (tableView === undefined || !tableView.isDataInMemory)) {
 				await this.handleCopyRequestByProvider(selections, includeHeaders);
 			} else {
-				await copySelectionToClipboard(this._clipboardService, this._notificationService, this, selections, includeHeaders, tableView);
+				await copySelectionToClipboard(this._clipboardService, this._notificationService, this._configurationService, this, selections, includeHeaders, tableView);
 			}
 		} catch (error) {
 			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
@@ -589,7 +605,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 	}
 
 	private async handleCopyRequestByProvider(selections: Slick.Range[], includeHeaders?: boolean): Promise<void> {
-		executeCopyWithNotification(this._notificationService, selections, async () => {
+		executeCopyWithNotification(this._notificationService, this._configurationService, selections, async () => {
 			await this.queryRunner.copyResults(selections, this.batchId, this.resultSetId, this.shouldIncludeHeaders(includeHeaders));
 		});
 	}

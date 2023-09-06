@@ -25,6 +25,12 @@ export const AccountsAzureAuthSection = AccountsSection + '.' + AzureSection + '
 
 export const AccountsAzureCloudSection = AccountsSection + '.' + AzureSection + '.' + CloudSection;
 
+export const enablePublicCloud = 'enablePublicCloud';
+
+export const enableUsGovCloud = 'enableUsGovCloud';
+
+export const enableChinaCloud = 'enableChinaCloud';
+
 export const EnableArcFeaturesSection = 'enableArcFeatures';
 
 export const ServiceName = 'azuredatastudio';
@@ -46,6 +52,8 @@ export const piiLogging = 'piiLogging';
 export const CustomProviderSettings = 'customProviderSettings';
 
 export const CustomProviderSettingsSection = AzureSection + '.' + CustomProviderSettings;
+
+export const PackageName = 'Microsoft.azurecore';
 
 /** MSAL Account version */
 export const AccountVersion = '2.0';
@@ -90,6 +98,25 @@ export const AADSTS70043 = 'AADSTS70043';
  * require reauthentication. Have the user sign in again.
  */
 export const AADSTS50173 = 'AADSTS50173';
+/**
+ * UserStrongAuthExpired- Presented multi-factor authentication has expired due to policies configured by your administrator,
+ * you must refresh your multi-factor authentication to access '{resource}'.
+ */
+export const AADSTS50078 = 'AADSTS50078';
+/**
+ * Refresh token needs social IDP login. Have user try signing-in again with username -password
+ */
+export const AADSTS50085 = 'AADSTS50085';
+/**
+ * Authentication failed due to flow token expired. Expected - auth codes, refresh tokens, and sessions expire over time
+ * or are revoked by the user or an admin. The app will request a new login from the user.
+ */
+export const AADSTS50089 = 'AADSTS50089';
+/**
+ * The refresh token was issued to a single page app (SPA), and therefore has a fixed, limited lifetime of {time}, which can't be extended.
+ * It is now expired and a new sign in request must be sent by the SPA to the sign in page. The token was issued on {issueDate}.
+ */
+export const AADSTS700084 = 'AADSTS700084';
 
 /**
  * multiple_matching_tokens error can occur in scenarios when users try to run ADS as different users, reference issue:

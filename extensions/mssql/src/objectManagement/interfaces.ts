@@ -454,27 +454,66 @@ export interface Database extends ObjectManagement.SqlObject {
 	databaseReadOnly?: boolean;
 	encryptionEnabled: boolean;
 	restrictAccess?: string;
+	databaseScopedConfigurations: DatabaseScopedConfigurationsInfo[];
+	isFilesTabSupported?: boolean;
+	files?: DatabaseFile[];
+	filegroups?: FileGroup[];
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
-	loginNames: string[];
-	collationNames: string[];
-	compatibilityLevels: string[];
-	containmentTypes: string[];
-	recoveryModels: string[];
-	files: DatabaseFile[];
 	isAzureDB: boolean;
-	azureBackupRedundancyLevels: string[];
-	azureServiceLevelObjectives: AzureEditionDetails[];
-	azureEditions: string[];
-	azureMaxSizes: AzureEditionDetails[];
-	pageVerifyOptions: string[];
-	restrictAccessOptions: string[];
+	isManagedInstance: boolean;
+	isSqlOnDemand: boolean;
+	loginNames?: OptionsCollection;
+	collationNames?: OptionsCollection;
+	compatibilityLevels?: OptionsCollection;
+	containmentTypes?: OptionsCollection;
+	recoveryModels?: OptionsCollection;
+	azureBackupRedundancyLevels?: string[];
+	azureServiceLevelObjectives?: AzureEditionDetails[];
+	azureEditions?: string[];
+	azureMaxSizes?: AzureEditionDetails[];
+	pageVerifyOptions?: string[];
+	restrictAccessOptions?: string[];
+	dscOnOffOptions?: string[];
+	dscElevateOptions?: string[];
+	dscEnableDisableOptions?: string[];
+	rowDataFileGroupsOptions?: string[];
+	fileStreamFileGroupsOptions?: string[];
+	fileTypesOptions?: string[];
+}
+
+export interface DatabaseScopedConfigurationsInfo {
+	id: number;
+	name: string;
+	valueForPrimary: string;
+	valueForSecondary: string;
+}
+
+export interface OptionsCollection {
+	options: string[];
+	defaultValueIndex: number;
 }
 
 export interface AzureEditionDetails {
 	editionDisplayName: string;
-	details: string[];
+	editionOptions: OptionsCollection;
+}
+
+export interface ProcessorAffinity {
+	processorId: string;
+	affinity: boolean;
+	ioAffinity: boolean;
+}
+
+export interface NumaNode {
+	numaNodeId: string
+	processors: ProcessorAffinity[]
+}
+
+export enum AffinityType {
+	ProcessorAffinity = 1,
+	IOAffinity = 2,
 }
 
 export interface Server extends ObjectManagement.SqlObject {
@@ -497,6 +536,48 @@ export interface Server extends ObjectManagement.SqlObject {
 	storageSpaceUsageInMB: number;
 	minServerMemory: NumericServerProperty;
 	maxServerMemory: NumericServerProperty;
+	autoProcessorAffinityMaskForAll: boolean;
+	autoProcessorAffinityIOMaskForAll: boolean;
+	numaNodes: NumaNode[];
+	authenticationMode: ServerLoginMode;
+	loginAuditing: AuditLevel;
+	checkCompressBackup: boolean;
+	checkBackupChecksum: boolean;
+	dataLocation: string;
+	logLocation: string;
+	backupLocation: string;
+	allowTriggerToFireOthers: boolean;
+	blockedProcThreshold: NumericServerProperty;
+	cursorThreshold: NumericServerProperty;
+	defaultFullTextLanguage: string;
+	defaultLanguage: string;
+	fullTextUpgradeOption: string;
+	maxTextReplicationSize: NumericServerProperty;
+	optimizeAdHocWorkloads: boolean;
+	scanStartupProcs: boolean;
+	twoDigitYearCutoff: number;
+	costThresholdParallelism: NumericServerProperty;
+	locks: NumericServerProperty;
+	maxDegreeParallelism: NumericServerProperty;
+	queryWait: NumericServerProperty;
+}
+
+/**
+ * The server login types.
+ */
+export const enum ServerLoginMode {
+	Integrated, //windows auth only
+	Mixed // both sql server and windows auth
+}
+
+/**
+ * The server audit levels.
+ */
+export const enum AuditLevel {
+	None,
+	Success,
+	Failure,
+	All
 }
 
 export interface NumericServerProperty {
@@ -506,11 +587,41 @@ export interface NumericServerProperty {
 }
 
 export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
+	languageOptions: string[];
+	fullTextUpgradeOptions: string[];
+}
+
+export const enum FileGrowthType {
+	KB = 0,
+	Percent = 1,
+	None = 99
+}
+
+export const enum FileGroupType {
+	RowsFileGroup = 0,
+	FileStreamDataFileGroup = 2,
+	MemoryOptimizedDataFileGroup = 3
 }
 
 export interface DatabaseFile {
+	id: number;
 	name: string;
 	type: string;
 	path: string;
 	fileGroup: string;
+	fileNameWithExtension: string;
+	sizeInMb: number;
+	isAutoGrowthEnabled: boolean;
+	autoFileGrowth: number;
+	autoFileGrowthType: FileGrowthType;
+	maxSizeLimitInMb: number
+}
+
+export interface FileGroup {
+	id?: number;
+	name: string;
+	type: FileGroupType;
+	isReadOnly: boolean;
+	isDefault: boolean;
+	autogrowAllFiles: boolean;
 }

@@ -56,9 +56,9 @@ import { ProxiesViewComponent } from 'sql/workbench/contrib/jobManagement/browse
 import { NotebooksViewComponent } from 'sql/workbench/contrib/jobManagement/browser/notebooksView.component';
 import { NotebookHistoryComponent } from 'sql/workbench/contrib/jobManagement/browser/notebookHistory.component';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
-import { SelectBox } from 'sql/platform/browser/selectBox/selectBox.component';
-import { InputBox } from 'sql/platform/browser/inputbox/inputBox.component';
-import { EditableDropDown } from 'sql/platform/browser/editableDropdown/editableDropdown.component';
+import { SelectBox } from 'sql/platform/selectBox/browser/selectBox.component';
+import { InputBox } from 'sql/platform/inputBox/browser/inputBox.component';
+import { EditableDropDown } from 'sql/platform/editableDropdown/browser/editableDropdown.component';
 import { AsmtViewComponent } from 'sql/workbench/contrib/assessment/browser/asmtView.component';
 import { AsmtResultsViewComponent } from 'sql/workbench/contrib/assessment/browser/asmtResultsView.component';
 

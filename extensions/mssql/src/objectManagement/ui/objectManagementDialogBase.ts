@@ -26,7 +26,6 @@ export interface ObjectManagementDialogOptions extends ScriptableDialogOptions {
 	isNewObject: boolean;
 	parentUrn: string;
 	objectUrn?: string;
-	objectExplorerContext?: azdata.ObjectExplorerContext;
 	objectName?: string;
 }
 
@@ -63,12 +62,16 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		await this.objectManagementService.save(this._contextId, this.objectInfo);
 	}
 
+	protected get saveChangesTaskLabel(): string {
+		const typeDisplayName = localizedConstants.getNodeTypeDisplayName(this.options.objectType);
+		return this.options.isNewObject ? localizedConstants.CreateObjectOperationDisplayName(typeDisplayName)
+			: localizedConstants.UpdateObjectOperationDisplayName(typeDisplayName, this.options.objectName);
+	}
+
 	protected override async initialize(): Promise<void> {
 		await super.initialize();
-		const typeDisplayName = localizedConstants.getNodeTypeDisplayName(this.options.objectType);
 		this.dialogObject.registerOperation({
-			displayName: this.options.isNewObject ? localizedConstants.CreateObjectOperationDisplayName(typeDisplayName)
-				: localizedConstants.UpdateObjectOperationDisplayName(typeDisplayName, this.options.objectName),
+			displayName: this.saveChangesTaskLabel,
 			description: '',
 			isCancelable: false,
 			operation: async (operation: azdata.BackgroundOperation): Promise<void> => {

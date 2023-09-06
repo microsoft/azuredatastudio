@@ -67,7 +67,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private _azureAccountList: azdata.Account[];
 	private _callbacks: IConnectionComponentCallbacks;
 	private _focusedBeforeHandleOnConnection: HTMLElement;
-	private _saveProfile: boolean;
 	private _databaseDropdownExpanded: boolean = false;
 	private _defaultDatabaseName: string = localize('defaultDatabaseOption', "<Default>");
 	private _loadingDatabaseName: string = localize('loadingDatabaseOption', "Loading...");
@@ -879,8 +878,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._connectionStringInputBox?.hideMessage();
 	}
 
-	private getModelValue(value: string): string {
-		return value !== undefined ? value : '';
+	private getModelValue(value: any): string {
+		return value !== undefined ? value.toString() : '';
 	}
 
 	public fillInConnectionInputs(connectionInfo: IConnectionProfile) {
@@ -893,20 +892,15 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._connectionNameInputBox.value = this.getModelValue(connectionInfo.connectionName);
 			this._userNameInputBox.value = this.getModelValue(connectionInfo.userName);
 			this._passwordInputBox.value = this.getModelValue(connectionInfo.password);
-			this._saveProfile = connectionInfo.saveProfile;
 			this._azureTenantId = connectionInfo.azureTenantId;
 			if (this._databaseNameInputBox) {
 				this._databaseNameInputBox.value = this.getModelValue(connectionInfo.databaseName);
 			}
 			let groupName: string;
-			if (this._saveProfile) {
-				if (!connectionInfo.groupFullName) {
-					groupName = this.DefaultServerGroup.name;
-				} else {
-					groupName = connectionInfo.groupFullName.replace('root/', '');
-				}
+			if (!connectionInfo.groupFullName) {
+				groupName = this.DefaultServerGroup.name;
 			} else {
-				groupName = this.NoneServerGroup.name;
+				groupName = connectionInfo.groupFullName.replace('root/', '');
 			}
 			if (this._serverGroupSelectBox) {
 				this._serverGroupSelectBox.selectWithOptionName(groupName);

@@ -214,7 +214,12 @@ export class PublishDatabaseDialog {
 					connId = connResult.connectionId!;
 				}
 				else {
-					connId = (await utils.getAzdataApi()!.connection.openConnectionDialog(undefined, connProfile)).connectionId;
+					connId = (await utils.getAzdataApi()!.connection.openConnectionDialog(undefined, connProfile, {
+						saveConnection: false,
+						showDashboard: false,
+						showConnectionDialogOnError: true,
+						showFirewallRuleOnError: true
+					})).connectionId;
 				}
 			}
 			else {
@@ -742,7 +747,12 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		this.selectConnectionButton.onDidClick(async () => {
-			let connection = await utils.getAzdataApi()!.connection.openConnectionDialog();
+			let connection = await utils.getAzdataApi()!.connection.openConnectionDialog(undefined, undefined, {
+				saveConnection: false,
+				showDashboard: false,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			});
 			this.connectionId = connection.connectionId;
 			this.serverName = connection.options['server'];
 

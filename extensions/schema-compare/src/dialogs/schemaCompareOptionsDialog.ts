@@ -68,8 +68,7 @@ export class SchemaCompareOptionsDialog {
 		this.schemaComparison.setDeploymentOptions(this.optionsModel.deploymentOptions);
 
 		const yesItem: vscode.MessageItem = {
-			title: loc.YesButtonText,
-			isCloseAffordance: true
+			title: loc.YesButtonText
 		};
 
 		const noItem: vscode.MessageItem = {

@@ -27,6 +27,7 @@ suite('Editable dropdown tests', () => {
 	test('default value for editable dropdown is empty', () => {
 		const dropdown = new Dropdown(container, undefined, options);
 		assert.strictEqual(dropdown.value, '');
+		dropdown.dispose();
 	});
 
 	test('changing value through code fires onValueChange event', () => {
@@ -42,6 +43,7 @@ suite('Editable dropdown tests', () => {
 		assert.strictEqual(count, 1, 'onValueChange event should not be fired for setting the same value again');
 		dropdown.value = options.values[1];
 		assert.strictEqual(count, 2, 'onValueChange event was not fired for setting a new value of the dropdown');
+		dropdown.dispose();
 	});
 
 	test('changing value through input text fires onValue Change event', () => {
@@ -67,5 +69,15 @@ suite('Editable dropdown tests', () => {
 		dropdown.fireOnTextChange = false;
 		dropdown.input.value = options.values[0];
 		assert.strictEqual(count, 3, 'onValueChange event was fired with input box value change even after setting the fireOnTextChange to false');
+		dropdown.dispose();
+	});
+
+	test('selecting same dropdown value again after changing text field should update text field', () => {
+		const dropdown = new Dropdown(container, undefined, options);
+		dropdown.value = options.values[0];
+		dropdown.input.value = 'NotARealValue';
+		dropdown.value = options.values[0];
+		assert.strictEqual(dropdown.input.value, options.values[0]);
+		dropdown.dispose();
 	});
 });

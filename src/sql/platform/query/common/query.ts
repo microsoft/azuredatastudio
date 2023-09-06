@@ -32,6 +32,7 @@ export interface IQueryEditorConfiguration {
 		readonly inMemoryDataProcessingThreshold: number;
 		readonly openAfterSave: boolean;
 		readonly showActionBar: boolean;
+		readonly showCopyCompletedNotification: boolean;
 		readonly preferProvidersCopyHandler: boolean;
 		readonly promptForLargeRowSelection: boolean;
 	},
@@ -45,6 +46,7 @@ export interface IQueryEditorConfiguration {
 	readonly tabColorMode: 'off' | 'border' | 'fill';
 	readonly showConnectionInfoInTitle: boolean;
 	readonly promptToSaveGeneratedFiles: boolean;
+	readonly githubCopilotContextualizationEnabled: boolean;
 }
 
 export interface IResultGridConfiguration {

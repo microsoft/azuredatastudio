@@ -8,6 +8,7 @@ import * as telemetry from '@microsoft/ads-extension-telemetry';
 import * as azdata from 'azdata';
 import { ConnectParams } from 'dataprotocol-client/lib/protocol';
 import * as mssql from 'mssql';
+import { DatabaseFileData } from 'mssql';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
 
@@ -1560,6 +1561,18 @@ export namespace ExecutionPlanComparisonRequest {
 
 // ------------------------------- < Execution Plan > ------------------------------------
 
+// ------------------------------- < Server Contextualization API > ------------------------------------
+
+export interface ServerContextualizationParams {
+	ownerUri: string;
+}
+
+export namespace GetServerContextualizationRequest {
+	export const type = new RequestType<ServerContextualizationParams, azdata.contextualization.GetServerContextualizationResult, void, void>('metadata/getServerContext');
+}
+
+// ------------------------------- < Server Contextualization API > ------------------------------------
+
 // ------------------------------- < Object Management > ------------------------------------
 export interface InitializeViewRequestParams {
 	connectionUri: string;
@@ -1635,6 +1648,7 @@ export namespace SearchObjectRequest {
 
 export interface DetachDatabaseRequestParams {
 	connectionUri: string;
+	database: string;
 	objectUrn: string;
 	dropConnections: boolean;
 	updateStatistics: boolean;
@@ -1643,6 +1657,46 @@ export interface DetachDatabaseRequestParams {
 
 export namespace DetachDatabaseRequest {
 	export const type = new RequestType<DetachDatabaseRequestParams, string, void, void>('objectManagement/detachDatabase');
+}
+
+export interface DropDatabaseRequestParams {
+	connectionUri: string;
+	database: string;
+	objectUrn: string;
+	dropConnections: boolean;
+	deleteBackupHistory: boolean;
+	generateScript: boolean;
+}
+
+export namespace DropDatabaseRequest {
+	export const type = new RequestType<DropDatabaseRequestParams, string, void, void>('objectManagement/dropDatabase');
+}
+
+export interface AttachDatabaseRequestParams {
+	connectionUri: string;
+	databases: DatabaseFileData[];
+	generateScript: boolean;
+}
+
+export namespace AttachDatabaseRequest {
+	export const type = new RequestType<AttachDatabaseRequestParams, string, void, void>('objectManagement/attachDatabase');
+}
+
+export interface GetDataFolderRequestParams {
+	connectionUri: string;
+}
+
+export namespace GetDataFolderRequest {
+	export const type = new RequestType<GetDataFolderRequestParams, string, void, void>('admin/getdatafolder');
+}
+
+export interface GetAssociatedFilesRequestParams {
+	connectionUri: string;
+	primaryFilePath: string;
+}
+
+export namespace GetAssociatedFilesRequest {
+	export const type = new RequestType<GetAssociatedFilesRequestParams, string[], void, void>('admin/getassociatedfiles');
 }
 
 // ------------------------------- < Object Management > ------------------------------------

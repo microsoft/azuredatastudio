@@ -26,8 +26,13 @@ import { HttpClient } from './httpClient';
 import { getProxyEnabledHttpClient, getTenantIgnoreList, updateTenantIgnoreList } from '../../utils';
 import { errorToPromptFailedResult } from './networkUtils';
 import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
-import { AzureListOperationResponse, ErrorResponseBodyWithError, isErrorResponseBodyWithError } from '../../azureResource/utils';
+import { isErrorResponseBodyWithError } from '../../azureResource/utils';
+import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 const localize = nls.loadMessageBundle();
+
+export type GetTenantsResponseData = {
+	value: TenantResponse[];
+}
 
 export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly memdb = new MemoryDatabase<string>();
@@ -242,18 +247,14 @@ export abstract class AzureAuth implements vscode.Disposable {
 			Logger.verbose(`Fetching tenants with uri: ${tenantUri}`);
 			let tenantList: string[] = [];
 
-			const tenantResponse = await this.httpClient.sendGetRequestAsync<AzureListOperationResponse<TenantResponse[]> | ErrorResponseBodyWithError>(tenantUri, {
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${token}`
-				}
-			});
+			const tenantResponse = await this.makeGetRequest<GetTenantsResponseData>(tenantUri, token);
 
 			const data = tenantResponse.data;
 			if (isErrorResponseBodyWithError(data)) {
 				Logger.error(`Error fetching tenants :${data.error?.code} - ${data.error?.message}`);
 				throw new Error(`${data.error?.code} - ${data.error?.message}`);
 			}
+
 			const tenants: Tenant[] = data.value.map((tenantInfo: TenantResponse) => {
 				if (tenantInfo.displayName) {
 					tenantList.push(tenantInfo.displayName);
@@ -305,7 +306,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 	private accountNeedsRefresh(error: AuthError): boolean {
 		return error instanceof InteractionRequiredAuthError
 			|| error.errorMessage.includes(Constants.AADSTS70043)
-			|| error.errorMessage.includes(Constants.AADSTS50173);
+			|| error.errorMessage.includes(Constants.AADSTS50173)
+			|| error.errorMessage.includes(Constants.AADSTS50078)
+			|| error.errorMessage.includes(Constants.AADSTS50085)
+			|| error.errorMessage.includes(Constants.AADSTS50089)
+			|| error.errorMessage.includes(Constants.AADSTS700084);
 	}
 
 	/**
@@ -471,6 +476,20 @@ export abstract class AzureAuth implements vscode.Disposable {
 	//#endregion
 
 	//#region network functions
+
+	private async makeGetRequest<T>(url: string, token: string): Promise<AxiosResponse<T>> {
+		const config: AxiosRequestConfig = {
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`
+			},
+			validateStatus: () => true // Never throw
+		};
+
+		const response: AxiosResponse = await axios.get<T>(url, config);
+		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data?.value as TenantResponse[] ?? response.data as GetTenantsResponseData }], [], url,);
+		return response;
+	}
 
 	//#endregion
 

@@ -96,9 +96,15 @@
         "icon": "$(edit)"
       },
       {
-        "command": "mssql.deleteObject",
+        "command": "mssql.dropDatabase",
         "category": "MSSQL",
-        "title": "%title.deleteObject%",
+        "title": "%title.dropObject%",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "mssql.dropObject",
+        "category": "MSSQL",
+        "title": "%title.dropObject%",
         "icon": "$(trash)"
       },
       {
@@ -110,6 +116,11 @@
         "command": "mssql.detachDatabase",
         "category": "MSSQL",
         "title": "%title.detachDatabase%"
+      },
+      {
+        "command": "mssql.attachDatabase",
+        "category": "MSSQL",
+        "title": "%title.attachDatabase%"
       },
       {
         "command": "mssql.enableGroupBySchema",
@@ -505,7 +516,11 @@
           "when": "false"
         },
         {
-          "command": "mssql.deleteObject",
+          "command": "mssql.dropDatabase",
+          "when": "false"
+        },
+        {
+          "command": "mssql.dropObject",
           "when": "false"
         },
         {
@@ -514,6 +529,10 @@
         },
         {
           "command": "mssql.detachDatabase",
+          "when": "false"
+        },
+        {
+          "command": "mssql.attachDatabase",
           "when": "false"
         }
       ],
@@ -570,8 +589,18 @@
           "group": "1_objectManagement@2"
         },
         {
-          "command": "mssql.deleteObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole|Database)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "command": "mssql.attachDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && !isCloud && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@2"
+        },
+        {
+          "command": "mssql.dropDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@3"
+        },
+        {
+          "command": "mssql.dropObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@3"
         },
         {
@@ -615,8 +644,13 @@
           "group": "inline@2"
         },
         {
-          "command": "mssql.deleteObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole|Database)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/)  && config.workbench.enablePreviewFeatures",
+          "command": "mssql.dropDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "inline@3"
+        },
+        {
+          "command": "mssql.dropObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/)  && config.workbench.enablePreviewFeatures",
           "group": "inline@3"
         }
       ],
@@ -662,8 +696,13 @@
           "group": "1_objectManagement@1"
         },
         {
-          "command": "mssql.deleteObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole|Database)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "command": "mssql.dropDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@3"
+        },
+        {
+          "command": "mssql.dropObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@3"
         },
         {
@@ -1540,8 +1579,8 @@
   },
   "devDependencies": {
     "@types/mocha": "^7.0.2",
-    "@microsoft/vscodetestcover": "^1.2.1",
-    "@microsoft/azdata-test": "^3.0.1",
+    "@microsoft/vscodetestcover": "^1.2.2",
+    "@microsoft/azdata-test": "^3.0.3",
     "mocha": "^7.1.1",
     "should": "^13.2.3",
     "typemoq": "^2.1.0"

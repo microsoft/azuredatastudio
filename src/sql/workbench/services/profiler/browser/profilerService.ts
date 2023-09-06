@@ -161,7 +161,7 @@ export class ProfilerService implements IProfilerService {
 			this.updateMemento(id, { previousSessionName: sessionName });
 			try {
 				await this._runAction(id, provider => provider.startSession(this._idMap.get(id)!, sessionName, sessionType));
-				let isRunning = sessionType === ProfilingSessionType.RemoteSession ? true : false;		// Reading session stops when the file reading completes
+				let isRunning = sessionType === ProfilingSessionType.LocalFile ? false : true;		// Reading session stops when the file reading completes
 				this._sessionMap.get(this._idMap.reverseGet(id)!)!.onSessionStateChanged({ isRunning: isRunning, isStopped: false, isPaused: false });
 
 				return true;

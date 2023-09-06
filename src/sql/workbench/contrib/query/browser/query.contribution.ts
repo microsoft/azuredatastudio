@@ -303,6 +303,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.copyRemoveNewLine', "Configuration options for copying multi-line results from the Results View"),
 			'default': true
 		},
+		'queryEditor.results.showCopyCompletedNotification': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.showCopyCompletedNotification', "Whether to show notifications when a results grid copy operation is completed."),
+			'default': true
+		},
 		'queryEditor.results.skipNewLineAfterTrailingLineBreak': {
 			'type': 'boolean',
 			'description': localize('queryEditor.results.skipNewLineAfterTrailingLineBreak', "Whether to skip adding a line break between rows when copying results if the previous row already has a trailing line break. The default value is false."),
@@ -369,6 +374,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'type': 'boolean',
 			'default': false,
 			'description': localize('queryEditor.promptToSaveGeneratedFiles', "Prompt to save generated SQL files")
+		},
+		'queryEditor.githubCopilotContextualizationEnabled': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('queryEditor.githubCopilotContextualizationEnabled', "(Preview) Enable contextualization of queries for GitHub Copilot. This setting helps GitHub Copilot to return improved suggestions, if the Copilot extension is installed and providers have implemented contextualization.")
 		}
 	}
 };

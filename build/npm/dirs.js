@@ -29,6 +29,7 @@ const dirs = [
 	'extensions/import',
 	'extensions/integration-tests',
 	'extensions/ipynb',
+	'extensions/javascript',
 	'extensions/json-language-features',
 	'extensions/json-language-features/server',
 	'extensions/kusto',
@@ -55,6 +56,7 @@ const dirs = [
 	'extensions/sql-database-projects',
 	'extensions/sql-migration',
 	'extensions/vscode-test-resolver',
+	'extensions/xml-language-features',
 	// {{SQL CARBON EDIT}} - End
 	'remote',
 	'remote/web',

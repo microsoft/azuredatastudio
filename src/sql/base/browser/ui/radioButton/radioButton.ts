@@ -17,9 +17,9 @@ export interface IRadioButtonOptions {
 export class RadioButton extends Widget {
 
 	private inputElement: HTMLInputElement;
-	private _onClicked = new Emitter<void>();
+	private _onClicked = this._register(new Emitter<void>());
 	public readonly onClicked: Event<void> = this._onClicked.event;
-	private _onChangedCheckedState = new Emitter<boolean>();
+	private _onChangedCheckedState = this._register(new Emitter<boolean>());
 	public readonly onDidChangeCheckedState: Event<boolean> = this._onChangedCheckedState.event;
 	private _label: HTMLSpanElement;
 	private _internalCheckedStateTracker: boolean = false;

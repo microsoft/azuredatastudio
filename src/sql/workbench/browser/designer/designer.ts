@@ -141,7 +141,7 @@ export class Designer extends Disposable {
 		this._propertiesPaneContainer = DOM.$('.properties-container');
 		this._verticalSplitView = new SplitView(this._verticalSplitViewContainer, { orientation: Orientation.VERTICAL });
 		this._horizontalSplitView = new SplitView(this._horizontalSplitViewContainer, { orientation: Orientation.HORIZONTAL });
-		this._contentTabbedPanel = new TabbedPanel(this._tabbedPanelContainer);
+		this._contentTabbedPanel = this._register(new TabbedPanel(this._tabbedPanelContainer));
 		this._container.appendChild(this._verticalSplitViewContainer);
 		this._contentContainer.appendChild(this._topContentContainer);
 		this._contentContainer.appendChild(this._tabbedPanelContainer);
@@ -154,7 +154,7 @@ export class Designer extends Disposable {
 			maximumSize: Number.POSITIVE_INFINITY,
 			onDidChange: Event.None
 		}, Sizing.Distribute);
-		this._scriptTabbedPannel = new TabbedPanel(this._editorContainer);
+		this._scriptTabbedPannel = this._register(new TabbedPanel(this._editorContainer));
 		this._issuesView = this._instantiationService.createInstance(DesignerIssuesTabPanelView);
 		this._register(this._issuesView.onIssueSelected((path) => {
 			if (path && path.length > 0) {
@@ -638,6 +638,7 @@ export class Designer extends Disposable {
 						dropdown.select(idx);
 					}
 				}
+				this._register(dropdown);
 				break;
 			default:
 				break;
@@ -693,24 +694,24 @@ export class Designer extends Disposable {
 				container.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
 				const inputContainer = container.appendChild(DOM.$(''));
 				const inputProperties = componentDefinition.componentProperties as InputBoxProperties;
-				const input = new InputBox(inputContainer, this._contextViewProvider, {
+				const input = this._register(new InputBox(inputContainer, this._contextViewProvider, {
 					ariaLabel: inputProperties.title,
 					type: inputProperties.inputType,
 					ariaDescription: componentDefinition.description,
 					inputBoxStyles: defaultInputBoxStyles
-				});
-				input.onLoseFocus((args) => {
+				}));
+				this._register(input.onLoseFocus((args) => {
 					if (args.hasChanged) {
 						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: args.value, source: view });
 					}
-				});
-				input.onInputFocus(() => {
+				}));
+				this._register(input.onInputFocus(() => {
 					if (view === 'PropertiesView') {
 						this._propertiesPane.updateDescription(componentDefinition);
 					} else if (view === 'TabsView' || view === 'TopContentView') {
 						this.updatePropertiesPane(DesignerRootObjectPath);
 					}
-				});
+				}));
 				if (view === 'TopContentView' && inputProperties.width) {
 					input.width = inputProperties.width as number;
 				}
@@ -722,39 +723,39 @@ export class Designer extends Disposable {
 				const dropdownProperties = componentDefinition.componentProperties as DropDownProperties;
 				let dropdown;
 				if (dropdownProperties.isEditable) {
-					dropdown = new Dropdown(dropdownContainer, this._contextViewProvider, {
+					dropdown = this._register(new Dropdown(dropdownContainer, this._contextViewProvider, {
 						values: dropdownProperties.values as string[] || [],
 						ariaLabel: componentDefinition.componentProperties?.title,
 						ariaDescription: componentDefinition.description,
 						...defaultEditableDropdownStyles
-					});
-					dropdown.onValueChange((value) => {
+					}));
+					this._register(dropdown.onValueChange((value) => {
 						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: value, source: view });
-					});
-					dropdown.onFocus(() => {
+					}));
+					this._register(dropdown.onFocus(() => {
 						if (view === 'PropertiesView') {
 							this._propertiesPane.updateDescription(componentDefinition);
 						} else if (view === 'TabsView' || view === 'TopContentView') {
 							this.updatePropertiesPane(DesignerRootObjectPath);
 						}
-					});
+					}));
 				} else {
-					dropdown = new SelectBox(dropdownProperties.values as string[] || [], undefined, defaultSelectBoxStyles, this._contextViewProvider, undefined, {
+					dropdown = this._register(new SelectBox(dropdownProperties.values as string[] || [], undefined, defaultSelectBoxStyles, this._contextViewProvider, undefined, {
 						ariaLabel: componentDefinition.componentProperties?.title,
 						ariaDescription: componentDefinition.description
-					});
+					}));
 					dropdown.render(dropdownContainer);
 					dropdown.selectElem.style.height = '25px';
-					dropdown.onDidSelect((e) => {
+					this._register(dropdown.onDidSelect((e) => {
 						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: e.selected, source: view });
-					});
-					dropdown.onDidFocus(() => {
+					}));
+					this._register(dropdown.onDidFocus(() => {
 						if (view === 'PropertiesView') {
 							this._propertiesPane.updateDescription(componentDefinition);
 						} else if (view === 'TabsView' || view === 'TopContentView') {
 							this.updatePropertiesPane(DesignerRootObjectPath);
 						}
-					});
+					}));
 				}
 				component = dropdown;
 				break;
@@ -762,17 +763,17 @@ export class Designer extends Disposable {
 				container.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
 				const checkboxContainer = container.appendChild(DOM.$(''));
 				const checkboxProperties = componentDefinition.componentProperties as CheckBoxProperties;
-				const checkbox = new Checkbox(checkboxContainer, { ...defaultCheckboxStyles, label: '', ariaLabel: checkboxProperties.title, ariaDescription: componentDefinition.description });
-				checkbox.onChange((newValue) => {
+				const checkbox = this._register(new Checkbox(checkboxContainer, { ...defaultCheckboxStyles, label: '', ariaLabel: checkboxProperties.title, ariaDescription: componentDefinition.description }));
+				this._register(checkbox.onChange((newValue) => {
 					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: newValue, source: view });
-				});
-				checkbox.onFocus(() => {
+				}));
+				this._register(checkbox.onFocus(() => {
 					if (view === 'PropertiesView') {
 						this._propertiesPane.updateDescription(componentDefinition);
 					} else if (view === 'TabsView' || view === 'TopContentView') {
 						this.updatePropertiesPane(DesignerRootObjectPath);
 					}
-				});
+				}));
 				component = checkbox;
 				break;
 			case 'table':
@@ -782,7 +783,7 @@ export class Designer extends Disposable {
 				const tableProperties = componentDefinition.componentProperties as DesignerTableProperties;
 				const taskbar = this.addTableTaskbar(container, tableProperties);
 				const tableContainer = container.appendChild(DOM.$('.full-row'));
-				const table = new Table(tableContainer, this._accessibilityService, this._quickInputService, getTableStyles({
+				const table = this._register(new Table(tableContainer, this._accessibilityService, this._quickInputService, getTableStyles({
 					listActiveSelectionBackground: undefined,
 					listActiveSelectionForeground: undefined,
 					listFocusAndSelectionBackground: undefined,
@@ -805,7 +806,7 @@ export class Designer extends Disposable {
 					rowHeight: TableRowHeight,
 					headerRowHeight: TableHeaderRowHeight,
 					editorLock: new Slick.EditorLock()
-				});
+				}));
 				table.grid.setSelectionModel(new RowSelectionModel());
 				if (taskbar) {
 					taskbar.context = { table: table, path: propertyPath, source: view };
@@ -854,14 +855,14 @@ export class Designer extends Disposable {
 								width: propertyDefinition.componentProperties.width as number
 							});
 							table.registerPlugin(checkboxColumn);
-							checkboxColumn.onChange((e) => {
+							this._register(checkboxColumn.onChange((e) => {
 								this.handleEdit({
 									type: DesignerEditType.Update,
 									path: [...propertyPath, e.row, propertyDefinition.propertyName],
 									value: e.value,
 									source: view
 								});
-							});
+							}));
 							return checkboxColumn.definition;
 						case 'dropdown':
 							const dropdownProperties = propertyDefinition.componentProperties as DropDownProperties;

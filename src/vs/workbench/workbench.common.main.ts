@@ -228,6 +228,8 @@ import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/comm
 import { TableDesignerService } from 'sql/workbench/services/tableDesigner/browser/tableDesignerService';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { ExecutionPlanService } from 'sql/workbench/services/executionPlan/common/executionPlanService';
+import { IServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
+import { ServerContextualizationService } from 'sql/workbench/services/contextualization/common/serverContextualizationService';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import { ErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/browser/errorDiagnosticsService';
 import { IComponentContextService, ComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
@@ -275,6 +277,7 @@ registerSingleton(IAssessmentService, AssessmentService, InstantiationType.Eager
 registerSingleton(IDataGridProviderService, DataGridProviderService, InstantiationType.Eager);
 registerSingleton(ITableDesignerService, TableDesignerService, InstantiationType.Eager);
 registerSingleton(IExecutionPlanService, ExecutionPlanService, InstantiationType.Eager);
+registerSingleton(IServerContextualizationService, ServerContextualizationService, InstantiationType.Eager);
 registerSingleton(IErrorDiagnosticsService, ErrorDiagnosticsService, InstantiationType.Eager);
 registerSingleton(IComponentContextService, ComponentContextService, InstantiationType.Eager);
 //#endregion
@@ -431,7 +434,7 @@ import 'vs/workbench/contrib/surveys/browser/ces.contribution';
 import 'vs/workbench/contrib/surveys/browser/languageSurveys.contribution';
 
 // Welcome
-import 'sql/workbench/contrib/welcome/page/browser/welcomePage.contribution'; // {{SQL CARBON EDIT}} - add welcome page contribution
+import 'sql/workbench/contrib/welcome/browser/welcomePage.contribution'; // {{SQL CARBON EDIT}} - add welcome page contribution
 // import 'vs/workbench/contrib/welcomeGettingStarted/browser/gettingStarted.contribution'; // {{SQL CARBON EDIT}} - remove vscode getting started
 import 'vs/workbench/contrib/welcomeWalkthrough/browser/walkThrough.contribution';
 import 'vs/workbench/contrib/welcomeViews/common/viewsWelcome.contribution';

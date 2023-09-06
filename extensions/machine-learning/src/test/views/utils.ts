@@ -27,7 +27,8 @@ export function createViewContext(): ViewTestContext {
 		onValidityChanged: undefined!,
 		valid: true,
 		validate: undefined!,
-		focus: undefined!
+		focus: undefined!,
+		dispose() { }
 	};
 	let button: azdata.ButtonComponent = Object.assign({}, componentBase, {
 		onDidClick: onClick.event
@@ -267,7 +268,8 @@ export function createViewContext(): ViewTestContext {
 			infoBox: undefined!,
 			slider: undefined!,
 			executionPlan: undefined!,
-		}
+		},
+		dispose() { }
 	};
 	let tab: azdata.window.DialogTab = {
 		title: '',
@@ -281,7 +283,8 @@ export function createViewContext(): ViewTestContext {
 		},
 		onValidityChanged: undefined!,
 		valid: true,
-		modelView: undefined!
+		modelView: undefined!,
+		dispose() { }
 	};
 
 	let dialogButton: azdata.window.Button = {
@@ -311,7 +314,8 @@ export function createViewContext(): ViewTestContext {
 		valid: true,
 		loading: false,
 		loadingText: '',
-		loadingCompletedText: ''
+		loadingCompletedText: '',
+		dispose() { }
 	};
 	let wizard: azdata.window.Wizard = {
 		title: '',
@@ -352,7 +356,8 @@ export function createViewContext(): ViewTestContext {
 			}
 		},
 		modelView: undefined!,
-		valid: true
+		valid: true,
+		dispose() { }
 	};
 	apiWrapper.setup(x => x.createButton(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => dialogButton);
 	apiWrapper.setup(x => x.createTab(TypeMoq.It.isAny())).returns(() => tab);

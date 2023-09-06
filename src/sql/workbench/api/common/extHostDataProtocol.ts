@@ -210,6 +210,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	$registerServerContextualizationProvider(provider: azdata.contextualization.ServerContextualizationProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.ServerContextualizationProvider);
+		this._proxy.$registerServerContextualizationProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
 	// Capabilities Discovery handlers
 	override $getServerCapabilities(handle: number, client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> {
 		return this._resolveProvider<azdata.CapabilitiesProvider>(handle).getServerCapabilities(client);
@@ -962,5 +968,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	public override $isExecutionPlan(handle: number, value: string): Thenable<azdata.executionPlan.IsExecutionPlanResult> {
 		return this._resolveProvider<azdata.executionPlan.ExecutionPlanProvider>(handle).isExecutionPlan(value);
+	}
+
+	// Server Contextualization API
+
+	public override $getServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GetServerContextualizationResult> {
+		return this._resolveProvider<azdata.contextualization.ServerContextualizationProvider>(handle).getServerContextualization(ownerUri);
 	}
 }

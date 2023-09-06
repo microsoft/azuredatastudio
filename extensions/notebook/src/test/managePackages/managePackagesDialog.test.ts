@@ -127,7 +127,8 @@ describe('Manage Package Dialog', () => {
 			onValidityChanged: undefined!,
 			valid: true,
 			validate: undefined!,
-			focus: undefined!
+			focus: undefined!,
+			dispose() { }
 		};
 		let button: azdata.ButtonComponent = Object.assign({}, componentBase, {
 			onDidClick: onClick.event
@@ -269,6 +270,7 @@ describe('Manage Package Dialog', () => {
 			onValidityChanged: undefined!,
 			validate: undefined!,
 			initializeModel: () => { return Promise.resolve(); },
+			dispose() { },
 			modelBuilder: {
 				listView: undefined!,
 				radioCardGroup: undefined!,

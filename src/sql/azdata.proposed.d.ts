@@ -661,6 +661,8 @@ declare module 'azdata' {
 		type?: ExtensionNodeType;
 	}
 
+	export interface Component extends vscode.Disposable { }
+
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location
@@ -887,12 +889,19 @@ declare module 'azdata' {
 
 	export enum DataProviderType {
 		TableDesignerProvider = 'TableDesignerProvider',
-		ExecutionPlanProvider = 'ExecutionPlanProvider'
+		ExecutionPlanProvider = 'ExecutionPlanProvider',
+		ServerContextualizationProvider = 'ServerContextualizationProvider'
 	}
 
 	export namespace dataprotocol {
 		export function registerTableDesignerProvider(provider: designers.TableDesignerProvider): vscode.Disposable;
 		export function registerExecutionPlanProvider(provider: executionPlan.ExecutionPlanProvider): vscode.Disposable;
+		/**
+		 * Registers a server contextualization provider, which can provide context about a server to extensions like GitHub
+		 * Copilot for improved suggestions.
+		 * @param provider The provider to register
+		 */
+		export function registerServerContextualizationProvider(provider: contextualization.ServerContextualizationProvider): vscode.Disposable;
 	}
 
 	export namespace designers {
@@ -1773,6 +1782,23 @@ declare module 'azdata' {
 		}
 	}
 
+	export namespace contextualization {
+		export interface GetServerContextualizationResult {
+			/**
+			 * The retrieved server context.
+			 */
+			context: string | undefined;
+		}
+
+		export interface ServerContextualizationProvider extends DataProvider {
+			/**
+			 * Gets server context, which can be in the form of create scripts but is left up each provider.
+			 * @param ownerUri The URI of the connection to get context for.
+			 */
+			getServerContextualization(ownerUri: string): Thenable<GetServerContextualizationResult>;
+		}
+	}
+
 	/**
 	 * Component to display text with an icon representing the severity
 	 */
@@ -1826,14 +1852,21 @@ declare module 'azdata' {
 		/**
 		 * Corresponds to the aria-live accessibility attribute for this component
 		 */
-		ariaLive?: AriaLiveValue
+		ariaLive?: AriaLiveValue;
 	}
 
 	export interface ContainerProperties extends ComponentProperties {
 		/**
 		 * Corresponds to the aria-live accessibility attribute for this component
 		 */
-		ariaLive?: AriaLiveValue
+		ariaLive?: AriaLiveValue;
+	}
+
+	export interface DropDownProperties {
+		/**
+		 * Whether or not an option in the list must be selected or a "new" option can be set. Only applicable when 'editable' is true. Default false.
+		 */
+		strictSelection?: boolean;
 	}
 
 	export interface NodeInfo {
@@ -1934,12 +1967,18 @@ declare module 'azdata' {
 		NotEndsWith = 13
 	}
 
-	export namespace window {
-		export interface Wizard extends LoadingComponentBase {
-		}
+	export interface ModelView extends vscode.Disposable { }
 
-		export interface Dialog extends LoadingComponentBase {
-		}
+	export interface DeclarativeTableMenuCellValue extends vscode.Disposable { }
+
+	export namespace window {
+		export interface Wizard extends LoadingComponentBase { }
+
+		export interface Dialog extends LoadingComponentBase, vscode.Disposable { }
+
+		export interface ModelViewPanel extends vscode.Disposable { }
+
+		export interface ModelViewDashboard extends vscode.Disposable { }
 
 		/**
 		 * Opens the error dialog with customization options provided.
@@ -2004,6 +2043,27 @@ declare module 'azdata' {
 			 */
 			isPrimary: boolean;
 		}
+
+		export interface FileFilters {
+			/**
+			 * The label to display in the file filter field next to the list of filters.
+			 */
+			label: string;
+			/**
+			 * The filters to limit what files are visible in the file browser (e.g. '*.sql' for SQL files).
+			 */
+			filters: string[];
+		}
+
+		/**
+		 * Opens a dialog to select a file path on the specified server's machine. Note: The dialog for just browsing local
+		 * files without any connection is opened via vscode.window.showOpenDialog.
+		 * @param connectionUri The URI of the connection to the target server
+		 * @param targetPath The file path on the server machine to open by default in the dialog
+		 * @param fileFilters The filters used to limit which files are displayed in the file browser
+		 * @returns The path of the file chosen from the dialog, and undefined if the dialog is closed without selecting anything.
+		 */
+		export function openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: FileFilters[]): Thenable<string | undefined>;
 	}
 
 	export type ChartType = 'bar' | 'bubble' | 'doughnut' | 'horizontalBar' | 'line' | 'pie' | 'polarArea' | 'radar' | 'scatter';
