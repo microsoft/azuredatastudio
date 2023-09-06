@@ -1768,6 +1768,9 @@
     <trans-unit id="sql.migration.retry.migration">
       <source xml:lang="en">Retry migration</source>
     </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.unsuccessful.revalidation">
+      <source xml:lang="en">Revalidate unsuccessful steps</source>
+    </trans-unit>
     <trans-unit id="sql.migration.sqldb.column.rowscopied">
       <source xml:lang="en">Rows copied</source>
     </trans-unit>
