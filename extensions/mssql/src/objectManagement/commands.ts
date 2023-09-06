@@ -93,8 +93,8 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 				break;
 		}
 
+		// Fall back to node type in case the user right clicked on an object instead of a folder
 		if (!objectType) {
-			// Fall back to node type in case the user right clicked on an object instead of a folder
 			switch (context.nodeInfo.nodeType) {
 				case ObjectManagement.NodeType.ApplicationRole:
 				case ObjectManagement.NodeType.DatabaseRole:
