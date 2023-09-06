@@ -48,6 +48,13 @@ steps:
     displayName: Merge distro
 
   - powershell: |
+      git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+      git fetch distro
+      git cherry-pick [commit hash from providerSettings.ts change]
+    condition: eq(variables['VSCODE_QUALITY'], 'agc')
+    displayName: Merge AGC endpoints
+
+  - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
       exec { node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js $(VSCODE_ARCH) > .build/yarnlockhash }
@@ -136,15 +143,15 @@ steps:
     condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'), ne(variables['VSCODE_ARCH'], 'arm64'))
 
   - powershell: |
-    # Install AGC specific extensions
-    $ErrorActionPreference = "Stop"
-    $tempFilePath = (New-TemporaryFile).FullName
-    $zipFilePath = $tempFilePath + ".zip"
-    $extensionUri = "$(standalone-extensions-uri)"
-    $adsExtensionPath = "$(agent.builddirectory)\azuredatastudio-win32-x64\resources\app\extensions"
-    Invoke-WebRequest -Uri $extensionUri -OutFile $tempFilePath
-    Move-Item $tempFilePath $zipFilePath
-    Expand-Archive $zipFilePath -DestinationPath $adsExtensionPath
+      # Install AGC specific extensions
+      $ErrorActionPreference = "Stop"
+      $tempFilePath = (New-TemporaryFile).FullName
+      $zipFilePath = $tempFilePath + ".zip"
+      $extensionUri = "$(agc-extensions-uri)"
+      $adsExtensionPath = "$(agent.builddirectory)\azuredatastudio-win32-x64\resources\app\extensions"
+      Invoke-WebRequest -Uri $extensionUri -OutFile $tempFilePath
+      Move-Item $tempFilePath $zipFilePath
+      Expand-Archive $zipFilePath -DestinationPath $adsExtensionPath
     displayName: Install AGC Extensions
     condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'agc'), ne(variables['VSCODE_ARCH'], 'arm64'))
 
