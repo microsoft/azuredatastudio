@@ -487,7 +487,8 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 });
 
 // Windows browsers use F11 for full screen, thus use alt+F11 as the default shortcut
-const STEP_INTO_KEYBINDING = (isWeb && isWindows) ? (KeyMod.Alt | KeyCode.F11) : KeyCode.F11;
+// {{SQL CARBON EDIT}} - Disable F11 binding to use it as shortcut for full screen in ADS
+/*const STEP_INTO_KEYBINDING = (isWeb && isWindows) ? (KeyMod.Alt | KeyCode.F11) : KeyCode.F11;
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: STEP_INTO_ID,
@@ -496,15 +497,14 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	// Use a more flexible when clause to not allow full screen command to take over when F11 pressed a lot of times
 	when: CONTEXT_DEBUG_STATE.notEqualsTo('inactive'),
 	handler: async (accessor: ServicesAccessor, _: string, context: CallStackContext | unknown) => {
-		// {{SQL CARBON EDIT}} - Disable F11 binding to use it as shortcut for full screen in ADS
-		/*const contextKeyService = accessor.get(IContextKeyService);
+		const contextKeyService = accessor.get(IContextKeyService);
 		if (CONTEXT_DISASSEMBLY_VIEW_FOCUS.getValue(contextKeyService)) {
 			await getThreadAndRun(accessor, context, (thread: IThread) => thread.stepIn('instruction'));
 		} else {
 			await getThreadAndRun(accessor, context, (thread: IThread) => thread.stepIn());
-		}*/
+		}
 	}
-});
+});*/
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: STEP_OUT_ID,
@@ -534,7 +534,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: STEP_INTO_TARGET_ID,
-	primary: STEP_INTO_KEYBINDING | KeyMod.CtrlCmd,
+	primary: KeyMod.CtrlCmd,		// {{SQL CARBON EDIT}} - Remove STEP_INTO_KEYBINDING
 	when: ContextKeyExpr.and(CONTEXT_STEP_INTO_TARGETS_SUPPORTED, CONTEXT_IN_DEBUG_MODE, CONTEXT_DEBUG_STATE.isEqualTo('stopped')),
 	weight: KeybindingWeight.WorkbenchContrib,
 	handler: async (accessor: ServicesAccessor, _: string, context: CallStackContext | unknown) => {
