@@ -496,12 +496,13 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	// Use a more flexible when clause to not allow full screen command to take over when F11 pressed a lot of times
 	when: CONTEXT_DEBUG_STATE.notEqualsTo('inactive'),
 	handler: async (accessor: ServicesAccessor, _: string, context: CallStackContext | unknown) => {
-		const contextKeyService = accessor.get(IContextKeyService);
+		// {{SQL CARBON EDIT}} - Disable F11 binding to use it as shortcut for full screen in ADS
+		/*const contextKeyService = accessor.get(IContextKeyService);
 		if (CONTEXT_DISASSEMBLY_VIEW_FOCUS.getValue(contextKeyService)) {
 			await getThreadAndRun(accessor, context, (thread: IThread) => thread.stepIn('instruction'));
 		} else {
 			await getThreadAndRun(accessor, context, (thread: IThread) => thread.stepIn());
-		}
+		}*/
 	}
 });
 
