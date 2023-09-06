@@ -39,7 +39,7 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { localize } from 'vs/nls';
 import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
-const cellWithNullCharMessage = localize('editData.cellWithNullCharMessage', "This cell contains the Unicode null character or enter arrow character which is currently not supported for editing.");
+const cellWithNullCharMessage = localize('editData.cellWithNullCharMessage', "This cell contains the Unicode null character which is currently not supported for editing.");
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
