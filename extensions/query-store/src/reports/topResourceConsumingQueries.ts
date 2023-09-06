@@ -17,7 +17,7 @@ export class TopResourceConsumingQueries extends BaseQueryStoreReport {
 	private plan: QueryStoreView;
 
 	constructor(extensionContext: vscode.ExtensionContext, databaseName: string) {
-		super(constants.topResourceConsumingQueriesToolbarLabel(databaseName), /*resizeable*/ true, extensionContext);
+		super(constants.topResourceConsumingQueriesToolbarLabel(databaseName), constants.topResourceConsumingQueriesTabId,/*resizeable*/ true, extensionContext);
 		this.queries = new QueryStoreView(constants.queries, 'chartreuse');
 		this.planSummary = new QueryStoreView(constants.planSummary('x'), 'coral'); // TODO: replace 'x' with actual query id
 		this.plan = new QueryStoreView(constants.plan('x'), 'darkturquoise');
