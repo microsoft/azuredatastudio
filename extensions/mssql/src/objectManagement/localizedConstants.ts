@@ -51,6 +51,8 @@ export const AddFileAriaLabel = localize('objectManagement.addFileText', "Add da
 export const RemoveFileAriaLabel = localize('objectManagement.removeFileText', "Remove database file");
 export const CreateObjectLabel = localize('objectManagement.createObjectLabel', "Create");
 export const ApplyUpdatesLabel = localize('objectManagement.applyUpdatesLabel', "Apply");
+export const allFiles = localize('objectManagement.allFiles', "All Files");
+export const labelSelectFolder = localize('objectManagement.labelSelectFolder', "Select Folder");
 export const DataFileLabel = localize('objectManagement.dataFileLabel', "Data");
 export const LogFileLabel = localize('objectManagement.logFileLabel', "Log");
 
@@ -106,6 +108,13 @@ export function OpenDetachDatabaseDialogError(error: string): string {
 	}, "An error occurred while opening the detach database dialog. {0}", error);
 }
 
+export function DetachDatabaseOperationDisplayName(objectName: string): string {
+	return localize({
+		key: 'objectManagement.detachDatabaseOperationName',
+		comment: ['{0}: object name.']
+	}, "Detach database '{0}'", objectName);
+}
+
 export function OpenDropDatabaseDialogError(error: string): string {
 	return localize({
 		key: 'objectManagement.openDropDatabaseDialogError',
@@ -119,6 +128,8 @@ export function OpenAttachDatabaseDialogError(error: string): string {
 		comment: ['{0}: error message.']
 	}, "An error occurred while opening the attach database dialog. {0}", error);
 }
+
+export const AttachDatabaseOperationDisplayName = localize('objectManagement.attachDatabaseOperationName', "Attach database");
 
 export function OpenObjectPropertiesDialogError(objectType: string, objectName: string, error: string): string {
 	return localize({
@@ -318,6 +329,28 @@ export const failedLoginsOnlyText = localize('objectManagement.failedLoginsOnlyT
 export const successfulLoginsOnlyText = localize('objectManagement.successfulLoginsOnlyText', "Successful logins only");
 export const bothFailedAndSuccessfulLoginsText = localize('objectManagement.bothFailedAndSuccessfulLoginsText', "Both failed and successful logins");
 export const needToRestartServer = localize('objectManagement.needToRestartServer', "Changes require server restart in order to be effective");
+export const logLocationText = localize('objectManagement.logLocationText', "Log");
+export const dataLocationText = localize('objectManagement.dataLocationText', "Data");
+export const backupLocationText = localize('objectManagement.backupLocationText', "Backup");
+export const defaultLocationsLabel = localize('objectManagement.defaultLocationsLabel', "Database default locations");
+export const databaseSettingsText = localize('objectManagement.databaseSettings', "Database Settings");
+export const compressBackupText = localize('objectManagement.compressBackupText', "Compress Backup");
+export const backupChecksumText = localize('objectManagement.backupChecksumText', "Backup checksum");
+export const backupAndRestoreText = localize('objectManagement.backupAndRestoreText', "Backup and Restore");
+export const allowTriggerToFireOthersLabel = localize('objectManagement.allowTriggerToFireOthersLabel', "Allow Triggers to Fire Others");
+export const blockedProcThresholdLabel = localize('objectManagement.blockedProcThresholdLabel', "Blocked Process Threshold");
+export const cursorThresholdLabel = localize('objectManagement.cursorThresholdLabel', "Cursor Threshold");
+export const defaultFullTextLanguageLabel = localize('objectManagement.defaultFullTextLanguageLabel', "Default Full-Text Language");
+export const defaultLanguageLabel = localize('objectManagement.defaultLanguageLabel', "Default Language");
+export const fullTextUpgradeOptionLabel = localize('objectManagement.fullTextUpgradeOptionLabel', "Full-Text Upgrade Option");
+export const maxTextReplicationSizeLabel = localize('objectManagement.maxTextReplicationSizeLabel', "Max Text Replication Size");
+export const optimizeAdHocWorkloadsLabel = localize('objectManagement.optimizeAdHocWorkloadsLabel', "Optimize Ad Hoc Workloads");
+export const scanStartupProcsLabel = localize('objectManagement.scanStartupProcsLabel', "Scan Startup Procs ");
+export const twoDigitYearCutoffLabel = localize('objectManagement.twoDigitYearCutoffLabel', "Two Digit Year Cutoff");
+export const costThresholdParallelismLabel = localize('objectManagement.costThresholdParallelismLabel', "Cost Threshold Parallelism");
+export const locksLabel = localize('objectManagement.locksLabel', "Locks");
+export const maxDegreeParallelismLabel = localize('objectManagement.maxDegreeParallelismLabel', "Max Degree Parallelism");
+export const queryWaitLabel = localize('objectManagement.queryWaitLabel', "Query Wait");
 
 //Database properties Dialog
 export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");

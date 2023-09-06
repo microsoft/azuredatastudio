@@ -901,7 +901,7 @@ declare module 'azdata' {
 		 * Copilot for improved suggestions.
 		 * @param provider The provider to register
 		 */
-		export function registerServerContextualizationProvider(provider: contextualization.ServerContextualizationProvider): vscode.Disposable
+		export function registerServerContextualizationProvider(provider: contextualization.ServerContextualizationProvider): vscode.Disposable;
 	}
 
 	export namespace designers {
@@ -1785,18 +1785,12 @@ declare module 'azdata' {
 	export namespace contextualization {
 		export interface GetServerContextualizationResult {
 			/**
-			 * An array containing the generated server context.
+			 * The retrieved server context.
 			 */
-			context: string[];
+			context: string | undefined;
 		}
 
 		export interface ServerContextualizationProvider extends DataProvider {
-			/**
-			 * Generates server context.
-			 * @param ownerUri The URI of the connection to generate context for.
-			 */
-			generateServerContextualization(ownerUri: string): void;
-
 			/**
 			 * Gets server context, which can be in the form of create scripts but is left up each provider.
 			 * @param ownerUri The URI of the connection to get context for.

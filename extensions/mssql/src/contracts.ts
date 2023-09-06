@@ -1567,15 +1567,11 @@ export interface ServerContextualizationParams {
 	ownerUri: string;
 }
 
-export namespace GenerateServerContextualizationNotification {
-	export const type = new NotificationType<ServerContextualizationParams, void>('metadata/generateServerContext');
-}
-
 export namespace GetServerContextualizationRequest {
 	export const type = new RequestType<ServerContextualizationParams, azdata.contextualization.GetServerContextualizationResult, void, void>('metadata/getServerContext');
 }
 
-// ------------------------------- < Database Server Contextualization API > ------------------------------------
+// ------------------------------- < Server Contextualization API > ------------------------------------
 
 // ------------------------------- < Object Management > ------------------------------------
 export interface InitializeViewRequestParams {
@@ -1652,6 +1648,7 @@ export namespace SearchObjectRequest {
 
 export interface DetachDatabaseRequestParams {
 	connectionUri: string;
+	database: string;
 	objectUrn: string;
 	dropConnections: boolean;
 	updateStatistics: boolean;
@@ -1664,6 +1661,7 @@ export namespace DetachDatabaseRequest {
 
 export interface DropDatabaseRequestParams {
 	connectionUri: string;
+	database: string;
 	objectUrn: string;
 	dropConnections: boolean;
 	deleteBackupHistory: boolean;

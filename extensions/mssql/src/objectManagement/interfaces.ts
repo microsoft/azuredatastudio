@@ -567,6 +567,25 @@ export interface Server extends ObjectManagement.SqlObject {
 	numaNodes: NumaNode[];
 	authenticationMode: ServerLoginMode;
 	loginAuditing: AuditLevel;
+	checkCompressBackup: boolean;
+	checkBackupChecksum: boolean;
+	dataLocation: string;
+	logLocation: string;
+	backupLocation: string;
+	allowTriggerToFireOthers: boolean;
+	blockedProcThreshold: NumericServerProperty;
+	cursorThreshold: NumericServerProperty;
+	defaultFullTextLanguage: string;
+	defaultLanguage: string;
+	fullTextUpgradeOption: string;
+	maxTextReplicationSize: NumericServerProperty;
+	optimizeAdHocWorkloads: boolean;
+	scanStartupProcs: boolean;
+	twoDigitYearCutoff: number;
+	costThresholdParallelism: NumericServerProperty;
+	locks: NumericServerProperty;
+	maxDegreeParallelism: NumericServerProperty;
+	queryWait: NumericServerProperty;
 }
 
 /**
@@ -594,6 +613,8 @@ export interface NumericServerProperty {
 }
 
 export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
+	languageOptions: string[];
+	fullTextUpgradeOptions: string[];
 }
 
 export const enum FileGrowthType {

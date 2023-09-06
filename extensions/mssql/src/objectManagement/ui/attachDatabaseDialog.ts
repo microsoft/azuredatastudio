@@ -36,6 +36,10 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		return this._databasesToAttach.length > 0;
 	}
 
+	protected override get saveChangesTaskLabel(): string {
+		return loc.AttachDatabaseOperationDisplayName;
+	}
+
 	protected async initializeUI(): Promise<void> {
 		let filesSection = this.initializeAttachSection();
 		let associatedSection = this.initializeAssociatedFilesSection();
