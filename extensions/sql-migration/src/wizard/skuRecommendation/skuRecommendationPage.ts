@@ -5,25 +5,26 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as utils from '../api/utils';
-import { MigrationTargetType } from '../api/utils';
-import * as contracts from '../service/contracts';
-import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, PerformanceDataSourceOptions, StateChangeEvent, AssessmentRuleId } from '../models/stateMachine';
-import { AssessmentResultsDialog } from '../dialog/assessment/assessmentResultsDialog';
-import { SkuRecommendationResultsDialog } from '../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
-import { GetAzureRecommendationDialog } from '../dialog/skuRecommendationResults/getAzureRecommendationDialog';
-import * as constants from '../constants/strings';
+import * as utils from '../../api/utils';
+import { MigrationTargetType } from '../../api/utils';
+import * as contracts from '../../service/contracts';
+import { MigrationWizardPage } from '../../models/migrationWizardPage';
+import { MigrationStateModel, PerformanceDataSourceOptions, StateChangeEvent, AssessmentRuleId } from '../../models/stateMachine';
+import { AssessmentResultsDialog } from '../../dialog/assessment/assessmentResultsDialog';
+import { SkuRecommendationResultsDialog } from '../../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
+import { GetAzureRecommendationDialog } from '../../dialog/skuRecommendationResults/getAzureRecommendationDialog';
+import * as constants from '../../constants/strings';
 import { EOL } from 'os';
-import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
-import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import * as styles from '../constants/styles';
-import { SkuEditParametersDialog } from '../dialog/skuRecommendationResults/skuEditParametersDialog';
-import { logError, TelemetryViews, TelemetryAction, sendSqlMigrationActionEvent, getTelemetryProps } from '../telemetry';
-import { TdeConfigurationDialog } from '../dialog/tdeConfiguration/tdeConfigurationDialog';
-import { TdeMigrationModel } from '../models/tdeModels';
-import { getSourceConnectionProfile } from '../api/sqlUtils';
-import { ConfigDialogSetting } from '../models/tdeModels'
+import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
+import { WIZARD_INPUT_COMPONENT_WIDTH } from '../wizardController';
+import * as styles from '../../constants/styles';
+import { SkuEditParametersDialog } from '../../dialog/skuRecommendationResults/skuEditParametersDialog';
+import { logError, TelemetryViews, TelemetryAction, sendSqlMigrationActionEvent, getTelemetryProps } from '../../telemetry';
+import { TdeConfigurationDialog } from '../../dialog/tdeConfiguration/tdeConfigurationDialog';
+import { TdeMigrationModel } from '../../models/tdeModels';
+import { getSourceConnectionProfile } from '../../api/sqlUtils';
+import { ConfigDialogSetting } from '../../models/tdeModels';
+import { SkuDataCollectionToolbar } from './skuDataCollectionToolbar';
 
 export interface Product {
 	type: MigrationTargetType;
@@ -59,6 +60,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _azureRecommendationInfoText!: azdata.TextComponent;
 	private _getAzureRecommendationButton!: azdata.ButtonComponent;
 
+	private _skuDataCollectionToolbar!: SkuDataCollectionToolbar;
 	private _skuDataCollectionStatusContainer!: azdata.FlexContainer;
 	private _skuDataCollectionStatusIcon!: azdata.ImageComponent;
 	private _skuDataCollectionStatusText!: azdata.TextComponent;
@@ -118,6 +120,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				width: 20,
 				height: 20
 			}).component();
+
+		this._skuDataCollectionToolbar = new SkuDataCollectionToolbar();
+		const toolbar = this._skuDataCollectionToolbar.createToolbar(view);
+		// TODO - add toolbar to disposables
+		// TODO - once new toolbar is ready for data collection, remove previous code.
+
 		const igContainer = this._view.modelBuilder.flexContainer()
 			.withProps({ CSSStyles: { 'align-items': 'center' } })
 			.component();
@@ -172,6 +180,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const statusContainer = this._view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withItems([
+				toolbar,
 				igContainer,
 				this._detailsComponent,
 				refreshAssessmentButton,
@@ -218,7 +227,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		await this._view.initializeModel(this._rootContainer);
 	}
-
 
 	private createStatusComponent(view: azdata.ModelView): azdata.TextComponent {
 		const component = view.modelBuilder.text()
