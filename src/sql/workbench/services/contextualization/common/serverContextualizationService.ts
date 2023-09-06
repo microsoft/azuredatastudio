@@ -75,43 +75,12 @@ export class ServerContextualizationService extends Disposable implements IServe
 
 		const getServerContextualizationResult = await this.getServerContextualization(uri);
 		if (getServerContextualizationResult.context) {
-			this._logService.info(`Server contextualization was previously generated for the URI (${uri}) connection, so sending that to Copilot for context.`);
+			this._logService.info(`Server contextualization was retrieved for the URI (${uri}) connection, so sending that to Copilot for context.`);
 
 			await this.sendServerContextualizationToCopilot(getServerContextualizationResult.context);
 		}
 		else {
-			this._logService.info(`Server contextualization was not previously generated for the URI (${uri}) connection. Generating now...`);
-
-			const generateServerContextualizationResult = await this.generateServerContextualization(uri);
-			if (generateServerContextualizationResult.context) {
-				this._logService.info(`Server contextualization was generated for the URI (${uri}) connection, so sending that to Copilot.`);
-
-				await this.sendServerContextualizationToCopilot(generateServerContextualizationResult.context);
-			}
-			else {
-				this._logService.warn(`Server contextualization was not generated for the URI (${uri}) connection, so no context will be sent to Copilot.`);
-			}
-		}
-	}
-
-	/**
-	 * Generates server context
-	 * @param ownerUri The URI of the connection to generate context for.
-	 */
-	private async generateServerContextualization(ownerUri: string): Promise<azdata.contextualization.GenerateServerContextualizationResult> {
-		const providerName = this._connectionManagementService.getProviderIdFromUri(ownerUri);
-		const handler = this.getProvider(providerName);
-		if (handler) {
-			this._logService.info(`Generating server contextualization for ${ownerUri}`);
-
-			return await handler.generateServerContextualization(ownerUri);
-		}
-		else {
-			this._logService.info(`No server contextualization provider found for ${ownerUri}`);
-
-			return Promise.resolve({
-				context: undefined
-			});
+			this._logService.warn(`Server contextualization was not generated for the URI (${uri}) connection, so no context will be sent to Copilot.`);
 		}
 	}
 

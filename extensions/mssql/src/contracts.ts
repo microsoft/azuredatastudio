@@ -1567,10 +1567,6 @@ export interface ServerContextualizationParams {
 	ownerUri: string;
 }
 
-export namespace GenerateServerContextualizationRequest {
-	export const type = new RequestType<ServerContextualizationParams, azdata.contextualization.GenerateServerContextualizationResult, void, void>('metadata/generateServerContext');
-}
-
 export namespace GetServerContextualizationRequest {
 	export const type = new RequestType<ServerContextualizationParams, azdata.contextualization.GetServerContextualizationResult, void, void>('metadata/getServerContext');
 }

@@ -1783,13 +1783,6 @@ declare module 'azdata' {
 	}
 
 	export namespace contextualization {
-		export interface GenerateServerContextualizationResult {
-			/**
-			 * The generated server context.
-			 */
-			context: string | undefined;
-		}
-
 		export interface GetServerContextualizationResult {
 			/**
 			 * The retrieved server context.
@@ -1798,12 +1791,6 @@ declare module 'azdata' {
 		}
 
 		export interface ServerContextualizationProvider extends DataProvider {
-			/**
-			 * Generates server context.
-			 * @param ownerUri The URI of the connection to generate context for.
-			 */
-			generateServerContextualization(ownerUri: string): Thenable<GenerateServerContextualizationResult>;
-
 			/**
 			 * Gets server context, which can be in the form of create scripts but is left up each provider.
 			 * @param ownerUri The URI of the connection to get context for.

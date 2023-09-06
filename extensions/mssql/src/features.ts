@@ -1310,7 +1310,7 @@ export class ExecutionPlanServiceFeature extends SqlOpsFeature<undefined> {
  */
 export class ServerContextualizationServiceFeature extends SqlOpsFeature<undefined> {
 	private static readonly messagesTypes: RPCMessageType[] = [
-		contracts.GenerateServerContextualizationRequest.type
+		contracts.GetServerContextualizationRequest.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
@@ -1330,20 +1330,6 @@ export class ServerContextualizationServiceFeature extends SqlOpsFeature<undefin
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		const generateServerContextualization = (ownerUri: string): Thenable<azdata.contextualization.GenerateServerContextualizationResult> => {
-			const params: contracts.ServerContextualizationParams = {
-				ownerUri: ownerUri
-			};
-
-			return client.sendRequest(contracts.GenerateServerContextualizationRequest.type, params).then(
-				r => r,
-				e => {
-					client.logFailedRequest(contracts.GenerateServerContextualizationRequest.type, e);
-					return Promise.reject(e);
-				}
-			);
-		};
-
 		const getServerContextualization = (ownerUri: string): Thenable<azdata.contextualization.GetServerContextualizationResult> => {
 			const params: contracts.ServerContextualizationParams = {
 				ownerUri: ownerUri
@@ -1360,7 +1346,6 @@ export class ServerContextualizationServiceFeature extends SqlOpsFeature<undefin
 
 		return azdata.dataprotocol.registerServerContextualizationProvider({
 			providerId: client.providerId,
-			generateServerContextualization: generateServerContextualization,
 			getServerContextualization: getServerContextualization
 		});
 	}
