@@ -15,7 +15,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 	templateUrl: decodeURI(require.toUrl('./chart.component.html'))
 })
 
-export default class ChartComponent<T extends azdata.ChartOptions> extends ComponentBase<azdata.ChartComponentProperties<T>> implements IComponent, OnDestroy, AfterViewInit {
+export default class ChartComponent<T extends azdata.ChartProperties> extends ComponentBase<azdata.ChartComponentProperties<T>> implements IComponent, OnDestroy, AfterViewInit {
 
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
@@ -42,11 +42,14 @@ export default class ChartComponent<T extends azdata.ChartOptions> extends Compo
 		if (this.chartType) {
 			this._chart.type = this.chartType;
 		}
-		if (this.data) {
+		/*if (this.data) {
 			this._chart.data = this.data;
 		}
 		if (this.options) {
 			this._chart.options = this.options;
+		}*/
+		if (this.chartConfig) {
+			this._chart.chartCongif = this.chartConfig;
 		}
 	}
 
@@ -54,12 +57,16 @@ export default class ChartComponent<T extends azdata.ChartOptions> extends Compo
 		return this.getProperties().chartType ?? undefined;
 	}
 
-	public get data(): azdata.ChartData | undefined {
+	/*public get data(): azdata.ChartData | undefined {
 		return this.getProperties().data ?? undefined;
 	}
 
 	public get options(): T {
 		return this.getProperties().options;
+	}*/
+
+	public get chartConfig(): T {
+		return this.getProperties().chartConfig;
 	}
 
 	public setLayout(layout: any): void {

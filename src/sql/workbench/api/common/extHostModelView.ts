@@ -289,7 +289,7 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
-	chart<T extends azdata.ChartOptions>(): azdata.ComponentBuilder<azdata.ChartComponent<T>, azdata.ChartComponentProperties<T>> {
+	chart<T extends azdata.ChartProperties>(): azdata.ComponentBuilder<azdata.ChartComponent<T>, azdata.ChartComponentProperties<T>> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.ChartComponent<T>, azdata.ChartComponentProperties<T>> = this.getComponentBuilder(new ChartComponentWrapper<T>(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
@@ -2269,7 +2269,7 @@ class GroupContainerComponentWrapper extends ComponentWrapper implements azdata.
 	}
 }
 
-class ChartComponentWrapper<T extends azdata.ChartOptions> extends ComponentWrapper implements azdata.ChartComponent<T> {
+class ChartComponentWrapper<T extends azdata.ChartProperties> extends ComponentWrapper implements azdata.ChartComponent<T> {
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.Chart, id, logService);
 		this.properties = {};
@@ -2285,7 +2285,7 @@ class ChartComponentWrapper<T extends azdata.ChartOptions> extends ComponentWrap
 		return this.properties['chartType'];
 	}
 
-	public set data(v: azdata.ChartData) {
+	/*public set data(v: azdata.ChartData) {
 		this.setProperty('data', v);
 	}
 
@@ -2299,6 +2299,14 @@ class ChartComponentWrapper<T extends azdata.ChartOptions> extends ComponentWrap
 
 	public get options(): T {
 		return this.properties['options'];
+	}*/
+
+	public set chartConfig(v: T) {
+		this.setProperty('chartConfig', v);
+	}
+
+	public get chartConfig(): T {
+		return this.properties['chartConfig'];
 	}
 
 	public get onDidClick(): vscode.Event<azdata.ChartClickEvent> {

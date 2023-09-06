@@ -2009,13 +2009,15 @@ declare module 'azdata' {
 	export type ChartType = 'bar' | 'bubble' | 'doughnut' | 'horizontalBar' | 'line' | 'pie' | 'polarArea' | 'radar' | 'scatter';
 
 	export interface ModelBuilder {
-		chart<T extends ChartOptions>(): ComponentBuilder<ChartComponent<T>, ChartComponentProperties<T>>;
+		chart<T extends ChartProperties>(): ComponentBuilder<ChartComponent<T>, ChartComponentProperties<T>>;
 	}
 
-	export interface ChartComponentProperties<T extends ChartOptions> extends ComponentProperties {
-		chartType: ChartType;
+	export interface ChartComponentProperties<T extends ChartProperties> extends ComponentProperties {
+		/*chartType: ChartType;
 		data: ChartData;
-		options?: T;
+		options?: T;*/
+		chartType: ChartType;
+		chartConfig: T;
 	}
 
 	export interface BubbleChartPoint {
@@ -2036,6 +2038,44 @@ declare module 'azdata' {
 		colors?: string[];
 		borderColor?: string[];
 	}
+
+	export interface BarDataEntry {
+		value: number;
+		xLabel: string;
+		backgroundColor?: string;
+		borderColor?: string;
+	}
+	export interface BarDataSet {
+		data: BarDataEntry[];
+		datasetLabel: string;
+	}
+
+	export interface ChartProperties {
+
+	}
+
+	export interface BarChartProperties extends ChartProperties {
+		//type?: 'bar';   //not able to initialize type like this. user needs to set chart type for now
+		datasets: BarDataSet[];
+		options?: BarChartOptions;
+	}
+
+	export interface LineChartProperties extends ChartProperties {
+		datasets: BarDataSet[]; //similar chart types (can be renamed later)
+		options?: LineChartOptions;
+	}
+
+	export interface DoughnutChartProperties extends ChartProperties {
+		dataset: BarDataSet; //using single dataset (can be renamed later)
+		options?: DoughnutChartOptions;
+	}
+
+	export interface PieChartProperties extends ChartProperties {
+		dataset: BarDataSet; //using single dataset (can be renamed later)
+		options?: PieChartOptions;
+	}
+
+
 
 	export interface ChartOptions {
 

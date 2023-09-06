@@ -135,12 +135,61 @@ export class SavedAssessmentDialog {
 				}
 			}));
 
+		const test = view.modelBuilder.chart<azdata.BarChartProperties>()
+			.withProps({
+				chartType: 'bar',
+				chartConfig: {
+					datasets: [{
+						datasetLabel: 'First',
+						data: [
+							{
+								value: 1,
+								xLabel: 'Mon'
+							},
+							{
+								value: 2,
+								xLabel: 'Tue'
+							},
+							{
+								value: 3,
+								xLabel: 'Wed'
+							},
+						]
+					},
+					{
+						datasetLabel: 'Second',
+						data: [
+							{
+								value: 6,
+								xLabel: 'Mon'
+							},
+							{
+								value: 7,
+								xLabel: 'Tue'
+							},
+							{
+								value: 8,
+								xLabel: 'Wed'
+							},
+						]
+					}],
+					options: {
+						scales: {
+							x: {
+								max: 8
+							}
+						}
+					}
+				}
+			}).component();
+
 		const flex = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column', })
 			.withProps({ CSSStyles: { 'padding': '20px 15px', } })
 			.component();
 		flex.addItem(radioStart, { flex: '0 0 auto' });
 		flex.addItem(radioContinue, { flex: '0 0 auto' });
+		flex.addItem(test, { flex: '0 0 auto' });
 
 		return flex;
 	}

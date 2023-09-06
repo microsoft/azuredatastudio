@@ -6,21 +6,32 @@ import { Component, Inject, forwardRef, ChangeDetectorRef } from '@angular/core'
 import * as chartjs from 'chart.js';
 import { mixin } from 'sql/base/common/objects';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { BubbleChartPoint, ChartOptions, ScatterChartPoint } from 'azdata';
+//import { BubbleChartPoint, ChartOptions, ScatterChartPoint } from 'azdata';
+import * as azdata from 'azdata';
+
+// nned to rename to match a common chart dataset
+export interface BarDataSet {
+	label: string;
+	data: number[];
+	backgroundColor?: string[];
+	borderColor?: string[];
+}
 
 @Component({
 	selector: 'chart-component',
 	templateUrl: decodeURI(require.toUrl('./chart.component.html'))
 })
-export class Chart<T extends ChartOptions> extends Disposable {
+export class Chart<T extends azdata.ChartProperties> extends Disposable {
 
 	private _labels: string[];
 	private _type: any;
-	private _data: number[] | BubbleChartPoint[] | ScatterChartPoint[];
-	private _colors: string | string[];
-	private _label: string;
-	private _borderColor: string | string[];
+	//private _data: number[] | BubbleChartPoint[] | ScatterChartPoint[];
+	//private _colors: string | string[];
+	//private _datasetLabel: string;
+	//private _borderColor: string | string[];
 	public chart: any;
+	private _datasets: any;
+
 
 	private _options: any = {
 		events: ['click', 'keyup'],
@@ -50,7 +61,52 @@ export class Chart<T extends ChartOptions> extends Disposable {
 		this._changeRef.detectChanges();
 	}
 
-	public set data(val: any) {
+	public set chartCongif(val: any) {
+		if (this._type === 'bar' || this._type === 'line') {
+			let BarDataSets: BarDataSet[] = [];
+			for (let dataset of val.datasets) {
+				var BarDataSet: BarDataSet = { label: '', data: [] };
+				BarDataSet.label = dataset.datasetLabel;
+				let dataEntry = dataset.data;
+				this._labels = [];
+				for (let dataEntryPoint of dataEntry) {
+					this._labels.push(dataEntryPoint.xLabel);
+					BarDataSet.data.push(dataEntryPoint.value);
+					if (dataEntryPoint.backgroundColor) {
+						BarDataSet.backgroundColor.push(dataEntryPoint.backgroundColor);
+					}
+					if (dataEntryPoint.borderColor) {
+						BarDataSet.borderColor.push(dataEntryPoint.borderColor);
+					}
+				}
+				BarDataSets.push(BarDataSet);
+			}
+			this._datasets = BarDataSets;
+		}
+		else if (this._type === 'doughnut' || this.type === 'pie') {
+			let BarDataSet: BarDataSet = { label: '', data: [] };
+			BarDataSet.label = val.dataset.datasetLabel;
+			let dataEntry = val.dataset.data;
+			this._labels = [];
+			for (let dataEntryPoint of dataEntry) {
+				this._labels.push(dataEntryPoint.xLabel);
+				BarDataSet.data.push(dataEntryPoint.value);
+				if (dataEntryPoint.backgroundColor) {
+					BarDataSet.backgroundColor.push(dataEntryPoint.backgroundColor);
+				}
+				if (dataEntryPoint.borderColor) {
+					BarDataSet.borderColor.push(dataEntryPoint.borderColor);
+				}
+			}
+			this._datasets = BarDataSet;
+		}
+
+		if (val.options) {
+			this.options = val.options;
+		}
+	}
+
+	/*public set data(val: any) {
 		this._data = val.dataset;
 		if (val.labels) {
 			this._labels = val.labels;
@@ -59,12 +115,12 @@ export class Chart<T extends ChartOptions> extends Disposable {
 			this._colors = val.colors;
 		}
 		if (val.label) {
-			this._label = val.label;
+			this._datasetLabel = val.label;
 		}
 		if (val.borderColor) {
 			this._borderColor = val.borderColor;
 		}
-	}
+	}*/
 
 	public set options(val: any) {
 		if (val) {
@@ -79,14 +135,15 @@ export class Chart<T extends ChartOptions> extends Disposable {
 			plugins: [plugin],
 			data: {
 				labels: this._labels,
-				datasets: [
+				/*datasets: [
 					{
-						label: this._label,
+						label: this._datasetLabel,
 						data: this._data,
 						backgroundColor: this._colors,
 						borderColor: this._borderColor
 					}
-				]
+				]*/
+				datasets: this._datasets
 			},
 			options: this._options
 		});
