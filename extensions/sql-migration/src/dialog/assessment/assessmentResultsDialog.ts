@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationStateModel } from '../../models/stateMachine';
 import { SqlDatabaseTree } from './sqlDatabasesTree';
-import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
+import { SKURecommendationPage } from '../../wizard/skuRecommendation/skuRecommendationPage';
 import * as constants from '../../constants/strings';
 import * as utils from '../../api/utils';
 import { MigrationTargetType } from '../../api/utils';

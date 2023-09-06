@@ -50,6 +50,10 @@ export class IconPathHelper {
 	public static breadCrumb: IconPath;
 	public static allTables: IconPath;
 	public static notFound: IconPath;
+	public static startDataCollection: IconPath;
+	public static stopDataCollection: IconPath;
+	public static import: IconPath;
+	public static settings: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -208,5 +212,22 @@ export class IconPathHelper {
 			light: context.asAbsolutePath('images/notFound.svg'),
 			dark: context.asAbsolutePath('images/notFound.svg'),
 		};
+		IconPathHelper.startDataCollection = {
+			light: context.asAbsolutePath('images/startDataCollection.svg'),
+			dark: context.asAbsolutePath('images/startDataCollection.svg')
+		};
+		IconPathHelper.stopDataCollection = {
+			light: context.asAbsolutePath('images/stopDataCollection.svg'),
+			dark: context.asAbsolutePath('images/stopDataCollection.svg')
+		};
+		IconPathHelper.import = {
+			light: context.asAbsolutePath('images/import.svg'),
+			dark: context.asAbsolutePath('images/import.svg')
+		};
+		IconPathHelper.settings = {
+			light: context.asAbsolutePath('images/settings.svg'),
+			dark: context.asAbsolutePath('images/settings.svg')
+		};
+
 	}
 }

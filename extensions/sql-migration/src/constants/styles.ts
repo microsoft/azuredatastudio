@@ -76,8 +76,14 @@ export const CARD_CSS = {
 	'padding': '8px 0px 8px 12px',
 	'border-radius': '4px',
 	'margin': '8px 0px 0px 15px'
-}
+};
 
+export const TOOLBAR_CSS = {
+	'font-size': '12px',
+	'line-height': '16px',
+	'font-weight': '400',
+	'margin': '0',
+};
 export const TDE_VALIDATION_INFO_LABEL = {
 	'font-size': '14px',
 	'line-height': '20px',

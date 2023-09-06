@@ -9,7 +9,7 @@ import { MigrationStateModel } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
 import { selectDropDownIndex } from '../../api/utils';
-import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
+import { SKURecommendationPage } from '../../wizard/skuRecommendation/skuRecommendationPage';
 
 export const TARGET_PERCENTILE_VALUES = [99, 97, 95, 90, 75, 50];
 
