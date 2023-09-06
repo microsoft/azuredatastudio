@@ -69,7 +69,7 @@ export interface IQueryManagementService {
 	changeConnectionUri(newUri: string, oldUri: string): Promise<void>;
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult>;
 	setQueryExecutionOptions(uri: string, options: azdata.QueryExecutionOptions): Promise<void>;
-	copyResults(params: azdata.CopyResultsRequestParams): Promise<void>;
+	copyResults(params: azdata.CopyResultsRequestParams): Promise<azdata.CopyResultsResults>;
 
 	// Callbacks
 	onQueryComplete(result: azdata.QueryExecuteCompleteNotificationResult): void;
@@ -108,7 +108,7 @@ export interface IQueryRequestHandler {
 	disposeQuery(ownerUri: string): Promise<void>;
 	connectionUriChanged(newUri: string, oldUri: string): Promise<void>;
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult>;
-	copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<void>;
+	copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<azdata.CopyResultsResults>;
 	setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Promise<void>;
 
 	// Edit Data actions
@@ -364,7 +364,7 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<void> {
+	public copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<azdata.CopyResultsResults> {
 		return this._runAction(requestParams.ownerUri, (runner) => {
 			return runner.copyResults(requestParams);
 		});

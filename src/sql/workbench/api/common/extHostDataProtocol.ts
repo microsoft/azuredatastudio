@@ -420,7 +420,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.QueryProvider>(handle).saveResults(requestParams);
 	}
 
-	override $copyResults(handle: number, requestParams: azdata.CopyResultsRequestParams): Thenable<void> {
+	override $copyResults(handle: number, requestParams: azdata.CopyResultsRequestParams): Thenable<azdata.CopyResultsResults> {
 		const provider = this._resolveProvider<azdata.QueryProvider>(handle);
 		if (provider.copyResults) {
 			return provider.copyResults(requestParams);

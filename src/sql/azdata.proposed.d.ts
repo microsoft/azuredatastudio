@@ -873,6 +873,13 @@ declare module 'azdata' {
 		selections: SelectionRange[];
 	}
 
+	export interface CopyResultsResults {
+		/**
+		 * Result string from copy operation
+		 */
+		results: string;
+	}
+
 	export interface QueryProvider {
 		/**
 		 * Notify clients that the URI for a connection has been changed.
@@ -884,7 +891,7 @@ declare module 'azdata' {
 		 * ADS will use this if 'supportCopyResultsToClipboard' property is set to true in the provider contribution point in extension's package.json.
 		 * Otherwise, The default handler will load all the selected data to ADS and perform the copy operation.
 		 */
-		copyResults?(requestParams: CopyResultsRequestParams): Thenable<void>;
+		copyResults?(requestParams: CopyResultsRequestParams): Thenable<CopyResultsResults>;
 	}
 
 	export enum DataProviderType {

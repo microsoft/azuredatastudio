@@ -161,7 +161,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 					return Promise.resolve(self._serializationService.saveAs(requestParams.resultFormat, requestParams.filePath, undefined, true));
 				}
 			},
-			copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<void> {
+			copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<azdata.CopyResultsResults> {
 				return Promise.resolve(self._proxy.$copyResults(handle, requestParams));
 			},
 			initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Promise<void> {
