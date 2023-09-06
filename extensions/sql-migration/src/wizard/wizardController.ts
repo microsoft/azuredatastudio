@@ -22,6 +22,7 @@ import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrat
 import { azureResource } from 'azurecore';
 import { ServiceContextChangeEvent } from '../dashboard/tabBase';
 import { getSourceConnectionProfile } from '../api/sqlUtils';
+import { AssessmentDetailsPage } from './assessmentDetailsPage/assessmentDetailsPage';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
@@ -82,6 +83,7 @@ export class WizardController {
 		this._wizardObject.customButtons = [validateButton, tdeMigrateButton, saveAndCloseButton];
 		const databaseSelectorPage = new DatabaseSelectorPage(this._wizardObject, stateModel);
 		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
+		const assessmentDetailsPage = new AssessmentDetailsPage(this._wizardObject, stateModel);
 		const targetSelectionPage = new TargetSelectionPage(this._wizardObject, stateModel);
 		const integrationRuntimePage = new IntergrationRuntimePage(this._wizardObject, stateModel);
 		const databaseBackupPage = new DatabaseBackupPage(this._wizardObject, stateModel);
@@ -90,6 +92,7 @@ export class WizardController {
 		const pages: MigrationWizardPage[] = [
 			databaseSelectorPage,
 			skuRecommendationPage,
+			assessmentDetailsPage,
 			targetSelectionPage,
 			integrationRuntimePage,
 			databaseBackupPage,

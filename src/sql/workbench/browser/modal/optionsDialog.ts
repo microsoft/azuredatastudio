@@ -123,7 +123,7 @@ export class OptionsDialog extends Modal {
 			let option: azdata.ServiceOption = options[i];
 			let rowContainer = DialogHelper.appendRow(container, option.displayName, 'optionsDialog-label', 'optionsDialog-input', `option-${option.name}`, option.isRequired);
 			const optionElement = OptionsDialogHelper.createOptionElement(option, rowContainer, this._optionValues, this._optionElements, this._contextViewService, (name) => this.onOptionLinkClicked(name));
-			this.disposableStore.add(optionElement.optionWidget);
+			this._register(optionElement.optionWidget);
 		}
 	}
 

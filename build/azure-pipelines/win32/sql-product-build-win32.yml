@@ -37,6 +37,8 @@ steps:
 
       exec { git config user.email "sqltools@service.microsoft.com" }
       exec { git config user.name "AzureDataStudio" }
+      exec { git config --global http.postBuffer 524288000 }
+      exec { git config --global https.postBuffer 524288000 }
     displayName: Prepare tooling
 
   - powershell: |
@@ -187,6 +189,7 @@ steps:
         Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll
         MicrosoftSqlToolsCredentials.dll
         MicrosoftSqlToolsServiceLayer.dll
+        MicrosoftSqlToolsSqlCore.dll
         Newtonsoft.Json.dll,SqlSerializationService.dll
         SqlToolsResourceProviderService.dll
         Microsoft.SqlServer.*.dll

@@ -374,6 +374,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'type': 'boolean',
 			'default': false,
 			'description': localize('queryEditor.promptToSaveGeneratedFiles', "Prompt to save generated SQL files")
+		},
+		'queryEditor.githubCopilotContextualizationEnabled': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('queryEditor.githubCopilotContextualizationEnabled', "(Preview) Enable contextualization of queries for GitHub Copilot. This setting helps GitHub Copilot to return improved suggestions, if the Copilot extension is installed and providers have implemented contextualization.")
 		}
 	}
 };

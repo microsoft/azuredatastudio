@@ -878,8 +878,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._connectionStringInputBox?.hideMessage();
 	}
 
-	private getModelValue(value: string): string {
-		return value !== undefined ? value : '';
+	private getModelValue(value: any): string {
+		return value !== undefined ? value.toString() : '';
 	}
 
 	public fillInConnectionInputs(connectionInfo: IConnectionProfile) {

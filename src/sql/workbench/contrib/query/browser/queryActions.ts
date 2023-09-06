@@ -646,12 +646,12 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 	) {
 		super();
 		this._databaseListDropdown = $('.databaseListDropdown');
-		this._dropdown = new Dropdown(this._databaseListDropdown, contextViewProvider, {
+		this._dropdown = this._register(new Dropdown(this._databaseListDropdown, contextViewProvider, {
 			strictSelection: true,
 			placeholder: this._selectDatabaseString,
 			ariaLabel: this._selectDatabaseString,
 			...defaultEditableDropdownStyles
-		});
+		}));
 
 		// Allows database selector to commit typed or pasted DB names without the need to click
 		// or press enter to make a selection when focus is moved away from the selector.

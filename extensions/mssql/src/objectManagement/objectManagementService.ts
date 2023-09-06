@@ -70,6 +70,11 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		const params: contracts.DetachDatabaseRequestParams = { connectionUri, objectUrn, dropConnections, updateStatistics, generateScript };
 		return this.runWithErrorHandling(contracts.DetachDatabaseRequest.type, params);
 	}
+
+	async dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Promise<string> {
+		const params: contracts.DropDatabaseRequestParams = { connectionUri, objectUrn, dropConnections, deleteBackupHistory, generateScript };
+		return this.runWithErrorHandling(contracts.DropDatabaseRequest.type, params);
+	}
 }
 
 const ServerLevelSecurableTypes: SecurableTypeMetadata[] = [
@@ -238,6 +243,10 @@ export class TestObjectManagementService implements IObjectManagementService {
 	}
 
 	async detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Promise<string> {
+		return this.delayAndResolve('');
+	}
+
+	dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string> {
 		return this.delayAndResolve('');
 	}
 
@@ -458,6 +467,19 @@ export class TestObjectManagementService implements IObjectManagementService {
 				azureServiceLevelObjective: ''
 			}
 		} : <DatabaseViewInfo>{
+			collationNames: { defaultValueIndex: 0, options: ['Latin1_General_100_CI_AS_KS_WS', 'Latin1_General_100_CI_AS_KS_WS_SC'] },
+			compatibilityLevels: { defaultValueIndex: 0, options: ['SQL Server 2008', 'SQL Server 2012', 'SQL Server 2014', 'SQL Server 2016', 'SQL Server 2017', 'SQL Server 2019'] },
+			containmentTypes: { defaultValueIndex: 0, options: ['NONE', 'PARTIAL'] },
+			loginNames: { defaultValueIndex: 0, options: ['user1', 'user2', 'user3'] },
+			restrictAccessOptions: ['MULTI_USER', 'RESTRICTED_USER', 'SINGLE_USER'],
+			recoveryModels: { defaultValueIndex: 0, options: ['FULL', 'SIMPLE', 'BULK_LOGGED'] },
+			pageVerifyOptions: ['CHECKSUM', 'NONE', 'TORN_PAGE_DETECTION'],
+			dscElevateOptions: ['OFF', 'WHEN_SUPPORTED', 'FAIL_UNSUPPORTED'],
+			dscEnableDisableOptions: ['ENABLED', 'DISABLED'],
+			dscOnOffOptions: ['ON', 'OFF'],
+			rowDataFileGroupsOptions: ['PRIMARY', 'RowDataGroup1', 'RowDataGroup2'],
+			fileStreamFileGroupsOptions: ['PRIMARY', 'FileStreamGroup1', 'FileStreamGroup2'],
+			fileTypesOptions: ['ROWS', 'LOG', 'FILESTREAM'],
 			objectInfo: {
 				name: 'Database Properties1',
 				collationName: 'Latin1_General_100_CI_AS_KS_WS',
@@ -482,8 +504,24 @@ export class TestObjectManagementService implements IObjectManagementService {
 				databaseReadOnly: true,
 				encryptionEnabled: false,
 				restrictAccess: 'SINGLE_USER',
+				databaseScopedConfigurations: [
+					{ name: 'MAXDOP', valueForPrimary: '', valueForSecondary: '' },
+					{ name: 'legacy_cardinality_estimation', valueForPrimary: 'ON', valueForSecondary: 'ON' },
+					{ name: 'parameter_sniffing', valueForPrimary: 'ON', valueForSecondary: 'OFF' },
+					{ name: 'query_optimizer_hotfixes', valueForPrimary: 'ON', valueForSecondary: 'OFF' },
+					{ name: 'identity_cache', valueForPrimary: 'ON', valueForSecondary: 'ON' },
+					{ name: 'interleaved_execution_tvf', valueForPrimary: 'ON', valueForSecondary: 'ON' },
+					{ name: 'batch_mode_memory_grant_feedback', valueForPrimary: 'OFF', valueForSecondary: 'OFF' },
+					{ name: 'batch_mode_adaptive_joins', valueForPrimary: 'OFF', valueForSecondary: 'ON' },
+					{ name: 'tsql_scalar_udf_inlining', valueForPrimary: 'ON', valueForSecondary: 'ON' }
+				],
+				isFilesTabSupported: true,
+				files: [
+					{ id: 1, name: 'databasefile1', type: 'ROWS Data', path: 'C:\\Temp\\', fileGroup: 'PRIMARY', fileNameWithExtension: 'databasefile1.mdf', sizeInMb: 62, isAutoGrowthEnabled: true, autoFileGrowth: 64, autoFileGrowthType: 0, maxSizeLimitInMb: -1 },
+					{ id: 2, name: 'databasefile1_Log', type: 'Log', path: 'C:\\Temp\\', fileGroup: 'Not Applicable', fileNameWithExtension: 'databasefile1_log.ldf', sizeInMb: 62, isAutoGrowthEnabled: true, autoFileGrowth: 64, autoFileGrowthType: 1, maxSizeLimitInMb: -1 },
+				]
 			}
-		};
+		}
 	}
 
 	private delayAndResolve(obj?: any): Promise<any> {
