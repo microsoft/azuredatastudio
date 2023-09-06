@@ -28,9 +28,11 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			}
 			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
 			const telemetryInfo = await getTelemetryInfo(context, tableIcon);
+			let nonDefaultOptions = await azdata.connection.getNonDefaultOptions(context.connectionProfile);
+			nonDefaultOptions = nonDefaultOptions.replace('(', '[').replace(')', ']');
 			await azdata.designers.openTableDesigner(sqlProviderName, {
 				title: NewTableText,
-				tooltip: context.connectionProfile!.connectionName ? `${context.connectionProfile!.connectionName} - ${NewTableText}` : `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`,
+				tooltip: `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}${nonDefaultOptions}`,
 				server: context.connectionProfile!.serverName,
 				database: context.connectionProfile!.databaseName,
 				isNewTable: true,
@@ -60,9 +62,11 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			}
 			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
 			const telemetryInfo = await getTelemetryInfo(context, tableIcon);
+			let nonDefaultOptions = await azdata.connection.getNonDefaultOptions(context.connectionProfile);
+			nonDefaultOptions = nonDefaultOptions.replace('(', '[').replace(')', ']');
 			await azdata.designers.openTableDesigner(sqlProviderName, {
 				title: `${schema}.${name}`,
-				tooltip: connName ? `${connName} - ${schema}.${name}` : `${server} - ${database} - ${schema}.${name}`,
+				tooltip: `${server} - ${database} - ${schema}.${name}${nonDefaultOptions}`,
 				server: server,
 				database: database,
 				isNewTable: false,

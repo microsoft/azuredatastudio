@@ -508,6 +508,13 @@ declare module 'azdata' {
 		 * @returns The new password that is returned from the operation or undefined if unsuccessful.
 		 */
 		export function openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined>;
+
+		/**
+		 * Gets the non default options of the connection profile.
+		 * @param profile The connection profile to get the options for.
+		 * @returns The string key containing the non default options (if any) for the profile.
+		 */
+		export function getNonDefaultOptions(profile: IConnectionProfile): Thenable<string>;
 	}
 
 	/*
