@@ -99,6 +99,9 @@
     <trans-unit id="objectManagement.ObjectSelectionMethodDialog_AllObjectsOfTypes">
       <source xml:lang="en">All objects of certain types</source>
     </trans-unit>
+    <trans-unit id="objectManagement.allowTriggerToFireOthersLabel">
+      <source xml:lang="en">Allow Triggers to Fire Others</source>
+    </trans-unit>
     <trans-unit id="objectManagement.dropObjectError">
       <source xml:lang="en">An error occurred while dropping the {0}: {1}. {2}</source>
       <note>{0} object type, {1}: object name, {2}: error message.</note>
@@ -152,6 +155,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.attachDatabaseDialogTitle">
       <source xml:lang="en">Attach Database (Preview)</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.attachDatabaseOperationName">
+      <source xml:lang="en">Attach database</source>
     </trans-unit>
     <trans-unit id="objectManagement.user.aadAuth">
       <source xml:lang="en">Authenticate with Azure Active Directory</source>
@@ -213,6 +219,9 @@
     <trans-unit id="objectManagement.backupChecksumText">
       <source xml:lang="en">Backup checksum</source>
     </trans-unit>
+    <trans-unit id="objectManagement.blockedProcThresholdLabel">
+      <source xml:lang="en">Blocked Process Threshold</source>
+    </trans-unit>
     <trans-unit id="objectManagement.bothFailedAndSuccessfulLoginsText">
       <source xml:lang="en">Both failed and successful logins</source>
     </trans-unit>
@@ -255,6 +264,9 @@
     <trans-unit id="objectManagement.containmentTypeLabel">
       <source xml:lang="en">Containment Type</source>
     </trans-unit>
+    <trans-unit id="objectManagement.costThresholdParallelismLabel">
+      <source xml:lang="en">Cost Threshold Parallelism</source>
+    </trans-unit>
     <trans-unit id="objectManagement.noDialogFoundError">
       <source xml:lang="en">Could not find a supported dialog for node type &apos;{0}&apos; and object type &apos;{1}&apos;.</source>
     </trans-unit>
@@ -270,6 +282,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.currentSLOLabel">
       <source xml:lang="en">Current Service Level Objective</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.cursorThresholdLabel">
+      <source xml:lang="en">Cursor Threshold</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseName">
       <source xml:lang="en">DB Name</source>
@@ -334,6 +349,12 @@
     <trans-unit id="objectManagement.databaseProperties.defaultText">
       <source xml:lang="en">Default</source>
     </trans-unit>
+    <trans-unit id="objectManagement.defaultFullTextLanguageLabel">
+      <source xml:lang="en">Default Full-Text Language</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.defaultLanguageLabel">
+      <source xml:lang="en">Default Language</source>
+    </trans-unit>
     <trans-unit id="objectManagement.login.defaultDatabaseLabel">
       <source xml:lang="en">Default database</source>
     </trans-unit>
@@ -357,6 +378,10 @@
     </trans-unit>
     <trans-unit id="objectManagement.detachDatabaseOptions">
       <source xml:lang="en">Detach Database Options</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.detachDatabaseOperationName">
+      <source xml:lang="en">Detach database &apos;{0}&apos;</source>
+      <note>{0}: object name.</note>
     </trans-unit>
     <trans-unit id="objectManagement.dropButtonLabel">
       <source xml:lang="en">Drop</source>
@@ -467,6 +492,9 @@
     <trans-unit id="objectManagement.findText">
       <source xml:lang="en">Find</source>
     </trans-unit>
+    <trans-unit id="objectManagement.fullTextUpgradeOptionLabel">
+      <source xml:lang="en">Full-Text Upgrade Option</source>
+    </trans-unit>
     <trans-unit id="objectManagement.generalSectionHeader">
       <source xml:lang="en">General</source>
     </trans-unit>
@@ -533,6 +561,9 @@
     <trans-unit id="objectManagement.loadingObjectsLabel">
       <source xml:lang="en">Loading objects…</source>
     </trans-unit>
+    <trans-unit id="objectManagement.locksLabel">
+      <source xml:lang="en">Locks</source>
+    </trans-unit>
     <trans-unit id="objectManagement.logLocationText">
       <source xml:lang="en">Log</source>
     </trans-unit>
@@ -566,8 +597,14 @@
     <trans-unit id="objectManagement.user.loginMapped">
       <source xml:lang="en">Mapped to a server login</source>
     </trans-unit>
+    <trans-unit id="objectManagement.maxDegreeParallelismLabel">
+      <source xml:lang="en">Max Degree Parallelism</source>
+    </trans-unit>
     <trans-unit id="objectManagement.maxSizeLabel">
       <source xml:lang="en">Max Size</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.maxTextReplicationSizeLabel">
+      <source xml:lang="en">Max Text Replication Size</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.maximumFileSizeText">
       <source xml:lang="en">Maximum File Size</source>
@@ -650,6 +687,9 @@
     <trans-unit id="objectManagement.operatingSystem">
       <source xml:lang="en">Operating System</source>
     </trans-unit>
+    <trans-unit id="objectManagement.optimizeAdHocWorkloadsLabel">
+      <source xml:lang="en">Optimize Ad Hoc Workloads</source>
+    </trans-unit>
     <trans-unit id="objectManagement.user.ownedSchemasLabel">
       <source xml:lang="en">Owned Schemas</source>
     </trans-unit>
@@ -707,6 +747,9 @@
     <trans-unit id="objectManagement.properties">
       <source xml:lang="en">Properties</source>
     </trans-unit>
+    <trans-unit id="objectManagement.queryWaitLabel">
+      <source xml:lang="en">Query Wait</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.rowsDataFileType">
       <source xml:lang="en">ROWS Data</source>
     </trans-unit>
@@ -755,6 +798,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.sqlServerAndWindowsAuthText">
       <source xml:lang="en">SQL Server and Windows Authentication mode</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.scanStartupProcsLabel">
+      <source xml:lang="en">Scan Startup Procs </source>
     </trans-unit>
     <trans-unit id="objectManagement.ObjectSelectionMethodDialog_SelectSchemaDropdownLabel">
       <source xml:lang="en">Schema</source>
@@ -842,6 +888,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.collationNotValidError">
       <source xml:lang="en">The selected collation &apos;{0}&apos; is not valid. Please choose a different collation.</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.twoDigitYearCutoffLabel">
+      <source xml:lang="en">Two Digit Year Cutoff</source>
     </trans-unit>
     <trans-unit id="objectManagement.user.type">
       <source xml:lang="en">Type</source>

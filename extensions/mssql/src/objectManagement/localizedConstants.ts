@@ -27,6 +27,7 @@ export const DatabaseRoleTypeDisplayName: string = localize('objectManagement.Da
 export const DatabaseRoleTypeDisplayNameInTitle: string = localize('objectManagement.DatabaseRoleTypeDisplayNameInTitle', "Database Role");
 export const DatabaseTypeDisplayNameInTitle: string = localize('objectManagement.DatabaseDisplayNameInTitle', "Database");
 export function NoDialogFoundError(nodeType: string, objectType: string): string { return localize('objectManagement.noDialogFoundError', "Could not find a supported dialog for node type '{0}' and object type '{1}'.", nodeType, objectType); }
+export function NotSupportedError(objectType: string): string { return localize('objectManagement.notSupportedError', "This command is not supported for object type '{0}'.", objectType); }
 
 // Shared Strings
 export const FailedToRetrieveConnectionInfoErrorMessage: string = localize('objectManagement.noConnectionUriError', "Failed to retrieve the connection information, please reconnect and try again.")
@@ -108,6 +109,13 @@ export function OpenDetachDatabaseDialogError(error: string): string {
 	}, "An error occurred while opening the detach database dialog. {0}", error);
 }
 
+export function DetachDatabaseOperationDisplayName(objectName: string): string {
+	return localize({
+		key: 'objectManagement.detachDatabaseOperationName',
+		comment: ['{0}: object name.']
+	}, "Detach database '{0}'", objectName);
+}
+
 export function OpenDropDatabaseDialogError(error: string): string {
 	return localize({
 		key: 'objectManagement.openDropDatabaseDialogError',
@@ -121,6 +129,8 @@ export function OpenAttachDatabaseDialogError(error: string): string {
 		comment: ['{0}: error message.']
 	}, "An error occurred while opening the attach database dialog. {0}", error);
 }
+
+export const AttachDatabaseOperationDisplayName = localize('objectManagement.attachDatabaseOperationName', "Attach database");
 
 export function OpenObjectPropertiesDialogError(objectType: string, objectName: string, error: string): string {
 	return localize({
