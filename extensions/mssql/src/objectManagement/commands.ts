@@ -109,8 +109,13 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 			}
 		}
 	} else {
-		// Node info will be missing for top level connection items like servers and databases, so make a best guess here based on connection info
-		objectType = context.connectionProfile.databaseName === '' ? ObjectManagement.NodeType.Server : ObjectManagement.NodeType.Database;
+		// Node info will be missing for top level connection items like servers and databases, so make a best guess here based on connection info.
+		// If we don't have a database name, then we have to assume it's a server node, which isn't valid for the New Object command.
+		if (context.connectionProfile?.databaseName?.length > 0) {
+			objectType = ObjectManagement.NodeType.Database;
+		} else {
+			throw new Error(objectManagementLoc.NotSupportedError(ObjectManagement.NodeType.Server));
+		}
 	}
 
 	try {
