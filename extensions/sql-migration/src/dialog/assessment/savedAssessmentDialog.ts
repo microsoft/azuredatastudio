@@ -135,7 +135,7 @@ export class SavedAssessmentDialog {
 				}
 			}));
 
-		const test = view.modelBuilder.chart<azdata.BarChartProperties>()
+		const chart = view.modelBuilder.chart<azdata.BarChartProperties>()
 			.withProps({
 				chartType: 'bar',
 				chartConfig: {
@@ -189,7 +189,7 @@ export class SavedAssessmentDialog {
 			.component();
 		flex.addItem(radioStart, { flex: '0 0 auto' });
 		flex.addItem(radioContinue, { flex: '0 0 auto' });
-		flex.addItem(test, { flex: '0 0 auto' });
+		flex.addItem(chart, { flex: '0 0 auto' });
 
 		return flex;
 	}

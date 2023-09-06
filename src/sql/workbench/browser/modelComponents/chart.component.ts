@@ -48,8 +48,10 @@ export default class ChartComponent<T extends azdata.ChartProperties> extends Co
 		if (this.options) {
 			this._chart.options = this.options;
 		}*/
+
 		if (this.chartConfig) {
-			this._chart.chartCongif = this.chartConfig;
+			this._chart.configuration = this.chartConfig;
+			//this._chart.chartCongif = this.chartConfig;
 		}
 	}
 

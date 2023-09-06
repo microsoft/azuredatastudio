@@ -22,16 +22,11 @@ export interface BarDataSet {
 	templateUrl: decodeURI(require.toUrl('./chart.component.html'))
 })
 export class Chart<T extends azdata.ChartProperties> extends Disposable {
-
+	private _type: azdata.ChartType;
 	private _labels: string[];
-	private _type: any;
-	//private _data: number[] | BubbleChartPoint[] | ScatterChartPoint[];
-	//private _colors: string | string[];
-	//private _datasetLabel: string;
-	//private _borderColor: string | string[];
-	public chart: any;
-	private _datasets: any;
+	public chart: chartjs.Chart;
 
+	private _configuration: chartjs.ChartData;
 
 	private _options: any = {
 		events: ['click', 'keyup'],
@@ -61,6 +56,47 @@ export class Chart<T extends azdata.ChartProperties> extends Disposable {
 		this._changeRef.detectChanges();
 	}
 
+	public set configuration(val: any) {
+		val = {
+			chartTitle: 'Test Chart Please Ignore',
+			datasets: [
+				{
+					data: [2, 3, 4],
+					backgroundColor: '#FF8888',
+					borderColor: '#FF0000',
+					seriesLabel: 'by one'
+				},
+				{
+					data: [3.5, 4, 4.5],
+					backgroundColor: '#88FF88',
+					borderColor: '#00FF00',
+					seriesLabel: 'by half'
+				},
+				{
+					data: [1, 3, 5],
+					backgroundColor: '#8888FF',
+					borderColor: '#0000FF',
+					seriesLabel: 'by two'
+				}
+			],
+			// only data that aligns with a label is shown.  If fewer labels than data, then data is truncated; if more labels than data, then there's an empty entry
+			labels: ['un', 'deux', 'trois', 'quatre'],
+			options: {
+				scales: {
+					x: {
+						max: 8
+					}
+				}
+			}
+		};
+
+		this._configuration = this.convert(val);
+
+		if (val.options) {
+			this.options = val.options;
+		}
+	}
+
 	public set chartCongif(val: any) {
 		if (this._type === 'bar' || this._type === 'line') {
 			let BarDataSets: BarDataSet[] = [];
@@ -81,7 +117,7 @@ export class Chart<T extends azdata.ChartProperties> extends Disposable {
 				}
 				BarDataSets.push(BarDataSet);
 			}
-			this._datasets = BarDataSets;
+			//this._datasets = BarDataSets;
 		}
 		else if (this._type === 'doughnut' || this.type === 'pie') {
 			let BarDataSet: BarDataSet = { label: '', data: [] };
@@ -98,7 +134,7 @@ export class Chart<T extends azdata.ChartProperties> extends Disposable {
 					BarDataSet.borderColor.push(dataEntryPoint.borderColor);
 				}
 			}
-			this._datasets = BarDataSet;
+			//this._datasets = BarDataSet;
 		}
 
 		if (val.options) {
@@ -129,24 +165,55 @@ export class Chart<T extends azdata.ChartProperties> extends Disposable {
 		this.drawChart();
 	}
 
+	private convert(val: any): chartjs.ChartData {
+		const result: chartjs.ChartData = {
+			datasets: []
+		}
+
+		for (let set of val.datasets) {
+			result.datasets.push({
+				data: 'x' in set.data ? set.data.map(val => val.x) : set.data,
+				backgroundColor: set.backgroundColor,
+				borderColor: set.borderColor,
+				label: set.seriesLabel
+			});
+		}
+
+		result.labels = val.labels;
+
+		return result;
+	}
+
 	public drawChart() {
-		this.chart = new chartjs.Chart("MyChart", {
-			type: this._type,
-			plugins: [plugin],
-			data: {
-				labels: this._labels,
-				/*datasets: [
-					{
-						label: this._datasetLabel,
-						data: this._data,
-						backgroundColor: this._colors,
-						borderColor: this._borderColor
-					}
-				]*/
-				datasets: this._datasets
-			},
-			options: this._options
-		});
+		if (this.chart) {
+			this.chart.data = this._configuration;
+			this.chart.update();
+		} else {
+			this.chart = new chartjs.Chart("MyChart", {
+				type: <any>this._type.toString(),
+				plugins: [plugin],
+				data: this._configuration,
+				options: this._options
+			});
+		}
+
+		// this.chart = new chartjs.Chart("MyChart", {
+		// 	type: this._type,
+		// 	plugins: [plugin],
+		// 	data: {
+		// 		labels: this._labels,
+		// 		/*datasets: [
+		// 			{
+		// 				label: this._datasetLabel,
+		// 				data: this._data,
+		// 				backgroundColor: this._colors,
+		// 				borderColor: this._borderColor
+		// 			}
+		// 		]*/
+		// 		datasets: this._datasets
+		// 	},
+		// 	options: this._options
+		// });
 	}
 }
 
