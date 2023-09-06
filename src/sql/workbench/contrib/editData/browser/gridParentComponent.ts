@@ -72,10 +72,6 @@ export abstract class GridParentComponent extends Disposable {
 	protected nativeElement: HTMLElement;
 	protected table: Table<any>;
 
-	// Variable for the newline replacement character
-	// allow-any-unicode-next-line
-	protected newlineCharacter = '↵';
-
 	set messageActive(input: boolean) {
 		this.messageActiveBool = input;
 		if (this.resultActive) {

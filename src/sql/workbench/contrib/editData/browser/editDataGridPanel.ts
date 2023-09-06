@@ -477,7 +477,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					id: columnIndex,
 					name: escape(c.columnName),
 					field: columnIndex,
-					formatter: this.getColumnFormatter,
+					formatter: (row, cell, value, columnDef, dataContext) => this.getColumnFormatter(row, cell, value, columnDef, dataContext, self.newlinePattern),
 					isEditable: c.isUpdatable
 				};
 			}))
@@ -1255,7 +1255,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 
 	/*Formatter for Column*/
-	private getColumnFormatter(row: number | undefined, cell: number | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
+	private getColumnFormatter(row: number | undefined, cell: number | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined, newlinePattern: string): string {
 		let valueToDisplay = '';
 		let cellClasses = 'grid-cell-value-container';
 		/* tslint:disable:no-null-keyword */
@@ -1272,8 +1272,6 @@ export class EditDataGridPanel extends GridParentComponent {
 			// If a cell is not edited and retrieved direct from the SQL server, it would be in the form of a DBCellValue.
 			// We use it's displayValue and remove newlines for display purposes only.
 			valueToDisplay = (value.displayValue + '');
-			valueToDisplay = valueToDisplay.replace(/(\r\n|\n|\r)/g, this.newlineCharacter);
-			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
 		}
 		else if (typeof value === 'string' || (value && value.text)) {
 			// Once a cell has been edited, the cell value will no longer be a DBCellValue until refresh.
@@ -1283,8 +1281,9 @@ export class EditDataGridPanel extends GridParentComponent {
 			} else {
 				valueToDisplay = value;
 			}
-			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+			valueToDisplay = newlinePattern ? valueToDisplay.replace(/\u0000/g, newlinePattern) : valueToDisplay;
 		}
+		valueToDisplay = Services.getCellDisplayValue(valueToDisplay);
 		return '<span title="' + valueToDisplay + '" class="' + cellClasses + '">' + valueToDisplay + '</span>';
 	}
 }
