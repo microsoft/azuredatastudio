@@ -5,10 +5,10 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as path from 'path';
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
 import { ConfigureDialog } from '../settings/configureDialog';
+import { IconPathHelper } from '../common/iconHelper';
 
 export abstract class BaseQueryStoreReport {
 	protected flexModel?: azdata.FlexContainer;
@@ -20,9 +20,8 @@ export abstract class BaseQueryStoreReport {
 	 * @param reportTitle Title of report shown in toolbar
 	 * @param reportId Id of tab used in query store dashboard
 	 * @param resizeable Whether or not the sections of the report are resizeable
-	 * @param extensionContext
 	 */
-	constructor(private reportTitle: string, private reportId: string, protected resizeable: boolean, private extensionContext: vscode.ExtensionContext) { }
+	constructor(private reportTitle: string, private reportId: string, protected resizeable: boolean) { }
 
 	public get ReportContent(): azdata.FlexContainer | undefined {
 		return this.flexModel;
@@ -112,10 +111,7 @@ export abstract class BaseQueryStoreReport {
 		const openInNewTabButton = view.modelBuilder.button().withProps({
 			label: constants.openInNewTab,
 			title: constants.openInNewTab,
-			iconPath: {
-				light: path.join(this.extensionContext.extensionPath, 'images', 'light', 'multiple-windows.svg'),
-				dark: path.join(this.extensionContext.extensionPath, 'images', 'dark', 'multiple-windows.svg')
-			}
+			iconPath: IconPathHelper.multipleWindows
 		}).component();
 		openInNewTabButton.enabled = true;
 
@@ -129,10 +125,7 @@ export abstract class BaseQueryStoreReport {
 		this.configureButton = view.modelBuilder.button().withProps({
 			label: constants.configure,
 			title: constants.configure,
-			iconPath: {
-				light: path.join(this.extensionContext.extensionPath, 'images', 'light', 'gear.svg'),
-				dark: path.join(this.extensionContext.extensionPath, 'images', 'dark', 'gear.svg')
-			}
+			iconPath: IconPathHelper.gear
 		}).component();
 		this.configureButton.enabled = true;
 

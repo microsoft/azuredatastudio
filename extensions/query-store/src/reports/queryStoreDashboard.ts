@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as constants from '../common/constants';
 import { TopResourceConsumingQueries } from './topResourceConsumingQueries';
@@ -14,7 +13,7 @@ export class QueryStoreDashboard {
 	private dashboard?: azdata.window.ModelViewDashboard;
 	private initDashboardComplete: Deferred = new Deferred();
 
-	constructor(private dbName: string, private extensionContext: vscode.ExtensionContext) { }
+	constructor(private dbName: string) { }
 
 	/**
 	 * Creates and opens the report
@@ -23,8 +22,8 @@ export class QueryStoreDashboard {
 		// TODO: update title based on selected tab to have the current selected report in editor tab title
 		this.dashboard = azdata.window.createModelViewDashboard(constants.queryStoreDashboardTitle(this.dbName));
 		this.dashboard.registerTabs(async (view: azdata.ModelView) => {
-			const topResourceConsumingQueriesReport = new TopResourceConsumingQueries(this.extensionContext, this.dbName);
-			const overallResourceConsumptionReport = new OverallResourceConsumption(this.extensionContext, this.dbName);
+			const topResourceConsumingQueriesReport = new TopResourceConsumingQueries(this.dbName);
+			const overallResourceConsumptionReport = new OverallResourceConsumption(this.dbName);
 
 			await Promise.all([topResourceConsumingQueriesReport.createReport(view), overallResourceConsumptionReport.createReport(view)]);
 

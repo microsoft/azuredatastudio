@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { BaseQueryStoreReport } from './baseQueryStoreReport';
 import { QueryStoreView } from './queryStoreView';
@@ -16,8 +15,8 @@ export class TopResourceConsumingQueries extends BaseQueryStoreReport {
 	private planSummary: QueryStoreView;
 	private plan: QueryStoreView;
 
-	constructor(extensionContext: vscode.ExtensionContext, databaseName: string) {
-		super(constants.topResourceConsumingQueriesToolbarLabel(databaseName), constants.topResourceConsumingQueriesTabId,/*resizeable*/ true, extensionContext);
+	constructor(databaseName: string) {
+		super(constants.topResourceConsumingQueriesToolbarLabel(databaseName), constants.topResourceConsumingQueriesTabId,/*resizeable*/ true);
 		this.queries = new QueryStoreView(constants.queries, 'chartreuse');
 		this.planSummary = new QueryStoreView(constants.planSummary('x'), 'coral'); // TODO: replace 'x' with actual query id
 		this.plan = new QueryStoreView(constants.plan('x'), 'darkturquoise');

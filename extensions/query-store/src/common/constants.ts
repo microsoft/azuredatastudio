@@ -27,7 +27,7 @@ export function plan(queryId: string): string { return localize('plan', "Plan {0
 export function topResourceConsumingQueriesToolbarLabel(databaseName: string): string { return localize('topResourceConsumingQueriesToolbarLabel', "Top 25 resource consumers for database {0}", databaseName); }
 
 export const configure = localize('configure', "Configure");
-export const openInNewTab = localize('openInNewTab', "Open in new tab");
+export const openInNewTab = localize('openInNewTab', "Open In New Tab");
 export const okButtonText = localize('okButtonText', "Ok");
 export const cancelButtonText = localize('cancelButtonText', "Cancel");
 export const applyButtonText = localize('applyButtonText', "Apply");
