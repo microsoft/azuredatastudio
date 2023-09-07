@@ -9,7 +9,7 @@ import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { TableDesignerComponentInput } from 'sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import * as azdata from 'azdata';
-import { GroupIdentifier, IRevertOptions, ISaveOptions, EditorInputCapabilities } from 'vs/workbench/common/editor';
+import { GroupIdentifier, IRevertOptions, ISaveOptions, EditorInputCapabilities, Verbosity } from 'vs/workbench/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { Schemas } from 'sql/base/common/schemas';
@@ -81,8 +81,17 @@ export class TableDesignerInput extends EditorInput {
 		return this._name;
 	}
 
-	override getTitle(): string {
-		return this._title;
+	override getTitle(verbosity?: Verbosity): string {
+		//TODO - Need to implement advanced options to title (long/medium for hover, short for top)
+		switch (verbosity) {
+			case Verbosity.SHORT:
+				return this._title;
+			case Verbosity.LONG:
+				return this._title;
+			default:
+			case Verbosity.MEDIUM:
+				return this._title;
+		}
 	}
 
 	override getDescription(): string {
