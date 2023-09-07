@@ -6,14 +6,10 @@
 import { AppContext } from '../appContext';
 import * as vscode from 'vscode';
 import * as constants from './constants';
-import { TelemetryReporter } from '../telemetry';
 import { ConnectionService } from './connectionService';
-
-const clearPooledConnectionsAction = 'clearPooledConnections';
 
 export function registerConnectionCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.clearPooledConnections', async () => {
-		TelemetryReporter.sendTelemetryEvent(clearPooledConnectionsAction);
 		await getConnectionService(appContext).clearPooledConnections();
 	}));
 }
