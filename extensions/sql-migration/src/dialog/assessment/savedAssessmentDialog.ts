@@ -167,6 +167,50 @@ export class SavedAssessmentDialog {
 			}
 		};
 
+		const barChart = view.modelBuilder.chart<azdata.BarChartConfiguration>()
+			.withProps({
+				chartType: 'bar',
+				configuration: barConfig
+			}).component();
+
+		const horizontalBarConfig: azdata.BarChartConfiguration = {
+			chartTitle: 'Test Horizontal Bar Chart',
+			datasets: [
+				{
+					data: [2, 3, 4],
+					backgroundColor: '#FFFF88',
+					borderColor: '#FFFF00',
+					dataLabel: 'By One'
+				},
+				{
+					data: [3.5, 4, 4.5],
+					backgroundColor: '#88FFFF',
+					borderColor: '#00FFFF',
+					dataLabel: 'By Half'
+				},
+				{
+					data: [1, 3, 5],
+					backgroundColor: '#FF88FF',
+					borderColor: '#FF00FF',
+					dataLabel: 'By Two'
+				}
+			],
+			labels: ['uno', 'dos', 'tres', 'quatro'],
+			options: {
+				scales: {
+					x: {
+						max: 8
+					}
+				}
+			}
+		};
+
+		const horizontalBarChart = view.modelBuilder.chart<azdata.BarChartConfiguration>()
+			.withProps({
+				chartType: 'horizontalBar',
+				configuration: horizontalBarConfig
+			}).component();
+
 		const lineConfig: azdata.LineChartConfiguration = {
 			chartTitle: 'Test Line Chart',
 			datasets: [
@@ -199,7 +243,46 @@ export class SavedAssessmentDialog {
 			}
 		};
 
-		const doughnutConfig: azdata.DoughnutChartConfiguration = {
+		const lineChart = view.modelBuilder.chart<azdata.LineChartConfiguration>()
+			.withProps({
+				chartType: 'line',
+				configuration: lineConfig
+			}).component();
+
+		const pieConfig: azdata.PieChartConfiguration = {
+			chartTitle: 'Test Pie Chart',
+			dataset: [
+				{
+					value: 50,
+					backgroundColor: "#FF8888",
+					borderColor: "#FF0000",
+					dataLabel: "Some"
+				},
+				{
+					value: 100,
+					backgroundColor: "#88FF88",
+					borderColor: "#00FF00",
+					dataLabel: "More"
+				},
+				{
+					value: 300,
+					backgroundColor: "#8888FF",
+					borderColor: "#0000FF",
+					dataLabel: "Most"
+				}
+			],
+			options: {
+
+			}
+		}
+
+		const pieChart = view.modelBuilder.chart<azdata.PieChartConfiguration>()
+			.withProps({
+				chartType: 'pie',
+				configuration: pieConfig
+			}).component();
+
+		const doughnutConfig: azdata.PieChartConfiguration = {
 			chartTitle: 'Test Doughnut Chart',
 			dataset: [
 				{
@@ -226,41 +309,23 @@ export class SavedAssessmentDialog {
 			}
 		}
 
-		const barChart = view.modelBuilder.chart<azdata.BarChartConfiguration>()
-			.withProps({
-				chartType: 'bar',
-				configuration: barConfig
-			}).component();
-
-		const lineChart = view.modelBuilder.chart<azdata.LineChartConfiguration>()
-			.withProps({
-				chartType: 'line',
-				configuration: lineConfig
-			}).component();
-
-		const doughnutChart = view.modelBuilder.chart<azdata.DoughnutChartConfiguration>()
+		const doughnutChart = view.modelBuilder.chart<azdata.PieChartConfiguration>()
 			.withProps({
 				chartType: 'doughnut',
 				configuration: doughnutConfig
 			}).component();
 
-		const scatterConfig: azdata.ScatterplotConfiguration = {
-			chartTitle: 'Test Scatter Chart',
+		const scatterplotConfig: azdata.ScatterplotConfiguration = {
+			chartTitle: 'Test Scatterplot',
 			datasets: [
 				{
-					data: [{
-						x: -10,
-						y: 0
-					}, {
-						x: 0,
-						y: 10
-					}, {
-						x: 10,
-						y: 5
-					}, {
-						x: 0.5,
-						y: 5.5
-					}],
+					data:
+						[
+							{ x: -10, y: 0 },
+							{ x: 0, y: 10 },
+							{ x: 10, y: 5 },
+							{ x: 0.5, y: 5.5 }
+						],
 					backgroundColor: 'rgb(255, 99, 132)',
 					borderColor: 'rgb(255, 99, 132)',
 					dataLabel: 'Scatter Dataset'
@@ -276,11 +341,56 @@ export class SavedAssessmentDialog {
 			}
 		};
 
-		const scatterChart = view.modelBuilder.chart<azdata.ScatterplotConfiguration>()
+		const scatterplot = view.modelBuilder.chart<azdata.ScatterplotConfiguration>()
 			.withProps({
 				chartType: 'scatter',
-				configuration: scatterConfig
+				configuration: scatterplotConfig
 			}).component();
+
+		const bubbleConfig: azdata.BubbleChartConfiguration = {
+			chartTitle: 'Test Bubble Chart',
+			datasets: [
+				{
+					data:
+						[
+							{ x: 5, y: 5, r: 2 },
+							{ x: 10, y: 10, r: 4 },
+							{ x: 15, y: 15, r: 6 },
+							{ x: 20, y: 20, r: 8 }
+						],
+					backgroundColor: '#FF6666',
+					borderColor: 'red',
+					dataLabel: 'Red Dataset'
+				},
+				{
+					data:
+						[
+							{ x: 5, y: 20, r: 8 },
+							{ x: 10, y: 15, r: 6 },
+							{ x: 15, y: 10, r: 4 },
+							{ x: 20, y: 5, r: 2 }
+						],
+					backgroundColor: '#6666FF',
+					borderColor: 'blue',
+					dataLabel: 'Blue Dataset'
+				},
+			],
+			options: {
+				scales: {
+					x: {
+						//type: 'linear',
+						position: 'bottom'
+					}
+				}
+			}
+		};
+
+		const bubbleChart = view.modelBuilder.chart<azdata.BubbleChartConfiguration>()
+			.withProps(
+				{
+					chartType: 'bubble',
+					configuration: bubbleConfig
+				}).component();
 
 		const flex = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column', })
@@ -288,10 +398,14 @@ export class SavedAssessmentDialog {
 			.component();
 		flex.addItem(radioStart, { flex: '0 0 auto' });
 		flex.addItem(radioContinue, { flex: '0 0 auto' });
-		flex.addItem(scatterChart, { flex: '0 0 auto' });
+
 		flex.addItem(barChart, { flex: '0 0 auto' });
-		flex.addItem(doughnutChart, { flex: '0 0 auto' });
+		flex.addItem(horizontalBarChart, { flex: '0 0 auto' });
 		flex.addItem(lineChart, { flex: '0 0 auto' });
+		flex.addItem(pieChart, { flex: '0 0 auto' });
+		flex.addItem(doughnutChart, { flex: '0 0 auto' });
+		flex.addItem(scatterplot, { flex: '0 0 auto' });
+		flex.addItem(bubbleChart, { flex: '0 0 auto' });
 
 		return flex;
 	}

@@ -2135,13 +2135,16 @@ declare module 'azdata' {
 
 	//#region Chart-specific types
 
-	//#region Bar chart
+	//#region Bar/Horizontal Bar charts
 
+	/**
+	 * Configuration for a bar chart, either vertical (chartType = 'bar') or horizontal (chartType = 'horizontalBar').
+	 */
 	export interface BarChartConfiguration extends ChartConfiguration {
 		datasets: BarChartData[];
 		options?: BarChartOptions;
 		/**
-		 * Labels for the X axis.  Only data that aligns with a label is shown.  If there are fewer labels than data, then not all data is displayed; if there are more labels than data, then empty chart entries are appended
+		 * Labels for the base axis.  Only data that aligns with a label is shown.  If there are fewer labels than data, then not all data is displayed; if there are more labels than data, then empty chart entries are appended
 		 */
 		labels: string[];
 	}
@@ -2149,17 +2152,6 @@ declare module 'azdata' {
 	export interface BarChartData extends ChartDataSet<Chart1DPoint | number> { }
 
 	export interface BarChartOptions extends ChartOptions {
-		scales?: {
-			x?: ScaleOptions;
-			y?: ScaleOptions;
-		}
-	}
-
-	//#endregion
-
-	//#region Horizontal Bar chart
-
-	export interface HorizontalBarChartOptions extends ChartOptions {
 		scales?: {
 			x?: ScaleOptions;
 			y?: ScaleOptions;
@@ -2189,30 +2181,17 @@ declare module 'azdata' {
 
 	//#endregion
 
-	//#region Pie chart
+	//#region Pie/Doughnut charts
 
+	/**
+	 * Configuration for a either a pie chart or a doughnut chart.  These are the same, but with different default values for the `cutout` option.
+	 */
 	export interface PieChartConfiguration extends ChartConfiguration {
 		dataset: ChartDataEntry[];
 		options?: PieChartOptions;
 	}
 
 	export interface PieChartOptions extends ChartOptions {
-		circumference?: number;
-		cutout?: number | string;
-		radius?: number | string;
-		rotation?: number;
-	}
-
-	//#endregion
-
-	//#region Doughnut chart
-
-	export interface DoughnutChartConfiguration extends ChartConfiguration {
-		dataset: ChartDataEntry[];
-		options?: DoughnutChartOptions;
-	}
-
-	export interface DoughnutChartOptions extends ChartOptions {
 		circumference?: number;
 		cutout?: number | string;
 		radius?: number | string;
@@ -2249,9 +2228,10 @@ declare module 'azdata' {
 
 	export interface BubbleChartData extends ChartDataSet<Chart3DPoint> {
 	}
-	export interface BubbleChartOptions extends ChartOptions {
+	export interface BubbleChartOptions extends ScatterplotOptions {
 
 	}
+
 	//#endregion
 
 	//#region Polar Area chart

@@ -70,67 +70,6 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 		}
 	}
 
-	// public set chartCongif(val: any) {
-	// 	if (this._type === 'bar' || this._type === 'line') {
-	// 		let BarDataSets: BarDataSet[] = [];
-	// 		for (let dataset of val.datasets) {
-	// 			var BarDataSet: BarDataSet = { label: '', data: [] };
-	// 			BarDataSet.label = dataset.datasetLabel;
-	// 			let dataEntry = dataset.data;
-	// 			this._labels = [];
-	// 			for (let dataEntryPoint of dataEntry) {
-	// 				this._labels.push(dataEntryPoint.xLabel);
-	// 				BarDataSet.data.push(dataEntryPoint.value);
-	// 				if (dataEntryPoint.backgroundColor) {
-	// 					BarDataSet.backgroundColor.push(dataEntryPoint.backgroundColor);
-	// 				}
-	// 				if (dataEntryPoint.borderColor) {
-	// 					BarDataSet.borderColor.push(dataEntryPoint.borderColor);
-	// 				}
-	// 			}
-	// 			BarDataSets.push(BarDataSet);
-	// 		}
-	// 		//this._datasets = BarDataSets;
-	// 	}
-	// 	else if (this._type === 'doughnut' || this.type === 'pie') {
-	// 		let BarDataSet: BarDataSet = { label: '', data: [] };
-	// 		BarDataSet.label = val.dataset.datasetLabel;
-	// 		let dataEntry = val.dataset.data;
-	// 		this._labels = [];
-	// 		for (let dataEntryPoint of dataEntry) {
-	// 			this._labels.push(dataEntryPoint.xLabel);
-	// 			BarDataSet.data.push(dataEntryPoint.value);
-	// 			if (dataEntryPoint.backgroundColor) {
-	// 				BarDataSet.backgroundColor.push(dataEntryPoint.backgroundColor);
-	// 			}
-	// 			if (dataEntryPoint.borderColor) {
-	// 				BarDataSet.borderColor.push(dataEntryPoint.borderColor);
-	// 			}
-	// 		}
-	// 		//this._datasets = BarDataSet;
-	// 	}
-
-	// 	if (val.options) {
-	// 		this.options = val.options;
-	// 	}
-	// }
-
-	/*public set data(val: any) {
-		this._data = val.dataset;
-		if (val.labels) {
-			this._labels = val.labels;
-		}
-		if (val.colors) {
-			this._colors = val.colors;
-		}
-		if (val.label) {
-			this._datasetLabel = val.label;
-		}
-		if (val.borderColor) {
-			this._borderColor = val.borderColor;
-		}
-	}*/
-
 	public set options(val: any) {
 		if (val) {
 			this._options = mixin({}, mixin(this._options, val));
@@ -158,11 +97,11 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 			}
 
 			result.labels = config.labels;
-		} else if (this._type === 'doughnut') {
+		} else if (this._type === 'pie' || this._type === 'doughnut') {
 			this.element = this.chartTitle;
 			this._changeRef.detectChanges();
 
-			const config = <azdata.DoughnutChartConfiguration>val;
+			const config = <azdata.PieChartConfiguration>val;
 
 			result.datasets.push({
 				data: config.dataset.map(entry => typeof entry.value === 'number' ? entry.value : entry.value.x),
@@ -185,7 +124,22 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 					label: set.dataLabel
 				});
 			}
-		} else {
+		} else if (this._type === 'bubble') {
+			this.element = this.chartTitle;
+			this._changeRef.detectChanges();
+
+			const config = <azdata.BubbleChartConfiguration>val;
+
+			for (let set of config.datasets) {
+				result.datasets.push({
+					data: set.data.map(entry => ({ x: entry.x, y: entry.y, r: entry.r })),
+					backgroundColor: set.backgroundColor,
+					borderColor: set.borderColor,
+					label: set.dataLabel
+				});
+			}
+		}
+		else {
 			throw new Error(`Unsupported chart type: '${this._type}'`);
 		}
 
