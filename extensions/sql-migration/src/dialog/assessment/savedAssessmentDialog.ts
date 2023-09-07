@@ -168,7 +168,7 @@ export class SavedAssessmentDialog {
 			}
 		};
 
-		const chart = view.modelBuilder.chart<azdata.BarChartProperties>()
+		const chart = view.modelBuilder.chart<azdata.BarChartProperties, azdata.BarChartConfiguration>()
 			.withProps({
 				chartType: 'bar',
 				chartConfig: {

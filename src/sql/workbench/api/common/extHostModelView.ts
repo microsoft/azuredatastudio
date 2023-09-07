@@ -290,9 +290,9 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
-	chart<T extends azdata.ChartProperties>(): azdata.ComponentBuilder<azdata.ChartComponent<T>, azdata.ChartComponentProperties<T>> {
+	chart<T extends azdata.ChartProperties, TConfig extends azdata.ChartConfiguration>(): azdata.ComponentBuilder<azdata.ChartComponent<T, TConfig>, azdata.ChartComponentProperties<T, TConfig>> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.ChartComponent<T>, azdata.ChartComponentProperties<T>> = this.getComponentBuilder(new ChartComponentWrapper<T>(this._proxy, this._handle, id, this.logService), id);
+		let builder: ComponentBuilderImpl<azdata.ChartComponent<T, TConfig>, azdata.ChartComponentProperties<T, TConfig>> = this.getComponentBuilder(new ChartComponentWrapper<T, TConfig>(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -2280,7 +2280,7 @@ class GroupContainerComponentWrapper extends ComponentWrapper implements azdata.
 	}
 }
 
-class ChartComponentWrapper<T extends azdata.ChartProperties> extends ComponentWrapper implements azdata.ChartComponent<T> {
+class ChartComponentWrapper<T extends azdata.ChartProperties, TConfig extends azdata.ChartConfiguration> extends ComponentWrapper implements azdata.ChartComponent<T, TConfig> {
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.Chart, id, logService);
 		this.properties = {};

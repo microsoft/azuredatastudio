@@ -2069,16 +2069,20 @@ declare module 'azdata' {
 	export type ChartType = 'bar' | 'bubble' | 'doughnut' | 'horizontalBar' | 'line' | 'pie' | 'polarArea' | 'radar' | 'scatter';
 
 	export interface ModelBuilder {
-		chart<T extends ChartProperties>(): ComponentBuilder<ChartComponent<T>, ChartComponentProperties<T>>;
+		chart<T extends ChartProperties, TConfig extends ChartConfiguration>(): ComponentBuilder<ChartComponent<T, TConfig>, ChartComponentProperties<T, TConfig>>;
 	}
 
-	export interface ChartComponentProperties<T extends ChartProperties> extends ComponentProperties {
+	export interface ChartComponentProperties<T extends ChartProperties, TConfig extends ChartConfiguration> extends ComponentProperties {
 		/*chartType: ChartType;
 		data: ChartData;
 		options?: T;*/
 		chartType: ChartType;
 		chartConfig?: T;
-		configuration: any;
+		configuration: TConfig;
+	}
+
+	export interface ChartConfiguration {
+		chartTitle: string;
 	}
 
 	export interface ChartDataSet<TVal extends ChartPoint> {
@@ -2092,8 +2096,7 @@ declare module 'azdata' {
 		x: number;
 	}
 
-	export interface BarChartConfiguration extends ChartProperties {
-		chartTitle: string;
+	export interface BarChartConfiguration extends ChartConfiguration {
 		datasets: BarChartData[];
 		options: BarChartOptions;
 		labels: string[];
@@ -2156,8 +2159,6 @@ declare module 'azdata' {
 		dataset: BarDataSet; //using single dataset (can be renamed later)
 		options?: PieChartOptions;
 	}
-
-
 
 	export interface ChartOptions {
 
@@ -2245,7 +2246,7 @@ declare module 'azdata' {
 
 	export type ChartClickEvent = { label: string };
 
-	export interface ChartComponent<T extends ChartOptions> extends Component, ChartComponentProperties<T> {
+	export interface ChartComponent<T extends ChartOptions, TConfig extends ChartConfiguration> extends Component, ChartComponentProperties<T, TConfig> {
 		onDidClick: vscode.Event<ChartClickEvent>;
 	}
 

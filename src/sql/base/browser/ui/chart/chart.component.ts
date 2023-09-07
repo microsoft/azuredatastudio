@@ -132,21 +132,30 @@ export class Chart<T extends azdata.ChartProperties> extends Disposable {
 		this.drawChart();
 	}
 
-	private convert(val: any): chartjs.ChartData {
+	private convert(val: azdata.ChartConfiguration): chartjs.ChartData {
 		const result: chartjs.ChartData = {
 			datasets: []
 		}
 
-		for (let set of val.datasets) {
-			result.datasets.push({
-				data: 'x' in set.data ? set.data.map(val => val.x) : set.data,
-				backgroundColor: set.backgroundColor,
-				borderColor: set.borderColor,
-				label: set.seriesLabel
-			});
-		}
+		if (this._type === 'bar') {
+			const config = <azdata.BarChartConfiguration>val;
+			for (let set of config.datasets) {
+				result.datasets.push({
+					data: 'x' in set.data ? set.data.map(val => val.x) : set.data,
+					backgroundColor: set.backgroundColor,
+					borderColor: set.borderColor,
+					label: set.seriesLabel
+				});
+			}
 
-		result.labels = val.labels;
+			result.labels = config.labels;
+		} else if (this._type === 'doughnut') {
+			//const config = <azdata.DoughnutChartConfiguration>val;
+
+			//TODO
+
+			//result.labels = config.labels;
+		}
 
 		return result;
 	}

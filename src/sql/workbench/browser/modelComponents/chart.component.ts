@@ -15,7 +15,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 	templateUrl: decodeURI(require.toUrl('./chart.component.html'))
 })
 
-export default class ChartComponent<T extends azdata.ChartProperties> extends ComponentBase<azdata.ChartComponentProperties<T>> implements IComponent, OnDestroy, AfterViewInit {
+export default class ChartComponent<T extends azdata.ChartProperties, TConfig extends azdata.ChartConfiguration> extends ComponentBase<azdata.ChartComponentProperties<T, TConfig>> implements IComponent, OnDestroy, AfterViewInit {
 
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
