@@ -23,7 +23,7 @@ export interface BarDataSet {
 })
 export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable {
 	private _type: azdata.ChartType;
-	private _labels: string[];
+	//private _labels: string[];
 	public chart: chartjs.Chart;
 
 	private _configuration: chartjs.ChartData;
