@@ -318,7 +318,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		if (selectedOption === localizedConstants.LogFiletype) {
 			fileGroupDdOptions = [localizedConstants.FileGroupForLogTypeText];
 			fileGroupDdValue = localizedConstants.FileGroupForLogTypeText;
-			fileSizeInputMaxValue = fileSizeInputMaxValueInMbForLogType
+			fileSizeInputMaxValue = fileSizeInputMaxValueInMbForLogType;
 		}
 		// File Stream
 		else if (selectedOption === localizedConstants.FilestreamFileType) {
