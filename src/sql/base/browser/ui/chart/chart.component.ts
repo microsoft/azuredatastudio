@@ -25,8 +25,11 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 	private _type: azdata.ChartType;
 	//private _labels: string[];
 	public chart: chartjs.Chart;
+	private chartTitle: string;
 
 	private _configuration: chartjs.ChartData;
+	private canvas: HTMLCanvasElement;
+	public element: string;
 
 	private _options: any = {
 		events: ['click', 'keyup'],
@@ -39,6 +42,8 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 	) {
 		chartjs.Chart.register(...chartjs.registerables);
 		super();
+
+		//this.canvas = document.createElement('canvas');
 	}
 
 	ngAfterViewInit(): void {
@@ -57,6 +62,7 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 	}
 
 	public set configuration(val: TConfig) {
+		this.chartTitle = val.chartTitle;
 		this._configuration = this.convert(val);
 
 		if ((<any>val).options) { // TODO: give TConfig a strongly-typed TOptions param
@@ -137,7 +143,10 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 			datasets: []
 		}
 
-		if (this._type === 'bar') {
+		if (this._type === 'bar' || this._type === 'line') {
+			this.element = this.chartTitle;
+			this._changeRef.detectChanges();
+
 			const config = <azdata.BarChartConfiguration>val;
 			for (let set of config.datasets) {
 				result.datasets.push({
@@ -150,6 +159,9 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 
 			result.labels = config.labels;
 		} else if (this._type === 'doughnut') {
+			this.element = this.chartTitle;
+			this._changeRef.detectChanges();
+
 			const config = <azdata.DoughnutChartConfiguration>val;
 
 			result.datasets.push({
@@ -159,6 +171,20 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 			});
 
 			result.labels = config.dataset.map(val => val.dataLabel);
+		} else if (this._type === 'scatter') {
+			this.element = this.chartTitle;
+			this._changeRef.detectChanges();
+
+			const config = <azdata.ScatterplotConfiguration>val;
+
+			for (let set of config.datasets) {
+				result.datasets.push({
+					data: set.data.map(entry => [entry.x, entry.y]),
+					backgroundColor: set.backgroundColor,
+					borderColor: set.borderColor,
+					label: set.dataLabel
+				});
+			}
 		} else {
 			throw new Error(`Unsupported chart type: '${this._type}'`);
 		}
@@ -167,11 +193,14 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 	}
 
 	public drawChart() {
+		let canvas = document.getElementById(this.element) as HTMLCanvasElement;
+		this.canvas = canvas;
+
 		if (this.chart) {
 			this.chart.data = this._configuration;
 			this.chart.update();
 		} else {
-			this.chart = new chartjs.Chart("MyChart", {
+			this.chart = new chartjs.Chart(this.canvas.getContext("2d"), {
 				type: <any>this._type.toString(),
 				plugins: [plugin],
 				data: this._configuration,

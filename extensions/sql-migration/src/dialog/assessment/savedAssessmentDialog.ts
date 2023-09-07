@@ -167,32 +167,64 @@ export class SavedAssessmentDialog {
 			}
 		};
 
-		// const doughnutConfig: azdata.DoughnutChartConfiguration = {
-		// 	chartTitle: 'Test Doughnut Chart',
-		// 	dataset: [
-		// 		{
-		// 			value: 50,
-		// 			backgroundColor: "#FF8888",
-		// 			borderColor: "#FF0000",
-		// 			dataLabel: "Some"
-		// 		},
-		// 		{
-		// 			value: 100,
-		// 			backgroundColor: "#88FF88",
-		// 			borderColor: "#00FF00",
-		// 			dataLabel: "More"
-		// 		},
-		// 		{
-		// 			value: 300,
-		// 			backgroundColor: "#8888FF",
-		// 			borderColor: "#0000FF",
-		// 			dataLabel: "Most"
-		// 		}
-		// 	],
-		// 	options: {
+		const lineConfig: azdata.LineChartConfiguration = {
+			chartTitle: 'Test Line Chart',
+			datasets: [
+				{
+					data: [2, 3, 4],
+					backgroundColor: '#FFFF88',
+					borderColor: '#FFFF00',
+					dataLabel: 'By One'
+				},
+				{
+					data: [3.5, 4, 4.5],
+					backgroundColor: '#88FFFF',
+					borderColor: '#00FFFF',
+					dataLabel: 'By Half'
+				},
+				{
+					data: [1, 3, 5],
+					backgroundColor: '#FF88FF',
+					borderColor: '#FF00FF',
+					dataLabel: 'By Two'
+				}
+			],
+			labels: ['uno', 'dos', 'tres', 'quatro'],
+			options: {
+				scales: {
+					x: {
+						max: 8
+					}
+				}
+			}
+		};
 
-		// 	}
-		// }
+		const doughnutConfig: azdata.DoughnutChartConfiguration = {
+			chartTitle: 'Test Doughnut Chart',
+			dataset: [
+				{
+					value: 50,
+					backgroundColor: "#FF8888",
+					borderColor: "#FF0000",
+					dataLabel: "Some"
+				},
+				{
+					value: 100,
+					backgroundColor: "#88FF88",
+					borderColor: "#00FF00",
+					dataLabel: "More"
+				},
+				{
+					value: 300,
+					backgroundColor: "#8888FF",
+					borderColor: "#0000FF",
+					dataLabel: "Most"
+				}
+			],
+			options: {
+
+			}
+		}
 
 		const barChart = view.modelBuilder.chart<azdata.BarChartConfiguration>()
 			.withProps({
@@ -200,11 +232,55 @@ export class SavedAssessmentDialog {
 				configuration: barConfig
 			}).component();
 
-		// const doughnutChart = view.modelBuilder.chart<azdata.DoughnutChartConfiguration>()
-		// 	.withProps({
-		// 		chartType: 'doughnut',
-		// 		configuration: doughnutConfig
-		// 	}).component();
+		const lineChart = view.modelBuilder.chart<azdata.LineChartConfiguration>()
+			.withProps({
+				chartType: 'line',
+				configuration: lineConfig
+			}).component();
+
+		const doughnutChart = view.modelBuilder.chart<azdata.DoughnutChartConfiguration>()
+			.withProps({
+				chartType: 'doughnut',
+				configuration: doughnutConfig
+			}).component();
+
+		const scatterConfig: azdata.ScatterplotConfiguration = {
+			chartTitle: 'Test Scatter Chart',
+			datasets: [
+				{
+					data: [{
+						x: -10,
+						y: 0
+					}, {
+						x: 0,
+						y: 10
+					}, {
+						x: 10,
+						y: 5
+					}, {
+						x: 0.5,
+						y: 5.5
+					}],
+					backgroundColor: 'rgb(255, 99, 132)',
+					borderColor: 'rgb(255, 99, 132)',
+					dataLabel: 'Scatter Dataset'
+				}
+			],
+			options: {
+				scales: {
+					x: {
+						//type: 'linear',
+						position: 'bottom'
+					}
+				}
+			}
+		};
+
+		const scatterChart = view.modelBuilder.chart<azdata.ScatterplotConfiguration>()
+			.withProps({
+				chartType: 'scatter',
+				configuration: scatterConfig
+			}).component();
 
 		const flex = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column', })
@@ -212,8 +288,10 @@ export class SavedAssessmentDialog {
 			.component();
 		flex.addItem(radioStart, { flex: '0 0 auto' });
 		flex.addItem(radioContinue, { flex: '0 0 auto' });
+		flex.addItem(scatterChart, { flex: '0 0 auto' });
 		flex.addItem(barChart, { flex: '0 0 auto' });
-		//flex.addItem(doughnutChart, { flex: '0 0 auto' });
+		flex.addItem(doughnutChart, { flex: '0 0 auto' });
+		flex.addItem(lineChart, { flex: '0 0 auto' });
 
 		return flex;
 	}

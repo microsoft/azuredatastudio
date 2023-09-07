@@ -2093,7 +2093,7 @@ declare module 'azdata' {
 		value: Chart1DPoint | number;
 	}
 
-	export interface ChartDataSet<TVal extends Chart1DPoint | number> extends ChartDataEntryBase {
+	export interface ChartDataSet<TVal extends Chart1DPoint | Chart2DPoint | number> extends ChartDataEntryBase {
 		data: TVal[];
 	}
 
@@ -2114,16 +2114,16 @@ declare module 'azdata' {
 	//#region Chart configurations
 	export interface BarChartConfiguration extends ChartConfiguration {
 		datasets: BarChartData[];
-		options: BarChartOptions;
+		options?: BarChartOptions;
 		/**
-		 * Labels for the Y axis.  Only data that aligns with a label is shown.  If fewer labels than data, then data is truncated; if more labels than data, then there's an empty entry
+		 * Labels for the X axis.  Only data that aligns with a label is shown.  If fewer labels than data, then data is truncated; if more labels than data, then there's an empty entry
 		 */
 		labels: string[];
 	}
 
 	export interface LineChartConfiguration extends ChartConfiguration {
 		datasets: BarChartData[];
-		options: LineChartOptions;
+		options?: LineChartOptions;
 		labels: string[];
 	}
 
@@ -2132,17 +2132,17 @@ declare module 'azdata' {
 
 	export interface DoughnutChartConfiguration extends ChartConfiguration {
 		dataset: ChartDataEntry[];
-		options: DoughnutChartOptions;
+		options?: DoughnutChartOptions;
 	}
 
 	export interface PieChartConfiguration extends ChartConfiguration {
 		dataset: ChartDataEntry[];
-		options: PieChartOptions;
+		options?: PieChartOptions;
 	}
 
 	export interface ScatterplotConfiguration extends ChartConfiguration {
 		datasets: ScatterplotData[];
-		//options: ScatterplotOptions; // TODO
+		options?: ScatterChartOptions;
 	}
 
 	export interface ScatterplotData extends ChartDataSet<Chart2DPoint> {
