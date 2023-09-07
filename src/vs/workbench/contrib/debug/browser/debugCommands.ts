@@ -28,7 +28,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 import { IViewsService, ViewContainerLocation } from 'vs/workbench/common/views';
 import { deepClone } from 'vs/base/common/objects';
-import { isWeb, isWindows } from 'vs/base/common/platform';
+import { isWeb } from 'vs/base/common/platform';
 import { saveAllBeforeDebugStart } from 'vs/workbench/contrib/debug/common/debugUtils';
 import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
 import { showLoadedScriptMenu } from 'vs/workbench/contrib/debug/common/loadedScriptsPicker';
