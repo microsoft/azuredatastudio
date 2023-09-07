@@ -487,7 +487,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 });
 
 // Windows browsers use F11 for full screen, thus use alt+F11 as the default shortcut
-// {{SQL CARBON EDIT}} - Disable F11 binding to use it as shortcut for full screen in ADS
+// {{SQL CARBON EDIT}} - BEGIN - Disable F11 binding to use it as shortcut for full screen in ADS
 /*const STEP_INTO_KEYBINDING = (isWeb && isWindows) ? (KeyMod.Alt | KeyCode.F11) : KeyCode.F11;
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
@@ -505,6 +505,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		}
 	}
 });*/
+// {{SQL CARBON EDIT}} - END
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: STEP_OUT_ID,
