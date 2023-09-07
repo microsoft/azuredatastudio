@@ -369,37 +369,46 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		let nodes: NumaNode[] = this.objectInfo.numaNodes;
 		let nodeTableList: azdata.TableComponent[] = [];
 		let tableGroups: azdata.GroupContainer[] = [];
-		for (let node of nodes) {
-			let table = this.createProcessorTable(node);
-			nodeTableList.push(table);
-			tableGroups.push(this.createGroup(localizedConstants.serverNumaNodeLabel(node.numaNodeId), [table], true));
+
+		if (isEnabled) {
+			for (let node of nodes) {
+				let table = this.createProcessorTable(node);
+				nodeTableList.push(table);
+				tableGroups.push(this.createGroup(localizedConstants.serverNumaNodeLabel(node.numaNodeId), [table], true));
+			}
 		}
+
 		this.autoSetProcessorAffinityMaskForAllCheckbox = this.createCheckbox(localizedConstants.autoSetProcessorAffinityMaskForAllText, async (newValue) => {
 			this.objectInfo.autoProcessorAffinityMaskForAll = newValue;
-			for (let table of nodeTableList) {
-				let newData = table.data;
-				for (let i = 0; i < newData.length; i++) {
-					if (newValue) {
-						// if affinity mask for all is checked, then uncheck the individual processors
-						newData[i][AffinityType.ProcessorAffinity] = false;
+			if (isEnabled) {
+				for (let table of nodeTableList) {
+					let newData = table.data;
+					for (let i = 0; i < newData.length; i++) {
+						if (newValue) {
+							// if affinity mask for all is checked, then uncheck the individual processors
+							newData[i][AffinityType.ProcessorAffinity] = false;
+						}
 					}
+					await this.setTableData(table, newData);
 				}
-				await this.setTableData(table, newData);
 			}
+
 		}, this.objectInfo.autoProcessorAffinityMaskForAll, isEnabled);
 
 		this.autoSetProcessorIOAffinityMaskForAllCheckbox = this.createCheckbox(localizedConstants.autoSetProcessorAffinityIOMaskForAllText, async (newValue) => {
 			this.objectInfo.autoProcessorAffinityIOMaskForAll = newValue;
-			for (let table of nodeTableList) {
-				let newData = table.data;
-				for (let i = 0; i < newData.length; i++) {
-					if (newValue) {
-						// if IO affinity mask for all is checked, then uncheck the individual processors
-						newData[i][AffinityType.IOAffinity] = false;
+			if (isEnabled) {
+				for (let table of nodeTableList) {
+					let newData = table.data;
+					for (let i = 0; i < newData.length; i++) {
+						if (newValue) {
+							// if IO affinity mask for all is checked, then uncheck the individual processors
+							newData[i][AffinityType.IOAffinity] = false;
+						}
 					}
+					await this.setTableData(table, newData);
+					this.resetNumaNodes();
 				}
-				await this.setTableData(table, newData);
-				this.resetNumaNodes();
 			}
 		}, this.objectInfo.autoProcessorAffinityIOMaskForAll, isEnabled);
 
