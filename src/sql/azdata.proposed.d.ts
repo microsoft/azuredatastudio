@@ -2083,22 +2083,29 @@ declare module 'azdata' {
 		chartTitle: string;
 	}
 
-	export interface ChartDataSet<TVal extends ChartPoint> {
-		data: TVal[] | number[];
+	export interface ChartDataEntryBase {
 		backgroundColor: string;
 		borderColor: string;
-		seriesLabel: string;
+		dataLabel: string;
 	}
 
-	export interface ChartPoint {
+	export interface ChartDataEntry extends ChartDataEntryBase {
+		value: Chart1DPoint | number;
+	}
+
+	export interface ChartDataSet<TVal extends Chart1DPoint> extends ChartDataEntryBase {
+		data: TVal[] | number[];
+	}
+
+	export interface Chart1DPoint {
 		x: number;
 	}
 
-	export interface ScatterplotPoint extends ChartPoint {
+	export interface Chart2DPoint extends Chart1DPoint {
 		y: number;
 	}
 
-	export interface BubbleChartPoint extends ScatterplotPoint {
+	export interface Chart3DPoint extends Chart2DPoint {
 		r: number;
 	}
 
@@ -2110,18 +2117,12 @@ declare module 'azdata' {
 		labels: string[];
 	}
 
-	export interface BarChartData extends ChartDataSet<ChartPoint> {
+	export interface BarChartData extends ChartDataSet<Chart1DPoint> {
 	}
 
 	export interface DoughnutChartConfiguration extends ChartConfiguration {
-		dataset: DoughnutChartData[]
+		dataset: ChartDataEntry[]
 		options: DoughnutChartOptions;
-	}
-
-	export interface DoughnutChartData extends ChartDataSet<ChartPoint> {
-		backgroundColor: string;
-		borderColor: string;
-		label: string;
 	}
 
 	export interface BubbleChartPoint {

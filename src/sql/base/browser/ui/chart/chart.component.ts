@@ -144,17 +144,23 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 					data: 'x' in set.data ? set.data.map(val => val.x) : set.data,
 					backgroundColor: set.backgroundColor,
 					borderColor: set.borderColor,
-					label: set.seriesLabel
+					label: set.dataLabel
 				});
 			}
 
 			result.labels = config.labels;
 		} else if (this._type === 'doughnut') {
-			//const config = <azdata.DoughnutChartConfiguration>val;
+			const config = <azdata.DoughnutChartConfiguration>val;
 
-			//TODO
+			result.datasets.push({
+				data: config.dataset.map(entry => typeof entry.value === 'number' ? entry.value : entry.value.x),
+				backgroundColor: config.dataset.map(entry => entry.backgroundColor),
+				borderColor: config.dataset.map(entry => entry.borderColor)
+			});
 
-			//result.labels = config.labels;
+			result.labels = config.dataset.map(val => val.dataLabel);
+		} else {
+			throw new Error(`Unsupported chart type: '${this._type}'`);
 		}
 
 		return result;

@@ -135,26 +135,26 @@ export class SavedAssessmentDialog {
 				}
 			}));
 
-		const chartConfig: azdata.BarChartConfiguration = {
-			chartTitle: 'Test Chart Please Ignore',
+		const barConfig: azdata.BarChartConfiguration = {
+			chartTitle: 'Test Bar Chart Please Ignore',
 			datasets: [
 				{
 					data: [2, 3, 4],
 					backgroundColor: '#FFFF88',
 					borderColor: '#FFFF00',
-					seriesLabel: 'by one'
+					dataLabel: 'By One'
 				},
 				{
 					data: [3.5, 4, 4.5],
 					backgroundColor: '#88FFFF',
 					borderColor: '#00FFFF',
-					seriesLabel: 'by half'
+					dataLabel: 'By Half'
 				},
 				{
 					data: [1, 3, 5],
 					backgroundColor: '#FF88FF',
 					borderColor: '#FF00FF',
-					seriesLabel: 'by two'
+					dataLabel: 'By Two'
 				}
 			],
 			// only data that aligns with a label is shown.  If fewer labels than data, then data is truncated; if more labels than data, then there's an empty entry
@@ -168,10 +168,43 @@ export class SavedAssessmentDialog {
 			}
 		};
 
-		const chart = view.modelBuilder.chart<azdata.BarChartConfiguration>()
+		const doughnutConfig: azdata.DoughnutChartConfiguration = {
+			chartTitle: 'Test Doughnut Chart Please Ignore',
+			dataset: [
+				{
+					value: 50,
+					backgroundColor: "#FF8888",
+					borderColor: "#FF0000",
+					dataLabel: "Some"
+				},
+				{
+					value: 100,
+					backgroundColor: "#88FF88",
+					borderColor: "#00FF00",
+					dataLabel: "More"
+				},
+				{
+					value: 300,
+					backgroundColor: "#8888FF",
+					borderColor: "#0000FF",
+					dataLabel: "Most"
+				}
+			],
+			options: {
+
+			}
+		}
+
+		// const barChart = view.modelBuilder.chart<azdata.BarChartConfiguration>()
+		// 	.withProps({
+		// 		chartType: 'bar',
+		// 		configuration: barConfig
+		// 	}).component();
+
+		const doughnutChart = view.modelBuilder.chart<azdata.DoughnutChartConfiguration>()
 			.withProps({
-				chartType: 'bar',
-				configuration: chartConfig
+				chartType: 'doughnut',
+				configuration: doughnutConfig
 			}).component();
 
 		const flex = view.modelBuilder.flexContainer()
@@ -180,7 +213,8 @@ export class SavedAssessmentDialog {
 			.component();
 		flex.addItem(radioStart, { flex: '0 0 auto' });
 		flex.addItem(radioContinue, { flex: '0 0 auto' });
-		flex.addItem(chart, { flex: '0 0 auto' });
+		//flex.addItem(barChart, { flex: '0 0 auto' });
+		flex.addItem(doughnutChart, { flex: '0 0 auto' });
 
 		return flex;
 	}
