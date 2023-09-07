@@ -198,24 +198,6 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 				options: this._options
 			});
 		}
-
-		// this.chart = new chartjs.Chart("MyChart", {
-		// 	type: this._type,
-		// 	plugins: [plugin],
-		// 	data: {
-		// 		labels: this._labels,
-		// 		/*datasets: [
-		// 			{
-		// 				label: this._datasetLabel,
-		// 				data: this._data,
-		// 				backgroundColor: this._colors,
-		// 				borderColor: this._borderColor
-		// 			}
-		// 		]*/
-		// 		datasets: this._datasets
-		// 	},
-		// 	options: this._options
-		// });
 	}
 }
 

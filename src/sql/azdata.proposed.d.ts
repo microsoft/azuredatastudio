@@ -2274,6 +2274,9 @@ declare module 'azdata' {
 				suggestedMin?: number;
 			}
 		}
+		/**
+		 * Bezier curve tension between points, 0 for straight lines.  Recommended range: 0.0-1.0
+		 */
 		tension?: number;
 	}
 
