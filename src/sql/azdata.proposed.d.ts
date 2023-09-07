@@ -2077,7 +2077,29 @@ declare module 'azdata' {
 		data: ChartData;
 		options?: T;*/
 		chartType: ChartType;
-		chartConfig: T;
+		chartConfig?: T;
+		configuration: any;
+	}
+
+	export interface ChartDataSet<TVal extends ChartPoint> {
+		data: TVal[] | number[];
+		backgroundColor: string;
+		borderColor: string;
+		seriesLabel: string;
+	}
+
+	export interface ChartPoint {
+		x: number;
+	}
+
+	export interface BarChartConfiguration extends ChartProperties {
+		chartTitle: string;
+		datasets: BarChartData[];
+		options: BarChartOptions;
+		labels: string[];
+	}
+
+	export interface BarChartData extends ChartDataSet<ChartPoint> {
 	}
 
 	export interface BubbleChartPoint {

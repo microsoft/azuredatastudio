@@ -2312,6 +2312,14 @@ class ChartComponentWrapper<T extends azdata.ChartProperties> extends ComponentW
 		return this.properties['options'];
 	}*/
 
+	public set configuration(v: any) {
+		this.setProperty('configuration', v);
+	}
+
+	public get configuration(): any {
+		return this.properties['configuration'];
+	}
+
 	public set chartConfig(v: T) {
 		this.setProperty('chartConfig', v);
 	}

@@ -135,6 +135,39 @@ export class SavedAssessmentDialog {
 				}
 			}));
 
+		const chartConfig: azdata.BarChartConfiguration = {
+			chartTitle: 'Test Chart Please Ignore',
+			datasets: [
+				{
+					data: [2, 3, 4],
+					backgroundColor: '#FFFF88',
+					borderColor: '#FFFF00',
+					seriesLabel: 'by one'
+				},
+				{
+					data: [3.5, 4, 4.5],
+					backgroundColor: '#88FFFF',
+					borderColor: '#00FFFF',
+					seriesLabel: 'by half'
+				},
+				{
+					data: [1, 3, 5],
+					backgroundColor: '#FF88FF',
+					borderColor: '#FF00FF',
+					seriesLabel: 'by two'
+				}
+			],
+			// only data that aligns with a label is shown.  If fewer labels than data, then data is truncated; if more labels than data, then there's an empty entry
+			labels: ['uno', 'dos', 'tres', 'quatro'],
+			options: {
+				scales: {
+					x: {
+						max: 8
+					}
+				}
+			}
+		};
+
 		const chart = view.modelBuilder.chart<azdata.BarChartProperties>()
 			.withProps({
 				chartType: 'bar',
@@ -180,7 +213,8 @@ export class SavedAssessmentDialog {
 							}
 						}
 					}
-				}
+				},
+				configuration: chartConfig
 			}).component();
 
 		const flex = view.modelBuilder.flexContainer()

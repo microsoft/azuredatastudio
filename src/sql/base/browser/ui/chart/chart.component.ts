@@ -57,39 +57,6 @@ export class Chart<T extends azdata.ChartProperties> extends Disposable {
 	}
 
 	public set configuration(val: any) {
-		val = {
-			chartTitle: 'Test Chart Please Ignore',
-			datasets: [
-				{
-					data: [2, 3, 4],
-					backgroundColor: '#FF8888',
-					borderColor: '#FF0000',
-					seriesLabel: 'by one'
-				},
-				{
-					data: [3.5, 4, 4.5],
-					backgroundColor: '#88FF88',
-					borderColor: '#00FF00',
-					seriesLabel: 'by half'
-				},
-				{
-					data: [1, 3, 5],
-					backgroundColor: '#8888FF',
-					borderColor: '#0000FF',
-					seriesLabel: 'by two'
-				}
-			],
-			// only data that aligns with a label is shown.  If fewer labels than data, then data is truncated; if more labels than data, then there's an empty entry
-			labels: ['un', 'deux', 'trois', 'quatre'],
-			options: {
-				scales: {
-					x: {
-						max: 8
-					}
-				}
-			}
-		};
-
 		this._configuration = this.convert(val);
 
 		if (val.options) {

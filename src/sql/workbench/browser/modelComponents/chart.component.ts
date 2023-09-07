@@ -50,8 +50,11 @@ export default class ChartComponent<T extends azdata.ChartProperties> extends Co
 		}*/
 
 		if (this.chartConfig) {
-			this._chart.configuration = this.chartConfig;
 			//this._chart.chartCongif = this.chartConfig;
+		}
+
+		if (this.configuration) {
+			this._chart.configuration = this.configuration;
 		}
 	}
 
@@ -69,6 +72,10 @@ export default class ChartComponent<T extends azdata.ChartProperties> extends Co
 
 	public get chartConfig(): T {
 		return this.getProperties().chartConfig;
+	}
+
+	public get configuration(): any {
+		return this.getProperties().configuration;
 	}
 
 	public setLayout(layout: any): void {
