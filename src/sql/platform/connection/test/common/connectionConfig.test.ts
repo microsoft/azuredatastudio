@@ -78,9 +78,9 @@ suite('ConnectionConfig', () => {
 	const testConnections: IConnectionProfileStore[] = deepFreeze([
 		{
 			options: {
-				serverName: 'server1',
-				databaseName: 'database',
-				userName: 'user',
+				server: 'server1',
+				database: 'database',
+				user: 'user',
 				password: 'password',
 				authenticationType: 'SqlLogin'
 			},
@@ -91,9 +91,9 @@ suite('ConnectionConfig', () => {
 		},
 		{
 			options: {
-				serverName: 'server2',
-				databaseName: 'database',
-				userName: 'user',
+				server: 'server2',
+				database: 'database',
+				user: 'user',
 				password: 'password',
 				authenticationType: 'SqlLogin'
 			},
@@ -104,9 +104,9 @@ suite('ConnectionConfig', () => {
 		},
 		{
 			options: {
-				serverName: 'server3',
-				databaseName: 'database',
-				userName: 'user',
+				server: 'server3',
+				database: 'database',
+				user: 'user',
 				password: 'password',
 				authenticationType: 'SqlLogin'
 			},
@@ -123,7 +123,7 @@ suite('ConnectionConfig', () => {
 		let connectionProvider: azdata.ConnectionProviderOptions = {
 			options: [
 				{
-					name: 'serverName',
+					name: 'server',
 					displayName: undefined!,
 					description: undefined!,
 					groupName: undefined!,
@@ -135,7 +135,7 @@ suite('ConnectionConfig', () => {
 					valueType: ServiceOptionType.string
 				},
 				{
-					name: 'databaseName',
+					name: 'database',
 					displayName: undefined!,
 					description: undefined!,
 					groupName: undefined!,
@@ -147,7 +147,7 @@ suite('ConnectionConfig', () => {
 					valueType: ServiceOptionType.string
 				},
 				{
-					name: 'userName',
+					name: 'user',
 					displayName: undefined!,
 					description: undefined!,
 					groupName: undefined!,
@@ -326,9 +326,9 @@ suite('ConnectionConfig', () => {
 	test('addConnection should not add the new profile to user settings if already exists', async () => {
 		let existingConnection = testConnections[0];
 		let newProfile: IConnectionProfile = {
-			serverName: existingConnection.options['serverName'],
-			databaseName: existingConnection.options['databaseName'],
-			userName: existingConnection.options['userName'],
+			serverName: existingConnection.options['server'],
+			databaseName: existingConnection.options['database'],
+			userName: existingConnection.options['user'],
 			password: existingConnection.options['password'],
 			authenticationType: existingConnection.options['authenticationType'],
 			groupId: existingConnection.groupId,
@@ -350,7 +350,6 @@ suite('ConnectionConfig', () => {
 		configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
-		connectionProfile.options['databaseDisplayName'] = existingConnection.options['databaseName'];
 
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.addConnection(connectionProfile);
@@ -413,7 +412,7 @@ suite('ConnectionConfig', () => {
 
 	test('getConnections should return connections with a valid id', () => {
 		let workspaceConnections = deepClone(testConnections).map(c => {
-			c.id = c.options['serverName'];
+			c.id = c.options['server'];
 			return c;
 		});
 		let userConnections = deepClone(testConnections).map(c => {
@@ -428,12 +427,12 @@ suite('ConnectionConfig', () => {
 		let allConnections = config.getConnections(false);
 		assert.strictEqual(allConnections.length, testConnections.length);
 		allConnections.forEach(connection => {
-			let userConnection = testConnections.find(u => u.options['serverName'] === connection.serverName);
+			let userConnection = testConnections.find(u => u.options['server'] === connection.serverName);
 			if (userConnection !== undefined) {
 				assert.notStrictEqual(connection.id, connection.getOptionsKey());
 				assert.ok(!!connection.id);
 			} else {
-				let workspaceConnection = workspaceConnections.find(u => u.options['serverName'] === connection.serverName);
+				let workspaceConnection = workspaceConnections.find(u => u.options['server'] === connection.serverName);
 				assert.notStrictEqual(connection.id, connection.getOptionsKey());
 				assert.strictEqual(workspaceConnection!.id, connection.id);
 			}

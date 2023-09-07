@@ -10,6 +10,7 @@ import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/t
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
@@ -63,7 +64,7 @@ suite('AsyncServerTreeDragAndDrop', () => {
 			undefined, // configuration service
 			new TestCapabilitiesService(), // capabilities service
 		);
-		serverTreeDragAndDrop = new AsyncServerTreeDragAndDrop(mockConnectionManagementService.object);
+		serverTreeDragAndDrop = new AsyncServerTreeDragAndDrop(mockConnectionManagementService.object, new TestNotificationService());
 
 		capabilitiesService = new TestCapabilitiesService();
 		capabilitiesService.capabilities[mssqlProviderName] = { connection: msSQLCapabilities };

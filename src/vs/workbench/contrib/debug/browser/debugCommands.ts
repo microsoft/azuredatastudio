@@ -28,7 +28,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 import { IViewsService, ViewContainerLocation } from 'vs/workbench/common/views';
 import { deepClone } from 'vs/base/common/objects';
-import { isWeb, isWindows } from 'vs/base/common/platform';
+import { isWeb } from 'vs/base/common/platform';
 import { saveAllBeforeDebugStart } from 'vs/workbench/contrib/debug/common/debugUtils';
 import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
 import { showLoadedScriptMenu } from 'vs/workbench/contrib/debug/common/loadedScriptsPicker';
@@ -487,7 +487,8 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 });
 
 // Windows browsers use F11 for full screen, thus use alt+F11 as the default shortcut
-const STEP_INTO_KEYBINDING = (isWeb && isWindows) ? (KeyMod.Alt | KeyCode.F11) : KeyCode.F11;
+// {{SQL CARBON EDIT}} - Disable F11 binding to use it as shortcut for full screen in ADS
+/*const STEP_INTO_KEYBINDING = (isWeb && isWindows) ? (KeyMod.Alt | KeyCode.F11) : KeyCode.F11;
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: STEP_INTO_ID,
@@ -503,7 +504,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 			await getThreadAndRun(accessor, context, (thread: IThread) => thread.stepIn());
 		}
 	}
-});
+});*/
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: STEP_OUT_ID,
@@ -533,7 +534,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: STEP_INTO_TARGET_ID,
-	primary: STEP_INTO_KEYBINDING | KeyMod.CtrlCmd,
+	primary: KeyMod.CtrlCmd,		// {{SQL CARBON EDIT}} - Remove STEP_INTO_KEYBINDING
 	when: ContextKeyExpr.and(CONTEXT_STEP_INTO_TARGETS_SUPPORTED, CONTEXT_IN_DEBUG_MODE, CONTEXT_DEBUG_STATE.isEqualTo('stopped')),
 	weight: KeybindingWeight.WorkbenchContrib,
 	handler: async (accessor: ServicesAccessor, _: string, context: CallStackContext | unknown) => {

@@ -33,13 +33,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "queryStore.topResourceConsumingQueriesOpen",
-        "title": "%queryStore.topResourceConsumingQueriesOpen%",
-        "category": "%queryStore.category%"
-      },
-      {
-        "command": "queryStore.overallResourceConsumptionOpen",
-        "title": "%queryStore.overallResourceConsumptionOpen%",
+        "command": "queryStore.openQueryStoreDashboard",
+        "title": "%queryStore.openQueryStoreDashboard%",
         "category": "%queryStore.category%"
       }
     ],
