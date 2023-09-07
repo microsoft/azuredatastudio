@@ -31,6 +31,7 @@ import { AzureBlobService } from './azureBlob/azureBlobService';
 import { ErrorDiagnosticsProvider } from './errorDiagnostics/errorDiagnosticsProvider';
 import { SqlProjectsService } from './sqlProjects/sqlProjectsService';
 import { ObjectManagementService } from './objectManagement/objectManagementService';
+import { ConnectionService } from './connection/connectionService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -236,6 +237,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 			AgentServicesFeature,
 			SerializationFeature,
 			SqlAssessmentServicesFeature,
+			ConnectionService.asFeature(context),
 			SchemaCompareService.asFeature(context),
 			LanguageExtensionService.asFeature(context),
 			DacFxService.asFeature(context),
