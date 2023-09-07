@@ -64,50 +64,50 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 		}
 	}
 
-	public set chartCongif(val: any) {
-		if (this._type === 'bar' || this._type === 'line') {
-			let BarDataSets: BarDataSet[] = [];
-			for (let dataset of val.datasets) {
-				var BarDataSet: BarDataSet = { label: '', data: [] };
-				BarDataSet.label = dataset.datasetLabel;
-				let dataEntry = dataset.data;
-				this._labels = [];
-				for (let dataEntryPoint of dataEntry) {
-					this._labels.push(dataEntryPoint.xLabel);
-					BarDataSet.data.push(dataEntryPoint.value);
-					if (dataEntryPoint.backgroundColor) {
-						BarDataSet.backgroundColor.push(dataEntryPoint.backgroundColor);
-					}
-					if (dataEntryPoint.borderColor) {
-						BarDataSet.borderColor.push(dataEntryPoint.borderColor);
-					}
-				}
-				BarDataSets.push(BarDataSet);
-			}
-			//this._datasets = BarDataSets;
-		}
-		else if (this._type === 'doughnut' || this.type === 'pie') {
-			let BarDataSet: BarDataSet = { label: '', data: [] };
-			BarDataSet.label = val.dataset.datasetLabel;
-			let dataEntry = val.dataset.data;
-			this._labels = [];
-			for (let dataEntryPoint of dataEntry) {
-				this._labels.push(dataEntryPoint.xLabel);
-				BarDataSet.data.push(dataEntryPoint.value);
-				if (dataEntryPoint.backgroundColor) {
-					BarDataSet.backgroundColor.push(dataEntryPoint.backgroundColor);
-				}
-				if (dataEntryPoint.borderColor) {
-					BarDataSet.borderColor.push(dataEntryPoint.borderColor);
-				}
-			}
-			//this._datasets = BarDataSet;
-		}
+	// public set chartCongif(val: any) {
+	// 	if (this._type === 'bar' || this._type === 'line') {
+	// 		let BarDataSets: BarDataSet[] = [];
+	// 		for (let dataset of val.datasets) {
+	// 			var BarDataSet: BarDataSet = { label: '', data: [] };
+	// 			BarDataSet.label = dataset.datasetLabel;
+	// 			let dataEntry = dataset.data;
+	// 			this._labels = [];
+	// 			for (let dataEntryPoint of dataEntry) {
+	// 				this._labels.push(dataEntryPoint.xLabel);
+	// 				BarDataSet.data.push(dataEntryPoint.value);
+	// 				if (dataEntryPoint.backgroundColor) {
+	// 					BarDataSet.backgroundColor.push(dataEntryPoint.backgroundColor);
+	// 				}
+	// 				if (dataEntryPoint.borderColor) {
+	// 					BarDataSet.borderColor.push(dataEntryPoint.borderColor);
+	// 				}
+	// 			}
+	// 			BarDataSets.push(BarDataSet);
+	// 		}
+	// 		//this._datasets = BarDataSets;
+	// 	}
+	// 	else if (this._type === 'doughnut' || this.type === 'pie') {
+	// 		let BarDataSet: BarDataSet = { label: '', data: [] };
+	// 		BarDataSet.label = val.dataset.datasetLabel;
+	// 		let dataEntry = val.dataset.data;
+	// 		this._labels = [];
+	// 		for (let dataEntryPoint of dataEntry) {
+	// 			this._labels.push(dataEntryPoint.xLabel);
+	// 			BarDataSet.data.push(dataEntryPoint.value);
+	// 			if (dataEntryPoint.backgroundColor) {
+	// 				BarDataSet.backgroundColor.push(dataEntryPoint.backgroundColor);
+	// 			}
+	// 			if (dataEntryPoint.borderColor) {
+	// 				BarDataSet.borderColor.push(dataEntryPoint.borderColor);
+	// 			}
+	// 		}
+	// 		//this._datasets = BarDataSet;
+	// 	}
 
-		if (val.options) {
-			this.options = val.options;
-		}
-	}
+	// 	if (val.options) {
+	// 		this.options = val.options;
+	// 	}
+	// }
 
 	/*public set data(val: any) {
 		this._data = val.dataset;
@@ -141,7 +141,7 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 			const config = <azdata.BarChartConfiguration>val;
 			for (let set of config.datasets) {
 				result.datasets.push({
-					data: 'x' in set.data ? set.data.map(val => val.x) : set.data,
+					data: set.data.map(entry => typeof entry === 'number' ? entry : entry.x),
 					backgroundColor: set.backgroundColor,
 					borderColor: set.borderColor,
 					label: set.dataLabel
