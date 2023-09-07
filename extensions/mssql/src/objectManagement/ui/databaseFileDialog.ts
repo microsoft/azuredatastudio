@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import * as path from 'path';
 import { DefaultInputWidth, DialogBase } from '../../ui/dialogBase';
 import * as localizedConstants from '../localizedConstants';
 import { DatabaseFile, DatabaseViewInfo, FileGrowthType } from '../interfaces';
 import { isUndefinedOrNull } from '../../types';
 import { deepClone } from '../../util/objects';
+import { IObjectManagementService } from 'mssql';
 
 export interface NewDatabaseFileDialogOptions {
 	title: string;
@@ -27,6 +27,7 @@ export interface NewDatabaseFileDialogOptions {
 		defaultFileGrowthInMb: number,
 		defaultMaxFileSizeLimitedToInMb: number
 	};
+	connectionUri: string;
 }
 
 const fileSizeInputMaxValueInMbForDataType = 16776192; // Row type supports up to 16 TB (SSMS allows =~ 15.99TB)
@@ -58,7 +59,9 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	private originalFileName: string;
 	private isEditingFile: boolean;
 
-	constructor(private readonly options: NewDatabaseFileDialogOptions) {
+	private readonly _fileFilters: azdata.window.FileFilters[] = [{ label: localizedConstants.DatabaseFilesLabel, filters: ['*.mdf', '*.ndf', '*.ldf'] }];
+
+	constructor(private readonly options: NewDatabaseFileDialogOptions, private readonly objectManagementService: IObjectManagementService) {
 		super(options.title, 'DatabaseFileDialog');
 	}
 
@@ -292,23 +295,12 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	 * Creates a file browser and sets the path to the filePath
 	 */
 	private async createFileBrowser(): Promise<void> {
-		let fileUris = await vscode.window.showOpenDialog(
-			{
-				canSelectFiles: false,
-				canSelectFolders: true,
-				canSelectMany: false,
-				defaultUri: vscode.Uri.file(this.options.databaseFile.path),
-				openLabel: localizedConstants.SelectText
-			}
-		);
-
-		if (!fileUris || fileUris.length === 0) {
-			return;
+		let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
+		let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, this._fileFilters);
+		if (filePath?.length > 0) {
+			this.filePathTextBox.value = filePath;
+			this.result.path = filePath;
 		}
-
-		let fileUri = fileUris[0];
-		this.filePathTextBox.value = fileUri.fsPath;
-		this.result.path = fileUri.fsPath;
 	}
 
 	/**

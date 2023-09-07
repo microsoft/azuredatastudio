@@ -698,8 +698,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				defaultFileGrowthInMb: defaultFileGrowthInMb,
 				defaultFileGrowthInPercent: defaultFileGrowthInPercent,
 				defaultMaxFileSizeLimitedToInMb: defaultMaxFileSizeLimitedToInMb
-			}
-		});
+			},
+			connectionUri: this.options.connectionUri
+		}, this.objectManagementService);
 		await dialog.open();
 		return await dialog.waitForClose();
 	}
