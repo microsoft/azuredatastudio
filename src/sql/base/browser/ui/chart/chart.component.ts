@@ -21,7 +21,7 @@ export interface BarDataSet {
 	selector: 'chart-component',
 	templateUrl: decodeURI(require.toUrl('./chart.component.html'))
 })
-export class Chart<T extends azdata.ChartProperties> extends Disposable {
+export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable {
 	private _type: azdata.ChartType;
 	private _labels: string[];
 	public chart: chartjs.Chart;
@@ -56,11 +56,11 @@ export class Chart<T extends azdata.ChartProperties> extends Disposable {
 		this._changeRef.detectChanges();
 	}
 
-	public set configuration(val: any) {
+	public set configuration(val: TConfig) {
 		this._configuration = this.convert(val);
 
-		if (val.options) {
-			this.options = val.options;
+		if ((<any>val).options) { // TODO: give TConfig a strongly-typed TOptions param
+			this.options = (<any>val).options;
 		}
 	}
 

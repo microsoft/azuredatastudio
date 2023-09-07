@@ -15,12 +15,12 @@ import { ILogService } from 'vs/platform/log/common/log';
 	templateUrl: decodeURI(require.toUrl('./chart.component.html'))
 })
 
-export default class ChartComponent<T extends azdata.ChartProperties, TConfig extends azdata.ChartConfiguration> extends ComponentBase<azdata.ChartComponentProperties<T, TConfig>> implements IComponent, OnDestroy, AfterViewInit {
+export default class ChartComponent<TConfig extends azdata.ChartConfiguration> extends ComponentBase<azdata.ChartComponentProperties<TConfig>> implements IComponent, OnDestroy, AfterViewInit {
 
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
-	@ViewChild(Chart) private _chart: Chart<T>;
+	@ViewChild(Chart) private _chart: Chart<TConfig>;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -49,9 +49,9 @@ export default class ChartComponent<T extends azdata.ChartProperties, TConfig ex
 			this._chart.options = this.options;
 		}*/
 
-		if (this.chartConfig) {
-			//this._chart.chartCongif = this.chartConfig;
-		}
+		// if (this.chartConfig) {
+		// 	//this._chart.chartCongif = this.chartConfig;
+		// }
 
 		if (this.configuration) {
 			this._chart.configuration = this.configuration;
@@ -70,11 +70,11 @@ export default class ChartComponent<T extends azdata.ChartProperties, TConfig ex
 		return this.getProperties().options;
 	}*/
 
-	public get chartConfig(): T {
-		return this.getProperties().chartConfig;
-	}
+	// public get chartConfig(): T {
+	// 	return this.getProperties().chartConfig;
+	// }
 
-	public get configuration(): any {
+	public get configuration(): TConfig {
 		return this.getProperties().configuration;
 	}
 

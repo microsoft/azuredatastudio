@@ -168,52 +168,9 @@ export class SavedAssessmentDialog {
 			}
 		};
 
-		const chart = view.modelBuilder.chart<azdata.BarChartProperties, azdata.BarChartConfiguration>()
+		const chart = view.modelBuilder.chart<azdata.BarChartConfiguration>()
 			.withProps({
 				chartType: 'bar',
-				chartConfig: {
-					datasets: [{
-						datasetLabel: 'First',
-						data: [
-							{
-								value: 1,
-								xLabel: 'Mon'
-							},
-							{
-								value: 2,
-								xLabel: 'Tue'
-							},
-							{
-								value: 3,
-								xLabel: 'Wed'
-							},
-						]
-					},
-					{
-						datasetLabel: 'Second',
-						data: [
-							{
-								value: 6,
-								xLabel: 'Mon'
-							},
-							{
-								value: 7,
-								xLabel: 'Tue'
-							},
-							{
-								value: 8,
-								xLabel: 'Wed'
-							},
-						]
-					}],
-					options: {
-						scales: {
-							x: {
-								max: 8
-							}
-						}
-					}
-				},
 				configuration: chartConfig
 			}).component();
 

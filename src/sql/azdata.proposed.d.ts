@@ -2069,17 +2069,15 @@ declare module 'azdata' {
 	export type ChartType = 'bar' | 'bubble' | 'doughnut' | 'horizontalBar' | 'line' | 'pie' | 'polarArea' | 'radar' | 'scatter';
 
 	export interface ModelBuilder {
-		chart<T extends ChartProperties, TConfig extends ChartConfiguration>(): ComponentBuilder<ChartComponent<T, TConfig>, ChartComponentProperties<T, TConfig>>;
+		chart<TConfig extends ChartConfiguration>(): ComponentBuilder<ChartComponent<TConfig>, ChartComponentProperties<TConfig>>;
 	}
 
-	export interface ChartComponentProperties<T extends ChartProperties, TConfig extends ChartConfiguration> extends ComponentProperties {
-		/*chartType: ChartType;
-		data: ChartData;
-		options?: T;*/
+	export interface ChartComponentProperties<TConfig extends ChartConfiguration> extends ComponentProperties {
 		chartType: ChartType;
-		chartConfig?: T;
 		configuration: TConfig;
 	}
+
+	//#region Charting generics
 
 	export interface ChartConfiguration {
 		chartTitle: string;
@@ -2096,6 +2094,16 @@ declare module 'azdata' {
 		x: number;
 	}
 
+	export interface ScatterplotPoint extends ChartPoint {
+		y: number;
+	}
+
+	export interface BubbleChartPoint extends ScatterplotPoint {
+		r: number;
+	}
+
+	//#endregion
+
 	export interface BarChartConfiguration extends ChartConfiguration {
 		datasets: BarChartData[];
 		options: BarChartOptions;
@@ -2103,6 +2111,17 @@ declare module 'azdata' {
 	}
 
 	export interface BarChartData extends ChartDataSet<ChartPoint> {
+	}
+
+	export interface DoughnutChartConfiguration extends ChartConfiguration {
+		dataset: DoughnutChartData[]
+		options: DoughnutChartOptions;
+	}
+
+	export interface DoughnutChartData extends ChartDataSet<ChartPoint> {
+		backgroundColor: string;
+		borderColor: string;
+		label: string;
 	}
 
 	export interface BubbleChartPoint {
@@ -2246,7 +2265,7 @@ declare module 'azdata' {
 
 	export type ChartClickEvent = { label: string };
 
-	export interface ChartComponent<T extends ChartOptions, TConfig extends ChartConfiguration> extends Component, ChartComponentProperties<T, TConfig> {
+	export interface ChartComponent<TConfig extends ChartConfiguration> extends Component, ChartComponentProperties<TConfig> {
 		onDidClick: vscode.Event<ChartClickEvent>;
 	}
 
