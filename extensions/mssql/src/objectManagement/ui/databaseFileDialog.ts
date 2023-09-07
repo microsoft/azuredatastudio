@@ -59,8 +59,6 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	private originalFileName: string;
 	private isEditingFile: boolean;
 
-	private readonly _fileFilters: azdata.window.FileFilters[] = [{ label: localizedConstants.DatabaseFilesLabel, filters: ['*.mdf', '*.ndf', '*.ldf'] }];
-
 	constructor(private readonly options: NewDatabaseFileDialogOptions, private readonly objectManagementService: IObjectManagementService) {
 		super(options.title, 'DatabaseFileDialog');
 	}
@@ -296,7 +294,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	 */
 	private async createFileBrowser(): Promise<void> {
 		let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
-		let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, this._fileFilters);
+		let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, [], true);
 		if (filePath?.length > 0) {
 			this.filePathTextBox.value = filePath;
 			this.result.path = filePath;

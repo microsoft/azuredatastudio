@@ -2273,7 +2273,7 @@ declare module 'azdata' {
 	// File browser interfaces  -----------------------------------------------------------------------
 
 	export interface FileBrowserProvider extends DataProvider {
-		openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean>;
+		openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean, showFoldersOnly?: boolean): Thenable<boolean>;
 		/**
 		 * Registers a handler for FileBrowserOpened events.
 		 *

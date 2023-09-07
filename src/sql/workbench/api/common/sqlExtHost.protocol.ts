@@ -355,7 +355,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Open a file browser
 	 */
-	$openFileBrowser(handle: number, ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean> { throw ni(); }
+	$openFileBrowser(handle: number, ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean, showFoldersOnly?: boolean): Thenable<boolean> { throw ni(); }
 
 
 	/**
