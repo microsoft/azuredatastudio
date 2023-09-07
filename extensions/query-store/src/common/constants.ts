@@ -7,6 +7,8 @@ import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
 
+export function queryStoreDashboardTitle(databaseName: string): string { return localize('queryStoreDashboardTitle', "Query Store - {0}", databaseName); }
+
 export const overallResourceConsumption = localize('overallResourceConsumption', "Overall Resource Consumption");
 export const duration = localize('duration', "Duration");
 export const executionCount = localize('executionCount', "Execution Count");

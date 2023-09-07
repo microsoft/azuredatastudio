@@ -7,34 +7,38 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { DetachDatabaseDocUrl } from '../constants';
-import { DatabaseFileGroupLabel, DatabaseFileNameLabel, DatabaseFilePathLabel, DatabaseFileTypeLabel, DatabaseFilesLabel, DetachButtonLabel, DetachDatabaseDialogTitle, DetachDatabaseOptions, DetachDropConnections, DetachUpdateStatistics } from '../localizedConstants';
+import * as loc from '../localizedConstants';
 
 export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private _dropConnections = false;
 	private _updateStatistics = false;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options, DetachDatabaseDialogTitle(options.database), 'DetachDatabase');
-		this.dialogObject.okButton.label = DetachButtonLabel;
+		super(objectManagementService, options, loc.DetachDatabaseDialogTitle(options.database), 'DetachDatabase');
+		this.dialogObject.okButton.label = loc.DetachButtonLabel;
 	}
 
 	protected override get isDirty(): boolean {
 		return true;
 	}
 
+	protected override get saveChangesTaskLabel(): string {
+		return loc.DetachDatabaseOperationDisplayName(this.objectInfo.name);
+	}
+
 	protected async initializeUI(): Promise<void> {
 		let tableData = this.objectInfo.files.map(file => [file.name, file.type, file.fileGroup, file.path]);
-		let columnNames = [DatabaseFileNameLabel, DatabaseFileTypeLabel, DatabaseFileGroupLabel, DatabaseFilePathLabel];
-		let fileTable = this.createTable(DatabaseFilesLabel, columnNames, tableData);
-		let tableGroup = this.createGroup(DatabaseFilesLabel, [fileTable], false);
+		let columnNames = [loc.DatabaseFileNameLabel, loc.DatabaseFileTypeLabel, loc.DatabaseFileGroupLabel, loc.DatabaseFilePathLabel];
+		let fileTable = this.createTable(loc.DatabaseFilesLabel, columnNames, tableData);
+		let tableGroup = this.createGroup(loc.DatabaseFilesLabel, [fileTable], false);
 
-		let connCheckbox = this.createCheckbox(DetachDropConnections, async checked => {
+		let connCheckbox = this.createCheckbox(loc.DetachDropConnections, async checked => {
 			this._dropConnections = checked;
 		});
-		let updateCheckbox = this.createCheckbox(DetachUpdateStatistics, async checked => {
+		let updateCheckbox = this.createCheckbox(loc.DetachUpdateStatistics, async checked => {
 			this._updateStatistics = checked;
 		});
-		let checkboxGroup = this.createGroup(DetachDatabaseOptions, [connCheckbox, updateCheckbox], false);
+		let checkboxGroup = this.createGroup(loc.DetachDatabaseOptions, [connCheckbox, updateCheckbox], false);
 
 		let components = [tableGroup, checkboxGroup];
 		this.formContainer.addItems(components);

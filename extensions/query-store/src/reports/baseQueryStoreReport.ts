@@ -11,40 +11,35 @@ import * as constants from '../common/constants';
 import { ConfigureDialog } from '../settings/configureDialog';
 
 export abstract class BaseQueryStoreReport {
-	protected editor: azdata.workspace.ModelViewEditor;
 	protected flexModel?: azdata.FlexContainer;
 	protected configureDialog?: ConfigureDialog;
 	protected configureButton?: azdata.ButtonComponent;
 
-	constructor(reportName: string, private reportTitle: string, protected resizeable: boolean, private extensionContext: vscode.ExtensionContext) {
-		this.editor = azdata.workspace.createModelViewEditor(reportName, { retainContextWhenHidden: true, supportsSave: false }, reportName);
+	constructor(private reportTitle: string, protected resizeable: boolean, private extensionContext: vscode.ExtensionContext) { }
+
+	public get ReportContent(): azdata.FlexContainer | undefined {
+		return this.flexModel;
 	}
 
 	/**
 	 * Creates and opens the report
 	 */
-	public async open(): Promise<void> {
-		this.editor.registerContent(async (view) => {
-			this.flexModel = <azdata.FlexContainer>view.modelBuilder.flexContainer().component();
+	public async createReport(view: azdata.ModelView): Promise<void> {
+		this.flexModel = <azdata.FlexContainer>view.modelBuilder.flexContainer().component();
 
-			const toolbar = await this.createToolbar(view);
-			this.flexModel.addItem(toolbar, { flex: 'none' });
+		const toolbar = await this.createToolbar(view);
+		this.flexModel.addItem(toolbar, { flex: 'none' });
 
-			const views = await this.createViews(view);
+		const views = await this.createViews(view);
 
-			const mainContainer = await this.createMainContainer(view, views);
+		const mainContainer = await this.createMainContainer(view, views);
 
-			this.flexModel.addItem(mainContainer, { CSSStyles: { 'width': '100%', 'height': '100%' } });
+		this.flexModel.addItem(mainContainer, { CSSStyles: { 'width': '100%', 'height': '100%' } });
 
-			this.flexModel.setLayout({
-				flexFlow: 'column',
-				height: '100%'
-			});
-
-			await view.initializeModel(this.flexModel);
+		this.flexModel.setLayout({
+			flexFlow: 'column',
+			height: '100%'
 		});
-
-		await this.editor.openEditor();
 	}
 
 	/**

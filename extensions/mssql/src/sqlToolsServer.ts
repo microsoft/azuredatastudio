@@ -31,6 +31,7 @@ import { AzureBlobService } from './azureBlob/azureBlobService';
 import { ErrorDiagnosticsProvider } from './errorDiagnostics/errorDiagnosticsProvider';
 import { SqlProjectsService } from './sqlProjects/sqlProjectsService';
 import { ObjectManagementService } from './objectManagement/objectManagementService';
+import { QueryStoreService } from './queryStore/queryStoreService';
 import { ConnectionService } from './connection/connectionService';
 
 const localize = nls.loadMessageBundle();
@@ -251,7 +252,8 @@ function getClientOptions(context: AppContext): ClientOptions {
 			ExecutionPlanServiceFeature,
 			// ServerContextualizationServiceFeature, // LEWISSANCHEZ TODO: Put this provider back once STS changes are complete
 			ErrorDiagnosticsProvider.asFeature(context),
-			ObjectManagementService.asFeature(context)
+			ObjectManagementService.asFeature(context),
+			QueryStoreService.asFeature(context)
 		],
 		outputChannel: outputChannel,
 		// Automatically reveal the output channel only in dev mode, so that the users are not impacted and issues can still be caught during development.
