@@ -1017,6 +1017,13 @@ declare module 'mssql' {
 		 * @returns An array of file path strings for each of the associated files.
 		 */
 		getAssociatedFiles(connectionUri: string, primaryFilePath: string): Thenable<string[]>;
+		/**
+		 * Clears all query store data from the database
+		 * @param connectionUri The URI of the server connection.
+		 * @param database The target database.
+		 * @param objectUrn SMO Urn of the database to be detached. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
+		 */
+		purgeQueryStoreData(connectionUri: string, database: string, objectUrn: string): Thenable<void>;
 	}
 
 	export interface DatabaseFileData {

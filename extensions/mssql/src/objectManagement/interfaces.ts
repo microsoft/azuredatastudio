@@ -500,6 +500,7 @@ export interface QueryStoreOptions {
 	staleQueryThresholdInDays: number;
 	waitStatisticsCaptureMode?: boolean;
 	capturePolicyOptions?: QueryStoreCapturePolicyOptions;
+	currentStorageSizeInMB: number;
 }
 
 export interface QueryStoreCapturePolicyOptions {

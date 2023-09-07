@@ -453,11 +453,17 @@ export const WaitStatisticsCaptureModeText = localize('objectManagement.database
 export const MonitoringSectionText = localize('objectManagement.databaseProperties.monitoringSectionText', "Monitoring");
 export const QueryStoreRetentionSectionText = localize('objectManagement.databaseProperties.queryStoreRetentionSectionText', "Query Store Retention");
 export const QueryStoreCapturePolicySectionText = localize('objectManagement.databaseProperties.queryStoreCapturePolicySectionText', "Query Store Capture Policy");
+export const QueryStoreCurrentDiskUsageSectionText = localize('objectManagement.databaseProperties.queryStoreCurrentDiskUsageSectionText', "Current Disk Usage");
 export const ExecutionCountText = localize('objectManagement.databaseProperties.executionCountText', "Execution Count");
 export const StaleThresholdText = localize('objectManagement.databaseProperties.staleThresholdText', "Stale Threshold");
 export const TotalCompileCPUTimeInMsText = localize('objectManagement.databaseProperties.totalCompileCPUTimeInMs', "Total Compile CPU Time (ms)");
 export const TotalExecutionCPUTimeInMsText = localize('objectManagement.databaseProperties.totalExecutionCPUTimeInMsText', "Total Execution CPU Time (ms)");
-export const QuerystorecapturemodeCustomText = localize('objectManagement.databaseProperties.querystorecapturemodeCustomText', "Custom");
+export const QueryStoreCapturemodeCustomText = localize('objectManagement.databaseProperties.queryStoreCapturemodeCustomText', "Custom");
+export const QueryStoreUsedText = localize('objectManagement.databaseProperties.queryStoreUsedText', "Query Store Used");
+export const QueryStoreAvailableText = localize('objectManagement.databaseProperties.queryStoreAvailableText', "Query Store Available");
+export const PurgeQueryDataButtonText = localize('objectManagement.databaseProperties.purgeQueryDataButtonText', "Purge Query Store Data");
+export const YesText = localize('objectManagement.databaseProperties.yesText', "Yes");
+export const PurgeQueryStoreDataMessage = (databaseName: string) => localize('objectManagement.databaseProperties.purgeQueryStoreDataMessage', "Are you sure you want to purge the Query Store data from '{0}'?", databaseName);
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {

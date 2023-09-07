@@ -14,6 +14,7 @@ import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
 import { deepClone } from '../../util/objects';
 import { DatabaseFileDialog } from './databaseFileDialog';
+import * as vscode from 'vscode';
 
 const MAXDOP_Max_Limit = 32767;
 const PAUSED_RESUMABLE_INDEX_Max_Limit = 71582;
@@ -115,6 +116,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private totalCompileCPUTimeInMS: azdata.InputBoxComponent;
 	private totalExecutionCPUTimeInMS: azdata.InputBoxComponent;
 	private operationModeOffOption: string;
+	private purgeQueryDataButton: azdata.ButtonComponent;
 
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
@@ -250,6 +252,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				if (!isUndefinedOrNull(this.objectInfo.queryStoreOptions.capturePolicyOptions)) {
 					this.initializeQueryStoreCapturePolicySection();
 				}
+				await this.initializeQueryStoreCurrentDiskStorageSection();
 				this.queryStoreTab = {
 					title: localizedConstants.QueryStoreTabHeader,
 					id: this.queryStoreTabId,
@@ -1643,8 +1646,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}, this.viewInfo.operationModeOptions, String(this.objectInfo.queryStoreOptions.actualMode), true, DefaultInputWidth);
 		containers.push(this.createLabelInputContainer(localizedConstants.RequestedOperationModeText, this.requestedOperationMode));
 
-		const stateSection = this.createGroup(localizedConstants.GeneralSectionHeader, containers, true);
-		this.queryStoreTabSectionsContainer.push(stateSection);
+		const generalSection = this.createGroup(localizedConstants.GeneralSectionHeader, containers, true);
+		this.queryStoreTabSectionsContainer.push(generalSection);
 	}
 
 	private initializeQueryStoreMonitoringSection(): void {
@@ -1667,8 +1670,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}, this.viewInfo.statisticsCollectionIntervalOptions, this.objectInfo.queryStoreOptions.statisticsCollectionInterval, this.areQueryStoreOptionsEnabled, DefaultInputWidth);
 		containers.push(this.createLabelInputContainer(localizedConstants.StatisticsCollectionInterval, this.statisticsCollectionInterval));
 
-		const stateSection = this.createGroup(localizedConstants.MonitoringSectionText, containers, true);
-		this.queryStoreTabSectionsContainer.push(stateSection);
+		const monitoringSection = this.createGroup(localizedConstants.MonitoringSectionText, containers, true);
+		this.queryStoreTabSectionsContainer.push(monitoringSection);
 	}
 
 	private initializeQueryStoreRetentionSection(): void {
@@ -1700,7 +1703,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Query Store Capture Mode
 		this.queryStoreCaptureMode = this.createDropdown(localizedConstants.QueryStoreCaptureModeText, async (newValue) => {
 			this.objectInfo.queryStoreOptions.queryStoreCaptureMode = newValue as string;
-			await this.toggleQueryCapturePolicySection(newValue === localizedConstants.QuerystorecapturemodeCustomText
+			await this.toggleQueryCapturePolicySection(newValue === localizedConstants.QueryStoreCapturemodeCustomText
 				&& this.requestedOperationMode.value !== this.operationModeOffOption);
 		}, this.viewInfo.queryStoreCaptureModeOptions, this.objectInfo.queryStoreOptions.queryStoreCaptureMode, this.areQueryStoreOptionsEnabled, DefaultInputWidth);
 		containers.push(this.createLabelInputContainer(localizedConstants.QueryStoreCaptureModeText, this.queryStoreCaptureMode));
@@ -1730,8 +1733,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}, this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode, this.areQueryStoreOptionsEnabled);
 			containers.push(this.waitStatisticsCaptureMode);
 		}
-		const stateSection = this.createGroup(localizedConstants.WaitStatisticsCaptureModeText, containers, true);
-		this.queryStoreTabSectionsContainer.push(stateSection);
+		const retentionSection = this.createGroup(localizedConstants.WaitStatisticsCaptureModeText, containers, true);
+		this.queryStoreTabSectionsContainer.push(retentionSection);
 	}
 
 	private initializeQueryStoreCapturePolicySection(): void {
@@ -1778,8 +1781,61 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		});
 		containers.push(this.createLabelInputContainer(localizedConstants.TotalExecutionCPUTimeInMsText, this.totalExecutionCPUTimeInMS));
 
-		const stateSection = this.createGroup(localizedConstants.QueryStoreCapturePolicySectionText, containers, true);
-		this.queryStoreTabSectionsContainer.push(stateSection);
+		const policySection = this.createGroup(localizedConstants.QueryStoreCapturePolicySectionText, containers, true);
+		this.queryStoreTabSectionsContainer.push(policySection);
+	}
+
+	private async initializeQueryStoreCurrentDiskStorageSection(): Promise<void> {
+		let containers: azdata.Component[] = [];
+		// Database Max size
+		const databaseName = this.createInputBox(async () => { }, {
+			ariaLabel: this.objectInfo.name,
+			inputType: 'text',
+			enabled: false,
+			value: localizedConstants.StringValueInMB(String(this.objectInfo.sizeInMb))
+		});
+		containers.push(this.createLabelInputContainer(this.objectInfo.name, databaseName));
+
+		// Query Store Used
+		const queryStoreUsed = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.QueryStoreUsedText,
+			inputType: 'text',
+			enabled: false,
+			value: localizedConstants.StringValueInMB(String(this.objectInfo.queryStoreOptions.currentStorageSizeInMB))
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.QueryStoreUsedText, queryStoreUsed));
+
+		// Query Store Available
+		const queryStoreAvailable = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.QueryStoreAvailableText,
+			inputType: 'text',
+			enabled: false,
+			value: localizedConstants.StringValueInMB(String(this.objectInfo.queryStoreOptions.maxSizeInMB - this.objectInfo.queryStoreOptions.currentStorageSizeInMB))
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.QueryStoreAvailableText, queryStoreAvailable));
+
+		// Prge query data button
+		this.purgeQueryDataButton = this.createButton(localizedConstants.PurgeQueryDataButtonText, localizedConstants.PurgeQueryDataButtonText, async () => {
+			await this.purgeQueryStoreDataButtonClick();
+		});
+		this.purgeQueryDataButton.width = DefaultInputWidth;
+		await this.purgeQueryDataButton.updateCssStyles({ 'margin': '10px 0px, 0px, 0px' });
+		containers.push(this.createLabelInputContainer('', this.purgeQueryDataButton));
+
+		const diskUsageSection = this.createGroup(localizedConstants.QueryStoreCurrentDiskUsageSectionText, containers, true);
+		this.queryStoreTabSectionsContainer.push(diskUsageSection);
+	}
+
+	/**
+	 *  Opens confirmation warning Clears the query store data for the database
+	 */
+	private async purgeQueryStoreDataButtonClick(): Promise<void> {
+		const response = await vscode.window.showWarningMessage(localizedConstants.PurgeQueryStoreDataMessage(this.objectInfo.name), localizedConstants.YesText);
+		if (response !== localizedConstants.YesText) {
+			return;
+		}
+
+		await this.objectManagementService.purgeQueryStoreData(this.options.connectionUri, this.options.database, this.options.objectUrn);
 	}
 
 	private async toggleQueryStoreOptions(): Promise<void> {
