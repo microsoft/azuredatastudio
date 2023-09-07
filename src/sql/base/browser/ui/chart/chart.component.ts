@@ -21,17 +21,12 @@ export interface BarDataSet {
 	selector: 'chart-component',
 	templateUrl: decodeURI(require.toUrl('./chart.component.html'))
 })
-export class Chart<T extends azdata.ChartProperties> extends Disposable {
+export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable {
+	private _type: azdata.ChartType;
+	//private _labels: string[];
+	public chart: chartjs.Chart;
 
-	private _labels: string[];
-	private _type: any;
-	//private _data: number[] | BubbleChartPoint[] | ScatterChartPoint[];
-	//private _colors: string | string[];
-	//private _datasetLabel: string;
-	//private _borderColor: string | string[];
-	public chart: any;
-	private _datasets: any;
-
+	private _configuration: chartjs.ChartData;
 
 	private _options: any = {
 		events: ['click', 'keyup'],
@@ -61,50 +56,58 @@ export class Chart<T extends azdata.ChartProperties> extends Disposable {
 		this._changeRef.detectChanges();
 	}
 
-	public set chartCongif(val: any) {
-		if (this._type === 'bar' || this._type === 'line') {
-			let BarDataSets: BarDataSet[] = [];
-			for (let dataset of val.datasets) {
-				var BarDataSet: BarDataSet = { label: '', data: [] };
-				BarDataSet.label = dataset.datasetLabel;
-				let dataEntry = dataset.data;
-				this._labels = [];
-				for (let dataEntryPoint of dataEntry) {
-					this._labels.push(dataEntryPoint.xLabel);
-					BarDataSet.data.push(dataEntryPoint.value);
-					if (dataEntryPoint.backgroundColor) {
-						BarDataSet.backgroundColor.push(dataEntryPoint.backgroundColor);
-					}
-					if (dataEntryPoint.borderColor) {
-						BarDataSet.borderColor.push(dataEntryPoint.borderColor);
-					}
-				}
-				BarDataSets.push(BarDataSet);
-			}
-			this._datasets = BarDataSets;
-		}
-		else if (this._type === 'doughnut' || this.type === 'pie') {
-			let BarDataSet: BarDataSet = { label: '', data: [] };
-			BarDataSet.label = val.dataset.datasetLabel;
-			let dataEntry = val.dataset.data;
-			this._labels = [];
-			for (let dataEntryPoint of dataEntry) {
-				this._labels.push(dataEntryPoint.xLabel);
-				BarDataSet.data.push(dataEntryPoint.value);
-				if (dataEntryPoint.backgroundColor) {
-					BarDataSet.backgroundColor.push(dataEntryPoint.backgroundColor);
-				}
-				if (dataEntryPoint.borderColor) {
-					BarDataSet.borderColor.push(dataEntryPoint.borderColor);
-				}
-			}
-			this._datasets = BarDataSet;
-		}
+	public set configuration(val: TConfig) {
+		this._configuration = this.convert(val);
 
-		if (val.options) {
-			this.options = val.options;
+		if ((<any>val).options) { // TODO: give TConfig a strongly-typed TOptions param
+			this.options = (<any>val).options;
 		}
 	}
+
+	// public set chartCongif(val: any) {
+	// 	if (this._type === 'bar' || this._type === 'line') {
+	// 		let BarDataSets: BarDataSet[] = [];
+	// 		for (let dataset of val.datasets) {
+	// 			var BarDataSet: BarDataSet = { label: '', data: [] };
+	// 			BarDataSet.label = dataset.datasetLabel;
+	// 			let dataEntry = dataset.data;
+	// 			this._labels = [];
+	// 			for (let dataEntryPoint of dataEntry) {
+	// 				this._labels.push(dataEntryPoint.xLabel);
+	// 				BarDataSet.data.push(dataEntryPoint.value);
+	// 				if (dataEntryPoint.backgroundColor) {
+	// 					BarDataSet.backgroundColor.push(dataEntryPoint.backgroundColor);
+	// 				}
+	// 				if (dataEntryPoint.borderColor) {
+	// 					BarDataSet.borderColor.push(dataEntryPoint.borderColor);
+	// 				}
+	// 			}
+	// 			BarDataSets.push(BarDataSet);
+	// 		}
+	// 		//this._datasets = BarDataSets;
+	// 	}
+	// 	else if (this._type === 'doughnut' || this.type === 'pie') {
+	// 		let BarDataSet: BarDataSet = { label: '', data: [] };
+	// 		BarDataSet.label = val.dataset.datasetLabel;
+	// 		let dataEntry = val.dataset.data;
+	// 		this._labels = [];
+	// 		for (let dataEntryPoint of dataEntry) {
+	// 			this._labels.push(dataEntryPoint.xLabel);
+	// 			BarDataSet.data.push(dataEntryPoint.value);
+	// 			if (dataEntryPoint.backgroundColor) {
+	// 				BarDataSet.backgroundColor.push(dataEntryPoint.backgroundColor);
+	// 			}
+	// 			if (dataEntryPoint.borderColor) {
+	// 				BarDataSet.borderColor.push(dataEntryPoint.borderColor);
+	// 			}
+	// 		}
+	// 		//this._datasets = BarDataSet;
+	// 	}
+
+	// 	if (val.options) {
+	// 		this.options = val.options;
+	// 	}
+	// }
 
 	/*public set data(val: any) {
 		this._data = val.dataset;
@@ -129,24 +132,70 @@ export class Chart<T extends azdata.ChartProperties> extends Disposable {
 		this.drawChart();
 	}
 
+	private convert(val: azdata.ChartConfiguration): chartjs.ChartData {
+		const result: chartjs.ChartData = {
+			datasets: []
+		}
+
+		if (this._type === 'bar') {
+			const config = <azdata.BarChartConfiguration>val;
+			for (let set of config.datasets) {
+				result.datasets.push({
+					data: set.data.map(entry => typeof entry === 'number' ? entry : entry.x),
+					backgroundColor: set.backgroundColor,
+					borderColor: set.borderColor,
+					label: set.dataLabel
+				});
+			}
+
+			result.labels = config.labels;
+		} else if (this._type === 'doughnut') {
+			const config = <azdata.DoughnutChartConfiguration>val;
+
+			result.datasets.push({
+				data: config.dataset.map(entry => typeof entry.value === 'number' ? entry.value : entry.value.x),
+				backgroundColor: config.dataset.map(entry => entry.backgroundColor),
+				borderColor: config.dataset.map(entry => entry.borderColor)
+			});
+
+			result.labels = config.dataset.map(val => val.dataLabel);
+		} else {
+			throw new Error(`Unsupported chart type: '${this._type}'`);
+		}
+
+		return result;
+	}
+
 	public drawChart() {
-		this.chart = new chartjs.Chart("MyChart", {
-			type: this._type,
-			plugins: [plugin],
-			data: {
-				labels: this._labels,
-				/*datasets: [
-					{
-						label: this._datasetLabel,
-						data: this._data,
-						backgroundColor: this._colors,
-						borderColor: this._borderColor
-					}
-				]*/
-				datasets: this._datasets
-			},
-			options: this._options
-		});
+		if (this.chart) {
+			this.chart.data = this._configuration;
+			this.chart.update();
+		} else {
+			this.chart = new chartjs.Chart("MyChart", {
+				type: <any>this._type.toString(),
+				plugins: [plugin],
+				data: this._configuration,
+				options: this._options
+			});
+		}
+
+		// this.chart = new chartjs.Chart("MyChart", {
+		// 	type: this._type,
+		// 	plugins: [plugin],
+		// 	data: {
+		// 		labels: this._labels,
+		// 		/*datasets: [
+		// 			{
+		// 				label: this._datasetLabel,
+		// 				data: this._data,
+		// 				backgroundColor: this._colors,
+		// 				borderColor: this._borderColor
+		// 			}
+		// 		]*/
+		// 		datasets: this._datasets
+		// 	},
+		// 	options: this._options
+		// });
 	}
 }
 

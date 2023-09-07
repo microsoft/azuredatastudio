@@ -290,9 +290,9 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
-	chart<T extends azdata.ChartProperties>(): azdata.ComponentBuilder<azdata.ChartComponent<T>, azdata.ChartComponentProperties<T>> {
+	chart<TConfig extends azdata.ChartConfiguration>(): azdata.ComponentBuilder<azdata.ChartComponent<TConfig>, azdata.ChartComponentProperties<TConfig>> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.ChartComponent<T>, azdata.ChartComponentProperties<T>> = this.getComponentBuilder(new ChartComponentWrapper<T>(this._proxy, this._handle, id, this.logService), id);
+		let builder: ComponentBuilderImpl<azdata.ChartComponent<TConfig>, azdata.ChartComponentProperties<TConfig>> = this.getComponentBuilder(new ChartComponentWrapper<TConfig>(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -2280,7 +2280,7 @@ class GroupContainerComponentWrapper extends ComponentWrapper implements azdata.
 	}
 }
 
-class ChartComponentWrapper<T extends azdata.ChartProperties> extends ComponentWrapper implements azdata.ChartComponent<T> {
+class ChartComponentWrapper<TConfig extends azdata.ChartConfiguration> extends ComponentWrapper implements azdata.ChartComponent<TConfig> {
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.Chart, id, logService);
 		this.properties = {};
@@ -2312,13 +2312,21 @@ class ChartComponentWrapper<T extends azdata.ChartProperties> extends ComponentW
 		return this.properties['options'];
 	}*/
 
-	public set chartConfig(v: T) {
-		this.setProperty('chartConfig', v);
+	public set configuration(v: any) {
+		this.setProperty('configuration', v);
 	}
 
-	public get chartConfig(): T {
-		return this.properties['chartConfig'];
+	public get configuration(): any {
+		return this.properties['configuration'];
 	}
+
+	// public set chartConfig(v: T) {
+	// 	this.setProperty('chartConfig', v);
+	// }
+
+	// public get chartConfig(): T {
+	// 	return this.properties['chartConfig'];
+	// }
 
 	public get onDidClick(): vscode.Event<azdata.ChartClickEvent> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);

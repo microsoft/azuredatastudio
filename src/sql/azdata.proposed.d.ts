@@ -2069,73 +2069,94 @@ declare module 'azdata' {
 	export type ChartType = 'bar' | 'bubble' | 'doughnut' | 'horizontalBar' | 'line' | 'pie' | 'polarArea' | 'radar' | 'scatter';
 
 	export interface ModelBuilder {
-		chart<T extends ChartProperties>(): ComponentBuilder<ChartComponent<T>, ChartComponentProperties<T>>;
+		chart<TConfig extends ChartConfiguration>(): ComponentBuilder<ChartComponent<TConfig>, ChartComponentProperties<TConfig>>;
 	}
 
-	export interface ChartComponentProperties<T extends ChartProperties> extends ComponentProperties {
-		/*chartType: ChartType;
-		data: ChartData;
-		options?: T;*/
+	export interface ChartComponentProperties<TConfig extends ChartConfiguration> extends ComponentProperties {
 		chartType: ChartType;
-		chartConfig: T;
+		configuration: TConfig;
 	}
 
-	export interface BubbleChartPoint {
+	//#region Charting generics
+
+	export interface ChartConfiguration {
+		chartTitle: string;
+	}
+
+	export interface ChartDataEntryBase {
+		backgroundColor: string;
+		borderColor: string;
+		dataLabel: string;
+	}
+
+	export interface ChartDataEntry extends ChartDataEntryBase {
+		value: Chart1DPoint | number;
+	}
+
+	export interface ChartDataSet<TVal extends Chart1DPoint | number> extends ChartDataEntryBase {
+		data: TVal[];
+	}
+
+	export interface Chart1DPoint {
 		x: number;
+	}
+
+	export interface Chart2DPoint extends Chart1DPoint {
 		y: number;
+	}
+
+	export interface Chart3DPoint extends Chart2DPoint {
 		r: number;
 	}
 
-	export interface ScatterChartPoint {
-		x: number;
-		y: number;
+	//#endregion
+
+	//#region Chart configurations
+	export interface BarChartConfiguration extends ChartConfiguration {
+		datasets: BarChartData[];
+		options: BarChartOptions;
+		/**
+		 * Labels for the Y axis.  Only data that aligns with a label is shown.  If fewer labels than data, then data is truncated; if more labels than data, then there's an empty entry
+		 */
+		labels: string[];
 	}
 
-	export interface ChartData {
-		label?: string;
-		dataset: number[] | BubbleChartPoint[] | ScatterChartPoint[];
-		labels?: string[];
-		colors?: string[];
-		borderColor?: string[];
+	export interface LineChartConfiguration extends ChartConfiguration {
+		datasets: BarChartData[];
+		options: LineChartOptions;
+		labels: string[];
 	}
 
-	export interface BarDataEntry {
-		value: number;
-		xLabel: string;
-		backgroundColor?: string;
-		borderColor?: string;
-	}
-	export interface BarDataSet {
-		data: BarDataEntry[];
-		datasetLabel: string;
+	export interface BarChartData extends ChartDataSet<Chart1DPoint | number> {
 	}
 
-	export interface ChartProperties {
-
+	export interface DoughnutChartConfiguration extends ChartConfiguration {
+		dataset: ChartDataEntry[];
+		options: DoughnutChartOptions;
 	}
 
-	export interface BarChartProperties extends ChartProperties {
-		//type?: 'bar';   //not able to initialize type like this. user needs to set chart type for now
-		datasets: BarDataSet[];
-		options?: BarChartOptions;
+	export interface PieChartConfiguration extends ChartConfiguration {
+		dataset: ChartDataEntry[];
+		options: PieChartOptions;
 	}
 
-	export interface LineChartProperties extends ChartProperties {
-		datasets: BarDataSet[]; //similar chart types (can be renamed later)
-		options?: LineChartOptions;
+	export interface ScatterplotConfiguration extends ChartConfiguration {
+		datasets: ScatterplotData[];
+		//options: ScatterplotOptions; // TODO
 	}
 
-	export interface DoughnutChartProperties extends ChartProperties {
-		dataset: BarDataSet; //using single dataset (can be renamed later)
-		options?: DoughnutChartOptions;
+	export interface ScatterplotData extends ChartDataSet<Chart2DPoint> {
 	}
 
-	export interface PieChartProperties extends ChartProperties {
-		dataset: BarDataSet; //using single dataset (can be renamed later)
-		options?: PieChartOptions;
+	export interface BubbleChartConfiguration extends ChartConfiguration {
+		datasets: BubbleChartData[];
+		options: BubbleChartOptions;
 	}
 
+	export interface BubbleChartData extends ChartDataSet<Chart3DPoint> {
+	}
 
+	//#endregion
 
 	export interface ChartOptions {
 
@@ -2223,7 +2244,7 @@ declare module 'azdata' {
 
 	export type ChartClickEvent = { label: string };
 
-	export interface ChartComponent<T extends ChartOptions> extends Component, ChartComponentProperties<T> {
+	export interface ChartComponent<TConfig extends ChartConfiguration> extends Component, ChartComponentProperties<TConfig> {
 		onDidClick: vscode.Event<ChartClickEvent>;
 	}
 
