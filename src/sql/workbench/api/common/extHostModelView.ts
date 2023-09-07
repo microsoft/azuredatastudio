@@ -290,7 +290,7 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
-	chart<T extends azdata.ChartProperties, TConfig extends azdata.ChartConfiguration>(): azdata.ComponentBuilder<azdata.ChartComponent<TConfig>, azdata.ChartComponentProperties<TConfig>> {
+	chart<TConfig extends azdata.ChartConfiguration>(): azdata.ComponentBuilder<azdata.ChartComponent<TConfig>, azdata.ChartComponentProperties<TConfig>> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.ChartComponent<TConfig>, azdata.ChartComponentProperties<TConfig>> = this.getComponentBuilder(new ChartComponentWrapper<TConfig>(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);

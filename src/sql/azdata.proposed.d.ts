@@ -2093,8 +2093,8 @@ declare module 'azdata' {
 		value: Chart1DPoint | number;
 	}
 
-	export interface ChartDataSet<TVal extends Chart1DPoint> extends ChartDataEntryBase {
-		data: TVal[] | number[];
+	export interface ChartDataSet<TVal extends Chart1DPoint | number> extends ChartDataEntryBase {
+		data: TVal[];
 	}
 
 	export interface Chart1DPoint {
@@ -2111,74 +2111,52 @@ declare module 'azdata' {
 
 	//#endregion
 
+	//#region Chart configurations
 	export interface BarChartConfiguration extends ChartConfiguration {
 		datasets: BarChartData[];
 		options: BarChartOptions;
+		/**
+		 * Labels for the Y axis.  Only data that aligns with a label is shown.  If fewer labels than data, then data is truncated; if more labels than data, then there's an empty entry
+		 */
 		labels: string[];
 	}
 
-	export interface BarChartData extends ChartDataSet<Chart1DPoint> {
+	export interface LineChartConfiguration extends ChartConfiguration {
+		datasets: BarChartData[];
+		options: LineChartOptions;
+		labels: string[];
+	}
+
+	export interface BarChartData extends ChartDataSet<Chart1DPoint | number> {
 	}
 
 	export interface DoughnutChartConfiguration extends ChartConfiguration {
-		dataset: ChartDataEntry[]
+		dataset: ChartDataEntry[];
 		options: DoughnutChartOptions;
 	}
 
-	export interface BubbleChartPoint {
-		x: number;
-		y: number;
-		r: number;
+	export interface PieChartConfiguration extends ChartConfiguration {
+		dataset: ChartDataEntry[];
+		options: PieChartOptions;
 	}
 
-	export interface ScatterChartPoint {
-		x: number;
-		y: number;
+	export interface ScatterplotConfiguration extends ChartConfiguration {
+		datasets: ScatterplotData[];
+		//options: ScatterplotOptions; // TODO
 	}
 
-	export interface ChartData {
-		label?: string;
-		dataset: number[] | BubbleChartPoint[] | ScatterChartPoint[];
-		labels?: string[];
-		colors?: string[];
-		borderColor?: string[];
+	export interface ScatterplotData extends ChartDataSet<Chart2DPoint> {
 	}
 
-	export interface BarDataEntry {
-		value: number;
-		xLabel: string;
-		backgroundColor?: string;
-		borderColor?: string;
-	}
-	export interface BarDataSet {
-		data: BarDataEntry[];
-		datasetLabel: string;
+	export interface BubbleChartConfiguration extends ChartConfiguration {
+		datasets: BubbleChartData[];
+		options: BubbleChartOptions;
 	}
 
-	export interface ChartProperties {
-
+	export interface BubbleChartData extends ChartDataSet<Chart3DPoint> {
 	}
 
-	export interface BarChartProperties extends ChartProperties {
-		//type?: 'bar';   //not able to initialize type like this. user needs to set chart type for now
-		datasets: BarDataSet[];
-		options?: BarChartOptions;
-	}
-
-	export interface LineChartProperties extends ChartProperties {
-		datasets: BarDataSet[]; //similar chart types (can be renamed later)
-		options?: LineChartOptions;
-	}
-
-	export interface DoughnutChartProperties extends ChartProperties {
-		dataset: BarDataSet; //using single dataset (can be renamed later)
-		options?: DoughnutChartOptions;
-	}
-
-	export interface PieChartProperties extends ChartProperties {
-		dataset: BarDataSet; //using single dataset (can be renamed later)
-		options?: PieChartOptions;
-	}
+	//#endregion
 
 	export interface ChartOptions {
 

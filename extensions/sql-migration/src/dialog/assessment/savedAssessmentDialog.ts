@@ -136,7 +136,7 @@ export class SavedAssessmentDialog {
 			}));
 
 		const barConfig: azdata.BarChartConfiguration = {
-			chartTitle: 'Test Bar Chart Please Ignore',
+			chartTitle: 'Test Bar Chart',
 			datasets: [
 				{
 					data: [2, 3, 4],
@@ -157,7 +157,6 @@ export class SavedAssessmentDialog {
 					dataLabel: 'By Two'
 				}
 			],
-			// only data that aligns with a label is shown.  If fewer labels than data, then data is truncated; if more labels than data, then there's an empty entry
 			labels: ['uno', 'dos', 'tres', 'quatro'],
 			options: {
 				scales: {
@@ -168,44 +167,44 @@ export class SavedAssessmentDialog {
 			}
 		};
 
-		const doughnutConfig: azdata.DoughnutChartConfiguration = {
-			chartTitle: 'Test Doughnut Chart Please Ignore',
-			dataset: [
-				{
-					value: 50,
-					backgroundColor: "#FF8888",
-					borderColor: "#FF0000",
-					dataLabel: "Some"
-				},
-				{
-					value: 100,
-					backgroundColor: "#88FF88",
-					borderColor: "#00FF00",
-					dataLabel: "More"
-				},
-				{
-					value: 300,
-					backgroundColor: "#8888FF",
-					borderColor: "#0000FF",
-					dataLabel: "Most"
-				}
-			],
-			options: {
+		// const doughnutConfig: azdata.DoughnutChartConfiguration = {
+		// 	chartTitle: 'Test Doughnut Chart',
+		// 	dataset: [
+		// 		{
+		// 			value: 50,
+		// 			backgroundColor: "#FF8888",
+		// 			borderColor: "#FF0000",
+		// 			dataLabel: "Some"
+		// 		},
+		// 		{
+		// 			value: 100,
+		// 			backgroundColor: "#88FF88",
+		// 			borderColor: "#00FF00",
+		// 			dataLabel: "More"
+		// 		},
+		// 		{
+		// 			value: 300,
+		// 			backgroundColor: "#8888FF",
+		// 			borderColor: "#0000FF",
+		// 			dataLabel: "Most"
+		// 		}
+		// 	],
+		// 	options: {
 
-			}
-		}
+		// 	}
+		// }
 
-		// const barChart = view.modelBuilder.chart<azdata.BarChartConfiguration>()
-		// 	.withProps({
-		// 		chartType: 'bar',
-		// 		configuration: barConfig
-		// 	}).component();
-
-		const doughnutChart = view.modelBuilder.chart<azdata.DoughnutChartConfiguration>()
+		const barChart = view.modelBuilder.chart<azdata.BarChartConfiguration>()
 			.withProps({
-				chartType: 'doughnut',
-				configuration: doughnutConfig
+				chartType: 'bar',
+				configuration: barConfig
 			}).component();
+
+		// const doughnutChart = view.modelBuilder.chart<azdata.DoughnutChartConfiguration>()
+		// 	.withProps({
+		// 		chartType: 'doughnut',
+		// 		configuration: doughnutConfig
+		// 	}).component();
 
 		const flex = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column', })
@@ -213,8 +212,8 @@ export class SavedAssessmentDialog {
 			.component();
 		flex.addItem(radioStart, { flex: '0 0 auto' });
 		flex.addItem(radioContinue, { flex: '0 0 auto' });
-		//flex.addItem(barChart, { flex: '0 0 auto' });
-		flex.addItem(doughnutChart, { flex: '0 0 auto' });
+		flex.addItem(barChart, { flex: '0 0 auto' });
+		//flex.addItem(doughnutChart, { flex: '0 0 auto' });
 
 		return flex;
 	}
