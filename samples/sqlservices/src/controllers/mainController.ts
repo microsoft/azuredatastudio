@@ -95,7 +95,7 @@ export default class MainController implements vscode.Disposable {
 		return Promise.resolve(true);
 	}
 
-	private async getTab3Content(view: azdata.ModelView): Promise<void> {
+	private async getTreeTabContent(view: azdata.ModelView): Promise<void> {
 		let treeData = {
 			label: '1',
 			children: [
@@ -168,8 +168,8 @@ export default class MainController implements vscode.Disposable {
 
 		await view.initializeModel(formWrapper);
 	}
-	private async getTabContent(view: azdata.ModelView, customButton1: azdata.window.Button, customButton2: azdata.window.Button, componentWidth: number | string
-	): Promise<void> {
+
+	private async getBasicUiTabContent(view: azdata.ModelView, customButton1: azdata.window.Button, customButton2: azdata.window.Button, componentWidth: number | string): Promise<void> {
 		let inputBox = view.modelBuilder.inputBox()
 			.withProps({
 				multiline: true,
@@ -505,29 +505,218 @@ export default class MainController implements vscode.Disposable {
 
 	private openDialog(): void {
 		let dialog = azdata.window.createModelViewDialog('Test dialog', '', 'wide');
-		let tab1 = azdata.window.createTab('Test tab 1');
 
-		let tab2 = azdata.window.createTab('Test tab 2');
-		let tab3 = azdata.window.createTab('Test tab 3');
-		tab2.content = 'sqlservices';
-		dialog.content = [tab1, tab2, tab3];
+		// Dialog button customizations
+
 		dialog.okButton.onClick(() => console.log('ok clicked!'));
-		dialog.cancelButton.onClick(() => console.log('cancel clicked!'));
 		dialog.okButton.label = 'ok';
-		dialog.cancelButton.label = 'no';
-		let customButton1 = azdata.window.createButton('Load name');
-		customButton1.onClick(() => console.log('button 1 clicked!'));
-		let customButton2 = azdata.window.createButton('Load all');
-		customButton2.onClick(() => console.log('button 2 clicked!'));
-		dialog.customButtons = [customButton1, customButton2];
-		tab1.registerContent(async (view) => {
-			await this.getTabContent(view, customButton1, customButton2, 400);
-		});
 
-		tab3.registerContent(async (view) => {
-			await this.getTab3Content(view);
+		dialog.cancelButton.onClick(() => console.log('cancel clicked!'));
+		dialog.cancelButton.label = 'no';
+
+		const customButton1 = azdata.window.createButton('Load name');
+		customButton1.onClick(() => console.log('button 1 clicked!'));
+
+		const customButton2 = azdata.window.createButton('Load all');
+		customButton2.onClick(() => console.log('button 2 clicked!'));
+
+		dialog.customButtons = [customButton1, customButton2];
+
+		// Dialog tabs
+
+		dialog.content = [];
+
+		const basicUiTab = azdata.window.createTab('Basic UI Controls');
+		basicUiTab.registerContent(async (view) => {
+			await this.getBasicUiTabContent(view, customButton1, customButton2, 400);
 		});
+		dialog.content.push(basicUiTab);
+
+		const widgetTab = azdata.window.createTab('Widget');
+		widgetTab.content = 'sqlservices';
+		dialog.content.push(widgetTab);
+
+		const treeTab = azdata.window.createTab('Tree');
+		treeTab.registerContent(async (view) => {
+			await this.getTreeTabContent(view);
+		});
+		dialog.content.push(treeTab);
+
+		const graphTab = azdata.window.createTab('Graphs');
+		graphTab.registerContent(async (view) => {
+			await this.getGraphTabContent(view);
+		});
+		dialog.content.push(graphTab);
+
+		// Open the dialog
+
 		azdata.window.openDialog(dialog);
+	}
+
+	private async getGraphTabContent(view: azdata.ModelView): Promise<void> {
+
+		// Bar chart
+
+		const barConfig: azdata.BarChartConfiguration = {
+			chartTitle: 'Test Bar Chart',
+			datasets: [
+				{
+					data: [2, 3, 4],
+					backgroundColor: '#FFFF88',
+					borderColor: '#FFFF00',
+					dataLabel: 'By One'
+				},
+				{
+					data: [3.5, 4, 4.5],
+					backgroundColor: '#88FFFF',
+					borderColor: '#00FFFF',
+					dataLabel: 'By Half'
+				},
+				{
+					data: [1, 3, 5],
+					backgroundColor: '#FF88FF',
+					borderColor: '#FF00FF',
+					dataLabel: 'By Two'
+				}
+			],
+			labels: ['uno', 'dos', 'tres', 'quatro'],
+			options: {
+				scales: {
+					x: {
+						max: 8
+					}
+				}
+			}
+		};
+
+		const barChart = view.modelBuilder.chart<azdata.BarChartConfiguration>()
+			.withProps({
+				chartType: 'bar',
+				configuration: barConfig
+			}).component();
+
+		// Line chart
+
+		const lineConfig: azdata.LineChartConfiguration = {
+			chartTitle: 'Test Line Chart',
+			datasets: [
+				{
+					data: [2, 3, 4],
+					backgroundColor: '#FFFF88',
+					borderColor: '#FFFF00',
+					dataLabel: 'By One'
+				},
+				{
+					data: [3.5, 4, 4.5],
+					backgroundColor: '#88FFFF',
+					borderColor: '#00FFFF',
+					dataLabel: 'By Half'
+				},
+				{
+					data: [1, 3, 5],
+					backgroundColor: '#FF88FF',
+					borderColor: '#FF00FF',
+					dataLabel: 'By Two'
+				}
+			],
+			labels: ['uno', 'dos', 'tres', 'quatro'],
+			options: {
+				scales: {
+					x: {
+						max: 8
+					}
+				}
+			}
+		};
+
+		const lineChart = view.modelBuilder.chart<azdata.LineChartConfiguration>()
+			.withProps({
+				chartType: 'line',
+				configuration: lineConfig
+			}).component();
+
+		// Doughnut chart
+
+		const doughnutConfig: azdata.DoughnutChartConfiguration = {
+			chartTitle: 'Test Doughnut Chart',
+			dataset: [
+				{
+					value: 50,
+					backgroundColor: '#FF8888',
+					borderColor: '#FF0000',
+					dataLabel: 'Some'
+				},
+				{
+					value: 100,
+					backgroundColor: '#88FF88',
+					borderColor: '#00FF00',
+					dataLabel: 'More'
+				},
+				{
+					value: 300,
+					backgroundColor: '#8888FF',
+					borderColor: '#0000FF',
+					dataLabel: 'Most'
+				}
+			],
+			options: {
+
+			}
+		};
+
+		// Scatterplot
+
+		const scatterConfig: azdata.ScatterplotConfiguration = {
+			chartTitle: 'Test Scatter Chart',
+			datasets: [
+				{
+					data: [
+						{ x: -10, y: 0 },
+						{ x: 0, y: 10 },
+						{ x: 10, y: 5 },
+						{ x: 0.5, y: 5.5 }
+					],
+					backgroundColor: 'rgb(255, 99, 132)',
+					borderColor: 'rgb(0, 255, 132)',
+					dataLabel: 'Scatter Dataset'
+				}
+			],
+			options: {
+				scales: {
+					x: {
+						// type: 'linear',
+						position: 'bottom'
+					}
+				}
+			}
+		};
+
+		const scatterplot = view.modelBuilder.chart<azdata.ScatterplotConfiguration>()
+			.withProps({
+				chartType: 'scatter',
+				configuration: scatterConfig
+			}).component();
+
+		const doughnutChart = view.modelBuilder.chart<azdata.DoughnutChartConfiguration>()
+			.withProps({
+				chartType: 'doughnut',
+				configuration: doughnutConfig
+			}).component();
+
+		const flexContainer = view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' })
+			.withProps({ CSSStyles: { 'padding': '20px 15px' } })
+			.component();
+
+		flexContainer.addItem(barChart, { flex: '0 0 auto' });
+		flexContainer.addItem(lineChart, { flex: '0 0 auto' });
+		flexContainer.addItem(doughnutChart, { flex: '0 0 auto' });
+		flexContainer.addItem(scatterplot, { flex: '0 0 auto' });
+
+		const flexWrapper = view.modelBuilder.loadingComponent().withItem(flexContainer).component();
+		flexWrapper.loading = false;
+
+		await view.initializeModel(flexWrapper);
 	}
 
 	private openWizard(): void {
@@ -541,7 +730,7 @@ export default class MainController implements vscode.Disposable {
 		customButton2.onClick(() => console.log('button 2 clicked!'));
 		wizard.customButtons = [customButton1, customButton2];
 		page1.registerContent(async (view) => {
-			await this.getTabContent(view, customButton1, customButton2, 800);
+			await this.getBasicUiTabContent(view, customButton1, customButton2, 800);
 		});
 
 		wizard.registerOperation({
