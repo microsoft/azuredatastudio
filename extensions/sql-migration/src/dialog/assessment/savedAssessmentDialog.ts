@@ -175,26 +175,7 @@ export class SavedAssessmentDialog {
 
 		const horizontalBarConfig: azdata.BarChartConfiguration = {
 			chartTitle: 'Test Horizontal Bar Chart',
-			datasets: [
-				{
-					data: [2, 3, 4],
-					backgroundColor: '#FFFF88',
-					borderColor: '#FFFF00',
-					dataLabel: 'By One'
-				},
-				{
-					data: [3.5, 4, 4.5],
-					backgroundColor: '#88FFFF',
-					borderColor: '#00FFFF',
-					dataLabel: 'By Half'
-				},
-				{
-					data: [1, 3, 5],
-					backgroundColor: '#FF88FF',
-					borderColor: '#FF00FF',
-					dataLabel: 'By Two'
-				}
-			],
+			datasets: barConfig.datasets,
 			labels: ['uno', 'dos', 'tres', 'quatro'],
 			options: {
 				scales: {
@@ -284,26 +265,7 @@ export class SavedAssessmentDialog {
 
 		const doughnutConfig: azdata.PieChartConfiguration = {
 			chartTitle: 'Test Doughnut Chart',
-			dataset: [
-				{
-					value: 50,
-					backgroundColor: "#FF8888",
-					borderColor: "#FF0000",
-					dataLabel: "Some"
-				},
-				{
-					value: 100,
-					backgroundColor: "#88FF88",
-					borderColor: "#00FF00",
-					dataLabel: "More"
-				},
-				{
-					value: 300,
-					backgroundColor: "#8888FF",
-					borderColor: "#0000FF",
-					dataLabel: "Most"
-				}
-			],
+			dataset: pieConfig.dataset,
 			options: {
 
 			}
@@ -392,6 +354,71 @@ export class SavedAssessmentDialog {
 					configuration: bubbleConfig
 				}).component();
 
+		const polarConfig: azdata.PolarAreaChartConfiguration = {
+			chartTitle: 'Test Polar Chart',
+			dataset:
+				[
+					{
+						value: 1,
+						dataLabel: 'Rouge',
+						backgroundColor: '#FF0000',
+						borderColor: '#880000'
+					},
+					{
+						value: 2,
+						dataLabel: 'Orange',
+						backgroundColor: '#FF8800',
+						borderColor: '#884400'
+					},
+					{
+						value: 3,
+						dataLabel: 'Jaune',
+						backgroundColor: '#FFFF00',
+						borderColor: '#888800'
+					},
+					{
+						value: 4,
+						dataLabel: 'Vert',
+						backgroundColor: '#00FF00',
+						borderColor: '#008800'
+					},
+					{
+						value: 5,
+						dataLabel: 'Bleu',
+						backgroundColor: '#0000FF',
+						borderColor: '#000088'
+					},
+					{
+						value: 6,
+						dataLabel: 'Violet',
+						backgroundColor: '#8800FF',
+						borderColor: '#440088'
+					}
+				],
+			options: {}
+		}
+
+		const polarChart = view.modelBuilder.chart<azdata.PolarAreaChartConfiguration>()
+			.withProps(
+				{
+					chartType: 'polarArea',
+					configuration: polarConfig
+				}).component();
+
+		const radarConfig: azdata.RadarChartConfiguration = {
+			chartTitle: 'Test Radar Chart',
+			datasets: barConfig.datasets,
+			labels: ['Ek', 'Do', 'Teen', 'Chaar']
+		};
+
+		const radarChart = view.modelBuilder.chart<azdata.RadarChartConfiguration>()
+			.withProps(
+				{
+					chartType: 'radar',
+					configuration: radarConfig
+				}
+			).component();
+
 		const flex = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column', })
 			.withProps({ CSSStyles: { 'padding': '20px 15px', } })
@@ -406,6 +433,8 @@ export class SavedAssessmentDialog {
 		flex.addItem(doughnutChart, { flex: '0 0 auto' });
 		flex.addItem(scatterplot, { flex: '0 0 auto' });
 		flex.addItem(bubbleChart, { flex: '0 0 auto' });
+		flex.addItem(polarChart, { flex: '0 0 auto' });
+		flex.addItem(radarChart, { flex: '0 0 auto' });
 
 		return flex;
 	}

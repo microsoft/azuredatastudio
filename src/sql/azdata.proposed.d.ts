@@ -2092,9 +2092,9 @@ declare module 'azdata' {
 	//#region Chart general data types
 
 	export interface ChartDataEntryBase {
-		backgroundColor: string;
-		borderColor: string;
 		dataLabel: string;
+		backgroundColor: string;
+		borderColor?: string;
 	}
 
 	export interface ChartDataEntry extends ChartDataEntryBase {
@@ -2236,6 +2236,11 @@ declare module 'azdata' {
 
 	//#region Polar Area chart
 
+	export interface PolarAreaChartConfiguration extends ChartConfiguration {
+		dataset: ChartDataEntry[];
+		options?: PolarAreaChartOptions;
+	}
+
 	export interface PolarAreaChartOptions extends ChartOptions {
 		circular?: boolean;
 	}
@@ -2243,6 +2248,15 @@ declare module 'azdata' {
 	//#endregion
 
 	//#region Radar chart
+
+	export interface RadarChartConfiguration extends ChartConfiguration {
+		datasets: BarChartData[];
+		options?: RadarChartOptions;
+		/**
+		 * Labels for the perimeter.  Only data that aligns with a label is shown.  If there are fewer labels than data, then not all data is displayed; if there are more labels than data, then empty chart entries are appended
+		 */
+		labels: string[];
+	}
 
 	export interface RadarChartOptions extends ChartOptions {
 		scales?: {

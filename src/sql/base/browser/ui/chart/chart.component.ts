@@ -82,65 +82,102 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 			datasets: []
 		}
 
-		if (this._type === 'bar' || this._type === 'line') {
-			this.element = this.chartTitle;
-			this._changeRef.detectChanges();
+		this.element = this.chartTitle;
+		this._changeRef.detectChanges();
 
-			const config = <azdata.BarChartConfiguration>val;
-			for (let set of config.datasets) {
-				result.datasets.push({
-					data: set.data.map(entry => typeof entry === 'number' ? entry : entry.x),
-					backgroundColor: set.backgroundColor,
-					borderColor: set.borderColor,
-					label: set.dataLabel
-				});
-			}
+		switch (this._type) {
+			case 'bar':
+			case 'horizontalBar': // should've been replaced with 'bar' by this point, but inlcuded case here for safety
+			case 'line':
+				{
+					const config = <azdata.BarChartConfiguration>val;
+					for (let set of config.datasets) {
+						result.datasets.push({
+							data: set.data.map(entry => typeof entry === 'number' ? entry : entry.x),
+							backgroundColor: set.backgroundColor,
+							borderColor: set.borderColor,
+							label: set.dataLabel
+						});
+					}
 
-			result.labels = config.labels;
-		} else if (this._type === 'pie' || this._type === 'doughnut') {
-			this.element = this.chartTitle;
-			this._changeRef.detectChanges();
+					result.labels = config.labels;
+					break;
+				}
+			case 'pie':
+			case 'doughnut':
+				{
+					const config = <azdata.PieChartConfiguration>val;
 
-			const config = <azdata.PieChartConfiguration>val;
+					result.datasets.push({
+						data: config.dataset.map(entry => typeof entry.value === 'number' ? entry.value : entry.value.x),
+						backgroundColor: config.dataset.map(entry => entry.backgroundColor),
+						borderColor: config.dataset.map(entry => entry.borderColor)
+					});
 
-			result.datasets.push({
-				data: config.dataset.map(entry => typeof entry.value === 'number' ? entry.value : entry.value.x),
-				backgroundColor: config.dataset.map(entry => entry.backgroundColor),
-				borderColor: config.dataset.map(entry => entry.borderColor)
-			});
+					result.labels = config.dataset.map(val => val.dataLabel);
+					break;
+				}
+			case 'scatter':
+				{
+					const config = <azdata.ScatterplotConfiguration>val;
 
-			result.labels = config.dataset.map(val => val.dataLabel);
-		} else if (this._type === 'scatter') {
-			this.element = this.chartTitle;
-			this._changeRef.detectChanges();
+					for (let set of config.datasets) {
+						result.datasets.push({
+							data: set.data.map(entry => [entry.x, entry.y]),
+							backgroundColor: set.backgroundColor,
+							borderColor: set.borderColor,
+							label: set.dataLabel
+						});
+					}
 
-			const config = <azdata.ScatterplotConfiguration>val;
+					break;
+				}
+			case 'bubble':
+				{
+					const config = <azdata.BubbleChartConfiguration>val;
 
-			for (let set of config.datasets) {
-				result.datasets.push({
-					data: set.data.map(entry => [entry.x, entry.y]),
-					backgroundColor: set.backgroundColor,
-					borderColor: set.borderColor,
-					label: set.dataLabel
-				});
-			}
-		} else if (this._type === 'bubble') {
-			this.element = this.chartTitle;
-			this._changeRef.detectChanges();
+					for (let set of config.datasets) {
+						result.datasets.push({
+							data: set.data.map(entry => ({ x: entry.x, y: entry.y, r: entry.r })),
+							backgroundColor: set.backgroundColor,
+							borderColor: set.borderColor,
+							label: set.dataLabel
+						});
+					}
 
-			const config = <azdata.BubbleChartConfiguration>val;
+					break;
+				}
+			case 'polarArea':
+				{
+					const config = <azdata.PolarAreaChartConfiguration>val;
 
-			for (let set of config.datasets) {
-				result.datasets.push({
-					data: set.data.map(entry => ({ x: entry.x, y: entry.y, r: entry.r })),
-					backgroundColor: set.backgroundColor,
-					borderColor: set.borderColor,
-					label: set.dataLabel
-				});
-			}
-		}
-		else {
-			throw new Error(`Unsupported chart type: '${this._type}'`);
+					result.datasets.push({
+						data: config.dataset.map(entry => typeof entry.value === 'number' ? entry.value : entry.value.x),
+						backgroundColor: config.dataset.map(entry => entry.backgroundColor),
+						borderColor: config.dataset.map(entry => entry.borderColor)
+					});
+
+					result.labels = config.dataset.map(val => val.dataLabel);
+					break;
+				}
+			case 'radar':
+				{
+					const config = <azdata.RadarChartConfiguration>val;
+
+					for (let set of config.datasets) {
+						result.datasets.push({
+							data: set.data.map(entry => typeof entry === 'number' ? entry : entry.x),
+							backgroundColor: set.backgroundColor,
+							borderColor: set.borderColor,
+							label: set.dataLabel
+						});
+					}
+
+					result.labels = config.labels;
+					break;
+				}
+			default:
+				throw new Error(`Unsupported chart type: '${this._type}'`);
 		}
 
 		return result;
