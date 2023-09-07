@@ -2066,22 +2066,30 @@ declare module 'azdata' {
 		export function openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: FileFilters[]): Thenable<string | undefined>;
 	}
 
+	//#region Chart component model types
+
 	export type ChartType = 'bar' | 'bubble' | 'doughnut' | 'horizontalBar' | 'line' | 'pie' | 'polarArea' | 'radar' | 'scatter';
 
 	export interface ModelBuilder {
 		chart<TConfig extends ChartConfiguration>(): ComponentBuilder<ChartComponent<TConfig>, ChartComponentProperties<TConfig>>;
 	}
 
+	export interface ChartComponent<TConfig extends ChartConfiguration> extends Component, ChartComponentProperties<TConfig> {
+		onDidClick: vscode.Event<ChartClickEvent>;
+	}
+
+	export type ChartClickEvent = { label: string };
+
 	export interface ChartComponentProperties<TConfig extends ChartConfiguration> extends ComponentProperties {
 		chartType: ChartType;
 		configuration: TConfig;
 	}
 
-	//#region Charting generics
-
 	export interface ChartConfiguration {
 		chartTitle: string;
 	}
+
+	//#region Chart general data types
 
 	export interface ChartDataEntryBase {
 		backgroundColor: string;
@@ -2111,56 +2119,9 @@ declare module 'azdata' {
 
 	//#endregion
 
-	//#region Chart configurations
-	export interface BarChartConfiguration extends ChartConfiguration {
-		datasets: BarChartData[];
-		options?: BarChartOptions;
-		/**
-		 * Labels for the X axis.  Only data that aligns with a label is shown.  If fewer labels than data, then data is truncated; if more labels than data, then there's an empty entry
-		 */
-		labels: string[];
-	}
+	//#region Chart general option types
 
-	export interface LineChartConfiguration extends ChartConfiguration {
-		datasets: BarChartData[];
-		options?: LineChartOptions;
-		labels: string[];
-	}
-
-	export interface BarChartData extends ChartDataSet<Chart1DPoint | number> {
-	}
-
-	export interface DoughnutChartConfiguration extends ChartConfiguration {
-		dataset: ChartDataEntry[];
-		options?: DoughnutChartOptions;
-	}
-
-	export interface PieChartConfiguration extends ChartConfiguration {
-		dataset: ChartDataEntry[];
-		options?: PieChartOptions;
-	}
-
-	export interface ScatterplotConfiguration extends ChartConfiguration {
-		datasets: ScatterplotData[];
-		options?: ScatterChartOptions;
-	}
-
-	export interface ScatterplotData extends ChartDataSet<Chart2DPoint> {
-	}
-
-	export interface BubbleChartConfiguration extends ChartConfiguration {
-		datasets: BubbleChartData[];
-		options: BubbleChartOptions;
-	}
-
-	export interface BubbleChartData extends ChartDataSet<Chart3DPoint> {
-	}
-
-	//#endregion
-
-	export interface ChartOptions {
-
-	}
+	export interface ChartOptions { }
 
 	export interface ScaleOptions {
 		beginAtZero?: boolean;
@@ -2169,29 +2130,50 @@ declare module 'azdata' {
 		offset?: boolean;
 		stacked?: boolean;
 	}
+
+	//#endregion
+
+	//#region Chart-specific types
+
+	//#region Bar chart
+
+	export interface BarChartConfiguration extends ChartConfiguration {
+		datasets: BarChartData[];
+		options?: BarChartOptions;
+		/**
+		 * Labels for the X axis.  Only data that aligns with a label is shown.  If there are fewer labels than data, then not all data is displayed; if there are more labels than data, then empty chart entries are appended
+		 */
+		labels: string[];
+	}
+
+	export interface BarChartData extends ChartDataSet<Chart1DPoint | number> { }
+
 	export interface BarChartOptions extends ChartOptions {
 		scales?: {
 			x?: ScaleOptions;
 			y?: ScaleOptions;
 		}
 	}
-	export interface BubbleChartOptions extends ChartOptions {
 
-	}
+	//#endregion
 
-
-	export interface DoughnutChartOptions extends ChartOptions {
-		circumference?: number;
-		cutout?: number | string;
-		radius?: number | string;
-		rotation?: number;
-	}
+	//#region Horizontal Bar chart
 
 	export interface HorizontalBarChartOptions extends ChartOptions {
 		scales?: {
 			x?: ScaleOptions;
 			y?: ScaleOptions;
 		}
+	}
+
+	//#endregion
+
+	//#region Line chart
+
+	export interface LineChartConfiguration extends ChartConfiguration {
+		datasets: BarChartData[];
+		options?: LineChartOptions;
+		labels: string[];
 	}
 
 	export interface LineChartOptions extends ChartOptions {
@@ -2205,6 +2187,15 @@ declare module 'azdata' {
 		tension?: number;
 	}
 
+	//#endregion
+
+	//#region Pie chart
+
+	export interface PieChartConfiguration extends ChartConfiguration {
+		dataset: ChartDataEntry[];
+		options?: PieChartOptions;
+	}
+
 	export interface PieChartOptions extends ChartOptions {
 		circumference?: number;
 		cutout?: number | string;
@@ -2212,9 +2203,66 @@ declare module 'azdata' {
 		rotation?: number;
 	}
 
+	//#endregion
+
+	//#region Doughnut chart
+
+	export interface DoughnutChartConfiguration extends ChartConfiguration {
+		dataset: ChartDataEntry[];
+		options?: DoughnutChartOptions;
+	}
+
+	export interface DoughnutChartOptions extends ChartOptions {
+		circumference?: number;
+		cutout?: number | string;
+		radius?: number | string;
+		rotation?: number;
+	}
+
+	//#endregion
+
+	//#region Scatterplot
+
+	export interface ScatterplotConfiguration extends ChartConfiguration {
+		datasets: ScatterplotData[];
+		options?: ScatterplotOptions;
+	}
+
+	export interface ScatterplotData extends ChartDataSet<Chart2DPoint> {
+	}
+
+	export interface ScatterplotOptions extends ChartOptions {
+		scales?: {
+			x?: ScaleOptions & { position?: 'left' | 'top' | 'right' | 'bottom' | 'center' };
+			y?: ScaleOptions & { position?: 'left' | 'top' | 'right' | 'bottom' | 'center' };
+		}
+	}
+
+	//#endregion
+
+	//#region Bubble chart
+
+	export interface BubbleChartConfiguration extends ChartConfiguration {
+		datasets: BubbleChartData[];
+		options: BubbleChartOptions;
+	}
+
+	export interface BubbleChartData extends ChartDataSet<Chart3DPoint> {
+	}
+	export interface BubbleChartOptions extends ChartOptions {
+
+	}
+	//#endregion
+
+	//#region Polar Area chart
+
 	export interface PolarAreaChartOptions extends ChartOptions {
 		circular?: boolean;
 	}
+
+	//#endregion
+
+	//#region Radar chart
 
 	export interface RadarChartOptions extends ChartOptions {
 		scales?: {
@@ -2235,18 +2283,11 @@ declare module 'azdata' {
 		tension?: number;
 	}
 
-	export interface ScatterChartOptions extends ChartOptions {
-		scales?: {
-			x?: ScaleOptions & { position?: 'left' | 'top' | 'right' | 'bottom' | 'center' };
-			y?: ScaleOptions & { position?: 'left' | 'top' | 'right' | 'bottom' | 'center' };
-		}
-	}
+	//#endregion
 
-	export type ChartClickEvent = { label: string };
+	//#endregion
 
-	export interface ChartComponent<TConfig extends ChartConfiguration> extends Component, ChartComponentProperties<TConfig> {
-		onDidClick: vscode.Event<ChartClickEvent>;
-	}
+	//#endregion
 
 	export interface TableComponent {
 		/**
