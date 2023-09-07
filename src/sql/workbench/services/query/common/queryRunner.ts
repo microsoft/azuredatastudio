@@ -483,7 +483,7 @@ export default class QueryRunner extends Disposable {
 	 * @param resultId The result id of the result to copy from
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
-	async copyResults(selections: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<azdata.CopyResultsResults> {
+	async copyResults(selections: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<azdata.CopyResultsRequestResult> {
 		return await this.queryManagementService.copyResults({
 			ownerUri: this.uri,
 			batchIndex: batchId,
