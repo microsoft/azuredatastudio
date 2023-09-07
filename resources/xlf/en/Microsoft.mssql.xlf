@@ -889,6 +889,9 @@
     <trans-unit id="objectManagement.collationNotValidError">
       <source xml:lang="en">The selected collation &apos;{0}&apos; is not valid. Please choose a different collation.</source>
     </trans-unit>
+    <trans-unit id="objectManagement.notSupportedError">
+      <source xml:lang="en">This command is not supported for object type &apos;{0}&apos;.</source>
+    </trans-unit>
     <trans-unit id="objectManagement.twoDigitYearCutoffLabel">
       <source xml:lang="en">Two Digit Year Cutoff</source>
     </trans-unit>
