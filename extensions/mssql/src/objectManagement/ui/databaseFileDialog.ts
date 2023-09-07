@@ -294,7 +294,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	 */
 	private async createFileBrowser(): Promise<void> {
 		let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
-		let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, [], true);
+		let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, [{ label: localizedConstants.allFiles, filters: ['*'] }], true);
 		if (filePath?.length > 0) {
 			this.filePathTextBox.value = filePath;
 			this.result.path = filePath;

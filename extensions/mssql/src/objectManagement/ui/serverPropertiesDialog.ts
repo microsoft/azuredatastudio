@@ -624,7 +624,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 	public async selectFolder(location: string): Promise<string | undefined> {
 		let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
-		return await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, [], true);
+		return await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, [{ label: localizedConstants.allFiles, filters: ['*'] }], true);
 	}
 
 	private initializeAdvancedSection(): void {
