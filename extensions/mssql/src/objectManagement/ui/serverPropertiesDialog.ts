@@ -372,11 +372,11 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	@debounce(1500)
 	private async notifyServerRestart(): Promise<void> {
 		if (this.notifyChangeInAuthentication && this.activeTabId === this.securityTabId) {
-			await vscode.window.showInformationMessage(localizedConstants.needToRestartServer, { modal: true });
+			await vscode.window.showInformationMessage(localizedConstants.needToRestartServer);
 			this.notifyChangeInAuthentication = false;
 		}
 		if ((this.notifyChangeDataLocation || this.notifyChangeLogLocation) && this.activeTabId === this.databaseSettingsTabId) {
-			await vscode.window.showInformationMessage(localizedConstants.needToRestartServer, { modal: true });
+			await vscode.window.showInformationMessage(localizedConstants.needToRestartServer);
 			this.notifyChangeLogLocation = false;
 			this.notifyChangeDataLocation = false;
 		}
