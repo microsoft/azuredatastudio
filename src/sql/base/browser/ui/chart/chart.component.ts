@@ -45,6 +45,9 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 
 	}
 
+	/**
+	 * Setter function for chart type
+	 */
 	public set type(val: any) {
 		if (val === 'horizontalBar') {
 			this._type = 'bar';
@@ -56,6 +59,9 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 		this._changeRef.detectChanges();
 	}
 
+	/**
+	 * Setter function for chart configuration
+	 */
 	public set configuration(val: TConfig) {
 		this.chartTitle = val.chartTitle;
 		this._configuration = this.convert(val);
@@ -68,6 +74,10 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 		}
 	}
 
+	/**
+	 * Setter function for chart options.
+	 * Some options like responsiveness and maintainaspectratio are set by default and will be used even if no options are provided.
+	 */
 	public set options(val: any) {
 		if (val) {
 			this._options = mixin({}, mixin(this._options, val));
@@ -181,6 +191,11 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 		return result;
 	}
 
+	/**
+	 * Function to draw the chart.
+	 * If the chart is already present, a call to this will simply update the chart with new configuration values(if any).
+	 * Else a new chart will be created.
+	 */
 	public drawChart() {
 		let canvas = document.getElementById(this.element) as HTMLCanvasElement;
 		this.canvas = canvas;

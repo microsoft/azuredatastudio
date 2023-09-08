@@ -2081,23 +2081,46 @@ declare module 'azdata' {
 	export type ChartClickEvent = { label: string };
 
 	export interface ChartComponentProperties<TConfig extends ChartConfiguration> extends ComponentProperties {
+		/**
+		 * Type of chart to build
+		 * @see ChartType for a list of supported chart types
+		 */
 		chartType: ChartType;
+		/**
+		 * Configuration of chart: datasets, labels(if applicable), options
+		 */
 		configuration: TConfig;
 	}
 
 	export interface ChartConfiguration {
+		/**
+		 * Title for chart. Note: This will be used as canvasID to render the chart
+		 */
 		chartTitle: string;
 	}
 
 	//#region Chart general data types
 
 	export interface ChartDataEntryBase {
+		/**
+		 * For pie/doughnut/polar area charts, it the label associated with the data value
+		 * For bar/horizontalBar/Line/Scatterplot/Bubble/Radial, it is the label name for dataset
+		 */
 		dataLabel: string;
+		/**
+		 * Background color for chart elements
+		 */
 		backgroundColor: string;
+		/**
+		 * Border color for chart elements
+		 */
 		borderColor?: string;
 	}
 
 	export interface ChartDataEntry extends ChartDataEntryBase {
+		/**
+		 * Value of data point
+		 */
 		value: Chart1DPoint | number;
 	}
 
@@ -2162,6 +2185,9 @@ declare module 'azdata' {
 
 	//#region Line chart
 
+	/**
+	 * Configuration for a line chart
+	 */
 	export interface LineChartConfiguration extends ChartConfiguration {
 		datasets: BarChartData[];
 		options?: LineChartOptions;
@@ -2202,6 +2228,9 @@ declare module 'azdata' {
 
 	//#region Scatterplot
 
+	/**
+	 * Configuration for a scatter plot chart
+	 */
 	export interface ScatterplotConfiguration extends ChartConfiguration {
 		datasets: ScatterplotData[];
 		options?: ScatterplotOptions;
@@ -2221,6 +2250,9 @@ declare module 'azdata' {
 
 	//#region Bubble chart
 
+	/**
+	 * Configuration for a bubble chart
+	 */
 	export interface BubbleChartConfiguration extends ChartConfiguration {
 		datasets: BubbleChartData[];
 		options: BubbleChartOptions;
@@ -2236,6 +2268,9 @@ declare module 'azdata' {
 
 	//#region Polar Area chart
 
+	/**
+	 * Configuration for a polar area chart
+	 */
 	export interface PolarAreaChartConfiguration extends ChartConfiguration {
 		dataset: ChartDataEntry[];
 		options?: PolarAreaChartOptions;
@@ -2249,6 +2284,9 @@ declare module 'azdata' {
 
 	//#region Radar chart
 
+	/**
+	 * Configuration for a radar chart
+	 */
 	export interface RadarChartConfiguration extends ChartConfiguration {
 		datasets: BarChartData[];
 		options?: RadarChartOptions;
