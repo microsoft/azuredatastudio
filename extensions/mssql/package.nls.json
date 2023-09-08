@@ -84,7 +84,7 @@
 	"mssql.connectionOptions.connectionName.description": "Custom name of the connection",
 	"mssql.connectionOptions.serverName.displayName": "Server",
 	"mssql.connectionOptions.serverName.description": "Name of the SQL Server instance",
-	"mssql.connectionOptions.serverName.placeholder": "e.g. tcp:servername,1433",
+	"mssql.connectionOptions.serverName.placeholder": "e.g. servername,port",
 	"mssql.connectionOptions.databaseName.displayName": "Database",
 	"mssql.connectionOptions.databaseName.description": "The name of the initial catalog or database int the data source",
 	"mssql.connectionOptions.authType.displayName": "Authentication type",
