@@ -1,6 +1,7 @@
 {
 	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
+		"experimentalDecorators": true,
 		"outDir": "./out",
 		"strict": false,
 		"noUnusedParameters": false

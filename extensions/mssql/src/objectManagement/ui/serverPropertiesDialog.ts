@@ -9,6 +9,7 @@ import { DefaultColumnCheckboxWidth } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import * as constants from '../constants';
+import { debounce } from '../utils';
 import { Server, ServerViewInfo, NumaNode, AffinityType, ServerLoginMode, AuditLevel } from '../interfaces';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
@@ -54,6 +55,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	// Server authentication radio buttons
 	private onlyWindowsAuthRadioButton: azdata.RadioButtonComponent;
 	private sqlServerAndWindowsAuthRadioButton: azdata.RadioButtonComponent;
+	private notifyChangeInAuthentication: boolean = false;
 	// Login auditing radio buttons
 	private noneRadioButton: azdata.RadioButtonComponent;
 	private failedLoginsOnlyRadioButton: azdata.RadioButtonComponent;
@@ -68,6 +70,8 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private dataLocationInput: azdata.InputBoxComponent;
 	private logLocationInput: azdata.InputBoxComponent;
 	private backupLocationInput: azdata.InputBoxComponent;
+	private notifyChangeDataLocation: boolean = false;
+	private notifyChangeLogLocation: boolean = false;
 
 	private advancedTab: azdata.Tab;
 	private readonly advancedTabId: string = 'advancedId';
@@ -361,7 +365,21 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		if (this.objectInfo.maxServerMemory.value < this.objectInfo.minServerMemory.value) {
 			errors.push(localizedConstants.serverMemoryMaxLowerThanMinInputError);
 		}
+		await this.notifyServerRestart();
 		return errors;
+	}
+
+	@debounce(1500)
+	private async notifyServerRestart(): Promise<void> {
+		if (this.notifyChangeInAuthentication && this.activeTabId === this.securityTabId) {
+			await vscode.window.showInformationMessage(localizedConstants.needToRestartServer, { modal: true });
+			this.notifyChangeInAuthentication = false;
+		}
+		if ((this.notifyChangeDataLocation || this.notifyChangeLogLocation) && this.activeTabId === this.databaseSettingsTabId) {
+			await vscode.window.showInformationMessage(localizedConstants.needToRestartServer, { modal: true });
+			this.notifyChangeLogLocation = false;
+			this.notifyChangeDataLocation = false;
+		}
 	}
 
 	private initializeProcessorsSection(): void {
@@ -528,9 +546,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		if (this.sqlServerAndWindowsAuthRadioButton.checked) {
 			this.objectInfo.authenticationMode = ServerLoginMode.Mixed;
 		}
-		if (this.objectInfo.authenticationMode !== this.originalObjectInfo.authenticationMode) {
-			await vscode.window.showInformationMessage(localizedConstants.needToRestartServer, { modal: true });
-		}
+		this.notifyChangeInAuthentication = this.objectInfo.authenticationMode !== this.originalObjectInfo.authenticationMode;
 	}
 
 	private async handleAuditLevelChange(): Promise<void> {
@@ -580,21 +596,25 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 		this.dataLocationInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.dataLocation = newValue;
+			this.notifyChangeDataLocation = this.objectInfo.dataLocation !== this.originalObjectInfo.dataLocation;
 		}, dataLocationInputboxProps);
 		const dataLocationButton = this.createBrowseButton(async () => {
 			const newPath = await this.selectFolder(this.objectInfo.dataLocation);
 			this.dataLocationInput.value = newPath;
 			this.objectInfo.dataLocation = newPath;
+			this.notifyChangeDataLocation = this.objectInfo.dataLocation !== this.originalObjectInfo.dataLocation;
 		}, isEnabled);
 		const dataLocationInputContainer = this.createLabelInputContainer(localizedConstants.dataLocationText, [this.dataLocationInput, dataLocationButton])
 
 		this.logLocationInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.logLocation = newValue;
+			this.notifyChangeLogLocation = this.objectInfo.logLocation !== this.originalObjectInfo.logLocation;
 		}, logLocationInputboxProps);
 		const logLocationButton = this.createBrowseButton(async () => {
 			const newPath = await this.selectFolder(this.objectInfo.logLocation);
 			this.logLocationInput.value = newPath;
 			this.objectInfo.logLocation = newPath;
+			this.notifyChangeLogLocation = this.objectInfo.logLocation !== this.originalObjectInfo.logLocation;
 		}, isEnabled);
 		const logLocationInputContainer = this.createLabelInputContainer(localizedConstants.logLocationText, [this.logLocationInput, logLocationButton])
 
