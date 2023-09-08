@@ -364,7 +364,7 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public async copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<azdata.CopyResultsRequestResult> {
+	public copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<azdata.CopyResultsRequestResult> {
 		return this._runAction(requestParams.ownerUri, async (runner) => {
 			return runner.copyResults(requestParams);
 		});
