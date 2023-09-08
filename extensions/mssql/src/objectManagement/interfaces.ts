@@ -458,6 +458,7 @@ export interface Database extends ObjectManagement.SqlObject {
 	isFilesTabSupported?: boolean;
 	files?: DatabaseFile[];
 	filegroups?: FileGroup[];
+	queryStoreOptions?: QueryStoreOptions;
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
@@ -481,6 +482,32 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	rowDataFileGroupsOptions?: string[];
 	fileStreamFileGroupsOptions?: string[];
 	fileTypesOptions?: string[];
+	operationModeOptions?: string[];
+	statisticsCollectionIntervalOptions?: string[];
+	queryStoreCaptureModeOptions?: string[];
+	sizeBasedCleanupModeOptions?: string[];
+	staleThresholdOptions?: string[];
+}
+
+export interface QueryStoreOptions {
+	actualMode: string;
+	dataFlushIntervalInMinutes: number;
+	statisticsCollectionInterval: string;
+	maxPlansPerQuery: number;
+	maxSizeInMB: number;
+	queryStoreCaptureMode: string;
+	sizeBasedCleanupMode: string;
+	staleQueryThresholdInDays: number;
+	waitStatisticsCaptureMode?: boolean;
+	capturePolicyOptions?: QueryStoreCapturePolicyOptions;
+	currentStorageSizeInMB: number;
+}
+
+export interface QueryStoreCapturePolicyOptions {
+	executionCount: number;
+	staleThreshold: string;
+	totalCompileCPUTimeInMS: number;
+	totalExecutionCPUTimeInMS: number;
 }
 
 export interface DatabaseScopedConfigurationsInfo {
@@ -546,6 +573,20 @@ export interface Server extends ObjectManagement.SqlObject {
 	dataLocation: string;
 	logLocation: string;
 	backupLocation: string;
+	allowTriggerToFireOthers: boolean;
+	blockedProcThreshold: NumericServerProperty;
+	cursorThreshold: NumericServerProperty;
+	defaultFullTextLanguage: string;
+	defaultLanguage: string;
+	fullTextUpgradeOption: string;
+	maxTextReplicationSize: NumericServerProperty;
+	optimizeAdHocWorkloads: boolean;
+	scanStartupProcs: boolean;
+	twoDigitYearCutoff: number;
+	costThresholdParallelism: NumericServerProperty;
+	locks: NumericServerProperty;
+	maxDegreeParallelism: NumericServerProperty;
+	queryWait: NumericServerProperty;
 }
 
 /**
@@ -573,6 +614,8 @@ export interface NumericServerProperty {
 }
 
 export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
+	languageOptions: string[];
+	fullTextUpgradeOptions: string[];
 }
 
 export const enum FileGrowthType {

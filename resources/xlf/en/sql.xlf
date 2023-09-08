@@ -6329,6 +6329,11 @@ Error Message: {1}</source>
       <source xml:lang="en">Show All Connections</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/dragAndDropController" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="objectExplorer.dragAndDropController.existingIdenticalProfile">
+      <source xml:lang="en">Cannot drag profile into group: A profile with identical options already exists in the group.</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog" source-language="en" datatype="plaintext"><body>
     <trans-unit id="filterDialog.errorDateRange">
       <source xml:lang="en">Start date cannot be greater than end date.</source>
@@ -6640,6 +6645,9 @@ Error Message: {1}</source>
     </trans-unit>
     <trans-unit id="openFile">
       <source xml:lang="en">Open file</source>
+    </trans-unit>
+    <trans-unit id="openFileLocation">
+      <source xml:lang="en">Open file location</source>
     </trans-unit>
     <trans-unit id="resultsSerializer.saveAsFileExtensionCSVTitle">
       <source xml:lang="en">CSV (Comma delimited)</source>

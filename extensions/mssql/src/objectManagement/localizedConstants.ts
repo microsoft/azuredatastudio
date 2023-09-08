@@ -27,6 +27,7 @@ export const DatabaseRoleTypeDisplayName: string = localize('objectManagement.Da
 export const DatabaseRoleTypeDisplayNameInTitle: string = localize('objectManagement.DatabaseRoleTypeDisplayNameInTitle', "Database Role");
 export const DatabaseTypeDisplayNameInTitle: string = localize('objectManagement.DatabaseDisplayNameInTitle', "Database");
 export function NoDialogFoundError(nodeType: string, objectType: string): string { return localize('objectManagement.noDialogFoundError', "Could not find a supported dialog for node type '{0}' and object type '{1}'.", nodeType, objectType); }
+export function NotSupportedError(objectType: string): string { return localize('objectManagement.notSupportedError', "This command is not supported for object type '{0}'.", objectType); }
 
 // Shared Strings
 export const FailedToRetrieveConnectionInfoErrorMessage: string = localize('objectManagement.noConnectionUriError', "Failed to retrieve the connection information, please reconnect and try again.")
@@ -108,6 +109,13 @@ export function OpenDetachDatabaseDialogError(error: string): string {
 	}, "An error occurred while opening the detach database dialog. {0}", error);
 }
 
+export function DetachDatabaseOperationDisplayName(objectName: string): string {
+	return localize({
+		key: 'objectManagement.detachDatabaseOperationName',
+		comment: ['{0}: object name.']
+	}, "Detach database '{0}'", objectName);
+}
+
 export function OpenDropDatabaseDialogError(error: string): string {
 	return localize({
 		key: 'objectManagement.openDropDatabaseDialogError',
@@ -121,6 +129,8 @@ export function OpenAttachDatabaseDialogError(error: string): string {
 		comment: ['{0}: error message.']
 	}, "An error occurred while opening the attach database dialog. {0}", error);
 }
+
+export const AttachDatabaseOperationDisplayName = localize('objectManagement.attachDatabaseOperationName', "Attach database");
 
 export function OpenObjectPropertiesDialogError(objectType: string, objectName: string, error: string): string {
 	return localize({
@@ -328,6 +338,20 @@ export const databaseSettingsText = localize('objectManagement.databaseSettings'
 export const compressBackupText = localize('objectManagement.compressBackupText', "Compress Backup");
 export const backupChecksumText = localize('objectManagement.backupChecksumText', "Backup checksum");
 export const backupAndRestoreText = localize('objectManagement.backupAndRestoreText', "Backup and Restore");
+export const allowTriggerToFireOthersLabel = localize('objectManagement.allowTriggerToFireOthersLabel', "Allow Triggers to Fire Others");
+export const blockedProcThresholdLabel = localize('objectManagement.blockedProcThresholdLabel', "Blocked Process Threshold");
+export const cursorThresholdLabel = localize('objectManagement.cursorThresholdLabel', "Cursor Threshold");
+export const defaultFullTextLanguageLabel = localize('objectManagement.defaultFullTextLanguageLabel', "Default Full-Text Language");
+export const defaultLanguageLabel = localize('objectManagement.defaultLanguageLabel', "Default Language");
+export const fullTextUpgradeOptionLabel = localize('objectManagement.fullTextUpgradeOptionLabel', "Full-Text Upgrade Option");
+export const maxTextReplicationSizeLabel = localize('objectManagement.maxTextReplicationSizeLabel', "Max Text Replication Size");
+export const optimizeAdHocWorkloadsLabel = localize('objectManagement.optimizeAdHocWorkloadsLabel', "Optimize Ad Hoc Workloads");
+export const scanStartupProcsLabel = localize('objectManagement.scanStartupProcsLabel', "Scan Startup Procs ");
+export const twoDigitYearCutoffLabel = localize('objectManagement.twoDigitYearCutoffLabel', "Two Digit Year Cutoff");
+export const costThresholdParallelismLabel = localize('objectManagement.costThresholdParallelismLabel', "Cost Threshold Parallelism");
+export const locksLabel = localize('objectManagement.locksLabel', "Locks");
+export const maxDegreeParallelismLabel = localize('objectManagement.maxDegreeParallelismLabel', "Max Degree Parallelism");
+export const queryWaitLabel = localize('objectManagement.queryWaitLabel', "Query Wait");
 
 //Database properties Dialog
 export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");
@@ -361,6 +385,7 @@ export const DatabaseStateText = localize('objectManagement.databaseProperties.d
 export const EncryptionEnabledText = localize('objectManagement.databaseProperties.encryptionEnabledText', "Encryption Enabled");
 export const RestrictAccessText = localize('objectManagement.databaseProperties.restrictAccessText', "Restrict Access");
 export const DatabaseScopedConfigurationTabHeader = localize('objectManagement.databaseProperties.databaseProperties.databaseScopedConfigurationTabHeader', "Database Scoped Configuration");
+export const QueryStoreTabHeader = localize('objectManagement.databaseProperties.databaseProperties.queryStoreTabHeader', "Query Store");
 export const DatabaseScopedOptionsColumnHeader = localize('objectManagement.databaseProperties.databaseScopedOptionsColumnHeader', "Database Scoped Options");
 export const ValueForPrimaryColumnHeader = localize('objectManagement.databaseProperties.valueForPrimaryColumnHeader', "Value for Primary");
 export const ValueForSecondaryColumnHeader = localize('objectManagement.databaseProperties.valueForSecondaryColumnHeader', "Value for Secondary");
@@ -416,6 +441,30 @@ export const FilestreamFilesText = localize('objectManagement.databaseProperties
 export const AddFilegroupText = localize('objectManagement.databaseProperties.addFilegroupButtonText', "Add Filegroup");
 export const FilegroupExistsError = (name: string) => localize('objectManagement.databaseProperties.FilegroupExistsError', "File group '{0}' could not be added to the collection, because it already exists.", name);
 export const EmptyFilegroupNameError = localize('objectManagement.databaseProperties.emptyFilegroupNameError', "Cannot use empty object names for filegroups.");
+export const ActualOperationModeText = localize('objectManagement.databaseProperties.actualOperationModeText', "Operation Mode (Actual)");
+export const RequestedOperationModeText = localize('objectManagement.databaseProperties.requestedOperationModeText', "Operation Mode (Requested)");
+export const DataFlushIntervalInMinutesText = localize('objectManagement.databaseProperties.dataFlushIntervalInMinutesText', "Data Flush Interval (Minutes)");
+export const StatisticsCollectionInterval = localize('objectManagement.databaseProperties.statisticsCollectionInterval', "Statistics Collection Interval");
+export const MaxPlansPerQueryText = localize('objectManagement.databaseProperties.maxPlansPerQueryText', "Max Plans Per Query");
+export const MaxSizeInMbText = localize('objectManagement.databaseProperties.maxSizeInMbText', "Max Size (MB)");
+export const QueryStoreCaptureModeText = localize('objectManagement.databaseProperties.queryStoreCaptureModeText', "Query Store Capture Mode");
+export const SizeBasedCleanupModeText = localize('objectManagement.databaseProperties.sizeBasedCleanupModeText', "Size Based Cleanup Mode");
+export const StateQueryThresholdInDaysText = localize('objectManagement.databaseProperties.stateQueryThresholdInDaysText', "State Query Threshold (Days)");
+export const WaitStatisticsCaptureModeText = localize('objectManagement.databaseProperties.waitStatisticsCaptureModeText', "Wait Statistics Capture Mode");
+export const MonitoringSectionText = localize('objectManagement.databaseProperties.monitoringSectionText', "Monitoring");
+export const QueryStoreRetentionSectionText = localize('objectManagement.databaseProperties.queryStoreRetentionSectionText', "Query Store Retention");
+export const QueryStoreCapturePolicySectionText = localize('objectManagement.databaseProperties.queryStoreCapturePolicySectionText', "Query Store Capture Policy");
+export const QueryStoreCurrentDiskUsageSectionText = localize('objectManagement.databaseProperties.queryStoreCurrentDiskUsageSectionText', "Current Disk Usage");
+export const ExecutionCountText = localize('objectManagement.databaseProperties.executionCountText', "Execution Count");
+export const StaleThresholdText = localize('objectManagement.databaseProperties.staleThresholdText', "Stale Threshold");
+export const TotalCompileCPUTimeInMsText = localize('objectManagement.databaseProperties.totalCompileCPUTimeInMs', "Total Compile CPU Time (ms)");
+export const TotalExecutionCPUTimeInMsText = localize('objectManagement.databaseProperties.totalExecutionCPUTimeInMsText', "Total Execution CPU Time (ms)");
+export const QueryStoreCapturemodeCustomText = localize('objectManagement.databaseProperties.queryStoreCapturemodeCustomText', "Custom");
+export const QueryStoreUsedText = localize('objectManagement.databaseProperties.queryStoreUsedText', "Query Store Used");
+export const QueryStoreAvailableText = localize('objectManagement.databaseProperties.queryStoreAvailableText', "Query Store Available");
+export const PurgeQueryDataButtonText = localize('objectManagement.databaseProperties.purgeQueryDataButtonText', "Purge Query Store Data");
+export const YesText = localize('objectManagement.databaseProperties.yesText', "Yes");
+export const PurgeQueryStoreDataMessage = (databaseName: string) => localize('objectManagement.databaseProperties.purgeQueryStoreDataMessage', "Are you sure you want to purge the Query Store data from '{0}'?", databaseName);
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {

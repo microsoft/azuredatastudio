@@ -41,6 +41,8 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	private _onColumnsChanged = new Emitter<Slick.Column<Slick.SlickData>[]>();
 	public onColumnsChanged: Event<Slick.Column<Slick.SlickData>[]> = this._onColumnsChanged.event;
 
+	private _initializerSetup: boolean = true;
+
 	private _filter: ProfilerFilter = { clauses: [] };
 
 	constructor(
@@ -160,6 +162,14 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 
 	public get isFileSession(): boolean {
 		return !!this.fileURI;
+	}
+
+	public get isSetupPhase(): boolean {
+		return this._initializerSetup;
+	}
+
+	public setInitializerPhase(isSetupPhase: boolean) {
+		this._initializerSetup = isSetupPhase;
 	}
 
 	public setConnectionState(isConnected: boolean): void {
