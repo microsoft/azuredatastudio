@@ -42,16 +42,6 @@ export default class ChartComponent<TConfig extends azdata.ChartConfiguration> e
 		if (this.chartType) {
 			this._chart.type = this.chartType;
 		}
-		/*if (this.data) {
-			this._chart.data = this.data;
-		}
-		if (this.options) {
-			this._chart.options = this.options;
-		}*/
-
-		// if (this.chartConfig) {
-		// 	//this._chart.chartCongif = this.chartConfig;
-		// }
 
 		if (this.configuration) {
 			this._chart.configuration = this.configuration;
@@ -61,18 +51,6 @@ export default class ChartComponent<TConfig extends azdata.ChartConfiguration> e
 	public get chartType(): azdata.ChartType | undefined {
 		return this.getProperties().chartType ?? undefined;
 	}
-
-	/*public get data(): azdata.ChartData | undefined {
-		return this.getProperties().data ?? undefined;
-	}
-
-	public get options(): T {
-		return this.getProperties().options;
-	}*/
-
-	// public get chartConfig(): T {
-	// 	return this.getProperties().chartConfig;
-	// }
 
 	public get configuration(): TConfig {
 		return this.getProperties().configuration;

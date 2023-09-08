@@ -2296,22 +2296,6 @@ class ChartComponentWrapper<TConfig extends azdata.ChartConfiguration> extends C
 		return this.properties['chartType'];
 	}
 
-	/*public set data(v: azdata.ChartData) {
-		this.setProperty('data', v);
-	}
-
-	public get data(): azdata.ChartData {
-		return this.properties['data'];
-	}
-
-	public set options(v: T) {
-		this.setProperty('options', v);
-	}
-
-	public get options(): T {
-		return this.properties['options'];
-	}*/
-
 	public set configuration(v: any) {
 		this.setProperty('configuration', v);
 	}
@@ -2319,14 +2303,6 @@ class ChartComponentWrapper<TConfig extends azdata.ChartConfiguration> extends C
 	public get configuration(): any {
 		return this.properties['configuration'];
 	}
-
-	// public set chartConfig(v: T) {
-	// 	this.setProperty('chartConfig', v);
-	// }
-
-	// public get chartConfig(): T {
-	// 	return this.properties['chartConfig'];
-	// }
 
 	public get onDidClick(): vscode.Event<azdata.ChartClickEvent> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);

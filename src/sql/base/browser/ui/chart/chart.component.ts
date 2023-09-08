@@ -6,10 +6,8 @@ import { Component, Inject, forwardRef, ChangeDetectorRef } from '@angular/core'
 import * as chartjs from 'chart.js';
 import { mixin } from 'sql/base/common/objects';
 import { Disposable } from 'vs/base/common/lifecycle';
-//import { BubbleChartPoint, ChartOptions, ScatterChartPoint } from 'azdata';
 import * as azdata from 'azdata';
 
-// nned to rename to match a common chart dataset
 export interface BarDataSet {
 	label: string;
 	data: number[];
@@ -23,7 +21,6 @@ export interface BarDataSet {
 })
 export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable {
 	private _type: azdata.ChartType;
-	//private _labels: string[];
 	public chart: chartjs.Chart;
 	private chartTitle: string;
 
@@ -42,8 +39,6 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 	) {
 		chartjs.Chart.register(...chartjs.registerables);
 		super();
-
-		//this.canvas = document.createElement('canvas');
 	}
 
 	ngAfterViewInit(): void {
