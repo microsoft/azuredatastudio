@@ -64,7 +64,7 @@ chownr@^2.0.0:
 
 "dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#1.3.7":
   version "1.3.6"
-  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/fdd415fd7c79c5c889f192a9122ba41dca66b35b"
+  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/0f07d03394eeebc2924971746470ac8224348fa4"
   dependencies:
     vscode-languageclient "5.2.1"
 
