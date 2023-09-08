@@ -968,7 +968,7 @@ declare module 'azdata' {
 		 */
 		export interface TableInfo {
 			/**
-			 * Used as the table designer editor's tab header text.
+			 * Used as the table designer editor's tab header text (as well as the base value of the tooltip).
 			 */
 			title: string;
 			/**
