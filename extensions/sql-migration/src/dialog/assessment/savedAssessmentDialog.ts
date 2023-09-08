@@ -290,7 +290,18 @@ export class SavedAssessmentDialog {
 						],
 					backgroundColor: 'rgb(255, 99, 132)',
 					borderColor: 'rgb(255, 99, 132)',
-					dataLabel: 'Scatter Dataset'
+					dataLabel: 'Rojo'
+				},
+				{
+					data:
+						[
+							{ x: -5, y: 8 },
+							{ x: 2, y: 6 },
+							{ x: -1, y: 1 }
+						],
+					backgroundColor: 'rgb(0, 102, 204)',
+					borderColor: 'rgb(0, 102, 204)',
+					dataLabel: 'Azul'
 				}
 			],
 			options: {
