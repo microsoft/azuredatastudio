@@ -87,13 +87,13 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 
 	public set height(val: string | number) {
 		if (val && this.chart) {
-			(<any>this.chart.canvas.parentNode).style.height = val;
+			(this.chart.canvas.parentNode as any).style.height = val;
 		}
 	}
 
 	public set width(val: string | number) {
 		if (val && this.chart) {
-			(<any>this.chart.canvas.parentNode).style.width = val;
+			(this.chart.canvas.parentNode as any).style.width = val;
 		}
 	}
 
