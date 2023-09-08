@@ -9,7 +9,7 @@ import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { TableDesignerComponentInput } from 'sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import * as azdata from 'azdata';
-import { GroupIdentifier, IRevertOptions, ISaveOptions, EditorInputCapabilities, Verbosity } from 'vs/workbench/common/editor';
+import { GroupIdentifier, IRevertOptions, ISaveOptions, Verbosity } from 'vs/workbench/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { Schemas } from 'sql/base/common/schemas';
@@ -87,24 +87,11 @@ export class TableDesignerInput extends EditorInput {
 			case Verbosity.SHORT:
 				return this._title;
 			case Verbosity.LONG:
-				return this._title;
+				return this._title + ' ' + this._additionalDetails;
 			default:
 			case Verbosity.MEDIUM:
-				return this._title;
+				return this._title + ' ' + this._additionalDetails;
 		}
-	}
-
-	override getDescription(): string {
-		return this._additionalDetails;
-	}
-
-	override get capabilities(): EditorInputCapabilities {
-		let capabilities = super.capabilities;
-
-
-		capabilities |= EditorInputCapabilities.ForceDescription;
-
-		return capabilities;
 	}
 
 	override isDirty(): boolean {
