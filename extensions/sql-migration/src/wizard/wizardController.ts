@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import { MigrationStateModel, NetworkContainerType, Page } from '../models/stateMachine';
 import * as loc from '../constants/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { SKURecommendationPage } from './skuRecommendationPage';
+import { SKURecommendationPage } from './skuRecommendation/skuRecommendationPage';
 import { DatabaseBackupPage } from './databaseBackupPage';
 import { TargetSelectionPage } from './targetSelectionPage';
 import { LoginMigrationTargetSelectionPage } from './loginMigrationTargetSelectionPage';

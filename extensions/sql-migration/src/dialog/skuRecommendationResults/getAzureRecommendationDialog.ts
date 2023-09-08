@@ -9,7 +9,7 @@ import { MigrationStateModel, PerformanceDataSourceOptions } from '../../models/
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
 import * as utils from '../../api/utils';
-import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
+import { SKURecommendationPage } from '../../wizard/skuRecommendation/skuRecommendationPage';
 import { EOL } from 'os';
 import { getSourceConnectionProfile } from '../../api/sqlUtils';
 
