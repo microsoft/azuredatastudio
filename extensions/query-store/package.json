@@ -39,9 +39,20 @@
       }
     ],
     "menus": {
-      "objectExplorer/item/context": [],
+      "objectExplorer/item/context": [
+        {
+          "command": "queryStore.openQueryStoreDashboard",
+          "when": "connectionProvider == MSSQL && nodeType == Database  && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "queryStore"
+        }
+      ],
       "dataExplorer/context": [],
-      "commandPalette": []
+      "commandPalette": [
+        {
+          "command": "queryStore.openQueryStoreDashboard",
+          "when": "false"
+        }
+      ]
     }
   },
   "dependencies": {

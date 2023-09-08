@@ -12,8 +12,15 @@ import { Deferred } from '../common/promise';
 export class QueryStoreDashboard {
 	private dashboard?: azdata.window.ModelViewDashboard;
 	private initDashboardComplete: Deferred = new Deferred();
+	private dbName: string;
 
-	constructor(private dbName: string) { }
+	public get ConnectionProfile(): azdata.IConnectionProfile {
+		return this.connectionProfile;
+	}
+
+	constructor(private connectionProfile: azdata.IConnectionProfile) {
+		this.dbName = connectionProfile.databaseName ?? connectionProfile.serverName;
+	}
 
 	/**
 	 * Creates and opens the report
