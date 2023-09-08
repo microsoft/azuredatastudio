@@ -46,6 +46,14 @@ export default class ChartComponent<TConfig extends azdata.ChartConfiguration> e
 		if (this.configuration) {
 			this._chart.configuration = this.configuration;
 		}
+
+		if (this.height) {
+			this._chart.height = this.height;
+		}
+
+		if (this.width) {
+			this._chart.width = this.width;
+		}
 	}
 
 	public get chartType(): azdata.ChartType | undefined {

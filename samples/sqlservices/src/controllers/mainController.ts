@@ -761,11 +761,10 @@ export default class MainController implements vscode.Disposable {
 			.withProps({
 				chartType: 'radar',
 				configuration: chartExamples.radarConfig
-			}
-			).component();
+			}).component();
 
 		const flexContainer = view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'column' })
+			.withLayout({ flexFlow: 'row' })
 			.withProps({ CSSStyles: { 'padding': '20px 15px' } })
 			.component();
 

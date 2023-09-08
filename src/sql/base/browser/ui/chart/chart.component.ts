@@ -85,6 +85,18 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 		this.drawChart();
 	}
 
+	public set height(val: string | number) {
+		if (val && this.chart) {
+			(<any>this.chart.canvas.parentNode).style.height = val;
+		}
+	}
+
+	public set width(val: string | number) {
+		if (val && this.chart) {
+			(<any>this.chart.canvas.parentNode).style.width = val;
+		}
+	}
+
 	private convert(val: azdata.ChartConfiguration): chartjs.ChartData {
 		const result: chartjs.ChartData = {
 			datasets: []
