@@ -559,6 +559,11 @@ export class AddDatabaseReferenceDialog {
 			this.serverNameTextbox!.enabled = false;
 			this.serverVariableTextbox!.enabled = false;
 
+			// update required property of the the textbox
+			this.databaseNameTextbox!.required = false;
+			this.serverNameTextbox!.required = false;
+			this.serverVariableTextbox!.required = false;
+
 			// update required indicator
 			this.databaseNameTextboxLabel!.requiredIndicator = false;
 			this.serverNameTextboxLabel!.requiredIndicator = false;
@@ -574,6 +579,11 @@ export class AddDatabaseReferenceDialog {
 			this.databaseVariableTextbox!.enabled = !isSystemDb; // database variable is only enabled for non-system database references
 			this.serverNameTextbox!.enabled = false;
 			this.serverVariableTextbox!.enabled = false;
+
+			// update required property of the the textbox
+			this.databaseNameTextbox!.required = true;
+			this.serverNameTextbox!.required = false;
+			this.serverVariableTextbox!.required = false;
 
 			// update required indicator
 			this.databaseNameTextboxLabel!.requiredIndicator = true;
@@ -592,6 +602,11 @@ export class AddDatabaseReferenceDialog {
 			this.databaseVariableTextbox!.enabled = true;
 			this.serverNameTextbox!.enabled = true;
 			this.serverVariableTextbox!.enabled = true;
+
+			// update required property of the the textbox
+			this.databaseNameTextbox!.required = true;
+			this.serverNameTextbox!.required = true;
+			this.serverVariableTextbox!.required = true;
 
 			// update required indicator
 			this.databaseNameTextboxLabel!.requiredIndicator = true;
@@ -639,21 +654,21 @@ export class AddDatabaseReferenceDialog {
 	private createVariableSection(): azdataType.FormComponent {
 		// database name row
 		this.databaseNameTextboxLabel = this.createLabel(constants.databaseName, true);
-		this.databaseNameTextbox = this.createInputBox(constants.databaseName, true);
+		this.databaseNameTextbox = this.createInputBox(constants.databaseName, true, true);
 		const databaseNameRow = this.view!.modelBuilder.flexContainer().withItems([this.databaseNameTextboxLabel, this.databaseNameTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		// database variable row
-		this.databaseVariableTextbox = this.createInputBox(constants.databaseVariable, false);
+		this.databaseVariableTextbox = this.createInputBox(constants.databaseVariable, false, false);
 		const databaseVariableRow = this.view!.modelBuilder.flexContainer().withItems([this.createLabel(constants.databaseVariable), this.databaseVariableTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		// server name row
 		this.serverNameTextboxLabel = this.createLabel(constants.serverName, false);
-		this.serverNameTextbox = this.createInputBox(constants.serverName, false);
+		this.serverNameTextbox = this.createInputBox(constants.serverName, false, false);
 		const serverNameRow = this.view!.modelBuilder.flexContainer().withItems([this.serverNameTextboxLabel, this.serverNameTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		// server variable row
 		this.serverVariableTextboxLabel = this.createLabel(constants.serverVariable, false);
-		this.serverVariableTextbox = this.createInputBox(constants.serverVariable, false);
+		this.serverVariableTextbox = this.createInputBox(constants.serverVariable, false, false);
 		const serverVariableRow = this.view!.modelBuilder.flexContainer().withItems([this.serverVariableTextboxLabel, this.serverVariableTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		const variableSection = this.view!.modelBuilder.flexContainer().withItems([databaseNameRow, databaseVariableRow, serverNameRow, serverVariableRow]).withLayout({ flexFlow: 'column' }).withProps({ CSSStyles: { 'margin-bottom': '25px' } }).component();
@@ -675,11 +690,12 @@ export class AddDatabaseReferenceDialog {
 		return label;
 	}
 
-	private createInputBox(ariaLabel: string, enabled: boolean): azdataType.InputBoxComponent {
+	private createInputBox(ariaLabel: string, enabled: boolean, required: boolean): azdataType.InputBoxComponent {
 		const inputBox = this.view!.modelBuilder.inputBox().withProps({
 			ariaLabel: ariaLabel,
 			enabled: enabled,
-			width: cssStyles.addDatabaseReferenceInputboxWidth
+			width: cssStyles.addDatabaseReferenceInputboxWidth,
+			required: required
 		}).component();
 
 		inputBox.onTextChanged(() => {
