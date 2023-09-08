@@ -385,6 +385,7 @@ export const DatabaseStateText = localize('objectManagement.databaseProperties.d
 export const EncryptionEnabledText = localize('objectManagement.databaseProperties.encryptionEnabledText', "Encryption Enabled");
 export const RestrictAccessText = localize('objectManagement.databaseProperties.restrictAccessText', "Restrict Access");
 export const DatabaseScopedConfigurationTabHeader = localize('objectManagement.databaseProperties.databaseProperties.databaseScopedConfigurationTabHeader', "Database Scoped Configuration");
+export const QueryStoreTabHeader = localize('objectManagement.databaseProperties.databaseProperties.queryStoreTabHeader', "Query Store");
 export const DatabaseScopedOptionsColumnHeader = localize('objectManagement.databaseProperties.databaseScopedOptionsColumnHeader', "Database Scoped Options");
 export const ValueForPrimaryColumnHeader = localize('objectManagement.databaseProperties.valueForPrimaryColumnHeader', "Value for Primary");
 export const ValueForSecondaryColumnHeader = localize('objectManagement.databaseProperties.valueForSecondaryColumnHeader', "Value for Secondary");
@@ -440,6 +441,30 @@ export const FilestreamFilesText = localize('objectManagement.databaseProperties
 export const AddFilegroupText = localize('objectManagement.databaseProperties.addFilegroupButtonText', "Add Filegroup");
 export const FilegroupExistsError = (name: string) => localize('objectManagement.databaseProperties.FilegroupExistsError', "File group '{0}' could not be added to the collection, because it already exists.", name);
 export const EmptyFilegroupNameError = localize('objectManagement.databaseProperties.emptyFilegroupNameError', "Cannot use empty object names for filegroups.");
+export const ActualOperationModeText = localize('objectManagement.databaseProperties.actualOperationModeText', "Operation Mode (Actual)");
+export const RequestedOperationModeText = localize('objectManagement.databaseProperties.requestedOperationModeText', "Operation Mode (Requested)");
+export const DataFlushIntervalInMinutesText = localize('objectManagement.databaseProperties.dataFlushIntervalInMinutesText', "Data Flush Interval (Minutes)");
+export const StatisticsCollectionInterval = localize('objectManagement.databaseProperties.statisticsCollectionInterval', "Statistics Collection Interval");
+export const MaxPlansPerQueryText = localize('objectManagement.databaseProperties.maxPlansPerQueryText', "Max Plans Per Query");
+export const MaxSizeInMbText = localize('objectManagement.databaseProperties.maxSizeInMbText', "Max Size (MB)");
+export const QueryStoreCaptureModeText = localize('objectManagement.databaseProperties.queryStoreCaptureModeText', "Query Store Capture Mode");
+export const SizeBasedCleanupModeText = localize('objectManagement.databaseProperties.sizeBasedCleanupModeText', "Size Based Cleanup Mode");
+export const StateQueryThresholdInDaysText = localize('objectManagement.databaseProperties.stateQueryThresholdInDaysText', "State Query Threshold (Days)");
+export const WaitStatisticsCaptureModeText = localize('objectManagement.databaseProperties.waitStatisticsCaptureModeText', "Wait Statistics Capture Mode");
+export const MonitoringSectionText = localize('objectManagement.databaseProperties.monitoringSectionText', "Monitoring");
+export const QueryStoreRetentionSectionText = localize('objectManagement.databaseProperties.queryStoreRetentionSectionText', "Query Store Retention");
+export const QueryStoreCapturePolicySectionText = localize('objectManagement.databaseProperties.queryStoreCapturePolicySectionText', "Query Store Capture Policy");
+export const QueryStoreCurrentDiskUsageSectionText = localize('objectManagement.databaseProperties.queryStoreCurrentDiskUsageSectionText', "Current Disk Usage");
+export const ExecutionCountText = localize('objectManagement.databaseProperties.executionCountText', "Execution Count");
+export const StaleThresholdText = localize('objectManagement.databaseProperties.staleThresholdText', "Stale Threshold");
+export const TotalCompileCPUTimeInMsText = localize('objectManagement.databaseProperties.totalCompileCPUTimeInMs', "Total Compile CPU Time (ms)");
+export const TotalExecutionCPUTimeInMsText = localize('objectManagement.databaseProperties.totalExecutionCPUTimeInMsText', "Total Execution CPU Time (ms)");
+export const QueryStoreCapturemodeCustomText = localize('objectManagement.databaseProperties.queryStoreCapturemodeCustomText', "Custom");
+export const QueryStoreUsedText = localize('objectManagement.databaseProperties.queryStoreUsedText', "Query Store Used");
+export const QueryStoreAvailableText = localize('objectManagement.databaseProperties.queryStoreAvailableText', "Query Store Available");
+export const PurgeQueryDataButtonText = localize('objectManagement.databaseProperties.purgeQueryDataButtonText', "Purge Query Store Data");
+export const YesText = localize('objectManagement.databaseProperties.yesText', "Yes");
+export const PurgeQueryStoreDataMessage = (databaseName: string) => localize('objectManagement.databaseProperties.purgeQueryStoreDataMessage', "Are you sure you want to purge the Query Store data from '{0}'?", databaseName);
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {

@@ -157,6 +157,10 @@
           "dark": "resources/dark/groupBySchemaDisabled_inverse.svg",
           "light": "resources/light/groupBySchemaDisabled.svg"
         }
+      },
+      {
+        "command": "mssql.clearPooledConnections",
+        "title": "%mssql.connection.clearPooledConnections%"
       }
     ],
     "outputChannels": [
