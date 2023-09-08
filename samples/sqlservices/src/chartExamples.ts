@@ -161,7 +161,18 @@ export const scatterConfig: azdata.ScatterplotConfiguration = {
 			],
 			backgroundColor: 'rgb(255, 99, 132)',
 			borderColor: 'rgb(0, 255, 132)',
-			dataLabel: 'Scatter Dataset'
+			dataLabel: 'Rojo'
+		},
+		{
+			data:
+				[
+					{ x: -5, y: 2 },
+					{ x: 4, y: 8 },
+					{ x: -1, y: 6 }
+				],
+			backgroundColor: 'rgb(0, 102, 204)',
+			borderColor: 'rgb(0, 102, 204)',
+			dataLabel: 'Azul'
 		}
 	],
 	options: {
