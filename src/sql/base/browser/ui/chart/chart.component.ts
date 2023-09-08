@@ -67,6 +67,9 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 
 		if ((<any>val).options) { // TODO: give TConfig a strongly-typed TOptions param
 			this.options = (<any>val).options;
+		} else {
+			// setting this.options above calls drawChart(), so putting this behind an "else" prevents a redraw with the same data
+			this.drawChart();
 		}
 	}
 

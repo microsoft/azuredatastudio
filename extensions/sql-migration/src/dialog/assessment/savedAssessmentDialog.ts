@@ -407,8 +407,27 @@ export class SavedAssessmentDialog {
 
 		const radarConfig: azdata.RadarChartConfiguration = {
 			chartTitle: 'Test Radar Chart',
-			datasets: barConfig.datasets,
-			labels: ['Ek', 'Do', 'Teen', 'Chaar']
+			datasets: [
+				{
+					data: [2, 2, 2, 2, 4, 7, 10, 11, 12, 2],
+					dataLabel: 'Left Wing',
+					backgroundColor: '#FF000033',
+					borderColor: '#FF0000'
+				},
+				{
+					data: [2, 2, 12, 11, 10, 7, 4, 2, 2, 2],
+					dataLabel: 'Right Wing',
+					backgroundColor: '#FF880033',
+					borderColor: '#FF8800'
+				},
+				{
+					data: [8, 6, 2, 1, 1, 1, 1, 1, 2, 6],
+					dataLabel: 'Head',
+					backgroundColor: '#FFFF0033',
+					borderColor: '#FFFF00'
+				},
+			],
+			labels: ['Ek', 'Do', 'Teen', 'Chaar', 'Panch', 'Chah', 'Saat', 'Aath', 'Nau', 'Das']
 		};
 
 		const radarChart = view.modelBuilder.chart<azdata.RadarChartConfiguration>()
