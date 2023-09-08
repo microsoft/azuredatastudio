@@ -8,16 +8,22 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultMaxTableRowCount, getTableHeight, DialogButton } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl, DatabaseFileGroupsPropertiesDocUrl } from '../constants';
+import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl, DatabaseFileGroupsPropertiesDocUrl, QueryStorePropertiesDocUrl } from '../constants';
 import { Database, DatabaseFile, DatabaseScopedConfigurationsInfo, DatabaseViewInfo, FileGrowthType, FileGroup, FileGroupType } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
 import { deepClone } from '../../util/objects';
 import { DatabaseFileDialog } from './databaseFileDialog';
+import * as vscode from 'vscode';
 
 const MAXDOP_Max_Limit = 32767;
 const PAUSED_RESUMABLE_INDEX_Max_Limit = 71582;
 const DscTableRowLength = 15;
+
+export const tableHeaderCssStylings = { 'border': 'solid 1px #C8C8C8' };
+export const tableRowCssStylings = { 'border': 'solid 1px #C8C8C8' }
+// export const tableHeaderCssStylings = { 'border-top': 'solid 1px #C8C8C8', 'border-bottom': 'none', 'border-left': 'none', 'border-right': 'none' };
+// export const tableRowCssStylings = { 'border-top': 'solid 1px #ccc', 'border-bottom': 'none', 'border-left': 'none', 'border-right': 'none' }
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
@@ -26,6 +32,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private optionsTab: azdata.Tab;
 	private fileGroupsTab: azdata.Tab;
 	private dscTab: azdata.Tab;
+	private queryStoreTab: azdata.Tab;
 	private optionsTabSectionsContainer: azdata.Component[] = [];
 	private activeTabId: string;
 
@@ -53,7 +60,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private filestreamDatafileGroupsOptions: string[];
 	// fileGroups Tab
 	private readonly fileGroupsTabId: string = 'fileGroupsDatabaseId';
-	private rowsFilegroupsTable: azdata.TableComponent;
+	private rowsFilegroupsTable: azdata.DeclarativeTableComponent;
 	private filestreamFilegroupsTable: azdata.TableComponent;
 	private memoryOptimizedFilegroupsTable: azdata.TableComponent;
 	private rowsFilegroupNameInput: azdata.InputBoxComponent;
@@ -96,6 +103,26 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private dscSecondaryCheckboxForInputGroup: azdata.GroupContainer;
 	private setFocusToInput: azdata.InputBoxComponent = undefined;
 	private currentRowObjectInfo: DatabaseScopedConfigurationsInfo;
+	// Query store Tab
+	private readonly queryStoreTabId: string = 'queryStoreTabId';
+	private queryStoreTabSectionsContainer: azdata.Component[] = [];
+	private areQueryStoreOptionsEnabled: boolean;
+	private requestedOperationMode: azdata.DropDownComponent;
+	private dataFlushIntervalInMinutes: azdata.InputBoxComponent;
+	private statisticsCollectionInterval: azdata.DropDownComponent;
+	private maxPlansPerQuery: azdata.InputBoxComponent;
+	private maxSizeinMB: azdata.InputBoxComponent;
+	private queryStoreCaptureMode: azdata.DropDownComponent;
+	private sizeBasedCleanupMode: azdata.DropDownComponent;
+	private stateQueryThresholdInDays: azdata.InputBoxComponent;
+	private waitStatisticsCaptureMode: azdata.CheckBoxComponent;
+	private executionCount: azdata.InputBoxComponent;
+	private staleThreshold: azdata.DropDownComponent;
+	private totalCompileCPUTimeInMS: azdata.InputBoxComponent;
+	private totalExecutionCPUTimeInMS: azdata.InputBoxComponent;
+	private operationModeOffOption: string;
+	private purgeQueryDataButton: azdata.ButtonComponent;
+
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
@@ -122,6 +149,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				break;
 			case this.dscTabId:
 				helpUrl = DatabaseScopedConfigurationPropertiesDocUrl;
+				break;
+			case this.queryStoreTabId:
+				helpUrl = QueryStorePropertiesDocUrl;
 				break;
 			default:
 				break;
@@ -217,6 +247,23 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					content: this.createGroup('', this.dscTabSectionsContainer, false)
 				}
 				tabs.push(this.dscTab);
+			}
+
+			// Intialize Query Store Tab
+			if (!isUndefinedOrNull(this.objectInfo.queryStoreOptions)) {
+				this.initializeQueryStoreGeneralSection();
+				this.initializeQueryStoreMonitoringSection();
+				this.initializeQueryStoreRetentionSection();
+				if (!isUndefinedOrNull(this.objectInfo.queryStoreOptions.capturePolicyOptions)) {
+					this.initializeQueryStoreCapturePolicySection();
+				}
+				await this.initializeQueryStoreCurrentDiskStorageSection();
+				this.queryStoreTab = {
+					title: localizedConstants.QueryStoreTabHeader,
+					id: this.queryStoreTabId,
+					content: this.createGroup('', this.queryStoreTabSectionsContainer, false)
+				}
+				tabs.push(this.queryStoreTab);
 			}
 
 			// Initialize tab group with tabbed panel
@@ -616,8 +663,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 */
 	private async updateFileGroupsTablesfileCount(fileType: string): Promise<void> {
 		if (fileType === localizedConstants.RowsDataFileType) {
-			let data = this.getTableData(FileGroupType.RowsFileGroup);
-			await this.setTableData(this.rowsFilegroupsTable, data);
+			// let data = this.getTableData(FileGroupType.RowsFileGroup);
+			// await this.setTableData(this.rowsFilegroupsTable, data);
 		}
 		else if (fileType === localizedConstants.FilestreamFileType) {
 			let data = this.getTableData(FileGroupType.FileStreamDataFileGroup);
@@ -649,13 +696,13 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				});
 			}
 		}
-		else if (table === this.rowsFilegroupsTable && this.rowsFilegroupsTable.selectedRows !== undefined && this.rowsFilegroupsTable.selectedRows.length === 1) {
-			const selectedRow = this.rowDataFileGroupsTableRows[this.rowsFilegroupsTable.selectedRows[0]];
-			// Cannot delete a row file if the fileGroup is Primary.
-			if (selectedRow.name === 'PRIMARY' && selectedRow.id > 0) {
-				isEnabled = false;
-			}
-		}
+		// else if (table === this.rowsFilegroupsTable && this.rowsFilegroupsTable.selectedRows !== undefined && this.rowsFilegroupsTable.selectedRows.length === 1) {
+		// 	const selectedRow = this.rowDataFileGroupsTableRows[this.rowsFilegroupsTable.selectedRows[0]];
+		// 	// Cannot delete a row file if the fileGroup is Primary.
+		// 	if (selectedRow.name === 'PRIMARY' && selectedRow.id > 0) {
+		// 		isEnabled = false;
+		// 	}
+		// }
 		return isEnabled;
 	}
 
@@ -713,49 +760,62 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 */
 	private async initializeRowsFileGroupSection(): Promise<azdata.GroupContainer> {
 		const data = this.getTableData(FileGroupType.RowsFileGroup);
-		this.rowsFilegroupsTable = this.modelView.modelBuilder.table().withProps({
+		this.rowsFilegroupsTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			columns: [{
-				type: azdata.ColumnType.text,
-				value: localizedConstants.NameText,
-				width: 120
+				valueType: azdata.DeclarativeDataType.string,
+				width: 120,
+				isReadOnly: false,
+				displayName: localizedConstants.NameText,
+				headerCssStyles: tableHeaderCssStylings,
+				rowCssStyles: tableRowCssStylings
 			}, {
-				type: azdata.ColumnType.text,
-				value: localizedConstants.FilesText,
-				width: 60
+				valueType: azdata.DeclarativeDataType.string,
+				width: 60,
+				isReadOnly: true,
+				displayName: localizedConstants.FilesText,
+				headerCssStyles: tableHeaderCssStylings,
+				rowCssStyles: tableRowCssStylings
 			}, {
-				type: azdata.ColumnType.checkBox,
-				value: localizedConstants.ReadOnlyText,
-				width: 80
+				valueType: azdata.DeclarativeDataType.boolean,
+				width: 80,
+				isReadOnly: false,
+				displayName: localizedConstants.ReadOnlyText,
+				headerCssStyles: tableHeaderCssStylings,
+				rowCssStyles: tableRowCssStylings
 			}, {
-				type: azdata.ColumnType.checkBox,
-				value: localizedConstants.DefaultText,
-				width: 80
+				valueType: azdata.DeclarativeDataType.boolean,
+				width: 80,
+				isReadOnly: false,
+				displayName: localizedConstants.DefaultText,
+				headerCssStyles: tableHeaderCssStylings,
+				rowCssStyles: tableRowCssStylings
 			}, {
-				type: azdata.ColumnType.checkBox,
-				value: localizedConstants.AutogrowAllFilesText,
-				width: 110
+				valueType: azdata.DeclarativeDataType.boolean,
+				isReadOnly: false,
+				displayName: localizedConstants.AutogrowAllFilesText,
+				width: 110,
+				headerCssStyles: tableHeaderCssStylings,
+				rowCssStyles: tableRowCssStylings
 			}],
 			data: data,
 			height: getTableHeight(data.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
 			width: DefaultTableWidth,
-			forceFitColumns: azdata.ColumnSizingMode.DataFit,
 			CSSStyles: {
 				'margin-left': '10px'
 			}
 		}).component();
-		this.rowsFilegroupNameInput = this.getFilegroupNameInput(this.rowsFilegroupsTable, FileGroupType.RowsFileGroup);
 		const addButtonComponent: DialogButton = {
 			buttonAriaLabel: localizedConstants.AddFilegroupText,
-			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.rowsFilegroupsTable)
+			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked1(this.rowsFilegroupsTable)
 		};
 		const removeButtonComponent: DialogButton = {
 			buttonAriaLabel: localizedConstants.RemoveButton,
-			buttonHandler: () => this.onRemoveDatabaseFileGroupsButtonClicked(this.rowsFilegroupsTable)
+			buttonHandler: () => this.onRemoveDatabaseFileGroupsButtonClicked1(this.rowsFilegroupsTable)
 		};
-		const rowsFileGroupButtonContainer = this.addButtonsForTable(this.rowsFilegroupsTable, addButtonComponent, removeButtonComponent);
+		const rowsFileGroupButtonContainer = this.addButtonsForTable1(this.rowsFilegroupsTable, addButtonComponent, removeButtonComponent);
 
 		this.disposables.push(
-			this.rowsFilegroupsTable.onCellAction(async (arg: azdata.ICheckboxCellActionEventArgs) => {
+			this.rowsFilegroupsTable.onDataChanged(async (arg: azdata.ICheckboxCellActionEventArgs) => {
 				let filegroup = this.rowDataFileGroupsTableRows[arg.row];
 				// Read-Only column
 				if (arg.column === 2) {
@@ -771,14 +831,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				}
 
 				// Refresh the table with updated data
-				let data = this.getTableData(FileGroupType.RowsFileGroup);
-				await this.setTableData(this.rowsFilegroupsTable, data);
+				// let data = this.getTableData(FileGroupType.RowsFileGroup);
+				//await this.setTableData(this.rowsFilegroupsTable, data);
 				this.onFormFieldChange();
 			}),
 			this.rowsFilegroupsTable.onRowSelected(
 				async () => {
-					if (this.rowsFilegroupsTable.selectedRows.length === 1) {
-						const fileGroup = this.rowDataFileGroupsTableRows[this.rowsFilegroupsTable.selectedRows[0]];
+					if (this.rowsFilegroupsTable.selectedRow === 1) {
+						const fileGroup = this.rowDataFileGroupsTableRows[this.rowsFilegroupsTable.selectedRow];
 						await this.rowsFilegroupNameInput.updateCssStyles({ 'visibility': fileGroup.id < 0 ? 'visible' : 'hidden' });
 						this.rowsFilegroupNameInput.value = fileGroup.name;
 						this.onFormFieldChange();
@@ -786,10 +846,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				}
 			)
 		);
-
-		const rowContainer = this.modelView.modelBuilder.flexContainer().withItems([this.rowsFilegroupNameInput]).component();
-		rowContainer.addItems([rowsFileGroupButtonContainer], { flex: '0 0 auto' });
-		return this.createGroup(localizedConstants.RowsFileGroupsSectionText, [this.rowsFilegroupsTable, rowContainer], true);
+		return this.createGroup(localizedConstants.RowsFileGroupsSectionText, [this.rowsFilegroupsTable, rowsFileGroupButtonContainer], true);
 	}
 
 	/**
@@ -948,15 +1005,16 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			isDefault: false,
 			autogrowAllFiles: false
 		};
-		if (table === this.rowsFilegroupsTable) {
-			newRow.type = FileGroupType.RowsFileGroup;
-			newRow.isReadOnly = false;
-			newRow.isDefault = false;
-			newRow.autogrowAllFiles = false
-			this.objectInfo.filegroups?.push(newRow);
-			newData = this.getTableData(FileGroupType.RowsFileGroup);
-		}
-		else if (table === this.filestreamFilegroupsTable) {
+		// if (table === this.rowsFilegroupsTable) {
+		// 	newRow.type = FileGroupType.RowsFileGroup;
+		// 	newRow.isReadOnly = false;
+		// 	newRow.isDefault = false;
+		// 	newRow.autogrowAllFiles = false
+		// 	this.objectInfo.filegroups?.push(newRow);
+		// 	newData = this.getTableData(FileGroupType.RowsFileGroup);
+		// }
+		// else
+		if (table === this.filestreamFilegroupsTable) {
 			newRow.type = FileGroupType.FileStreamDataFileGroup;
 			newRow.isReadOnly = false;
 			newRow.isDefault = false;
@@ -975,6 +1033,55 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			await this.setTableData(table, newData, DefaultMaxTableRowCount);
 		}
 	}
+
+	private async onAddDatabaseFileGroupsButtonClicked1(table: azdata.DeclarativeTableComponent): Promise<void> {
+		let newData: any[] | undefined;
+		let newRow: FileGroup = {
+			id: --this.newFileGroupTemporaryId,
+			name: '',
+			type: undefined,
+			isReadOnly: false,
+			isDefault: false,
+			autogrowAllFiles: false
+		};
+		if (table === this.rowsFilegroupsTable) {
+			newRow.type = FileGroupType.RowsFileGroup;
+			newRow.isReadOnly = false;
+			newRow.isDefault = false;
+			newRow.autogrowAllFiles = false
+			this.objectInfo.filegroups?.push(newRow);
+			newData = this.getTableData(FileGroupType.RowsFileGroup);
+		}
+
+		if (newData !== undefined) {
+			// Refresh the table with new row data
+			this.updateFileGroupsOptionsAndTableRows();
+			// await this.setTableData(table, newData, DefaultMaxTableRowCount);
+
+			await table.updateProperties({
+				data: newData,
+				height: getTableHeight(newData.length, DefaultMinTableRowCount)
+			});
+		}
+	}
+	private async onRemoveDatabaseFileGroupsButtonClicked1(table: azdata.DeclarativeTableComponent): Promise<void> {
+		if (table === this.rowsFilegroupsTable) {
+			if (this.rowsFilegroupsTable.selectedRow === 1) {
+				const removeFilegroupIndex = this.objectInfo.filegroups.indexOf(this.rowDataFileGroupsTableRows[this.rowsFilegroupsTable.selectedRow]);
+				this.objectInfo.filegroups?.splice(removeFilegroupIndex, 1);
+				var newData = this.getTableData(FileGroupType.RowsFileGroup);
+				await this.rowsFilegroupNameInput.updateCssStyles({ 'visibility': 'hidden' });
+			}
+		}
+
+		// Refresh the individual table rows object and table with updated data
+		this.updateFileGroupsOptionsAndTableRows();
+		await table.updateProperties({
+			data: newData,
+			height: getTableHeight(newData.length, DefaultMinTableRowCount)
+		});
+	}
+
 
 	/**
 	 * Prepares the individual table rows for each filegroup type and list of filegroups options
@@ -1000,15 +1107,16 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * @param table table component
 	 */
 	private async onRemoveDatabaseFileGroupsButtonClicked(table: azdata.TableComponent): Promise<void> {
-		if (table === this.rowsFilegroupsTable) {
-			if (this.rowsFilegroupsTable.selectedRows.length === 1) {
-				const removeFilegroupIndex = this.objectInfo.filegroups.indexOf(this.rowDataFileGroupsTableRows[this.rowsFilegroupsTable.selectedRows[0]]);
-				this.objectInfo.filegroups?.splice(removeFilegroupIndex, 1);
-				var newData = this.getTableData(FileGroupType.RowsFileGroup);
-				await this.rowsFilegroupNameInput.updateCssStyles({ 'visibility': 'hidden' });
-			}
-		}
-		else if (table === this.filestreamFilegroupsTable) {
+		// if (table === this.rowsFilegroupsTable) {
+		// 	if (this.rowsFilegroupsTable.selectedRows.length === 1) {
+		// 		const removeFilegroupIndex = this.objectInfo.filegroups.indexOf(this.rowDataFileGroupsTableRows[this.rowsFilegroupsTable.selectedRows[0]]);
+		// 		this.objectInfo.filegroups?.splice(removeFilegroupIndex, 1);
+		// 		var newData = this.getTableData(FileGroupType.RowsFileGroup);
+		// 		await this.rowsFilegroupNameInput.updateCssStyles({ 'visibility': 'hidden' });
+		// 	}
+		// }
+		// else
+		if (table === this.filestreamFilegroupsTable) {
 			if (this.filestreamFilegroupsTable.selectedRows.length === 1) {
 				const removeFilegroupIndex = this.objectInfo.filegroups.indexOf(this.filestreamDataFileGroupsTableRows[this.filestreamFilegroupsTable.selectedRows[0]]);
 				this.objectInfo.filegroups?.splice(removeFilegroupIndex, 1);
@@ -1040,9 +1148,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		return this.createInputBox(async (value) => {
 			if (table.selectedRows.length === 1) {
 				let fg = null;
-				if (table === this.rowsFilegroupsTable) {
-					fg = this.rowDataFileGroupsTableRows[table.selectedRows[0]];
-				} else if (table === this.filestreamFilegroupsTable) {
+				// if (table === this.rowsFilegroupsTable) {
+				// 	fg = this.rowDataFileGroupsTableRows[table.selectedRows[0]];
+				// } else
+				if (table === this.filestreamFilegroupsTable) {
 					fg = this.filestreamDataFileGroupsTableRows[table.selectedRows[0]];
 				} else if (table === this.memoryOptimizedFilegroupsTable) {
 					fg = this.memoryoptimizedFileGroupsTableRows[table.selectedRows[0]];
@@ -1580,6 +1689,245 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		this.dscTable.setActiveCell(this.currentRowId, 0);
 	}
 	// #endregion
+
+	//#region Database Properties - Query Store Tab
+	private initializeQueryStoreGeneralSection(): void {
+		let containers: azdata.Component[] = [];
+		const actualOperationMode = this.objectInfo.queryStoreOptions.actualMode;
+		this.operationModeOffOption = 'Off'
+		this.areQueryStoreOptionsEnabled = this.objectInfo.queryStoreOptions.actualMode !== this.operationModeOffOption;
+		// Operation Mode (Actual)
+		const operationModeActual = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.ActualOperationModeText,
+			inputType: 'text',
+			enabled: false,
+			value: actualOperationMode
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.ActualOperationModeText, operationModeActual));
+
+		// Operation Mode (Requested)
+		this.requestedOperationMode = this.createDropdown(localizedConstants.RequestedOperationModeText, async (newValue) => {
+			this.objectInfo.queryStoreOptions.actualMode = newValue as string;
+			this.areQueryStoreOptionsEnabled = newValue !== this.operationModeOffOption;
+			await this.toggleQueryStoreOptions();
+		}, this.viewInfo.operationModeOptions, String(this.objectInfo.queryStoreOptions.actualMode), true, DefaultInputWidth);
+		containers.push(this.createLabelInputContainer(localizedConstants.RequestedOperationModeText, this.requestedOperationMode));
+
+		const generalSection = this.createGroup(localizedConstants.GeneralSectionHeader, containers, true);
+		this.queryStoreTabSectionsContainer.push(generalSection);
+	}
+
+	private initializeQueryStoreMonitoringSection(): void {
+		let containers: azdata.Component[] = [];
+		// Data Flush Interval (Minutes)
+		this.dataFlushIntervalInMinutes = this.createInputBox(async (newValue) => {
+			this.objectInfo.queryStoreOptions.dataFlushIntervalInMinutes = Number(newValue);
+		}, {
+			ariaLabel: localizedConstants.DataFlushIntervalInMinutesText,
+			inputType: 'number',
+			enabled: this.areQueryStoreOptionsEnabled,
+			value: String(this.objectInfo.queryStoreOptions.dataFlushIntervalInMinutes),
+			min: 0
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.DataFlushIntervalInMinutesText, this.dataFlushIntervalInMinutes));
+
+		// Statistics Collection Interval
+		this.statisticsCollectionInterval = this.createDropdown(localizedConstants.StatisticsCollectionInterval, async (newValue) => {
+			this.objectInfo.queryStoreOptions.statisticsCollectionInterval = String(newValue);
+		}, this.viewInfo.statisticsCollectionIntervalOptions, this.objectInfo.queryStoreOptions.statisticsCollectionInterval, this.areQueryStoreOptionsEnabled, DefaultInputWidth);
+		containers.push(this.createLabelInputContainer(localizedConstants.StatisticsCollectionInterval, this.statisticsCollectionInterval));
+
+		const monitoringSection = this.createGroup(localizedConstants.MonitoringSectionText, containers, true);
+		this.queryStoreTabSectionsContainer.push(monitoringSection);
+	}
+
+	private initializeQueryStoreRetentionSection(): void {
+		let containers: azdata.Component[] = [];
+		// Max Plans Per Query
+		this.maxPlansPerQuery = this.createInputBox(async (newValue) => {
+			this.objectInfo.queryStoreOptions.maxPlansPerQuery = Number(newValue);
+		}, {
+			ariaLabel: localizedConstants.MaxPlansPerQueryText,
+			inputType: 'number',
+			enabled: this.areQueryStoreOptionsEnabled,
+			value: String(this.objectInfo.queryStoreOptions.maxPlansPerQuery),
+			min: 0
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.MaxPlansPerQueryText, this.maxPlansPerQuery));
+
+		// Max size (MB)
+		this.maxSizeinMB = this.createInputBox(async (newValue) => {
+			this.objectInfo.queryStoreOptions.maxSizeInMB = Number(newValue);
+		}, {
+			ariaLabel: localizedConstants.MaxSizeInMbText,
+			inputType: 'number',
+			enabled: this.areQueryStoreOptionsEnabled,
+			value: String(this.objectInfo.queryStoreOptions.maxSizeInMB),
+			min: 0
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.MaxSizeInMbText, this.maxSizeinMB));
+
+		// Query Store Capture Mode
+		this.queryStoreCaptureMode = this.createDropdown(localizedConstants.QueryStoreCaptureModeText, async (newValue) => {
+			this.objectInfo.queryStoreOptions.queryStoreCaptureMode = newValue as string;
+			await this.toggleQueryCapturePolicySection(newValue === localizedConstants.QueryStoreCapturemodeCustomText
+				&& this.requestedOperationMode.value !== this.operationModeOffOption);
+		}, this.viewInfo.queryStoreCaptureModeOptions, this.objectInfo.queryStoreOptions.queryStoreCaptureMode, this.areQueryStoreOptionsEnabled, DefaultInputWidth);
+		containers.push(this.createLabelInputContainer(localizedConstants.QueryStoreCaptureModeText, this.queryStoreCaptureMode));
+
+		// Size Based Cleanup Mode
+		this.sizeBasedCleanupMode = this.createDropdown(localizedConstants.SizeBasedCleanupModeText, async (newValue) => {
+			this.objectInfo.queryStoreOptions.sizeBasedCleanupMode = newValue as string;
+		}, this.viewInfo.sizeBasedCleanupModeOptions, this.objectInfo.queryStoreOptions.sizeBasedCleanupMode, this.areQueryStoreOptionsEnabled, DefaultInputWidth);
+		containers.push(this.createLabelInputContainer(localizedConstants.SizeBasedCleanupModeText, this.sizeBasedCleanupMode));
+
+		// State Query Threshold (Days)
+		this.stateQueryThresholdInDays = this.createInputBox(async (newValue) => {
+			this.objectInfo.queryStoreOptions.staleQueryThresholdInDays = Number(newValue);
+		}, {
+			ariaLabel: localizedConstants.StateQueryThresholdInDaysText,
+			inputType: 'number',
+			enabled: this.areQueryStoreOptionsEnabled,
+			value: String(this.objectInfo.queryStoreOptions.staleQueryThresholdInDays),
+			min: 0
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.StateQueryThresholdInDaysText, this.stateQueryThresholdInDays));
+
+		// Wait Statistics Capture Mode - supported from 2017 or higher
+		if (!isUndefinedOrNull(this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode)) {
+			this.waitStatisticsCaptureMode = this.createCheckbox(localizedConstants.WaitStatisticsCaptureModeText, async (checked) => {
+				this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode = checked;
+			}, this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode, this.areQueryStoreOptionsEnabled);
+			containers.push(this.waitStatisticsCaptureMode);
+		}
+		const retentionSection = this.createGroup(localizedConstants.WaitStatisticsCaptureModeText, containers, true);
+		this.queryStoreTabSectionsContainer.push(retentionSection);
+	}
+
+	private initializeQueryStoreCapturePolicySection(): void {
+		let containers: azdata.Component[] = [];
+		// Execution Count
+		this.executionCount = this.createInputBox(async (newValue) => {
+			this.objectInfo.queryStoreOptions.capturePolicyOptions.executionCount = Number(newValue);
+		}, {
+			ariaLabel: localizedConstants.ExecutionCountText,
+			inputType: 'number',
+			enabled: this.areQueryStoreOptionsEnabled,
+			value: String(this.objectInfo.queryStoreOptions.capturePolicyOptions.executionCount),
+			min: 0
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.ExecutionCountText, this.executionCount));
+
+		// Stale Threshold
+		this.staleThreshold = this.createDropdown(localizedConstants.StaleThresholdText, async (newValue) => {
+			this.objectInfo.queryStoreOptions.capturePolicyOptions.staleThreshold = newValue as string;
+		}, this.viewInfo.staleThresholdOptions, this.objectInfo.queryStoreOptions.capturePolicyOptions.staleThreshold, this.areQueryStoreOptionsEnabled, DefaultInputWidth);
+		containers.push(this.createLabelInputContainer(localizedConstants.StaleThresholdText, this.staleThreshold));
+
+		// Total Compile CPU Time (ms)
+		this.totalCompileCPUTimeInMS = this.createInputBox(async (newValue) => {
+			this.objectInfo.queryStoreOptions.capturePolicyOptions.totalCompileCPUTimeInMS = Number(newValue);
+		}, {
+			ariaLabel: localizedConstants.TotalCompileCPUTimeInMsText,
+			inputType: 'number',
+			enabled: this.areQueryStoreOptionsEnabled,
+			value: String(this.objectInfo.queryStoreOptions.capturePolicyOptions.totalCompileCPUTimeInMS),
+			min: 0
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.TotalCompileCPUTimeInMsText, this.totalCompileCPUTimeInMS));
+
+		// Total Execution CPU Time (ms)
+		this.totalExecutionCPUTimeInMS = this.createInputBox(async (newValue) => {
+			this.objectInfo.queryStoreOptions.capturePolicyOptions.totalExecutionCPUTimeInMS = Number(newValue);
+		}, {
+			ariaLabel: localizedConstants.TotalExecutionCPUTimeInMsText,
+			inputType: 'number',
+			enabled: this.areQueryStoreOptionsEnabled,
+			value: String(this.objectInfo.queryStoreOptions.capturePolicyOptions.totalExecutionCPUTimeInMS),
+			min: 0
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.TotalExecutionCPUTimeInMsText, this.totalExecutionCPUTimeInMS));
+
+		const policySection = this.createGroup(localizedConstants.QueryStoreCapturePolicySectionText, containers, true);
+		this.queryStoreTabSectionsContainer.push(policySection);
+	}
+
+	private async initializeQueryStoreCurrentDiskStorageSection(): Promise<void> {
+		let containers: azdata.Component[] = [];
+		// Database Max size
+		const databaseName = this.createInputBox(async () => { }, {
+			ariaLabel: this.objectInfo.name,
+			inputType: 'text',
+			enabled: false,
+			value: localizedConstants.StringValueInMB(String(this.objectInfo.sizeInMb))
+		});
+		containers.push(this.createLabelInputContainer(this.objectInfo.name, databaseName));
+
+		// Query Store Used
+		const queryStoreUsed = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.QueryStoreUsedText,
+			inputType: 'text',
+			enabled: false,
+			value: localizedConstants.StringValueInMB(String(this.objectInfo.queryStoreOptions.currentStorageSizeInMB))
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.QueryStoreUsedText, queryStoreUsed));
+
+		// Query Store Available
+		const queryStoreAvailable = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.QueryStoreAvailableText,
+			inputType: 'text',
+			enabled: false,
+			value: localizedConstants.StringValueInMB(String(this.objectInfo.queryStoreOptions.maxSizeInMB - this.objectInfo.queryStoreOptions.currentStorageSizeInMB))
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.QueryStoreAvailableText, queryStoreAvailable));
+
+		// Prge query data button
+		this.purgeQueryDataButton = this.createButton(localizedConstants.PurgeQueryDataButtonText, localizedConstants.PurgeQueryDataButtonText, async () => {
+			await this.purgeQueryStoreDataButtonClick();
+		});
+		this.purgeQueryDataButton.width = DefaultInputWidth;
+		await this.purgeQueryDataButton.updateCssStyles({ 'margin': '10px 0px, 0px, 0px' });
+		containers.push(this.createLabelInputContainer('', this.purgeQueryDataButton));
+
+		const diskUsageSection = this.createGroup(localizedConstants.QueryStoreCurrentDiskUsageSectionText, containers, true);
+		this.queryStoreTabSectionsContainer.push(diskUsageSection);
+	}
+
+	/**
+	 *  Opens confirmation warning for clearing the query store data for the database
+	 */
+	private async purgeQueryStoreDataButtonClick(): Promise<void> {
+		const response = await vscode.window.showWarningMessage(localizedConstants.PurgeQueryStoreDataMessage(this.objectInfo.name), localizedConstants.YesText);
+		if (response !== localizedConstants.YesText) {
+			return;
+		}
+
+		await this.objectManagementService.purgeQueryStoreData(this.options.connectionUri, this.options.database, this.options.objectUrn);
+	}
+
+	private async toggleQueryStoreOptions(): Promise<void> {
+		this.dataFlushIntervalInMinutes.enabled
+			= this.statisticsCollectionInterval.enabled
+			= this.maxPlansPerQuery.enabled
+			= this.maxSizeinMB.enabled
+			= this.queryStoreCaptureMode.enabled
+			= this.sizeBasedCleanupMode.enabled
+			= this.stateQueryThresholdInDays.enabled = this.areQueryStoreOptionsEnabled;
+		if (!isUndefinedOrNull(this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode)) {
+			this.waitStatisticsCaptureMode.enabled = this.areQueryStoreOptionsEnabled
+		}
+		await this.toggleQueryCapturePolicySection(this.areQueryStoreOptionsEnabled);
+	}
+
+	private async toggleQueryCapturePolicySection(enable: boolean): Promise<void> {
+		if (!isUndefinedOrNull(this.objectInfo.queryStoreOptions.capturePolicyOptions)) {
+			this.executionCount.enabled
+				= this.staleThreshold.enabled
+				= this.totalCompileCPUTimeInMS.enabled
+				= this.totalExecutionCPUTimeInMS.enabled = enable;
+		}
+	}
+	//#endregion
 
 	private initializeConfigureSLOSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];

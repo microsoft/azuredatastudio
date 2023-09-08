@@ -458,6 +458,7 @@ export interface Database extends ObjectManagement.SqlObject {
 	isFilesTabSupported?: boolean;
 	files?: DatabaseFile[];
 	filegroups?: FileGroup[];
+	queryStoreOptions?: QueryStoreOptions;
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
@@ -481,6 +482,32 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	rowDataFileGroupsOptions?: string[];
 	fileStreamFileGroupsOptions?: string[];
 	fileTypesOptions?: string[];
+	operationModeOptions?: string[];
+	statisticsCollectionIntervalOptions?: string[];
+	queryStoreCaptureModeOptions?: string[];
+	sizeBasedCleanupModeOptions?: string[];
+	staleThresholdOptions?: string[];
+}
+
+export interface QueryStoreOptions {
+	actualMode: string;
+	dataFlushIntervalInMinutes: number;
+	statisticsCollectionInterval: string;
+	maxPlansPerQuery: number;
+	maxSizeInMB: number;
+	queryStoreCaptureMode: string;
+	sizeBasedCleanupMode: string;
+	staleQueryThresholdInDays: number;
+	waitStatisticsCaptureMode?: boolean;
+	capturePolicyOptions?: QueryStoreCapturePolicyOptions;
+	currentStorageSizeInMB: number;
+}
+
+export interface QueryStoreCapturePolicyOptions {
+	executionCount: number;
+	staleThreshold: string;
+	totalCompileCPUTimeInMS: number;
+	totalExecutionCPUTimeInMS: number;
 }
 
 export interface DatabaseScopedConfigurationsInfo {

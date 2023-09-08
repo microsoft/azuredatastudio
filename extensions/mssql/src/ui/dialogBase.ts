@@ -328,6 +328,51 @@ export abstract class DialogBase<DialogResult> {
 		return this.createButtonContainer(buttonComponents)
 	}
 
+	protected addButtonsForTable1(table: azdata.DeclarativeTableComponent, addbutton: DialogButton, removeButton: DialogButton, editButton: DialogButton = undefined): azdata.FlexContainer {
+		let addButtonComponent: azdata.ButtonComponent;
+		let editButtonComponent: azdata.ButtonComponent;
+		let removeButtonComponent: azdata.ButtonComponent;
+		let buttonComponents: azdata.ButtonComponent[] = [];
+		const updateButtons = (isRemoveEnabled: boolean = undefined) => {
+			this.onFormFieldChange();
+			const tableSelectedRowsLengthCheck = table.selectedRow === 1 && table.selectedRow < table.data.length;
+			if (editButton !== undefined) {
+				editButtonComponent.enabled = tableSelectedRowsLengthCheck;
+			}
+			removeButtonComponent.enabled = !!isRemoveEnabled && tableSelectedRowsLengthCheck;
+		}
+		addButtonComponent = this.createButton(uiLoc.AddText, addbutton.buttonAriaLabel, async () => {
+			await addbutton.buttonHandler(addButtonComponent);
+			updateButtons();
+		});
+		buttonComponents.push(addButtonComponent);
+
+		if (editButton !== undefined) {
+			editButtonComponent = this.createButton(uiLoc.EditText, editButton.buttonAriaLabel, async () => {
+				await editButton.buttonHandler(editButtonComponent);
+				updateButtons();
+			}, false);
+			buttonComponents.push(editButtonComponent);
+		}
+
+		removeButtonComponent = this.createButton(uiLoc.RemoveText, removeButton.buttonAriaLabel, async () => {
+			await removeButton.buttonHandler(removeButtonComponent);
+			if (table.selectedRow === 1) {
+				// table.selectedRow = [table.data.length - 1];
+			}
+			updateButtons();
+		}, false);
+		buttonComponents.push(removeButtonComponent);
+
+		this.disposables.push(table.onRowSelected(() => {
+			const isRemoveButtonEnabled = true;
+			updateButtons(isRemoveButtonEnabled);
+		}));
+
+		return this.createButtonContainer(buttonComponents)
+	}
+
+
 	protected createDropdown(ariaLabel: string, handler: (newValue: string) => Promise<void>, values: string[], value: string | undefined, enabled: boolean = true, width: number = DefaultInputWidth, editable?: boolean, strictSelection?: boolean): azdata.DropDownComponent {
 		// Automatically add an empty item to the beginning of the list if the current value is not specified.
 		// This is needed when no meaningful default value can be provided.

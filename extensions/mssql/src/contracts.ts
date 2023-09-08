@@ -1699,6 +1699,16 @@ export namespace GetAssociatedFilesRequest {
 	export const type = new RequestType<GetAssociatedFilesRequestParams, string[], void, void>('admin/getassociatedfiles');
 }
 
+export namespace PurgeQueryStoreDataRequest {
+	export const type = new RequestType<purgeQueryStoreDataRequestParams, void, void, void>('objectManagement/purgeQueryStoreData');
+}
+
+export interface purgeQueryStoreDataRequestParams {
+	connectionUri: string;
+	database: string;
+	objectUrn: string;
+}
+
 // ------------------------------- < Object Management > ------------------------------------
 
 // ------------------------------- < Encryption IV/KEY updation Event > ------------------------------------
