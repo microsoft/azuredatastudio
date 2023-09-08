@@ -172,7 +172,7 @@ export class QueryModelService implements IQueryModelService {
 
 	public async copyResults(uri: string, selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<void> {
 		if (this._queryInfoMap.has(uri)) {
-			let results = await this._queryInfoMap.get(uri)!.queryRunner!.copyResults(selection, batchId, resultId, includeHeaders);
+			const results = await this._queryInfoMap.get(uri)!.queryRunner!.copyResults(selection, batchId, resultId, includeHeaders);
 			let clipboardData: ClipboardData = {
 				text: results.results
 			};
