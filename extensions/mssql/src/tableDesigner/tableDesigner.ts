@@ -32,7 +32,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			nonDefaultOptions = nonDefaultOptions.replace('(', '[').replace(')', ']');
 			await azdata.designers.openTableDesigner(sqlProviderName, {
 				title: NewTableText,
-				headerName: `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`,
+				tooltip: `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`,
 				server: context.connectionProfile!.serverName,
 				database: context.connectionProfile!.databaseName,
 				isNewTable: true,
@@ -40,7 +40,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				connectionString: connectionString,
 				accessToken: context.connectionProfile!.options.azureAccountToken as string,
 				tableIcon: tableIcon,
-				tooltip: `${context.connectionProfile.connectionName ? '(' + context.connectionProfile.connectionName + ')' : ''} ${nonDefaultOptions}`
+				additionalInfo: `${context.connectionProfile.connectionName ? '(' + context.connectionProfile.connectionName + ')' : ''} ${nonDefaultOptions}`
 			}, telemetryInfo, context);
 		} catch (error) {
 			console.error(error);
@@ -66,7 +66,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			nonDefaultOptions = nonDefaultOptions.replace('(', '[').replace(')', ']');
 			await azdata.designers.openTableDesigner(sqlProviderName, {
 				title: `${schema}.${name}`,
-				headerName: `${server} - ${database} - ${schema}.${name}`,
+				tooltip: `${server} - ${database} - ${schema}.${name}`,
 				server: server,
 				database: database,
 				isNewTable: false,
@@ -76,7 +76,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				connectionString: connectionString,
 				accessToken: context.connectionProfile!.options.azureAccountToken as string,
 				tableIcon: tableIcon,
-				tooltip: `${connName ? '(' + connName + ')' : ''} ${nonDefaultOptions}`
+				additionalInfo: `${connName ? '(' + connName + ')' : ''} ${nonDefaultOptions}`
 			}, telemetryInfo, context);
 		} catch (error) {
 			console.error(error);

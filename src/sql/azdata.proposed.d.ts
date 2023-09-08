@@ -974,7 +974,7 @@ declare module 'azdata' {
 			/**
 			 * Used as the table designer editor's tab header name text.
 			 */
-			headerName: string;
+			tooltip: string;
 			/**
 			 * Unique identifier of the table. Will be used to decide whether a designer is already opened for the table.
 			 */
@@ -995,7 +995,7 @@ declare module 'azdata' {
 			/**
 			 * Additional information for tooltip on hover displaying the full information of the connection.
 			 */
-			tooltip?: string;
+			additionalInfo?: string;
 		}
 
 		/**

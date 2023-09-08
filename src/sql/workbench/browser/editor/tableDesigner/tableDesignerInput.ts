@@ -128,8 +128,8 @@ export class TableDesignerInput extends EditorInput {
 
 	private setEditorLabel(): void {
 		this._name = this._designerComponentInput.tableInfo.title;
-		this._title = this._designerComponentInput.tableInfo.headerName;
-		let addlDetails = this._designerComponentInput.tableInfo.tooltip
+		this._title = this._designerComponentInput.tableInfo.tooltip;
+		let addlDetails = this._designerComponentInput.tableInfo.additionalInfo
 		if (addlDetails) {
 			this._additionalDetails = addlDetails;
 		}
