@@ -498,7 +498,7 @@ crypt@0.0.2:
   integrity sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==
 
 "dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#1.3.7":
-  version "1.3.6"
+  version "1.3.7"
   resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/0f07d03394eeebc2924971746470ac8224348fa4"
   dependencies:
     vscode-languageclient "5.2.1"
