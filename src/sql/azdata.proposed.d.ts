@@ -993,7 +993,7 @@ declare module 'azdata' {
 			 */
 			tableIcon?: TableIcon;
 			/**
-			 * Tooltip on hover displaying the full information of the connection.
+			 * Additional information for tooltip on hover displaying the full information of the connection.
 			 */
 			tooltip?: string;
 		}
