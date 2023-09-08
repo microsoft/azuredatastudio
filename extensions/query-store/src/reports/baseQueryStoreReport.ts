@@ -5,17 +5,23 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as path from 'path';
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
 import { ConfigureDialog } from '../settings/configureDialog';
+import { IconPathHelper } from '../common/iconHelper';
 
 export abstract class BaseQueryStoreReport {
 	protected flexModel?: azdata.FlexContainer;
 	protected configureDialog?: ConfigureDialog;
 	protected configureButton?: azdata.ButtonComponent;
 
-	constructor(private reportTitle: string, protected resizeable: boolean, private extensionContext: vscode.ExtensionContext) { }
+	/**
+	 * Constructor
+	 * @param reportTitle Title of report shown in toolbar
+	 * @param reportId Id of tab used in query store dashboard
+	 * @param resizeable Whether or not the sections of the report are resizeable
+	 */
+	constructor(private reportTitle: string, private reportId: string, protected resizeable: boolean) { }
 
 	public get ReportContent(): azdata.FlexContainer | undefined {
 		return this.flexModel;
@@ -101,13 +107,25 @@ export abstract class BaseQueryStoreReport {
 			CSSStyles: { 'margin-top': '5px', 'margin-bottom': '5px', 'margin-right': '15px' }
 		}).component();
 
+		// Open in New Tab button
+		const openInNewTabButton = view.modelBuilder.button().withProps({
+			label: constants.openInNewTab,
+			title: constants.openInNewTab,
+			iconPath: IconPathHelper.multipleWindows
+		}).component();
+		openInNewTabButton.enabled = true;
+
+		openInNewTabButton.onDidClick(async () => {
+			await vscode.commands.executeCommand('queryStore.openQueryStoreDashboard', this.reportId);
+		});
+
+		await openInNewTabButton.updateCssStyles({ 'margin-top': '5px' });
+
+		// Configure button
 		this.configureButton = view.modelBuilder.button().withProps({
 			label: constants.configure,
 			title: constants.configure,
-			iconPath: {
-				light: path.join(this.extensionContext.extensionPath, 'images', 'light', 'gear.svg'),
-				dark: path.join(this.extensionContext.extensionPath, 'images', 'dark', 'gear.svg')
-			}
+			iconPath: IconPathHelper.gear
 		}).component();
 		this.configureButton.enabled = true;
 
@@ -126,6 +144,9 @@ export abstract class BaseQueryStoreReport {
 			{
 				component: timePeriod,
 				toolbarSeparatorAfter: true
+			},
+			{
+				component: openInNewTabButton
 			},
 			{
 				component: this.configureButton

@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { BaseQueryStoreReport } from './baseQueryStoreReport';
 import { QueryStoreView } from './queryStoreView';
@@ -18,8 +17,8 @@ export class OverallResourceConsumption extends BaseQueryStoreReport {
 	private cpuTime: QueryStoreView;
 	private logicalReads: QueryStoreView;
 
-	constructor(extensionContext: vscode.ExtensionContext, databaseName: string) {
-		super(constants.overallResourceConsumptionToolbarLabel(databaseName), /*resizeable*/ false, extensionContext);
+	constructor(databaseName: string) {
+		super(constants.overallResourceConsumptionToolbarLabel(databaseName), constants.overallResourceConsumptionTabId,/*resizeable*/ false);
 		this.duration = new QueryStoreView(constants.duration, 'chartreuse');
 		this.executionCount = new QueryStoreView(constants.executionCount, 'coral');
 		this.cpuTime = new QueryStoreView(constants.cpuTime, 'darkturquoise');

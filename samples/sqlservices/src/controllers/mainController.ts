@@ -53,12 +53,16 @@ export default class MainController implements vscode.Disposable {
 		this.registerSplitPanelModelView();
 		this.registerModelViewDashboardTab();
 
+		vscode.commands.registerCommand('sqlservices.openEditor', () => { this.openEditor(); });
+		vscode.commands.registerCommand('sqlservices.openDialog', () => { this.openDialog(); });
+		vscode.commands.registerCommand('sqlservices.openEditorWithWebView', () => { this.openEditorWithWebview(buttonHtml, counterHtml); });
+		vscode.commands.registerCommand('sqlservices.openEditorWithWebView2', () => { this.openEditorWithWebview2(); });
+		vscode.commands.registerCommand('sqlservices.openWizard', () => { this.openWizard(); });
+		vscode.commands.registerCommand('sqlservices.openModelViewDashboard', () => { dashboard.openModelViewDashboard(this.context); });
+		vscode.commands.registerCommand('sqlservices.updateObjectExplorerNode', async (context: azdata.ObjectExplorerContext) => { await objectExplorer.updateNode(context); });
+
 		azdata.tasks.registerTask('sqlservices.clickTask', (profile) => {
 			vscode.window.showInformationMessage(`Clicked from profile ${profile.serverName}.${profile.databaseName}`);
-		});
-
-		vscode.commands.registerCommand('sqlservices.openDialog', () => {
-			this.openDialog();
 		});
 
 		vscode.commands.registerCommand('sqlservices.openConnectionDialog', async () => {
@@ -68,32 +72,226 @@ export default class MainController implements vscode.Disposable {
 			}
 		});
 
-		vscode.commands.registerCommand('sqlservices.openEditor', () => {
-			this.openEditor();
-		});
-
-		vscode.commands.registerCommand('sqlservices.openEditorWithWebView', () => {
-			this.openEditorWithWebview(buttonHtml, counterHtml);
-		});
-
-		vscode.commands.registerCommand('sqlservices.openEditorWithWebView2', () => {
-			this.openEditorWithWebview2();
-		});
-
-		vscode.commands.registerCommand('sqlservices.openWizard', () => {
-			this.openWizard();
-		});
-
-		vscode.commands.registerCommand('sqlservices.openModelViewDashboard', () => {
-			dashboard.openModelViewDashboard(this.context);
-		});
-
-		vscode.commands.registerCommand('sqlservices.updateObjectExplorerNode', async (context: azdata.ObjectExplorerContext) => {
-			await objectExplorer.updateNode(context);
-		});
-
 		return Promise.resolve(true);
 	}
+
+	//#region Primary entrypoints
+
+	private openDialog(): void {
+		let dialog = azdata.window.createModelViewDialog('Test dialog', '', 'wide');
+
+		// Dialog button customizations
+
+		dialog.okButton.onClick(() => console.log('ok clicked!'));
+		dialog.okButton.label = 'ok';
+
+		dialog.cancelButton.onClick(() => console.log('cancel clicked!'));
+		dialog.cancelButton.label = 'no';
+
+		const customButton1 = azdata.window.createButton('Load name');
+		customButton1.onClick(() => console.log('button 1 clicked!'));
+
+		const customButton2 = azdata.window.createButton('Load all');
+		customButton2.onClick(() => console.log('button 2 clicked!'));
+
+		dialog.customButtons = [customButton1, customButton2];
+
+		// Dialog tabs
+
+		dialog.content = [];
+
+		const basicUiTab = azdata.window.createTab('Basic UI Controls');
+		basicUiTab.registerContent(async (view) => {
+			await this.getBasicUiTabContent(view, customButton1, customButton2, 400);
+		});
+		dialog.content.push(basicUiTab);
+
+		const widgetTab = azdata.window.createTab('Widget');
+		widgetTab.content = 'sqlservices';
+		dialog.content.push(widgetTab);
+
+		const treeTab = azdata.window.createTab('Tree');
+		treeTab.registerContent(async (view) => {
+			await this.getTreeTabContent(view);
+		});
+		dialog.content.push(treeTab);
+
+		// Open the dialog
+
+		azdata.window.openDialog(dialog);
+	}
+
+	private openWizard(): void {
+		let wizard = azdata.window.createWizard('Test wizard');
+		let page1 = azdata.window.createWizardPage('First wizard page');
+		let page2 = azdata.window.createWizardPage('Second wizard page');
+		page2.content = 'sqlservices';
+		let customButton1 = azdata.window.createButton('Load name');
+		customButton1.onClick(() => console.log('button 1 clicked!'));
+		let customButton2 = azdata.window.createButton('Load all');
+		customButton2.onClick(() => console.log('button 2 clicked!'));
+		wizard.customButtons = [customButton1, customButton2];
+		page1.registerContent(async (view) => {
+			await this.getBasicUiTabContent(view, customButton1, customButton2, 800);
+		});
+
+		wizard.registerOperation({
+			displayName: 'test task',
+			description: 'task description',
+			isCancelable: true,
+			connection: undefined,
+			operation: op => {
+				op.updateStatus(azdata.TaskStatus.InProgress);
+				op.updateStatus(azdata.TaskStatus.InProgress, 'Task is running');
+				setTimeout(() => {
+					op.updateStatus(azdata.TaskStatus.Succeeded);
+				}, 5000);
+			}
+		});
+		wizard.pages = [page1, page2];
+		wizard.open();
+	}
+
+	private openEditor(): void {
+		let editor = azdata.workspace.createModelViewEditor('Test Model View');
+		editor.registerContent(async view => {
+			let inputBox = view.modelBuilder.inputBox()
+				.withValidation(component => component.value !== 'valid')
+				.component();
+			let formModel = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: inputBox,
+					title: 'Enter anything but "valid"'
+				}]).component();
+			view.onClosed((params) => {
+				vscode.window.showInformationMessage('The model view editor is closed.');
+			});
+			await view.initializeModel(formModel);
+		});
+		editor.openEditor();
+	}
+
+	private openEditorWithWebview(html1: string, html2: string): void {
+		let editor = azdata.workspace.createModelViewEditor('Editor webview', { retainContextWhenHidden: true });
+		editor.registerContent(async view => {
+			let count = 0;
+			let webview1 = view.modelBuilder.webView()
+				.withProps({
+					html: html1
+				})
+				.component();
+			let webview2 = view.modelBuilder.webView()
+				.withProps({
+					html: html2
+				})
+				.component();
+			webview1.onMessage((params) => {
+				count++;
+				webview2.message = count;
+			});
+
+			let editor1 = view.modelBuilder.editor()
+				.withProps({
+					content: 'select * from sys.tables'
+				})
+				.component();
+
+			let editor2 = view.modelBuilder.editor()
+				.withProps({
+					content: 'print("Hello World !")',
+					languageMode: 'python'
+				})
+				.component();
+
+			let flexModel = view.modelBuilder.flexContainer().component();
+			flexModel.addItem(editor1, { flex: '1' });
+			flexModel.addItem(editor2, { flex: '1' });
+			flexModel.setLayout({
+				flexFlow: 'column',
+				alignItems: 'stretch',
+				height: '100%'
+			});
+
+			view.onClosed((params) => {
+				vscode.window.showInformationMessage('editor1: language: ' + editor1.languageMode + ' Content1: ' + editor1.content);
+				vscode.window.showInformationMessage('editor2: language: ' + editor2.languageMode + ' Content2: ' + editor2.content);
+			});
+			await view.initializeModel(flexModel);
+		});
+		editor.openEditor();
+	}
+
+	private openEditorWithWebview2(): void {
+		let editor = azdata.workspace.createModelViewEditor('Editor webview2', { retainContextWhenHidden: true });
+		editor.registerContent(async view => {
+
+			let inputBox = view.modelBuilder.inputBox().component();
+			let dropdown = view.modelBuilder.dropDown()
+				.withProps({
+					value: 'aa',
+					values: ['aa', 'bb', 'cc']
+				})
+				.component();
+			let runIcon = path.join(__dirname, '..', 'media', 'start.svg');
+			let runButton = view.modelBuilder.button()
+				.withProps({
+					label: 'Run',
+					iconPath: runIcon,
+					title: 'Run title'
+				}).component();
+
+			let monitorLightPath = vscode.Uri.file(path.join(__dirname, '..', 'media', 'monitor.svg'));
+			let monitorIcon = {
+				light: monitorLightPath,
+				dark: path.join(__dirname, '..', 'media', 'monitor_inverse.svg')
+			};
+
+			let monitorButton = view.modelBuilder.button()
+				.withProps({
+					label: 'Monitor',
+					iconPath: monitorIcon,
+					title: 'Monitor title'
+				}).component();
+			let toolbarModel = view.modelBuilder.toolbarContainer()
+				.withToolbarItems([{
+					component: inputBox,
+					title: 'User name:'
+				}, {
+					component: dropdown,
+					title: 'favorite:'
+				}, {
+					component: runButton
+				}, {
+					component: monitorButton
+				}]).component();
+
+
+			let webview = view.modelBuilder.webView()
+				.component();
+
+			let flexModel = view.modelBuilder.flexContainer().component();
+			flexModel.addItem(toolbarModel, { flex: '0' });
+			flexModel.addItem(webview, { flex: '1' });
+			flexModel.setLayout({
+				flexFlow: 'column',
+				alignItems: 'stretch',
+				height: '100%'
+			});
+
+			let templateValues = { url: 'http://whoisactive.com/docs/' };
+			Utils.renderTemplateHtml(path.join(__dirname, '..'), 'templateTab.html', templateValues)
+				.then(html => {
+					webview.html = html;
+				});
+
+			await view.initializeModel(flexModel);
+		});
+		editor.openEditor();
+	}
+
+	//#endregion
+
+	//#region Component helpers
 
 	private async getTreeTabContent(view: azdata.ModelView): Promise<void> {
 		let treeData = {
@@ -959,5 +1157,6 @@ export default class MainController implements vscode.Disposable {
 
 		});
 	}
-}
 
+	//#endregion
+}
