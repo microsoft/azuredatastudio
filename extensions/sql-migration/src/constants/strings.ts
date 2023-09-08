@@ -96,6 +96,9 @@ export const ISSUES_LABEL = localize('sql.migration.issues.label', "Blocking iss
 export const INSTANCE_FINDING_SUMMARY = localize('sql.migration.instance.finding.summary', "Server instance assessment findings summary");
 export const SEVERITY_FINDINGS_LABEL = localize('sql.migration.severity.findings.label', "Findings by severity");
 export const ASSESSED_DBS_LABEL = localize('sql.migration.assessed.dbs.label', "Assessed databases");
+export const NOT_READY = localize('sql.migration.not.ready', "Not ready");
+export const READY = localize('sql.migration.ready', "Ready");
+export const READY_WARN = localize('sql.migration.ready.warn', "Ready with warnings");
 
 // Assessment results and recommendations
 export const ASSESSMENT_RESULTS_AND_RECOMMENDATIONS_PAGE_TITLE = localize('sql.migration.assessment.results.and.recommendations.title', "Assessment results and recommendations");

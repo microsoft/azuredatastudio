@@ -124,17 +124,17 @@ export class InstanceSummary {
 
 		const labels = [
 			{
-				label: "Not ready",
+				label: constants.NOT_READY,
 				count: 1,
 				color: "#E00B1C"
 			},
 			{
-				label: "Ready with warnings",
+				label: constants.READY_WARN,
 				count: 1,
 				color: "#DB7500"
 			},
 			{
-				label: "Ready",
+				label: constants.READY,
 				count: 8,
 				color: "#57A300"
 			}];
