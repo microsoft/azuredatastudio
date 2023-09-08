@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
 import { IconPathHelper } from '../../constants/iconPathHelper';
+import { ColorCodes } from '../../constants/helper';
 
 interface IActionMetadata {
 	label: string,
@@ -126,17 +127,17 @@ export class InstanceSummary {
 			{
 				label: constants.NOT_READY,
 				count: 1,
-				color: "#E00B1C"
+				color: ColorCodes.NotReadyState_Red
 			},
 			{
 				label: constants.READY_WARN,
 				count: 1,
-				color: "#DB7500"
+				color: ColorCodes.ReadyWithWarningState_Amber
 			},
 			{
 				label: constants.READY,
 				count: 8,
-				color: "#57A300"
+				color: ColorCodes.ReadyState_Green
 			}];
 
 		// create individual card component for each property in above list
