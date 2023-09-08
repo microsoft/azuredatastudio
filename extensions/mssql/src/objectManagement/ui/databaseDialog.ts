@@ -1894,7 +1894,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	}
 
 	/**
-	 *  Opens confirmation warning Clears the query store data for the database
+	 *  Opens confirmation warning for clearing the query store data for the database
 	 */
 	private async purgeQueryStoreDataButtonClick(): Promise<void> {
 		const response = await vscode.window.showWarningMessage(localizedConstants.PurgeQueryStoreDataMessage(this.objectInfo.name), localizedConstants.YesText);
