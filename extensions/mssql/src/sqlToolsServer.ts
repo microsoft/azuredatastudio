@@ -32,6 +32,7 @@ import { ErrorDiagnosticsProvider } from './errorDiagnostics/errorDiagnosticsPro
 import { SqlProjectsService } from './sqlProjects/sqlProjectsService';
 import { ObjectManagementService } from './objectManagement/objectManagementService';
 import { QueryStoreService } from './queryStore/queryStoreService';
+import { ConnectionService } from './connection/connectionService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -237,6 +238,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 			AgentServicesFeature,
 			SerializationFeature,
 			SqlAssessmentServicesFeature,
+			ConnectionService.asFeature(context),
 			SchemaCompareService.asFeature(context),
 			LanguageExtensionService.asFeature(context),
 			DacFxService.asFeature(context),
