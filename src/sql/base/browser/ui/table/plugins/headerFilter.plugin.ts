@@ -265,7 +265,7 @@ export class HeaderFilter<T extends Slick.SlickData> extends Disposable {
 			if (!filterItem || filterItem.indexOf('Error:') < 0) {
 				let element = new TableFilterListElement(filterItem, filtered);
 				this._register(element);
-				this.listData.push();
+				this.listData.push(element);
 			}
 		}
 
