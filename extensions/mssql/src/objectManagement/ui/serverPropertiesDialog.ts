@@ -712,7 +712,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 		this.fullTextUpgradeOptionDropdown = this.createDropdown(localizedConstants.fullTextUpgradeOptionLabel, async (newValue) => {
 			this.objectInfo.fullTextUpgradeOption = newValue;
-		}, this.viewInfo.fullTextUpgradeOptions, this.objectInfo.fullTextUpgradeOption, !this.objectInfo.fullTextUpgradeOption);
+		}, this.viewInfo.fullTextUpgradeOptions, this.objectInfo.fullTextUpgradeOption, !!this.objectInfo.fullTextUpgradeOption);
 		const fullTextUpgradeOptionContainer = this.createLabelInputContainer(localizedConstants.fullTextUpgradeOptionLabel, this.fullTextUpgradeOptionDropdown);
 
 		this.maxTextReplicationSizeInput = this.createInputBox(async (newValue) => {
