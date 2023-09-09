@@ -2111,11 +2111,13 @@ declare module 'azdata' {
 		 */
 		dataLabel: string;
 		/**
-		 * Background color for chart elements
+		 * Background color for chart elements.  May be a name ('red'), hex ('#FFFFFF[77]), or RGB ('rgb(255, 255, 255[, 0.5])).
+		 * Bracketed portions are optional for alpha/transparency.
 		 */
 		backgroundColor: string;
 		/**
-		 * Border color for chart elements
+		 * Border color for chart elements.  May be a name ('red'), hex ('#FFFFFF[77]), or RGB ('rgb(255, 255, 255[, 0.5])).
+		 * Bracketed portions are optional for alpha/transparency.
 		 */
 		borderColor?: string;
 	}
