@@ -176,24 +176,25 @@ export class SavedAssessmentDialog {
 				height: '300px'
 			}).component();
 
-		// const horizontalBarConfig: azdata.BarChartConfiguration = {
-		// 	datasets: barConfig.datasets,
-		// 	labels: ['uno', 'dos', 'tres', 'quatro'],
-		// 	options: {
-		// 		scales: {
-		// 			x: {
-		// 				max: 8
-		// 			}
-		// 		}
-		// 	}
-		// };
+		const horizontalBarConfig: azdata.BarChartConfiguration = {
+			datasets: barConfig.datasets,
+			labels: ['uno', 'dos', 'tres', 'quatro'],
+			options: {
+				legendVisible: false,
+				scales: {
+					x: {
+						max: 8
+					}
+				}
+			}
+		};
 
-		// const horizontalBarChart = view.modelBuilder.chart<azdata.BarChartConfiguration>()
-		// 	.withProps({
-		// 		chartType: 'horizontalBar',
-		// 		configuration: horizontalBarConfig,
-		// 		chartId: 'horizChart1'
-		// 	}).component();
+		const horizontalBarChart = view.modelBuilder.chart<azdata.BarChartConfiguration>()
+			.withProps({
+				chartType: 'horizontalBar',
+				configuration: horizontalBarConfig,
+				chartId: 'horizChart1'
+			}).component();
 
 		// const lineConfig: azdata.LineChartConfiguration = {
 		// 	chartTitle: 'Test Line Chart',
@@ -460,7 +461,7 @@ export class SavedAssessmentDialog {
 		flex.addItem(radioContinue, { flex: '0 0 auto' });
 
 		flex.addItem(barChart, { flex: '0 0 auto' });
-		// flex.addItem(horizontalBarChart, { flex: '0 0 auto' });
+		flex.addItem(horizontalBarChart, { flex: '0 0 auto' });
 		// flex.addItem(lineChart, { flex: '0 0 auto' });
 		// flex.addItem(pieChart, { flex: '0 0 auto' });
 		// flex.addItem(doughnutChart, { flex: '0 0 auto' });

@@ -97,7 +97,7 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 
 		// ...then strongly-typed ComponentModel options get set (overriding free-form options)
 		if (val !== undefined) {
-			if (val.chartTitle) {
+			if (val.chartTitle) { // undefined results in hiding title
 				if (typeof val.chartTitle === 'string') {
 					this._options = mixin(this._options, {
 						plugins: {
@@ -107,34 +107,15 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 							}
 						}
 					});
-				} else {
-					this._options = mixin(this._options, {
-						plugins: {
-							title: {
-								text: val.chartTitle.text,
-								color: val.chartTitle.color,
-								display: true
-							}
-						}
-					});
 				}
 			} else {
 				this._options = mixin(this._options, { plugins: { title: { display: false } } });
 			}
 
-			if (val.legendOptions) {
-				this._options = mixin(this._options, {
-					plugins: {
-						legend: {
-							title: {
-								color: val.legendOptions.color ?? undefined,
-								display: true
-							}
-						}
-					}
-				});
+			if (val.legendVisible !== false) { // undefined defaults to true
+				this._options = mixin(this._options, { plugins: { legend: { display: true } } });
 			} else {
-				this._options = mixin(this._options, { plugins: { legend: { title: { display: false } } } });
+				this._options = mixin(this._options, { plugins: { legend: { display: false } } });
 			}
 		}
 

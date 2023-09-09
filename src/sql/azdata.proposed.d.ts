@@ -2145,8 +2145,8 @@ declare module 'azdata' {
 	//#region Chart general option types
 
 	export interface ChartOptions {
-		chartTitle?: ChartTextOptions | string;
-		legendOptions?: ChartTextStyleOptions;
+		chartTitle?: string;
+		legendVisible?: boolean;
 		freeformOptions?: any;
 	}
 
@@ -2156,14 +2156,6 @@ declare module 'azdata' {
 		max?: number;
 		offset?: boolean;
 		stacked?: boolean;
-	}
-
-	export interface ChartTextOptions extends ChartTextStyleOptions {
-		text: string;
-	}
-
-	export interface ChartTextStyleOptions {
-		color?: string;
 	}
 
 	//#endregion
