@@ -2156,7 +2156,7 @@ declare module 'azdata' {
 	 */
 	export interface Chart3DPoint extends Chart2DPoint {
 		/**
-		 * Radius for a multi-dimensional data point
+		 * Radius for a bubble data point, in pixels
 		 */
 		r: number;
 	}

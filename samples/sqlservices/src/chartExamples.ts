@@ -6,7 +6,6 @@
 import * as azdata from 'azdata';
 
 export const barConfig: azdata.BarChartConfiguration = {
-	chartTitle: 'Test Bar Chart - Belgian Flag',
 	datasets: [
 		{
 			data: [3, 4, 5, 4],
@@ -29,6 +28,7 @@ export const barConfig: azdata.BarChartConfiguration = {
 	],
 	labels: ['Een', 'Twee', 'Drie', 'Vier'],
 	options: {
+		chartTitle: 'Test Bar Chart - Belgian Flag',
 		scales: {
 			x: {
 				max: 8
@@ -38,7 +38,6 @@ export const barConfig: azdata.BarChartConfiguration = {
 };
 
 export const horizontalBarConfig: azdata.BarChartConfiguration = {
-	chartTitle: 'Test Horizontal Bar Chart - Indian Flag',
 	datasets: [
 		{
 			data: [3, 8],
@@ -61,6 +60,7 @@ export const horizontalBarConfig: azdata.BarChartConfiguration = {
 	],
 	labels: ['Ek', 'Do'],
 	options: {
+		chartTitle: 'Test Horizontal Bar Chart - Indian Flag',
 		scales: {
 			x: {
 				max: 8
@@ -70,7 +70,6 @@ export const horizontalBarConfig: azdata.BarChartConfiguration = {
 };
 
 export const lineConfig: azdata.LineChartConfiguration = {
-	chartTitle: 'Test Line Chart',
 	datasets: [
 		{
 			data: [2, 3, 4],
@@ -93,6 +92,7 @@ export const lineConfig: azdata.LineChartConfiguration = {
 	],
 	labels: ['uno', 'dos', 'tres', 'quatro'],
 	options: {
+		chartTitle: 'Test Line Chart',
 		scales: {
 			x: {
 				max: 8
@@ -102,7 +102,6 @@ export const lineConfig: azdata.LineChartConfiguration = {
 };
 
 export const pieConfig: azdata.PieChartConfiguration = {
-	chartTitle: 'Test Pie Chart - Pacman',
 	dataset: [
 		{
 			value: 3,
@@ -118,12 +117,14 @@ export const pieConfig: azdata.PieChartConfiguration = {
 		}
 	],
 	options: {
-		rotation: 135
+		chartTitle: 'Test Pie Chart - Pacman',
+		freeformOptions: {
+			rotation: 135
+		}
 	}
 };
 
 export const doughnutConfig: azdata.PieChartConfiguration = {
-	chartTitle: 'Test Doughnut Chart - Strawberry Doughnut',
 	dataset: [
 		{
 			value: 50,
@@ -145,12 +146,11 @@ export const doughnutConfig: azdata.PieChartConfiguration = {
 		}
 	],
 	options: {
-
+		chartTitle: 'Test Doughnut Chart - Strawberry Doughnut'
 	}
 };
 
 export const scatterConfig: azdata.ScatterplotConfiguration = {
-	chartTitle: 'Test Scatter Chart',
 	datasets: [
 		{
 			data: [
@@ -176,6 +176,7 @@ export const scatterConfig: azdata.ScatterplotConfiguration = {
 		}
 	],
 	options: {
+		chartTitle: 'Test Scatter Chart',
 		scales: {
 			x: {
 				// type: 'linear',
@@ -186,7 +187,6 @@ export const scatterConfig: azdata.ScatterplotConfiguration = {
 };
 
 export const bubbleConfig: azdata.BubbleChartConfiguration = {
-	chartTitle: 'Test Bubble Chart - Yin and Yang',
 	datasets: [
 		{
 			data:
@@ -224,6 +224,7 @@ export const bubbleConfig: azdata.BubbleChartConfiguration = {
 		}
 	],
 	options: {
+		chartTitle: 'Test Bubble Chart - Yin and Yang',
 		scales: {
 			x: {
 				// type: 'linear',
@@ -234,7 +235,6 @@ export const bubbleConfig: azdata.BubbleChartConfiguration = {
 };
 
 export const polarConfig: azdata.PolarAreaChartConfiguration = {
-	chartTitle: 'Test Polar Chart - Rainbow',
 	dataset:
 		[
 			{
@@ -274,11 +274,12 @@ export const polarConfig: azdata.PolarAreaChartConfiguration = {
 				borderColor: '#440088'
 			}
 		],
-	options: {}
+	options: {
+		chartTitle: 'Test Polar Chart - Rainbow'
+	}
 };
 
 export const radarConfig: azdata.RadarChartConfiguration = {
-	chartTitle: 'Test Radar Chart - Firebird',
 	datasets: [
 		{
 			data: [2, 2, 2, 2, 4, 7, 10, 11, 12, 2],
@@ -299,5 +300,8 @@ export const radarConfig: azdata.RadarChartConfiguration = {
 			borderColor: '#FFFF00'
 		}
 	],
-	labels: ['She\'ll', 'Be', 'Coming', 'Around', 'The', 'Firebird', 'When', 'She', 'Comes', 'Encore']
+	labels: ['She\'ll', 'Be', 'Coming', 'Around', 'The', 'Firebird', 'When', 'She', 'Comes', 'Encore'],
+	options: {
+		chartTitle: 'Test Radar Chart - Firebird'
+	}
 };

@@ -711,63 +711,121 @@ export default class MainController implements vscode.Disposable {
 	private async getGraphTabContent(view: azdata.ModelView): Promise<void> {
 		const barChart = view.modelBuilder.chart<azdata.BarChartConfiguration>()
 			.withProps({
+				chartId: 'barChart1',
 				chartType: 'bar',
-				configuration: chartExamples.barConfig
+				configuration: chartExamples.barConfig,
+				width: '500px',
+				height: '300px'
 			}).component();
 
 		const horizontalBarChart = view.modelBuilder.chart<azdata.BarChartConfiguration>() // BarChartConfiguration is used for both vertical and horizontal bar charts
 			.withProps({
+				chartId: 'horizBarChart1',
 				chartType: 'horizontalBar',
-				configuration: chartExamples.horizontalBarConfig
+				configuration: chartExamples.horizontalBarConfig,
+				width: '500px',
+				height: '300px'
 			}).component();
 
 		const lineChart = view.modelBuilder.chart<azdata.LineChartConfiguration>()
 			.withProps({
+				chartId: 'lineChart1',
 				chartType: 'line',
-				configuration: chartExamples.lineConfig
+				configuration: chartExamples.lineConfig,
+				width: '500px',
+				height: '300px'
 			}).component();
 
 		const pieChart = view.modelBuilder.chart<azdata.PieChartConfiguration>()
 			.withProps({
+				chartId: 'pieChart1',
 				chartType: 'pie',
-				configuration: chartExamples.pieConfig
+				configuration: chartExamples.pieConfig,
+				width: '300px',
+				height: '300px'
 			}).component();
 
 		const doughnutChart = view.modelBuilder.chart<azdata.PieChartConfiguration>() // PieChartConfiguration is used for both pie charts and doughnut charts
 			.withProps({
+				chartId: 'doughnutChart1',
 				chartType: 'doughnut',
-				configuration: chartExamples.doughnutConfig
+				configuration: chartExamples.doughnutConfig,
+				width: '400px',
+				height: '400px'
 			}).component();
 
 		const scatterplot = view.modelBuilder.chart<azdata.ScatterplotConfiguration>()
 			.withProps({
+				chartId: 'scatterplot1',
 				chartType: 'scatter',
-				configuration: chartExamples.scatterConfig
+				configuration: chartExamples.scatterConfig,
+				width: '400px',
+				height: '400px'
 			}).component();
 
 		const bubbleChart = view.modelBuilder.chart<azdata.BubbleChartConfiguration>()
 			.withProps({
+				chartId: 'bubbleChart1',
 				chartType: 'bubble',
-				configuration: chartExamples.bubbleConfig
+				configuration: chartExamples.bubbleConfig,
+				width: '500px',
+				height: '500px'
 			}).component();
 
 		const polarChart = view.modelBuilder.chart<azdata.PolarAreaChartConfiguration>()
 			.withProps({
+				chartId: 'polarChart1',
 				chartType: 'polarArea',
-				configuration: chartExamples.polarConfig
+				configuration: chartExamples.polarConfig,
+				width: '500px',
+				height: '500px'
 			}).component();
 
 		const radarChart = view.modelBuilder.chart<azdata.RadarChartConfiguration>()
 			.withProps({
+				chartId: 'radarChart1',
 				chartType: 'radar',
-				configuration: chartExamples.radarConfig
+				configuration: chartExamples.radarConfig,
+				width: '500px',
+				height: '500px'
 			}).component();
 
+		const button = view.modelBuilder.button()
+			.withProps({
+				label: 'Click to change bar chart data'
+			}).component();
+
+		button.onDidClick(async () => {
+			// To update data, a new config object must be created and passed.
+			// If the existing one is updated, it's detected as the same object, and "saves" the effort of send propertyChanged events.
+			// This is one way to do that.
+
+			for (let set of chartExamples.barConfig.datasets) {
+				for (let i = 0; i < set.data.length; i++) {
+					set.data[i] = Math.random() * 8;
+				}
+			}
+
+
+			const newConfig: azdata.BarChartConfiguration = {
+				// Spread to pull in existing data/options/properties
+				...chartExamples.barConfig
+
+				// Replace the old data with the new.
+				// Since this example edits the existing configuration object, it's already there (rendering this is second line unnecessary),
+				// but this is how you could insert entirely new data.
+				// datasets: updatedDataSets
+			};
+
+			await barChart.updateProperty('configuration', newConfig);
+		});
+
 		const flexContainer = view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'row' })
+			.withLayout({ flexFlow: 'column' })
 			.withProps({ CSSStyles: { 'padding': '20px 15px' } })
 			.component();
 
+		flexContainer.addItem(button, { flex: '0 0 auto' });
 		flexContainer.addItem(barChart, { flex: '0 0 auto' });
 		flexContainer.addItem(horizontalBarChart, { flex: '0 0 auto' });
 		flexContainer.addItem(lineChart, { flex: '0 0 auto' });
