@@ -597,8 +597,10 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		}, dataLocationInputboxProps);
 		const dataLocationButton = this.createBrowseButton(async () => {
 			const newPath = await this.selectFolder(this.objectInfo.dataLocation);
-			this.dataLocationInput.value = newPath;
-			this.objectInfo.dataLocation = newPath;
+			if (newPath) {
+				this.dataLocationInput.value = newPath;
+				this.objectInfo.dataLocation = newPath;
+			}
 			if (this.objectInfo.dataLocation !== this.originalObjectInfo.dataLocation) {
 				this.shouldRestartServer = true;
 			}
@@ -613,8 +615,10 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		}, logLocationInputboxProps);
 		const logLocationButton = this.createBrowseButton(async () => {
 			const newPath = await this.selectFolder(this.objectInfo.logLocation);
-			this.logLocationInput.value = newPath;
-			this.objectInfo.logLocation = newPath;
+			if (newPath) {
+				this.logLocationInput.value = newPath;
+				this.objectInfo.logLocation = newPath;
+			}
 			if (this.objectInfo.logLocation !== this.originalObjectInfo.logLocation) {
 				this.shouldRestartServer = true;
 			}
@@ -626,8 +630,10 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		}, backupLocationInputboxProps);
 		const backupLocationButton = this.createBrowseButton(async () => {
 			const newPath = await this.selectFolder(this.objectInfo.backupLocation);
-			this.backupLocationInput.value = newPath;
-			this.objectInfo.backupLocation = newPath;
+			if (newPath) {
+				this.backupLocationInput.value = newPath;
+				this.objectInfo.backupLocation = newPath;
+			}
 		}, isEnabled);
 		const backupLocationInputContainer = this.createLabelInputContainer(localizedConstants.backupLocationText, [this.backupLocationInput, backupLocationButton])
 
@@ -706,7 +712,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 		this.fullTextUpgradeOptionDropdown = this.createDropdown(localizedConstants.fullTextUpgradeOptionLabel, async (newValue) => {
 			this.objectInfo.fullTextUpgradeOption = newValue;
-		}, this.viewInfo.fullTextUpgradeOptions, this.objectInfo.fullTextUpgradeOption);
+		}, this.viewInfo.fullTextUpgradeOptions, this.objectInfo.fullTextUpgradeOption, !!this.objectInfo.fullTextUpgradeOption);
 		const fullTextUpgradeOptionContainer = this.createLabelInputContainer(localizedConstants.fullTextUpgradeOptionLabel, this.fullTextUpgradeOptionDropdown);
 
 		this.maxTextReplicationSizeInput = this.createInputBox(async (newValue) => {
