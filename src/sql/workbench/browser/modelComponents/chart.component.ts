@@ -39,6 +39,13 @@ export default class ChartComponent<TConfig extends azdata.ChartConfiguration> e
 
 	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
+
+		// chartId and chartType must be set before configuration because they're necessary for the draw that setting configuration triggers
+
+		if (this.chartId) {
+			this._chart.chartId = this.chartId;
+		}
+
 		if (this.chartType) {
 			this._chart.type = this.chartType;
 		}
@@ -62,6 +69,10 @@ export default class ChartComponent<TConfig extends azdata.ChartConfiguration> e
 
 	public get configuration(): TConfig {
 		return this.getProperties().configuration;
+	}
+
+	public get chartId(): string {
+		return this.getProperties().chartId;
 	}
 
 	public setLayout(layout: any): void {

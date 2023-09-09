@@ -2288,6 +2288,14 @@ class ChartComponentWrapper<TConfig extends azdata.ChartConfiguration> extends C
 		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<azdata.ChartClickEvent>());
 	}
 
+	public set chartId(v: string) {
+		this.setProperty('chartId', v);
+	}
+
+	public get chartId(): string {
+		return this.properties['chartId'];
+	}
+
 	public set chartType(v: azdata.ChartType) {
 		this.setProperty('chartType', v);
 	}

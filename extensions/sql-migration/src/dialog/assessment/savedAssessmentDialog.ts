@@ -136,7 +136,6 @@ export class SavedAssessmentDialog {
 			}));
 
 		const barConfig: azdata.BarChartConfiguration = {
-			chartTitle: 'Test Bar Chart',
 			datasets: [
 				{
 					data: [2, 3, 4],
@@ -159,6 +158,7 @@ export class SavedAssessmentDialog {
 			],
 			labels: ['uno', 'dos', 'tres', 'quatro'],
 			options: {
+				chartTitle: 'Test Bar Chart',
 				scales: {
 					x: {
 						max: 8
@@ -171,12 +171,12 @@ export class SavedAssessmentDialog {
 			.withProps({
 				chartType: 'bar',
 				configuration: barConfig,
+				chartId: 'barChart1',
 				width: '500px',
 				height: '300px'
 			}).component();
 
 		// const horizontalBarConfig: azdata.BarChartConfiguration = {
-		// 	chartTitle: 'Test Horizontal Bar Chart',
 		// 	datasets: barConfig.datasets,
 		// 	labels: ['uno', 'dos', 'tres', 'quatro'],
 		// 	options: {
@@ -191,7 +191,8 @@ export class SavedAssessmentDialog {
 		// const horizontalBarChart = view.modelBuilder.chart<azdata.BarChartConfiguration>()
 		// 	.withProps({
 		// 		chartType: 'horizontalBar',
-		// 		configuration: horizontalBarConfig
+		// 		configuration: horizontalBarConfig,
+		// 		chartId: 'horizChart1'
 		// 	}).component();
 
 		// const lineConfig: azdata.LineChartConfiguration = {

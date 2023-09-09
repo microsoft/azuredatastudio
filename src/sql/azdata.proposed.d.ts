@@ -2090,14 +2090,14 @@ declare module 'azdata' {
 		 * Configuration of chart: datasets, labels(if applicable), options
 		 */
 		configuration: TConfig;
+
+		/**
+		 * Unique ID for chart, used as the canvasID to render.
+		 */
+		chartId: string;
 	}
 
-	export interface ChartConfiguration {
-		/**
-		 * Title for chart. Note: This will be used as canvasID to render the chart
-		 */
-		chartTitle: string;
-	}
+	export interface ChartConfiguration { }
 
 	//#region Chart general data types
 
@@ -2144,7 +2144,11 @@ declare module 'azdata' {
 
 	//#region Chart general option types
 
-	export interface ChartOptions { }
+	export interface ChartOptions {
+		chartTitle?: ChartTextOptions | string;
+		legendOptions?: ChartTextStyleOptions;
+		freeformOptions?: any;
+	}
 
 	export interface ScaleOptions {
 		beginAtZero?: boolean;
@@ -2152,6 +2156,14 @@ declare module 'azdata' {
 		max?: number;
 		offset?: boolean;
 		stacked?: boolean;
+	}
+
+	export interface ChartTextOptions extends ChartTextStyleOptions {
+		text: string;
+	}
+
+	export interface ChartTextStyleOptions {
+		color?: string;
 	}
 
 	//#endregion
@@ -2260,8 +2272,8 @@ declare module 'azdata' {
 
 	export interface BubbleChartData extends ChartDataSet<Chart3DPoint> {
 	}
-	export interface BubbleChartOptions extends ScatterplotOptions {
 
+	export interface BubbleChartOptions extends ScatterplotOptions {
 	}
 
 	//#endregion

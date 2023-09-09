@@ -20,14 +20,17 @@ export interface BarDataSet {
 	templateUrl: decodeURI(require.toUrl('./chart.component.html'))
 })
 export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable {
+	private _chartId: string;
 	private _type: azdata.ChartType;
-	public chart: chartjs.Chart;
-	private chartTitle: string;
-
 	private _configuration: chartjs.ChartData;
+
+	public chart: chartjs.Chart;
 	private canvas: HTMLCanvasElement;
 	public element: string;
 
+	/**
+	 * Options in the form that Chart.js accepts (hence the `any` type)
+	 */
 	private _options: any = {
 		events: ['click', 'keyup'],
 		responsive: true,
@@ -63,7 +66,6 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 	 * Setter function for chart configuration
 	 */
 	public set configuration(val: TConfig) {
-		this.chartTitle = val.chartTitle;
 		this._configuration = this.convert(val);
 
 		if ((<any>val).options) { // TODO: give TConfig a strongly-typed TOptions param
@@ -74,14 +76,68 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 		}
 	}
 
+	public set chartId(val: string) {
+		this._chartId = val;
+
+		this.element = this._chartId;
+		this._changeRef.detectChanges();
+	}
+
 	/**
 	 * Setter function for chart options.
 	 * Some options like responsiveness and maintainaspectratio are set by default and will be used even if no options are provided.
 	 */
-	public set options(val: any) {
-		if (val) {
-			this._options = mixin({}, mixin(this._options, val));
+	public set options(val: azdata.ChartOptions) {
+		if (val === undefined) {
+			return;
 		}
+
+		// Free-form chart.js options get added first...
+		this._options = mixin({}, mixin(this._options, val.freeformOptions));
+
+		// ...then strongly-typed ComponentModel options get set (overriding free-form options)
+		if (val !== undefined) {
+			if (val.chartTitle) {
+				if (typeof val.chartTitle === 'string') {
+					this._options = mixin(this._options, {
+						plugins: {
+							title: {
+								text: val.chartTitle,
+								display: true
+							}
+						}
+					});
+				} else {
+					this._options = mixin(this._options, {
+						plugins: {
+							title: {
+								text: val.chartTitle.text,
+								color: val.chartTitle.color,
+								display: true
+							}
+						}
+					});
+				}
+			} else {
+				this._options = mixin(this._options, { plugins: { title: { display: false } } });
+			}
+
+			if (val.legendOptions) {
+				this._options = mixin(this._options, {
+					plugins: {
+						legend: {
+							title: {
+								color: val.legendOptions.color ?? undefined,
+								display: true
+							}
+						}
+					}
+				});
+			} else {
+				this._options = mixin(this._options, { plugins: { legend: { title: { display: false } } } });
+			}
+		}
+
 		this.drawChart();
 	}
 
@@ -101,9 +157,6 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 		const result: chartjs.ChartData = {
 			datasets: []
 		}
-
-		this.element = this.chartTitle;
-		this._changeRef.detectChanges();
 
 		switch (this._type) {
 			case 'bar':
