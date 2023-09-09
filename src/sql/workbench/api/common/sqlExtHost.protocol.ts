@@ -596,10 +596,6 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$isExecutionPlan(handle: number, value: string): Thenable<azdata.executionPlan.IsExecutionPlanResult> { throw ni(); }
 	/**
-	 * Generates server context.
-	 */
-	$generateServerContextualization(handle: number, ownerUri: string): void { throw ni(); }
-	/**
 	 * Gets server context.
 	 */
 	$getServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GetServerContextualizationResult> { throw ni(); }

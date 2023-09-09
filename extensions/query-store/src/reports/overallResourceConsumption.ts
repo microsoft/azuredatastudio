@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { BaseQueryStoreReport } from './baseQueryStoreReport';
 import { QueryStoreView } from './queryStoreView';
+import { ConfigureDialog } from '../settings/configureDialog';
+import { ConfigComponentsInfo } from '../common/utils';
 
 
 export class OverallResourceConsumption extends BaseQueryStoreReport {
@@ -16,8 +17,8 @@ export class OverallResourceConsumption extends BaseQueryStoreReport {
 	private cpuTime: QueryStoreView;
 	private logicalReads: QueryStoreView;
 
-	constructor(extensionContext: vscode.ExtensionContext, databaseName: string) {
-		super(constants.overallResourceConsumption, constants.overallResourceConsumptionToolbarLabel(databaseName), /*resizeable*/ false, extensionContext);
+	constructor(databaseName: string) {
+		super(constants.overallResourceConsumptionToolbarLabel(databaseName), constants.overallResourceConsumptionTabId,/*resizeable*/ false);
 		this.duration = new QueryStoreView(constants.duration, 'chartreuse');
 		this.executionCount = new QueryStoreView(constants.executionCount, 'coral');
 		this.cpuTime = new QueryStoreView(constants.cpuTime, 'darkturquoise');
@@ -31,5 +32,10 @@ export class OverallResourceConsumption extends BaseQueryStoreReport {
 		const logicalReadsContainer = await this.logicalReads.createViewContainer(view);
 
 		return [durationContainer, executionCountContainer, cpuTimeContainer, logicalReadsContainer];
+	}
+
+	protected override async configureButtonClick(configureDialog: ConfigureDialog): Promise<void> {
+		const configComponentsInfo: ConfigComponentsInfo[] = [ConfigComponentsInfo.chartComponent, ConfigComponentsInfo.timeIntervalComponentOverallResource];
+		await configureDialog.openDialog(configComponentsInfo);
 	}
 }

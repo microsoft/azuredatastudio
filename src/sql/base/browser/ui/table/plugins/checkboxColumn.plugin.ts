@@ -10,6 +10,7 @@ import { Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { convertJQueryKeyDownEvent } from 'sql/base/browser/dom';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface CheckBoxCellValue {
 	enabled?: boolean;
@@ -26,14 +27,14 @@ export interface CheckBoxChangedEventArgs<T extends Slick.SlickData> {
 export interface CheckBoxColumnOptions extends BaseTableColumnOptions {
 }
 
-export class CheckBoxColumn<T extends Slick.SlickData> implements Slick.Plugin<T>, TableColumn<T> {
+export class CheckBoxColumn<T extends Slick.SlickData> extends Disposable implements Slick.Plugin<T>, TableColumn<T> {
 	private _handler = new Slick.EventHandler();
 	private _grid!: Slick.Grid<T>;
-	private _onChange = new Emitter<CheckBoxChangedEventArgs<T>>();
+	private _onChange = this._register(new Emitter<CheckBoxChangedEventArgs<T>>());
 	public onChange = this._onChange.event;
 
 	constructor(private options: CheckBoxColumnOptions) {
-
+		super();
 	}
 
 	public init(grid: Slick.Grid<T>): void {

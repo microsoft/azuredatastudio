@@ -7,38 +7,42 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { DropDatabaseDocUrl } from '../constants';
-import { DropButtonLabel, DropDatabaseDialogTitle, DeleteBackupHistory, CloseConnections, DropDatabaseOptions, NameText, OwnerText, StatusText, DatabaseDetailsLabel } from '../localizedConstants';
+import * as loc from '../localizedConstants';
 
 export class DropDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private _dropConnections = false;
 	private _deleteBackupHistory = false;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options, DropDatabaseDialogTitle(options.database), 'DropDatabase');
-		this.dialogObject.okButton.label = DropButtonLabel;
+		super(objectManagementService, options, loc.DropDatabaseDialogTitle(options.database), 'DropDatabase');
+		this.dialogObject.okButton.label = loc.DropButtonLabel;
 	}
 
 	protected override get isDirty(): boolean {
 		return true;
 	}
 
+	protected override get saveChangesTaskLabel(): string {
+		return loc.DropObjectOperationDisplayName(loc.DatabaseTypeDisplayName, this.objectInfo.name);
+	}
+
 	protected async initializeUI(): Promise<void> {
 		let components = [];
 
 		let tableData = [[this.objectInfo.name, this.objectInfo.owner ?? '', this.objectInfo.status ?? '']];
-		let columnNames = [NameText, OwnerText, StatusText];
-		let fileTable = this.createTable(DatabaseDetailsLabel, columnNames, tableData);
-		let tableGroup = this.createGroup(DatabaseDetailsLabel, [fileTable], false);
+		let columnNames = [loc.NameText, loc.OwnerText, loc.StatusText];
+		let fileTable = this.createTable(loc.DatabaseDetailsLabel, columnNames, tableData);
+		let tableGroup = this.createGroup(loc.DatabaseDetailsLabel, [fileTable], false);
 		components.push(tableGroup);
 
 		if (!this.viewInfo.isAzureDB && !this.viewInfo.isManagedInstance && !this.viewInfo.isSqlOnDemand) {
-			let connCheckbox = this.createCheckbox(CloseConnections, async checked => {
+			let connCheckbox = this.createCheckbox(loc.CloseConnections, async checked => {
 				this._dropConnections = checked;
 			});
-			let updateCheckbox = this.createCheckbox(DeleteBackupHistory, async checked => {
+			let updateCheckbox = this.createCheckbox(loc.DeleteBackupHistory, async checked => {
 				this._deleteBackupHistory = checked;
 			});
-			let checkboxGroup = this.createGroup(DropDatabaseOptions, [connCheckbox, updateCheckbox], false);
+			let checkboxGroup = this.createGroup(loc.DropDatabaseOptions, [connCheckbox, updateCheckbox], false);
 			components.push(checkboxGroup);
 		}
 		this.formContainer.addItems(components);
@@ -49,11 +53,11 @@ export class DropDatabaseDialog extends ObjectManagementDialogBase<Database, Dat
 	}
 
 	protected override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
-		await this.objectManagementService.dropDatabase(this.options.connectionUri, this.options.objectUrn, this._dropConnections, this._deleteBackupHistory, false);
+		await this.objectManagementService.dropDatabase(this.options.connectionUri, this.options.database, this.options.objectUrn, this._dropConnections, this._deleteBackupHistory, false);
 	}
 
 	protected override async generateScript(): Promise<string> {
-		return await this.objectManagementService.dropDatabase(this.options.connectionUri, this.options.objectUrn, this._dropConnections, this._deleteBackupHistory, true);
+		return await this.objectManagementService.dropDatabase(this.options.connectionUri, this.options.database, this.options.objectUrn, this._dropConnections, this._deleteBackupHistory, true);
 	}
 
 	protected override async validateInput(): Promise<string[]> {
