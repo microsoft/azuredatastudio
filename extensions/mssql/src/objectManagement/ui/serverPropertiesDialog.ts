@@ -9,7 +9,6 @@ import { DefaultColumnCheckboxWidth } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import * as constants from '../constants';
-import { debounce } from '../utils';
 import { Server, ServerViewInfo, NumaNode, AffinityType, ServerLoginMode, AuditLevel } from '../interfaces';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
@@ -55,7 +54,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	// Server authentication radio buttons
 	private onlyWindowsAuthRadioButton: azdata.RadioButtonComponent;
 	private sqlServerAndWindowsAuthRadioButton: azdata.RadioButtonComponent;
-	private notifyChangeInAuthentication: boolean = false;
 	// Login auditing radio buttons
 	private noneRadioButton: azdata.RadioButtonComponent;
 	private failedLoginsOnlyRadioButton: azdata.RadioButtonComponent;
@@ -70,8 +68,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private dataLocationInput: azdata.InputBoxComponent;
 	private logLocationInput: azdata.InputBoxComponent;
 	private backupLocationInput: azdata.InputBoxComponent;
-	private notifyChangeDataLocation: boolean = false;
-	private notifyChangeLogLocation: boolean = false;
 
 	private advancedTab: azdata.Tab;
 	private readonly advancedTabId: string = 'advancedId';
@@ -91,9 +87,13 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private queryWaitInput: azdata.InputBoxComponent;
 
 	private activeTabId: string;
+	private shouldRestartServer: boolean = false;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
+		this.disposables.push(this.dialogObject.onClosed(async () => {
+			await this.notifyServerRestart();
+		}));
 	}
 
 	protected override get helpUrl(): string {
@@ -365,20 +365,13 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		if (this.objectInfo.maxServerMemory.value < this.objectInfo.minServerMemory.value) {
 			errors.push(localizedConstants.serverMemoryMaxLowerThanMinInputError);
 		}
-		await this.notifyServerRestart();
 		return errors;
 	}
 
-	@debounce(1500)
 	private async notifyServerRestart(): Promise<void> {
-		if (this.notifyChangeInAuthentication && this.activeTabId === this.securityTabId) {
-			await vscode.window.showInformationMessage(localizedConstants.needToRestartServer);
-			this.notifyChangeInAuthentication = false;
-		}
-		if ((this.notifyChangeDataLocation || this.notifyChangeLogLocation) && this.activeTabId === this.databaseSettingsTabId) {
-			await vscode.window.showInformationMessage(localizedConstants.needToRestartServer);
-			this.notifyChangeLogLocation = false;
-			this.notifyChangeDataLocation = false;
+		if (this.shouldRestartServer) {
+			await vscode.window.showInformationMessage(localizedConstants.needToRestartServer, { modal: true });
+			this.shouldRestartServer = false;
 		}
 	}
 
@@ -546,7 +539,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		if (this.sqlServerAndWindowsAuthRadioButton.checked) {
 			this.objectInfo.authenticationMode = ServerLoginMode.Mixed;
 		}
-		this.notifyChangeInAuthentication = this.objectInfo.authenticationMode !== this.originalObjectInfo.authenticationMode;
+		this.shouldRestartServer = this.objectInfo.authenticationMode !== this.originalObjectInfo.authenticationMode;
 	}
 
 	private async handleAuditLevelChange(): Promise<void> {
@@ -596,25 +589,33 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 		this.dataLocationInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.dataLocation = newValue;
-			this.notifyChangeDataLocation = this.objectInfo.dataLocation !== this.originalObjectInfo.dataLocation;
+			if (this.objectInfo.dataLocation !== this.originalObjectInfo.dataLocation) {
+				this.shouldRestartServer = true;
+			}
 		}, dataLocationInputboxProps);
 		const dataLocationButton = this.createBrowseButton(async () => {
 			const newPath = await this.selectFolder(this.objectInfo.dataLocation);
 			this.dataLocationInput.value = newPath;
 			this.objectInfo.dataLocation = newPath;
-			this.notifyChangeDataLocation = this.objectInfo.dataLocation !== this.originalObjectInfo.dataLocation;
+			if (this.objectInfo.dataLocation !== this.originalObjectInfo.dataLocation) {
+				this.shouldRestartServer = true;
+			}
 		}, isEnabled);
 		const dataLocationInputContainer = this.createLabelInputContainer(localizedConstants.dataLocationText, [this.dataLocationInput, dataLocationButton])
 
 		this.logLocationInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.logLocation = newValue;
-			this.notifyChangeLogLocation = this.objectInfo.logLocation !== this.originalObjectInfo.logLocation;
+			if (this.objectInfo.logLocation !== this.originalObjectInfo.logLocation) {
+				this.shouldRestartServer = true;
+			}
 		}, logLocationInputboxProps);
 		const logLocationButton = this.createBrowseButton(async () => {
 			const newPath = await this.selectFolder(this.objectInfo.logLocation);
 			this.logLocationInput.value = newPath;
 			this.objectInfo.logLocation = newPath;
-			this.notifyChangeLogLocation = this.objectInfo.logLocation !== this.originalObjectInfo.logLocation;
+			if (this.objectInfo.logLocation !== this.originalObjectInfo.logLocation) {
+				this.shouldRestartServer = true;
+			}
 		}, isEnabled);
 		const logLocationInputContainer = this.createLabelInputContainer(localizedConstants.logLocationText, [this.logLocationInput, logLocationButton])
 
@@ -802,5 +803,4 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 		this.advancedTab = this.createTab(this.advancedTabId, localizedConstants.AdvancedSectionHeader, advancedTabContainer);
 	}
-
 }
