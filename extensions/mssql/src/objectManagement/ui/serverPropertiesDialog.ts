@@ -539,7 +539,9 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		if (this.sqlServerAndWindowsAuthRadioButton.checked) {
 			this.objectInfo.authenticationMode = ServerLoginMode.Mixed;
 		}
-		this.shouldRestartServer = this.objectInfo.authenticationMode !== this.originalObjectInfo.authenticationMode;
+		if (this.objectInfo.authenticationMode !== this.originalObjectInfo.authenticationMode) {
+			this.shouldRestartServer = true;
+		}
 	}
 
 	private async handleAuditLevelChange(): Promise<void> {
