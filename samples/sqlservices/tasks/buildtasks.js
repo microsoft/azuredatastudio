@@ -20,7 +20,7 @@ let tsProject = ts.createProject('tsconfig.json');
 
 // GULP TASKS //////////////////////////////////////////////////////////////
 gulp.task('copytypings', function () {
-	return remoteSrc('azdata.proposed.d.ts', { base: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio/deepaksa1/chartComponent/src/sql/' })
+	return remoteSrc('azdata.proposed.d.ts', { base: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/src/sql/' })
 		.pipe(gulp.dest('typings/'));
 });
 
