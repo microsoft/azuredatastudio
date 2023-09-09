@@ -2087,7 +2087,7 @@ declare module 'azdata' {
 		 */
 		chartType: ChartType;
 		/**
-		 * Configuration of chart: datasets, labels(if applicable), options
+		 * Configuration of chart: datasets, labels (if applicable), options
 		 */
 		configuration: TConfig;
 

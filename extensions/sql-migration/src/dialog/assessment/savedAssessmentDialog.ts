@@ -176,25 +176,25 @@ export class SavedAssessmentDialog {
 				height: '300px'
 			}).component();
 
-		const horizontalBarConfig: azdata.BarChartConfiguration = {
-			datasets: barConfig.datasets,
-			labels: ['uno', 'dos', 'tres', 'quatro'],
-			options: {
-				legendVisible: false,
-				scales: {
-					x: {
-						max: 8
-					}
-				}
-			}
-		};
+		// const horizontalBarConfig: azdata.BarChartConfiguration = {
+		// 	datasets: barConfig.datasets,
+		// 	labels: ['uno', 'dos', 'tres', 'quatro'],
+		// 	options: {
+		// 		legendVisible: false,
+		// 		scales: {
+		// 			x: {
+		// 				max: 8
+		// 			}
+		// 		}
+		// 	}
+		// };
 
-		const horizontalBarChart = view.modelBuilder.chart<azdata.BarChartConfiguration>()
-			.withProps({
-				chartType: 'horizontalBar',
-				configuration: horizontalBarConfig,
-				chartId: 'horizChart1'
-			}).component();
+		// const horizontalBarChart = view.modelBuilder.chart<azdata.BarChartConfiguration>()
+		// 	.withProps({
+		// 		chartType: 'horizontalBar',
+		// 		configuration: horizontalBarConfig,
+		// 		chartId: 'horizChart1'
+		// 	}).component();
 
 		// const lineConfig: azdata.LineChartConfiguration = {
 		// 	chartTitle: 'Test Line Chart',
@@ -453,6 +453,26 @@ export class SavedAssessmentDialog {
 		// 		}
 		// 	).component();
 
+		const button = view.modelBuilder.button()
+			.withProps({
+				label: 'Click to change chart data'
+			}).component();
+
+		this._disposables.push(button.onDidClick(async () => {
+			for (let set of barConfig.datasets) {
+				for (let i = 0; i < set.data.length; i++) {
+					set.data[i] = Math.random() * 8;
+				}
+			}
+
+			const newConfig: azdata.BarChartConfiguration = {
+				...barConfig,
+				datasets: barConfig.datasets
+			};
+
+			await barChart.updateProperty('configuration', newConfig);
+		}));
+
 		const flex = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column', })
 			.withProps({ CSSStyles: { 'padding': '20px 15px', } })
@@ -460,8 +480,10 @@ export class SavedAssessmentDialog {
 		flex.addItem(radioStart, { flex: '0 0 auto' });
 		flex.addItem(radioContinue, { flex: '0 0 auto' });
 
+		flex.addItem(button);
+
 		flex.addItem(barChart, { flex: '0 0 auto' });
-		flex.addItem(horizontalBarChart, { flex: '0 0 auto' });
+		// flex.addItem(horizontalBarChart, { flex: '0 0 auto' });
 		// flex.addItem(lineChart, { flex: '0 0 auto' });
 		// flex.addItem(pieChart, { flex: '0 0 auto' });
 		// flex.addItem(doughnutChart, { flex: '0 0 auto' });
