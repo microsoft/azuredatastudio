@@ -332,7 +332,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		}
 		// File Stream
 		else if (selectedOption === localizedConstants.FilestreamFileType) {
-			fileGroupDdOptions = this.options.filestreamFilegroups;
+			fileGroupDdOptions = this.options.filestreamFilegroups.length > 0 ? this.options.filestreamFilegroups : [localizedConstants.FileGroupForFilestreamTypeText];
 			fileGroupDdValue = this.result.fileGroup;
 			visibility = 'hidden';
 			maxSizeGroupMarginTop = '-130px';
