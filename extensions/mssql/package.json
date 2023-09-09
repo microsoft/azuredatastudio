@@ -32,10 +32,6 @@
     ],
     "commands": [
       {
-        "command": "objectExplorer.scriptAsAlter",
-        "title": "Script as Alter"
-      },
-      {
         "command": "mssql.exportSqlAsNotebook",
         "title": "%mssql.exportSqlAsNotebook%"
       },
@@ -157,6 +153,10 @@
           "dark": "resources/dark/groupBySchemaDisabled_inverse.svg",
           "light": "resources/light/groupBySchemaDisabled.svg"
         }
+      },
+      {
+        "command": "mssql.clearPooledConnections",
+        "title": "%mssql.connection.clearPooledConnections%"
       }
     ],
     "outputChannels": [
@@ -537,11 +537,6 @@
         }
       ],
       "objectExplorer/item/context": [
-        {
-          "command": "objectExplorer.scriptAsAlter",
-          "when": "nodeType == Table",
-          "group": "0_query@5"
-        },
         {
           "command": "mssql.designTable",
           "when": "connectionProvider == MSSQL && nodeType == Table && nodeSubType != LedgerDropped",

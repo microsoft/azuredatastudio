@@ -142,6 +142,9 @@
     <trans-unit id="okButtonText">
       <source xml:lang="en">Ok</source>
     </trans-unit>
+    <trans-unit id="openInNewTab">
+      <source xml:lang="en">Open In New Tab</source>
+    </trans-unit>
     <trans-unit id="overallResourceConsumption">
       <source xml:lang="en">Overall Resource Consumption</source>
     </trans-unit>

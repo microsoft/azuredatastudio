@@ -1733,6 +1733,11 @@ export namespace EncryptionKeysChangedNotification {
 	export const type = new NotificationType<DidChangeEncryptionIVKeyParams, void>('connection/encryptionKeysChanged');
 }
 
+// ------------------------------- < Clear Pooled Connections Request > ---------------------------------------
+
+export namespace ClearPooledConnectionsRequest {
+	export const type = new RequestType<object, void, void, void>('connection/clearpooledconnections');
+}
 // ------------------------------- < Query Store > ------------------------------------
 //#region Query Store
 
