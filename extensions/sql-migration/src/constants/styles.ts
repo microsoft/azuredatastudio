@@ -84,3 +84,10 @@ export const TOOLBAR_CSS = {
 	'font-weight': '400',
 	'margin': '0',
 };
+
+export const ASSESSMENT_SUMMARY_CARD_CSS = {
+	'font-size': '16px',
+	'line-height': '21.28px',
+	'font-weight': '700',
+	'margin': '0px',
+};
