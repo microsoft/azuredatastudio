@@ -757,7 +757,10 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			inputType: 'number',
 			max: this.objectInfo.locks.maximumValue,
 			min: 0,
-			value: this.objectInfo.locks.value.toString()
+			value: this.objectInfo.locks.value.toString(),
+			validationErrorMessage: localizedConstants.locksValidation(this.objectInfo.locks.minimumValue)
+		}, async () => {
+			return !(+this.locksInput.value < this.objectInfo.locks.minimumValue && +this.locksInput.value !== 0);
 		});
 		const locksContainer = this.createLabelInputContainer(localizedConstants.locksLabel, this.locksInput);
 
