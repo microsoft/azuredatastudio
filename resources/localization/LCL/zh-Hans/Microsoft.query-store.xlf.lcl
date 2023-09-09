@@ -493,6 +493,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.query-store/dist/common/constants.queryStoreDashboardTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Query Store - {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[查询存储 - {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.query-store/dist/common/constants.resourceConsumptionCriteriaTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Resource Consumption Criteria]]></Val>
@@ -664,20 +673,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.query-store/package.queryStore.overallResourceConsumptionOpen" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.query-store/package.queryStore.openQueryStoreDashboard" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Open Overall Resource Consumption]]></Val>
+          <Val><![CDATA[Query Store]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[打开总体资源消耗]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.query-store/package.queryStore.topResourceConsumingQueriesOpen" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Open Top Resource Consuming Queries]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[打开资源消耗量最高的查询]]></Val>
+            <Val><![CDATA[查询存储]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
