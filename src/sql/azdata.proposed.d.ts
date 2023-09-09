@@ -2097,6 +2097,9 @@ declare module 'azdata' {
 		chartId: string;
 	}
 
+	/**
+	 * Base type for chart configurations
+	 */
 	export interface ChartConfiguration { }
 
 	//#region Chart general data types
@@ -2119,7 +2122,7 @@ declare module 'azdata' {
 
 	export interface ChartDataEntry extends ChartDataEntryBase {
 		/**
-		 * Value of data point
+		 * Value of one-dimensional data point
 		 */
 		value: Chart1DPoint | number;
 	}
@@ -2128,15 +2131,33 @@ declare module 'azdata' {
 		data: TVal[];
 	}
 
+	/**
+	 * One-dimensional data point
+	 */
 	export interface Chart1DPoint {
+		/**
+		 * Value for a one-dimensional data point, or the x-coordinate for a multi-dimensional data point
+		 */
 		x: number;
 	}
 
+	/**
+	 * Two-dimensional data point
+	 */
 	export interface Chart2DPoint extends Chart1DPoint {
+		/**
+		 * Y-coordiate for a multi-dimensional data point
+		 */
 		y: number;
 	}
 
+	/**
+	 * Three-dimensional data point
+	 */
 	export interface Chart3DPoint extends Chart2DPoint {
+		/**
+		 * Radius for a multi-dimensional data point
+		 */
 		r: number;
 	}
 
@@ -2144,17 +2165,54 @@ declare module 'azdata' {
 
 	//#region Chart general option types
 
+	/**
+	 * Base options for a char
+	 */
 	export interface ChartOptions {
+		/**
+		 * Title of the chart.  Set to `undefined` to not display the title.
+		 */
 		chartTitle?: string;
+
+		/**
+		 * Whether to display the legend.  Defaults to true.
+		 */
 		legendVisible?: boolean;
+
+		/**
+		 * Free-form options that are mixed into the display options for the underlying charting library to support all missing options functionality.
+		 * Chart.js is the current library powering ADS charting, but this is subject to change in the future.
+		 */
 		freeformOptions?: any;
 	}
 
+	/**
+	 * Base options for scales
+	 */
 	export interface ScaleOptions {
+		/**
+		 * Whether to begin the scale at zero
+		 */
 		beginAtZero?: boolean;
+
+		/**
+		 * Minimum value of the scale
+		 */
 		min?: number;
+
+		/**
+		 * Maxium value of the scale
+		 */
 		max?: number;
+
+		/**
+		 * Whether to add extra space between the scale and the chart
+		 */
 		offset?: boolean;
+
+		/**
+		 * Whether to stack charted values
+		 */
 		stacked?: boolean;
 	}
 
@@ -2170,6 +2228,7 @@ declare module 'azdata' {
 	export interface BarChartConfiguration extends ChartConfiguration {
 		datasets: BarChartData[];
 		options?: BarChartOptions;
+
 		/**
 		 * Labels for the base axis.  Only data that aligns with a label is shown.  If there are fewer labels than data, then not all data is displayed; if there are more labels than data, then empty chart entries are appended
 		 */
@@ -2195,6 +2254,10 @@ declare module 'azdata' {
 	export interface LineChartConfiguration extends ChartConfiguration {
 		datasets: BarChartData[];
 		options?: LineChartOptions;
+
+		/**
+		 * Labels for the base axis.  Only data that aligns with a label is shown.  If there are fewer labels than data, then not all data is displayed; if there are more labels than data, then empty chart entries are appended
+		 */
 		labels: string[];
 	}
 
@@ -2206,6 +2269,9 @@ declare module 'azdata' {
 			x?: ScaleOptions;
 			y?: ScaleOptions;
 		}
+		/**
+		 * Bezier curve tension between points, 0 for straight lines.  Recommended range: 0.0-1.0
+		 */
 		tension?: number;
 	}
 
@@ -2223,6 +2289,9 @@ declare module 'azdata' {
 
 	export interface PieChartOptions extends ChartOptions {
 		circumference?: number;
+		/**
+		 * Size of the cutout for a pie/doughnut chart.  Pie chart defaults to 0.  Doughnut chart defaults to 50%.
+		 */
 		cutout?: number | string;
 		radius?: number | string;
 		rotation?: number;
