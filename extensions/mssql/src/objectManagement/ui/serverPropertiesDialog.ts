@@ -756,6 +756,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			ariaLabel: localizedConstants.locksLabel,
 			inputType: 'number',
 			max: this.objectInfo.locks.maximumValue,
+			min: 0,
 			value: this.objectInfo.locks.value.toString()
 		});
 		const locksContainer = this.createLabelInputContainer(localizedConstants.locksLabel, this.locksInput);
