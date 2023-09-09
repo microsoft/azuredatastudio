@@ -2166,7 +2166,7 @@ declare module 'azdata' {
 	//#region Chart general option types
 
 	/**
-	 * Base options for a char
+	 * Base options for a chart
 	 */
 	export interface ChartOptions {
 		/**
