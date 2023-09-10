@@ -12,7 +12,6 @@ import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPro
 import { Database, DatabaseFile, DatabaseScopedConfigurationsInfo, DatabaseViewInfo, FileGrowthType, FileGroup, FileGroupType } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
-import { deepClone } from '../../util/objects';
 import { DatabaseFileDialog } from './databaseFileDialog';
 import * as vscode from 'vscode';
 
@@ -82,7 +81,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private readonly dscTabId: string = 'dscDatabaseId';
 	private dscTabSectionsContainer: azdata.Component[] = [];
 	private dscTable: azdata.TableComponent;
-	private dscOriginalData: DatabaseScopedConfigurationsInfo[];
 	private currentRowId: number;
 	private valueForPrimaryDropdown: azdata.DropDownComponent;
 	private valueForSecondaryDropdown: azdata.DropDownComponent;
@@ -1297,7 +1295,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	//#region Database Properties - Data Scoped configurations Tab
 	private async initializeDatabaseScopedConfigurationSection(): Promise<void> {
-		this.dscOriginalData = deepClone(this.objectInfo.databaseScopedConfigurations);
 		const dscNameColumn: azdata.TableColumn = {
 			type: azdata.ColumnType.text,
 			value: localizedConstants.DatabaseScopedOptionsColumnHeader,
@@ -1488,7 +1485,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Apply Primary To Secondary checkbox
 		this.setSecondaryCheckboxForInputType = this.createCheckbox(localizedConstants.SetSecondaryText, async (checked) => {
 			await this.dscSecondaryValueInputGroup.updateCssStyles({ 'visibility': checked ? 'hidden' : 'visible' });
-			this.currentRowObjectInfo.valueForSecondary = checked ? this.currentRowObjectInfo.valueForPrimary : this.dscOriginalData[this.currentRowId].valueForSecondary;
+			this.currentRowObjectInfo.valueForSecondary = this.currentRowObjectInfo.valueForPrimary;
 			await this.valueForSecondaryInput.updateProperties({ value: this.currentRowObjectInfo.valueForSecondary });
 			if (this.dscTable.data[this.currentRowId][2] !== this.currentRowObjectInfo.valueForSecondary) {
 				this.dscTable.data[this.currentRowId][2] = this.currentRowObjectInfo.valueForSecondary;
@@ -1550,7 +1547,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Apply Primary To Secondary checkbox
 		this.setSecondaryCheckboxForDropdowns = this.createCheckbox(localizedConstants.SetSecondaryText, async (checked) => {
 			await this.dscSecondaryValueDropdownGroup.updateCssStyles({ 'visibility': checked ? 'hidden' : 'visible' });
-			this.currentRowObjectInfo.valueForSecondary = checked ? this.currentRowObjectInfo.valueForPrimary : this.dscOriginalData[this.currentRowId].valueForSecondary;
+			this.currentRowObjectInfo.valueForSecondary = this.currentRowObjectInfo.valueForPrimary;
 			await this.valueForSecondaryDropdown.updateProperties({ value: this.currentRowObjectInfo.valueForSecondary });
 		}, true);
 		this.dscSecondaryCheckboxForDropdownGroup = this.createGroup('', [this.setSecondaryCheckboxForDropdowns], false, true);
