@@ -92,7 +92,10 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 				errors.push(localizedConstants.FileNameExistsError(this.result.name.trim()));
 			}
 			// If new file, verify if the file name with extension already exists
-			if (this.options.isNewFile && !!this.options.files.find(file => { return (path.join(file.path, file.fileNameWithExtension) === path.join(this.result.path, this.result.fileNameWithExtension)) })) {
+			if (this.options.isNewFile && !!this.options.files.find(file => {
+				return (this.result.name === file.name &&
+					path.join(file.path, file.fileNameWithExtension) === path.join(this.result.path, this.result.fileNameWithExtension))
+			})) {
 				errors.push(localizedConstants.FileAlreadyExistsError(path.join(this.result.path, this.result.fileNameWithExtension)));
 			}
 		}
@@ -333,7 +336,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		}
 		// File Stream
 		else if (selectedOption === localizedConstants.FilestreamFileType) {
-			fileGroupDdOptions = this.options.filestreamFilegroups;
+			fileGroupDdOptions = this.options.filestreamFilegroups.length > 0 ? this.options.filestreamFilegroups : [localizedConstants.FileGroupForFilestreamTypeText];
 			fileGroupDdValue = this.result.fileGroup;
 			visibility = 'hidden';
 			maxSizeGroupMarginTop = '-130px';
