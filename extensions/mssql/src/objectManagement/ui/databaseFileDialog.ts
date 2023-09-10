@@ -157,7 +157,8 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 			ariaLabel: localizedConstants.SizeInMbText,
 			inputType: 'number',
 			enabled: this.options.databaseFile.type !== localizedConstants.FilestreamFileType,
-			value: String(this.options.databaseFile.sizeInMb)
+			value: String(this.options.databaseFile.sizeInMb),
+			min: 1
 		});
 		const fileSizeContainer = this.createLabelInputContainer(localizedConstants.SizeInMbText, this.fileSizeInput);
 		containers.push(fileSizeContainer);
