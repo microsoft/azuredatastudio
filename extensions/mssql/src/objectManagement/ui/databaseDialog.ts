@@ -1317,7 +1317,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		this.dscTable = this.modelView.modelBuilder.table().withProps({
 			columns: [dscNameColumn, primaryValueColumn, secondaryValueColumn],
 			data: this.objectInfo.databaseScopedConfigurations.map(metaData => {
-				return [metaData.name,
+				return [metaData.name.toLocaleUpperCase(),
 				metaData.valueForPrimary,
 				metaData.valueForSecondary]
 			}),
