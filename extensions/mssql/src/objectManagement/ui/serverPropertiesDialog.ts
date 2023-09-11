@@ -504,8 +504,9 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	}
 
 	private initializeSecuritySection(): void {
+		const isWindows = this.objectInfo.platform === constants.Windows;
 		// cannot change auth mode in sql managed instance or non windows instances
-		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance && this.objectInfo.platform === 'Windows';
+		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance && isWindows;
 		const radioServerGroupName = 'serverAuthenticationRadioGroup';
 		this.onlyWindowsAuthRadioButton = this.createRadioButton(localizedConstants.onlyWindowsAuthModeText, radioServerGroupName, this.objectInfo.authenticationMode === ServerLoginMode.Integrated, async () => { await this.handleAuthModeChange(); });
 		this.sqlServerAndWindowsAuthRadioButton = this.createRadioButton(localizedConstants.sqlServerAndWindowsAuthText, radioServerGroupName, this.objectInfo.authenticationMode === ServerLoginMode.Mixed, async () => { await this.handleAuthModeChange(); });
@@ -517,7 +518,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		], true);
 
 		const radioLoginsGroupName = 'serverLoginsRadioGroup';
-		const isWindows = this.objectInfo.platform === 'Windows';
 		this.noneRadioButton = this.createRadioButton(localizedConstants.noLoginAuditingText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.None, async () => { await this.handleAuditLevelChange(); });
 		this.failedLoginsOnlyRadioButton = this.createRadioButton(localizedConstants.failedLoginsOnlyText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.Failure, async () => { await this.handleAuditLevelChange(); });
 		this.successfulLoginsOnlyRadioButton = this.createRadioButton(localizedConstants.successfulLoginsOnlyText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.Success, async () => { await this.handleAuditLevelChange(); });
