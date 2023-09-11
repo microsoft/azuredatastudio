@@ -673,6 +673,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	}
 
 	private initializeAdvancedSection(): void {
+		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance;
 		this.allowTriggerToFireOthersDropdown = this.createDropdown(localizedConstants.allowTriggerToFireOthersLabel, async (newValue) => {
 			this.objectInfo.allowTriggerToFireOthers = newValue === 'True';
 		}, ['True', 'False'], this.objectInfo.allowTriggerToFireOthers ? 'True' : 'False');
@@ -736,7 +737,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 		this.scanStartupProcsDropdown = this.createDropdown(localizedConstants.scanStartupProcsLabel, async (newValue) => {
 			this.objectInfo.scanStartupProcs = newValue === 'True';
-		}, ['True', 'False'], this.objectInfo.scanStartupProcs ? 'True' : 'False');
+		}, ['True', 'False'], this.objectInfo.scanStartupProcs ? 'True' : 'False', isEnabled);
 		const scanStartupProcsContainer = this.createLabelInputContainer(localizedConstants.scanStartupProcsLabel, this.scanStartupProcsDropdown);
 
 		this.twoDigitYearCutoffInput = this.createInputBox(async (newValue) => {
@@ -764,6 +765,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		}, {
 			ariaLabel: localizedConstants.locksLabel,
 			inputType: 'number',
+			enabled: isEnabled,
 			max: this.objectInfo.locks.maximumValue,
 			min: 0,
 			value: this.objectInfo.locks.value.toString(),
