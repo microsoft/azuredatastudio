@@ -87,6 +87,19 @@ export const ASSESSMENT_RESULTS_PAGE_TITLE = localize('sql.migration.assessment.
 export const ASSESSMENT_RESULTS_PAGE_HEADER = localize('sql.migration.assessment.results.header', "View assessment results and select database(s) for migration");
 export const DATABASES_ASSESSED_LABEL = localize('sql.migration.database.assessed.label', "Database(s) assessed");
 export const MIGRATION_TIME_LABEL = localize('sql.migration.migration.time.label', "Ready for migration");
+export const ASSESSMENT_FINDINGS_LABEL = localize('sql.migration.assessment.findings.label', "Assessment findings");
+export const SUMMARY_TITLE = localize('sql.migration.summary.title', "Summary");
+export const DETAILS_TITLE = localize('sql.migration.details.title', "Details");
+export const ASSESSMENT_SUMMARY_TITLE = localize('sql.migration.assessment.summary.title', "Assessment summary");
+export const READINESS_SECTION_TITLE = localize('sql.migration.readiness.section.title', "Migration readiness of assessed databases in the Server instance");
+export const TOTAL_FINDINGS_LABEL = localize('sql.migration.total.findings.label', "Total findings");
+export const ISSUES_LABEL = localize('sql.migration.issues.label', "Blocking issues");
+export const INSTANCE_FINDING_SUMMARY = localize('sql.migration.instance.finding.summary', "Server instance assessment findings summary");
+export const SEVERITY_FINDINGS_LABEL = localize('sql.migration.severity.findings.label', "Findings by severity");
+export const ASSESSED_DBS_LABEL = localize('sql.migration.assessed.dbs.label', "Assessed databases");
+export const NOT_READY = localize('sql.migration.not.ready', "Not ready");
+export const READY = localize('sql.migration.ready', "Ready");
+export const READY_WARN = localize('sql.migration.ready.warn', "Ready with warnings");
 
 // Assessment results and recommendations
 export const ASSESSMENT_RESULTS_AND_RECOMMENDATIONS_PAGE_TITLE = localize('sql.migration.assessment.results.and.recommendations.title', "Assessment results and recommendations");
