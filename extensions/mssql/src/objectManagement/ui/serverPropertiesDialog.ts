@@ -91,8 +91,11 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
-		this.disposables.push(this.dialogObject.onClosed(async () => {
-			await this.notifyServerRestart();
+		this.disposables.push(this.dialogObject.onClosed(async (reason: azdata.window.CloseReason) => {
+			if (reason === 'ok') {
+				// only show message if user apply changes
+				await this.notifyServerRestart();
+			}
 		}));
 	}
 
@@ -514,10 +517,16 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		], true);
 
 		const radioLoginsGroupName = 'serverLoginsRadioGroup';
+		const isWindows = this.objectInfo.platform === 'Windows';
 		this.noneRadioButton = this.createRadioButton(localizedConstants.noLoginAuditingText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.None, async () => { await this.handleAuditLevelChange(); });
 		this.failedLoginsOnlyRadioButton = this.createRadioButton(localizedConstants.failedLoginsOnlyText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.Failure, async () => { await this.handleAuditLevelChange(); });
 		this.successfulLoginsOnlyRadioButton = this.createRadioButton(localizedConstants.successfulLoginsOnlyText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.Success, async () => { await this.handleAuditLevelChange(); });
 		this.bothFailedAndSuccessfulLoginsRadioButton = this.createRadioButton(localizedConstants.bothFailedAndSuccessfulLoginsText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.All, async () => { await this.handleAuditLevelChange(); });
+		// cannot change values in serverLogin section on Linux
+		this.noneRadioButton.enabled = isWindows;
+		this.failedLoginsOnlyRadioButton.enabled = isWindows;
+		this.successfulLoginsOnlyRadioButton.enabled = isWindows;
+		this.bothFailedAndSuccessfulLoginsRadioButton.enabled = isWindows;
 		const serverLoginSection = this.createGroup(localizedConstants.loginAuditingText, [
 			this.noneRadioButton,
 			this.failedLoginsOnlyRadioButton,
