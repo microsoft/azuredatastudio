@@ -100,6 +100,7 @@ export const NOT_READY = localize('sql.migration.not.ready', "Not ready");
 export const READY = localize('sql.migration.ready', "Ready");
 export const NEEDS_REVIEW = localize('sql.migration.needs.review', "Needs review");
 export const READY_WARN = localize('sql.migration.ready.warn', "Ready with warnings");
+export const BLOCKERS = localize('sql.migration.ready', "Blockers");
 export const DATABASE_ISSUES_SUMMARY = localize('sql.migration.database.issues.summary', "Database assessment issues summary");
 export const TOTAL_ISSUES_LABEL = localize('sql.migration.total.issues.label', "Total issues found");
 export const SEVERITY_ISSUES_LABEL = localize('sql.migration.severity.issues.label', "Issues by severity");
