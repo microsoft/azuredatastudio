@@ -27,6 +27,7 @@ export class IconPathHelper {
 	public static sqlServerLogo: IconPath;
 	public static sqlDatabaseLogo: IconPath;
 	public static sqlDatabaseWarningLogo: IconPath;
+	public static sqlDatabaseNotReadyLogo: IconPath;
 	public static cancel: IconPath;
 	public static warning: IconPath;
 	public static info: IconPath;
@@ -118,6 +119,10 @@ export class IconPathHelper {
 		IconPathHelper.sqlDatabaseWarningLogo = {
 			light: context.asAbsolutePath('images/sqlDatabaseWarning.svg'),
 			dark: context.asAbsolutePath('images/sqlDatabaseWarning.svg')
+		};
+		IconPathHelper.sqlDatabaseNotReadyLogo = {
+			light: context.asAbsolutePath('images/sqlDatabaseNotReady.svg'),
+			dark: context.asAbsolutePath('images/sqlDatabaseNotReady.svg')
 		};
 		IconPathHelper.cancel = {
 			light: context.asAbsolutePath('images/cancel.svg'),

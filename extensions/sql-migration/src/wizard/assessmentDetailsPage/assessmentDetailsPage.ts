@@ -25,7 +25,7 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 			azdata.window.createWizardPage(constants.ASSESSMENT_RESULTS_PAGE_TITLE),
 			migrationStateModel);
 		this._header = new AssessmentDetailsHeader(migrationStateModel);
-		this._body = new AssessmentDetailsBody(migrationStateModel);
+		this._body = new AssessmentDetailsBody(migrationStateModel, migrationStateModel._targetType);
 	}
 
 	// function to register Assessment details page content.
@@ -62,7 +62,7 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		await this._header.populateAssessmentDetailsHeader();
-		await this._body._treeComponent.initialize();
+		await this._body.populateAssessmentBody();
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
