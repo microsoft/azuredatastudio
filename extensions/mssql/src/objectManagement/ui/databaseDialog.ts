@@ -1295,6 +1295,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	//#region Database Properties - Data Scoped configurations Tab
 	private async initializeDatabaseScopedConfigurationSection(): Promise<void> {
+		// Configurations that doesn't support secondary replica
+		let secondaryUnsupportedConfigsSet = new Set<number>([11, 12, 25, 6, 21]);
 		const dscNameColumn: azdata.TableColumn = {
 			type: azdata.ColumnType.text,
 			value: localizedConstants.DatabaseScopedOptionsColumnHeader,
@@ -1316,7 +1318,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			data: this.objectInfo.databaseScopedConfigurations.map(metaData => {
 				return [metaData.name.toLocaleUpperCase(),
 				metaData.valueForPrimary,
-				metaData.valueForSecondary]
+				secondaryUnsupportedConfigsSet.has(metaData.id) ? localizedConstants.NotAvailableText : metaData.valueForSecondary]
 			}),
 			height: getTableHeight(this.objectInfo.databaseScopedConfigurations.length, 1, DscTableRowLength),
 			width: DefaultTableWidth
