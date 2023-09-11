@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { DisplayType } from 'azdata';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as styles from '../../constants/styles';
@@ -24,7 +25,10 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 	private _recommendedConfigurationText!: azdata.TextComponent;
 	private _vmRecommendedConfigurationText!: azdata.TextComponent;
 
-	public createAssessmentSummaryCard(view: azdata.ModelView, migrationTargetType: MigrationTargetType): azdata.FlexContainer {
+	constructor(public migrationTargetType: MigrationTargetType) {
+	}
+
+	public createAssessmentSummaryCard(view: azdata.ModelView): azdata.FlexContainer {
 		const cardContainer = view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
 				'height': '394px',
@@ -71,7 +75,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		}).component();
 
 
-		switch (migrationTargetType) {
+		switch (this.migrationTargetType) {
 			case MigrationTargetType.SQLDB:
 				labelImage.iconPath = IconPathHelper.sqlDatabaseLogo;
 				labelText.value = "Azure SQL Database (PAAS)";
@@ -91,7 +95,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 
 		cardContainer.addItem(labelContainer);
 		cardContainer.addItem(this.createAssessmentResultsContainer(view));
-		cardContainer.addItem(this.createRecommendedConfigurationContainer(view, migrationTargetType));
+		cardContainer.addItem(this.createRecommendedConfigurationContainer(view));
 
 		return cardContainer;
 	}
@@ -113,14 +117,32 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 			}
 		}).component();
 
+		const assessmentResultsTextContainer = view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'display': 'flex',
+				'flex-direction': 'column',
+				'gap': '0px',
+				// 'height': '32',
+			}
+		}).component();
+
+		const assessmentResultPreText = view.modelBuilder.text().withProps({
+			value: "ASSESSMENT RESULTS",
+			description: "Assessment Value",
+			CSSStyles: {
+				...styles.TOOLBAR_CSS,
+				'margin-left': '55px'
+			},
+		}).component();
+
 		this._assessmentResultText = view.modelBuilder.text().withProps({
-			value: "ASSESSMENT RESULTS\n(for n databases assessed)",
-			description: "value value",
-			height: 40,
+			value: "",
 			CSSStyles: {
 				...styles.TOOLBAR_CSS
 			},
 		}).component();
+
+		assessmentResultsTextContainer.addItems([assessmentResultPreText, this._assessmentResultText]);
 
 		const assessmentResultsImage = view.modelBuilder.image().withProps({
 			iconPath: IconPathHelper.completedMigration,
@@ -129,7 +151,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 			height: 24,
 		}).component();
 
-		assessmentResultsHeading.addItems([this._assessmentResultText, assessmentResultsImage]);
+		assessmentResultsHeading.addItems([assessmentResultsTextContainer, assessmentResultsImage]);
 
 		const migrationReadiness = this.createMigrationReadinessContainer(view);
 		const assessmentFindings = this.createAssessmentFindingsContainer(view);
@@ -232,7 +254,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		}).component();
 
 		const value = view.modelBuilder.text().withProps({
-			value: "8",
+			value: "",
 			height: 22,
 		}).component();
 
@@ -285,7 +307,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 	}
 
 
-	private createRecommendedConfigurationContainer(view: azdata.ModelView, migrationTargetType: MigrationTargetType) {
+	private createRecommendedConfigurationContainer(view: azdata.ModelView) {
 		const container = view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
 				'display': 'flex',
@@ -302,7 +324,21 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				...styles.TOOLBAR_CSS,
 				'text-align': 'center',
 				'align': 'center',
+				'margin-left': '20px',
 			},
+		}).component();
+
+		const noRecommendationConfigurationText = view.modelBuilder.hyperlink().withProps({
+			label: "",
+			url: '',
+			height: 18,
+			display: 'none',
+			CSSStyles: {
+				'font-size': '13px',
+				'font-weight': '400',
+				'line-height': '18px',
+				'text-decoration': 'none',
+			}
 		}).component();
 
 		this._recommendedConfigurationText = view.modelBuilder.text().withProps({
@@ -316,23 +352,17 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 			},
 		}).component();
 
-		container.addItem(recommendedConfigurationLabel);
-		container.addItem(this._recommendedConfigurationText);
-
-		switch (migrationTargetType) {
-			case MigrationTargetType.SQLVM:
-				this._recommendedConfigurationText = view.modelBuilder.text().withProps({
-					value: "",
-					height: 28,
-					CSSStyles: {
-						'font-size': '10px',
-						'line-height': '14px',
-						'font-weight': '400',
-						'margin': '0px',
-					},
-				}).component();
-				container.addItem(this._vmRecommendedConfigurationText)
-		}
+		this._vmRecommendedConfigurationText = view.modelBuilder.text().withProps({
+			value: "",
+			height: 28,
+			display: 'none',
+			CSSStyles: {
+				'font-size': '10px',
+				'line-height': '14px',
+				'font-weight': '400',
+				'margin': '0px',
+			},
+		}).component();
 
 		const viewDetailsLink = view.modelBuilder.hyperlink().withProps({
 			label: "View details",
@@ -340,6 +370,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 			// 	localize(constants.FOR.key, constants.FOR.value) + getTargetType(targetType),
 			url: '',
 			height: 18,
+			display: 'none',
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': '400',
@@ -348,22 +379,34 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 			}
 		}).component();
 
-		container.addItem(viewDetailsLink);
+
+		container.addItem(recommendedConfigurationLabel);
+		container.addItem(this._recommendedConfigurationText);
+
+		switch (this.migrationTargetType) {
+			case MigrationTargetType.SQLVM:
+				container.addItem(this._vmRecommendedConfigurationText);
+				container.addItem(viewDetailsLink);
+				break;
+			default:
+				container.addItem(viewDetailsLink);
+				container.addItem(this._vmRecommendedConfigurationText);
+		}
+
 		return container;
 	}
 
-	public updateContent(dummyData: DummyData): void {
-		async () => {
-			await this._assessmentResultText.updateProperties({ "value": dummyData.assessmentResult.toString() });
-			await this._readyText.updateProperties({ "value": dummyData.ready.toString() });
-			await this._needsReviewText.updateProperties({ "value": dummyData.needsReview.toString() });
-			await this._notReadyText.updateProperties({ "value": dummyData.notReady.toString() });
-			await this._blockersText.updateProperties({ "value": dummyData.blockers.toString() });
-			await this._warningsText.updateProperties({ "value": dummyData.warnings.toString() });
+	public async updateContent(dummyData: DummyData) {
+		await this._assessmentResultText.updateProperties({ "value": "(for " + + dummyData.assessmentResult.toString() + " assessed databases)" });
+		await this._readyText.updateProperties({ "value": dummyData.ready.toString() });
+		await this._needsReviewText.updateProperties({ "value": dummyData.needsReview.toString() });
+		await this._notReadyText.updateProperties({ "value": dummyData.notReady.toString() });
+		await this._blockersText.updateProperties({ "value": dummyData.blockers.toString() });
+		await this._warningsText.updateProperties({ "value": dummyData.warnings.toString() });
 
-			await this._recommendedConfigurationText.updateProperties({ "value": dummyData.skuRecommendation.toString() });
-			await this._vmRecommendedConfigurationText.updateProperties({ "value": dummyData.vmRecommendation });
-		}
+		await this._recommendedConfigurationText.updateProperties({ "value": dummyData.skuRecommendation.toString() });
+		await this._vmRecommendedConfigurationText.updateProperties({ "value": dummyData.vmRecommendation });
+
 	}
 
 	public dispose(): void {
@@ -381,25 +424,10 @@ export enum AssessmentResultType {
 }
 
 export class DummyData {
-	assessmentResult: string;
-	ready: number;
-	needsReview: number;
-	notReady: number;
-	blockers: number;
-	warnings: number;
-	skuRecommendation: string;
-	vmRecommendation: string;
-
 	constructor(
-		assessmentResult: string, ready: number, needsReview: number, notReady: number,
-		blockers: number, warnings: number, skuRecommendation: string, vmRecommendation: string) {
-		this.assessmentResult = assessmentResult;
-		this.ready = ready;
-		this.needsReview = needsReview;
-		this.notReady = notReady;
-		this.blockers = blockers;
-		this.warnings = warnings;
-		this.skuRecommendation = skuRecommendation;
-		this.vmRecommendation = vmRecommendation;
+		public assessmentResult: number,
+		public ready: number, public needsReview: number, public notReady: number,
+		public blockers: number, public warnings: number,
+		public skuRecommendation: string, public vmRecommendation: string) {
 	}
 }
