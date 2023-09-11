@@ -1847,7 +1847,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		if (!isUndefinedOrNull(this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode)) {
 			this.waitStatisticsCaptureMode.enabled = this.areQueryStoreOptionsEnabled
 		}
-		await this.toggleQueryCapturePolicySection(this.areQueryStoreOptionsEnabled);
+		await this.toggleQueryCapturePolicySection(this.areQueryStoreOptionsEnabled &&
+			this.queryStoreCaptureMode.value === localizedConstants.QueryStoreCapturemodeCustomText);
 	}
 
 	private async toggleQueryCapturePolicySection(enable: boolean): Promise<void> {
