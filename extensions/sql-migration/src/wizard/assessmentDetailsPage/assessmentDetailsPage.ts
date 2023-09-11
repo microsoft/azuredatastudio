@@ -41,6 +41,8 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 
 		const headerSection = this._header.createAssessmentDetailsHeader(this._view);
 
+		const bodySection = this._body.createAssessmentDetailsBody(this._view);
+
 		const form = this._view.modelBuilder.formContainer()
 			.withFormItems([
 				{
@@ -48,6 +50,9 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 				},
 				{
 					component: headerSection
+				},
+				{
+					component: bodySection
 				}
 			]).withProps({
 				CSSStyles: { 'padding-top': '0' }
@@ -57,6 +62,7 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		await this._header.populateAssessmentDetailsHeader();
+		await this._body._treeComponent.initialize();
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {

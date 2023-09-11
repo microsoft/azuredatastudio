@@ -70,6 +70,11 @@ export const BIG_NUMBER_CSS = {
 	'margin': '0',
 };
 
+export const SUBTITLE_LABEL_CSS = {
+	...BODY_CSS,
+	'font-weight': '400',
+};
+
 export const CARD_CSS = {
 	'width': '190px',
 	'box-shadow': '0px 1px 4px rgba(0, 0, 0, 0.13)',
@@ -83,4 +88,14 @@ export const TOOLBAR_CSS = {
 	'line-height': '16px',
 	'font-weight': '400',
 	'margin': '0',
+};
+
+
+export const CARD_AXES_LABEL = {
+	'font-size': '12px',
+	'height': '14px',
+	'line-height': '14px',
+	'margin': '0px',
+	'text-align': 'right',
+	'font-weight': '600',
 };
