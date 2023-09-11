@@ -87,9 +87,13 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private queryWaitInput: azdata.InputBoxComponent;
 
 	private activeTabId: string;
+	private shouldRestartServer: boolean = false;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
+		this.disposables.push(this.dialogObject.onClosed(async () => {
+			await this.notifyServerRestart();
+		}));
 	}
 
 	protected override get helpUrl(): string {
@@ -364,6 +368,13 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		return errors;
 	}
 
+	private async notifyServerRestart(): Promise<void> {
+		if (this.shouldRestartServer) {
+			await vscode.window.showInformationMessage(localizedConstants.needToRestartServer, { modal: true });
+			this.shouldRestartServer = false;
+		}
+	}
+
 	private initializeProcessorsSection(): void {
 		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance;
 		let nodes: NumaNode[] = this.objectInfo.numaNodes;
@@ -491,7 +502,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 	private initializeSecuritySection(): void {
 		// cannot change auth mode in sql managed instance or non windows instances
-		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance && this.objectInfo.platform !== 'Windows';
+		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance && this.objectInfo.platform === 'Windows';
 		const radioServerGroupName = 'serverAuthenticationRadioGroup';
 		this.onlyWindowsAuthRadioButton = this.createRadioButton(localizedConstants.onlyWindowsAuthModeText, radioServerGroupName, this.objectInfo.authenticationMode === ServerLoginMode.Integrated, async () => { await this.handleAuthModeChange(); });
 		this.sqlServerAndWindowsAuthRadioButton = this.createRadioButton(localizedConstants.sqlServerAndWindowsAuthText, radioServerGroupName, this.objectInfo.authenticationMode === ServerLoginMode.Mixed, async () => { await this.handleAuthModeChange(); });
@@ -529,7 +540,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			this.objectInfo.authenticationMode = ServerLoginMode.Mixed;
 		}
 		if (this.objectInfo.authenticationMode !== this.originalObjectInfo.authenticationMode) {
-			await vscode.window.showInformationMessage(localizedConstants.needToRestartServer, { modal: true });
+			this.shouldRestartServer = true;
 		}
 	}
 
@@ -580,21 +591,37 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 		this.dataLocationInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.dataLocation = newValue;
+			if (this.objectInfo.dataLocation !== this.originalObjectInfo.dataLocation) {
+				this.shouldRestartServer = true;
+			}
 		}, dataLocationInputboxProps);
 		const dataLocationButton = this.createBrowseButton(async () => {
 			const newPath = await this.selectFolder(this.objectInfo.dataLocation);
-			this.dataLocationInput.value = newPath;
-			this.objectInfo.dataLocation = newPath;
+			if (newPath) {
+				this.dataLocationInput.value = newPath;
+				this.objectInfo.dataLocation = newPath;
+			}
+			if (this.objectInfo.dataLocation !== this.originalObjectInfo.dataLocation) {
+				this.shouldRestartServer = true;
+			}
 		}, isEnabled);
 		const dataLocationInputContainer = this.createLabelInputContainer(localizedConstants.dataLocationText, [this.dataLocationInput, dataLocationButton])
 
 		this.logLocationInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.logLocation = newValue;
+			if (this.objectInfo.logLocation !== this.originalObjectInfo.logLocation) {
+				this.shouldRestartServer = true;
+			}
 		}, logLocationInputboxProps);
 		const logLocationButton = this.createBrowseButton(async () => {
 			const newPath = await this.selectFolder(this.objectInfo.logLocation);
-			this.logLocationInput.value = newPath;
-			this.objectInfo.logLocation = newPath;
+			if (newPath) {
+				this.logLocationInput.value = newPath;
+				this.objectInfo.logLocation = newPath;
+			}
+			if (this.objectInfo.logLocation !== this.originalObjectInfo.logLocation) {
+				this.shouldRestartServer = true;
+			}
 		}, isEnabled);
 		const logLocationInputContainer = this.createLabelInputContainer(localizedConstants.logLocationText, [this.logLocationInput, logLocationButton])
 
@@ -603,8 +630,10 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		}, backupLocationInputboxProps);
 		const backupLocationButton = this.createBrowseButton(async () => {
 			const newPath = await this.selectFolder(this.objectInfo.backupLocation);
-			this.backupLocationInput.value = newPath;
-			this.objectInfo.backupLocation = newPath;
+			if (newPath) {
+				this.backupLocationInput.value = newPath;
+				this.objectInfo.backupLocation = newPath;
+			}
 		}, isEnabled);
 		const backupLocationInputContainer = this.createLabelInputContainer(localizedConstants.backupLocationText, [this.backupLocationInput, backupLocationButton])
 
@@ -670,7 +699,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 		this.fullTextUpgradeOptionDropdown = this.createDropdown(localizedConstants.fullTextUpgradeOptionLabel, async (newValue) => {
 			this.objectInfo.fullTextUpgradeOption = newValue;
-		}, this.viewInfo.fullTextUpgradeOptions, this.objectInfo.fullTextUpgradeOption);
+		}, this.viewInfo.fullTextUpgradeOptions, this.objectInfo.fullTextUpgradeOption, !!this.objectInfo.fullTextUpgradeOption);
 		const fullTextUpgradeOptionContainer = this.createLabelInputContainer(localizedConstants.fullTextUpgradeOptionLabel, this.fullTextUpgradeOptionDropdown);
 
 		this.maxTextReplicationSizeInput = this.createInputBox(async (newValue) => {
@@ -769,5 +798,4 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 		this.advancedTab = this.createTab(this.advancedTabId, localizedConstants.AdvancedSectionHeader, advancedTabContainer);
 	}
-
 }

@@ -3599,7 +3599,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Learn more]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[자세한 정보]]></Val>
+            <Val><![CDATA[자세히 알아보기]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -8313,6 +8313,15 @@
           <Val><![CDATA[Stop validation]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[유효성 검사 중지]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.validate.ir.unsuccessful.revalidation" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Revalidate unsuccessful steps]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[실패한 단계 유효성 재검사]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
