@@ -620,6 +620,11 @@
           "group": "inline@0"
         },
         {
+          "command": "mssql.newDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && config.workbench.enablePreviewFeatures",
+          "group": "inline@0"
+        },
+        {
           "command": "mssql.newObject",
           "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles)$/ && config.workbench.enablePreviewFeatures",
           "group": "inline@0"
