@@ -382,6 +382,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		return container;
 	}
 
+	// TODO - We can remove dummayData input later and use a some other way to pass the values. Once we start implementing the whole page.
 	public async updateContent(dummyData: DummyData) {
 		await this._assessmentResultText.updateProperties({ "value": constants.ASSESSED_DBS(dummyData.assessmentResult) });
 		await this._readyText.updateProperties({ "value": dummyData.ready.toString() });
@@ -395,6 +396,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 
 	}
 
+	// TODO - Check this later, if we need to handle this separately.
 	public dispose(): void {
 		this._disposables.forEach(
 			d => { try { d.dispose(); } catch { } });
@@ -409,6 +411,7 @@ export enum AssessmentResultType {
 	WARNINGS = 4,
 }
 
+// TODO - We can remove this class later and use a some other way to pass the values. Once we start implementing the whole page.
 export class DummyData {
 	constructor(
 		public assessmentResult: number,
