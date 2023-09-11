@@ -91,8 +91,11 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
-		this.disposables.push(this.dialogObject.onClosed(async () => {
-			await this.notifyServerRestart();
+		this.disposables.push(this.dialogObject.onClosed(async (reason: azdata.window.CloseReason) => {
+			if (reason === 'ok') {
+				// only show message if user apply changes
+				await this.notifyServerRestart();
+			}
 		}));
 	}
 
@@ -501,8 +504,9 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	}
 
 	private initializeSecuritySection(): void {
+		const isWindows = this.objectInfo.platform === constants.Windows;
 		// cannot change auth mode in sql managed instance or non windows instances
-		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance && this.objectInfo.platform === 'Windows';
+		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance && isWindows;
 		const radioServerGroupName = 'serverAuthenticationRadioGroup';
 		this.onlyWindowsAuthRadioButton = this.createRadioButton(localizedConstants.onlyWindowsAuthModeText, radioServerGroupName, this.objectInfo.authenticationMode === ServerLoginMode.Integrated, async () => { await this.handleAuthModeChange(); });
 		this.sqlServerAndWindowsAuthRadioButton = this.createRadioButton(localizedConstants.sqlServerAndWindowsAuthText, radioServerGroupName, this.objectInfo.authenticationMode === ServerLoginMode.Mixed, async () => { await this.handleAuthModeChange(); });
@@ -518,6 +522,11 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.failedLoginsOnlyRadioButton = this.createRadioButton(localizedConstants.failedLoginsOnlyText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.Failure, async () => { await this.handleAuditLevelChange(); });
 		this.successfulLoginsOnlyRadioButton = this.createRadioButton(localizedConstants.successfulLoginsOnlyText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.Success, async () => { await this.handleAuditLevelChange(); });
 		this.bothFailedAndSuccessfulLoginsRadioButton = this.createRadioButton(localizedConstants.bothFailedAndSuccessfulLoginsText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.All, async () => { await this.handleAuditLevelChange(); });
+		// cannot change values in serverLogin section on Linux
+		this.noneRadioButton.enabled = isWindows;
+		this.failedLoginsOnlyRadioButton.enabled = isWindows;
+		this.successfulLoginsOnlyRadioButton.enabled = isWindows;
+		this.bothFailedAndSuccessfulLoginsRadioButton.enabled = isWindows;
 		const serverLoginSection = this.createGroup(localizedConstants.loginAuditingText, [
 			this.noneRadioButton,
 			this.failedLoginsOnlyRadioButton,
@@ -670,6 +679,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	}
 
 	private initializeAdvancedSection(): void {
+		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance;
 		this.allowTriggerToFireOthersDropdown = this.createDropdown(localizedConstants.allowTriggerToFireOthersLabel, async (newValue) => {
 			this.objectInfo.allowTriggerToFireOthers = newValue === 'True';
 		}, ['True', 'False'], this.objectInfo.allowTriggerToFireOthers ? 'True' : 'False');
@@ -733,7 +743,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 		this.scanStartupProcsDropdown = this.createDropdown(localizedConstants.scanStartupProcsLabel, async (newValue) => {
 			this.objectInfo.scanStartupProcs = newValue === 'True';
-		}, ['True', 'False'], this.objectInfo.scanStartupProcs ? 'True' : 'False');
+		}, ['True', 'False'], this.objectInfo.scanStartupProcs ? 'True' : 'False', isEnabled);
 		const scanStartupProcsContainer = this.createLabelInputContainer(localizedConstants.scanStartupProcsLabel, this.scanStartupProcsDropdown);
 
 		this.twoDigitYearCutoffInput = this.createInputBox(async (newValue) => {
@@ -761,8 +771,13 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		}, {
 			ariaLabel: localizedConstants.locksLabel,
 			inputType: 'number',
+			enabled: isEnabled,
 			max: this.objectInfo.locks.maximumValue,
-			value: this.objectInfo.locks.value.toString()
+			min: 0,
+			value: this.objectInfo.locks.value.toString(),
+			validationErrorMessage: localizedConstants.locksValidation(this.objectInfo.locks.minimumValue)
+		}, async () => {
+			return !(+this.locksInput.value < this.objectInfo.locks.minimumValue && +this.locksInput.value !== 0);
 		});
 		const locksContainer = this.createLabelInputContainer(localizedConstants.locksLabel, this.locksInput);
 
