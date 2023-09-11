@@ -112,7 +112,7 @@ export class FileBrowserDialog extends Modal {
 		expandPath: string,
 		fileFilters: [{ label: string, filters: string[] }],
 		fileValidationServiceType: string,
-		showFoldersOnly?: boolean
+		showFoldersOnly: boolean
 	): void {
 		this._viewModel.initialize(ownerUri, expandPath, fileFilters, fileValidationServiceType, showFoldersOnly);
 		this._viewModel.openFileBrowser(0, false).catch(err => onUnexpectedError(err));
@@ -130,7 +130,7 @@ export class FileBrowserDialog extends Modal {
 
 	/* enter key */
 	protected override onAccept() {
-		if (this._okButton.enabled === true) {
+		if (this._okButton.enabled) {
 			this.ok();
 		}
 	}
@@ -141,7 +141,7 @@ export class FileBrowserDialog extends Modal {
 	}
 
 	private enableOkButton() {
-		if (strings.isFalsyOrWhitespace(this._selectedFilePath) || this._isFolderSelected === true) {
+		if (strings.isFalsyOrWhitespace(this._selectedFilePath) || (this._isFolderSelected && !this._viewModel.showFoldersOnly)) {
 			this._okButton.enabled = false;
 		} else {
 			this._okButton.enabled = true;

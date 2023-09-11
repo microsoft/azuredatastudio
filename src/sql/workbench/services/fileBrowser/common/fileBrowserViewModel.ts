@@ -29,6 +29,10 @@ export class FileBrowserViewModel {
 		this._fileBrowserService.onPathValidate(args => onPathValidateCallback(args));
 	}
 
+	public get showFoldersOnly(): boolean {
+		return this._showFoldersOnly;
+	}
+
 	public initialize(ownerUri: string,
 		expandPath: string,
 		fileFilters: [{ label: string, filters: string[] }],

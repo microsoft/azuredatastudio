@@ -833,7 +833,7 @@ export interface ExtHostWorkspaceShape {
 }
 
 export interface ExtHostWindowShape {
-	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string | undefined>;
+	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[], showFoldersOnly?: boolean): Promise<string | undefined>;
 }
 
 export interface MainThreadWorkspaceShape {
@@ -843,7 +843,7 @@ export interface MainThreadWorkspaceShape {
 }
 
 export interface MainThreadWindowShape {
-	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string | undefined>;
+	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[], showFoldersOnly?: boolean): Promise<string | undefined>;
 }
 
 export interface MainThreadBackgroundTaskManagementShape extends IDisposable {
