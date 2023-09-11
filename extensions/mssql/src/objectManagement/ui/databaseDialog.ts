@@ -108,7 +108,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private queryStoreCaptureMode: azdata.DropDownComponent;
 	private sizeBasedCleanupMode: azdata.DropDownComponent;
 	private stateQueryThresholdInDays: azdata.InputBoxComponent;
-	private waitStatisticsCaptureMode: azdata.CheckBoxComponent;
+	private waitStatisticsCaptureMode: azdata.DropDownComponent;
 	private executionCount: azdata.InputBoxComponent;
 	private staleThreshold: azdata.DropDownComponent;
 	private totalCompileCPUTimeInMS: azdata.InputBoxComponent;
@@ -1386,18 +1386,18 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Can only set OFF/Azure blob storage endpoint to the 'LEDGER_DIGEST_STORAGE_ENDPOINT (38)'s primary and secondary values
 		else if (this.currentRowObjectInfo.id === 38) {
 			await this.showDropdownsSection(isSecondaryCheckboxChecked);
-			if (JSON.stringify(this.valueForPrimaryDropdown.values) !== JSON.stringify([this.viewInfo.dscOnOffOptions[1]]) ||
+			if (JSON.stringify(this.valueForPrimaryDropdown.values) !== JSON.stringify([this.viewInfo.propertiesOnOffOptions[1]]) ||
 				this.valueForPrimaryDropdown.value !== this.currentRowObjectInfo.valueForPrimary) {
 				await this.valueForPrimaryDropdown.updateProperties({
-					values: [this.viewInfo.dscOnOffOptions[1]] // Only OFF is allowed for primary value
+					values: [this.viewInfo.propertiesOnOffOptions[1]] // Only OFF is allowed for primary value
 					, value: this.currentRowObjectInfo.valueForPrimary
 					, editable: true // This is to allow the user to enter the Azure blob storage endpoint
 				});
 			}
-			if (JSON.stringify(this.valueForSecondaryDropdown.values) !== JSON.stringify([this.viewInfo.dscOnOffOptions[1]]) ||
+			if (JSON.stringify(this.valueForSecondaryDropdown.values) !== JSON.stringify([this.viewInfo.propertiesOnOffOptions[1]]) ||
 				this.valueForSecondaryDropdown.value !== this.currentRowObjectInfo.valueForSecondary) {
 				await this.valueForSecondaryDropdown.updateProperties({
-					values: [this.viewInfo.dscOnOffOptions[1]] // Only OFF is allowed for secondary value
+					values: [this.viewInfo.propertiesOnOffOptions[1]] // Only OFF is allowed for secondary value
 					, value: this.currentRowObjectInfo.valueForSecondary
 					, editable: true // This is to allow the user to enter the Azure blob storage endpoint
 				});
@@ -1407,10 +1407,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Cannot set the 'GLOBAL_TEMPORARY_TABLE_AUTO_DROP (21)' option for the secondaries replica while this option is only allowed to be set for the primary.
 		else if (this.currentRowObjectInfo.id === 6 || this.currentRowObjectInfo.id === 21) {
 			await this.dscPrimaryValueDropdownGroup.updateCssStyles({ 'visibility': 'visible' });
-			if (JSON.stringify(this.valueForPrimaryDropdown.values) !== JSON.stringify(this.viewInfo.dscOnOffOptions) ||
+			if (JSON.stringify(this.valueForPrimaryDropdown.values) !== JSON.stringify(this.viewInfo.propertiesOnOffOptions) ||
 				this.valueForPrimaryDropdown.value !== this.currentRowObjectInfo.valueForPrimary) {
 				await this.valueForPrimaryDropdown.updateProperties({
-					values: this.viewInfo.dscOnOffOptions
+					values: this.viewInfo.propertiesOnOffOptions
 					, value: this.currentRowObjectInfo.valueForPrimary
 				});
 			}
@@ -1436,17 +1436,17 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// All other options accepts primary and seconday values as ON/OFF/PRIMARY(only secondary)
 		else {
 			await this.showDropdownsSection(isSecondaryCheckboxChecked);
-			if (JSON.stringify(this.valueForPrimaryDropdown.values) !== JSON.stringify(this.viewInfo.dscOnOffOptions) ||
+			if (JSON.stringify(this.valueForPrimaryDropdown.values) !== JSON.stringify(this.viewInfo.propertiesOnOffOptions) ||
 				this.valueForPrimaryDropdown.value !== this.currentRowObjectInfo.valueForPrimary) {
 				await this.valueForPrimaryDropdown.updateProperties({
-					values: this.viewInfo.dscOnOffOptions
+					values: this.viewInfo.propertiesOnOffOptions
 					, value: this.currentRowObjectInfo.valueForPrimary
 				});
 			}
-			if (JSON.stringify(this.valueForSecondaryDropdown.values) !== JSON.stringify(this.viewInfo.dscOnOffOptions) ||
+			if (JSON.stringify(this.valueForSecondaryDropdown.values) !== JSON.stringify(this.viewInfo.propertiesOnOffOptions) ||
 				this.valueForSecondaryDropdown.value !== this.currentRowObjectInfo.valueForSecondary) {
 				await this.valueForSecondaryDropdown.updateProperties({
-					values: this.viewInfo.dscOnOffOptions
+					values: this.viewInfo.propertiesOnOffOptions
 					, value: this.currentRowObjectInfo.valueForSecondary
 				});
 			}
@@ -1726,10 +1726,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		// Wait Statistics Capture Mode - supported from 2017 or higher
 		if (!isUndefinedOrNull(this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode)) {
-			this.waitStatisticsCaptureMode = this.createCheckbox(localizedConstants.WaitStatisticsCaptureModeText, async (checked) => {
-				this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode = checked;
-			}, this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode, this.areQueryStoreOptionsEnabled);
-			containers.push(this.waitStatisticsCaptureMode);
+			this.waitStatisticsCaptureMode = this.createDropdown(localizedConstants.WaitStatisticsCaptureModeText, async (newValue) => {
+				this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode = newValue as string;
+			}, this.viewInfo.propertiesOnOffOptions, this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode.toUpperCase(), this.areQueryStoreOptionsEnabled, DefaultInputWidth);
+			containers.push(this.createLabelInputContainer(localizedConstants.WaitStatisticsCaptureModeText, this.waitStatisticsCaptureMode));
 		}
 		const retentionSection = this.createGroup(localizedConstants.WaitStatisticsCaptureModeText, containers, true);
 		this.queryStoreTabSectionsContainer.push(retentionSection);
