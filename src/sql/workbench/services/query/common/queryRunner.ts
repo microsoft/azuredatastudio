@@ -11,7 +11,7 @@ import { ResultSerializer, SaveFormat } from 'sql/workbench/services/query/commo
 
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import * as types from 'vs/base/common/types';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -483,8 +483,8 @@ export default class QueryRunner extends Disposable {
 	 * @param resultId The result id of the result to copy from
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
-	async copyResults(selections: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<void> {
-		await this.queryManagementService.copyResults({
+	async copyResults(selections: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<azdata.CopyResultsRequestResult> {
+		return this.queryManagementService.copyResults({
 			ownerUri: this.uri,
 			batchIndex: batchId,
 			resultSetIndex: resultId,
@@ -606,7 +606,11 @@ export class QueryGridDataProvider implements IGridDataProvider {
 
 	private async handleCopyRequestByProvider(selections: Slick.Range[], includeHeaders?: boolean): Promise<void> {
 		executeCopyWithNotification(this._notificationService, this._configurationService, selections, async () => {
-			await this.queryRunner.copyResults(selections, this.batchId, this.resultSetId, this.shouldIncludeHeaders(includeHeaders));
+			let results = await this.queryRunner.copyResults(selections, this.batchId, this.resultSetId, this.shouldIncludeHeaders(includeHeaders));
+			let clipboardData: ClipboardData = {
+				text: results.results
+			}
+			this._clipboardService.write(clipboardData);
 		});
 	}
 

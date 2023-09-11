@@ -1699,6 +1699,16 @@ export namespace GetAssociatedFilesRequest {
 	export const type = new RequestType<GetAssociatedFilesRequestParams, string[], void, void>('admin/getassociatedfiles');
 }
 
+export namespace PurgeQueryStoreDataRequest {
+	export const type = new RequestType<purgeQueryStoreDataRequestParams, void, void, void>('objectManagement/purgeQueryStoreData');
+}
+
+export interface purgeQueryStoreDataRequestParams {
+	connectionUri: string;
+	database: string;
+	objectUrn: string;
+}
+
 // ------------------------------- < Object Management > ------------------------------------
 
 // ------------------------------- < Encryption IV/KEY updation Event > ------------------------------------
@@ -1723,6 +1733,11 @@ export namespace EncryptionKeysChangedNotification {
 	export const type = new NotificationType<DidChangeEncryptionIVKeyParams, void>('connection/encryptionKeysChanged');
 }
 
+// ------------------------------- < Clear Pooled Connections Request > ---------------------------------------
+
+export namespace ClearPooledConnectionsRequest {
+	export const type = new RequestType<object, void, void, void>('connection/clearpooledconnections');
+}
 // ------------------------------- < Query Store > ------------------------------------
 //#region Query Store
 

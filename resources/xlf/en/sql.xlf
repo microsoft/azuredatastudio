@@ -6646,6 +6646,9 @@ Error Message: {1}</source>
     <trans-unit id="openFile">
       <source xml:lang="en">Open file</source>
     </trans-unit>
+    <trans-unit id="openFileLocation">
+      <source xml:lang="en">Open file location</source>
+    </trans-unit>
     <trans-unit id="resultsSerializer.saveAsFileExtensionCSVTitle">
       <source xml:lang="en">CSV (Comma delimited)</source>
     </trans-unit>

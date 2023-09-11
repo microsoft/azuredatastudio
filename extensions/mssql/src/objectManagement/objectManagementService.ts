@@ -90,6 +90,11 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		const params: contracts.GetAssociatedFilesRequestParams = { connectionUri, primaryFilePath };
 		return this.runWithErrorHandling(contracts.GetAssociatedFilesRequest.type, params);
 	}
+
+	async purgeQueryStoreData(connectionUri: string, database: string, objectUrn: string): Promise<void> {
+		const params: contracts.purgeQueryStoreDataRequestParams = { connectionUri, database, objectUrn };
+		return this.runWithErrorHandling(contracts.PurgeQueryStoreDataRequest.type, params);
+	}
 }
 
 const ServerLevelSecurableTypes: SecurableTypeMetadata[] = [
@@ -274,6 +279,10 @@ export class TestObjectManagementService implements IObjectManagementService {
 	}
 
 	async getAssociatedFiles(connectionUri: string, primaryFilePath: string): Promise<string[]> {
+		return this.delayAndResolve([]);
+	}
+
+	async purgeQueryStoreData(connectionUri: string, database: string, objectUrn: string): Promise<void> {
 		return this.delayAndResolve([]);
 	}
 
