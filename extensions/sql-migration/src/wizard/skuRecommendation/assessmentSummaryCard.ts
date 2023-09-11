@@ -3,14 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DisplayType } from 'azdata';
+/*---------------------------------------------------------------------------------------------
+* This conatins code for creation of Assessment Summary card for each of the target platform -
+* SQL VM,SQL MI, SQL DB
+----------------------------------------------------------------------------------------------*/
+
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
 import { MigrationTargetType } from '../../api/utils';
 import { IconPathHelper } from '../../constants/iconPathHelper';
-import { update } from 'plotly.js';
-import { AzureSqlDatabaseServer } from '../../api/azure';
 
 export class AssessmentSummaryCard implements vscode.Disposable {
 	private _disposables: vscode.Disposable[] = [];
@@ -78,15 +81,15 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		switch (this.migrationTargetType) {
 			case MigrationTargetType.SQLDB:
 				labelImage.iconPath = IconPathHelper.sqlDatabaseLogo;
-				labelText.value = "Azure SQL Database (PAAS)";
+				labelText.value = constants.SKU_RECOMMENDATION_SQLDB_CARD_TEXT;
 				break;
 			case MigrationTargetType.SQLMI:
 				labelImage.iconPath = IconPathHelper.sqlMiLogo;
-				labelText.value = "Azure SQL Managed Instance (PAAS)";
+				labelText.value = constants.SKU_RECOMMENDATION_MI_CARD_TEXT;
 				break;
 			case MigrationTargetType.SQLVM:
 				labelImage.iconPath = IconPathHelper.sqlVmLogo
-				labelText.value = "SQL Server on Azure Virtual Machine (IaaS)";
+				labelText.value = constants.SKU_RECOMMENDATION_VM_CARD_TEXT;
 				break;
 		}
 
@@ -127,8 +130,8 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		}).component();
 
 		const assessmentResultPreText = view.modelBuilder.text().withProps({
-			value: "ASSESSMENT RESULTS",
-			description: "Assessment Value",
+			value: constants.ASSESSMENT_RESULTS.toUpperCase(),
+			description: "", //TODO - add description later
 			CSSStyles: {
 				...styles.TOOLBAR_CSS,
 				'margin-left': '55px'
@@ -173,7 +176,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		}).component();
 
 		const migrationReadinessText = view.modelBuilder.text().withProps({
-			value: "Migration Readiness",
+			value: constants.MIGRATION_READINESS_LABEL,
 			height: 16,
 			CSSStyles: {
 				...styles.TOOLBAR_CSS
@@ -211,7 +214,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		}).component();
 
 		const assessmentFindingsText = view.modelBuilder.text().withProps({
-			value: "Assessment Findings",
+			value: constants.ASSESSMENT_FINDINGS_LABEL,
 			height: 16,
 			CSSStyles: {
 				...styles.TOOLBAR_CSS
@@ -261,7 +264,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 
 		switch (assessmentResultType) {
 			case AssessmentResultType.READY:
-				label.value = "Ready";
+				label.value = constants.READY;
 				value.CSSStyles = {
 					...styles.ASSESSMENT_SUMMARY_CARD_CSS,
 					'color': '#57A300',
@@ -269,7 +272,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				this._readyText = value;
 				break;
 			case AssessmentResultType.NEEDS_REVIEW:
-				label.value = "Needs review";
+				label.value = constants.NEEDS_REVIEW;
 				value.CSSStyles = {
 					...styles.ASSESSMENT_SUMMARY_CARD_CSS,
 					'color': '#DB7500',
@@ -277,7 +280,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				this._needsReviewText = value;
 				break;
 			case AssessmentResultType.NOT_READY:
-				label.value = "Not ready";
+				label.value = constants.NOT_READY;
 				value.CSSStyles = {
 					...styles.ASSESSMENT_SUMMARY_CARD_CSS,
 					'color': '#E00B1C',
@@ -285,7 +288,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				this._notReadyText = value;
 				break;
 			case AssessmentResultType.BLOCKERS:
-				label.value = "Blockers";
+				label.value = constants.BLOCKERS;
 				value.CSSStyles = {
 					...styles.ASSESSMENT_SUMMARY_CARD_CSS,
 					'color': '#323130',
@@ -293,7 +296,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				this._blockersText = value;
 				break;
 			case AssessmentResultType.WARNINGS:
-				label.value = "Warnings";
+				label.value = constants.WARNINGS;
 				value.CSSStyles = {
 					...styles.ASSESSMENT_SUMMARY_CARD_CSS,
 					'color': '#323130',
@@ -317,8 +320,8 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		}).component();
 
 		const recommendedConfigurationLabel = view.modelBuilder.text().withProps({
-			value: "RECOMMENDED CONFIGURATION",
-			description: "Recommendation happens after perf collection",
+			value: constants.RECOMMENDED_CONFIGURATION.toUpperCase(),
+			description: "", // TODO - need this value later
 			height: 18,
 			CSSStyles: {
 				...styles.TOOLBAR_CSS,
@@ -326,19 +329,6 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				'align': 'center',
 				'margin-left': '20px',
 			},
-		}).component();
-
-		const noRecommendationConfigurationText = view.modelBuilder.hyperlink().withProps({
-			label: "",
-			url: '',
-			height: 18,
-			display: 'none',
-			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': '400',
-				'line-height': '18px',
-				'text-decoration': 'none',
-			}
 		}).component();
 
 		this._recommendedConfigurationText = view.modelBuilder.text().withProps({
@@ -355,7 +345,6 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		this._vmRecommendedConfigurationText = view.modelBuilder.text().withProps({
 			value: "",
 			height: 28,
-			display: 'none',
 			CSSStyles: {
 				'font-size': '10px',
 				'line-height': '14px',
@@ -365,12 +354,9 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		}).component();
 
 		const viewDetailsLink = view.modelBuilder.hyperlink().withProps({
-			label: "View details",
-			// ariaLabel: localize(constants.VIEW_REPORT_DETAILS.key, constants.VIEW_REPORT_DETAILS.value) +
-			// 	localize(constants.FOR.key, constants.FOR.value) + getTargetType(targetType),
+			label: constants.VIEW_DETAILS,
 			url: '',
 			height: 18,
-			display: 'none',
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': '400',
@@ -397,7 +383,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 	}
 
 	public async updateContent(dummyData: DummyData) {
-		await this._assessmentResultText.updateProperties({ "value": "(for " + + dummyData.assessmentResult.toString() + " assessed databases)" });
+		await this._assessmentResultText.updateProperties({ "value": constants.ASSESSED_DBS(dummyData.assessmentResult) });
 		await this._readyText.updateProperties({ "value": dummyData.ready.toString() });
 		await this._needsReviewText.updateProperties({ "value": dummyData.needsReview.toString() });
 		await this._notReadyText.updateProperties({ "value": dummyData.notReady.toString() });

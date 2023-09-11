@@ -98,7 +98,9 @@ export const SEVERITY_FINDINGS_LABEL = localize('sql.migration.severity.findings
 export const ASSESSED_DBS_LABEL = localize('sql.migration.assessed.dbs.label', "Assessed databases");
 export const NOT_READY = localize('sql.migration.not.ready', "Not ready");
 export const READY = localize('sql.migration.ready', "Ready");
+export const NEEDS_REVIEW = localize('sql.migration.needs.review', "Needs review");
 export const READY_WARN = localize('sql.migration.ready.warn', "Ready with warnings");
+export const BLOCKERS = localize('sql.migration.ready', "Blockers");
 
 // Assessment results and recommendations
 export const ASSESSMENT_RESULTS_AND_RECOMMENDATIONS_PAGE_TITLE = localize('sql.migration.assessment.results.and.recommendations.title', "Assessment results and recommendations");
@@ -137,9 +139,9 @@ export const REFRESH_ASSESSMENT_BUTTON_LABEL = localize('sql.migration.refresh.a
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose your Azure SQL target");
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET_HELP = localize('sql.migration.wizard.sku.choose_a_target.help', "Not sure which Azure SQL target is right for you? Learn more");
 
-export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure SQL Managed Instance");
-export const SKU_RECOMMENDATION_SQLDB_CARD_TEXT = localize('sql.migration.sku.sqldb.card.title', "Azure SQL Database");
-export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "SQL Server on Azure Virtual Machine");
+export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure SQL Managed Instance (PAAS)");
+export const SKU_RECOMMENDATION_SQLDB_CARD_TEXT = localize('sql.migration.sku.sqldb.card.title', "Azure SQL Database (PAAS)");
+export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "SQL Server on Azure Virtual Machine (IAAS)");
 export const SKU_RECOMMENDATION_MI_TARGET_TEXT = localize('sql.migration.sku.mi.target.title', "Azure SQL Managed Instance");
 export const SKU_RECOMMENDATION_SQLDB_TARGET_TEXT = localize('sql.migration.sku.sqldb.target.title', "Azure SQL Database");
 export const SKU_RECOMMENDATION_VM_TARGET_TEXT = localize('sql.migration.sku.vm.target.title', "SQL Server on Azure Virtual Machine");
