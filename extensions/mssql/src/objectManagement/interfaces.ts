@@ -593,8 +593,8 @@ export interface Server extends ObjectManagement.SqlObject {
  * The server login types.
  */
 export const enum ServerLoginMode {
-	Integrated, //windows auth only
-	Mixed // both sql server and windows auth
+	Integrated = 1, //windows auth only
+	Mixed = 2// both sql server and windows auth
 }
 
 /**
