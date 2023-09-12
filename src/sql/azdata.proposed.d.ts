@@ -2089,15 +2089,11 @@ declare module 'azdata' {
 
 	export interface ChartComponentProperties<TChartType extends ChartType, TData extends ChartData<TChartType>, TOptions extends ChartOptions<TChartType>> extends ComponentProperties {
 		/**
-		 * Unique ID for chart, used as the canvasID to render.
-		 */
-		chartId: string;
-
-		/**
 		 * Type of chart to build
 		 * @see ChartType for a list of supported chart types
 		 */
 		chartType: ChartType;
+
 		/**
 		 * Datasets and labels (if applicable) for the chart
 		 */

@@ -7,6 +7,7 @@ import * as chartjs from 'chart.js';
 import { mixin } from 'sql/base/common/objects';
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as azdata from 'azdata';
+import { generateUuid } from 'vs/base/common/uuid';
 
 export interface BarDataSet {
 	label: string;
@@ -20,7 +21,6 @@ export interface BarDataSet {
 	templateUrl: decodeURI(require.toUrl('./chart.component.html'))
 })
 export class Chart<TChartType extends azdata.ChartType, TData extends azdata.ChartData<TChartType>, TOptions extends azdata.ChartOptions<TChartType>> extends Disposable {
-	private _chartId: string;
 	private _type: azdata.ChartType;
 	private _data: chartjs.ChartData;
 
@@ -42,20 +42,12 @@ export class Chart<TChartType extends azdata.ChartType, TData extends azdata.Cha
 	) {
 		chartjs.Chart.register(...chartjs.registerables);
 		super();
+
+		this.element = 'chart' + generateUuid();
 	}
 
 	ngAfterViewInit(): void {
 
-	}
-
-	/**
-	 * Setter function for chart ID
-	 */
-	public set chartId(val: string) {
-		this._chartId = val;
-
-		this.element = this._chartId;
-		this._changeRef.detectChanges();
 	}
 
 	/**

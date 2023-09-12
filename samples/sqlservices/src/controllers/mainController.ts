@@ -711,7 +711,6 @@ export default class MainController implements vscode.Disposable {
 	private async getGraphTabContent(view: azdata.ModelView): Promise<void> {
 		const barChart = view.modelBuilder.chart<'bar', azdata.BarChartData, azdata.BarChartOptions>()
 			.withProps({
-				chartId: 'barChart1',
 				chartType: 'bar',
 				data: chartExamples.barData,
 				options: chartExamples.barOptions,
@@ -721,7 +720,6 @@ export default class MainController implements vscode.Disposable {
 
 		const horizontalBarChart = view.modelBuilder.chart<'horizontalBar', azdata.HorizontalBarChartData, azdata.HorizontalBarChartOptions>()
 			.withProps({
-				chartId: 'horizBarChart1',
 				chartType: 'horizontalBar',
 				data: chartExamples.horizontalBarData,
 				options: chartExamples.horizontalBarOptions,
@@ -731,7 +729,6 @@ export default class MainController implements vscode.Disposable {
 
 		const lineChart = view.modelBuilder.chart<'line', azdata.LineChartData, azdata.LineChartOptions>()
 			.withProps({
-				chartId: 'lineChart1',
 				chartType: 'line',
 				data: chartExamples.lineData,
 				options: chartExamples.lineOptions,
@@ -741,7 +738,6 @@ export default class MainController implements vscode.Disposable {
 
 		const pieChart = view.modelBuilder.chart<'pie', azdata.PieChartData, azdata.PieChartOptions>()
 			.withProps({
-				chartId: 'pieChart1',
 				chartType: 'pie',
 				data: chartExamples.pieData,
 				options: chartExamples.pieOptions,
@@ -751,7 +747,6 @@ export default class MainController implements vscode.Disposable {
 
 		const doughnutChart = view.modelBuilder.chart<'doughnut', azdata.DoughnutChartData, azdata.DoughnutChartOptions>()
 			.withProps({
-				chartId: 'doughnutChart1',
 				chartType: 'doughnut',
 				data: chartExamples.doughnutData,
 				options: chartExamples.doughnutOptions,
@@ -761,7 +756,6 @@ export default class MainController implements vscode.Disposable {
 
 		const scatterplot = view.modelBuilder.chart<'scatter', azdata.ScatterplotData, azdata.ScatterplotOptions>()
 			.withProps({
-				chartId: 'scatterplot1',
 				chartType: 'scatter',
 				data: chartExamples.scatterData,
 				options: chartExamples.scatterOptions,
@@ -771,7 +765,6 @@ export default class MainController implements vscode.Disposable {
 
 		const bubbleChart = view.modelBuilder.chart<'bubble', azdata.BubbleChartData, azdata.BubbleChartOptions>()
 			.withProps({
-				chartId: 'bubbleChart1',
 				chartType: 'bubble',
 				data: chartExamples.bubbleData,
 				options: chartExamples.bubbleOptions,
@@ -781,7 +774,6 @@ export default class MainController implements vscode.Disposable {
 
 		const polarChart = view.modelBuilder.chart<'polarArea', azdata.PolarAreaChartData, azdata.PolarAreaChartOptions>()
 			.withProps({
-				chartId: 'polarChart1',
 				chartType: 'polarArea',
 				data: chartExamples.polarData,
 				options: chartExamples.polarOptions,
@@ -791,7 +783,6 @@ export default class MainController implements vscode.Disposable {
 
 		const radarChart = view.modelBuilder.chart<'radar', azdata.RadarChartData, azdata.RadarChartOptions>()
 			.withProps({
-				chartId: 'radarChart1',
 				chartType: 'radar',
 				data: chartExamples.radarData,
 				options: chartExamples.radarOptions,
