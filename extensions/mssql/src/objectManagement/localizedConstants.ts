@@ -350,6 +350,7 @@ export const scanStartupProcsLabel = localize('objectManagement.scanStartupProcs
 export const twoDigitYearCutoffLabel = localize('objectManagement.twoDigitYearCutoffLabel', "Two Digit Year Cutoff");
 export const costThresholdParallelismLabel = localize('objectManagement.costThresholdParallelismLabel', "Cost Threshold Parallelism");
 export const locksLabel = localize('objectManagement.locksLabel', "Locks");
+export function locksValidation(minValue: number): string { return localize('objectManagement.locksValidation', "Value should be greater than {0}. Choose 0 for default settings.", minValue); }
 export const maxDegreeParallelismLabel = localize('objectManagement.maxDegreeParallelismLabel', "Max Degree Parallelism");
 export const queryWaitLabel = localize('objectManagement.queryWaitLabel', "Query Wait");
 
