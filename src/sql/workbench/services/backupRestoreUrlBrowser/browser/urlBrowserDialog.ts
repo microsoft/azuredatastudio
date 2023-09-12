@@ -147,7 +147,7 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 		));
 		linkAccountButton.appendChild(linkAccount.el);
 
-		let tenantLabel = localize('backupRestoreUrlBrowserDialog.tenant', "Azure AD Tenant");
+		let tenantLabel = localize('backupRestoreUrlBrowserDialog.tenant', "Microsoft Entra Tenant");
 		this._tenantSelectorBox = this._register(new SelectBox([], '', defaultSelectBoxStyles, this._contextViewService, null, { ariaLabel: tenantLabel }));
 		this._tenantSelectorBox.disable();
 		let tenantSelector = DialogHelper.appendRow(tableContainer, tenantLabel, 'url-input-label', 'url-input-box', null, true);
