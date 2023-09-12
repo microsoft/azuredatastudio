@@ -38,6 +38,8 @@ export class FileBrowserDialog extends Modal {
 	private _body: HTMLElement;
 	private _filePathInputBox: InputBox;
 	private _fileFilterSelectBox: SelectBox;
+	private _fileFilterRow: HTMLElement;
+	private _originalFilterDisplay: string;
 	private _okButton: Button;
 	private _onOk = new Emitter<string>();
 	public onOk: Event<string> = this._onOk.event;
@@ -99,6 +101,8 @@ export class FileBrowserDialog extends Modal {
 		this._fileFilterSelectBox.setAriaLabel(filterLabel);
 		let filterBuilder = DialogHelper.appendRow(tableContainer, filterLabel, 'file-input-label', 'file-input-box');
 		DialogHelper.appendInputSelectBox(filterBuilder, this._fileFilterSelectBox);
+		this._fileFilterRow = tableContainer.childNodes[1] as HTMLElement;
+		this._originalFilterDisplay = this._fileFilterRow.style.display;
 
 		this._okButton = this.addFooterButton(localize('fileBrowser.ok', "OK"), () => this.ok());
 		this._okButton.enabled = false;
@@ -116,7 +120,13 @@ export class FileBrowserDialog extends Modal {
 	): void {
 		this._viewModel.initialize(ownerUri, expandPath, fileFilters, fileValidationServiceType, showFoldersOnly);
 		this._viewModel.openFileBrowser(0, false).catch(err => onUnexpectedError(err));
-		this._fileFilterSelectBox.setOptions(this._viewModel.formattedFileFilters, 0);
+		if (showFoldersOnly) {
+			this._fileFilterSelectBox.setOptions([]);
+			this._fileFilterRow.style.display = 'none';
+		} else {
+			this._fileFilterSelectBox.setOptions(this._viewModel.formattedFileFilters, 0);
+			this._fileFilterRow.style.display = this._originalFilterDisplay;
+		}
 		this._filePathInputBox.value = expandPath;
 		this._isFolderSelected = true;
 		this.enableOkButton();
@@ -216,9 +226,11 @@ export class FileBrowserDialog extends Modal {
 	}
 
 	private registerListeners(): void {
-		this._register(this._fileFilterSelectBox.onDidSelect(selectData => {
-			this.onFilterSelectChanged(selectData.index).catch(err => onUnexpectedError(err));
-		}));
+		if (this._fileFilterSelectBox) {
+			this._register(this._fileFilterSelectBox.onDidSelect(selectData => {
+				this.onFilterSelectChanged(selectData.index).catch(err => onUnexpectedError(err));
+			}));
+		}
 		this._register(this._filePathInputBox.onDidChange(e => {
 			this.onFilePathChange(e);
 		}));
