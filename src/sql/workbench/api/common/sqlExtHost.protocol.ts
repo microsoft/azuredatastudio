@@ -254,7 +254,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Copies the selected data to clipboard.
 	 */
-	$copyResults(handle: number, requestParams: azdata.CopyResultsRequestParams): Thenable<void> { throw ni(); }
+	$copyResults(handle: number, requestParams: azdata.CopyResultsRequestParams): Thenable<azdata.CopyResultsRequestResult> { throw ni(); }
 
 	/**
 	 * Commits all pending edits in an edit session
@@ -595,10 +595,6 @@ export abstract class ExtHostDataProtocolShape {
 	 * Determines if the provided value is an execution plan and returns the appropriate file extension.
 	 */
 	$isExecutionPlan(handle: number, value: string): Thenable<azdata.executionPlan.IsExecutionPlanResult> { throw ni(); }
-	/**
-	 * Generates server context.
-	 */
-	$generateServerContextualization(handle: number, ownerUri: string): void { throw ni(); }
 	/**
 	 * Gets server context.
 	 */

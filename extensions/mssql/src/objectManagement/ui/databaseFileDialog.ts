@@ -16,6 +16,8 @@ export interface NewDatabaseFileDialogOptions {
 	title: string;
 	viewInfo: DatabaseViewInfo;
 	files: DatabaseFile[];
+	rowFilegroups: string[];
+	filestreamFilegroups: string[];
 	isNewFile: boolean;
 	isEditingNewFile: boolean;
 	databaseFile: DatabaseFile;
@@ -90,7 +92,10 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 				errors.push(localizedConstants.FileNameExistsError(this.result.name.trim()));
 			}
 			// If new file, verify if the file name with extension already exists
-			if (this.options.isNewFile && !!this.options.files.find(file => { return (path.join(file.path, file.fileNameWithExtension) === path.join(this.result.path, this.result.fileNameWithExtension)) })) {
+			if (this.options.isNewFile && !!this.options.files.find(file => {
+				return (this.result.name === file.name &&
+					path.join(file.path, file.fileNameWithExtension) === path.join(this.result.path, this.result.fileNameWithExtension))
+			})) {
 				errors.push(localizedConstants.FileAlreadyExistsError(path.join(this.result.path, this.result.fileNameWithExtension)));
 			}
 		}
@@ -144,7 +149,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		// Filegroup
 		this.fileGroupDropdown = this.createDropdown(localizedConstants.FilegroupText, async (newValue) => {
 			this.result.fileGroup = newValue;
-		}, this.options.viewInfo.rowDataFileGroupsOptions, this.options.databaseFile.fileGroup, this.isEditingFile, DefaultInputWidth);
+		}, this.options.rowFilegroups, this.options.databaseFile.fileGroup, this.isEditingFile, DefaultInputWidth);
 		const sizeContainer = this.createLabelInputContainer(localizedConstants.FilegroupText, this.fileGroupDropdown);
 		containers.push(sizeContainer);
 
@@ -155,7 +160,8 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 			ariaLabel: localizedConstants.SizeInMbText,
 			inputType: 'number',
 			enabled: this.options.databaseFile.type !== localizedConstants.FilestreamFileType,
-			value: String(this.options.databaseFile.sizeInMb)
+			value: String(this.options.databaseFile.sizeInMb),
+			min: 1
 		});
 		const fileSizeContainer = this.createLabelInputContainer(localizedConstants.SizeInMbText, this.fileSizeInput);
 		containers.push(fileSizeContainer);
@@ -315,7 +321,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	 */
 	private async updateOptionsForSelectedFileType(selectedOption: string): Promise<void> {
 		// Row Data defaults
-		let fileGroupDdOptions = this.options.viewInfo.rowDataFileGroupsOptions;
+		let fileGroupDdOptions = this.options.rowFilegroups;
 		let fileGroupDdValue = this.result.fileGroup;
 		let visibility = 'visible';
 		let maxSizeGroupMarginTop = '0px';
@@ -330,7 +336,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		}
 		// File Stream
 		else if (selectedOption === localizedConstants.FilestreamFileType) {
-			fileGroupDdOptions = this.options.viewInfo.fileStreamFileGroupsOptions;
+			fileGroupDdOptions = this.options.filestreamFilegroups.length > 0 ? this.options.filestreamFilegroups : [localizedConstants.FileGroupForFilestreamTypeText];
 			fileGroupDdValue = this.result.fileGroup;
 			visibility = 'hidden';
 			maxSizeGroupMarginTop = '-130px';

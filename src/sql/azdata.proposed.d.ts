@@ -873,6 +873,13 @@ declare module 'azdata' {
 		selections: SelectionRange[];
 	}
 
+	export interface CopyResultsRequestResult {
+		/**
+		 * Result string from copy operation
+		 */
+		results: string;
+	}
+
 	export interface QueryProvider {
 		/**
 		 * Notify clients that the URI for a connection has been changed.
@@ -884,7 +891,7 @@ declare module 'azdata' {
 		 * ADS will use this if 'supportCopyResultsToClipboard' property is set to true in the provider contribution point in extension's package.json.
 		 * Otherwise, The default handler will load all the selected data to ADS and perform the copy operation.
 		 */
-		copyResults?(requestParams: CopyResultsRequestParams): Thenable<void>;
+		copyResults?(requestParams: CopyResultsRequestParams): Thenable<CopyResultsRequestResult>;
 	}
 
 	export enum DataProviderType {
@@ -901,7 +908,7 @@ declare module 'azdata' {
 		 * Copilot for improved suggestions.
 		 * @param provider The provider to register
 		 */
-		export function registerServerContextualizationProvider(provider: contextualization.ServerContextualizationProvider): vscode.Disposable
+		export function registerServerContextualizationProvider(provider: contextualization.ServerContextualizationProvider): vscode.Disposable;
 	}
 
 	export namespace designers {
@@ -1785,18 +1792,12 @@ declare module 'azdata' {
 	export namespace contextualization {
 		export interface GetServerContextualizationResult {
 			/**
-			 * An array containing the generated server context.
+			 * The retrieved server context.
 			 */
-			context: string[];
+			context: string | undefined;
 		}
 
 		export interface ServerContextualizationProvider extends DataProvider {
-			/**
-			 * Generates server context.
-			 * @param ownerUri The URI of the connection to generate context for.
-			 */
-			generateServerContextualization(ownerUri: string): void;
-
 			/**
 			 * Gets server context, which can be in the form of create scripts but is left up each provider.
 			 * @param ownerUri The URI of the connection to get context for.

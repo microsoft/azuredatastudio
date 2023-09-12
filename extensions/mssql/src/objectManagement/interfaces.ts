@@ -457,6 +457,8 @@ export interface Database extends ObjectManagement.SqlObject {
 	databaseScopedConfigurations: DatabaseScopedConfigurationsInfo[];
 	isFilesTabSupported?: boolean;
 	files?: DatabaseFile[];
+	filegroups?: FileGroup[];
+	queryStoreOptions?: QueryStoreOptions;
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
@@ -474,12 +476,38 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	azureMaxSizes?: AzureEditionDetails[];
 	pageVerifyOptions?: string[];
 	restrictAccessOptions?: string[];
-	dscOnOffOptions?: string[];
+	propertiesOnOffOptions?: string[];
 	dscElevateOptions?: string[];
 	dscEnableDisableOptions?: string[];
 	rowDataFileGroupsOptions?: string[];
 	fileStreamFileGroupsOptions?: string[];
 	fileTypesOptions?: string[];
+	operationModeOptions?: string[];
+	statisticsCollectionIntervalOptions?: string[];
+	queryStoreCaptureModeOptions?: string[];
+	sizeBasedCleanupModeOptions?: string[];
+	staleThresholdOptions?: string[];
+}
+
+export interface QueryStoreOptions {
+	actualMode: string;
+	dataFlushIntervalInMinutes: number;
+	statisticsCollectionInterval: string;
+	maxPlansPerQuery: number;
+	maxSizeInMB: number;
+	queryStoreCaptureMode: string;
+	sizeBasedCleanupMode: string;
+	staleQueryThresholdInDays: number;
+	waitStatisticsCaptureMode?: string;
+	capturePolicyOptions?: QueryStoreCapturePolicyOptions;
+	currentStorageSizeInMB: number;
+}
+
+export interface QueryStoreCapturePolicyOptions {
+	executionCount: number;
+	staleThreshold: string;
+	totalCompileCPUTimeInMS: number;
+	totalExecutionCPUTimeInMS: number;
 }
 
 export interface DatabaseScopedConfigurationsInfo {
@@ -540,14 +568,33 @@ export interface Server extends ObjectManagement.SqlObject {
 	numaNodes: NumaNode[];
 	authenticationMode: ServerLoginMode;
 	loginAuditing: AuditLevel;
+	checkCompressBackup: boolean;
+	checkBackupChecksum: boolean;
+	dataLocation: string;
+	logLocation: string;
+	backupLocation: string;
+	allowTriggerToFireOthers: boolean;
+	blockedProcThreshold: NumericServerProperty;
+	cursorThreshold: NumericServerProperty;
+	defaultFullTextLanguage: string;
+	defaultLanguage: string;
+	fullTextUpgradeOption: string;
+	maxTextReplicationSize: NumericServerProperty;
+	optimizeAdHocWorkloads: boolean;
+	scanStartupProcs: boolean;
+	twoDigitYearCutoff: number;
+	costThresholdParallelism: NumericServerProperty;
+	locks: NumericServerProperty;
+	maxDegreeParallelism: NumericServerProperty;
+	queryWait: NumericServerProperty;
 }
 
 /**
  * The server login types.
  */
 export const enum ServerLoginMode {
-	Integrated, //windows auth only
-	Mixed // both sql server and windows auth
+	Integrated = 1, //windows auth only
+	Mixed = 2// both sql server and windows auth
 }
 
 /**
@@ -567,12 +614,20 @@ export interface NumericServerProperty {
 }
 
 export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
+	languageOptions: string[];
+	fullTextUpgradeOptions: string[];
 }
 
 export const enum FileGrowthType {
 	KB = 0,
 	Percent = 1,
 	None = 99
+}
+
+export const enum FileGroupType {
+	RowsFileGroup = 0,
+	FileStreamDataFileGroup = 2,
+	MemoryOptimizedDataFileGroup = 3
 }
 
 export interface DatabaseFile {
@@ -587,4 +642,13 @@ export interface DatabaseFile {
 	autoFileGrowth: number;
 	autoFileGrowthType: FileGrowthType;
 	maxSizeLimitInMb: number
+}
+
+export interface FileGroup {
+	id?: number;
+	name: string;
+	type: FileGroupType;
+	isReadOnly: boolean;
+	isDefault: boolean;
+	autogrowAllFiles: boolean;
 }

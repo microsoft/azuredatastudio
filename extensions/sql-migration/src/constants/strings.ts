@@ -802,6 +802,7 @@ export const VALIDATION_STATE_FAILED = localize('sql.migration.validation.state.
 export const VALIDATE_IR_DONE_BUTTON = localize('sql.migration.validate.ir.done.button', "Done");
 export const VALIDATE_IR_HEADING = localize('sql.migration.validate.ir.heading', "We are validating the following:");
 export const VALIDATE_IR_START_VALIDATION = localize('sql.migration.validate.ir.start.validation', "Start validation");
+export const VALIDATE_IR_UNSUCCESSFUL_REVALIDATION = localize('sql.migration.validate.ir.unsuccessful.revalidation', "Revalidate unsuccessful steps");
 export const VALIDATE_IR_STOP_VALIDATION = localize('sql.migration.validate.ir.stop.validation', "Stop validation");
 export const VALIDATE_IR_COPY_RESULTS = localize('sql.migration.validate.ir.copy.results', "Copy validation results");
 export const VALIDATE_IR_RESULTS_HEADING = localize('sql.migration.validate.ir.results.heading', "Validation step details");

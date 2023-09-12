@@ -7,6 +7,12 @@ import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
 
+export function queryStoreDashboardTitle(databaseName: string): string { return localize('queryStoreDashboardTitle', "Query Store - {0}", databaseName); }
+
+// report dashboard tab ids
+export const overallResourceConsumptionTabId = 'OverallResourceConsumptionTab';
+export const topResourceConsumingQueriesTabId = 'TopResourceConsumingQueriesTab';
+
 export const overallResourceConsumption = localize('overallResourceConsumption', "Overall Resource Consumption");
 export const duration = localize('duration', "Duration");
 export const executionCount = localize('executionCount', "Execution Count");
@@ -21,6 +27,7 @@ export function plan(queryId: string): string { return localize('plan', "Plan {0
 export function topResourceConsumingQueriesToolbarLabel(databaseName: string): string { return localize('topResourceConsumingQueriesToolbarLabel', "Top 25 resource consumers for database {0}", databaseName); }
 
 export const configure = localize('configure', "Configure");
+export const openInNewTab = localize('openInNewTab', "Open In New Tab");
 export const okButtonText = localize('okButtonText', "Ok");
 export const cancelButtonText = localize('cancelButtonText', "Cancel");
 export const applyButtonText = localize('applyButtonText', "Apply");

@@ -8,7 +8,7 @@ import * as constants from '../constants';
 import * as contracts from '../contracts';
 
 import { BaseService, ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
-import { ObjectManagement, IObjectManagementService } from 'mssql';
+import { ObjectManagement, IObjectManagementService, DatabaseFileData } from 'mssql';
 import { ClientCapabilities } from 'vscode-languageclient';
 import { AppContext } from '../appContext';
 
@@ -66,14 +66,34 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		return this.runWithErrorHandling(contracts.SearchObjectRequest.type, params);
 	}
 
-	async detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Promise<string> {
-		const params: contracts.DetachDatabaseRequestParams = { connectionUri, objectUrn, dropConnections, updateStatistics, generateScript };
+	async detachDatabase(connectionUri: string, database: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Promise<string> {
+		const params: contracts.DetachDatabaseRequestParams = { connectionUri, database, objectUrn, dropConnections, updateStatistics, generateScript };
 		return this.runWithErrorHandling(contracts.DetachDatabaseRequest.type, params);
 	}
 
-	async dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Promise<string> {
-		const params: contracts.DropDatabaseRequestParams = { connectionUri, objectUrn, dropConnections, deleteBackupHistory, generateScript };
+	async dropDatabase(connectionUri: string, database: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Promise<string> {
+		const params: contracts.DropDatabaseRequestParams = { connectionUri, database, objectUrn, dropConnections, deleteBackupHistory, generateScript };
 		return this.runWithErrorHandling(contracts.DropDatabaseRequest.type, params);
+	}
+
+	async attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Promise<string> {
+		const params: contracts.AttachDatabaseRequestParams = { connectionUri, databases, generateScript };
+		return this.runWithErrorHandling(contracts.AttachDatabaseRequest.type, params);
+	}
+
+	async getDataFolder(connectionUri: string): Promise<string> {
+		const params: contracts.GetDataFolderRequestParams = { connectionUri };
+		return this.runWithErrorHandling(contracts.GetDataFolderRequest.type, params);
+	}
+
+	async getAssociatedFiles(connectionUri: string, primaryFilePath: string): Promise<string[]> {
+		const params: contracts.GetAssociatedFilesRequestParams = { connectionUri, primaryFilePath };
+		return this.runWithErrorHandling(contracts.GetAssociatedFilesRequest.type, params);
+	}
+
+	async purgeQueryStoreData(connectionUri: string, database: string, objectUrn: string): Promise<void> {
+		const params: contracts.purgeQueryStoreDataRequestParams = { connectionUri, database, objectUrn };
+		return this.runWithErrorHandling(contracts.PurgeQueryStoreDataRequest.type, params);
 	}
 }
 
@@ -242,12 +262,28 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve(items);
 	}
 
-	async detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Promise<string> {
+	async detachDatabase(connectionUri: string, database: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Promise<string> {
 		return this.delayAndResolve('');
 	}
 
-	dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string> {
+	async attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Promise<string> {
 		return this.delayAndResolve('');
+	}
+
+	dropDatabase(connectionUri: string, database: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string> {
+		return this.delayAndResolve('');
+	}
+
+	async getDataFolder(connectionUri: string): Promise<string> {
+		return this.delayAndResolve('');
+	}
+
+	async getAssociatedFiles(connectionUri: string, primaryFilePath: string): Promise<string[]> {
+		return this.delayAndResolve([]);
+	}
+
+	async purgeQueryStoreData(connectionUri: string, database: string, objectUrn: string): Promise<void> {
+		return this.delayAndResolve([]);
 	}
 
 	private generateSearchResult(objectType: ObjectManagement.NodeType, schema: string | undefined, count: number): ObjectManagement.SearchResultItem[] {
@@ -476,7 +512,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 			pageVerifyOptions: ['CHECKSUM', 'NONE', 'TORN_PAGE_DETECTION'],
 			dscElevateOptions: ['OFF', 'WHEN_SUPPORTED', 'FAIL_UNSUPPORTED'],
 			dscEnableDisableOptions: ['ENABLED', 'DISABLED'],
-			dscOnOffOptions: ['ON', 'OFF'],
+			propertiesOnOffOptions: ['ON', 'OFF'],
 			rowDataFileGroupsOptions: ['PRIMARY', 'RowDataGroup1', 'RowDataGroup2'],
 			fileStreamFileGroupsOptions: ['PRIMARY', 'FileStreamGroup1', 'FileStreamGroup2'],
 			fileTypesOptions: ['ROWS', 'LOG', 'FILESTREAM'],
