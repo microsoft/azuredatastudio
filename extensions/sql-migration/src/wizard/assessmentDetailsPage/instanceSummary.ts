@@ -6,12 +6,13 @@
 import * as azdata from 'azdata';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
-import { IconPathHelper } from '../../constants/iconPathHelper';
 import { ColorCodes } from '../../constants/helper';
+import { MigrationStateModel } from '../../models/stateMachine';
+import { MigrationTargetType } from '../../api/utils';
 
 interface IActionMetadata {
 	label: string,
-	count: number,
+	count?: number,
 	iconPath?: azdata.IconPath,
 	color?: string
 }
@@ -19,34 +20,16 @@ interface IActionMetadata {
 // Class that defines Instance Summary section.
 export class InstanceSummary {
 	private _view!: azdata.ModelView;
+	private _assessedDatabases!: azdata.TextComponent;
+	private _totalFindingLabels!: azdata.TextComponent;
+	private _yAxisLabels: azdata.TextComponent[] = [];
+	private _divs: azdata.FlexContainer[] = [];
 
 	// function to create instance summary components
 	public createInstanceSummaryContainer(view: azdata.ModelView): azdata.FlexContainer {
 		this._view = view;
 		const instanceSummaryContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
-		}).withProps({
-			CSSStyles: {
-				'border-left': 'solid 1px'
-			}
-		}).component();
-
-		const heading = view.modelBuilder.text().withProps({
-			value: constants.DETAILS_TITLE,
-			CSSStyles: {
-				...styles.LABEL_CSS,
-				"padding": "5px",
-				"border-bottom": "solid 1px"
-			}
-		}).component();
-
-		const subHeading = view.modelBuilder.text().withProps({
-			value: constants.ASSESSMENT_SUMMARY_TITLE,
-			CSSStyles: {
-				...styles.LABEL_CSS,
-				"padding": "10px",
-				"border-bottom": "solid 1px"
-			}
 		}).component();
 
 		const description = view.modelBuilder.text().withProps({
@@ -58,8 +41,8 @@ export class InstanceSummary {
 			}
 		}).component();
 
-		const assessedDatabasesLabel = view.modelBuilder.text().withProps({
-			value: constants.ASSESSED_DBS_LABEL + ":",
+		this._assessedDatabases = view.modelBuilder.text().withProps({
+			value: "",
 			CSSStyles: {
 				...styles.LIGHT_LABEL_CSS,
 				'margin': '0px',
@@ -77,8 +60,8 @@ export class InstanceSummary {
 			}
 		}).component();
 
-		const totalFindingsLabel = view.modelBuilder.text().withProps({
-			value: constants.TOTAL_FINDINGS_LABEL + ":",
+		this._totalFindingLabels = view.modelBuilder.text().withProps({
+			value: "",
 			CSSStyles: {
 				...styles.LIGHT_LABEL_CSS,
 				'margin': '0px',
@@ -86,33 +69,45 @@ export class InstanceSummary {
 			}
 		}).component();
 
-		const findingsSummarySubtitle = view.modelBuilder.text().withProps({
-			value: constants.SEVERITY_FINDINGS_LABEL,
-			CSSStyles: {
-				...styles.SUBTITLE_LABEL_CSS,
-				'margin': '0px',
-				'margin-top': '10px',
-				'padding-left': '10px'
-			}
-		}).component();
+		instanceSummaryContainer.addItems([description, this._assessedDatabases, this.createGraphComponent(),
+			findingsSummaryTitle, this._totalFindingLabels]);
 
-		const findings = [
+		return instanceSummaryContainer;
+	}
+
+	public populateInstanceSummaryContainer(model: MigrationStateModel, targetType: MigrationTargetType): void {
+
+		this._assessedDatabases.value = constants.ASSESSED_DBS_LABEL + ": " + model._databasesForAssessment?.length;
+		this._totalFindingLabels.value = constants.TOTAL_FINDINGS_LABEL + ": " + model._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === targetType).length;
+		const readyDbsCount = model._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === targetType).length === 0).length;
+		const notReadyDbsCount = model._databasesForAssessment?.length - readyDbsCount;
+		const readywithWarnDbsCount = 0;
+
+		const labels = [
 			{
-				label: constants.ISSUES_LABEL,
-				count: 0,
-				iconPath: IconPathHelper.error
+				label: constants.NOT_READY,
+				count: notReadyDbsCount,
+				color: ColorCodes.NotReadyState_Red
 			},
 			{
-				label: constants.WARNINGS,
-				count: 0,
-				iconPath: IconPathHelper.warning
+				label: constants.READY_WARN,
+				count: readywithWarnDbsCount,
+				color: ColorCodes.ReadyWithWarningState_Amber
+			},
+			{
+				label: constants.READY,
+				count: readyDbsCount,
+				color: ColorCodes.ReadyState_Green
 			}];
-
-		instanceSummaryContainer.addItems([heading, subHeading, description, assessedDatabasesLabel, this.createGraphComponent(),
-			findingsSummaryTitle, totalFindingsLabel, findingsSummarySubtitle]);
-
-		instanceSummaryContainer.addItems(findings.map(l => this.createFindingsContainer(l)));
-		return instanceSummaryContainer;
+		let i = 0;
+		this._yAxisLabels.forEach(component => { component.value = labels[i].label + " (" + labels[i].count + ")"; i++; });
+		i = 0;
+		let maxValue = 1;
+		labels.forEach(label => maxValue = Math.max(label.count, maxValue));
+		this._divs.forEach(async (component) => {
+			const divWidth = this.setWidth(labels[i++].count ?? 0, maxValue);
+			await component.updateCssStyles({ 'width': divWidth + '%' });
+		});
 	}
 
 	private createGraphComponent(): azdata.FlexContainer {
@@ -126,17 +121,14 @@ export class InstanceSummary {
 		const labels = [
 			{
 				label: constants.NOT_READY,
-				count: 1,
 				color: ColorCodes.NotReadyState_Red
 			},
 			{
 				label: constants.READY_WARN,
-				count: 1,
 				color: ColorCodes.ReadyWithWarningState_Amber
 			},
 			{
 				label: constants.READY,
-				count: 8,
 				color: ColorCodes.ReadyState_Green
 			}];
 
@@ -153,32 +145,25 @@ export class InstanceSummary {
 				'flex-direction': 'row'
 			}
 		}).component();
-
 		barComponent.addItem(this.createYAxisComponent(linkMetaData), { 'flex': 'none' });
 
-		if (linkMetaData.count !== 0) {
-
-			const divWidth = this.setWidth(linkMetaData.count, maxValue);
-
-			const division = this._view.modelBuilder.divContainer().withProps({
-				CSSStyles: {
-					'margin-top': '12px',
-					'margin-left': '10px',
-					'background-color': linkMetaData.color ?? "",
-					'height': '30px',
-				}
-			}).component();
-
-			if (divWidth !== 0) {
-				barComponent.addItem(division, { CSSStyles: { 'width': divWidth + '%' } });
+		const division = this._view.modelBuilder.divContainer().withProps({
+			width: '0px',
+			CSSStyles: {
+				'margin-top': '12px',
+				'margin-left': '10px',
+				'background-color': linkMetaData.color ?? "",
+				'height': '30px',
+				'width': '0px'
 			}
-
-		}
+		}).component();
+		this._divs.push(division);
+		barComponent.addItem(division);
 
 		return barComponent;
 	}
 
-	private createYAxisComponent(linkMetaData: IActionMetadata): azdata.Component {
+	private createYAxisComponent(linkMetaData: IActionMetadata): azdata.FlexContainer {
 
 		const yAxisLabelContainer = this._view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
@@ -190,12 +175,14 @@ export class InstanceSummary {
 		}).component();
 
 		const yAxisLabel = this._view.modelBuilder.text().withProps({
-			value: linkMetaData.label + " (" + linkMetaData.count + ")",
+			value: "",
 			CSSStyles: {
 				...styles.CARD_AXES_LABEL,
 				'overflow-wrap': 'break-word'
 			},
 		}).component();
+
+		this._yAxisLabels.push(yAxisLabel);
 
 		yAxisLabelContainer.addItem(yAxisLabel);
 
@@ -205,45 +192,5 @@ export class InstanceSummary {
 	private setWidth(value: number, maxValue: number): number {
 		const width = (Math.sqrt(value) / Math.sqrt(maxValue)) * 75;
 		return width;
-	}
-
-	private createFindingsContainer(linkMetaData: IActionMetadata): azdata.FlexContainer {
-		const findingContainer = this._view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'flex-direction': 'row',
-				'margin': '0px',
-				'padding-left': '10px'
-			}
-		}).component();
-
-		const findingImage = this._view.modelBuilder.image().withProps({
-			iconPath: linkMetaData.iconPath,
-			iconHeight: 12,
-			iconWidth: 12,
-			width: 12,
-			height: 19,
-			CSSStyles: { 'margin-right': '4px' }
-		}).component();
-
-		const findingLabel = this._view.modelBuilder.text().withProps({
-			value: linkMetaData.label + ":",
-			CSSStyles: {
-				...styles.LIGHT_LABEL_CSS,
-				'margin': '0px', 'margin-right': '4px'
-			}
-		}).component();
-
-		const findingCount = this._view.modelBuilder.text().withProps({
-			value: String(linkMetaData.count),
-			CSSStyles: {
-				...styles.SUBTITLE_LABEL_CSS,
-				'margin': '0px', 'margin-right': '4px'
-			}
-		}).component();
-
-		findingContainer.addItem(findingImage, { flex: 'none' });
-		findingContainer.addItem(findingLabel, { flex: 'none' });
-		findingContainer.addItem(findingCount, { flex: 'none' });
-		return findingContainer;
 	}
 }
