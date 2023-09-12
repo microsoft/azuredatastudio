@@ -512,7 +512,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 			pageVerifyOptions: ['CHECKSUM', 'NONE', 'TORN_PAGE_DETECTION'],
 			dscElevateOptions: ['OFF', 'WHEN_SUPPORTED', 'FAIL_UNSUPPORTED'],
 			dscEnableDisableOptions: ['ENABLED', 'DISABLED'],
-			dscOnOffOptions: ['ON', 'OFF'],
+			propertiesOnOffOptions: ['ON', 'OFF'],
 			rowDataFileGroupsOptions: ['PRIMARY', 'RowDataGroup1', 'RowDataGroup2'],
 			fileStreamFileGroupsOptions: ['PRIMARY', 'FileStreamGroup1', 'FileStreamGroup2'],
 			fileTypesOptions: ['ROWS', 'LOG', 'FILESTREAM'],
