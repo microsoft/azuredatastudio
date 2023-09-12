@@ -465,6 +465,7 @@ export const QueryStoreUsedText = localize('objectManagement.databaseProperties.
 export const QueryStoreAvailableText = localize('objectManagement.databaseProperties.queryStoreAvailableText', "Query Store Available");
 export const PurgeQueryDataButtonText = localize('objectManagement.databaseProperties.purgeQueryDataButtonText', "Purge Query Store Data");
 export const YesText = localize('objectManagement.databaseProperties.yesText', "Yes");
+export const NotAvailableText = localize('objectManagement.databaseProperties.notAvailableText', "N/A");
 export const PurgeQueryStoreDataMessage = (databaseName: string) => localize('objectManagement.databaseProperties.purgeQueryStoreDataMessage', "Are you sure you want to purge the Query Store data from '{0}'?", databaseName);
 
 // Util functions
