@@ -739,6 +739,16 @@
 		"--z-index-notebook-progress-bar",
 		"--z-index-notebook-scrollbar",
 		"--z-index-run-button-container",
-		"--zoom-factor"
+		"--zoom-factor",
+		"--color-content",
+		"--border-color-default",
+		"--background-color",
+		"--color-input-text",
+		"--color-input-background",
+		"--color-cell-bg-grid-selected",
+		"--color-grid-dirty-text",
+		"--color-grid-dirty-background",
+		"--color-bg-content-header",
+		"--color-cell-border-active"
 	]
 }
