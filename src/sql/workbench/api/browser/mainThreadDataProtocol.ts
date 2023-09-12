@@ -33,6 +33,7 @@ import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/comm
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { IServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -64,7 +65,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		@IDataGridProviderService private _dataGridProviderService: IDataGridProviderService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 		@ITableDesignerService private _tableDesignerService: ITableDesignerService,
-		@IExecutionPlanService private _executionPlanService: IExecutionPlanService
+		@IExecutionPlanService private _executionPlanService: IExecutionPlanService,
+		@IServerContextualizationService private _serverContextualizationService: IServerContextualizationService
 	) {
 		super();
 		if (extHostContext) {
@@ -159,7 +161,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 					return Promise.resolve(self._serializationService.saveAs(requestParams.resultFormat, requestParams.filePath, undefined, true));
 				}
 			},
-			copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<void> {
+			copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<azdata.CopyResultsRequestResult> {
 				return Promise.resolve(self._proxy.$copyResults(handle, requestParams));
 			},
 			initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Promise<void> {
@@ -359,8 +361,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			createSession(sessionId: string, createStatement: string, template: azdata.ProfilerSessionTemplate): Thenable<boolean> {
 				return self._proxy.$createSession(handle, sessionId, createStatement, template);
 			},
-			startSession(sessionId: string, sessionName: string): Thenable<boolean> {
-				return self._proxy.$startSession(handle, sessionId, sessionName);
+			startSession(sessionId: string, sessionName: string, sessionType?: azdata.ProfilingSessionType): Thenable<boolean> {
+				return self._proxy.$startSession(handle, sessionId, sessionName, sessionType);
 			},
 			stopSession(sessionId: string): Thenable<boolean> {
 				return self._proxy.$stopSession(handle, sessionId);
@@ -568,6 +570,13 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			getExecutionPlan: (planFile: azdata.executionPlan.ExecutionPlanGraphInfo) => this._proxy.$getExecutionPlan(handle, planFile),
 			compareExecutionPlanGraph: (firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo) => this._proxy.$compareExecutionPlanGraph(handle, firstPlanFile, secondPlanFile),
 			isExecutionPlan: (value: string) => this._proxy.$isExecutionPlan(handle, value)
+		});
+	}
+
+	// Server contextualization handler
+	public $registerServerContextualizationProvider(providerId: string, handle: number): void {
+		this._serverContextualizationService.registerProvider(providerId, <azdata.contextualization.ServerContextualizationProvider>{
+			getServerContextualization: (ownerUri: string) => this._proxy.$getServerContextualization(handle, ownerUri)
 		});
 	}
 

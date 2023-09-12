@@ -8,6 +8,7 @@ export const providerId = 'MSSQL';
 export const serviceCrashLink = 'https://github.com/Microsoft/vscode-mssql/wiki/SqlToolsService-Known-Issues';
 export const extensionConfigSectionName = 'mssql';
 export const telemetryConfigSectionName = 'telemetry';
+export const queryEditorConfigSectionName = 'queryEditor';
 export const packageName = 'Microsoft.mssql';
 
 // DATA PROTOCOL VALUES ///////////////////////////////////////////////////////////
@@ -25,9 +26,13 @@ export const SqlAssessmentService = 'sqlAssessmentService';
 export const NotebookConvertService = 'notebookConvertService';
 export const AzureBlobService = 'azureBlobService';
 export const ObjectManagementService = 'objectManagementService';
+export const QueryStoreService = 'queryStoreService';
 
 // CONFIGURATION VALUES //////////////////////////////////////////////////////////
 export const configObjectExplorerGroupBySchemaFlagName = 'mssql.objectExplorer.groupBySchema';
+export const configAsyncParallelProcessingName = 'mssql.parallelMessageProcessing';
+export const configEnableSqlAuthenticationProviderName = 'mssql.enableSqlAuthenticationProvider';
+export const configEnableConnectionPoolingName = 'mssql.enableConnectionPooling';
 
 // COMMANDNAMES //////////////////////////////////////////////////////////
 export const cmdObjectExplorerEnableGroupBySchemaCommand = 'mssql.enableGroupBySchema';

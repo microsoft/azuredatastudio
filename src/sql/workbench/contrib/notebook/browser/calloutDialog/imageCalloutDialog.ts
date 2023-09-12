@@ -101,7 +101,6 @@ export class ImageCalloutDialog extends Modal {
 
 		this.addFooterButton(constants.insertButtonText, () => this.insert());
 		this.addFooterButton(constants.cancelButtonText, () => this.cancel(), undefined, true);
-		this.registerListeners();
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -116,16 +115,16 @@ export class ImageCalloutDialog extends Modal {
 		DOM.append(locationRow, this._imageLocationLabel);
 
 		let radioButtonGroup = DOM.$('.radio-group');
-		this._imageLocalRadioButton = new RadioButton(radioButtonGroup, {
+		this._imageLocalRadioButton = this._register(new RadioButton(radioButtonGroup, {
 			label: constants.localImageLabel,
 			enabled: true,
 			checked: true
-		});
-		this._imageRemoteRadioButton = new RadioButton(radioButtonGroup, {
+		}));
+		this._imageRemoteRadioButton = this._register(new RadioButton(radioButtonGroup, {
 			label: constants.remoteImageLabel,
 			enabled: true,
 			checked: false
-		});
+		}));
 		this._imageLocalRadioButton.name = this._editorImageLocationGroup;
 		this._imageLocalRadioButton.value = constants.locationLocal;
 		this._imageRemoteRadioButton.name = this._editorImageLocationGroup;
@@ -192,12 +191,6 @@ export class ImageCalloutDialog extends Modal {
 			this._imageUrlLabel.innerText = constants.pathPlaceholder;
 			this._imageUrlInputBox.setPlaceHolder(constants.pathPlaceholder);
 		}));
-	}
-
-	private registerListeners(): void {
-		// {{SQL CARBON TODO}} - attach styles?
-		// this._register(styler.attachInputBoxStyler(this._imageUrlInputBox, this._themeService));
-		// this._register(styler.attachToggleStyler(this._imageEmbedCheckbox, this._themeService));
 	}
 
 	public insert(): void {

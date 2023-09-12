@@ -12,6 +12,7 @@ import { INavigator, MappedNavigator } from 'sql/base/common/navigator';
 import { Event, Emitter, Relay } from 'vs/base/common/event';
 import { Color } from 'vs/base/common/color';
 import { mixin } from 'vs/base/common/objects';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 export class TreeContext implements _.ITreeContext {
 
@@ -59,10 +60,9 @@ const defaultStyles: _.ITreeStyles = {
 	listDropBackground: Color.fromHex('#383B3D')
 };
 
-export class Tree implements _.ITree {
+export class Tree extends Disposable implements _.ITree {
 
 	private container: HTMLElement;
-
 	private context: _.ITreeContext;
 	private model: Model.TreeModel;
 	private view: View.TreeView;
@@ -77,10 +77,11 @@ export class Tree implements _.ITree {
 	readonly onDidExpandItem: Event<Model.IItemExpandEvent> = this._onDidExpandItem.event;
 	private _onDidCollapseItem = new Relay<Model.IItemCollapseEvent>();
 	readonly onDidCollapseItem: Event<Model.IItemCollapseEvent> = this._onDidCollapseItem.event;
-	private readonly _onDispose = new Emitter<void>();
+	private readonly _onDispose = this._register(new Emitter<void>());
 	readonly onDidDispose: Event<void> = this._onDispose.event;
 
 	constructor(container: HTMLElement, configuration: _.ITreeConfiguration, options: _.ITreeOptions = {}) {
+		super();
 		this.container = container;
 		mixin(options, defaultStyles, false);
 
@@ -302,7 +303,8 @@ export class Tree implements _.ITree {
 		return new MappedNavigator(this.model.getNavigator(fromElement, subTreeOnly), i => i && i.getElement());
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
+		super.dispose();
 		this._onDispose.fire();
 		this.model.dispose();
 		this.view.dispose();

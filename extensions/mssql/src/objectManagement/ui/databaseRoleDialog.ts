@@ -45,14 +45,25 @@ export class DatabaseRoleDialog extends PrincipalDialogBase<DatabaseRoleInfo, Da
 	}
 
 	private initializeGeneralSection(): void {
-		this.nameInput = this.createInputBox(localizedConstants.NameText, async (newValue) => {
+		this.nameInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.name = newValue;
-		}, this.objectInfo.name, this.options.isNewObject);
+		}, {
+			ariaLabel: localizedConstants.NameText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: this.objectInfo.name
+		});
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
 
-		this.ownerInput = this.createInputBox(localizedConstants.OwnerText, async (newValue) => {
+		this.ownerInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.owner = newValue;
-		}, this.objectInfo.owner, true, 'text', 210);
+		}, {
+			ariaLabel: localizedConstants.OwnerText,
+			inputType: 'text',
+			enabled: true,
+			value: this.objectInfo.owner,
+			width: 210
+		});
 		const browseOwnerButton = this.createButton(localizedConstants.BrowseText, localizedConstants.BrowseOwnerButtonAriaLabel, async () => {
 			const dialog = new FindObjectDialog(this.objectManagementService, {
 				objectTypes: localizedConstants.getObjectTypeInfo([
@@ -80,26 +91,32 @@ export class DatabaseRoleDialog extends PrincipalDialogBase<DatabaseRoleInfo, Da
 
 	private initializeMemberSection(): void {
 		this.memberTable = this.createTable(localizedConstants.MemberSectionHeader, [localizedConstants.NameText], this.objectInfo.members.map(m => [m]));
-		const buttonContainer = this.addButtonsForTable(this.memberTable, localizedConstants.AddMemberAriaLabel, localizedConstants.RemoveMemberAriaLabel,
-			async () => {
-				const dialog = new FindObjectDialog(this.objectManagementService, {
-					objectTypes: localizedConstants.getObjectTypeInfo([
-						ObjectManagement.NodeType.DatabaseRole,
-						ObjectManagement.NodeType.User
-					]),
-					selectAllObjectTypes: true,
-					multiSelect: true,
-					contextId: this.contextId,
-					title: localizedConstants.SelectDatabaseRoleMemberDialogTitle,
-					showSchemaColumn: false
-				});
-				await dialog.open();
-				const result = await dialog.waitForClose();
-				await this.addMembers(result.selectedObjects.map(r => r.name));
+		const buttonContainer = this.addButtonsForTable(this.memberTable,
+			{
+				buttonAriaLabel: localizedConstants.AddMemberAriaLabel,
+				buttonHandler: async () => {
+					const dialog = new FindObjectDialog(this.objectManagementService, {
+						objectTypes: localizedConstants.getObjectTypeInfo([
+							ObjectManagement.NodeType.DatabaseRole,
+							ObjectManagement.NodeType.User
+						]),
+						selectAllObjectTypes: true,
+						multiSelect: true,
+						contextId: this.contextId,
+						title: localizedConstants.SelectDatabaseRoleMemberDialogTitle,
+						showSchemaColumn: false
+					});
+					await dialog.open();
+					const result = await dialog.waitForClose();
+					await this.addMembers(result.selectedObjects.map(r => r.name));
+				}
 			},
-			async () => {
-				if (this.memberTable.selectedRows.length === 1) {
-					await this.removeMember(this.memberTable.selectedRows[0]);
+			{
+				buttonAriaLabel: localizedConstants.RemoveMemberAriaLabel,
+				buttonHandler: async () => {
+					if (this.memberTable.selectedRows.length === 1) {
+						await this.removeMember(this.memberTable.selectedRows[0]);
+					}
 				}
 			});
 		this.memberSection = this.createGroup(localizedConstants.MemberSectionHeader, [this.memberTable, buttonContainer]);

@@ -14,13 +14,14 @@ interface IMap<T> { [id: string]: T; }
 interface IItemMap extends IMap<Item> { }
 interface ITraitMap extends IMap<IItemMap> { }
 
-export class LockData {
+export class LockData extends Disposable {
 
 	private _item: Item;
-	private _onDispose?= new Emitter<void>();
+	private _onDispose?= this._register(new Emitter<void>());
 	readonly onDispose: Event<void> = this._onDispose!.event;
 
 	constructor(item: Item) {
+		super();
 		this._item = item;
 	}
 
@@ -28,12 +29,11 @@ export class LockData {
 		return this._item;
 	}
 
-	dispose(): void {
+	override dispose(): void {
 		if (this._onDispose) {
 			this._onDispose.fire();
-			this._onDispose.dispose();
-			this._onDispose = undefined;
 		}
+		super.dispose();
 	}
 }
 
@@ -233,7 +233,7 @@ export interface IItemChildrenRefreshEvent extends IBaseItemEvent {
 	isNested: boolean;
 }
 
-export class Item {
+export class Item extends Disposable {
 
 	private registry: ItemRegistry;
 	private context: _.ITreeContext;
@@ -259,34 +259,35 @@ export class Item {
 
 	private traits: { [trait: string]: boolean; };
 
-	private readonly _onDidCreate = new Emitter<Item>();
+	private readonly _onDidCreate = this._register(new Emitter<Item>());
 	readonly onDidCreate: Event<Item> = this._onDidCreate.event;
-	private readonly _onDidReveal = new Emitter<IItemRevealEvent>();
+	private readonly _onDidReveal = this._register(new Emitter<IItemRevealEvent>());
 	readonly onDidReveal: Event<IItemRevealEvent> = this._onDidReveal.event;
-	private readonly _onExpand = new Emitter<IItemExpandEvent>();
+	private readonly _onExpand = this._register(new Emitter<IItemExpandEvent>());
 	readonly onExpand: Event<IItemExpandEvent> = this._onExpand.event;
-	private readonly _onDidExpand = new Emitter<IItemExpandEvent>();
+	private readonly _onDidExpand = this._register(new Emitter<IItemExpandEvent>());
 	readonly onDidExpand: Event<IItemExpandEvent> = this._onDidExpand.event;
-	private readonly _onCollapse = new Emitter<IItemCollapseEvent>();
+	private readonly _onCollapse = this._register(new Emitter<IItemCollapseEvent>());
 	readonly onCollapse: Event<IItemCollapseEvent> = this._onCollapse.event;
-	private readonly _onDidCollapse = new Emitter<IItemCollapseEvent>();
+	private readonly _onDidCollapse = this._register(new Emitter<IItemCollapseEvent>());
 	readonly onDidCollapse: Event<IItemCollapseEvent> = this._onDidCollapse.event;
-	private readonly _onDidAddTrait = new Emitter<IItemTraitEvent>();
+	private readonly _onDidAddTrait = this._register(new Emitter<IItemTraitEvent>());
 	readonly onDidAddTrait: Event<IItemTraitEvent> = this._onDidAddTrait.event;
-	private readonly _onDidRemoveTrait = new Emitter<IItemTraitEvent>();
+	private readonly _onDidRemoveTrait = this._register(new Emitter<IItemTraitEvent>());
 	readonly onDidRemoveTrait: Event<IItemTraitEvent> = this._onDidRemoveTrait.event;
-	private readonly _onDidRefresh = new Emitter<Item>();
+	private readonly _onDidRefresh = this._register(new Emitter<Item>());
 	readonly onDidRefresh: Event<Item> = this._onDidRefresh.event;
-	private readonly _onRefreshChildren = new Emitter<IItemChildrenRefreshEvent>();
+	private readonly _onRefreshChildren = this._register(new Emitter<IItemChildrenRefreshEvent>());
 	readonly onRefreshChildren: Event<IItemChildrenRefreshEvent> = this._onRefreshChildren.event;
-	private readonly _onDidRefreshChildren = new Emitter<IItemChildrenRefreshEvent>();
+	private readonly _onDidRefreshChildren = this._register(new Emitter<IItemChildrenRefreshEvent>());
 	readonly onDidRefreshChildren: Event<IItemChildrenRefreshEvent> = this._onDidRefreshChildren.event;
-	private readonly _onDidDispose = new Emitter<Item>();
+	private readonly _onDidDispose = this._register(new Emitter<Item>());
 	readonly onDidDispose: Event<Item> = this._onDidDispose.event;
 
 	private _isDisposed: boolean;
 
 	constructor(id: string, registry: ItemRegistry, context: _.ITreeContext, lock: Lock, element: any) {
+		super();
 		this.registry = registry;
 		this.context = context;
 		this.lock = lock;
@@ -689,9 +690,8 @@ export class Item {
 		return this._isDisposed;
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		this.forEachChild((child) => child.dispose());
-
 		this.parent = null;
 		this.previous = null;
 		this.next = null;
@@ -702,19 +702,7 @@ export class Item {
 
 		this.registry.deregister(this);
 
-		this._onDidCreate.dispose();
-		this._onDidReveal.dispose();
-		this._onExpand.dispose();
-		this._onDidExpand.dispose();
-		this._onCollapse.dispose();
-		this._onDidCollapse.dispose();
-		this._onDidAddTrait.dispose();
-		this._onDidRemoveTrait.dispose();
-		this._onDidRefresh.dispose();
-		this._onRefreshChildren.dispose();
-		this._onDidRefreshChildren.dispose();
-		this._onDidDispose.dispose();
-
+		super.dispose();
 		this._isDisposed = true;
 	}
 }
@@ -859,54 +847,55 @@ export interface IRefreshEvent extends IBaseEvent {
 	recursive: boolean;
 }
 
-export class TreeModel {
+export class TreeModel extends Disposable {
 
 	private context: _.ITreeContext;
 	private lock!: Lock;
 	private input: Item | null;
-	private registry: ItemRegistry = new ItemRegistry();
+	private registry: ItemRegistry = this._register(new ItemRegistry());
 	private registryDisposable: IDisposable = Disposable.None;
 	private traitsToItems: ITraitMap;
 
-	private readonly _onSetInput = new Emitter<IInputEvent>();
+	private readonly _onSetInput = this._register(new Emitter<IInputEvent>());
 	readonly onSetInput: Event<IInputEvent> = this._onSetInput.event;
-	private readonly _onDidSetInput = new Emitter<IInputEvent>();
+	private readonly _onDidSetInput = this._register(new Emitter<IInputEvent>());
 	readonly onDidSetInput: Event<IInputEvent> = this._onDidSetInput.event;
-	private readonly _onRefresh = new Emitter<IRefreshEvent>();
+	private readonly _onRefresh = this._register(new Emitter<IRefreshEvent>());
 	readonly onRefresh: Event<IRefreshEvent> = this._onRefresh.event;
-	private readonly _onDidRefresh = new Emitter<IRefreshEvent>();
+	private readonly _onDidRefresh = this._register(new Emitter<IRefreshEvent>());
 	readonly onDidRefresh: Event<IRefreshEvent> = this._onDidRefresh.event;
-	private readonly _onDidHighlight = new Emitter<_.IHighlightEvent>();
+	private readonly _onDidHighlight = this._register(new Emitter<_.IHighlightEvent>());
 	readonly onDidHighlight: Event<_.IHighlightEvent> = this._onDidHighlight.event;
-	private readonly _onDidSelect = new Emitter<_.ISelectionEvent>();
+	private readonly _onDidSelect = this._register(new Emitter<_.ISelectionEvent>());
 	readonly onDidSelect: Event<_.ISelectionEvent> = this._onDidSelect.event;
-	private readonly _onDidFocus = new Emitter<_.IFocusEvent>();
+	private readonly _onDidFocus = this._register(new Emitter<_.IFocusEvent>());
 	readonly onDidFocus: Event<_.IFocusEvent> = this._onDidFocus.event;
 
-	private _onDidRevealItem = new Relay<IItemRevealEvent>();
+	private _onDidRevealItem = this._register(new Relay<IItemRevealEvent>());
 	readonly onDidRevealItem: Event<IItemRevealEvent> = this._onDidRevealItem.event;
-	private _onExpandItem = new Relay<IItemExpandEvent>();
+	private _onExpandItem = this._register(new Relay<IItemExpandEvent>());
 	readonly onExpandItem: Event<IItemExpandEvent> = this._onExpandItem.event;
-	private _onDidExpandItem = new Relay<IItemExpandEvent>();
+	private _onDidExpandItem = this._register(new Relay<IItemExpandEvent>());
 	readonly onDidExpandItem: Event<IItemExpandEvent> = this._onDidExpandItem.event;
-	private _onCollapseItem = new Relay<IItemCollapseEvent>();
+	private _onCollapseItem = this._register(new Relay<IItemCollapseEvent>());
 	readonly onCollapseItem: Event<IItemCollapseEvent> = this._onCollapseItem.event;
-	private _onDidCollapseItem = new Relay<IItemCollapseEvent>();
+	private _onDidCollapseItem = this._register(new Relay<IItemCollapseEvent>());
 	readonly onDidCollapseItem: Event<IItemCollapseEvent> = this._onDidCollapseItem.event;
-	private _onDidAddTraitItem = new Relay<IItemTraitEvent>();
+	private _onDidAddTraitItem = this._register(new Relay<IItemTraitEvent>());
 	readonly onDidAddTraitItem: Event<IItemTraitEvent> = this._onDidAddTraitItem.event;
-	private _onDidRemoveTraitItem = new Relay<IItemTraitEvent>();
+	private _onDidRemoveTraitItem = this._register(new Relay<IItemTraitEvent>());
 	readonly onDidRemoveTraitItem: Event<IItemTraitEvent> = this._onDidRemoveTraitItem.event;
-	private _onDidRefreshItem = new Relay<Item>();
+	private _onDidRefreshItem = this._register(new Relay<Item>());
 	readonly onDidRefreshItem: Event<Item> = this._onDidRefreshItem.event;
-	private _onRefreshItemChildren = new Relay<IItemChildrenRefreshEvent>();
+	private _onRefreshItemChildren = this._register(new Relay<IItemChildrenRefreshEvent>());
 	readonly onRefreshItemChildren: Event<IItemChildrenRefreshEvent> = this._onRefreshItemChildren.event;
-	private _onDidRefreshItemChildren = new Relay<IItemChildrenRefreshEvent>();
+	private _onDidRefreshItemChildren = this._register(new Relay<IItemChildrenRefreshEvent>());
 	readonly onDidRefreshItemChildren: Event<IItemChildrenRefreshEvent> = this._onDidRefreshItemChildren.event;
-	private _onDidDisposeItem = new Relay<Item>();
+	private _onDidDisposeItem = this._register(new Relay<Item>());
 	readonly onDidDisposeItem: Event<Item> = this._onDidDisposeItem.event;
 
 	constructor(context: _.ITreeContext) {
+		super();
 		this.context = context;
 		this.input = null;
 		this.traitsToItems = {};
@@ -1470,27 +1459,5 @@ export class TreeModel {
 			}
 		}
 		return elements;
-	}
-
-	public dispose(): void {
-		this.registry.dispose();
-		this._onSetInput.dispose();
-		this._onDidSetInput.dispose();
-		this._onRefresh.dispose();
-		this._onDidRefresh.dispose();
-		this._onDidHighlight.dispose();
-		this._onDidSelect.dispose();
-		this._onDidFocus.dispose();
-		this._onDidRevealItem.dispose();
-		this._onExpandItem.dispose();
-		this._onDidExpandItem.dispose();
-		this._onCollapseItem.dispose();
-		this._onDidCollapseItem.dispose();
-		this._onDidAddTraitItem.dispose();
-		this._onDidRemoveTraitItem.dispose();
-		this._onDidRefreshItem.dispose();
-		this._onRefreshItemChildren.dispose();
-		this._onDidRefreshItemChildren.dispose();
-		this._onDidDisposeItem.dispose();
 	}
 }

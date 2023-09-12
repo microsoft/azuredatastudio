@@ -62,7 +62,6 @@ export class AccountPicker extends Disposable {
 	public get onTenantSelectionChangeEvent(): Event<string | undefined> { return this._onTenantSelectionChangeEvent.event; }
 
 	constructor(
-		private _providerId: string,
 		@IThemeService private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextViewService private _contextViewService: IContextViewService
@@ -77,11 +76,9 @@ export class AccountPicker extends Disposable {
 		this._onTenantSelectionChangeEvent = new Emitter<string | undefined>();
 
 		// Create the view model, wire up the events, and initialize with baseline data
-		this.viewModel = this._instantiationService.createInstance(AccountPickerViewModel, this._providerId);
+		this.viewModel = this._instantiationService.createInstance(AccountPickerViewModel);
 		this.viewModel.updateAccountListEvent(arg => {
-			if (arg.providerId === this._providerId) {
-				this.updateAccountList(arg.accountList);
-			}
+			this.updateAccountList(arg.accountList);
 		});
 	}
 
@@ -149,10 +146,11 @@ export class AccountPicker extends Disposable {
 		};
 
 		// Create the add account action
-		const addAccountAction = this._instantiationService.createInstance(AddAccountAction, this._providerId);
-		addAccountAction.addAccountCompleteEvent(() => this._addAccountCompleteEmitter.fire());
-		addAccountAction.addAccountErrorEvent((msg) => this._addAccountErrorEmitter.fire(msg));
-		addAccountAction.addAccountStartEvent(() => this._addAccountStartEmitter.fire());
+		const addAccountAction = this._register(this._instantiationService.createInstance(AddAccountAction, undefined));
+		this._register(addAccountAction.addAccountCompleteEvent(() => this._addAccountCompleteEmitter.fire()));
+		this._register(addAccountAction.addAccountErrorEvent((msg) => this._addAccountErrorEmitter.fire(msg)));
+		this._register(addAccountAction.addAccountStartEvent(() => this._addAccountStartEmitter.fire()));
+		this._register(addAccountAction);
 
 		this._dropdown = this._register(new DropdownList(this._accountContainer, accountOptions, this._accountListContainer, this._accountList, addAccountAction));
 		this._tenantDropdown = this._register(new DropdownList(this._tenantContainer, tenantOption, this._tenantListContainer, this._tenantList));

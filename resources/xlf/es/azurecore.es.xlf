@@ -241,80 +241,88 @@ Para permitir de nuevo el acceso a los recursos de este inquilino, deberá quita
   <file original="extensions/azurecore/dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="azure.resource.providers.AzureMonitorContainerLabel">
-        <source xml:lang="en">Log Analytics workspace</source>
-        <target state="translated">Área de trabajo de Log Analytics</target>
+        <source xml:lang="en">Log Analytics workspaces</source>
+        <target state="translated">Áreas de trabajo de Log Analytics</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel">
-        <source xml:lang="en">CosmosDB for Mongo</source>
-        <target state="translated">CosmosDB para Mongo</target>
+        <source xml:lang="en">Azure CosmosDB for MongoDB</source>
+        <target state="translated">Azure CosmosDB para MongoDB</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/database/databaseTreeDataProvider" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
-        <source xml:lang="en">SQL database</source>
-        <target state="translated">Base de datos SQL</target>
+        <source xml:lang="en">SQL databases</source>
+        <target state="translated">Bases de datos SQL</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel">
-        <source xml:lang="en">SQL server</source>
-        <target state="translated">SQL Server</target>
+        <source xml:lang="en">SQL servers</source>
+        <target state="translated">Servidores SQL</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/kusto/kustoTreeDataProvider" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="azure.resource.providers.KustoContainerLabel">
-        <source xml:lang="en">Azure Data Explorer Cluster</source>
-        <target state="translated">Clúster de Azure Data Explorer</target>
+        <source xml:lang="en">Azure Data Explorer Clusters</source>
+        <target state="translated">Clústeres de Azure Data Explorer</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel">
-        <source xml:lang="en">Azure Database for MySQL Flexible server</source>
-        <target state="translated">Servidor flexible de Azure Database for MySQL</target>
+        <source xml:lang="en">Azure Database for MySQL flexible servers</source>
+        <target state="translated">Servidores flexibles de Azure Database for MySQL</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="es">
+  <file original="extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel">
-        <source xml:lang="en">PostgreSQL Hyperscale – Azure Arc</source>
-        <target state="translated">Hiperescala de PostgreSQL: Azure Arc</target>
+        <source xml:lang="en">PostgreSQL servers – Azure Arc</source>
+        <target state="translated">Servidores PostgreSQL: Azure Arc</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.postgresFlexibleServerContainerLabel">
+        <source xml:lang="en">Azure Database for PostgreSQL flexible servers</source>
+        <target state="translated">Servidores flexibles de Azure Database for PostgreSQL</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel">
-        <source xml:lang="en">Azure Database for PostgreSQL server</source>
-        <target state="translated">Servidor de Azure Database for PostgreSQL</target>
+        <source xml:lang="en">Azure Database for PostgreSQL servers</source>
+        <target state="translated">Servidores de Azure Database for PostgreSQL</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="azure.resource.providers.sqlInstanceContainerLabel">
-        <source xml:lang="en">Azure SQL DB managed instance</source>
-        <target state="translated">Instancia administrada de Azure SQL Database</target>
+        <source xml:lang="en">SQL managed instances</source>
+        <target state="translated">Instancias administradas de SQL</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="azure.resource.providers.sqlInstanceArcContainerLabel">
-        <source xml:lang="en">SQL managed instance – Azure Arc</source>
-        <target state="translated">Instancia administrada de SQL: Azure Arc</target>
+        <source xml:lang="en">SQL managed instances - Azure Arc</source>
+        <target state="translated">Instancias administradas de SQL: Azure Arc</target>
       </trans-unit>
     </body>
   </file>
@@ -331,6 +339,18 @@ Para permitir de nuevo el acceso a los recursos de este inquilino, deberá quita
       <trans-unit id="azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel">
         <source xml:lang="en">Azure Synapse Analytics</source>
         <target state="translated">Azure Synapse Analytics</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/universal/universalService" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="azurecore.unregisteredProvider">
+        <source xml:lang="en">Unrecognized Provider resource: {0}</source>
+        <target state="translated">Recurso de proveedor no reconocido: {0}</target>
+      </trans-unit>
+      <trans-unit id="azurecore.unregisteredProviderType">
+        <source xml:lang="en">Unrecognized Provider resource type: {0}</source>
+        <target state="translated">Tipo de recurso de proveedor no reconocido: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -398,13 +418,9 @@ Para permitir de nuevo el acceso a los recursos de este inquilino, deberá quita
   </file>
   <file original="extensions/azurecore/dist/azureResource/tree/accountTreeNode" source-language="en" datatype="plaintext" target-language="es">
     <body>
-      <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
-        <source xml:lang="en">No Subscriptions found.</source>
-        <target state="translated">No se han encontrado suscripciones.</target>
-      </trans-unit>
-      <trans-unit id="azure.unableToAccessSubscription">
-        <source xml:lang="en">Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}</source>
-        <target state="translated">No se puede tener acceso a la suscripción {0} ({1}). [Actualice la cuenta] (comando: azure.resource.signin) para volver a intentarlo. {2}</target>
+      <trans-unit id="azure.resource.tree.accountTreeNode.noTenantsLabel">
+        <source xml:lang="en">No Tenants found.</source>
+        <target state="translated">No se encontraron inquilinos.</target>
       </trans-unit>
     </body>
   </file>
@@ -426,28 +442,17 @@ Para permitir de nuevo el acceso a los recursos de este inquilino, deberá quita
   </file>
   <file original="extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode" source-language="en" datatype="plaintext" target-language="es">
     <body>
-      <trans-unit id="azure.resource.flatAccountTreeNode.noResourcesLabel">
-        <source xml:lang="en">No Resources found.</source>
-        <target state="translated">No se han encontrado recursos.</target>
+      <trans-unit id="azure.resource.tree.accountTreeNode.noTenantsLabel">
+        <source xml:lang="en">No Tenants found.</source>
+        <target state="translated">No se encontraron inquilinos.</target>
       </trans-unit>
-      <trans-unit id="azure.resource.throttleerror">
-        <source xml:lang="en">Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.</source>
-        <target state="translated">Las solicitudes de esta cuenta se han acelerado Para volver a intentarlo, seleccione un número menor de suscripciones.</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.tree.accountTreeNode.title">
-        <source xml:lang="en">{0} ({1}/{2} subscriptions)</source>
-        <note>{0} is the display name of the azure account
-{1} is the number of selected subscriptions in this account
-{2} is the number of total subscriptions in this account</note>
-        <target state="translated">{0} ({1} de {2} suscripciones)</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.tree.accountTreeNode.titleLoading">
-        <source xml:lang="en">{0} - Loading...</source>
-        <target state="translated">{0}: carga en curso...</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.tree.loadresourceerror">
-        <source xml:lang="en">An error occurred while loading Azure resources: {0}</source>
-        <target state="translated">Se ha producido un error al cargar los recursos de Azure: {0}</target>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/tree/flatTenantTreeNode" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
+        <source xml:lang="en">No Subscriptions found.</source>
+        <target state="translated">No se han encontrado suscripciones.</target>
       </trans-unit>
     </body>
   </file>
@@ -456,6 +461,14 @@ Para permitir de nuevo el acceso a los recursos de este inquilino, deberá quita
       <trans-unit id="azure.resource.tree.subscriptionTreeNode.noResourcesLabel">
         <source xml:lang="en">No Resources found.</source>
         <target state="translated">No se han encontrado recursos.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/tree/tenantTreeNode" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
+        <source xml:lang="en">No Subscriptions found.</source>
+        <target state="translated">No se han encontrado suscripciones.</target>
       </trans-unit>
     </body>
   </file>
@@ -665,9 +678,13 @@ Para permitir de nuevo el acceso a los recursos de este inquilino, deberá quita
         <source xml:lang="en">Warning: Azure PII Logging is enabled. Enabling this option allows personally identifiable information to be logged and should only be used for debugging purposes.</source>
         <target state="translated">Advertencia: Azure PII Logging está habilitado. Habilitar esta opción permite registrar información de identificación personal y solo debe utilizarse con fines de depuración.</target>
       </trans-unit>
+      <trans-unit id="azurecore.postgresFlexibleServer">
+        <source xml:lang="en">Azure Database for PostgreSQL flexible servers</source>
+        <target state="translated">Servidores flexibles de Azure Database for PostgreSQL</target>
+      </trans-unit>
       <trans-unit id="azurecore.postgresServer">
-        <source xml:lang="en">Azure Database for PostgreSQL server</source>
-        <target state="translated">Servidor de Azure Database for PostgreSQL</target>
+        <source xml:lang="en">Azure Database for PostgreSQL servers</source>
+        <target state="translated">Servidores de Azure Database for PostgreSQL</target>
       </trans-unit>
       <trans-unit id="azurecore.reload">
         <source xml:lang="en">Reload</source>
@@ -836,6 +853,10 @@ Para permitir de nuevo el acceso a los recursos de este inquilino, deberá quita
       <trans-unit id="azure.resource.selectsubscriptions.title">
         <source xml:lang="en">Select Subscriptions</source>
         <target state="translated">Seleccionar suscripciones</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.selecttenants.title">
+        <source xml:lang="en">Select Tenants</source>
+        <target state="translated">Seleccionar inquilinos</target>
       </trans-unit>
       <trans-unit id="azure.resource.signin.title">
         <source xml:lang="en">Azure: Sign In</source>

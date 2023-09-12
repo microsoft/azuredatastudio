@@ -20,6 +20,7 @@ import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/text
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
 
 const MAX_SIZE = 13;
 
@@ -146,10 +147,11 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		private _description: string | undefined,
 		protected _text: AbstractTextResourceEditorInput,
 		protected _results: QueryResultsInput,
-		@IConnectionManagementService protected readonly connectionManagementService: IConnectionManagementService,
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IInstantiationService protected readonly instantiationService: IInstantiationService
+		@IInstantiationService protected readonly instantiationService: IInstantiationService,
+		@IServerContextualizationService private readonly serverContextualizationService: IServerContextualizationService
 	) {
 		super();
 
@@ -243,17 +245,11 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 				title = this._description + ' ';
 			}
 			if (profile) {
-				let distinguishedTitle = this.connectionManagementService.getEditorConnectionProfileTitle(profile);
-				if (distinguishedTitle !== '') {
-					title += distinguishedTitle;
+				title += `${profile.serverName}`;
+				if (profile.databaseName) {
+					title += `.${profile.databaseName}`;
 				}
-				else {
-					title += `${profile.serverName}`;
-					if (profile.databaseName) {
-						title += `.${profile.databaseName}`;
-					}
-					title += ` (${profile.userName || profile.authenticationType})`;
-				}
+				title += ` (${profile.userName || profile.authenticationType})`;
 			} else {
 				title += localize('disconnected', "disconnected");
 			}
@@ -325,6 +321,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			}
 		}
 		this._onDidChangeLabel.fire();
+
+		// Intentionally not awaiting, so that contextualization can happen in the background
+		void this.serverContextualizationService?.contextualizeUriForCopilot(this.uri);
 	}
 
 	public onDisconnect(): void {

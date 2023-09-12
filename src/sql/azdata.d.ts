@@ -3387,8 +3387,9 @@ declare module 'azdata' {
 
 		/**
 		 * SplitView height
+		 * @deprecated use splitViewSize instead
 		 */
-		splitViewHeight: number | string;
+		splitViewHeight?: number | string;
 	}
 
 	export interface FlexItemLayout {
@@ -4894,6 +4895,9 @@ declare module 'azdata' {
 			/**
 			 * Register model view content for the dialog.
 			 * Doesn't do anything if model view is already registered
+			 *
+			 * IMPORTANT: Model View is a disposable, all components created in the model view
+			 * MUST be registered for disposal using the 'vscode.Disposable._register' API on ModelView.
 			 */
 			registerContent(handler: (view: ModelView) => Thenable<void>): void;
 

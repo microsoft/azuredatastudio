@@ -2,13 +2,14 @@
   "name": "profiler",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.13.0",
+  "version": "0.15.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
-    "vscode": "0.10.0"
+    "vscode": "*",
+    "azdata": ">=1.45.0"
   },
   "activationEvents": [
     "*"
@@ -50,6 +51,11 @@
       {
         "command": "profiler.openCreateSessionDialog",
         "title": "profiler.contributes.title.openCreateSessionDialog",
+        "category": "%profiler.category%"
+      },
+      {
+        "command": "profiler.openFile",
+        "title": "%profiler.contributes.title.openXELFile%",
         "category": "%profiler.category%"
       }
     ],

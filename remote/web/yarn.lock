@@ -115,9 +115,9 @@ array-uniq@^1.0.2:
   resolved "https://registry.yarnpkg.com/array-uniq/-/array-uniq-1.0.3.tgz#af6ac877a25cc7f74e058894753858dfdb24fdb6"
   integrity sha512-MNha4BWQ6JbwhFhj03YK552f7cb3AzoE8SzeljgChvL1dl3IcvggXVz1DilzySZkCja+CXuZbdW7yATchWn8/Q==
 
-"azdataGraph@github:Microsoft/azdataGraph#0.0.58":
-  version "0.0.58"
-  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/45c88554e98ed3b41cd283a672bd497af08c7ac3"
+"azdataGraph@github:Microsoft/azdataGraph#0.0.59":
+  version "0.0.59"
+  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/d8eebd0e0af55fae332a5922971c52772df7792d"
 
 chalk@^2.3.0, chalk@^2.4.1:
   version "2.4.2"
@@ -348,9 +348,9 @@ semver-umd@^5.5.7:
   resolved "https://registry.yarnpkg.com/semver-umd/-/semver-umd-5.5.7.tgz#966beb5e96c7da6fbf09c3da14c2872d6836c528"
   integrity sha512-XgjPNlD0J6aIc8xoTN6GQGwWc2Xg0kq8NzrqMVuKG/4Arl6ab1F8+Am5Y/XKKCR+FceFr2yN/Uv5ZJBhRyRqKg==
 
-"slickgrid@github:Microsoft/SlickGrid.ADS#2.3.44":
-  version "2.3.44"
-  resolved "https://codeload.github.com/Microsoft/SlickGrid.ADS/tar.gz/a4e4dfbfad17f76086e101d8f8b3237b8778be91"
+"slickgrid@github:Microsoft/SlickGrid.ADS#2.3.45":
+  version "2.3.45"
+  resolved "https://codeload.github.com/Microsoft/SlickGrid.ADS/tar.gz/90adbec2fdc4d83b2201f3dd3d3110109599da67"
 
 source-map@^0.6.1:
   version "0.6.1"
@@ -421,10 +421,10 @@ xtend@^4.0.0:
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.2.tgz#bb72779f5fa465186b1f438f674fa347fdb5db54"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==
 
-xterm-addon-canvas@0.4.0-beta.14:
-  version "0.4.0-beta.14"
-  resolved "https://registry.yarnpkg.com/xterm-addon-canvas/-/xterm-addon-canvas-0.4.0-beta.14.tgz#ed8b5d2a839608ae5c9c73d1fa11f6ffb5f92be7"
-  integrity sha512-FBlHGuSjQMuujwOBhuoOO16iLHgeQ9ucOApsTS+Hf0ZpOnFVQX3JQDYAWlxRIpfDa/HiEGYPhAgFjqqFMtXL4Q==
+xterm-addon-canvas@0.5.0-beta.3:
+  version "0.5.0-beta.3"
+  resolved "https://registry.yarnpkg.com/xterm-addon-canvas/-/xterm-addon-canvas-0.5.0-beta.3.tgz#d499e8974e8e9ead3ec5d549ac31fcd7bef2e5f8"
+  integrity sha512-J/FRLznAe37LrKK3zPWpe5ZGJO0kEg9gAA0MmsDEmMvnN/WcQJftHFPiNMsMLJWikPNJxMDDlu9lEj1mysqsFQ==
 
 xterm-addon-image@0.4.0:
   version "0.4.0"

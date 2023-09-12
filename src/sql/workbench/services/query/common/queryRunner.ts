@@ -11,7 +11,7 @@ import { ResultSerializer, SaveFormat } from 'sql/workbench/services/query/commo
 
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import * as types from 'vs/base/common/types';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -348,7 +348,7 @@ export default class QueryRunner extends Disposable {
 			if (hasShowPlan && resultSet.rowCount > 0) {
 				this._isQueryPlan = true;
 
-				this.getQueryRows(0, 1, resultSet.batchId, resultSet.id).then(e => {
+				this.getQueryRowsPaged(0, 1, resultSet.batchId, resultSet.id).then(e => {
 					if (e.rows) {
 						this._planXml.resolve(e.rows[0][0].displayValue);
 					}
@@ -373,7 +373,7 @@ export default class QueryRunner extends Disposable {
 			let hasShowPlan = !!resultSet.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 			if (hasShowPlan) {
 				this._isQueryPlan = true;
-				this.getQueryRows(0, 1, resultSet.batchId, resultSet.id).then(e => {
+				this.getQueryRowsPaged(0, 1, resultSet.batchId, resultSet.id).then(e => {
 
 					if (e.rows) {
 						let planXmlString = e.rows[0][0].displayValue;
@@ -419,6 +419,7 @@ export default class QueryRunner extends Disposable {
 
 	/**
 	 * Get more data rows from the current resultSets from the service layer
+	 * @deprecated getQueryRowsPaged should be used instead as it is much more performant
 	 */
 	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
 		let rowData: QueryExecuteSubsetParams = <QueryExecuteSubsetParams>{
@@ -429,7 +430,22 @@ export default class QueryRunner extends Disposable {
 			batchIndex: batchIndex
 		};
 
-		return this.queryManagementService.getQueryRows(rowData, cancellationToken, onProgressCallback).then(r => r, error => {
+		return this.queryManagementService.getQueryRows(rowData);
+	}
+
+	/**
+	 * Get more data rows from the current resultSets from the service layer with paging, fetching row data in batches until all rows are retrieved.
+	 */
+	public getQueryRowsPaged(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
+		let rowData: QueryExecuteSubsetParams = <QueryExecuteSubsetParams>{
+			ownerUri: this.uri,
+			resultSetIndex: resultSetIndex,
+			rowsCount: numberOfRows,
+			rowsStartIndex: rowStart,
+			batchIndex: batchIndex
+		};
+
+		return this.queryManagementService.getQueryRowsPaged(rowData, cancellationToken, onProgressCallback).then(r => r, error => {
 			// this._notificationService.notify({
 			// 	severity: Severity.Error,
 			// 	message: nls.localize('query.gettingRowsFailedError', 'Something went wrong getting more rows: {0}', error)
@@ -465,15 +481,13 @@ export default class QueryRunner extends Disposable {
 	 * @param selections The selection range to copy
 	 * @param batchId The batch id of the result to copy from
 	 * @param resultId The result id of the result to copy from
-	 * @param removeNewLines Whether to remove line breaks from values.
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
-	async copyResults(selections: Slick.Range[], batchId: number, resultId: number, removeNewLines: boolean, includeHeaders?: boolean): Promise<void> {
-		await this.queryManagementService.copyResults({
+	async copyResults(selections: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<azdata.CopyResultsRequestResult> {
+		return this.queryManagementService.copyResults({
 			ownerUri: this.uri,
 			batchIndex: batchId,
 			resultSetIndex: resultId,
-			removeNewLines: removeNewLines,
 			includeHeaders: includeHeaders,
 			selections: selections.map(selection => {
 				return {
@@ -568,7 +582,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 	}
 
 	getRowData(rowStart: number, numberOfRows: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
-		return this.queryRunner.getQueryRows(rowStart, numberOfRows, this.batchId, this.resultSetId, cancellationToken, onProgressCallback);
+		return this.queryRunner.getQueryRowsPaged(rowStart, numberOfRows, this.batchId, this.resultSetId, cancellationToken, onProgressCallback);
 	}
 
 	copyResults(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
@@ -583,7 +597,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 			if (preferProvidersCopyHandler && providerSupportCopyResults && (tableView === undefined || !tableView.isDataInMemory)) {
 				await this.handleCopyRequestByProvider(selections, includeHeaders);
 			} else {
-				await copySelectionToClipboard(this._clipboardService, this._notificationService, this, selections, includeHeaders, tableView);
+				await copySelectionToClipboard(this._clipboardService, this._notificationService, this._configurationService, this, selections, includeHeaders, tableView);
 			}
 		} catch (error) {
 			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
@@ -591,8 +605,12 @@ export class QueryGridDataProvider implements IGridDataProvider {
 	}
 
 	private async handleCopyRequestByProvider(selections: Slick.Range[], includeHeaders?: boolean): Promise<void> {
-		executeCopyWithNotification(this._notificationService, selections, async () => {
-			await this.queryRunner.copyResults(selections, this.batchId, this.resultSetId, this.shouldRemoveNewLines(), this.shouldIncludeHeaders(includeHeaders));
+		executeCopyWithNotification(this._notificationService, this._configurationService, selections, async () => {
+			let results = await this.queryRunner.copyResults(selections, this.batchId, this.resultSetId, this.shouldIncludeHeaders(includeHeaders));
+			let clipboardData: ClipboardData = {
+				text: results.results
+			}
+			this._clipboardService.write(clipboardData);
 		});
 	}
 
@@ -613,6 +631,9 @@ export class QueryGridDataProvider implements IGridDataProvider {
 	}
 	shouldRemoveNewLines(): boolean {
 		return shouldRemoveNewLines(this._configurationService);
+	}
+	shouldSkipNewLineAfterTrailingLineBreak(): boolean {
+		return shouldSkipNewLineAfterTrailingLineBreak(this._configurationService);
 	}
 	getColumnHeaders(range: Slick.Range): string[] | undefined {
 		return this.queryRunner.getColumnHeaders(this.batchId, this.resultSetId, range);
@@ -646,6 +667,12 @@ export function shouldRemoveNewLines(configurationService: IConfigurationService
 	// get config copyRemoveNewLine option from vscode config
 	let removeNewLines = configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.copyRemoveNewLine;
 	return !!removeNewLines;
+}
+
+export function shouldSkipNewLineAfterTrailingLineBreak(configurationService: IConfigurationService): boolean {
+	// get config skipNewLineAfterTrailingLineBreak option from vscode config
+	let skipNewLineAfterTrailingLineBreak = configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.skipNewLineAfterTrailingLineBreak;
+	return !!skipNewLineAfterTrailingLineBreak;
 }
 
 function isRangeOrUndefined(input: string | IRange | undefined): input is IRange | undefined {

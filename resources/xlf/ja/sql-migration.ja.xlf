@@ -2,14 +2,6 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/sql-migration/dist/constants/strings" source-language="en" datatype="plaintext" target-language="ja">
     <body>
-      <trans-unit id="azure.accounts.accountAccessError">
-        <source xml:lang="en">An error occurred while accessing the selected account '{0}' and tenant '{1}'. Select 'Link account' and refresh the account, or select a different account. Error '{2}'</source>
-        <target state="translated">選択したアカウント '{0}' とテナント '{1}' へのアクセス中にエラーが発生しました。'リンク アカウント' を選択して、アカウントを更新するか、別のアカウントを選択してください。エラー '{2}'</target>
-      </trans-unit>
-      <trans-unit id="azure.accounts.accountStaleError">
-        <source xml:lang="en">The access token for selected account '{0}' and tenant '{1}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.</source>
-        <target state="translated">選択したアカウント '{0}' とテナント '{1}' のアクセス トークンは有効でなくなりました。'リンク アカウント' を選択して、アカウントを更新するか、別のアカウントを選択してください。</target>
-      </trans-unit>
       <trans-unit id="serviceCrashMessage">
         <source xml:lang="en">Migration service component could not start. {0}</source>
         <target state="translated">移行サービス コンポーネントを開始できませんでした。{0}</target>
@@ -1332,15 +1324,15 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.ir.setup.step2">
         <source xml:lang="en">Step 2: Use the keys below to register your integration runtime</source>
-        <target state="new">Step 2: Use the keys below to register your integration runtime</target>
+        <target state="translated">手順 2: 以下のキーを使用して統合ランタイムを登録します</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.setup.step3">
         <source xml:lang="en">Step 3: Click on the 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime</source>
-        <target state="new">Step 3: Click on the 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime</target>
+        <target state="translated">手順 3: [接続テスト] ボタンをクリックして、Azure Database Migration Service と統合ランタイムの間の接続を確認します</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.setup.step3.alternate">
         <source xml:lang="en">Step 3: Click on the Refresh button above to check the connection between Azure Database Migration Service and integration runtime</source>
-        <target state="new">Step 3: Click on the Refresh button above to check the connection between Azure Database Migration Service and integration runtime</target>
+        <target state="translated">手順 3: 上の [最新の情報に更新] ボタンをクリックして、Azure Database Migration Service と統合ランタイムの間の接続を確認します</target>
       </trans-unit>
       <trans-unit id="sql.migration.issue.aria.label">
         <source xml:lang="en">Blocking Issue: {0}</source>
@@ -2124,15 +2116,15 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.container.description1">
         <source xml:lang="en">Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to handle connectivity between source and target and upload backups from an on-premises network file share to Azure (if applicable).</source>
-        <target state="new">Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to handle connectivity between source and target and upload backups from an on-premises network file share to Azure (if applicable).</target>
+        <target state="translated">Azure Database Migration Service では、ソースとターゲットの間の接続の処理、および (該当する場合) オンプレミスのネットワーク ファイル共有から Azure へのバックアップのアップロードを、Azure Data Factory のセルフホステッド統合ランタイムを利用して行います。</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.container.description2">
         <source xml:lang="en">Follow the instructions below to set up self-hosted integration runtime.</source>
-        <target state="new">Follow the instructions below to set up self-hosted integration runtime.</target>
+        <target state="translated">セルフホステッド統合ランタイムをセットアップするには、以下の手順に従ってください。</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.heading">
         <source xml:lang="en">Set up integration runtime</source>
-        <target state="new">Set up integration runtime</target>
+        <target state="translated">統合ランタイムのセットアップ</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.loading.help">
         <source xml:lang="en">Loading Migration Services</source>
@@ -2182,9 +2174,9 @@ This may take some time.</source>
         <source xml:lang="en">Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.
 
 See below for registration instructions.</source>
-        <target state="new">Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.
+        <target state="translated">Azure Database Migration Service が登録されていません。Azure Database Migration Service '{0}' が、任意のノードのセルフホステッド統合ランタイムに登録されている必要があります。
 
-See below for registration instructions.</target>
+登録手順については以下をご覧ください。</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.prompt">
         <source xml:lang="en">{0} (change)</source>
@@ -2194,17 +2186,17 @@ See below for registration instructions.</target>
         <source xml:lang="en">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}
 
 For improved performance and high availability, you can register additional nodes.</source>
-        <target state="new">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}
+        <target state="translated">Azure Database Migration Service '{0}' は、これらのノードで動作中のセルフホステッド統合ランタイムに接続されています - {1}
 
-For improved performance and high availability, you can register additional nodes.</target>
+パフォーマンスの向上と高可用性を実現したい場合は、追加のノードを登録できます。</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.ready.below">
         <source xml:lang="en">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}
 
 For improved performance and high availability, you can register additional nodes. See below for registration instructions.</source>
-        <target state="new">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}
+        <target state="translated">Azure Database Migration Service '{0}' は、これらのノードで動作中のセルフホステッド統合ランタイムに接続されています - {1}
 
-For improved performance and high availability, you can register additional nodes. See below for registration instructions.</target>
+パフォーマンスの向上と高可用性を実現したい場合は、追加のノードを登録できます。登録手順については以下をご覧ください。</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.selection.location.msg">
         <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
@@ -2220,7 +2212,7 @@ For improved performance and high availability, you can register additional node
       </trans-unit>
       <trans-unit id="sql.migration.services.container.description.network">
         <source xml:lang="en">Enter the information below to add a new Azure Database Migration Service. To register self-hosted integration runtime, select 'My database backups are on a network share' on the previous page.</source>
-        <target state="new">Enter the information below to add a new Azure Database Migration Service. To register self-hosted integration runtime, select 'My database backups are on a network share' on the previous page.</target>
+        <target state="translated">以下の情報を入力して、新しい Azure Database Migration Service を追加します。セルフホステッド統合ランタイムを登録するには、前のページで [データベースのバックアップがネットワーク共有上にある] を選択します。</target>
       </trans-unit>
       <trans-unit id="sql.migration.services.dialog.title">
         <source xml:lang="en">Create Azure Database Migration Service</source>
@@ -3021,6 +3013,14 @@ For improved performance and high availability, you can register additional node
       <trans-unit id="sql.migration.storageAccount.warning.one">
         <source xml:lang="en">Target instance '{0}' may not be able to access storage accounts '{1}'. Ensure that the subnet of the target instance is whitelisted on the storage accounts, and if applicable, that the private endpoints are on the same virtual network as the target server.</source>
         <target state="translated">ターゲット インスタンス '{0}' はストレージ アカウント '{1}' にアクセスできない可能性があります。ターゲット インスタンスのサブネットがストレージ アカウントでホワイトリストに登録されていることを確認し、該当する場合は、プライベート エンドポイントがターゲット サーバーと同じ仮想ネットワーク上にあることを確認します。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.storageAccount.warning.vm.many">
+        <source xml:lang="en">Target server '{0}' may not be able to access storage account '{1}'. Ensure that the subnet of the target server is whitelisted on the storage account.</source>
+        <target state="translated">ターゲット サーバー '{0}' は、ストレージ アカウント '{1}' にアクセスできない可能性があります。ターゲット サーバーのサブネットがストレージ アカウントのホワイトリストに登録されていることを確認してください。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.storageAccount.warning.vm.one">
+        <source xml:lang="en">Target server '{0}' may not be able to access storage accounts '{1}'. Ensure that the subnet of the target server is whitelisted on the storage accounts.</source>
+        <target state="translated">ターゲット サーバー '{0}' は、ストレージ アカウント '{1}' にアクセスできない可能性があります。ターゲット サーバーのサブネットがストレージ アカウントのホワイトリストに登録されていることを確認してください。</target>
       </trans-unit>
       <trans-unit id="sql.migration.subscription">
         <source xml:lang="en">Subscription</source>

@@ -6,7 +6,6 @@
 import { IProfilerController } from 'sql/workbench/contrib/profiler/common/interfaces';
 import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { IProfilerStateChangedEvent } from 'sql/workbench/common/editor/profiler/profilerState';
 import { FindWidget, ITableController, IConfigurationChangedEvent, ACTION_IDS, PROFILER_MAX_MATCHES } from 'sql/workbench/contrib/profiler/browser/profilerFindWidget';
@@ -36,6 +35,8 @@ import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contri
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 
 export interface ProfilerTableViewState {
 	scrollTop: number;
@@ -57,6 +58,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 	private _actionMap: { [x: string]: IEditorAction } = {};
 	private _statusbarItem: IDisposable;
 	private _showStatusBarItem: boolean;
+	public loadingSpinner: LoadingSpinner;
 
 	private _onDidChangeConfiguration = new Emitter<IConfigurationChangedEvent>();
 	public onDidChangeConfiguration: Event<IConfigurationChangedEvent> = this._onDidChangeConfiguration.event;
@@ -88,9 +90,10 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		this._overlay.className = 'overlayWidgets';
 		this._overlay.style.width = '100%';
 		this._overlay.style.zIndex = '4';
+		this._overlay.style.paddingTop = '50px';
 		parent.appendChild(this._overlay);
 
-		this._profilerTable = new Table(parent, this._accessibilityService, this._quickInputService, {
+		this._profilerTable = new Table(parent, this._accessibilityService, this._quickInputService, defaultTableStyles, {
 			sorter: (args) => {
 				let input = this.input as ProfilerInput;
 				if (input && input.data) {
@@ -106,7 +109,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		});
 		this._profilerTable.setSelectionModel(new RowSelectionModel());
 		const copyKeybind = new CopyKeybind();
-		copyKeybind.onCopy((e) => {
+		this._register(copyKeybind.onCopy((e) => {
 			// in context of this table, the selection mode is row selection, copy the whole row will get a lot of unwanted data
 			// ignore the passed in range and create a range so that it only copies the currently selected cell value.
 			const activeCell = this._profilerTable.activeCell;
@@ -114,9 +117,8 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 				const fieldName = this._input.columns[cell].field;
 				return this._input.data.getItem(row)[fieldName];
 			});
-		});
+		}));
 		this._profilerTable.registerPlugin(copyKeybind);
-		attachTableStyler(this._profilerTable, this._themeService);
 		this._register(this._componentContextService.registerTable(this._profilerTable));
 
 		this._findState = new FindReplaceState();
@@ -130,6 +132,8 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 			this._contextKeyService,
 			this._themeService
 		);
+
+		this.loadingSpinner = new LoadingSpinner(this._overlay, { showText: true, fullSize: false });
 	}
 
 	public override setInput(input: ProfilerInput): Promise<void> {

@@ -26,22 +26,26 @@ export interface ObjectManagementDialogOptions extends ScriptableDialogOptions {
 	isNewObject: boolean;
 	parentUrn: string;
 	objectUrn?: string;
-	objectExplorerContext?: azdata.ObjectExplorerContext;
 	objectName?: string;
 }
 
 export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectManagement.SqlObject, ViewInfoType extends ObjectManagement.ObjectViewInfo<ObjectInfoType>> extends ScriptableDialogBase<ObjectManagementDialogOptions> {
-	private _contextId: string;
+	private readonly _contextId: string;
 	private _viewInfo: ViewInfoType;
 	private _originalObjectInfo: ObjectInfoType;
 
-	constructor(protected readonly objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(options.isNewObject ? localizedConstants.NewObjectDialogTitle(localizedConstants.getNodeTypeDisplayName(options.objectType, true)) :
-			localizedConstants.ObjectPropertiesDialogTitle(localizedConstants.getNodeTypeDisplayName(options.objectType, true), options.objectName),
-			getDialogName(options.objectType, options.isNewObject),
-			options
-		);
+	constructor(protected readonly objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions, dialogTitle?: string, dialogName?: string) {
+		if (!dialogTitle) {
+			dialogTitle = options.isNewObject
+				? localizedConstants.NewObjectDialogTitle(localizedConstants.getNodeTypeDisplayName(options.objectType, true))
+				: localizedConstants.ObjectPropertiesDialogTitle(localizedConstants.getNodeTypeDisplayName(options.objectType, true), options.objectName);
+		}
+		if (!dialogName) {
+			dialogName = getDialogName(options.objectType, options.isNewObject);
+		}
+		super(dialogTitle, dialogName, options);
 		this._contextId = generateUuid();
+		this.dialogObject.okButton.label = options.isNewObject ? localizedConstants.CreateObjectLabel : localizedConstants.ApplyUpdatesLabel;
 	}
 
 	protected postInitializeData(): void { }
@@ -54,12 +58,20 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		return errors;
 	}
 
+	protected async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
+		await this.objectManagementService.save(this._contextId, this.objectInfo);
+	}
+
+	protected get saveChangesTaskLabel(): string {
+		const typeDisplayName = localizedConstants.getNodeTypeDisplayName(this.options.objectType);
+		return this.options.isNewObject ? localizedConstants.CreateObjectOperationDisplayName(typeDisplayName)
+			: localizedConstants.UpdateObjectOperationDisplayName(typeDisplayName, this.options.objectName);
+	}
+
 	protected override async initialize(): Promise<void> {
 		await super.initialize();
-		const typeDisplayName = localizedConstants.getNodeTypeDisplayName(this.options.objectType);
 		this.dialogObject.registerOperation({
-			displayName: this.options.isNewObject ? localizedConstants.CreateObjectOperationDisplayName(typeDisplayName)
-				: localizedConstants.UpdateObjectOperationDisplayName(typeDisplayName, this.options.objectName),
+			displayName: this.saveChangesTaskLabel,
 			description: '',
 			isCancelable: false,
 			operation: async (operation: azdata.BackgroundOperation): Promise<void> => {
@@ -67,7 +79,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				try {
 					if (this.isDirty) {
 						const startTime = Date.now();
-						await this.objectManagementService.save(this._contextId, this.objectInfo);
+						await this.saveChanges(this._contextId, this.objectInfo);
 						if (this.options.objectExplorerContext) {
 							if (this.options.isNewObject) {
 								await refreshNode(this.options.objectExplorerContext);

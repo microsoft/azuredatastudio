@@ -14,17 +14,7 @@ import { workbenchColorsSchemaId } from 'vs/platform/theme/common/colorRegistry'
 import { tokenStylingSchemaId } from 'vs/platform/theme/common/tokenClassificationRegistry';
 import { ThemeSettings, IWorkbenchColorTheme, IWorkbenchFileIconTheme, IColorCustomizations, ITokenColorCustomizations, IWorkbenchProductIconTheme, ISemanticTokenColorCustomizations, ThemeSettingTarget, ThemeSettingDefaults } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
-import { isWeb } from 'vs/base/common/platform';
-
-// {{SQL CARBON TODO}} - set default themes
-// const DEFAULT_THEME_DARK_SETTING_VALUE = 'Default Dark Azure Data Studio'; // {{SQL CARBON EDIT}} replace default theme
-// const DEFAULT_THEME_LIGHT_SETTING_VALUE = 'Default Light Azure Data Studio'; // {{SQL CARBON EDIT}} replace default theme
-// const DEFAULT_THEME_HC_DARK_SETTING_VALUE = 'Default High Contrast';
-// const DEFAULT_THEME_HC_LIGHT_SETTING_VALUE = 'Default High Contrast Light';
-
-// const DEFAULT_FILE_ICON_THEME_SETTING_VALUE = 'vs-seti';
-
-export const DEFAULT_PRODUCT_ICON_THEME_SETTING_VALUE = 'Default';
+// import { isWeb } from 'vs/base/common/platform'; // {{SQL CARBON EDIT}} - remove import since it is not needed.
 
 // Configuration: Themes
 const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration);
@@ -40,7 +30,7 @@ function formatSettingAsLink(str: string) {
 const colorThemeSettingSchema: IConfigurationPropertySchema = {
 	type: 'string',
 	description: nls.localize('colorTheme', "Specifies the color theme used in the workbench."),
-	default: isWeb ? ThemeSettingDefaults.COLOR_THEME_LIGHT : ThemeSettingDefaults.COLOR_THEME_DARK,
+	default: ThemeSettingDefaults.COLOR_THEME_LIGHT, // {{SQL CARBON EDIT}} - use light theme as default.
 	enum: colorThemeSettingEnum,
 	enumDescriptions: colorThemeSettingEnumDescriptions,
 	enumItemLabels: colorThemeSettingEnumItemLabels,

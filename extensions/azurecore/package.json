@@ -5,6 +5,7 @@
   "version": "0.1.0",
   "publisher": "Microsoft",
   "preview": true,
+  "aiKey": "29a207bb14f84905966a8f22524cb730-25407f35-11b6-4d4e-8114-ab9e843cb52f-7380",
   "engines": {
     "vscode": "^1.30.1",
     "azdata": "*"
@@ -115,19 +116,149 @@
               "All"
             ]
           },
-          "azure.authenticationLibrary": {
-            "type": "string",
-            "description": "%config.authenticationLibrary%",
-            "default": "MSAL",
-            "enum": [
-              "ADAL",
-              "MSAL"
-            ],
-            "enumDescriptions": [
-              "Azure Active Directory Authentication Library",
-              "Microsoft Authentication Library"
-            ],
-            "deprecationMessage": "Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL (default option) instead."
+          "azure.customProviderSettings": {
+            "type": "array",
+            "description": "%config.customProviderSettings%",
+            "scope": "resource",
+            "items": {
+              "type": "object",
+              "description": "%config.providerSettingsTitle%",
+              "required": [
+                "name",
+                "settings"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "default": "Azure Public",
+                  "description": "%config.providerSettingsName%"
+                },
+                "settings": {
+                  "type": "object",
+                  "description": "%config.providerSettingsDescription%",
+                  "required": [
+                    "metadata"
+                  ],
+                  "properties": {
+                    "metadata": {
+                      "type": "object",
+                      "required": [
+                        "displayName",
+                        "id"
+                      ],
+                      "properties": {
+                        "displayName": {
+                          "type": "string",
+                          "default": "Azure Public Cloud",
+                          "description": "%config.providerSettingsMetadata%"
+                        },
+                        "id": {
+                          "type": "string",
+                          "default": "azure_publicCloud",
+                          "description": "%config.providerSettingsId%"
+                        },
+                        "endpoints": {
+                          "type": "object",
+                          "required": [
+                            "host",
+                            "clientId",
+                            "scopes",
+                            "sqlResource",
+                            "microsoftResource",
+                            "armResource",
+                            "graphResource",
+                            "azureStorageResource"
+                          ],
+                          "properties": {
+                            "type": "object",
+                            "host": {
+                              "type": "string",
+                              "default": "https://login.microsoftonline.com/",
+                              "description": "%config.providerSettings.endpoints.host%"
+                            },
+                            "clientId": {
+                              "type": "string",
+                              "default": "a69788c6-1d43-44ed-9ca3-b83e194da255",
+                              "description": "%config.providerSettings.endpoints.clientId%"
+                            },
+                            "microsoftResource": {
+                              "type": "string",
+                              "default": "https://management.core.windows.net/",
+                              "description": "%config.providerSettings.endpoints.microsoftResource%"
+                            },
+                            "graphResource": {
+                              "type": "string",
+                              "default": "https://graph.windows.net/",
+                              "description": "%config.providerSettings.endpoints.graphResource%"
+                            },
+                            "msGraphResource": {
+                              "type": "string",
+                              "default": "https://graph.microsoft.com/",
+                              "description": "%config.providerSettings.endpoints.msGraphResource%"
+                            },
+                            "armResource": {
+                              "type": "string",
+                              "default": "https://management.azure.com/",
+                              "description": "%config.providerSettings.endpoints.armResource%"
+                            },
+                            "sqlResource": {
+                              "type": "string",
+                              "default": "https://database.windows.net/",
+                              "description": "%config.providerSettings.endpoints.sqlResource%"
+                            },
+                            "azureKeyVaultResource": {
+                              "type": "string",
+                              "default": "https://vault.azure.net/",
+                              "description": "%config.providerSettings.endpoints.azureKeyVaultResource%"
+                            },
+                            "azureLogAnalyticsResource": {
+                              "type": "string",
+                              "default": "https://api.loganalytics.io/",
+                              "description": "%config.providerSettings.endpoints.logAnalytics%"
+                            },
+                            "azureStorageResource": {
+                              "type": "object",
+                              "properties": {
+                                "endpoint": {
+                                  "type": "string",
+                                  "default": "",
+                                  "description": "%config.providerSettings.endpoints.azureStorageResource%"
+                                },
+                                "endpointSuffix": {
+                                  "type": "string",
+                                  "default": ".core.windows.net/",
+                                  "description": "%config.providerSettings.endpoints.azureStorageResourceSuffix%"
+                                }
+                              }
+                            },
+                            "azureKustoResource": {
+                              "type": "string",
+                              "default": "https://kusto.kusto.windows.net/",
+                              "description": "%config.providerSettings.endpoints.azureKustoResource%"
+                            },
+                            "powerBiResource": {
+                              "type": "string",
+                              "default": "https://analysis.windows.net/powerbi/api/",
+                              "description": "%config.providerSettings.endpoints.powerBiResource%"
+                            },
+                            "scopes": {
+                              "type": "string",
+                              "default": "https://management.azure.com/user_impersonation",
+                              "description": "%config.providerSettings.endpoints.scopes%"
+                            },
+                            "portalEndpoint": {
+                              "type": "string",
+                              "default": "https://portal.azure.com",
+                              "description": "%config.providerSettings.endpoints.portal%"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -381,7 +512,8 @@
       ],
       "dataGrid/item/context": [
         {
-          "command": "azure.dataGrid.openInAzurePortal"
+          "command": "azure.dataGrid.openInAzurePortal",
+          "group": "y_portal"
         }
       ]
     },
@@ -395,6 +527,7 @@
     "@azure/storage-blob": "^12.13.0",
     "axios": "^0.27.2",
     "lockfile": "1.0.4",
+    "@microsoft/ads-extension-telemetry": "^3.0.1",
     "node-fetch": "^2.6.7",
     "qs": "^6.9.1",
     "universalify": "^0.1.2",
@@ -402,8 +535,8 @@
     "ws": "^7.4.6"
   },
   "devDependencies": {
-    "@microsoft/azdata-test": "^3.0.1",
-    "@microsoft/vscodetestcover": "^1.2.1",
+    "@microsoft/vscodetestcover": "^1.2.2",
+    "@microsoft/azdata-test": "^3.0.3",
     "@types/keytar": "4.4.0",
     "@types/lockfile": "^1.0.2",
     "@types/mocha": "^7.0.2",

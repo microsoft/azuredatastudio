@@ -623,8 +623,8 @@ Default Skipped Commands:
         <target state="translated">'{0}'을(를) 제거하시겠습니까?</target>
       </trans-unit>
       <trans-unit id="refreshAccount">
-        <source xml:lang="en">Reenter your credentials</source>
-        <target state="translated">자격 증명 다시 입력</target>
+        <source xml:lang="en">Refresh your credentials</source>
+        <target state="translated">자격 증명 새로 고침</target>
       </trans-unit>
       <trans-unit id="removeAccount">
         <source xml:lang="en">Remove account</source>
@@ -2025,6 +2025,14 @@ Default Skipped Commands:
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/backup/browser/backupUiService" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="backupDialogTitle">
+        <source xml:lang="en">Backup database - {0}:{1}</source>
+        <target state="translated">백업 데이터베이스 - {0}:{1}</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/backup/common/constants" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="backup.asymmetricKey">
@@ -2311,6 +2319,10 @@ Default Skipped Commands:
   </file>
   <file original="src/sql/workbench/contrib/commandLine/electron-browser/commandLine" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="commandline.propertiesFormatError">
+        <source xml:lang="en">Advanced connection properties could not be parsed as JSON, error occurred: {0} Received properties value: {1}</source>
+        <target state="translated">고급 연결 속성을 JSON으로 구문 분석할 수 없습니다. 오류가 발생했습니다. {0} 받은 속성 값: {1}</target>
+      </trans-unit>
       <trans-unit id="confirmConnect">
         <source xml:lang="en">Are you sure you want to connect?</source>
         <target state="translated">연결하시겠습니까?</target>
@@ -2366,6 +2378,10 @@ Default Skipped Commands:
       <trans-unit id="connection.showUnsupportedServerVersionWarning">
         <source xml:lang="en">Whether to show the warning message when user connects to a server version that is not supported by Azure Data Studio.</source>
         <target state="translated">사용자가 Azure Data Studio에서 지원하지 않는 서버 버전에 연결할 때 경고 메시지를 표시할지 여부입니다.</target>
+      </trans-unit>
+      <trans-unit id="registeredServers.collapseAll">
+        <source xml:lang="en">Collapse All Connections</source>
+        <target state="translated">모든 연결 축소</target>
       </trans-unit>
       <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
         <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
@@ -4101,6 +4117,10 @@ Default Skipped Commands:
         <source xml:lang="en">Enter search value</source>
         <target state="translated">검색 값 입력</target>
       </trans-unit>
+      <trans-unit id="executionPlanFindNodeLabel">
+        <source xml:lang="en">Find nodes</source>
+        <target state="translated">노드 찾기</target>
+      </trans-unit>
       <trans-unit id="executionPlanSearchTypeContains">
         <source xml:lang="en">Contains</source>
         <target state="translated">포함</target>
@@ -4755,6 +4775,10 @@ Error: {1}</source>
         <source xml:lang="en">Remove parameter cell</source>
         <target state="translated">매개 변수 셀 제거</target>
       </trans-unit>
+      <trans-unit id="addCellLabel">
+        <source xml:lang="en">Add cell</source>
+        <target state="translated">셀 추가</target>
+      </trans-unit>
       <trans-unit id="clear">
         <source xml:lang="en">Clear Result</source>
         <target state="translated">결과 지우기</target>
@@ -4799,10 +4823,6 @@ Error: {1}</source>
         <source xml:lang="en">Insert Text Below</source>
         <target state="translated">아래에 텍스트 삽입</target>
       </trans-unit>
-      <trans-unit id="moreActionsLabel">
-        <source xml:lang="en">More</source>
-        <target state="translated">자세히</target>
-      </trans-unit>
       <trans-unit id="runAllAbove">
         <source xml:lang="en">Run Cells Above</source>
         <target state="translated">위 셀 실행</target>
@@ -4831,14 +4851,6 @@ Error: {1}</source>
         <source xml:lang="en">Move cell up</source>
         <target state="translated">위로 셀 이동</target>
       </trans-unit>
-      <trans-unit id="codeCellsPreview">
-        <source xml:lang="en">Add cell</source>
-        <target state="translated">셀 추가</target>
-      </trans-unit>
-      <trans-unit id="codePreview">
-        <source xml:lang="en">Code cell</source>
-        <target state="translated">코드 셀</target>
-      </trans-unit>
       <trans-unit id="optionCodeCell">
         <source xml:lang="en">Code cell</source>
         <target state="translated">코드 셀</target>
@@ -4850,10 +4862,6 @@ Error: {1}</source>
       <trans-unit id="splitCell">
         <source xml:lang="en">Split cell</source>
         <target state="translated">셀 분할</target>
-      </trans-unit>
-      <trans-unit id="textPreview">
-        <source xml:lang="en">Text cell</source>
-        <target state="translated">텍스트 셀</target>
       </trans-unit>
     </body>
   </file>
@@ -5123,14 +5131,6 @@ Error: {1}</source>
         <source xml:lang="en">Run Cells failed - See error in output of the currently selected cell for more information.</source>
         <target state="translated">셀 실행 실패 - 자세한 내용은 현재 선택한 셀의 출력 오류를 참조하세요.</target>
       </trans-unit>
-      <trans-unit id="codeCellsPreview">
-        <source xml:lang="en">Add cell</source>
-        <target state="translated">셀 추가</target>
-      </trans-unit>
-      <trans-unit id="codePreview">
-        <source xml:lang="en">Code cell</source>
-        <target state="translated">코드 셀</target>
-      </trans-unit>
       <trans-unit id="createFile">
         <source xml:lang="en">Create File</source>
         <target state="translated">파일 만들기</target>
@@ -5154,10 +5154,6 @@ Error: {1}</source>
       <trans-unit id="runAllPreview">
         <source xml:lang="en">Run all</source>
         <target state="translated">모두 실행</target>
-      </trans-unit>
-      <trans-unit id="textPreview">
-        <source xml:lang="en">Text cell</source>
-        <target state="translated">텍스트 셀</target>
       </trans-unit>
       <trans-unit id="views">
         <source xml:lang="en">Views</source>
@@ -5451,6 +5447,10 @@ Error: {1}</source>
         <source xml:lang="en">Clear Results</source>
         <target state="translated">결과 지우기</target>
       </trans-unit>
+      <trans-unit id="codePreview">
+        <source xml:lang="en">Code cell</source>
+        <target state="translated">코드 셀</target>
+      </trans-unit>
       <trans-unit id="collapseAllCells">
         <source xml:lang="en">Collapse Cells</source>
         <target state="translated">셀 축소</target>
@@ -5522,6 +5522,10 @@ Error: {1}</source>
       <trans-unit id="selectConnection">
         <source xml:lang="en">Select Connection</source>
         <target state="translated">연결 선택</target>
+      </trans-unit>
+      <trans-unit id="textPreview">
+        <source xml:lang="en">Text cell</source>
+        <target state="translated">텍스트 셀</target>
       </trans-unit>
       <trans-unit id="trustLabel">
         <source xml:lang="en">Trusted</source>
@@ -5743,10 +5747,6 @@ Error: {1}</source>
         <source xml:lang="en">Insert Cells</source>
         <target state="translated">셀 삽입</target>
       </trans-unit>
-      <trans-unit id="moreActionsLabel">
-        <source xml:lang="en">More</source>
-        <target state="translated">자세히</target>
-      </trans-unit>
       <trans-unit id="runCell">
         <source xml:lang="en">Run cell</source>
         <target state="translated">셀 실행</target>
@@ -5816,8 +5816,8 @@ Error: {1}</source>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error {0}</source>
-        <target state="translated">{0} 오류를 나타내며 복사 실패</target>
+        <source xml:lang="en">Copy failed with error: {0}</source>
+        <target state="translated">복사하지 못했습니다(오류: {0}).</target>
       </trans-unit>
       <trans-unit id="notebook.showChart">
         <source xml:lang="en">Show chart</source>
@@ -5849,8 +5849,20 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/notebook/common/notebookLoc" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="moreActionsLabel">
+        <source xml:lang="en">More</source>
+        <target state="translated">자세히</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/objectExplorer/browser/serverTreeView" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="objectExplorer.filterDialogTitle">
+        <source xml:lang="en">Filter Settings</source>
+        <target state="translated">필터 설정</target>
+      </trans-unit>
       <trans-unit id="serverTree.newConnection">
         <source xml:lang="en">New Connection</source>
         <target state="translated">새 연결</target>
@@ -5875,6 +5887,10 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/contrib/objectExplorer/common/serverGroup.contribution" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="objectExplorerConfigurationTitle">
+        <source xml:lang="en">Object Explorer</source>
+        <target state="translated">개체 탐색기</target>
+      </trans-unit>
       <trans-unit id="serverGroup.autoExpand">
         <source xml:lang="en">Auto-expand Server Groups in the Object Explorer viewlet.</source>
         <target state="translated">개체 탐색기 뷰렛에서 서버 그룹을 자동으로 확장합니다.</target>
@@ -5886,10 +5902,6 @@ Error: {1}</source>
       <trans-unit id="serverTree.configuration.title">
         <source xml:lang="en">Server Tree</source>
         <target state="translated">서버 트리</target>
-      </trans-unit>
-      <trans-unit id="serverTree.nodeExpansionTimeout">
-        <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
-        <target state="translated">서버 보기에서 노드를 확장하는 데 대한 시간 제한(초)</target>
       </trans-unit>
       <trans-unit id="serverTree.useAsyncServerTree">
         <source xml:lang="en">Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering. Requires a restart to take effect.</source>
@@ -5922,6 +5934,10 @@ Error: {1}</source>
       <trans-unit id="notebook">
         <source xml:lang="en">Notebook</source>
         <target state="translated">Notebook</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer">
+        <source xml:lang="en">Object Explorer</source>
+        <target state="translated">개체 탐색기</target>
       </trans-unit>
       <trans-unit id="profiler">
         <source xml:lang="en">Profiler</source>
@@ -6147,6 +6163,10 @@ Error: {1}</source>
         <source xml:lang="en">Copy With Headers</source>
         <target state="translated">복사(머리글 포함)</target>
       </trans-unit>
+      <trans-unit id="excelLimitExceededError">
+        <source xml:lang="en">The number of rows or columns in the table has exceeded the Excel limits. Please try a different format instead.</source>
+        <target state="translated">테이블의 행 또는 열 수가 Excel 제한을 초과했습니다. 대신 다른 형식을 사용해 보세요.</target>
+      </trans-unit>
       <trans-unit id="jsonEncoding">
         <source xml:lang="en">Results encoding will not be saved when exporting to JSON, remember to save with desired encoding once file is created.</source>
         <target state="translated">JSON으로 내보낼 때 결과 인코딩이 저장되지 않습니다. 파일이 만들어지면 원하는 인코딩으로 저장해야 합니다.</target>
@@ -6154,6 +6174,10 @@ Error: {1}</source>
       <trans-unit id="maximize">
         <source xml:lang="en">Maximize</source>
         <target state="translated">최대화</target>
+      </trans-unit>
+      <trans-unit id="openExcelSpecs">
+        <source xml:lang="en">View Excel specifications</source>
+        <target state="translated">Excel 사양 보기</target>
       </trans-unit>
       <trans-unit id="restore">
         <source xml:lang="en">Restore</source>
@@ -6242,6 +6266,34 @@ Error: {1}</source>
       <trans-unit id="resultsGrid">
         <source xml:lang="en">Results grid</source>
         <target state="translated">결과 표</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.cancelLargeRowSelection">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.confirmLargeRowSelection">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">예</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.donotShowLargeRowSelectionPromptAgain">
+        <source xml:lang="en">Don't show again</source>
+        <target state="translated">다시 표시 안 함</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.largeRowSelectionPrompt.">
+        <source xml:lang="en">You have selected {0} rows, it might take a while to load the data and calculate the summary, do you want to continue?</source>
+        <target state="translated">{0} 행을 선택했습니다. 데이터를 로드하고 요약을 계산하는 데 시간이 다소 걸릴 수 있습니다. 계속하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.loadingData">
+        <source xml:lang="en">Loading selected rows for calculation...</source>
+        <target state="translated">계산을 위해 선택한 행을 로드하는 중...</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.loadingDataWithProgress">
+        <source xml:lang="en">Loading selected rows for calculation ({0}/{1})...</source>
+        <target state="translated">계산을 위해 선택한 행을 로드하는 중({0}/{1})...</target>
       </trans-unit>
       <trans-unit id="resultsGrid.maxRowCountExceeded">
         <source xml:lang="en">Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'</source>
@@ -6335,6 +6387,10 @@ Error: {1}</source>
         <source xml:lang="en">Message Panel</source>
         <target state="translated">메시지 패널</target>
       </trans-unit>
+      <trans-unit id="messagePanel.message">
+        <source xml:lang="en">Timestamp: {0}, Message: {1}</source>
+        <target state="translated">타임스탬프: {0}%1, 메시지: %1 {1}</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/query/browser/query.contribution" source-language="en" datatype="plaintext" target-language="ko">
@@ -6374,6 +6430,14 @@ Error: {1}</source>
       <trans-unit id="queryEditor.results.openAfterSave">
         <source xml:lang="en">Whether to open the file in Azure Data Studio after the result is saved.</source>
         <target state="translated">결과를 저장한 후 Azure Data Studio의 파일을 열지 여부입니다.</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.preferProvidersCopyHandler">
+        <source xml:lang="en">Whether the copy result request should be handled by the query provider when it is supported. The default value is true, set this to false to force all copy handling to be done by Azure Data Studio.</source>
+        <target state="translated">복사 결과 요청이 지원되는 경우 쿼리 공급자가 처리해야 하는지 여부입니다. 기본값은 true이며 Azure Data Studio에서 모든 복사 처리를 강제로 수행하려면 false로 설정합니다.</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.promptForLargeRowSelection">
+        <source xml:lang="en">When cells are selected in the results grid, ADS will calculate the summary for them, This setting controls whether to show the a confirmation when the number of rows selected is larger than the value specified in the 'inMemoryDataProcessingThreshold' setting. The default value is true.</source>
+        <target state="translated">결과 표에서 셀을 선택하면 ADS에서 해당 요약을 계산합니다. 이 설정은 선택한 행 수가 'inMemoryDataProcessingThreshold' 설정에 지정된 값보다 큰 경우 확인 메시지를 표시할지 여부를 제어합니다. 기본값은 true입니다.</target>
       </trans-unit>
       <trans-unit id="queryEditor.results.saveAsCsv.delimiter">
         <source xml:lang="en">The custom delimiter to use between values when saving as CSV</source>
@@ -6422,6 +6486,10 @@ Error: {1}</source>
       <trans-unit id="queryEditor.results.showActionBar">
         <source xml:lang="en">Whether to show the action bar in the query results view</source>
         <target state="translated">쿼리 결과 뷰에 작업 모음을 표시할지 여부</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.skipNewLineAfterTrailingLineBreak">
+        <source xml:lang="en">Whether to skip adding a line break between rows when copying results if the previous row already has a trailing line break. The default value is false.</source>
+        <target state="translated">이전 행에 이미 후행 줄 바꿈이 있는 경우 결과를 복사할 때 행 간에 줄 바꿈 추가를 건너뛸지 여부를 지정합니다. 기본값은 false입니다.</target>
       </trans-unit>
       <trans-unit id="queryEditor.results.streaming">
         <source xml:lang="en">Enable results streaming; contains few minor visual issues</source>
@@ -6551,6 +6619,10 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/contrib/query/browser/queryEditor" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="queryActions.selectDatabase.label">
+        <source xml:lang="en">Database:</source>
+        <target state="translated">데이터베이스:</target>
+      </trans-unit>
       <trans-unit id="queryEditor.name">
         <source xml:lang="en">Query Editor</source>
         <target state="translated">쿼리 편집기</target>
@@ -6827,6 +6899,18 @@ Error: {1}</source>
         <source xml:lang="en">An error occurred refreshing node '{0}': {1}</source>
         <target state="translated">'{0}' 노드를 새로 고치는 동안 오류가 발생했습니다. {1}</target>
       </trans-unit>
+      <trans-unit id="scriptActionError">
+        <source xml:lang="en">An error occurred while executing the action '{0}': {1}.</source>
+        <target state="translated">'{0}' 작업을 실행하는 동안 오류가 발생했습니다. {1}.</target>
+      </trans-unit>
+      <trans-unit id="scriptingAction.close">
+        <source xml:lang="en">Close</source>
+        <target state="translated">닫기</target>
+      </trans-unit>
+      <trans-unit id="scriptingAction.inProgress">
+        <source xml:lang="en">Executing action: {0}...</source>
+        <target state="translated">실행 중인 동작: {0}...</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/tableDesigner/browser/actions" source-language="en" datatype="plaintext" target-language="ko">
@@ -6855,10 +6939,6 @@ Error: {1}</source>
       <trans-unit id="tasks">
         <source xml:lang="en">Tasks</source>
         <target state="translated">작업</target>
-      </trans-unit>
-      <trans-unit id="viewCategory">
-        <source xml:lang="en">View</source>
-        <target state="translated">보기</target>
       </trans-unit>
     </body>
   </file>
@@ -6965,6 +7045,18 @@ Error: {1}</source>
         <source xml:lang="en">Refresh</source>
         <target state="translated">새로 고침</target>
       </trans-unit>
+      <trans-unit id="treeView.enableCollapseAll">
+        <source xml:lang="en">Whether the the tree view with id {0} enables collapse all.</source>
+        <target state="translated">ID가 {0}인 트리 뷰에서 모두 축소를 사용할 수 있는지 여부입니다.</target>
+      </trans-unit>
+      <trans-unit id="treeView.enableRefresh">
+        <source xml:lang="en">Whether the tree view with id {0} enables refresh.</source>
+        <target state="translated">ID가 {0}인 트리 뷰에서 새로 고침을 사용할 수 있는지 여부입니다.</target>
+      </trans-unit>
+      <trans-unit id="treeView.toggleCollapseAll">
+        <source xml:lang="en">Whether collapse all is toggled for the tree view with id {0}.</source>
+        <target state="translated">ID가 {0}인 트리 뷰에 대해 모두 축소가 토글되는지 여부입니다.</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/webview/browser/webViewDialog" source-language="en" datatype="plaintext" target-language="ko">
@@ -6999,19 +7091,16 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="src/sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="notifyEncryption.message">
-        <source xml:lang="en">Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.</source>
-        <target state="translated">이제 Azure Data Studio에서 모든 SQL Server 연결에 대해 기본적으로 암호화를 사용합니다. 이로 인해 특정 암호화 관련 연결 속성이 변경되지 않는 한 기존 연결이 더 이상 작동하지 않을 수 있습니다.{0}아래 링크에서 자세한 내용을 검토하는 것이 좋습니다.</target>
+      <trans-unit id="miGettingStarted">
+        <source xml:lang="en">Getting &amp;&amp;Started</source>
+        <note>&amp;&amp; denotes a mnemonic</note>
+        <target state="translated">시작(&amp;&amp;S)</target>
       </trans-unit>
-      <trans-unit id="notifyEncryption.moreInfoLink">
-        <source xml:lang="en">More information</source>
-        <target state="translated">추가 정보</target>
-      </trans-unit>
-      <trans-unit id="notifyEncryption.title">
-        <source xml:lang="en">Important Update</source>
-        <target state="translated">중요 업데이트</target>
+      <trans-unit id="showReleaseNotes">
+        <source xml:lang="en">Show Getting Started</source>
+        <target state="translated">시작 표시</target>
       </trans-unit>
     </body>
   </file>
@@ -7196,10 +7285,6 @@ Error: {1}</source>
       <trans-unit id="guidedTour">
         <source xml:lang="en">User Welcome Tour</source>
         <target state="translated">사용자 시작 둘러보기</target>
-      </trans-unit>
-      <trans-unit id="help">
-        <source xml:lang="en">Help</source>
-        <target state="translated">도움말</target>
       </trans-unit>
       <trans-unit id="hideGuidedTour">
         <source xml:lang="en">Hide Welcome Tour</source>
@@ -7415,6 +7500,22 @@ Error: {1}</source>
         <source xml:lang="en">Open the welcome page with Getting Started Tour (default)</source>
         <note>This is the description for a setting. Values surrounded by single quotes are not to be translated.</note>
         <target state="translated">시작하기 둘러보기로 시작 페이지 열기(기본값)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="telemetryOptOut.optInNotice">
+        <source xml:lang="en">Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt in]({1}).</source>
+        <target state="translated">Microsoft에서 사용 데이터를 수집하도록 허용하여 Azure Data Studio 개선에 도움을 주세요. Microsoft [개인정보처리방침]({0})을 읽고 [옵트인]({1})하는 방법을 알아보세요.</target>
+      </trans-unit>
+      <trans-unit id="telemetryOptOut.optOutNotice">
+        <source xml:lang="en">Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt out]({1}).</source>
+        <target state="translated">Microsoft에서 사용 데이터를 수집하도록 허용하여 Azure Data Studio 개선에 도움을 주세요. Microsoft [개인정보처리방침]({0})을 읽고 [옵트아웃]({1})하는 방법을 알아보세요.</target>
+      </trans-unit>
+      <trans-unit id="telemetryOptOut.readMore">
+        <source xml:lang="en">Read More</source>
+        <target state="translated">더 읽기</target>
       </trans-unit>
     </body>
   </file>
@@ -7808,6 +7909,18 @@ Error Message: {1}</source>
         <source xml:lang="en">Are you sure you want to cancel this connection?</source>
         <target state="translated">이 연결을 취소하시겠습니까?</target>
       </trans-unit>
+      <trans-unit id="connection.connTitleGroupSection">
+        <source xml:lang="en"> (Group: {0})</source>
+        <target state="translated">(그룹: {0})</target>
+      </trans-unit>
+      <trans-unit id="connection.duplicateEditErrorMessage">
+        <source xml:lang="en">Cannot save profile, the selected connection matches an existing profile with the same server info in the same group: 
+
+ {0}{1}</source>
+        <target state="translated">프로필을 저장할 수 없습니다. 선택한 연결이 동일한 그룹에 있는 동일한 서버 정보를 가진 기존 프로필과 일치합니다. 
+
+ {0}{1}</target>
+      </trans-unit>
       <trans-unit id="connection.extensionNotInstalled">
         <source xml:lang="en">The extension '{0}' is required in order to connect to this resource. Do you want to install it?</source>
         <target state="translated">이 리소스에 연결하려면 '{0}' 확장이 필요합니다. 해당 확장을 설치하시겠습니까?</target>
@@ -7907,6 +8020,18 @@ Error Message: {1}</source>
       <trans-unit id="connectionWidget.connectionString">
         <source xml:lang="en">Connection string</source>
         <target state="translated">연결 문자열</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.inputType.connectionString">
+        <source xml:lang="en">Connection String</source>
+        <target state="translated">연결 문자열</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.inputType.parameters">
+        <source xml:lang="en">Parameters</source>
+        <target state="translated">매개 변수</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.inputTypeLabel">
+        <source xml:lang="en">Input type</source>
+        <target state="translated">입력 유형</target>
       </trans-unit>
       <trans-unit id="connectionWidget.invalidAzureAccount">
         <source xml:lang="en">You must select an account</source>
@@ -8666,6 +8791,14 @@ Error Message: {1}</source>
         <source xml:lang="en">Show Active Connections</source>
         <target state="translated">활성 연결 표시</target>
       </trans-unit>
+      <trans-unit id="connectionDeleted">
+        <source xml:lang="en">Connection {0} deleted</source>
+        <target state="translated">연결 {0}이(가) 삭제됨</target>
+      </trans-unit>
+      <trans-unit id="connectionGroupDeleted">
+        <source xml:lang="en">Connection group {0} deleted</source>
+        <target state="translated">연결 그룹 {0}이(가) 삭제됨</target>
+      </trans-unit>
       <trans-unit id="connectionTree.addConnection">
         <source xml:lang="en">New Connection</source>
         <target state="translated">새 연결</target>
@@ -8694,14 +8827,6 @@ Error Message: {1}</source>
         <source xml:lang="en">Are you sure you want to delete connection '{0}'?</source>
         <target state="translated">'{0}' 연결을 삭제할까요?</target>
       </trans-unit>
-      <trans-unit id="deleteConnectionConfirmationNo">
-        <source xml:lang="en">No</source>
-        <target state="translated">아니요</target>
-      </trans-unit>
-      <trans-unit id="deleteConnectionConfirmationYes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">예</target>
-      </trans-unit>
       <trans-unit id="deleteConnectionGroup">
         <source xml:lang="en">Delete Group</source>
         <target state="translated">그룹 삭제</target>
@@ -8710,9 +8835,149 @@ Error Message: {1}</source>
         <source xml:lang="en">Are you sure you want to delete connection group '{0}'?</source>
         <target state="translated">'{0}' 연결 그룹을 삭제할까요?</target>
       </trans-unit>
+      <trans-unit id="objectExplorer.filterChildren">
+        <source xml:lang="en">Filter</source>
+        <target state="translated">필터</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.removeFilter">
+        <source xml:lang="en">Remove Filter</source>
+        <target state="translated">필터 제거</target>
+      </trans-unit>
+      <trans-unit id="registeredServers.clearRecentConnections">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">삭제</target>
+      </trans-unit>
       <trans-unit id="showAllConnections">
         <source xml:lang="en">Show All Connections</source>
         <target state="translated">모든 연결 표시</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="filterDialog.errorDateRange">
+        <source xml:lang="en">Start date cannot be greater than end date.</source>
+        <target state="translated">시작일은 종료일보다 클 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="filterDialog.errorEndDate">
+        <source xml:lang="en">End date is not specified.</source>
+        <target state="translated">종료 날짜가 지정되지 않았습니다.</target>
+      </trans-unit>
+      <trans-unit id="filterDialog.errorEndNumber">
+        <source xml:lang="en">End number is not specified.</source>
+        <target state="translated">끝 번호가 지정되지 않았습니다.</target>
+      </trans-unit>
+      <trans-unit id="filterDialog.errorNumberRange">
+        <source xml:lang="en">Start number cannot be greater than end number.</source>
+        <target state="translated">시작 번호는 끝 번호보다 클 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="filterDialog.errorStartDate">
+        <source xml:lang="en">Start date is not specified.</source>
+        <target state="translated">시작 날짜가 지정되지 않았습니다.</target>
+      </trans-unit>
+      <trans-unit id="filterDialog.errorStartNumber">
+        <source xml:lang="en">Start number is not specified.</source>
+        <target state="translated">시작 번호가 지정되지 않았습니다.</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.andSelectBox">
+        <source xml:lang="en">And</source>
+        <target state="translated">및</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.betweenSelectBox">
+        <source xml:lang="en">Between</source>
+        <target state="translated">사이</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.cancelButtonText">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.clearAllButtonText">
+        <source xml:lang="en">Clear All</source>
+        <target state="translated">모두 지우기</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.clearColumnHeader">
+        <source xml:lang="en">Clear</source>
+        <target state="translated">지우기</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.containsSelectBox">
+        <source xml:lang="en">Contains</source>
+        <target state="translated">포함</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.endsWithSelectBox">
+        <source xml:lang="en">Ends With</source>
+        <target state="translated">다음으로 끝남</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.equalsSelectBox">
+        <source xml:lang="en">Equals</source>
+        <target state="translated">같음</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.falseSelectBox">
+        <source xml:lang="en">False</source>
+        <target state="translated">False</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.greaterThanOrEqualsSelectBox">
+        <source xml:lang="en">Greater Than Or Equals</source>
+        <target state="translated">크거나 같음</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.greaterThanSelectBox">
+        <source xml:lang="en">Greater Than</source>
+        <target state="translated">보다 큼</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.lessThanOrEqualsSelectBox">
+        <source xml:lang="en">Less Than Or Equals</source>
+        <target state="translated">작거나 같음</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.lessThanSelectBox">
+        <source xml:lang="en">Less Than</source>
+        <target state="translated">보다 작음</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.nodePath">
+        <source xml:lang="en">Path:</source>
+        <target state="translated">경로:</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.notBetweenSelectBox">
+        <source xml:lang="en">Not Between</source>
+        <target state="translated">사이에 있지 않음</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.notContainsSelectBox">
+        <source xml:lang="en">Not Contains</source>
+        <target state="translated">포함하지 않음</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.notEndsWithSelectBox">
+        <source xml:lang="en">Not Ends With</source>
+        <target state="translated">다음으로 끝나지 않음</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.notEqualsSelectBox">
+        <source xml:lang="en">Not Equals</source>
+        <target state="translated">같지 않음</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.notStartsWithSelectBox">
+        <source xml:lang="en">Not Starts With</source>
+        <target state="translated">다음으로 시작하지 않음</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.okButtonText">
+        <source xml:lang="en">OK</source>
+        <target state="translated">확인</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.operatorColumnHeader">
+        <source xml:lang="en">Operator</source>
+        <target state="translated">연산자</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.propertyNameColumnHeader">
+        <source xml:lang="en">Property</source>
+        <target state="translated">속성</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.startsWithSelectBox">
+        <source xml:lang="en">Starts With</source>
+        <target state="translated">다음으로 시작함</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.trueSelectBox">
+        <source xml:lang="en">True</source>
+        <target state="translated">True</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.valueColumnHeader">
+        <source xml:lang="en">Value</source>
+        <target state="translated">값</target>
       </trans-unit>
     </body>
   </file>
@@ -8725,18 +8990,6 @@ Error Message: {1}</source>
       <trans-unit id="nodeExpansionError">
         <source xml:lang="en">Multiple errors:</source>
         <target state="translated">여러 오류:</target>
-      </trans-unit>
-      <trans-unit id="nodeExpansionTimeout">
-        <source xml:lang="en">Node expansion timed out for node {0} for providers {1}</source>
-        <target state="translated">{1} 공급자의 {0} 노드에 대한 노드 확장 시간을 초과했습니다.</target>
-      </trans-unit>
-      <trans-unit id="objectExplorerMissingConnectionForSession">
-        <source xml:lang="en">Timeout waiting for session {0} to be created for connection "{1}". This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection "{1}"</source>
-        <target state="translated">연결 "{1}"에 대해 세션 {0} 생성을 기다리는 동안 시간이 초과되었습니다. 이 문제는 OE 서비스가 연결 "{1}"에 대해 공급자로부터 createNewSession에 대한 응답을 받지 못했기 때문에 발생했을 수 있습니다.</target>
-      </trans-unit>
-      <trans-unit id="objectExplorerMissingSession">
-        <source xml:lang="en">Timed out waiting for session {0} to be created. This has probably happened because OE service did not recieve a response for createNewSession from the provider.</source>
-        <target state="translated">세션 {0} 생성을 기다리는 동안 시간이 초과되었습니다. 이 문제는 OE 서비스가 공급자로부터 createNewSession에 대한 응답을 받지 못했기 때문에 발생했을 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="objectExplorerSessionIdMissing">
         <source xml:lang="en">The session ID returned by provider "{0}" for connection "{1}" is invalid.</source>
@@ -8786,9 +9039,9 @@ Error Message: {1}</source>
   </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/treeUpdateUtils" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="objectExplorerTimeout">
-        <source xml:lang="en">Object Explorer expansion timed out for '{0}'</source>
-        <target state="translated">'{0}'에 대한 개체 탐색기 확장 시간이 초과되었습니다.</target>
+      <trans-unit id="connectionFailedError">
+        <source xml:lang="en">Failed to connect, please try again.</source>
+        <target state="translated">연결하지 못했습니다. 다시 시도하세요.</target>
       </trans-unit>
     </body>
   </file>
@@ -8900,6 +9153,30 @@ Error Message: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/query/common/gridDataProvider" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="gridDataProvider.cancelCopyResults">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
+      </trans-unit>
+      <trans-unit id="gridDataProvider.closeNotification">
+        <source xml:lang="en">Close</source>
+        <target state="translated">닫기</target>
+      </trans-unit>
+      <trans-unit id="gridDataProvider.copyResultsCompleted">
+        <source xml:lang="en">Selected data has been copied to the clipboard. Row count: {0}.</source>
+        <target state="translated">선택한 데이터가 클립보드에 복사되었습니다. 행 개수: {0}.</target>
+      </trans-unit>
+      <trans-unit id="gridDataProvider.copying">
+        <source xml:lang="en">Copying...</source>
+        <target state="translated">복사 중...</target>
+      </trans-unit>
+      <trans-unit id="gridDataProvider.loadingRowsInProgress">
+        <source xml:lang="en">Loading the rows to be copied ({0}/{1})...</source>
+        <target state="translated">복사할 행 로드 중({0}/{1})...</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/query/common/queryManagement" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="queryManagement.noQueryRunnerForUri">
@@ -8947,8 +9224,8 @@ Error Message: {1}</source>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error {0}</source>
-        <target state="translated">{0} 오류를 나타내며 복사 실패</target>
+        <source xml:lang="en">Copy failed with error: {0}</source>
+        <target state="translated">복사하지 못했습니다(오류: {0}).</target>
       </trans-unit>
       <trans-unit id="elapsedBatchTime">
         <source xml:lang="en">Batch execution time: {0}</source>
@@ -9229,6 +9506,14 @@ Error Message: {1}</source>
       <trans-unit id="targetDatabaseTooltip">
         <source xml:lang="en">Please enter target database name</source>
         <target state="translated">대상 데이터베이스 이름을 입력하세요</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/restore/browser/restoreServiceImpl" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="restoreDialogTitle">
+        <source xml:lang="en">Restore database - {0}:{1}</source>
+        <target state="translated">데이터베이스 복원 - {0}:{1}</target>
       </trans-unit>
     </body>
   </file>
@@ -9642,6 +9927,11 @@ Error Message: {1}</source>
         <source xml:lang="en">The changes have been successfully published.</source>
         <target state="translated">변경 내용을 게시했습니다.</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.refreshOEError">
+        <source xml:lang="en">An error occurred while refreshing the object explorer. {0}</source>
+        <note>{0}: error message.</note>
+        <target state="translated">개체 탐색기를 새로 고치는 동안 오류가 발생했습니다. {0}</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.savingChanges">
         <source xml:lang="en">Publishing table designer changes...</source>
         <target state="translated">테이블 디자이너 변경 내용을 게시하는 중...</target>
@@ -9702,19 +9992,6 @@ Error Message: {1}</source>
       <trans-unit id="taskService.yes">
         <source xml:lang="en">Yes</source>
         <target state="translated">예</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/update/electron-browser/gettingStarted" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="miGettingStarted">
-        <source xml:lang="en">Getting &amp;&amp;Started</source>
-        <note>&amp;&amp; denotes a mnemonic</note>
-        <target state="translated">시작(&amp;S)</target>
-      </trans-unit>
-      <trans-unit id="showReleaseNotes">
-        <source xml:lang="en">Show Getting Started</source>
-        <target state="translated">시작 표시</target>
       </trans-unit>
     </body>
   </file>

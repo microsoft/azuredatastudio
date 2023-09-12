@@ -2,9 +2,11 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import { convertJQueryKeyDownEvent } from 'sql/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Emitter } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface TableColumn<T extends Slick.SlickData> {
 	readonly definition: Slick.Column<T>;
@@ -24,19 +26,20 @@ export interface ClickableColumnOptions {
 	enabledField?: string;
 }
 
-export abstract class BaseClickableColumn<T extends Slick.SlickData> implements Slick.Plugin<T>, TableColumn<T> {
+export abstract class BaseClickableColumn<T extends Slick.SlickData> extends Disposable implements Slick.Plugin<T>, TableColumn<T> {
 	protected _handler = new Slick.EventHandler();
 	protected _grid!: Slick.Grid<T>;
-	private _onClick = new Emitter<TableCellClickEventArgs<T>>();
+	private _onClick = this._register(new Emitter<TableCellClickEventArgs<T>>());
 	public onClick = this._onClick.event;
 
 	constructor(private readonly _options: ClickableColumnOptions) {
+		super();
 	}
 
 	public init(grid: Slick.Grid<T>): void {
 		this._grid = grid;
 		this._handler.subscribe(grid.onClick, (e: DOMEvent, args: Slick.OnClickEventArgs<T>) => this.handleClick(args));
-		this._handler.subscribe(grid.onKeyDown, (e: DOMEvent, args: Slick.OnKeyDownEventArgs<T>) => this.handleKeyboardEvent(e as KeyboardEvent, args));
+		this._handler.subscribe(grid.onKeyDown, (e: DOMEvent, args: Slick.OnKeyDownEventArgs<T>) => this.handleKeyboardEvent(convertJQueryKeyDownEvent(e), args));
 		this._handler.subscribe(grid.onActiveCellChanged, (e: DOMEvent, args: Slick.OnActiveCellChangedEventArgs<T>) => { this.handleActiveCellChanged(args); });
 	}
 
@@ -44,6 +47,9 @@ export abstract class BaseClickableColumn<T extends Slick.SlickData> implements 
 		this._handler.unsubscribeAll();
 	}
 
+	public override dispose(): void {
+		this.destroy();
+	}
 	/**
 	 * Returns the column definition.
 	 * Note when implementing this abstract getter:
@@ -74,11 +80,10 @@ export abstract class BaseClickableColumn<T extends Slick.SlickData> implements 
 		}
 	}
 
-	private handleKeyboardEvent(e: KeyboardEvent, args: Slick.OnKeyDownEventArgs<T>): void {
-		let event = new StandardKeyboardEvent(e);
-		if ((event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) && this.isCellEnabled(args.row, args.cell)) {
-			event.stopPropagation();
-			event.preventDefault();
+	private handleKeyboardEvent(e: StandardKeyboardEvent, args: Slick.OnKeyDownEventArgs<T>): void {
+		if ((e.equals(KeyCode.Enter) || e.equals(KeyCode.Space)) && this.isCellEnabled(args.row, args.cell)) {
+			e.stopPropagation();
+			e.preventDefault();
 			this.fireClickEvent();
 		}
 	}

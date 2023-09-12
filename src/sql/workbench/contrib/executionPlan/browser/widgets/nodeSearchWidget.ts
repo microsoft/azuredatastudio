@@ -10,7 +10,6 @@ import * as DOM from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import { Codicon } from 'vs/base/common/codicons';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Action } from 'vs/base/common/actions';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -19,6 +18,7 @@ import { AzdataGraphView, SearchType } from 'sql/workbench/contrib/executionPlan
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
 import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 import { ThemeIcon } from 'vs/base/common/themables';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const SELECT_PROPERTY_TITLE = localize('executionPlanSelectPropertyTitle', 'Select property');
 const SELECT_SEARCH_TYPE_TITLE = localize('executionPlanSelectSearchTypeTitle', 'Select search type');
@@ -71,9 +71,8 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 		this._propertyNameSelectBoxContainer.style.width = '120px';
 
 		const propDropdownOptions = this._executionPlanDiagram.getUniqueElementProperties();
-		this._propertyNameSelectBox = this._register(new SelectBox(propDropdownOptions, propDropdownOptions[0], this.contextViewService, this._propertyNameSelectBoxContainer));
+		this._propertyNameSelectBox = this._register(new SelectBox(propDropdownOptions, propDropdownOptions[0], defaultSelectBoxStyles, this.contextViewService, this._propertyNameSelectBoxContainer));
 		this._propertyNameSelectBox.setAriaLabel(SELECT_PROPERTY_TITLE);
-		this._register(attachSelectBoxStyler(this._propertyNameSelectBox, this.themeService));
 		this._propertyNameSelectBox.render(this._propertyNameSelectBoxContainer);
 
 		this._register(this._propertyNameSelectBox.onDidSelect(e => {
@@ -93,10 +92,9 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 			GREATER_EQUAL_DISPLAY_STRING,
 			LESSER_EQUAL_DISPLAY_STRING,
 			LESSER_AND_GREATER_DISPLAY_STRING
-		], EQUALS_DISPLAY_STRING, this.contextViewService, this._searchTypeSelectBoxContainer));
+		], EQUALS_DISPLAY_STRING, defaultSelectBoxStyles, this.contextViewService, this._searchTypeSelectBoxContainer));
 		this._searchTypeSelectBox.setAriaLabel(SELECT_SEARCH_TYPE_TITLE);
 		this._searchTypeSelectBox.render(this._searchTypeSelectBoxContainer);
-		this._register(attachSelectBoxStyler(this._searchTypeSelectBox, this.themeService));
 
 		this._register(this._searchTypeSelectBox.onDidSelect(e => {
 			this._usePreviousSearchResult = false;

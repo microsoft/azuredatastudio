@@ -886,8 +886,7 @@
                             "defaultValue": "2",
                             "optionsType": "radio"
                           },
-                          "dynamicOptions":
-                          {
+                          "dynamicOptions": {
                             "target": "AZDATA_NB_VAR_SQL_REPLICAS",
                             "alternates": [
                               {
@@ -949,8 +948,7 @@
                             "defaultValue": "-1",
                             "optionsType": "radio"
                           },
-                          "dynamicOptions":
-                          {
+                          "dynamicOptions": {
                             "target": "AZDATA_NB_VAR_SQL_REPLICAS",
                             "alternates": [
                               {
@@ -1414,7 +1412,10 @@
                           "type": "options",
                           "required": true,
                           "options": {
-                            "values": ["NodePort", "LoadBalancer"],
+                            "values": [
+                              "NodePort",
+                              "LoadBalancer"
+                            ],
                             "defaultValue": "NodePort",
                             "optionsType": "radio"
                           }
@@ -1599,12 +1600,12 @@
     "@types/sinon": "^9.0.4",
     "@types/uuid": "^8.3.0",
     "@types/yamljs": "^0.2.31",
-    "@microsoft/azdata-test": "^3.0.1",
+    "@microsoft/azdata-test": "^3.0.3",
     "mocha": "^7.1.1",
     "should": "^13.2.3",
     "sinon": "^9.0.2",
     "typemoq": "2.1.0",
-    "@microsoft/vscodetestcover": "^1.2.1"
+    "@microsoft/vscodetestcover": "^1.2.2"
   },
   "__metadata": {
     "id": "68",
