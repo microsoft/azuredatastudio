@@ -2074,6 +2074,10 @@ declare module 'azdata' {
 		export function openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: FileFilters[], showFoldersOnly?: boolean): Thenable<string | undefined>;
 	}
 
+	export interface FileBrowserProvider extends DataProvider {
+		openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean, showFoldersOnly?: boolean): Thenable<boolean>;
+	}
+
 	export interface TableComponent {
 		/**
 		 * Set active cell.
