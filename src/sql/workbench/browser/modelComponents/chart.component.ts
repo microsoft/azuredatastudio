@@ -15,12 +15,12 @@ import { ILogService } from 'vs/platform/log/common/log';
 	templateUrl: decodeURI(require.toUrl('./chart.component.html'))
 })
 
-export default class ChartComponent<TConfig extends azdata.ChartConfiguration> extends ComponentBase<azdata.ChartComponentProperties<TConfig>> implements IComponent, OnDestroy, AfterViewInit {
+export default class ChartComponent<TChartType extends azdata.ChartType, TData extends azdata.ChartData<TChartType>, TOptions extends azdata.ChartOptions<TChartType>> extends ComponentBase<azdata.ChartComponentProperties<TChartType, TData, TOptions>> implements IComponent, OnDestroy, AfterViewInit {
 
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
-	@ViewChild(Chart) private _chart: Chart<TConfig>;
+	@ViewChild(Chart) private _chart: Chart<TChartType, TData, TOptions>;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -40,7 +40,7 @@ export default class ChartComponent<TConfig extends azdata.ChartConfiguration> e
 	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 
-		// chartId and chartType must be set before configuration because they're necessary for the draw that setting configuration triggers
+		// chartId and chartType must be set before data because they're necessary for the draw that setting data triggers
 
 		if (this.chartId) {
 			this._chart.chartId = this.chartId;
@@ -50,8 +50,8 @@ export default class ChartComponent<TConfig extends azdata.ChartConfiguration> e
 			this._chart.type = this.chartType;
 		}
 
-		if (this.configuration) {
-			this._chart.configuration = this.configuration;
+		if (this.data) {
+			this._chart.data = this.data;
 		}
 
 		if (this.height) {
@@ -67,8 +67,8 @@ export default class ChartComponent<TConfig extends azdata.ChartConfiguration> e
 		return this.getProperties().chartType ?? undefined;
 	}
 
-	public get configuration(): TConfig {
-		return this.getProperties().configuration;
+	public get data(): TData {
+		return this.getProperties().data;
 	}
 
 	public get chartId(): string {

@@ -19,10 +19,10 @@ export interface BarDataSet {
 	selector: 'chart-component',
 	templateUrl: decodeURI(require.toUrl('./chart.component.html'))
 })
-export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable {
+export class Chart<TChartType extends azdata.ChartType, TData extends azdata.ChartData<TChartType>, TOptions extends azdata.ChartOptions<TChartType>> extends Disposable {
 	private _chartId: string;
 	private _type: azdata.ChartType;
-	private _configuration: chartjs.ChartData;
+	private _data: chartjs.ChartData;
 
 	public chart: chartjs.Chart;
 	private canvas: HTMLCanvasElement;
@@ -49,6 +49,16 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 	}
 
 	/**
+	 * Setter function for chart ID
+	 */
+	public set chartId(val: string) {
+		this._chartId = val;
+
+		this.element = this._chartId;
+		this._changeRef.detectChanges();
+	}
+
+	/**
 	 * Setter function for chart type
 	 */
 	public set type(val: any) {
@@ -63,31 +73,19 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 	}
 
 	/**
-	 * Setter function for chart configuration
+	 * Setter function for chart data
 	 */
-	public set configuration(val: TConfig) {
-		this._configuration = this.convert(val);
+	public set data(val: TData) {
+		this._data = this.convert(val);
 
-		if ((<any>val).options) { // TODO: give TConfig a strongly-typed TOptions param
-			this.options = (<any>val).options;
-		} else {
-			// setting this.options above calls drawChart(), so putting this behind an "else" prevents a redraw with the same data
-			this.drawChart();
-		}
-	}
-
-	public set chartId(val: string) {
-		this._chartId = val;
-
-		this.element = this._chartId;
-		this._changeRef.detectChanges();
+		this.drawChart();
 	}
 
 	/**
 	 * Setter function for chart options.
 	 * Some options like responsiveness and maintainaspectratio are set by default and will be used even if no options are provided.
 	 */
-	public set options(val: azdata.ChartOptions) {
+	public set options(val: TOptions) {
 		if (val === undefined) {
 			return;
 		}
@@ -134,7 +132,7 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 		}
 	}
 
-	private convert(val: azdata.ChartConfiguration): chartjs.ChartData {
+	private convert(val: azdata.ChartData<TChartType>): chartjs.ChartData {
 		const result: chartjs.ChartData = {
 			datasets: []
 		}
@@ -144,8 +142,8 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 			case 'horizontalBar': // should've been replaced with 'bar' by this point, but inlcuded case here for safety
 			case 'line':
 				{
-					const config = <azdata.BarChartConfiguration>val;
-					for (let set of config.datasets) {
+					const data = <azdata.BarChartData><unknown>val;
+					for (let set of data.datasets) {
 						result.datasets.push({
 							data: set.data.map(entry => typeof entry === 'number' ? entry : entry.x),
 							backgroundColor: set.backgroundColor,
@@ -154,28 +152,28 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 						});
 					}
 
-					result.labels = config.labels;
+					result.labels = data.labels;
 					break;
 				}
 			case 'pie':
 			case 'doughnut':
 				{
-					const config = <azdata.PieChartConfiguration>val;
+					const data = <azdata.PieChartData><unknown>val;
 
 					result.datasets.push({
-						data: config.dataset.map(entry => typeof entry.value === 'number' ? entry.value : entry.value.x),
-						backgroundColor: config.dataset.map(entry => entry.backgroundColor),
-						borderColor: config.dataset.map(entry => entry.borderColor)
+						data: data.dataset.map(entry => typeof entry.value === 'number' ? entry.value : entry.value.x),
+						backgroundColor: data.dataset.map(entry => entry.backgroundColor),
+						borderColor: data.dataset.map(entry => entry.borderColor)
 					});
 
-					result.labels = config.dataset.map(val => val.dataLabel);
+					result.labels = data.dataset.map(val => val.dataLabel);
 					break;
 				}
 			case 'scatter':
 				{
-					const config = <azdata.ScatterplotConfiguration>val;
+					const data = <azdata.ScatterplotData><unknown>val;
 
-					for (let set of config.datasets) {
+					for (let set of data.datasets) {
 						result.datasets.push({
 							data: set.data.map(entry => [entry.x, entry.y]),
 							backgroundColor: set.backgroundColor,
@@ -188,9 +186,9 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 				}
 			case 'bubble':
 				{
-					const config = <azdata.BubbleChartConfiguration>val;
+					const data = <azdata.BubbleChartData><unknown>val;
 
-					for (let set of config.datasets) {
+					for (let set of data.datasets) {
 						result.datasets.push({
 							data: set.data.map(entry => ({ x: entry.x, y: entry.y, r: entry.r })),
 							backgroundColor: set.backgroundColor,
@@ -203,22 +201,22 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 				}
 			case 'polarArea':
 				{
-					const config = <azdata.PolarAreaChartConfiguration>val;
+					const data = <azdata.PolarAreaChartData><unknown>val;
 
 					result.datasets.push({
-						data: config.dataset.map(entry => typeof entry.value === 'number' ? entry.value : entry.value.x),
-						backgroundColor: config.dataset.map(entry => entry.backgroundColor),
-						borderColor: config.dataset.map(entry => entry.borderColor)
+						data: data.dataset.map(entry => typeof entry.value === 'number' ? entry.value : entry.value.x),
+						backgroundColor: data.dataset.map(entry => entry.backgroundColor),
+						borderColor: data.dataset.map(entry => entry.borderColor)
 					});
 
-					result.labels = config.dataset.map(val => val.dataLabel);
+					result.labels = data.dataset.map(val => val.dataLabel);
 					break;
 				}
 			case 'radar':
 				{
-					const config = <azdata.RadarChartConfiguration>val;
+					const data = <azdata.RadarChartData><unknown>val;
 
-					for (let set of config.datasets) {
+					for (let set of data.datasets) {
 						result.datasets.push({
 							data: set.data.map(entry => typeof entry === 'number' ? entry : entry.x),
 							backgroundColor: set.backgroundColor,
@@ -227,7 +225,7 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 						});
 					}
 
-					result.labels = config.labels;
+					result.labels = data.labels;
 					break;
 				}
 			default:
@@ -239,7 +237,7 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 
 	/**
 	 * Function to draw the chart.
-	 * If the chart is already present, a call to this will simply update the chart with new configuration values(if any).
+	 * If the chart is already present, a call to this will simply update the chart with new data values (if any).
 	 * Else a new chart will be created.
 	 */
 	public drawChart() {
@@ -247,13 +245,13 @@ export class Chart<TConfig extends azdata.ChartConfiguration> extends Disposable
 		this.canvas = canvas;
 
 		if (this.chart) {
-			this.chart.data = this._configuration;
+			this.chart.data = this._data;
 			this.chart.update();
 		} else {
 			this.chart = new chartjs.Chart(this.canvas.getContext("2d"), {
 				type: <any>this._type.toString(),
 				plugins: [plugin],
-				data: this._configuration,
+				data: this._data,
 				options: this._options
 			});
 		}

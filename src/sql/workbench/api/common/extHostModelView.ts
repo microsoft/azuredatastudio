@@ -290,9 +290,9 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
-	chart<TConfig extends azdata.ChartConfiguration>(): azdata.ComponentBuilder<azdata.ChartComponent<TConfig>, azdata.ChartComponentProperties<TConfig>> {
+	chart<TChartType extends azdata.ChartType, TData extends azdata.ChartData<TChartType>, TOptions extends azdata.ChartOptions<TChartType>>(): azdata.ComponentBuilder<azdata.ChartComponent<TChartType, TData, TOptions>, azdata.ChartComponentProperties<TChartType, TData, TOptions>> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.ChartComponent<TConfig>, azdata.ChartComponentProperties<TConfig>> = this.getComponentBuilder(new ChartComponentWrapper<TConfig>(this._proxy, this._handle, id, this.logService), id);
+		let builder: ComponentBuilderImpl<azdata.ChartComponent<TChartType, TData, TOptions>, azdata.ChartComponentProperties<TChartType, TData, TOptions>> = this.getComponentBuilder(new ChartComponentWrapper<TChartType, TData, TOptions>(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -2280,7 +2280,7 @@ class GroupContainerComponentWrapper extends ComponentWrapper implements azdata.
 	}
 }
 
-class ChartComponentWrapper<TConfig extends azdata.ChartConfiguration> extends ComponentWrapper implements azdata.ChartComponent<TConfig> {
+class ChartComponentWrapper<TChartType extends azdata.ChartType, TData extends azdata.ChartData<TChartType>, TOptions extends azdata.ChartOptions<TChartType>> extends ComponentWrapper implements azdata.ChartComponent<TChartType, TData, TOptions> {
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.Chart, id, logService);
 		this.properties = {};
@@ -2304,12 +2304,12 @@ class ChartComponentWrapper<TConfig extends azdata.ChartConfiguration> extends C
 		return this.properties['chartType'];
 	}
 
-	public set configuration(v: any) {
-		this.setProperty('configuration', v);
+	public set data(v: any) {
+		this.setProperty('data', v);
 	}
 
-	public get configuration(): any {
-		return this.properties['configuration'];
+	public get data(): any {
+		return this.properties['data'];
 	}
 
 	public get onDidClick(): vscode.Event<azdata.ChartClickEvent> {

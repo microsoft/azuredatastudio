@@ -709,83 +709,92 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	private async getGraphTabContent(view: azdata.ModelView): Promise<void> {
-		const barChart = view.modelBuilder.chart<azdata.BarChartConfiguration>()
+		const barChart = view.modelBuilder.chart<'bar', azdata.BarChartData, azdata.BarChartOptions>()
 			.withProps({
 				chartId: 'barChart1',
 				chartType: 'bar',
-				configuration: chartExamples.barConfig,
+				data: chartExamples.barData,
+				options: chartExamples.barOptions,
 				width: '500px',
 				height: '300px'
 			}).component();
 
-		const horizontalBarChart = view.modelBuilder.chart<azdata.BarChartConfiguration>() // BarChartConfiguration is used for both vertical and horizontal bar charts
+		const horizontalBarChart = view.modelBuilder.chart<'horizontalBar', azdata.HorizontalBarChartData, azdata.HorizontalBarChartOptions>()
 			.withProps({
 				chartId: 'horizBarChart1',
 				chartType: 'horizontalBar',
-				configuration: chartExamples.horizontalBarConfig,
+				data: chartExamples.horizontalBarData,
+				options: chartExamples.horizontalBarOptions,
 				width: '500px',
 				height: '300px'
 			}).component();
 
-		const lineChart = view.modelBuilder.chart<azdata.LineChartConfiguration>()
+		const lineChart = view.modelBuilder.chart<'line', azdata.LineChartData, azdata.LineChartOptions>()
 			.withProps({
 				chartId: 'lineChart1',
 				chartType: 'line',
-				configuration: chartExamples.lineConfig,
+				data: chartExamples.lineData,
+				options: chartExamples.lineOptions,
 				width: '500px',
 				height: '300px'
 			}).component();
 
-		const pieChart = view.modelBuilder.chart<azdata.PieChartConfiguration>()
+		const pieChart = view.modelBuilder.chart<'pie', azdata.PieChartData, azdata.PieChartOptions>()
 			.withProps({
 				chartId: 'pieChart1',
 				chartType: 'pie',
-				configuration: chartExamples.pieConfig,
+				data: chartExamples.pieData,
+				options: chartExamples.pieOptions,
 				width: '300px',
 				height: '300px'
 			}).component();
 
-		const doughnutChart = view.modelBuilder.chart<azdata.PieChartConfiguration>() // PieChartConfiguration is used for both pie charts and doughnut charts
+		const doughnutChart = view.modelBuilder.chart<'doughnut', azdata.DoughnutChartData, azdata.DoughnutChartOptions>()
 			.withProps({
 				chartId: 'doughnutChart1',
 				chartType: 'doughnut',
-				configuration: chartExamples.doughnutConfig,
+				data: chartExamples.doughnutData,
+				options: chartExamples.doughnutOptions,
 				width: '400px',
 				height: '400px'
 			}).component();
 
-		const scatterplot = view.modelBuilder.chart<azdata.ScatterplotConfiguration>()
+		const scatterplot = view.modelBuilder.chart<'scatter', azdata.ScatterplotData, azdata.ScatterplotOptions>()
 			.withProps({
 				chartId: 'scatterplot1',
 				chartType: 'scatter',
-				configuration: chartExamples.scatterConfig,
+				data: chartExamples.scatterData,
+				options: chartExamples.scatterOptions,
 				width: '400px',
 				height: '400px'
 			}).component();
 
-		const bubbleChart = view.modelBuilder.chart<azdata.BubbleChartConfiguration>()
+		const bubbleChart = view.modelBuilder.chart<'bubble', azdata.BubbleChartData, azdata.BubbleChartOptions>()
 			.withProps({
 				chartId: 'bubbleChart1',
 				chartType: 'bubble',
-				configuration: chartExamples.bubbleConfig,
+				data: chartExamples.bubbleData,
+				options: chartExamples.bubbleOptions,
 				width: '500px',
 				height: '500px'
 			}).component();
 
-		const polarChart = view.modelBuilder.chart<azdata.PolarAreaChartConfiguration>()
+		const polarChart = view.modelBuilder.chart<'polarArea', azdata.PolarAreaChartData, azdata.PolarAreaChartOptions>()
 			.withProps({
 				chartId: 'polarChart1',
 				chartType: 'polarArea',
-				configuration: chartExamples.polarConfig,
+				data: chartExamples.polarData,
+				options: chartExamples.polarOptions,
 				width: '500px',
 				height: '500px'
 			}).component();
 
-		const radarChart = view.modelBuilder.chart<azdata.RadarChartConfiguration>()
+		const radarChart = view.modelBuilder.chart<'radar', azdata.RadarChartData, azdata.RadarChartOptions>()
 			.withProps({
 				chartId: 'radarChart1',
 				chartType: 'radar',
-				configuration: chartExamples.radarConfig,
+				data: chartExamples.radarData,
+				options: chartExamples.radarOptions,
 				width: '500px',
 				height: '500px'
 			}).component();
@@ -796,28 +805,30 @@ export default class MainController implements vscode.Disposable {
 			}).component();
 
 		button.onDidClick(async () => {
-			// To update data, a new config object must be created and passed.
+			// To update data, a new data object must be created and passed.
 			// If the existing one is updated, it's detected as the same object, and "saves" the effort of send propertyChanged events.
-			// This is one way to do that.
 
-			for (let set of chartExamples.barConfig.datasets) {
-				for (let i = 0; i < set.data.length; i++) {
-					set.data[i] = Math.random() * 8;
+			const newDataSets: azdata.BarChartDataSet[] = [];
+
+			for (let i = 0; i < chartExamples.barData.datasets.length; i++) {
+				const newSet: azdata.BarChartDataSet = {
+					...chartExamples.barData.datasets[i], // spread to preserve existing colors and label
+					data: []
+				};
+
+				for (let j = 0; j < chartExamples.barData.datasets[i].data.length; j++) {
+					newSet.data.push(Math.random() * 8);
 				}
+
+				newDataSets.push(newSet);
 			}
 
-
-			const newConfig: azdata.BarChartConfiguration = {
-				// Spread to pull in existing data/options/properties
-				...chartExamples.barConfig
-
-				// Replace the old data with the new.
-				// Since this example edits the existing configuration object, it's already there (rendering this is second line unnecessary),
-				// but this is how you could insert entirely new data.
-				// datasets: updatedDataSets
+			const newData: azdata.BarChartData = {
+				labels: chartExamples.barData.labels,
+				datasets: newDataSets
 			};
 
-			await barChart.updateProperty('configuration', newConfig);
+			await barChart.updateProperty('data', newData);
 		});
 
 		const flexContainer = view.modelBuilder.flexContainer()
