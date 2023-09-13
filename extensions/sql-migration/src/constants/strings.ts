@@ -99,6 +99,16 @@ export const ASSESSED_DBS_LABEL = localize('sql.migration.assessed.dbs.label', "
 export const NOT_READY = localize('sql.migration.not.ready', "Not ready");
 export const READY = localize('sql.migration.ready', "Ready");
 export const READY_WARN = localize('sql.migration.ready.warn', "Ready with warnings");
+export const DATABASE_ISSUES_SUMMARY = localize('sql.migration.database.issues.summary', "Database assessment issues summary");
+export const TOTAL_ISSUES_LABEL = localize('sql.migration.total.issues.label', "Total issues found");
+export const SEVERITY_ISSUES_LABEL = localize('sql.migration.severity.issues.label', "Issues by severity");
+export function DB_READINESS_SECTION_TITLE(dbName: string) {
+	return localize('sql.migration.db.readiness.section.title', "Database {0} migration readiness", dbName);
+}
+export function NON_READINESS_DESCRIPTION(issueCount: number) {
+	return localize('sql.migration.non.readiness.description', "The database is not ready to migrate due to {0} blocking issue.", issueCount);
+}
+export const READINESS_DESCRIPTION = localize('sql.migration.readiness.description', "The database is ready to migrate.");
 
 // Assessment results and recommendations
 export const ASSESSMENT_RESULTS_AND_RECOMMENDATIONS_PAGE_TITLE = localize('sql.migration.assessment.results.and.recommendations.title', "Assessment results and recommendations");
