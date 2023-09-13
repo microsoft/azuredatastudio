@@ -2285,7 +2285,7 @@ class ChartComponentWrapper<TChartType extends azdata.ChartType, TData extends a
 		super(proxy, handle, ModelComponentTypes.Chart, id, logService);
 		this.properties = {};
 
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<azdata.ChartClickEvent>());
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
 	}
 
 	public set chartType(v: TChartType) {
@@ -2304,7 +2304,7 @@ class ChartComponentWrapper<TChartType extends azdata.ChartType, TData extends a
 		return this.properties['data'];
 	}
 
-	public get onDidClick(): vscode.Event<azdata.ChartClickEvent> {
+	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
 	}

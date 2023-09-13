@@ -2082,10 +2082,8 @@ declare module 'azdata' {
 	}
 
 	export interface ChartComponent<TChartType extends ChartType, TData extends ChartData<TChartType>, TOptions extends ChartOptions<TChartType>> extends Component, ChartComponentProperties<TChartType, TData, TOptions> {
-		onDidClick: vscode.Event<ChartClickEvent>;
+		onDidClick: vscode.Event<any>;
 	}
-
-	export type ChartClickEvent = { label: string };
 
 	export interface ChartComponentProperties<TChartType extends ChartType, TData extends ChartData<TChartType>, TOptions extends ChartOptions<TChartType>> extends ComponentProperties {
 		/**
