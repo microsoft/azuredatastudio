@@ -824,12 +824,18 @@
         <Item ItemId=";(...) yDataButtonText" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Purge Query Store Data]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Abfragespeicherdaten bereinigen]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) yStoreDataMessage" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Are you sure you want to purge the Query Store data from '{0}'?]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Möchten Sie die Abfragespeicherdaten aus "{0}" löschen?]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1037,6 +1043,9 @@
         <Item ItemId=";(...) yThresholdInDaysText" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[State Query Threshold (Days)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Schwellenwert für Zustandsabfragen (Tage)]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -3855,6 +3864,9 @@
       <Item ItemId=";extensions/Microsoft.mssql/package.mssql.connection.clearPooledConnections" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server: Clear Pooled Connections]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server: Gepoolte Verbindungen löschen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4581,8 +4593,8 @@
       <Item ItemId=";extensions/Microsoft.mssql/package.mssql.connectionOptions.serverName.placeholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[e.g. servername,port]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Beispiel: tcp:servername,1433]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Beispiel: Servername,Port]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[e.g. tcp:servername,1433]]></Val>
@@ -4680,8 +4692,8 @@
       <Item ItemId=";extensions/Microsoft.mssql/package.mssql.enableConnectionPooling" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed. To clear pooled connections, run the command: 'SQL Server: Clear Pooled Connections']]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Aktiviert das Verbindungspooling für MSSQL-Verbindungen, um die Gesamtleistung der Azure Data Studio-Konnektivität zu verbessern. Diese Einstellung ist standardmäßig aktiviert. Azure Data Studio muss neu gestartet werden, nachdem der Wert geändert wurde.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aktiviert das Verbindungspooling für MSSQL-Verbindungen, um die Gesamtleistung der Azure Data Studio-Konnektivität zu verbessern. Diese Einstellung ist standardmäßig aktiviert. Azure Data Studio muss nach dem Ändern des Werts neu gestartet werden. Führen Sie den folgenden Befehl aus, um gepoolte Verbindungen zu löschen: "SQL Server: Gepoolte Verbindungen löschen"]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed.]]></Val>

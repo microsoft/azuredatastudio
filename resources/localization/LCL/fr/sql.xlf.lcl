@@ -18829,7 +18829,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Open file location]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ouvrir l'emplacement du fichier]]></Val>
+            <Val><![CDATA[Ouvrir l’emplacement du fichier]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
