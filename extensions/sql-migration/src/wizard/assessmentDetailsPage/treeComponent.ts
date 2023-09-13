@@ -69,6 +69,14 @@ export class TreeComponent {
 		private _targetType: MigrationTargetType
 	) { }
 
+	public get instanceTable() {
+		return this._instanceTable;
+	}
+
+	public get databaseTable() {
+		return this._databaseTable;
+	}
+
 	// function that creates components for tree section
 	public createTreeComponent(view: azdata.ModelView, dbs: string[]) {
 		this._view = view;
