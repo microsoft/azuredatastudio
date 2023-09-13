@@ -157,90 +157,95 @@ export class Chart<TChartType extends azdata.ChartType, TData extends azdata.Cha
 			case 'horizontalBar': // should've been replaced with 'bar' by this point, but inlcuded case here for safety
 			case 'line':
 				{
-					const data = <azdata.BarChartData><unknown>val;
-					for (let set of data.datasets) {
-						result.datasets.push({
-							data: set.data.map(entry => typeof entry === 'number' ? entry : entry.x),
-							backgroundColor: set.backgroundColor,
-							borderColor: set.borderColor,
-							label: set.dataLabel
-						});
+					if (this.isBarOrLineChartData(val)) {
+						for (let set of val.datasets) {
+							result.datasets.push({
+								data: set.data.map(entry => typeof entry === 'number' ? entry : entry.x),
+								backgroundColor: set.backgroundColor,
+								borderColor: set.borderColor,
+								label: set.dataLabel
+							});
+						}
+
+						result.labels = val.labels;
 					}
 
-					result.labels = data.labels;
 					break;
 				}
 			case 'pie':
 			case 'doughnut':
 				{
-					const data = <azdata.PieChartData><unknown>val;
+					if (this.isPieOrDoughnutChartData(val)) {
+						result.datasets.push({
+							data: val.dataset.map(entry => typeof entry.value === 'number' ? entry.value : entry.value.x),
+							backgroundColor: val.dataset.map(entry => entry.backgroundColor),
+							borderColor: val.dataset.map(entry => entry.borderColor)
+						});
 
-					result.datasets.push({
-						data: data.dataset.map(entry => typeof entry.value === 'number' ? entry.value : entry.value.x),
-						backgroundColor: data.dataset.map(entry => entry.backgroundColor),
-						borderColor: data.dataset.map(entry => entry.borderColor)
-					});
+						result.labels = val.dataset.map(val => val.dataLabel);
+					}
 
-					result.labels = data.dataset.map(val => val.dataLabel);
 					break;
 				}
 			case 'scatter':
 				{
-					const data = <azdata.ScatterplotData><unknown>val;
-
-					for (let set of data.datasets) {
-						result.datasets.push({
-							data: set.data.map(entry => [entry.x, entry.y]),
-							backgroundColor: set.backgroundColor,
-							borderColor: set.borderColor,
-							label: set.dataLabel
-						});
+					if (this.isScatterplotData(val)) {
+						for (let set of val.datasets) {
+							result.datasets.push({
+								data: set.data.map(entry => [entry.x, entry.y]),
+								backgroundColor: set.backgroundColor,
+								borderColor: set.borderColor,
+								label: set.dataLabel
+							});
+						}
 					}
 
 					break;
 				}
 			case 'bubble':
 				{
-					const data = <azdata.BubbleChartData><unknown>val;
-
-					for (let set of data.datasets) {
-						result.datasets.push({
-							data: set.data.map(entry => ({ x: entry.x, y: entry.y, r: entry.r })),
-							backgroundColor: set.backgroundColor,
-							borderColor: set.borderColor,
-							label: set.dataLabel
-						});
+					if (this.isBubbleChartData(val)) {
+						for (let set of val.datasets) {
+							result.datasets.push({
+								data: set.data.map(entry => ({ x: entry.x, y: entry.y, r: entry.r })),
+								backgroundColor: set.backgroundColor,
+								borderColor: set.borderColor,
+								label: set.dataLabel
+							});
+						}
 					}
 
 					break;
 				}
 			case 'polarArea':
 				{
-					const data = <azdata.PolarAreaChartData><unknown>val;
+					if (this.isPolarAreaChartData(val)) {
+						result.datasets.push({
+							data: val.dataset.map(entry => typeof entry.value === 'number' ? entry.value : entry.value.x),
+							backgroundColor: val.dataset.map(entry => entry.backgroundColor),
+							borderColor: val.dataset.map(entry => entry.borderColor)
+						});
 
-					result.datasets.push({
-						data: data.dataset.map(entry => typeof entry.value === 'number' ? entry.value : entry.value.x),
-						backgroundColor: data.dataset.map(entry => entry.backgroundColor),
-						borderColor: data.dataset.map(entry => entry.borderColor)
-					});
+						result.labels = val.dataset.map(val => val.dataLabel);
+					}
 
-					result.labels = data.dataset.map(val => val.dataLabel);
 					break;
 				}
 			case 'radar':
 				{
-					const data = <azdata.RadarChartData><unknown>val;
+					if (this.isRadarChartData(val)) {
+						for (let set of val.datasets) {
+							result.datasets.push({
+								data: set.data.map(entry => typeof entry === 'number' ? entry : entry.x),
+								backgroundColor: set.backgroundColor,
+								borderColor: set.borderColor,
+								label: set.dataLabel
+							});
+						}
 
-					for (let set of data.datasets) {
-						result.datasets.push({
-							data: set.data.map(entry => typeof entry === 'number' ? entry : entry.x),
-							backgroundColor: set.backgroundColor,
-							borderColor: set.borderColor,
-							label: set.dataLabel
-						});
+						result.labels = val.labels;
 					}
 
-					result.labels = data.labels;
 					break;
 				}
 			default:
@@ -258,7 +263,44 @@ export class Chart<TChartType extends azdata.ChartType, TData extends azdata.Cha
 				return this._type;
 		}
 	}
+
+	//#region Type predicates
+
+	private isBarOrLineChartData(data: unknown): data is BarOrLineChartData {
+		return (data as BarOrLineChartData).datasets !== undefined
+			&& (data as BarOrLineChartData).labels !== undefined;
+	}
+
+	private isPieOrDoughnutChartData(data: unknown): data is PieOrDoughnutChartData {
+		return (data as PieOrDoughnutChartData).dataset !== undefined;
+	}
+
+	private isScatterplotData(data: unknown): data is azdata.ScatterplotData {
+		return (data as azdata.ScatterplotData).datasets !== undefined;
+	}
+
+	private isBubbleChartData(data: unknown): data is azdata.BubbleChartData {
+		return (data as azdata.BubbleChartData).datasets !== undefined;
+	}
+
+	private isPolarAreaChartData(data: unknown): data is azdata.PolarAreaChartData {
+		return (data as azdata.PolarAreaChartData).dataset !== undefined;
+	}
+
+	private isRadarChartData(data: unknown): data is azdata.RadarChartData {
+		return (data as azdata.RadarChartData).datasets !== undefined
+			&& (data as azdata.RadarChartData).labels !== undefined;
+	}
+
+	//endregion
 }
+
+//#region Data compatibility groups
+
+type BarOrLineChartData = azdata.BarChartData | azdata.HorizontalBarChartData | azdata.LineChartData;
+type PieOrDoughnutChartData = azdata.PieChartData | azdata.DoughnutChartData;
+
+//#endregion
 
 //#region Events
 
