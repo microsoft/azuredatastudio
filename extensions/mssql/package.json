@@ -580,7 +580,7 @@
         },
         {
           "command": "mssql.detachDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@2"
         },
         {
@@ -611,7 +611,7 @@
         },
         {
           "command": "mssql.objectProperties",
-          "when": "connectionProvider == MSSQL && serverInfo && !isCloud && nodeType =~ /^(Database|Server)$/ && mssql:engineedition != 11 && config.workbench.enablePreviewFeatures && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
+          "when": "connectionProvider == MSSQL && serverInfo && !isCloud && nodeType =~ /^(Database|Server)$/ && mssql:engineedition != 11 && config.workbench.enablePreviewFeatures",
           "group": "z_objectexplorer@3"
         },
         {
