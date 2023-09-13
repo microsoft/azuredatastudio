@@ -284,8 +284,7 @@ const dispatchClick = function (chart, point) {
 		clientX: rect.left + point.x,
 		clientY: rect.top + point.y,
 		cancelable: true,
-		bubbles: true,
-		//view: window
+		bubbles: true
 	});
 	node.dispatchEvent(event);
 }
