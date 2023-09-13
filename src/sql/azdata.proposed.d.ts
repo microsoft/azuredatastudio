@@ -2250,6 +2250,9 @@ declare module 'azdata' {
 	export interface BarChartDataSet extends ChartDataSet<Chart1DPoint | number> { }
 
 	export interface BarChartDataBase {
+		/**
+		 * Array of datasets for the chart
+		 */
 		datasets: BarChartDataSet[];
 
 		/**
@@ -2259,8 +2262,18 @@ declare module 'azdata' {
 	}
 
 	export interface BarChartOptionsBase {
+		/**
+		 * Options for the scales
+		 */
 		scales?: {
+			/**
+			 * Options for the X-axis
+			 */
 			x?: ScaleOptions;
+
+			/**
+			 * Options for the Y-axis
+			 */
 			y?: ScaleOptions;
 		}
 	}
@@ -2297,14 +2310,12 @@ declare module 'azdata' {
 	/**
 	 * Options for a line chart
 	 */
-	export interface LineChartOptions extends ChartOptions<'line'> {
+	export interface LineChartOptions extends ChartOptions<'line'>, BarChartOptionsBase {
+		/**
+		 * Which axis to use as the base, x or y; defaults to x
+		 */
 		indexAxis?: string;
-		cubicInterpolationMode?: 'default' | 'monotone';
-		stepped?: 'before' | 'after' | 'middle' | boolean;
-		scales?: {
-			x?: ScaleOptions;
-			y?: ScaleOptions;
-		}
+
 		/**
 		 * Bezier curve tension between points, 0 for straight lines.  Recommended range: 0.0-1.0
 		 */
@@ -2316,16 +2327,25 @@ declare module 'azdata' {
 	//#region Pie/Doughnut charts
 
 	export interface PieChartDataBase {
+		/**
+		 * Dataset for the chart
+		 */
 		dataset: ChartDataEntry[];
 	}
 
 	export interface PieChartOptionsBase {
 		circumference?: number;
 		/**
-		 * Size of the cutout for a pie/doughnut chart.  Pie chart defaults to 0.  Doughnut chart defaults to 50%.
+		 * Size of the cutout for a pie/doughnut chart, in pixels or percentage.  Pie chart defaults to 0.  Doughnut chart defaults to 50%.
 		 */
 		cutout?: number | string;
+
+		/** Size of the outer radius for a pie/doughnut chart, in pixels or percentage of chart area */
 		radius?: number | string;
+
+		/**
+		 * Degrees of rotation to start drawing the first data entry from
+		 */
 		rotation?: number;
 	}
 
@@ -2354,8 +2374,18 @@ declare module 'azdata' {
 	//#region Scatterplot
 
 	export interface ScatterplotOptionBase {
+		/**
+		 * Options for scales
+		 */
 		scales?: {
+			/**
+			 * Options for the X-axis
+			 */
 			x?: ScaleOptions & { position?: 'left' | 'top' | 'right' | 'bottom' | 'center' };
+
+			/**
+			 * Options for the Y-axis
+			 */
 			y?: ScaleOptions & { position?: 'left' | 'top' | 'right' | 'bottom' | 'center' };
 		}
 	}
@@ -2364,6 +2394,9 @@ declare module 'azdata' {
 	 * Data for a scatter plot chart
 	 */
 	export interface ScatterplotData extends ChartData<'scatter'> {
+		/**
+		 * Array of datasets for the chart
+		 */
 		datasets: ScatterplotDataSet[];
 	}
 
@@ -2379,6 +2412,9 @@ declare module 'azdata' {
 	 * Data for a bubble chart
 	 */
 	export interface BubbleChartData extends ChartData<'bubble'> {
+		/**
+		 * Array of datasets for the chart
+		 */
 		datasets: BubbleChartDataSet[];
 	}
 
@@ -2394,10 +2430,16 @@ declare module 'azdata' {
 	 * Data for a polar area chart
 	 */
 	export interface PolarAreaChartData extends ChartData<'polarArea'> {
+		/**
+		 * Dataset for the chart
+		 */
 		dataset: ChartDataEntry[];
 	}
 
 	export interface PolarAreaChartOptions extends ChartOptions<'polarArea'> {
+		/**
+		 * Whether to display data areas with circular edges.  Defaults to true.
+		 */
 		circular?: boolean;
 	}
 
@@ -2409,6 +2451,9 @@ declare module 'azdata' {
 	 * Data for a radar chart
 	 */
 	export interface RadarChartData extends ChartData<'radar'> {
+		/**
+		 * Array of datasets for the chart
+		 */
 		datasets: BarChartDataSet[];
 		/**
 		 * Labels for the perimeter.  Only data that aligns with a label is shown.  If there are fewer labels than data, then not all data is displayed; if there are more labels than data, then empty chart entries are appended
@@ -2417,19 +2462,33 @@ declare module 'azdata' {
 	}
 
 	export interface RadarChartOptions extends ChartOptions<'radar'> {
+		/**
+		 * Options for scales
+		 */
 		scales?: {
+			/**
+			 * Options for the radial axis
+			 */
 			r?: {
+				/**
+				 * Angle to start the first data entry from.  Defaults to 0
+				 */
 				startAngle?: number;
-				angleLines?: {
-					display?: boolean;
-					color?: string;
-					lineWidth?: number;
-				};
+
+				/**
+				 * Value to start the radial axis from.  Calculated if not set.
+				 */
 				beginAtZero?: boolean;
+
+				/**
+				 * Minimum value for the radial axis.  Calculated if not set.
+				 */
 				min?: number;
+
+				/**
+				 * Maximum value for the radial axis.  Calculated if not set.
+				 */
 				max?: number;
-				suggestedMax?: number;
-				suggestedMin?: number;
 			}
 		}
 		/**
