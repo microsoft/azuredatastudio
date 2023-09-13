@@ -2119,8 +2119,8 @@ declare module 'azdata' {
 
 	export interface ChartDataEntryBase {
 		/**
-		 * For Pie, Doughnut, Polar Area charts, it the label associated with the data value
-		 * For Bar, Horizontal Bar, Line, Scatterplot, Bubble, and Rradial, it is the label name for dataset
+		 * For Pie, Doughnut, Polar Area charts, it is the label associated with the data value.
+		 * For Bar, Horizontal Bar, Line, Scatterplot, Bubble, and Radial, it is the label name for dataset.
 		 */
 		dataLabel: string;
 		/**
