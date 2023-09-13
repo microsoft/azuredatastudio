@@ -29,9 +29,9 @@ export class Chart<TChartType extends azdata.ChartType, TData extends azdata.Cha
 	private chartCanvasId: string;
 
 	/**
-	 * Options in the form that Chart.js accepts (hence the `any` type)
+	 * Options in the form that Chart.js accepts
 	 */
-	private _options: any = {
+	private _options: chartjs.ChartOptions = {
 		events: ['click', 'keyup'],
 		responsive: true,
 		maintainAspectRatio: false
