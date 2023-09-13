@@ -41,7 +41,7 @@
 									[selectedOption]="getSelectedOptionDisplayName(r,c)">
 								</editable-select-box>
 								<input-box *ngIf="isInputBox(c)" [value]="cellData.value"
-									(onDidChange)="onInputBoxChanged($event,r,c)"></input-box>
+									(onDidChange)="onInputBoxChanged($event,r,c)" [attr.disabled]="!isControlEnabled(r, c)"></input-box>
 								<span *ngIf="isLabel(c)">
 									{{cellData.value}}
 								</span>
