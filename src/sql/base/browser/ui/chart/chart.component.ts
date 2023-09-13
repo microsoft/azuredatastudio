@@ -24,9 +24,9 @@ export class Chart<TChartType extends azdata.ChartType, TData extends azdata.Cha
 	private _type: TChartType;
 	private _data: chartjs.ChartData;
 
-	public chart: chartjs.Chart;
+	private chart: chartjs.Chart;
 	private canvas: HTMLCanvasElement;
-	public element: string;
+	private chartCanvasId: string;
 
 	/**
 	 * Options in the form that Chart.js accepts (hence the `any` type)
@@ -43,7 +43,7 @@ export class Chart<TChartType extends azdata.ChartType, TData extends azdata.Cha
 		chartjs.Chart.register(...chartjs.registerables);
 		super();
 
-		this.element = 'chart' + generateUuid();
+		this.chartCanvasId = 'chart' + generateUuid();
 	}
 
 	ngAfterViewInit(): void {
@@ -234,7 +234,7 @@ export class Chart<TChartType extends azdata.ChartType, TData extends azdata.Cha
 	 * Else a new chart will be created.
 	 */
 	public drawChart() {
-		let canvas = document.getElementById(this.element) as HTMLCanvasElement;
+		let canvas = document.getElementById(this.chartCanvasId) as HTMLCanvasElement;
 		this.canvas = canvas;
 
 		if (this.chart) {
