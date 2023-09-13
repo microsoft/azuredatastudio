@@ -2075,6 +2075,14 @@ declare module 'azdata' {
 	}
 
 	export interface FileBrowserProvider extends DataProvider {
+		/**
+		 * Opens a file browser for selecting file paths on a local or remote machine.
+		 * @param ownerUri The connection URI of the machine whose files are to be browsed.
+		 * @param expandPath The initial path to open in the file browser.
+		 * @param fileFilters The list of filters to apply to the file browser (e.g. '*.sql' for SQL files). Ignored if showFoldersOnly is set to true.
+		 * @param changeFilter Whether to update the list of file filters from the last time the dialog was opened for this connection URI.
+		 * @param showFoldersOnly (Optional) Whether to only show folders in the file browser. Default value is false.
+		 */
 		openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean, showFoldersOnly?: boolean): Thenable<boolean>;
 	}
 
