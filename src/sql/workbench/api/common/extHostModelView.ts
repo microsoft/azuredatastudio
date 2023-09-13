@@ -2288,11 +2288,11 @@ class ChartComponentWrapper<TChartType extends azdata.ChartType, TData extends a
 		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<azdata.ChartClickEvent>());
 	}
 
-	public set chartType(v: azdata.ChartType) {
+	public set chartType(v: TChartType) {
 		this.setProperty('chartType', v);
 	}
 
-	public get chartType(): azdata.ChartType {
+	public get chartType(): TChartType {
 		return this.properties['chartType'];
 	}
 

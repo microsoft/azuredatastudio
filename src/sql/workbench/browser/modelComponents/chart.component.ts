@@ -59,8 +59,8 @@ export default class ChartComponent<TChartType extends azdata.ChartType, TData e
 		}
 	}
 
-	public get chartType(): azdata.ChartType | undefined {
-		return this.getProperties().chartType ?? undefined;
+	public get chartType(): TChartType {
+		return this.getProperties().chartType;
 	}
 
 	public get data(): TData {

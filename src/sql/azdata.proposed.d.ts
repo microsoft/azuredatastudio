@@ -2089,10 +2089,9 @@ declare module 'azdata' {
 
 	export interface ChartComponentProperties<TChartType extends ChartType, TData extends ChartData<TChartType>, TOptions extends ChartOptions<TChartType>> extends ComponentProperties {
 		/**
-		 * Type of chart to build
-		 * @see ChartType for a list of supported chart types
+		 * Type of chart to build.  Must match the ChartType parameter used to construct the chart.
 		 */
-		chartType: ChartType;
+		chartType: TChartType; // Necessary because all typing information from the generic parameters is lost after compilation
 
 		/**
 		 * Datasets and labels (if applicable) for the chart

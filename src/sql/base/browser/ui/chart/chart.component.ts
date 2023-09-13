@@ -21,7 +21,7 @@ export interface BarDataSet {
 	templateUrl: decodeURI(require.toUrl('./chart.component.html'))
 })
 export class Chart<TChartType extends azdata.ChartType, TData extends azdata.ChartData<TChartType>, TOptions extends azdata.ChartOptions<TChartType>> extends Disposable {
-	private _type: azdata.ChartType;
+	private _type: TChartType;
 	private _data: chartjs.ChartData;
 
 	public chart: chartjs.Chart;
@@ -55,7 +55,8 @@ export class Chart<TChartType extends azdata.ChartType, TData extends azdata.Cha
 	 */
 	public set type(val: any) {
 		if (val === 'horizontalBar') {
-			this._type = 'bar';
+			// In Chart.js, horizontal bar charts are just bar charts with a different indexAxis set.
+			// The indexAxis gets set here, and the Chart.js type gets mapped at conversion time.
 			this._options = mixin({}, mixin(this._options, { indexAxis: 'y' }));
 		}
 		else {
@@ -241,11 +242,20 @@ export class Chart<TChartType extends azdata.ChartType, TData extends azdata.Cha
 			this.chart.update();
 		} else {
 			this.chart = new chartjs.Chart(this.canvas.getContext("2d"), {
-				type: <any>this._type.toString(),
+				type: this.convertChartType(),
 				plugins: [plugin],
 				data: this._data,
 				options: this._options
 			});
+		}
+	}
+
+	private convertChartType(): chartjs.ChartType {
+		switch (this._type) {
+			case 'horizontalBar': // our 'horizontalBar' is just Chart.js's 'bar' with the indexAxis option set
+				return 'bar';
+			default: // everything else matches up
+				return this._type;
 		}
 	}
 }
