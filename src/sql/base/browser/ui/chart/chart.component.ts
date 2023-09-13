@@ -69,7 +69,7 @@ export class Chart<TChartType extends azdata.ChartType, TData extends azdata.Cha
 	 * Setter function for chart data
 	 */
 	public set data(val: TData) {
-		this._data = this.convert(val);
+		this._data = this.convertData(val);
 
 		this.drawChart();
 	}
@@ -125,7 +125,29 @@ export class Chart<TChartType extends azdata.ChartType, TData extends azdata.Cha
 		}
 	}
 
-	private convert(val: azdata.ChartData<TChartType>): chartjs.ChartData {
+	/**
+	 * Function to draw the chart.
+	 * If the chart is already present, a call to this will simply update the chart with new data values (if any).
+	 * Else a new chart will be created.
+	 */
+	public drawChart() {
+		let canvas = document.getElementById(this.chartCanvasId) as HTMLCanvasElement;
+		this.canvas = canvas;
+
+		if (this.chart) {
+			this.chart.data = this._data;
+			this.chart.update();
+		} else {
+			this.chart = new chartjs.Chart(this.canvas.getContext("2d"), {
+				type: this.convertChartType(),
+				plugins: [plugin],
+				data: this._data,
+				options: this._options
+			});
+		}
+	}
+
+	private convertData(val: azdata.ChartData<TChartType>): chartjs.ChartData {
 		const result: chartjs.ChartData = {
 			datasets: []
 		}
@@ -226,28 +248,6 @@ export class Chart<TChartType extends azdata.ChartType, TData extends azdata.Cha
 		}
 
 		return result;
-	}
-
-	/**
-	 * Function to draw the chart.
-	 * If the chart is already present, a call to this will simply update the chart with new data values (if any).
-	 * Else a new chart will be created.
-	 */
-	public drawChart() {
-		let canvas = document.getElementById(this.chartCanvasId) as HTMLCanvasElement;
-		this.canvas = canvas;
-
-		if (this.chart) {
-			this.chart.data = this._data;
-			this.chart.update();
-		} else {
-			this.chart = new chartjs.Chart(this.canvas.getContext("2d"), {
-				type: this.convertChartType(),
-				plugins: [plugin],
-				data: this._data,
-				options: this._options
-			});
-		}
 	}
 
 	private convertChartType(): chartjs.ChartType {
