@@ -121,11 +121,11 @@ declare module 'azdata' {
 			 */
 			Integrated = 'Integrated',
 			/**
-			 * Azure Active Directory - Universal with MFA support
+			 * Microsoft Entra ID - Universal with MFA support
 			 */
 			AzureMFA = 'AzureMFA',
 			/**
-			 * Azure Active Directory - Password
+			 * Microsoft Entra ID - Password
 			 */
 			AzureMFAAndUser = 'AzureMFAAndUser',
 			/**
