@@ -186,7 +186,6 @@ export const scatterOptions: azdata.ScatterplotOptions = {
 	chartTitle: 'Test Scatter Chart',
 	scales: {
 		x: {
-			// type: 'linear',
 			position: 'bottom'
 		}
 	}
@@ -235,7 +234,6 @@ export const bubbleOptions: azdata.BubbleChartOptions = {
 	chartTitle: 'Test Bubble Chart - Yin and Yang',
 	scales: {
 		x: {
-			// type: 'linear',
 			position: 'bottom'
 		}
 	}
