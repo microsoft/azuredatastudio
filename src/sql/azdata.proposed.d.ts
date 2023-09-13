@@ -2068,9 +2068,14 @@ declare module 'azdata' {
 		 * @param connectionUri The URI of the connection to the target server
 		 * @param targetPath The file path on the server machine to open by default in the dialog
 		 * @param fileFilters The filters used to limit which files are displayed in the file browser
+		 * @param showFoldersOnly Optional argument to specify whether the browser should only show folders
 		 * @returns The path of the file chosen from the dialog, and undefined if the dialog is closed without selecting anything.
 		 */
-		export function openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: FileFilters[]): Thenable<string | undefined>;
+		export function openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: FileFilters[], showFoldersOnly?: boolean): Thenable<string | undefined>;
+	}
+
+	export interface FileBrowserProvider extends DataProvider {
+		openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean, showFoldersOnly?: boolean): Thenable<boolean>;
 	}
 
 	export interface TableComponent {
