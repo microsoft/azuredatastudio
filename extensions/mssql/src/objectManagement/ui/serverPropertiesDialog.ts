@@ -90,6 +90,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private shouldRestartServer: boolean = false;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
+		options.width = '560px'
 		super(objectManagementService, options);
 		this.disposables.push(this.dialogObject.onClosed(async (reason: azdata.window.CloseReason) => {
 			if (reason === 'ok') {

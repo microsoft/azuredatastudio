@@ -118,6 +118,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
+		options.width = '645px';
 		super(objectManagementService, options);
 	}
 
