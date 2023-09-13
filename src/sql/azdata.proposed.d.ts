@@ -2201,12 +2201,6 @@ declare module 'azdata' {
 		 * Whether to display the legend.  Defaults to true.
 		 */
 		legendVisible?: boolean;
-
-		/**
-		 * Free-form options that are mixed into the display options for the underlying charting library to support all missing options functionality.
-		 * Chart.js is the current library powering ADS charting, but this is subject to change in the future.
-		 */
-		freeformOptions?: any;
 	}
 
 	/**
@@ -2338,7 +2332,9 @@ declare module 'azdata' {
 		 */
 		cutout?: number | string;
 
-		/** Size of the outer radius for a pie/doughnut chart, in pixels or percentage of chart area */
+		/**
+		 * Size of the outer radius for a pie/doughnut chart, in pixels or percentage of chart area
+		 */
 		radius?: number | string;
 
 		/**

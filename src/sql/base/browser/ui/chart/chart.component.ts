@@ -83,10 +83,10 @@ export class Chart<TChartType extends azdata.ChartType, TData extends azdata.Cha
 			return;
 		}
 
-		// Free-form chart.js options get added first...
-		this._options = mixin({}, mixin(this._options, val.freeformOptions));
+		// mix in initial options
+		this._options = mixin({}, mixin(this._options, val));
 
-		// ...then strongly-typed ComponentModel options get set (overriding free-form options)
+		// ...then set title and legend properties
 		if (val !== undefined) {
 			if (val.chartTitle) { // undefined results in hiding title
 				if (typeof val.chartTitle === 'string') {
@@ -260,6 +260,8 @@ export class Chart<TChartType extends azdata.ChartType, TData extends azdata.Cha
 	}
 }
 
+//#region Events
+
 const setActiveElements = function (chart, index) {
 	chart.setActiveElements([
 		{
@@ -318,3 +320,5 @@ const plugin = {
 		return false;
 	}
 };
+
+//#endregion

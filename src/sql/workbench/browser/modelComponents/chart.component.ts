@@ -50,6 +50,10 @@ export default class ChartComponent<TChartType extends azdata.ChartType, TData e
 			this._chart.data = this.data;
 		}
 
+		if (this.options) {
+			this._chart.options = this.options;
+		}
+
 		if (this.height) {
 			this._chart.height = this.height;
 		}
@@ -65,6 +69,10 @@ export default class ChartComponent<TChartType extends azdata.ChartType, TData e
 
 	public get data(): TData {
 		return this.getProperties().data;
+	}
+
+	public get options(): TOptions | undefined {
+		return this.getProperties().options;
 	}
 
 	public setLayout(layout: any): void {

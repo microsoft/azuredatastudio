@@ -123,9 +123,7 @@ export const pieData: azdata.PieChartData = {
 
 export const pieOptions: azdata.PieChartOptions = {
 	chartTitle: 'Test Pie Chart - Pacman',
-	freeformOptions: {
-		rotation: 135
-	}
+	rotation: 135
 };
 
 export const doughnutData: azdata.DoughnutChartData = {
