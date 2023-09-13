@@ -91,7 +91,7 @@
 	"mssql.connectionOptions.authType.description": "Specifies the method of authenticating with SQL Server",
 	"mssql.connectionOptions.authType.categoryValues.sqlLogin": "SQL Login",
 	"mssql.connectionOptions.authType.categoryValues.integrated": "Windows Authentication",
-	"mssql.connectionOptions.authType.categoryValues.azureMFA": "Azure Active Directory - Universal with MFA support",
+	"mssql.connectionOptions.authType.categoryValues.azureMFA": "Microsoft Entra ID - Universal with MFA support",
 	"mssql.connectionOptions.userName.displayName": "User name",
 	"mssql.connectionOptions.userName.description": "Indicates the user ID to be used when connecting to the data source",
 	"mssql.connectionOptions.password.displayName": "Password",

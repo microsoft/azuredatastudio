@@ -276,7 +276,7 @@ export const enum UserType {
 	 */
 	SqlAuthentication = 'SqlAuthentication',
 	/**
-	 * Authenticate with Azure Active Directory.
+	 * Authenticate with Microsoft Entra.
 	 */
 	AADAuthentication = 'AADAuthentication',
 	/**
