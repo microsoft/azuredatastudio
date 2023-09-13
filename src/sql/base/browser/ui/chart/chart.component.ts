@@ -54,14 +54,14 @@ export class Chart<TChartType extends azdata.ChartType, TData extends azdata.Cha
 	 * Setter function for chart type
 	 */
 	public set type(val: any) {
+		this._type = val;
+
 		if (val === 'horizontalBar') {
 			// In Chart.js, horizontal bar charts are just bar charts with a different indexAxis set.
 			// The indexAxis gets set here, and the Chart.js type gets mapped at conversion time.
 			this._options = mixin({}, mixin(this._options, { indexAxis: 'y' }));
 		}
-		else {
-			this._type = val;
-		}
+
 		this._changeRef.detectChanges();
 	}
 
