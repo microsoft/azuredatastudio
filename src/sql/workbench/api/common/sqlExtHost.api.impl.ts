@@ -488,8 +488,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				openCustomErrorDialog(options: sqlExtHostTypes.IErrorDialogOptions): Thenable<string | undefined> {
 					return extHostModelViewDialog.openCustomErrorDialog(options);
 				},
-				openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Thenable<string | undefined> {
-					return extHostWindow.$openServerFileBrowserDialog(connectionUri, targetPath, fileFilters);
+				openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[], showFoldersOnly?: boolean): Thenable<string | undefined> {
+					return extHostWindow.$openServerFileBrowserDialog(connectionUri, targetPath, fileFilters, showFoldersOnly);
 				}
 			};
 

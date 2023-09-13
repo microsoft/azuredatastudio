@@ -661,21 +661,8 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	}
 
 	public async selectFolder(location: string): Promise<string | undefined> {
-		const allFilesFilter = localizedConstants.allFiles;
-		let filter: any = {};
-		filter[allFilesFilter] = '*';
-		let uris = await vscode.window.showOpenDialog({
-			filters: filter,
-			canSelectFiles: false,
-			canSelectMany: false,
-			canSelectFolders: true,
-			defaultUri: vscode.Uri.file(location),
-			openLabel: localizedConstants.labelSelectFolder
-		});
-		if (uris && uris.length > 0) {
-			return uris[0].fsPath;
-		}
-		return undefined;
+		let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
+		return await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, [{ label: localizedConstants.allFiles, filters: ['*'] }], true);
 	}
 
 	private initializeAdvancedSection(): void {
