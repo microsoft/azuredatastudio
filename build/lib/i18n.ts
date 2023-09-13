@@ -906,18 +906,21 @@ export function createI18nFile(name: string, messages: any): File { // {{SQL CAR
 	];
 	for (const key of Object.keys(messages)) {
 		// {{SQL CARBON EDIT}} - Need to handle aliased ids from vscode-translations-export
-		let bundleObject = messages['contents']['bundle'];
-		if (name.startsWith('extensions/') && key.startsWith('contents') && bundleObject) {
-			for (const bundleKey of Object.keys(bundleObject)) {
-				let shortName = name.substring(11);
-				let keyAlias = aliasStrings as StringMap<StringMap<string>>
-				if (bundleKey.startsWith('++CODE++') && keyAlias[shortName]) {
-					let shortBundleKey = bundleKey.substring(8);
-					let aliasKey = keyAlias[shortName][shortBundleKey];
-					if (aliasKey) {
-						let originalMessage = messages['contents']['bundle'][bundleKey];
-						messages['contents']['bundle'][bundleKey] = undefined;
-						messages['contents']['bundle'][aliasKey] = originalMessage;
+		let areaList = messages['contents'];
+		if (name.startsWith('extensions/') && key.startsWith('contents') && areaList) {
+			for (const areaKey of Object.keys(areaList)) {
+				let stringList = messages['contents'][areaKey];
+				for (const stringKey of Object.keys(stringList)) {
+					let shortName = name.substring(11);
+					let keyAlias = aliasStrings as StringMap<StringMap<string>>
+					if (stringKey.startsWith('++CODE++') && keyAlias[shortName]) {
+						let shortBundleKey = stringKey.substring(8);
+						let aliasKey = keyAlias[shortName][shortBundleKey];
+						if (aliasKey) {
+							let originalMessage = messages['contents'][areaKey][stringKey];
+							messages['contents'][areaKey][stringKey] = undefined;
+							messages['contents'][areaKey][aliasKey] = originalMessage;
+						}
 					}
 				}
 			}
