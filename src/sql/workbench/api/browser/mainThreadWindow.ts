@@ -20,13 +20,13 @@ export class MainThreadWindow extends Disposable implements MainThreadWindowShap
 		super();
 	}
 
-	public async $openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string | undefined> {
+	public async $openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[], showFoldersOnly?: boolean): Promise<string | undefined> {
 		let completion = new Promise<string | undefined>((resolve, reject) => {
 			try {
 				const handleOnClosed = (path: string | undefined) => {
 					resolve(path);
 				};
-				this._fileBrowserDialogService.showDialog(connectionUri, targetPath, fileFilters, '', true, handleOnClosed);
+				this._fileBrowserDialogService.showDialog(connectionUri, targetPath, fileFilters, '', true, handleOnClosed, showFoldersOnly);
 			} catch (error) {
 				reject(error);
 			}
