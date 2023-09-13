@@ -1116,7 +1116,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			const filesCount = this.objectInfo.files?.filter(file => file.fileGroup === fileGroup.name).length;
 			if (filegroupType === FileGroupType.RowsFileGroup && fileGroup.type === filegroupType) {
 				data.push([
-					{ value: fileGroup.name },
+					{ value: fileGroup.name, enabled: fileGroup.id < 0 },
 					{ value: filesCount },
 					{ value: fileGroup.isReadOnly, enabled: (fileGroup.name !== 'PRIMARY' && filesCount > 0) },
 					{ value: fileGroup.isDefault, enabled: filesCount > 0 },
@@ -1124,14 +1124,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				]);
 			} else if (fileGroup.type === FileGroupType.FileStreamDataFileGroup && fileGroup.type === filegroupType) {
 				data.push([
-					{ value: fileGroup.name },
+					{ value: fileGroup.name, enabled: fileGroup.id < 0 },
 					{ value: filesCount },
 					{ value: fileGroup.isReadOnly, enabled: filesCount > 0 },
 					{ value: fileGroup.isDefault }
 				]);
 			} else if (fileGroup.type === FileGroupType.MemoryOptimizedDataFileGroup && fileGroup.type === filegroupType) {
 				data.push([
-					{ value: fileGroup.name },
+					{ value: fileGroup.name, enabled: fileGroup.id < 0 },
 					{ value: filesCount },
 				]);
 			}

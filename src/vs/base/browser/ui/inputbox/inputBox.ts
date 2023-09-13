@@ -36,7 +36,7 @@ export interface IInputOptions {
 	readonly flexibleMaxHeight?: number;
 	readonly actions?: ReadonlyArray<IAction>;
 	readonly inputBoxStyles: IInputBoxStyles;
-
+	readonly enabled?: boolean;
 
 	// {{SQL CARBON EDIT}} Candidate for addition to vscode
 	readonly min?: string;
@@ -164,6 +164,14 @@ export class InputBox extends Widget {
 		this.input.setAttribute('autocorrect', 'off');
 		this.input.setAttribute('autocapitalize', 'off');
 		this.input.setAttribute('spellcheck', 'false');
+
+		if (this.options.enabled !== undefined) {
+			if (this.options.enabled) {
+				this.input.removeAttribute('disabled');
+			} else {
+				this.input.setAttribute('disabled', 'true');
+			}
+		}
 
 		this.onfocus(this.input, () => this.element.classList.add('synthetic-focus'));
 		this.onblur(this.input, () => this.element.classList.remove('synthetic-focus'));
