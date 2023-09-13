@@ -632,8 +632,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	/**
 	 * Open a file browser
 	 */
-	public override $openFileBrowser(handle: number, ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean> {
-		return this._resolveProvider<azdata.FileBrowserProvider>(handle).openFileBrowser(ownerUri, expandPath, fileFilters, changeFilter);
+	public override $openFileBrowser(handle: number, ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean, showFoldersOnly?: boolean): Thenable<boolean> {
+		return this._resolveProvider<azdata.FileBrowserProvider>(handle).openFileBrowser(ownerUri, expandPath, fileFilters, changeFilter, showFoldersOnly);
 	}
 
 	/**
