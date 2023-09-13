@@ -53,7 +53,7 @@ export class Chart<TChartType extends azdata.ChartType, TData extends azdata.Cha
 	/**
 	 * Setter function for chart type
 	 */
-	public set type(val: any) {
+	public set type(val: TChartType) {
 		this._type = val;
 
 		if (val === 'horizontalBar') {
