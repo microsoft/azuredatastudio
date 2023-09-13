@@ -18,6 +18,7 @@ import * as vscode from 'vscode';
 const MAXDOP_Max_Limit = 32767;
 const PAUSED_RESUMABLE_INDEX_Max_Limit = 71582;
 const DscTableRowLength = 15;
+const Dialog_Width = '650px';
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
@@ -118,7 +119,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		options.width = '645px';
+		options.width = Dialog_Width;
 		super(objectManagementService, options);
 	}
 
