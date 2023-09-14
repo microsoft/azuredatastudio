@@ -824,12 +824,18 @@
         <Item ItemId=";(...) yDataButtonText" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Purge Query Store Data]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[清除查询存储数据]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) yStoreDataMessage" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Are you sure you want to purge the Query Store data from '{0}'?]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[是否确实要从“{0}”中清除查询存储数据?]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1037,6 +1043,9 @@
         <Item ItemId=";(...) yThresholdInDaysText" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[State Query Threshold (Days)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[状态查询阈值(天)]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -3855,6 +3864,9 @@
       <Item ItemId=";extensions/Microsoft.mssql/package.mssql.connection.clearPooledConnections" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server: Clear Pooled Connections]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server: 清除共用连接]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4581,8 +4593,8 @@
       <Item ItemId=";extensions/Microsoft.mssql/package.mssql.connectionOptions.serverName.placeholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[e.g. servername,port]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[例如 tcp:servername,1433]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[例如服务器名、端口]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[e.g. tcp:servername,1433]]></Val>
@@ -4680,8 +4692,8 @@
       <Item ItemId=";extensions/Microsoft.mssql/package.mssql.enableConnectionPooling" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed. To clear pooled connections, run the command: 'SQL Server: Clear Pooled Connections']]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[在 MSSQL 连接上启用连接池，以提高 Azure Data Studio 连接的整体性能。默认启用此设置。更改值时，需要重新启动 Azure Data Studio。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[在 MSSQL 连接上启用连接池，以提高 Azure Data Studio 连接的整体性能。默认启用此设置。更改值时，需要重新启动 Azure Data Studio。若要清除共用连接，请运行以下命令: 'SQL Server: Clear Pooled Connections']]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed.]]></Val>
