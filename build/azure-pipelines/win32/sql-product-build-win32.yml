@@ -1,11 +1,3 @@
-variables:
-  - name: Codeql.enabled
-    value: true
-  - name: Codeql.TSAEnabled
-    value: true
-  - name: Codeql.TSAOptionsPath
-    value: '$(Build.SourcesDirectory)\build\azure-pipelines\config\tsaoptions.json'
-
 steps:
   - task: NodeTool@0
     inputs:
