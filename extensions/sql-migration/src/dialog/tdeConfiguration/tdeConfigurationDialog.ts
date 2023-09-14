@@ -9,6 +9,7 @@ import { MigrationStateModel } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
 import * as utils from '../../api/utils';
+import { EOL } from 'os';
 import { ConfigDialogSetting } from '../../models/tdeModels'
 import { IconPathHelper } from '../../constants/iconPathHelper';
 
@@ -27,7 +28,7 @@ export class TdeConfigurationDialog {
 	private _validationMessagesText!: azdata.InputBoxComponent;
 	private _onClosed: () => void;
 
-	private _validationDescriptionsErrorsAndTips!: string[][];
+	private _validationSuccessDescriptionErrorAndTips!: string[][];
 
 	constructor(public migrationStateModel: MigrationStateModel, onClosed: () => void) {
 		this._onClosed = onClosed;
@@ -306,8 +307,9 @@ export class TdeConfigurationDialog {
 
 				let allValidationsSucceeded = true;
 
-				this._validationDescriptionsErrorsAndTips = validationData.result.map(e => {
+				this._validationSuccessDescriptionErrorAndTips = validationData.result.map(e => {
 					return [
+						e.validationStatus.toString(),
 						e.validationDescription,
 						e.validationErrorMessage,
 						e.validationTroubleshootingTips
@@ -345,28 +347,32 @@ export class TdeConfigurationDialog {
 				async (e) => {
 					const selectedRows: number[] = this._validationTable.selectedRows ?? [];
 
+					let message: string = '';
 					selectedRows.forEach((rowIndex) => {
-						let description = this._validationDescriptionsErrorsAndTips[rowIndex][0];
-						let errorMessage = this._validationDescriptionsErrorsAndTips[rowIndex][1];
-						let tips = this._validationDescriptionsErrorsAndTips[rowIndex][2];
 
-						var message = `${description}\n`;
+						let successful = this._validationSuccessDescriptionErrorAndTips[rowIndex][0] === "1" // Value will be "1" if successful
+						let description = this._validationSuccessDescriptionErrorAndTips[rowIndex][1];
+						let errorMessage = this._validationSuccessDescriptionErrorAndTips[rowIndex][2];
+						let tips = this._validationSuccessDescriptionErrorAndTips[rowIndex][3];
 
-						if (errorMessage.length > 0) {
-							message += `${errorMessage}\n`;
+						message = `Description:${EOL}${description}`;
+						if (!successful) {
+							message += `${EOL}${EOL}`;
+							if (errorMessage?.length > 0) {
+								message += `Error:${EOL}${errorMessage}${EOL}${EOL}`;
+							}
+
+							message += `Troubleshooting Tips:${EOL}${tips}`;
 						}
-
-						message += `${tips}\n`;
-						this._validationMessagesText.value = message;
 					});
 
-					console.log(selectedRows);
+					this._validationMessagesText.value = message;
 				}));
 
 		this._validationMessagesText = _view.modelBuilder.inputBox()
 			.withProps({
 				inputType: 'text',
-				height: 100,
+				height: 142,
 				multiline: true,
 				CSSStyles: { 'overflow': 'none auto' }
 			})
@@ -398,7 +404,7 @@ export class TdeConfigurationDialog {
 			.withProps({
 				columns: [
 					{
-						value: 'message',
+						value: 'title',
 						name: constants.TDE_VALIDATION_TITLE,
 						type: azdata.ColumnType.text,
 						width: 320,
