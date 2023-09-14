@@ -2086,6 +2086,430 @@ declare module 'azdata' {
 		openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean, showFoldersOnly?: boolean): Thenable<boolean>;
 	}
 
+	//#region Chart component model types
+
+	export type ChartType = 'bar' | 'bubble' | 'doughnut' | 'horizontalBar' | 'line' | 'pie' | 'polarArea' | 'radar' | 'scatter';
+
+	export interface ModelBuilder {
+		chart<TChartType extends ChartType, TData extends ChartData<TChartType>, TOptions extends ChartOptions<TChartType>>(): ComponentBuilder<ChartComponent<TChartType, TData, TOptions>, ChartComponentProperties<TChartType, TData, TOptions>>;
+	}
+
+	export interface ChartComponent<TChartType extends ChartType, TData extends ChartData<TChartType>, TOptions extends ChartOptions<TChartType>> extends Component, ChartComponentProperties<TChartType, TData, TOptions> {
+		onDidClick: vscode.Event<any>;
+	}
+
+	export interface ChartComponentProperties<TChartType extends ChartType, TData extends ChartData<TChartType>, TOptions extends ChartOptions<TChartType>> extends ComponentProperties {
+		/**
+		 * Type of chart to build.  Must match the ChartType parameter used to construct the chart.
+		 */
+		chartType: TChartType; // Necessary because all typing information from the generic parameters is lost after compilation
+
+		/**
+		 * Datasets and labels (if applicable) for the chart
+		 */
+		data: TData;
+
+		/**
+		 * Options for the chart configuration
+		 */
+		options?: TOptions;
+	}
+
+	/**
+	 * Base type for chart data
+	 */
+	export interface ChartData<TChartType extends ChartType> {
+		/**
+		 * Never needs to be set or used.  Only present for the TypeScript compiler to recognize the pairing between same-chart Data and Options types.
+		 */
+		// DevNote:
+		// This works because it gets compiled to (e.g.) `'bar' | undefined, forcing it to be associated with BarChartOptions
+		// and preventing it from being paired with PieChartOptions.
+		type?: TChartType;
+	}
+
+	//#region Chart general data types
+
+	export interface ChartDataEntryBase {
+		/**
+		 * For Pie, Doughnut, Polar Area charts, it is the label associated with the data value.
+		 * For Bar, Horizontal Bar, Line, Scatterplot, Bubble, and Radial, it is the label name for dataset.
+		 */
+		dataLabel: string;
+		/**
+		 * Background color for chart elements.  May be a name ('red'), hex ('#FFFFFF[77]), or RGB ('rgb(255, 255, 255[, 0.5])).
+		 * Bracketed portions are optional for alpha/transparency.
+		 */
+		backgroundColor: string;
+		/**
+		 * Border color for chart elements.  May be a name ('red'), hex ('#FFFFFF[77]), or RGB ('rgb(255, 255, 255[, 0.5])).
+		 * Bracketed portions are optional for alpha/transparency.
+		 */
+		borderColor?: string;
+	}
+
+	export interface ChartDataEntry extends ChartDataEntryBase {
+		/**
+		 * Value of one-dimensional data point
+		 */
+		value: Chart1DPoint | number;
+	}
+
+	export interface ChartDataSet<TVal extends Chart1DPoint | number> extends ChartDataEntryBase {
+		data: TVal[];
+	}
+
+	/**
+	 * One-dimensional data point
+	 */
+	export interface Chart1DPoint {
+		/**
+		 * Value for a one-dimensional data point, or the x-coordinate for a multi-dimensional data point
+		 */
+		x: number;
+	}
+
+	/**
+	 * Two-dimensional data point
+	 */
+	export interface Chart2DPoint extends Chart1DPoint {
+		/**
+		 * Y-coordiate for a multi-dimensional data point
+		 */
+		y: number;
+	}
+
+	/**
+	 * Three-dimensional data point
+	 */
+	export interface Chart3DPoint extends Chart2DPoint {
+		/**
+		 * Radius for a bubble data point, in pixels
+		 */
+		r: number;
+	}
+
+	//#endregion
+
+	//#region Chart general option types
+
+	/**
+	 * Base options for a chart
+	 */
+	export interface ChartOptions<TChartType extends ChartType> {
+		/**
+		 * Never needs to be set or used.  Only present for the TypeScript compiler to recognize the pairing between same-chart Data and Options types.
+		 */
+		// DevNote:
+		// This works because it gets compiled to (e.g.) `'bar' | undefined, forcing it to be associated with BarChartData
+		// and preventing it from being paired with PieChartData.
+		type?: TChartType;
+
+		/**
+		 * Title of the chart.  Set to `undefined` to not display the title.
+		 */
+		chartTitle?: string;
+
+		/**
+		 * Whether to display the legend.  Defaults to true.
+		 */
+		legendVisible?: boolean;
+	}
+
+	/**
+	 * Base options for scales
+	 */
+	export interface ScaleOptions {
+		/**
+		 * Whether to begin the scale at zero
+		 */
+		beginAtZero?: boolean;
+
+		/**
+		 * Minimum value of the scale
+		 */
+		min?: number;
+
+		/**
+		 * Maxium value of the scale
+		 */
+		max?: number;
+
+		/**
+		 * Whether to add extra space between the scale and the chart
+		 */
+		offset?: boolean;
+
+		/**
+		 * Whether to stack charted values
+		 */
+		stacked?: boolean;
+	}
+
+	//#endregion
+
+	//#region Chart-specific types
+
+	//#region Bar/Horizontal Bar charts
+
+	export interface BarChartDataSet extends ChartDataSet<Chart1DPoint | number> { }
+
+	export interface BarChartDataBase {
+		/**
+		 * Array of datasets for the chart
+		 */
+		datasets: BarChartDataSet[];
+
+		/**
+		 * Labels for the base axis.  Only data that aligns with a label is shown.  If there are fewer labels than data, then not all data is displayed; if there are more labels than data, then empty chart entries are appended
+		 */
+		labels: string[];
+	}
+
+	export interface BarChartOptionsBase {
+		/**
+		 * Options for the scales
+		 */
+		scales?: {
+			/**
+			 * Options for the X-axis
+			 */
+			x?: ScaleOptions;
+
+			/**
+			 * Options for the Y-axis
+			 */
+			y?: ScaleOptions;
+		}
+	}
+
+	/**
+	 * Data for a vertical bar chart
+	 */
+	export interface BarChartData extends ChartData<'bar'>, BarChartDataBase { }
+
+	/**
+	 * Options for a vertical bar chart
+	 */
+	export interface BarChartOptions extends ChartOptions<'bar'>, BarChartOptionsBase { }
+
+	/**
+	 * Data for a horizontal bar chart
+	 */
+	export interface HorizontalBarChartData extends ChartData<'horizontalBar'>, BarChartDataBase { }
+
+	/**
+	 * Options for a horizontal bar chart
+	 */
+	export interface HorizontalBarChartOptions extends ChartOptions<'horizontalBar'>, BarChartOptionsBase { }
+
+	//#endregion
+
+	//#region Line chart
+
+	/**
+	 * Data for a line chart
+	 */
+	export interface LineChartData extends ChartData<'line'>, BarChartDataBase { }
+
+	/**
+	 * Options for a line chart
+	 */
+	export interface LineChartOptions extends ChartOptions<'line'>, BarChartOptionsBase {
+		/**
+		 * Which axis to use as the base, x or y; defaults to x
+		 */
+		indexAxis?: string;
+
+		/**
+		 * Bezier curve tension between points, 0 for straight lines.  Recommended range: 0.0-1.0
+		 */
+		tension?: number;
+	}
+
+	//#endregion
+
+	//#region Pie/Doughnut charts
+
+	export interface PieChartDataBase {
+		/**
+		 * Dataset for the chart
+		 */
+		dataset: ChartDataEntry[];
+	}
+
+	export interface PieChartOptionsBase {
+		circumference?: number;
+		/**
+		 * Size of the cutout for a pie/doughnut chart, in pixels or percentage.  Pie chart defaults to 0.  Doughnut chart defaults to 50%.
+		 */
+		cutout?: number | string;
+
+		/**
+		 * Size of the outer radius for a pie/doughnut chart, in pixels or percentage of chart area
+		 */
+		radius?: number | string;
+
+		/**
+		 * Degrees of rotation to start drawing the first data entry from
+		 */
+		rotation?: number;
+	}
+
+	/**
+	 * Data for a Pie chart
+	 */
+	export interface PieChartData extends ChartData<'pie'>, PieChartDataBase { }
+
+	/**
+	 * Options for a Pie chart
+	 */
+	export interface PieChartOptions extends ChartOptions<'pie'>, PieChartOptionsBase { }
+
+	/**
+	 * Data for a Doughnut chart
+	 */
+	export interface DoughnutChartData extends ChartData<'doughnut'>, PieChartDataBase { }
+
+	/**
+	 * Options for a Doughnut chart
+	 */
+	export interface DoughnutChartOptions extends ChartOptions<'doughnut'>, PieChartOptionsBase { }
+
+	//#endregion
+
+	//#region Scatterplot
+
+	export interface ScatterplotOptionBase {
+		/**
+		 * Options for scales
+		 */
+		scales?: {
+			/**
+			 * Options for the X-axis
+			 */
+			x?: ScaleOptions & { position?: 'left' | 'top' | 'right' | 'bottom' | 'center' };
+
+			/**
+			 * Options for the Y-axis
+			 */
+			y?: ScaleOptions & { position?: 'left' | 'top' | 'right' | 'bottom' | 'center' };
+		}
+	}
+
+	/**
+	 * Data for a scatter plot chart
+	 */
+	export interface ScatterplotData extends ChartData<'scatter'> {
+		/**
+		 * Array of datasets for the chart
+		 */
+		datasets: ScatterplotDataSet[];
+	}
+
+	export interface ScatterplotDataSet extends ChartDataSet<Chart2DPoint> { }
+
+	export interface ScatterplotOptions extends ChartOptions<'scatter'>, ScatterplotOptionBase { }
+
+	//#endregion
+
+	//#region Bubble chart
+
+	/**
+	 * Data for a bubble chart
+	 */
+	export interface BubbleChartData extends ChartData<'bubble'> {
+		/**
+		 * Array of datasets for the chart
+		 */
+		datasets: BubbleChartDataSet[];
+	}
+
+	export interface BubbleChartDataSet extends ChartDataSet<Chart3DPoint> { }
+
+	export interface BubbleChartOptions extends ChartOptions<'bubble'>, ScatterplotOptionBase { }
+
+	//#endregion
+
+	//#region Polar Area chart
+
+	/**
+	 * Data for a polar area chart
+	 */
+	export interface PolarAreaChartData extends ChartData<'polarArea'> {
+		/**
+		 * Dataset for the chart
+		 */
+		dataset: ChartDataEntry[];
+	}
+
+	export interface PolarAreaChartOptions extends ChartOptions<'polarArea'> {
+		/**
+		 * Whether to display data areas with circular edges.  Defaults to true.
+		 */
+		circular?: boolean;
+	}
+
+	//#endregion
+
+	//#region Radar chart
+
+	/**
+	 * Data for a radar chart
+	 */
+	export interface RadarChartData extends ChartData<'radar'> {
+		/**
+		 * Array of datasets for the chart
+		 */
+		datasets: BarChartDataSet[];
+		/**
+		 * Labels for the perimeter.  Only data that aligns with a label is shown.  If there are fewer labels than data, then not all data is displayed; if there are more labels than data, then empty chart entries are appended
+		 */
+		labels: string[];
+	}
+
+	export interface RadarChartOptions extends ChartOptions<'radar'> {
+		/**
+		 * Options for scales
+		 */
+		scales?: {
+			/**
+			 * Options for the radial axis
+			 */
+			r?: {
+				/**
+				 * Angle to start the first data entry from.  Defaults to 0
+				 */
+				startAngle?: number;
+
+				/**
+				 * Value to start the radial axis from.  Calculated if not set.
+				 */
+				beginAtZero?: boolean;
+
+				/**
+				 * Minimum value for the radial axis.  Calculated if not set.
+				 */
+				min?: number;
+
+				/**
+				 * Maximum value for the radial axis.  Calculated if not set.
+				 */
+				max?: number;
+			}
+		}
+		/**
+		 * Bezier curve tension between points, 0 for straight lines.  Recommended range: 0.0-1.0
+		 */
+		tension?: number;
+	}
+
+	//#endregion
+
+	//#endregion
+
+	//#endregion
+
 	export interface TableComponent {
 		/**
 		 * Set active cell.
