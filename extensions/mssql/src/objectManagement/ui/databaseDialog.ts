@@ -909,15 +909,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 			// Default column
 			else if (arg.column === 3) {
-				if (arg.value) {
-					this.objectInfo.filegroups.forEach(fg => {
-						if (fg.type === FileGroupType.FileStreamDataFileGroup) {
-							fg.isDefault = fg.name === filegroup.name && fg.id === filegroup.id ? arg.value : !arg.value;
-						}
-					});
-				} else {
-					filegroup.isDefault = arg.value;
-				}
+				this.updateFilegroupsDefaultColumnValues(arg.value, filegroup, FileGroupType.FileStreamDataFileGroup);
 			}
 
 			// Refresh the table with updated data
