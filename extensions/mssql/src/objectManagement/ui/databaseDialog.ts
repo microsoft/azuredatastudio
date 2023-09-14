@@ -14,6 +14,7 @@ import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
 import { DatabaseFileDialog } from './databaseFileDialog';
 import * as vscode from 'vscode';
+import { DeclarativeTableCellValue } from 'azdata';
 
 const MAXDOP_Max_Limit = 32767;
 const PAUSED_RESUMABLE_INDEX_Max_Limit = 71582;
@@ -816,6 +817,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			// FileGroup name column
 			if (arg.column === 0) {
 				filegroup.name = arg.value;
+
+				// Refresh the filegroups options
+				this.updateFileGroupsOptions();
 			}
 			// Read-Only column
 			if (arg.column === 2) {
@@ -824,16 +828,20 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			// Default column
 			if (arg.column === 3) {
 				this.updateFilegroupsDefaultColumnValues(arg.value, filegroup, FileGroupType.RowsFileGroup);
+				if (arg.value) {
+					this.rowsFilegroupsTable.dataValues.map((row, index) => {
+						row[3].value = row[0].value === filegroup.name && index === arg.row ? arg.value : !arg.value;
+					});
+				} else {
+					filegroup.isDefault = false;
+				}
+
+				await this.rowsFilegroupsTable.setDataValues(this.rowsFilegroupsTable.dataValues);
 			}
 			// Autogrow all files column
 			if (arg.column === 4) {
 				filegroup.autogrowAllFiles = arg.value;
 			}
-
-			// Refresh the table with updated data
-			let data = this.getTableData(FileGroupType.RowsFileGroup);
-			await this.setDeclarativeTableData(this.rowsFilegroupsTable, data);
-			this.updateFileGroupsOptionsAndTableRows();
 			this.onFormFieldChange();
 		}));
 		this.disposables.push(this.rowsFilegroupsTable.onRowSelected(async (selectedRow) => {
@@ -902,6 +910,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			// FileGroup name column
 			if (arg.column === 0) {
 				filegroup.name = arg.value;
+
+				// Refresh the filegroups options
+				this.updateFileGroupsOptions();
 			}
 			// Read-Only column
 			if (arg.column === 2) {
@@ -911,11 +922,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			else if (arg.column === 3) {
 				this.updateFilegroupsDefaultColumnValues(arg.value, filegroup, FileGroupType.FileStreamDataFileGroup);
 			}
-
-			// Refresh the table with updated data
-			let data = this.getTableData(FileGroupType.FileStreamDataFileGroup);
-			await this.setDeclarativeTableData(this.filestreamFilegroupsTable, data);
-			this.updateFileGroupsOptionsAndTableRows();
 			this.onFormFieldChange();
 		}));
 
@@ -971,12 +977,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			// FileGroup name column
 			if (arg.column === 0) {
 				filegroup.name = arg.value;
-			}
 
-			// Refresh the table with updated data
-			let data = this.getTableData(FileGroupType.MemoryOptimizedDataFileGroup);
-			await this.setDeclarativeTableData(this.memoryOptimizedFilegroupsTable, data);
-			this.updateFileGroupsOptionsAndTableRows();
+				// Refresh the filegroups options
+				this.updateFileGroupsOptions();
+			}
 			this.onFormFieldChange();
 		}));
 		this.disposables.push(this.memoryOptimizedFilegroupsTable.onRowSelected(async (selectedRow) => {
@@ -1069,6 +1073,11 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		this.memoryoptimizedFileGroupsTableRows = this.objectInfo.filegroups?.filter(filegroup => filegroup.type === FileGroupType.MemoryOptimizedDataFileGroup);
 
 		// Filegroups options for files tab
+		this.updateFileGroupsOptions()
+	}
+
+	private updateFileGroupsOptions(): void {
+		// Filegroups options for files tab
 		this.filestreamDatafileGroupsOptions = this.objectInfo.filegroups?.filter(filegroup => filegroup.type === FileGroupType.FileStreamDataFileGroup || filegroup.type === FileGroupType.MemoryOptimizedDataFileGroup).map(filegroup => filegroup.name);
 		this.rowDatafileGroupsOptions = this.objectInfo.filegroups?.filter(filegroup => filegroup.type === FileGroupType.RowsFileGroup).map(filegroup => filegroup.name);
 		let index: number;
@@ -1116,7 +1125,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * @param filegroupType filegroup type
 	 * @returns data view object
 	 */
-	private getTableData(filegroupType: FileGroupType): any[] {
+	private getTableData(filegroupType: FileGroupType): azdata.DeclarativeTableCellValue[][] {
 		let data: azdata.DeclarativeTableCellValue[][] = [];
 		this.objectInfo.filegroups?.map(fileGroup => {
 			const filesCount = this.objectInfo.files?.filter(file => file.fileGroup === fileGroup.name).length;
