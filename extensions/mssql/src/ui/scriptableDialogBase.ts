@@ -63,7 +63,7 @@ export abstract class ScriptableDialogBase<OptionsType extends ScriptableDialogO
 	protected abstract get isDirty(): boolean;
 
 	protected override onFormFieldChange(): void {
-		this._scriptButton.enabled = this.isDirty;
+		this._scriptButton.enabled = this.isDirty && this.modelView.valid;
 		this.dialogObject.okButton.enabled = this.isDirty;
 	}
 
