@@ -310,6 +310,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			|| error.errorMessage.includes(Constants.AADSTS50078)
 			|| error.errorMessage.includes(Constants.AADSTS50085)
 			|| error.errorMessage.includes(Constants.AADSTS50089)
+			|| error.errorMessage.includes(Constants.AADSTS700082)
 			|| error.errorMessage.includes(Constants.AADSTS700084);
 	}
 
