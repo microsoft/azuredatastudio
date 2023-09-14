@@ -172,7 +172,7 @@ declare module 'azurecore' {
 	}
 
 	/**
-	 * Represents a resource exposed by an Azure Active Directory
+	 * Represents a resource exposed by a Microsoft Entra identity
 	 */
 	export interface Resource {
 		/**
@@ -197,7 +197,7 @@ declare module 'azurecore' {
 	}
 
 	/**
-	 * Represents a tenant (an Azure Active Directory instance) to which a user has access
+	 * Represents a Microsoft Entra tenant to which a user has access
 	 */
 	export interface Tenant {
 		/**

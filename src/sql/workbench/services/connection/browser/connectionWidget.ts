@@ -445,7 +445,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._refreshCredentialsLink.href = '#';
 		this._refreshCredentialsLink.innerText = localize('connectionWidget.refreshAzureCredentials', "Refresh account credentials");
 		// Azure tenant picker
-		let tenantLabel = localize('connection.azureTenantDropdownLabel', "Azure AD tenant");
+		let tenantLabel = localize('connection.azureTenantDropdownLabel', "Microsoft Entra tenant");
 		let tenantDropdown = DialogHelper.appendRow(this._tableContainer, tenantLabel, 'connection-label', 'connection-input', ['azure-account-row', 'azure-tenant-row']);
 		this._azureTenantDropdown = new SelectBox([], undefined, defaultSelectBoxStyles, this._contextViewService, tenantDropdown, { ariaLabel: tenantLabel });
 		this._register(this._azureTenantDropdown);

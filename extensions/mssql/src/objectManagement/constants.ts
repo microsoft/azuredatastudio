@@ -16,6 +16,7 @@ export const enum FolderType {
 }
 
 export const PublicServerRoleName = 'public';
+export const Windows = 'Windows';
 
 export const CreateUserDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/create-user-transact-sql';
 export const AlterUserDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/alter-user-transact-sql';

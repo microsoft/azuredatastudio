@@ -1,0 +1,587 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/Microsoft.datavirtualization/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="externalTable.databaseNameTitle">
+        <source xml:lang="en">Database Name</source>
+        <target state="translated">データベース名</target>
+      </trans-unit>
+      <trans-unit id="externalTable.externalSchemaTitle">
+        <source xml:lang="en">External Schema</source>
+        <target state="translated">外部スキーマ</target>
+      </trans-unit>
+      <trans-unit id="externalTable.externalTableTitle">
+        <source xml:lang="en">External Table</source>
+        <target state="translated">外部テーブル</target>
+      </trans-unit>
+      <trans-unit id="externalTable.hostnameTitle">
+        <source xml:lang="en">Hostname</source>
+        <target state="translated">ホスト名</target>
+      </trans-unit>
+      <trans-unit id="msgMissingNodeContext">
+        <source xml:lang="en">Node Command called without any node passed</source>
+        <target state="translated">ノードが渡されずに呼び出されたノード コマンド</target>
+      </trans-unit>
+      <trans-unit id="sqlServerTypeName">
+        <source xml:lang="en">SQL Server</source>
+        <target state="translated">SQL Server</target>
+      </trans-unit>
+      <trans-unit id="externalTable.serverNameTitle">
+        <source xml:lang="en">Server Name</source>
+        <target state="translated">サーバー名</target>
+      </trans-unit>
+      <trans-unit id="externalTable.serviceNameTitle">
+        <source xml:lang="en">Service name / SID</source>
+        <target state="translated">サービス名/SID</target>
+      </trans-unit>
+      <trans-unit id="externalTable.sourceSchemaTitle">
+        <source xml:lang="en">Source Schema</source>
+        <target state="translated">ソース スキーマ</target>
+      </trans-unit>
+      <trans-unit id="externalTable.sourceTableTitle">
+        <source xml:lang="en">Source Table</source>
+        <target state="translated">基になるテーブル</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/services/serviceClient" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="downloadingServiceSize">
+        <source xml:lang="en">({0} KB)</source>
+        <target state="translated">({0} KB)</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceComplete">
+        <source xml:lang="en">Done downloading {0}</source>
+        <target state="translated">{0} のダウンロードが完了しました</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceStatus">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">{0} をダウンロードしています</target>
+      </trans-unit>
+      <trans-unit id="downloadingService">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">{0} をダウンロードしています</target>
+      </trans-unit>
+      <trans-unit id="serviceStartFailed">
+        <source xml:lang="en">Failed to start {0}: {1}</source>
+        <target state="translated">{0}を開始できませんでした: {1}</target>
+      </trans-unit>
+      <trans-unit id="serviceInstalled">
+        <source xml:lang="en">Installed {0}</source>
+        <target state="translated">{0} がインストールされました</target>
+      </trans-unit>
+      <trans-unit id="installingService">
+        <source xml:lang="en">Installing {0}</source>
+        <target state="translated">{0} のインストール中</target>
+      </trans-unit>
+      <trans-unit id="installingServiceDetailed">
+        <source xml:lang="en">Installing {0} to {1}</source>
+        <target state="translated">{0} を {1} にインストールしています</target>
+      </trans-unit>
+      <trans-unit id="serviceStarting">
+        <source xml:lang="en">Starting {0}...</source>
+        <target state="translated">{0} を開始しています...</target>
+      </trans-unit>
+      <trans-unit id="serviceStarted">
+        <source xml:lang="en">{0} started</source>
+        <target state="translated">{0} 開始</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/services/telemetry" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="serviceCrashButton">
+        <source xml:lang="en">View Known Issues</source>
+        <target state="translated">既知の問題の表示</target>
+      </trans-unit>
+      <trans-unit id="serviceCrashMessage">
+        <source xml:lang="en">service component could not start</source>
+        <target state="translated">サービス コンポーネントを開始できませんでした</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/utils" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="executeCommandProcessExited">
+        <source xml:lang="en">Process exited with code {0}</source>
+        <target state="translated">プロセスがコード {0} で終了しました</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/tableFromFile/pages/fileConfigPage" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="tableFromFileImport.databaseDropdownTitle">
+        <source xml:lang="en">Database the external table will be created in</source>
+        <target state="translated">外部テーブルが作成されるデータベース</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.destConnTitle">
+        <source xml:lang="en">Destination Server</source>
+        <target state="translated">同期先サーバー</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.dataSourceDropdown">
+        <source xml:lang="en">External data source for new external table</source>
+        <target state="translated">新しい外部テーブル用外部データ ソース</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.tableTextboxTitle">
+        <source xml:lang="en">Name for new external table </source>
+        <target state="translated">新しい外部テーブルの名前 </target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.fileFormatTextboxTitle">
+        <source xml:lang="en">Name for new table's external file format</source>
+        <target state="translated">新しいテーブルの外部ファイル形式の名前</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.noSchemas">
+        <source xml:lang="en">No user schemas were found in the specified database.</source>
+        <target state="translated">指定したデータベースにはユーザー スキーマがありません。</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.noDataSources">
+        <source xml:lang="en">No valid external data sources were found in the specified database.</source>
+        <target state="translated">指定されたデータベースに有効な外部データ ソースが見つかりませんでした。</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.refreshButtonTitle">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">最新の情報に更新</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.schemaTextboxTitle">
+        <source xml:lang="en">Schema for new external table</source>
+        <target state="translated">新しい外部テーブルのスキーマ</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.fileTextboxTitle">
+        <source xml:lang="en">Source File</source>
+        <target state="translated">ソース ファイル</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.folderTextboxTitle">
+        <source xml:lang="en">Source Folder</source>
+        <target state="translated">転送元フォルダー</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.fileFormatExists">
+        <source xml:lang="en">The specified external file format name already exists.</source>
+        <target state="translated">指定された外部ファイル形式名は既に存在します。</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.tableExists">
+        <source xml:lang="en">The specified table name already exists under the specified schema.</source>
+        <target state="translated">指定されたテーブル名は、指定されたスキーマに既に存在します。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/tableFromFile/pages/modifyColumnsPage" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="tableFromFileImport.allowNulls">
+        <source xml:lang="en">Allow Nulls</source>
+        <target state="translated">Null を許容</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.columnName">
+        <source xml:lang="en">Column Name</source>
+        <target state="translated">列名</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.dataType">
+        <source xml:lang="en">Data Type</source>
+        <target state="translated">データ型</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/tableFromFile/pages/prosePreviewPage" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="tableFromFileImport.noProseInfo">
+        <source xml:lang="en">Failed to generate column information for the specified file.</source>
+        <target state="translated">指定されたファイルの列情報を生成できませんでした。</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.noPreviewData">
+        <source xml:lang="en">Failed to retrieve any data from the specified file.</source>
+        <target state="translated">指定されたファイルからデータを取得できませんでした。</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.prosePreviewMessage">
+        <source xml:lang="en">This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.</source>
+        <target state="translated">この操作によって、最初の 50 行までのプレビューを下に生成するために入力ファイル構造が分析されました。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/tableFromFile/pages/summaryPage" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="tableFromFileImport.importInformation">
+        <source xml:lang="en">Data Virtualization information</source>
+        <target state="translated">データ仮想化情報</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.databaseName">
+        <source xml:lang="en">Database name</source>
+        <target state="translated">データベース名</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.fileFormat">
+        <source xml:lang="en">File format name</source>
+        <target state="translated">ファイル形式名</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.next">
+        <source xml:lang="en">Next</source>
+        <target state="translated">次へ</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.serverName">
+        <source xml:lang="en">Server name</source>
+        <target state="translated">サーバー名</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.summaryFileName">
+        <source xml:lang="en">Source File</source>
+        <target state="translated">ソース ファイル</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.summaryFolderName">
+        <source xml:lang="en">Source Folder</source>
+        <target state="translated">転送元フォルダー</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.tableName">
+        <source xml:lang="en">Table name</source>
+        <target state="translated">テーブル名</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.tableSchema">
+        <source xml:lang="en">Table schema</source>
+        <target state="translated">テーブル スキーマ</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.importData">
+        <source xml:lang="en">Virtualize Data</source>
+        <target state="translated">データの仮想化</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/tableFromFile/tableFromFileWizard" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="tableFromFileImport.onlyCsvSupported">
+        <source xml:lang="en">Currently only csv files are supported for this wizard.</source>
+        <target state="translated">現在、このウィザードでは CSV ファイルのみがサポートされています。</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.page2Name">
+        <source xml:lang="en">Modify Columns</source>
+        <target state="translated">列の変更</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.noCsvFileFound">
+        <source xml:lang="en">No csv files were found in the specified folder.</source>
+        <target state="translated">指定されたフォルダーに CSV ファイルが見つかりませんでした。</target>
+      </trans-unit>
+      <trans-unit id="import.needFile">
+        <source xml:lang="en">Please select a source file or folder before using this wizard.</source>
+        <target state="translated">このウィザードを使用する前に、ソース ファイルまたはフォルダーを選択してください。</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.page1Name">
+        <source xml:lang="en">Preview Data</source>
+        <target state="translated">データのプレビュー</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.page0Name">
+        <source xml:lang="en">Select the destination database for your external table</source>
+        <target state="translated">外部テーブルの宛先データベースを選択する</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.page3Name">
+        <source xml:lang="en">Summary</source>
+        <target state="translated">概要</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.openScriptMsg">
+        <source xml:lang="en">The script has opened in a document window. You can view it once the wizard is closed.</source>
+        <target state="translated">スクリプトがドキュメント ウィンドウで開きました。ウィザードが閉じられると表示できます。</target>
+      </trans-unit>
+      <trans-unit id="tableFromFile.taskLabel">
+        <source xml:lang="en">Virtualize Data</source>
+        <target state="translated">データの仮想化</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.wizardName">
+        <source xml:lang="en">Virtualize Data From CSV</source>
+        <target state="translated">CSV からデータを仮想化する</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/connectionDetailsPage" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="newCredOption">
+        <source xml:lang="en">-- Create New Credential --</source>
+        <target state="translated">-- 新しい資格情報の作成 --</target>
+      </trans-unit>
+      <trans-unit id="credentialNameDropdown">
+        <source xml:lang="en">Choose Credential</source>
+        <target state="translated">資格情報の選択</target>
+      </trans-unit>
+      <trans-unit id="credentialFields">
+        <source xml:lang="en">Configure Credential</source>
+        <target state="translated">資格情報の構成</target>
+      </trans-unit>
+      <trans-unit id="connectionDetailsTitle">
+        <source xml:lang="en">Create a connection to your Data Source</source>
+        <target state="translated">データ ソースへの接続を作成する</target>
+      </trans-unit>
+      <trans-unit id="sourceNameInput">
+        <source xml:lang="en">External Data Source Name</source>
+        <target state="translated">外部データ ソース名</target>
+      </trans-unit>
+      <trans-unit id="credentialNameInput">
+        <source xml:lang="en">New Credential Name</source>
+        <target state="translated">新しい資格情報名</target>
+      </trans-unit>
+      <trans-unit id="passwordInput">
+        <source xml:lang="en">Password</source>
+        <target state="translated">パスワード</target>
+      </trans-unit>
+      <trans-unit id="serverFields">
+        <source xml:lang="en">Server Connection</source>
+        <target state="translated">サーバー接続</target>
+      </trans-unit>
+      <trans-unit id="dataSourceHelpText">
+        <source xml:lang="en">The name for your External Data Source.</source>
+        <target state="translated">外部データ ソースの名前。</target>
+      </trans-unit>
+      <trans-unit id="credNameHelpText">
+        <source xml:lang="en">The name of the Database Scoped Credential used to securely store the login information for the External Data Source you are creating.</source>
+        <target state="translated">作成する外部データ ソースのログイン情報を安全に保存するために使用されるデータベース スコープ資格情報の名前です。</target>
+      </trans-unit>
+      <trans-unit id="usernameInput">
+        <source xml:lang="en">Username</source>
+        <target state="translated">ユーザー名</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/createMasterKeyPage" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="masterKeyExistsMsg">
+        <source xml:lang="en">A Master Key already exists for the selected database. No action is required on this page.</source>
+        <target state="translated">選択したデータベースのマスター キーは既に存在します。このページでの操作は必要ありません。</target>
+      </trans-unit>
+      <trans-unit id="createMasterKeyDescription">
+        <source xml:lang="en">A master key is required. This secures the credentials used by an External Data Source. Note that you should back up the master key by using BACKUP MASTER KEY and store the backup in a secure, off-site location.</source>
+        <target state="translated">マスター キーが必要です。これにより、外部データ ソースで使用される資格情報がセキュリティで保護されます。バックアップ マスター キーを使用してマスター キーをバックアップし、バックアップを安全なオフサイトの場所に保存する必要があります。</target>
+      </trans-unit>
+      <trans-unit id="masterKeyPasswordConfirmInput">
+        <source xml:lang="en">Confirm Password</source>
+        <target state="translated">パスワードの確認入力</target>
+      </trans-unit>
+      <trans-unit id="createMasterKeyTitle">
+        <source xml:lang="en">Create Database Master Key</source>
+        <target state="translated">データベース マスター キーを作成する</target>
+      </trans-unit>
+      <trans-unit id="masterKeyPasswordInput">
+        <source xml:lang="en">Password</source>
+        <target state="translated">パスワード</target>
+      </trans-unit>
+      <trans-unit id="passwordMismatchWithConfirmError">
+        <source xml:lang="en">Password values do not match.</source>
+        <target state="translated">パスワードの値が一致しません。</target>
+      </trans-unit>
+      <trans-unit id="masterKeyPasswordLabel">
+        <source xml:lang="en">Set the Master Key password.</source>
+        <target state="translated">マスター キーのパスワードを設定します。</target>
+      </trans-unit>
+      <trans-unit id="pwdReminderText">
+        <source xml:lang="en">Strong passwords use a combination of alphanumeric, upper, lower, and special characters.</source>
+        <target state="translated">強力なパスワードには、英数字、大文字、小文字、特殊文字の組み合わせを使用します。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/objectMappingPage" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="mappingTableCheckboxHelpText">
+        <source xml:lang="en">Clicking on the checkbox will select that table to be mapped.</source>
+        <target state="translated">チェックボックスをクリックすると、マップするテーブルが選択されます。</target>
+      </trans-unit>
+      <trans-unit id="mappingTableHelpText">
+        <source xml:lang="en">Clicking on the table name will show you the column mapping information for that table.</source>
+        <target state="translated">テーブル名をクリックすると、そのテーブルの列マッピング情報が表示されます。</target>
+      </trans-unit>
+      <trans-unit id="mapping.collations">
+        <source xml:lang="en">Collations</source>
+        <target state="translated">照合順序</target>
+      </trans-unit>
+      <trans-unit id="externalTableMappingLabel">
+        <source xml:lang="en">Column Mapping</source>
+        <target state="translated">列マッピング</target>
+      </trans-unit>
+      <trans-unit id="mapping.externalName">
+        <source xml:lang="en">External</source>
+        <target state="translated">外部</target>
+      </trans-unit>
+      <trans-unit id="objectMappingTitle">
+        <source xml:lang="en">Map your data source objects to your external table</source>
+        <target state="translated">データ ソース オブジェクトを外部テーブルにマップする</target>
+      </trans-unit>
+      <trans-unit id="noObjectSelectedMessage">
+        <source xml:lang="en">No objects were selected.</source>
+        <target state="translated">オブジェクトが選択されていません。</target>
+      </trans-unit>
+      <trans-unit id="noTableError">
+        <source xml:lang="en">No table information present for '{0}'</source>
+        <target state="translated">'{0}' のテーブル情報が存在しません</target>
+      </trans-unit>
+      <trans-unit id="mapping.nullable">
+        <source xml:lang="en">Nullable</source>
+        <target state="translated">Null 許容</target>
+      </trans-unit>
+      <trans-unit id="mapping.sqlDataType">
+        <source xml:lang="en">SQL Data Type</source>
+        <target state="translated">SQL データ型</target>
+      </trans-unit>
+      <trans-unit id="mapping.SourceName">
+        <source xml:lang="en">Source</source>
+        <target state="translated">ソース</target>
+      </trans-unit>
+      <trans-unit id="tableFolderLabel">
+        <source xml:lang="en">Tables</source>
+        <target state="translated">テーブル</target>
+      </trans-unit>
+      <trans-unit id="warning.unsupported_column_type_description">
+        <source xml:lang="en">These column types are not supported for external tables:{0}{1}</source>
+        <target state="translated">これらの列の種類は次の外部テーブルではサポートされていません:{0}{1}</target>
+      </trans-unit>
+      <trans-unit id="warning.unsupported_column_type_title">
+        <source xml:lang="en">Unsupported Column Types found</source>
+        <target state="translated">サポートされていない列の種類が見つかりました</target>
+      </trans-unit>
+      <trans-unit id="viewFolderLabel">
+        <source xml:lang="en">Views</source>
+        <target state="translated">ビュー</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/selectDataSourcePage" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="noServerTypeError">
+        <source xml:lang="en">A data source type must be selected.</source>
+        <target state="translated">データ ソースの種類を選択する必要があります。</target>
+      </trans-unit>
+      <trans-unit id="noDestDatabaseError">
+        <source xml:lang="en">A destination database must be selected.</source>
+        <target state="translated">同期先データベースを選択する必要があります。</target>
+      </trans-unit>
+      <trans-unit id="defaultSourceType">
+        <source xml:lang="en">Default</source>
+        <target state="translated">既定</target>
+      </trans-unit>
+      <trans-unit id="selectDataSrcTitle">
+        <source xml:lang="en">Select a Data Source</source>
+        <target state="translated">データ ソースの選択</target>
+      </trans-unit>
+      <trans-unit id="destDBLabel">
+        <source xml:lang="en">Select the destination database for your external table</source>
+        <target state="translated">外部テーブルの宛先データベースを選択する</target>
+      </trans-unit>
+      <trans-unit id="sourceCardsLabel">
+        <source xml:lang="en">Select your data source type</source>
+        <target state="translated">データ ソースの種類を選択する</target>
+      </trans-unit>
+      <trans-unit id="destDBHelpText">
+        <source xml:lang="en">The database in which to create your External Data Source.</source>
+        <target state="translated">外部データ ソースを作成するデータベースです。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/summaryPage" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="summaryMasterKeyLabel">
+        <source xml:lang="en">Database Master Key</source>
+        <target state="translated">データベース マスター キー</target>
+      </trans-unit>
+      <trans-unit id="summaryCredLabel">
+        <source xml:lang="en">Database Scoped Credential</source>
+        <target state="translated">データベース スコープ資格情報</target>
+      </trans-unit>
+      <trans-unit id="summaryDestDb">
+        <source xml:lang="en">Destination Database:</source>
+        <target state="translated">転送先データベース:</target>
+      </trans-unit>
+      <trans-unit id="virtualizeTaskStart">
+        <source xml:lang="en">Executing script...</source>
+        <target state="translated">スクリプトを実行しています...</target>
+      </trans-unit>
+      <trans-unit id="summaryDataSrcLabel">
+        <source xml:lang="en">External Data Source</source>
+        <target state="translated">外部データ ソース</target>
+      </trans-unit>
+      <trans-unit id="summaryExternalTableLabel">
+        <source xml:lang="en">External Table</source>
+        <target state="translated">外部テーブル</target>
+      </trans-unit>
+      <trans-unit id="createSourceInfo">
+        <source xml:lang="en">External Table creation completed successfully</source>
+        <target state="translated">外部テーブルの作成が正常に完了しました</target>
+      </trans-unit>
+      <trans-unit id="createSourceError">
+        <source xml:lang="en">External Table creation failed</source>
+        <target state="translated">外部テーブルの作成に失敗しました</target>
+      </trans-unit>
+      <trans-unit id="summaryObjNameLabel">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名前</target>
+      </trans-unit>
+      <trans-unit id="summaryObjTypeLabel">
+        <source xml:lang="en">Object type</source>
+        <target state="translated">オブジェクトの種類</target>
+      </trans-unit>
+      <trans-unit id="summaryNewSchemaLabel">
+        <source xml:lang="en">Schema</source>
+        <target state="translated">スキーマ</target>
+      </trans-unit>
+      <trans-unit id="summaryPageTitle">
+        <source xml:lang="en">Summary</source>
+        <target state="translated">概要</target>
+      </trans-unit>
+      <trans-unit id="summaryTitle">
+        <source xml:lang="en">The following objects will be created in the destination database:</source>
+        <target state="translated">次のオブジェクトが宛先データベースに作成されます。</target>
+      </trans-unit>
+      <trans-unit id="virtualizeTaskLabel">
+        <source xml:lang="en">Virtualize Data</source>
+        <target state="translated">データの仮想化</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/virtualizeDataWizard" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="doneButtonLabel">
+        <source xml:lang="en">Create</source>
+        <target state="translated">作成</target>
+      </trans-unit>
+      <trans-unit id="openScriptMsg">
+        <source xml:lang="en">The script has opened in a document window. You can view it once the wizard is closed.</source>
+        <target state="translated">スクリプトがドキュメント ウィンドウで開きました。ウィザードが閉じられると表示できます。</target>
+      </trans-unit>
+      <trans-unit id="getExtDataTitle">
+        <source xml:lang="en">Virtualize Data</source>
+        <target state="translated">データの仮想化</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/wizardCommands" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="noConnection">
+        <source xml:lang="en">Data Virtualization requires a connection to be selected.</source>
+        <target state="translated">データ仮想化は、接続を選択する必要があります。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/package" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="title.datavirtualization">
+        <source xml:lang="en">Data Virtualization</source>
+        <target state="translated">データ仮想化</target>
+      </trans-unit>
+      <trans-unit id="config.logDebugInfo">
+        <source xml:lang="en">Enable/disable logging debug information to the developer console.</source>
+        <target state="translated">開発者コンソールへのデバッグ情報のログ記録を有効または無効にします。</target>
+      </trans-unit>
+      <trans-unit id="config.proseParsingMaxLines">
+        <source xml:lang="en">Number of lines to read from a file to run PROSE parsing on.</source>
+        <target state="translated">PROSE 解析を実行するファイルから読み取る行数。</target>
+      </trans-unit>
+      <trans-unit id="description.datavirtualization">
+        <source xml:lang="en">Support for Data Virtualization features in SQL Server</source>
+        <target state="translated">SQL Server でのデータ仮想化機能のサポート</target>
+      </trans-unit>
+      <trans-unit id="config.extensionDescription">
+        <source xml:lang="en">Support for Data Virtualization in SQL Server, including wizards for creating an External Table from an External Data Source or CSV files.</source>
+        <target state="translated">外部データ ソースまたは CSV ファイルから外部テーブルを作成するためのウィザードを含む、SQL Server でのデータ仮想化のサポート。</target>
+      </trans-unit>
+      <trans-unit id="title.tasks">
+        <source xml:lang="en">Tasks</source>
+        <target state="translated">タスク</target>
+      </trans-unit>
+      <trans-unit id="title.openVirtualizeDataWizard">
+        <source xml:lang="en">Virtualize Data</source>
+        <target state="translated">データの仮想化</target>
+      </trans-unit>
+      <trans-unit id="title.openMssqlHdfsTableWizard">
+        <source xml:lang="en">Virtualize Data From CSV Files</source>
+        <target state="translated">CSV ファイルからデータを仮想化する</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

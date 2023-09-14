@@ -1,0 +1,587 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/Microsoft.datavirtualization/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="externalTable.databaseNameTitle">
+        <source xml:lang="en">Database Name</source>
+        <target state="translated">Nombre de la base de datos</target>
+      </trans-unit>
+      <trans-unit id="externalTable.externalSchemaTitle">
+        <source xml:lang="en">External Schema</source>
+        <target state="translated">Esquema externo</target>
+      </trans-unit>
+      <trans-unit id="externalTable.externalTableTitle">
+        <source xml:lang="en">External Table</source>
+        <target state="translated">Tabla externa</target>
+      </trans-unit>
+      <trans-unit id="externalTable.hostnameTitle">
+        <source xml:lang="en">Hostname</source>
+        <target state="translated">Nombre de host</target>
+      </trans-unit>
+      <trans-unit id="msgMissingNodeContext">
+        <source xml:lang="en">Node Command called without any node passed</source>
+        <target state="translated">Se ha llamado al comando de nodo sin pasar ningún nodo</target>
+      </trans-unit>
+      <trans-unit id="sqlServerTypeName">
+        <source xml:lang="en">SQL Server</source>
+        <target state="translated">SQL Server</target>
+      </trans-unit>
+      <trans-unit id="externalTable.serverNameTitle">
+        <source xml:lang="en">Server Name</source>
+        <target state="translated">Nombre del servidor</target>
+      </trans-unit>
+      <trans-unit id="externalTable.serviceNameTitle">
+        <source xml:lang="en">Service name / SID</source>
+        <target state="translated">Nombre del servicio/SID</target>
+      </trans-unit>
+      <trans-unit id="externalTable.sourceSchemaTitle">
+        <source xml:lang="en">Source Schema</source>
+        <target state="translated">Esquema de origen</target>
+      </trans-unit>
+      <trans-unit id="externalTable.sourceTableTitle">
+        <source xml:lang="en">Source Table</source>
+        <target state="translated">Tabla de origen</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/services/serviceClient" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="downloadingServiceSize">
+        <source xml:lang="en">({0} KB)</source>
+        <target state="translated">({0} KB)</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceComplete">
+        <source xml:lang="en">Done downloading {0}</source>
+        <target state="translated">Descarga finalizada {0}</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceStatus">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">Descargando {0}</target>
+      </trans-unit>
+      <trans-unit id="downloadingService">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">Descargando {0}</target>
+      </trans-unit>
+      <trans-unit id="serviceStartFailed">
+        <source xml:lang="en">Failed to start {0}: {1}</source>
+        <target state="translated">No se pudo iniciar {0}: {1}</target>
+      </trans-unit>
+      <trans-unit id="serviceInstalled">
+        <source xml:lang="en">Installed {0}</source>
+        <target state="translated">Se instaló {0}</target>
+      </trans-unit>
+      <trans-unit id="installingService">
+        <source xml:lang="en">Installing {0}</source>
+        <target state="translated">Instalando {0}</target>
+      </trans-unit>
+      <trans-unit id="installingServiceDetailed">
+        <source xml:lang="en">Installing {0} to {1}</source>
+        <target state="translated">Instalando {0} en {1}</target>
+      </trans-unit>
+      <trans-unit id="serviceStarting">
+        <source xml:lang="en">Starting {0}...</source>
+        <target state="translated">Iniciando {0}...</target>
+      </trans-unit>
+      <trans-unit id="serviceStarted">
+        <source xml:lang="en">{0} started</source>
+        <target state="translated">Se inició {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/services/telemetry" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="serviceCrashButton">
+        <source xml:lang="en">View Known Issues</source>
+        <target state="translated">Ver problemas conocidos</target>
+      </trans-unit>
+      <trans-unit id="serviceCrashMessage">
+        <source xml:lang="en">service component could not start</source>
+        <target state="translated">el componente de servicio no se pudo iniciar</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/utils" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="executeCommandProcessExited">
+        <source xml:lang="en">Process exited with code {0}</source>
+        <target state="translated">Proceso cerrado con el código {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/tableFromFile/pages/fileConfigPage" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="tableFromFileImport.databaseDropdownTitle">
+        <source xml:lang="en">Database the external table will be created in</source>
+        <target state="translated">Base de datos en la que se creará la tabla externa</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.destConnTitle">
+        <source xml:lang="en">Destination Server</source>
+        <target state="translated">Servidor de destino</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.dataSourceDropdown">
+        <source xml:lang="en">External data source for new external table</source>
+        <target state="translated">Origen de datos externo para la nueva tabla externa</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.tableTextboxTitle">
+        <source xml:lang="en">Name for new external table </source>
+        <target state="translated">Nombre de la nueva tabla externa </target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.fileFormatTextboxTitle">
+        <source xml:lang="en">Name for new table's external file format</source>
+        <target state="translated">Nombre del formato de archivo externo de la nueva tabla</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.noSchemas">
+        <source xml:lang="en">No user schemas were found in the specified database.</source>
+        <target state="translated">No se encontraron esquemas de usuario en la base de datos especificada.</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.noDataSources">
+        <source xml:lang="en">No valid external data sources were found in the specified database.</source>
+        <target state="translated">No se encontraron orígenes de datos externos válidos en la base de datos especificada.</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.refreshButtonTitle">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">Actualizar</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.schemaTextboxTitle">
+        <source xml:lang="en">Schema for new external table</source>
+        <target state="translated">Esquema para nueva tabla externa</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.fileTextboxTitle">
+        <source xml:lang="en">Source File</source>
+        <target state="translated">Archivo de origen</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.folderTextboxTitle">
+        <source xml:lang="en">Source Folder</source>
+        <target state="translated">Carpeta de origen</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.fileFormatExists">
+        <source xml:lang="en">The specified external file format name already exists.</source>
+        <target state="translated">El nombre de formato de archivo externo especificado ya existe.</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.tableExists">
+        <source xml:lang="en">The specified table name already exists under the specified schema.</source>
+        <target state="translated">El nombre de tabla especificado ya existe en el esquema especificado.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/tableFromFile/pages/modifyColumnsPage" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="tableFromFileImport.allowNulls">
+        <source xml:lang="en">Allow Nulls</source>
+        <target state="translated">Permitir NULL</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.columnName">
+        <source xml:lang="en">Column Name</source>
+        <target state="translated">Nombre de columna</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.dataType">
+        <source xml:lang="en">Data Type</source>
+        <target state="translated">Tipo de datos</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/tableFromFile/pages/prosePreviewPage" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="tableFromFileImport.noProseInfo">
+        <source xml:lang="en">Failed to generate column information for the specified file.</source>
+        <target state="translated">No se pudo generar la información de columna para el archivo especificado.</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.noPreviewData">
+        <source xml:lang="en">Failed to retrieve any data from the specified file.</source>
+        <target state="translated">No se pudieron recuperar los datos del archivo especificado.</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.prosePreviewMessage">
+        <source xml:lang="en">This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.</source>
+        <target state="translated">Esta operación analizó la estructura del archivo de entrada para generar la vista previa siguiente para las primeras 50 filas.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/tableFromFile/pages/summaryPage" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="tableFromFileImport.importInformation">
+        <source xml:lang="en">Data Virtualization information</source>
+        <target state="translated">Información de virtualización de datos</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.databaseName">
+        <source xml:lang="en">Database name</source>
+        <target state="translated">Nombre de la base de datos</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.fileFormat">
+        <source xml:lang="en">File format name</source>
+        <target state="translated">Nombre del formato de archivo</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.next">
+        <source xml:lang="en">Next</source>
+        <target state="translated">Siguiente</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.serverName">
+        <source xml:lang="en">Server name</source>
+        <target state="translated">Nombre del servidor</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.summaryFileName">
+        <source xml:lang="en">Source File</source>
+        <target state="translated">Archivo de origen</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.summaryFolderName">
+        <source xml:lang="en">Source Folder</source>
+        <target state="translated">Carpeta de origen</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.tableName">
+        <source xml:lang="en">Table name</source>
+        <target state="translated">Nombre de la tabla</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.tableSchema">
+        <source xml:lang="en">Table schema</source>
+        <target state="translated">Esquema de tabla</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.importData">
+        <source xml:lang="en">Virtualize Data</source>
+        <target state="translated">Virtualizar datos</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/tableFromFile/tableFromFileWizard" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="tableFromFileImport.onlyCsvSupported">
+        <source xml:lang="en">Currently only csv files are supported for this wizard.</source>
+        <target state="translated">Actualmente solo se admiten archivos CSV para este asistente.</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.page2Name">
+        <source xml:lang="en">Modify Columns</source>
+        <target state="translated">Modificar columnas</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.noCsvFileFound">
+        <source xml:lang="en">No csv files were found in the specified folder.</source>
+        <target state="translated">No se encontraron archivos CSV en la carpeta especificada.</target>
+      </trans-unit>
+      <trans-unit id="import.needFile">
+        <source xml:lang="en">Please select a source file or folder before using this wizard.</source>
+        <target state="translated">Seleccione un archivo o carpeta de origen antes de usar este asistente.</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.page1Name">
+        <source xml:lang="en">Preview Data</source>
+        <target state="translated">Vista previa de datos</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.page0Name">
+        <source xml:lang="en">Select the destination database for your external table</source>
+        <target state="translated">Selección de la base de datos de destino para la tabla externa</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.page3Name">
+        <source xml:lang="en">Summary</source>
+        <target state="translated">Resumen</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.openScriptMsg">
+        <source xml:lang="en">The script has opened in a document window. You can view it once the wizard is closed.</source>
+        <target state="translated">El script se ha abierto en una ventana de documento. Puede verlo una vez cerrado el asistente.</target>
+      </trans-unit>
+      <trans-unit id="tableFromFile.taskLabel">
+        <source xml:lang="en">Virtualize Data</source>
+        <target state="translated">Virtualizar datos</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.wizardName">
+        <source xml:lang="en">Virtualize Data From CSV</source>
+        <target state="translated">Virtualización de datos desde CSV</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/connectionDetailsPage" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="newCredOption">
+        <source xml:lang="en">-- Create New Credential --</source>
+        <target state="translated">-- Crear nueva credencial --</target>
+      </trans-unit>
+      <trans-unit id="credentialNameDropdown">
+        <source xml:lang="en">Choose Credential</source>
+        <target state="translated">Elegir credencial</target>
+      </trans-unit>
+      <trans-unit id="credentialFields">
+        <source xml:lang="en">Configure Credential</source>
+        <target state="translated">Configurar credenciales</target>
+      </trans-unit>
+      <trans-unit id="connectionDetailsTitle">
+        <source xml:lang="en">Create a connection to your Data Source</source>
+        <target state="translated">Crear una conexión al origen de datos</target>
+      </trans-unit>
+      <trans-unit id="sourceNameInput">
+        <source xml:lang="en">External Data Source Name</source>
+        <target state="translated">Nombre del origen de datos externo</target>
+      </trans-unit>
+      <trans-unit id="credentialNameInput">
+        <source xml:lang="en">New Credential Name</source>
+        <target state="translated">Nuevo nombre de credencial</target>
+      </trans-unit>
+      <trans-unit id="passwordInput">
+        <source xml:lang="en">Password</source>
+        <target state="translated">Contraseña</target>
+      </trans-unit>
+      <trans-unit id="serverFields">
+        <source xml:lang="en">Server Connection</source>
+        <target state="translated">Conexión de servidor</target>
+      </trans-unit>
+      <trans-unit id="dataSourceHelpText">
+        <source xml:lang="en">The name for your External Data Source.</source>
+        <target state="translated">Nombre del origen de datos externo.</target>
+      </trans-unit>
+      <trans-unit id="credNameHelpText">
+        <source xml:lang="en">The name of the Database Scoped Credential used to securely store the login information for the External Data Source you are creating.</source>
+        <target state="translated">Nombre de la credencial con ámbito de base de datos que se usa para almacenar de forma segura la información de inicio de sesión del origen de datos externo que está creando.</target>
+      </trans-unit>
+      <trans-unit id="usernameInput">
+        <source xml:lang="en">Username</source>
+        <target state="translated">Nombre de usuario</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/createMasterKeyPage" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="masterKeyExistsMsg">
+        <source xml:lang="en">A Master Key already exists for the selected database. No action is required on this page.</source>
+        <target state="translated">Ya existe una clave maestra para la base de datos seleccionada. No se requiere ninguna acción en esta página.</target>
+      </trans-unit>
+      <trans-unit id="createMasterKeyDescription">
+        <source xml:lang="en">A master key is required. This secures the credentials used by an External Data Source. Note that you should back up the master key by using BACKUP MASTER KEY and store the backup in a secure, off-site location.</source>
+        <target state="translated">Se requiere una clave maestra. Esto protege las credenciales utilizadas por una fuente de datos externa. Tenga en cuenta que debe hacer una copia de seguridad de la clave maestra usando BACKUP MASTER KEY y almacenar la copia de seguridad en una ubicación segura fuera del sitio.</target>
+      </trans-unit>
+      <trans-unit id="masterKeyPasswordConfirmInput">
+        <source xml:lang="en">Confirm Password</source>
+        <target state="translated">Confirmar contraseña</target>
+      </trans-unit>
+      <trans-unit id="createMasterKeyTitle">
+        <source xml:lang="en">Create Database Master Key</source>
+        <target state="translated">Crear clave maestra de base de datos</target>
+      </trans-unit>
+      <trans-unit id="masterKeyPasswordInput">
+        <source xml:lang="en">Password</source>
+        <target state="translated">Contraseña</target>
+      </trans-unit>
+      <trans-unit id="passwordMismatchWithConfirmError">
+        <source xml:lang="en">Password values do not match.</source>
+        <target state="translated">Los valores de contraseña no coinciden.</target>
+      </trans-unit>
+      <trans-unit id="masterKeyPasswordLabel">
+        <source xml:lang="en">Set the Master Key password.</source>
+        <target state="translated">Establecer la contraseña de la clave maestra.</target>
+      </trans-unit>
+      <trans-unit id="pwdReminderText">
+        <source xml:lang="en">Strong passwords use a combination of alphanumeric, upper, lower, and special characters.</source>
+        <target state="translated">Las contraseñas seguras usan una combinación de caracteres alfanuméricos, superiores, inferiores y especiales.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/objectMappingPage" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="mappingTableCheckboxHelpText">
+        <source xml:lang="en">Clicking on the checkbox will select that table to be mapped.</source>
+        <target state="translated">Al hacer clic en la casilla, se seleccionará la tabla que se va a asignar.</target>
+      </trans-unit>
+      <trans-unit id="mappingTableHelpText">
+        <source xml:lang="en">Clicking on the table name will show you the column mapping information for that table.</source>
+        <target state="translated">Al hacer clic en el nombre de la tabla, se mostrará la información de asignación de columnas para esa tabla.</target>
+      </trans-unit>
+      <trans-unit id="mapping.collations">
+        <source xml:lang="en">Collations</source>
+        <target state="translated">Intercalaciones</target>
+      </trans-unit>
+      <trans-unit id="externalTableMappingLabel">
+        <source xml:lang="en">Column Mapping</source>
+        <target state="translated">Asignación de columnas</target>
+      </trans-unit>
+      <trans-unit id="mapping.externalName">
+        <source xml:lang="en">External</source>
+        <target state="translated">Externo</target>
+      </trans-unit>
+      <trans-unit id="objectMappingTitle">
+        <source xml:lang="en">Map your data source objects to your external table</source>
+        <target state="translated">Asignar los objetos de origen de datos a la tabla externa</target>
+      </trans-unit>
+      <trans-unit id="noObjectSelectedMessage">
+        <source xml:lang="en">No objects were selected.</source>
+        <target state="translated">No se seleccionó ningún objeto.</target>
+      </trans-unit>
+      <trans-unit id="noTableError">
+        <source xml:lang="en">No table information present for '{0}'</source>
+        <target state="translated">No hay información de tabla presente para "{0}"</target>
+      </trans-unit>
+      <trans-unit id="mapping.nullable">
+        <source xml:lang="en">Nullable</source>
+        <target state="translated">Acepta valores NULL</target>
+      </trans-unit>
+      <trans-unit id="mapping.sqlDataType">
+        <source xml:lang="en">SQL Data Type</source>
+        <target state="translated">Tipo de datos SQL</target>
+      </trans-unit>
+      <trans-unit id="mapping.SourceName">
+        <source xml:lang="en">Source</source>
+        <target state="translated">Origen</target>
+      </trans-unit>
+      <trans-unit id="tableFolderLabel">
+        <source xml:lang="en">Tables</source>
+        <target state="translated">Tablas</target>
+      </trans-unit>
+      <trans-unit id="warning.unsupported_column_type_description">
+        <source xml:lang="en">These column types are not supported for external tables:{0}{1}</source>
+        <target state="translated">Estos tipos de columna no se admiten para tablas externas:{0}{1}</target>
+      </trans-unit>
+      <trans-unit id="warning.unsupported_column_type_title">
+        <source xml:lang="en">Unsupported Column Types found</source>
+        <target state="translated">Se encontraron tipos de columna no admitidos</target>
+      </trans-unit>
+      <trans-unit id="viewFolderLabel">
+        <source xml:lang="en">Views</source>
+        <target state="translated">Vistas</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/selectDataSourcePage" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="noServerTypeError">
+        <source xml:lang="en">A data source type must be selected.</source>
+        <target state="translated">Debe seleccionarse un tipo de origen de datos.</target>
+      </trans-unit>
+      <trans-unit id="noDestDatabaseError">
+        <source xml:lang="en">A destination database must be selected.</source>
+        <target state="translated">Debe seleccionarse una base de datos de destino.</target>
+      </trans-unit>
+      <trans-unit id="defaultSourceType">
+        <source xml:lang="en">Default</source>
+        <target state="translated">Valor predeterminado</target>
+      </trans-unit>
+      <trans-unit id="selectDataSrcTitle">
+        <source xml:lang="en">Select a Data Source</source>
+        <target state="translated">Seleccionar un origen de datos</target>
+      </trans-unit>
+      <trans-unit id="destDBLabel">
+        <source xml:lang="en">Select the destination database for your external table</source>
+        <target state="translated">Selección de la base de datos de destino para la tabla externa</target>
+      </trans-unit>
+      <trans-unit id="sourceCardsLabel">
+        <source xml:lang="en">Select your data source type</source>
+        <target state="translated">Seleccionar el tipo de origen de datos</target>
+      </trans-unit>
+      <trans-unit id="destDBHelpText">
+        <source xml:lang="en">The database in which to create your External Data Source.</source>
+        <target state="translated">Base de datos en la que se va a crear el origen de datos externo.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/summaryPage" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="summaryMasterKeyLabel">
+        <source xml:lang="en">Database Master Key</source>
+        <target state="translated">Clave maestra de base de datos</target>
+      </trans-unit>
+      <trans-unit id="summaryCredLabel">
+        <source xml:lang="en">Database Scoped Credential</source>
+        <target state="translated">Credencial de ámbito de base de datos</target>
+      </trans-unit>
+      <trans-unit id="summaryDestDb">
+        <source xml:lang="en">Destination Database:</source>
+        <target state="translated">Base de datos de destino:</target>
+      </trans-unit>
+      <trans-unit id="virtualizeTaskStart">
+        <source xml:lang="en">Executing script...</source>
+        <target state="translated">Ejecutando script...</target>
+      </trans-unit>
+      <trans-unit id="summaryDataSrcLabel">
+        <source xml:lang="en">External Data Source</source>
+        <target state="translated">Origen de datos externo</target>
+      </trans-unit>
+      <trans-unit id="summaryExternalTableLabel">
+        <source xml:lang="en">External Table</source>
+        <target state="translated">Tabla externa</target>
+      </trans-unit>
+      <trans-unit id="createSourceInfo">
+        <source xml:lang="en">External Table creation completed successfully</source>
+        <target state="translated">La creación de la tabla externa se completó correctamente</target>
+      </trans-unit>
+      <trans-unit id="createSourceError">
+        <source xml:lang="en">External Table creation failed</source>
+        <target state="translated">Error al crear la tabla externa</target>
+      </trans-unit>
+      <trans-unit id="summaryObjNameLabel">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Nombre</target>
+      </trans-unit>
+      <trans-unit id="summaryObjTypeLabel">
+        <source xml:lang="en">Object type</source>
+        <target state="translated">Tipo de objeto</target>
+      </trans-unit>
+      <trans-unit id="summaryNewSchemaLabel">
+        <source xml:lang="en">Schema</source>
+        <target state="translated">Esquema</target>
+      </trans-unit>
+      <trans-unit id="summaryPageTitle">
+        <source xml:lang="en">Summary</source>
+        <target state="translated">Resumen</target>
+      </trans-unit>
+      <trans-unit id="summaryTitle">
+        <source xml:lang="en">The following objects will be created in the destination database:</source>
+        <target state="translated">Se crearán los siguientes objetos en la base de datos de destino:</target>
+      </trans-unit>
+      <trans-unit id="virtualizeTaskLabel">
+        <source xml:lang="en">Virtualize Data</source>
+        <target state="translated">Virtualizar datos</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/virtualizeDataWizard" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="doneButtonLabel">
+        <source xml:lang="en">Create</source>
+        <target state="translated">Crear</target>
+      </trans-unit>
+      <trans-unit id="openScriptMsg">
+        <source xml:lang="en">The script has opened in a document window. You can view it once the wizard is closed.</source>
+        <target state="translated">El script se ha abierto en una ventana de documento. Puede verlo una vez cerrado el asistente.</target>
+      </trans-unit>
+      <trans-unit id="getExtDataTitle">
+        <source xml:lang="en">Virtualize Data</source>
+        <target state="translated">Virtualizar datos</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/wizardCommands" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="noConnection">
+        <source xml:lang="en">Data Virtualization requires a connection to be selected.</source>
+        <target state="translated">La virtualización de datos requiere que se seleccione una conexión.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/package" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="title.datavirtualization">
+        <source xml:lang="en">Data Virtualization</source>
+        <target state="translated">Virtualización de datos</target>
+      </trans-unit>
+      <trans-unit id="config.logDebugInfo">
+        <source xml:lang="en">Enable/disable logging debug information to the developer console.</source>
+        <target state="translated">Habilitar o deshabilitar el registro de información de depuración en la consola del desarrollador.</target>
+      </trans-unit>
+      <trans-unit id="config.proseParsingMaxLines">
+        <source xml:lang="en">Number of lines to read from a file to run PROSE parsing on.</source>
+        <target state="translated">Número de líneas para leer de un archivo en el que se va a ejecutar el análisis de PROSE.</target>
+      </trans-unit>
+      <trans-unit id="description.datavirtualization">
+        <source xml:lang="en">Support for Data Virtualization features in SQL Server</source>
+        <target state="translated">Compatibilidad con las características de virtualización de datos en SQL Server</target>
+      </trans-unit>
+      <trans-unit id="config.extensionDescription">
+        <source xml:lang="en">Support for Data Virtualization in SQL Server, including wizards for creating an External Table from an External Data Source or CSV files.</source>
+        <target state="translated">Compatibilidad con la virtualización de datos en SQL Server, incluidos los asistentes para crear una tabla externa a partir de una fuente de datos externa o archivos CSV.</target>
+      </trans-unit>
+      <trans-unit id="title.tasks">
+        <source xml:lang="en">Tasks</source>
+        <target state="translated">Tareas</target>
+      </trans-unit>
+      <trans-unit id="title.openVirtualizeDataWizard">
+        <source xml:lang="en">Virtualize Data</source>
+        <target state="translated">Virtualizar datos</target>
+      </trans-unit>
+      <trans-unit id="title.openMssqlHdfsTableWizard">
+        <source xml:lang="en">Virtualize Data From CSV Files</source>
+        <target state="translated">Virtualizar datos de archivos CSV</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
