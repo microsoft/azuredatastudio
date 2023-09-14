@@ -1,3 +1,11 @@
+variables:
+  - name: Codeql.enabled
+    value: true
+  - name: Codeql.TSAEnabled
+    value: true
+  - name: Codeql.TSAOptionsPath
+    value: '$(Build.SourcesDirectory)\build\azure-pipelines\config\tsaoptions.json'
+
 steps:
   - task: NodeTool@0
     inputs:
@@ -40,6 +48,10 @@ steps:
       exec { git config --global http.postBuffer 524288000 }
       exec { git config --global https.postBuffer 524288000 }
     displayName: Prepare tooling
+
+  - task: CodeQL3000Init@0
+    displayName: CodeQL Initialize
+    condition: eq(variables['Codeql.enabled'], 'True')
 
   - powershell: |
       git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
