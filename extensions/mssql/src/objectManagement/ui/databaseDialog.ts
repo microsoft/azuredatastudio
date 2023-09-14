@@ -958,7 +958,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}).component();
 		const addButtonComponent: DialogButton = {
 			buttonAriaLabel: localizedConstants.AddFilegroupText,
-			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.memoryOptimizedFilegroupsTable)
+			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.memoryOptimizedFilegroupsTable),
+			enabled: this.memoryoptimizedFileGroupsTableRows.length < 1
 		};
 		const removeButtonComponent: DialogButton = {
 			buttonAriaLabel: localizedConstants.RemoveButton,
@@ -982,6 +983,19 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.memoryOptimizedTableSelectedRow = selectedRow.row;
 		}));
 		return this.createGroup(localizedConstants.MemoryOptimizedFileGroupsSectionText, [this.memoryOptimizedFilegroupsTable, memoryOptimizedFileGroupButtonContainer], true);
+	}
+
+	/**
+	 * Overrides declarative table add button enabled/disabled state
+	 * @param table table component
+	 * @returns table add button enabled/disabled state
+	 */
+	public override addButtonEnabled(table: azdata.TableComponent | azdata.DeclarativeTableComponent): boolean {
+		let enabled = true;
+		if (table === this.memoryOptimizedFilegroupsTable) {
+			enabled = this.memoryoptimizedFileGroupsTableRows.length < 1;
+		}
+		return enabled;
 	}
 
 	/**

@@ -24,7 +24,8 @@ export function getTableHeight(rowCount: number, minRowCount: number = DefaultMi
 
 export interface DialogButton {
 	buttonAriaLabel: string;
-	buttonHandler: (button: azdata.ButtonComponent) => Promise<void>
+	buttonHandler: (button: azdata.ButtonComponent) => Promise<void>;
+	enabled?: boolean;
 }
 
 export type TableListItemEnabledStateGetter<T> = (item: T) => boolean;
@@ -79,6 +80,8 @@ export abstract class DialogBase<DialogResult> {
 	protected onFormFieldChange(): void { }
 
 	protected removeButtonEnabled(table: azdata.TableComponent | azdata.DeclarativeTableComponent): boolean { return true; }
+
+	protected addButtonEnabled(table: azdata.TableComponent | azdata.DeclarativeTableComponent): boolean { return true; }
 
 	protected validateInput(): Promise<string[]> { return Promise.resolve([]); }
 
@@ -341,13 +344,13 @@ export abstract class DialogBase<DialogResult> {
 		let buttonComponents: azdata.ButtonComponent[] = [];
 		const updateButtons = (isRemoveEnabled: boolean = undefined) => {
 			this.onFormFieldChange();
+			addButtonComponent.enabled = this.addButtonEnabled(table);
 			removeButtonComponent.enabled = !!isRemoveEnabled;
 		}
-
 		addButtonComponent = this.createButton(uiLoc.AddText, addbutton.buttonAriaLabel, async () => {
 			await addbutton.buttonHandler(addButtonComponent);
 			updateButtons();
-		});
+		}, addbutton.enabled ?? true);
 		buttonComponents.push(addButtonComponent);
 
 		removeButtonComponent = this.createButton(uiLoc.RemoveText, removeButton.buttonAriaLabel, async () => {
