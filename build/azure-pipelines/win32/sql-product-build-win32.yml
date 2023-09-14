@@ -42,10 +42,6 @@ steps:
     displayName: Prepare tooling
 
   - task: CodeQL3000Init@0
-    variables:
-      Codeql.enabled: true
-      Codeql.TSAEnabled: true
-      Codeql.TSAOptionsPath: '$(Build.SourcesDirectory)\build\azure-pipelines\config\tsaoptions.json'
     displayName: CodeQL Initialize
     condition: eq(variables['Codeql.enabled'], 'True')
 
