@@ -2,7 +2,7 @@
 	"name": "ads-language-pack-de",
 	"displayName": "German Language Pack for Azure Data Studio",
 	"description": "Language pack extension for German",
-	"version": "1.45.0",
+	"version": "1.46.0",
 	"publisher": "Microsoft",
 	"repository": {
 		"type": "git",
@@ -11,7 +11,7 @@
 	"license": "SEE SOURCE EULA LICENSE IN LICENSE.txt",
 	"engines": {
 		"vscode": "*",
-		"azdata": "^1.45.0"
+		"azdata": "^1.46.0"
 	},
 	"icon": "languagepack.png",
 	"categories": [
@@ -32,6 +32,114 @@
 						"path": "./translations/main.i18n.json"
 					},
 					{
+						"id": "vscode.git",
+						"path": "./translations/extensions/vscode.git.i18n.json"
+					},
+					{
+						"id": "Microsoft.admin-tool-ext-win",
+						"path": "./translations/extensions/Microsoft.admin-tool-ext-win.i18n.json"
+					},
+					{
+						"id": "Microsoft.agent",
+						"path": "./translations/extensions/Microsoft.agent.i18n.json"
+					},
+					{
+						"id": "Microsoft.arc",
+						"path": "./translations/extensions/Microsoft.arc.i18n.json"
+					},
+					{
+						"id": "Microsoft.asde-deployment",
+						"path": "./translations/extensions/Microsoft.asde-deployment.i18n.json"
+					},
+					{
+						"id": "Microsoft.azcli",
+						"path": "./translations/extensions/Microsoft.azcli.i18n.json"
+					},
+					{
+						"id": "Microsoft.azurecore",
+						"path": "./translations/extensions/Microsoft.azurecore.i18n.json"
+					},
+					{
+						"id": "Microsoft.azuremonitor",
+						"path": "./translations/extensions/Microsoft.azuremonitor.i18n.json"
+					},
+					{
+						"id": "Microsoft.cms",
+						"path": "./translations/extensions/Microsoft.cms.i18n.json"
+					},
+					{
+						"id": "Microsoft.dacpac",
+						"path": "./translations/extensions/Microsoft.dacpac.i18n.json"
+					},
+					{
+						"id": "Microsoft.data-workspace",
+						"path": "./translations/extensions/Microsoft.data-workspace.i18n.json"
+					},
+					{
+						"id": "Microsoft.datavirtualization",
+						"path": "./translations/extensions/Microsoft.datavirtualization.i18n.json"
+					},
+					{
+						"id": "Microsoft.import",
+						"path": "./translations/extensions/Microsoft.import.i18n.json"
+					},
+					{
+						"id": "Microsoft.kusto",
+						"path": "./translations/extensions/Microsoft.kusto.i18n.json"
+					},
+					{
+						"id": "Microsoft.machine-learning",
+						"path": "./translations/extensions/Microsoft.machine-learning.i18n.json"
+					},
+					{
+						"id": "Microsoft.mssql",
+						"path": "./translations/extensions/Microsoft.mssql.i18n.json"
+					},
+					{
+						"id": "Microsoft.notebook",
+						"path": "./translations/extensions/Microsoft.notebook.i18n.json"
+					},
+					{
+						"id": "Microsoft.profiler",
+						"path": "./translations/extensions/Microsoft.profiler.i18n.json"
+					},
+					{
+						"id": "Microsoft.query-history",
+						"path": "./translations/extensions/Microsoft.query-history.i18n.json"
+					},
+					{
+						"id": "Microsoft.query-store",
+						"path": "./translations/extensions/Microsoft.query-store.i18n.json"
+					},
+					{
+						"id": "Microsoft.resource-deployment",
+						"path": "./translations/extensions/Microsoft.resource-deployment.i18n.json"
+					},
+					{
+						"id": "Microsoft.schema-compare",
+						"path": "./translations/extensions/Microsoft.schema-compare.i18n.json"
+					},
+					{
+						"id": "Microsoft.server-report",
+						"path": "./translations/extensions/Microsoft.server-report.i18n.json"
+					},
+					{
+						"id": "Microsoft.sql-assessment",
+						"path": "./translations/extensions/Microsoft.sql-assessment.i18n.json"
+					},
+					{
+						"id": "Microsoft.sql-database-projects",
+						"path": "./translations/extensions/Microsoft.sql-database-projects.i18n.json"
+					},
+					{
+						"id": "Microsoft.sql-migration",
+						"path": "./translations/extensions/Microsoft.sql-migration.i18n.json"
+					},
+					{
+						"id": "ms-mssql.sql-bindings-vscode",
+						"path": "./translations/extensions/ms-mssql.sql-bindings-vscode.i18n.json"
+					},
+					{
 						"id": "vscode.bat",
 						"path": "./translations/extensions/vscode.bat.i18n.json"
 					},
@@ -50,10 +158,6 @@
 					{
 						"id": "vscode.git-base",
 						"path": "./translations/extensions/vscode.git-base.i18n.json"
-					},
-					{
-						"id": "vscode.git",
-						"path": "./translations/extensions/vscode.git.i18n.json"
 					},
 					{
 						"id": "vscode.github-authentication",
@@ -174,98 +278,6 @@
 					{
 						"id": "vscode.yaml",
 						"path": "./translations/extensions/vscode.yaml.i18n.json"
-					},
-					{
-						"id": "Microsoft.admin-tool-ext-win",
-						"path": "./translations/extensions/admin-tool-ext-win.i18n.json"
-					},
-					{
-						"id": "Microsoft.agent",
-						"path": "./translations/extensions/agent.i18n.json"
-					},
-					{
-						"id": "Microsoft.arc",
-						"path": "./translations/extensions/arc.i18n.json"
-					},
-					{
-						"id": "Microsoft.asde-deployment",
-						"path": "./translations/extensions/asde-deployment.i18n.json"
-					},
-					{
-						"id": "Microsoft.azcli",
-						"path": "./translations/extensions/azcli.i18n.json"
-					},
-					{
-						"id": "Microsoft.azurecore",
-						"path": "./translations/extensions/azurecore.i18n.json"
-					},
-					{
-						"id": "Microsoft.cms",
-						"path": "./translations/extensions/cms.i18n.json"
-					},
-					{
-						"id": "Microsoft.dacpac",
-						"path": "./translations/extensions/dacpac.i18n.json"
-					},
-					{
-						"id": "Microsoft.data-workspace",
-						"path": "./translations/extensions/data-workspace.i18n.json"
-					},
-					{
-						"id": "Microsoft.import",
-						"path": "./translations/extensions/import.i18n.json"
-					},
-					{
-						"id": "Microsoft.kusto",
-						"path": "./translations/extensions/kusto.i18n.json"
-					},
-					{
-						"id": "Microsoft.machine-learning",
-						"path": "./translations/extensions/machine-learning.i18n.json"
-					},
-					{
-						"id": "Microsoft.mssql",
-						"path": "./translations/extensions/mssql.i18n.json"
-					},
-					{
-						"id": "Microsoft.notebook",
-						"path": "./translations/extensions/notebook.i18n.json"
-					},
-					{
-						"id": "Microsoft.profiler",
-						"path": "./translations/extensions/profiler.i18n.json"
-					},
-					{
-						"id": "Microsoft.query-history",
-						"path": "./translations/extensions/query-history.i18n.json"
-					},
-					{
-						"id": "Microsoft.resource-deployment",
-						"path": "./translations/extensions/resource-deployment.i18n.json"
-					},
-					{
-						"id": "Microsoft.schema-compare",
-						"path": "./translations/extensions/schema-compare.i18n.json"
-					},
-					{
-						"id": "Microsoft.server-report",
-						"path": "./translations/extensions/server-report.i18n.json"
-					},
-					{
-						"id": "Microsoft.sql-assessment",
-						"path": "./translations/extensions/sql-assessment.i18n.json"
-					},
-					{
-						"id": "Microsoft.sql-database-projects",
-						"path": "./translations/extensions/sql-database-projects.i18n.json"
-					},
-					{
-						"id": "Microsoft.sql-migration",
-						"path": "./translations/extensions/sql-migration.i18n.json"
-					},
-					{
-						"id": "Microsoft.xml-language-features",
-						"path": "./translations/extensions/xml-language-features.i18n.json"
 					}
 				]
 			}

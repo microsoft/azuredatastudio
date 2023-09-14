@@ -1585,6 +1585,58 @@ Comandi predefiniti ignorati:
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/common/backup/constants" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="backup.asymmetricKey">
+        <source xml:lang="en">Asymmetric Key</source>
+        <target state="translated">Chiave asimmetrica</target>
+      </trans-unit>
+      <trans-unit id="backup.compressBackup">
+        <source xml:lang="en">Compress backup</source>
+        <target state="translated">Comprimi il backup</target>
+      </trans-unit>
+      <trans-unit id="backup.defaultCompression">
+        <source xml:lang="en">Use the default server setting</source>
+        <target state="translated">Usa l'impostazione predefinita del server</target>
+      </trans-unit>
+      <trans-unit id="backup.doNotCompress">
+        <source xml:lang="en">Do not compress backup</source>
+        <target state="translated">Non comprimere il backup</target>
+      </trans-unit>
+      <trans-unit id="backup.labelDatabase">
+        <source xml:lang="en">Database</source>
+        <target state="translated">Database</target>
+      </trans-unit>
+      <trans-unit id="backup.labelDifferential">
+        <source xml:lang="en">Differential</source>
+        <target state="translated">Differenziale</target>
+      </trans-unit>
+      <trans-unit id="backup.labelDisk">
+        <source xml:lang="en">Disk</source>
+        <target state="translated">Disco</target>
+      </trans-unit>
+      <trans-unit id="backup.labelFilegroup">
+        <source xml:lang="en">Files and filegroups</source>
+        <target state="translated">File e filegroup</target>
+      </trans-unit>
+      <trans-unit id="backup.labelFull">
+        <source xml:lang="en">Full</source>
+        <target state="translated">Completo</target>
+      </trans-unit>
+      <trans-unit id="backup.labelLog">
+        <source xml:lang="en">Transaction Log</source>
+        <target state="translated">Log delle transazioni</target>
+      </trans-unit>
+      <trans-unit id="backup.labelUrl">
+        <source xml:lang="en">Url</source>
+        <target state="translated">URL</target>
+      </trans-unit>
+      <trans-unit id="backup.serverCertificate">
+        <source xml:lang="en">Server Certificate</source>
+        <target state="translated">Certificato del server</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/common/constants" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="notebookMultipleRequestsError">
@@ -2033,58 +2085,6 @@ Comandi predefiniti ignorati:
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/backup/common/constants" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="backup.asymmetricKey">
-        <source xml:lang="en">Asymmetric Key</source>
-        <target state="translated">Chiave asimmetrica</target>
-      </trans-unit>
-      <trans-unit id="backup.compressBackup">
-        <source xml:lang="en">Compress backup</source>
-        <target state="translated">Comprimi il backup</target>
-      </trans-unit>
-      <trans-unit id="backup.defaultCompression">
-        <source xml:lang="en">Use the default server setting</source>
-        <target state="translated">Usa l'impostazione predefinita del server</target>
-      </trans-unit>
-      <trans-unit id="backup.doNotCompress">
-        <source xml:lang="en">Do not compress backup</source>
-        <target state="translated">Non comprimere il backup</target>
-      </trans-unit>
-      <trans-unit id="backup.labelDatabase">
-        <source xml:lang="en">Database</source>
-        <target state="translated">Database</target>
-      </trans-unit>
-      <trans-unit id="backup.labelDifferential">
-        <source xml:lang="en">Differential</source>
-        <target state="translated">Differenziale</target>
-      </trans-unit>
-      <trans-unit id="backup.labelDisk">
-        <source xml:lang="en">Disk</source>
-        <target state="translated">Disco</target>
-      </trans-unit>
-      <trans-unit id="backup.labelFilegroup">
-        <source xml:lang="en">Files and filegroups</source>
-        <target state="translated">File e filegroup</target>
-      </trans-unit>
-      <trans-unit id="backup.labelFull">
-        <source xml:lang="en">Full</source>
-        <target state="translated">Completo</target>
-      </trans-unit>
-      <trans-unit id="backup.labelLog">
-        <source xml:lang="en">Transaction Log</source>
-        <target state="translated">Log delle transazioni</target>
-      </trans-unit>
-      <trans-unit id="backup.labelUrl">
-        <source xml:lang="en">Url</source>
-        <target state="translated">URL</target>
-      </trans-unit>
-      <trans-unit id="backup.serverCertificate">
-        <source xml:lang="en">Server Certificate</source>
-        <target state="translated">Certificato del server</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="src/sql/workbench/contrib/charts/browser/actions" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="chartNotFound">
@@ -2317,7 +2317,7 @@ Comandi predefiniti ignorati:
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/commandLine/electron-browser/commandLine" source-language="en" datatype="plaintext" target-language="it">
+  <file original="src/sql/workbench/contrib/commandLine/electron-sandbox/commandLine" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="commandline.propertiesFormatError">
         <source xml:lang="en">Advanced connection properties could not be parsed as JSON, error occurred: {0} Received properties value: {1}</source>
@@ -3491,9 +3491,9 @@ Comandi predefiniti ignorati:
         <source xml:lang="en">Dispose Edit Failed With Error: </source>
         <target state="translated">Modifica del metodo Dispose non riuscita. Errore: </target>
       </trans-unit>
-      <trans-unit id="editData.closeSql">
-        <source xml:lang="en">Close SQL Pane</source>
-        <target state="translated">Chiudi riquadro SQL</target>
+      <trans-unit id="editData.hideSql">
+        <source xml:lang="en">Hide SQL Pane</source>
+        <target state="translated">Nascondi riquadro SQL</target>
       </trans-unit>
       <trans-unit id="editData.run">
         <source xml:lang="en">Run</source>
@@ -6403,6 +6403,10 @@ Errore: {1}</target>
         <source xml:lang="en">The default chart type to use when opening Chart Viewer from a Query Results</source>
         <target state="translated">Tipo di grafico predefinito da usare quando si apre il visualizzatore grafico dai risultati di una query</target>
       </trans-unit>
+      <trans-unit id="queryEditor.githubCopilotContextualizationEnabled">
+        <source xml:lang="en">(Preview) Enable contextualization of queries for GitHub Copilot. This setting helps GitHub Copilot to return improved suggestions, if the Copilot extension is installed and providers have implemented contextualization.</source>
+        <target state="translated">(Anteprima) Abilita la contestualizzazione delle query per GitHub Copilot. Questa impostazione consente a GitHub Copilot di restituire suggerimenti migliorati se l'estensione Copilot è installata e i provider hanno implementato la contestualizzazione.</target>
+      </trans-unit>
       <trans-unit id="queryEditor.inMemoryDataProcessingThreshold">
         <source xml:lang="en">Controls the max number of rows allowed to do filtering and sorting in memory. If the number is exceeded, sorting and filtering will be disabled. Warning: Increasing this may impact performance.</source>
         <target state="translated">Controlla il numero massimo di righe consentite per l'applicazione di filtri e ordinamento in memoria. Se il numero viene superato, l'ordinamento e il filtro verranno disabilitati. Avviso: l'aumento di questo valore può influire sulle prestazioni.</target>
@@ -6486,6 +6490,10 @@ Errore: {1}</target>
       <trans-unit id="queryEditor.results.showActionBar">
         <source xml:lang="en">Whether to show the action bar in the query results view</source>
         <target state="translated">Indica se visualizzare la barra delle azioni nella visualizzazione dei risultati della query</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.showCopyCompletedNotification">
+        <source xml:lang="en">Whether to show notifications when a results grid copy operation is completed.</source>
+        <target state="translated">Indica se visualizzare le notifiche al completamento di un'operazione di copia della griglia dei risultati.</target>
       </trans-unit>
       <trans-unit id="queryEditor.results.skipNewLineAfterTrailingLineBreak">
         <source xml:lang="en">Whether to skip adding a line break between rows when copying results if the previous row already has a trailing line break. The default value is false.</source>
@@ -7011,6 +7019,22 @@ Errore: {1}</target>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/telemetry/browser/telemetryOptOut" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="telemetryOptOut.optInNotice">
+        <source xml:lang="en">Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt in]({1}).</source>
+        <target state="translated">Per contribuire al miglioramento di Azure Data Studio, è possibile consentire a Microsoft di raccogliere i dati di utilizzo. Leggere l'[informativa sulla privacy]({0}) per informazioni su come [acconsentire esplicitamente]({1}).</target>
+      </trans-unit>
+      <trans-unit id="telemetryOptOut.optOutNotice">
+        <source xml:lang="en">Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt out]({1}).</source>
+        <target state="translated">Per contribuire al miglioramento di Azure Data Studio, è possibile consentire a Microsoft di raccogliere i dati di utilizzo. Leggere l'[informativa sulla privacy]({0}) per informazioni su come [rifiutare esplicitamente]({1}).</target>
+      </trans-unit>
+      <trans-unit id="telemetryOptOut.readMore">
+        <source xml:lang="en">Read More</source>
+        <target state="translated">Altre informazioni</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/tsgops/browser/tsgopsActions" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="hideActivityBarViewContainers">
@@ -7071,7 +7095,7 @@ Errore: {1}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/welcome/gettingStarted/browser/abstractEnablePreviewFeatures" source-language="en" datatype="plaintext" target-language="it">
+  <file original="src/sql/workbench/contrib/welcome/browser/abstractEnablePreviewFeatures" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="enablePreviewFeatures.never">
         <source xml:lang="en">No, don't show again</source>
@@ -7083,7 +7107,7 @@ Errore: {1}</target>
       </trans-unit>
       <trans-unit id="enablePreviewFeatures.notice">
         <source xml:lang="en">Preview features enhance your experience in Azure Data Studio by giving you full access to new features and improvements. You can learn more about preview features [here]({0}). Would you like to enable preview features?</source>
-        <target state="translated">Le funzionalità in anteprima consentono di migliorare l'esperienza in Azure Data Studio offrendo accesso completo a nuove funzionalità e miglioramenti. Per altre informazioni sulle funzionalità in anteprima, vedere [qui] ({0}). Abilitare le funzionalità in anteprima?</target>
+        <target state="translated">Le funzionalità in anteprima consentono di migliorare l'esperienza in Azure Data Studio offrendo accesso completo a nuove funzionalità e miglioramenti. Per altre informazioni sulle funzionalità in anteprima, vedere [qui]({0}). Abilitare le funzionalità in anteprima?</target>
       </trans-unit>
       <trans-unit id="enablePreviewFeatures.yes">
         <source xml:lang="en">Yes (recommended)</source>
@@ -7091,20 +7115,7 @@ Errore: {1}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="miGettingStarted">
-        <source xml:lang="en">Getting &amp;&amp;Started</source>
-        <note>&amp;&amp; denotes a mnemonic</note>
-        <target state="translated">&amp;&amp;Introduzione</target>
-      </trans-unit>
-      <trans-unit id="showReleaseNotes">
-        <source xml:lang="en">Show Getting Started</source>
-        <target state="translated">Mostra introduzione</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page" source-language="en" datatype="plaintext" target-language="it">
+  <file original="src/sql/workbench/contrib/welcome/browser/az_data_welcome_page" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="welcomePage.createConnection">
         <source xml:lang="en">Create a connection</source>
@@ -7208,7 +7219,7 @@ Errore: {1}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/welcome/page/browser/gettingStartedTour" source-language="en" datatype="plaintext" target-language="it">
+  <file original="src/sql/workbench/contrib/welcome/browser/gettingStartedTour" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="GuidedTour.addExtensions">
         <source xml:lang="en">Extend the functionality of Azure Data Studio by installing extensions developed by us/Microsoft as well as the third-party community (you!).</source>
@@ -7292,7 +7303,7 @@ Errore: {1}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/welcome/page/browser/welcomePage" source-language="en" datatype="plaintext" target-language="it">
+  <file original="src/sql/workbench/contrib/welcome/browser/welcomePage" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="WelcomePage.TakeATour">
         <source xml:lang="en">Would you like to take a quick tour of Azure Data Studio?</source>
@@ -7366,25 +7377,9 @@ Errore: {1}</target>
         <source xml:lang="en">Install</source>
         <target state="translated">Installa</target>
       </trans-unit>
-      <trans-unit id="welcomePage.installExtensionPack">
-        <source xml:lang="en">Install additional support for {0}</source>
-        <target state="translated">Installa supporto aggiuntivo per {0}</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.installKeymap">
-        <source xml:lang="en">Install {0} keymap</source>
-        <target state="translated">Installa mappatura tastiera {0}</target>
-      </trans-unit>
       <trans-unit id="welcomePage.installed">
         <source xml:lang="en">Installed</source>
         <target state="translated">Installato</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.installedExtensionPack">
-        <source xml:lang="en">{0} support is already installed</source>
-        <target state="translated">Il supporto {0} è già installato</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.installedKeymap">
-        <source xml:lang="en">{0} keymap is already installed</source>
-        <target state="translated">Mappatura tastiera {0} è già installata</target>
       </trans-unit>
       <trans-unit id="welcomePage.installingExtensionPack">
         <source xml:lang="en">Installing additional support for {0}...</source>
@@ -7460,7 +7455,7 @@ Errore: {1}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/welcome/page/browser/welcomePage.contribution" source-language="en" datatype="plaintext" target-language="it">
+  <file original="src/sql/workbench/contrib/welcome/browser/welcomePage.contribution" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="miWelcome">
         <source xml:lang="en">&amp;&amp;Welcome</source>
@@ -7503,19 +7498,16 @@ Errore: {1}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut" source-language="en" datatype="plaintext" target-language="it">
+  <file original="src/sql/workbench/contrib/welcome/electron-sandbox/gettingStarted" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="telemetryOptOut.optInNotice">
-        <source xml:lang="en">Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt in]({1}).</source>
-        <target state="translated">Per contribuire al miglioramento di Azure Data Studio, è possibile consentire a Microsoft di raccogliere i dati di utilizzo. Leggere l'[informativa sulla privacy]({0}) per informazioni su come [acconsentire esplicitamente]({1}).</target>
+      <trans-unit id="miGettingStarted">
+        <source xml:lang="en">Getting &amp;&amp;Started</source>
+        <note>&amp;&amp; denotes a mnemonic</note>
+        <target state="translated">&amp;&amp;Introduzione</target>
       </trans-unit>
-      <trans-unit id="telemetryOptOut.optOutNotice">
-        <source xml:lang="en">Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt out]({1}).</source>
-        <target state="translated">Per contribuire al miglioramento di Azure Data Studio, è possibile consentire a Microsoft di raccogliere i dati di utilizzo. Leggere l'[informativa sulla privacy]({0}) per informazioni su come [rifiutare esplicitamente]({1}).</target>
-      </trans-unit>
-      <trans-unit id="telemetryOptOut.readMore">
-        <source xml:lang="en">Read More</source>
-        <target state="translated">Altre informazioni</target>
+      <trans-unit id="showReleaseNotes">
+        <source xml:lang="en">Show Getting Started</source>
+        <target state="translated">Mostra introduzione</target>
       </trans-unit>
     </body>
   </file>
@@ -7573,6 +7565,14 @@ Errore: {1}</target>
   </file>
   <file original="src/sql/workbench/services/accountManagement/browser/accountManagementService" source-language="en" datatype="plaintext" target-language="it">
     <body>
+      <trans-unit id="accountDialog.didNotPickAuthProvider">
+        <source xml:lang="en">You didn't select any authentication provider. Please try again.</source>
+        <target state="translated">Non è stato selezionato alcun provider di autenticazione. Riprovare.</target>
+      </trans-unit>
+      <trans-unit id="accountDialog.noCloudsRegistered">
+        <source xml:lang="en">You have no clouds enabled. Go to Settings -&gt; Search Azure Account Configuration -&gt; Enable at least one cloud</source>
+        <target state="translated">Nessun cloud abilitato. Passa a Impostazioni -&gt; Cerca configurazione dell'account Azure -&gt; Abilita almeno un cloud</target>
+      </trans-unit>
       <trans-unit id="accountManagementService.close">
         <source xml:lang="en">Close</source>
         <target state="translated">Chiudi</target>
@@ -7625,6 +7625,10 @@ Messaggio di errore: {1}</target>
         <source xml:lang="en">Copy &amp; Open</source>
         <target state="translated">Copia e apri</target>
       </trans-unit>
+      <trans-unit id="deviceCodeAuthDialogTitle">
+        <source xml:lang="en">Azure Auth: Device Code</source>
+        <target state="translated">Autenticazione di Azure: codice dispositivo</target>
+      </trans-unit>
       <trans-unit id="oauthDialog.cancel">
         <source xml:lang="en">Cancel</source>
         <target state="translated">Annulla</target>
@@ -7644,6 +7648,10 @@ Messaggio di errore: {1}</target>
       <trans-unit id="oauthFlyoutIsAlreadyOpen">
         <source xml:lang="en">Cannot start auto OAuth. An auto OAuth is already in progress.</source>
         <target state="translated">Non è possibile avviare un OAuth automatico perché ne è già in corso uno.</target>
+      </trans-unit>
+      <trans-unit id="selfHelpMessage">
+        <source xml:lang="en">A web browser cannot be launched in this environment, please launch a browser, navigate to the URL above and enter code manually.</source>
+        <target state="translated">Non è possibile avviare un Web browser in questo ambiente. Avviare un browser, passare all'URL precedente e immettere il codice manualmente.</target>
       </trans-unit>
     </body>
   </file>
@@ -7909,10 +7917,6 @@ Messaggio di errore: {1}</target>
         <source xml:lang="en">Are you sure you want to cancel this connection?</source>
         <target state="translated">Annullare questa connessione?</target>
       </trans-unit>
-      <trans-unit id="connection.connTitleGroupSection">
-        <source xml:lang="en"> (Group: {0})</source>
-        <target state="translated"> (Gruppo: {0})</target>
-      </trans-unit>
       <trans-unit id="connection.duplicateEditErrorMessage">
         <source xml:lang="en">Cannot save profile, the selected connection matches an existing profile with the same server info in the same group: 
 
@@ -7937,6 +7941,10 @@ Messaggio di errore: {1}</target>
         <source xml:lang="en">Failed to get Azure account token for connection</source>
         <target state="translated">Non è stato possibile recuperare il token dell'account di Azure per la connessione</target>
       </trans-unit>
+      <trans-unit id="connection.providerNotFound">
+        <source xml:lang="en">Connection provider '{0}' not found</source>
+        <target state="translated">Provider di connessione '{0}' non trovato</target>
+      </trans-unit>
       <trans-unit id="connection.refreshAzureTokenFailure">
         <source xml:lang="en">Failed to refresh Azure account token for connection</source>
         <target state="translated">Non è stato possibile aggiornare il token dell'account di Azure per la connessione</target>
@@ -7952,10 +7960,6 @@ Messaggio di errore: {1}</target>
       <trans-unit id="connectionDialog.connectionProviderNotSupported">
         <source xml:lang="en">The extension that supports provider type '{0}' is not currently installed. Do you want to view the extensions?</source>
         <target state="translated">L'estensione che supporta il tipo di provider '{0}' non è attualmente installata. Visualizzare le estensioni?</target>
-      </trans-unit>
-      <trans-unit id="connectionManagementService.noProviderForUri">
-        <source xml:lang="en">Could not find provider for uri: {0}</source>
-        <target state="translated">Non è stato possibile trovare il provider per l'URI: {0}</target>
       </trans-unit>
       <trans-unit id="connectionNotAcceptedError">
         <source xml:lang="en">Connection Not Accepted</source>
@@ -8853,6 +8857,14 @@ Messaggio di errore: {1}</target>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/dragAndDropController" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="objectExplorer.dragAndDropController.existingIdenticalProfile">
+        <source xml:lang="en">Cannot drag profile into group: A profile with identical options already exists in the group.</source>
+        <target state="translated">Impossibile trascinare il profilo nel gruppo. Nel gruppo esiste già un profilo con opzioni identiche.</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="filterDialog.errorDateRange">
@@ -9153,6 +9165,22 @@ Messaggio di errore: {1}</target>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/profiler/browser/profilerService" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="FileFilterDescription">
+        <source xml:lang="en">XEL Files</source>
+        <target state="translated">File XEL</target>
+      </trans-unit>
+      <trans-unit id="FileTooLarge">
+        <source xml:lang="en">The file is too large to open in profiler. The profiler can open files that are less than 1GB.</source>
+        <target state="translated">Il file è troppo grande per essere aperto nel profiler. Il profiler può aprire file di dimensioni inferiori a 1 GB.</target>
+      </trans-unit>
+      <trans-unit id="LargeFileWait">
+        <source xml:lang="en">Loading the file might take a moment due to the file size.</source>
+        <target state="translated">Il caricamento del file potrebbe richiedere qualche istante a causa delle sue dimensioni.</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/query/common/gridDataProvider" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="gridDataProvider.cancelCopyResults">
@@ -9171,9 +9199,17 @@ Messaggio di errore: {1}</target>
         <source xml:lang="en">Copying...</source>
         <target state="translated">Copia in corso...</target>
       </trans-unit>
+      <trans-unit id="gridDataProvider.disableCopyNotification">
+        <source xml:lang="en">Don't show again</source>
+        <target state="translated">Non visualizzare più</target>
+      </trans-unit>
       <trans-unit id="gridDataProvider.loadingRowsInProgress">
         <source xml:lang="en">Loading the rows to be copied ({0}/{1})...</source>
         <target state="translated">Caricamento delle righe da copiare ({0}/{1})...</target>
+      </trans-unit>
+      <trans-unit id="gridDataProvider.turnOnCopyNotificationsMessage">
+        <source xml:lang="en">Copy completed notifications are now disabled. To re-enable, modify the setting: queryEditor.results.showCopyCompletedNotification</source>
+        <target state="translated">Le notifiche di copia completata sono ora disabilitate. Per riabilitarle, modificare l'impostazione: queryEditor.results.showCopyCompletedNotification</target>
       </trans-unit>
     </body>
   </file>
@@ -9262,6 +9298,10 @@ Messaggio di errore: {1}</target>
       <trans-unit id="openFile">
         <source xml:lang="en">Open file</source>
         <target state="translated">Apri file</target>
+      </trans-unit>
+      <trans-unit id="openFileLocation">
+        <source xml:lang="en">Open file location</source>
+        <target state="translated">Apri percorso file</target>
       </trans-unit>
       <trans-unit id="resultsSerializer.saveAsFileExtensionCSVTitle">
         <source xml:lang="en">CSV (Comma delimited)</source>

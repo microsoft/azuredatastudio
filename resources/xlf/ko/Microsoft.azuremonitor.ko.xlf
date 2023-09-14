@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/Microsoft.azuremonitor/dist/azuremonitorServer" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="downloadingServiceSizeChannelMsg">
+        <source xml:lang="en">({0} KB)</source>
+        <target state="translated">({0}KB)</target>
+      </trans-unit>
+      <trans-unit id="downloadServiceDoneChannelMsg">
+        <source xml:lang="en">Downloaded {0}</source>
+        <target state="translated">{0}을(를) 다운로드함</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceStatusMsg">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">{0} 다운로드 중</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceChannelMsg">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">{0} 다운로드 중</target>
+      </trans-unit>
+      <trans-unit id="failedToStartServiceErrorMsg">
+        <source xml:lang="en">Failed to start {0}</source>
+        <target state="translated">{0}을(를) 시작하지 못함</target>
+      </trans-unit>
+      <trans-unit id="installedServiceChannelMsg">
+        <source xml:lang="en">Installed {0}</source>
+        <target state="translated">설치된 {0}</target>
+      </trans-unit>
+      <trans-unit id="installingServiceStatusMsg">
+        <source xml:lang="en">Installing {0}</source>
+        <target state="translated">{0} 설치</target>
+      </trans-unit>
+      <trans-unit id="installingServiceChannelMsg">
+        <source xml:lang="en">Installing {0} to {1}</source>
+        <target state="translated">{1}에 {0} 설치 중</target>
+      </trans-unit>
+      <trans-unit id="startingServiceStatusMsg">
+        <source xml:lang="en">Starting {0}</source>
+        <target state="translated">{0} 시작</target>
+      </trans-unit>
+      <trans-unit id="serviceStartedStatusMsg">
+        <source xml:lang="en">{0} Started</source>
+        <target state="translated">{0}이(가) 시작됨</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.azuremonitor/dist/features/accountFeature" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="kusto.accountDoesNotExist">
+        <source xml:lang="en">Account does not exist.</source>
+        <target state="translated">계정이 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="kusto.missingLinkedAzureAccount">
+        <source xml:lang="en">Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query.</source>
+        <target state="translated">Azure Data Studio는 Always Encrypted의 열 마스터 키에 액세스하려면 Azure Key Vault에 연결해야 하지만, 연결된 Azure 계정을 사용할 수 없습니다. 연결된 Azure 계정을 추가하고 쿼리를 다시 시도하세요.</target>
+      </trans-unit>
+      <trans-unit id="kusto.insufficientlyPrivelagedAzureAccount">
+        <source xml:lang="en">The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.</source>
+        <target state="translated">{0}에 대해 구성된 Azure 계정에 Always Encrypted의 열 마스터 키에 액세스할 수 있는 Azure Key Vault에 대한 권한이 없습니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.azuremonitor/dist/main" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="notebookFileType">
+        <source xml:lang="en">Notebooks</source>
+        <target state="translated">Notebook</target>
+      </trans-unit>
+      <trans-unit id="unsupportedFileType">
+        <source xml:lang="en">Only .ipynb Notebooks are supported</source>
+        <target state="translated">.ipynb Notebook만 지원됩니다.</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.unsupportedPlatform">
+        <source xml:lang="en">Unsupported platform</source>
+        <target state="translated">지원되지 않는 플랫폼</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.azuremonitor/dist/objectExplorerNodeProvider/command" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="progress">
+        <source xml:lang="en">$(sync~spin) {0}...</source>
+        <target state="translated">$(sync~spin) {0}...</target>
+      </trans-unit>
+      <trans-unit id="cancelTooltip">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
+      </trans-unit>
+      <trans-unit id="cancel">
+        <source xml:lang="en">Cancel operation?</source>
+        <target state="translated">작업을 취소하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="azureMonitor.searchServers">
+        <source xml:lang="en">Search Server Names</source>
+        <target state="translated">서버 이름 검색</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.azuremonitor/dist/objectExplorerNodeProvider/objectExplorerNodeProvider" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="notifyError">
+        <source xml:lang="en">Error notifying of node change: {0}</source>
+        <target state="translated">노드 변경 알리기 오류: {0}</target>
+      </trans-unit>
+      <trans-unit id="rootLabel">
+        <source xml:lang="en">Root</source>
+        <target state="translated">루트</target>
+      </trans-unit>
+      <trans-unit id="sessionNotFound">
+        <source xml:lang="en">Session for node {0} does not exist</source>
+        <target state="translated">{0} 노드의 세션이 없습니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.azuremonitor/dist/telemetry" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="viewKnownIssuesText">
+        <source xml:lang="en">View Known Issues</source>
+        <target state="translated">알려진 문제 보기</target>
+      </trans-unit>
+      <trans-unit id="serviceCrashMessage">
+        <source xml:lang="en">{0} component exited unexpectedly. Please restart Azure Data Studio.</source>
+        <target state="translated">{0} 구성 요소가 예기치 않게 종료되었습니다. Azure Data Studio를 다시 시작하세요.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.azuremonitor/package" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="azuremonitor.connectionProperties.dbaPrivilege.label">
+        <source xml:lang="en">Administrative privileges</source>
+        <target state="translated">관리자 권한</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.dbaPrivilege.description">
+        <source xml:lang="en">Administrative privileges: SYSDBA or SYSOPER</source>
+        <target state="translated">관리 권한: SYSDBA 또는 SYSOPER</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.authType.displayName">
+        <source xml:lang="en">Authentication type</source>
+        <target state="translated">인증 유형</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.authType.categoryValues.azureMFA">
+        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
+        <target state="translated">Azure Active Directory - MFA가 지원되는 유니버설</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.displayName">
+        <source xml:lang="en">Azure Monitor Logs</source>
+        <target state="translated">Azure Monitor 로그</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.description">
+        <source xml:lang="en">Azure Monitor access for Azure Data Studio</source>
+        <target state="translated">Azure Data Studio 대한 액세스 Azure Monitor</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.connectionName.description">
+        <source xml:lang="en">Custom name of the connection</source>
+        <target state="translated">연결의 사용자 지정 이름</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionOptions.databaseName.displayName">
+        <source xml:lang="en">Database</source>
+        <target state="translated">데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.password.description">
+        <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
+        <target state="translated">데이터 원본에 연결할 때 사용할 암호를 나타냅니다.</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.userName.description">
+        <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
+        <target state="translated">데이터 원본에 연결할 때 사용할 사용자 ID를 나타냅니다.</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.serverName.description">
+        <source xml:lang="en">Log Analytics Workspace ID</source>
+        <target state="translated">Log Analytics 작업 영역 ID</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.metadataPooling.label">
+        <source xml:lang="en">Metadata Pooling</source>
+        <target state="translated">메타데이터 풀링</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.objectsListProperties.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.databasesListProperties.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.connectionName.displayName">
+        <source xml:lang="en">Name (optional)</source>
+        <target state="translated">이름(선택 사항)</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.password.displayName">
+        <source xml:lang="en">Password</source>
+        <target state="translated">암호</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.proxyUserPassword.description">
+        <source xml:lang="en">Password of the proxy user.</source>
+        <target state="translated">프록시 사용자의 암호입니다.</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.proxyUserPassword.label">
+        <source xml:lang="en">Proxy Password</source>
+        <target state="translated">프록시 암호</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.proxyUserId.label">
+        <source xml:lang="en">Proxy User Id</source>
+        <target state="translated">프록시 사용자 ID</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.groupName.security">
+        <source xml:lang="en">Security</source>
+        <target state="translated">보안</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.databasesListProperties.size">
+        <source xml:lang="en">Size (MB)</source>
+        <target state="translated">크기(MB)</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.groupName.source">
+        <source xml:lang="en">Source</source>
+        <target state="translated">원본</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.authType.description">
+        <source xml:lang="en">Specifies the method of authenticating with Azure Monitor</source>
+        <target state="translated">Azure Monitor를 사용하여 인증하는 방법을 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionOptions.databaseName.description">
+        <source xml:lang="en">The name of the initial catalog or database in the data source</source>
+        <target state="translated">데이터 원본의 초기 카탈로그 또는 데이터베이스 이름</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.metadataPooling.description">
+        <source xml:lang="en">This attribute indicates whether the metadata information for executed queries is cached for improved performance.</source>
+        <target state="translated">이 특성은 성능 향상을 위해 실행된 쿼리에 대한 메타데이터 정보가 캐시되는지 여부를 나타냅니다.</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.objectsListProperties.metadataTypeName">
+        <source xml:lang="en">Type</source>
+        <target state="translated">형식</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.userName.displayName">
+        <source xml:lang="en">User name</source>
+        <target state="translated">사용자 이름</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.proxyUserId.description">
+        <source xml:lang="en">User name of the proxy user.</source>
+        <target state="translated">프록시 사용자의 사용자 이름입니다.</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.serverName.displayName">
+        <source xml:lang="en">Workspace ID</source>
+        <target state="translated">작업 영역 ID</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.cloud.workspaceProperties.id">
+        <source xml:lang="en">Workspace ID</source>
+        <target state="translated">작업 영역 ID</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.cloud.workspaceProperties.name">
+        <source xml:lang="en">Workspace Name</source>
+        <target state="translated">작업 영역 이름</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
