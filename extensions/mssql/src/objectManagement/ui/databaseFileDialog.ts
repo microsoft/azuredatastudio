@@ -217,9 +217,9 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 				= this.inMegabytesAutogrowth.enabled
 				= this.autoFilegrowthInput.enabled
 				= this.limitedToMbFileSize.enabled
-				= this.limitedToMbFileSizeInput.enabled
 				= this.unlimitedFileSize.enabled
 				= this.result.isAutoGrowthEnabled = checked;
+			this.limitedToMbFileSizeInput.enabled = checked && this.limitedToMbFileSize.checked;
 		}, true, true);
 
 		// Autogrowth radio button and input section
