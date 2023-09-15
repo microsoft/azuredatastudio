@@ -139,7 +139,7 @@ export class TdeConfigurationDialog {
 					let validationTitleData = await this.migrationStateModel.getTdeValidationTitles();
 
 					let networkPathValidated =
-						(this.migrationStateModel.tdeMigrationConfig.getPendingNetworkPath() !== "") &&
+						(this.migrationStateModel.tdeMigrationConfig.getPendingNetworkPath() !== '') &&
 						(this.migrationStateModel.tdeMigrationConfig.getPendingNetworkPath() === this.migrationStateModel.tdeMigrationConfig.getLastValidatedNetworkPath())
 
 					let result = validationTitleData.result.map(validationTitle => {
