@@ -12,6 +12,7 @@ import * as utils from '../../api/utils';
 import { EOL } from 'os';
 import { ConfigDialogSetting } from '../../models/tdeModels'
 import { IconPathHelper } from '../../constants/iconPathHelper';
+import { strings } from '../../../../../build/lib/tsb/utils';
 
 export class TdeConfigurationDialog {
 
@@ -139,7 +140,7 @@ export class TdeConfigurationDialog {
 					let validationTitleData = await this.migrationStateModel.getTdeValidationTitles();
 
 					let networkPathValidated =
-						(this.migrationStateModel.tdeMigrationConfig.getPendingNetworkPath() !== '') &&
+						(this.migrationStateModel.tdeMigrationConfig.getPendingNetworkPath() !== strings.empty) &&
 						(this.migrationStateModel.tdeMigrationConfig.getPendingNetworkPath() === this.migrationStateModel.tdeMigrationConfig.getLastValidatedNetworkPath())
 
 					let result = validationTitleData.result.map(validationTitle => {
@@ -270,7 +271,7 @@ export class TdeConfigurationDialog {
 				await this.updateUI();
 			}));
 
-		const preValidationSeparator = _view.modelBuilder.separator().withProps({}).component();
+		const preValidationSeparator = _view.modelBuilder.separator().component();
 
 		const validationRequiredLabel = _view.modelBuilder.text()
 			.withProps({
@@ -355,14 +356,14 @@ export class TdeConfigurationDialog {
 						let errorMessage = this._validationSuccessDescriptionErrorAndTips[rowIndex][2];
 						let tips = this._validationSuccessDescriptionErrorAndTips[rowIndex][3];
 
-						message = `Description:${EOL}${description}`;
+						message = `${constants.TDE_VALIDATION_DESCRIPTION}:${EOL}${description}`;
 						if (!successful) {
 							message += `${EOL}${EOL}`;
 							if (errorMessage?.length > 0) {
-								message += `Error:${EOL}${errorMessage}${EOL}${EOL}`;
+								message += `${constants.TDE_VALIDATION_ERROR}:${EOL}${errorMessage}${EOL}${EOL}`;
 							}
 
-							message += `Troubleshooting Tips:${EOL}${tips}`;
+							message += `${constants.TDE_VALIDATION_TROUBLESHOOTING_TIPS}:${EOL}${tips}`;
 						}
 					});
 
@@ -378,10 +379,7 @@ export class TdeConfigurationDialog {
 			})
 			.component();
 
-		const postValidationSeparator = _view.modelBuilder.separator()
-			.withProps(
-				{
-				}).component();
+		const postValidationSeparator = _view.modelBuilder.separator().component();
 
 		container.addItems([
 			adsMethodInfoMessage,
