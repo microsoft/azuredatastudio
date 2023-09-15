@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import { MigrationStateModel } from '../../models/stateMachine';
+import { MigrationTargetType } from '../../api/utils';
 
 interface IActionMetadata {
 	title?: string,
@@ -97,7 +98,8 @@ export class AssessmentDetailsHeader {
 
 	// function to populate the values of properties displayed in the cards.
 	public async populateAssessmentDetailsHeader(migrationStateModel: MigrationStateModel): Promise<void> {
-
+		// this value is populated to handle the case when user selects a target type and want to resume later.
+		this._targetSelectionDropdown.value = this.getTargetTypeBasedOnModel(migrationStateModel._targetType);
 		const assessmentHeaderValues = [
 			{
 				// TODO(stutijain): replace below value with recommended config
@@ -107,8 +109,7 @@ export class AssessmentDetailsHeader {
 				value: String(migrationStateModel?._assessedDatabaseList.length)
 			},
 			{
-				// TODO(stutijain): confirm ready to migration value and replace here.
-				value: "8"
+				value: String(migrationStateModel._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === migrationStateModel._targetType).length === 0).length)
 			}];
 
 		// iterating over each value container and filling it with the corresponding text.
@@ -144,5 +145,17 @@ export class AssessmentDetailsHeader {
 		targetTypeContainer.addItem(this._targetSelectionDropdown, { flex: 'none' });
 
 		return targetTypeContainer;
+	}
+
+	// function to get target type value based on model value.
+	private getTargetTypeBasedOnModel(targetType: MigrationTargetType): string {
+		switch (targetType) {
+			case MigrationTargetType.SQLDB:
+				return constants.SUMMARY_SQLDB_TYPE;
+			case MigrationTargetType.SQLVM:
+				return constants.SUMMARY_VM_TYPE;
+			case MigrationTargetType.SQLMI:
+				return constants.SUMMARY_MI_TYPE;
+		}
 	}
 }
