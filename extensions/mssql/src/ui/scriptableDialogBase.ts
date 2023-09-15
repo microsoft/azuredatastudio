@@ -70,6 +70,9 @@ export abstract class ScriptableDialogBase<OptionsType extends ScriptableDialogO
 	protected override async initialize(): Promise<void> {
 		await this.initializeData();
 		await this.initializeUI();
+		this.disposables.push(this.modelView.onValidityChanged((isValid: boolean) => {
+			this._scriptButton.enabled = isValid;
+		}));
 	}
 
 	protected override updateLoadingStatus(isLoading: boolean, loadingText?: string, loadingCompletedText?: string): void {

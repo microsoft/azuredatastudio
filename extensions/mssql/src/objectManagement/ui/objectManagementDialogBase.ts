@@ -107,9 +107,6 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				}
 			}
 		});
-		this.modelView.onValidityChanged((isValid: boolean) => {
-			this.dialogObject.customButtons[1].enabled = isValid;
-		});
 	}
 
 	protected get viewInfo(): ViewInfoType {
