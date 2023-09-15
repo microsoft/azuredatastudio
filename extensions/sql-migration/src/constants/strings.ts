@@ -1516,8 +1516,18 @@ export const TDE_WIZARD_MSG_MANUAL = localize('sql.migration.tde.msg.manual', "Y
 export const TDE_WIZARD_MSG_TDE = localize('sql.migration.tde.msg.tde', "You have given Azure Data Studio access to migrate the encryption certificates and database.");
 export const TDE_WIZARD_MSG_EMPTY = localize('sql.migration.tde.msg.empty', "No encrypted database selected.");
 
+export const TDE_VALIDATION_TITLE = localize('sql.migration.tde.validation.title', "Validation");
+export const TDE_VALIDATION_REQUIREMENTS_MESSAGE = localize('sql.migration.tde.validation.requirements.message', "In order for certificate migration to succeed, you must meet all of the requirements listed below.\n\nClick \"Run validation\" to check that requirements are met.");
+export const TDE_VALIDATION_STATUS_PENDING = localize('sql.migration.tde.validation.status.pending', "Pending");
+export const TDE_VALIDATION_STATUS_RUNNING = localize('sql.migration.tde.validation.running', "Running");
+export const TDE_VALIDATION_STATUS_SUCCEEDED = localize('sql.migration.tde.validation.status.succeeded', "Succeeded");
+export const TDE_VALIDATION_STATUS_RUN_VALIDATION = localize('sql.migration.tde.validation.run.validation', "Run validation");
+export const TDE_VALIDATION_DESCRIPTION = localize('sql.migration.tde.validation.description', "Description");
+export const TDE_VALIDATION_ERROR = localize('sql.migration.tde.validation.error', "Error");
+export const TDE_VALIDATION_TROUBLESHOOTING_TIPS = localize('sql.migration.tde.validation.troubleshooting.tips', "Troubleshooting tips");
+
 export function TDE_MIGRATION_ERROR(message: string): string {
-	return localize('sql.migration.starting.migration.error', "An error occurred while starting the certificate migration: '{0}'", message);
+	return localize('sql.migration.starting.migration.error', "The following error has occurred while starting the certificate migration: '{0}'", message);
 }
 
 export function TDE_MIGRATION_ERROR_DB(name: string, message: string): string {
