@@ -95,6 +95,12 @@ export const requiredIpykernelPkg: PythonPkgDetails = {
 	installExactVersion: true
 };
 
+export const requiredTraitletsPkg: PythonPkgDetails = {
+	name: 'traitlets',
+	version: '5.9.0',
+	installExactVersion: true
+};
+
 export const requiredPowershellPkg: PythonPkgDetails = {
 	name: 'powershell-kernel',
 	version: '0.1.4'
@@ -155,11 +161,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this._kernelSetupCache = new Map<string, boolean>();
 		this._requiredKernelPackages = new Map<string, PythonPkgDetails[]>();
 
-		this._requiredKernelPackages.set(constants.ipykernelDisplayName, [requiredJupyterPkg, requiredNotebookPkg, requiredIpykernelPkg]);
-		this._requiredKernelPackages.set(constants.python3DisplayName, [requiredJupyterPkg, requiredNotebookPkg, requiredIpykernelPkg]);
-		this._requiredKernelPackages.set(constants.powershellDisplayName, [requiredJupyterPkg, requiredPowershellPkg, requiredNotebookPkg, requiredIpykernelPkg]);
+		this._requiredKernelPackages.set(constants.ipykernelDisplayName, [requiredJupyterPkg, requiredNotebookPkg, requiredIpykernelPkg, requiredTraitletsPkg]);
+		this._requiredKernelPackages.set(constants.python3DisplayName, [requiredJupyterPkg, requiredNotebookPkg, requiredIpykernelPkg, requiredTraitletsPkg]);
+		this._requiredKernelPackages.set(constants.powershellDisplayName, [requiredJupyterPkg, requiredPowershellPkg, requiredNotebookPkg, requiredIpykernelPkg, requiredTraitletsPkg]);
 
-		let allPackages = [requiredJupyterPkg, requiredNotebookPkg, requiredIpykernelPkg, requiredPowershellPkg];
+		let allPackages = [requiredJupyterPkg, requiredNotebookPkg, requiredIpykernelPkg, requiredTraitletsPkg, requiredPowershellPkg];
 		this._requiredKernelPackages.set(constants.allKernelsName, allPackages);
 
 		this._requiredPackagesSet = new Set<string>();
