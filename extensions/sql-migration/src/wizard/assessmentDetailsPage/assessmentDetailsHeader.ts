@@ -7,34 +7,42 @@ import * as azdata from 'azdata';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import { MigrationStateModel } from '../../models/stateMachine';
-import { MigrationTargetType } from '../../api/utils';
 
 interface IActionMetadata {
 	title?: string,
 	value?: string
 }
 
-// Class defining header section of Assessment Details page
+// Class defining header section of assessment details page
 export class AssessmentDetailsHeader {
 	private _view!: azdata.ModelView;
-	private _migrationStateModel: MigrationStateModel;
 	private _valueContainers: azdata.TextComponent[] = [];
+	private _targetSelectionDropdown!: azdata.DropDownComponent;
 
-	constructor(migrationStateModel: MigrationStateModel) {
-		this._migrationStateModel = migrationStateModel;
+	// public getter for target type selection drop down.
+	public get targetTypeDropdown() {
+		return this._targetSelectionDropdown;
 	}
 
+	// function that creates the component for header section of assessment details page.
 	public createAssessmentDetailsHeader(view: azdata.ModelView): azdata.Component {
 		this._view = view;
 		const headerContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column',
+		}).withProps({
+			CSSStyles: {
+				'margin-left': '15px'
+			}
+		}).component();
+
+		const targetTypeContainer = this.createTargetTypeContainer();
+
+		const headerCardsContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 		}).component();
 
 		// List of card labels displayed in header section of Assessment details page.
 		const assessmentHeaderLabels = [
-			{
-				title: constants.TARGET_PLATFORM
-			},
 			{
 				title: constants.RECOMMENDED_CONFIGURATION
 			},
@@ -46,7 +54,9 @@ export class AssessmentDetailsHeader {
 			}];
 
 		// create individual card component for each property in above list
-		headerContainer.addItems(assessmentHeaderLabels.map(l => this.createCard(l)));
+		headerCardsContainer.addItems(assessmentHeaderLabels.map(l => this.createCard(l)));
+
+		headerContainer.addItems([targetTypeContainer, headerCardsContainer]);
 
 		return headerContainer;
 	}
@@ -86,18 +96,15 @@ export class AssessmentDetailsHeader {
 	}
 
 	// function to populate the values of properties displayed in the cards.
-	public async populateAssessmentDetailsHeader(): Promise<void> {
+	public async populateAssessmentDetailsHeader(migrationStateModel: MigrationStateModel): Promise<void> {
 
 		const assessmentHeaderValues = [
-			{
-				value: this._getTargetPlatformLabel(this._migrationStateModel?._targetType)
-			},
 			{
 				// TODO(stutijain): replace below value with recommended config
 				value: "10 available"
 			},
 			{
-				value: String(this._migrationStateModel?._assessedDatabaseList.length)
+				value: String(migrationStateModel?._assessedDatabaseList.length)
 			},
 			{
 				// TODO(stutijain): confirm ready to migration value and replace here.
@@ -110,17 +117,32 @@ export class AssessmentDetailsHeader {
 			valueContainer.value = assessmentHeaderValues[index++].value);
 	}
 
-	// function that returns a localised string for target platform based on enum MigrationTargetType.
-	private _getTargetPlatformLabel(targetType: MigrationTargetType): string {
-		switch (targetType) {
-			case MigrationTargetType.SQLDB:
-				return constants.SUMMARY_SQLDB_TYPE
-			case MigrationTargetType.SQLVM:
-				return constants.SUMMARY_VM_TYPE
-			case MigrationTargetType.SQLMI:
-				return constants.SUMMARY_MI_TYPE
-			default:
-				return "--"
-		}
+	// function that create target selection dropdown
+	private createTargetTypeContainer(): azdata.FlexContainer {
+		const targetTypeContainer = this._view.modelBuilder.flexContainer().component();
+
+		const selectLabel = this._view.modelBuilder.text().withProps({
+			value: constants.SELECT_TARGET_LABEL + ":",
+			CSSStyles: {
+				...styles.LABEL_CSS
+			},
+		}).component();
+
+		this._targetSelectionDropdown = this._view.modelBuilder.dropDown().withProps({
+			ariaLabel: constants.AZURE_SQL_TARGET,
+			value: constants.SUMMARY_SQLDB_TYPE,
+			values: [constants.SUMMARY_SQLDB_TYPE, constants.SUMMARY_VM_TYPE, constants.SUMMARY_MI_TYPE],
+			width: 250,
+			editable: false,
+			CSSStyles: {
+				'margin-top': '-0.2em',
+				'margin-left': '10px'
+			},
+		}).component();
+
+		targetTypeContainer.addItem(selectLabel, { flex: 'none' });
+		targetTypeContainer.addItem(this._targetSelectionDropdown, { flex: 'none' });
+
+		return targetTypeContainer;
 	}
 }

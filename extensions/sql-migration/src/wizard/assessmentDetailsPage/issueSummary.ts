@@ -18,6 +18,7 @@ const headerLeft: azdata.CssStyles = {
 	'border-bottom': '1px solid'
 };
 
+// Creates Issue/Warning summary container
 export class IssueSummary {
 	private _view!: azdata.ModelView;
 	private _recommendationText!: azdata.TextComponent;
@@ -31,6 +32,7 @@ export class IssueSummary {
 	private _impactedObjectsTable!: azdata.DeclarativeTableComponent;
 	private _disposables: vscode.Disposable[] = [];
 
+	//create issue summary ui
 	public createIssueSummary(view: azdata.ModelView): azdata.FlexContainer {
 		this._view = view;
 		const bottomContainer = this.createDescriptionContainer();
@@ -51,7 +53,7 @@ export class IssueSummary {
 			.withProps({ CSSStyles: { 'height': '100%' } })
 			.component();
 		container.addItem(description, { flex: '0 0 auto', CSSStyles: { 'width': '200px', 'margin-right': '35px' } });
-		container.addItem(impactedObjects, { flex: '0 0 auto', CSSStyles: { 'width': '280px' } });
+		container.addItem(impactedObjects, { flex: '0 0 auto', CSSStyles: { 'width': '180px' } });
 
 		return container;
 	}
@@ -119,7 +121,7 @@ export class IssueSummary {
 			value: constants.IMPACTED_OBJECTS,
 			CSSStyles: {
 				...styles.LIGHT_LABEL_CSS,
-				'width': '280px',
+				'width': '180px',
 				'margin': '10px 0px 0px 0px',
 			}
 		}).component();
@@ -214,6 +216,7 @@ export class IssueSummary {
 		this._objectDetailsSample.value = impactedObject?.impactDetail || '';
 	}
 
+	//refresh issue summary values.
 	public async refreshAssessmentDetails(selectedIssue?: SqlMigrationAssessmentResultItem): Promise<void> {
 		await this._descriptionText.updateProperty('value', selectedIssue?.description || '');
 		await this._recommendationText.updateProperty('value', selectedIssue?.message || constants.NA);

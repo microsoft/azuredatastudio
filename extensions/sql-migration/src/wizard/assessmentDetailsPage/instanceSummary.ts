@@ -8,7 +8,6 @@ import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
 import { ColorCodes } from '../../constants/helper';
 import { MigrationStateModel } from '../../models/stateMachine';
-import { MigrationTargetType } from '../../api/utils';
 
 interface IActionMetadata {
 	label: string,
@@ -75,15 +74,16 @@ export class InstanceSummary {
 		return instanceSummaryContainer;
 	}
 
-	public populateInstanceSummaryContainer(model: MigrationStateModel, targetType: MigrationTargetType): void {
+	// function to populate instance summary container with latest values.
+	public populateInstanceSummaryContainer(model: MigrationStateModel): void {
 
 		this._assessedDatabases.value = constants.ASSESSED_DBS_LABEL + ": " + model._databasesForAssessment?.length;
-		this._totalFindingLabels.value = constants.TOTAL_FINDINGS_LABEL + ": " + model._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === targetType).length;
-		const readyDbsCount = model._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === targetType).length === 0).length;
+		this._totalFindingLabels.value = constants.TOTAL_FINDINGS_LABEL + ": " + model._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === model._targetType).length;
+		const readyDbsCount = model._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === model._targetType).length === 0).length;
 		const notReadyDbsCount = model._databasesForAssessment?.length - readyDbsCount;
 		const readywithWarnDbsCount = 0;
 
-		const labels = [
+		const readinessStates = [
 			{
 				label: constants.NOT_READY,
 				count: notReadyDbsCount,
@@ -99,17 +99,23 @@ export class InstanceSummary {
 				count: readyDbsCount,
 				color: ColorCodes.ReadyState_Green
 			}];
-		let i = 0;
-		this._yAxisLabels.forEach(component => { component.value = labels[i].label + " (" + labels[i].count + ")"; i++; });
-		i = 0;
+
+		let readinessStateIndex = 0; // variable to iterate on readinessStates list
+
+		// update value of YAxis for three states.
+		this._yAxisLabels.forEach(component => { component.value = readinessStates[readinessStateIndex].label + " (" + readinessStates[readinessStateIndex++].count + ")"; });
+
+		// update width of states of ready, not ready and readyWithWarn in the graph bar component.
+		readinessStateIndex = 0;
 		let maxValue = 1;
-		labels.forEach(label => maxValue = Math.max(label.count, maxValue));
+		readinessStates.forEach(readinessState => maxValue = Math.max(readinessState.count, maxValue));
 		this._divs.forEach(async (component) => {
-			const divWidth = this.setWidth(labels[i++].count ?? 0, maxValue);
+			const divWidth = this.setWidth(readinessStates[readinessStateIndex++].count ?? 0, maxValue);
 			await component.updateCssStyles({ 'width': divWidth + '%' });
 		});
 	}
 
+	// Create graph depicting dbs readiness.
 	private createGraphComponent(): azdata.FlexContainer {
 		const graph = this._view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
@@ -118,7 +124,7 @@ export class InstanceSummary {
 			}
 		}).component();
 
-		const labels = [
+		const readinessStates = [
 			{
 				label: constants.NOT_READY,
 				color: ColorCodes.NotReadyState_Red
@@ -132,12 +138,13 @@ export class InstanceSummary {
 				color: ColorCodes.ReadyState_Green
 			}];
 
-		// create individual card component for each property in above list
-		graph.addItems(labels.map(l => this.createBarComponent(l, 8)));
+		// create individual bar component for each property in above list
+		graph.addItems(readinessStates.map(l => this.createBarComponent(l)));
 		return graph;
 	}
 
-	private createBarComponent(linkMetaData: IActionMetadata, maxValue: number) {
+	// create individual bar component
+	private createBarComponent(linkMetaData: IActionMetadata) {
 
 		const barComponent = this._view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
@@ -145,7 +152,7 @@ export class InstanceSummary {
 				'flex-direction': 'row'
 			}
 		}).component();
-		barComponent.addItem(this.createYAxisComponent(linkMetaData), { 'flex': 'none' });
+		barComponent.addItem(this.createYAxisComponent(), { 'flex': 'none' });
 
 		const division = this._view.modelBuilder.divContainer().withProps({
 			width: '0px',
@@ -157,13 +164,16 @@ export class InstanceSummary {
 				'width': '0px'
 			}
 		}).component();
+
+		// storing divisions to update later based on selections.
 		this._divs.push(division);
 		barComponent.addItem(division);
 
 		return barComponent;
 	}
 
-	private createYAxisComponent(linkMetaData: IActionMetadata): azdata.FlexContainer {
+	// create y axis details of the bar component
+	private createYAxisComponent(): azdata.FlexContainer {
 
 		const yAxisLabelContainer = this._view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
@@ -189,6 +199,7 @@ export class InstanceSummary {
 		return yAxisLabelContainer;
 	}
 
+	// maths formula to calculate width of bar component and create comparison among diff values.
 	private setWidth(value: number, maxValue: number): number {
 		const width = (Math.sqrt(value) / Math.sqrt(maxValue)) * 75;
 		return width;

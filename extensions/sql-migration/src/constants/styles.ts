@@ -80,7 +80,7 @@ export const CARD_CSS = {
 	'box-shadow': '0px 1px 4px rgba(0, 0, 0, 0.13)',
 	'padding': '8px 0px 8px 12px',
 	'border-radius': '4px',
-	'margin': '8px 0px 0px 15px'
+	'margin-top': '8px'
 };
 
 export const TOOLBAR_CSS = {
