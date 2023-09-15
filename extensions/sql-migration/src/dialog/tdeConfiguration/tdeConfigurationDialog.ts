@@ -148,9 +148,9 @@ export class TdeConfigurationDialog {
 							validationTitle,
 							{
 								'icon': networkPathValidated ? IconPathHelper.completedMigration : IconPathHelper.notFound,
-								'title': networkPathValidated ? constants.TDE_VALIDATION_STATUS_SUCCEEDED : constants.TDE_VALIDATION_STATUS_NOT_RAN
+								'title': networkPathValidated ? constants.TDE_VALIDATION_STATUS_SUCCEEDED : constants.TDE_VALIDATION_STATUS_PENDING
 							},
-							networkPathValidated ? constants.TDE_VALIDATION_STATUS_SUCCEEDED : constants.TDE_VALIDATION_STATUS_NOT_RAN
+							networkPathValidated ? constants.TDE_VALIDATION_STATUS_SUCCEEDED : constants.TDE_VALIDATION_STATUS_PENDING
 						]
 					});
 
