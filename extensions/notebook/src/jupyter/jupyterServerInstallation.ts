@@ -83,18 +83,21 @@ export const requiredJupyterPkg: PythonPkgDetails = {
 	version: '1.0.0'
 };
 
+// https://github.com/microsoft/azuredatastudio/issues/23945
 export const requiredNotebookPkg: PythonPkgDetails = {
 	name: 'notebook',
 	version: '6.5.5',
 	installExactVersion: true
 };
 
+// https://github.com/microsoft/azuredatastudio/issues/24405
 export const requiredIpykernelPkg: PythonPkgDetails = {
 	name: 'ipykernel',
 	version: '5.5.5',
 	installExactVersion: true
 };
 
+// https://github.com/microsoft/azuredatastudio/issues/24443
 export const requiredTraitletsPkg: PythonPkgDetails = {
 	name: 'traitlets',
 	version: '5.9.0',
