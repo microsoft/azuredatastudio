@@ -95,6 +95,7 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 			return true;
 		});
 		this.migrationStateModel._targetType = MigrationTargetType.SQLDB;
+		this.executeChange(this.migrationStateModel._targetType);
 		await this._header.populateAssessmentDetailsHeader(this.migrationStateModel);
 		await this._body.populateAssessmentBody(this.migrationStateModel);
 		this.wizard.nextButton.enabled = this.migrationStateModel._assessmentResults !== undefined;
@@ -159,6 +160,31 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 				this.migrationStateModel._databasesForMigration = dbDbs;
 				break;
 		}
+		this.addWarningNotReadyCondition();
 		this.migrationStateModel.refreshDatabaseBackupPage = true;
+	}
+
+	// function to add warning message to wizard in case of target change
+	private addWarningNotReadyCondition() {
+		if (this.migrationStateModel._targetType === MigrationTargetType.SQLMI) {
+			if (this.migrationStateModel._assessmentResults?.databaseAssessments.some(db => db.issues.find(issue => issue.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI))) {
+				this.wizard.message = {
+					level: azdata.window.MessageLevel.Warning,
+					text: constants.ASSESSMENT_MIGRATION_WARNING_SQLMI,
+				};
+			}
+			else { this.wizard.message = { text: '' }; }
+		} else if (this.migrationStateModel._targetType === MigrationTargetType.SQLDB) {
+			if (this.migrationStateModel._assessmentResults?.databaseAssessments.some(db => db.issues.find(issue => issue.appliesToMigrationTargetPlatform === MigrationTargetType.SQLDB))) {
+				this.wizard.message = {
+					level: azdata.window.MessageLevel.Warning,
+					text: constants.ASSESSMENT_MIGRATION_WARNING_SQLDB,
+				};
+			}
+			else {
+				this.wizard.message = { text: '' };
+			}
+		}
+		else { this.wizard.message = { text: '' }; }
 	}
 }
