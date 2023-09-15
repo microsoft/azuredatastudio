@@ -229,8 +229,27 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 	if (!connectionUri) {
 		return;
 	}
-	const nodeTypeDisplayName = objectManagementLoc.getNodeTypeDisplayName(context.nodeInfo!.nodeType);
-	const originalName = context.nodeInfo!.metadata!.name;
+
+	let nodeType: string;
+	let originalName: string;
+	let objectUrn: string;
+	if (context.nodeInfo) {
+		nodeType = context.nodeInfo.nodeType;
+		originalName = context.nodeInfo.metadata?.name;
+		objectUrn = context.nodeInfo.metadata?.urn;
+	} else {
+		// Node info will be missing for top level connection items like servers and databases, so make a best guess here based on connection info.
+		// If we don't have a database name, then we have to assume it's a server node, which isn't valid for the Rename command.
+		if (context.connectionProfile?.databaseName?.length > 0) {
+			nodeType = ObjectManagement.NodeType.Database;
+			originalName = context.connectionProfile.databaseName;
+			objectUrn = `Server/Database[@Name='${escapeSingleQuotes(originalName)}']`
+		} else {
+			throw new Error(objectManagementLoc.NotSupportedError(ObjectManagement.NodeType.Server));
+		}
+	}
+
+	const nodeTypeDisplayName = objectManagementLoc.getNodeTypeDisplayName(nodeType);
 	const newName = await vscode.window.showInputBox({
 		title: objectManagementLoc.RenameObjectDialogTitle,
 		value: originalName,
@@ -256,9 +275,9 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 		operation: async (operation) => {
 			try {
 				const startTime = Date.now();
-				await service.rename(connectionUri, context.nodeInfo.nodeType as ObjectManagement.NodeType, context.nodeInfo!.metadata!.urn, newName);
+				await service.rename(connectionUri, nodeType as ObjectManagement.NodeType, objectUrn, newName);
 				TelemetryReporter.sendTelemetryEvent(TelemetryActions.RenameObject, {
-					objectType: context.nodeInfo!.nodeType
+					objectType: nodeType
 				}, {
 					elapsedTimeMs: Date.now() - startTime
 				});
@@ -266,7 +285,7 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 			catch (err) {
 				operation.updateStatus(azdata.TaskStatus.Failed, objectManagementLoc.RenameObjectError(nodeTypeDisplayName, originalName, newName, getErrorMessage(err)));
 				TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.RenameObject, err).withAdditionalProperties({
-					objectType: context.nodeInfo!.nodeType
+					objectType: nodeType
 				}).send();
 				console.error(err);
 				return;
