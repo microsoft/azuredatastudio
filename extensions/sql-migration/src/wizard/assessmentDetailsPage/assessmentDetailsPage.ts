@@ -12,6 +12,7 @@ import { MigrationStateModel, StateChangeEvent } from '../../models/stateMachine
 import { AssessmentDetailsHeader } from './assessmentDetailsHeader';
 import { AssessmentDetailsBody } from './assessmentDetialsBody';
 import { MigrationTargetType } from '../../api/utils';
+import { EOL } from 'os';
 
 // Class where assessment details page is defined
 export class AssessmentDetailsPage extends MigrationWizardPage {
@@ -50,7 +51,7 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 		this._disposables.push(this._header.targetTypeDropdown.onValueChanged(async (value) => {
 			if (value) {
 				const selectedTargetType = this.getTargetTypeBasedOnSelection(value.selected);
-				this.changeTargetType(selectedTargetType);
+				this.executeChange(selectedTargetType);
 				await this._header.populateAssessmentDetailsHeader(this.migrationStateModel);
 				await this._body.populateAssessmentBody(this.migrationStateModel);
 			}
@@ -74,15 +75,43 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizard.registerNavigationValidator((pageChangeInfo) => {
+			this.wizard.message = { text: '' };
+			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+				return true;
+			}
+			this.executeChange(this.migrationStateModel._targetType);
+			const errors: string[] = [];
+			if (this.migrationStateModel._databasesForMigration.length === 0) {
+				errors.push(constants.SELECT_DATABASE_TO_MIGRATE);
+			}
+			if (errors.length > 0) {
+				this.wizard.message = {
+					text: errors.join(EOL),
+					level: azdata.window.MessageLevel.Error
+				};
+				return false;
+			}
+			return true;
+		});
 		this.migrationStateModel._targetType = MigrationTargetType.SQLDB;
 		await this._header.populateAssessmentDetailsHeader(this.migrationStateModel);
 		await this._body.populateAssessmentBody(this.migrationStateModel);
+		this.wizard.nextButton.enabled = this.migrationStateModel._assessmentResults !== undefined;
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizard.registerNavigationValidator(pageChangeInfo => true);
+		this.wizard.message = { text: '' };
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
+	}
+
+	private didUpdateDatabasesForMigration(priorDbs: string[], selectedDbs: string[]) {
+		this.migrationStateModel._didUpdateDatabasesForMigration = selectedDbs.length === 0
+			|| selectedDbs.length !== priorDbs.length
+			|| priorDbs.some(db => selectedDbs.indexOf(db) < 0);
 	}
 
 	// function to give target type based on value selected in dropdown.
@@ -98,10 +127,13 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 		return MigrationTargetType.SQLDB;
 	}
 
-	// function to execute when user changes target type.
-	private changeTargetType(newTargetType: string): void {
+	// function to execute when user changes target type for the selected databases.
+	private executeChange(newTargetType: string): void {
+		const selectedDbs = this._body.treeComponent.selectedDbs();
 		switch (newTargetType) {
 			case MigrationTargetType.SQLMI:
+				this.didUpdateDatabasesForMigration(this.migrationStateModel._miDbs, selectedDbs);
+				this.migrationStateModel._miDbs = selectedDbs;
 				const miDbs = this.migrationStateModel._miDbs.filter(
 					db => this.migrationStateModel._databasesForAssessment.findIndex(
 						dba => dba === db) >= 0);
@@ -109,6 +141,8 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 				this.migrationStateModel._databasesForMigration = miDbs;
 				break;
 			case MigrationTargetType.SQLVM:
+				this.didUpdateDatabasesForMigration(this.migrationStateModel._vmDbs, selectedDbs);
+				this.migrationStateModel._vmDbs = selectedDbs;
 				const vmDbs = this.migrationStateModel._vmDbs.filter(
 					db => this.migrationStateModel._databasesForAssessment.findIndex(
 						dba => dba === db) >= 0);
@@ -116,6 +150,8 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 				this.migrationStateModel._databasesForMigration = vmDbs;
 				break;
 			case MigrationTargetType.SQLDB:
+				this.didUpdateDatabasesForMigration(this.migrationStateModel._sqldbDbs, selectedDbs);
+				this.migrationStateModel._sqldbDbs = selectedDbs;
 				const dbDbs = this.migrationStateModel._sqldbDbs.filter(
 					db => this.migrationStateModel._databasesForAssessment.findIndex(
 						dba => dba === db) >= 0);

@@ -34,6 +34,10 @@ export class AssessmentDetailsBody {
 		this._treeComponent = new TreeComponent();
 	}
 
+	public get treeComponent() {
+		return this._treeComponent;
+	}
+
 	// function that defines all the components for body section
 	public createAssessmentDetailsBody(view: azdata.ModelView): azdata.Component {
 		this._view = view;
