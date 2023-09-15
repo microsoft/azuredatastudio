@@ -4813,7 +4813,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": "^1.79.2"
+									"value": "^1.79.1"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
