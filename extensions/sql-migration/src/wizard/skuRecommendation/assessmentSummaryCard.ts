@@ -14,6 +14,7 @@ import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
 import { MigrationTargetType } from '../../api/utils';
 import { IconPathHelper } from '../../constants/iconPathHelper';
+import { ColorCodes } from '../../constants/helper';
 
 export class AssessmentSummaryCard implements vscode.Disposable {
 	private _disposables: vscode.Disposable[] = [];
@@ -28,9 +29,11 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 	private _recommendedConfigurationText!: azdata.TextComponent;
 	private _vmRecommendedConfigurationText!: azdata.TextComponent;
 
+	// Target Type is passed in constructor to create the summary card based on that.
 	constructor(public migrationTargetType: MigrationTargetType) {
 	}
 
+	// Creates the whole assessment summary card with Assessment/SKU result summary.
 	public createAssessmentSummaryCard(view: azdata.ModelView): azdata.FlexContainer {
 		const cardContainer = view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
@@ -42,7 +45,6 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				'justify-content': 'center',
 				'box-shadow': '0px 1px 4px rgba(0, 0, 0, 0.13)',
 				'border-radius': '2px',
-				// 'margin-top': '16px',
 				'padding': '16px 8px, 16px, 8px',
 				'gap': '16px'
 			}
@@ -73,7 +75,6 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				'font-weight': '600',
 				'margin': '0px',
 				'padding-top': '5px',
-				// 'padding-left': '44px'
 			},
 		}).component();
 
@@ -103,6 +104,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		return cardContainer;
 	}
 
+	// Creates the Assessment Result conatiner with all details.
 	private createAssessmentResultsContainer(view: azdata.ModelView) {
 		const container = view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
@@ -125,12 +127,11 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				'display': 'flex',
 				'flex-direction': 'column',
 				'gap': '0px',
-				// 'height': '32',
 			}
 		}).component();
 
 		const assessmentResultPreText = view.modelBuilder.text().withProps({
-			value: constants.ASSESSMENT_RESULTS.toUpperCase(),
+			value: constants.ASSESSMENT_RESULTS.toLocaleUpperCase(),
 			description: "", //TODO - add description later
 			CSSStyles: {
 				...styles.TOOLBAR_CSS,
@@ -166,6 +167,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		return container;
 	}
 
+	// Creates the conatiner with read/ready_with_warnings/not_ready info for each target type.
 	private createMigrationReadinessContainer(view: azdata.ModelView) {
 		const container = view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
@@ -204,6 +206,8 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		return container;
 	}
 
+
+	// Creates the container with errors/warnings for each of target type.
 	private createAssessmentFindingsContainer(view: azdata.ModelView) {
 		const container = view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
@@ -267,7 +271,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				label.value = constants.READY;
 				value.CSSStyles = {
 					...styles.ASSESSMENT_SUMMARY_CARD_CSS,
-					'color': '#57A300',
+					'color': ColorCodes.ReadyState_Green,
 				};
 				this._readyText = value;
 				break;
@@ -275,7 +279,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				label.value = constants.NEEDS_REVIEW;
 				value.CSSStyles = {
 					...styles.ASSESSMENT_SUMMARY_CARD_CSS,
-					'color': '#DB7500',
+					'color': ColorCodes.ReadyWithWarningState_Amber,
 				};
 				this._needsReviewText = value;
 				break;
@@ -283,7 +287,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				label.value = constants.NOT_READY;
 				value.CSSStyles = {
 					...styles.ASSESSMENT_SUMMARY_CARD_CSS,
-					'color': '#E00B1C',
+					'color': ColorCodes.NotReadyState_Red,
 				};
 				this._notReadyText = value;
 				break;
@@ -291,7 +295,6 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				label.value = constants.BLOCKERS;
 				value.CSSStyles = {
 					...styles.ASSESSMENT_SUMMARY_CARD_CSS,
-					'color': '#323130',
 				};
 				this._blockersText = value;
 				break;
@@ -299,7 +302,6 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				label.value = constants.WARNINGS;
 				value.CSSStyles = {
 					...styles.ASSESSMENT_SUMMARY_CARD_CSS,
-					'color': '#323130',
 				};
 				this._warningsText = value;
 				break;
@@ -309,7 +311,8 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		return container;
 	}
 
-
+	// Creates the SKU recommendation Part of summary.
+	// TODO - Add the dialog link later which gives the detail of SKU Recommendation.
 	private createRecommendedConfigurationContainer(view: azdata.ModelView) {
 		const container = view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
@@ -320,7 +323,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		}).component();
 
 		const recommendedConfigurationLabel = view.modelBuilder.text().withProps({
-			value: constants.RECOMMENDED_CONFIGURATION.toUpperCase(),
+			value: constants.RECOMMENDED_CONFIGURATION.toLocaleUpperCase(),
 			description: "", // TODO - need this value later
 			height: 18,
 			CSSStyles: {
@@ -382,6 +385,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		return container;
 	}
 
+	// Used to update the summary of assessment card later after its initialization.
 	// TODO - We can remove dummayData input later and use a some other way to pass the values. Once we start implementing the whole page.
 	public async updateContent(dummyData: DummyData) {
 		await this._assessmentResultText.updateProperties({ "value": constants.ASSESSED_DBS(dummyData.assessmentResult) });
@@ -403,6 +407,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 	}
 }
 
+// Defines type of result type in assessment summary
 export enum AssessmentResultType {
 	READY = 0,
 	NEEDS_REVIEW = 1,
