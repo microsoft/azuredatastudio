@@ -61,7 +61,7 @@ export class AssessmentDetailsBody {
 
 		bodyContainer.addItem(treeComponent, { flex: "none" });
 		bodyContainer.addItem(findingsListComponent, { flex: "none" });
-		bodyContainer.addItem(summaryComponent, { flex: "none" });
+		bodyContainer.addItem(summaryComponent, { flex: "none", CSSStyles: { 'width': '450px', 'min-height': '400px', 'border-left': 'solid 1px' } });
 
 		return bodyContainer;
 	}
@@ -112,7 +112,6 @@ export class AssessmentDetailsBody {
 		}).withProps({
 			width: '450px',
 			CSSStyles: {
-				'border-left': 'solid 1px',
 				'width': '450px'
 			}
 		}).component();
