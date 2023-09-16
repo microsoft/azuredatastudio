@@ -181,7 +181,8 @@ export enum ModelComponentTypes {
 	PropertiesContainer,
 	InfoBox,
 	Slider,
-	ExecutionPlan
+	ExecutionPlan,
+	Chart
 }
 
 export enum ModelViewAction {

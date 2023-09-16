@@ -276,7 +276,7 @@ export const enum UserType {
 	 */
 	SqlAuthentication = 'SqlAuthentication',
 	/**
-	 * Authenticate with Azure Active Directory.
+	 * Authenticate with Microsoft Entra.
 	 */
 	AADAuthentication = 'AADAuthentication',
 	/**
@@ -476,7 +476,7 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	azureMaxSizes?: AzureEditionDetails[];
 	pageVerifyOptions?: string[];
 	restrictAccessOptions?: string[];
-	dscOnOffOptions?: string[];
+	propertiesOnOffOptions?: string[];
 	dscElevateOptions?: string[];
 	dscEnableDisableOptions?: string[];
 	rowDataFileGroupsOptions?: string[];
@@ -498,7 +498,7 @@ export interface QueryStoreOptions {
 	queryStoreCaptureMode: string;
 	sizeBasedCleanupMode: string;
 	staleQueryThresholdInDays: number;
-	waitStatisticsCaptureMode?: boolean;
+	waitStatisticsCaptureMode?: string;
 	capturePolicyOptions?: QueryStoreCapturePolicyOptions;
 	currentStorageSizeInMB: number;
 }

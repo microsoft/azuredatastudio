@@ -1,0 +1,297 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/ms-mssql.sql-bindings-vscode/dist/common/constants" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="enterPasswordPrompt">
+        <source xml:lang="en">(Optional) Enter connection password to save in local.settings.json</source>
+        <target state="translated">(可选) 输入连接密码以保存在 local.settings.json 中</target>
+      </trans-unit>
+      <trans-unit id="azureFunctionsProjectMustBeOpened">
+        <source xml:lang="en">A C# Azure Functions project must be present in order to create a new Azure Function with SQL binding.</source>
+        <target state="translated">必须存在 C# Azure Functions 项目才能使用创建包含 SQL 绑定的新的 Azure 函数。</target>
+      </trans-unit>
+      <trans-unit id="addPackage">
+        <source xml:lang="en">Add Package</source>
+        <target state="translated">添加包</target>
+      </trans-unit>
+      <trans-unit id="addSqlBinding">
+        <source xml:lang="en">Adding SQL Binding to function "{0}"...</source>
+        <target state="translated">正在将 SQL 绑定添加到函数“{0}”...</target>
+      </trans-unit>
+      <trans-unit id="dotnetResult">
+        <source xml:lang="en">Adding SQL nuget package:
+{0}</source>
+        <target state="translated">正在添加 SQL nuget 包: 
+{0}</target>
+      </trans-unit>
+      <trans-unit id="failedToGetConnectionString">
+        <source xml:lang="en">An error occurred generating the connection string for the selected connection</source>
+        <target state="translated">生成所选连接的连接字符串时出错</target>
+      </trans-unit>
+      <trans-unit id="azureFunctionsExtensionNotInstalled">
+        <source xml:lang="en">Azure Functions extension must be installed in order to use this feature.</source>
+        <target state="translated">必须安装 Azure Functions 扩展才能使用此功能。</target>
+      </trans-unit>
+      <trans-unit id="browseEllipsis">
+        <source xml:lang="en">Browse...</source>
+        <target state="translated">浏览...</target>
+      </trans-unit>
+      <trans-unit id="closeButton">
+        <source xml:lang="en">Close</source>
+        <target state="translated">关闭</target>
+      </trans-unit>
+      <trans-unit id="connectionStringSetting">
+        <source xml:lang="en">Connection string setting name</source>
+        <target state="translated">连接字符串设置名称</target>
+      </trans-unit>
+      <trans-unit id="connectionStringSettingPlaceholder">
+        <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
+        <target state="translated">"local.settings.json" 中指定的连接字符串设置</target>
+      </trans-unit>
+      <trans-unit id="createProject">
+        <source xml:lang="en">Create Azure Function Project</source>
+        <target state="translated">创建 Azure 函数项目</target>
+      </trans-unit>
+      <trans-unit id="createNewLocalAppSetting">
+        <source xml:lang="en">Create new local app setting</source>
+        <target state="translated">创建新的本地应用设置</target>
+      </trans-unit>
+      <trans-unit id="doNotInstall">
+        <source xml:lang="en">Do not install</source>
+        <target state="translated">不安装</target>
+      </trans-unit>
+      <trans-unit id="includePassword">
+        <source xml:lang="en">Do you want to include the password from this connection in your local.settings.json file?</source>
+        <target state="translated">是否要将此连接中的密码包含在 local.settings.json 文件中?</target>
+      </trans-unit>
+      <trans-unit id="enterTableName">
+        <source xml:lang="en">Enter SQL table to query</source>
+        <target state="translated">输入要查询的 SQL 表</target>
+      </trans-unit>
+      <trans-unit id="enterTableNameToUpsert">
+        <source xml:lang="en">Enter SQL table to upsert into</source>
+        <target state="translated">输入要更新插入到的 SQL 表</target>
+      </trans-unit>
+      <trans-unit id="enterViewName">
+        <source xml:lang="en">Enter SQL view to query</source>
+        <target state="translated">输入要查询的 SQL 视图</target>
+      </trans-unit>
+      <trans-unit id="userConnectionString">
+        <source xml:lang="en">Enter connection string</source>
+        <target state="translated">输入连接字符串</target>
+      </trans-unit>
+      <trans-unit id="enterConnectionString">
+        <source xml:lang="en">Enter connection string</source>
+        <target state="translated">输入连接字符串</target>
+      </trans-unit>
+      <trans-unit id="enterConnectionStringSettingName">
+        <source xml:lang="en">Enter connection string setting name</source>
+        <target state="translated">输入连接字符串设置名称</target>
+      </trans-unit>
+      <trans-unit id="errorNewAzureFunction">
+        <source xml:lang="en">Error creating new Azure Function: {0}</source>
+        <target state="translated">创建新的 Azure 函数时出错: {0}</target>
+      </trans-unit>
+      <trans-unit id="failedToParse">
+        <source xml:lang="en">Failed to parse "{0}": {1}.</source>
+        <target state="translated">未能解析“{0}”: {1}。</target>
+      </trans-unit>
+      <trans-unit id="unableToSetConnectionString">
+        <source xml:lang="en">Failed to set connection string app setting</source>
+        <target state="translated">无法设置连接字符串应用设置</target>
+      </trans-unit>
+      <trans-unit id="failedToSetSetting">
+        <source xml:lang="en">Failed to set connection string app setting: {0}</source>
+        <target state="translated">无法设置连接字符串应用设置: {0}</target>
+      </trans-unit>
+      <trans-unit id="tableListProgressTitle">
+        <source xml:lang="en">Fetching tables for selected database...</source>
+        <target state="translated">正在提取所选数据库的表...</target>
+      </trans-unit>
+      <trans-unit id="viewListProgressTitle">
+        <source xml:lang="en">Fetching views for selected database...</source>
+        <target state="translated">正在提取所选数据库的视图...</target>
+      </trans-unit>
+      <trans-unit id="functionNameTitle">
+        <source xml:lang="en">Function Name</source>
+        <target state="translated">函数名称</target>
+      </trans-unit>
+      <trans-unit id="userPasswordLater">
+        <source xml:lang="en">In order to user the SQL connection string later you will need to manually enter the password in your local.settings.json file.</source>
+        <target state="translated">若要在以后使用 SQL 连接字符串，需要在 local.settings.json 文件中手动输入密码。</target>
+      </trans-unit>
+      <trans-unit id="input">
+        <source xml:lang="en">Input</source>
+        <target state="translated">输入</target>
+      </trans-unit>
+      <trans-unit id="install">
+        <source xml:lang="en">Install</source>
+        <target state="translated">安装</target>
+      </trans-unit>
+      <trans-unit id="learnMore">
+        <source xml:lang="en">Learn more</source>
+        <target state="translated">了解详细信息</target>
+      </trans-unit>
+      <trans-unit id="SettingAlreadyExists">
+        <source xml:lang="en">Local app setting '{0}' already exists. Overwrite?</source>
+        <target state="translated">本地应用设置“{0}”已存在。是否覆盖?</target>
+      </trans-unit>
+      <trans-unit id="moreInformation">
+        <source xml:lang="en">More Information</source>
+        <target state="translated">更多信息</target>
+      </trans-unit>
+      <trans-unit id="nameMustNotBeEmpty">
+        <source xml:lang="en">Name must not be empty</source>
+        <target state="translated">名称不得为空</target>
+      </trans-unit>
+      <trans-unit id="hasSpecialCharacters">
+        <source xml:lang="en">Name must not include special characters</source>
+        <target state="translated">名称不得包含特殊字符</target>
+      </trans-unit>
+      <trans-unit id="noString">
+        <source xml:lang="en">No</source>
+        <target state="translated">否</target>
+      </trans-unit>
+      <trans-unit id="noAzureFunctionsInFile">
+        <source xml:lang="en">No Azure functions in the current active file</source>
+        <target state="translated">当前活动文件中没有 Azure 函数</target>
+      </trans-unit>
+      <trans-unit id="noAzureFunctionsProjectsInWorkspace">
+        <source xml:lang="en">No Azure functions projects found in the workspace</source>
+        <target state="translated">在工作区中找不到 Azure Functions 项目</target>
+      </trans-unit>
+      <trans-unit id="openFile">
+        <source xml:lang="en">Open File</source>
+        <target state="translated">打开文件</target>
+      </trans-unit>
+      <trans-unit id="output">
+        <source xml:lang="en">Output</source>
+        <target state="translated">输出</target>
+      </trans-unit>
+      <trans-unit id="inputDescription">
+        <source xml:lang="en">Retrieves data from a database</source>
+        <target state="translated">从数据库中检索数据</target>
+      </trans-unit>
+      <trans-unit id="sqlObjectToQuery">
+        <source xml:lang="en">SQL object to query</source>
+        <target state="translated">要查询的 SQL 对象</target>
+      </trans-unit>
+      <trans-unit id="sqlTableToUpsert">
+        <source xml:lang="en">SQL table to upsert into</source>
+        <target state="translated">要更新插入到的 SQL 表</target>
+      </trans-unit>
+      <trans-unit id="save">
+        <source xml:lang="en">Save</source>
+        <target state="translated">保存</target>
+      </trans-unit>
+      <trans-unit id="outputDescription">
+        <source xml:lang="en">Save data to a database</source>
+        <target state="translated">将数据保存到数据库</target>
+      </trans-unit>
+      <trans-unit id="selectButton">
+        <source xml:lang="en">Select</source>
+        <target state="translated">选择</target>
+      </trans-unit>
+      <trans-unit id="selectDatabase">
+        <source xml:lang="en">Select Database</source>
+        <target state="translated">选择数据库</target>
+      </trans-unit>
+      <trans-unit id="selectConnectionString">
+        <source xml:lang="en">Select SQL connection string method</source>
+        <target state="translated">选择 SQL 连接字符串方法</target>
+      </trans-unit>
+      <trans-unit id="selectSetting">
+        <source xml:lang="en">Select SQL connection string setting from local.settings.json</source>
+        <target state="translated">从 local.settings.json 中选择 SQL 连接字符串设置</target>
+      </trans-unit>
+      <trans-unit id="connectionProfile">
+        <source xml:lang="en">Select a connection profile</source>
+        <target state="translated">选择连接配置文件</target>
+      </trans-unit>
+      <trans-unit id="selectAzureFunction">
+        <source xml:lang="en">Select an Azure function in the current file to add SQL binding to</source>
+        <target state="translated">在当前文件中选择要将 SQL 绑定添加到的 Azure 函数</target>
+      </trans-unit>
+      <trans-unit id="selectAzureFunctionProjFolder">
+        <source xml:lang="en">Select folder for the Azure Function project</source>
+        <target state="translated">选择 Azure 函数项目的文件夹</target>
+      </trans-unit>
+      <trans-unit id="selectSqlTableOrViewPrompt">
+        <source xml:lang="en">Select object type to insert or upsert into</source>
+        <target state="translated">选择要插入或更新插入的对象类型</target>
+      </trans-unit>
+      <trans-unit id="selectTable">
+        <source xml:lang="en">Select table to use</source>
+        <target state="translated">选择要使用的表</target>
+      </trans-unit>
+      <trans-unit id="selectProject">
+        <source xml:lang="en">Select the Azure Function project for the SQL Binding</source>
+        <target state="translated">为 SQL 绑定选择 Azure 函数项目</target>
+      </trans-unit>
+      <trans-unit id="selectBindingType">
+        <source xml:lang="en">Select type of binding</source>
+        <target state="translated">选择绑定类型</target>
+      </trans-unit>
+      <trans-unit id="selectBindingTypeToSpecifiedFunction">
+        <source xml:lang="en">Select type of binding for the function '{0}'</source>
+        <target state="translated">选择函数“{0}”的绑定类型</target>
+      </trans-unit>
+      <trans-unit id="selectView">
+        <source xml:lang="en">Select view to use</source>
+        <target state="translated">选择要使用的视图</target>
+      </trans-unit>
+      <trans-unit id="table">
+        <source xml:lang="en">Table</source>
+        <target state="translated">表</target>
+      </trans-unit>
+      <trans-unit id="azureFunctionsExtensionNotFound">
+        <source xml:lang="en">The Azure Functions extension is required to create a new Azure Function with SQL binding but is not installed, install it now?</source>
+        <target state="translated">需要 Azure Functions 扩展才能使用 SQL 绑定创建新的 Azure 函数，但未安装，是否立即安装?</target>
+      </trans-unit>
+      <trans-unit id="saveChangesInFile">
+        <source xml:lang="en">There are unsaved changes in the current file. Save now?</source>
+        <target state="translated">当前文件中存在未保存的更改。立即保存?</target>
+      </trans-unit>
+      <trans-unit id="timeoutAzureFunctionFileError">
+        <source xml:lang="en">Timed out waiting for Azure Function file to be created</source>
+        <target state="translated">等待创建 Azure 函数文件时超时</target>
+      </trans-unit>
+      <trans-unit id="timeoutExtensionError">
+        <source xml:lang="en">Timed out waiting for extension to install</source>
+        <target state="translated">等待安装扩展时超时</target>
+      </trans-unit>
+      <trans-unit id="valueMustNotBeEmpty">
+        <source xml:lang="en">Value must not be empty</source>
+        <target state="translated">值不能为空</target>
+      </trans-unit>
+      <trans-unit id="view">
+        <source xml:lang="en">View</source>
+        <target state="translated">查看</target>
+      </trans-unit>
+      <trans-unit id="yesString">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">是</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/ms-mssql.sql-bindings-vscode/package" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="sqlBindings.addSqlBinding">
+        <source xml:lang="en">Add SQL Binding (preview)</source>
+        <target state="translated">添加 SQL 绑定(预览)</target>
+      </trans-unit>
+      <trans-unit id="sqlBindings.createAzureFunction">
+        <source xml:lang="en">Create Azure Function with SQL binding (preview)</source>
+        <target state="translated">创建包含 SQL 绑定的 Azure 函数 (预览版)</target>
+      </trans-unit>
+      <trans-unit id="description">
+        <source xml:lang="en">Enables users to develop and publish Azure Functions with Azure SQL bindings</source>
+        <target state="translated">使用户能够开发和发布包含 Azure SQL 绑定的 Azure Functions</target>
+      </trans-unit>
+      <trans-unit id="displayName">
+        <source xml:lang="en">SQL Bindings</source>
+        <target state="translated">SQL 绑定</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
