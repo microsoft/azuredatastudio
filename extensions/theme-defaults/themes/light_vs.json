@@ -31,6 +31,7 @@
 		"list.focusAndSelectionOutline": "#90C2F9",
 		"terminal.inactiveSelectionBackground": "#E5EBF1",
 		"widget.border": "#d4d4d4",
+		"actionBar.toggledBackground": "#dddddd",
 		"input.border":"#CECECE"
 	},
 	"tokenColors": [
@@ -38,7 +39,8 @@
 			"scope": [
 				"meta.embedded",
 				"source.groovy.embedded",
-				"string meta.image.inline.markdown"
+				"string meta.image.inline.markdown",
+				"variable.legacy.builtin.python"
 			],
 			"settings": {
 				"foreground": "#000000ff"
@@ -63,11 +65,7 @@
 			}
 		},
 		{
-			"name": "Comments",
-			"scope": [
-				"comment",
-				"string.quoted.docstring"
-			],
+			"scope": "comment",
 			"settings": {
 				"foreground": "#008000"
 			}

@@ -60,7 +60,7 @@ suite.skip('NativeExtensionsScanerService Test', () => { // {{SQL CARBON EDIT}} 
 
 	setup(async () => {
 		translations = {};
-		instantiationService = new TestInstantiationService();
+		instantiationService = disposables.add(new TestInstantiationService());
 		const logService = new NullLogService();
 		const fileService = disposables.add(new FileService(logService));
 		const fileSystemProvider = disposables.add(new InMemoryFileSystemProvider());

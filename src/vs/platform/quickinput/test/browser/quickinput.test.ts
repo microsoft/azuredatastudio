@@ -13,8 +13,9 @@ import { raceTimeout } from 'vs/base/common/async';
 import { unthemedCountStyles } from 'vs/base/browser/ui/countBadge/countBadge';
 import { unthemedKeybindingLabelOptions } from 'vs/base/browser/ui/keybindingLabel/keybindingLabel';
 import { unthemedProgressBarOptions } from 'vs/base/browser/ui/progressbar/progressbar';
-import { QuickInputController } from 'vs/platform/quickinput/browser/quickInput';
+import { QuickInputController } from 'vs/platform/quickinput/browser/quickInputController';
 import { IQuickPick, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
+import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 
 // Sets up an `onShow` listener to allow us to wait until the quick pick is shown (useful when triggering an `accept()` right after launching a quick pick)
 // kick this off before you launch the picker and then await the promise returned after you launch the picker.
@@ -81,9 +82,10 @@ suite('QuickInput', () => { // https://github.com/microsoft/vscode/issues/147543
 				pickerGroup: {
 					pickerGroupBorder: undefined,
 					pickerGroupForeground: undefined,
-				},
+				}
 			}
-		});
+		},
+			new TestThemeService());
 
 		// initial layout
 		controller.layout({ height: 20, width: 40 }, 0);

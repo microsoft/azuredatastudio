@@ -59,9 +59,6 @@ app.setPath('userData', userDataPath);
 // Resolve code cache path
 const codeCachePath = getCodeCachePath();
 
-// Configure static command line arguments
-const argvConfig = configureCommandlineSwitchesSync(args);
-
 // Disable default menu (https://github.com/electron/electron/issues/35512)
 Menu.setApplicationMenu(null);
 
@@ -197,7 +194,10 @@ function configureCommandlineSwitchesSync(cliArgs) {
 		'disable-hardware-acceleration',
 
 		// override for the color profile to use
-		'force-color-profile'
+		'force-color-profile',
+
+		// override which password-store is used
+		'password-store'
 	];
 
 	if (process.platform === 'linux') {
@@ -224,8 +224,12 @@ function configureCommandlineSwitchesSync(cliArgs) {
 		// Append Electron flags to Electron
 		if (SUPPORTED_ELECTRON_SWITCHES.indexOf(argvKey) !== -1) {
 
-			// Color profile
-			if (argvKey === 'force-color-profile') {
+			if (
+				// Color profile
+				argvKey === 'force-color-profile' ||
+				// Password store
+				argvKey === 'password-store'
+			) {
 				if (argvValue) {
 					app.commandLine.appendSwitch(argvKey, argvValue);
 				}
@@ -475,6 +479,9 @@ function parseCLIArgs() {
 			'locale',
 			'js-flags',
 			'crash-reporter-directory'
+		],
+		boolean: [
+			'disable-chromium-sandbox',
 		],
 		default: {
 			'sandbox': false // {{SQL CARBON EDIT} - set sandbox to false

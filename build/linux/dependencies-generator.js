@@ -20,8 +20,13 @@ const types_2 = require("./rpm/types"); // {{SQL CARBON EDIT}} remove unused imp
 // If true, we fail the build if there are new dependencies found during that task.
 // The reference dependencies, which one has to update when the new dependencies
 // are valid, are in dep-lists.ts
+<<<<<<< HEAD
 // const FAIL_BUILD_FOR_NEW_DEPENDENCIES: boolean = false; // {{SQL CARBON EDIT}} Not needed
 // Based on https://source.chromium.org/chromium/chromium/src/+/refs/tags/108.0.5359.215:chrome/installer/linux/BUILD.gn;l=64-80
+=======
+const FAIL_BUILD_FOR_NEW_DEPENDENCIES = true;
+// Based on https://source.chromium.org/chromium/chromium/src/+/refs/tags/114.0.5735.199:chrome/installer/linux/BUILD.gn;l=64-80
+>>>>>>> vs/release/1.82
 // and the Linux Archive build
 // Shared library dependencies that we already bundle.
 const bundledDeps = [

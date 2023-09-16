@@ -29,7 +29,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - name: Compute node modules cache key
         id: nodeModulesCacheKey
@@ -82,7 +82,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       # {{SQL CARBON TODO}} Update node modules caching to work with our cache keys
       # - name: Compute node modules cache key
@@ -150,7 +150,7 @@ jobs:
 
   #     - uses: actions/setup-node@v3
   #       with:
-  #         node-version: 16
+  #         node-version: 18
 
   #     - name: Compute node modules cache key
   #       id: nodeModulesCacheKey
