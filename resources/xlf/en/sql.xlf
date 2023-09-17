@@ -1694,10 +1694,10 @@ Default Skipped Commands:
       <source xml:lang="en">Collapse All Connections</source>
     </trans-unit>
     <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
-      <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
+      <source xml:lang="en">Microsoft Entra ID - Universal with MFA support</source>
     </trans-unit>
     <trans-unit id="sql.defaultAuthenticationType.AzureMFAAndUser">
-      <source xml:lang="en">Azure Active Directory - Password</source>
+      <source xml:lang="en">Microsoft Entra ID - Password</source>
     </trans-unit>
     <trans-unit id="sql.defaultAuthenticationType.Integrated">
       <source xml:lang="en">Windows Authentication</source>
@@ -5518,7 +5518,7 @@ Error Message: {1}</source>
       <source xml:lang="en">Azure subscription</source>
     </trans-unit>
     <trans-unit id="backupRestoreUrlBrowserDialog.tenant">
-      <source xml:lang="en">Azure AD Tenant</source>
+      <source xml:lang="en">Microsoft Entra Tenant</source>
     </trans-unit>
     <trans-unit id="fileBrowser.discard">
       <source xml:lang="en">Discard</source>
@@ -5721,7 +5721,7 @@ Error Message: {1}</source>
       <source xml:lang="en">Account</source>
     </trans-unit>
     <trans-unit id="connection.azureTenantDropdownLabel">
-      <source xml:lang="en">Azure AD tenant</source>
+      <source xml:lang="en">Microsoft Entra tenant</source>
     </trans-unit>
     <trans-unit id="connectionName">
       <source xml:lang="en">Name (optional)</source>
