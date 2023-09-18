@@ -4776,34 +4776,34 @@
 					},
 					"versions": [
 						{
-							"version": "0.9.3",
-							"lastUpdated": "04/26/2022",
+							"version": "1.2.1",
+							"lastUpdated": "09/15/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/mongodb/mongodb.mongodb-vscode-0.9.3.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/mongodb/mongodb.mongodb-vscode-1.2.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v0.9.3/images/mongodb.png"
+									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v1.2.1/images/mongodb.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v0.9.3/README.md"
+									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v1.2.1/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v0.9.3/CHANGELOG.md"
+									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v1.2.1/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v0.9.3/package.json"
+									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v1.2.1/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v0.9.3/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/mongodb-js/vscode/v1.2.1/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -4813,7 +4813,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": "^1.65.2"
+									"value": "^1.79.1"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -4827,7 +4827,7 @@
 						}
 					],
 					"statistics": [],
-					"flags": "preview"
+					"flags": ""
 				},
 				{
 					"extensionId": "96",
