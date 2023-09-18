@@ -387,17 +387,21 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 
 	// Used to update the summary of assessment card later after its initialization.
 	// TODO - We can remove dummayData input later and use a some other way to pass the values. Once we start implementing the whole page.
-	public async updateContent(dummyData: DummyData) {
-		await this._assessmentResultText.updateProperties({ "value": constants.ASSESSED_DBS(dummyData.assessmentResult) });
-		await this._readyText.updateProperties({ "value": dummyData.ready.toString() });
-		await this._needsReviewText.updateProperties({ "value": dummyData.needsReview.toString() });
-		await this._notReadyText.updateProperties({ "value": dummyData.notReady.toString() });
-		await this._blockersText.updateProperties({ "value": dummyData.blockers.toString() });
-		await this._warningsText.updateProperties({ "value": dummyData.warnings.toString() });
+	public async updateAssessmentResult(
+		databaseCounts: number, ready: number, needsReview: number, notReady: number,
+		blockers: number, warnings: number) {
+		await this._assessmentResultText.updateProperties({ "value": constants.ASSESSED_DBS(databaseCounts) });
+		await this._readyText.updateProperties({ "value": ready.toString() });
+		await this._needsReviewText.updateProperties({ "value": needsReview.toString() });
+		await this._notReadyText.updateProperties({ "value": notReady.toString() });
+		await this._blockersText.updateProperties({ "value": blockers.toString() });
+		await this._warningsText.updateProperties({ "value": warnings.toString() });
+	}
 
-		await this._recommendedConfigurationText.updateProperties({ "value": dummyData.skuRecommendation.toString() });
-		await this._vmRecommendedConfigurationText.updateProperties({ "value": dummyData.vmRecommendation });
-
+	public async updateSkuRecommendation(
+		skuRecommendation: string, vmRecommendation: string) {
+		await this._recommendedConfigurationText.updateProperties({ "value": skuRecommendation });
+		await this._vmRecommendedConfigurationText.updateProperties({ "value": vmRecommendation });
 	}
 
 	// TODO - Check this later, if we need to handle this separately.
@@ -417,11 +421,9 @@ export enum AssessmentResultType {
 }
 
 // TODO - We can remove this class later and use a some other way to pass the values. Once we start implementing the whole page.
-export class DummyData {
-	constructor(
-		public assessmentResult: number,
-		public ready: number, public needsReview: number, public notReady: number,
-		public blockers: number, public warnings: number,
-		public skuRecommendation: string, public vmRecommendation: string) {
-	}
-}
+// export class AssessmentResult {
+// 	constructor(
+// 		public ready: number, public needsReview: number, public notReady: number,
+// 		public blockers: number, public warnings: number) {
+// 	}
+// }
