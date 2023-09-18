@@ -100,6 +100,14 @@ export const CARD_AXES_LABEL = {
 	'font-weight': '600',
 };
 
+
+export const ASSESSMENT_SUMMARY_CARD_CSS = {
+	'font-size': '16px',
+	'line-height': '21.28px',
+	'font-weight': '700',
+	'margin': '0px',
+};
+
 export const TDE_VALIDATION_INFO_LABEL = {
 	'font-size': '14px',
 	'line-height': '20px',
