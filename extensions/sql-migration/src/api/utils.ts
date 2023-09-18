@@ -949,7 +949,7 @@ export async function isAdmin(): Promise<boolean> {
 		if (isWindows()) {
 			isAdmin = (await import('native-is-elevated'))();
 		} else {
-			isAdmin = process.getuid() === 0;
+			isAdmin = process.getuid?.() === 0;
 		}
 	} catch (e) {
 		//Ignore error and return false;
