@@ -243,7 +243,7 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 		if (context.connectionProfile?.databaseName?.length > 0) {
 			nodeType = ObjectManagement.NodeType.Database;
 			originalName = context.connectionProfile.databaseName;
-			objectUrn = `Server/Database[@Name='${escapeSingleQuotes(originalName)}']`
+			objectUrn = `Server/Database[@Name='${escapeSingleQuotes(originalName)}']`;
 		} else {
 			throw new Error(objectManagementLoc.NotSupportedError(ObjectManagement.NodeType.Server));
 		}
