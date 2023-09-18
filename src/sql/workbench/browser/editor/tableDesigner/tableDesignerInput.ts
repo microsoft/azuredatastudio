@@ -82,7 +82,6 @@ export class TableDesignerInput extends EditorInput {
 	}
 
 	override getTitle(verbosity?: Verbosity): string {
-		//TODO - Need to implement advanced options to title (long/medium for hover, short for top)
 		switch (verbosity) {
 			case Verbosity.SHORT:
 				return this._title;

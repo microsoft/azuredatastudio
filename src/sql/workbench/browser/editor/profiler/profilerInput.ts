@@ -7,6 +7,7 @@ import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTemplate, ProfilerFilter } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ProfilerState } from 'sql/workbench/common/editor/profiler/profilerState';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
@@ -19,6 +20,7 @@ import * as types from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import { FilterData } from 'sql/workbench/services/profiler/browser/profilerFilter';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
+import { Verbosity } from 'vs/workbench/common/editor';
 
 export interface ColumnDefinition extends Slick.Column<Slick.SlickData> {
 	name: string;
@@ -26,6 +28,7 @@ export interface ColumnDefinition extends Slick.Column<Slick.SlickData> {
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {
 
+	private static PROFILERNAME: string = nls.localize('profilerInput.profiler', "Profiler");
 	public static ID: string = 'workbench.editorinputs.profilerinputs';
 	public static SCHEMA: string = 'profiler';
 	private _data: TableDataView<Slick.SlickData>;
@@ -48,6 +51,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	constructor(
 		public connection: IConnectionProfile | undefined,
 		public fileURI: URI | undefined,
+		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@INotificationService private _notificationService: INotificationService
 	) {
@@ -126,12 +130,33 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public override getName(): string {
-		let name: string = nls.localize('profilerInput.profiler', "Profiler");
+		let name: string = ProfilerInput.PROFILERNAME;
 		if (!this.connection) {
 			return name;
 		}
 		name += ': ' + this.connection.serverName.substring(0, 20);
 		return name;
+	}
+
+	public override getTitle(verbosity?: Verbosity): string {
+		let fullTitle = ProfilerInput.PROFILERNAME;
+		if (this.connection) {
+			let baseName = this.connection.serverName + ':' + this.connection.databaseName;
+			let connName = this.connection.connectionName ? (' (' + this.connection.connectionName + ')') : '';
+			let advancedOptions = this._connectionService.getNonDefaultOptions(this.connection);
+			advancedOptions = advancedOptions.replace('(', '[').replace(')', ']');
+			fullTitle = fullTitle + ': ' + baseName + connName + advancedOptions;
+		}
+
+		switch (verbosity) {
+			case Verbosity.SHORT:
+				return this.getName();
+			case Verbosity.LONG:
+				return fullTitle;
+			default:
+			case Verbosity.MEDIUM:
+				return fullTitle;
+		}
 	}
 
 	public getResource(): URI {

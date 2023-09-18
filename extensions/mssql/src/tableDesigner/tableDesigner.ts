@@ -40,7 +40,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				connectionString: connectionString,
 				accessToken: context.connectionProfile!.options.azureAccountToken as string,
 				tableIcon: tableIcon,
-				additionalInfo: `${context.connectionProfile.connectionName ? '(' + context.connectionProfile.connectionName + ')' : ''} ${nonDefaultOptions}`
+				additionalInfo: `${context.connectionProfile.connectionName ? '(' + context.connectionProfile.connectionName + ')' : ''}${nonDefaultOptions}`
 			}, telemetryInfo, context);
 		} catch (error) {
 			console.error(error);
@@ -76,7 +76,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				connectionString: connectionString,
 				accessToken: context.connectionProfile!.options.azureAccountToken as string,
 				tableIcon: tableIcon,
-				additionalInfo: `${connName ? '(' + connName + ')' : ''} ${nonDefaultOptions}`
+				additionalInfo: `${connName ? '(' + connName + ')' : ''}${nonDefaultOptions}`
 			}, telemetryInfo, context);
 		} catch (error) {
 			console.error(error);
