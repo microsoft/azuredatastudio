@@ -99,3 +99,11 @@ export const CARD_AXES_LABEL = {
 	'text-align': 'right',
 	'font-weight': '600',
 };
+
+
+export const ASSESSMENT_SUMMARY_CARD_CSS = {
+	'font-size': '16px',
+	'line-height': '21.28px',
+	'font-weight': '700',
+	'margin': '0px',
+};
