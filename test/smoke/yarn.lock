@@ -72,15 +72,9 @@
     "@types/node" "*"
 
 "@vscode/test-electron@^2.3.2":
-<<<<<<< HEAD
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/@vscode/test-electron/-/test-electron-2.3.3.tgz#e648700d5848eccfda99efa5d839356cfbe8cd4e"
-  integrity sha512-hgXCkDP0ibboF1K6seqQYyHAzCURgTwHS/6QU7slhwznDLwsRwg9bhfw1CZdyUEw8vvCmlrKWnd7BlQnI0BC4w==
-=======
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/@vscode/test-electron/-/test-electron-2.3.2.tgz#25db8d1a94e8274c27015cf806ae8b180c83545b"
   integrity sha512-CRfQIs5Wi5Ok5SUCC3PTvRRXa74LD43cSXHC8EuNlmHHEPaJa/AGrv76brcA1hVSxrdja9tiYwp95Lq8kwY0tw==
->>>>>>> vs/release/1.82
   dependencies:
     http-proxy-agent "^4.0.1"
     https-proxy-agent "^5.0.0"
@@ -282,15 +276,9 @@ glob@^7.1.3:
     path-is-absolute "^1.0.0"
 
 graceful-fs@^4.1.2:
-<<<<<<< HEAD
-  version "4.2.6"
-  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.6.tgz#ff040b2b0853b23c3d31027523706f1885d76bee"
-  integrity sha512-nTnJ528pbqxYanhpDYsi4Rd8MAeaBA67+RZ10CM1m3bTAVFEDcd5AuA4a6W5YkGZ1iNXHzZz8T6TBKLeBuNriQ==
-=======
   version "4.2.4"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.4.tgz#2256bde14d3632958c465ebc96dc467ca07a29fb"
   integrity sha512-WjKPNJF79dtJAVniUlGGWHYGz2jWxT6VhN/4m1NdkbZ2nOsEF+cI1Edgql5zCRhs/VsQYRvrXctxktVXZUkixw==
->>>>>>> vs/release/1.82
 
 has-flag@^3.0.0:
   version "3.0.0"
