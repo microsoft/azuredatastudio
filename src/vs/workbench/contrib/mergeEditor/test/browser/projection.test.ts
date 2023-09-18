@@ -18,13 +18,9 @@ suite('TextModelProjection', () => {
 2
 3 // Beak Container
 4 this.beakContainer = document.createElement('div');
-<<<<<<< .\input1.ts
-this.beakContainer.className = 'status-bar-item-beak-container';
-=======
 this.beakContainer.className = 'status-bar-beak-container';
 
 // Add to parent
->>>>>>> .\input2.ts
 5 this.container.appendChild(this.beakContainer);
 6
 7 this.update(entry);
