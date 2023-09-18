@@ -12,7 +12,6 @@ import { MigrationStateModel } from '../../models/stateMachine';
 import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
 import { selectDatabasesFromList } from '../../constants/helper';
 import { getSourceConnectionProfile } from '../../api/sqlUtils';
-import { SqlMigrationAssessmentResultItem } from '../../service/contracts';
 
 const styleLeft: azdata.CssStyles = {
 	'border': 'none',
@@ -51,23 +50,12 @@ export class TreeComponent {
 	private _view!: azdata.ModelView;
 	private _instanceTable!: azdata.DeclarativeTableComponent;
 	private _databaseTable!: azdata.DeclarativeTableComponent;
-	private _assessmentResultsList!: azdata.ListViewComponent;
-	private _assessmentContainer!: azdata.FlexContainer;
-	private _assessmentsTable!: azdata.FlexContainer;
-	private _noIssuesContainer!: azdata.FlexContainer;
-	private _recommendation!: azdata.TextComponent;
-	private _recommendationTitle!: azdata.TextComponent;
 	private _databaseTableValues!: azdata.DeclarativeTableCellValue[][];
-	private _activeIssues!: SqlMigrationAssessmentResultItem[];
 	private _serverName!: string;
 	private _dbNames!: string[];
 	private _databaseCount!: azdata.TextComponent;
 	private _disposables: vscode.Disposable[] = [];
-
-	constructor(
-		private _model: MigrationStateModel,
-		private _targetType: MigrationTargetType
-	) { }
+	private _model!: MigrationStateModel;
 
 	public get instanceTable() {
 		return this._instanceTable;
@@ -78,7 +66,7 @@ export class TreeComponent {
 	}
 
 	// function that creates components for tree section
-	public createTreeComponent(view: azdata.ModelView, dbs: string[]) {
+	public createTreeComponent(view: azdata.ModelView) {
 		this._view = view;
 		const component = view.modelBuilder.flexContainer().withLayout({
 			height: '100%',
@@ -93,7 +81,7 @@ export class TreeComponent {
 		component.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		component.addItem(this.createInstanceComponent(), { flex: '0 0 auto' });
 		component.addItem(this.createDatabaseCount(), { flex: '0 0 auto' });
-		component.addItem(this.createDatabaseComponent(dbs), { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'auto' } });
+		component.addItem(this.createDatabaseComponent(), { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'auto' } });
 		return component;
 	}
 
@@ -109,7 +97,7 @@ export class TreeComponent {
 
 		const searchContainer = this._view.modelBuilder.divContainer().withItems([resourceSearchBox]).withProps({
 			CSSStyles: {
-				'margin': '10px 15px 0px 15px'
+				'margin': '10px 15px 0px 0px'
 			}
 		}).component();
 
@@ -159,7 +147,7 @@ export class TreeComponent {
 						headerCssStyles: headerLeft
 					},
 					{
-						displayName: constants.WARNINGS,
+						displayName: constants.FINDINGS_LABEL,
 						valueType: azdata.DeclarativeDataType.string,
 						width: 50,
 						isReadOnly: true,
@@ -170,68 +158,24 @@ export class TreeComponent {
 
 		const instanceContainer = this._view.modelBuilder.divContainer().withItems([this._instanceTable]).withProps({
 			CSSStyles: {
-				'margin': '19px 15px 0px 15px'
+				'margin': '19px 15px 0px 0px'
 			}
 		}).component();
 
 		return instanceContainer;
 	}
 
-	public async refreshResults(): Promise<void> {
-		if (this._targetType === MigrationTargetType.SQLMI ||
-			this._targetType === MigrationTargetType.SQLDB) {
-			if (this._activeIssues?.length === 0) {
-				/// show no issues here
-				await this._assessmentsTable.updateCssStyles({ 'display': 'none', 'border-right': 'none' });
-				await this._assessmentContainer.updateCssStyles({ 'display': 'none' });
-				await this._noIssuesContainer.updateCssStyles({ 'display': 'flex' });
-			} else {
-				await this._assessmentContainer.updateCssStyles({ 'display': 'flex' });
-				await this._assessmentsTable.updateCssStyles({ 'display': 'flex', 'border-right': 'solid 1px' });
-				await this._noIssuesContainer.updateCssStyles({ 'display': 'none' });
-			}
-		} else {
-			await this._assessmentsTable.updateCssStyles({ 'display': 'none', 'border-right': 'none' });
-			await this._assessmentContainer.updateCssStyles({ 'display': 'none' });
-			await this._noIssuesContainer.updateCssStyles({ 'display': 'flex' });
-
-			this._recommendationTitle.value = constants.ASSESSMENT_RESULTS;
-			this._recommendation.value = '';
-		}
-		let assessmentResults: azdata.ListViewOption[] = this._activeIssues
-			.sort((e1, e2) => {
-				if (e1.databaseRestoreFails) { return -1; }
-				if (e2.databaseRestoreFails) { return 1; }
-				return e1.checkId.localeCompare(e2.checkId);
-			}).filter((v) => {
-				return v.appliesToMigrationTargetPlatform === this._targetType;
-			}).map((v, index) => {
-				return {
-					id: index.toString(),
-					label: v.checkId,
-					icon: v.databaseRestoreFails ? IconPathHelper.error : undefined,
-					ariaLabel: v.databaseRestoreFails ? constants.BLOCKING_ISSUE_ARIA_LABEL(v.checkId) : v.checkId,
-				};
-			});
-
-		this._assessmentResultsList.options = assessmentResults;
-		if (this._assessmentResultsList.options.length) {
-			this._assessmentResultsList.selectedOptionId = '0';
-
-		}
-	}
-
 	private createDatabaseCount(): azdata.TextComponent {
 		this._databaseCount = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
 				...styles.BOLD_NOTE_CSS,
-				'margin': '0px 15px 0px 15px'
+				'margin-right': '15px'
 			}
 		}).component();
 		return this._databaseCount;
 	}
 
-	private createDatabaseComponent(dbs: string[]): azdata.DivContainer {
+	private createDatabaseComponent(): azdata.DivContainer {
 
 		this._databaseTable = this._view.modelBuilder.declarativeTable().withProps(
 			{
@@ -260,7 +204,7 @@ export class TreeComponent {
 						headerCssStyles: headerLeft
 					},
 					{
-						displayName: constants.ISSUES,
+						displayName: constants.FINDINGS_LABEL,
 						valueType: azdata.DeclarativeDataType.string,
 						width: 50,
 						isReadOnly: true,
@@ -271,21 +215,21 @@ export class TreeComponent {
 		).component();
 
 		this._disposables.push(this._databaseTable.onDataChanged(async () => {
-			await this.updateValuesOnSelection();
+			await this.updateValuesOnSelection(this._model);
 		}));
 
 		const tableContainer = this._view.modelBuilder.divContainer().withItems([this._databaseTable]).withProps({
 			width: '100%',
 			CSSStyles: {
-				'margin': '0px 15px 0px 15px'
+				'margin-right': '15px'
 			}
 		}).component();
 		return tableContainer;
 	}
 
-	private async updateValuesOnSelection() {
+	private async updateValuesOnSelection(migrationStateModel: MigrationStateModel) {
 		await this._databaseCount.updateProperties({
-			'value': constants.DATABASES(this.selectedDbs()?.length, this._model._databasesForAssessment?.length)
+			'value': constants.DATABASES(this.selectedDbs()?.length, migrationStateModel._databasesForAssessment?.length)
 		});
 	}
 
@@ -299,16 +243,18 @@ export class TreeComponent {
 		return result;
 	}
 
-	public async initialize(): Promise<void> {
+	// populates tree component values.
+	public async initialize(migrationStateModel: MigrationStateModel): Promise<void> {
+		this._model = migrationStateModel;
 		let instanceTableValues: azdata.DeclarativeTableCellValue[][] = [];
 		this._databaseTableValues = [];
-		this._dbNames = this._model._databasesForAssessment;
+		this._dbNames = migrationStateModel._databasesForAssessment;
 		this._serverName = (await getSourceConnectionProfile()).serverName;
 
 		// pre-select the entire list
-		const selectedDbs = this._dbNames.filter(db => this._model._databasesForAssessment.includes(db));
+		const selectedDbs = this._dbNames.filter(db => migrationStateModel._databasesForAssessment.includes(db));
 
-		if (this._targetType === MigrationTargetType.SQLVM || !this._model._assessmentResults) {
+		if (migrationStateModel._targetType === MigrationTargetType.SQLVM || !migrationStateModel._assessmentResults) {
 			instanceTableValues = [[
 				{
 					value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
@@ -342,18 +288,18 @@ export class TreeComponent {
 					style: styleLeft
 				},
 				{
-					value: this._model._assessmentResults?.issues?.filter(issue => issue.appliesToMigrationTargetPlatform === this._targetType).length,
+					value: migrationStateModel._assessmentResults?.issues?.filter(issue => issue.appliesToMigrationTargetPlatform === migrationStateModel._targetType).length,
 					style: styleRight
 				}
 			]];
-			this._model._assessmentResults?.databaseAssessments
+			migrationStateModel._assessmentResults?.databaseAssessments
 				.sort((db1, db2) => db2.issues?.length - db1.issues?.length);
 
 			// Reset the dbName list so that it is in sync with the table
-			this._dbNames = this._model._assessmentResults?.databaseAssessments.map(da => da.name);
-			this._model._assessmentResults?.databaseAssessments.forEach((db) => {
+			this._dbNames = migrationStateModel._assessmentResults?.databaseAssessments.map(da => da.name);
+			migrationStateModel._assessmentResults?.databaseAssessments.forEach((db) => {
 				let selectable = true;
-				if (db.issues.find(issue => issue.databaseRestoreFails && issue.appliesToMigrationTargetPlatform === this._targetType)) {
+				if (db.issues.find(issue => issue.databaseRestoreFails && issue.appliesToMigrationTargetPlatform === migrationStateModel._targetType)) {
 					selectable = false;
 				}
 				this._databaseTableValues.push([
@@ -367,7 +313,7 @@ export class TreeComponent {
 						style: styleLeft
 					},
 					{
-						value: db.issues.filter(v => v.appliesToMigrationTargetPlatform === this._targetType)?.length,
+						value: db.issues.filter(v => v.appliesToMigrationTargetPlatform === migrationStateModel._targetType)?.length,
 						style: styleRight
 					}
 				]);
@@ -375,10 +321,10 @@ export class TreeComponent {
 		}
 		await this._instanceTable.setDataValues(instanceTableValues);
 
-		this._databaseTableValues = selectDatabasesFromList(this._model._databasesForMigration, this._databaseTableValues);
+		this._databaseTableValues = selectDatabasesFromList(migrationStateModel._databasesForMigration, this._databaseTableValues);
 		await this._databaseTable.setDataValues(this._databaseTableValues);
-		await this.updateValuesOnSelection();
-		this._databaseCount.value = constants.DATABASES(0, this._model._databasesForAssessment?.length);
+		await this.updateValuesOnSelection(migrationStateModel);
+		this._databaseCount.value = constants.DATABASES(0, migrationStateModel._databasesForAssessment?.length);
 	}
 
 	private createIconTextCell(icon: IconPath, text: string): string {

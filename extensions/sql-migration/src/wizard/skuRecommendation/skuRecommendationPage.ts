@@ -10,19 +10,16 @@ import { MigrationTargetType } from '../../api/utils';
 import * as contracts from '../../service/contracts';
 import { MigrationWizardPage } from '../../models/migrationWizardPage';
 import { MigrationStateModel, PerformanceDataSourceOptions, StateChangeEvent, AssessmentRuleId } from '../../models/stateMachine';
-import { AssessmentResultsDialog } from '../../dialog/assessment/assessmentResultsDialog';
 import { SkuRecommendationResultsDialog } from '../../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
 import { GetAzureRecommendationDialog } from '../../dialog/skuRecommendationResults/getAzureRecommendationDialog';
 import * as constants from '../../constants/strings';
 import { EOL } from 'os';
 import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
-import { WIZARD_INPUT_COMPONENT_WIDTH } from '../wizardController';
 import * as styles from '../../constants/styles';
 import { SkuEditParametersDialog } from '../../dialog/skuRecommendationResults/skuEditParametersDialog';
 import { logError, TelemetryViews, TelemetryAction, sendSqlMigrationActionEvent, getTelemetryProps } from '../../telemetry';
 import { TdeConfigurationDialog } from '../../dialog/tdeConfiguration/tdeConfigurationDialog';
 import { TdeMigrationModel } from '../../models/tdeModels';
-import { getSourceConnectionProfile } from '../../api/sqlUtils';
 import { ConfigDialogSetting } from '../../models/tdeModels';
 import { SkuDataCollectionToolbar } from './skuDataCollectionToolbar';
 
@@ -50,8 +47,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _formContainer!: azdata.ComponentBuilder<azdata.FormContainer, azdata.ComponentProperties>;
 	private _assessmentLoader!: azdata.LoadingComponent;
 	private _rootContainer!: azdata.FlexContainer;
-	private _viewAssessmentsHelperText!: azdata.TextComponent;
-	private _databaseSelectedHelperText!: azdata.TextComponent;
 	private _tdedatabaseSelectedHelperText!: azdata.TextComponent;
 
 	private _azureRecommendationSectionText!: azdata.TextComponent;
@@ -78,7 +73,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _skuEnablePreviewSkuText!: azdata.TextComponent;
 	private _skuEnableElasticRecommendationsText!: azdata.TextComponent;
 
-	private assessmentGroupContainer!: azdata.FlexContainer;
 	private _tdeInfoContainer!: azdata.FlexContainer;
 	private _disposables: vscode.Disposable[] = [];
 	private _tdeConfigurationDialog!: TdeConfigurationDialog;
@@ -190,14 +184,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			.component();
 		this._chooseTargetComponent = await this.createChooseTargetComponent(view);
 		const _azureRecommendationsContainer = this.createAzureRecommendationContainer(view);
-		this.assessmentGroupContainer = await this.createViewAssessmentsContainer();
 		this._tdeInfoContainer = await this.createTdeInfoContainer();
 		this._formContainer = view.modelBuilder.formContainer()
 			.withFormItems([
 				{ component: statusContainer, title: '' },
 				{ component: this._chooseTargetComponent },
 				{ component: _azureRecommendationsContainer },
-				{ component: this.assessmentGroupContainer },
 				{ component: this._tdeInfoContainer }])
 			.withProps({
 				CSSStyles: {
@@ -360,7 +352,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this._disposables.push(this._rbg.onSelectionChanged(async (value) => {
 			if (value) {
-				this.assessmentGroupContainer.display = 'inline';
 				this.changeTargetType(value.cardId);
 				await this.refreshTdeView();
 			}
@@ -410,65 +401,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		return container;
 	}
 
-	private async createViewAssessmentsContainer(): Promise<azdata.FlexContainer> {
-		this._viewAssessmentsHelperText = this._view.modelBuilder.text().withProps({
-			value: constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI,
-			CSSStyles: { ...styles.SECTION_HEADER_CSS },
-			width: WIZARD_INPUT_COMPONENT_WIDTH
-		}).component();
-
-		const button = this._view.modelBuilder.button().withProps({
-			label: constants.VIEW_SELECT_BUTTON_LABEL,
-			width: 100,
-			CSSStyles: { 'margin': '12px 0' }
-		}).component();
-
-		this._serverName = this.migrationStateModel.serverName || (await getSourceConnectionProfile()).serverName;
-
-		const assessmentTitle = constants.ASSESSMENT_TITLE(this._serverName);
-		const miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, assessmentTitle, this, MigrationTargetType.SQLMI);
-		const vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, assessmentTitle, this, MigrationTargetType.SQLVM);
-		const dbDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, assessmentTitle, this, MigrationTargetType.SQLDB);
-
-		this._disposables.push(button.onDidClick(async (e) => {
-			switch (this._rbg.selectedCardId) {
-				case MigrationTargetType.SQLVM:
-					this._rbg.selectedCardId = MigrationTargetType.SQLVM;
-					return await vmDialog.openDialog();
-				case MigrationTargetType.SQLMI:
-					this._rbg.selectedCardId = MigrationTargetType.SQLMI;
-					return await miDialog.openDialog();
-				case MigrationTargetType.SQLDB:
-					this._rbg.selectedCardId = MigrationTargetType.SQLDB;
-					return await dbDialog.openDialog();
-			}
-		}));
-
-		this._databaseSelectedHelperText = this._view.modelBuilder.text()
-			.withProps({
-				CSSStyles: { ...styles.BODY_CSS },
-				ariaLive: 'polite',
-			}).component();
-
-		const container = this._view.modelBuilder.flexContainer()
-			.withItems([
-				this._viewAssessmentsHelperText,
-				button,
-				this._databaseSelectedHelperText
-			]).withProps({
-				'display': 'none'
-			}).component();
-		return container;
-	}
-
 	private changeTargetType(newTargetType: string): void {
 		switch (newTargetType) {
 			case MigrationTargetType.SQLMI:
 				const miDbs = this.migrationStateModel._miDbs.filter(
 					db => this.migrationStateModel._databasesForAssessment.findIndex(
 						dba => dba === db) >= 0);
-
-				this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI;
 				this.migrationStateModel._targetType = MigrationTargetType.SQLMI;
 				this.migrationStateModel._databasesForMigration = miDbs;
 				break;
@@ -476,8 +414,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				const vmDbs = this.migrationStateModel._vmDbs.filter(
 					db => this.migrationStateModel._databasesForAssessment.findIndex(
 						dba => dba === db) >= 0);
-
-				this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM;
 				this.migrationStateModel._targetType = MigrationTargetType.SQLVM;
 				this.migrationStateModel._databasesForMigration = vmDbs;
 				break;
@@ -485,16 +421,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				const dbDbs = this.migrationStateModel._sqldbDbs.filter(
 					db => this.migrationStateModel._databasesForAssessment.findIndex(
 						dba => dba === db) >= 0);
-
-				this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_SQLDB;
 				this.migrationStateModel._targetType = MigrationTargetType.SQLDB;
 				this.migrationStateModel._databasesForMigration = dbDbs;
 				break;
 		}
-
-		this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(
-			this.migrationStateModel._databasesForMigration.length,
-			this.migrationStateModel._databasesForAssessment.length);
 		this.migrationStateModel.refreshDatabaseBackupPage = true;
 	}
 
@@ -614,10 +544,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this._chooseTargetComponent,
 			!failedAssessment || this._skipAssessmentCheckbox.checked === true,
 			'block');
-		await utils.updateControlDisplay(
-			this.assessmentGroupContainer,
-			this._rbg.selectedCardId !== undefined && (!failedAssessment || this._skipAssessmentCheckbox.checked === true),
-			'inline');
 
 		this._assessmentLoader.loading = assessing;
 	}
@@ -630,12 +556,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 
 			const errors: string[] = [];
-			if (this._rbg.selectedCardId === undefined || this._rbg.selectedCardId === '') {
-				errors.push(constants.SELECT_TARGET_TO_CONTINUE);
-			}
-			if (this.migrationStateModel._databasesForMigration.length === 0) {
-				errors.push(constants.SELECT_DATABASE_TO_MIGRATE);
-			}
 
 			if (errors.length > 0) {
 				this.wizard.message = {
