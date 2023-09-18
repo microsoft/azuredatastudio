@@ -217,11 +217,6 @@ function buildCustomCloudProviderSettings(customProvider: ProviderSettingsJson):
 					endpoint: customProvider.settings.metadata.endpoints.armResource,
 					azureResourceId: AzureResource.ResourceManagement
 				},
-				graphResource: {
-					id: SettingIds.graph,
-					endpoint: customProvider.settings.metadata.endpoints.graphResource,
-					azureResourceId: AzureResource.Graph
-				},
 				azureStorageResource: {
 					id: SettingIds.storage,
 					endpoint: customProvider.settings.metadata.endpoints.azureStorageResource.endpoint,
