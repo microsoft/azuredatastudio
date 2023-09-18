@@ -482,7 +482,7 @@ export class TdeConfigurationDialog {
 
 		this._validationGroup = _view.modelBuilder.groupContainer()
 			.withLayout({
-				header: 'Certificate validations',
+				header: constants.TDE_VALIDATION_GROUP_TITLE,
 				collapsible: true,
 				collapsed: true
 			}).withProps({
