@@ -195,6 +195,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		return component;
 	}
 
+	// Creates the Assessment summary container.
 	private createTargetSummaryComponent(view: azdata.ModelView): FlexContainer {
 		const chooseYourTargetText = this._view.modelBuilder.text().withProps({
 			value: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
@@ -285,6 +286,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this.migrationStateModel._assessmentResults?.databaseAssessments?.length);
 		}
 
+		// TODO - Keeping these to remind changes required skeRecommendation calculation.
 		// let shouldGetSkuRecommendations = false;
 
 		// // recommendations were already generated, then the user went back and changed the list of databases
@@ -295,30 +297,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 
 		// if (this.migrationStateModel.savedInfo?.skuRecommendation) {
-		// 	await this.refreshSkuParameters();
-
-		// 	switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
-		// 		case PerformanceDataSourceOptions.CollectData: {
-		// 			// check if collector is still running
-		// 			await this.migrationStateModel.refreshPerfDataCollection();
-		// 			if (this.migrationStateModel._perfDataCollectionIsCollecting) {
-		// 				// user started collecting data, ensure the collector is still running
-		// 				await this.migrationStateModel.startSkuTimers(this);
-		// 				await this.refreshSkuRecommendationComponents();
-		// 			} else {
-		// 				// user started collecting data, but collector is stopped
-		// 				// set stop date to some date value
-		// 				this.migrationStateModel._perfDataCollectionStopDate = this.migrationStateModel._perfDataCollectionStopDate || new Date();
-		// 				shouldGetSkuRecommendations = true;
-		// 			}
-		// 			break;
-		// 		}
-
-		// 		case PerformanceDataSourceOptions.OpenExisting: {
-		// 			shouldGetSkuRecommendations = true;
-		// 			break;
-		// 		}
-		// 	}
 		// }
 
 		// await this.refreshSkuRecommendationComponents();
@@ -326,6 +304,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		await this._setAssessmentState(false, this.migrationStateModel._runAssessments);
 	}
 
+	// creating the assessmentInProgress. Shown when the assessment is being calculate.
 	private createAssessmentProgress(): azdata.FlexContainer {
 		this._assessmentLoader = this._view.modelBuilder.loadingComponent()
 			.component();
@@ -391,6 +370,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._assessmentSummaryCardLoader.loading = assessing;
 	}
 
+	// Refresh the assessment summary details.
 	public async refreshCardText(showLoadingIcon: boolean = true): Promise<void> {
 		this._assessmentSummaryCardLoader.loading = showLoadingIcon && true;
 
@@ -404,10 +384,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			await this.updateAssessmentDetailsForEachTarget(MigrationTargetType.SQLVM, dbCount);
 
 			if (this.hasRecommendations()) {
+				// TODO
 				// updated the headers.
 				// also update for each target type the sku recommendations.
 			}
 			else {
+				// TODO
 				// update the headers.
 			}
 		}
@@ -416,12 +398,16 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._assessmentSummaryCardLoader.loading = false;
 	}
 
+	// Update the assessment details for each of the target type.
 	private async updateAssessmentDetailsForEachTarget(targetType: MigrationTargetType, dbCount: number): Promise<void> {
+		// For Target - SQLVM, all databases can be migrated with issues. So dbReady = dbCount;
 		if (targetType === MigrationTargetType.SQLVM) {
 			await this._vmAssessmentCard.updateAssessmentResult(dbCount, dbCount, 0, 0, 0, 0);
 			return;
 		}
 
+		// dbReady are thos databases without issues. dbNotReady are those databases with atleast one issue with issueCategory = "Issue".
+		// dbReadyWithWarnings can be found by subtraction dbReady and dbNotReady with total dbCount.
 		const dbReady = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db =>
 			!db.issues?.some(issue => issue.appliesToMigrationTargetPlatform === targetType)
 		).length;
@@ -430,13 +416,17 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		).length;
 		const dbReadyWithWarnings = dbCount - (dbReady + dbNotReady);
 
+		// blockers contain count of all the instance level issues with issueCategory = "Issue".
 		var blockers = this.migrationStateModel._assessmentResults?.issues.filter(issue =>
 			(issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === "Issue")).length;
+		// also blockers includes sum of all the dabatase level issues with issueCategory = "Issue" for each database.
 		blockers += this.migrationStateModel._assessmentResults?.databaseAssessments?.reduce((count, database) =>
 			count + database.issues.filter(issue => (issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === "Issue")).length, 0);
 
+		// warnings contain count all the instance level issues with issueCategory = "Warning".
 		var warnings = this.migrationStateModel._assessmentResults?.issues.filter(issue =>
 			(issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === "Warning")).length;
+		// also warnings includes sum of all the dabatase level issues with issueCategory = "Warning" for each database.
 		warnings += this.migrationStateModel._assessmentResults?.databaseAssessments?.reduce((count, database) =>
 			count + database.issues.filter(issue => (issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === "Warning")).length, 0);
 
@@ -506,6 +496,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		// this.eventListener?.dispose();
 	}
 
+	// Return true if Recommendations are ready and does not  have errors.
 	public hasRecommendations(): boolean {
 		return this.migrationStateModel._skuRecommendationResults?.recommendations
 			&& !this.migrationStateModel._skuRecommendationResults?.recommendationError
