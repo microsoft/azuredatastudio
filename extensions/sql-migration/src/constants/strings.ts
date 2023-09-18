@@ -112,6 +112,8 @@ export function NON_READINESS_DESCRIPTION(issueCount: number) {
 	return localize('sql.migration.non.readiness.description', "The database is not ready to migrate due to {0} blocking issue.", issueCount);
 }
 export const READINESS_DESCRIPTION = localize('sql.migration.readiness.description', "The database is ready to migrate.");
+export const SELECT_TARGET_LABEL = localize('sql.migration.select.target.label', 'Select target type');
+export const FINDINGS_LABEL = localize('sql.migration.findings.label', "Findings");
 
 // Assessment results and recommendations
 export const ASSESSMENT_RESULTS_AND_RECOMMENDATIONS_PAGE_TITLE = localize('sql.migration.assessment.results.and.recommendations.title', "Assessment results and recommendations");

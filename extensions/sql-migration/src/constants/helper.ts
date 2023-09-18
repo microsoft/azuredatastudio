@@ -98,6 +98,11 @@ export const ColorCodes = {
 	ReadyWithWarningState_Amber: "#DB7500"
 }
 
+export const IssueCategory = {
+	Issue: "Issue",
+	Warning: "Warning"
+}
+
 const _dateFormatter = new Intl.DateTimeFormat(
 	undefined, {
 	year: 'numeric',

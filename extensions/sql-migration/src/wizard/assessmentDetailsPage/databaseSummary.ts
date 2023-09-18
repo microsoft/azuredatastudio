@@ -54,16 +54,6 @@ export class DatabaseSummary {
 			}
 		}).component();
 
-		const issuesSummarySubtitle = view.modelBuilder.text().withProps({
-			value: constants.SEVERITY_FINDINGS_LABEL,
-			CSSStyles: {
-				...styles.SUBTITLE_LABEL_CSS,
-				'margin': '0px',
-				'margin-top': '10px',
-				'padding-left': '10px'
-			}
-		}).component();
-
 		this._readinessDescription = view.modelBuilder.text().withProps({
 			value: "",
 			CSSStyles: {
@@ -81,11 +71,12 @@ export class DatabaseSummary {
 		databaseSummaryContainer.addItem(this._readinessDescription);
 
 		databaseSummaryContainer.addItems([
-			issuesSummaryTitle, this._totalIssues, issuesSummarySubtitle]);
+			issuesSummaryTitle, this._totalIssues]);
 
 		return databaseSummaryContainer;
 	}
 
+	//creates icon-text container depicting state for selected database.
 	private createIconTextContainer(): azdata.FlexContainer {
 		const iconTextContainer = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row'

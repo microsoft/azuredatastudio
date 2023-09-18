@@ -20,21 +20,22 @@ import { SqlMigrationAssessmentResultItem } from '../../service/contracts';
 export class AssessmentDetailsBody {
 	private _view!: azdata.ModelView;
 	private _model!: MigrationStateModel;
-	public _treeComponent!: TreeComponent;
-	private _targetType!: MigrationTargetType;
-	public _instanceSummary = new InstanceSummary();
+	private _treeComponent!: TreeComponent;
+	private _instanceSummary = new InstanceSummary();
 	private _databaseSummary = new DatabaseSummary();
 	private _issueSummary = new IssueSummary();
-	public _warningsOrIssuesListSection!: azdata.ListViewComponent;
+	private _warningsOrIssuesListSection!: azdata.ListViewComponent;
 	private _findingsSummaryList!: azdata.ListViewComponent;
 	private _disposables: vscode.Disposable[] = [];
 	private _activeIssues!: SqlMigrationAssessmentResultItem[];
 
-	constructor(migrationStateModel: MigrationStateModel,
-		targetType: MigrationTargetType) {
+	constructor(migrationStateModel: MigrationStateModel) {
 		this._model = migrationStateModel;
-		this._targetType = targetType;
-		this._treeComponent = new TreeComponent(this._model, this._model._targetType)
+		this._treeComponent = new TreeComponent();
+	}
+
+	public get treeComponent() {
+		return this._treeComponent;
 	}
 
 	// function that defines all the components for body section
@@ -44,40 +45,38 @@ export class AssessmentDetailsBody {
 			flexFlow: 'row',
 		}).withProps({
 			CSSStyles: {
-				'border-top': 'solid 1px'
+				'border-top': 'solid 1px',
+				'margin-left': '15px'
 			}
 		}).component();
 
-		// returns the side pane of tree component to select instance and databases.
-		const treeComponent = this._treeComponent.createTreeComponent(
-			view,
-			(this._targetType === MigrationTargetType.SQLVM)
-				? this._model._vmDbs
-				: (this._targetType === MigrationTargetType.SQLMI)
-					? this._model._miDbs
-					: this._model._sqldbDbs);
+		// returns the left side pane (tree component) to select instance and databases.
+		const treeComponent = this._treeComponent.createTreeComponent(view);
 
 		// returns middle section of body where list of issues and warnings are displayed.
-		const assessmentFindingsComponent = this.createAssessmentFindingComponent();
+		const findingsListComponent = this.createFindingsListComponent();
 
-		// returns the right section of body which defines the result of assessment.
-		const resultComponent = this.createResultComponent();
+		// returns the right section of body which defines the summary of selected instance/database.
+		const summaryComponent = this.createSummaryComponent();
 
 		bodyContainer.addItem(treeComponent, { flex: "none" });
-		bodyContainer.addItem(assessmentFindingsComponent, { flex: "none" });
-		bodyContainer.addItem(resultComponent, { flex: "none" });
+		bodyContainer.addItem(findingsListComponent, { flex: "none" });
+		bodyContainer.addItem(summaryComponent, { flex: "none", CSSStyles: { 'width': '450px', 'min-height': '400px', 'border-left': 'solid 1px' } });
 
 		return bodyContainer;
 	}
 
 	// function to populate data for body section
-	public async populateAssessmentBody(): Promise<void> {
-		await this._treeComponent.initialize();
-		this._instanceSummary.populateInstanceSummaryContainer(this._model, this._model._targetType);
+	public async populateAssessmentBody(migrationStateModel: MigrationStateModel): Promise<void> {
+		this._model = migrationStateModel;
+		await this._treeComponent.initialize(migrationStateModel);
+		this._activeIssues = this._model._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this._model?._targetType);
+		await this.refreshResults();
+		this._instanceSummary.populateInstanceSummaryContainer(migrationStateModel);
 	}
 
 	// function to create middle section of body that displays list of warnings/ issues.
-	public createAssessmentFindingComponent(): azdata.FlexContainer {
+	public createFindingsListComponent(): azdata.FlexContainer {
 		const assessmentFindingsComponent = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: "190px"
@@ -98,7 +97,7 @@ export class AssessmentDetailsBody {
 		assessmentFindingsComponent.addItem(this._findingsSummaryList);
 
 		this._warningsOrIssuesListSection = this._view.modelBuilder.listView().withProps({
-			title: { text: constants.WARNINGS },
+			title: { text: constants.FINDINGS_LABEL },
 			options: []
 		}).component();
 
@@ -106,12 +105,14 @@ export class AssessmentDetailsBody {
 		return assessmentFindingsComponent;
 	}
 
-	private createResultComponent(): azdata.FlexContainer {
-		const resultContainer = this._view.modelBuilder.flexContainer().withLayout({
+	// creates ui for summary component based on selections in left panel.
+	private createSummaryComponent(): azdata.FlexContainer {
+		const summaryContainer = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
 		}).withProps({
+			width: '450px',
 			CSSStyles: {
-				'border-left': 'solid 1px'
+				'width': '450px'
 			}
 		}).component();
 
@@ -130,7 +131,6 @@ export class AssessmentDetailsBody {
 				...styles.LABEL_CSS,
 				"padding": "5px",
 				"padding-left": "10px",
-				"padding-right": "250px",
 				"border-bottom": "solid 1px"
 			}
 		}).component();
@@ -152,14 +152,14 @@ export class AssessmentDetailsBody {
 
 		bottomContainer.addItems([instanceSummary, databaseSummary, issueSummary]);
 
-		resultContainer.addItems([heading, subHeading, bottomContainer]);
+		summaryContainer.addItems([heading, subHeading, bottomContainer]);
 
 		let _isInstanceSummarySelected = true;
 
+		// when an instance is selected
 		this._disposables.push(this._treeComponent.instanceTable.onRowSelected(async (e) => {
 			_isInstanceSummarySelected = true;
-			this._targetType = this._model?._targetType;
-			this._activeIssues = this._model._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this._targetType);
+			this._activeIssues = this._model._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this._model?._targetType);
 			await instanceSummary.updateCssStyles({
 				'display': 'block'
 			});
@@ -170,18 +170,16 @@ export class AssessmentDetailsBody {
 				'display': 'none'
 			});
 			await subHeading.updateProperty('value', constants.ASSESSMENT_SUMMARY_TITLE);
-			if (this._targetType === MigrationTargetType.SQLMI ||
-				this._targetType === MigrationTargetType.SQLDB) {
-				await this.refreshResults();
-			}
-			this._instanceSummary.populateInstanceSummaryContainer(this._model, this._targetType);
+			await this.refreshResults();
+			this._instanceSummary.populateInstanceSummaryContainer(this._model);
 		}));
 
+		// when database is selected
 		this._disposables.push(this._treeComponent.databaseTable.onRowSelected(async (e) => {
 			_isInstanceSummarySelected = false;
-			if (this._targetType === MigrationTargetType.SQLMI ||
-				this._targetType === MigrationTargetType.SQLDB) {
-				this._activeIssues = this._model._assessmentResults?.databaseAssessments[e.row].issues.filter(i => i.appliesToMigrationTargetPlatform === this._targetType);
+			if (this._model?._targetType === MigrationTargetType.SQLMI ||
+				this._model?._targetType === MigrationTargetType.SQLDB) {
+				this._activeIssues = this._model._assessmentResults?.databaseAssessments[e.row].issues.filter(i => i.appliesToMigrationTargetPlatform === this._model?._targetType);
 			} else {
 				this._activeIssues = [];
 			}
@@ -195,16 +193,14 @@ export class AssessmentDetailsBody {
 				'display': 'block'
 			});
 			await subHeading.updateProperty('value', constants.ASSESSMENT_SUMMARY_TITLE);
+			await this.refreshResults();
 			await this._databaseSummary.populateDatabaseSummary(this._activeIssues, this._model._assessmentResults?.databaseAssessments[e.row]?.name);
-			if (this._targetType === MigrationTargetType.SQLMI ||
-				this._targetType === MigrationTargetType.SQLDB) {
-				await this.refreshResults();
-			}
 			if (this._findingsSummaryList.options.length) {
 				this._findingsSummaryList.selectedOptionId = '0';
 			}
 		}));
 
+		// when summary is selected.
 		this._disposables.push(this._findingsSummaryList.onDidClick(async (e: azdata.ListViewClickEvent) => {
 			if (_isInstanceSummarySelected) {
 				await instanceSummary.updateCssStyles({
@@ -228,6 +224,7 @@ export class AssessmentDetailsBody {
 			await subHeading.updateProperty('value', constants.ASSESSMENT_SUMMARY_TITLE);
 		}));
 
+		// when issue/warning is selected.
 		this._disposables.push(this._warningsOrIssuesListSection.onDidClick(async (e: azdata.ListViewClickEvent) => {
 			const selectedIssue = this._activeIssues[parseInt(this._warningsOrIssuesListSection.selectedOptionId!)];
 			await instanceSummary.updateCssStyles({
@@ -243,19 +240,20 @@ export class AssessmentDetailsBody {
 			await this._issueSummary.refreshAssessmentDetails(selectedIssue);
 		}));
 
-		return resultContainer;
+		return summaryContainer;
 	}
 
+	// function to get latest issues/warnings list for the selected instance/database.
 	public async refreshResults(): Promise<void> {
-		if (this._targetType === MigrationTargetType.SQLMI ||
-			this._targetType === MigrationTargetType.SQLDB) {
+		if (this._model?._targetType === MigrationTargetType.SQLMI ||
+			this._model?._targetType === MigrationTargetType.SQLDB) {
 			let assessmentResults: azdata.ListViewOption[] = this._activeIssues
 				.sort((e1, e2) => {
 					if (e1.databaseRestoreFails) { return -1; }
 					if (e2.databaseRestoreFails) { return 1; }
 					return e1.checkId.localeCompare(e2.checkId);
 				}).filter((v) => {
-					return v.appliesToMigrationTargetPlatform === this._targetType;
+					return v.appliesToMigrationTargetPlatform === this._model?._targetType;
 				}).map((v, index) => {
 					return {
 						id: index.toString(),
@@ -266,6 +264,9 @@ export class AssessmentDetailsBody {
 				});
 
 			this._warningsOrIssuesListSection.options = assessmentResults;
+		}
+		else {
+			this._warningsOrIssuesListSection.options = [];
 		}
 	}
 }
