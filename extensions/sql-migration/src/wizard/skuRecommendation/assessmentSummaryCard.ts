@@ -132,7 +132,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 
 		const assessmentResultPreText = view.modelBuilder.text().withProps({
 			value: constants.ASSESSMENT_RESULTS.toLocaleUpperCase(),
-			description: "", //TODO - add description later
+			description: constants.ASSESSMENT_RESULTS.toLocaleUpperCase(), //TODO - add description later
 			CSSStyles: {
 				...styles.TOOLBAR_CSS,
 				'margin-left': '55px'
@@ -324,7 +324,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 
 		const recommendedConfigurationLabel = view.modelBuilder.text().withProps({
 			value: constants.RECOMMENDED_CONFIGURATION.toLocaleUpperCase(),
-			description: "", // TODO - need this value later
+			description: constants.RECOMMENDED_CONFIGURATION, // TODO - need to add description later
 			height: 18,
 			CSSStyles: {
 				...styles.TOOLBAR_CSS,

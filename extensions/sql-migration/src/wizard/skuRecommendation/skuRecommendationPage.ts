@@ -201,7 +201,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			value: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
 			CSSStyles: {
 				...styles.SECTION_HEADER_CSS,
-				'margin': '0'
+				'margin-bottom': '5px'
 			}
 		}).component();
 
