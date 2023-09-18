@@ -2525,41 +2525,37 @@ declare module 'azdata' {
 		 */
 		AzureKeyVault = 3,
 		/**
-		 * Azure AD Graph
-		 */
-		Graph = 4,
-		/**
 		 * Microsoft Resource Management
 		 */
-		MicrosoftResourceManagement = 5,
+		MicrosoftResourceManagement = 4,
 		/**
 		 * Azure Dev Ops
 		 */
-		AzureDevOps = 6,
+		AzureDevOps = 5,
 		/**
 		 * Microsoft Graph
 		 */
-		MsGraph = 7,
+		MsGraph = 6,
 		/**
 		 * Azure Log Analytics
 		 */
-		AzureLogAnalytics = 8,
+		AzureLogAnalytics = 7,
 		/**
 		 * Azure Storage
 		 */
-		AzureStorage = 9,
+		AzureStorage = 8,
 		/**
 		 * Kusto
 		 */
-		AzureKusto = 10,
+		AzureKusto = 9,
 		/**
 		 * Power BI
 		 */
-		PowerBi = 11,
+		PowerBi = 10,
 		/**
 		 * Represents custom resource URIs as received from server endpoint.
 		 */
-		Custom = 12
+		Custom = 11
 	}
 
 	export interface DidChangeAccountsParams {

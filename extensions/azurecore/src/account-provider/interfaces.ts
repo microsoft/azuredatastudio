@@ -7,7 +7,6 @@ import * as azurecore from 'azurecore';
 
 export const enum SettingIds {
 	marm = 'marm',
-	graph = 'graph',
 	msgraph = 'msgraph',
 	arm = 'arm',
 	sql = 'sql',
