@@ -2524,10 +2524,7 @@ declare module 'azdata' {
 		 * Azure Key Vault
 		 */
 		AzureKeyVault = 3,
-		/**
-		 * Azure AD Graph
-		 */
-		Graph = 4,
+		// 4 (formerly Azure Graph) is no longer used.
 		/**
 		 * Microsoft Resource Management
 		 */
