@@ -24,7 +24,8 @@ export function getTableHeight(rowCount: number, minRowCount: number = DefaultMi
 
 export interface DialogButton {
 	buttonAriaLabel: string;
-	buttonHandler: (button: azdata.ButtonComponent) => Promise<void>
+	buttonHandler: (button: azdata.ButtonComponent) => Promise<void>,
+	enabled?: boolean
 }
 
 export type TableListItemEnabledStateGetter<T> = (item: T) => boolean;
@@ -79,6 +80,8 @@ export abstract class DialogBase<DialogResult> {
 	protected onFormFieldChange(): void { }
 
 	protected removeButtonEnabled(table: azdata.TableComponent): boolean { return true; }
+
+	protected addButtonEnabled(table: azdata.TableComponent): boolean { return true; }
 
 	protected validateInput(): Promise<string[]> { return Promise.resolve([]); }
 
@@ -295,12 +298,13 @@ export abstract class DialogBase<DialogResult> {
 			if (editButton !== undefined) {
 				editButtonComponent.enabled = tableSelectedRowsLengthCheck;
 			}
+			addButtonComponent.enabled = this.addButtonEnabled(table);
 			removeButtonComponent.enabled = !!isRemoveEnabled && tableSelectedRowsLengthCheck;
 		}
 		addButtonComponent = this.createButton(uiLoc.AddText, addbutton.buttonAriaLabel, async () => {
 			await addbutton.buttonHandler(addButtonComponent);
 			updateButtons();
-		});
+		}, addbutton.enabled ?? true);
 		buttonComponents.push(addButtonComponent);
 
 		if (editButton !== undefined) {

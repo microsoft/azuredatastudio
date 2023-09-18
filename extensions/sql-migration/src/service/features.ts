@@ -316,5 +316,34 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 
 		return undefined;
 	}
-}
 
+	async runTdeValidation(
+		sourceSqlConnectionString: string,
+		networkSharePath: string,
+	) {
+		let params: contracts.TdeValidationParams = {
+			sourceSqlConnectionString: sourceSqlConnectionString,
+			networkSharePath: networkSharePath,
+		};
+
+		try {
+			return await this._client.sendRequest(contracts.TdeValidationRequest.type, params);
+		}
+		catch (e) {
+			this._client.logFailedRequest(contracts.TdeValidationRequest.type, e);
+		}
+
+		return undefined;
+	}
+
+	async getTdeValidationTitles() {
+		try {
+			return await this._client.sendRequest(contracts.TdeValidationTitlesRequest.type, {});
+		}
+		catch (e) {
+			this._client.logFailedRequest(contracts.TdeValidationRequest.type, e);
+		}
+
+		return undefined;
+	}
+}
