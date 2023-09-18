@@ -48,7 +48,6 @@ export type ProviderSettingsJson = {
 				host: string,
 				clientId: string,
 				microsoftResource: string,
-				graphResource: string,
 				msGraphResource?: string,
 				armResource: string,
 				sqlResource: string,
