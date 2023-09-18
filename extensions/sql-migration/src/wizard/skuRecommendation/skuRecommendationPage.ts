@@ -18,7 +18,7 @@ import { FlexContainer } from 'azdata';
 import { AssessmentSummaryCard } from './assessmentSummaryCard';
 import { MigrationTargetType } from '../../api/utils';
 import { logError, TelemetryViews, TelemetryAction, sendSqlMigrationActionEvent, getTelemetryProps } from '../../telemetry';
-import { update } from 'plotly.js';
+import { getSourceConnectionProfile } from '../../api/sqlUtils';
 
 
 export class SKURecommendationPage extends MigrationWizardPage {
@@ -240,6 +240,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			level: azdata.window.MessageLevel.Error
 		};
 
+		this._serverName = this.migrationStateModel.serverName || (await getSourceConnectionProfile()).serverName;
+
 		if (this.migrationStateModel._runAssessments) {
 			const errors: string[] = [];
 			await this._setAssessmentState(true, false);
@@ -390,47 +392,16 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	public async refreshCardText(showLoadingIcon: boolean = true): Promise<void> {
-		// this._rbgLoader.loading = showLoadingIcon && true;
+		this._assessmentSummaryCardLoader.loading = showLoadingIcon && true;
 
 		const dbCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.length;
-
-		const dbReadyForMiCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db =>
-			!db.issues?.some(issue => issue.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI)
-		).length;
-		const dbNotReadyForMiCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db =>
-			db.issues?.some(issue => (issue.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) && (issue.issueCategory === "Issue"))
-		).length;
-		const dbReadyWithWarningsForMiCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db =>
-			db.issues?.some(issue => (issue.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) && (issue.issueCategory === "Warning"))
-		).length;
-		const blockersForMiCount = 0;
-		const warningsForMiCount = 0;
-
-
-		const dbReadyForVmCount = dbCount;
-		const dbNotReadyForVmCount = 0;
-		const dbReadyWithWarningsForVmCount = 0;
-		const blockersForVmCount = 0;
-		const warningsForVmCount = 0;
-
-		const dbReadyForDbCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db =>
-			!db.issues?.some(issue => issue.appliesToMigrationTargetPlatform === MigrationTargetType.SQLDB)
-		).length;
-		const dbNotReadyForDbCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db =>
-			db.issues?.some(issue => (issue.appliesToMigrationTargetPlatform === MigrationTargetType.SQLDB) && (issue.issueCategory === "Issue"))
-		).length;
-		const dbReadyWithWarningsForDbCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db =>
-			db.issues?.some(issue => (issue.appliesToMigrationTargetPlatform === MigrationTargetType.SQLDB) && (issue.issueCategory === "Warning"))
-		).length;
-		const blockersForDbCount = 0;
-		const warningsForDbCount = 0;
 
 		if (!this.migrationStateModel._assessmentResults) {
 		}
 		else {
-			await this._miAssessmentCard.updateAssessmentResult(dbCount, dbReadyForMiCount, dbReadyWithWarningsForMiCount, dbNotReadyForMiCount, blockersForMiCount, warningsForMiCount);
-			await this._vmAssessmentCard.updateAssessmentResult(dbCount, dbReadyForVmCount, dbReadyWithWarningsForVmCount, dbNotReadyForVmCount, blockersForVmCount, warningsForVmCount);
-			await this._dbAssessmentCard.updateAssessmentResult(dbCount, dbReadyForDbCount, dbReadyWithWarningsForDbCount, dbNotReadyForDbCount, blockersForDbCount, warningsForDbCount);
+			await this.updateAssessmentDetailsForEachTarget(MigrationTargetType.SQLDB, dbCount);
+			await this.updateAssessmentDetailsForEachTarget(MigrationTargetType.SQLMI, dbCount);
+			await this.updateAssessmentDetailsForEachTarget(MigrationTargetType.SQLVM, dbCount);
 
 			if (this.hasRecommendations()) {
 				// updated the headers.
@@ -443,6 +414,40 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		// await this.refreshTdeView();
 		this._assessmentSummaryCardLoader.loading = false;
+	}
+
+	private async updateAssessmentDetailsForEachTarget(targetType: MigrationTargetType, dbCount: number): Promise<void> {
+		if (targetType === MigrationTargetType.SQLVM) {
+			await this._vmAssessmentCard.updateAssessmentResult(dbCount, dbCount, 0, 0, 0, 0);
+			return;
+		}
+
+		const dbReady = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db =>
+			!db.issues?.some(issue => issue.appliesToMigrationTargetPlatform === targetType)
+		).length;
+		const dbNotReady = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db =>
+			db.issues?.some(issue => (issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === "Issue"))
+		).length;
+		const dbReadyWithWarnings = dbCount - (dbReady + dbNotReady);
+
+		var blockers = this.migrationStateModel._assessmentResults?.issues.filter(issue =>
+			(issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === "Issue")).length;
+		blockers += this.migrationStateModel._assessmentResults?.databaseAssessments?.reduce((count, database) =>
+			count + database.issues.filter(issue => (issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === "Issue")).length, 0);
+
+		var warnings = this.migrationStateModel._assessmentResults?.issues.filter(issue =>
+			(issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === "Warning")).length;
+		warnings += this.migrationStateModel._assessmentResults?.databaseAssessments?.reduce((count, database) =>
+			count + database.issues.filter(issue => (issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === "Warning")).length, 0);
+
+		switch (targetType) {
+			case MigrationTargetType.SQLDB:
+				await this._dbAssessmentCard.updateAssessmentResult(dbCount, dbReady, dbReadyWithWarnings, dbNotReady, blockers, warnings);
+				break;
+			case MigrationTargetType.SQLMI:
+				await this._miAssessmentCard.updateAssessmentResult(dbCount, dbReady, dbReadyWithWarnings, dbNotReady, blockers, warnings);
+				break;
+		}
 	}
 
 	// TODO - will be needed when SKU recommendation is done.
@@ -461,7 +466,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	// private createAzureRecommendationContainer(_view: azdata.ModelView): azdata.FlexContainer {
 	// }
 
-	// TODO - functions related to TDE
+	// TODO - add back functions related to TDE
 	// private async createTdeInfoContainer(): Promise<azdata.FlexContainer> {
 	// }
 	// private _resetTdeConfiguration() {
