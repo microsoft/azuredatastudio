@@ -63,13 +63,16 @@ export abstract class ScriptableDialogBase<OptionsType extends ScriptableDialogO
 	protected abstract get isDirty(): boolean;
 
 	protected override onFormFieldChange(): void {
-		this._scriptButton.enabled = this.isDirty;
+		this.updateScriptButtonState();
 		this.dialogObject.okButton.enabled = this.isDirty;
 	}
 
 	protected override async initialize(): Promise<void> {
 		await this.initializeData();
 		await this.initializeUI();
+		this.disposables.push(this.modelView.onValidityChanged(() => {
+			this.updateScriptButtonState();
+		}));
 	}
 
 	protected override updateLoadingStatus(isLoading: boolean, loadingText?: string, loadingCompletedText?: string): void {
@@ -130,5 +133,9 @@ export abstract class ScriptableDialogBase<OptionsType extends ScriptableDialogO
 		} finally {
 			this.updateLoadingStatus(false, localizedConstants.GeneratingScriptText, localizedConstants.GeneratingScriptCompletedText);
 		}
+	}
+
+	private updateScriptButtonState(): void {
+		this._scriptButton.enabled = this.isDirty && this.modelView.valid;
 	}
 }

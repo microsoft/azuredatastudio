@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/Microsoft.query-store/dist/common/constants" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="aggregationSizeLabel">
+        <source xml:lang="en">Aggregation Size</source>
+        <target state="translated">Taille de l'agrégation</target>
+      </trans-unit>
+      <trans-unit id="allLabel">
+        <source xml:lang="en">All</source>
+        <target state="translated">Tout</target>
+      </trans-unit>
+      <trans-unit id="applyButtonText">
+        <source xml:lang="en">Apply</source>
+        <target state="translated">Appliquer</target>
+      </trans-unit>
+      <trans-unit id="automaticLabel">
+        <source xml:lang="en">Automatic</source>
+        <target state="translated">Automatique</target>
+      </trans-unit>
+      <trans-unit id="avgLabel">
+        <source xml:lang="en">Avg</source>
+        <target state="translated">Moy</target>
+      </trans-unit>
+      <trans-unit id="basedOnLabel">
+        <source xml:lang="en">Based on:</source>
+        <target state="translated">Basé sur :</target>
+      </trans-unit>
+      <trans-unit id="CLRTimeLabel">
+        <source xml:lang="en">CLR Time (ms)</source>
+        <target state="translated">Temps CLR (ms)</target>
+      </trans-unit>
+      <trans-unit id="cpuTime">
+        <source xml:lang="en">CPU Time</source>
+        <target state="translated">Temps processeur</target>
+      </trans-unit>
+      <trans-unit id="CPUTimeLabel">
+        <source xml:lang="en">CPU Time (ms)</source>
+        <target state="translated">Temps CPU (ms)</target>
+      </trans-unit>
+      <trans-unit id="cancelButtonText">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Annuler</target>
+      </trans-unit>
+      <trans-unit id="topConsumersRadioButtonsLabel">
+        <source xml:lang="en">Check for top consumers of:</source>
+        <target state="translated">Rechercher les plus gros consommateurs de :</target>
+      </trans-unit>
+      <trans-unit id="configure">
+        <source xml:lang="en">Configure</source>
+        <target state="translated">Configurer</target>
+      </trans-unit>
+      <trans-unit id="criteria">
+        <source xml:lang="en">Criteria</source>
+        <target state="translated">Critères</target>
+      </trans-unit>
+      <trans-unit id="customLabel">
+        <source xml:lang="en">Custom</source>
+        <target state="translated">Personnalisé</target>
+      </trans-unit>
+      <trans-unit id="++CODE++9cb725c039170871de7978892c2fdf0f763f58359bd66bd0b1a06b0bdf3f6b38">
+        <source xml:lang="en">DOP</source>
+        <target state="translated">DOP</target>
+      </trans-unit>
+      <trans-unit id="dayLabel">
+        <source xml:lang="en">Day</source>
+        <target state="translated">Jour</target>
+      </trans-unit>
+      <trans-unit id="duration">
+        <source xml:lang="en">Duration</source>
+        <target state="translated">Durée</target>
+      </trans-unit>
+      <trans-unit id="durationLabel">
+        <source xml:lang="en">Duration (ms)</source>
+        <target state="translated">Durée (ms)</target>
+      </trans-unit>
+      <trans-unit id="executionCountLabel">
+        <source xml:lang="en">Execution Count</source>
+        <target state="translated">Nombre d'exécutions</target>
+      </trans-unit>
+      <trans-unit id="executionCount">
+        <source xml:lang="en">Execution Count</source>
+        <target state="translated">Nombre d'exécutions</target>
+      </trans-unit>
+      <trans-unit id="filterLabel">
+        <source xml:lang="en">Filters</source>
+        <target state="translated">Filtres</target>
+      </trans-unit>
+      <trans-unit id="fromLabel">
+        <source xml:lang="en">From</source>
+        <target state="translated">De</target>
+      </trans-unit>
+      <trans-unit id="hourLabel">
+        <source xml:lang="en">Hour</source>
+        <target state="translated">Heure</target>
+      </trans-unit>
+      <trans-unit id="last12HoursLabel">
+        <source xml:lang="en">Last 12 hours</source>
+        <target state="translated">12 dernières heures</target>
+      </trans-unit>
+      <trans-unit id="last15MinsLabel">
+        <source xml:lang="en">Last 15 minutes</source>
+        <target state="translated">15 dernières minutes</target>
+      </trans-unit>
+      <trans-unit id="last2DaysLabel">
+        <source xml:lang="en">Last 2 days</source>
+        <target state="translated">2 derniers jours</target>
+      </trans-unit>
+      <trans-unit id="last2WeeksLabel">
+        <source xml:lang="en">Last 2 weeks</source>
+        <target state="translated">2 dernières semaines</target>
+      </trans-unit>
+      <trans-unit id="last3MonthsLabel">
+        <source xml:lang="en">Last 3 months</source>
+        <target state="translated">3 derniers mois</target>
+      </trans-unit>
+      <trans-unit id="last30MinsLabel">
+        <source xml:lang="en">Last 30 minutes</source>
+        <target state="translated">30 dernières minutes</target>
+      </trans-unit>
+      <trans-unit id="last5MinsLabel">
+        <source xml:lang="en">Last 5 minutes</source>
+        <target state="translated">5 dernières minutes</target>
+      </trans-unit>
+      <trans-unit id="last6MonthsLabel">
+        <source xml:lang="en">Last 6 months</source>
+        <target state="translated">6 derniers mois</target>
+      </trans-unit>
+      <trans-unit id="lastDayLabel">
+        <source xml:lang="en">Last day</source>
+        <target state="translated">Dernier jour</target>
+      </trans-unit>
+      <trans-unit id="lastHourLabel">
+        <source xml:lang="en">Last hour</source>
+        <target state="translated">Dernière heure</target>
+      </trans-unit>
+      <trans-unit id="lastMonthLabel">
+        <source xml:lang="en">Last month</source>
+        <target state="translated">Mois dernier</target>
+      </trans-unit>
+      <trans-unit id="lastWeekLabel">
+        <source xml:lang="en">Last week</source>
+        <target state="translated">Semaine dernière</target>
+      </trans-unit>
+      <trans-unit id="lastYearLabel">
+        <source xml:lang="en">Last year</source>
+        <target state="translated">Année dernière</target>
+      </trans-unit>
+      <trans-unit id="localLabel">
+        <source xml:lang="en">Local</source>
+        <target state="translated">Local</target>
+      </trans-unit>
+      <trans-unit id="logMemoryUsedLabel">
+        <source xml:lang="en">Log Memory Used (KB)</source>
+        <target state="translated">Mémoire de journal utilisée (Ko)</target>
+      </trans-unit>
+      <trans-unit id="logicalReads">
+        <source xml:lang="en">Logical Reads</source>
+        <target state="translated">Lectures logiques</target>
+      </trans-unit>
+      <trans-unit id="logicalReadsLabel">
+        <source xml:lang="en">Logical Reads (KB)</source>
+        <target state="translated">Lectures logiques (Ko)</target>
+      </trans-unit>
+      <trans-unit id="logicalWritesLabel">
+        <source xml:lang="en">Logical Writes (KB)</source>
+        <target state="translated">Écritures logiques (Ko)</target>
+      </trans-unit>
+      <trans-unit id="maxLabel">
+        <source xml:lang="en">Max</source>
+        <target state="translated">Max</target>
+      </trans-unit>
+      <trans-unit id="memoryConsumptionLabel">
+        <source xml:lang="en">Memory Consumption (KB)</source>
+        <target state="translated">Consommation de mémoire (Ko)</target>
+      </trans-unit>
+      <trans-unit id="minLabel">
+        <source xml:lang="en">Min</source>
+        <target state="translated">Min</target>
+      </trans-unit>
+      <trans-unit id="filterMinPlanLabel">
+        <source xml:lang="en">Min number of plans</source>
+        <target state="translated">Nombre minimum de forfaits</target>
+      </trans-unit>
+      <trans-unit id="minuteLabel">
+        <source xml:lang="en">Minute</source>
+        <target state="translated">Minute</target>
+      </trans-unit>
+      <trans-unit id="okButtonText">
+        <source xml:lang="en">Ok</source>
+        <target state="translated">OK</target>
+      </trans-unit>
+      <trans-unit id="openInNewTab">
+        <source xml:lang="en">Open In New Tab</source>
+        <target state="new">Open In New Tab</target>
+      </trans-unit>
+      <trans-unit id="overallResourceConsumption">
+        <source xml:lang="en">Overall Resource Consumption</source>
+        <target state="translated">Consommation globale des ressources</target>
+      </trans-unit>
+      <trans-unit id="overallResourceConsumptionToolbarLabel">
+        <source xml:lang="en">Overall resource consumption for database {0}</source>
+        <target state="translated">Consommation globale des ressources pour base de données {0}</target>
+      </trans-unit>
+      <trans-unit id="physicalReadsLabel">
+        <source xml:lang="en">Physical Reads (KB)</source>
+        <target state="translated">Lectures physiques (Ko)</target>
+      </trans-unit>
+      <trans-unit id="planSummary">
+        <source xml:lang="en">Plan Summary for query {0}</source>
+        <target state="translated">Résumé du plan pour la requête {0}</target>
+      </trans-unit>
+      <trans-unit id="plan">
+        <source xml:lang="en">Plan {0}</source>
+        <target state="translated">Plan {0}</target>
+      </trans-unit>
+      <trans-unit id="queries">
+        <source xml:lang="en">Queries</source>
+        <target state="translated">Requêtes</target>
+      </trans-unit>
+      <trans-unit id="queryStoreDashboardTitle">
+        <source xml:lang="en">Query Store - {0}</source>
+        <target state="translated">Magasin des requêtes - {0}</target>
+      </trans-unit>
+      <trans-unit id="resourceConsumptionCriteriaTitle">
+        <source xml:lang="en">Resource Consumption Criteria</source>
+        <target state="translated">Critères de consommation des ressources</target>
+      </trans-unit>
+      <trans-unit id="returnLabel">
+        <source xml:lang="en">Return</source>
+        <target state="translated">Retourner</target>
+      </trans-unit>
+      <trans-unit id="rowCountLabel">
+        <source xml:lang="en">Row Count</source>
+        <target state="translated">Nombre de lignes</target>
+      </trans-unit>
+      <trans-unit id="showChartTitle">
+        <source xml:lang="en">Show Chart for</source>
+        <target state="translated">Afficher le graphique pour</target>
+      </trans-unit>
+      <trans-unit id="stdDevLabel">
+        <source xml:lang="en">Std Dev</source>
+        <target state="translated">Développement standard</target>
+      </trans-unit>
+      <trans-unit id="tempDBMermoryUsedLabel">
+        <source xml:lang="en">Temp DB Memory Used (KB)</source>
+        <target state="translated">Mémoire Tempdb utilisée (Ko)</target>
+      </trans-unit>
+      <trans-unit id="timeFormatLabel">
+        <source xml:lang="en">Time Format</source>
+        <target state="translated">Format d'heure</target>
+      </trans-unit>
+      <trans-unit id="timeIntervalLabel">
+        <source xml:lang="en">Time Interval</source>
+        <target state="translated">Intervalle de temps</target>
+      </trans-unit>
+      <trans-unit id="timeSettingsLabel">
+        <source xml:lang="en">Time Settings</source>
+        <target state="translated">Paramètres horaires</target>
+      </trans-unit>
+      <trans-unit id="toLabel">
+        <source xml:lang="en">To</source>
+        <target state="translated">À</target>
+      </trans-unit>
+      <trans-unit id="topLabel">
+        <source xml:lang="en">Top</source>
+        <target state="translated">Top</target>
+      </trans-unit>
+      <trans-unit id="topResourceConsumingQueriesToolbarLabel">
+        <source xml:lang="en">Top 25 resource consumers for database {0}</source>
+        <target state="translated">25 principaux consommateurs de ressources pour base de données {0}</target>
+      </trans-unit>
+      <trans-unit id="topResourceConsumingQueries">
+        <source xml:lang="en">Top Resource Consuming Queries</source>
+        <target state="translated">Principales requêtes consommatrices de ressources</target>
+      </trans-unit>
+      <trans-unit id="totalLabel">
+        <source xml:lang="en">Total</source>
+        <target state="translated">Total</target>
+      </trans-unit>
+      <trans-unit id="++CODE++17bc05152f339d6dc2fb2844595760e9009662c4315fa1ac0d61c7e47dfbdbb3">
+        <source xml:lang="en">UTC</source>
+        <target state="translated">UTC</target>
+      </trans-unit>
+      <trans-unit id="waitTimeLabel">
+        <source xml:lang="en">Wait Time (ms)</source>
+        <target state="translated">Temps d'attente (ms)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.query-store/package" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="queryStore.openQueryStoreDashboard">
+        <source xml:lang="en">Query Store</source>
+        <target state="translated">Magasin des requêtes</target>
+      </trans-unit>
+      <trans-unit id="queryStore.category">
+        <source xml:lang="en">Query Store</source>
+        <target state="translated">Magasin des requêtes</target>
+      </trans-unit>
+      <trans-unit id="queryStore.displayName">
+        <source xml:lang="en">Query Store</source>
+        <target state="translated">Magasin des requêtes</target>
+      </trans-unit>
+      <trans-unit id="queryStore.description">
+        <source xml:lang="en">Query Store extension for Azure Data Studio.</source>
+        <target state="translated">Extension magasin des requêtes pour Azure Data Studio.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

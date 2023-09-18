@@ -161,7 +161,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 					return Promise.resolve(self._serializationService.saveAs(requestParams.resultFormat, requestParams.filePath, undefined, true));
 				}
 			},
-			copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<void> {
+			copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<azdata.CopyResultsRequestResult> {
 				return Promise.resolve(self._proxy.$copyResults(handle, requestParams));
 			},
 			initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Promise<void> {
@@ -338,8 +338,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	public $registerFileBrowserProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._fileBrowserService.registerProvider(providerId, <azdata.FileBrowserProvider>{
-			openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean> {
-				return self._proxy.$openFileBrowser(handle, ownerUri, expandPath, fileFilters, changeFilter);
+			openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean, showFoldersOnly?: boolean): Thenable<boolean> {
+				return self._proxy.$openFileBrowser(handle, ownerUri, expandPath, fileFilters, changeFilter, showFoldersOnly);
 			},
 			expandFolderNode(ownerUri: string, expandPath: string): Thenable<boolean> {
 				return self._proxy.$expandFolderNode(handle, ownerUri, expandPath);
