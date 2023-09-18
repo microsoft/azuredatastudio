@@ -279,7 +279,7 @@ export class ChatService extends Disposable implements IChatService {
 		const data: IChatTransfer[] = this.storageService.getObject(globalChatKey, StorageScope.PROFILE, []);
 		const workspaceUri = this.workspaceContextService.getWorkspace().folders[0]?.uri;
 		if (!workspaceUri) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 
 		const thisWorkspace = workspaceUri.toString();

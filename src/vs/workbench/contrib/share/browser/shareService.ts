@@ -81,6 +81,6 @@ export class ShareService implements IShareService {
 			return selected.provider.provideShare(item, token);
 		}
 
-		return;
+		return undefined; // {{SQL CARBON EDIT}}
 	}
 }

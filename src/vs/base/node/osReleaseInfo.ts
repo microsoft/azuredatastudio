@@ -16,7 +16,7 @@ type ReleaseInfo = {
 
 export async function getOSReleaseInfo(errorLogger: (error: any) => void): Promise<ReleaseInfo | undefined> {
 	if (Platform.isMacintosh || Platform.isWindows) {
-		return;
+		return undefined; // {{SQL CARBON EDIT}}
 	}
 
 	// Extract release information on linux based systems
@@ -32,7 +32,7 @@ export async function getOSReleaseInfo(errorLogger: (error: any) => void): Promi
 
 	if (!handle) {
 		errorLogger('Unable to retrieve release information from known identifier paths.');
-		return;
+		return undefined; // {{SQL CARBON EDIT}}
 	}
 
 	try {
@@ -69,5 +69,5 @@ export async function getOSReleaseInfo(errorLogger: (error: any) => void): Promi
 		errorLogger(err);
 	}
 
-	return;
+	return undefined; // {{SQL CARBON EDIT}}
 }

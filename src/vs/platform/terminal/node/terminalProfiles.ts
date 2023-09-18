@@ -246,7 +246,7 @@ async function getValidatedProfile(
 		}
 		const result = await fsProvider.existsFile(actualRequiredPath);
 		if (!result) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 	}
 

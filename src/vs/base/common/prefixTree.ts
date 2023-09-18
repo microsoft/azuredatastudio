@@ -43,7 +43,8 @@ export class WellDefinedPrefixTree<V> {
 
 		const value = path[i].node.value;
 		if (value === unset) {
-			return; // not actually a real node
+			// {{SQL CARBON EDIT}}
+			return undefined; // not actually a real node
 		}
 
 		this._size--;

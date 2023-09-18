@@ -381,7 +381,7 @@ export class CopyPasteController extends Disposable implements IEditorContributi
 
 	private fetchCopyMetadata(e: ClipboardEvent): CopyMetadata | undefined {
 		if (!e.clipboardData) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 
 		// Prefer using the clipboard data we saved off

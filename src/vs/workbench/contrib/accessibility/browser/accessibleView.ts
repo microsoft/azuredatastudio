@@ -240,11 +240,11 @@ class AccessibleView extends Disposable {
 
 	getSymbols(): IAccessibleViewSymbol[] | undefined {
 		if (!this._currentProvider || !this._currentContent) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 		const tokens = this._currentProvider.options.language && this._currentProvider.options.language !== 'markdown' ? this._currentProvider.getSymbols?.() : marked.lexer(this._currentContent);
 		if (!tokens) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 		const symbols: IAccessibleViewSymbol[] = [];
 		let firstListItem: string | undefined;

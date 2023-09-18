@@ -625,7 +625,7 @@ export class ContentHoverWidget extends ResizableContentWidget {
 	private _findAvailableSpaceVertically(): number | undefined {
 		const position = this._visibleData?.showAtPosition;
 		if (!position) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 		return this._positionPreference === ContentWidgetPositionPreference.ABOVE ? this._availableVerticalSpaceAbove(position) : this._availableVerticalSpaceBelow(position);
 	}
@@ -633,7 +633,7 @@ export class ContentHoverWidget extends ResizableContentWidget {
 	private _findMaximumRenderingHeight(): number | undefined {
 		const availableSpace = this._findAvailableSpaceVertically();
 		if (!availableSpace) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 		// Padding needed in order to stop the resizing down to a smaller height
 		let maximumHeight = CONTAINER_HEIGHT_PADDING;
@@ -663,7 +663,7 @@ export class ContentHoverWidget extends ResizableContentWidget {
 
 	private _findMaximumRenderingWidth(): number | undefined {
 		if (!this._editor || !this._editor.hasModel()) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 
 		const overflowing = this._isHoverTextOverflowing();

@@ -732,7 +732,7 @@ export class TestingOutputPeekController extends Disposable implements IEditorCo
 
 		const result = this.testResults.results.find(r => r.id === parts.resultId);
 		if (!result) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 
 		if (parts.type === TestUriType.TaskOutput) {
@@ -742,7 +742,7 @@ export class TestingOutputPeekController extends Disposable implements IEditorCo
 		if (parts.type === TestUriType.TestOutput) {
 			const test = result.getStateById(parts.testExtId);
 			const task = result.tasks[parts.taskIndex];
-			if (!test || !task) { return; }
+			if (!test || !task) { return undefined; /* {{SQL CARBON EDIT}} */ }
 			return new TestOutputSubject(result, parts.taskIndex, task, test);
 		}
 
@@ -1308,7 +1308,7 @@ class PlainTextMessagePeek extends Disposable implements IPeekOutputRenderer {
 		}
 
 		const message = subject.message;
-		if (isDiffable(message) || message.type === TestMessageType.Output || typeof message.message !== 'string') {
+		if (isDiffable(message) || message.type === TestMessageType.Output || typeof ((<ITestErrorMessage>message).message) !== 'string') { // {{SQL CARBON EDIT}} - Casting message to ITestErrorMessage to access message property
 			return this.clear();
 		}
 
@@ -1452,7 +1452,7 @@ class TerminalMessagePeek extends Disposable implements IPeekOutputRenderer {
 		});
 
 		if (subject instanceof MessageSubject && subject.message.type === TestMessageType.Output && subject.message.marker !== undefined) {
-			terminal?.xterm.selectMarkedRange(getMarkId(subject.message.marker, true), getMarkId(subject.message.marker, false), /* scrollIntoView= */ true);
+			(<IDetachedTerminalInstance>terminal)?.xterm.selectMarkedRange(getMarkId(subject.message.marker, true), getMarkId(subject.message.marker, false), /* scrollIntoView= */ true); // {{SQL CARBON EDIT}} Casting to IDetachedTerminalInstance
 		}
 	}
 
@@ -1568,7 +1568,7 @@ class TerminalMessagePeek extends Disposable implements IPeekOutputRenderer {
 const hintMessagePeekHeight = (msg: ITestMessage) => {
 	const msgHeight = isDiffable(msg)
 		? Math.max(hintPeekStrHeight(msg.actual), hintPeekStrHeight(msg.expected))
-		: hintPeekStrHeight(typeof msg.message === 'string' ? msg.message : msg.message.value);
+		: hintPeekStrHeight(typeof msg.message === 'string' ? msg.message : (<IMarkdownString>msg.message).value); // {{SQL CARBON EDIT}} Cast to access value property and resolve typescript compiler error with value not existing on type "never"
 
 	// add 8ish lines for the size of the title and decorations in the peek.
 	return msgHeight + 8;

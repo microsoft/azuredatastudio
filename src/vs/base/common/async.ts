@@ -193,7 +193,7 @@ export class Throttler implements IDisposable {
 					this.queuedPromise = null;
 
 					if (this.isDisposed) {
-						return;
+						return undefined; // {{SQL CARBON EDIT}}
 					}
 
 					const result = this.queue(this.queuedPromiseFactory!);

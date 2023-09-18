@@ -306,14 +306,14 @@ export class StickyScrollWidget extends Disposable implements IOverlayWidget {
 	private _renderFoldingIconForLine(container: HTMLSpanElement, foldingModel: FoldingModel | null | undefined, index: number, line: number): StickyFoldingIcon | undefined {
 		const showFoldingControls: 'mouseover' | 'always' | 'never' = this._editor.getOption(EditorOption.showFoldingControls);
 		if (!foldingModel || showFoldingControls === 'never') {
-			return;
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 		const foldingRegions = foldingModel.regions;
 		const indexOfFoldingRegion = foldingRegions.findRange(line);
 		const startLineNumber = foldingRegions.getStartLineNumber(indexOfFoldingRegion);
 		const isFoldingScope = line === startLineNumber;
 		if (!isFoldingScope) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 		const isCollapsed = foldingRegions.isCollapsed(indexOfFoldingRegion);
 		const foldingIcon = new StickyFoldingIcon(isCollapsed, this._lineHeight);

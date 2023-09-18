@@ -7,8 +7,8 @@ import { localize } from 'vs/nls';
 import { GettingStartedInputSerializer, GettingStartedPage, inWelcomeContext } from 'vs/workbench/contrib/welcomeGettingStarted/browser/gettingStarted';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorExtensions, IEditorFactoryRegistry } from 'vs/workbench/common/editor';
-import { MenuId, registerAction2, Action2 } from 'vs/platform/actions/common/actions';
-import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { /*MenuId,*/ registerAction2, Action2 } from 'vs/platform/actions/common/actions'; // {{SQL CARBON EDIT}} Remove unused
+import { /*IInstantiationService,*/ ServicesAccessor } from 'vs/platform/instantiation/common/instantiation'; // {{SQL CARBON EDIT}} Remove unused
 import { ContextKeyExpr, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
@@ -16,7 +16,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { EditorPaneDescriptor, IEditorPaneRegistry } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IWalkthroughsService } from 'vs/workbench/contrib/welcomeGettingStarted/browser/gettingStartedService';
-import { GettingStartedEditorOptions, GettingStartedInput } from 'vs/workbench/contrib/welcomeGettingStarted/browser/gettingStartedInput';
+import { /*GettingStartedEditorOptions,*/ GettingStartedInput } from 'vs/workbench/contrib/welcomeGettingStarted/browser/gettingStartedInput'; // {{SQL CARBON EDIT}} Remove unused
 import { Extensions as WorkbenchExtensions, IWorkbenchContributionsRegistry } from 'vs/workbench/common/contributions';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { ConfigurationScope, Extensions as ConfigurationExtensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry';
@@ -30,8 +30,8 @@ import { isLinux, isMacintosh, isWindows, OperatingSystem as OS } from 'vs/base/
 import { IExtensionManagementServerService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { StartupPageContribution, } from 'vs/workbench/contrib/welcomeGettingStarted/browser/startupPage';
-import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput';
-import { Categories } from 'vs/platform/action/common/actionCommonCategories';
+// import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput'; // {{SQL CARBON EDIT}} Remove unused
+// import { Categories } from 'vs/platform/action/common/actionCommonCategories'; // {{SQL CARBON EDIT}} Remove unused
 
 export * as icons from 'vs/workbench/contrib/welcomeGettingStarted/browser/gettingStartedIcons';
 

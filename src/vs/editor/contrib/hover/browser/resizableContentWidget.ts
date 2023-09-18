@@ -65,7 +65,7 @@ export abstract class ResizableContentWidget extends Disposable implements ICont
 		const editorDomNode = this._editor.getDomNode();
 		const mouseBox = this._editor.getScrolledVisiblePosition(position);
 		if (!editorDomNode || !mouseBox) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 		const editorBox = dom.getDomNodePagePosition(editorDomNode);
 		return editorBox.top + mouseBox.top - TOP_HEIGHT;
@@ -75,7 +75,7 @@ export abstract class ResizableContentWidget extends Disposable implements ICont
 		const editorDomNode = this._editor.getDomNode();
 		const mouseBox = this._editor.getScrolledVisiblePosition(position);
 		if (!editorDomNode || !mouseBox) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 		const editorBox = dom.getDomNodePagePosition(editorDomNode);
 		const bodyBox = dom.getClientArea(document.body);

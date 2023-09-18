@@ -1249,7 +1249,7 @@ export interface MainThreadChatShape extends IDisposable {
 	$addRequest(context: any): void;
 	$sendRequestToProvider(providerId: string, message: IChatDynamicRequest): void;
 	$unregisterChatProvider(handle: number): Promise<void>;
-	$acceptResponseProgress(handle: number, sessionId: number, progress: IChatResponseProgressDto, responsePartHandle?: number): Promise<number | void>;
+	$acceptResponseProgress(handle: number, sessionId: number, progress: IChatResponseProgressDto, responsePartHandle?: number | void | undefined): Promise<number | void>; // {{SQL CARBON EDIT}} added responsePartHandle undefined and void typings
 	$transferChatSession(sessionId: number, toWorkspace: UriComponents): void;
 }
 

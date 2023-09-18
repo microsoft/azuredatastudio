@@ -639,7 +639,7 @@ class SingleTabHoverDelegate implements IHoverDelegate {
 	showHover(options: IHoverDelegateOptions, focus?: boolean) {
 		const instance = this._terminalGroupService.activeInstance;
 		if (!instance) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 		const hoverInfo = getInstanceHoverInfo(instance);
 		return this._hoverService.showHover({

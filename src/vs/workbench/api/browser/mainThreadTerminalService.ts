@@ -286,7 +286,7 @@ export class MainThreadTerminalService implements MainThreadTerminalServiceShape
 		this._quickFixProviders.set(id, this._terminalQuickFixService.registerQuickFixProvider(id, {
 			provideTerminalQuickFixes: async (terminalCommand, lines, options, token) => {
 				if (token.isCancellationRequested) {
-					return;
+					return undefined; // {{SQL CARBON EDIT}}
 				}
 				if (options.outputMatcher?.length && options.outputMatcher.length > 40) {
 					options.outputMatcher.length = 40;
@@ -294,7 +294,7 @@ export class MainThreadTerminalService implements MainThreadTerminalServiceShape
 				}
 				const commandLineMatch = terminalCommand.command.match(options.commandLineMatcher);
 				if (!commandLineMatch || !lines) {
-					return;
+					return undefined; // {{SQL CARBON EDIT}}
 				}
 				const outputMatcher = options.outputMatcher;
 				let outputMatch;
@@ -302,7 +302,7 @@ export class MainThreadTerminalService implements MainThreadTerminalServiceShape
 					outputMatch = getOutputMatchForLines(lines, outputMatcher);
 				}
 				if (!outputMatch) {
-					return;
+					return undefined; // {{SQL CARBON EDIT}}
 				}
 				const matchResult = { commandLineMatch, outputMatch, commandLine: terminalCommand.command };
 
@@ -311,10 +311,10 @@ export class MainThreadTerminalService implements MainThreadTerminalServiceShape
 					if (result && Array.isArray(result)) {
 						return result.map(r => parseQuickFix(id, extensionId, r));
 					} else if (result) {
-						return parseQuickFix(id, extensionId, result);
+						return parseQuickFix(id, extensionId, <TerminalQuickFix>result); // {{SQL CARBON EDIT}} Cast to TerminalQuickFix
 					}
 				}
-				return;
+				return undefined; // {{SQL CARBON EDIT}}
 			}
 		}));
 	}

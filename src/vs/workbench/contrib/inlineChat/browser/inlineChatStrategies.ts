@@ -139,7 +139,7 @@ export class PreviewStrategy extends EditModeStrategy {
 	}
 
 	getWidgetPosition(): Position | undefined {
-		return;
+		return undefined; // {{SQL CARBON EDIT}}
 	}
 
 	hasFocus(): boolean {
@@ -438,7 +438,7 @@ export class LivePreviewStrategy extends LiveStrategy {
 		if (this._session.lastTextModelChanges.length) {
 			return this._session.wholeRange.value.getEndPosition();
 		}
-		return;
+		return undefined; // {{SQL CARBON EDIT}}
 	}
 }
 

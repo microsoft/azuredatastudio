@@ -1080,20 +1080,20 @@ registerAction2(class extends Action2 {
 	private async tryEvaluateAndCopy(debugService: IDebugService, element: IReplElement): Promise<string | undefined> {
 		// todo: we should expand DAP to allow copying more types here (#187784)
 		if (!(element instanceof ReplEvaluationResult)) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 
 		const stackFrame = debugService.getViewModel().focusedStackFrame;
 		const session = debugService.getViewModel().focusedSession;
 		if (!stackFrame || !session || !session.capabilities.supportsClipboardContext) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 
 		try {
 			const evaluation = await session.evaluate(element.originalExpression, stackFrame.frameId, 'clipboard');
 			return evaluation?.body.result;
 		} catch (e) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 	}
 });

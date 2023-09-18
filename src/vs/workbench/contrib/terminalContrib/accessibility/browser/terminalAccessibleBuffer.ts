@@ -89,7 +89,7 @@ export class AccessibleBufferWidget extends TerminalAccessibleWidget {
 			line = command.commandStartMarker?.line;
 		}
 		if (line === undefined || line < 0) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 		line = this._bufferTracker.bufferToEditorLineMapping.get(line);
 		if (line === undefined) {
