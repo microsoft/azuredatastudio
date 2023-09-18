@@ -476,14 +476,15 @@ export enum AzureResource {
 	Sql = 1,
 	OssRdbms = 2,
 	AzureKeyVault = 3,
-	MicrosoftResourceManagement = 4,
-	AzureDevOps = 5,
-	MsGraph = 6,
-	AzureLogAnalytics = 7,
-	AzureStorage = 8,
-	AzureKusto = 9,
-	PowerBi = 10,
-	Custom = 11 // Handles custom resource URIs as received from server endpoint.
+	// 4 (formerly Azure Graph) is no longer used.
+	MicrosoftResourceManagement = 5,
+	AzureDevOps = 6,
+	MsGraph = 7,
+	AzureLogAnalytics = 8,
+	AzureStorage = 9,
+	AzureKusto = 10,
+	PowerBi = 11,
+	Custom = 12 // Handles custom resource URIs as received from server endpoint.
 }
 
 export enum NodeFilterPropertyDataType {
