@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
-import { ColorCodes } from '../../constants/helper';
+import { ColorCodes, IssueCategory } from '../../constants/helper';
 import { MigrationStateModel } from '../../models/stateMachine';
 
 interface IActionMetadata {
@@ -80,8 +80,8 @@ export class InstanceSummary {
 		this._assessedDatabases.value = constants.ASSESSED_DBS_LABEL + ": " + model._databasesForAssessment?.length;
 		this._totalFindingLabels.value = constants.TOTAL_FINDINGS_LABEL + ": " + model._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === model._targetType).length;
 		const readyDbsCount = model._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === model._targetType).length === 0).length;
-		const notReadyDbsCount = model._databasesForAssessment?.length - readyDbsCount;
-		const readywithWarnDbsCount = 0;
+		const notReadyDbsCount = model._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === model._targetType && issue.issueCategory === IssueCategory.Issue).length !== 0).length;
+		const readyWithWarnDbsCount = model._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === model._targetType && issue.issueCategory === IssueCategory.Warning).length !== 0).length;
 
 		const readinessStates = [
 			{
@@ -91,7 +91,7 @@ export class InstanceSummary {
 			},
 			{
 				label: constants.READY_WARN,
-				count: readywithWarnDbsCount,
+				count: readyWithWarnDbsCount,
 				color: ColorCodes.ReadyWithWarningState_Amber
 			},
 			{

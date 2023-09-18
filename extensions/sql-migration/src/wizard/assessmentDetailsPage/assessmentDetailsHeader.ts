@@ -156,6 +156,8 @@ export class AssessmentDetailsHeader {
 				return constants.SUMMARY_VM_TYPE;
 			case MigrationTargetType.SQLMI:
 				return constants.SUMMARY_MI_TYPE;
+			default:
+				throw new Error('Unsupported type');
 		}
 	}
 }

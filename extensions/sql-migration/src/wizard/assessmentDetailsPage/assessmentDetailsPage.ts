@@ -124,8 +124,9 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 				return MigrationTargetType.SQLVM;
 			case constants.SUMMARY_MI_TYPE:
 				return MigrationTargetType.SQLMI;
+			default:
+				throw new Error('Unsupported type');
 		}
-		return MigrationTargetType.SQLDB;
 	}
 
 	// function to execute when user changes target type for the selected databases.
