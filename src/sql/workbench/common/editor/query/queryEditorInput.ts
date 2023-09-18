@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { GroupIdentifier, IRevertOptions, ISaveOptions, EditorInputCapabilities, IUntypedEditorInput } from 'vs/workbench/common/editor';
+import { GroupIdentifier, IRevertOptions, ISaveOptions, EditorInputCapabilities, IUntypedEditorInput, Verbosity } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
@@ -264,8 +264,24 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	// Called to get the tooltip of the tab
-	public override getTitle(): string {
-		return this.getName(true);
+	public override getTitle(verbosity?: Verbosity): string {
+		let profile = this.connectionManagementService.getConnectionProfile(this.uri);
+		let additionalOptions = '';
+		if (profile) {
+			additionalOptions = profile.connectionName ? (' (' + profile.connectionName + ')') : ''
+			let nonDefaultOptions = this.connectionManagementService.getNonDefaultOptions(profile);
+			nonDefaultOptions = nonDefaultOptions.replace('(', '[').replace(')', ']');
+			additionalOptions += nonDefaultOptions;
+		}
+		switch (verbosity) {
+			case Verbosity.SHORT:
+				return this.getName(true);
+			case Verbosity.LONG:
+				return this.getName(true) + additionalOptions;
+			default:
+			case Verbosity.MEDIUM:
+				return this.getName(true) + additionalOptions;
+		}
 	}
 
 	// State update funtions

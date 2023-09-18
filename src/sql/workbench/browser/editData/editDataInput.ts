@@ -18,6 +18,7 @@ import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/u
 import { EncodingMode } from 'vs/workbench/services/textfile/common/textfiles';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IEditorModel, IEditorOptions } from 'vs/platform/editor/common/editor';
+import { Verbosity } from 'vs/workbench/common/editor';
 
 /**
  * Input for the EditDataEditor.
@@ -224,6 +225,26 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 
 	public getEncoding(): string | undefined { return this._sql.getEncoding(); }
 	public override getName(): string { return this._sql.getName(); }
+	public override getTitle(verbosity?: Verbosity): string {
+		let additionalOptions = '';
+		let profile = this._connectionManagementService.getConnectionProfile(this.uri);
+		if (profile) {
+			additionalOptions = ': ' + profile.serverName + ':' + profile.databaseName;
+			let connectionName = profile.connectionName ? (' (' + profile.connectionName + ')') : '';
+			let nonDefaultOptions = this._connectionManagementService.getNonDefaultOptions(profile);
+			nonDefaultOptions = nonDefaultOptions.replace('(', '[').replace(')', ']');
+			additionalOptions += (connectionName + nonDefaultOptions);
+		}
+		switch (verbosity) {
+			case Verbosity.SHORT:
+				return this.getName();
+			case Verbosity.LONG:
+				return this.getName() + additionalOptions;
+			default:
+			case Verbosity.MEDIUM:
+				return this.getName() + additionalOptions;
+		}
+	}
 	public get hasAssociatedFilePath(): boolean { return this._sql.model.hasAssociatedFilePath; }
 
 	public setEncoding(encoding: string, mode: EncodingMode /* ignored, we only have Encode */): void {
