@@ -12,7 +12,7 @@ import * as fs from 'fs-extra';
 import * as request from 'request';
 import * as utils from '../../common/utils';
 import { JupyterServerInstallation, PythonInstallSettings, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
-import { powershellDisplayName, python3DisplayName, winPlatform } from '../../common/constants';
+import { ipykernelDisplayName, powershellDisplayName, python3DisplayName, winPlatform } from '../../common/constants';
 import { requiredJupyterPackages } from '../../jupyter/requiredJupyterPackages';
 
 describe('Jupyter Server Installation', function () {
@@ -225,12 +225,16 @@ describe('Jupyter Server Installation', function () {
 		should(packages.length).be.equal(0);
 	});
 
-	it('Get required packages test - Python 3 kernel', async function () {
-		let packages = installation.getRequiredPackagesForKernel(python3DisplayName);
-		let pythonKernelInfo = requiredJupyterPackages.kernels.find(kernel => kernel.name === python3DisplayName);
-		should(pythonKernelInfo).not.be.undefined();
-		let expectedPackages = requiredJupyterPackages.sharedPackages.concat(pythonKernelInfo.packages);
-		should(packages).be.deepEqual(expectedPackages);
+	// Test different name variations of the python kernel
+	const pythonKernels = [python3DisplayName, ipykernelDisplayName];
+	pythonKernels.forEach(kernelName => {
+		it(`Get required packages test - ${kernelName} kernel`, async function () {
+			let packages = installation.getRequiredPackagesForKernel(kernelName);
+			let pythonKernelInfo = requiredJupyterPackages.kernels.find(kernel => kernel.name === kernelName);
+			should(pythonKernelInfo).not.be.undefined();
+			let expectedPackages = requiredJupyterPackages.sharedPackages.concat(pythonKernelInfo.packages);
+			should(packages).be.deepEqual(expectedPackages);
+		});
 	});
 
 	it('Get required packages test - Powershell kernel', async function () {
