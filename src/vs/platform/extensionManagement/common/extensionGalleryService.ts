@@ -26,7 +26,7 @@ import { asJson, asTextOrError, IRequestService } from 'vs/platform/request/comm
 import { resolveMarketplaceHeaders } from 'vs/platform/externalServices/common/marketplace';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { StopWatch } from 'vs/base/common/stopwatch';
+// import { StopWatch } from 'vs/base/common/stopwatch'; // {{SQL CARBON EIDT}} - Remove unused
 
 const CURRENT_TARGET_PLATFORM = isWeb ? TargetPlatform.WEB : getTargetPlatform(platform, arch);
 const ACTIVITY_HEADER_NAME = 'X-Market-Search-Activity-Id';
@@ -278,7 +278,7 @@ type QueryTelemetryData = {
 	readonly searchTextLength?: number;
 };
 
-/* {{SQL CARBON EDIT}} Remove unused
+/* {{SQL CARBON EDIT}} - START - Remove unused
 type GalleryServiceQueryEvent = QueryTelemetryData & {
 	readonly duration: number;
 	readonly success: boolean;
@@ -300,7 +300,7 @@ type GalleryServiceAdditionalQueryEvent = {
 	readonly duration: number;
 	readonly count: number;
 };
-*/
+{{SQL CARBON EDIT}} - END */
 interface IExtensionCriteria {
 	readonly targetPlatform: TargetPlatform;
 	readonly compatible: boolean;
@@ -923,16 +923,18 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		}
 
 		if (needAllVersions.size) {
-			const stopWatch = new StopWatch();
+			// const stopWatch = new StopWatch(); // {{SQL CARBON EDIT}} - Remove unused
 			const query = new Query()
 				.withFlags(flags & ~Flags.IncludeLatestVersionOnly, Flags.IncludeVersions)
 				.withPage(1, needAllVersions.size)
 				.withFilter(FilterType.ExtensionId, ...needAllVersions.keys());
 			const { extensions } = await this.queryGalleryExtensions(query, criteria, token);
+			/* {{SQL CARBON EDIT}} - START - Remove unused
 			this.telemetryService.publicLog2<GalleryServiceAdditionalQueryEvent, GalleryServiceAdditionalQueryClassification>('galleryService:additionalQuery', {
 				duration: stopWatch.elapsed(),
 				count: needAllVersions.size
 			});
+			{{SQL CARBON EDIT}} - END */
 			for (const extension of extensions) {
 				const index = needAllVersions.get(extension.identifier.uuid)!;
 				result.push([index, extension]);

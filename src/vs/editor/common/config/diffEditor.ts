@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ValidDiffEditorBaseOptions } from 'vs/editor/common/config/editorOptions';
+import { IDiffEditorBaseOptions, ValidDiffEditorBaseOptions } from 'vs/editor/common/config/editorOptions'; // {{SQL CARBON EDIT}} - Added IDiffEditorBaseOptions to import list
 
-export const diffEditorDefaultOptions = {
+export const diffEditorDefaultOptions = ({ // {{SQL CARbon EDIT}} Added parens for cast below
 	enableSplitViewResizing: true,
 	splitViewDefaultRatio: 0.5,
 	renderSideBySide: true,
@@ -34,4 +34,4 @@ export const diffEditorDefaultOptions = {
 	onlyShowAccessibleDiffViewer: false,
 	renderSideBySideInlineBreakpoint: 900,
 	useInlineViewWhenSpaceIsLimited: true,
-} satisfies ValidDiffEditorBaseOptions;
+} as Readonly<Required<IDiffEditorBaseOptions>>) satisfies ValidDiffEditorBaseOptions; // {{SQL CARBON EDIT}} Explicit cast to resolve type mismatch error with assignment

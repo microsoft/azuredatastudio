@@ -484,7 +484,7 @@ export class ChatModel extends Disposable implements IChatModel {
 		return requests.map((raw: ISerializableChatRequestData) => {
 			const request = new ChatRequestModel(this, raw.message, raw.providerRequestId);
 			if (raw.response || raw.responseErrorDetails) {
-				request.response = new ChatResponseModel(raw.response ?? [new MarkdownString(raw.response)], this, true, raw.isCanceled, raw.vote, raw.providerRequestId, raw.responseErrorDetails, raw.followups);
+				request.response = new ChatResponseModel(raw.response ?? [new MarkdownString()], this, true, raw.isCanceled, raw.vote, raw.providerRequestId, raw.responseErrorDetails, raw.followups); // {{SQL CARBON EDIT}} Instantiate a default MarkdownString when raw.response is undefined or null
 			}
 			return request;
 		});

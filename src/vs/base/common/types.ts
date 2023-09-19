@@ -190,6 +190,15 @@ export function validateConstraint(arg: unknown, constraint: TypeConstraint | un
 	}
 }
 
+// {{SQL CARBON EDIT}} - START - Defining withNullAsUndefined
+/**
+ * Converts null to undefined, passes all other values through.
+ */
+export function withNullAsUndefined<T>(x: T | null): T | undefined {
+	return x === null ? undefined : x;
+}
+// {{SQL CARBON EDIT}} - END
+
 type AddFirstParameterToFunction<T, TargetFunctionsReturnType, FirstParameter> = T extends (...args: any[]) => TargetFunctionsReturnType ?
 	// Function: add param to function
 	(firstArg: FirstParameter, ...args: Parameters<T>) => ReturnType<T> :

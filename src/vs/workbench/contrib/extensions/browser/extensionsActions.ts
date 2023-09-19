@@ -329,7 +329,6 @@ export class InstallAction extends ExtensionAction {
 		if (this.extension.state === ExtensionState.Uninstalled && await this.extensionsWorkbenchService.canInstall(this.extension)) {
 			this.enabled = this.options.installPreReleaseVersion ? this.extension.hasPreReleaseVersion : this.extension.hasReleaseVersion;
 			this.updateLabel();
-			this.updateTooltip(); // {{SQL CARBON EDIT}} Update tooltip for download extensions
 		}
 	}
 
@@ -475,7 +474,7 @@ export class InstallAction extends ExtensionAction {
 
 			console.error(error);
 
-			await this.instantiationService.createInstance(PromptExtensionInstallFailureAction, extension, extension.latestVersion, InstallOperation.Install, installOptions, error).run();
+			await this.instantiationService.createInstance(PromptExtensionInstallFailureAction, extension, extension.latestVersion, InstallOperation.Install, error).run();
 			return undefined;
 		}
 	}
@@ -498,8 +497,6 @@ export class InstallAction extends ExtensionAction {
 		}
 		return null;
 	}
-
-	protected abstract updateTooltip(): void; // {{SQL CARBON EDIT}} Update tooltip for download extensions
 
 	protected updateLabel(): void {
 		this.label = this.getLabel();

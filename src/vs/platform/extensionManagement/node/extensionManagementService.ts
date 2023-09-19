@@ -149,12 +149,12 @@ export class ExtensionManagementService extends AbstractExtensionManagementServi
 		try {
 			const manifest = await getManifest(path.resolve(location.fsPath));
 			// {{SQL CARBON EDIT}} Do our own engine checks
-			const id = getGalleryExtensionId(manifest.publisher, manifest.name);
+			const extensionId = getGalleryExtensionId(manifest.publisher, manifest.name);
 			if (manifest.engines?.vscode && !isEngineValid(manifest.engines.vscode, this.productService.vscodeVersion, this.productService.date)) {
-				throw new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with the current VS Code engine version '{1}'.", id, this.productService.vscodeVersion));
+				throw new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with the current VS Code engine version '{1}'.", extensionId, this.productService.vscodeVersion));
 			}
 			if (manifest.engines?.azdata && !isEngineValid(manifest.engines.azdata, this.productService.version, this.productService.date)) {
-				throw new ExtensionManagementError(extensionsWorkbenchServiceIncompatible(id, manifest.version, this.productService.version, manifest.engines.azdata), ExtensionManagementErrorCode.Incompatible);
+				throw new ExtensionManagementError(extensionsWorkbenchServiceIncompatible(extensionId, manifest.version, this.productService.version, manifest.engines.azdata), ExtensionManagementErrorCode.Incompatible);
 			}
 			/*
 			if (manifest.engines && manifest.engines.vscode && !isEngineValid(manifest.engines.vscode, this.productService.version, this.productService.date)) {

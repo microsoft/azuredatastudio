@@ -795,7 +795,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		@IExtensionService private readonly extensionService: IExtensionService,
 		@ILocaleService private readonly localeService: ILocaleService,
 		@ILifecycleService private readonly lifecycleService: ILifecycleService,
-		@IFileService private readonly fileService: IFileService,
+		//@IFileService private readonly fileService: IFileService, // {{SQL CARBON EDIT}} Remove unused
 		@IUserDataProfileService private readonly userDataProfileService: IUserDataProfileService,
 	) {
 		super();

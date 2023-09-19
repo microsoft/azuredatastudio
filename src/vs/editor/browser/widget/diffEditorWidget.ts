@@ -310,7 +310,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 			onlyShowAccessibleDiffViewer: false,
 			renderSideBySideInlineBreakpoint: 0,
 			useInlineViewWhenSpaceIsLimited: false,
-		});
+		} as Readonly<Required<IDiffEditorOptions>>); // {{SQL CARBON EDIT}}
 
 		this.isEmbeddedDiffEditorKey = EditorContextKeys.isEmbeddedDiffEditor.bindTo(this._contextKeyService);
 		this.isEmbeddedDiffEditorKey.set(typeof options.isInEmbeddedEditor !== 'undefined' ? options.isInEmbeddedEditor : false);
@@ -857,8 +857,8 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		}
 
 		// Guard us against partial null model
-		if (model && (!model.original || !model.modified)) {
-			throw new Error(!model.original ? 'DiffEditorWidget.setModel: Original model is null' : 'DiffEditorWidget.setModel: Modified model is null');
+		if (model && (!(<editorCommon.IDiffEditorModel>model).original || !(<editorCommon.IDiffEditorModel>model).modified)) { // {{SQL CARBON EDIT}}
+			throw new Error(!(<editorCommon.IDiffEditorModel>model).original ? 'DiffEditorWidget.setModel: Original model is null' : 'DiffEditorWidget.setModel: Modified model is null');
 		}
 
 		// Remove all view zones & decorations
@@ -867,8 +867,8 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		this._disposeOverviewRulers();
 
 		// Update code editor models
-		this._originalEditor.setModel(model ? model.original : null);
-		this._modifiedEditor.setModel(model ? model.modified : null);
+		this._originalEditor.setModel(model ? (<editorCommon.IDiffEditorModel>model).original : null); // {{SQL CARBON EDIT}}
+		this._modifiedEditor.setModel(model ? (<editorCommon.IDiffEditorModel>model).modified : null); // {{SQL CARBON EDIT}}
 		this._updateDecorationsRunner.cancel();
 
 		// this.originalEditor.onDidChangeModelOptions
@@ -2836,7 +2836,7 @@ function validateDiffEditorOptions(options: Readonly<IDiffEditorOptions>, defaul
 		onlyShowAccessibleDiffViewer: false,
 		renderSideBySideInlineBreakpoint: 0,
 		useInlineViewWhenSpaceIsLimited: false,
-	};
+	} as ValidDiffEditorBaseOptions; // {{SQL CARBON EDIT}} - Specified type
 }
 
 function changedDiffEditorOptions(a: ValidDiffEditorBaseOptions, b: ValidDiffEditorBaseOptions) {

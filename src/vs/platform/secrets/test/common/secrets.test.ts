@@ -58,7 +58,7 @@ suite('secrets', () => {
 		setup(() => {
 			sandbox = sinon.createSandbox();
 			spyEncryptionService = sandbox.spy(new TestEncryptionService());
-			service = new BaseSecretStorageService(true, new InMemoryStorageService(), spyEncryptionService, new NullLogService());
+			service = new BaseSecretStorageService(true, new InMemoryStorageService(), spyEncryptionService as IEncryptionService, new NullLogService()); // {{SQL CARBON EDIT}} Explicitly cast to IEncryptionService to fix type mismatch error
 		});
 
 		teardown(() => {
@@ -115,7 +115,7 @@ suite('secrets', () => {
 		setup(() => {
 			sandbox = sinon.createSandbox();
 			spyEncryptionService = sandbox.spy(new TestEncryptionService());
-			service = new BaseSecretStorageService(false, new InMemoryStorageService(), spyEncryptionService, new NullLogService());
+			service = new BaseSecretStorageService(false, new InMemoryStorageService(), spyEncryptionService as IEncryptionService, new NullLogService()); // {{SQL CARBON EDIT}} Explicitly cast to IEncryptionService to fix type mismatch error
 		});
 
 		teardown(() => {
@@ -172,7 +172,7 @@ suite('secrets', () => {
 		setup(() => {
 			sandbox = sinon.createSandbox();
 			spyNoEncryptionService = sandbox.spy(new TestNoEncryptionService());
-			service = new BaseSecretStorageService(false, new InMemoryStorageService(), spyNoEncryptionService, new NullLogService());
+			service = new BaseSecretStorageService(false, new InMemoryStorageService(), spyNoEncryptionService as IEncryptionService, new NullLogService()); // {{SQL CARBON EDIT}} Explicitly cast to IEncryptionService to fix type mismatch error
 		});
 
 		teardown(() => {

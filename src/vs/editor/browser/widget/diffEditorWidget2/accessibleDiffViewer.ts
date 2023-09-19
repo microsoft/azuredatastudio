@@ -154,7 +154,7 @@ class ViewModel extends Disposable {
 			// This ensures editor commands (like revert/stage) work
 			const currentViewItem = this.currentElement.read(reader);
 			if (currentViewItem && currentViewItem.type !== LineType.Header) {
-				const lineNumber = currentViewItem.modifiedLineNumber ?? currentViewItem.diff.modifiedRange.startLineNumber;
+				const lineNumber = currentViewItem.modifiedLineNumber ?? (<DeletedLineViewElement>currentViewItem).diff.modifiedRange.startLineNumber; // {{SQL CARBON EDIT}} - Casting to DeletedLineViewElement access diff property
 				this._editors.modified.setSelection(Range.fromPositions(new Position(lineNumber, 1)));
 			}
 		}));
