@@ -1594,6 +1594,7 @@ export const TDE_WIZARD_MSG_MANUAL = localize('sql.migration.tde.msg.manual', "Y
 export const TDE_WIZARD_MSG_TDE = localize('sql.migration.tde.msg.tde', "You have given Azure Data Studio access to migrate the encryption certificates and database.");
 export const TDE_WIZARD_MSG_EMPTY = localize('sql.migration.tde.msg.empty', "No encrypted database selected.");
 
+export const TDE_VALIDATION_GROUP_TITLE = localize('sql.migration.tde.validation.group.title', "Certificate validations");
 export const TDE_VALIDATION_TITLE = localize('sql.migration.tde.validation.title', "Validation");
 export const TDE_VALIDATION_REQUIREMENTS_MESSAGE = localize('sql.migration.tde.validation.requirements.message', "In order for certificate migration to succeed, you must meet all of the requirements listed below.\n\nClick \"Run validation\" to check that requirements are met.");
 export const TDE_VALIDATION_STATUS_PENDING = localize('sql.migration.tde.validation.status.pending', "Pending");
