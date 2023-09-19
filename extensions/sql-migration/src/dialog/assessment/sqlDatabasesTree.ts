@@ -892,7 +892,10 @@ export class SqlDatabaseTree {
 		} else {
 			if (this._targetType === MigrationTargetType.SQLMI && selectedDbs?.length > AZURE_SQL_MI_DB_COUNT_THRESHOLD) {
 				this._dialog.okButton.enabled = false;
-				void vscode.window.showErrorMessage(constants.AZURE_SQL_MI_DB_COUNT_THRESHOLD_EXCEEDS_ERROR(AZURE_SQL_MI_DB_COUNT_THRESHOLD));
+				this._dialog.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: constants.AZURE_SQL_MI_DB_COUNT_THRESHOLD_EXCEEDS_ERROR(AZURE_SQL_MI_DB_COUNT_THRESHOLD),
+				};
 			}
 
 			instanceTableValues = [[
@@ -943,11 +946,17 @@ export class SqlDatabaseTree {
 		const selectedDbsCount = this.selectedDbs()?.length;
 		if (this._targetType === MigrationTargetType.SQLMI && selectedDbsCount > AZURE_SQL_MI_DB_COUNT_THRESHOLD) {
 			this._dialog.okButton.enabled = false;
-			void vscode.window.showErrorMessage(constants.AZURE_SQL_MI_DB_COUNT_THRESHOLD_EXCEEDS_ERROR(AZURE_SQL_MI_DB_COUNT_THRESHOLD));
+			this._dialog.message = {
+				level: azdata.window.MessageLevel.Error,
+				text: constants.AZURE_SQL_MI_DB_COUNT_THRESHOLD_EXCEEDS_ERROR(AZURE_SQL_MI_DB_COUNT_THRESHOLD)
+			};
 		}
 		else if (!this._dialog.okButton.enabled) {
 			this._dialog.okButton.enabled = true;
-			void vscode.window.showInformationMessage(constants.AZURE_SQL_MI_DB_COUNT_UNDER_THRESHOLD);
+			this._dialog.message = {
+				level: azdata.window.MessageLevel.Information,
+				text: constants.AZURE_SQL_MI_DB_COUNT_UNDER_THRESHOLD
+			};
 		}
 
 		await this._databaseCount.updateProperties({
