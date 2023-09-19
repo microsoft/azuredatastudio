@@ -11,7 +11,7 @@ import * as uuid from 'uuid';
 import * as fs from 'fs-extra';
 import * as request from 'request';
 import * as utils from '../../common/utils';
-import { requiredJupyterPkg, JupyterServerInstallation, requiredPowershellPkg, PythonInstallSettings, PythonPkgDetails, requiredNotebookPkg, requiredIpykernelPkg, requiredTraitletsPkg } from '../../jupyter/jupyterServerInstallation';
+import { requiredJupyterPkg, JupyterServerInstallation, requiredPowershellPkg, PythonInstallSettings, PythonPkgDetails, requiredNotebookPkg, requiredIpykernelPkg } from '../../jupyter/jupyterServerInstallation';
 import { powershellDisplayName, python3DisplayName, winPlatform } from '../../common/constants';
 
 describe('Jupyter Server Installation', function () {
@@ -226,12 +226,12 @@ describe('Jupyter Server Installation', function () {
 
 	it('Get required packages test - Python 3 kernel', async function () {
 		let packages = installation.getRequiredPackagesForKernel(python3DisplayName);
-		should(packages).be.deepEqual([requiredJupyterPkg, requiredNotebookPkg, requiredIpykernelPkg, requiredTraitletsPkg]);
+		should(packages).be.deepEqual([requiredJupyterPkg, requiredNotebookPkg, requiredIpykernelPkg]);
 	});
 
 	it('Get required packages test - Powershell kernel', async function () {
 		let packages = installation.getRequiredPackagesForKernel(powershellDisplayName);
-		should(packages).be.deepEqual([requiredJupyterPkg, requiredPowershellPkg, requiredNotebookPkg, requiredIpykernelPkg, requiredTraitletsPkg]);
+		should(packages).be.deepEqual([requiredJupyterPkg, requiredPowershellPkg, requiredNotebookPkg, requiredIpykernelPkg]);
 	});
 
 	it('Install python test - Run install while Python is already running', async function () {

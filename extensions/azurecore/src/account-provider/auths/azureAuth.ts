@@ -68,8 +68,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		this.redirectUri = this.metadata.settings.redirectUri;
 		this.clientId = this.metadata.settings.clientId;
 		this.resources = [
-			this.metadata.settings.armResource,
-			this.metadata.settings.graphResource,
+			this.metadata.settings.armResource
 		];
 		if (this.metadata.settings.sqlResource) {
 			this.resources.push(this.metadata.settings.sqlResource);
