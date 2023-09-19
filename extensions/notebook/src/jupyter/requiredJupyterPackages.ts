@@ -5,7 +5,7 @@
 
 import { PythonPkgDetails } from './jupyterServerInstallation'
 
-export interface PackagesManifest {
+export interface RequiredPackagesInfo {
 	sharedPackages: PythonPkgDetails[];
 	kernels: {
 		name: string;
@@ -13,7 +13,7 @@ export interface PackagesManifest {
 	}[];
 }
 
-export const requiredJupyterPackages: PackagesManifest = {
+export const requiredJupyterPackages: RequiredPackagesInfo = {
 	sharedPackages: [{
 		name: 'jupyter',
 		version: '1.0.0'
