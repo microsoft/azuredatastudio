@@ -12,7 +12,7 @@ import * as fs from 'fs-extra';
 import * as request from 'request';
 import * as utils from '../../common/utils';
 import { JupyterServerInstallation, PythonInstallSettings, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
-import { ipykernelDisplayName, powershellDisplayName, python3DisplayName, winPlatform } from '../../common/constants';
+import { allKernelsName, ipykernelDisplayName, powershellDisplayName, python3DisplayName, winPlatform } from '../../common/constants';
 import { requiredJupyterPackages } from '../../jupyter/requiredJupyterPackages';
 
 describe('Jupyter Server Installation', function () {
@@ -243,6 +243,15 @@ describe('Jupyter Server Installation', function () {
 		should(powershellKernelInfo).not.be.undefined();
 		let expectedPackages = requiredJupyterPackages.sharedPackages.concat(powershellKernelInfo.packages);
 		should(packages).be.deepEqual(expectedPackages);
+	});
+
+	it('Get required packages test - All Kernels', async function () {
+		let packages = installation.getRequiredPackagesForKernel(allKernelsName);
+		let allPackages = requiredJupyterPackages.sharedPackages;
+		for (let kernel of requiredJupyterPackages.kernels) {
+			allPackages = allPackages.concat(kernel.packages);
+		}
+		should(packages).be.deepEqual(allPackages);
 	});
 
 	it('Install python test - Run install while Python is already running', async function () {
