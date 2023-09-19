@@ -386,10 +386,8 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 	}
 
 	// Used to update the summary of assessment card later after its initialization.
-	// TODO - We can remove dummayData input later and use a some other way to pass the values. Once we start implementing the whole page.
 	public async updateAssessmentResult(
-		databaseCounts: number, ready: number, needsReview: number, notReady: number,
-		blockers: number, warnings: number) {
+		databaseCounts: number, ready: number, needsReview: number, notReady: number, blockers: number, warnings: number) {
 		await this._assessmentResultText.updateProperties({ "value": constants.ASSESSED_DBS(databaseCounts) });
 		await this._readyText.updateProperties({ "value": ready.toString() });
 		await this._needsReviewText.updateProperties({ "value": needsReview.toString() });
@@ -419,11 +417,3 @@ export enum AssessmentResultType {
 	BLOCKERS = 3,
 	WARNINGS = 4,
 }
-
-// TODO - We can remove this class later and use a some other way to pass the values. Once we start implementing the whole page.
-// export class AssessmentResult {
-// 	constructor(
-// 		public ready: number, public needsReview: number, public notReady: number,
-// 		public blockers: number, public warnings: number) {
-// 	}
-// }

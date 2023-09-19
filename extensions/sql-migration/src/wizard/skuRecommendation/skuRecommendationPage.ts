@@ -19,6 +19,7 @@ import { AssessmentSummaryCard } from './assessmentSummaryCard';
 import { MigrationTargetType } from '../../api/utils';
 import { logError, TelemetryViews, TelemetryAction, sendSqlMigrationActionEvent, getTelemetryProps } from '../../telemetry';
 import { getSourceConnectionProfile } from '../../api/sqlUtils';
+import { IssueCategory } from '../../constants/helper';
 
 
 export class SKURecommendationPage extends MigrationWizardPage {
@@ -408,23 +409,23 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			!db.issues?.some(issue => issue.appliesToMigrationTargetPlatform === targetType)
 		).length;
 		const dbNotReady = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db =>
-			db.issues?.some(issue => (issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === "Issue"))
+			db.issues?.some(issue => (issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === IssueCategory.Issue))
 		).length;
 		const dbReadyWithWarnings = dbCount - (dbReady + dbNotReady);
 
 		// blockers contain count of all the instance level issues with issueCategory = "Issue".
 		var blockers = this.migrationStateModel._assessmentResults?.issues.filter(issue =>
-			(issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === "Issue")).length;
+			(issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === IssueCategory.Issue)).length;
 		// also blockers includes sum of all the dabatase level issues with issueCategory = "Issue" for each database.
 		blockers += this.migrationStateModel._assessmentResults?.databaseAssessments?.reduce((count, database) =>
-			count + database.issues.filter(issue => (issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === "Issue")).length, 0);
+			count + database.issues.filter(issue => (issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === IssueCategory.Issue)).length, 0);
 
 		// warnings contain count all the instance level issues with issueCategory = "Warning".
 		var warnings = this.migrationStateModel._assessmentResults?.issues.filter(issue =>
-			(issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === "Warning")).length;
+			(issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === IssueCategory.Warning)).length;
 		// also warnings includes sum of all the dabatase level issues with issueCategory = "Warning" for each database.
 		warnings += this.migrationStateModel._assessmentResults?.databaseAssessments?.reduce((count, database) =>
-			count + database.issues.filter(issue => (issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === "Warning")).length, 0);
+			count + database.issues.filter(issue => (issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === IssueCategory.Warning)).length, 0);
 
 		switch (targetType) {
 			case MigrationTargetType.SQLDB:
