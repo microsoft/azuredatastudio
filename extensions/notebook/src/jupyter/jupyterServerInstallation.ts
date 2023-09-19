@@ -83,11 +83,10 @@ export const requiredJupyterPkg: PythonPkgDetails = {
 	version: '1.0.0'
 };
 
-// https://github.com/microsoft/azuredatastudio/issues/23945
+// Require notebook >= 6.5.6 for https://github.com/jupyter/notebook/issues/7048
 export const requiredNotebookPkg: PythonPkgDetails = {
 	name: 'notebook',
-	version: '6.5.5',
-	installExactVersion: true
+	version: '6.5.6'
 };
 
 // https://github.com/microsoft/azuredatastudio/issues/24405
