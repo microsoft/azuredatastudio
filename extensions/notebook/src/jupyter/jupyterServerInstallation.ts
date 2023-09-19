@@ -437,8 +437,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 							await notebookConfig.update(constants.existingPythonConfigKey, this._usingExistingPython, vscode.ConfigurationTarget.Global);
 							await this.configurePackagePaths();
 
+							await vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, constants.CommandContext.NotebookPythonInstalled, true);
 							this._installCompletion.resolve();
 							this._installInProgress = false;
+
 							if (this._upgradeInProcess) {
 								// Pass in false for restartJupyterServer parameter since the jupyter server has already been shutdown
 								// when removing the old Python version on Windows.
