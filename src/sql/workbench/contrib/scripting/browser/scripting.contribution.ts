@@ -105,6 +105,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
 		ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
 		ContextKeyExpr.or(
+			TreeNodeContextKey.NodeType.isEqualTo(NodeType.HistoryTable),
 			TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
 			TreeNodeContextKey.NodeType.isEqualTo(NodeType.View)
 		)
