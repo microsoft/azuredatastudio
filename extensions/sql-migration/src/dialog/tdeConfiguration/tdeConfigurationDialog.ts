@@ -9,7 +9,6 @@ import { MigrationStateModel } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
 import * as utils from '../../api/utils';
-import { EOL } from 'os';
 import { ConfigDialogSetting } from '../../models/tdeModels'
 import { IconPathHelper } from '../../constants/iconPathHelper';
 
@@ -25,10 +24,20 @@ export class TdeConfigurationDialog {
 	private _manualMethodWarningContainer!: azdata.FlexContainer;
 	private _networkPathText!: azdata.InputBoxComponent;
 	private _validationTable!: azdata.TableComponent;
-	private _validationMessagesText!: azdata.InputBoxComponent;
 	private _onClosed: () => void;
 
 	private _validationSuccessDescriptionErrorAndTips!: string[][];
+
+	private _validationGroup!: azdata.GroupContainer;
+
+	private _descriptionLabel!: azdata.TextComponent;
+	private _descriptionText!: azdata.TextComponent;
+
+	private _errorLabel!: azdata.TextComponent;
+	private _errorText!: azdata.TextComponent;
+
+	private _troubleshootingTipsLabel!: azdata.TextComponent;
+	private _troubleshootingTipsText!: azdata.TextComponent;
 
 	constructor(public migrationStateModel: MigrationStateModel, onClosed: () => void) {
 		this._onClosed = onClosed;
@@ -267,6 +276,10 @@ export class TdeConfigurationDialog {
 		this._disposables.push(
 			this._adsConfirmationCheckBox.onChanged(async checked => {
 				this.migrationStateModel.tdeMigrationConfig.setPendingExportCertUserConsent(checked);
+				if (checked) {
+					this._validationGroup.collapsed = false;
+				}
+
 				await this.updateUI();
 			}));
 
@@ -277,7 +290,7 @@ export class TdeConfigurationDialog {
 				value: constants.TDE_VALIDATION_REQUIREMENTS_MESSAGE,
 				CSSStyles: {
 					...styles.BODY_CSS,
-					'margin': '4px 2px 4px 2px'
+					'margin': '4px 2px 4px 0px'
 				}
 			}).component();
 
@@ -285,7 +298,10 @@ export class TdeConfigurationDialog {
 			.withProps(
 				{
 					label: constants.TDE_VALIDATION_STATUS_RUN_VALIDATION,
-					enabled: true
+					enabled: true,
+					CSSStyles: {
+						width: 'calc(100% - 10px)'
+					}
 				}).component();
 
 		this._disposables.push(
@@ -347,50 +363,156 @@ export class TdeConfigurationDialog {
 				async (e) => {
 					const selectedRows: number[] = this._validationTable.selectedRows ?? [];
 
-					let message: string = '';
 					selectedRows.forEach((rowIndex) => {
-
 						let successful = this._validationSuccessDescriptionErrorAndTips[rowIndex][0] === "1" // Value will be "1" if successful
 						let description = this._validationSuccessDescriptionErrorAndTips[rowIndex][1];
 						let errorMessage = this._validationSuccessDescriptionErrorAndTips[rowIndex][2];
 						let tips = this._validationSuccessDescriptionErrorAndTips[rowIndex][3];
 
-						message = `${constants.TDE_VALIDATION_DESCRIPTION}:${EOL}${description}`;
-						if (!successful) {
-							message += `${EOL}${EOL}`;
-							if (errorMessage?.length > 0) {
-								message += `${constants.TDE_VALIDATION_ERROR}:${EOL}${errorMessage}${EOL}${EOL}`;
+						this._descriptionText.value = description;
+						this._descriptionLabel.CSSStyles = {
+							...styles.TDE_VALIDATION_INFO_LABEL
+						}
+						this._descriptionText.CSSStyles = {
+							...styles.TDE_VALIDATION_INFO_TEXT
+						}
+
+						this._errorText.value = errorMessage;
+						this._errorLabel.CSSStyles = {
+							...styles.TDE_VALIDATION_INFO_LABEL
+						}
+						this._errorText.CSSStyles = {
+							...styles.TDE_VALIDATION_INFO_TEXT
+						}
+
+						this._troubleshootingTipsText.value = tips;
+
+						if (successful) {
+							this._errorLabel.CSSStyles = {
+								...styles.TDE_VALIDATION_INFO_LABEL,
+								'display': 'none'
+							}
+							this._errorText.CSSStyles = {
+								...styles.TDE_VALIDATION_INFO_TEXT,
+								'display': 'none'
 							}
 
-							message += `${constants.TDE_VALIDATION_TROUBLESHOOTING_TIPS}:${EOL}${tips}`;
+							this._troubleshootingTipsLabel.CSSStyles = {
+								...styles.TDE_VALIDATION_INFO_LABEL,
+								'display': 'none'
+							}
+							this._troubleshootingTipsText.CSSStyles = {
+								...styles.TDE_VALIDATION_INFO_TEXT,
+								'display': 'none'
+							}
+						} else {
+							if (errorMessage === null || errorMessage?.length === 0) {
+								this._errorLabel.CSSStyles = {
+									...styles.TDE_VALIDATION_INFO_LABEL,
+									'display': 'none'
+								}
+								this._errorText.CSSStyles = {
+									...styles.TDE_VALIDATION_INFO_TEXT,
+									'display': 'none'
+								}
+							}
+
+							this._troubleshootingTipsLabel.CSSStyles = {
+								...styles.TDE_VALIDATION_INFO_LABEL
+							}
+							this._troubleshootingTipsText.CSSStyles = {
+								...styles.TDE_VALIDATION_INFO_TEXT
+							}
 						}
 					});
-
-					this._validationMessagesText.value = message;
 				}));
 
-		this._validationMessagesText = _view.modelBuilder.inputBox()
-			.withProps({
-				inputType: 'text',
-				height: 142,
-				multiline: true,
-				CSSStyles: { 'overflow': 'none auto' }
-			})
-			.component();
-
 		const postValidationSeparator = _view.modelBuilder.separator().component();
+
+		this._descriptionLabel = _view.modelBuilder.text()
+			.withProps({
+				value: constants.TDE_VALIDATION_DESCRIPTION,
+				CSSStyles: {
+					...styles.TDE_VALIDATION_INFO_LABEL,
+					'display': 'none'
+				}
+			}).component();
+		this._descriptionText = _view.modelBuilder.text()
+			.withProps({
+				value: '',
+				CSSStyles: {
+					...styles.TDE_VALIDATION_INFO_TEXT,
+					'display': 'none'
+				}
+			}).component();
+
+		this._errorLabel = _view.modelBuilder.text()
+			.withProps({
+				value: constants.TDE_VALIDATION_ERROR,
+				CSSStyles: {
+					...styles.TDE_VALIDATION_INFO_LABEL,
+					'display': 'none'
+				}
+			}).component();
+		this._errorText = _view.modelBuilder.text()
+			.withProps({
+				value: '',
+				CSSStyles: {
+					...styles.TDE_VALIDATION_INFO_TEXT,
+					'display': 'none'
+				}
+			}).component();
+
+		this._troubleshootingTipsLabel = _view.modelBuilder.text()
+			.withProps({
+				value: constants.TDE_VALIDATION_TROUBLESHOOTING_TIPS,
+				CSSStyles: {
+					...styles.TDE_VALIDATION_INFO_LABEL,
+					'display': 'none'
+				}
+			}).component();
+		this._troubleshootingTipsText = _view.modelBuilder.text()
+			.withProps({
+				value: '',
+				CSSStyles: {
+					...styles.TDE_VALIDATION_INFO_TEXT,
+					'display': 'none'
+				}
+			}).component();
+
+		this._validationGroup = _view.modelBuilder.groupContainer()
+			.withLayout({
+				header: constants.TDE_VALIDATION_GROUP_TITLE,
+				collapsible: true,
+				collapsed: true
+			}).withProps({
+				collapsed: true,
+				CSSStyles: {
+					'margin': '0 0 0 10px',
+					'padding': '0 0 0 0',
+				}
+			})
+			.withItems([
+				preValidationSeparator,
+				validationRequiredLabel,
+				runValidationButton,
+				this._validationTable,
+				this._descriptionLabel,
+				this._descriptionText,
+				this._errorLabel,
+				this._errorText,
+				this._troubleshootingTipsLabel,
+				this._troubleshootingTipsText,
+				postValidationSeparator
+			])
+			.component();
 
 		container.addItems([
 			adsMethodInfoMessage,
 			networkPathLabel,
 			this._networkPathText,
 			this._adsConfirmationCheckBox,
-			preValidationSeparator,
-			validationRequiredLabel,
-			runValidationButton,
-			this._validationTable,
-			this._validationMessagesText,
-			postValidationSeparator
+			this._validationGroup
 		]);
 
 		return container;
@@ -429,8 +551,7 @@ export class TdeConfigurationDialog {
 				width: 450,
 				height: 80,
 				CSSStyles: {
-					'margin-top': '10px',
-					'margin-bottom': '10px',
+					'margin-top': '10px'
 				},
 			})
 			.component();
