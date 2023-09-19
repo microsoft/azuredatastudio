@@ -11,8 +11,9 @@ import * as uuid from 'uuid';
 import * as fs from 'fs-extra';
 import * as request from 'request';
 import * as utils from '../../common/utils';
-import { requiredJupyterPkg, JupyterServerInstallation, requiredPowershellPkg, PythonInstallSettings, PythonPkgDetails, requiredNotebookPkg, requiredIpykernelPkg, requiredTraitletsPkg } from '../../jupyter/jupyterServerInstallation';
+import { JupyterServerInstallation, PythonInstallSettings, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
 import { powershellDisplayName, python3DisplayName, winPlatform } from '../../common/constants';
+import { requiredJupyterPackages } from '../../jupyter/requiredJupyterPackages';
 
 describe('Jupyter Server Installation', function () {
 	let outputChannelStub: TypeMoq.IMock<vscode.OutputChannel>;
@@ -226,12 +227,18 @@ describe('Jupyter Server Installation', function () {
 
 	it('Get required packages test - Python 3 kernel', async function () {
 		let packages = installation.getRequiredPackagesForKernel(python3DisplayName);
-		should(packages).be.deepEqual([requiredJupyterPkg, requiredNotebookPkg, requiredIpykernelPkg, requiredTraitletsPkg]);
+		let pythonKernelInfo = requiredJupyterPackages.kernels.find(kernel => kernel.name === python3DisplayName);
+		should(pythonKernelInfo).not.be.undefined();
+		let expectedPackages = requiredJupyterPackages.sharedPackages.concat(pythonKernelInfo.packages);
+		should(packages).be.deepEqual(expectedPackages);
 	});
 
 	it('Get required packages test - Powershell kernel', async function () {
 		let packages = installation.getRequiredPackagesForKernel(powershellDisplayName);
-		should(packages).be.deepEqual([requiredJupyterPkg, requiredPowershellPkg, requiredNotebookPkg, requiredIpykernelPkg, requiredTraitletsPkg]);
+		let powershellKernelInfo = requiredJupyterPackages.kernels.find(kernel => kernel.name === powershellDisplayName);
+		should(powershellKernelInfo).not.be.undefined();
+		let expectedPackages = requiredJupyterPackages.sharedPackages.concat(powershellKernelInfo.packages);
+		should(packages).be.deepEqual(expectedPackages);
 	});
 
 	it('Install python test - Run install while Python is already running', async function () {
