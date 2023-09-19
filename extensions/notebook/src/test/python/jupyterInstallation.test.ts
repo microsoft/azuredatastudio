@@ -225,24 +225,15 @@ describe('Jupyter Server Installation', function () {
 		should(packages.length).be.equal(0);
 	});
 
-	// Test different name variations of the python kernel
-	const pythonKernels = [python3DisplayName, ipykernelDisplayName];
+	const pythonKernels = [python3DisplayName, ipykernelDisplayName, powershellDisplayName];
 	pythonKernels.forEach(kernelName => {
 		it(`Get required packages test - ${kernelName} kernel`, async function () {
 			let packages = installation.getRequiredPackagesForKernel(kernelName);
-			let pythonKernelInfo = requiredJupyterPackages.kernels.find(kernel => kernel.name === kernelName);
-			should(pythonKernelInfo).not.be.undefined();
-			let expectedPackages = requiredJupyterPackages.sharedPackages.concat(pythonKernelInfo.packages);
+			let kernelInfo = requiredJupyterPackages.kernels.find(kernel => kernel.name === kernelName);
+			should(kernelInfo).not.be.undefined();
+			let expectedPackages = requiredJupyterPackages.sharedPackages.concat(kernelInfo.packages);
 			should(packages).be.deepEqual(expectedPackages);
 		});
-	});
-
-	it('Get required packages test - Powershell kernel', async function () {
-		let packages = installation.getRequiredPackagesForKernel(powershellDisplayName);
-		let powershellKernelInfo = requiredJupyterPackages.kernels.find(kernel => kernel.name === powershellDisplayName);
-		should(powershellKernelInfo).not.be.undefined();
-		let expectedPackages = requiredJupyterPackages.sharedPackages.concat(powershellKernelInfo.packages);
-		should(packages).be.deepEqual(expectedPackages);
 	});
 
 	it('Get required packages test - All Kernels', async function () {
