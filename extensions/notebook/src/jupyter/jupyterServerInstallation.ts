@@ -18,6 +18,7 @@ import * as utils from '../common/utils';
 import { Deferred } from '../common/promise';
 import { ConfigurePythonWizard } from '../dialog/configurePython/configurePythonWizard';
 import { IKernelInfo } from '../contracts/content';
+import { requiredJupyterPackages } from './requiredJupyterPackages';
 
 const localize = nls.loadMessageBundle();
 const msgInstallPkgProgress = localize('msgInstallPkgProgress', "Notebook dependencies installation is in progress");
@@ -78,37 +79,6 @@ export interface IJupyterServerInstallation {
 	installedPythonVersion: string;
 }
 
-export const requiredJupyterPkg: PythonPkgDetails = {
-	name: 'jupyter',
-	version: '1.0.0'
-};
-
-// https://github.com/microsoft/azuredatastudio/issues/23945
-export const requiredNotebookPkg: PythonPkgDetails = {
-	name: 'notebook',
-	version: '6.5.5',
-	installExactVersion: true
-};
-
-// https://github.com/microsoft/azuredatastudio/issues/24405
-export const requiredIpykernelPkg: PythonPkgDetails = {
-	name: 'ipykernel',
-	version: '5.5.5',
-	installExactVersion: true
-};
-
-// https://github.com/microsoft/azuredatastudio/issues/24443
-export const requiredTraitletsPkg: PythonPkgDetails = {
-	name: 'traitlets',
-	version: '5.9.0',
-	installExactVersion: true
-};
-
-export const requiredPowershellPkg: PythonPkgDetails = {
-	name: 'powershell-kernel',
-	version: '0.1.4'
-};
-
 export class JupyterServerInstallation implements IJupyterServerInstallation {
 	public extensionPath: string;
 	public pythonBinPath: string;
@@ -128,14 +98,14 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private _oldUserInstalledPipPackages: PythonPkgDetails[] = [];
 	private _upgradePrompted: boolean = false;
 
-	private _installInProgress: boolean;
+	private _installInProgress = false;
 	private _installCompletion: Deferred<void>;
 
 	public static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
 
-	private _kernelSetupCache: Map<string, boolean>;
-	private readonly _requiredKernelPackages: Map<string, PythonPkgDetails[]>;
-	private readonly _requiredPackagesSet: Set<string>;
+	private readonly _kernelSetupCache = new Map<string, boolean>();
+	private readonly _requiredKernelPackages = new Map<string, PythonPkgDetails[]>();
+	private readonly _requiredPackageNames: Set<string>;
 
 	private readonly _runningOnSAW: boolean;
 	private readonly _tsgopsweb: boolean;
@@ -159,22 +129,21 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			this._pythonInstallationPath = JupyterServerInstallation.getPythonInstallPath();
 			this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting();
 		}
-		this._installInProgress = false;
 
-		this._kernelSetupCache = new Map<string, boolean>();
-		this._requiredKernelPackages = new Map<string, PythonPkgDetails[]>();
+		let allPackages = requiredJupyterPackages.sharedPackages;
+		for (let kernelInfo of requiredJupyterPackages.kernels) {
+			// Add this kernel's specific dependencies to the running list of packages for All Kernels.
+			allPackages = allPackages.concat(kernelInfo.packages);
 
-		this._requiredKernelPackages.set(constants.ipykernelDisplayName, [requiredJupyterPkg, requiredNotebookPkg, requiredIpykernelPkg, requiredTraitletsPkg]);
-		this._requiredKernelPackages.set(constants.python3DisplayName, [requiredJupyterPkg, requiredNotebookPkg, requiredIpykernelPkg, requiredTraitletsPkg]);
-		this._requiredKernelPackages.set(constants.powershellDisplayName, [requiredJupyterPkg, requiredPowershellPkg, requiredNotebookPkg, requiredIpykernelPkg, requiredTraitletsPkg]);
+			// Combine this kernel's specific dependencies with the shared list of packages to get its
+			// full list of dependencies
+			let packages = requiredJupyterPackages.sharedPackages.concat(kernelInfo.packages);
+			this._requiredKernelPackages.set(kernelInfo.name, packages);
+		}
 
-		let allPackages = [requiredJupyterPkg, requiredNotebookPkg, requiredIpykernelPkg, requiredTraitletsPkg, requiredPowershellPkg];
 		this._requiredKernelPackages.set(constants.allKernelsName, allPackages);
 
-		this._requiredPackagesSet = new Set<string>();
-		allPackages.forEach(pkg => {
-			this._requiredPackagesSet.add(pkg.name);
-		});
+		this._requiredPackageNames = new Set<string>(allPackages.map(pkg => pkg.name));
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean, packages: PythonPkgDetails[]): Promise<void> {
@@ -642,7 +611,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	public uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void> {
 		for (let pkg of packages) {
-			if (this._requiredPackagesSet.has(pkg.name)) {
+			if (this._requiredPackageNames.has(pkg.name)) {
 				this._kernelSetupCache.clear();
 				break;
 			}
@@ -694,7 +663,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	public async uninstallCondaPackages(packages: PythonPkgDetails[]): Promise<void> {
 		if (this.condaExecutable) {
 			for (let pkg of packages) {
-				if (this._requiredPackagesSet.has(pkg.name)) {
+				if (this._requiredPackageNames.has(pkg.name)) {
 					this._kernelSetupCache.clear();
 					break;
 				}
