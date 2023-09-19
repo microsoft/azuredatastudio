@@ -19,8 +19,6 @@ import { AssessmentSummaryCard } from './assessmentSummaryCard';
 import { MigrationTargetType } from '../../api/utils';
 import { logError, TelemetryViews, TelemetryAction, sendSqlMigrationActionEvent, getTelemetryProps } from '../../telemetry';
 import { getSourceConnectionProfile } from '../../api/sqlUtils';
-import { TdeConfigurationDialog } from '../../dialog/tdeConfiguration/tdeConfigurationDialog';
-import { ConfigDialogSetting, TdeMigrationModel } from '../../models/tdeModels';
 
 
 export class SKURecommendationPage extends MigrationWizardPage {
@@ -47,13 +45,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _assessmentProgress!: azdata.TextComponent;
 	private _progressContainer!: azdata.FlexContainer;
 	private _assessmentInfo!: azdata.TextComponent;
-
-	private _tdedatabaseSelectedHelperText!: azdata.TextComponent;
-	private _tdeInfoContainer!: azdata.FlexContainer;
-	private _tdeEditButton!: azdata.ButtonComponent;
-	private _tdeConfigurationDialog!: TdeConfigurationDialog;
-	private _previousMiTdeMigrationConfig: TdeMigrationModel = new TdeMigrationModel(); // avoid null checks
-
 	private _disposables: vscode.Disposable[] = [];
 
 	private _serverName: string = '';
@@ -143,14 +134,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			.component();
 
 		this._targetSummaryComponent = this.createTargetSummaryComponent(view);
-		this._tdeInfoContainer = await this.createTdeInfoContainer();
 
 		this._formContainer = view.modelBuilder.formContainer()
 			.withFormItems([
 				{ component: toolbar },
 				{ component: statusContainer },
-				{ component: this._targetSummaryComponent },
-				{ component: this._tdeInfoContainer }
+				{ component: this._targetSummaryComponent }
 			])
 			.withProps({
 				CSSStyles: {
@@ -402,7 +391,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}
 
-		await this.refreshTdeView();
 		this._assessmentSummaryCardLoader.loading = false;
 	}
 
@@ -448,7 +436,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}
 	}
 
-	// TODO - will be needed when SKU recommendation is done.
+	// TODO - might be needed when SKU recommendation is done.
 	// public async startCardLoading(): Promise<void> {
 	// }
 	// private createPerformanceCollectionStatusContainer(_view: azdata.ModelView): azdata.FlexContainer {
@@ -463,133 +451,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	// }
 	// private createAzureRecommendationContainer(_view: azdata.ModelView): azdata.FlexContainer {
 	// }
-
-	private async createTdeInfoContainer(): Promise<azdata.FlexContainer> {
-		const container = this._view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'flex-direction': 'column'
-			}
-		}).component();
-
-		this._tdeEditButton = this._view.modelBuilder.button().withProps({
-			label: constants.TDE_BUTTON_CAPTION,
-			width: 180,
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'margin': '0',
-			}
-		}).component();
-		this._tdeConfigurationDialog = new TdeConfigurationDialog(this.migrationStateModel, () => this._onTdeConfigClosed());
-		this._disposables.push(this._tdeEditButton.onDidClick(
-			async (e) => await this._tdeConfigurationDialog.openDialog()));
-
-		this._tdedatabaseSelectedHelperText = this._view.modelBuilder.text()
-			.withProps({
-				CSSStyles: { ...styles.BODY_CSS },
-				ariaLive: 'polite',
-			}).component();
-
-		container.addItems([
-			this._tdeEditButton,
-			this._tdedatabaseSelectedHelperText]);
-
-		await utils.updateControlDisplay(container, false);
-
-		return container;
-	}
-
-	private _resetTdeConfiguration() {
-		this._previousMiTdeMigrationConfig = this.migrationStateModel.tdeMigrationConfig;
-		this.migrationStateModel.tdeMigrationConfig = new TdeMigrationModel();
-	}
-
-	private async refreshTdeView() {
-
-		if (this.migrationStateModel._targetType !== MigrationTargetType.SQLMI) {
-
-			//Reset the encrypted databases counter on the model to ensure the certificates migration is ignored.
-			this._resetTdeConfiguration();
-
-		} else {
-
-			const encryptedDbFound = this.migrationStateModel._assessmentResults.databaseAssessments
-				.filter(
-					db => this.migrationStateModel._databasesForMigration.findIndex(dba => dba === db.name) >= 0 &&
-						db.issues.findIndex(iss => iss.ruleId === AssessmentRuleId.TdeEnabled && iss.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) >= 0
-				)
-				.map(db => db.name);
-
-			if (this._matchWithEncryptedDatabases(encryptedDbFound)) {
-				this.migrationStateModel.tdeMigrationConfig = this._previousMiTdeMigrationConfig;
-			} else {
-				if (!utils.isWindows()) //Only available for windows for now.
-					return;
-
-				//Set encrypted databases
-				this.migrationStateModel.tdeMigrationConfig.setTdeEnabledDatabasesCount(encryptedDbFound);
-
-				if (this.migrationStateModel.tdeMigrationConfig.hasTdeEnabledDatabases()) {
-					//Set the text when there are encrypted databases.
-
-					if (!this.migrationStateModel.tdeMigrationConfig.shownBefore()) {
-						await this._tdeConfigurationDialog.openDialog();
-					}
-				} else {
-					this._tdedatabaseSelectedHelperText.value = constants.TDE_WIZARD_MSG_EMPTY;
-				}
-
-			}
-		}
-
-		await utils.updateControlDisplay(this._tdeInfoContainer, this.migrationStateModel.tdeMigrationConfig.hasTdeEnabledDatabases());
-	}
-
-	private _onTdeConfigClosed(): Thenable<void> {
-		const tdeMsg = (this.migrationStateModel.tdeMigrationConfig.getAppliedConfigDialogSetting() === ConfigDialogSetting.ExportCertificates) ? constants.TDE_WIZARD_MSG_TDE : constants.TDE_WIZARD_MSG_MANUAL;
-		this._tdedatabaseSelectedHelperText.value = constants.TDE_MSG_DATABASES_SELECTED(this.migrationStateModel.tdeMigrationConfig.getTdeEnabledDatabasesCount(), tdeMsg);
-
-		let tdeTelemetryAction: TelemetryAction;
-
-		switch (this.migrationStateModel.tdeMigrationConfig.getAppliedConfigDialogSetting()) {
-			case ConfigDialogSetting.ExportCertificates:
-				tdeTelemetryAction = TelemetryAction.TdeConfigurationUseADS;
-				break;
-			case ConfigDialogSetting.DoNotExport:
-				tdeTelemetryAction = TelemetryAction.TdeConfigurationAlreadyMigrated;
-				break;
-			case ConfigDialogSetting.NoSelection:
-				tdeTelemetryAction = TelemetryAction.TdeConfigurationCancelled;
-				break;
-			default:
-				tdeTelemetryAction = TelemetryAction.TdeConfigurationCancelled;
-				break;
-		}
-
-		sendSqlMigrationActionEvent(
-			TelemetryViews.TdeConfigurationDialog,
-			tdeTelemetryAction,
-			{
-				...getTelemetryProps(this.migrationStateModel),
-				'numberOfDbsWithTde': this.migrationStateModel.tdeMigrationConfig.getTdeEnabledDatabasesCount().toString()
-			},
-			{}
-		);
-
-		return this._tdeEditButton.focus();
-	}
-
-	private _matchWithEncryptedDatabases(encryptedDbList: string[]): boolean {
-		var currentTdeDbs = this._previousMiTdeMigrationConfig.getTdeEnabledDatabases();
-
-		if (encryptedDbList.length === 0 || encryptedDbList.length !== currentTdeDbs.length)
-			return false;
-
-		if (encryptedDbList.filter(db => currentTdeDbs.findIndex(dba => dba === db) < 0).length > 0)
-			return false; //There is at least one element that is not in the other array. There should be no risk of duplicates table names
-
-
-		return true;
-	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
@@ -610,7 +471,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		});
 		await this.constructDetails();
 		this.wizard.nextButton.enabled = this.migrationStateModel._assessmentResults !== undefined;
-		this._previousMiTdeMigrationConfig = this.migrationStateModel.tdeMigrationConfig;
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
