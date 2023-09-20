@@ -1640,6 +1640,8 @@ export interface ExtHostTreeViewsShape {
 	$handleDrag(sourceViewId: string, sourceTreeItemHandles: string[], operationUuid: string, token: CancellationToken): Promise<DataTransferDTO | undefined>;
 	$setExpanded(treeViewId: string, treeItemHandle: string, expanded: boolean): void;
 	$setSelectionAndFocus(treeViewId: string, selectionHandles: string[], focusHandle: string): void;
+	$setSelection(treeViewId: string, treeItemHandles: string[]): void; // {{SQL CARBON EDIT}}
+	$setFocus(treeViewId: string, treeItemHandle: string): void; // {{SQL CARBON EDIT}}
 	$setVisible(treeViewId: string, visible: boolean): void;
 	$changeCheckboxState(treeViewId: string, checkboxUpdates: CheckboxUpdate[]): void;
 	$hasResolve(treeViewId: string): Promise<boolean>;

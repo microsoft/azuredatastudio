@@ -81,6 +81,24 @@ export class ExtHostTreeViews implements ExtHostTreeViewsShape {
 		});
 	}
 
+	// {{SQL CARBON EDIT}} - START - Define $setSelection and $setFocus
+	$setSelection(treeViewId: string, treeItemHandles: string[]): void {
+		const treeView = this.treeViews.get(treeViewId);
+		if (!treeView) {
+			throw new NoTreeViewError(treeViewId);
+		}
+		treeView.setSelection(treeItemHandles);
+	}
+
+	$setFocus(treeViewId: string, treeItemHandles: string) {
+		const treeView = this.treeViews.get(treeViewId);
+		if (!treeView) {
+			throw new NoTreeViewError(treeViewId);
+		}
+		treeView.setFocus(treeItemHandles);
+	}
+	// {{SQL CARBON EDIT}} - END
+
 	registerTreeDataProvider<T>(id: string, treeDataProvider: vscode.TreeDataProvider<T>, extension: IExtensionDescription): vscode.Disposable {
 		const treeView = this.createTreeView(id, { treeDataProvider }, extension);
 		return { dispose: () => treeView.dispose() };
@@ -507,6 +525,19 @@ export class ExtHostTreeView<T> extends Disposable {
 			}
 		}
 	}
+
+	// {{SQL CARBON EDIT}} - START - Define setSelection and setFocus
+	setSelection(treeItemHandles: TreeItemHandle[]): void {
+		if (!equals(this._selectedHandles, treeItemHandles)) {
+			this._selectedHandles = treeItemHandles;
+			this._onDidChangeSelection.fire(Object.freeze({ selection: this.selectedElements }));
+		}
+	}
+
+	setFocus(treeItemHandle: TreeItemHandle) {
+		this._focusedHandle = treeItemHandle;
+	}
+	// {{SQL CARBON EDIT}} - END
 
 	setSelectionAndFocus(selectedHandles: TreeItemHandle[], focusedHandle: string): void {
 		const changedSelection = !equals(this._selectedHandles, selectedHandles);
