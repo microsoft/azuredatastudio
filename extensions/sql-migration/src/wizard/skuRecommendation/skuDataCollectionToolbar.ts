@@ -14,7 +14,7 @@ import * as vscode from 'vscode';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
-import { PerformanceDataSourceOptions } from '../../models/stateMachine';
+import { MigrationStateModel, PerformanceDataSourceOptions } from '../../models/stateMachine';
 
 export class SkuDataCollectionToolbar implements vscode.Disposable {
 	private _refreshSKURecommendationButton!: azdata.ButtonComponent;
@@ -26,6 +26,9 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 	private _performanceDataSource!: PerformanceDataSourceOptions;
 
 	private _disposables: vscode.Disposable[] = [];
+
+	constructor(public migrationStateModel: MigrationStateModel) {
+	}
 
 	public createToolbar(view: azdata.ModelView): azdata.ToolbarContainer {
 		const toolbar = view.modelBuilder.toolbarContainer();
@@ -79,7 +82,38 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 				}
 			}).component();
 
-		// TODO - implement onDidClick and add to disposables
+		this._disposables.push(this._startPerformanceCollectionButton.onDidClick(async () => {
+			const selectedOption = await vscode.window.showInformationMessage(
+				'Where do you want to save collected data?',
+				'Default path',
+				'Choose a path...'
+			);
+
+			if (!selectedOption || selectedOption === 'Default path') {
+				await vscode.window.showInformationMessage('Default path selected.');
+
+				this._performanceDataSource = PerformanceDataSourceOptions.CollectData;
+				this.migrationStateModel._skuRecommendationPerformanceLocation = 'default path';
+
+			} else if (selectedOption === 'Choose a path...') {
+				// Handle the folder selection here
+				const chosenFolder = await vscode.window.showOpenDialog({
+					canSelectFiles: false,
+					canSelectFolders: true,
+					openLabel: 'Select Folder',
+				});
+
+				if (chosenFolder && chosenFolder.length > 0) {
+					await vscode.window.showInformationMessage(`Selected folder: ${chosenFolder[0].fsPath}`);
+
+					this._performanceDataSource = PerformanceDataSourceOptions.CollectData;
+					this.migrationStateModel._skuRecommendationPerformanceLocation = chosenFolder[0].fsPath;
+				} else {
+					await vscode.window.showInformationMessage('No folder selected.');
+				}
+			}
+		}));
+
 		return startPerformanceCollectionButton;
 	}
 
