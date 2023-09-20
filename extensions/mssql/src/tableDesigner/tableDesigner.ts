@@ -29,7 +29,6 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
 			const telemetryInfo = await getTelemetryInfo(context, tableIcon);
 			let nonDefaultOptions = await azdata.connection.getNonDefaultOptions(context.connectionProfile);
-			nonDefaultOptions = nonDefaultOptions.replace('(', '[').replace(')', ']');
 			await azdata.designers.openTableDesigner(sqlProviderName, {
 				title: NewTableText,
 				tooltip: `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`,
@@ -40,7 +39,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				connectionString: connectionString,
 				accessToken: context.connectionProfile!.options.azureAccountToken as string,
 				tableIcon: tableIcon,
-				additionalInfo: `${context.connectionProfile.connectionName ? '(' + context.connectionProfile.connectionName + ')' : ''}${nonDefaultOptions}`
+				additionalInfo: `${context.connectionProfile.connectionName ? ' - ' + context.connectionProfile.connectionName : ''}${nonDefaultOptions}`
 			}, telemetryInfo, context);
 		} catch (error) {
 			console.error(error);
@@ -63,7 +62,6 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
 			const telemetryInfo = await getTelemetryInfo(context, tableIcon);
 			let nonDefaultOptions = await azdata.connection.getNonDefaultOptions(context.connectionProfile);
-			nonDefaultOptions = nonDefaultOptions.replace('(', '[').replace(')', ']');
 			await azdata.designers.openTableDesigner(sqlProviderName, {
 				title: `${schema}.${name}`,
 				tooltip: `${server} - ${database} - ${schema}.${name}`,
@@ -76,7 +74,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				connectionString: connectionString,
 				accessToken: context.connectionProfile!.options.azureAccountToken as string,
 				tableIcon: tableIcon,
-				additionalInfo: `${connName ? '(' + connName + ')' : ''}${nonDefaultOptions}`
+				additionalInfo: `${connName ? connName : ''}${nonDefaultOptions}`
 			}, telemetryInfo, context);
 		} catch (error) {
 			console.error(error);

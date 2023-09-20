@@ -86,10 +86,12 @@ export class TableDesignerInput extends EditorInput {
 			case Verbosity.SHORT:
 				return this._title;
 			case Verbosity.LONG:
+				// Used by tabsTitleControl as the tooltip hover.
 				return this._title + ' ' + this._additionalDetails;
 			default:
 			case Verbosity.MEDIUM:
-				return this._title + ' ' + this._additionalDetails;
+				// Not used by this editor, normally used relative to workspace for files in vscode.
+				return this._title;
 		}
 	}
 

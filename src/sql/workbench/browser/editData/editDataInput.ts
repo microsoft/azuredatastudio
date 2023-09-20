@@ -230,19 +230,20 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		let profile = this._connectionManagementService.getConnectionProfile(this.uri);
 		if (profile) {
 			additionalOptions = ': ' + profile.serverName + ':' + profile.databaseName;
-			let connectionName = profile.connectionName ? (' (' + profile.connectionName + ')') : '';
+			let connectionName = profile.connectionName ? (' - ' + profile.connectionName) : '';
 			let nonDefaultOptions = this._connectionManagementService.getNonDefaultOptions(profile);
-			nonDefaultOptions = nonDefaultOptions.replace('(', '[').replace(')', ']');
 			additionalOptions += (connectionName + nonDefaultOptions);
 		}
 		switch (verbosity) {
 			case Verbosity.SHORT:
 				return this.getName();
 			case Verbosity.LONG:
+				// Used by tabsTitleControl as the tooltip hover.
 				return this.getName() + additionalOptions;
 			default:
 			case Verbosity.MEDIUM:
-				return this.getName() + additionalOptions;
+				// Not used by this editor, normally used relative to workspace for files in vscode.
+				return this.getName();
 		}
 	}
 	public get hasAssociatedFilePath(): boolean { return this._sql.model.hasAssociatedFilePath; }

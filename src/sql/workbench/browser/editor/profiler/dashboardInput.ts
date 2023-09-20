@@ -95,25 +95,25 @@ export class DashboardInput extends EditorInput {
 	}
 
 	public override getTitle(verbosity?: Verbosity): string {
-		let connName = this.connectionProfile.connectionName ? (' (' + this.connectionProfile.connectionName + ')') : '';
+		let connName = this.connectionProfile.connectionName ? (' - ' + this.connectionProfile.connectionName) : '';
 		let baseName = this.connectionProfile.serverName;
 		if (this.connectionProfile.databaseName && !this.isMasterMssql()) {
 			// Only add DB name if this is a non-default, non-master connection and if there is no user set profile name.
 			baseName = baseName + ':' + this.connectionProfile.databaseName;
 		}
 		let advancedOptions = this._connectionService.getNonDefaultOptions(this.connectionProfile);
-		advancedOptions = advancedOptions.replace('(', '[').replace(')', ']');
-
 		let fullTitle = baseName + connName + advancedOptions;
 
 		switch (verbosity) {
 			case Verbosity.SHORT:
 				return this.getName();
 			case Verbosity.LONG:
+				// Used by tabsTitleControl as the tooltip hover.
 				return fullTitle;
 			default:
 			case Verbosity.MEDIUM:
-				return fullTitle;
+				// Not used by this editor, normally used relative to workspace for files in vscode.
+				return this.getName();
 		}
 	}
 

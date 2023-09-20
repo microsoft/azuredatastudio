@@ -726,7 +726,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	public getNonDefaultOptions(profile: interfaces.IConnectionProfile): string {
 		let convProfile = new ConnectionProfile(this._capabilitiesService, profile);
-		return convProfile.getNonDefaultOptionsString();
+		let nonDefOptions = convProfile.getNonDefaultOptionsString();
+		return nonDefOptions.replace('(', '[').replace(')', ']');
 	}
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {

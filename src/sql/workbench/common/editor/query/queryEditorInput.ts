@@ -268,19 +268,20 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		let profile = this.connectionManagementService.getConnectionProfile(this.uri);
 		let additionalOptions = '';
 		if (profile) {
-			additionalOptions = profile.connectionName ? (' (' + profile.connectionName + ')') : ''
+			additionalOptions = profile.connectionName ? (' - ' + profile.connectionName) : ''
 			let nonDefaultOptions = this.connectionManagementService.getNonDefaultOptions(profile);
-			nonDefaultOptions = nonDefaultOptions.replace('(', '[').replace(')', ']');
 			additionalOptions += nonDefaultOptions;
 		}
 		switch (verbosity) {
 			case Verbosity.SHORT:
 				return this.getName(true);
 			case Verbosity.LONG:
+				// Used by tabsTitleControl as the tooltip hover.
 				return this.getName(true) + additionalOptions;
 			default:
 			case Verbosity.MEDIUM:
-				return this.getName(true) + additionalOptions;
+				// Not used by this editor, normally used relative to workspace for files in vscode.
+				return this.getName(true);
 		}
 	}
 

@@ -142,9 +142,8 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		let fullTitle = ProfilerInput.PROFILERNAME;
 		if (this.connection) {
 			let baseName = this.connection.serverName + ':' + this.connection.databaseName;
-			let connName = this.connection.connectionName ? (' (' + this.connection.connectionName + ')') : '';
+			let connName = this.connection.connectionName ? (' - ' + this.connection.connectionName) : '';
 			let advancedOptions = this._connectionService.getNonDefaultOptions(this.connection);
-			advancedOptions = advancedOptions.replace('(', '[').replace(')', ']');
 			fullTitle = fullTitle + ': ' + baseName + connName + advancedOptions;
 		}
 
@@ -152,10 +151,12 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			case Verbosity.SHORT:
 				return this.getName();
 			case Verbosity.LONG:
+				// Used by tabsTitleControl as the tooltip hover.
 				return fullTitle;
 			default:
 			case Verbosity.MEDIUM:
-				return fullTitle;
+				// Not used by this editor, normally used relative to workspace for files in vscode.
+				return this.getName();
 		}
 	}
 
