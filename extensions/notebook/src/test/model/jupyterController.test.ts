@@ -19,10 +19,8 @@ describe('Jupyter Controller', function () {
 	let appContext = new AppContext(mockExtensionContext);
 	let controller: JupyterController;
 	let connection: azdata.connection.ConnectionProfile = new azdata.connection.ConnectionProfile();
-	let showErrorMessageSpy: sinon.SinonSpy;
 
 	this.beforeEach(() => {
-		showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 		sinon.stub(azdata.connection, 'getCurrentConnection').returns(Promise.resolve(connection));
 		sinon.stub(azdata.tasks, 'registerTask');
 		sinon.stub(vscode.commands, 'registerCommand');
