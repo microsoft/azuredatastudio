@@ -399,7 +399,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private async updateAssessmentDetailsForEachTarget(targetType: MigrationTargetType, dbCount: number): Promise<void> {
 		// For Target - SQLVM, all databases can be migrated with issues. So dbReady = dbCount;
 		if (targetType === MigrationTargetType.SQLVM) {
-			await this._vmAssessmentCard.updateAssessmentResult(dbCount, dbCount, 0, 0, 0, 0);
+			this._vmAssessmentCard.updateAssessmentResult(dbCount, dbCount, 0, 0, 0, 0);
 			return;
 		}
 
@@ -429,10 +429,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		switch (targetType) {
 			case MigrationTargetType.SQLDB:
-				await this._dbAssessmentCard.updateAssessmentResult(dbCount, dbReady, dbReadyWithWarnings, dbNotReady, blockers, warnings);
+				this._dbAssessmentCard.updateAssessmentResult(dbCount, dbReady, dbReadyWithWarnings, dbNotReady, blockers, warnings);
 				break;
 			case MigrationTargetType.SQLMI:
-				await this._miAssessmentCard.updateAssessmentResult(dbCount, dbReady, dbReadyWithWarnings, dbNotReady, blockers, warnings);
+				this._miAssessmentCard.updateAssessmentResult(dbCount, dbReady, dbReadyWithWarnings, dbNotReady, blockers, warnings);
 				break;
 		}
 	}

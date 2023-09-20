@@ -131,8 +131,8 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		}).component();
 
 		const assessmentResultPreText = view.modelBuilder.text().withProps({
-			value: constants.ASSESSMENT_RESULTS.toLocaleUpperCase(),
-			description: constants.ASSESSMENT_RESULTS.toLocaleUpperCase(), //TODO - add description later
+			value: constants.ASSESSMENT_RESULTS_SUMMARY_LABEL_CAPS,
+			description: constants.ASSESSMENT_RESULTS_SUMMARY_LABEL_CAPS, //TODO - add description later
 			CSSStyles: {
 				...styles.TOOLBAR_CSS,
 				'margin-left': '55px'
@@ -323,8 +323,8 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		}).component();
 
 		const recommendedConfigurationLabel = view.modelBuilder.text().withProps({
-			value: constants.RECOMMENDED_CONFIGURATION.toLocaleUpperCase(),
-			description: constants.RECOMMENDED_CONFIGURATION, // TODO - need to add description later
+			value: constants.RECOMMENDED_CONFIGURATION_SUMMARY_LABEL_CAPS,
+			description: constants.RECOMMENDED_CONFIGURATION_SUMMARY_LABEL_CAPS, // TODO - need to add description later
 			height: 18,
 			CSSStyles: {
 				...styles.TOOLBAR_CSS,
@@ -386,14 +386,14 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 	}
 
 	// Used to update the summary of assessment card later after its initialization.
-	public async updateAssessmentResult(
+	public updateAssessmentResult(
 		databaseCounts: number, ready: number, needsReview: number, notReady: number, blockers: number, warnings: number) {
-		await this._assessmentResultText.updateProperties({ "value": constants.ASSESSED_DBS(databaseCounts) });
-		await this._readyText.updateProperties({ "value": ready.toString() });
-		await this._needsReviewText.updateProperties({ "value": needsReview.toString() });
-		await this._notReadyText.updateProperties({ "value": notReady.toString() });
-		await this._blockersText.updateProperties({ "value": blockers.toString() });
-		await this._warningsText.updateProperties({ "value": warnings.toString() });
+		this._assessmentResultText.value = constants.ASSESSED_DBS(databaseCounts);
+		this._readyText.value = ready.toString();
+		this._needsReviewText.value = needsReview.toString();
+		this._notReadyText.value = notReady.toString();
+		this._blockersText.value = blockers.toString();
+		this._warningsText.value = warnings.toString();
 	}
 
 	public async updateSkuRecommendation(

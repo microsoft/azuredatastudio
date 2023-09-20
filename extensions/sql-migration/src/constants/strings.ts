@@ -83,6 +83,7 @@ export const XEVENTS_ASSESSMENT_OPEN_FOLDER = localize('sql.migration.database.a
 
 // Assessment results
 export const ASSESSMENT_RESULTS_PAGE_TITLE = localize('sql.migration.assessment.results.title', "Assessment results");
+export const ASSESSMENT_RESULTS_SUMMARY_LABEL_CAPS = localize('sql.migration.assessment.results.summary.label.caps', "ASSESSMENT RESULTS");
 export const ASSESSMENT_RESULTS_PAGE_HEADER = localize('sql.migration.assessment.results.header', "View assessment results and select database(s) for migration");
 export const DATABASES_ASSESSED_LABEL = localize('sql.migration.database.assessed.label', "Database(s) assessed");
 export const MIGRATION_TIME_LABEL = localize('sql.migration.migration.time.label', "Ready for migration");
@@ -202,6 +203,7 @@ export function RECOMMENDATIONS_TITLE(targetType: string): string {
 	return localize('sql.migration.sku.recommendations.title', "{0} Recommendations", targetType);
 }
 export const RECOMMENDED_CONFIGURATION = localize('sql.migration.sku.recommendedConfiguration', "Recommended configuration");
+export const RECOMMENDED_CONFIGURATION_SUMMARY_LABEL_CAPS = localize('sql.migration.sku.recommended.configuration.summary.label.caps', "RECOMMENDED CONFIGURATION");
 export const GET_AZURE_RECOMMENDATION = localize('sql.migration.sku.get.recommendation', "Get Azure recommendation");
 export const REFINE_AZURE_RECOMMENDATION = localize('sql.migration.sku.refine.recommendation', "Refine Azure recommendation");
 export const REFRESH_AZURE_RECOMMENDATION = localize('sql.migration.sku.refresh.recommendation', "Refresh recommendation");
