@@ -29,10 +29,6 @@ export const requiredJupyterPackages: RequiredPackagesInfo = {
 		name: 'ipykernel',
 		version: '5.5.5',
 		installExactVersion: true
-	}, {
-		name: 'traitlets',
-		version: '5.9.0',
-		installExactVersion: true
 	}],
 	kernels: [{
 		name: 'Python 3 (ipykernel)',
