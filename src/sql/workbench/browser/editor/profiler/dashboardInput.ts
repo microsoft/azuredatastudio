@@ -108,7 +108,7 @@ export class DashboardInput extends EditorInput {
 			case Verbosity.SHORT:
 				return this.getName();
 			case Verbosity.LONG:
-				// Used by tabsTitleControl as the tooltip hover.
+				// Used by tabsTitleControl as the tooltip hover, returns tab title with profile name and non defualt advanced options.
 				return fullTitle;
 			default:
 			case Verbosity.MEDIUM:

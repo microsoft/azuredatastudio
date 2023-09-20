@@ -276,7 +276,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			case Verbosity.SHORT:
 				return this.getName(true);
 			case Verbosity.LONG:
-				// Used by tabsTitleControl as the tooltip hover.
+				// Used by tabsTitleControl as the tooltip hover, returns tab title with profile name and non defualt advanced options.
 				return this.getName(true) + additionalOptions;
 			default:
 			case Verbosity.MEDIUM:
