@@ -152,6 +152,10 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 
 		const viewsService = new class implements IViewsService {
+			getFocusedViewName(): string {
+				throw new Error('Method not implemented.');
+			}
+			onDidChangeFocusedView: Event<void>;
 			getActiveViewPaneContainerWithId(viewContainerId: string): IViewPaneContainer {
 				throw new Error('Method not implemented.');
 			}

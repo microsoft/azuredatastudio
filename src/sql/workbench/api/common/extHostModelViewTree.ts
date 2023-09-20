@@ -68,6 +68,9 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 		}
 	}
 
+	$setSelectionAndFocus(treeViewId: string, selectionHandles: string[], focusHandle: string): void {
+	}
+
 	$setExpanded(treeViewId: string, treeItemHandle: string, expanded: boolean): void {
 	}
 

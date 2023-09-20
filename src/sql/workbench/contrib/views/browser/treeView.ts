@@ -170,6 +170,8 @@ abstract class AbstractTreeView extends Disposable implements ITreeView {
 		// during startup, and anything added here can affect performance.
 	}
 
+	onDidChangeSelectionAndFocus: Event<{ selection: readonly ITreeItem[]; focus: ITreeItem; }>;
+
 	private _isInitialized: boolean = false;
 	private initialize() {
 		if (this._isInitialized) {
@@ -1278,7 +1280,7 @@ class TreeRenderer extends Disposable implements ITreeRenderer<ITreeItem, FuzzyS
 				this.rerender();
 			}
 			if (!templateData.checkbox) {
-				const checkbox = new TreeItemCheckbox(templateData.checkboxContainer, this.checkboxStateHandler);
+				const checkbox = new TreeItemCheckbox(templateData.checkboxContainer, this.checkboxStateHandler, this._hoverDelegate);
 				templateData.checkbox = checkbox;
 			}
 			templateData.checkbox.render(node);
