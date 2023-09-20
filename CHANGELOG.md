@@ -12,7 +12,7 @@ Azure Data Studio 1.46.0 is the latest general availability (GA) release.
 | New Item | Details |
 | --- | --- |
 | Attach/Detach Database | Introduced support for attaching and detaching databases (Preview) |
-| Connection | Introduced support for custom cloud providers (LINK TO NEW DOC PAGE) |
+| Connection | Introduced support for custom cloud providers, see ([Azure Data Studio - Azure Connectivity](https://learn.microsoft.com/sql/azure-data-studio/azure-connectivity?#configuring-custom-cloud-endpoints)) for configuration information |
 | Connection | Enabled Connection Pooling as default behavior |
 | Connection | Introduced command `SQL Server: Clear Pooled Connections` to clear inactive pooled connections |
 | Database Properties | Introduced support for viewing database properties (Preview) |
