@@ -17,11 +17,15 @@ export const requiredJupyterPackages: RequiredPackagesInfo = {
 	sharedPackages: [{
 		name: 'jupyter',
 		version: '1.0.0'
-	}, {
+	},
+	// Require notebook 6.5.6 for https://github.com/jupyter/notebook/issues/7048
+	{
 		name: 'notebook',
-		version: '6.5.5',
+		version: '6.5.6',
 		installExactVersion: true
-	}, {
+	},
+	// Require ipykernel 5.5.5 for https://github.com/microsoft/azuredatastudio/issues/24405
+	{
 		name: 'ipykernel',
 		version: '5.5.5',
 		installExactVersion: true
