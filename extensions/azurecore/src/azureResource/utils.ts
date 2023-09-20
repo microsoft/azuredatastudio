@@ -21,7 +21,7 @@ import providerSettings from '../account-provider/providerSettings';
 import { getProxyEnabledHttpClient } from '../utils';
 import { HttpClient } from '../account-provider/auths/httpClient';
 import { NetworkRequestOptions } from '@azure/msal-common';
-import { ErrorResponseBody } from '@azure/arm-subscriptions/esm/models';
+import { ErrorResponseBody } from '@azure/arm-subscriptions/dist-esm/src/models';
 import { TenantIgnoredError } from '../utils/TenantIgnoredError';
 import { AzureMonitorResourceService } from './providers/azuremonitor/azuremonitorService';
 import { AzureMonitorTreeDataProvider } from './providers/azuremonitor/azuremonitorTreeDataProvider';

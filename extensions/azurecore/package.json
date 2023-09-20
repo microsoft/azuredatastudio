@@ -520,19 +520,19 @@
     "hasAzureResourceProviders": true
   },
   "dependencies": {
-    "@azure/arm-resourcegraph": "^4.0.0",
-    "@azure/arm-subscriptions": "^3.0.0",
-    "@azure/msal-common": "^11.0.0",
-    "@azure/msal-node": "^1.16.0",
+    "@azure/arm-resourcegraph": "^4.2.1",
+    "@azure/arm-subscriptions": "^5.1.0",
+    "@azure/msal-common": "^14.0.3",
+    "@azure/msal-node": "^2.1.0",
     "@azure/storage-blob": "^12.13.0",
-    "axios": "^0.27.2",
+    "axios": "^1.5.0",
     "lockfile": "1.0.4",
-    "@microsoft/ads-extension-telemetry": "^3.0.1",
-    "node-fetch": "^2.6.7",
-    "qs": "^6.9.1",
-    "universalify": "^0.1.2",
+    "@microsoft/ads-extension-telemetry": "^3.0.2",
+    "node-fetch": "^3.3.2",
+    "qs": "^6.11.2",
+    "universalify": "^2.0.0",
     "vscode-nls": "^4.0.0",
-    "ws": "^7.4.6"
+    "ws": "^8.14.2"
   },
   "devDependencies": {
     "@microsoft/vscodetestcover": "^1.2.2",
