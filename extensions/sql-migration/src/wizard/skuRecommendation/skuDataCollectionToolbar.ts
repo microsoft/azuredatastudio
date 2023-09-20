@@ -16,6 +16,9 @@ import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import { MigrationStateModel, PerformanceDataSourceOptions } from '../../models/stateMachine';
 
+// TODO - "Change this to actual default path once it is available"
+const Default_PATH_FOR_START_DATA_COLLECTION = "C:\DataPointsCollectionFolder";
+
 export class SkuDataCollectionToolbar implements vscode.Disposable {
 	private _refreshSKURecommendationButton!: azdata.ButtonComponent;
 	private _startPerformanceCollectionButton!: azdata.ButtonComponent;
@@ -82,34 +85,42 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 				}
 			}).component();
 
-		this._disposables.push(this._startPerformanceCollectionButton.onDidClick(async () => {
+		this._disposables.push(startPerformanceCollectionButton.onDidClick(async () => {
 			const selectedOption = await vscode.window.showInformationMessage(
-				'Where do you want to save collected data?',
-				'Default path',
-				'Choose a path...'
+				constants.AZURE_RECOMMENDATION_DATA_COLLECTION_POPUP_MESSAGE_LABEL,
+				constants.AZURE_RECOMMENDATION_DATA_COLLECTION_DEFAULT_PATH,
+				constants.AZURE_RECOMMENDATION_DATA_COLLECTION_CHOOSE_PATH
 			);
 
-			if (!selectedOption || selectedOption === 'Default path') {
-				await vscode.window.showInformationMessage('Default path selected.');
-
+			// Default path is selected or no option is selected.
+			if (!selectedOption || selectedOption === constants.AZURE_RECOMMENDATION_DATA_COLLECTION_DEFAULT_PATH) {
 				this._performanceDataSource = PerformanceDataSourceOptions.CollectData;
-				this.migrationStateModel._skuRecommendationPerformanceLocation = 'default path';
+				this.migrationStateModel._skuRecommendationPerformanceLocation = Default_PATH_FOR_START_DATA_COLLECTION;
 
-			} else if (selectedOption === 'Choose a path...') {
-				// Handle the folder selection here
-				const chosenFolder = await vscode.window.showOpenDialog({
+				// TODO - Start data collection at default path.
+			}
+			// 'Choose a path' option is selected.
+			else if (selectedOption === constants.AZURE_RECOMMENDATION_DATA_COLLECTION_CHOOSE_PATH) {
+				const options: vscode.OpenDialogOptions = {
+					openLabel: 'Select',
 					canSelectFiles: false,
 					canSelectFolders: true,
-					openLabel: 'Select Folder',
-				});
+					canSelectMany: false,
+				};
 
-				if (chosenFolder && chosenFolder.length > 0) {
-					await vscode.window.showInformationMessage(`Selected folder: ${chosenFolder[0].fsPath}`);
+				// Handle the folder selection here
+				const chosenFolder = await vscode.window.showOpenDialog(options);
 
+				// if a folder path is selected.
+				if (chosenFolder && chosenFolder.length > 0 && chosenFolder[0]) {
 					this._performanceDataSource = PerformanceDataSourceOptions.CollectData;
 					this.migrationStateModel._skuRecommendationPerformanceLocation = chosenFolder[0].fsPath;
+
+					// TODO - Start data collection at folder path selected.
 				} else {
-					await vscode.window.showInformationMessage('No folder selected.');
+					// TODO - What to do if user clicks on "choose a path" and do not selecta folder.
+					// Either 1) start data collection at Default path.
+					// or 2) Do not start data collection and give user a warning that "no path selected".
 				}
 			}
 		}));
