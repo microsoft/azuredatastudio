@@ -131,8 +131,8 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		}).component();
 
 		const assessmentResultPreText = view.modelBuilder.text().withProps({
-			value: constants.ASSESSMENT_RESULTS.toLocaleUpperCase(),
-			description: "", //TODO - add description later
+			value: constants.ASSESSMENT_RESULTS_SUMMARY_LABEL_CAPS,
+			description: constants.ASSESSMENT_RESULTS_SUMMARY_LABEL_CAPS, //TODO - add description later
 			CSSStyles: {
 				...styles.TOOLBAR_CSS,
 				'margin-left': '55px'
@@ -323,8 +323,8 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		}).component();
 
 		const recommendedConfigurationLabel = view.modelBuilder.text().withProps({
-			value: constants.RECOMMENDED_CONFIGURATION.toLocaleUpperCase(),
-			description: "", // TODO - need this value later
+			value: constants.RECOMMENDED_CONFIGURATION_SUMMARY_LABEL_CAPS,
+			description: constants.RECOMMENDED_CONFIGURATION_SUMMARY_LABEL_CAPS, // TODO - need to add description later
 			height: 18,
 			CSSStyles: {
 				...styles.TOOLBAR_CSS,
@@ -386,18 +386,20 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 	}
 
 	// Used to update the summary of assessment card later after its initialization.
-	// TODO - We can remove dummayData input later and use a some other way to pass the values. Once we start implementing the whole page.
-	public async updateContent(dummyData: DummyData) {
-		await this._assessmentResultText.updateProperties({ "value": constants.ASSESSED_DBS(dummyData.assessmentResult) });
-		await this._readyText.updateProperties({ "value": dummyData.ready.toString() });
-		await this._needsReviewText.updateProperties({ "value": dummyData.needsReview.toString() });
-		await this._notReadyText.updateProperties({ "value": dummyData.notReady.toString() });
-		await this._blockersText.updateProperties({ "value": dummyData.blockers.toString() });
-		await this._warningsText.updateProperties({ "value": dummyData.warnings.toString() });
+	public updateAssessmentResult(
+		databaseCounts: number, ready: number, needsReview: number, notReady: number, blockers: number, warnings: number) {
+		this._assessmentResultText.value = constants.ASSESSED_DBS(databaseCounts);
+		this._readyText.value = ready.toString();
+		this._needsReviewText.value = needsReview.toString();
+		this._notReadyText.value = notReady.toString();
+		this._blockersText.value = blockers.toString();
+		this._warningsText.value = warnings.toString();
+	}
 
-		await this._recommendedConfigurationText.updateProperties({ "value": dummyData.skuRecommendation.toString() });
-		await this._vmRecommendedConfigurationText.updateProperties({ "value": dummyData.vmRecommendation });
-
+	public async updateSkuRecommendation(
+		skuRecommendation: string, vmRecommendation: string) {
+		await this._recommendedConfigurationText.updateProperties({ "value": skuRecommendation });
+		await this._vmRecommendedConfigurationText.updateProperties({ "value": vmRecommendation });
 	}
 
 	// TODO - Check this later, if we need to handle this separately.
@@ -414,14 +416,4 @@ export enum AssessmentResultType {
 	NOT_READY = 2,
 	BLOCKERS = 3,
 	WARNINGS = 4,
-}
-
-// TODO - We can remove this class later and use a some other way to pass the values. Once we start implementing the whole page.
-export class DummyData {
-	constructor(
-		public assessmentResult: number,
-		public ready: number, public needsReview: number, public notReady: number,
-		public blockers: number, public warnings: number,
-		public skuRecommendation: string, public vmRecommendation: string) {
-	}
 }
