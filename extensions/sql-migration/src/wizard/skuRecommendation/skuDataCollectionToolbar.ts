@@ -14,19 +14,34 @@ import * as vscode from 'vscode';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
+import { PerformanceDataSourceOptions } from '../../models/stateMachine';
 
 export class SkuDataCollectionToolbar implements vscode.Disposable {
+	private _refreshSKURecommendationButton!: azdata.ButtonComponent;
+	private _startPerformanceCollectionButton!: azdata.ButtonComponent;
+	private _stopPerformanceCollectionButton!: azdata.ButtonComponent;
+	private _importPerformanceDataButton!: azdata.ButtonComponent;
+	private _recommendationParametersButton!: azdata.ButtonComponent;
+
+	private _performanceDataSource!: PerformanceDataSourceOptions;
+
 	private _disposables: vscode.Disposable[] = [];
 
 	public createToolbar(view: azdata.ModelView): azdata.ToolbarContainer {
-		const toolbar = view.modelBuilder.toolbarContainer()
+		const toolbar = view.modelBuilder.toolbarContainer();
+
+		this._refreshSKURecommendationButton = this.createRefreshSKURecommendationButton(view);
+		this._startPerformanceCollectionButton = this.createStartPerformanceCollectionButton(view);
+		this._stopPerformanceCollectionButton = this.createStopPerformanceCollectionButton(view);
+		this._importPerformanceDataButton = this.createImportPerformanceDataButton(view);
+		this._recommendationParametersButton = this.createRecommendationParametersButton(view);
 
 		toolbar.addToolbarItems([
-			<azdata.ToolbarComponent>{ component: this.createRefreshSKURecommendationButton(view), toolbarSeparatorAfter: true },
-			<azdata.ToolbarComponent>{ component: this.createStartPerformanceCollectionButton(view), toolbarSeparatorAfter: false },
-			<azdata.ToolbarComponent>{ component: this.createStopPerformanceCollectionButton(view), toolbarSeparatorAfter: false },
-			<azdata.ToolbarComponent>{ component: this.createImportPerformanceDataButton(view), toolbarSeparatorAfter: true },
-			<azdata.ToolbarComponent>{ component: this.createRecommendationParametersButton(view), toolbarSeparatorAfter: false },
+			<azdata.ToolbarComponent>{ component: this._refreshSKURecommendationButton, toolbarSeparatorAfter: true },
+			<azdata.ToolbarComponent>{ component: this._startPerformanceCollectionButton, toolbarSeparatorAfter: false },
+			<azdata.ToolbarComponent>{ component: this._stopPerformanceCollectionButton, toolbarSeparatorAfter: false },
+			<azdata.ToolbarComponent>{ component: this._importPerformanceDataButton, toolbarSeparatorAfter: true },
+			<azdata.ToolbarComponent>{ component: this._recommendationParametersButton, toolbarSeparatorAfter: false },
 		]);
 
 		return toolbar.component();
@@ -63,6 +78,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 					...styles.TOOLBAR_CSS
 				}
 			}).component();
+
 		// TODO - implement onDidClick and add to disposables
 		return startPerformanceCollectionButton;
 	}
