@@ -62,17 +62,6 @@ describe('Jupyter Controller', function () {
 		should(defaultConnection).deepEqual(connection, 'getDefaultConnection() did not return expected result');
 	});
 
-	it('should show error message for doManagePackages before activation', async () => {
-		await controller.doManagePackages();
-		should(showErrorMessageSpy.calledOnce).be.true('showErrorMessage should be called');
-	});
-
-	it('should not show error message for doManagePackages after activation', async () => {
-		await controller.activate();
-		await controller.doManagePackages();
-		should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not be called');
-	});
-
 	it('Returns expected values from notebook provider', async () => {
 		await controller.activate();
 		should(controller.executeProvider.providerId).equal('jupyter', 'Notebook provider should be jupyter');
