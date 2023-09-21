@@ -100,13 +100,13 @@ export async function getImageTags(imageInfo: DockerImageInfo, target: string, d
 }
 
 /**
- * Returns the list of base images for given target version
+ * Returns the base image for given target version
  * @param target
- * @returns list of image info
+ * @returns image info
  */
-export function getDockerBaseImages(target: string): DockerImageInfo[] {
+export function getDockerBaseImage(target: string): DockerImageInfo {
 	if (target === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure)) {
-		return [{
+		return {
 			name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}`,
 			displayName: constants.AzureSqlDbFullDockerImageName,
 			agreementInfo: {
@@ -117,22 +117,20 @@ export function getDockerBaseImages(target: string): DockerImageInfo[] {
 			},
 			tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.sqlServerDockerRepository}/tags/list`,
 			defaultTag: constants.dockerImageDefaultTag
-		}];
+		};
 	} else {
-		return [
-			{
-				name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}`,
-				displayName: constants.SqlServerDockerImageName,
-				agreementInfo: {
-					link: {
-						text: constants.eulaAgreementTitle,
-						url: constants.sqlServerEulaLink,
-					}
-				},
-				tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.sqlServerDockerRepository}/tags/list`,
-				defaultTag: constants.dockerImageDefaultTag
-			}
-		];
+		return {
+			name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}`,
+			displayName: constants.SqlServerDockerImageName,
+			agreementInfo: {
+				link: {
+					text: constants.eulaAgreementTitle,
+					url: constants.sqlServerEulaLink,
+				}
+			},
+			tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.sqlServerDockerRepository}/tags/list`,
+			defaultTag: constants.dockerImageDefaultTag
+		};
 	}
 }
 

@@ -61,8 +61,7 @@ export async function getPublishToDockerSettings(project: ISqlProject): Promise<
 		return undefined;
 	}
 
-	const baseImages = uiUtils.getDockerBaseImages(target);
-	const imageInfo = baseImages[0];
+	const imageInfo = uiUtils.getDockerBaseImage(target);
 
 	if (!imageInfo) {
 		return undefined;
