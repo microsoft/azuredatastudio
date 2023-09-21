@@ -114,6 +114,10 @@ export const PERF_DATA_COLLECTION_ERROR = (serverName: string, errors: string[])
 };
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_BYPASS = localize('sql.migration.wizard.sku.assessment.error.bypass', 'Check this option to skip assessment and continue the migration.');
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_DETAIL = localize('sql.migration.wizard.sku.assessment.error.detail', '[There are no assessment results to validate readiness of your database migration. By checking this box, you acknowledge you want to proceed migrating your database to the desired Azure SQL target.]',);
+export const AZURE_SQL_MI_DB_COUNT_THRESHOLD_EXCEEDS_ERROR = (selectedDbCount: number): string => {
+	return localize('sql.migration.select.azure.mi.db.count.threshold.exceeds.error', 'Error: Azure SQL Managed Instance supports maximum {0} user databases per instance. Select {0} or less database(s) to proceed further.', selectedDbCount);
+};
+export const AZURE_SQL_MI_DB_COUNT_UNDER_THRESHOLD = localize('sql.migration.select.azure.mi.db.count.under.threshold', 'To proceed, press Select button');
 export const REFRESH_ASSESSMENT_BUTTON_LABEL = localize('sql.migration.refresh.assessment.button.label', "Refresh assessment");
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose your Azure SQL target");
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET_HELP = localize('sql.migration.wizard.sku.choose_a_target.help', "Not sure which Azure SQL target is right for you? Learn more");
@@ -1516,6 +1520,7 @@ export const TDE_WIZARD_MSG_MANUAL = localize('sql.migration.tde.msg.manual', "Y
 export const TDE_WIZARD_MSG_TDE = localize('sql.migration.tde.msg.tde', "You have given Azure Data Studio access to migrate the encryption certificates and database.");
 export const TDE_WIZARD_MSG_EMPTY = localize('sql.migration.tde.msg.empty', "No encrypted database selected.");
 
+export const TDE_VALIDATION_GROUP_TITLE = localize('sql.migration.tde.validation.group.title', "Certificate validations");
 export const TDE_VALIDATION_TITLE = localize('sql.migration.tde.validation.title', "Validation");
 export const TDE_VALIDATION_REQUIREMENTS_MESSAGE = localize('sql.migration.tde.validation.requirements.message', "In order for certificate migration to succeed, you must meet all of the requirements listed below.\n\nClick \"Run validation\" to check that requirements are met.");
 export const TDE_VALIDATION_STATUS_PENDING = localize('sql.migration.tde.validation.status.pending', "Pending");
