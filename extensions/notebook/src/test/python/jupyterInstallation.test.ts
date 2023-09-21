@@ -11,8 +11,9 @@ import * as uuid from 'uuid';
 import * as fs from 'fs-extra';
 import * as request from 'request';
 import * as utils from '../../common/utils';
-import { requiredJupyterPkg, JupyterServerInstallation, requiredPowershellPkg, PythonInstallSettings, PythonPkgDetails, requiredNotebookPkg, requiredIpykernelPkg } from '../../jupyter/jupyterServerInstallation';
-import { powershellDisplayName, python3DisplayName, winPlatform } from '../../common/constants';
+import { JupyterServerInstallation, PythonInstallSettings, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
+import { allKernelsName, ipykernelDisplayName, powershellDisplayName, python3DisplayName, winPlatform } from '../../common/constants';
+import { requiredJupyterPackages } from '../../jupyter/requiredJupyterPackages';
 
 describe('Jupyter Server Installation', function () {
 	let outputChannelStub: TypeMoq.IMock<vscode.OutputChannel>;
@@ -224,14 +225,24 @@ describe('Jupyter Server Installation', function () {
 		should(packages.length).be.equal(0);
 	});
 
-	it('Get required packages test - Python 3 kernel', async function () {
-		let packages = installation.getRequiredPackagesForKernel(python3DisplayName);
-		should(packages).be.deepEqual([requiredJupyterPkg, requiredNotebookPkg, requiredIpykernelPkg]);
+	const pythonKernels = [python3DisplayName, ipykernelDisplayName, powershellDisplayName];
+	pythonKernels.forEach(kernelName => {
+		it(`Get required packages test - ${kernelName} kernel`, async function () {
+			let packages = installation.getRequiredPackagesForKernel(kernelName);
+			let kernelInfo = requiredJupyterPackages.kernels.find(kernel => kernel.name === kernelName);
+			should(kernelInfo).not.be.undefined();
+			let expectedPackages = requiredJupyterPackages.sharedPackages.concat(kernelInfo.packages);
+			should(packages).be.deepEqual(expectedPackages);
+		});
 	});
 
-	it('Get required packages test - Powershell kernel', async function () {
-		let packages = installation.getRequiredPackagesForKernel(powershellDisplayName);
-		should(packages).be.deepEqual([requiredJupyterPkg, requiredPowershellPkg, requiredNotebookPkg, requiredIpykernelPkg]);
+	it('Get required packages test - All Kernels', async function () {
+		let packages = installation.getRequiredPackagesForKernel(allKernelsName);
+		let allPackages = requiredJupyterPackages.sharedPackages;
+		for (let kernel of requiredJupyterPackages.kernels) {
+			allPackages = allPackages.concat(kernel.packages);
+		}
+		should(packages).be.deepEqual(allPackages);
 	});
 
 	it('Install python test - Run install while Python is already running', async function () {
