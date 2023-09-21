@@ -305,12 +305,13 @@ export abstract class DialogBase<DialogResult> {
 			if (editButton !== undefined) {
 				editButtonComponent.enabled = tableSelectedRowsLengthCheck;
 			}
+			addButtonComponent.enabled = this.addButtonEnabled(table);
 			removeButtonComponent.enabled = !!isRemoveEnabled && tableSelectedRowsLengthCheck;
 		}
 		addButtonComponent = this.createButton(uiLoc.AddText, addbutton.buttonAriaLabel, async () => {
 			await addbutton.buttonHandler(addButtonComponent);
 			updateButtons();
-		});
+		}, addbutton.enabled ?? true);
 		buttonComponents.push(addButtonComponent);
 
 		if (editButton !== undefined) {

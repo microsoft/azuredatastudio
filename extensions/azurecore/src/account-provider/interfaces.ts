@@ -7,7 +7,6 @@ import * as azurecore from 'azurecore';
 
 export const enum SettingIds {
 	marm = 'marm',
-	graph = 'graph',
 	msgraph = 'msgraph',
 	arm = 'arm',
 	sql = 'sql',
@@ -49,7 +48,6 @@ export type ProviderSettingsJson = {
 				host: string,
 				clientId: string,
 				microsoftResource: string,
-				graphResource: string,
 				msGraphResource?: string,
 				armResource: string,
 				sqlResource: string,
