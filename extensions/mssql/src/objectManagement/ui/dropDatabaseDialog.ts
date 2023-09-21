@@ -53,11 +53,11 @@ export class DropDatabaseDialog extends ObjectManagementDialogBase<Database, Dat
 	}
 
 	protected override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
-		await this.objectManagementService.dropDatabase(this.options.connectionUri, this.options.database, this.options.objectUrn, this._dropConnections, this._deleteBackupHistory, false);
+		await this.objectManagementService.dropDatabase(this.options.connectionUri, this.options.database, this._dropConnections, this._deleteBackupHistory, false);
 	}
 
 	protected override async generateScript(): Promise<string> {
-		return await this.objectManagementService.dropDatabase(this.options.connectionUri, this.options.database, this.options.objectUrn, this._dropConnections, this._deleteBackupHistory, true);
+		return await this.objectManagementService.dropDatabase(this.options.connectionUri, this.options.database, this._dropConnections, this._deleteBackupHistory, true);
 	}
 
 	protected override async validateInput(): Promise<string[]> {
