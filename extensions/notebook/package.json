@@ -370,7 +370,7 @@
         },
         {
           "command": "jupyter.cmd.managePackages",
-          "when": "false"
+          "when": "notebook:pythonInstalled && !notebook:runningOnSAW"
         },
         {
           "command": "notebook.command.saveBook",
