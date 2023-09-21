@@ -440,21 +440,21 @@ export class ProjectsController {
 	public async publishProject(project: Project): Promise<void>;
 	public async publishProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project: Project = await this.getProjectFromContext(context);
-		// if (utils.getAzdataApi()) {
-		// 	let publishDatabaseDialog = this.getPublishDialog(project);
+		if (utils.getAzdataApi()) {
+			let publishDatabaseDialog = this.getPublishDialog(project);
 
-		// 	publishDatabaseDialog.publish = async (proj, prof) => this.publishOrScriptProject(proj, prof, true);
-		// 	publishDatabaseDialog.publishToContainer = async (proj, prof) => this.publishToDockerContainer(proj, prof);
-		// 	publishDatabaseDialog.generateScript = async (proj, prof) => this.publishOrScriptProject(proj, prof, false);
-		// 	publishDatabaseDialog.readPublishProfile = async (profileUri) => readPublishProfile(profileUri);
-		// 	publishDatabaseDialog.savePublishProfile = async (profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions) => savePublishProfile(profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions);
+			publishDatabaseDialog.publish = async (proj, prof) => this.publishOrScriptProject(proj, prof, true);
+			publishDatabaseDialog.publishToContainer = async (proj, prof) => this.publishToDockerContainer(proj, prof);
+			publishDatabaseDialog.generateScript = async (proj, prof) => this.publishOrScriptProject(proj, prof, false);
+			publishDatabaseDialog.readPublishProfile = async (profileUri) => readPublishProfile(profileUri);
+			publishDatabaseDialog.savePublishProfile = async (profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions) => savePublishProfile(profilePath, databaseName, connectionString, sqlCommandVariableValues, deploymentOptions);
 
-		// 	publishDatabaseDialog.openDialog();
+			publishDatabaseDialog.openDialog();
 
-		// 	return publishDatabaseDialog.waitForClose();
-		// } else {
-		return this.publishDatabase(project);
-		// }
+			return publishDatabaseDialog.waitForClose();
+		} else {
+			return this.publishDatabase(project);
+		}
 	}
 
 	public getPublishDialog(project: Project): PublishDatabaseDialog {
