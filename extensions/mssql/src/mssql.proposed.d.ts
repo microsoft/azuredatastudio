@@ -22,6 +22,7 @@ declare module 'mssql' {
 
 	export interface IExtension {
 		readonly sqlAssessment: ISqlAssessmentService;
+		readonly queryStore: IQueryStoreService;
 	}
 
 	export interface ISqlAssessmentService {

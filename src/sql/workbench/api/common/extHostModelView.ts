@@ -20,6 +20,7 @@ import { IExtensionDescription } from 'vs/platform/extensions/common/extensions'
 import { ILogService } from 'vs/platform/log/common/log';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 class ModelBuilderImpl implements azdata.ModelBuilder {
 	private nextComponentId: number;
@@ -285,6 +286,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		const id = this.getNextComponentId();
 		const builder: ComponentBuilderImpl<azdata.ExecutionPlanComponent, azdata.ExecutionPlanComponentProperties> = this.getComponentBuilder(new ExecutionPlanComponentWrapper(this._proxy, this._handle, id, this.logService), id);
 
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	chart<TChartType extends azdata.ChartType, TData extends azdata.ChartData<TChartType>, TOptions extends azdata.ChartOptions<TChartType>>(): azdata.ComponentBuilder<azdata.ChartComponent<TChartType, TData, TOptions>, azdata.ChartComponentProperties<TChartType, TData, TOptions>> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.ChartComponent<TChartType, TData, TOptions>, azdata.ChartComponentProperties<TChartType, TData, TOptions>> = this.getComponentBuilder(new ChartComponentWrapper<TChartType, TData, TOptions>(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -594,16 +602,16 @@ class InternalItemConfig {
 	}
 }
 
-class ComponentWrapper implements azdata.Component {
+class ComponentWrapper extends Disposable implements azdata.Component {
 	public properties: { [key: string]: any } = {};
 	public layout: any;
 	public itemConfigs: InternalItemConfig[];
 	public customValidations: ((component: ThisType<ComponentWrapper>) => boolean | Thenable<boolean>)[] = [];
 	private _valid: boolean = true;
-	private _onValidityChangedEmitter = new Emitter<boolean>();
+	private _onValidityChangedEmitter = this._register(new Emitter<boolean>());
 	public readonly onValidityChanged = this._onValidityChangedEmitter.event;
 
-	private _onErrorEmitter = new Emitter<Error>();
+	private _onErrorEmitter = this._register(new Emitter<Error>());
 	public readonly onError: vscode.Event<Error> = this._onErrorEmitter.event;
 	protected _emitterMap = new Map<ComponentEventType, Emitter<any>>();
 
@@ -613,8 +621,15 @@ class ComponentWrapper implements azdata.Component {
 		protected _id: string,
 		protected _logService: ILogService
 	) {
+		super();
 		this.properties = {};
 		this.itemConfigs = [];
+	}
+
+	public getRegisteredEmitter<T>(): Emitter<T> {
+		let emitter = new Emitter<T>();
+		this._register(emitter);
+		return emitter;
 	}
 
 	public get id(): string {
@@ -729,6 +744,7 @@ class ComponentWrapper implements azdata.Component {
 				this._logService.warn(`Trying to add duplicate component ${item.id} to container ${this.id}`);
 				return false;
 			}
+			this._register(item);
 			return true;
 		});
 		if (items.length === 0) {
@@ -769,6 +785,7 @@ class ComponentWrapper implements azdata.Component {
 			this._logService.warn(`Trying to add duplicate component ${item.id} to container ${this.id}`);
 			return;
 		}
+		this._register(item);
 		const config = this.createAndAddItemConfig(item, itemLayout, index);
 		this._proxy.$addToContainer(this._handle, this.id, [{ itemConfig: config.toIItemConfig(), index }]).then(undefined, (err) => this.handleError(err));
 	}
@@ -784,6 +801,7 @@ class ComponentWrapper implements azdata.Component {
 		if (!itemImpl) {
 			throw new Error(nls.localize('unknownComponentType', "Unknown component type. Must use ModelBuilder to create objects"));
 		}
+		this._register(itemImpl);
 		const config = new InternalItemConfig(itemImpl, itemLayout);
 		if (index !== undefined && index >= 0 && index <= this.items.length) {
 			this.itemConfigs.splice(index, 0, config);
@@ -932,7 +950,7 @@ class CardWrapper extends ComponentWrapper implements azdata.CardComponent {
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.Card, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidClick, this.getRegisteredEmitter<any>());
 	}
 
 	public get label(): string {
@@ -1001,8 +1019,8 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.InputBox, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onEnterKeyPressed, new Emitter<string>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<any>());
+		this._emitterMap.set(ComponentEventType.onEnterKeyPressed, this.getRegisteredEmitter<string>());
 	}
 
 	public get value(): string {
@@ -1113,7 +1131,7 @@ class CheckBoxWrapper extends ComponentWrapper implements azdata.CheckBoxCompone
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.CheckBox, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<any>());
 	}
 
 	public get checked(): boolean {
@@ -1142,7 +1160,7 @@ class WebViewWrapper extends ComponentWrapper implements azdata.WebViewComponent
 		this.properties = {
 			'extensionLocation': this._extensionLocation
 		};
-		this._emitterMap.set(ComponentEventType.onMessage, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onMessage, this.getRegisteredEmitter<any>());
 	}
 
 	public get message(): any {
@@ -1176,8 +1194,8 @@ class EditorWrapper extends ComponentWrapper implements azdata.EditorComponent {
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.Editor, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onComponentCreated, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<any>());
+		this._emitterMap.set(ComponentEventType.onComponentCreated, this.getRegisteredEmitter<any>());
 	}
 
 	public get content(): string {
@@ -1229,8 +1247,8 @@ class DiffEditorWrapper extends ComponentWrapper implements azdata.DiffEditorCom
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.DiffEditor, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onComponentCreated, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<any>());
+		this._emitterMap.set(ComponentEventType.onComponentCreated, this.getRegisteredEmitter<any>());
 	}
 
 	public get contentLeft(): string {
@@ -1316,8 +1334,8 @@ class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonC
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.RadioButton, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<boolean>());
+		this._emitterMap.set(ComponentEventType.onDidClick, this.getRegisteredEmitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<boolean>());
 	}
 
 	public get name(): string {
@@ -1422,8 +1440,8 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.Table, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onCellAction, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, this.getRegisteredEmitter<any>());
+		this._emitterMap.set(ComponentEventType.onCellAction, this.getRegisteredEmitter<any>());
 	}
 
 	public get data(): any[][] {
@@ -1522,7 +1540,7 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.DropDown, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<any>());
 	}
 
 	public get value(): string | azdata.CategoryValue {
@@ -1600,8 +1618,8 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.DeclarativeTable, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, new Emitter<azdata.DeclarativeTableRowSelectedEvent>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<any>());
+		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, this.getRegisteredEmitter<azdata.DeclarativeTableRowSelectedEvent>());
 
 	}
 
@@ -1736,7 +1754,7 @@ class ListBoxWrapper extends ComponentWrapper implements azdata.ListBoxComponent
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.ListBox, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, this.getRegisteredEmitter<any>());
 	}
 
 	public get selectedRow(): number {
@@ -1764,7 +1782,7 @@ class ButtonWrapper extends ComponentWithIconWrapper implements azdata.ButtonCom
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.Button, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidClick, this.getRegisteredEmitter<any>());
 	}
 
 	public get label(): string {
@@ -1841,7 +1859,7 @@ class FileBrowserTreeComponentWrapper extends ComponentWrapper implements azdata
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.FileBrowserTree, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<any>());
 	}
 
 	public get ownerUri(): string {
@@ -1868,7 +1886,7 @@ class DivContainerWrapper extends ComponentWrapper implements azdata.DivContaine
 	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string, logService: ILogService) {
 		super(proxy, handle, type, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidClick, this.getRegisteredEmitter<any>());
 	}
 
 	public get overflowY(): string {
@@ -1920,7 +1938,7 @@ class HyperlinkComponentWrapper extends ComponentWrapper implements azdata.Hyper
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.Hyperlink, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidClick, this.getRegisteredEmitter<any>());
 	}
 
 	public get label(): string {
@@ -1948,8 +1966,8 @@ class RadioCardGroupComponentWrapper extends ComponentWrapper implements azdata.
 		super(proxy, handle, ModelComponentTypes.RadioCardGroup, id, logService);
 		this.properties = {};
 
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<azdata.RadioCardSelectionChangedEvent>());
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<azdata.RadioCardLinkClickEvent>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<azdata.RadioCardSelectionChangedEvent>());
+		this._emitterMap.set(ComponentEventType.onDidClick, this.getRegisteredEmitter<azdata.RadioCardLinkClickEvent>());
 	}
 
 	public get iconWidth(): string | undefined {
@@ -2023,7 +2041,7 @@ class ListViewComponentWrapper extends ComponentWrapper implements azdata.ListVi
 		super(proxy, handle, ModelComponentTypes.ListView, id, logService);
 		this.properties = {};
 
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<azdata.ListViewClickEvent>());
+		this._emitterMap.set(ComponentEventType.onDidClick, this.getRegisteredEmitter<azdata.ListViewClickEvent>());
 	}
 
 	public get title(): azdata.ListViewTitle {
@@ -2059,7 +2077,7 @@ class TabbedPanelComponentWrapper extends ComponentWrapper implements azdata.Tab
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.TabbedPanel, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<string>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<string>());
 	}
 
 	updateTabs(tabs: (azdata.Tab | azdata.TabGroup)[]): void {
@@ -2112,8 +2130,8 @@ class InfoBoxComponentWrapper extends ComponentWrapper implements azdata.InfoBox
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.InfoBox, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onChildClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidClick, this.getRegisteredEmitter<any>());
+		this._emitterMap.set(ComponentEventType.onChildClick, this.getRegisteredEmitter<any>());
 	}
 
 	public get style(): azdata.InfoBoxStyle {
@@ -2179,8 +2197,8 @@ class SliderComponentWrapper extends ComponentWrapper implements azdata.SliderCo
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.Slider, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<number>());
-		this._emitterMap.set(ComponentEventType.onInput, new Emitter<number>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<number>());
+		this._emitterMap.set(ComponentEventType.onInput, this.getRegisteredEmitter<number>());
 	}
 
 	public get min(): number | undefined {
@@ -2262,10 +2280,48 @@ class GroupContainerComponentWrapper extends ComponentWrapper implements azdata.
 	}
 }
 
-class ModelViewImpl implements azdata.ModelView {
+class ChartComponentWrapper<TChartType extends azdata.ChartType, TData extends azdata.ChartData<TChartType>, TOptions extends azdata.ChartOptions<TChartType>> extends ComponentWrapper implements azdata.ChartComponent<TChartType, TData, TOptions> {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.Chart, id, logService);
+		this.properties = {};
 
-	public onClosedEmitter = new Emitter<any>();
-	private _onValidityChangedEmitter = new Emitter<boolean>();
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+	}
+
+	public set chartType(v: TChartType) {
+		this.setProperty('chartType', v);
+	}
+
+	public get chartType(): TChartType {
+		return this.properties['chartType'];
+	}
+
+	public set data(v: TData) {
+		this.setProperty('data', v);
+	}
+
+	public get data(): TData {
+		return this.properties['data'];
+	}
+
+	public set options(v: TOptions) {
+		this.setProperty('options', v);
+	}
+
+	public get options(): TOptions {
+		return this.properties['options'];
+	}
+
+	public get onDidClick(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
+	}
+}
+
+class ModelViewImpl extends Disposable implements azdata.ModelView {
+
+	public onClosedEmitter = this._register(new Emitter<any>());
+	private _onValidityChangedEmitter = this._register(new Emitter<boolean>());
 	public readonly onValidityChanged = this._onValidityChangedEmitter.event;
 
 	private _modelBuilder: ModelBuilderImpl;
@@ -2280,6 +2336,7 @@ class ModelViewImpl implements azdata.ModelView {
 		_extension: IExtensionDescription,
 		logService: ILogService
 	) {
+		super();
 		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle, this._extHostModelViewTree, _extension, logService);
 	}
 
@@ -2328,7 +2385,6 @@ class ModelViewImpl implements azdata.ModelView {
 
 export class ExtHostModelView implements ExtHostModelViewShape {
 	private readonly _proxy: MainThreadModelViewShape;
-
 	private readonly _modelViews = new Map<number, ModelViewImpl>();
 	private readonly _handlers = new Map<string, (view: azdata.ModelView) => void>();
 	private readonly _handlerToExtension = new Map<string, IExtensionDescription>();

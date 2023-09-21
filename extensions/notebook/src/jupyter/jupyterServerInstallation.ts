@@ -83,6 +83,20 @@ export const requiredJupyterPkg: PythonPkgDetails = {
 	version: '1.0.0'
 };
 
+// Require notebook 6.5.6 for https://github.com/jupyter/notebook/issues/7048
+export const requiredNotebookPkg: PythonPkgDetails = {
+	name: 'notebook',
+	version: '6.5.6',
+	installExactVersion: true
+};
+
+// https://github.com/microsoft/azuredatastudio/issues/24405
+export const requiredIpykernelPkg: PythonPkgDetails = {
+	name: 'ipykernel',
+	version: '5.5.5',
+	installExactVersion: true
+};
+
 export const requiredPowershellPkg: PythonPkgDetails = {
 	name: 'powershell-kernel',
 	version: '0.1.4'
@@ -143,11 +157,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this._kernelSetupCache = new Map<string, boolean>();
 		this._requiredKernelPackages = new Map<string, PythonPkgDetails[]>();
 
-		this._requiredKernelPackages.set(constants.ipykernelDisplayName, [requiredJupyterPkg]);
-		this._requiredKernelPackages.set(constants.python3DisplayName, [requiredJupyterPkg]);
-		this._requiredKernelPackages.set(constants.powershellDisplayName, [requiredJupyterPkg, requiredPowershellPkg]);
+		this._requiredKernelPackages.set(constants.ipykernelDisplayName, [requiredJupyterPkg, requiredNotebookPkg, requiredIpykernelPkg]);
+		this._requiredKernelPackages.set(constants.python3DisplayName, [requiredJupyterPkg, requiredNotebookPkg, requiredIpykernelPkg]);
+		this._requiredKernelPackages.set(constants.powershellDisplayName, [requiredJupyterPkg, requiredPowershellPkg, requiredNotebookPkg, requiredIpykernelPkg]);
 
-		let allPackages = [requiredJupyterPkg, requiredPowershellPkg];
+		let allPackages = [requiredJupyterPkg, requiredNotebookPkg, requiredIpykernelPkg, requiredPowershellPkg];
 		this._requiredKernelPackages.set(constants.allKernelsName, allPackages);
 
 		this._requiredPackagesSet = new Set<string>();
@@ -542,7 +556,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let requiredPackages = this.getRequiredPackagesForKernel(kernelDisplayName);
 		for (let pkg of requiredPackages) {
 			let installedVersion = installedPackageMap.get(pkg.name);
-			if (!installedVersion || utils.compareVersions(installedVersion, pkg.version) < 0) {
+			if (!installedVersion || utils.compareVersions(installedVersion, pkg.version) < 0 || (pkg.installExactVersion && installedVersion !== pkg.version)) {
 				return false;
 			}
 		}
@@ -563,7 +577,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 			packages.forEach(pkg => {
 				let installedPkgVersion = pipVersionMap.get(pkg.name);
-				if (!installedPkgVersion || utils.compareVersions(installedPkgVersion, pkg.version) < 0) {
+				if (!installedPkgVersion || utils.compareVersions(installedPkgVersion, pkg.version) < 0 || (pkg.installExactVersion && installedPkgVersion !== pkg.version)) {
 					packagesToInstall.push(pkg);
 				}
 			});

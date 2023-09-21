@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
 import { addDisposableListener, EventType, EventHelper, $, isAncestor, clearNode, append } from 'vs/base/browser/dom';
-import { DisposableStore, dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable, DisposableStore, dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { IDisposableDataProvider, instanceOfIDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
@@ -53,7 +53,7 @@ const ShowFilterText: string = localize('headerFilter.showFilter', "Show Filter"
 
 export const FilterButtonWidth: number = 34;
 
-export class HeaderFilter<T extends Slick.SlickData> {
+export class HeaderFilter<T extends Slick.SlickData> extends Disposable {
 
 	public onFilterApplied = new Slick.Event<{ grid: Slick.Grid<T>, column: FilterableColumn<T> }>();
 	public onCommand = new Slick.Event<CommandEventArgs<T>>();
@@ -81,6 +81,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private listContainer?: HTMLElement;
 
 	constructor(private readonly options: ITableFilterOptions, private readonly contextViewProvider: IContextViewProvider, private readonly notificationProvider?: NotificationProvider) {
+		super();
 	}
 
 	public init(grid: Slick.Grid<T>): void {
@@ -198,10 +199,10 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		});
 
 
-		this.searchInputBox = new InputBox(append(searchRow, $('.search-input')), this.contextViewProvider, {
+		this.searchInputBox = this._register(new InputBox(append(searchRow, $('.search-input')), this.contextViewProvider, {
 			placeholder: localize('table.searchPlaceHolder', "Search"),
 			inputBoxStyles: this.options
-		});
+		}));
 		const visibleCountContainer = append(searchRow, $('.visible-count'));
 		visibleCountContainer.setAttribute('aria-live', 'polite');
 		visibleCountContainer.setAttribute('aria-atomic', 'true');
@@ -215,11 +216,11 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			countFormat: localize({ key: 'tableFilter.selectedCount', comment: ['This tells the user how many items are selected in the list'] }, "{0} Selected")
 		}, this.options);
 
-		this.searchInputBox.onDidChange(async (newString) => {
+		this._register(this.searchInputBox.onDidChange(async (newString) => {
 			this.filteredListData = this.listData.filter(element => element.value?.toUpperCase().indexOf(newString.toUpperCase()) !== -1);
 			this.list.splice(0, this.list.length, this.filteredListData);
 			this.updateSelectionState();
-		});
+		}));
 	}
 
 	private async createFilterList(): Promise<void> {
@@ -262,7 +263,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			// work item to remove the 'Error:' string check: https://github.com/microsoft/azuredatastudio/issues/15206
 			const filterItem = filterItems[i];
 			if (!filterItem || filterItem.indexOf('Error:') < 0) {
-				this.listData.push(new TableFilterListElement(filterItem, filtered));
+				let element = new TableFilterListElement(filterItem, filtered);
+				this._register(element);
+				this.listData.push(element);
 			}
 		}
 
@@ -518,11 +521,12 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	}
 }
 
-class TableFilterListElement {
-	private readonly _onCheckStateChanged = new Emitter<boolean>();
+class TableFilterListElement extends Disposable {
+	private readonly _onCheckStateChanged = this._register(new Emitter<boolean>());
 	private _checked: boolean;
 
 	constructor(val: string, checked: boolean) {
+		super();
 		this.value = val;
 		this._checked = checked;
 

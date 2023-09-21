@@ -35,7 +35,7 @@ export class ListBox extends SelectBox {
 	private contextViewProvider: IContextViewProvider;
 	private isValid: boolean;
 
-	private _onKeyDown = new Emitter<StandardKeyboardEvent>();
+	private _onKeyDown = this._register(new Emitter<StandardKeyboardEvent>());
 	public readonly onKeyDown = this._onKeyDown.event;
 
 	constructor(private readonly options: IListBoxOptions,

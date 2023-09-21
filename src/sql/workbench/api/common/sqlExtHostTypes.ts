@@ -181,7 +181,8 @@ export enum ModelComponentTypes {
 	PropertiesContainer,
 	InfoBox,
 	Slider,
-	ExecutionPlan
+	ExecutionPlan,
+	Chart
 }
 
 export enum ModelViewAction {
@@ -421,7 +422,8 @@ export enum DataProviderType {
 	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
 	DataGridProvider = 'DataGridProvider',
 	TableDesignerProvider = 'TableDesignerProvider',
-	ExecutionPlanProvider = 'ExecutionPlanProvider'
+	ExecutionPlanProvider = 'ExecutionPlanProvider',
+	ServerContextualizationProvider = 'ServerContextualizationProvider'
 }
 
 export enum DeclarativeDataType {
@@ -474,7 +476,7 @@ export enum AzureResource {
 	Sql = 1,
 	OssRdbms = 2,
 	AzureKeyVault = 3,
-	Graph = 4,
+	// 4 (formerly Azure Graph) is no longer used.
 	MicrosoftResourceManagement = 5,
 	AzureDevOps = 6,
 	MsGraph = 7,

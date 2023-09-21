@@ -187,7 +187,7 @@ export class ProfilerFilterDialog extends Modal {
 	}
 
 	private createSelectBox(container: HTMLElement, options: string[], selectedOption: string, ariaLabel: string): SelectBox {
-		const dropdown = new SelectBox(options, selectedOption, defaultSelectBoxStyles, this.contextViewService, undefined, { ariaLabel: ariaLabel });
+		const dropdown = this._register(new SelectBox(options, selectedOption, defaultSelectBoxStyles, this.contextViewService, undefined, { ariaLabel: ariaLabel }));
 		dropdown.render(container);
 		return dropdown;
 	}

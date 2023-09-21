@@ -254,7 +254,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Copies the selected data to clipboard.
 	 */
-	$copyResults(handle: number, requestParams: azdata.CopyResultsRequestParams): Thenable<void> { throw ni(); }
+	$copyResults(handle: number, requestParams: azdata.CopyResultsRequestParams): Thenable<azdata.CopyResultsRequestResult> { throw ni(); }
 
 	/**
 	 * Commits all pending edits in an edit session
@@ -355,7 +355,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Open a file browser
 	 */
-	$openFileBrowser(handle: number, ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean> { throw ni(); }
+	$openFileBrowser(handle: number, ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean, showFoldersOnly?: boolean): Thenable<boolean> { throw ni(); }
 
 
 	/**
@@ -595,6 +595,10 @@ export abstract class ExtHostDataProtocolShape {
 	 * Determines if the provided value is an execution plan and returns the appropriate file extension.
 	 */
 	$isExecutionPlan(handle: number, value: string): Thenable<azdata.executionPlan.IsExecutionPlanResult> { throw ni(); }
+	/**
+	 * Gets server context.
+	 */
+	$getServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GetServerContextualizationResult> { throw ni(); }
 }
 
 /**
@@ -687,6 +691,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerDataGridProvider(providerId: string, title: string, handle: number): void;
 	$registerTableDesignerProvider(providerId: string, handle: number): Promise<any>;
 	$registerExecutionPlanProvider(providerId: string, handle: number): void;
+	$registerServerContextualizationProvider(providerId: string, handle: number): void;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
@@ -827,10 +832,18 @@ export interface ExtHostWorkspaceShape {
 	$saveAndEnterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 }
 
+export interface ExtHostWindowShape {
+	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[], showFoldersOnly?: boolean): Promise<string | undefined>;
+}
+
 export interface MainThreadWorkspaceShape {
 	$createAndEnterWorkspace(folder: vscode.Uri, workspaceFile: vscode.Uri): Promise<void>;
 	$enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 	$saveAndEnterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
+}
+
+export interface MainThreadWindowShape {
+	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[], showFoldersOnly?: boolean): Promise<string | undefined>;
 }
 
 export interface MainThreadBackgroundTaskManagementShape extends IDisposable {

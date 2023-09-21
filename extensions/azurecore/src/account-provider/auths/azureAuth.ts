@@ -26,8 +26,13 @@ import { HttpClient } from './httpClient';
 import { getProxyEnabledHttpClient, getTenantIgnoreList, updateTenantIgnoreList } from '../../utils';
 import { errorToPromptFailedResult } from './networkUtils';
 import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
-import { AzureListOperationResponse, ErrorResponseBodyWithError, isErrorResponseBodyWithError } from '../../azureResource/utils';
+import { isErrorResponseBodyWithError } from '../../azureResource/utils';
+import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 const localize = nls.loadMessageBundle();
+
+export type GetTenantsResponseData = {
+	value: TenantResponse[];
+}
 
 export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly memdb = new MemoryDatabase<string>();
@@ -63,8 +68,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		this.redirectUri = this.metadata.settings.redirectUri;
 		this.clientId = this.metadata.settings.clientId;
 		this.resources = [
-			this.metadata.settings.armResource,
-			this.metadata.settings.graphResource,
+			this.metadata.settings.armResource
 		];
 		if (this.metadata.settings.sqlResource) {
 			this.resources.push(this.metadata.settings.sqlResource);
@@ -242,18 +246,14 @@ export abstract class AzureAuth implements vscode.Disposable {
 			Logger.verbose(`Fetching tenants with uri: ${tenantUri}`);
 			let tenantList: string[] = [];
 
-			const tenantResponse = await this.httpClient.sendGetRequestAsync<AzureListOperationResponse<TenantResponse[]> | ErrorResponseBodyWithError>(tenantUri, {
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${token}`
-				}
-			});
+			const tenantResponse = await this.makeGetRequest<GetTenantsResponseData>(tenantUri, token);
 
 			const data = tenantResponse.data;
 			if (isErrorResponseBodyWithError(data)) {
 				Logger.error(`Error fetching tenants :${data.error?.code} - ${data.error?.message}`);
 				throw new Error(`${data.error?.code} - ${data.error?.message}`);
 			}
+
 			const tenants: Tenant[] = data.value.map((tenantInfo: TenantResponse) => {
 				if (tenantInfo.displayName) {
 					tenantList.push(tenantInfo.displayName);
@@ -309,6 +309,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			|| error.errorMessage.includes(Constants.AADSTS50078)
 			|| error.errorMessage.includes(Constants.AADSTS50085)
 			|| error.errorMessage.includes(Constants.AADSTS50089)
+			|| error.errorMessage.includes(Constants.AADSTS700082)
 			|| error.errorMessage.includes(Constants.AADSTS700084);
 	}
 
@@ -476,6 +477,20 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	//#region network functions
 
+	private async makeGetRequest<T>(url: string, token: string): Promise<AxiosResponse<T>> {
+		const config: AxiosRequestConfig = {
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`
+			},
+			validateStatus: () => true // Never throw
+		};
+
+		const response: AxiosResponse = await axios.get<T>(url, config);
+		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data?.value as TenantResponse[] ?? response.data as GetTenantsResponseData }], [], url,);
+		return response;
+	}
+
 	//#endregion
 
 	//#region inconsequential
@@ -609,7 +624,7 @@ export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-
 	aud: string;
 	/**
 	 * Identifies the issuer, or "authorization server" that constructs and
-	 * returns the token. It also identifies the Azure AD tenant for which
+	 * returns the token. It also identifies the Microsoft Entra tenant for which
 	 * the user was authenticated. If the token was issued by the v2.0 endpoint,
 	 * the URI will end in /v2.0. The GUID that indicates that the user is a consumer
 	 * user from a Microsoft account is 9188040d-6c67-4c5b-b112-36a304b66dad.
@@ -627,7 +642,7 @@ export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-
 	 * account not in the same tenant as the issuer - guests, for instance.
 	 * If the claim isn't present, it means that the value of iss can be used instead.
 	 * For personal accounts being used in an organizational context (for instance,
-	 * a personal account invited to an Azure AD tenant), the idp claim may be
+	 * a personal account invited to a Microsoft Entra tenant), the idp claim may be
 	 * 'live.com' or an STS URI containing the Microsoft account tenant
 	 * 9188040d-6c67-4c5b-b112-36a304b66dad.
 	 */
@@ -660,7 +675,7 @@ export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-
 	 */
 	at_hash: string;
 	/**
-	 * An internal claim used by Azure AD to record data for token reuse. Should be ignored.
+	 * An internal claim used by Microsoft Entra ID to record data for token reuse. Should be ignored.
 	 */
 	aio: string;
 	/**

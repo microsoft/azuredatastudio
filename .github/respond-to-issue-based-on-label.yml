@@ -23,14 +23,14 @@ Needs Logs:
 # actions for Needs Logs - Azure label
 Needs Logs - Azure:
   comment: |
-    We need more info to debug your Azure Active Directory issue. If you could attach your logs to the issue (ensure no private data is in them), it would help us fix the issue much faster.
+    We need more info to debug your Microsoft Entra ID issue. If you could attach your logs to the issue (ensure no private data is in them), it would help us fix the issue much faster.
 
     - In the settings menu, find the setting titled `Azure: Logging Level` and select the `Verbose` option
     - Restart Azure Data Studio
     - Run the process that produces your error
     - Open command palette (Click **View** -> **Command Palette**)
     - Run the command: **`Developer: Open Logs Folder`**
-    - Follow this path to find the Azure Accounts log file: `[default log folder]/exthost1/output_logging_[earliest timestamp]/#-Azure Acounts.log`
+    - Follow this path to find the Azure Accounts log file: `[default log folder]/window1/exthost/output_logging_[earliest timestamp]/#-Azure Accounts.log`
     - Please attach the Azure-Accounts.log file to the issue.
 
 # actions for Out of Scope label

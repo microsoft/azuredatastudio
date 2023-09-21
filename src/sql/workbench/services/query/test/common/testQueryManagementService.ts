@@ -51,7 +51,10 @@ export class TestQueryManagementService implements IQueryManagementService {
 	parseSyntax(ownerUri: string, query: string): Promise<azdata.SyntaxParseResult> {
 		throw new Error('Method not implemented.');
 	}
-	getQueryRows(rowData: azdata.QueryExecuteSubsetParams, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
+	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<ResultSetSubset> {
+		throw new Error('Method not implemented.');
+	}
+	getQueryRowsPaged(rowData: azdata.QueryExecuteSubsetParams, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
 		throw new Error('Method not implemented.');
 	}
 	async disposeQuery(ownerUri: string): Promise<void> {
@@ -63,7 +66,7 @@ export class TestQueryManagementService implements IQueryManagementService {
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult> {
 		throw new Error('Method not implemented.');
 	}
-	copyResults(params: azdata.CopyResultsRequestParams): Promise<void> {
+	copyResults(params: azdata.CopyResultsRequestParams): Promise<azdata.CopyResultsRequestResult> {
 		throw new Error('Method not implemented.');
 	}
 	setQueryExecutionOptions(uri: string, options: azdata.QueryExecutionOptions): Promise<void> {

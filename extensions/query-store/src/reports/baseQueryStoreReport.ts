@@ -5,43 +5,47 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as path from 'path';
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
+import { ConfigureDialog } from '../settings/configureDialog';
+import { IconPathHelper } from '../common/iconHelper';
 
 export abstract class BaseQueryStoreReport {
-	protected editor: azdata.workspace.ModelViewEditor;
 	protected flexModel?: azdata.FlexContainer;
+	protected configureDialog?: ConfigureDialog;
+	protected configureButton?: azdata.ButtonComponent;
 
-	constructor(reportName: string, private reportTitle: string, protected resizeable: boolean, private extensionContext: vscode.ExtensionContext) {
-		this.editor = azdata.workspace.createModelViewEditor(reportName, { retainContextWhenHidden: true, supportsSave: false }, reportName);
+	/**
+	 * Constructor
+	 * @param reportTitle Title of report shown in toolbar
+	 * @param reportId Id of tab used in query store dashboard
+	 * @param resizeable Whether or not the sections of the report are resizeable
+	 */
+	constructor(private reportTitle: string, private reportId: string, protected resizeable: boolean) { }
+
+	public get ReportContent(): azdata.FlexContainer | undefined {
+		return this.flexModel;
 	}
 
 	/**
 	 * Creates and opens the report
 	 */
-	public async open(): Promise<void> {
-		this.editor.registerContent(async (view) => {
-			this.flexModel = <azdata.FlexContainer>view.modelBuilder.flexContainer().component();
+	public async createReport(view: azdata.ModelView): Promise<void> {
+		this.flexModel = <azdata.FlexContainer>view.modelBuilder.flexContainer().component();
 
-			const toolbar = await this.createToolbar(view);
-			this.flexModel.addItem(toolbar, { flex: 'none' });
+		const toolbar = await this.createToolbar(view);
+		this.flexModel.addItem(toolbar, { flex: 'none' });
 
-			const views = await this.createViews(view);
+		const views = await this.createViews(view);
 
-			const mainContainer = await this.createMainContainer(view, views);
+		const mainContainer = await this.createMainContainer(view, views);
 
-			this.flexModel.addItem(mainContainer, { CSSStyles: { 'width': '100%', 'height': '100%' } });
+		this.flexModel.addItem(mainContainer, { CSSStyles: { 'width': '100%', 'height': '100%' } });
 
-			this.flexModel.setLayout({
-				flexFlow: 'column',
-				height: '100%'
-			});
-
-			await view.initializeModel(this.flexModel);
+		this.flexModel.setLayout({
+			flexFlow: 'column',
+			height: '100%'
 		});
-
-		await this.editor.openEditor();
 	}
 
 	/**
@@ -103,24 +107,34 @@ export abstract class BaseQueryStoreReport {
 			CSSStyles: { 'margin-top': '5px', 'margin-bottom': '5px', 'margin-right': '15px' }
 		}).component();
 
-		const configureButton = view.modelBuilder.button().withProps({
-			label: constants.configure,
-			title: constants.configure,
-			iconPath: {
-				light: path.join(this.extensionContext.extensionPath, 'images', 'light', 'gear.svg'),
-				dark: path.join(this.extensionContext.extensionPath, 'images', 'dark', 'gear.svg')
-			}
+		// Open in New Tab button
+		const openInNewTabButton = view.modelBuilder.button().withProps({
+			label: constants.openInNewTab,
+			title: constants.openInNewTab,
+			iconPath: IconPathHelper.multipleWindows
 		}).component();
+		openInNewTabButton.enabled = true;
 
-		// TODO: enable after the configuration dialog is implemented
-		configureButton.enabled = false;
-
-		configureButton.onDidClick(() => {
-			// TODO: implement configuration dialog
-			console.error('configuration dialog not implemented')
+		openInNewTabButton.onDidClick(async () => {
+			await vscode.commands.executeCommand('queryStore.openQueryStoreDashboard', this.reportId);
 		});
 
-		await configureButton.updateCssStyles({ 'margin-top': '5px' });
+		await openInNewTabButton.updateCssStyles({ 'margin-top': '5px' });
+
+		// Configure button
+		this.configureButton = view.modelBuilder.button().withProps({
+			label: constants.configure,
+			title: constants.configure,
+			iconPath: IconPathHelper.gear
+		}).component();
+		this.configureButton.enabled = true;
+
+		this.configureButton.onDidClick(async () => {
+			this.configureDialog = new ConfigureDialog();
+			await this.configureButtonClick(this.configureDialog);
+		});
+
+		await this.configureButton.updateCssStyles({ 'margin-top': '5px' });
 
 		toolBar.addToolbarItems([
 			{
@@ -132,7 +146,10 @@ export abstract class BaseQueryStoreReport {
 				toolbarSeparatorAfter: true
 			},
 			{
-				component: configureButton
+				component: openInNewTabButton
+			},
+			{
+				component: this.configureButton
 			}
 		]);
 
@@ -140,5 +157,6 @@ export abstract class BaseQueryStoreReport {
 	}
 
 	protected abstract createViews(_view: azdata.ModelView): Promise<azdata.FlexContainer[]>;
+	protected abstract configureButtonClick(configureDialog: ConfigureDialog): Promise<void>;
 }
 

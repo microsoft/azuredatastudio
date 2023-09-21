@@ -77,8 +77,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	private _contextMenuColumns: ContextMenuColumn<{}>[] = [];
 	private _pluginsRegisterStatus: boolean[] = [];
 	private _filterPlugin: HeaderFilter<Slick.SlickData>;
-	private _onCheckBoxChanged = new Emitter<ICheckboxCellActionEventArgs>();
-	private _onButtonClicked = new Emitter<TableCellClickEventArgs<{}>>();
+	private _onCheckBoxChanged = this._register(new Emitter<ICheckboxCellActionEventArgs>());
+	private _onButtonClicked = this._register(new Emitter<TableCellClickEventArgs<{}>>());
 	public readonly onCheckBoxChanged: vsEvent<ICheckboxCellActionEventArgs> = this._onCheckBoxChanged.event;
 	public readonly onButtonClicked: vsEvent<TableCellClickEventArgs<{}>> = this._onButtonClicked.event;
 	private _iconCssMap: { [iconKey: string]: string } = {};

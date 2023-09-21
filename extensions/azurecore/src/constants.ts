@@ -53,6 +53,8 @@ export const CustomProviderSettings = 'customProviderSettings';
 
 export const CustomProviderSettingsSection = AzureSection + '.' + CustomProviderSettings;
 
+export const PackageName = 'Microsoft.azurecore';
+
 /** MSAL Account version */
 export const AccountVersion = '2.0';
 
@@ -110,6 +112,12 @@ export const AADSTS50085 = 'AADSTS50085';
  * or are revoked by the user or an admin. The app will request a new login from the user.
  */
 export const AADSTS50089 = 'AADSTS50089';
+/**
+ * ExpiredOrRevokedGrantInactiveToken - The refresh token has expired due to inactivity.
+ * The token was issued on {issueDate} and was inactive for {time}. Expected part of the token lifecycle -
+ * the user went an extended period of time without using the application, so the token was expired when the app attempted to refresh it.
+ */
+export const AADSTS700082 = 'AADSTS700082';
 /**
  * The refresh token was issued to a single page app (SPA), and therefore has a fixed, limited lifetime of {time}, which can't be extended.
  * It is now expired and a new sign in request must be sent by the SPA to the sign in page. The token was issued on {issueDate}.

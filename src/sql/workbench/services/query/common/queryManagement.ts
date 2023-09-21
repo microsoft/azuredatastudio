@@ -51,12 +51,25 @@ export interface IQueryManagementService {
 	runQueryString(ownerUri: string, queryString: string): Promise<void>;
 	runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult>;
 	parseSyntax(ownerUri: string, query: string): Promise<azdata.SyntaxParseResult>;
-	getQueryRows(rowData: azdata.QueryExecuteSubsetParams, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset>;
+	/**
+	 * Fetches the specified rows - this will fetch all the rows at once.
+	 * @param rowData The rows to fetch
+	 * @deprecated getQueryRowsPaged should be preferred as it is much more performant for large data sets
+	 */
+	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<ResultSetSubset>;
+	/**
+	 * Fetches the specified rows with paging - getting subsets of the total rows one page at a time and then returning the entire set once
+	 * completed.
+	 * @param rowData The rows to fetch
+	 * @param cancellationToken Optional cancellation token for canceling the operation while fetching rows
+	 * @param onProgressCallback Optional callback that will be called each time a page of rows is fetched
+	 */
+	getQueryRowsPaged(rowData: azdata.QueryExecuteSubsetParams, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset>;
 	disposeQuery(ownerUri: string): Promise<void>;
 	changeConnectionUri(newUri: string, oldUri: string): Promise<void>;
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult>;
 	setQueryExecutionOptions(uri: string, options: azdata.QueryExecutionOptions): Promise<void>;
-	copyResults(params: azdata.CopyResultsRequestParams): Promise<void>;
+	copyResults(params: azdata.CopyResultsRequestParams): Promise<azdata.CopyResultsRequestResult>;
 
 	// Callbacks
 	onQueryComplete(result: azdata.QueryExecuteCompleteNotificationResult): void;
@@ -95,7 +108,7 @@ export interface IQueryRequestHandler {
 	disposeQuery(ownerUri: string): Promise<void>;
 	connectionUriChanged(newUri: string, oldUri: string): Promise<void>;
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult>;
-	copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<void>;
+	copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<azdata.CopyResultsRequestResult>;
 	setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Promise<void>;
 
 	// Edit Data actions
@@ -272,7 +285,13 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public async getQueryRows(rowData: azdata.QueryExecuteSubsetParams, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
+	public async getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<ResultSetSubset> {
+		return this._runAction(rowData.ownerUri, (runner) => {
+			return runner.getQueryRows(rowData).then(r => r.resultSubset);
+		});
+	}
+
+	public async getQueryRowsPaged(rowData: azdata.QueryExecuteSubsetParams, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
 		const pageSize = 500;
 		return this._runAction(rowData.ownerUri, async (runner): Promise<ResultSetSubset> => {
 			const result = [];
@@ -345,7 +364,7 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<void> {
+	public copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<azdata.CopyResultsRequestResult> {
 		return this._runAction(requestParams.ownerUri, (runner) => {
 			return runner.copyResults(requestParams);
 		});

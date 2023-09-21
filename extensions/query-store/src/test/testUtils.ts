@@ -19,7 +19,8 @@ export function createViewContext(): TestContext {
 		onValidityChanged: undefined!,
 		valid: true,
 		validate: undefined!,
-		focus: undefined!
+		focus: undefined!,
+		dispose() { }
 	};
 
 	const components: azdata.Component[] = [];
@@ -67,9 +68,11 @@ export function createViewContext(): TestContext {
 		onValidityChanged: undefined!,
 		validate: undefined!,
 		initializeModel: () => { return Promise.resolve(); },
+		dispose() { },
 		modelBuilder: {
 			listView: undefined!,
 			radioCardGroup: undefined!,
+			chart: undefined!,
 			navContainer: undefined!,
 			divContainer: undefined!,
 			flexContainer: () => flexBuilder,

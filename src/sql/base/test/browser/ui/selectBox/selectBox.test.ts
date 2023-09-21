@@ -16,8 +16,8 @@ suite('Select Box tests', () => {
 	test('default value', () => {
 
 		const sb = new SelectBox(options, options[1].value, <ISelectBoxStyles>{}, undefined!, undefined!, undefined!);
-
 		assert(sb.value === options[1].value);
+		sb.dispose();
 	});
 
 	test('values change', () => {
@@ -34,6 +34,7 @@ suite('Select Box tests', () => {
 
 		sb.setOptions(newOptions);
 		assert(equals(sb.values, newOptions.map(s => s.value)));
+		sb.dispose();
 	});
 
 	test('the selected option changes', () => {
@@ -46,6 +47,7 @@ suite('Select Box tests', () => {
 
 		assert(sb.value === options[0].value);
 		assert(sb.label === options[0].text);
+		sb.dispose();
 	});
 
 	test('values get auto populated', () => {
@@ -53,5 +55,6 @@ suite('Select Box tests', () => {
 		const sb = new SelectBox(newOptions, undefined!, <ISelectBoxStyles>{}, undefined!, undefined!, undefined!);
 
 		assert(equals(sb.values, newOptions.map(s => s.text)));
+		sb.dispose();
 	});
 });
