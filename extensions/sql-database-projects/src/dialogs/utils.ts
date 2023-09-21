@@ -44,15 +44,6 @@ export function getPublishServerName(target: string): string {
 }
 
 /**
- * Returns the docker image place holder based on the target version
- */
-export function getDockerImagePlaceHolder(target: string): string {
-	return target === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure) ?
-		constants.dockerImagesPlaceHolder(constants.AzureSqlDbLiteDockerImageName) :
-		constants.dockerImagesPlaceHolder(SqlTargetPlatform.sqlEdge);
-}
-
-/**
  * Returns the list of image tags for given target
  * @param imageInfo docker image info
  * @param target project target version
@@ -126,17 +117,6 @@ export function getDockerBaseImages(target: string): DockerImageInfo[] {
 			},
 			tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.sqlServerDockerRepository}/tags/list`,
 			defaultTag: constants.dockerImageDefaultTag
-		}, {
-			name: `${constants.sqlServerDockerRegistry}/${constants.azureSqlEdgeDockerRepository}`,
-			displayName: constants.AzureSqlDbLiteDockerImageName,
-			agreementInfo: {
-				link: {
-					text: constants.edgeEulaAgreementTitle,
-					url: constants.sqlServerEdgeEulaLink,
-				}
-			},
-			tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.azureSqlEdgeDockerRepository}/tags/list`,
-			defaultTag: constants.dockerImageDefaultTag
 		}];
 	} else {
 		return [
@@ -151,19 +131,7 @@ export function getDockerBaseImages(target: string): DockerImageInfo[] {
 				},
 				tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.sqlServerDockerRepository}/tags/list`,
 				defaultTag: constants.dockerImageDefaultTag
-			},
-			{
-				name: `${constants.sqlServerDockerRegistry}/${constants.azureSqlEdgeDockerRepository}`,
-				displayName: SqlTargetPlatform.sqlEdge,
-				agreementInfo: {
-					link: {
-						text: constants.edgeEulaAgreementTitle,
-						url: constants.sqlServerEdgeEulaLink,
-					}
-				},
-				tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.azureSqlEdgeDockerRepository}/tags/list`,
-				defaultTag: constants.dockerImageDefaultTag
-			},
+			}
 		];
 	}
 }
