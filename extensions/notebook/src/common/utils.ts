@@ -52,6 +52,10 @@ export function executeBufferedCommand(cmd: string, options: childProcess.ExecOp
 	});
 }
 
+export function executeBufferedCommandSync(cmd: string, options: childProcess.ExecOptions): string {
+	return childProcess.execSync(cmd, options).toString();
+}
+
 export function executeStreamedCommand(cmd: string, options: childProcess.SpawnOptions, outputChannel?: vscode.OutputChannel): Thenable<void> {
 	return new Promise<void>((resolve, reject) => {
 		// Start the command
