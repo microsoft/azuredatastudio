@@ -86,7 +86,7 @@ export class TableDesignerInput extends EditorInput {
 			case Verbosity.SHORT:
 				return this._title;
 			case Verbosity.LONG:
-				// Used by tabsTitleControl as the tooltip hover, returns tab title with profile name and non defualt advanced options.
+				// Used by tabsTitleControl as the tooltip hover.
 				return this._additionalDetails + this._title.substring(this._title.lastIndexOf(' - '));
 			default:
 			case Verbosity.MEDIUM:

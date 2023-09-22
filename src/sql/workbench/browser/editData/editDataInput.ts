@@ -238,7 +238,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 			case Verbosity.SHORT:
 				return this.getName();
 			case Verbosity.LONG:
-				// Used by tabsTitleControl as the tooltip hover, returns tab title with profile name and non defualt advanced options.
+				// Used by tabsTitleControl as the tooltip hover.
 				return this.getName() + additionalOptions;
 			default:
 			case Verbosity.MEDIUM:
