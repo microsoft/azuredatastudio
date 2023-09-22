@@ -17,7 +17,7 @@ import * as constants from '../../constants/strings';
 import { MigrationStateModel, PerformanceDataSourceOptions } from '../../models/stateMachine';
 
 // TODO - "Change this to actual default path once it is available"
-const Default_PATH_FOR_START_DATA_COLLECTION = "C:\DataPointsCollectionFolder";
+const DEFAULT_PATH_FOR_START_DATA_COLLECTION = "C:\DataPointsCollectionFolder";
 
 export class SkuDataCollectionToolbar implements vscode.Disposable {
 	private _refreshSKURecommendationButton!: azdata.ButtonComponent;
