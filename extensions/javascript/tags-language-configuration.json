@@ -37,19 +37,6 @@
 			")"
 		]
 	],
-	"colorizedBracketPairs": [
-			"{",
-			"}"
-		],
-		[
-			"[",
-			"]"
-		],
-		[
-			"(",
-			")"
-		]
-	],
 	"autoClosingPairs": [
 		{
 			"open": "{",

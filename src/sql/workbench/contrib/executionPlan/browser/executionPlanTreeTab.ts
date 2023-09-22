@@ -9,8 +9,6 @@ import { localize } from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { ExecutionPlanState } from 'sql/workbench/common/editor/query/executionPlanState';
 import { TreeGrid } from 'sql/base/browser/ui/table/treeGrid';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -26,7 +24,8 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { deepClone } from 'vs/base/common/objects';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export class ExecutionPlanTreeTab extends Disposable implements IPanelTab {
 	public readonly title: string = localize('planTreeTab.title', 'Plan Tree');
@@ -52,12 +51,11 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 	private _planTreeContainers: HTMLElement[] = [];
 
 	constructor(
-		@IThemeService private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IAccessibilityService private _accessibilityService: IAccessibilityService,
 		@IQuickInputService private _quickInputService: IQuickInputService,
-		@ITableService private _tableService: ITableService
+		@IComponentContextService private _componentContextService: IComponentContextService
 	) {
 		super();
 	}
@@ -198,7 +196,7 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 
 		const selectionModel = new CellSelectionModel<Slick.SlickData>();
 
-		const treeGrid = this._register(new TreeGrid<Slick.SlickData>(tableContainer, this._accessibilityService, this._quickInputService, {
+		const treeGrid = this._register(new TreeGrid<Slick.SlickData>(tableContainer, this._accessibilityService, this._quickInputService, defaultTableStyles, {
 			columns: columns,
 			sorter: (args) => {
 				const sortColumn = args.sortCol.field;
@@ -280,7 +278,7 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 		treeGrid.registerPlugin(copyHandler);
 		treeGrid.setTableTitle(localize('topOperationsTableTitle', "Execution Plan Tree"));
 		this._treeGrids.push(treeGrid);
-		this._register(this._tableService.registerTable(treeGrid));
+		this._register(this._componentContextService.registerTable(treeGrid));
 
 		const contextMenuAction = [
 			this._register(this._instantiationService.createInstance(CopyTableData)),
@@ -345,8 +343,6 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 			});
 
 		}));
-
-		this._register(attachTableStyler(treeGrid, this._themeService));
 
 		new ResizeObserver((e) => {
 			treeGrid.layout(new DOM.Dimension(tableContainer.clientWidth, tableContainer.clientHeight));

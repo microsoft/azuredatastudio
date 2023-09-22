@@ -27,13 +27,14 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
-import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getFlavor } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { getInputBoxStyle } from 'vs/platform/theme/browser/defaultStyles';
+import { settingsTextInputBackground, settingsTextInputBorder, settingsTextInputForeground } from 'vs/workbench/contrib/preferences/common/settingsEditorColorRegistry';
 
 @Component({
 	selector: 'explorer-widget',
@@ -65,7 +66,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(IDashboardService) private readonly dashboardService: IDashboardService,
 		@Inject(IAccessibilityService) private readonly accessibilityService: IAccessibilityService,
 		@Inject(IQuickInputService) private readonly quickInputService: IQuickInputService,
-		@Inject(ITableService) private readonly tableService: ITableService,
+		@Inject(IComponentContextService) private readonly componentContextService: IComponentContextService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
 	) {
 		super(changeRef);
@@ -84,7 +85,12 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 
 		const inputOptions: IInputOptions = {
 			placeholder: placeholderLabel,
-			ariaLabel: placeholderLabel
+			ariaLabel: placeholderLabel,
+			inputBoxStyles: getInputBoxStyle({
+				inputBackground: settingsTextInputBackground,
+				inputForeground: settingsTextInputForeground,
+				inputBorder: settingsTextInputBorder
+			})
 		};
 		this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
 		this._table = new ExplorerTable(this._tableContainer.nativeElement,
@@ -101,9 +107,8 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			this.dashboardService,
 			this.accessibilityService,
 			this.quickInputService,
-			this.tableService);
+			this.componentContextService);
 		this._register(this._input);
-		this._register(attachInputBoxStyler(this._input, this.themeService));
 		this._register(this._table);
 		this._register(this._input.onDidChange(e => {
 			this._filterDelayer.trigger(async () => {

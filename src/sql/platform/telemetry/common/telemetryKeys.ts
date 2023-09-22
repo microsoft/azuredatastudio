@@ -45,8 +45,6 @@ export const enum TelemetryView {
 	ExtensionRecommendationDialog = 'ExtensionRecommendationDialog',
 	LinkedAccounts = 'LinkedAccounts',
 	Notebook = 'Notebook',
-	NotifyEncryptionDialog = 'NotifyEncryptionDialog',
-	NotifyHiddenTenantDialog = 'NotifyHiddenTenantDialog',
 	ResultsPanel = 'ResultsPanel',
 	Shell = 'Shell',
 	SqlAssessment = 'SqlAssessment',
@@ -145,6 +143,5 @@ export const enum NbTelemetryAction {
 export const enum TelemetryPropertyName {
 	ChartMaxRowCountExceeded = 'chartMaxRowCountExceeded',
 	ConnectionSource = 'connectionSource',
-	AuthLibrary = 'AuthLibrary'
 }
 

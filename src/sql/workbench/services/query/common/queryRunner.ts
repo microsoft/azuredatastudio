@@ -11,7 +11,7 @@ import { ResultSerializer, SaveFormat } from 'sql/workbench/services/query/commo
 
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import * as types from 'vs/base/common/types';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -21,7 +21,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { URI } from 'vs/base/common/uri';
 import * as perf from 'vs/base/common/performance';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-import { IGridDataProvider, getResultsString } from 'sql/workbench/services/query/common/gridDataProvider';
+import { IGridDataProvider, copySelectionToClipboard, executeCopyWithNotification, getTableHeaderString } from 'sql/workbench/services/query/common/gridDataProvider';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IRange, Range } from 'vs/editor/common/core/range';
@@ -29,6 +29,8 @@ import { BatchSummary, IQueryMessage, ResultSetSummary, QueryExecuteSubsetParams
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 /*
 * Query Runner class which handles running a query, reports the results to the content manager,
@@ -346,7 +348,7 @@ export default class QueryRunner extends Disposable {
 			if (hasShowPlan && resultSet.rowCount > 0) {
 				this._isQueryPlan = true;
 
-				this.getQueryRows(0, 1, resultSet.batchId, resultSet.id).then(e => {
+				this.getQueryRowsPaged(0, 1, resultSet.batchId, resultSet.id).then(e => {
 					if (e.rows) {
 						this._planXml.resolve(e.rows[0][0].displayValue);
 					}
@@ -371,7 +373,7 @@ export default class QueryRunner extends Disposable {
 			let hasShowPlan = !!resultSet.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 			if (hasShowPlan) {
 				this._isQueryPlan = true;
-				this.getQueryRows(0, 1, resultSet.batchId, resultSet.id).then(e => {
+				this.getQueryRowsPaged(0, 1, resultSet.batchId, resultSet.id).then(e => {
 
 					if (e.rows) {
 						let planXmlString = e.rows[0][0].displayValue;
@@ -417,8 +419,9 @@ export default class QueryRunner extends Disposable {
 
 	/**
 	 * Get more data rows from the current resultSets from the service layer
+	 * @deprecated getQueryRowsPaged should be used instead as it is much more performant
 	 */
-	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number): Promise<ResultSetSubset> {
+	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
 		let rowData: QueryExecuteSubsetParams = <QueryExecuteSubsetParams>{
 			ownerUri: this.uri,
 			resultSetIndex: resultSetIndex,
@@ -427,7 +430,22 @@ export default class QueryRunner extends Disposable {
 			batchIndex: batchIndex
 		};
 
-		return this.queryManagementService.getQueryRows(rowData).then(r => r, error => {
+		return this.queryManagementService.getQueryRows(rowData);
+	}
+
+	/**
+	 * Get more data rows from the current resultSets from the service layer with paging, fetching row data in batches until all rows are retrieved.
+	 */
+	public getQueryRowsPaged(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
+		let rowData: QueryExecuteSubsetParams = <QueryExecuteSubsetParams>{
+			ownerUri: this.uri,
+			resultSetIndex: resultSetIndex,
+			rowsCount: numberOfRows,
+			rowsStartIndex: rowStart,
+			batchIndex: batchIndex
+		};
+
+		return this.queryManagementService.getQueryRowsPaged(rowData, cancellationToken, onProgressCallback).then(r => r, error => {
 			// this._notificationService.notify({
 			// 	severity: Severity.Error,
 			// 	message: nls.localize('query.gettingRowsFailedError', 'Something went wrong getting more rows: {0}', error)
@@ -460,16 +478,27 @@ export default class QueryRunner extends Disposable {
 
 	/**
 	 * Sends a copy request
-	 * @param selection The selection range to copy
+	 * @param selections The selection range to copy
 	 * @param batchId The batch id of the result to copy from
 	 * @param resultId The result id of the result to copy from
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
-	async copyResults(selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<void> {
-		let provider = this.getGridDataProvider(batchId, resultId);
-		return provider.copyResults(selection, includeHeaders);
+	async copyResults(selections: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<azdata.CopyResultsRequestResult> {
+		return this.queryManagementService.copyResults({
+			ownerUri: this.uri,
+			batchIndex: batchId,
+			resultSetIndex: resultId,
+			includeHeaders: includeHeaders,
+			selections: selections.map(selection => {
+				return {
+					fromRow: selection.fromRow,
+					toRow: selection.toRow,
+					fromColumn: selection.fromCell,
+					toColumn: selection.toCell
+				};
+			})
+		});
 	}
-
 
 	public getColumnHeaders(batchId: number, resultId: number, range: Slick.Range): string[] | undefined {
 		let headers: string[] | undefined = undefined;
@@ -547,24 +576,50 @@ export class QueryGridDataProvider implements IGridDataProvider {
 		@INotificationService private _notificationService: INotificationService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService
+		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 	}
 
-	getRowData(rowStart: number, numberOfRows: number): Promise<ResultSetSubset> {
-		return this.queryRunner.getQueryRows(rowStart, numberOfRows, this.batchId, this.resultSetId);
+	getRowData(rowStart: number, numberOfRows: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
+		return this.queryRunner.getQueryRowsPaged(rowStart, numberOfRows, this.batchId, this.resultSetId, cancellationToken, onProgressCallback);
 	}
 
 	copyResults(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
 		return this.copyResultsAsync(selection, includeHeaders, tableView);
 	}
 
-	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
+	private async copyResultsAsync(selections: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
 		try {
-			const results = await getResultsString(this, selection, includeHeaders, tableView);
+			const providerId = this.queryRunner.getProviderId();
+			const providerSupportCopyResults = this._capabilitiesService.getCapabilities(providerId).connection.supportCopyResultsToClipboard;
+			const preferProvidersCopyHandler = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.preferProvidersCopyHandler;
+			if (preferProvidersCopyHandler && providerSupportCopyResults && (tableView === undefined || !tableView.isDataInMemory)) {
+				await this.handleCopyRequestByProvider(selections, includeHeaders);
+			} else {
+				await copySelectionToClipboard(this._clipboardService, this._notificationService, this._configurationService, this, selections, includeHeaders, tableView);
+			}
+		} catch (error) {
+			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
+		}
+	}
+
+	private async handleCopyRequestByProvider(selections: Slick.Range[], includeHeaders?: boolean): Promise<void> {
+		executeCopyWithNotification(this._notificationService, this._configurationService, selections, async () => {
+			let results = await this.queryRunner.copyResults(selections, this.batchId, this.resultSetId, this.shouldIncludeHeaders(includeHeaders));
+			let clipboardData: ClipboardData = {
+				text: results.results
+			}
+			this._clipboardService.write(clipboardData);
+		});
+	}
+
+	async copyHeaders(selection: Slick.Range[]): Promise<void> {
+		try {
+			const results = getTableHeaderString(this, selection);
 			await this._clipboardService.writeText(results);
 		} catch (error) {
-			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
+			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
 		}
 	}
 
@@ -576,6 +631,9 @@ export class QueryGridDataProvider implements IGridDataProvider {
 	}
 	shouldRemoveNewLines(): boolean {
 		return shouldRemoveNewLines(this._configurationService);
+	}
+	shouldSkipNewLineAfterTrailingLineBreak(): boolean {
+		return shouldSkipNewLineAfterTrailingLineBreak(this._configurationService);
 	}
 	getColumnHeaders(range: Slick.Range): string[] | undefined {
 		return this.queryRunner.getColumnHeaders(this.batchId, this.resultSetId, range);
@@ -609,6 +667,12 @@ export function shouldRemoveNewLines(configurationService: IConfigurationService
 	// get config copyRemoveNewLine option from vscode config
 	let removeNewLines = configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.copyRemoveNewLine;
 	return !!removeNewLines;
+}
+
+export function shouldSkipNewLineAfterTrailingLineBreak(configurationService: IConfigurationService): boolean {
+	// get config skipNewLineAfterTrailingLineBreak option from vscode config
+	let skipNewLineAfterTrailingLineBreak = configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.skipNewLineAfterTrailingLineBreak;
+	return !!skipNewLineAfterTrailingLineBreak;
 }
 
 function isRangeOrUndefined(input: string | IRange | undefined): input is IRange | undefined {

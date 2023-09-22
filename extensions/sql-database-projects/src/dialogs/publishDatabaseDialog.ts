@@ -20,7 +20,7 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { Deferred } from '../common/promise';
 import { PublishOptionsDialog } from './publishOptionsDialog';
 import { IPublishToDockerSettings, ISqlProjectPublishSettings } from '../models/deploy/publishSettings';
-import { PublishProfile } from '../models/publishProfile/publishProfile';
+import { PublishProfile, promptToSaveProfile } from '../models/publishProfile/publishProfile';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -56,7 +56,6 @@ export class PublishDatabaseDialog {
 	private connectionIsDataSource: boolean | undefined;
 	private sqlCmdVars: Map<string, string> | undefined;
 	private deploymentOptions: DeploymentOptions | undefined;
-	private profileUsed: boolean = false;
 	private serverName: string | undefined;
 	protected optionsButton: azdataType.ButtonComponent | undefined;
 	private publishOptionsDialog: PublishOptionsDialog | undefined;
@@ -215,7 +214,12 @@ export class PublishDatabaseDialog {
 					connId = connResult.connectionId!;
 				}
 				else {
-					connId = (await utils.getAzdataApi()!.connection.openConnectionDialog(undefined, connProfile)).connectionId;
+					connId = (await utils.getAzdataApi()!.connection.openConnectionDialog(undefined, connProfile, {
+						saveConnection: false,
+						showDashboard: false,
+						showConnectionDialogOnError: true,
+						showFirewallRuleOnError: true
+					})).connectionId;
 				}
 			}
 			else {
@@ -240,7 +244,7 @@ export class PublishDatabaseDialog {
 				connectionUri: await this.getConnectionUri(),
 				sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
 				deploymentOptions: await this.getDeploymentOptions(),
-				profileUsed: this.profileUsed
+				publishProfileUri: this.publishProfileUri
 			};
 
 			utils.getAzdataApi()!.window.closeDialog(this.dialog);
@@ -273,7 +277,7 @@ export class PublishDatabaseDialog {
 					connectionUri: '',
 					sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
 					deploymentOptions: await this.getDeploymentOptions(),
-					profileUsed: this.profileUsed
+					publishProfileUri: this.publishProfileUri
 				}
 			};
 
@@ -294,7 +298,7 @@ export class PublishDatabaseDialog {
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: sqlCmdVars,
 			deploymentOptions: await this.getDeploymentOptions(),
-			profileUsed: this.profileUsed
+			publishProfileUri: this.publishProfileUri
 		};
 
 		utils.getAzdataApi()!.window.closeDialog(this.dialog);
@@ -743,7 +747,12 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		this.selectConnectionButton.onDidClick(async () => {
-			let connection = await utils.getAzdataApi()!.connection.openConnectionDialog();
+			let connection = await utils.getAzdataApi()!.connection.openConnectionDialog(undefined, undefined, {
+				saveConnection: false,
+				showDashboard: false,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			});
 			this.connectionId = connection.connectionId;
 			this.serverName = connection.options['server'];
 
@@ -831,7 +840,6 @@ export class PublishDatabaseDialog {
 				this.loadProfileTextBox!.value = fileUris[0].fsPath;
 				await this.loadProfileTextBox!.updateProperty('title', fileUris[0].fsPath);
 
-				this.profileUsed = true;
 				this.publishProfileUri = fileUris[0];
 			}
 		});
@@ -850,15 +858,7 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		saveProfileAsButton.onDidClick(async () => {
-			const filePath = await vscode.window.showSaveDialog(
-				{
-					defaultUri: this.publishProfileUri ?? vscode.Uri.file(path.join(this.project.projectFolderPath, `${this.project.projectFileName}_1.publish.xml`)),
-					saveLabel: constants.save,
-					filters: {
-						'Publish Settings Files': ['publish.xml'],
-					}
-				}
-			);
+			const filePath = await promptToSaveProfile(this.project, this.publishProfileUri);
 
 			if (!filePath) {
 				return;
@@ -873,7 +873,6 @@ export class PublishDatabaseDialog {
 				TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.profileSaved);
 			}
 
-			this.profileUsed = true;
 			this.publishProfileUri = filePath;
 
 			await this.project.addNoneItem(path.relative(this.project.projectFolderPath, filePath.fsPath));

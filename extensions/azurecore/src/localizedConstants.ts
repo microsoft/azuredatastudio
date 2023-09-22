@@ -11,6 +11,8 @@ export const extensionName = localize('azurecore.extensionName', "Azure Accounts
 export const requiresReload = localize('azurecore.requiresReload', "Modifying this setting requires reloading the window for all changes to take effect.");
 export const reload = localize('azurecore.reload', "Reload");
 export const cancel = localize('azurecore.reload', "Cancel");
+export const enablePublicCloud = localize('azurecore.enablePublicCloud', "Enable Public Cloud");
+export const enablePublicCloudCamel = localize('azurecore.enablePublicCloud', "enablePublicCloud");
 
 export const australiaCentral = localize('azurecore.australiacentral', "Australia Central");
 export const australiaCentral2 = localize('azurecore.australiacentral2', "Australia Central 2");
@@ -63,18 +65,22 @@ export const location = localize('azurecore.location', "Location");
 export const subscription = localize('azurecore.subscription', "Subscription");
 export const typeIcon = localize('azurecore.typeIcon', "Type Icon");
 
-export const reloadPrompt = localize('azurecore.reloadPrompt', "Authentication Library has changed, please reload Azure Data Studio.");
+export function reloadPrompt(sectionName: string): string {
+	return localize('azurecore.reloadPrompt', "{0} setting changed, please reload Azure Data Studio.", sectionName);
+}
+export const reloadPromptCacheClear = localize('azurecore.reloadPromptCacheClear', "Token cache has been cleared successfully, please reload Azure Data Studio.");
 export const reloadChoice = localize('azurecore.reloadChoice', "Reload Azure Data Studio");
 
-export const deprecatedOption = localize('azurecore.deprecated', "Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL instead.");
 export const piiWarning = localize('azurecore.piiLogging.warning', "Warning: Azure PII Logging is enabled. Enabling this option allows personally identifiable information to be logged and should only be used for debugging purposes.");
 export const disable = localize('azurecore.disable', 'Disable');
 export const dismiss = localize('azurecore.dismiss', 'Dismiss');
+export const switchMsal = localize('azurecore.switchMsal', 'Switch to MSAL');
 
 // Azure Resource Types
 export const sqlServer = localize('azurecore.sqlServer', "SQL server");
 export const sqlDatabase = localize('azurecore.sqlDatabase', "SQL database");
-export const postgresServer = localize('azurecore.postgresServer', "Azure Database for PostgreSQL server");
+export const postgresServer = localize('azurecore.postgresServer', "Azure Database for PostgreSQL servers");
+export const postgresFlexibleServer = localize('azurecore.postgresFlexibleServer', "Azure Database for PostgreSQL flexible servers");
 export const sqlManagedInstance = localize('azurecore.sqlManagedInstance', "SQL managed instance");
 export const azureArcsqlManagedInstance = localize('azurecore.azureArcsqlManagedInstance', "SQL managed instance - Azure Arc");
 export const azureArcService = localize('azurecore.azureArcService', "Data Service - Azure Arc");
@@ -93,3 +99,4 @@ export function unableToFetchTokenError(tenant: string): string {
 
 // Error Messages
 export const azureCredStoreSaveFailedError = localize('azure.credStoreSaveFailedError', `Keys for token cache could not be saved in credential store, this may cause Azure access token persistence issues and connection instabilities. It's likely that SqlTools has reached credential storage limit on Windows, please clear at least 2 credentials that start with "Microsoft.SqlTools|" in Windows Credential Manager and reload.`);
+export const noCloudsEnabled = localize('azure.noCloudsEnabled', "No clouds are enabled, please enable a cloud to continue.");

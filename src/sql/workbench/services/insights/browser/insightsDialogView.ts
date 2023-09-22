@@ -7,7 +7,6 @@ import 'vs/css!./media/insightsDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IInsightsDialogModel, ListResource, IInsightDialogActionContext, insertValueRegex } from 'sql/workbench/services/insights/browser/insightsDialogService';
@@ -48,12 +47,13 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInsightsConfigDetails } from 'sql/platform/extensions/common/extensions';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { convertJQueryKeyDownEvent } from 'sql/base/browser/dom';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -92,17 +92,17 @@ class InsightTableView extends ViewPane {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IAccessibilityService private _accessibilityService: IAccessibilityService,
 		@IQuickInputService private _quickInputService: IQuickInputService,
-		@ITableService private readonly _tableService: ITableService
+		@IComponentContextService private readonly _componentContextService: IComponentContextService
 	) {
 		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
 	}
 
 	protected override renderBody(container: HTMLElement): void {
-		this._table = new Table(container, this._accessibilityService, this._quickInputService, {
+		this._table = new Table(container, this._accessibilityService, this._quickInputService, defaultTableStyles, {
 			columns: this.columns,
 			dataProvider: this.data
 		}, this.tableOptions);
-		this._register(this._tableService.registerTable(this._table));
+		this._register(this._componentContextService.registerTable(this._table));
 	}
 
 	protected override layoutBody(size: number): void {
@@ -306,11 +306,8 @@ export class InsightsDialogView extends Modal {
 		this._splitView.addView(topTableView, Sizing.Distribute);
 		this._splitView.addView(bottomTableView, Sizing.Distribute);
 
-		this._register(attachTableStyler(this._topTable, this._themeService));
-		this._register(attachTableStyler(this._bottomTable, this._themeService));
-
-		this._topTable.grid.onKeyDown.subscribe(e => {
-			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
+		this._topTable.grid.onKeyDown.subscribe((e: DOMEvent) => {
+			const event = convertJQueryKeyDownEvent(e);
 			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				topTableView.focus();
 				e.stopImmediatePropagation();
@@ -320,8 +317,8 @@ export class InsightsDialogView extends Modal {
 			}
 		});
 
-		this._bottomTable.grid.onKeyDown.subscribe(e => {
-			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
+		this._bottomTable.grid.onKeyDown.subscribe((e: DOMEvent) => {
+			const event = convertJQueryKeyDownEvent(e);
 			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				bottomTableView.focus();
 				e.stopImmediatePropagation();
@@ -346,7 +343,6 @@ export class InsightsDialogView extends Modal {
 	public override render() {
 		super.render();
 		this._closeButton = this.addFooterButton('Close', () => this.close());
-		this._register(attachButtonStyler(this._closeButton, this._themeService));
 		this._register(attachModalDialogStyler(this, this._themeService));
 	}
 
@@ -401,7 +397,6 @@ export class InsightsDialogView extends Modal {
 					}, 'left', true);
 					button.enabled = false;
 					this._taskButtonDisposables.push(button);
-					this._taskButtonDisposables.push(attachButtonStyler(button, this._themeService));
 				}
 			}
 		}

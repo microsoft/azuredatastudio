@@ -81,7 +81,8 @@ export function createViewContext(): ViewTestContext {
 		onValidityChanged: undefined!,
 		valid: true,
 		validate: undefined!,
-		focus: () => Promise.resolve()
+		focus: () => Promise.resolve(),
+		dispose() { }
 	};
 
 	let container = {
@@ -295,7 +296,8 @@ export function createViewContext(): ViewTestContext {
 		columns: [] as string[],
 		onRowSelected: onClick.event,
 		onCellAction: onClick.event,
-		appendData: (_data: any[][]) => undefined
+		appendData: (_data: any[][]) => undefined,
+		setActiveCell: (_row: number, _column: number) => undefined
 	});
 	let tableBuilder: azdata.ComponentBuilder<azdata.TableComponent, azdata.TableComponentProperties> = {
 		component: () => table(),
@@ -324,9 +326,11 @@ export function createViewContext(): ViewTestContext {
 		onValidityChanged: undefined!,
 		validate: undefined!,
 		initializeModel: () => { return Promise.resolve(); },
+		dispose() { },
 		modelBuilder: {
 			listView: undefined!,
 			radioCardGroup: undefined!,
+			chart: undefined!,
 			navContainer: undefined!,
 			divContainer: () => divBuilder,
 			flexContainer: () => flexBuilder,
@@ -358,7 +362,8 @@ export function createViewContext(): ViewTestContext {
 			separator: undefined!,
 			propertiesContainer: undefined!,
 			infoBox: undefined!,
-			slider: undefined!
+			slider: undefined!,
+			executionPlan: undefined!,
 		}
 	};
 	return {

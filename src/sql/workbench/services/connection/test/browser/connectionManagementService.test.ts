@@ -67,7 +67,9 @@ suite('SQL ConnectionManagementService tests', () => {
 		savePassword: true,
 		groupFullName: 'g2/g2-2',
 		groupId: 'group id',
+		serverCapabilities: undefined,
 		getOptionsKey: () => { return 'connectionId'; },
+		getOptionKeyIdNames: undefined!,
 		matches: undefined,
 		providerName: 'MSSQL',
 		options: {},
@@ -514,7 +516,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		assert.ok(called, 'expected changeGroupIdForConnectionGroup to be called on ConnectionStore');
 	});
 
-	test('findExistingConnection should find connection for connectionProfile with same info', async () => {
+	test('findExistingConnection should find connection for connectionProfile with same basic info', async () => {
 		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		let uri1 = 'connection:connectionId';
 		let options: IConnectionCompletionOptions = {
@@ -1013,12 +1015,16 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
-			//In a real scenario this would be false as it would match the first instance and not find a duplicate.
-			return Promise.resolve(false);
+		let originalProfileKey = '';
+		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((inputProfile, matcher) => {
+			let newProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), inputProfile);
+			let result = newProfile.getOptionsKey() === originalProfileKey;
+			return Promise.resolve(result);
 		});
 
 		await connect(uri1, options, true, profile);
+		let originalProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), connectionProfile);
+		originalProfileKey = originalProfile.getOptionsKey();
 		let newProfile = Object.assign({}, connectionProfile);
 		newProfile.connectionName = newname;
 		options.params.isEditConnection = true;
@@ -1102,7 +1108,6 @@ suite('SQL ConnectionManagementService tests', () => {
 		options.params.isEditConnection = true;
 		await assert.rejects(async () => await connect(uri1, options, true, newProfile));
 	});
-
 
 
 	test('failed firewall rule should open the firewall rule dialog', async () => {

@@ -74,7 +74,9 @@ suite('Insights Dialog Controller Tests', () => {
 			savePassword: true,
 			groupFullName: '',
 			groupId: '',
+			serverCapabilities: undefined,
 			getOptionsKey: () => '',
+			getOptionKeyIdNames: undefined!,
 			matches: undefined,
 			providerName: '',
 			saveProfile: true,
@@ -128,7 +130,7 @@ function getPrimedQueryRunner(data: string[][], columns: string[]): IPrimedQuery
 		];
 	});
 
-	querymock.setup(x => x.getQueryRows(It.isAnyNumber(), It.isAnyNumber(), It.isAnyNumber(), It.isAnyNumber()))
+	querymock.setup(x => x.getQueryRowsPaged(It.isAnyNumber(), It.isAnyNumber(), It.isAnyNumber(), It.isAnyNumber()))
 		.returns(x => Promise.resolve(<ResultSetSubset>{
 			rowCount: data.length,
 			rows: data.map(r => r.map(c => { return { displayValue: c }; }))

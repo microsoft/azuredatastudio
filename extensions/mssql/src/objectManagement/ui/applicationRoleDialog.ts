@@ -3,14 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { IObjectManagementService, ObjectManagement } from 'mssql';
+import { ObjectManagementDialogOptions } from './objectManagementDialogBase';
+import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterApplicationRoleDocUrl, CreateApplicationRoleDocUrl } from '../constants';
 import { isValidSQLPassword } from '../utils';
-import { DefaultMaxTableHeight } from '../../ui/dialogBase';
+import { DefaultMaxTableRowCount } from '../../ui/dialogBase';
+import { PrincipalDialogBase } from './principalDialogBase';
+import { ApplicationRoleInfo, ApplicationRoleViewInfo } from '../interfaces';
 
-export class ApplicationRoleDialog extends ObjectManagementDialogBase<ObjectManagement.ApplicationRoleInfo, ObjectManagement.ApplicationRoleViewInfo> {
+export class ApplicationRoleDialog extends PrincipalDialogBase<ApplicationRoleInfo, ApplicationRoleViewInfo> {
 	// Sections
 	private generalSection: azdata.GroupContainer;
 	private ownedSchemasSection: azdata.GroupContainer;
@@ -25,7 +27,7 @@ export class ApplicationRoleDialog extends ObjectManagementDialogBase<ObjectMana
 	private ownedSchemaTable: azdata.TableComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options);
+		super(objectManagementService, { ...options, isDatabaseLevelPrincipal: true, supportEffectivePermissions: false });
 	}
 
 	protected override postInitializeData(): void {
@@ -51,16 +53,22 @@ export class ApplicationRoleDialog extends ObjectManagementDialogBase<ObjectMana
 		return errors;
 	}
 
-	protected async initializeUI(): Promise<void> {
+	protected override async initializeUI(): Promise<void> {
+		await super.initializeUI();
 		this.initializeGeneralSection();
 		this.initializeOwnedSchemasSection();
-		this.formContainer.addItems([this.generalSection, this.ownedSchemasSection]);
+		this.formContainer.addItems([this.generalSection, this.ownedSchemasSection, this.securableSection], this.getSectionItemLayout());
 	}
 
 	private initializeGeneralSection(): void {
-		this.nameInput = this.createInputBox(localizedConstants.NameText, async (newValue) => {
+		this.nameInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.name = newValue;
-		}, this.objectInfo.name, this.options.isNewObject);
+		}, {
+			ariaLabel: localizedConstants.NameText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: this.objectInfo.name
+		});
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
 
 		this.defaultSchemaDropdown = this.createDropdown(localizedConstants.DefaultSchemaText, async (newValue) => {
@@ -84,7 +92,7 @@ export class ApplicationRoleDialog extends ObjectManagementDialogBase<ObjectMana
 			[localizedConstants.SchemaText],
 			this.viewInfo.schemas,
 			this.objectInfo.ownedSchemas,
-			DefaultMaxTableHeight,
+			DefaultMaxTableRowCount,
 			(item) => {
 				// It is not allowed to have unassigned schema.
 				return this.objectInfo.ownedSchemas.indexOf(item) === -1;

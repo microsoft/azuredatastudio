@@ -8,7 +8,7 @@ import * as errors from 'vs/base/common/errors';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachButtonStyler, attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
 import { ISelectionEvent, ITree } from 'sql/base/parts/tree/browser/tree';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
@@ -23,7 +23,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { TreeCreationUtils } from 'sql/workbench/services/objectExplorer/browser/treeCreationUtils';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
-import { IObjectExplorerService, IServerTreeView, ServerTreeViewView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { ERROR_NODE_TYPE, IObjectExplorerService, IServerTreeView, ServerTreeViewView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/services/objectExplorer/common/treeNode';
@@ -50,6 +50,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { FilterDialog } from 'sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export const CONTEXT_SERVER_TREE_VIEW = new RawContextKey<ServerTreeViewView>('serverTreeView.view', ServerTreeViewView.all);
 export const CONTEXT_SERVER_TREE_HAS_CONNECTIONS = new RawContextKey<boolean>('serverTreeView.hasConnections', false);
@@ -185,9 +186,8 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 
 		if (!this._connectionManagementService.hasRegisteredServers()) {
 			this._buttonSection = append(container, $('.button-section'));
-			const connectButton = new Button(this._buttonSection);
+			const connectButton = new Button(this._buttonSection, defaultButtonStyles);
 			connectButton.label = localize('serverTree.newConnection', "New Connection");
-			this._register(attachButtonStyler(connectButton, this._themeService));
 			this._register(connectButton.onDidClick(() => {
 				this._connectionManagementService.showConnectionDialog(undefined, {
 					showDashboard: true,
@@ -320,7 +320,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				} else {
 					// If the profile was not moved to a different group then just update the profile in the group.
 					oldProfileParent.replaceConnection(e.profile, e.oldProfileId);
-					await this._tree.updateChildren(oldProfileParent)
+					await this._tree.updateChildren(oldProfileParent);
 					await this._tree.revealSelectFocusElement(e.profile);
 					await this._tree.expand(e.profile);
 				}
@@ -332,8 +332,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				const movedConnection = <ConnectionProfile>e.source;
 				const oldParent = <ConnectionProfileGroup>this._tree.getElementById(e.oldGroupId);
 				const newParent = <ConnectionProfileGroup>this._tree.getElementById(e.newGroupId);
-				// Storing the expanded state of children of the moved connection so that they can be expanded after the move.
-				const profileExpandedState = this._tree.getExpandedState(movedConnection);
 				if (oldParent) {
 					oldParent.removeConnections([movedConnection]);
 					await this._tree.updateChildren(oldParent);
@@ -348,8 +346,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				const newConnection = this._tree.getElementById(movedConnection.id);
 				if (newConnection) {
 					await this._tree.revealSelectFocusElement(newConnection);
-					// Expanding the previously expanded children of the moved connection after the move.
-					await this._tree.expandElements(profileExpandedState);
 				}
 			}
 		}));
@@ -401,8 +397,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				const movedGroup = <ConnectionProfileGroup>e.source;
 				const oldParent = <ConnectionProfileGroup>this._tree.getElementById(e.oldGroupId);
 				const newParent = <ConnectionProfileGroup>this._tree.getElementById(e.newGroupId);
-				// Storing the expanded state of children of the moved group so that they can be expanded after the move.
-				const profileExpandedState = this._tree.getExpandedState(movedGroup);
 				oldParent.children = oldParent.children.filter(c => c.id !== movedGroup.id);
 				await this._tree.updateChildren(oldParent);
 				newParent.children.push(movedGroup);
@@ -410,8 +404,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				(<ConnectionProfileGroup>movedGroup).parentId = newParent.id;
 				await this._tree.updateChildren(newParent);
 				await this._tree.revealSelectFocusElement(movedGroup);
-				// Expanding the previously expanded children of the moved group after the move.
-				this._tree.expandElements(profileExpandedState);
 			}
 		}));
 
@@ -516,7 +508,10 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				await this._connectionManagementService.deleteConnection(profile);
 			}
 			const connectionProfile = this.getConnectionInTreeInput(profile.id);
-
+			// If the connection is not found in the tree, it means it was already deleted from the tree and we don't need to disconnect it
+			if (!connectionProfile) {
+				return;
+			}
 			// For the connection profile, we need to clear the password from the last session if the user doesn't want to save it
 			if (!connectionProfile.savePassword) {
 				connectionProfile.password = '';
@@ -595,8 +590,8 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	public async filterElementChildren(node: TreeNode): Promise<void> {
 		await FilterDialog.getFiltersForProperties(
 			node.filterProperties,
-			localize('objectExplorer.filterDialogTitle', "(Preview) Filter Settings: {0}", node.getConnectionProfile().title),
-			localize('objectExplorer.nodePath', "Node Path: {0}", node.nodePath),
+			localize('objectExplorer.filterDialogTitle', "Filter Settings"),
+			node.nodePath,
 			node.filters,
 			async (filters) => {
 				let errorListener;
@@ -928,6 +923,13 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				}
 			}
 		}
+
+		// In case of error node, we need to show the error message
+		if (node instanceof TreeNode) {
+			if (node.objectType === ERROR_NODE_TYPE) {
+				this.showError(node.label);
+			}
+		}
 	}
 
 	public getActionContext(element: ServerTreeElement): any {
@@ -951,5 +953,13 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			actionContext = element;
 		}
 		return actionContext;
+	}
+
+	public collapseAllConnections(): void {
+		const root = TreeUpdateUtils.getTreeInput(this._connectionManagementService)!;
+		const connections = ConnectionProfileGroup.getConnectionsInGroup(root);
+		connections.forEach(con => {
+			this._tree!.collapse(con, true);
+		});
 	}
 }

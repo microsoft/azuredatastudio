@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureAccount, azureResource } from 'azurecore';
+import { AzureAccount, Tenant, azureResource } from 'azurecore';
 import { IAzureResourceSubscriptionFilterService, IAzureResourceCacheService } from '../interfaces';
 
 interface AzureResourceSelectedSubscriptionsCache {
-	selectedSubscriptions: { [accountId: string]: azureResource.AzureResourceSubscription[] };
+	selectedSubscriptions: { [accountTenantId: string]: azureResource.AzureResourceSubscription[] };
 }
 
 export class AzureResourceSubscriptionFilterService implements IAzureResourceSubscriptionFilterService {
@@ -19,36 +19,44 @@ export class AzureResourceSubscriptionFilterService implements IAzureResourceSub
 		this._cacheKey = this._cacheService.generateKey('selectedSubscriptions');
 	}
 
-	public async getSelectedSubscriptions(account: AzureAccount): Promise<azureResource.AzureResourceSubscription[]> {
+	public async getSelectedSubscriptions(account: AzureAccount, tenant: Tenant): Promise<azureResource.AzureResourceSubscription[]> {
 		let selectedSubscriptions: azureResource.AzureResourceSubscription[] = [];
 
 		const cache = this._cacheService.get<AzureResourceSelectedSubscriptionsCache>(this._cacheKey);
 		if (cache) {
-			selectedSubscriptions = cache.selectedSubscriptions[account.key.accountId];
+			selectedSubscriptions = cache.selectedSubscriptions[account.key.accountId + '/' + tenant.id];
+			if (!selectedSubscriptions) {
+				let oldTenantCache = cache.selectedSubscriptions[account.key.accountId]?.filter(sub => sub.tenant === tenant.id);
+				if (oldTenantCache) {
+					await this.saveSelectedSubscriptions(account, tenant, oldTenantCache);
+				}
+			}
 		}
-
 		return selectedSubscriptions;
 	}
 
-	public async saveSelectedSubscriptions(account: AzureAccount, selectedSubscriptions: azureResource.AzureResourceSubscription[]): Promise<void> {
-		let selectedSubscriptionsCache: { [accountId: string]: azureResource.AzureResourceSubscription[] } = {};
+	public async saveSelectedSubscriptions(account: AzureAccount, tenant: Tenant, selectedSubscriptions: azureResource.AzureResourceSubscription[]): Promise<void> {
+		let selections: { [accountTenantId: string]: azureResource.AzureResourceSubscription[] } = {};
 
 		const cache = this._cacheService.get<AzureResourceSelectedSubscriptionsCache>(this._cacheKey);
 		if (cache) {
-			selectedSubscriptionsCache = cache.selectedSubscriptions;
+			selections = cache.selectedSubscriptions;
 		}
 
-		if (!selectedSubscriptionsCache) {
-			selectedSubscriptionsCache = {};
+		if (!selections) {
+			selections = {};
 		}
 
-		selectedSubscriptionsCache[account.key.accountId] = selectedSubscriptions;
+		let accountTenantId = account.key.accountId;
+		if (tenant) {
+			accountTenantId += '/' + tenant.id;
+		}
 
-		await this._cacheService.update<AzureResourceSelectedSubscriptionsCache>(this._cacheKey, { selectedSubscriptions: selectedSubscriptionsCache });
+		selections[accountTenantId] = selectedSubscriptions;
+
+		await this._cacheService.update<AzureResourceSelectedSubscriptionsCache>(this._cacheKey, { selectedSubscriptions: selections });
 
 		const filters: string[] = [];
-		for (const accountId in selectedSubscriptionsCache) {
-			filters.push(...selectedSubscriptionsCache[accountId].map((subscription) => `${accountId}/${subscription.id}/${subscription.name}`));
-		}
+		filters.push(...selections[accountTenantId].map((subscription) => `${accountTenantId}/${subscription.id}`));
 	}
 }

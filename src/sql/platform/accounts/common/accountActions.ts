@@ -40,9 +40,9 @@ export class AddAccountAction extends Action {
 		super(AddAccountAction.ID, AddAccountAction.LABEL);
 		this.class = 'add-linked-account-action';
 
-		this._addAccountCompleteEmitter = new Emitter<void>();
-		this._addAccountErrorEmitter = new Emitter<string>();
-		this._addAccountStartEmitter = new Emitter<void>();
+		this._addAccountCompleteEmitter = this._register(new Emitter<void>());
+		this._addAccountErrorEmitter = this._register(new Emitter<string>());
+		this._addAccountStartEmitter = this._register(new Emitter<void>());
 	}
 
 	public override async run(): Promise<void> {
@@ -50,7 +50,12 @@ export class AddAccountAction extends Action {
 		// Fire the event that we've started adding accounts
 		this._addAccountStartEmitter.fire();
 		try {
-			await this._accountManagementService.addAccount(this._providerId);
+			if (!this._providerId) {
+				let providerId = await this._accountManagementService.promptProvider();
+				await this._accountManagementService.addAccount(providerId);
+			} else {
+				await this._accountManagementService.addAccount(this._providerId);
+			}
 			this._addAccountCompleteEmitter.fire();
 		} catch (err) {
 			this.logService.error(`Error while adding account: ${err}`);
@@ -81,7 +86,7 @@ export class RemoveAccountAction extends Action {
 		const confirm: IConfirmation = {
 			message: localize('confirmRemoveUserAccountMessage', "Are you sure you want to remove '{0}'?", this._account.displayInfo.displayName),
 			primaryButton: localize('accountActions.yes', "Yes"),
-			secondaryButton: localize('accountActions.no', "No"),
+			cancelButton: localize('accountActions.no', "No"),
 			type: 'question'
 		};
 
@@ -123,7 +128,7 @@ export class ApplyFilterAction extends Action {
  */
 export class RefreshAccountAction extends Action {
 	public static ID = 'account.refresh';
-	public static LABEL = localize('refreshAccount', "Reenter your credentials");
+	public static LABEL = localize('refreshAccount', "Refresh your credentials");
 	public account?: azdata.Account;
 
 	constructor(

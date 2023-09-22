@@ -4,152 +4,170 @@
       "LanguageSet": "AzureKatal_Languages",
       "LocItems": [
         {
-          "SourceFile": "resources\\xlf\\en\\admin-tool-ext-win.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\admin-tool-ext-win.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.admin-tool-ext-win.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.admin-tool-ext-win.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\agent.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\agent.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.agent.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.agent.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\arc.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\arc.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.arc.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.arc.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\asde-deployment.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\asde-deployment.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.asde-deployment.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.asde-deployment.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\azcli.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\azcli.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.azcli.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.azcli.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\azurecore.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\azurecore.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.azurecore.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.azurecore.xlf.lcl",
+          "CopyOption": "LangIDOnPath",
+          "OutputPath": "resources\\xlf"
+        },
+    	{
+          "SourceFile": "resources\\xlf\\en\\Microsoft.azuremonitor.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.azuremonitor.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\cms.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\cms.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.cms.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.cms.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\dacpac.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\dacpac.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.dacpac.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.dacpac.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\data-workspace.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\data-workspace.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.data-workspace.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.data-workspace.xlf.lcl",
+          "CopyOption": "LangIDOnPath",
+          "OutputPath": "resources\\xlf"
+        },
+    	{
+          "SourceFile": "resources\\xlf\\en\\Microsoft.datavirtualization.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.datavirtualization.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\git.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\git.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\vscode.git.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\vscode.git.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\import.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\import.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.import.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.import.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\kusto.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\kusto.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.kusto.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.kusto.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\machine-learning.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\machine-learning.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.machine-learning.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.machine-learning.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\mssql.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\mssql.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.mssql.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.mssql.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\notebook.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\notebook.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.notebook.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.notebook.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\profiler.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\profiler.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.profiler.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.profiler.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\query-history.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\query-history.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.query-history.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.query-history.xlf.lcl",
+          "CopyOption": "LangIDOnPath",
+          "OutputPath": "resources\\xlf"
+        },
+    	{
+          "SourceFile": "resources\\xlf\\en\\Microsoft.query-store.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.query-store.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\resource-deployment.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\resource-deployment.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.resource-deployment.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.resource-deployment.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\schema-compare.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\schema-compare.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.schema-compare.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.schema-compare.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\server-report.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\server-report.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.server-report.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.server-report.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
-		{
-          "SourceFile": "resources\\xlf\\en\\sql-assessment.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\sql-assessment.xlf.lcl",
-          "CopyOption": "LangIDOnPath",
-          "OutputPath": "resources\\xlf"
-        },
-		{
-          "SourceFile": "resources\\xlf\\en\\sql-database-projects.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\sql-database-projects.xlf.lcl",
-          "CopyOption": "LangIDOnPath",
-          "OutputPath": "resources\\xlf"
-        },
-		{
-          "SourceFile": "resources\\xlf\\en\\sql-migration.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\sql-migration.xlf.lcl",
-          "CopyOption": "LangIDOnPath",
-          "OutputPath": "resources\\xlf"
-        },
-		{
+    {
           "SourceFile": "resources\\xlf\\en\\sql.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\sql.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\xml-language-features.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\xml-language-features.xlf.lcl",
+          "SourceFile": "resources\\xlf\\en\\Microsoft.sql-assessment.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.sql-assessment.xlf.lcl",
+          "CopyOption": "LangIDOnPath",
+          "OutputPath": "resources\\xlf"
+        },
+    	{
+          "SourceFile": "resources\\xlf\\en\\ms-mssql.sql-bindings-vscode.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\ms-mssql.sql-bindings-vscode.xlf.lcl",
+          "CopyOption": "LangIDOnPath",
+          "OutputPath": "resources\\xlf"
+        },
+		{
+          "SourceFile": "resources\\xlf\\en\\Microsoft.sql-database-projects.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.sql-database-projects.xlf.lcl",
+          "CopyOption": "LangIDOnPath",
+          "OutputPath": "resources\\xlf"
+        },
+		{
+          "SourceFile": "resources\\xlf\\en\\Microsoft.sql-migration.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.sql-migration.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         }

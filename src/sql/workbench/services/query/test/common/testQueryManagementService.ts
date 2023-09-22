@@ -10,6 +10,7 @@ import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import * as azdata from 'azdata';
 import { IRange } from 'vs/editor/common/core/range';
 import { ResultSetSubset } from 'sql/workbench/services/query/common/query';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export class TestQueryManagementService implements IQueryManagementService {
 	_serviceBrand: undefined;
@@ -53,6 +54,9 @@ export class TestQueryManagementService implements IQueryManagementService {
 	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<ResultSetSubset> {
 		throw new Error('Method not implemented.');
 	}
+	getQueryRowsPaged(rowData: azdata.QueryExecuteSubsetParams, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
+		throw new Error('Method not implemented.');
+	}
 	async disposeQuery(ownerUri: string): Promise<void> {
 		return;
 	}
@@ -60,6 +64,9 @@ export class TestQueryManagementService implements IQueryManagementService {
 		throw new Error('Method not implemented.');
 	}
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult> {
+		throw new Error('Method not implemented.');
+	}
+	copyResults(params: azdata.CopyResultsRequestParams): Promise<azdata.CopyResultsRequestResult> {
 		throw new Error('Method not implemented.');
 	}
 	setQueryExecutionOptions(uri: string, options: azdata.QueryExecutionOptions): Promise<void> {

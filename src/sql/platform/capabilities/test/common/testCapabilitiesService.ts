@@ -115,6 +115,7 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 			providerId: mssqlProviderName,
 			displayName: 'MSSQL',
 			connectionOptions: connectionProvider.concat(mssqlAdvancedOptions),
+			useFullOptions: true,
 		};
 		let pgSQLCapabilities = {
 			providerId: this.pgsqlProviderName,

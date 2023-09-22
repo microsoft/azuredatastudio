@@ -14,8 +14,7 @@ import { ExecutionPlanState } from 'sql/workbench/common/editor/query/executionP
 import { Table } from 'sql/base/browser/ui/table/table';
 import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
-import { attachInputBoxStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
-import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { ExecutionPlanViewHeader } from 'sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader';
 import { QueryResultsView } from 'sql/workbench/contrib/query/browser/queryResultsView';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
@@ -32,7 +31,9 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { filterIconClassNames, searchPlaceholder, topOperationsSearchDescription } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const TABLE_SORT_COLUMN_KEY = 'tableCostColumnForSorting';
 
@@ -61,13 +62,12 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 
 	constructor(
 		private _queryResultsView: QueryResultsView,
-		@IThemeService private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IAccessibilityService private _accessibilityService: IAccessibilityService,
 		@IQuickInputService private _quickInputService: IQuickInputService,
-		@ITableService private _tableService: ITableService
+		@IComponentContextService private _componentContextService: IComponentContextService
 	) {
 		super();
 	}
@@ -178,13 +178,12 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 
 		const headerSearchBarContainer = DOM.$('.top-operations-header-search-bar');
 		headerContainer.appendChild(headerSearchBarContainer);
-		headerContainer.classList.add('codicon', filterIconClassNames);
 
 		const topOperationsSearchInput = this._register(new InputBox(headerSearchBarContainer, this._contextViewService, {
 			ariaDescription: topOperationsSearchDescription,
-			placeholder: searchPlaceholder
+			placeholder: searchPlaceholder,
+			inputBoxStyles: defaultInputBoxStyles,
 		}));
-		this._register(attachInputBoxStyler(topOperationsSearchInput, this._themeService));
 		topOperationsSearchInput.element.classList.add('codicon', filterIconClassNames);
 
 		const header = this._register(this._instantiationService.createInstance(ExecutionPlanViewHeader, headerInfoContainer, {
@@ -242,7 +241,7 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 
 		const selectionModel = new CellSelectionModel<Slick.SlickData>({ hasRowSelector: true });
 
-		const table = this._register(new Table<Slick.SlickData>(tableContainer, this._accessibilityService, this._quickInputService, {
+		const table = this._register(new Table<Slick.SlickData>(tableContainer, this._accessibilityService, this._quickInputService, defaultTableStyles, {
 			columns: columns,
 			sorter: (args) => {
 				const column = args.sortCol.field;
@@ -404,13 +403,11 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 			});
 		}));
 
-		this._register(attachTableStyler(table, this._themeService));
-
 		new ResizeObserver((e) => {
 			table.layout(new DOM.Dimension(tableContainer.clientWidth, tableContainer.clientHeight));
 		}).observe(tableContainer);
 
-		this._register(this._tableService.registerTable(table));
+		this._register(this._componentContextService.registerTable(table));
 
 		return table;
 	}

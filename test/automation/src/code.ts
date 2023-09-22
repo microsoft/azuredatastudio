@@ -3,15 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as os from 'os';
+// import { join } from 'path'; // {{SQL CARBON EDIT}} - not used
 import * as cp from 'child_process';
-import { IElement, ILocalizedStrings, ILocaleInfo } from './driver';
-import { launch as launchPlaywrightBrowser } from './playwrightBrowser';
-import { launch as launchPlaywrightElectron } from './playwrightElectron';
-import { Logger, measureAndLog } from './logger';
+import * as os from 'os';
 import * as treekill from 'tree-kill';
-import { teardown } from './processes';
+import { IElement, ILocaleInfo, ILocalizedStrings, ILogFile } from './driver';
+import { Logger, measureAndLog } from './logger';
+import { launch as launchPlaywrightBrowser } from './playwrightBrowser';
 import { PlaywrightDriver } from './playwrightDriver';
+import { launch as launchPlaywrightElectron } from './playwrightElectron';
+import { teardown } from './processes';
 
 export interface LaunchOptions {
 	codePath?: string;
@@ -71,10 +72,9 @@ export async function launch(options: LaunchOptions): Promise<Code> {
 	if (stopped) {
 		throw new Error('Smoke test process has terminated, refusing to spawn Code');
 	}
-
 	// Browser smoke tests
 	if (options.web) {
-		const { serverProcess, driver } = await measureAndLog(launchPlaywrightBrowser(options), 'launch playwright (browser)', options.logger);
+		const { serverProcess, driver } = await measureAndLog(() => launchPlaywrightBrowser(options), 'launch playwright (browser)', options.logger);
 		registerInstance(serverProcess, options.logger, 'server');
 
 		return new Code(driver, options.logger, serverProcess);
@@ -82,7 +82,7 @@ export async function launch(options: LaunchOptions): Promise<Code> {
 
 	// Electron smoke tests (playwright)
 	else {
-		const { electronProcess, driver } = await measureAndLog(launchPlaywrightElectron(options), 'launch playwright (electron)', options.logger);
+		const { electronProcess, driver } = await measureAndLog(() => launchPlaywrightElectron(options), 'launch playwright (electron)', options.logger);
 		registerInstance(electronProcess, options.logger, 'electron');
 
 		return new Code(driver, options.logger, electronProcess);
@@ -129,8 +129,12 @@ export class Code {
 		await this.driver.dispatchKeybinding(keybinding);
 	}
 
+	async didFinishLoad(): Promise<void> {
+		return this.driver.didFinishLoad();
+	}
+
 	async exit(): Promise<void> {
-		return measureAndLog(new Promise<void>((resolve, reject) => {
+		return measureAndLog(() => new Promise<void>(resolve => {
 			const pid = this.mainProcess.pid!;
 
 			let done = false;
@@ -144,18 +148,39 @@ export class Code {
 				while (!done) {
 					retries++;
 
-					if (retries === 20) {
-						this.logger.log('Smoke test exit call did not terminate process after 10s, forcefully exiting the application...');
+					switch (retries) {
 
-						// no need to await since we're polling for the process to die anyways
-						treekill(pid, err => {
-							try {
-								process.kill(pid, 0); // throws an exception if the process doesn't exist anymore
-								this.logger.log('Failed to kill Electron process tree:', err?.message);
-							} catch (error) {
-								// Expected when process is gone
-							}
-						});
+						// after 5 / 10 seconds: try to exit gracefully again
+						case 10:
+						case 20: {
+							this.logger.log('Smoke test exit call did not terminate process after 5-10s, gracefully trying to exit the application again...');
+							this.driver.exitApplication();
+							break;
+						}
+
+						// after 20 seconds: forcefully kill
+						case 40: {
+							this.logger.log('Smoke test exit call did not terminate process after 20s, forcefully exiting the application...');
+
+							// no need to await since we're polling for the process to die anyways
+							treekill(pid, err => {
+								try {
+									process.kill(pid, 0); // throws an exception if the process doesn't exist anymore
+									this.logger.log('Failed to kill Electron process tree:', err?.message);
+								} catch (error) {
+									// Expected when process is gone
+								}
+							});
+
+							break;
+						}
+
+						// after 30 seconds: give up
+						case 60: {
+							done = true;
+							this.logger.log('Smoke test exit call did not terminate process after 30s, giving up');
+							resolve();
+						}
 					}
 
 					try {
@@ -163,12 +188,6 @@ export class Code {
 						await new Promise(resolve => setTimeout(resolve, 500));
 					} catch (error) {
 						done = true;
-						resolve();
-					}
-
-					if (retries === 60) {
-						done = true;
-						this.logger.log('Smoke test exit call did not terminate process after 30s, giving up');
 						resolve();
 					}
 				}
@@ -180,18 +199,21 @@ export class Code {
 		accept = accept || (result => textContent !== undefined ? textContent === result : !!result);
 
 		// {{SQL CARBON EDIT}} Print out found element
-		return await poll(
-			() => this.driver.getElements(windowId, selector).then(els => els.length > 0 ? Promise.resolve(els[0].textContent) : Promise.reject(new Error('Element not found for textContent'))),
-			s => accept!(typeof s.textContent === 'string' ? s.textContent : ''),
+		return await this.poll(
+			() => this.driver.getElements(selector).then(els => els.length > 0 ? Promise.resolve(els[0].textContent) : Promise.reject(new Error('Element not found for textContent'))),
+			s => accept!(typeof s === 'string' ? s : ''),
 			`get text content '${selector}'`,
 			retryCount
 		);
-		this.logger.log(`got text content element ${JSON.stringify(element)}`);
-		return element.textContent;
 	}
 
 	async waitAndClick(selector: string, xoffset?: number, yoffset?: number, retryCount: number = 200): Promise<void> {
 		await this.poll(() => this.driver.click(selector, xoffset, yoffset), () => true, `click '${selector}'`, retryCount);
+	}
+
+	// {{SQL CARBON EDIT}} - defined waitAndDoubleClick
+	async waitAndDoubleClick(selector: string): Promise<void> {
+		await this.poll(() => this.driver.doubleClick(selector), () => true, `double click '${selector}'`);
 	}
 
 	async waitForSetValue(selector: string, value: string): Promise<void> {
@@ -200,9 +222,7 @@ export class Code {
 
 	async waitForElements(selector: string, recursive: boolean, accept: (result: IElement[]) => boolean = result => result.length > 0): Promise<IElement[]> {
 		// {{SQL CARBON EDIT}} Print out found element
-		return await poll(() => this.driver.getElements(windowId, selector, recursive), accept, this.logger, `get elements '${selector}'`);
-		this.logger.log(`got elements ${elements.map(element => JSON.stringify(element)).join('\n')}`);
-		return elements;
+		return await this.poll(() => this.driver.getElements(selector, recursive), accept, `get elements '${selector}'`);
 	}
 
 	async waitForElement(selector: string, accept: (result: IElement | undefined) => boolean = result => !!result, retryCount: number = 200): Promise<IElement> {
@@ -210,6 +230,11 @@ export class Code {
 		const element = await this.poll<IElement>(() => this.driver.getElements(selector).then(els => els[0]), accept, `get element '${selector}'`, retryCount);
 		this.logger.log(`got element ${JSON.stringify(element)}`);
 		return element;
+	}
+
+	// {{SQL CARBON EDIT}} - defined waitForElementGone
+	async waitForElementGone(selector: string, accept: (result: IElement | undefined) => boolean = result => !result, retryCount: number = 200): Promise<IElement> {
+		return await this.poll<IElement>(() => this.driver.getElements(selector).then(els => els[0]), accept, `get element gone '${selector}'`, retryCount);
 	}
 
 	async waitForActiveElement(selector: string, retryCount: number = 200): Promise<void> {
@@ -232,12 +257,16 @@ export class Code {
 		await this.poll(() => this.driver.writeInTerminal(selector, value), () => true, `writeInTerminal '${selector}'`);
 	}
 
-	async getLocaleInfo(): Promise<ILocaleInfo> {
+	getLocaleInfo(): Promise<ILocaleInfo> {
 		return this.driver.getLocaleInfo();
 	}
 
-	async getLocalizedStrings(): Promise<ILocalizedStrings> {
+	getLocalizedStrings(): Promise<ILocalizedStrings> {
 		return this.driver.getLocalizedStrings();
+	}
+
+	getLogs(): Promise<ILogFile[]> {
+		return this.driver.getLogs();
 	}
 
 	private async poll<T>(

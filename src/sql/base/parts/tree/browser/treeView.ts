@@ -20,11 +20,12 @@ import { HeightMap, IViewItem } from 'sql/base/parts/tree/browser/treeViewModel'
 import * as _ from 'sql/base/parts/tree/browser/tree';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Event, Emitter } from 'vs/base/common/event';
-import { DataTransfers, StaticDND, IDragAndDropData } from 'vs/base/browser/dnd';
+import { DataTransfers, IDragAndDropData } from 'vs/base/browser/dnd';
 import { DefaultTreestyler } from './treeDefaults';
 import { Delayer, timeout } from 'vs/base/common/async';
 import { MappedNavigator } from 'sql/base/common/navigator';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { StaticDND } from 'vs/base/browser/ui/list/listView';
 
 export interface IRow {
 	element: HTMLElement | null;
@@ -446,13 +447,13 @@ export class TreeView extends HeightMap {
 	private highlightedItemWasDraggable: boolean = false;
 	private onHiddenScrollTop: number | null = null;
 
-	private readonly _onDOMFocus = new Emitter<void>();
+	private readonly _onDOMFocus = this._register(new Emitter<void>());
 	readonly onDOMFocus: Event<void> = this._onDOMFocus.event;
 
-	private readonly _onDOMBlur = new Emitter<void>();
+	private readonly _onDOMBlur = this._register(new Emitter<void>());
 	readonly onDOMBlur: Event<void> = this._onDOMBlur.event;
 
-	private readonly _onDidScroll = new Emitter<void>();
+	private readonly _onDidScroll = this._register(new Emitter<void>());
 	readonly onDidScroll: Event<void> = this._onDidScroll.event;
 
 	constructor(context: _.ITreeContext, container: HTMLElement) {

@@ -34,10 +34,10 @@ import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { attachTableFilterStyler } from 'sql/platform/theme/common/styler';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultTableFilterStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 
 export const NOTEBOOKSVIEW_SELECTOR: string = 'notebooksview-component';
@@ -113,7 +113,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		@Inject(IContextViewService) private _contextViewService: IContextViewService,
 		@Inject(IAccessibilityService) private _accessibilityService: IAccessibilityService,
 		@Inject(IQuickInputService) private _quickInputService: IQuickInputService,
-		@Inject(ITableService) private _tableService: ITableService
+		@Inject(IComponentContextService) private _componentContextService: IComponentContextService
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		let notebookCacheObjectMap = this._jobManagementService.notebookCacheObjectMap;
@@ -187,13 +187,12 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		});
 		this.rowDetail = rowDetail;
 		columns.unshift(this.rowDetail.getColumnDefinition());
-		let filterPlugin = new HeaderFilter<IItem>(this._contextViewService);
-		this._register(attachTableFilterStyler(filterPlugin, this._themeService));
+		let filterPlugin = new HeaderFilter<IItem>(defaultTableFilterStyles, this._contextViewService);
 		this.filterPlugin = filterPlugin;
 		jQuery(this._gridEl.nativeElement).empty();
 		jQuery(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
-		this._table = this._register(new Table(this._gridEl.nativeElement, this._accessibilityService, this._quickInputService, { columns }, options));
+		this._table = this._register(new Table(this._gridEl.nativeElement, this._accessibilityService, this._quickInputService, defaultTableStyles, { columns }, options));
 		this._table.grid.setData(this.dataView, true);
 		this._table.grid.onClick.subscribe((e, args) => {
 			let notebook = self.getNotebook(args);
@@ -201,7 +200,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			self._agentViewComponent.agentNotebookInfo = notebook;
 			self._agentViewComponent.showNotebookHistory = true;
 		});
-		this._register(this._tableService.registerTable(this._table));
+		this._register(this._componentContextService.registerTable(this._table));
 		this._register(this._table.onContextMenu(e => {
 			self.openContextMenu(e);
 		}));

@@ -8,13 +8,13 @@
  * being used e.g. in HTMLElement.innerHTML.
  */
 export function escape(html: string): string {
-	return html.replace(/[<|>|&|"]/g, function (match) {
+	return html.replace(/[<|>|&|"|\']/g, function (match) {
 		switch (match) {
 			case '<': return '&lt;';
 			case '>': return '&gt;';
 			case '&': return '&amp;';
 			case '"': return '&quot;';
-			case '\'': return '&#39';
+			case '\'': return '&#39;';
 			default: return match;
 		}
 	});

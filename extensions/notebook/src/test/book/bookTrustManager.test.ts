@@ -182,7 +182,7 @@ describe('BookTrustManagerTests', function () {
 					should(isNotebookTrustedBeforeChange).be.false('Notebook should NOT be trusted');
 
 					// add another book subfolder
-					bookTrustManager.setBookAsTrusted('/SubFolder2/', true);
+					await bookTrustManager.setBookAsTrusted('/SubFolder2/', true);
 
 					let isNotebookTrustedAfterChange = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
@@ -211,7 +211,7 @@ describe('BookTrustManagerTests', function () {
 				});
 
 				it('should NOT trust notebook inside trusted subfolder when absent in table of contents ', async () => {
-					bookTrustManager.setBookAsTrusted('/temp/SubFolder/', true);
+					await bookTrustManager.setBookAsTrusted('/temp/SubFolder/', true);
 
 					let notebookUri = run.book1.notInTocNb;
 					let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
@@ -221,8 +221,6 @@ describe('BookTrustManagerTests', function () {
 			});
 		});
 	});
-
-
 
 	describe('TrustingInFolder', () => {
 
@@ -331,7 +329,7 @@ describe('BookTrustManagerTests', function () {
 				});
 
 				it('should trust notebooks in a trusted book in a folder', async () => {
-					bookTrustManager.setBookAsTrusted('/temp/SubFolder/', true);
+					await bookTrustManager.setBookAsTrusted('/temp/SubFolder/', true);
 
 					let notebookUri1 = run.book1.notebook1;
 					let notebookUri2 = run.book1.notebook2;
@@ -346,7 +344,7 @@ describe('BookTrustManagerTests', function () {
 
 				it('should NOT trust a notebook in an untrusted book in a folder', async () => {
 					//Set book as not trusted before running test
-					bookTrustManager.setBookAsTrusted('/temp/SubFolder2/', false);
+					await bookTrustManager.setBookAsTrusted('/temp/SubFolder2/', false);
 
 					let notebookUri = run.book2.notebook1;
 					let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
@@ -356,13 +354,13 @@ describe('BookTrustManagerTests', function () {
 
 				it('should trust notebook after book has been added to a folder', async () => {
 					//Set book as not trusted before running test
-					bookTrustManager.setBookAsTrusted('/temp/SubFolder2/', false);
+					await bookTrustManager.setBookAsTrusted('/temp/SubFolder2/', false);
 					let notebookUri = run.book2.notebook1;
 					let isNotebookTrustedBeforeChange = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
 					should(isNotebookTrustedBeforeChange).be.false('Notebook should NOT be trusted');
 
-					bookTrustManager.setBookAsTrusted('/temp/SubFolder2/', true);
+					await bookTrustManager.setBookAsTrusted('/temp/SubFolder2/', true);
 
 					let isNotebookTrustedAfterChange = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
@@ -370,8 +368,8 @@ describe('BookTrustManagerTests', function () {
 				});
 
 				it('should NOT trust a notebook when removing all books from folders', async () => {
-					bookTrustManager.setBookAsTrusted('/temp/SubFolder/', true);
-					bookTrustManager.setBookAsTrusted('/temp/SubFolder2/', true);
+					await bookTrustManager.setBookAsTrusted('/temp/SubFolder/', true);
+					await bookTrustManager.setBookAsTrusted('/temp/SubFolder2/', true);
 					let notebookUri = run.book1.notebook1;
 					let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 					let notebook2Uri = run.book2.notebook1;
@@ -397,7 +395,7 @@ describe('BookTrustManagerTests', function () {
 				});
 
 				it('should NOT trust notebook inside trusted subfolder when absent in table of contents ', async () => {
-					bookTrustManager.setBookAsTrusted('/temp/SubFolder/', true);
+					await bookTrustManager.setBookAsTrusted('/temp/SubFolder/', true);
 
 					let notebookUri = run.book1.notInTocNb;
 					let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);

@@ -7,7 +7,7 @@ import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResult
 import { EditDataInput } from 'sql/workbench/browser/editData/editDataInput';
 import { ConnectionType, IConnectableInput, IConnectionCompletionOptions, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService, INewSqlEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
+import { UntitledQueryEditorInput } from 'sql/workbench/browser/editor/query/untitledQueryEditorInput';
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -60,8 +60,8 @@ export class QueryEditorService implements IQueryEditorService {
 		const mode = this._connectionManagementService.getProviderLanguageMode(connectionProviderName);
 		const fileInput = await this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, languageId: mode }) as UntitledTextEditorInput;
 		let untitledEditorModel = await fileInput.resolve();
-		if (options.initalContent) {
-			untitledEditorModel.textEditorModel.setValue(options.initalContent);
+		if (options.initialContent) {
+			untitledEditorModel.textEditorModel.setValue(options.initialContent);
 			if (options.dirty === false || (options.dirty === undefined && !this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').promptToSaveGeneratedFiles)) {
 				(untitledEditorModel as UntitledTextEditorModel).setDirty(false);
 			}

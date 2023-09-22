@@ -11,6 +11,7 @@ import { IDragAndDropData } from 'vs/base/browser/dnd';
 import { ITreeDragAndDrop, ITreeDragOverReaction, TreeDragOverReactions } from 'vs/base/browser/ui/tree/tree';
 import { ServerTreeDragAndDrop } from 'sql/workbench/services/objectExplorer/browser/dragAndDropController';
 import { ServerTreeElement, AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 /**
  * Implements drag and drop for the server tree
@@ -22,8 +23,9 @@ export class AsyncServerTreeDragAndDrop implements ITreeDragAndDrop<ServerTreeEl
 
 	constructor(
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@INotificationService notificationService: INotificationService
 	) {
-		this._dragAndDrop = new ServerTreeDragAndDrop(connectionManagementService);
+		this._dragAndDrop = new ServerTreeDragAndDrop(connectionManagementService, notificationService);
 	}
 
 	/**

@@ -18,12 +18,21 @@
 	border-width: 1px;
 }
 
-.modal:not(.flyout-dialog):not(.callout-dialog) .modal-dialog {
+.modal.normal-dialog .modal-dialog {
 	margin: auto;
 	width: 640px;
-	max-height: 480px;
 }
 
+.modal.normal-dialog .modal-dialog .modal-content {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.modal.normal-dialog .modal-dialog .modal-content .modal-body {
+	flex: 1 1 auto;
+	overflow-y: auto;
+}
 .modal .modal-header {
 	padding: 15px;
 }

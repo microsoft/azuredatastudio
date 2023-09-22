@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 .error-dialog {
-	padding: 15px;
-	overflow: auto;
-	height: 210px;
+	padding: 10px;
+	height: calc(100% - 20px);
 }
 
 .error-dialog .codicon.error, .error-dialog .codicon.warning , .error-dialog .codicon.info {

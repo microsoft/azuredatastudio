@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Action } from 'vs/base/common/actions';
+import { Action, toAction } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { Table } from 'sql/base/browser/ui/table/table';
@@ -23,7 +23,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { getChartMaxRowCount, notifyMaxRowCountExceeded } from 'sql/workbench/contrib/charts/browser/utils';
 import { IEncodingSupport } from 'vs/workbench/services/textfile/common/textfiles';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
@@ -43,6 +43,10 @@ function mapForNumberColumn(ranges: Slick.Range[]): Slick.Range[] {
 		return undefined;
 	}
 }
+
+const ExcelSpecUrl = 'https://support.microsoft.com/office/excel-specifications-and-limits-1672b34d-7043-467e-8e27-269d656771c3';
+const ExcelRowLimit: number = 1048576;
+const ExcelColumnLimit: number = 16384;
 
 export class SaveResultAction extends Action {
 	public static SAVECSV_ID = 'grid.saveAsCsv';
@@ -72,11 +76,35 @@ export class SaveResultAction extends Action {
 		private format: SaveFormat,
 		@INotificationService private notificationService: INotificationService,
 		@IEditorService private editorService: IEditorService,
+		@IOpenerService private openerService: IOpenerService
 	) {
 		super(id, label, icon);
 	}
 
 	public override async run(context: IGridActionContext): Promise<void> {
+		if (!context.gridDataProvider.canSerialize) {
+			this.notificationService.warn(localize('saveToFileNotSupported', "Save to file is not supported by the backing data source"));
+			return;
+		}
+
+		if (this.format === SaveFormat.EXCEL && (context.table.getData().getLength() > ExcelRowLimit || context.table.columns.length > ExcelColumnLimit)) {
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: localize('excelLimitExceededError', "The number of rows or columns in the table has exceeded the Excel limits. Please try a different format instead."),
+				actions: {
+					primary: [
+						toAction({
+							id: 'openExcelSpecs',
+							label: localize('openExcelSpecs', "View Excel specifications"),
+							run: () => {
+								this.openerService.open(ExcelSpecUrl);
+							}
+						})
+					]
+				}
+			});
+			return;
+		}
 
 		const activeEditor = this.editorService.activeEditorPane as unknown as IEncodingSupport;
 		if (typeof activeEditor.getEncoding === 'function' && activeEditor.getEncoding() !== 'utf8') {
@@ -87,10 +115,6 @@ export class SaveResultAction extends Action {
 			});
 		}
 
-		if (!context.gridDataProvider.canSerialize) {
-			this.notificationService.warn(localize('saveToFileNotSupported', "Save to file is not supported by the backing data source"));
-			return;
-		}
 		try {
 			await context.gridDataProvider.serializeResults(this.format, mapForNumberColumn(context.selection));
 		} catch (error) {
@@ -101,7 +125,7 @@ export class SaveResultAction extends Action {
 }
 
 export class CopyResultAction extends Action {
-	public static COPY_ID = 'grid.copySelection';
+	public static COPY_ID = 'editor.action.clipboardCopyAction';
 	public static COPY_LABEL = localize('copySelection', "Copy");
 
 	public static COPYWITHHEADERS_ID = 'grid.copyWithHeaders';
@@ -124,22 +148,17 @@ export class CopyResultAction extends Action {
 }
 
 export class CopyHeadersAction extends Action {
-	private static ID = 'grid.copyHeaders';
+	public static ID = 'grid.copyHeaders';
 	private static LABEL = localize('copyHeaders', 'Copy Headers');
 
-	constructor(
-		@IClipboardService private clipboardService: IClipboardService
-	) {
+	constructor() {
 		super(CopyHeadersAction.ID, CopyHeadersAction.LABEL);
 	}
 
 	public override async run(context: IGridActionContext): Promise<void> {
-		// Starting at index 1 to ignore the first column of row numbers
-		const columnHeaders = context.table.columns.slice(1, context.table.columns.length)
-			.map(c => c.name ? c.name : '')
-			.join(',');
+		const selection = mapForNumberColumn(context.selection);
+		await context.gridDataProvider.copyHeaders(selection);
 
-		await this.clipboardService.writeText(columnHeaders);
 	}
 }
 

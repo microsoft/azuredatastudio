@@ -20,7 +20,7 @@ import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType'
 import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
 import { createObjectExplorerServiceMock } from 'sql/workbench/services/objectExplorer/test/browser/testObjectExplorerService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { TestTree } from 'sql/workbench/test/treeMock';
+import { TestTree } from 'sql/workbench/test/browser/parts/tree/treeMock';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
@@ -58,7 +58,7 @@ const treeNode = new TreeNode(NodeType.Database, '', 'db node', false, '', '', '
 const oeActionArgs: ObjectExplorerActionsContext = { connectionProfile: connection, isConnectionNode: false, nodeInfo: nodeInfo };
 
 let instantiationService: IInstantiationService;
-let logServiceMock: TypeMoq.Mock<ILogService>;
+let logServiceMock: TypeMoq.Mock<NullLogService>;
 let treeMock: TypeMoq.Mock<TestTree>;
 
 suite('Scripting Actions', () => {

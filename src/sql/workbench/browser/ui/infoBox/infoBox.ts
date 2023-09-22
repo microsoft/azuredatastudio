@@ -7,8 +7,6 @@ import 'vs/css!./media/infoBox';
 import * as azdata from 'azdata';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { alert, status } from 'vs/base/browser/ui/aria/aria';
-import { IThemable } from 'vs/base/common/styler';
-import { Color } from 'vs/base/common/color';
 import * as DOM from 'vs/base/browser/dom';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Codicon } from 'vs/base/common/codicons';
@@ -16,12 +14,13 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ThemeIcon } from 'vs/base/common/themables';
 
 export interface IInfoBoxStyles {
-	informationBackground?: Color;
-	warningBackground?: Color;
-	errorBackground?: Color;
-	successBackground?: Color;
+	informationBackground: string | undefined;
+	warningBackground: string | undefined;
+	errorBackground: string | undefined;
+	successBackground: string | undefined;
 }
 
 export type InfoBoxStyle = 'information' | 'warning' | 'error' | 'success';
@@ -35,7 +34,7 @@ export interface InfoBoxOptions {
 	clickableButtonAriaLabel?: string;
 }
 
-export class InfoBox extends Disposable implements IThemable {
+export class InfoBox extends Disposable {
 	private _imageElement: HTMLDivElement;
 	private _textElement: HTMLDivElement;
 	private _infoBoxElement: HTMLDivElement;
@@ -43,7 +42,6 @@ export class InfoBox extends Disposable implements IThemable {
 	private _text = '';
 	private _links: azdata.LinkArea[] = [];
 	private _infoBoxStyle: InfoBoxStyle = 'information';
-	private _styles: IInfoBoxStyles;
 	private _announceText: boolean = false;
 	private _isClickable: boolean = false;
 	private _clickableButtonAriaLabel: string;
@@ -58,6 +56,7 @@ export class InfoBox extends Disposable implements IThemable {
 
 	constructor(
 		container: HTMLElement,
+		private readonly _styles: IInfoBoxStyles,
 		options: InfoBoxOptions | undefined,
 		@IOpenerService private _openerService: IOpenerService,
 		@ILogService private _logService: ILogService
@@ -72,7 +71,7 @@ export class InfoBox extends Disposable implements IThemable {
 		this._infoBoxElement.appendChild(this._imageElement);
 		this._infoBoxElement.appendChild(this._textElement);
 		this._clickableIndicator = DOM.$('a');
-		this._clickableIndicator.classList.add('infobox-clickable-arrow', ...Codicon.arrowRight.classNamesArray);
+		this._clickableIndicator.classList.add('infobox-clickable-arrow', ...ThemeIcon.asClassNameArray(Codicon.arrowRight));
 		this._infoBoxElement.appendChild(this._clickableIndicator);
 
 		if (options) {
@@ -84,11 +83,6 @@ export class InfoBox extends Disposable implements IThemable {
 			this.clickableButtonAriaLabel = options.clickableButtonAriaLabel;
 		}
 		this.updateClickableState();
-	}
-
-	public style(styles: IInfoBoxStyles): void {
-		this._styles = styles;
-		this.updateStyle();
 	}
 
 	public get announceText(): boolean {
@@ -265,24 +259,22 @@ export class InfoBox extends Disposable implements IThemable {
 	}
 
 	private updateStyle(): void {
-		if (this._styles) {
-			let backgroundColor: Color;
-			switch (this.infoBoxStyle) {
-				case 'error':
-					backgroundColor = this._styles.errorBackground;
-					break;
-				case 'warning':
-					backgroundColor = this._styles.warningBackground;
-					break;
-				case 'success':
-					backgroundColor = this._styles.successBackground;
-					break;
-				default:
-					backgroundColor = this._styles.informationBackground;
-					break;
-			}
-			this._infoBoxElement.style.backgroundColor = backgroundColor.toString();
+		let backgroundColor: string | undefined;
+		switch (this.infoBoxStyle) {
+			case 'error':
+				backgroundColor = this._styles.errorBackground;
+				break;
+			case 'warning':
+				backgroundColor = this._styles.warningBackground;
+				break;
+			case 'success':
+				backgroundColor = this._styles.successBackground;
+				break;
+			default:
+				backgroundColor = this._styles.informationBackground;
+				break;
 		}
+		this._infoBoxElement.style.backgroundColor = backgroundColor;
 	}
 
 	private updateClickableState(): void {

@@ -20,8 +20,6 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { attachButtonStyler, attachInputBoxStyler, attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import * as DOM from 'vs/base/browser/dom';
 import * as strings from 'vs/base/common/strings';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
@@ -32,14 +30,17 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export class FileBrowserDialog extends Modal {
 	private _viewModel: FileBrowserViewModel;
 	private _body: HTMLElement;
 	private _filePathInputBox: InputBox;
 	private _fileFilterSelectBox: SelectBox;
+	private _fileFilterRow: HTMLElement;
+	private _originalFilterDisplay: string;
 	private _okButton: Button;
-	private _cancelButton: Button;
 	private _onOk = new Emitter<string>();
 	public onOk: Event<string> = this._onOk.event;
 
@@ -81,8 +82,6 @@ export class FileBrowserDialog extends Modal {
 			this.backButton.onDidClick(() => {
 				this.close();
 			});
-
-			this._register(attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND }));
 		}
 
 		this._treeContainer = DOM.append(this._body, DOM.$('.tree-view'));
@@ -93,18 +92,21 @@ export class FileBrowserDialog extends Modal {
 		let pathLabel = localize('filebrowser.filepath', "Selected path");
 		let pathBuilder = DialogHelper.appendRow(tableContainer, pathLabel, 'file-input-label', 'file-input-box');
 		this._filePathInputBox = new InputBox(pathBuilder, this._contextViewService, {
-			ariaLabel: pathLabel
+			ariaLabel: pathLabel,
+			inputBoxStyles: defaultInputBoxStyles,
 		});
 
 		let filterLabel = localize('fileFilter', "Files of type");
-		this._fileFilterSelectBox = new SelectBox(['*'], '*', this._contextViewService);
+		this._fileFilterSelectBox = this._register(new SelectBox(['*'], '*', defaultSelectBoxStyles, this._contextViewService));
 		this._fileFilterSelectBox.setAriaLabel(filterLabel);
 		let filterBuilder = DialogHelper.appendRow(tableContainer, filterLabel, 'file-input-label', 'file-input-box');
 		DialogHelper.appendInputSelectBox(filterBuilder, this._fileFilterSelectBox);
+		this._fileFilterRow = tableContainer.childNodes[1] as HTMLElement;
+		this._originalFilterDisplay = this._fileFilterRow.style.display;
 
 		this._okButton = this.addFooterButton(localize('fileBrowser.ok', "OK"), () => this.ok());
 		this._okButton.enabled = false;
-		this._cancelButton = this.addFooterButton(localize('fileBrowser.discard', "Discard"), () => this.close(), 'right', true);
+		this.addFooterButton(localize('fileBrowser.discard', "Discard"), () => this.close(), 'right', true);
 
 		this.registerListeners();
 		this.updateTheme();
@@ -114,10 +116,17 @@ export class FileBrowserDialog extends Modal {
 		expandPath: string,
 		fileFilters: [{ label: string, filters: string[] }],
 		fileValidationServiceType: string,
+		showFoldersOnly?: boolean
 	): void {
-		this._viewModel.initialize(ownerUri, expandPath, fileFilters, fileValidationServiceType);
-		this._fileFilterSelectBox.setOptions(this._viewModel.formattedFileFilters);
-		this._fileFilterSelectBox.select(0);
+		this._viewModel.initialize(ownerUri, expandPath, fileFilters, fileValidationServiceType, showFoldersOnly);
+		this._viewModel.openFileBrowser(0, false).catch(err => onUnexpectedError(err));
+		if (showFoldersOnly) {
+			this._fileFilterSelectBox.setOptions([]);
+			this._fileFilterRow.style.display = 'none';
+		} else {
+			this._fileFilterSelectBox.setOptions(this._viewModel.formattedFileFilters, 0);
+			this._fileFilterRow.style.display = this._originalFilterDisplay;
+		}
 		this._filePathInputBox.value = expandPath;
 		this._isFolderSelected = true;
 		this.enableOkButton();
@@ -127,12 +136,11 @@ export class FileBrowserDialog extends Modal {
 		this._fileBrowserTreeView = this._instantiationService.createInstance(FileBrowserTreeView);
 		this._fileBrowserTreeView.setOnClickedCallback((arg) => this.onClicked(arg));
 		this._fileBrowserTreeView.setOnDoubleClickedCallback((arg) => this.onDoubleClicked(arg));
-		this._viewModel.openFileBrowser(0, false).catch(err => onUnexpectedError(err));
 	}
 
 	/* enter key */
 	protected override onAccept() {
-		if (this._okButton.enabled === true) {
+		if (this._okButton.enabled) {
 			this.ok();
 		}
 	}
@@ -143,7 +151,7 @@ export class FileBrowserDialog extends Modal {
 	}
 
 	private enableOkButton() {
-		if (strings.isFalsyOrWhitespace(this._selectedFilePath) || this._isFolderSelected === true) {
+		if (strings.isFalsyOrWhitespace(this._selectedFilePath) || (this._isFolderSelected && !this._viewModel.showFoldersOnly)) {
 			this._okButton.enabled = false;
 		} else {
 			this._okButton.enabled = true;
@@ -218,22 +226,17 @@ export class FileBrowserDialog extends Modal {
 	}
 
 	private registerListeners(): void {
-		this._register(this._fileFilterSelectBox.onDidSelect(selectData => {
-			this.onFilterSelectChanged(selectData.index).catch(err => onUnexpectedError(err));
-		}));
+		if (this._fileFilterSelectBox) {
+			this._register(this._fileFilterSelectBox.onDidSelect(selectData => {
+				this.onFilterSelectChanged(selectData.index).catch(err => onUnexpectedError(err));
+			}));
+		}
 		this._register(this._filePathInputBox.onDidChange(e => {
 			this.onFilePathChange(e);
 		}));
 		this._register(this._filePathInputBox.onLoseFocus((params: OnLoseFocusParams) => {
 			this.onFilePathBlur(params).catch(err => onUnexpectedError(err));
 		}));
-
-		// Theme styler
-		this._register(attachInputBoxStyler(this._filePathInputBox, this._themeService));
-		this._register(attachSelectBoxStyler(this._fileFilterSelectBox, this._themeService));
-		this._register(attachButtonStyler(this._okButton, this._themeService));
-		this._register(attachButtonStyler(this._cancelButton, this._themeService));
-
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme()));
 	}
 

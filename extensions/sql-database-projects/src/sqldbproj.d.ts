@@ -104,7 +104,8 @@ declare module 'sqldbproj' {
 		externalStreamingJob = 'externalStreamingJob',
 		folder = 'folder',
 		preDeployScript = 'preDeployScript',
-		postDeployScript = 'postDeployScript'
+		postDeployScript = 'postDeployScript',
+		publishProfile = 'publishProfile'
 	}
 
 	/**
@@ -151,6 +152,12 @@ declare module 'sqldbproj' {
 		 * @param relativePath
 		 */
 		addPostDeploymentScript(relativePath: string): Promise<void>;
+
+		/**
+		 * Adds a none item that is not included in "Build"
+		 * @param relativePath
+		 */
+		addNoneItem(relativePath: string): Promise<void>;
 
 		/**
 		 * Add a SQL object script that will be included in the schema
@@ -314,7 +321,9 @@ declare module 'sqldbproj' {
 		sqlServer2022 = 'SQL Server 2022',
 		sqlAzure = 'Azure SQL Database',
 		sqlDW = 'Azure Synapse SQL Pool',
-		sqlEdge = 'Azure SQL Edge'
+		sqlEdge = 'Azure SQL Edge',
+		sqlDwServerless = 'Azure Synapse Serverless SQL Pool',
+		sqlDwUnified = 'Synapse Data Warehouse in Microsoft Fabric'
 	}
 
 	export interface ISqlConnectionProperties {

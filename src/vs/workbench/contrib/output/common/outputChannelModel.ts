@@ -278,9 +278,7 @@ export class FileOutputChannelModel extends Disposable implements IOutputChannel
 	}
 
 	protected cancelModelUpdate(): void {
-		if (this.modelUpdateCancellationSource.value) {
-			this.modelUpdateCancellationSource.value.cancel();
-		}
+		this.modelUpdateCancellationSource.value?.cancel();
 		this.modelUpdateCancellationSource.value = undefined;
 		this.appendThrottler.cancel();
 		this.replacePromise = undefined;
@@ -334,7 +332,7 @@ class OutputChannelBackedByFile extends FileOutputChannelModel implements IOutpu
 		super(modelUri, language, file, fileService, modelService, logService, editorWorkerService);
 
 		// Donot rotate to check for the file reset
-		this.logger = loggerService.createLogger(file, { always: true, donotRotate: true, donotUseFormatters: true });
+		this.logger = loggerService.createLogger(file, { logLevel: 'always', donotRotate: true, donotUseFormatters: true, hidden: true });
 		this._offset = 0;
 	}
 

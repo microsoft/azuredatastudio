@@ -17,7 +17,7 @@ import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBac
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getSourceConnectionUri, getTrustServerCertificateValue, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel } from './loginMigrationModel';
-import { TdeMigrationDbResult, TdeMigrationModel } from './tdeModels';
+import { TdeMigrationDbResult, TdeMigrationModel, TdeValidationResult } from './tdeModels';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
 const localize = nls.loadMessageBundle();
 
@@ -659,7 +659,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 				void vscode.window.showInformationMessage(constants.AZURE_RECOMMENDATION_START_POPUP);
 
-				await this.startSkuTimers(page, this.refreshPerfDataCollectionFrequency);
+				await this.startSkuTimers(page);
 			}
 		}
 		catch (error) {
@@ -688,7 +688,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		}
 	}
 
-	public async startSkuTimers(page: SKURecommendationPage, refreshIntervalInMs: number): Promise<void> {
+	public async startSkuTimers(page: SKURecommendationPage): Promise<void> {
 		const classVariable = this;
 
 		if (!this._autoRefreshPerfDataCollectionHandle) {
@@ -701,7 +701,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							await page.refreshSkuRecommendationComponents();	// update timer
 						}
 					},
-					refreshIntervalInMs);
+					this.refreshPerfDataCollectionFrequency);
 			}
 		}
 
@@ -773,7 +773,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 		}
 		catch (error) {
-			logError(TelemetryViews.DataCollectionWizard, 'RefreshDataCollectionFailed', error);
+			console.log(error);		// use console.log() instead of logError() to avoid spamming telemetry with this error, which can be frequent
 		}
 
 		return true;
@@ -972,7 +972,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				this._targetSubscription?.id,
 				this._resourceGroup?.name,
 				this._targetServerInstance.name,
-				this.tdeMigrationConfig._networkPath,
+				this.tdeMigrationConfig.getAppliedNetworkPath(),
 				accessToken,
 				reportUpdate);
 
@@ -997,6 +997,55 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		}
 
 		opResult.success = opResult.errors.length === 0; //Set success when there are no errors.
+		return opResult;
+	}
+
+	public async getTdeValidationTitles(): Promise<OperationResult<string[]>> {
+		const opResult: OperationResult<string[]> = {
+			success: false,
+			result: [],
+			errors: []
+		};
+
+		try {
+			opResult.result = await this.migrationService.getTdeValidationTitles() ?? [];
+		} catch (e) {
+			console.error(e);
+		}
+
+		return opResult;
+	}
+
+	public async runTdeValidation(networkSharePath: string): Promise<OperationResult<TdeValidationResult[]>> {
+		const opResult: OperationResult<TdeValidationResult[]> = {
+			success: false,
+			result: [],
+			errors: []
+		};
+
+		const connectionString = await getSourceConnectionString();
+
+		try {
+			let tdeValidationResult = await this.migrationService.runTdeValidation(
+				connectionString,
+				networkSharePath);
+
+			if (tdeValidationResult !== undefined) {
+				opResult.result = tdeValidationResult?.map((e) => {
+					return {
+						validationTitle: e.validationTitle,
+						validationDescription: e.validationDescription,
+						validationTroubleshootingTips: e.validationTroubleshootingTips,
+						validationErrorMessage: e.validationErrorMessage,
+						validationStatus: e.validationStatus,
+						validationStatusString: e.validationStatusString
+					};
+				});
+			}
+		} catch (e) {
+			console.error(e);
+		}
+
 		return opResult;
 	}
 
@@ -1142,7 +1191,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						TelemetryAction.StartMigration,
 						{
 							'sessionId': this._sessionId,
-							'tenantId': this._azureAccount.properties.tenants[0].id,
+							'tenantId': this._azureTenant?.id,
 							'subscriptionId': this._sqlMigrationServiceSubscription?.id,
 							'resourceGroup': this._sqlMigrationServiceResourceGroup?.name,
 							'location': this._location.name,

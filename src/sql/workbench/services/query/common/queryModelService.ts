@@ -21,6 +21,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import Severity from 'vs/base/common/severity';
 import EditQueryRunner from 'sql/workbench/services/editData/common/editQueryRunner';
 import { IRange } from 'vs/editor/common/core/range';
+import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 const selectionSnippetMaxLen = 100;
 
@@ -82,6 +83,7 @@ export class QueryModelService implements IQueryModelService {
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@INotificationService private _notificationService: INotificationService,
+		@IClipboardService private _clipboardService: IClipboardService,
 		@ILogService private _logService: ILogService
 	) {
 		this._queryInfoMap = new Map<string, QueryInfo>();
@@ -150,7 +152,7 @@ export class QueryModelService implements IQueryModelService {
 	 */
 	public getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Promise<ResultSetSubset | undefined> {
 		if (this._queryInfoMap.has(uri)) {
-			return this._getQueryInfo(uri)!.queryRunner!.getQueryRows(rowStart, numberOfRows, batchId, resultId).then(results => {
+			return this._getQueryInfo(uri)!.queryRunner!.getQueryRowsPaged(rowStart, numberOfRows, batchId, resultId).then(results => {
 				return results;
 			});
 		} else {
@@ -170,7 +172,11 @@ export class QueryModelService implements IQueryModelService {
 
 	public async copyResults(uri: string, selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<void> {
 		if (this._queryInfoMap.has(uri)) {
-			return this._queryInfoMap.get(uri)!.queryRunner!.copyResults(selection, batchId, resultId, includeHeaders);
+			const results = await this._queryInfoMap.get(uri)!.queryRunner!.copyResults(selection, batchId, resultId, includeHeaders);
+			let clipboardData: ClipboardData = {
+				text: results.results
+			};
+			this._clipboardService.write(clipboardData);
 		}
 	}
 

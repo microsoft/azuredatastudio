@@ -60,6 +60,7 @@ export default class ContextProvider {
 	}
 
 	dispose(): void {
-		this._disposables = this._disposables.map(i => i.dispose());
+		this._disposables.forEach(i => i.dispose());
+		this._disposables = [];
 	}
 }

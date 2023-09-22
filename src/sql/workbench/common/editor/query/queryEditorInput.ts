@@ -20,6 +20,7 @@ import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/text
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
 
 const MAX_SIZE = 13;
 
@@ -149,7 +150,8 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IInstantiationService protected readonly instantiationService: IInstantiationService
+		@IInstantiationService protected readonly instantiationService: IInstantiationService,
+		@IServerContextualizationService private readonly serverContextualizationService: IServerContextualizationService
 	) {
 		super();
 
@@ -185,7 +187,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		}));
 
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
-			if (e.affectedKeys.indexOf('queryEditor') > -1) {
+			if (e.affectedKeys.has('queryEditor')) {
 				this._onDidChangeLabel.fire();
 			}
 		}));
@@ -319,6 +321,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			}
 		}
 		this._onDidChangeLabel.fire();
+
+		// Intentionally not awaiting, so that contextualization can happen in the background
+		void this.serverContextualizationService?.contextualizeUriForCopilot(this.uri);
 	}
 
 	public onDisconnect(): void {

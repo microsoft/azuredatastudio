@@ -7,7 +7,7 @@ import { IInsight } from './interfaces';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { $ } from 'vs/base/browser/dom';
 import { mixin } from 'vs/base/common/objects';
-import { IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/browser/interfaces';
 import * as nls from 'vs/nls';
 import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 

@@ -388,6 +388,11 @@ export const enum VirtualMachineFamily {
 	standardNVSv4Family
 }
 
+export const enum TdeValidationStatus {
+	Failed = -1,
+	Succeeded = 1
+}
+
 export namespace GetSqlMigrationSkuRecommendationsRequest {
 	export const type = new RequestType<SqlMigrationSkuRecommendationsParams, SkuRecommendationResult, void, void>('migration/getskurecommendations');
 }
@@ -548,4 +553,26 @@ export interface TdeMigrateProgressParams {
 	success: boolean;
 	message: string;
 	statusCode: string;
+}
+
+export interface TdeValidationResult {
+	validationTitle: string;
+	validationDescription: string;
+	validationTroubleshootingTips: string;
+	validationErrorMessage: string;
+	validationStatus: TdeValidationStatus;
+	validationStatusString: string;
+}
+
+export interface TdeValidationParams {
+	sourceSqlConnectionString: string;
+	networkSharePath: string;
+}
+
+export namespace TdeValidationRequest {
+	export const type = new RequestType<TdeValidationParams, TdeValidationResult[], void, void>('migration/tdevalidation');
+}
+
+export namespace TdeValidationTitlesRequest {
+	export const type = new RequestType<{}, string[], void, void>('migration/tdevalidationtitles');
 }

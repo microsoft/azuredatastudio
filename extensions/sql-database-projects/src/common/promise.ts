@@ -17,9 +17,9 @@ export class Deferred<T = void> {
 		});
 	}
 
-	then<TResult>(onfulfilled?: (value: T) => TResult | Thenable<TResult>, onrejected?: (reason: any) => TResult | Thenable<TResult>): Thenable<TResult>;
-	then<TResult>(onfulfilled?: (value: T) => TResult | Thenable<TResult>, onrejected?: (reason: any) => void): Thenable<TResult>;
-	then<TResult>(onfulfilled?: (value: T) => TResult | Thenable<TResult>, onrejected?: (reason: any) => TResult | Thenable<TResult>): Thenable<TResult> {
-		return this.promise.then(onfulfilled, onrejected);
+	then<TResult>(onFulfilled?: (value: T) => TResult | Thenable<TResult>, onRejected?: (reason: any) => TResult | Thenable<TResult>): Thenable<TResult>;
+	then<TResult>(onFulfilled?: (value: T) => TResult | Thenable<TResult>, onRejected?: (reason: any) => void): Thenable<TResult>;
+	then<TResult>(onFulfilled?: (value: T) => TResult | Thenable<TResult>, onRejected?: (reason: any) => TResult | Thenable<TResult>): Thenable<TResult> {
+		return this.promise.then(onFulfilled, onRejected);
 	}
 }

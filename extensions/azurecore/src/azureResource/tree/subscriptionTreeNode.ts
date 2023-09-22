@@ -10,7 +10,6 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { TreeNode } from '../treeNode';
-import { IAzureResourceNodeWithProviderId } from '../interfaces';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { AzureResourceItemType, AzureResourceServiceNames } from '../constants';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
@@ -18,39 +17,41 @@ import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { AzureResourceService } from '../resourceService';
 import { AzureResourceResourceTreeNode } from '../resourceTreeNode';
-import { AzureAccount, azureResource } from 'azurecore';
+import { AzureAccount, Tenant, azureResource } from 'azurecore';
 
 export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTreeNodeBase {
 	public constructor(
 		public readonly account: AzureAccount,
 		public readonly subscription: azureResource.AzureResourceSubscription,
-		public readonly tenantId: string,
+		public readonly tenant: Tenant,
 		appContext: AppContext,
 		treeChangeHandler: IAzureResourceTreeChangeHandler,
 		parent: TreeNode
 	) {
 		super(appContext, treeChangeHandler, parent);
 
-		this._id = `account_${this.account.key.accountId}.subscription_${this.subscription.id}.tenant_${this.tenantId}`;
+		this._id = `account_${this.account.key.accountId}.tenant_${this.tenant.id}.subscription_${this.subscription.id}`;
 		this.setCacheKey(`${this._id}.resources`);
 	}
 
 	public async getChildren(): Promise<TreeNode[]> {
 		try {
 			const resourceService = this.appContext.getService<AzureResourceService>(AzureResourceServiceNames.resourceService);
-
-			const children: IAzureResourceNodeWithProviderId[] = [];
-
-			for (const resourceProviderId of await resourceService.listResourceProviderIds()) {
-				children.push(...await resourceService.getRootChildren(resourceProviderId, this.account, this.subscription));
-			}
-
+			const children: azureResource.IAzureResourceNode[] = await resourceService.getAllChildren(this.account, [this.subscription], true);
+			let resourceTreeNodes: azureResource.IAzureResourceNode[] = [];
 			if (children.length === 0) {
 				return [AzureResourceMessageTreeNode.create(AzureResourceSubscriptionTreeNode.noResourcesLabel, this)];
 			} else {
-				return children.map((child) => {
+				for (let resource of children) {
+					if (resourceTreeNodes.findIndex(r => r.resourceProviderId === resource.resourceProviderId) !== -1) {
+						continue;
+					} else {
+						resourceTreeNodes.push(await resourceService.getRootChild(resource.resourceProviderId, this.account, this.subscription));
+					}
+				}
+				return resourceTreeNodes.map((child) => {
 					// To make tree node's id unique, otherwise, treeModel.js would complain 'item already registered'
-					child.resourceNode.treeItem.id = `${this._id}.${child.resourceNode.treeItem.id}`;
+					child.treeItem.id = `${this._id}.${child.treeItem.id}`;
 					return new AzureResourceResourceTreeNode(child, this, this.appContext);
 				}).sort((a, b) => a.nodePathValue.localeCompare(b.nodePathValue));
 			}
@@ -62,10 +63,7 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 	public getTreeItem(): TreeItem | Promise<TreeItem> {
 		const item = new TreeItem(this.subscription.name, TreeItemCollapsibleState.Collapsed);
 		item.contextValue = AzureResourceItemType.subscription;
-		item.iconPath = {
-			dark: this.appContext.extensionContext.asAbsolutePath('resources/dark/subscription_inverse.svg'),
-			light: this.appContext.extensionContext.asAbsolutePath('resources/light/subscription.svg')
-		};
+		item.iconPath = this.appContext.extensionContext.asAbsolutePath('resources/subscriptions.svg');
 		return item;
 	}
 

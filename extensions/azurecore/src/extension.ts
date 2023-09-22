@@ -12,7 +12,7 @@ import * as os from 'os';
 import { AppContext } from './appContext';
 import { AzureAccountProviderService } from './account-provider/azureAccountProviderService';
 import { AzureResourceService } from './azureResource/resourceService';
-import { IAzureResourceCacheService, IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService } from './azureResource/interfaces';
+import { IAzureResourceCacheService, IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService, IAzureResourceTenantFilterService } from './azureResource/interfaces';
 import { AzureResourceServiceNames } from './azureResource/constants';
 import { AzureResourceSubscriptionService } from './azureResource/services/subscriptionService';
 import { AzureResourceSubscriptionFilterService } from './azureResource/services/subscriptionFilterService';
@@ -29,11 +29,10 @@ import { AzureResourceGroupService } from './azureResource/providers/resourceGro
 import { Logger } from './utils/Logger';
 import { ConnectionDialogTreeProvider } from './azureResource/tree/connectionDialogTreeProvider';
 import { AzureDataGridProvider } from './azureDataGridProvider';
-// import { AzureResourceUniversalService } from './azureResource/providers/universal/universalService';
 import { AzureResourceUniversalService } from './azureResource/providers/universal/universalService';
 import { AzureResourceUniversalTreeDataProvider } from './azureResource/providers/universal/universalTreeDataProvider';
 import { AzureResourceUniversalResourceProvider } from './azureResource/providers/universal/universalProvider';
-// import { AzureResourceUniversalTreeDataProvider } from './azureResource/providers/universal/universalTreeDataProvider';
+import { AzureResourceTenantFilterService } from './azureResource/services/tenantFilterService';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -74,9 +73,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 		await config.update('deviceCode', true, vscode.ConfigurationTarget.Global);
 	}
 
-	const authLibrary: string = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.AuthenticationLibrarySection)
-		?? Constants.DefaultAuthLibrary;
-
 	const piiLogging = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.piiLogging, false)
 	if (piiLogging) {
 		void vscode.window.showWarningMessage(loc.piiWarning, loc.disable, loc.dismiss).then(async (value) => {
@@ -90,18 +86,18 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 
 	let eventEmitter: vscode.EventEmitter<azurecore.CacheEncryptionKeys>;
 	// Create the provider service and activate
-	let providerService = await initAzureAccountProvider(extensionContext, storagePath, authLibrary!).catch((err) => Logger.error(err));
+	let providerService = await initAzureAccountProvider(extensionContext, storagePath).catch((err) => Logger.error(err));
 	if (providerService) {
 		eventEmitter = providerService.getEncryptionKeysEmitter();
 
 		registerAzureServices(appContext);
-		const azureResourceTree = new AzureResourceTreeProvider(appContext, authLibrary);
-		const connectionDialogTree = new ConnectionDialogTreeProvider(appContext, authLibrary);
+		const azureResourceTree = new AzureResourceTreeProvider(appContext);
+		const connectionDialogTree = new ConnectionDialogTreeProvider(appContext);
 		pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
 		pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
 		pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e)));
-		registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree, authLibrary);
-		azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext, authLibrary));
+		registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree);
+		azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext));
 		vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
 			const portalEndpoint = item.portalEndpoint;
 			const subscriptionId = item.subscriptionId;
@@ -257,9 +253,9 @@ async function findOrMakeStoragePath() {
 	return storagePath;
 }
 
-async function initAzureAccountProvider(extensionContext: vscode.ExtensionContext, storagePath: string, authLibrary: string): Promise<AzureAccountProviderService | undefined> {
+async function initAzureAccountProvider(extensionContext: vscode.ExtensionContext, storagePath: string): Promise<AzureAccountProviderService | undefined> {
 	try {
-		const accountProviderService = new AzureAccountProviderService(extensionContext, storagePath, authLibrary);
+		const accountProviderService = new AzureAccountProviderService(extensionContext, storagePath);
 		extensionContext.subscriptions.push(accountProviderService);
 		await accountProviderService.activate();
 		return accountProviderService;
@@ -275,6 +271,7 @@ function registerAzureServices(appContext: AppContext): void {
 	appContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, new AzureResourceCacheService(extensionContext));
 	appContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, new AzureResourceSubscriptionService());
 	appContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, new AzureResourceSubscriptionFilterService(new AzureResourceCacheService(extensionContext)));
+	appContext.registerService<IAzureResourceTenantFilterService>(AzureResourceServiceNames.tenantFilterService, new AzureResourceTenantFilterService(new AzureResourceCacheService(extensionContext)));
 	appContext.registerService<IAzureTerminalService>(AzureResourceServiceNames.terminalService, new AzureTerminalService(extensionContext));
 }
 
@@ -282,29 +279,9 @@ async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent): Pro
 	if (e.affectsConfiguration('azure.piiLogging')) {
 		updatePiiLoggingLevel();
 	}
-	if (e.affectsConfiguration('azure.authenticationLibrary')) {
-		if (vscode.workspace.getConfiguration(Constants.AzureSection).get('authenticationLibrary') === 'ADAL') {
-			void vscode.window.showInformationMessage(loc.deprecatedOption);
-		}
-		await displayReloadAds();
-	}
 }
 
 function updatePiiLoggingLevel(): void {
 	const piiLogging: boolean = vscode.workspace.getConfiguration(Constants.AzureSection).get('piiLogging', false);
 	Logger.piiLogging = piiLogging;
-}
-
-// Display notification with button to reload
-// return true if button clicked
-// return false if button not clicked
-async function displayReloadAds(): Promise<boolean> {
-	const result = await vscode.window.showInformationMessage(loc.reloadPrompt, loc.reloadChoice);
-	if (result === loc.reloadChoice) {
-		await vscode.commands.executeCommand('workbench.action.reloadWindow');
-		return true;
-	} else {
-		return false;
-	}
-
 }

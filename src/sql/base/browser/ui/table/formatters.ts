@@ -66,20 +66,25 @@ export function isCssIconCellValue(obj: any | undefined): obj is CssIconCellValu
 export function hyperLinkFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
 	let cellClasses = 'grid-cell-value-container';
 	let valueToDisplay: string = '';
-
+	let isHyperlink: boolean = false;
 	if (DBCellValue.isDBCellValue(value)) {
 		valueToDisplay = 'NULL';
 		if (!value.isNull) {
 			valueToDisplay = getCellDisplayValue(value.displayValue);
-			return `<a class="${cellClasses}">${valueToDisplay}</a>`;
+			isHyperlink = true;
 		} else {
 			cellClasses += ' missing-value';
 		}
 	} else if (isHyperlinkCellValue(value)) {
 		valueToDisplay = getCellDisplayValue(value.displayText);
-		return `<a class="${cellClasses}" title="${valueToDisplay}">${valueToDisplay}</a>`;
+		isHyperlink = true;
 	}
-	return `<span title="${valueToDisplay}" class="${cellClasses}">${valueToDisplay}</span>`;
+
+	if (isHyperlink) {
+		return `<a class="${cellClasses}" title="${valueToDisplay}">${valueToDisplay}</a>`;
+	} else {
+		return `<span title="${valueToDisplay}" class="${cellClasses}">${valueToDisplay}</span>`;
+	}
 }
 
 /**
@@ -131,10 +136,11 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 	return formattedValue;
 }
 
-function getCellDisplayValue(cellValue: string): string {
+export function getCellDisplayValue(cellValue: string): string {
+	let valueToDisplay = cellValue.length > 250 ? cellValue.slice(0, 250) + '...' : cellValue;
 	// allow-any-unicode-next-line
-	let valueToDisplay = cellValue.replace(/(\r\n|\n|\r)/g, '↵');
-	return escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+	valueToDisplay = valueToDisplay.replace(/(\r\n|\n|\r)/g, '↵');
+	return escape(valueToDisplay);
 }
 
 

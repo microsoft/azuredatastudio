@@ -28,6 +28,7 @@
 	"sqlDatabaseProjects.newItem": "Add Item...",
 	"sqlDatabaseProjects.addExistingItem": "Add Existing Item...",
 	"sqlDatabaseProjects.newFolder": "Add Folder",
+	"sqlDatabaseProjects.newPublishProfile": "Add Publish Profile",
 
 	"sqlDatabaseProjects.addDatabaseReference": "Add Database Reference",
 	"sqlDatabaseProjects.addSqlCmdVariable": "Add SQLCMD Variable",
@@ -37,6 +38,7 @@
 	"sqlDatabaseProjects.generateProjectFromOpenApiSpec": "Generate SQL Project from OpenAPI/Swagger spec (Preview)",
 	"sqlDatabaseProjects.convertToSdkStyleProject": "Convert to SDK-style project",
 	"sqlDatabaseProjects.openInDesigner": "Open in Designer",
+	"sqlDatabaseProjects.openReferencedSqlProject": "Open project",
 
 	"sqlDatabaseProjects.Settings": "Database Projects",
 	"sqlDatabaseProjects.dotnetInstallLocation": "Full path to .NET SDK on the machine. For example, if dotnet.exe is located at C:\\folder1\\dotnet\\dotnet.exe, set the path for this setting to C:\\folder1\\dotnet",

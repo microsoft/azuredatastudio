@@ -70,12 +70,17 @@ class ConnectionProfileGroupTemplate extends Disposable {
 			matches: createMatches(filterData)
 		});
 
-		const actionProvider = this._objectExplorerService.getServerTreeView().treeActionProvider;
-		const tree = this._objectExplorerService.getServerTreeView().tree;
-		const actions = actionProvider.getActions(tree, element, true);
-		this._actionBar.context = this._objectExplorerService.getServerTreeView().getActionContext(element);
-		this._actionBar.clear();
-		this._actionBar.pushAction(actions, { icon: true, label: false });
+		let serverTreeView = this._objectExplorerService.getServerTreeView();
+		if (serverTreeView) {
+			const actionProvider = serverTreeView.treeActionProvider;
+			const tree = serverTreeView.tree;
+			const actions = actionProvider.getActions(tree, element, true);
+			this._actionBar.context = serverTreeView.getActionContext(element);
+			this._actionBar.clear();
+			this._actionBar.pushAction(actions, { icon: true, label: false });
+		} else {
+			console.log('Server Tree view not loaded, action bar will not be populated.');
+		}
 	}
 }
 
@@ -149,19 +154,24 @@ class ConnectionProfileTemplate extends Disposable {
 		this._label.element.setLabel(labelText, '', {
 			matches: createMatches(filterData)
 		});
-		this._root.title = labelText;
-		const actionProvider = this._objectExplorerService.getServerTreeView().treeActionProvider;
-		if (!this._isCompact) {
-			const tree = this._objectExplorerService.getServerTreeView().tree;
-			const actions = actionProvider.getActions(tree, element, true);
-			this._actionBar.context = this._objectExplorerService.getServerTreeView().getActionContext(element);
-			this._actionBar.clear();
-			this._actionBar.pushAction(actions, { icon: true, label: false });
+		this._root.title = treeNode?.filters?.length > 0 ? getLabelWithFilteredSuffix(element.serverInfo) : element.serverInfo;
+		let serverTreeView = this._objectExplorerService.getServerTreeView();
+		if (serverTreeView) {
+			const actionProvider = serverTreeView.treeActionProvider;
+			if (!this._isCompact) {
+				const tree = serverTreeView.tree;
+				const actions = actionProvider.getActions(tree, element, true);
+				this._actionBar.context = serverTreeView.getActionContext(element);
+				this._actionBar.clear();
+				this._actionBar.pushAction(actions, { icon: true, label: false });
+			} else {
+				const actions = actionProvider.getRecentConnectionActions(element);
+				this._actionBar.context = undefined;
+				this._actionBar.clear();
+				this._actionBar.pushAction(actions, { icon: true, label: false });
+			}
 		} else {
-			const actions = actionProvider.getRecentConnectionActions(element);
-			this._actionBar.context = undefined;
-			this._actionBar.clear();
-			this._actionBar.pushAction(actions, { icon: true, label: false });
+			console.log('Server Tree view not loaded, action bar will not be populated.');
 		}
 	}
 }
@@ -247,12 +257,17 @@ class TreeNodeTemplate extends Disposable {
 			matches: createMatches(filterData)
 		});
 		this._root.title = labelText;
-		const tree = this._objectExplorerService.getServerTreeView().tree;
-		const actionProvider = this._objectExplorerService.getServerTreeView().treeActionProvider;
-		const actions = actionProvider.getActions(tree, element, true);
-		this._actionBar.context = this._objectExplorerService.getServerTreeView().getActionContext(element);
-		this._actionBar.clear();
-		this._actionBar.pushAction(actions, { icon: true, label: false });
+		let serverTreeView = this._objectExplorerService.getServerTreeView();
+		if (serverTreeView) {
+			const tree = serverTreeView.tree;
+			const actionProvider = serverTreeView.treeActionProvider;
+			const actions = actionProvider.getActions(tree, element, true);
+			this._actionBar.context = serverTreeView.getActionContext(element);
+			this._actionBar.clear();
+			this._actionBar.pushAction(actions, { icon: true, label: false });
+		} else {
+			console.log('Server Tree view not loaded, action bar will not be populated.');
+		}
 	}
 }
 

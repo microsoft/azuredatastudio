@@ -8,6 +8,7 @@
 			{
 				"ignoreVoid": true
 			}
-		]
+		],
+		"@typescript-eslint/no-unsafe-assignment": "off"
 	}
 }

@@ -13,7 +13,7 @@ import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/mo
 import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/fileNotebookInput';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
-import { NodeStub, NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { NodeStub, NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/browser/stubs';
 import { basenameOrAuthority } from 'vs/base/common/resources';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IExtensionService, NullExtensionService } from 'vs/workbench/services/extensions/common/extensions';
