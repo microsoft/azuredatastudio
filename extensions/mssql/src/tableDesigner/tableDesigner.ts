@@ -12,6 +12,7 @@ import { fillServerInfo } from '../telemetry';
 import * as telemetry from '@microsoft/ads-extension-telemetry';
 import * as nls from 'vscode-nls';
 import { getConfigPreloadDatabaseModel, getErrorMessage, setConfigPreloadDatabaseModel } from '../utils';
+import { title } from 'process';
 const localize = nls.loadMessageBundle();
 
 const NewTableText = localize('tableDesigner.NewTable', "New Table");
@@ -31,7 +32,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			let nonDefaultOptions = await azdata.connection.getNonDefaultOptions(context.connectionProfile);
 			await azdata.designers.openTableDesigner(sqlProviderName, {
 				title: NewTableText,
-				tooltip: `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`,
+				tooltip: context.connectionProfile!.connectionName ? `${context.connectionProfile!.connectionName} - ${NewTableText}` : `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`,
 				server: context.connectionProfile!.serverName,
 				database: context.connectionProfile!.databaseName,
 				isNewTable: true,
@@ -39,7 +40,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				connectionString: connectionString,
 				accessToken: context.connectionProfile!.options.azureAccountToken as string,
 				tableIcon: tableIcon,
-				additionalInfo: `${context.connectionProfile.connectionName ? ' - ' + context.connectionProfile.connectionName : ''}${nonDefaultOptions}`
+				additionalInfo: `${context.connectionProfile!.serverName + ' - ' + context.connectionProfile!.databaseName}${nonDefaultOptions}`
 			}, telemetryInfo, context);
 		} catch (error) {
 			console.error(error);
@@ -64,7 +65,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			let nonDefaultOptions = await azdata.connection.getNonDefaultOptions(context.connectionProfile);
 			await azdata.designers.openTableDesigner(sqlProviderName, {
 				title: `${schema}.${name}`,
-				tooltip: `${server} - ${database} - ${schema}.${name}`,
+				tooltip: connName ? `${connName} - ${schema}.${name}` : `${server} - ${database} - ${schema}.${name}`,
 				server: server,
 				database: database,
 				isNewTable: false,
@@ -74,7 +75,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				connectionString: connectionString,
 				accessToken: context.connectionProfile!.options.azureAccountToken as string,
 				tableIcon: tableIcon,
-				additionalInfo: `${connName ? connName : ''}${nonDefaultOptions}`
+				additionalInfo: `${server + ' - ' + database}${nonDefaultOptions}`
 			}, telemetryInfo, context);
 		} catch (error) {
 			console.error(error);
