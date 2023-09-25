@@ -66,13 +66,13 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		return this.runWithErrorHandling(contracts.SearchObjectRequest.type, params);
 	}
 
-	async detachDatabase(connectionUri: string, database: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Promise<string> {
-		const params: contracts.DetachDatabaseRequestParams = { connectionUri, database, objectUrn, dropConnections, updateStatistics, generateScript };
+	async detachDatabase(connectionUri: string, database: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Promise<string> {
+		const params: contracts.DetachDatabaseRequestParams = { connectionUri, database, dropConnections, updateStatistics, generateScript };
 		return this.runWithErrorHandling(contracts.DetachDatabaseRequest.type, params);
 	}
 
-	async dropDatabase(connectionUri: string, database: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Promise<string> {
-		const params: contracts.DropDatabaseRequestParams = { connectionUri, database, objectUrn, dropConnections, deleteBackupHistory, generateScript };
+	async dropDatabase(connectionUri: string, database: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Promise<string> {
+		const params: contracts.DropDatabaseRequestParams = { connectionUri, database, dropConnections, deleteBackupHistory, generateScript };
 		return this.runWithErrorHandling(contracts.DropDatabaseRequest.type, params);
 	}
 
@@ -91,8 +91,8 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		return this.runWithErrorHandling(contracts.GetAssociatedFilesRequest.type, params);
 	}
 
-	async purgeQueryStoreData(connectionUri: string, database: string, objectUrn: string): Promise<void> {
-		const params: contracts.purgeQueryStoreDataRequestParams = { connectionUri, database, objectUrn };
+	async purgeQueryStoreData(connectionUri: string, database: string): Promise<void> {
+		const params: contracts.PurgeQueryStoreDataRequestParams = { connectionUri, database };
 		return this.runWithErrorHandling(contracts.PurgeQueryStoreDataRequest.type, params);
 	}
 }
@@ -262,7 +262,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve(items);
 	}
 
-	async detachDatabase(connectionUri: string, database: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Promise<string> {
+	async detachDatabase(connectionUri: string, database: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Promise<string> {
 		return this.delayAndResolve('');
 	}
 
@@ -270,7 +270,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve('');
 	}
 
-	dropDatabase(connectionUri: string, database: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string> {
+	dropDatabase(connectionUri: string, database: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string> {
 		return this.delayAndResolve('');
 	}
 
@@ -282,7 +282,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve([]);
 	}
 
-	async purgeQueryStoreData(connectionUri: string, database: string, objectUrn: string): Promise<void> {
+	async purgeQueryStoreData(connectionUri: string, database: string): Promise<void> {
 		return this.delayAndResolve([]);
 	}
 

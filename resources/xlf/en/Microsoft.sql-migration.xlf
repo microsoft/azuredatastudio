@@ -448,6 +448,9 @@
     <trans-unit id="sql.migration.tde.wizard.optionscaption">
       <source xml:lang="en">Certificate migration</source>
     </trans-unit>
+    <trans-unit id="sql.migration.tde.validation.group.title">
+      <source xml:lang="en">Certificate validations</source>
+    </trans-unit>
     <trans-unit id="sql.migration.validation.dialog.title">
       <source xml:lang="en">Certificates Migration</source>
     </trans-unit>
@@ -894,6 +897,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.wizard.perfCollection.error">
       <source xml:lang="en">Error(s) occurred while collecting performance data for the server &apos;{0}&apos;. If these issues persist, try restarting the data collection process:&#10;&#10;{1}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.azure.mi.db.count.threshold.exceeds.error">
+      <source xml:lang="en">Error: Azure SQL Managed Instance supports maximum {0} user databases per instance. Select {0} or less database(s) to proceed further.</source>
     </trans-unit>
     <trans-unit id="sql.login.migration.migrate.server.roles.and.set.permissions">
       <source xml:lang="en">Establishing user mappings completed.&#10;&#10;Currently, migrating server roles, establishing server mappings and setting permissions. This will take some time.</source>
@@ -2436,6 +2442,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.database.migration.mode.description">
       <source xml:lang="en">To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.azure.mi.db.count.under.threshold">
+      <source xml:lang="en">To proceed, press Select button</source>
     </trans-unit>
     <trans-unit id="sql.migration.details.serverobjects.all.tables.label">
       <source xml:lang="en">Total tables</source>

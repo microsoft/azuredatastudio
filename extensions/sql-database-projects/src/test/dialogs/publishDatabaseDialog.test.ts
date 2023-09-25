@@ -116,12 +116,12 @@ describe('Publish Database Dialog', () => {
 		const expectedContainerPublishProfile: IPublishToDockerSettings = {
 			dockerSettings: {
 				dbName: 'MockDatabaseName',
-				dockerBaseImage: '',
+				dockerBaseImage: 'mcr.microsoft.com/mssql/server',
 				password: '',
 				port: 1433,
 				serverName: 'localhost',
 				userName: 'sa',
-				dockerBaseImageEula: ''
+				dockerBaseImageEula: 'https://aka.ms/mcr/osslegalnotice'
 
 			},
 			sqlProjectPublishSettings: {
