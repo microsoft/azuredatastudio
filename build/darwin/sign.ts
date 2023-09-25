@@ -92,6 +92,7 @@ async function main(buildDir?: string): Promise<void> {
 			'-insert',
 			'NSAppleEventsUsageDescription',
 			'-string',
+			// ${{SQL CARBON EDIT}} Update application name to Azure Data Studio
 			'An application in Azure Data Studio wants to use AppleScript.',
 			`${infoPlistPath}`
 		]);
@@ -99,6 +100,7 @@ async function main(buildDir?: string): Promise<void> {
 			'-replace',
 			'NSMicrophoneUsageDescription',
 			'-string',
+			// ${{SQL CARBON EDIT}} Update application name to Azure Data Studio
 			'An application in Azure Data Studio wants to use the Microphone.',
 			`${infoPlistPath}`
 		]);
@@ -106,6 +108,7 @@ async function main(buildDir?: string): Promise<void> {
 			'-replace',
 			'NSCameraUsageDescription',
 			'-string',
+			// ${{SQL CARBON EDIT}} Update application name to Azure Data Studio
 			'An application in Azure Data Studio wants to use the Camera.',
 			`${infoPlistPath}`
 		]);
