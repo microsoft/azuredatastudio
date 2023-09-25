@@ -524,6 +524,7 @@
     "@azure/arm-subscriptions": "^5.1.0",
     "@azure/msal-common": "^14.0.3",
     "@azure/msal-node": "^2.1.0",
+    "@azure/ms-rest-js": "2.7.0",
     "@azure/storage-blob": "^12.13.0",
     "axios": "^1.5.0",
     "lockfile": "1.0.4",
