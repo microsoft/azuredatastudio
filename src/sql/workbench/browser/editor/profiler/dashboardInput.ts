@@ -95,14 +95,13 @@ export class DashboardInput extends EditorInput {
 	}
 
 	public override getTitle(verbosity?: Verbosity): string {
-		let connName = this.connectionProfile.connectionName ? (' - ' + this.connectionProfile.connectionName) : '';
 		let baseName = this.connectionProfile.serverName;
 		if (this.connectionProfile.databaseName && !this.isMasterMssql()) {
 			// Only add DB name if this is a non-default, non-master connection and if there is no user set profile name.
 			baseName = baseName + ':' + this.connectionProfile.databaseName;
 		}
 		let advancedOptions = this._connectionService.getNonDefaultOptions(this.connectionProfile);
-		let fullTitle = baseName + connName + advancedOptions;
+		let fullTitle = baseName + advancedOptions;
 
 		switch (verbosity) {
 			case Verbosity.SHORT:

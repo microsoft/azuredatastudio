@@ -224,22 +224,41 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	}
 
 	public getEncoding(): string | undefined { return this._sql.getEncoding(); }
-	public override getName(): string { return this._sql.getName(); }
+	public override getName(): string {
+		let profile = this._connectionManagementService.getConnectionProfile(this.uri);
+		let title = this._sql.getName();
+		if (profile) {
+			if (profile.connectionName) {
+				title += ` ${profile.connectionName}`;
+			}
+			else {
+				title += ` ${profile.serverName}`;
+				if (profile.databaseName) {
+					title += `.${profile.databaseName}`;
+				}
+				title += ` (${profile.userName || profile.authenticationType})`;
+			}
+		}
+		return title;
+	}
 	public override getTitle(verbosity?: Verbosity): string {
-		let additionalOptions = '';
+		let fullTitle = this._sql.getName();
 		let profile = this._connectionManagementService.getConnectionProfile(this.uri);
 		if (profile) {
-			additionalOptions = ': ' + profile.serverName + ':' + profile.databaseName;
-			let connectionName = profile.connectionName ? (' - ' + profile.connectionName) : '';
+			fullTitle += ` ${profile.serverName}`;
+			if (profile.databaseName) {
+				fullTitle += `.${profile.databaseName}`;
+			}
+			fullTitle += ` (${profile.userName || profile.authenticationType})`;
 			let nonDefaultOptions = this._connectionManagementService.getNonDefaultOptions(profile);
-			additionalOptions += (connectionName + nonDefaultOptions);
+			fullTitle += nonDefaultOptions;
 		}
 		switch (verbosity) {
 			case Verbosity.SHORT:
 				return this.getName();
 			case Verbosity.LONG:
 				// Used by tabsTitleControl as the tooltip hover.
-				return this.getName() + additionalOptions;
+				return fullTitle;
 			default:
 			case Verbosity.MEDIUM:
 				// Not used by this editor, normally used relative to workspace for files in vscode.

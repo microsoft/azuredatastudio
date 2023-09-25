@@ -134,7 +134,12 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		if (!this.connection) {
 			return name;
 		}
-		name += ': ' + this.connection.serverName.substring(0, 20);
+		if (this.connection.connectionName) {
+			name += ': ' + this.connection.connectionName.substring(0, 20);
+		}
+		else {
+			name += ': ' + this.connection.serverName.substring(0, 20);
+		}
 		return name;
 	}
 
@@ -142,9 +147,8 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		let fullTitle = ProfilerInput.PROFILERNAME;
 		if (this.connection) {
 			let baseName = this.connection.serverName + ':' + this.connection.databaseName;
-			let connName = this.connection.connectionName ? (' - ' + this.connection.connectionName) : '';
 			let advancedOptions = this._connectionService.getNonDefaultOptions(this.connection);
-			fullTitle = fullTitle + ': ' + baseName + connName + advancedOptions;
+			fullTitle = fullTitle + ': ' + baseName + advancedOptions;
 		}
 
 		switch (verbosity) {

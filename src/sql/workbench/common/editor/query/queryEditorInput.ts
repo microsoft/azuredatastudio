@@ -245,11 +245,16 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 				title = this._description + ' ';
 			}
 			if (profile) {
-				title += `${profile.serverName}`;
-				if (profile.databaseName) {
-					title += `.${profile.databaseName}`;
+				if (profile.connectionName) {
+					title += `${profile.connectionName}`;
 				}
-				title += ` (${profile.userName || profile.authenticationType})`;
+				else {
+					title += `${profile.serverName}`;
+					if (profile.databaseName) {
+						title += `.${profile.databaseName}`;
+					}
+					title += ` (${profile.userName || profile.authenticationType})`;
+				}
 			} else {
 				title += localize('disconnected', "disconnected");
 			}
@@ -266,18 +271,29 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	// Called to get the tooltip of the tab
 	public override getTitle(verbosity?: Verbosity): string {
 		let profile = this.connectionManagementService.getConnectionProfile(this.uri);
-		let additionalOptions = '';
+		let fullTitle = '';
 		if (profile) {
-			additionalOptions = profile.connectionName ? (' - ' + profile.connectionName) : ''
-			let nonDefaultOptions = this.connectionManagementService.getNonDefaultOptions(profile);
-			additionalOptions += nonDefaultOptions;
+			let additionalOptions = this.connectionManagementService.getNonDefaultOptions(profile);
+			if (this._description && this._description !== '') {
+				fullTitle = this._description + ' ';
+			}
+			fullTitle += `${profile.serverName}`;
+			if (profile.databaseName) {
+				fullTitle += `.${profile.databaseName}`;
+			}
+			fullTitle += ` (${profile.userName || profile.authenticationType})`;
+
+			fullTitle += additionalOptions;
+		}
+		else {
+			fullTitle = this.getName(true);
 		}
 		switch (verbosity) {
 			case Verbosity.SHORT:
 				return this.getName(true);
 			case Verbosity.LONG:
 				// Used by tabsTitleControl as the tooltip hover.
-				return this.getName(true) + additionalOptions;
+				return this.getName(true);
 			default:
 			case Verbosity.MEDIUM:
 				// Not used by this editor, normally used relative to workspace for files in vscode.
