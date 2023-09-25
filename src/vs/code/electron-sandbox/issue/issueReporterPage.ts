@@ -31,14 +31,14 @@ export default (): string => `
 	<div class="section">
 		<div class="input-group">
 			<label class="inline-label" for="issue-type">${escape(localize('issueTypeLabel', "This is a"))}</label>
-			<select id="issue-type" class="inline-form-control">
+			<select id="issue-type" class="inline-form-control" aria-label="This is a"> <!-- {{SQL CARBON EDIT}} add aria label-->
 				<!-- To be dynamically filled -->
 			</select>
 		</div>
 
 		<div class="input-group" id="problem-source">
 			<label class="inline-label" for="issue-source">${escape(localize('issueSourceLabel', "File on"))} <span class="required-input">*</span></label>
-			<select id="issue-source" class="inline-form-control" required>
+			<select id="issue-source" class="inline-form-control" required aria-label="File on"> <!-- {{SQL CARBON EDIT}} add aria label-->
 				<!-- To be dynamically filled -->
 			</select>
 			<div id="issue-source-empty-error" class="validation-error hidden" role="alert">${escape(localize('issueSourceEmptyValidation', "An issue source is required."))}</div>
@@ -61,7 +61,7 @@ export default (): string => `
 
 		<div id="issue-title-container" class="input-group">
 			<label class="inline-label" for="issue-title">${escape(localize('issueTitleLabel', "Title"))} <span class="required-input">*</span></label>
-			<input id="issue-title" type="text" class="inline-form-control" placeholder="${escape(localize('issueTitleRequired', "Please enter a title."))}" required>
+			<input id="issue-title" type="text" class="inline-form-control" placeholder="${escape(localize('issueTitleRequired', "Please enter a title."))}" required aria-label="Title"> <!-- {{SQL CARBON EDIT}} add aria label-->
 			<div id="issue-title-empty-error" class="validation-error hidden" role="alert">${escape(localize('titleEmptyValidation', "A title is required."))}</div>
 			<div id="issue-title-length-validation-error" class="validation-error hidden" role="alert">${escape(localize('titleLengthValidation', "The title is too long."))}</div>
 			<small id="similar-issues">
@@ -79,7 +79,7 @@ export default (): string => `
 			<!-- To be dynamically filled -->
 		</div>
 		<div class="block-info-text">
-			<textarea name="description" id="description" placeholder="${escape(localize('details', "Please enter details."))}" required></textarea>
+			<textarea name="description" id="description" placeholder="${escape(localize('details', "Please enter details."))}" required aria-label="Steps to Reproduce"></textarea> <!-- {{SQL CARBON EDIT}} add aria label-->
 		</div>
 		<div id="description-empty-error" class="validation-error hidden" role="alert">${escape(localize('descriptionEmptyValidation', "A description is required."))}</div>
 	</div>
