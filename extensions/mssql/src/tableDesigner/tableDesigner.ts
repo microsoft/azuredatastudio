@@ -12,7 +12,6 @@ import { fillServerInfo } from '../telemetry';
 import * as telemetry from '@microsoft/ads-extension-telemetry';
 import * as nls from 'vscode-nls';
 import { getConfigPreloadDatabaseModel, getErrorMessage, setConfigPreloadDatabaseModel } from '../utils';
-import { title } from 'process';
 const localize = nls.loadMessageBundle();
 
 const NewTableText = localize('tableDesigner.NewTable', "New Table");
