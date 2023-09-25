@@ -768,7 +768,8 @@ class DefaultThemeUpdatedNotificationContribution implements IWorkbenchContribut
 			];
 			await this._notificationService.prompt(
 				Severity.Info,
-				localize({ key: 'themeUpdatedNotification', comment: ['{0} is the name of the new default theme'] }, "Visual Studio Code now ships with a new default theme '{0}'. If you prefer, you can switch back to the old theme or try one of the many other color themes available.", newTheme.label),
+				// {{SQL CARBON EDIT}} Update application name to Azure Data Studio
+				localize({ key: 'themeUpdatedNotification', comment: ['{0} is the name of the new default theme'] }, "Azure Data Studio now ships with a new default theme '{0}'. If you prefer, you can switch back to the old theme or try one of the many other color themes available.", newTheme.label),
 				choices,
 				{
 					onCancel: () => this._writeTelemetry('cancel')
@@ -796,7 +797,8 @@ class DefaultThemeUpdatedNotificationContribution implements IWorkbenchContribut
 			}];
 			await this._notificationService.prompt(
 				Severity.Info,
-				localize({ key: 'newThemeNotification', comment: ['{0} is the name of the new default theme'] }, "Visual Studio Code now ships with a new default theme '{0}'. Do you want to give it a try?", theme.label),
+				// {{SQL CARBON EDIT}} Update application name to Azure Data Studio
+				localize({ key: 'newThemeNotification', comment: ['{0} is the name of the new default theme'] }, "Azure Data Studio now ships with a new default theme '{0}'. Do you want to give it a try?", theme.label),
 				choices,
 				{ onCancel: () => this._writeTelemetry('cancel') }
 			);
