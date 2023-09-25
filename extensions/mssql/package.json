@@ -178,14 +178,16 @@
           "description": "%mssql.query.displayBitAsNumber%"
         },
         "mssql.query.maxXmlCharsToStore": {
-          "type": "number",
+          "type": "integer",
           "default": 2097152,
-          "description": "%mssql.query.maxXmlCharsToStore%"
+          "description": "%mssql.query.maxXmlCharsToStore%",
+          "maximum": 2147483647
         },
         "mssql.query.maxCharsToStore": {
-          "type": "number",
+          "type": "integer",
           "default": 65535,
-          "description": "%mssql.query.maxCharsToStore%"
+          "description": "%mssql.query.maxCharsToStore%",
+          "maximum": 2147483647
         },
         "mssql.format.alignColumnDefinitionsInColumns": {
           "type": "boolean",
@@ -316,19 +318,22 @@
           ]
         },
         "mssql.query.rowCount": {
-          "type": "number",
+          "type": "integer",
           "default": 0,
-          "description": "%mssql.query.setRowCount%"
+          "description": "%mssql.query.setRowCount%",
+          "maximum": 2147483647
         },
         "mssql.query.textSize": {
-          "type": "number",
+          "type": "integer",
           "default": 2147483647,
-          "description": "%mssql.query.textSize%"
+          "description": "%mssql.query.textSize%",
+          "maximum": 2147483647
         },
         "mssql.query.executionTimeout": {
-          "type": "number",
+          "type": "integer",
           "default": 0,
-          "description": "%mssql.query.executionTimeout%"
+          "description": "%mssql.query.executionTimeout%",
+          "maximum": 2147483647
         },
         "mssql.query.noCount": {
           "type": "boolean",
@@ -384,14 +389,16 @@
           "description": "%mssql.query.deadlockPriority%"
         },
         "mssql.query.lockTimeout": {
-          "type": "number",
+          "type": "integer",
           "default": -1,
-          "description": "%mssql.query.lockTimeout%"
+          "description": "%mssql.query.lockTimeout%",
+          "maximum": 2147483647
         },
         "mssql.query.queryGovernorCostLimit": {
-          "type": "number",
+          "type": "integer",
           "default": -1,
-          "description": "%mssql.query.queryGovernorCostLimit%"
+          "description": "%mssql.query.queryGovernorCostLimit%",
+          "maximum": 2147483647
         },
         "mssql.query.ansiDefaults": {
           "type": "boolean",
@@ -474,10 +481,11 @@
           "description": "%mssql.objectExplorer.groupBySchema%"
         },
         "mssql.objectExplorer.expandTimeout": {
-          "type": "number",
+          "type": "integer",
           "default": 45,
           "minimum": 1,
-          "description": "%mssql.objectExplorer.expandTimeout%"
+          "description": "%mssql.objectExplorer.expandTimeout%",
+          "maximum": 2147483647
         }
       }
     },
