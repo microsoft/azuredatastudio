@@ -1848,7 +1848,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			return;
 		}
 
-		await this.objectManagementService.purgeQueryStoreData(this.options.connectionUri, this.options.database, this.options.objectUrn);
+		await this.objectManagementService.purgeQueryStoreData(this.options.connectionUri, this.options.database);
 	}
 
 	private async toggleQueryStoreOptions(): Promise<void> {
