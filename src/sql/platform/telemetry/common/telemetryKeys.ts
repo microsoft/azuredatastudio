@@ -88,6 +88,8 @@ export const enum TelemetryAction {
 	EditCellSelect = 'EditCellSelect',
 	EditCellEnd = 'EditCellEnd',
 	EditGridSelectAll = 'EditGridSelectAll',
+	EditRestoreViewState = 'EditRestoreViewState',
+	EditSaveViewState = 'EditSaveViewState',
 	FindNode = 'FindNode',
 	FirewallRuleRequested = 'FirewallRuleCreated',
 	GenerateScript = 'GenerateScript',

@@ -894,6 +894,9 @@ export class EditDataGridPanel extends GridParentComponent {
 				scrollTop: viewport.scrollTop,
 				scrollLeft: viewport.scrollLeft
 			};
+			this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditSaveViewState, 'EditSaveViewState')
+				.withAdditionalProperties({ gridSelections: this.savedViewState.gridSelections, scrollLeft: this.savedViewState.scrollLeft, scrollTop: this.savedViewState.scrollTop })
+				.send();
 
 			// Save the cell that is currently being edited.
 			// Note: This is only updating the data in tools service, not saving the change to database.
@@ -912,6 +915,9 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private restoreViewState(): void {
 		if (this.savedViewState) {
+			this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditRestoreViewState, 'EditRestoreViewState')
+				.withAdditionalProperties({ gridSelections: this.savedViewState.gridSelections, scrollLeft: this.savedViewState.scrollLeft, scrollTop: this.savedViewState.scrollTop })
+				.send();
 			// Row selections are undefined in original slickgrid, removed for no purpose
 			let viewport = ((this.table as any)._grid.getCanvasNode() as HTMLElement).parentElement;
 			viewport.scrollLeft = this.savedViewState.scrollLeft;
