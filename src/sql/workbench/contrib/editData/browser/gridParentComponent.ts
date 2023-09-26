@@ -424,6 +424,9 @@ export abstract class GridParentComponent extends Disposable {
 	protected onGridSelectAll(): (gridIndex: number) => void {
 		let self = this;
 		return (gridIndex: number) => {
+			self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditGridSelectAll, 'EditGridSelectAll')
+				.withAdditionalProperties({ gridIndex: gridIndex })
+				.send();
 			self.activeGrid = gridIndex;
 			let grid = self.table;
 			grid.setActiveCell(0, 1);

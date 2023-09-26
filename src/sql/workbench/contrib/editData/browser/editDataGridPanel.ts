@@ -199,6 +199,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.onActiveCellChanged = this.onCellSelect;
 
 		this.onCellEditEnd = (event: Slick.OnCellChangeEventArgs<any>): void => {
+			self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditCellEnd, 'EditCellEnd')
+				.withAdditionalProperties({ eventRow: event.row, eventCol: event.cell, eventValue: event.item[event.cell] })
+				.send();
 			if (self.currentEditCellValue !== event.item[event.cell]) {
 				self.currentCell.isDirty = true;
 			}
@@ -315,6 +318,9 @@ export class EditDataGridPanel extends GridParentComponent {
 	onDeleteRow(): (index: number) => void {
 		const self = this;
 		return (index: number): void => {
+			self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.DeleteEditRow, 'DeleteEditRow')
+				.withAdditionalProperties({ rowIndex: index })
+				.send();
 			// If the user is deleting a new row that hasn't been committed yet then use the revert code
 			if (self.newRowVisible && index === self.dataSet.dataRows.getLength() - 2) {
 				self.revertCurrentRow().catch(onUnexpectedError);
@@ -336,7 +342,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	onRevertRow(): () => void {
 		const self = this;
 		return (): void => {
-			self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.RevertCurrentRow, 'RevertCurrentRow')
+			self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.RevertEditCurrentRow, 'RevertEditCurrentRow')
 				.withAdditionalProperties({ currentRow: self.currentCell.row })
 				.send();
 			self.revertCurrentRow().catch(onUnexpectedError);
@@ -347,6 +353,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		let self = this;
 		let row = event.row;
 		let column = event.cell;
+		self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditCellSelect, 'EditCellSelect')
+			.withAdditionalProperties({ selectedRow: event.row, selectedColumn: event.cell })
+			.send();
 
 		// Skip processing if the newly selected cell is undefined or we don't have column
 		// definition for the column (ie, the selection was reset)
