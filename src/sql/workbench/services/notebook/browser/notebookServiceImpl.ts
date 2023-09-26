@@ -446,7 +446,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (!DefaultNotebookProviders.includes(p.id)) {
 			this._extensionService.whenInstalledExtensionsRegistered()
 				.then(() => this._extensionService.activateByEvent(`onNotebook:${p.id}`))
-				.then(() => this._extensionService.activateByEvent(`onNotebook:*`))
 				.catch(err => onUnexpectedError(err));
 		}
 	}
