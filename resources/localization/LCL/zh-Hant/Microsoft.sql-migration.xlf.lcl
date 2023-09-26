@@ -429,10 +429,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.aad.domain.name.input.box.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)]]></Val>
+          <Val><![CDATA[Microsoft Entra ID Domain Name (only required to migrate Windows Authenication Logins)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Active Directory 網域名稱 (僅需要移轉 Windows 驗證登入)]]></Val>
+            <Val><![CDATA[Microsoft Entra ID 網域名稱 (只需要移轉 Windows Authenication 登入)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -465,10 +468,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.enter.AAD.domain.name.to.continue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Active Directory (AAD) Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).]]></Val>
+          <Val><![CDATA[Microsoft Entra ID Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[需要 Azure Active Directory (AAD) 網域名稱才能移轉 Windows 登入。請輸入 AAD 網域名稱或取消選取 Windows 登入。]]></Val>
+            <Val><![CDATA[需要 Microsoft Entra ID 網域名稱才能移轉 Windows 登入。請輸入 AAD 網域名稱或取消選取 Windows 登入。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Active Directory (AAD) Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1152,10 +1158,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.azure.tenant" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure AD tenant]]></Val>
+          <Val><![CDATA[Microsoft Entra tenant]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure AD 租用戶]]></Val>
+            <Val><![CDATA[Microsoft Entra 租用戶]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure AD tenant]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6984,10 +6993,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.starting.migration.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[An error occurred while starting the certificate migration: '{0}']]></Val>
+          <Val><![CDATA[The following error has occurred while starting the certificate migration: '{0}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[啟動憑證移轉時發生錯誤: '{0}']]></Val>
+            <Val><![CDATA[啟動憑證移轉時發生下列錯誤: '{0}']]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[An error occurred while starting the certificate migration: '{0}']]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7990,6 +8002,87 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Description]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[描述]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.error" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[錯誤]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.requirements.message" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[In order for certificate migration to succeed, you must meet all of the requirements listed below.]A;]A;Click "Run validation" to check that requirements are met.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[為了讓憑證移轉成功，您必須符合下列所有需求。 ]A;]A;按一下 [執行驗證]5D; 以檢查是否符合需求。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.run.validation" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Run validation]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[執行驗證]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.running" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Running]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在執行]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.status.pending" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Pending]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[擱置中]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.status.succeeded" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Succeeded]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[已成功]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Validation]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[驗證]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.troubleshooting.tips" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Troubleshooting tips]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[疑難排解提示]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.wizard.databases.selected" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} out of {1} selected database(s) is using transparent data encryption.]]></Val>
@@ -8313,6 +8406,15 @@
           <Val><![CDATA[Stop validation]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[停止驗證]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.validate.ir.unsuccessful.revalidation" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Revalidate unsuccessful steps]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[重新驗證失敗的步驟]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

@@ -254,7 +254,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Copies the selected data to clipboard.
 	 */
-	$copyResults(handle: number, requestParams: azdata.CopyResultsRequestParams): Thenable<void> { throw ni(); }
+	$copyResults(handle: number, requestParams: azdata.CopyResultsRequestParams): Thenable<azdata.CopyResultsRequestResult> { throw ni(); }
 
 	/**
 	 * Commits all pending edits in an edit session
@@ -355,7 +355,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Open a file browser
 	 */
-	$openFileBrowser(handle: number, ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean> { throw ni(); }
+	$openFileBrowser(handle: number, ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean, showFoldersOnly?: boolean): Thenable<boolean> { throw ni(); }
 
 
 	/**
@@ -596,10 +596,6 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$isExecutionPlan(handle: number, value: string): Thenable<azdata.executionPlan.IsExecutionPlanResult> { throw ni(); }
 	/**
-	 * Generates server context.
-	 */
-	$generateServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GenerateServerContextualizationResult> { throw ni(); }
-	/**
 	 * Gets server context.
 	 */
 	$getServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GetServerContextualizationResult> { throw ni(); }
@@ -837,7 +833,7 @@ export interface ExtHostWorkspaceShape {
 }
 
 export interface ExtHostWindowShape {
-	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string | undefined>;
+	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[], showFoldersOnly?: boolean): Promise<string | undefined>;
 }
 
 export interface MainThreadWorkspaceShape {
@@ -847,7 +843,7 @@ export interface MainThreadWorkspaceShape {
 }
 
 export interface MainThreadWindowShape {
-	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string | undefined>;
+	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[], showFoldersOnly?: boolean): Promise<string | undefined>;
 }
 
 export interface MainThreadBackgroundTaskManagementShape extends IDisposable {

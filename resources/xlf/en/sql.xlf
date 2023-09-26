@@ -1694,10 +1694,10 @@ Default Skipped Commands:
       <source xml:lang="en">Collapse All Connections</source>
     </trans-unit>
     <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
-      <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
+      <source xml:lang="en">Microsoft Entra ID - Universal with MFA support</source>
     </trans-unit>
     <trans-unit id="sql.defaultAuthenticationType.AzureMFAAndUser">
-      <source xml:lang="en">Azure Active Directory - Password</source>
+      <source xml:lang="en">Microsoft Entra ID - Password</source>
     </trans-unit>
     <trans-unit id="sql.defaultAuthenticationType.Integrated">
       <source xml:lang="en">Windows Authentication</source>
@@ -5518,7 +5518,7 @@ Error Message: {1}</source>
       <source xml:lang="en">Azure subscription</source>
     </trans-unit>
     <trans-unit id="backupRestoreUrlBrowserDialog.tenant">
-      <source xml:lang="en">Azure AD Tenant</source>
+      <source xml:lang="en">Microsoft Entra Tenant</source>
     </trans-unit>
     <trans-unit id="fileBrowser.discard">
       <source xml:lang="en">Discard</source>
@@ -5721,7 +5721,7 @@ Error Message: {1}</source>
       <source xml:lang="en">Account</source>
     </trans-unit>
     <trans-unit id="connection.azureTenantDropdownLabel">
-      <source xml:lang="en">Azure AD tenant</source>
+      <source xml:lang="en">Microsoft Entra tenant</source>
     </trans-unit>
     <trans-unit id="connectionName">
       <source xml:lang="en">Name (optional)</source>
@@ -6329,6 +6329,11 @@ Error Message: {1}</source>
       <source xml:lang="en">Show All Connections</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/dragAndDropController" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="objectExplorer.dragAndDropController.existingIdenticalProfile">
+      <source xml:lang="en">Cannot drag profile into group: A profile with identical options already exists in the group.</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog" source-language="en" datatype="plaintext"><body>
     <trans-unit id="filterDialog.errorDateRange">
       <source xml:lang="en">Start date cannot be greater than end date.</source>
@@ -6640,6 +6645,9 @@ Error Message: {1}</source>
     </trans-unit>
     <trans-unit id="openFile">
       <source xml:lang="en">Open file</source>
+    </trans-unit>
+    <trans-unit id="openFileLocation">
+      <source xml:lang="en">Open file location</source>
     </trans-unit>
     <trans-unit id="resultsSerializer.saveAsFileExtensionCSVTitle">
       <source xml:lang="en">CSV (Comma delimited)</source>

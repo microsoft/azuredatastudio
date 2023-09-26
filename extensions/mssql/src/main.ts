@@ -27,6 +27,7 @@ import { registerTableDesignerCommands } from './tableDesigner/tableDesigner';
 import { registerObjectManagementCommands } from './objectManagement/commands';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from './telemetry';
 import { noConvertResult, noDocumentFound, unsupportedPlatform } from './localizedConstants';
+import { registerConnectionCommands } from './connection/commands';
 
 const localize = nls.loadMessageBundle();
 
@@ -156,6 +157,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 
 	registerTableDesignerCommands(appContext);
 	registerObjectManagementCommands(appContext);
+	registerConnectionCommands(appContext);
 
 	// context.subscriptions.push(new SqlNotebookController()); Temporarily disabled due to breaking query editor
 

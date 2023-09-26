@@ -142,6 +142,9 @@
     <trans-unit id="okButtonText">
       <source xml:lang="en">Ok</source>
     </trans-unit>
+    <trans-unit id="openInNewTab">
+      <source xml:lang="en">Open In New Tab</source>
+    </trans-unit>
     <trans-unit id="overallResourceConsumption">
       <source xml:lang="en">Overall Resource Consumption</source>
     </trans-unit>
@@ -159,6 +162,9 @@
     </trans-unit>
     <trans-unit id="queries">
       <source xml:lang="en">Queries</source>
+    </trans-unit>
+    <trans-unit id="queryStoreDashboardTitle">
+      <source xml:lang="en">Query Store - {0}</source>
     </trans-unit>
     <trans-unit id="resourceConsumptionCriteriaTitle">
       <source xml:lang="en">Resource Consumption Criteria</source>
@@ -210,11 +216,8 @@
     </trans-unit>
   </body></file>
   <file original="extensions/Microsoft.query-store/package" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="queryStore.overallResourceConsumptionOpen">
-      <source xml:lang="en">Open Overall Resource Consumption</source>
-    </trans-unit>
-    <trans-unit id="queryStore.topResourceConsumingQueriesOpen">
-      <source xml:lang="en">Open Top Resource Consuming Queries</source>
+    <trans-unit id="queryStore.openQueryStoreDashboard">
+      <source xml:lang="en">Query Store</source>
     </trans-unit>
     <trans-unit id="queryStore.category">
       <source xml:lang="en">Query Store</source>

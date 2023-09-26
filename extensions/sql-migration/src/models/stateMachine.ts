@@ -17,7 +17,7 @@ import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBac
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getSourceConnectionUri, getTrustServerCertificateValue, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel } from './loginMigrationModel';
-import { TdeMigrationDbResult, TdeMigrationModel } from './tdeModels';
+import { TdeMigrationDbResult, TdeMigrationModel, TdeValidationResult } from './tdeModels';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
 const localize = nls.loadMessageBundle();
 
@@ -997,6 +997,55 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		}
 
 		opResult.success = opResult.errors.length === 0; //Set success when there are no errors.
+		return opResult;
+	}
+
+	public async getTdeValidationTitles(): Promise<OperationResult<string[]>> {
+		const opResult: OperationResult<string[]> = {
+			success: false,
+			result: [],
+			errors: []
+		};
+
+		try {
+			opResult.result = await this.migrationService.getTdeValidationTitles() ?? [];
+		} catch (e) {
+			console.error(e);
+		}
+
+		return opResult;
+	}
+
+	public async runTdeValidation(networkSharePath: string): Promise<OperationResult<TdeValidationResult[]>> {
+		const opResult: OperationResult<TdeValidationResult[]> = {
+			success: false,
+			result: [],
+			errors: []
+		};
+
+		const connectionString = await getSourceConnectionString();
+
+		try {
+			let tdeValidationResult = await this.migrationService.runTdeValidation(
+				connectionString,
+				networkSharePath);
+
+			if (tdeValidationResult !== undefined) {
+				opResult.result = tdeValidationResult?.map((e) => {
+					return {
+						validationTitle: e.validationTitle,
+						validationDescription: e.validationDescription,
+						validationTroubleshootingTips: e.validationTroubleshootingTips,
+						validationErrorMessage: e.validationErrorMessage,
+						validationStatus: e.validationStatus,
+						validationStatusString: e.validationStatusString
+					};
+				});
+			}
+		} catch (e) {
+			console.error(e);
+		}
+
 		return opResult;
 	}
 

@@ -166,7 +166,7 @@ export const OPTIONS: OptionDescriptions<Required<NativeParsedArgs>> = {
 	'enable-coi': { type: 'boolean' },
 
 	// {{SQL CARBON EDIT}} Start
-	'aad': { type: 'boolean', cat: 'o', description: localize('aadParameter', 'Use Azure Active Directory authentication, this option is depcrecated - use \'authenticationType\' instead.') },
+	'aad': { type: 'boolean', cat: 'o', description: localize('aadParameter', 'Use Microsoft Entra authentication, this option is depcrecated - use \'authenticationType\' instead.') },
 	'applicationName': { type: 'string', alias: 'A', cat: 'o', allowEmptyValue: true, description: localize('applicationNameParameter', 'Supports providing applicationName that will be used for connection profile app name.') },
 	'authenticationType': { type: 'string', alias: 'T', cat: 'o', allowEmptyValue: true, deprecates: ['aad', 'integrated'], description: localize('authenticationTypeParameter', 'Provide authentication mode to be used. Accepted values: AzureMFA, SqlLogin, Integrated, etc.') },
 	'command': { type: 'string', alias: 'c', cat: 'o', args: 'command-name', allowEmptyValue: true, description: localize('commandParameter', 'Name of command to run, accepted values: connect, openConnectionDialog') },
