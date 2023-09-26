@@ -47,6 +47,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _skuDataCollectionStatusIcon!: azdata.ImageComponent;
 	private _skuDataCollectionStatusText!: azdata.TextComponent;
 	private _skuDataCollectionTimerText!: azdata.TextComponent;
+	private _skuLastRefreshTimeText!: azdata.TextComponent;
 
 	private _assessmentLoader!: azdata.LoadingComponent;
 	private _assessmentProgress!: azdata.TextComponent;
@@ -84,6 +85,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		igContainer.addItem(this._igComponent, { flex: '0 0 auto' });
 
 		this._detailsComponent = this.createDetailsComponent(view);
+
+		this._skuDataCollectionStatusContainer = this.createPerformanceCollectionStatusContainer(view);
 
 		this._skipAssessmentCheckbox = view.modelBuilder.checkBox()
 			.withProps({
@@ -134,6 +137,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			.withItems([
 				igContainer,
 				this._detailsComponent,
+				this._skuDataCollectionStatusContainer,
 				refreshAssessmentButton,
 				this._skipAssessmentCheckbox,
 				this._skipAssessmentSubText])
@@ -237,6 +241,70 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		// TODO - OnLinkClick for SKU Recommendations dialog and push it to disposables.
 
 		return component;
+	}
+
+	private createPerformanceCollectionStatusContainer(_view: azdata.ModelView): azdata.FlexContainer {
+		const container = _view.modelBuilder.flexContainer()
+			.withProps({
+				CSSStyles: {
+					'flex-direction': 'column',
+					'display': this.migrationStateModel.performanceCollectionNotStarted() ? 'none' : 'block',
+				}
+			}).component();
+
+		this._skuDataCollectionStatusIcon = _view.modelBuilder.image()
+			.withProps({
+				iconPath: IconPathHelper.inProgressMigration,
+				iconHeight: 16,
+				iconWidth: 16,
+				width: 16,
+				height: 16,
+				CSSStyles: { 'margin-right': '4px' }
+			}).component();
+		this._skuDataCollectionStatusText = _view.modelBuilder.text()
+			.withProps({
+				value: '',
+				CSSStyles: { ...styles.BODY_CSS, 'margin': '0' }
+			}).component();
+
+		const statusIconTextContainer = _view.modelBuilder.flexContainer()
+			.withItems([
+				this._skuDataCollectionStatusIcon,
+				this._skuDataCollectionStatusText,
+			])
+			.withProps({
+				CSSStyles: {
+					'flex-direction': 'row',
+					'width': 'fit-content',
+					'align-items': 'center',
+					'margin': '0',
+				}
+			}).component();
+
+		this._skuDataCollectionTimerText = _view.modelBuilder.text()
+			.withProps({
+				value: '',
+				CSSStyles: {
+					...styles.LIGHT_LABEL_CSS,
+					'margin': '0 0 8px 20px',
+				}
+			}).component();
+
+		this._skuLastRefreshTimeText = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.LAST_REFRESHED_TIME(),
+				CSSStyles: {
+					...styles.SMALL_NOTE_CSS,
+					'margin': '0 0 4px 4px',
+				},
+			}).component();
+
+		container.addItems([
+			this._skuLastRefreshTimeText,
+			statusIconTextContainer,
+			this._skuDataCollectionTimerText]);
+
+		return container;
 	}
 
 	private async constructDetails(): Promise<void> {
@@ -545,8 +613,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	// TODO - might be needed when SKU recommendation is done.
 	// public async startCardLoading(): Promise<void> {
 	// }
-	// private createPerformanceCollectionStatusContainer(_view: azdata.ModelView): azdata.FlexContainer {
-	// }
 	// public async refreshSkuParameters(): Promise<void> {
 	// }
 	// public async refreshAzureRecommendation(): Promise<void> {
@@ -599,43 +665,43 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				// });
 
 				if (this.migrationStateModel.performanceCollectionInProgress()) {
-					// await this._skuDataCollectionStatusIcon.updateProperties({
-					// 	iconPath: IconPathHelper.inProgressMigration
-					// });
-					// this._skuDataCollectionStatusText.value = this.hasRecommendations()
-					// 	? constants.AZURE_RECOMMENDATION_STATUS_REFINING
-					// 	: constants.AZURE_RECOMMENDATION_STATUS_IN_PROGRESS;
+					await this._skuDataCollectionStatusIcon.updateProperties({
+						iconPath: IconPathHelper.inProgressMigration
+					});
+					this._skuDataCollectionStatusText.value = this.hasRecommendations()
+						? constants.AZURE_RECOMMENDATION_STATUS_REFINING
+						: constants.AZURE_RECOMMENDATION_STATUS_IN_PROGRESS;
 
 					if (await this.migrationStateModel.isWaitingForFirstTimeRefresh()) {
 						const elapsedTimeInMins = Math.abs(new Date().getTime() - new Date(this.migrationStateModel._perfDataCollectionStartDate!).getTime()) / 60000;
 						const skuRecAutoRefreshTimeInMins = this.migrationStateModel.refreshGetSkuRecommendationFrequency / 60000;
 
-						// this._skuDataCollectionTimerText.value = constants.AZURE_RECOMMENDATION_STATUS_AUTO_REFRESH_TIMER(Math.ceil(skuRecAutoRefreshTimeInMins - elapsedTimeInMins));
+						this._skuDataCollectionTimerText.value = constants.AZURE_RECOMMENDATION_STATUS_AUTO_REFRESH_TIMER(Math.ceil(skuRecAutoRefreshTimeInMins - elapsedTimeInMins));
 					} else {
-						// this._skuDataCollectionTimerText.value = constants.AZURE_RECOMMENDATION_STATUS_MANUAL_REFRESH_TIMER;
+						this._skuDataCollectionTimerText.value = constants.AZURE_RECOMMENDATION_STATUS_MANUAL_REFRESH_TIMER;
 					}
 
-					// await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'block' });
+					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'block' });
 					// await this._skuStopDataCollectionButton.updateCssStyles({ 'display': 'block' });
 					// await this._skuRestartDataCollectionButton.updateCssStyles({ 'display': 'none' });
 					// await this._refreshAzureRecommendationButton.updateCssStyles({ 'display': 'block' });
 					// await this._skuEditParametersContainer.updateCssStyles({ 'display': 'block' });
 				}
 
-				else if (this.migrationStateModel.performanceCollectionStopped()) {
-					// await this._skuDataCollectionStatusIcon.updateProperties({
-					// 	iconPath: IconPathHelper.stop
-					// });
-					// this._skuDataCollectionStatusText.value = constants.AZURE_RECOMMENDATION_STATUS_STOPPED;
-					// this._skuDataCollectionTimerText.value = '';
+				// else if (this.migrationStateModel.performanceCollectionStopped()) {
+				// 	// await this._skuDataCollectionStatusIcon.updateProperties({
+				// 	// 	iconPath: IconPathHelper.stop
+				// 	// });
+				// 	// this._skuDataCollectionStatusText.value = constants.AZURE_RECOMMENDATION_STATUS_STOPPED;
+				// 	// this._skuDataCollectionTimerText.value = '';
 
-					// await this._skuGetRecommendationContainer.updateCssStyles({ 'display': 'none' });
-					// await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'block' });
-					// await this._skuStopDataCollectionButton.updateCssStyles({ 'display': 'none' });
-					// await this._skuRestartDataCollectionButton.updateCssStyles({ 'display': 'block' });
-					// await this._refreshAzureRecommendationButton.updateCssStyles({ 'display': 'none' });
-					// await this._skuEditParametersContainer.updateCssStyles({ 'display': 'block' });
-				}
+				// 	// await this._skuGetRecommendationContainer.updateCssStyles({ 'display': 'none' });
+				// 	await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'block' });
+				// 	// await this._skuStopDataCollectionButton.updateCssStyles({ 'display': 'none' });
+				// 	// await this._skuRestartDataCollectionButton.updateCssStyles({ 'display': 'block' });
+				// 	// await this._refreshAzureRecommendationButton.updateCssStyles({ 'display': 'none' });
+				// 	// await this._skuEditParametersContainer.updateCssStyles({ 'display': 'block' });
+				// }
 				break;
 			}
 
@@ -659,7 +725,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			// initial state before "Get Azure recommendation" dialog
 			default: {
 				// await this._skuGetRecommendationContainer.updateCssStyles({ 'display': 'block' });
-				// await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'none' });
+				await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'none' });
 				// await this._skuEditParametersContainer.updateCssStyles({ 'display': 'none' });
 				// await this._azureRecommendationSectionText.updateProperties({
 				// 	description: constants.AZURE_RECOMMENDATION_TOOLTIP_NOT_STARTED
@@ -673,7 +739,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	public async refreshAzureRecommendation(): Promise<void> {
 		// await this.startCardLoading();
-		// this._skuLastRefreshTimeText.value = constants.LAST_REFRESHED_TIME();
+		this._skuLastRefreshTimeText.value = constants.LAST_REFRESHED_TIME();
 		await this.migrationStateModel.getSkuRecommendations();
 
 		const skuRecommendationError = this.migrationStateModel._skuRecommendationResults?.recommendationError;
@@ -686,6 +752,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}
 
 		await this.refreshSkuRecommendationComponents();
-		// this._skuLastRefreshTimeText.value = constants.LAST_REFRESHED_TIME(new Date().toLocaleString());
+		this._skuLastRefreshTimeText.value = constants.LAST_REFRESHED_TIME(new Date().toLocaleString());
 	}
 }
