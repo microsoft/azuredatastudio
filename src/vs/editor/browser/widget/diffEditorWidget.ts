@@ -310,6 +310,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 			onlyShowAccessibleDiffViewer: false,
 			renderSideBySideInlineBreakpoint: 0,
 			useInlineViewWhenSpaceIsLimited: false,
+			reverse: false // {{SQL CARBON EDIT}} - Add reverse option
 		} as Readonly<Required<IDiffEditorOptions>>); // {{SQL CARBON EDIT}}
 
 		this.isEmbeddedDiffEditorKey = EditorContextKeys.isEmbeddedDiffEditor.bindTo(this._contextKeyService);
@@ -2836,6 +2837,7 @@ function validateDiffEditorOptions(options: Readonly<IDiffEditorOptions>, defaul
 		onlyShowAccessibleDiffViewer: false,
 		renderSideBySideInlineBreakpoint: 0,
 		useInlineViewWhenSpaceIsLimited: false,
+		reverse: validateBooleanOption(options.reverse, defaults.reverse), // {{SQL CARBON EDIT}}
 	} as ValidDiffEditorBaseOptions; // {{SQL CARBON EDIT}} - Specified type
 }
 

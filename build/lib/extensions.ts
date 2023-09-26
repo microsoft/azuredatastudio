@@ -60,7 +60,7 @@ function updateExtensionPackageJSON(input: Stream, update: (data: any) => any): 
 		.pipe(packageJsonFilter.restore);
 }
 
-function fromLocal(extensionPath: string, forWeb: boolean, disableMangle: boolean): Stream {
+export function fromLocal(extensionPath: string, forWeb: boolean, disableMangle: boolean): Stream {
 	const webpackConfigFileName = forWeb ? 'extension-browser.webpack.config.js' : 'extension.webpack.config.js';
 
 	const isWebPacked = fs.existsSync(path.join(extensionPath, webpackConfigFileName));
@@ -496,7 +496,7 @@ export function packageExternalExtensionsStream(): NodeJS.ReadWriteStream {
 		.filter(({ name }) => externalExtensions.indexOf(name) >= 0 || vscodeExternalExtensions.indexOf(name) >= 0);
 
 	const builtExtensions = extenalExtensionDescriptions.map(extension => {
-		return fromLocal(extension.path, false)
+		return fromLocal(extension.path, false, true)
 			.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
 	});
 
@@ -519,7 +519,7 @@ export function packageRebuildExtensionsStream(): NodeJS.ReadWriteStream {
 		.filter(({ name }) => rebuildExtensions.indexOf(name) >= 0);
 
 	const builtExtensions = extenalExtensionDescriptions.map(extension => {
-		return fromLocal(extension.path, false)
+		return fromLocal(extension.path, false, true)
 			.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
 	});
 

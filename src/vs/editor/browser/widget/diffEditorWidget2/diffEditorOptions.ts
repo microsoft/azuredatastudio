@@ -93,5 +93,6 @@ function validateDiffEditorOptions(options: Readonly<IDiffEditorOptions>, defaul
 		onlyShowAccessibleDiffViewer: validateBooleanOption(options.onlyShowAccessibleDiffViewer, defaults.onlyShowAccessibleDiffViewer),
 		renderSideBySideInlineBreakpoint: clampedInt(options.renderSideBySideInlineBreakpoint, defaults.renderSideBySideInlineBreakpoint, 0, Constants.MAX_SAFE_SMALL_INTEGER),
 		useInlineViewWhenSpaceIsLimited: validateBooleanOption(options.useInlineViewWhenSpaceIsLimited, defaults.useInlineViewWhenSpaceIsLimited),
+		reverse: validateBooleanOption(options.reverse, defaults.reverse) // {{SQL CARBON EDIT}} - Validate reverse option
 	};
 }
