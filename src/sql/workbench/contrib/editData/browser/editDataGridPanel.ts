@@ -199,7 +199,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.onActiveCellChanged = this.onCellSelect;
 
 		this.onCellEditEnd = (event: Slick.OnCellChangeEventArgs<any>): void => {
-			self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditCellEnd, 'EditCellEnd')
+			self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditCellEnd)
 				.withAdditionalProperties({ eventRow: event.row, eventCol: event.cell, eventValue: event.item[event.cell] })
 				.send();
 			if (self.currentEditCellValue !== event.item[event.cell]) {
@@ -318,7 +318,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	onDeleteRow(): (index: number) => void {
 		const self = this;
 		return (index: number): void => {
-			self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.DeleteEditRow, 'DeleteEditRow')
+			self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.DeleteEditRow)
 				.withAdditionalProperties({ rowIndex: index })
 				.send();
 			// If the user is deleting a new row that hasn't been committed yet then use the revert code
@@ -342,7 +342,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	onRevertRow(): () => void {
 		const self = this;
 		return (): void => {
-			self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.RevertEditCurrentRow, 'RevertEditCurrentRow')
+			self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.RevertEditCurrentRow)
 				.withAdditionalProperties({ currentRow: self.currentCell.row })
 				.send();
 			self.revertCurrentRow().catch(onUnexpectedError);
@@ -353,7 +353,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		let self = this;
 		let row = event.row;
 		let column = event.cell;
-		self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditCellSelect, 'EditCellSelect')
+		self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditCellSelect)
 			.withAdditionalProperties({ selectedRow: event.row, selectedColumn: event.cell })
 			.send();
 
@@ -894,7 +894,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				scrollTop: viewport.scrollTop,
 				scrollLeft: viewport.scrollLeft
 			};
-			this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditSaveViewState, 'EditSaveViewState')
+			this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditSaveViewState)
 				.withAdditionalProperties({ gridSelections: this.savedViewState.gridSelections, scrollLeft: this.savedViewState.scrollLeft, scrollTop: this.savedViewState.scrollTop })
 				.send();
 
@@ -915,7 +915,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private restoreViewState(): void {
 		if (this.savedViewState) {
-			this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditRestoreViewState, 'EditRestoreViewState')
+			this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditRestoreViewState)
 				.withAdditionalProperties({ gridSelections: this.savedViewState.gridSelections, scrollLeft: this.savedViewState.scrollLeft, scrollTop: this.savedViewState.scrollTop })
 				.send();
 			// Row selections are undefined in original slickgrid, removed for no purpose
