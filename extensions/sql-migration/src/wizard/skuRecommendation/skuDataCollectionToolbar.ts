@@ -68,6 +68,10 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 				}
 			}).component();
 		// TODO - implement onDidClick and add to disposables
+		this._disposables.push(refreshSKURecommendationButton.onDidClick(async () => {
+			await this.skuRecommendationPage.refreshAzureRecommendation();
+		}));
+
 		return refreshSKURecommendationButton;
 	}
 

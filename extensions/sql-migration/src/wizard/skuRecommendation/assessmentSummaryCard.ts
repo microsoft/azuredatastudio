@@ -416,8 +416,8 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		await this._recommendedConfigurationText.updateCssStyles({ 'display': 'block' });
 		await this._vmRecommendedConfigurationText.updateCssStyles({ 'display': 'block' });
 
-		await this._recommendedConfigurationText.updateProperties({ "value": skuRecommendation });
-		await this._vmRecommendedConfigurationText.updateProperties({ "value": vmRecommendation });
+		this._recommendedConfigurationText.value = skuRecommendation;
+		this._vmRecommendedConfigurationText.value = vmRecommendation;
 	}
 
 	// TODO - Check this later, if we need to handle this separately.
