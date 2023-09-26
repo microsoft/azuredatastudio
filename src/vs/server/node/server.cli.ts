@@ -89,8 +89,7 @@ const cliStdInFilePath = process.env['VSCODE_STDIN_FILE_PATH'] as string;
 
 export async function main(desc: ProductDescription, args: string[]): Promise<void> {
 	if (!cliPipe && !cliCommand) {
-		// {{SQL CARBON EDIT}} Update application name to Azure Data Studio
-		console.log('Command is only available in WSL or inside an Azure Data Studio terminal.');
+		console.log('Command is only available in WSL or inside a Visual Studio Code terminal.');
 		return;
 	}
 
