@@ -229,10 +229,10 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		let title = this._sql.getName();
 		if (profile) {
 			if (profile.connectionName) {
-				title += ` ${profile.connectionName}`;
+				title += ` - ${profile.connectionName}`;
 			}
 			else {
-				title += ` ${profile.serverName}`;
+				title += ` - ${profile.serverName}`;
 				if (profile.databaseName) {
 					title += `.${profile.databaseName}`;
 				}
@@ -245,7 +245,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		let fullTitle = this._sql.getName();
 		let profile = this._connectionManagementService.getConnectionProfile(this.uri);
 		if (profile) {
-			fullTitle += ` ${profile.serverName}`;
+			fullTitle += ` - ${profile.serverName}`;
 			if (profile.databaseName) {
 				fullTitle += `.${profile.databaseName}`;
 			}

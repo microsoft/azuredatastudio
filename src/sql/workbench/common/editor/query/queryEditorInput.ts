@@ -293,7 +293,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 				return this.getName(true);
 			case Verbosity.LONG:
 				// Used by tabsTitleControl as the tooltip hover.
-				return this.getName(true);
+				return fullTitle;
 			default:
 			case Verbosity.MEDIUM:
 				// Not used by this editor, normally used relative to workspace for files in vscode.
