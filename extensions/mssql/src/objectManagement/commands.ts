@@ -359,17 +359,18 @@ async function handleDropDatabase(context: azdata.ObjectExplorerContext, service
 		return;
 	}
 	try {
-		const parentUrn = await getParentUrn(context);
-		const objectName = context.nodeInfo?.label ?? context.connectionProfile.databaseName;
-		const objectUrn = context.nodeInfo?.metadata?.urn ?? `Server/Database[@Name='${escapeSingleQuotes(context.connectionProfile.databaseName)}']`;
+		let object = await getObjectInfoForContext(context);
+		if (object.type !== ObjectManagement.NodeType.Database) {
+			throw new Error(objectManagementLoc.NotSupportedError(ObjectManagement.NodeType.Database));
+		}
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
 			isNewObject: false,
-			database: context.connectionProfile!.databaseName!,
-			objectType: ObjectManagement.NodeType.Database,
-			objectName: objectName,
-			parentUrn: parentUrn,
-			objectUrn: objectUrn,
+			database: object.name,
+			objectType: object.type,
+			objectName: object.name,
+			parentUrn: object.parentUrn,
+			objectUrn: object.urn,
 			objectExplorerContext: context
 		};
 		const dialog = new DropDatabaseDialog(service, options);
@@ -425,4 +426,40 @@ async function getParentUrn(context: azdata.ObjectExplorerContext): Promise<stri
 		parentUrn = node?.metadata?.urn;
 	}
 	return parentUrn;
+}
+
+interface ObjectInfo {
+	parentUrn: string;
+	name: string;
+	type: ObjectManagement.NodeType;
+	urn: string;
+}
+
+async function getObjectInfoForContext(context: azdata.ObjectExplorerContext): Promise<ObjectInfo> {
+	let nodeType: ObjectManagement.NodeType;
+	let objectName: string;
+	let objectUrn: string;
+	if (context.nodeInfo) {
+		nodeType = context.nodeInfo.nodeType as ObjectManagement.NodeType;
+		objectName = context.nodeInfo.metadata?.name;
+		objectUrn = context.nodeInfo.metadata?.urn;
+	} else {
+		// Node info will be missing for top level connection items like servers and databases, so make a best guess here based on connection info.
+		if (context.connectionProfile?.databaseName?.length > 0) {
+			nodeType = ObjectManagement.NodeType.Database;
+			objectName = context.connectionProfile.databaseName;
+			objectUrn = `Server/Database[@Name='${escapeSingleQuotes(objectName)}']`;
+		} else {
+			nodeType = ObjectManagement.NodeType.Server;
+			objectName = context.connectionProfile.serverName;
+			objectUrn = 'Server';
+		}
+	}
+	let parentUrn = await getParentUrn(context);
+	return {
+		parentUrn: parentUrn,
+		name: objectName,
+		type: nodeType,
+		urn: objectUrn
+	}
 }
