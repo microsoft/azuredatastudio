@@ -130,7 +130,13 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 			objectExplorerContext: context
 		};
 		const dialog = getDialog(service, options);
+		const startTime = Date.now();
 		await dialog.open();
+		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenNewObjectDialog, {
+			objectType: objectType
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
 	}
 	catch (err) {
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenNewObjectDialog, err).withAdditionalProperties({
@@ -159,7 +165,13 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 			objectExplorerContext: context
 		};
 		const dialog = getDialog(service, options);
+		const startTime = Date.now();
 		await dialog.open();
+		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenPropertiesDialog, {
+			objectType: object.type
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
 	}
 	catch (err) {
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenPropertiesDialog, err).withAdditionalProperties({
@@ -297,7 +309,13 @@ async function handleDetachDatabase(context: azdata.ObjectExplorerContext, servi
 			objectExplorerContext: context
 		};
 		const dialog = new DetachDatabaseDialog(service, options);
+		const startTime = Date.now();
 		await dialog.open();
+		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenDetachDatabaseDialog, {
+			objectType: object.type
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
 	}
 	catch (err) {
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenDetachDatabaseDialog, err).withAdditionalProperties({
@@ -325,7 +343,13 @@ async function handleAttachDatabase(context: azdata.ObjectExplorerContext, servi
 			objectExplorerContext: context
 		};
 		const dialog = new AttachDatabaseDialog(service, options);
+		const startTime = Date.now();
 		await dialog.open();
+		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenAttachDatabaseDialog, {
+			objectType: ObjectManagement.NodeType.Database
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
 	}
 	catch (err) {
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenAttachDatabaseDialog, err).withAdditionalProperties({
@@ -357,7 +381,13 @@ async function handleDropDatabase(context: azdata.ObjectExplorerContext, service
 			objectExplorerContext: context
 		};
 		const dialog = new DropDatabaseDialog(service, options);
+		const startTime = Date.now();
 		await dialog.open();
+		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenDropDatabaseDialog, {
+			objectType: object.type
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
 	}
 	catch (err) {
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenDropDatabaseDialog, err).withAdditionalProperties({
