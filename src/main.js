@@ -59,6 +59,9 @@ app.setPath('userData', userDataPath);
 // Resolve code cache path
 const codeCachePath = getCodeCachePath();
 
+// Configure static command line arguments
+const argvConfig = configureCommandlineSwitchesSync(args);
+
 // Disable default menu (https://github.com/electron/electron/issues/35512)
 Menu.setApplicationMenu(null);
 
