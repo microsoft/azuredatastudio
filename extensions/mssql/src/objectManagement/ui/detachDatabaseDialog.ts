@@ -6,7 +6,7 @@
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
-import { DetachDatabaseDocUrl } from '../constants';
+import { DetachDatabaseDocUrl, TelemetryActions } from '../constants';
 import * as loc from '../localizedConstants';
 
 export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
@@ -46,6 +46,10 @@ export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	protected override get helpUrl(): string {
 		return DetachDatabaseDocUrl;
+	}
+
+	protected override get actionName(): string {
+		return TelemetryActions.DetachDatabase;
 	}
 
 	protected override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
