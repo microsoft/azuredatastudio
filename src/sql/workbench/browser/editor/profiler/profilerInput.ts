@@ -18,6 +18,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as types from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
+import * as path from 'vs/base/common/path';
 import { FilterData } from 'sql/workbench/services/profiler/browser/profilerFilter';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { Verbosity } from 'vs/workbench/common/editor';
@@ -132,6 +133,9 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	public override getName(): string {
 		let name: string = ProfilerInput.PROFILERNAME;
 		if (!this.connection) {
+			if (this.isFileSession) {
+				name += ': ' + path.basename(this.fileURI.fsPath);
+			}
 			return name;
 		}
 		if (this.connection.connectionName) {
@@ -150,16 +154,18 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			let advancedOptions = this._connectionService.getNonDefaultOptions(this.connection);
 			fullTitle = fullTitle + ': ' + baseName + advancedOptions;
 		}
+		else if (this.isFileSession) {
+			fullTitle += ': ' + path.basename(this.fileURI.fsPath);
+		}
 
 		switch (verbosity) {
-			case Verbosity.SHORT:
-				return this.getName();
 			case Verbosity.LONG:
 				// Used by tabsTitleControl as the tooltip hover.
 				return fullTitle;
 			default:
+			case Verbosity.SHORT:
 			case Verbosity.MEDIUM:
-				// Not used by this editor, normally used relative to workspace for files in vscode.
+				// Used for header title by tabsTitleControl.
 				return this.getName();
 		}
 	}

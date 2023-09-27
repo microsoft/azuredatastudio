@@ -83,14 +83,13 @@ export class TableDesignerInput extends EditorInput {
 
 	override getTitle(verbosity?: Verbosity): string {
 		switch (verbosity) {
-			case Verbosity.SHORT:
-				return this._title;
 			case Verbosity.LONG:
 				// Used by tabsTitleControl as the tooltip hover.
 				return this._additionalDetails + this._title.substring(this._title.lastIndexOf(' - '));
 			default:
+			case Verbosity.SHORT:
 			case Verbosity.MEDIUM:
-				// Not used by this editor, normally used relative to workspace for files in vscode.
+				// Used for header title by tabsTitleControl.
 				return this._title;
 		}
 	}
