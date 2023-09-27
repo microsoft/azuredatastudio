@@ -616,8 +616,9 @@ export class EditDataGridPanel extends GridParentComponent {
 			handled = true;
 		}
 
-		if (e.keyCode === KeyCode.Enter && this.isNullRow(this.currentCell.row)) {
-			this.isInNullRow = true;
+		if (e.keyCode === KeyCode.Enter) {
+			if (this.isNullRow(this.currentCell.row))
+				this.isInNullRow = true;
 		}
 
 		return handled;
@@ -856,9 +857,10 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.gridDataProvider = new AsyncDataProvider(this.dataSet.dataRows);
 		// refresh results view
 		return this.refreshGrid().then(() => {
-			// Set focus to the row index column of the removed row if the current selection is in the removed row
+			// Set focus to the replacement row if its deleted in the selection
 			if (this.currentCell.row === row && !this.removingNewRow) {
-				this.focusCell(row, 1);
+				this.setCurrentCell(this.currentCell.row, this.currentCell.column);
+				this.focusCell(this.currentCell.row, this.currentCell.column);
 			}
 			this.removingNewRow = false;
 		});
