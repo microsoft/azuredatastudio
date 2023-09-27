@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import * as utils from '../../api/utils';
+import * as contracts from '../../service/contracts';
 
 import { EOL } from 'os';
 import { MigrationWizardPage } from '../../models/migrationWizardPage';
@@ -42,6 +43,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _miAssessmentCard!: AssessmentSummaryCard;
 	private _vmAssessmentCard!: AssessmentSummaryCard;
 
+	private _skuDataCollectionStatusContainer!: azdata.FlexContainer;
+	private _skuDataCollectionStatusIcon!: azdata.ImageComponent;
+	private _skuDataCollectionStatusText!: azdata.TextComponent;
+	private _skuDataCollectionTimerText!: azdata.TextComponent;
+
 	private _assessmentLoader!: azdata.LoadingComponent;
 	private _assessmentProgress!: azdata.TextComponent;
 	private _progressContainer!: azdata.FlexContainer;
@@ -58,7 +64,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	protected async registerContent(view: azdata.ModelView) {
 		this._view = view;
 
-		this._skuDataCollectionToolbar = new SkuDataCollectionToolbar(this.migrationStateModel);
+		this._skuDataCollectionToolbar = new SkuDataCollectionToolbar(this, this.migrationStateModel);
 		const toolbar = this._skuDataCollectionToolbar.createToolbar(view);
 
 		this._assessmentStatusIcon = this._view.modelBuilder.image()
@@ -285,24 +291,50 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}
 
 		// TODO - Keeping these to remind changes required skeRecommendation calculation.
-		// let shouldGetSkuRecommendations = false;
+		let shouldGetSkuRecommendations = false;
 
-		// // recommendations were already generated, then the user went back and changed the list of databases
-		// // so recommendations should be re-generated
-		// if (this.hasRecommendations() && this.migrationStateModel.hasRecommendedDatabaseListChanged()) {
-		// 	shouldGetSkuRecommendations = true;
-		// }
+		// recommendations were already generated, then the user went back and changed the list of databases
+		// so recommendations should be re-generated
+		if (this.hasRecommendations() && this.migrationStateModel.hasRecommendedDatabaseListChanged()) {
+			shouldGetSkuRecommendations = true;
+		}
 
+		if (this.migrationStateModel.savedInfo?.skuRecommendation) {
+			// await this.refreshSkuParameters();
 
-		// if (this.migrationStateModel.savedInfo?.skuRecommendation) {
-		// }
+			switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
+				case PerformanceDataSourceOptions.CollectData: {
+					// check if collector is still running
+					await this.migrationStateModel.refreshPerfDataCollection();
+					if (this.migrationStateModel._perfDataCollectionIsCollecting) {
+						// user started collecting data, ensure the collector is still running
+						await this.migrationStateModel.startSkuTimers(this);
+						await this.refreshSkuRecommendationComponents();
+					} else {
+						// user started collecting data, but collector is stopped
+						// set stop date to some date value
+						this.migrationStateModel._perfDataCollectionStopDate = this.migrationStateModel._perfDataCollectionStopDate || new Date();
+						shouldGetSkuRecommendations = true;
+					}
+					break;
+				}
 
-		// await this.refreshSkuRecommendationComponents();
-		await this.refreshCardText();
+				case PerformanceDataSourceOptions.OpenExisting: {
+					shouldGetSkuRecommendations = true;
+					break;
+				}
+			}
+		}
+
+		if (shouldGetSkuRecommendations) {
+			await this.migrationStateModel.getSkuRecommendations();
+		}
+
+		await this.refreshSkuRecommendationComponents();
 		await this._setAssessmentState(false, this.migrationStateModel._runAssessments);
 	}
 
-	// creating the assessmentInProgress. Shown when the assessment is being calculate.
+	// creating the assessmentInProgress. Shown when the assessment is being calculated.
 	private createAssessmentProgress(): azdata.FlexContainer {
 		this._assessmentLoader = this._view.modelBuilder.loadingComponent()
 			.component();
@@ -377,9 +409,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		if (!this.migrationStateModel._assessmentResults) {
 		}
 		else {
-			await this.updateAssessmentDetailsForEachTarget(MigrationTargetType.SQLDB, dbCount);
-			await this.updateAssessmentDetailsForEachTarget(MigrationTargetType.SQLMI, dbCount);
-			await this.updateAssessmentDetailsForEachTarget(MigrationTargetType.SQLVM, dbCount);
+			await this.updateDetailsForEachTarget(MigrationTargetType.SQLDB, dbCount);
+			await this.updateDetailsForEachTarget(MigrationTargetType.SQLMI, dbCount);
+			await this.updateDetailsForEachTarget(MigrationTargetType.SQLVM, dbCount);
 
 			if (this.hasRecommendations()) {
 				// TODO
@@ -396,10 +428,44 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	// Update the assessment details for each of the target type.
-	private async updateAssessmentDetailsForEachTarget(targetType: MigrationTargetType, dbCount: number): Promise<void> {
+	private async updateDetailsForEachTarget(targetType: MigrationTargetType, dbCount: number): Promise<void> {
+		let recommendation;
+
 		// For Target - SQLVM, all databases can be migrated with issues. So dbReady = dbCount;
 		if (targetType === MigrationTargetType.SQLVM) {
 			this._vmAssessmentCard.updateAssessmentResult(dbCount, dbCount, 0, 0, 0, 0);
+
+			if (this.hasRecommendations()) {
+				// elastic model currently doesn't support SQL VM, so show the baseline model results regardless of user preference
+				recommendation = this.migrationStateModel._skuRecommendationResults.recommendations?.sqlVmRecommendationResults[0];
+
+				// result returned but no SKU recommended
+				if (!recommendation?.targetSku) {
+					await this._vmAssessmentCard.updateSkuRecommendation(constants.SKU_RECOMMENDATION_NO_RECOMMENDATION);
+				}
+				else {
+					const vmConfiguration = constants.VM_CONFIGURATION(
+						recommendation.targetSku.virtualMachineSize!.sizeName,
+						recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
+
+					const dataDisk = constants.STORAGE_CONFIGURATION(
+						recommendation.targetSku.dataDiskSizes![0].size,
+						recommendation.targetSku.dataDiskSizes!.length);
+					const storageDisk = constants.STORAGE_CONFIGURATION(
+						recommendation.targetSku.logDiskSizes![0].size,
+						recommendation.targetSku.logDiskSizes!.length);
+					const tempDb = recommendation.targetSku.tempDbDiskSizes!.length > 0
+						? constants.STORAGE_CONFIGURATION(
+							recommendation.targetSku.logDiskSizes![0].size,
+							recommendation.targetSku.logDiskSizes!.length)
+						: constants.LOCAL_SSD;
+					const vmConfigurationPreview =
+						constants.VM_CONFIGURATION_PREVIEW(dataDisk, storageDisk, tempDb);
+
+					await this._vmAssessmentCard.updateSkuRecommendation(vmConfiguration, vmConfigurationPreview);
+				}
+			}
+
 			return;
 		}
 
@@ -430,9 +496,48 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		switch (targetType) {
 			case MigrationTargetType.SQLDB:
 				this._dbAssessmentCard.updateAssessmentResult(dbCount, dbReady, dbReadyWithWarnings, dbNotReady, blockers, warnings);
+
+				if (this.hasRecommendations()) {
+					const recommendations = this.migrationStateModel._skuEnableElastic
+						? this.migrationStateModel._skuRecommendationResults.recommendations!.elasticSqlDbRecommendationResults
+						: this.migrationStateModel._skuRecommendationResults.recommendations!.sqlDbRecommendationResults;
+					const successfulRecommendationsCount = recommendations.filter(r => r.targetSku !== null).length;
+					await this._dbAssessmentCard.updateSkuRecommendation(constants.RECOMMENDATIONS_AVAILABLE(successfulRecommendationsCount));
+				}
+
 				break;
+
 			case MigrationTargetType.SQLMI:
 				this._miAssessmentCard.updateAssessmentResult(dbCount, dbReady, dbReadyWithWarnings, dbNotReady, blockers, warnings);
+
+				if (this.hasRecommendations()) {
+					if (this.migrationStateModel._skuEnableElastic) {
+						recommendation = this.migrationStateModel._skuRecommendationResults.recommendations?.elasticSqlMiRecommendationResults[0];
+					} else {
+						recommendation = this.migrationStateModel._skuRecommendationResults.recommendations?.sqlMiRecommendationResults[0];
+					}
+
+					// result returned but no SKU recommended
+					if (!recommendation?.targetSku) {
+						await this._miAssessmentCard.updateSkuRecommendation(constants.SKU_RECOMMENDATION_NO_RECOMMENDATION);
+					}
+					else {
+						const serviceTier = recommendation.targetSku.category?.sqlServiceTier === contracts.AzureSqlPaaSServiceTier.GeneralPurpose
+							? constants.GENERAL_PURPOSE
+							: constants.BUSINESS_CRITICAL;
+						const hardwareType = recommendation.targetSku.category?.hardwareType === contracts.AzureSqlPaaSHardwareType.Gen5
+							? constants.GEN5
+							: recommendation.targetSku.category?.hardwareType === contracts.AzureSqlPaaSHardwareType.PremiumSeries
+								? constants.PREMIUM_SERIES
+								: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
+
+						await this._miAssessmentCard.updateSkuRecommendation(constants.MI_CONFIGURATION_PREVIEW(
+							hardwareType,
+							serviceTier,
+							recommendation.targetSku.computeSize!,
+							recommendation.targetSku.storageMaxSizeInMb! / 1024));
+					}
+				}
 				break;
 		}
 	}
@@ -445,8 +550,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	// public async refreshSkuParameters(): Promise<void> {
 	// }
 	// public async refreshAzureRecommendation(): Promise<void> {
-	// }
-	// public async refreshSkuRecommendationComponents(): Promise<void> {
 	// }
 	// private createSkuEditParameters(_view: azdata.ModelView): azdata.FlexContainer {
 	// }
@@ -486,5 +589,103 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			&& !this.migrationStateModel._skuRecommendationResults?.recommendationError
 			? true
 			: false;
+	}
+
+	public async refreshSkuRecommendationComponents(): Promise<void> {
+		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
+			case PerformanceDataSourceOptions.CollectData: {
+				// await this._azureRecommendationSectionText.updateProperties({
+				// 	description: constants.AZURE_RECOMMENDATION_TOOLTIP_IN_PROGRESS
+				// });
+
+				if (this.migrationStateModel.performanceCollectionInProgress()) {
+					// await this._skuDataCollectionStatusIcon.updateProperties({
+					// 	iconPath: IconPathHelper.inProgressMigration
+					// });
+					// this._skuDataCollectionStatusText.value = this.hasRecommendations()
+					// 	? constants.AZURE_RECOMMENDATION_STATUS_REFINING
+					// 	: constants.AZURE_RECOMMENDATION_STATUS_IN_PROGRESS;
+
+					if (await this.migrationStateModel.isWaitingForFirstTimeRefresh()) {
+						const elapsedTimeInMins = Math.abs(new Date().getTime() - new Date(this.migrationStateModel._perfDataCollectionStartDate!).getTime()) / 60000;
+						const skuRecAutoRefreshTimeInMins = this.migrationStateModel.refreshGetSkuRecommendationFrequency / 60000;
+
+						// this._skuDataCollectionTimerText.value = constants.AZURE_RECOMMENDATION_STATUS_AUTO_REFRESH_TIMER(Math.ceil(skuRecAutoRefreshTimeInMins - elapsedTimeInMins));
+					} else {
+						// this._skuDataCollectionTimerText.value = constants.AZURE_RECOMMENDATION_STATUS_MANUAL_REFRESH_TIMER;
+					}
+
+					// await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'block' });
+					// await this._skuStopDataCollectionButton.updateCssStyles({ 'display': 'block' });
+					// await this._skuRestartDataCollectionButton.updateCssStyles({ 'display': 'none' });
+					// await this._refreshAzureRecommendationButton.updateCssStyles({ 'display': 'block' });
+					// await this._skuEditParametersContainer.updateCssStyles({ 'display': 'block' });
+				}
+
+				else if (this.migrationStateModel.performanceCollectionStopped()) {
+					// await this._skuDataCollectionStatusIcon.updateProperties({
+					// 	iconPath: IconPathHelper.stop
+					// });
+					// this._skuDataCollectionStatusText.value = constants.AZURE_RECOMMENDATION_STATUS_STOPPED;
+					// this._skuDataCollectionTimerText.value = '';
+
+					// await this._skuGetRecommendationContainer.updateCssStyles({ 'display': 'none' });
+					// await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'block' });
+					// await this._skuStopDataCollectionButton.updateCssStyles({ 'display': 'none' });
+					// await this._skuRestartDataCollectionButton.updateCssStyles({ 'display': 'block' });
+					// await this._refreshAzureRecommendationButton.updateCssStyles({ 'display': 'none' });
+					// await this._skuEditParametersContainer.updateCssStyles({ 'display': 'block' });
+				}
+				break;
+			}
+
+			// case PerformanceDataSourceOptions.OpenExisting: {
+			// 	await this._azureRecommendationSectionText.updateProperties({
+			// 		description: constants.AZURE_RECOMMENDATION_TOOLTIP_NOT_STARTED
+			// 	});
+
+			// 	if (this.hasRecommendations()) {
+			// 		this._azureRecommendationInfoText.value = constants.AZURE_RECOMMENDATION_STATUS_DATA_IMPORTED;
+			// 		this._getAzureRecommendationButton.label = constants.REFINE_AZURE_RECOMMENDATION;
+			// 		this._getAzureRecommendationButton.width = 200;
+
+			// 		await this._skuGetRecommendationContainer.updateCssStyles({ 'display': 'block' });
+			// 		await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'none' });
+			// 		await this._skuEditParametersContainer.updateCssStyles({ 'display': 'block' });
+			// 	}
+			// 	break;
+			// }
+
+			// initial state before "Get Azure recommendation" dialog
+			default: {
+				// await this._skuGetRecommendationContainer.updateCssStyles({ 'display': 'block' });
+				// await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'none' });
+				// await this._skuEditParametersContainer.updateCssStyles({ 'display': 'none' });
+				// await this._azureRecommendationSectionText.updateProperties({
+				// 	description: constants.AZURE_RECOMMENDATION_TOOLTIP_NOT_STARTED
+				// });
+				break;
+			}
+		}
+
+		await this.refreshCardText(false);
+	}
+
+	public async refreshAzureRecommendation(): Promise<void> {
+		// await this.startCardLoading();
+		// this._skuLastRefreshTimeText.value = constants.LAST_REFRESHED_TIME();
+		await this.migrationStateModel.getSkuRecommendations();
+
+		const skuRecommendationError = this.migrationStateModel._skuRecommendationResults?.recommendationError;
+		if (skuRecommendationError) {
+			this.wizard.message = {
+				text: constants.SKU_RECOMMENDATION_ERROR(this._serverName),
+				description: skuRecommendationError.message,
+				level: azdata.window.MessageLevel.Error
+			};
+		}
+
+		await this.refreshSkuRecommendationComponents();
+		// this._skuLastRefreshTimeText.value = constants.LAST_REFRESHED_TIME(new Date().toLocaleString());
 	}
 }

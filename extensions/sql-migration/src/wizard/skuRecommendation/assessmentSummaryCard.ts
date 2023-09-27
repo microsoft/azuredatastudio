@@ -26,6 +26,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 	private _blockersText!: azdata.TextComponent;
 	private _warningsText!: azdata.TextComponent;
 
+	private _azureRecommendationNotAvailableText!: azdata.TextComponent;
 	private _recommendedConfigurationText!: azdata.TextComponent;
 	private _vmRecommendedConfigurationText!: azdata.TextComponent;
 
@@ -334,6 +335,15 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 			},
 		}).component();
 
+		this._azureRecommendationNotAvailableText = view.modelBuilder.text().withProps({
+			value: constants.AZURE_RECOMMENDATION_CARD_NOT_ENABLED,
+			CSSStyles: {
+				'font-size': '13px',
+				'font-weight': '400',
+				'line-height': '18px',
+			},
+		}).component();
+
 		this._recommendedConfigurationText = view.modelBuilder.text().withProps({
 			value: "",
 			height: 18,
@@ -342,6 +352,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				'line-height': '18px',
 				'font-weight': '600',
 				'margin': '0px',
+				'display': 'none',
 			},
 		}).component();
 
@@ -353,6 +364,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				'line-height': '14px',
 				'font-weight': '400',
 				'margin': '0px',
+				'display': 'none',
 			},
 		}).component();
 
@@ -365,10 +377,12 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				'font-weight': '400',
 				'line-height': '18px',
 				'text-decoration': 'none',
+				'display': 'none',
 			}
 		}).component();
 
 
+		container.addItem(this._azureRecommendationNotAvailableText);
 		container.addItem(recommendedConfigurationLabel);
 		container.addItem(this._recommendedConfigurationText);
 
@@ -397,9 +411,13 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 	}
 
 	public async updateSkuRecommendation(
-		skuRecommendation: string, vmRecommendation: string) {
-		await this._recommendedConfigurationText.updateProperties({ "value": skuRecommendation });
-		await this._vmRecommendedConfigurationText.updateProperties({ "value": vmRecommendation });
+		skuRecommendation: string, vmRecommendation: string = '') {
+		await this._azureRecommendationNotAvailableText.updateCssStyles({ 'display': 'none' });
+		await this._recommendedConfigurationText.updateCssStyles({ 'display': 'block' });
+		await this._vmRecommendedConfigurationText.updateCssStyles({ 'display': 'block' });
+
+		this._recommendedConfigurationText.value = skuRecommendation;
+		this._vmRecommendedConfigurationText.value = vmRecommendation;
 	}
 
 	// TODO - Check this later, if we need to handle this separately.
