@@ -271,7 +271,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				.withProps({
 					CSSStyles: {
 						'margin': '-10px 0px 0px -10px'
-					},
+					}
 				})
 				.component();
 			this.disposables.push(
