@@ -266,8 +266,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			const propertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 				.withTabs([propertiesTabGroup])
 				.withLayout({
-					orientation: azdata.TabOrientation.Vertical,
-					alwaysShowTabs: true
+					orientation: azdata.TabOrientation.Vertical
 				})
 				.withProps({
 					CSSStyles: {

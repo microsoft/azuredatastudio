@@ -142,13 +142,12 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		const serverPropertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 			.withTabs([serverPropertiesTabGroup])
 			.withLayout({
-				orientation: azdata.TabOrientation.Vertical,
-				alwaysShowTabs: true
+				orientation: azdata.TabOrientation.Vertical
 			})
 			.withProps({
 				CSSStyles: {
 					'margin': '-10px 0px 0px -10px'
-				},
+				}
 			}).component();
 		this.disposables.push(
 			serverPropertiesTabbedPannel.onTabChanged(async tabId => {
