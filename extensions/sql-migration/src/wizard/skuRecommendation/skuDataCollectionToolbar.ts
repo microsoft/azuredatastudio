@@ -14,19 +14,40 @@ import * as vscode from 'vscode';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
+import { MigrationStateModel, PerformanceDataSourceOptions } from '../../models/stateMachine';
+
+// TODO - "Change this to actual default path once it is available"
+const DEFAULT_PATH_FOR_START_DATA_COLLECTION = "C:\DataPointsCollectionFolder";
 
 export class SkuDataCollectionToolbar implements vscode.Disposable {
+	private _refreshSKURecommendationButton!: azdata.ButtonComponent;
+	private _startPerformanceCollectionButton!: azdata.ButtonComponent;
+	private _stopPerformanceCollectionButton!: azdata.ButtonComponent;
+	private _importPerformanceDataButton!: azdata.ButtonComponent;
+	private _recommendationParametersButton!: azdata.ButtonComponent;
+
+	private _performanceDataSource!: PerformanceDataSourceOptions;
+
 	private _disposables: vscode.Disposable[] = [];
 
+	constructor(private migrationStateModel: MigrationStateModel) {
+	}
+
 	public createToolbar(view: azdata.ModelView): azdata.ToolbarContainer {
-		const toolbar = view.modelBuilder.toolbarContainer()
+		const toolbar = view.modelBuilder.toolbarContainer();
+
+		this._refreshSKURecommendationButton = this.createRefreshSKURecommendationButton(view);
+		this._startPerformanceCollectionButton = this.createStartPerformanceCollectionButton(view);
+		this._stopPerformanceCollectionButton = this.createStopPerformanceCollectionButton(view);
+		this._importPerformanceDataButton = this.createImportPerformanceDataButton(view);
+		this._recommendationParametersButton = this.createRecommendationParametersButton(view);
 
 		toolbar.addToolbarItems([
-			<azdata.ToolbarComponent>{ component: this.createRefreshSKURecommendationButton(view), toolbarSeparatorAfter: true },
-			<azdata.ToolbarComponent>{ component: this.createStartPerformanceCollectionButton(view), toolbarSeparatorAfter: false },
-			<azdata.ToolbarComponent>{ component: this.createStopPerformanceCollectionButton(view), toolbarSeparatorAfter: false },
-			<azdata.ToolbarComponent>{ component: this.createImportPerformanceDataButton(view), toolbarSeparatorAfter: true },
-			<azdata.ToolbarComponent>{ component: this.createRecommendationParametersButton(view), toolbarSeparatorAfter: false },
+			<azdata.ToolbarComponent>{ component: this._refreshSKURecommendationButton, toolbarSeparatorAfter: true },
+			<azdata.ToolbarComponent>{ component: this._startPerformanceCollectionButton, toolbarSeparatorAfter: false },
+			<azdata.ToolbarComponent>{ component: this._stopPerformanceCollectionButton, toolbarSeparatorAfter: false },
+			<azdata.ToolbarComponent>{ component: this._importPerformanceDataButton, toolbarSeparatorAfter: true },
+			<azdata.ToolbarComponent>{ component: this._recommendationParametersButton, toolbarSeparatorAfter: false },
 		]);
 
 		return toolbar.component();
@@ -63,7 +84,50 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 					...styles.TOOLBAR_CSS
 				}
 			}).component();
-		// TODO - implement onDidClick and add to disposables
+
+		const defaultPathOption = constants.AZURE_RECOMMENDATION_DATA_COLLECTION_DEFAULT_PATH;
+		const choosePathOption = constants.AZURE_RECOMMENDATION_DATA_COLLECTION_CHOOSE_PATH;
+
+		this._disposables.push(startPerformanceCollectionButton.onDidClick(async () => {
+			const selectedOption = await vscode.window.showInformationMessage(
+				constants.AZURE_RECOMMENDATION_DATA_COLLECTION_POPUP_MESSAGE_LABEL,
+				defaultPathOption,
+				choosePathOption
+			);
+
+			// Default path is selected or no option is selected.
+			if (!selectedOption || selectedOption === defaultPathOption) {
+				this._performanceDataSource = PerformanceDataSourceOptions.CollectData;
+				this.migrationStateModel._skuRecommendationPerformanceLocation = DEFAULT_PATH_FOR_START_DATA_COLLECTION;
+
+				// TODO - Start data collection at default path.
+			}
+			// 'Choose a path' option is selected.
+			else if (selectedOption === choosePathOption) {
+				const options: vscode.OpenDialogOptions = {
+					openLabel: 'Select',
+					canSelectFiles: false,
+					canSelectFolders: true,
+					canSelectMany: false,
+				};
+
+				// Handle the folder selection here
+				const chosenFolder = await vscode.window.showOpenDialog(options);
+
+				// if a folder path is selected.
+				if (chosenFolder && chosenFolder.length > 0 && chosenFolder[0]) {
+					this._performanceDataSource = PerformanceDataSourceOptions.CollectData;
+					this.migrationStateModel._skuRecommendationPerformanceLocation = chosenFolder[0].fsPath;
+
+					// TODO - Start data collection at folder path selected.
+				} else {
+					// TODO - What to do if user clicks on "choose a path" and do not selecta folder.
+					// Either 1) start data collection at Default path.
+					// or 2) Do not start data collection and give user a warning that "no path selected".
+				}
+			}
+		}));
+
 		return startPerformanceCollectionButton;
 	}
 
