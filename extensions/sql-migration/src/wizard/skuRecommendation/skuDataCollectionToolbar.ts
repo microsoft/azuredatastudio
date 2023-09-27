@@ -30,7 +30,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 
 	private _disposables: vscode.Disposable[] = [];
 
-	constructor(public migrationStateModel: MigrationStateModel) {
+	constructor(private migrationStateModel: MigrationStateModel) {
 	}
 
 	public createToolbar(view: azdata.ModelView): azdata.ToolbarContainer {
@@ -85,22 +85,25 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 				}
 			}).component();
 
+		const defaultPathOption = constants.AZURE_RECOMMENDATION_DATA_COLLECTION_DEFAULT_PATH;
+		const choosePathOption = constants.AZURE_RECOMMENDATION_DATA_COLLECTION_CHOOSE_PATH;
+
 		this._disposables.push(startPerformanceCollectionButton.onDidClick(async () => {
 			const selectedOption = await vscode.window.showInformationMessage(
 				constants.AZURE_RECOMMENDATION_DATA_COLLECTION_POPUP_MESSAGE_LABEL,
-				constants.AZURE_RECOMMENDATION_DATA_COLLECTION_DEFAULT_PATH,
-				constants.AZURE_RECOMMENDATION_DATA_COLLECTION_CHOOSE_PATH
+				defaultPathOption,
+				choosePathOption
 			);
 
 			// Default path is selected or no option is selected.
-			if (!selectedOption || selectedOption === constants.AZURE_RECOMMENDATION_DATA_COLLECTION_DEFAULT_PATH) {
+			if (!selectedOption || selectedOption === defaultPathOption) {
 				this._performanceDataSource = PerformanceDataSourceOptions.CollectData;
-				this.migrationStateModel._skuRecommendationPerformanceLocation = Default_PATH_FOR_START_DATA_COLLECTION;
+				this.migrationStateModel._skuRecommendationPerformanceLocation = DEFAULT_PATH_FOR_START_DATA_COLLECTION;
 
 				// TODO - Start data collection at default path.
 			}
 			// 'Choose a path' option is selected.
-			else if (selectedOption === constants.AZURE_RECOMMENDATION_DATA_COLLECTION_CHOOSE_PATH) {
+			else if (selectedOption === choosePathOption) {
 				const options: vscode.OpenDialogOptions = {
 					openLabel: 'Select',
 					canSelectFiles: false,
