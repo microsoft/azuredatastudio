@@ -127,7 +127,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}).component();
 
 		this._disposables.push(refreshAssessmentButton.onDidClick(async () => {
-			// await this.startCardLoading();
+			await this.startCardLoading();
 			this.migrationStateModel._runAssessments = true;
 			await this.constructDetails();
 		}));
@@ -220,9 +220,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 
-		this._dbAssessmentCard = new AssessmentSummaryCard(MigrationTargetType.SQLDB);
-		this._miAssessmentCard = new AssessmentSummaryCard(MigrationTargetType.SQLMI);
-		this._vmAssessmentCard = new AssessmentSummaryCard(MigrationTargetType.SQLVM);
+		this._dbAssessmentCard = new AssessmentSummaryCard(MigrationTargetType.SQLDB, this.migrationStateModel);
+		this._miAssessmentCard = new AssessmentSummaryCard(MigrationTargetType.SQLMI, this.migrationStateModel);
+		this._vmAssessmentCard = new AssessmentSummaryCard(MigrationTargetType.SQLVM, this.migrationStateModel);
 
 		this._assessmentSummaryCard.addItems([
 			this._dbAssessmentCard.createAssessmentSummaryCard(view),
@@ -611,11 +611,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	// TODO - might be needed when SKU recommendation is done.
-	// public async startCardLoading(): Promise<void> {
-	// }
 	// public async refreshSkuParameters(): Promise<void> {
-	// }
-	// public async refreshAzureRecommendation(): Promise<void> {
 	// }
 	// private createSkuEditParameters(_view: azdata.ModelView): azdata.FlexContainer {
 	// }
@@ -737,8 +733,16 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		await this.refreshCardText(false);
 	}
 
+	public async startCardLoading(): Promise<void> {
+		// TO-DO: ideally the short SKU recommendation loading time should have a spinning indicator,
+		// but updating the card text will do for now
+		await this._dbAssessmentCard.updateSkuRecommendation(constants.LOADING_RECOMMENDATIONS, '');
+		await this._miAssessmentCard.updateSkuRecommendation(constants.LOADING_RECOMMENDATIONS, '');
+		await this._vmAssessmentCard.updateSkuRecommendation(constants.LOADING_RECOMMENDATIONS, '');
+	}
+
 	public async refreshAzureRecommendation(): Promise<void> {
-		// await this.startCardLoading();
+		await this.startCardLoading();
 		this._skuLastRefreshTimeText.value = constants.LAST_REFRESHED_TIME();
 		await this.migrationStateModel.getSkuRecommendations();
 
