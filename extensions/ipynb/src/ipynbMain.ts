@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as azdata from 'azdata';
+import * as azdata from 'azdata'; // {{SQL CARBON EDIT}}
 import { NotebookSerializer } from './notebookSerializer';
 import { ensureAllNewCellsHaveCellIds } from './cellIdService';
 import { notebookImagePasteSetup } from './notebookImagePaste';
@@ -59,6 +59,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(vscode.commands.registerCommand('ipynb.newUntitledIpynb', async () => {
+		// {{SQL CARBON EDIT}} Open new notebooks using the default ADS notebook viewer if VSCode notebooks aren't enabled.
 		let useVSCodeNotebooks = vscode.workspace.getConfiguration('workbench')?.get<boolean>('useVSCodeNotebooks');
 		if (useVSCodeNotebooks) {
 			const language = 'python';
