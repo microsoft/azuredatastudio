@@ -217,6 +217,9 @@ export class EditDataGridPanel extends GridParentComponent {
 				},
 					(error: any) => {
 						self.notificationService.error(error);
+						self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditCellEndError)
+							.withAdditionalProperties({ error: error })
+							.send();
 					}).catch(onUnexpectedError);
 			}
 		};
@@ -387,6 +390,9 @@ export class EditDataGridPanel extends GridParentComponent {
 				return Promise.resolve();
 			},
 			(error) => {
+				self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditCellSelectError)
+					.withAdditionalProperties({ error: error })
+					.send();
 				// Cell update failed, jump back to the last cell we were on
 				this.cellSubmitInProgress = true;
 				this.updateEnabledState(true);
@@ -406,6 +412,9 @@ export class EditDataGridPanel extends GridParentComponent {
 					self.newRowVisible = false;
 					return Promise.resolve();
 				}, error => {
+					self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditCellSelectError)
+						.withAdditionalProperties({ error: error })
+						.send();
 					// Committing failed, jump back to the last selected cell
 					this.cellSubmitInProgress = true;
 					this.updateEnabledState(true);
