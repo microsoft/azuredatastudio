@@ -12,11 +12,14 @@ import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment } from 'vs/workbench/services/statusbar/browser/statusbar';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { localize } from 'vs/nls';
+import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 
 // Connection status bar showing the current global connection
 export class ConnectionStatusbarItem extends Disposable implements IWorkbenchContribution {
 
 	private static readonly ID = 'status.connection.status';
+
+	private readonly queryString = `SELECT @@SPID AS 'ID'`;
 
 	private statusItem: IStatusbarEntryAccessor;
 	private readonly name = localize('status.connection.status', "Connection Status");
@@ -26,6 +29,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService,
+		@IQueryManagementService private readonly queryManagementService: IQueryManagementService
 	) {
 		super();
 		this.statusItem = this._register(
@@ -68,6 +72,9 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 
 	// Set connection info to connection status bar
 	private _setConnectionText(connectionProfile: IConnectionProfile): void {
+		let uri = this.connectionManagementService.getConnectionUri(connectionProfile);
+		let result = this.queryManagementService.runQueryAndReturn(uri, this.queryString);
+		console.log('result is ' + result);
 		let text: string = connectionProfile.serverName;
 		if (text) {
 			if (connectionProfile.databaseName && connectionProfile.databaseName !== '') {
