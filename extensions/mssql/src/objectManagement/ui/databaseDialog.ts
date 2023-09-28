@@ -829,9 +829,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 						const fileGroup = this.rowDataFileGroupsTableRows[this.rowsFilegroupsTable.selectedRows[0]];
 						await this.rowsFilegroupNameContainer.updateCssStyles({ 'visibility': fileGroup.id < 0 ? 'visible' : 'hidden' });
 						await this.rowsFileGroupButtonContainer.updateCssStyles({ 'margin-top': fileGroup.id < 0 ? '0' : '-50px' });
-						if (fileGroup.id < 0) {
-							this.rowsFilegroupNameInput.value = fileGroup.name;
-						}
+						this.rowsFilegroupNameInput.value = fileGroup.name;
 						this.onFormFieldChange();
 					}
 				}
@@ -1068,6 +1066,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				this.objectInfo.filegroups?.splice(removeFilegroupIndex, 1);
 				var newData = this.getTableData(FileGroupType.RowsFileGroup);
 				await this.rowsFilegroupNameContainer.updateCssStyles({ 'visibility': 'hidden' });
+				await this.rowsFileGroupButtonContainer.updateCssStyles({ 'margin-top': '-50px' });
 			}
 		}
 		else if (table === this.filestreamFilegroupsTable) {
@@ -1076,6 +1075,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				this.objectInfo.filegroups?.splice(removeFilegroupIndex, 1);
 				var newData = this.getTableData(FileGroupType.FileStreamDataFileGroup);
 				await this.filestreamFilegroupNameContainer.updateCssStyles({ 'visibility': 'hidden' });
+				await this.filestreamFileGroupButtonContainer.updateCssStyles({ 'margin-top': '-50px' });
 			}
 		}
 		else if (table === this.memoryOptimizedFilegroupsTable) {
@@ -1084,6 +1084,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				this.objectInfo.filegroups?.splice(removeFilegroupIndex, 1);
 				var newData = this.getTableData(FileGroupType.MemoryOptimizedDataFileGroup);
 				await this.memoryOptimizedFilegroupNameContainer.updateCssStyles({ 'visibility': 'hidden' });
+				await this.memoryOptimizedFileGroupButtonContainer.updateCssStyles({ 'margin-top': '-50px' });
 			}
 		}
 
@@ -1108,7 +1109,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.memoryOptimizedFilegroupNameInput = fgInput;
 		}
 
-		let fgInputGroupcontainer = this.createLabelInputContainer(localizedConstants.fileGroupsNameInput, [this.rowsFilegroupNameInput], false);
+		let fgInputGroupcontainer = this.createLabelInputContainer(localizedConstants.fileGroupsNameInput, [fgInput], false);
 		await fgInputGroupcontainer.updateCssStyles({ 'visibility': 'hidden', 'margin-left': '10px' });
 
 		return fgInputGroupcontainer;
@@ -1121,7 +1122,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * @returns Input component
 	 */
 	private getFilegroupNameInput(table: azdata.TableComponent, filegroupType: FileGroupType): azdata.InputBoxComponent {
-		return this.rowsFilegroupNameInput = this.createInputBox(async (value) => {
+		return this.createInputBox(async (value) => {
 			if (table.selectedRows.length === 1) {
 				let fg = null;
 				if (table === this.rowsFilegroupsTable) {
