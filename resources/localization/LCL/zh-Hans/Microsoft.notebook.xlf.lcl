@@ -1448,10 +1448,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/managePackagesDialog.managePackages.dialogName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Manage Packages]]></Val>
+          <Val><![CDATA[Manage Notebook Packages]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[管理包]]></Val>
+            <Val><![CDATA[管理笔记本软件包]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Manage Packages]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1496,6 +1499,15 @@
           <Val><![CDATA[Notebooks]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[笔记本]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterController.pythonNotSetup" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Python is not currently configured for notebooks. The 'Configure Python for Notebooks' command must be run before being able to manage notebook packages.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[当前未为笔记本配置 Python。必须先运行“Configure Python for Notebooks”命令，然后才能管理笔记本软件包。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2282,10 +2294,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.notebook/package.title.managePackages" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Manage Packages]]></Val>
+          <Val><![CDATA[Manage Notebook Packages]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[管理包]]></Val>
+            <Val><![CDATA[管理笔记本软件包]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Manage Packages]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
