@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { SubscriptionClient, SubscriptionClientOptionalParams } from '@azure/arm-subscriptions';
+import { SubscriptionClient } from '@azure/arm-subscriptions';
 import { AzureAccount, azureResource } from 'azurecore';
 import { IAzureResourceSubscriptionService } from '../interfaces';
 import { AzureSubscriptionError } from '../errors';
@@ -15,7 +15,7 @@ import { Logger } from '../../utils/Logger';
 import * as nls from 'vscode-nls';
 import { TenantIgnoredError } from '../../utils/TenantIgnoredError';
 import { multiple_matching_tokens_error } from '../../constants';
-import { TokenCredentialProvider } from './tokenCredentialProvider';
+import { TokenCredentials } from '@azure/ms-rest-js';
 const localize = nls.loadMessageBundle();
 
 export class AzureResourceSubscriptionService implements IAzureResourceSubscriptionService {
@@ -34,20 +34,16 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 			try {
 				const token = await azdata.accounts.getAccountSecurityToken(account, tenantId, azdata.AzureResource.ResourceManagement);
 				if (token !== undefined) {
-					let cred = new TokenCredentialProvider(account, tenantId);
-					let params: SubscriptionClientOptionalParams = {
-						endpoint: account.properties.providerSettings.settings.armResource.endpoint
-					};
-					const subClient: SubscriptionClient = new SubscriptionClient(cred, params);
-					const newSubs = subClient.subscriptions.list();
-					for await (const newSub of newSubs) {
-						subscriptions.push({
+					const subClient = new SubscriptionClient(new TokenCredentials(token.token, token.tokenType), { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
+					const newSubs = await subClient.subscriptions.list();
+					subscriptions.push(...newSubs.map(newSub => {
+						return {
 							id: newSub.subscriptionId || '',
 							name: newSub.displayName || '',
 							tenant: tenantId
-						});
-					}
-					Logger.verbose(`AzureResourceSubscriptionService.getSubscriptions: Retrieved ${subscriptions.length} subscriptions for tenant ${tenantId} / account ${account.displayInfo.displayName}`);
+						};
+					}));
+					Logger.verbose(`AzureResourceSubscriptionService.getSubscriptions: Retrieved ${newSubs.length} subscriptions for tenant ${tenantId} / account ${account.displayInfo.displayName}`);
 					gotSubscriptions = true;
 				}
 				else if (!account.isStale) {
