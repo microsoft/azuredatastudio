@@ -797,7 +797,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		};
 		const removeButtonComponent: DialogButton = {
 			buttonAriaLabel: localizedConstants.RemoveButton,
-			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.rowsFilegroupsTable)
+			buttonHandler: () => this.onRemoveDatabaseFileGroupsButtonClicked(this.rowsFilegroupsTable)
 		};
 		this.rowsFileGroupButtonContainer = this.addButtonsForTable(this.rowsFilegroupsTable, addButtonComponent, removeButtonComponent);
 		await this.rowsFileGroupButtonContainer.updateCssStyles({ 'margin-top': '-50px' });
