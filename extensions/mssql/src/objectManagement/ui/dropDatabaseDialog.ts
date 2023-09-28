@@ -6,7 +6,7 @@
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
-import { DropDatabaseDocUrl } from '../constants';
+import { DropDatabaseDocUrl, TelemetryActions } from '../constants';
 import * as loc from '../localizedConstants';
 
 export class DropDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
@@ -50,6 +50,10 @@ export class DropDatabaseDialog extends ObjectManagementDialogBase<Database, Dat
 
 	protected override get helpUrl(): string {
 		return DropDatabaseDocUrl;
+	}
+
+	protected override get actionName(): string {
+		return TelemetryActions.DropObject;
 	}
 
 	protected override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {

@@ -1,10 +1,9 @@
 name: @@NAME@@
 version: @@VERSION@@
-summary: Code editing. Redefined.
+summary: Azure Data connectivity.
 description: |
-  Visual Studio Code is a new choice of tool that combines the
-  simplicity of a code editor with what developers need for the core
-  edit-build-debug cycle.
+  Azure Data Studio is a lightweight, cross-platform data management
+  and development tool with connectivity to popular cloud and on-premises databases.
 
 architectures:
   - build-on: amd64
