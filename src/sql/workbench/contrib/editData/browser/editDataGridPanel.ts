@@ -918,6 +918,9 @@ export class EditDataGridPanel extends GridParentComponent {
 				this.submitCurrentCellChange((result: EditUpdateCellResult) => {
 					self.setCellDirtyState(self.currentCell.row, self.currentCell.column, result.cell.isDirty);
 				}, (error: any) => {
+					self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditSaveViewError)
+						.withAdditionalProperties({ error: error })
+						.send();
 					self.notificationService.error(error);
 				}).catch(onUnexpectedError);
 			}
