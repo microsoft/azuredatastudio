@@ -2508,6 +2508,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.azuredatastudio.themeUpdatedNotification" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Azure Data Studio now ships with a new default theme '{0}'. If you prefer, you can switch back to the old theme or try one of the many other color themes available.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio 現在隨附新的預設佈景主題 '{0}'。如果您想要的話，您可以切換回舊的佈景主題，或嘗試其他多種可用的色彩佈景主題。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/base/common/locConstants.connectionDialogBrowseTree.context" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The connection dialog's browse tree context menu]]></Val>
@@ -2669,6 +2678,15 @@
           <Val><![CDATA[New Query]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[新增查詢]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.newThemeNotification" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Azure Data Studio now ships with a new default theme '{0}'. Do you want to give it a try?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio 現在隨附新的預設佈景主題 '{0}'。您要試試看嗎?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
