@@ -60,7 +60,7 @@ export class FileBrowserDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(title, TelemetryKeys.ModalDialogName.FileBrowser, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'flyout', hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
+		super(title, TelemetryKeys.ModalDialogName.FileBrowser, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'flyout', hasTitleIcon: false, hasBackButton: false, hasSpinner: true });
 		this._viewModel = this._instantiationService.createInstance(FileBrowserViewModel);
 		this._viewModel.onAddFileTree(args => this.handleOnAddFileTree(args.rootNode, args.selectedNode, args.expandedNodes).catch(err => onUnexpectedError(err)));
 		this._viewModel.onPathValidate(args => this.handleOnValidate(args.succeeded, args.message));
@@ -76,13 +76,6 @@ export class FileBrowserDialog extends Modal {
 	public override render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
-
-		if (this.backButton) {
-
-			this.backButton.onDidClick(() => {
-				this.close();
-			});
-		}
 
 		this._treeContainer = DOM.append(this._body, DOM.$('.tree-view'));
 
@@ -106,6 +99,7 @@ export class FileBrowserDialog extends Modal {
 
 		this._okButton = this.addFooterButton(localize('fileBrowser.ok', "OK"), () => this.ok());
 		this._okButton.enabled = false;
+		// Add a back button to the footer rather than use the built-in back button in the upper left of the dialog
 		this.addFooterButton(localize('fileBrowser.back', "Back"), () => this.close(), 'right', true);
 
 		this.registerListeners();
