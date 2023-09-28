@@ -800,8 +800,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			buttonHandler: () => this.onRemoveDatabaseFileGroupsButtonClicked(this.rowsFilegroupsTable)
 		};
 		this.rowsFileGroupButtonContainer = this.addButtonsForTable(this.rowsFilegroupsTable, addButtonComponent, removeButtonComponent);
-		await this.rowsFileGroupButtonContainer.updateCssStyles({ 'margin-top': '-50px' });
-
 		this.disposables.push(
 			this.rowsFilegroupsTable.onCellAction(async (arg: azdata.ICheckboxCellActionEventArgs) => {
 				let filegroup = this.rowDataFileGroupsTableRows[arg.row];
@@ -827,8 +825,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				async () => {
 					if (this.rowsFilegroupsTable.selectedRows.length === 1) {
 						const fileGroup = this.rowDataFileGroupsTableRows[this.rowsFilegroupsTable.selectedRows[0]];
-						await this.rowsFilegroupNameContainer.updateCssStyles({ 'visibility': fileGroup.id < 0 ? 'visible' : 'hidden' });
-						await this.rowsFileGroupButtonContainer.updateCssStyles({ 'margin-top': fileGroup.id < 0 ? '0' : '-50px' });
+						this.rowsFilegroupNameContainer.display = fileGroup.id < 0 ? 'inline-flex' : 'none';
 						this.rowsFilegroupNameInput.value = fileGroup.name;
 						this.onFormFieldChange();
 					}
@@ -876,8 +873,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			buttonHandler: () => this.onRemoveDatabaseFileGroupsButtonClicked(this.filestreamFilegroupsTable)
 		};
 		this.filestreamFileGroupButtonContainer = this.addButtonsForTable(this.filestreamFilegroupsTable, addButtonComponent, removeButtonComponent);
-		await this.filestreamFileGroupButtonContainer.updateCssStyles({ 'margin-top': '-50px' });
-
 		this.disposables.push(
 			this.filestreamFilegroupsTable.onCellAction(async (arg: azdata.ICheckboxCellActionEventArgs) => {
 				let filegroup = this.filestreamDataFileGroupsTableRows[arg.row];
@@ -899,8 +894,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				async () => {
 					if (this.filestreamFilegroupsTable.selectedRows.length === 1) {
 						const fileGroup = this.filestreamDataFileGroupsTableRows[this.filestreamFilegroupsTable.selectedRows[0]];
-						await this.filestreamFilegroupNameContainer.updateCssStyles({ 'visibility': fileGroup.id < 0 ? 'visible' : 'hidden' });
-						await this.filestreamFileGroupButtonContainer.updateCssStyles({ 'margin-top': fileGroup.id < 0 ? '0' : '-50px' });
+						this.filestreamFilegroupNameContainer.display = fileGroup.id < 0 ? 'inline-flex' : 'none';
 						this.filestreamFilegroupNameInput.value = fileGroup.name;
 						this.onFormFieldChange();
 					}
@@ -944,15 +938,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			buttonHandler: () => this.onRemoveDatabaseFileGroupsButtonClicked(this.memoryOptimizedFilegroupsTable)
 		};
 		this.memoryOptimizedFileGroupButtonContainer = this.addButtonsForTable(this.memoryOptimizedFilegroupsTable, addButtonComponent, removeButtonComponent);
-		await this.memoryOptimizedFileGroupButtonContainer.updateCssStyles({ 'margin-top': '-50px' });
-
 		this.disposables.push(
 			this.memoryOptimizedFilegroupsTable.onRowSelected(
 				async () => {
 					if (this.memoryOptimizedFilegroupsTable.selectedRows.length === 1) {
 						const fileGroup = this.memoryoptimizedFileGroupsTableRows[this.memoryOptimizedFilegroupsTable.selectedRows[0]];
-						await this.memoryOptimizedFilegroupNameContainer.updateCssStyles({ 'visibility': fileGroup.id < 0 ? 'visible' : 'hidden' });
-						await this.memoryOptimizedFileGroupButtonContainer.updateCssStyles({ 'margin-top': fileGroup.id < 0 ? '0' : '-50px' });
+						this.memoryOptimizedFilegroupNameContainer.display = fileGroup.id < 0 ? 'inline-flex' : 'none';
 						this.memoryOptimizedFilegroupNameInput.value = fileGroup.name;
 						this.onFormFieldChange();
 					}
@@ -1065,8 +1056,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				const removeFilegroupIndex = this.objectInfo.filegroups.indexOf(this.rowDataFileGroupsTableRows[this.rowsFilegroupsTable.selectedRows[0]]);
 				this.objectInfo.filegroups?.splice(removeFilegroupIndex, 1);
 				var newData = this.getTableData(FileGroupType.RowsFileGroup);
-				await this.rowsFilegroupNameContainer.updateCssStyles({ 'visibility': 'hidden' });
-				await this.rowsFileGroupButtonContainer.updateCssStyles({ 'margin-top': '-50px' });
+				this.rowsFilegroupNameContainer.display = 'none';
 			}
 		}
 		else if (table === this.filestreamFilegroupsTable) {
@@ -1074,8 +1064,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				const removeFilegroupIndex = this.objectInfo.filegroups.indexOf(this.filestreamDataFileGroupsTableRows[this.filestreamFilegroupsTable.selectedRows[0]]);
 				this.objectInfo.filegroups?.splice(removeFilegroupIndex, 1);
 				var newData = this.getTableData(FileGroupType.FileStreamDataFileGroup);
-				await this.filestreamFilegroupNameContainer.updateCssStyles({ 'visibility': 'hidden' });
-				await this.filestreamFileGroupButtonContainer.updateCssStyles({ 'margin-top': '-50px' });
+				this.filestreamFilegroupNameContainer.display = 'none';
 			}
 		}
 		else if (table === this.memoryOptimizedFilegroupsTable) {
@@ -1083,8 +1072,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				const removeFilegroupIndex = this.objectInfo.filegroups.indexOf(this.memoryoptimizedFileGroupsTableRows[this.memoryOptimizedFilegroupsTable.selectedRows[0]]);
 				this.objectInfo.filegroups?.splice(removeFilegroupIndex, 1);
 				var newData = this.getTableData(FileGroupType.MemoryOptimizedDataFileGroup);
-				await this.memoryOptimizedFilegroupNameContainer.updateCssStyles({ 'visibility': 'hidden' });
-				await this.memoryOptimizedFileGroupButtonContainer.updateCssStyles({ 'margin-top': '-50px' });
+				this.memoryOptimizedFilegroupNameContainer.display = 'none';
 			}
 		}
 
@@ -1110,8 +1098,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 
 		let fgInputGroupcontainer = this.createLabelInputContainer(localizedConstants.fileGroupsNameInput, [fgInput], false);
-		await fgInputGroupcontainer.updateCssStyles({ 'visibility': 'hidden', 'margin-left': '10px' });
-
+		await fgInputGroupcontainer.updateCssStyles({ 'margin': '0px 0px -10px 10px' });
+		fgInputGroupcontainer.display = 'none';
 		return fgInputGroupcontainer;
 	}
 
@@ -1144,8 +1132,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			inputType: 'text',
 			enabled: true,
 			value: '',
-			width: 200,
-			// CSSStyles: { 'margin': '5px 0px 0px 10px' }
+			width: DefaultInputWidth
 		});
 	}
 
