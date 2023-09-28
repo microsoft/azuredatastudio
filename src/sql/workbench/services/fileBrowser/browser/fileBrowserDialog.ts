@@ -106,7 +106,7 @@ export class FileBrowserDialog extends Modal {
 
 		this._okButton = this.addFooterButton(localize('fileBrowser.ok', "OK"), () => this.ok());
 		this._okButton.enabled = false;
-		this.addFooterButton(localize('fileBrowser.discard', "Discard"), () => this.close(), 'right', true);
+		this.addFooterButton(localize('fileBrowser.back', "Back"), () => this.close(), 'right', true);
 
 		this.registerListeners();
 		this.updateTheme();
