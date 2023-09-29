@@ -151,15 +151,15 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	public override getTitle(verbosity?: Verbosity): string {
 		let fullTitle = ProfilerInput.PROFILERNAME;
 		if (this.connection) {
-			let baseName = this.connection.serverName + ':' + this.connection.databaseName;
-			let advancedOptions = this._connectionService.getNonDefaultOptions(this.connection);
-			fullTitle = fullTitle + ': ' + baseName + advancedOptions + '\n';
 			if (this.sessionName) {
-				fullTitle += nls.localize('profilerInput.sessionNameLoaded', 'Session Name: {0}', this.sessionName);
+				fullTitle += nls.localize('profilerInput.sessionNameLoaded', ': Session Name: {0}\n', this.sessionName);
 			}
 			else {
-				fullTitle += nls.localize('profilerInput.sessionNameNotLoaded', 'Session Name: not available');
+				fullTitle += nls.localize('profilerInput.sessionNameNotLoaded', ': Session Name: not available\n');
 			}
+			let baseName = this.connection.serverName + ':' + this.connection.databaseName;
+			let advancedOptions = this._connectionService.getNonDefaultOptions(this.connection);
+			fullTitle = fullTitle + nls.localize('profilerInput.connDetails', 'Connection Details: ') + baseName + advancedOptions;
 		}
 		else if (this.isFileSession) {
 			fullTitle += ': ' + path.basename(this.fileURI.fsPath);
