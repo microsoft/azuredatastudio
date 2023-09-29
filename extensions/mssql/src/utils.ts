@@ -224,7 +224,7 @@ export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileNa
 		launchArgs.push('--http-proxy-url');
 		launchArgs.push(httpProxy);
 		if (getHttpProxyStrictSSL()) {
-			launchArgs.push('--http-proxyStrictSSL')
+			launchArgs.push('--http-proxy-strict-ssl')
 		}
 	}
 	return launchArgs;
