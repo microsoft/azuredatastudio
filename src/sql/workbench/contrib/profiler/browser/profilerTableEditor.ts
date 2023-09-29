@@ -226,7 +226,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 	public addOverlayWidget(widget: IOverlayWidget): void {
 		let domNode = widget.getDomNode();
 		domNode.style.right = '28px';
-		this.overlay.appendChild(widget.getDomNode());
+		this._overlay.appendChild(widget.getDomNode());
 		this._findState.change({ isRevealed: false }, false);
 	}
 
