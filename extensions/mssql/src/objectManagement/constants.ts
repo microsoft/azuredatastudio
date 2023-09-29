@@ -54,7 +54,9 @@ export const enum TelemetryActions {
 	UpdateObject = 'UpdateObject',
 	OpenDetachDatabaseDialog = 'OpenDetachDatabaseDialog',
 	OpenAttachDatabaseDialog = 'OpenAttachDatabaseDialog',
-	OpenDropDatabaseDialog = 'OpenDropDatabaseDialog'
+	OpenDropDatabaseDialog = 'OpenDropDatabaseDialog',
+	AttachDatabase = 'AttachDatabase',
+	DetachDatabase = 'DetachDatabase'
 }
 
 export const ObjectManagementViewName = 'ObjectManagement';
