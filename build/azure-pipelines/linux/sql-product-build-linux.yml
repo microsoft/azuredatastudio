@@ -27,6 +27,12 @@ steps:
       tar -xzf $(Pipeline.Workspace)/compilation.tar.gz
     displayName: Extract compilation output
 
+#try to delete after compilation?
+  - script: |
+      set -e
+      rm $(Pipeline.Workspace)/compilation.tar.gz
+    displayName: Delete downloaded compilation output after it's been extracted
+
   - script: |
       set -e
       cat << EOF > ~/.netrc
