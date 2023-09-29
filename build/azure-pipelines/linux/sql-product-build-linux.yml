@@ -25,13 +25,9 @@ steps:
   - script: |
       set -e
       tar -xzf $(Pipeline.Workspace)/compilation.tar.gz
-    displayName: Extract compilation output
-
-#try to delete after compilation?
-  - script: |
-      set -e
+      # delete tar.gz after it's been extracted
       rm $(Pipeline.Workspace)/compilation.tar.gz
-    displayName: Delete downloaded compilation output after it's been extracted
+    displayName: Extract compilation output
 
   - script: |
       set -e
