@@ -152,10 +152,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		let fullTitle = ProfilerInput.PROFILERNAME;
 		if (this.connection) {
 			if (this.sessionName) {
-				fullTitle += nls.localize('profilerInput.sessionNameLoaded', ': Session Name: {0}\n', this.sessionName);
-			}
-			else {
-				fullTitle += nls.localize('profilerInput.sessionNameNotLoaded', ': Session Name: not available\n');
+				fullTitle += nls.localize('profilerInput.sessionName', ': Session Name: {0}\n', this.sessionName);
 			}
 			let baseName = this.connection.serverName + ':' + this.connection.databaseName;
 			let advancedOptions = this._connectionService.getNonDefaultOptions(this.connection);
