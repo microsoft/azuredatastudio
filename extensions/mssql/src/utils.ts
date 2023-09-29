@@ -96,7 +96,10 @@ export function getHttpProxyUrl(): string | undefined {
 }
 
 export function getHttpProxyStrictSSL(): boolean {
-	return getConfiguration(httpConfig)[configProxyStrictSSL] ?? true; // true by default.
+	let config = getConfiguration(httpConfig);
+	if (config) {
+		return config.get<boolean>(configProxyStrictSSL, true); // true by default
+	} return true; // true by default.
 }
 /**
  * The tracing level defined in the package.json
