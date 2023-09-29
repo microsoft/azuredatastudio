@@ -130,22 +130,24 @@ export class LoginDialog extends PrincipalDialogBase<Login, LoginViewInfo> {
 		}, this.objectInfo.isEnabled);
 		items.push(this.enabledCheckbox);
 
-		this.defaultDatabaseDropdown = this.createDropdown(objectManagementLoc.DefaultDatabaseText, async (newValue) => {
-			this.objectInfo.defaultDatabase = newValue;
-		}, this.viewInfo.databases, this.objectInfo.defaultDatabase);
-		const defaultDatabaseContainer = this.createLabelInputContainer(objectManagementLoc.DefaultDatabaseText, this.defaultDatabaseDropdown);
-		items.push(defaultDatabaseContainer);
+		if (this.viewInfo.supportAdvancedOptions) {
+			this.defaultDatabaseDropdown = this.createDropdown(objectManagementLoc.DefaultDatabaseText, async (newValue) => {
+				this.objectInfo.defaultDatabase = newValue;
+			}, this.viewInfo.databases, this.objectInfo.defaultDatabase);
+			const defaultDatabaseContainer = this.createLabelInputContainer(objectManagementLoc.DefaultDatabaseText, this.defaultDatabaseDropdown);
+			items.push(defaultDatabaseContainer);
 
-		this.defaultLanguageDropdown = this.createDropdown(objectManagementLoc.DefaultLanguageText, async (newValue) => {
-			this.objectInfo.defaultLanguage = newValue;
-		}, this.viewInfo.languages, this.objectInfo.defaultLanguage);
-		const defaultLanguageContainer = this.createLabelInputContainer(objectManagementLoc.DefaultLanguageText, this.defaultLanguageDropdown);
-		items.push(defaultLanguageContainer);
+			this.defaultLanguageDropdown = this.createDropdown(objectManagementLoc.DefaultLanguageText, async (newValue) => {
+				this.objectInfo.defaultLanguage = newValue;
+			}, this.viewInfo.languages, this.objectInfo.defaultLanguage);
+			const defaultLanguageContainer = this.createLabelInputContainer(objectManagementLoc.DefaultLanguageText, this.defaultLanguageDropdown);
+			items.push(defaultLanguageContainer);
 
-		this.connectPermissionCheckbox = this.createCheckbox(objectManagementLoc.PermissionToConnectText, async (checked) => {
-			this.objectInfo.connectPermission = checked;
-		}, this.objectInfo.connectPermission);
-		items.push(this.connectPermissionCheckbox);
+			this.connectPermissionCheckbox = this.createCheckbox(objectManagementLoc.PermissionToConnectText, async (checked) => {
+				this.objectInfo.connectPermission = checked;
+			}, this.objectInfo.connectPermission);
+			items.push(this.connectPermissionCheckbox);
+		}
 
 		this.generalSection = this.createGroup(objectManagementLoc.GeneralSectionHeader, items, false);
 	}
