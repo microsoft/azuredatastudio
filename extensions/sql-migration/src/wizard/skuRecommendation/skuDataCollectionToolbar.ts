@@ -15,6 +15,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import { MigrationStateModel, PerformanceDataSourceOptions } from '../../models/stateMachine';
+import { SKURecommendationPage } from './skuRecommendationPage';
 
 // TODO - "Change this to actual default path once it is available"
 const DEFAULT_PATH_FOR_START_DATA_COLLECTION = "C:\DataPointsCollectionFolder";
@@ -30,7 +31,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 
 	private _disposables: vscode.Disposable[] = [];
 
-	constructor(private migrationStateModel: MigrationStateModel) {
+	constructor(private skuRecommendationPage: SKURecommendationPage, private migrationStateModel: MigrationStateModel) {
 	}
 
 	public createToolbar(view: azdata.ModelView): azdata.ToolbarContainer {
@@ -100,7 +101,8 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 				this._performanceDataSource = PerformanceDataSourceOptions.CollectData;
 				this.migrationStateModel._skuRecommendationPerformanceLocation = DEFAULT_PATH_FOR_START_DATA_COLLECTION;
 
-				// TODO - Start data collection at default path.
+				// Start data collection at default path.
+				await this.executeStartDataCollection();
 			}
 			// 'Choose a path' option is selected.
 			else if (selectedOption === choosePathOption) {
@@ -119,7 +121,8 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 					this._performanceDataSource = PerformanceDataSourceOptions.CollectData;
 					this.migrationStateModel._skuRecommendationPerformanceLocation = chosenFolder[0].fsPath;
 
-					// TODO - Start data collection at folder path selected.
+					// Start data collection at folder path selected.
+					await this.executeStartDataCollection();
 				} else {
 					// TODO - What to do if user clicks on "choose a path" and do not selecta folder.
 					// Either 1) start data collection at Default path.
@@ -181,6 +184,23 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 			}).component();
 		// TODO - implement onDidClick and add to disposables
 		return recommendationParametersButton;
+	}
+
+	private async executeStartDataCollection() {
+		this._stopPerformanceCollectionButton.enabled = true;
+		this._startPerformanceCollectionButton.enabled = false;
+		this._importPerformanceDataButton.enabled = false;
+
+		this.migrationStateModel._skuRecommendationPerformanceDataSource = this._performanceDataSource;
+
+		await this.migrationStateModel.startPerfDataCollection(
+			this.migrationStateModel._skuRecommendationPerformanceLocation,
+			this.migrationStateModel._performanceDataQueryIntervalInSeconds,
+			this.migrationStateModel._staticDataQueryIntervalInSeconds,
+			this.migrationStateModel._numberOfPerformanceDataQueryIterations,
+			this.skuRecommendationPage);
+
+		await this.skuRecommendationPage.refreshSkuRecommendationComponents();
 	}
 
 	public dispose(): void {
