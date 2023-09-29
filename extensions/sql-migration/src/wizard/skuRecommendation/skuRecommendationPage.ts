@@ -475,6 +475,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const dbCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.length;
 
 		if (!this.migrationStateModel._assessmentResults) {
+			// TODO
+			// Need to think what to show if assessment result is coming as null.
 		}
 		else {
 			await this.updateDetailsForEachTarget(MigrationTargetType.SQLDB, dbCount);
