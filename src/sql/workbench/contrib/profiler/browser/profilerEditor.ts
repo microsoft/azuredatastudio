@@ -503,7 +503,6 @@ export class ProfilerEditor extends EditorPane {
 			}
 
 			if (this.input.isFileSession && this.input.isSetupPhase) {		// Add loading indicator when opening a new file session
-				this._profilerTableEditor.overlay.style.paddingTop = '50px';		// Add padding on top of loading indicator to place it below the header of the table
 				this._profilerTableEditor.loadingSpinner.loading = true;
 				this.input.setInitializerPhase(false);
 			}
@@ -591,8 +590,6 @@ export class ProfilerEditor extends EditorPane {
 					this._updateSessionSelector();
 				} else {
 					this._profilerTableEditor.loadingSpinner.loading = false;		// Remove the loading indicator when the complete file is read
-					this._profilerTableEditor.overlay.style.paddingTop = '0px';	// Remove the added padding to keep the table header columns resize functional
-
 				}
 			}
 		}

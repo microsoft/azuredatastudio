@@ -53,7 +53,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 	private _findCountChangeListener: IDisposable;
 	private _findState: FindReplaceState;
 	private _finder: FindWidget;
-	public overlay: HTMLElement;
+	private _overlay: HTMLElement;
 	private _currentDimensions: Dimension;
 	private _actionMap: { [x: string]: IEditorAction } = {};
 	private _statusbarItem: IDisposable;
@@ -86,11 +86,12 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 
 	protected createEditor(parent: HTMLElement): void {
 
-		this.overlay = document.createElement('div');
-		this.overlay.className = 'overlayWidgets';
-		this.overlay.style.width = '100%';
-		this.overlay.style.zIndex = '4';
-		parent.appendChild(this.overlay);
+		this._overlay = document.createElement('div');
+		this._overlay.className = 'overlayWidgets';
+		this._overlay.style.width = '100%';
+		this._overlay.style.zIndex = '4';
+		this._overlay.style.top = '50px';
+		parent.appendChild(this._overlay);
 
 		this._profilerTable = new Table(parent, this._accessibilityService, this._quickInputService, defaultTableStyles, {
 			sorter: (args) => {
@@ -132,7 +133,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 			this._themeService
 		);
 
-		this.loadingSpinner = new LoadingSpinner(this.overlay, { showText: true, fullSize: false });
+		this.loadingSpinner = new LoadingSpinner(this._overlay, { showText: true, fullSize: false });
 	}
 
 	public override setInput(input: ProfilerInput): Promise<void> {
