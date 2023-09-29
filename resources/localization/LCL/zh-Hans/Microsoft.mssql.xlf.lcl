@@ -2562,6 +2562,9 @@
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.locksValidation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Value should be greater than {0}. Choose 0 for default settings.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[值应大于 {0}。为默认设置选择 0。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3339,8 +3342,8 @@
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.user.aadAuth" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Authenticate with Microsoft Entra]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[通过 Azure Active Directory 进行身份验证]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[使用 Microsoft Entra 进行身份验证]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Authenticate with Azure Active Directory]]></Val>
@@ -3951,8 +3954,8 @@
       <Item ItemId=";extensions/Microsoft.mssql/package.mssql.connectionOptions.authType.categoryValues.azureMFA" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Microsoft Entra ID - Universal with MFA support]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure Active Directory - 支持 MFA 的通用目录]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Microsoft Entra ID - 具有 MFA 支持的通用]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure Active Directory - Universal with MFA support]]></Val>

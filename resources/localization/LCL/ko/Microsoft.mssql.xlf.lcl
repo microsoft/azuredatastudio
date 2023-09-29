@@ -2562,6 +2562,9 @@
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.locksValidation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Value should be greater than {0}. Choose 0 for default settings.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[값은 {0}보다 커야 합니다. 기본 설정에 대해 0을 선택합니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2586,8 +2589,8 @@
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.login.aadAuthenticationType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Microsoft Entra ID Authentication]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure Active Directory 인증]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Microsoft Entra ID 인증]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure Active Directory Authentication]]></Val>
@@ -3339,8 +3342,8 @@
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.user.aadAuth" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Authenticate with Microsoft Entra]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure Active Directory로 인증]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Microsoft Entra를 사용하여 인증]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Authenticate with Azure Active Directory]]></Val>
@@ -3951,8 +3954,8 @@
       <Item ItemId=";extensions/Microsoft.mssql/package.mssql.connectionOptions.authType.categoryValues.azureMFA" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Microsoft Entra ID - Universal with MFA support]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure Active Directory - MFA가 지원되는 유니버설]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Microsoft Entra ID - MFA 지원으로 유니버설]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure Active Directory - Universal with MFA support]]></Val>

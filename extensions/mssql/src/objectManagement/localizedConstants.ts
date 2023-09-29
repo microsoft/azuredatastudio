@@ -56,6 +56,7 @@ export const allFiles = localize('objectManagement.allFiles', "All Files");
 export const labelSelectFolder = localize('objectManagement.labelSelectFolder', "Select Folder");
 export const DataFileLabel = localize('objectManagement.dataFileLabel', "Data");
 export const LogFileLabel = localize('objectManagement.logFileLabel', "Log");
+export const BackButtonLabel = localize('objectManagement.backButtonLabel', "Back");
 
 export function ExplicitPermissionsTableLabelSelected(name: string): string { return localize('objectManagement.explicitPermissionsTableLabelSelected', "Explicit permissions for: {0}", name); }
 export function EffectivePermissionsTableLabelSelected(name: string): string { return localize('objectManagement.effectivePermissionsTableLabelSelected', "Effective permissions for: {0}", name); }
