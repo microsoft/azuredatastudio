@@ -53,7 +53,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 	private _findCountChangeListener: IDisposable;
 	private _findState: FindReplaceState;
 	private _finder: FindWidget;
-	private _overlay: HTMLElement;
+	public _overlay: HTMLElement;
 	private _currentDimensions: Dimension;
 	private _actionMap: { [x: string]: IEditorAction } = {};
 	private _statusbarItem: IDisposable;
@@ -90,7 +90,6 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		this._overlay.className = 'overlayWidgets';
 		this._overlay.style.width = '100%';
 		this._overlay.style.zIndex = '4';
-		this._overlay.style.paddingTop = '50px';
 		parent.appendChild(this._overlay);
 
 		this._profilerTable = new Table(parent, this._accessibilityService, this._quickInputService, defaultTableStyles, {
