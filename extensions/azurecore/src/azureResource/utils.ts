@@ -523,7 +523,7 @@ export async function makeHttpRequest<B>(
 		requestUrl = `${account.properties.providerSettings.settings.armResource.endpoint}${path}`;
 	}
 
-	let response: AxiosResponse<B, ErrorResponseBodyWithError> | undefined;
+	let response: AxiosResponse<B | ErrorResponseBodyWithError> | undefined;
 	switch (requestType) {
 		case HttpRequestMethod.GET:
 			response = await axios.get(requestUrl, config);
