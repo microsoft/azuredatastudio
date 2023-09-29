@@ -1024,6 +1024,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			// Refresh the table with new row data
 			this.updateFileGroupsOptionsAndTableRows();
 			await this.setTableData(table, newData, DefaultMaxTableRowCount);
+			table.setActiveCell(table.data?.length - 1, 0);
 		}
 	}
 
