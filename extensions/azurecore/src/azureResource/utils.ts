@@ -18,9 +18,6 @@ import { IAzureResourceSubscriptionFilterService, IAzureResourceSubscriptionServ
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
 import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
 import providerSettings from '../account-provider/providerSettings';
-import { getProxyEnabledHttpClient } from '../utils';
-import { HttpClient } from '../account-provider/auths/httpClient';
-import { NetworkRequestOptions } from '@azure/msal-common';
 import { ErrorResponseBody } from '@azure/arm-subscriptions/esm/models';
 import { TenantIgnoredError } from '../utils/TenantIgnoredError';
 import { AzureMonitorResourceService } from './providers/azuremonitor/azuremonitorService';
@@ -52,6 +49,7 @@ import { PostgresFlexibleServerTreeDataProvider } from './providers/postgresFlex
 import { PostgresFlexibleServerService } from './providers/postgresFlexibleServer/postgresFlexibleServerService';
 import { CosmosDbPostgresTreeDataProvider } from './providers/cosmosdb/postgres/cosmosDbPostgresTreeDataProvider';
 import { CosmosDbPostgresService } from './providers/cosmosdb/postgres/cosmosDbPostgresService';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 const localize = nls.loadMessageBundle();
 
@@ -463,7 +461,6 @@ export async function makeHttpRequest<B>(
 	requestHeaders: Record<string, string> = {}
 ): Promise<AzureRestResponse<B>> {
 	const result: AzureRestResponse<B> = { response: undefined, errors: [] };
-	const httpClient: HttpClient = getProxyEnabledHttpClient();
 
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
 		const error = new Error(invalidAzureAccount);
@@ -509,10 +506,9 @@ export async function makeHttpRequest<B>(
 		...requestHeaders
 	}
 
-	const body = JSON.stringify(requestBody || '');
-	let networkRequestOptions: NetworkRequestOptions = {
+	const config: AxiosRequestConfig = {
 		headers: reqHeaders,
-		body
+		validateStatus: () => true // Never throw
 	};
 
 	// Adding '/' if path does not begin with it.
@@ -527,26 +523,22 @@ export async function makeHttpRequest<B>(
 		requestUrl = `${account.properties.providerSettings.settings.armResource.endpoint}${path}`;
 	}
 
-	let response: AzureNetworkResponse<B | ErrorResponseBodyWithError> | undefined = undefined;
+	let response: AxiosResponse<B, ErrorResponseBodyWithError> | undefined;
 	switch (requestType) {
 		case HttpRequestMethod.GET:
-			response = await httpClient.sendGetRequestAsync<B | ErrorResponseBodyWithError>(requestUrl, {
-				headers: reqHeaders
-			});
+			response = await axios.get(requestUrl, config);
 			break;
 		case HttpRequestMethod.POST:
-			response = await httpClient.sendPostRequestAsync<B | ErrorResponseBodyWithError>(requestUrl, networkRequestOptions);
+			response = await axios.post(requestUrl, requestBody, config);
 			break;
 		case HttpRequestMethod.PUT:
-			response = await httpClient.sendPutRequestAsync<B | ErrorResponseBodyWithError>(requestUrl, networkRequestOptions);
+			response = await axios.put(requestUrl, requestBody, config);
 			break;
 		case HttpRequestMethod.DELETE:
-			response = await httpClient.sendDeleteRequestAsync<B | ErrorResponseBodyWithError>(requestUrl, {
-				headers: reqHeaders
-			});
+			response = await axios.delete(requestUrl, config);
 			break;
 		case HttpRequestMethod.PATCH:
-			response = await httpClient.sendPatchRequestAsync<B | ErrorResponseBodyWithError>(requestUrl, networkRequestOptions);
+			response = await axios.patch(requestUrl, config);
 			break;
 		default:
 			const error = new Error(`Unknown RequestType "${requestType}"`);
