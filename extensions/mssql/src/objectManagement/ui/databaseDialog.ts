@@ -1079,7 +1079,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		// Refresh the individual table rows object and table with updated data
 		this.updateFileGroupsOptionsAndTableRows();
-		await this.setTableData(table, newData)
+		await this.setTableData(table, newData);
+		if (table.selectedRows !== undefined && table.selectedRows[0] !== undefined && table.selectedRows[0] < table.data?.length) {
+			table.setActiveCell(table.selectedRows[0], 0);
+		}
 	}
 
 	/**
