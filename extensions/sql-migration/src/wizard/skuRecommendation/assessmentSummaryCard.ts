@@ -17,6 +17,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { ColorCodes } from '../../constants/helper';
 import { SkuRecommendationResultsDialog } from '../../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
 import { MigrationStateModel } from '../../models/stateMachine';
+import { SKURecommendationPage } from './skuRecommendationPage';
 
 export class AssessmentSummaryCard implements vscode.Disposable {
 	private _disposables: vscode.Disposable[] = [];
@@ -34,7 +35,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 	private _viewDetailsLink!: azdata.HyperlinkComponent;
 
 	// Target Type is passed in constructor to create the summary card based on that.
-	constructor(public migrationTargetType: MigrationTargetType, public migrationStateModel: MigrationStateModel) {
+	constructor(public skuRecommendationPage: SKURecommendationPage, public migrationTargetType: MigrationTargetType, public migrationStateModel: MigrationStateModel) {
 	}
 
 	// Creates the whole assessment summary card with Assessment/SKU result summary.
@@ -422,10 +423,14 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		this._recommendedConfigurationText.value = skuRecommendation;
 		this._vmRecommendedConfigurationText.value = vmRecommendation;
 
-		const skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, this.migrationTargetType);
-		await skuRecommendationResultsDialog.openDialog(
-			this.migrationTargetType,
-			this.migrationStateModel._skuRecommendationResults.recommendations);
+		this._viewDetailsLink.onDidClick(async () => {
+			// if (this.skuRecommendationPage.hasRecommendations()) {
+			const skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, this.migrationTargetType);
+			await skuRecommendationResultsDialog.openDialog(
+				this.migrationTargetType,
+				this.migrationStateModel._skuRecommendationResults.recommendations);
+			// }
+		});
 	}
 
 	// TODO - Check this later, if we need to handle this separately.

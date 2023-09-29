@@ -220,9 +220,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 
-		this._dbAssessmentCard = new AssessmentSummaryCard(MigrationTargetType.SQLDB, this.migrationStateModel);
-		this._miAssessmentCard = new AssessmentSummaryCard(MigrationTargetType.SQLMI, this.migrationStateModel);
-		this._vmAssessmentCard = new AssessmentSummaryCard(MigrationTargetType.SQLVM, this.migrationStateModel);
+		this._dbAssessmentCard = new AssessmentSummaryCard(this, MigrationTargetType.SQLDB, this.migrationStateModel);
+		this._miAssessmentCard = new AssessmentSummaryCard(this, MigrationTargetType.SQLMI, this.migrationStateModel);
+		this._vmAssessmentCard = new AssessmentSummaryCard(this, MigrationTargetType.SQLVM, this.migrationStateModel);
 
 		this._assessmentSummaryCard.addItems([
 			this._dbAssessmentCard.createAssessmentSummaryCard(view),
