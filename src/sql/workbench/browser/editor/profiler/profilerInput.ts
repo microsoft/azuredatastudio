@@ -119,6 +119,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	public setSessionName(name: string) {
 		if (!this.state.isRunning || !this.state.isPaused) {
 			this._sessionName = name;
+			this._onDidChangeLabel.fire();
 		}
 	}
 
@@ -152,7 +153,13 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		if (this.connection) {
 			let baseName = this.connection.serverName + ':' + this.connection.databaseName;
 			let advancedOptions = this._connectionService.getNonDefaultOptions(this.connection);
-			fullTitle = fullTitle + ': ' + baseName + advancedOptions;
+			fullTitle = fullTitle + ': ' + baseName + advancedOptions + '\n';
+			if (this.sessionName) {
+				fullTitle += nls.localize('profilerInput.sessionNameLoaded', 'Session Name: {0}', this.sessionName);
+			}
+			else {
+				fullTitle += nls.localize('profilerInput.sessionNameNotLoaded', 'Session Name: not available');
+			}
 		}
 		else if (this.isFileSession) {
 			fullTitle += ': ' + path.basename(this.fileURI.fsPath);
