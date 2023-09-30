@@ -832,8 +832,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	// }
 	// public async refreshSkuParameters(): Promise<void> {
 	// }
-	// public async refreshAzureRecommendation(): Promise<void> {
-	// }
 	// private createSkuEditParameters(_view: azdata.ModelView): azdata.FlexContainer {
 	// }
 	// private createAzureRecommendationContainer(_view: azdata.ModelView): azdata.FlexContainer {
@@ -874,6 +872,26 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}
 
 		await this.refreshCardText(false);
+	}
+
+	public async refreshAzureRecommendation(): Promise<void> {
+		// TODO - Add cardLoading at start of refresh sku recommendation.
+		// await this.startCardLoading();
+		// this._skuLastRefreshTimeText.value = constants.LAST_REFRESHED_TIME();
+		await this.migrationStateModel.getSkuRecommendations();
+
+		const skuRecommendationError = this.migrationStateModel._skuRecommendationResults?.recommendationError;
+		if (skuRecommendationError) {
+			this.wizard.message = {
+				text: constants.SKU_RECOMMENDATION_ERROR(this._serverName),
+				description: skuRecommendationError.message,
+				level: azdata.window.MessageLevel.Error
+			};
+		}
+
+		await this.refreshSkuRecommendationComponents();
+		// TODO - Update the refreshTime for SKU Recommendation.
+		// this._skuLastRefreshTimeText.value = constants.LAST_REFRESHED_TIME(new Date().toLocaleString());
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
