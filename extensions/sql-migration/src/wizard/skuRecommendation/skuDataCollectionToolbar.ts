@@ -67,7 +67,10 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 					...styles.TOOLBAR_CSS
 				}
 			}).component();
-		// TODO - implement onDidClick and add to disposables
+
+		this._disposables.push(refreshSKURecommendationButton.onDidClick(async () => {
+			await this.skuRecommendationPage.refreshAzureRecommendation();
+		}));
 		return refreshSKURecommendationButton;
 	}
 
@@ -148,7 +151,10 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 				}
 			}).component();
 		stopPerformanceCollectionButton.enabled = false;
-		// TODO - implement onDidClick and add to disposables
+		this._disposables.push(stopPerformanceCollectionButton.onDidClick(async () => {
+			await this.migrationStateModel.stopPerfDataCollection();
+			await this.skuRecommendationPage.refreshAzureRecommendation();
+		}));
 		return stopPerformanceCollectionButton;
 	}
 
