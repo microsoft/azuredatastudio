@@ -4841,34 +4841,34 @@
 					},
 					"versions": [
 						{
-							"version": "7.5.1",
-							"lastUpdated": "09/10/2023",
+							"version": "7.6.0",
+							"lastUpdated": "09/30/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/MarkMpn/Sql4Cds/releases/tag/v7.5.1"
+									"source": "https://github.com/MarkMpn/Sql4Cds/releases/tag/v7.6.0"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.5.1/AzureDataStudioExtension/images/extension-icon.png"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.6.0/AzureDataStudioExtension/images/extension-icon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.5.1/AzureDataStudioExtension/README.md"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.6.0/AzureDataStudioExtension/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.5.1/AzureDataStudioExtension/CHANGELOG.md"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.6.0/AzureDataStudioExtension/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.5.1/AzureDataStudioExtension/package.json"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.6.0/AzureDataStudioExtension/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.5.1/LICENSE"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.6.0/LICENSE"
 								}
 							],
 							"properties": [
