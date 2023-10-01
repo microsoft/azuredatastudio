@@ -80,7 +80,13 @@ export class WizardController {
 		tdeMigrateButton.secondary = false;
 		tdeMigrateButton.hidden = true;
 
-		this._wizardObject.customButtons = [validateButton, tdeMigrateButton, saveAndCloseButton];
+		const saveAssessmentButton = azdata.window.createButton(
+			loc.SAVE_ASSESSMENT_REPORT,
+			'right');
+		saveAssessmentButton.secondary = true;
+		saveAssessmentButton.hidden = true;
+
+		this._wizardObject.customButtons = [validateButton, tdeMigrateButton, saveAssessmentButton, saveAndCloseButton];
 		const databaseSelectorPage = new DatabaseSelectorPage(this._wizardObject, stateModel);
 		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
 		const assessmentDetailsPage = new AssessmentDetailsPage(this._wizardObject, stateModel);
