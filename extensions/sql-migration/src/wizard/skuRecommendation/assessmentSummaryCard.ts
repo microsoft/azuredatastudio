@@ -350,7 +350,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 
 		this._recommendedConfigurationText = view.modelBuilder.text().withProps({
 			value: "",
-			height: 18,
+			// height: 18,
 			CSSStyles: {
 				'font-size': '13px',
 				'line-height': '18px',
@@ -362,7 +362,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 
 		this._vmRecommendedConfigurationText = view.modelBuilder.text().withProps({
 			value: "",
-			height: 28,
+			// height: 28,
 			CSSStyles: {
 				'font-size': '10px',
 				'line-height': '14px',
@@ -433,6 +433,16 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 			}
 		});
 	}
+
+	public async loadingSKURecommendation() {
+		await this._azureRecommendationNotAvailableText.updateCssStyles({ 'display': 'none' });
+		await this._recommendedConfigurationText.updateCssStyles({ 'display': 'block' });
+		await this._vmRecommendedConfigurationText.updateCssStyles({ 'display': 'none' });
+		await this._viewDetailsLink.updateCssStyles({ 'display': 'none' });
+
+		this._recommendedConfigurationText.value = constants.LOADING_RECOMMENDATIONS;
+	}
+
 
 
 	// TODO - Check this later, if we need to handle this separately.

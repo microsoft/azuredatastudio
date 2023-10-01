@@ -715,8 +715,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	public async startCardLoading(): Promise<void> {
 		// TO-DO: ideally the short SKU recommendation loading time should have a spinning indicator,
 		// but updating the card text will do for now
-		await this._dbAssessmentCard.updateSkuRecommendation(constants.LOADING_RECOMMENDATIONS, '');
-		await this._miAssessmentCard.updateSkuRecommendation(constants.LOADING_RECOMMENDATIONS, '');
-		await this._vmAssessmentCard.updateSkuRecommendation(constants.LOADING_RECOMMENDATIONS, '');
+		await this._dbAssessmentCard.loadingSKURecommendation();
+		await this._miAssessmentCard.loadingSKURecommendation();
+		await this._vmAssessmentCard.loadingSKURecommendation();
 	}
 }
