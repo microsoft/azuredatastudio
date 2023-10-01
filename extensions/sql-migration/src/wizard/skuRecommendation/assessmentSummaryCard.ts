@@ -15,6 +15,9 @@ import * as styles from '../../constants/styles';
 import { MigrationTargetType } from '../../api/utils';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { ColorCodes } from '../../constants/helper';
+import { SKURecommendationPage } from './skuRecommendationPage';
+import { SkuRecommendationResultsDialog } from '../../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
+import { MigrationStateModel } from '../../models/stateMachine';
 
 export class AssessmentSummaryCard implements vscode.Disposable {
 	private _disposables: vscode.Disposable[] = [];
@@ -29,9 +32,10 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 	private _azureRecommendationNotAvailableText!: azdata.TextComponent;
 	private _recommendedConfigurationText!: azdata.TextComponent;
 	private _vmRecommendedConfigurationText!: azdata.TextComponent;
+	private _viewDetailsLink!: azdata.HyperlinkComponent;
 
 	// Target Type is passed in constructor to create the summary card based on that.
-	constructor(public migrationTargetType: MigrationTargetType) {
+	constructor(public skuRecommendationPage: SKURecommendationPage, public migrationTargetType: MigrationTargetType, public migrationStateModel: MigrationStateModel) {
 	}
 
 	// Creates the whole assessment summary card with Assessment/SKU result summary.
@@ -368,7 +372,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 			},
 		}).component();
 
-		const viewDetailsLink = view.modelBuilder.hyperlink().withProps({
+		this._viewDetailsLink = view.modelBuilder.hyperlink().withProps({
 			label: constants.VIEW_DETAILS,
 			url: '',
 			height: 18,
@@ -389,10 +393,10 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		switch (this.migrationTargetType) {
 			case MigrationTargetType.SQLVM:
 				container.addItem(this._vmRecommendedConfigurationText);
-				container.addItem(viewDetailsLink);
+				container.addItem(this._viewDetailsLink);
 				break;
 			default:
-				container.addItem(viewDetailsLink);
+				container.addItem(this._viewDetailsLink);
 				container.addItem(this._vmRecommendedConfigurationText);
 		}
 
@@ -415,9 +419,19 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		await this._azureRecommendationNotAvailableText.updateCssStyles({ 'display': 'none' });
 		await this._recommendedConfigurationText.updateCssStyles({ 'display': 'block' });
 		await this._vmRecommendedConfigurationText.updateCssStyles({ 'display': 'block' });
+		await this._viewDetailsLink.updateCssStyles({ 'display': 'block' });
 
 		this._recommendedConfigurationText.value = skuRecommendation;
 		this._vmRecommendedConfigurationText.value = vmRecommendation;
+
+		this._viewDetailsLink.onDidClick(async () => {
+			if (this.skuRecommendationPage.hasRecommendations()) {
+				const skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, this.migrationTargetType);
+				await skuRecommendationResultsDialog.openDialog(
+					this.migrationTargetType,
+					this.migrationStateModel._skuRecommendationResults.recommendations);
+			}
+		});
 	}
 
 

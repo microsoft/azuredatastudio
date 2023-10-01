@@ -127,7 +127,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}).component();
 
 		this._disposables.push(refreshAssessmentButton.onDidClick(async () => {
-			// await this.startCardLoading();
+			await this.startCardLoading();
 			this.migrationStateModel._runAssessments = true;
 			await this.constructDetails();
 		}));
@@ -220,9 +220,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 
-		this._dbAssessmentCard = new AssessmentSummaryCard(MigrationTargetType.SQLDB);
-		this._miAssessmentCard = new AssessmentSummaryCard(MigrationTargetType.SQLMI);
-		this._vmAssessmentCard = new AssessmentSummaryCard(MigrationTargetType.SQLVM);
+		this._dbAssessmentCard = new AssessmentSummaryCard(this, MigrationTargetType.SQLDB, this.migrationStateModel);
+		this._miAssessmentCard = new AssessmentSummaryCard(this, MigrationTargetType.SQLMI, this.migrationStateModel);
+		this._vmAssessmentCard = new AssessmentSummaryCard(this, MigrationTargetType.SQLVM, this.migrationStateModel);
 
 		this._assessmentSummaryCard.addItems([
 			this._dbAssessmentCard.createAssessmentSummaryCard(view),
