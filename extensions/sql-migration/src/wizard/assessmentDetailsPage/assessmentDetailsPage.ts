@@ -13,6 +13,9 @@ import { AssessmentDetailsHeader } from './assessmentDetailsHeader';
 import { AssessmentDetailsBody } from './assessmentDetialsBody';
 import { MigrationTargetType } from '../../api/utils';
 import { EOL } from 'os';
+import * as fs from 'fs';
+import path = require('path');
+import * as utils from '../../api/utils';
 
 // Class where assessment details page is defined
 export class AssessmentDetailsPage extends MigrationWizardPage {
@@ -20,6 +23,7 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 	private _header;
 	private _body;
 	private _disposables: vscode.Disposable[] = [];
+	private static readonly _assessmentReportName: string = 'SqlAssessmentReport.json';
 
 	constructor(
 		wizard: azdata.window.Wizard,
@@ -56,6 +60,26 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 				await this._body.populateAssessmentBody(this.migrationStateModel);
 			}
 		}));
+
+		// added on click to export the assessment as Json
+		this._disposables.push(
+			this.wizard.customButtons[2].onClick(async () => {
+				const folder = await utils.promptUserForFolder();
+				if (folder) {
+					const destinationFilePath = path.join(folder, AssessmentDetailsPage._assessmentReportName);
+					if (this.migrationStateModel._assessmentReportFilePath) {
+						fs.copyFile(this.migrationStateModel._assessmentReportFilePath, destinationFilePath, (err) => {
+							if (err) {
+								console.log(err);
+							} else {
+								void vscode.window.showInformationMessage(constants.SAVE_ASSESSMENT_REPORT_SUCCESS(destinationFilePath));
+							}
+						});
+					} else {
+						console.log('assessment report not found');
+					}
+				}
+			}));
 
 		const form = this._view.modelBuilder.formContainer()
 			.withFormItems([
@@ -94,6 +118,8 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 			}
 			return true;
 		});
+		// displaying save assessment button when enter on assessment page
+		this.wizard.customButtons[2].hidden = false;
 		this.migrationStateModel._targetType = MigrationTargetType.SQLDB;
 		this.executeChange(this.migrationStateModel._targetType);
 		await this._header.populateAssessmentDetailsHeader(this.migrationStateModel);
@@ -104,6 +130,8 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator(pageChangeInfo => true);
 		this.wizard.message = { text: '' };
+		// hiding save assessment button when page is left
+		this.wizard.customButtons[2].hidden = true;
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
