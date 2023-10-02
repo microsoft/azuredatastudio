@@ -90,7 +90,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		this._overlay.className = 'overlayWidgets';
 		this._overlay.style.width = '100%';
 		this._overlay.style.zIndex = '4';
-		this._overlay.style.paddingTop = '50px';
+		this._overlay.style.top = '50px';
 		parent.appendChild(this._overlay);
 
 		this._profilerTable = new Table(parent, this._accessibilityService, this._quickInputService, defaultTableStyles, {
