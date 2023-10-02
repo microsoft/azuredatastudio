@@ -237,7 +237,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			sqlServerItems.push(isPolyBaseInstalledContainer);
 		}
 
-		if (this, this.objectInfo.isXTPSupported !== undefined) {
+		if (this.objectInfo.isXTPSupported !== undefined) {
 			this.isXTPSupportedInput = this.createInputBox(async () => { }, {
 				ariaLabel: localizedConstants.IsXTPSupportedText,
 				inputType: 'text',
