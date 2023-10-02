@@ -154,6 +154,17 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private initializeGeneralSection(): void {
 		// Information about the platform that the SQL instance is running on
 		let platformItems: azdata.Component[] = [];
+		if (this.objectInfo.hardwareGeneration) {
+			this.hardwareGenerationInput = this.createInputBox(async () => { }, {
+				ariaLabel: localizedConstants.HardwareGenerationText,
+				inputType: 'text',
+				enabled: this.options.isNewObject,
+				value: this.objectInfo.hardwareGeneration.toString()
+			});
+			const hardwareGenerationContainer = this.createLabelInputContainer(localizedConstants.HardwareGenerationText, this.hardwareGenerationInput);
+			platformItems.push(hardwareGenerationContainer);
+		}
+
 		this.nameInput = this.createInputBox(async () => { }, {
 			ariaLabel: localizedConstants.NameText,
 			inputType: 'text',
@@ -285,15 +296,15 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		const versionContainer = this.createLabelInputContainer(localizedConstants.VersionText, this.versionInput);
 		sqlServerItems.push(versionContainer);
 
-		if (this.objectInfo.hardwareGeneration) {
-			this.hardwareGenerationInput = this.createInputBox(async () => { }, {
-				ariaLabel: localizedConstants.HardwareGenerationText,
+		if (!isUndefinedOrNull(this.objectInfo.reservedStorageSizeMB)) {
+			this.reservedStorageSizeInMBInput = this.createInputBox(async () => { }, {
+				ariaLabel: localizedConstants.ReservedStorageSizeInMBText,
 				inputType: 'text',
 				enabled: this.options.isNewObject,
-				value: this.objectInfo.hardwareGeneration.toString()
+				value: localizedConstants.StringValueInMB(this.objectInfo.reservedStorageSizeMB.toString())
 			});
-			const hardwareGenerationContainer = this.createLabelInputContainer(localizedConstants.HardwareGenerationText, this.hardwareGenerationInput);
-			sqlServerItems.push(hardwareGenerationContainer);
+			const reservedStorageSizeInMBContainer = this.createLabelInputContainer(localizedConstants.ReservedStorageSizeInMBText, this.reservedStorageSizeInMBInput);
+			sqlServerItems.push(reservedStorageSizeInMBContainer);
 		}
 
 		if (this.objectInfo.serviceTier) {
@@ -316,17 +327,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			});
 			const storageSpaceUsageInMbContainer = this.createLabelInputContainer(localizedConstants.StorageSpaceUsageInMBText, this.storageSpaceUsageInMBInput);
 			sqlServerItems.push(storageSpaceUsageInMbContainer);
-		}
-
-		if (!isUndefinedOrNull(this.objectInfo.reservedStorageSizeMB)) {
-			this.reservedStorageSizeInMBInput = this.createInputBox(async () => { }, {
-				ariaLabel: localizedConstants.ReservedStorageSizeInMBText,
-				inputType: 'text',
-				enabled: this.options.isNewObject,
-				value: localizedConstants.StringValueInMB(this.objectInfo.reservedStorageSizeMB.toString())
-			});
-			const reservedStorageSizeInMBContainer = this.createLabelInputContainer(localizedConstants.ReservedStorageSizeInMBText, this.reservedStorageSizeInMBInput);
-			sqlServerItems.push(reservedStorageSizeInMBContainer);
 		}
 
 		this.platformSection = this.createGroup('Platform', platformItems, true);
