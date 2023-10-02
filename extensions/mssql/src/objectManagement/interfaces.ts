@@ -554,7 +554,7 @@ export interface Server extends ObjectManagement.SqlObject {
 	isClustered: boolean;
 	isHadrEnabled: boolean;
 	isPolyBaseInstalled?: boolean;
-	isXTPSupported: boolean;
+	isXTPSupported?: boolean;
 	product: string;
 	reservedStorageSizeMB?: number;
 	rootDirectory: string;
