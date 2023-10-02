@@ -56,6 +56,7 @@ export const allFiles = localize('objectManagement.allFiles', "All Files");
 export const labelSelectFolder = localize('objectManagement.labelSelectFolder', "Select Folder");
 export const DataFileLabel = localize('objectManagement.dataFileLabel', "Data");
 export const LogFileLabel = localize('objectManagement.logFileLabel', "Log");
+export const BackButtonLabel = localize('objectManagement.backButtonLabel', "Back");
 
 export function ExplicitPermissionsTableLabelSelected(name: string): string { return localize('objectManagement.explicitPermissionsTableLabelSelected', "Explicit permissions for: {0}", name); }
 export function EffectivePermissionsTableLabelSelected(name: string): string { return localize('objectManagement.effectivePermissionsTableLabelSelected', "Effective permissions for: {0}", name); }
@@ -467,6 +468,7 @@ export const PurgeQueryDataButtonText = localize('objectManagement.databasePrope
 export const YesText = localize('objectManagement.databaseProperties.yesText', "Yes");
 export const NotAvailableText = localize('objectManagement.databaseProperties.notAvailableText', "N/A");
 export const PurgeQueryStoreDataMessage = (databaseName: string) => localize('objectManagement.databaseProperties.purgeQueryStoreDataMessage', "Are you sure you want to purge the Query Store data from '{0}'?", databaseName);
+export const fileGroupsNameInput = localize('objectManagement.filegroupsNameInput', "Filegroup Name");
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
