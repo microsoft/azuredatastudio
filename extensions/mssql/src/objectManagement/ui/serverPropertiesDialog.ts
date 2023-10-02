@@ -10,6 +10,7 @@ import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import * as constants from '../constants';
 import { Server, ServerViewInfo, NumaNode, AffinityType, ServerLoginMode, AuditLevel } from '../interfaces';
+import { isUndefinedOrNull } from '../../types';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
 	private generalTab: azdata.Tab;
@@ -226,7 +227,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		const isHadrEnabledContainer = this.createLabelInputContainer(localizedConstants.IsHadrEnabledText, this.isHadrEnabledInput);
 		sqlServerItems.push(isHadrEnabledContainer);
 
-		if (this.objectInfo.isPolyBaseInstalled !== undefined) {
+		if (!isUndefinedOrNull(this.objectInfo.isPolyBaseInstalled)) {
 			this.isPolyBaseInstalledInput = this.createInputBox(async () => { }, {
 				ariaLabel: localizedConstants.IsPolyBaseInstalledText,
 				inputType: 'text',
@@ -237,7 +238,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			sqlServerItems.push(isPolyBaseInstalledContainer);
 		}
 
-		if (this.objectInfo.isXTPSupported !== undefined) {
+		if (!isUndefinedOrNull(this.objectInfo.isXTPSupported)) {
 			this.isXTPSupportedInput = this.createInputBox(async () => { }, {
 				ariaLabel: localizedConstants.IsXTPSupportedText,
 				inputType: 'text',
@@ -284,50 +285,48 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		const versionContainer = this.createLabelInputContainer(localizedConstants.VersionText, this.versionInput);
 		sqlServerItems.push(versionContainer);
 
-		if (this.engineEdition === azdata.DatabaseEngineEdition.SqlManagedInstance) {
-			if (this.objectInfo.hardwareGeneration) {
-				this.hardwareGenerationInput = this.createInputBox(async () => { }, {
-					ariaLabel: localizedConstants.HardwareGenerationText,
-					inputType: 'text',
-					enabled: this.options.isNewObject,
-					value: this.objectInfo.hardwareGeneration.toString()
-				});
-				const hardwareGenerationContainer = this.createLabelInputContainer(localizedConstants.HardwareGenerationText, this.hardwareGenerationInput);
-				platformItems.unshift(hardwareGenerationContainer);
-			}
+		if (this.objectInfo.hardwareGeneration) {
+			this.hardwareGenerationInput = this.createInputBox(async () => { }, {
+				ariaLabel: localizedConstants.HardwareGenerationText,
+				inputType: 'text',
+				enabled: this.options.isNewObject,
+				value: this.objectInfo.hardwareGeneration.toString()
+			});
+			const hardwareGenerationContainer = this.createLabelInputContainer(localizedConstants.HardwareGenerationText, this.hardwareGenerationInput);
+			sqlServerItems.push(hardwareGenerationContainer);
+		}
 
-			if (this.objectInfo.reservedStorageSizeMB !== undefined) {
-				this.reservedStorageSizeInMBInput = this.createInputBox(async () => { }, {
-					ariaLabel: localizedConstants.ReservedStorageSizeInMBText,
-					inputType: 'text',
-					enabled: this.options.isNewObject,
-					value: localizedConstants.StringValueInMB(this.objectInfo.reservedStorageSizeMB.toString())
-				});
-				const reservedStorageSizeInMBContainer = this.createLabelInputContainer(localizedConstants.ReservedStorageSizeInMBText, this.reservedStorageSizeInMBInput);
-				sqlServerItems.push(reservedStorageSizeInMBContainer);
-			}
+		if (this.objectInfo.serviceTier) {
+			this.serviceTierInput = this.createInputBox(async () => { }, {
+				ariaLabel: localizedConstants.ServiceTierText,
+				inputType: 'text',
+				enabled: this.options.isNewObject,
+				value: this.objectInfo.serviceTier
+			});
+			const serviceTierContainer = this.createLabelInputContainer(localizedConstants.ServiceTierText, this.serviceTierInput);
+			sqlServerItems.push(serviceTierContainer);
+		}
 
-			if (this.objectInfo.serviceTier) {
-				this.serviceTierInput = this.createInputBox(async () => { }, {
-					ariaLabel: localizedConstants.ServiceTierText,
-					inputType: 'text',
-					enabled: this.options.isNewObject,
-					value: this.objectInfo.serviceTier
-				});
-				const serviceTierContainer = this.createLabelInputContainer(localizedConstants.ServiceTierText, this.serviceTierInput);
-				sqlServerItems.push(serviceTierContainer);
-			}
+		if (!isUndefinedOrNull(this.objectInfo.storageSpaceUsageInMB)) {
+			this.storageSpaceUsageInMBInput = this.createInputBox(async () => { }, {
+				ariaLabel: localizedConstants.StorageSpaceUsageInMBText,
+				inputType: 'text',
+				enabled: this.options.isNewObject,
+				value: localizedConstants.StringValueInMB(this.objectInfo.storageSpaceUsageInMB.toString())
+			});
+			const storageSpaceUsageInMbContainer = this.createLabelInputContainer(localizedConstants.StorageSpaceUsageInMBText, this.storageSpaceUsageInMBInput);
+			sqlServerItems.push(storageSpaceUsageInMbContainer);
+		}
 
-			if (this.objectInfo.storageSpaceUsageInMB !== undefined) {
-				this.storageSpaceUsageInMBInput = this.createInputBox(async () => { }, {
-					ariaLabel: localizedConstants.StorageSpaceUsageInMBText,
-					inputType: 'text',
-					enabled: this.options.isNewObject,
-					value: localizedConstants.StringValueInMB(this.objectInfo.storageSpaceUsageInMB.toString())
-				});
-				const storageSpaceUsageInMbContainer = this.createLabelInputContainer(localizedConstants.StorageSpaceUsageInMBText, this.storageSpaceUsageInMBInput);
-				sqlServerItems.push(storageSpaceUsageInMbContainer);
-			}
+		if (!isUndefinedOrNull(this.objectInfo.reservedStorageSizeMB)) {
+			this.reservedStorageSizeInMBInput = this.createInputBox(async () => { }, {
+				ariaLabel: localizedConstants.ReservedStorageSizeInMBText,
+				inputType: 'text',
+				enabled: this.options.isNewObject,
+				value: localizedConstants.StringValueInMB(this.objectInfo.reservedStorageSizeMB.toString())
+			});
+			const reservedStorageSizeInMBContainer = this.createLabelInputContainer(localizedConstants.ReservedStorageSizeInMBText, this.reservedStorageSizeInMBInput);
+			sqlServerItems.push(reservedStorageSizeInMBContainer);
 		}
 
 		this.platformSection = this.createGroup('Platform', platformItems, true);
