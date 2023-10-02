@@ -468,6 +468,7 @@ export const PurgeQueryDataButtonText = localize('objectManagement.databasePrope
 export const YesText = localize('objectManagement.databaseProperties.yesText', "Yes");
 export const NotAvailableText = localize('objectManagement.databaseProperties.notAvailableText', "N/A");
 export const PurgeQueryStoreDataMessage = (databaseName: string) => localize('objectManagement.databaseProperties.purgeQueryStoreDataMessage', "Are you sure you want to purge the Query Store data from '{0}'?", databaseName);
+export const fileGroupsNameInput = localize('objectManagement.filegroupsNameInput', "Filegroup Name");
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
