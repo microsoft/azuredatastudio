@@ -454,7 +454,7 @@ suite('SearchModel', () => {
 		});
 	});
 
-	test.skip('Search Model: Search reports timed telemetry on search when error is called', () => { // {{SQL CARBON EDIT}} Skip failing search model test 
+	test.skip('Search Model: Search reports timed telemetry on search when error is called', () => { // {{SQL CARBON EDIT}} Skip failing search model test
 		const target2 = sinon.spy();
 		sinon.stub(nullEvent, 'stop').callsFake(target2);
 		const target1 = sinon.stub().returns(nullEvent);
