@@ -159,14 +159,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		});
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
 
-		this.hardwareGenerationInput = this.createInputBox(async () => { }, {
-			ariaLabel: localizedConstants.HardwareGenerationText,
-			inputType: 'text',
-			enabled: this.options.isNewObject,
-			value: this.objectInfo.hardwareGeneration.toString()
-		});
-		const hardwareGenerationContainer = this.createLabelInputContainer(localizedConstants.HardwareGenerationText, this.hardwareGenerationInput);
-
 		this.languageDropdown = this.createDropdown(localizedConstants.LanguageText, async () => { }, [this.objectInfo.language], this.objectInfo.language, this.options.isNewObject);
 		const languageContainer = this.createLabelInputContainer(localizedConstants.LanguageText, this.languageDropdown);
 
@@ -311,7 +303,17 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		];
 
 		if (this.engineEdition === azdata.DatabaseEngineEdition.SqlManagedInstance) {
-			platformItems.unshift(hardwareGenerationContainer);
+
+			if (this.objectInfo.hardwareGeneration) {
+				this.hardwareGenerationInput = this.createInputBox(async () => { }, {
+					ariaLabel: localizedConstants.HardwareGenerationText,
+					inputType: 'text',
+					enabled: this.options.isNewObject,
+					value: this.objectInfo.hardwareGeneration.toString()
+				});
+				const hardwareGenerationContainer = this.createLabelInputContainer(localizedConstants.HardwareGenerationText, this.hardwareGenerationInput);
+				platformItems.unshift(hardwareGenerationContainer);
+			}
 			sqlServerItems.push(reservedStorageSizeInMBContainer, serviceTierContainer, storageSpaceUsageInMbContainer);
 			// remove isXTPSupported
 			sqlServerItems.splice(3, 1);

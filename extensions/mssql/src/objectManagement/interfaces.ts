@@ -544,23 +544,23 @@ export enum AffinityType {
 }
 
 export interface Server extends ObjectManagement.SqlObject {
-	hardwareGeneration: string;
+	hardwareGeneration?: string;
 	language: string;
 	memoryInMB: number;
-	operatingSystem: string;
-	platform: string;
+	operatingSystem?: string;
+	platform?: string;
 	processors: string;
 	version: string;
 	isClustered: boolean;
 	isHadrEnabled: boolean;
-	isPolyBaseInstalled: boolean;
+	isPolyBaseInstalled?: boolean;
 	isXTPSupported: boolean;
 	product: string;
-	reservedStorageSizeMB: number;
+	reservedStorageSizeMB?: number;
 	rootDirectory: string;
 	serverCollation: string;
-	serviceTier: string;
-	storageSpaceUsageInMB: number;
+	serviceTier?: string;
+	storageSpaceUsageInMB?: number;
 	minServerMemory: NumericServerProperty;
 	maxServerMemory: NumericServerProperty;
 	autoProcessorAffinityMaskForAll: boolean;
