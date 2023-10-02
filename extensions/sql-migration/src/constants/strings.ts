@@ -250,8 +250,8 @@ export const SOURCE_PROPERTIES = localize('sql.migration.sku.sourceProperties', 
 export const SQL_TEMPDB = localize('sql.migration.sku.sql.temp', "SQL tempdb");
 export const SQL_DATA_FILES = localize('sql.migration.sku.sql.dataDisk', "SQL data files");
 export const SQL_LOG_FILES = localize('sql.migration.sku.sql.logDisk', "SQL log files");
-export function STORAGE_CONFIGURATION(size: string, count: number): string {
-	return localize('sql.migration.sku.azureConfiguration.storage', "{0} x {1}", size, count);
+export function STORAGE_CONFIGURATION(count: number, type: string, size: string): string {
+	return localize('sql.migration.sku.azureConfiguration.storage', "{0} x {1} ({2})", count, type, size);
 }
 export const RECOMMENDED_TARGET_STORAGE_CONFIGURATION = localize('sql.migration.sku.targetStorageConfiguration', "Recommendation target storage configuration");
 export const RECOMMENDED_TARGET_STORAGE_CONFIGURATION_INFO = localize('sql.migration.sku.targetStorageConfiguration.info', "Below is the target storage configuration required to meet your storage performance needs.");
@@ -262,6 +262,12 @@ export function STORAGE_GB(storage: number): string {
 export const RECOMMENDED_STORAGE_CONFIGURATION = localize('sql.migration.sku.targetStorageConfiguration.recommendedStorageConfiguration', "Recommended storage configuration");
 export const EPHEMERAL_TEMPDB = localize('sql.migration.sku.targetStorageConfiguration.ephemeralTempdb', "Place tempdb on the local ephemeral SSD (default D:\\) drive");
 export const LOCAL_SSD = localize('sql.migration.sku.targetStorageConfiguration.local.SSD', "Local SSD");
+export const DISKTYPE_STANDARDHDD = localize('sql.migration.sku.targetStorageConfiguration.disktype.standardHdd', "StandardHDD");
+export const DISKTYPE_STANDARDSSD = localize('sql.migration.sku.targetStorageConfiguration.disktype.StandardSsd', "StandardSSD");
+export const DISKTYPE_PREMIUMSSD = localize('sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsd', "PremiumSSD");
+export const DISKTYPE_ULTRASSD = localize('sql.migration.sku.targetStorageConfiguration.disktype.UltraSsd', "UltraSSD");
+export const DISKTYPE_PREMIUMSSDV2 = localize('sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsdV2', "PremiumSSDV2");
+
 export const CACHING = localize('sql.migration.sku.targetStorageConfiguration.caching', "Host caching");
 export const CACHING_NA = localize('sql.migration.sku.targetStorageConfiguration.caching.na', "Not applicable");
 export const CACHING_NONE = localize('sql.migration.sku.targetStorageConfiguration.caching.none', "None");

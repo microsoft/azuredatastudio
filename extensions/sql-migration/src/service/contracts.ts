@@ -115,6 +115,7 @@ export interface SqlMigrationSkuRecommendationsParams {
 	endTime: string;
 	includePreviewSkus: boolean;
 	databaseAllowList: string[];
+	isPremiumSSDV2Enabled: boolean;
 }
 
 export interface AzureSqlSkuCategory {
@@ -136,6 +137,7 @@ export interface AzureManagedDiskSku {
 	tier: AzureManagedDiskTier;
 	size: string;
 	caching: AzureManagedDiskCaching;
+	type: AzureManagedDiskType;
 }
 
 export interface AzureVirtualMachineSku {
@@ -276,6 +278,15 @@ export const enum AzureManagedDiskTier {
 	Standard = 0,
 	Premium = 1,
 	Ultra = 2
+}
+
+// values from SQL NuGet
+export const enum AzureManagedDiskType {
+	StandardHDD = 1,   // Standard HDD
+	StandardSSD = 2,   // Standard SSD
+	PremiumSSD = 4,    // Premium SSD
+	UltraSSD = 8,      // Ultra SSD
+	PremiumSSDV2 = 16,    // Premium SSD V2
 }
 
 export const enum AzureManagedDiskCaching {

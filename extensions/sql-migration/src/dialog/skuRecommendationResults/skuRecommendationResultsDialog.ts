@@ -303,7 +303,10 @@ export class SkuRecommendationResultsDialog {
 			{ value: constants.SQL_TEMPDB },
 			{
 				value: recommendation.targetSku.tempDbDiskSizes!.length > 0
-					? constants.STORAGE_CONFIGURATION(recommendation.targetSku.logDiskSizes![0].size, recommendation.targetSku.logDiskSizes!.length)
+					? constants.STORAGE_CONFIGURATION(
+						recommendation.targetSku.logDiskSizes!.length,
+						this.getDiskTypeText(recommendation.targetSku.logDiskSizes![0].type),
+						recommendation.targetSku.logDiskSizes![0].size)
 					: constants.EPHEMERAL_TEMPDB
 			},
 			{
@@ -315,13 +318,23 @@ export class SkuRecommendationResultsDialog {
 
 		const dataDiskTableRow: azdata.DeclarativeTableCellValue[] = [
 			{ value: constants.SQL_DATA_FILES },
-			{ value: constants.STORAGE_CONFIGURATION(recommendation.targetSku.dataDiskSizes![0].size, recommendation.targetSku.dataDiskSizes!.length) },
+			{
+				value: constants.STORAGE_CONFIGURATION(
+					recommendation.targetSku.dataDiskSizes!.length,
+					this.getDiskTypeText(recommendation.targetSku.dataDiskSizes![0].type),
+					recommendation.targetSku.dataDiskSizes![0].size)
+			},
 			{ value: this.getCachingText(recommendation.targetSku.dataDiskSizes![0].caching) }
 		];
 
 		const logDiskTableRow: azdata.DeclarativeTableCellValue[] = [
 			{ value: constants.SQL_LOG_FILES },
-			{ value: constants.STORAGE_CONFIGURATION(recommendation.targetSku.logDiskSizes![0].size, recommendation.targetSku.logDiskSizes!.length) },
+			{
+				value: constants.STORAGE_CONFIGURATION(
+					recommendation.targetSku.logDiskSizes!.length,
+					this.getDiskTypeText(recommendation.targetSku.logDiskSizes![0].type),
+					recommendation.targetSku.logDiskSizes![0].size)
+			},
 			{ value: this.getCachingText(recommendation.targetSku.logDiskSizes![0].caching) }
 		];
 
@@ -362,6 +375,25 @@ export class SkuRecommendationResultsDialog {
 
 			case contracts.AzureManagedDiskCaching.ReadWrite:
 				return constants.CACHING_READ_WRITE;
+		}
+	}
+
+	private getDiskTypeText(type: contracts.AzureManagedDiskType): string {
+		switch (type) {
+			case contracts.AzureManagedDiskType.StandardHDD:
+				return constants.DISKTYPE_STANDARDHDD;
+
+			case contracts.AzureManagedDiskType.StandardSSD:
+				return constants.DISKTYPE_STANDARDSSD;
+
+			case contracts.AzureManagedDiskType.PremiumSSD:
+				return constants.DISKTYPE_PREMIUMSSD;
+
+			case contracts.AzureManagedDiskType.UltraSSD:
+				return constants.DISKTYPE_ULTRASSD;
+
+			case contracts.AzureManagedDiskType.PremiumSSDV2:
+				return constants.DISKTYPE_PREMIUMSSDV2;
 		}
 	}
 

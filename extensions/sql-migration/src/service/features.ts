@@ -104,7 +104,8 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 			startTime,
 			endTime,
 			includePreviewSkus,
-			databaseAllowList
+			databaseAllowList,
+			isPremiumSSDV2Enabled: true,
 		};
 
 		try {
