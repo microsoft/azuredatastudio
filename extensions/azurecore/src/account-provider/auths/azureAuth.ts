@@ -31,6 +31,7 @@ const localize = nls.loadMessageBundle();
 
 export type GetTenantsResponseData = {
 	value: TenantResponse[];
+	error?: string;
 }
 
 export abstract class AzureAuth implements vscode.Disposable {
@@ -43,6 +44,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly scopesString: string;
 	protected readonly clientId: string;
 	protected readonly resources: Resource[];
+	protected readonly httpClient: HttpClient;
+	private readonly _disposableStore: vscode.Disposable[];
 
 	constructor(
 		protected readonly metadata: AzureAccountProviderMetadata,
@@ -53,7 +56,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		protected readonly authType: AzureAuthType,
 		public readonly userFriendlyName: string
 	) {
-
+		this._disposableStore = [];
 		this.loginEndpointUrl = this.metadata.settings.host;
 		this.commonTenant = {
 			id: 'common',
@@ -96,6 +99,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		this.scopes = [...this.metadata.settings.scopes];
 		this.scopesString = this.scopes.join(' ');
+		this._disposableStore.push(this.uriEventEmitter);
 	}
 
 	public async startLogin(): Promise<AzureAccount | azdata.PromptFailedResult> {
@@ -507,8 +511,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		this.clientApplication.clearCache();
 
 		// unlink both cache files
-		await this.msalCacheProvider.unlinkMsalCache();
-		await this.msalCacheProvider.unlinkLocalCache();
+		await this.msalCacheProvider.unlinkCacheFiles();
 
 		// Delete Encryption Keys
 		await this.msalCacheProvider.clearCacheEncryptionKeys();
@@ -538,7 +541,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 		await this.msalCacheProvider.clearAccountFromLocalCache(accountKey.accountId);
 	}
 
-	public async dispose() { }
+	public async dispose() {
+		this._disposableStore.forEach(d => d.dispose());
+	}
 
 	public async autoOAuthCancelled(): Promise<void> { }
 

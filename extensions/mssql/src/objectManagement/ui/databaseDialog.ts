@@ -58,8 +58,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private filestreamFilegroupsTable: azdata.TableComponent;
 	private memoryOptimizedFilegroupsTable: azdata.TableComponent;
 	private rowsFilegroupNameInput: azdata.InputBoxComponent;
+	private rowsFilegroupNameContainer: azdata.FlexContainer;
+	private rowsFileGroupButtonContainer: azdata.FlexContainer;
 	private filestreamFilegroupNameInput: azdata.InputBoxComponent;
+	private filestreamFilegroupNameContainer: azdata.FlexContainer;
+	private filestreamFileGroupButtonContainer: azdata.FlexContainer;
 	private memoryOptimizedFilegroupNameInput: azdata.InputBoxComponent;
+	private memoryOptimizedFilegroupNameContainer: azdata.FlexContainer;
+	private memoryOptimizedFileGroupButtonContainer: azdata.FlexContainer;
 	private newFileGroupTemporaryId: number = 0;
 	private rowDataFileGroupsTableRows: FileGroup[] = [];
 	private filestreamDataFileGroupsTableRows: FileGroup[] = [];
@@ -88,12 +94,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private valueForPrimaryInput: azdata.InputBoxComponent;
 	private valueForSecondaryInput: azdata.InputBoxComponent;
 	private setSecondaryCheckboxForInputType: azdata.CheckBoxComponent;
-	private dscPrimaryValueDropdownGroup: azdata.GroupContainer;
-	private dscSecondaryValueDropdownGroup: azdata.GroupContainer;
-	private dscSecondaryCheckboxForDropdownGroup: azdata.GroupContainer;
-	private dscPrimaryValueInputGroup: azdata.GroupContainer;
-	private dscSecondaryValueInputGroup: azdata.GroupContainer;
-	private dscSecondaryCheckboxForInputGroup: azdata.GroupContainer;
+	private dscPrimaryValueDropdown: azdata.FlexContainer;
+	private dscSecondaryValueDropdown: azdata.FlexContainer;
+	private dscPrimaryValueInput: azdata.FlexContainer;
+	private dscSecondaryValueInput: azdata.FlexContainer;
 	private setFocusToInput: azdata.InputBoxComponent = undefined;
 	private currentRowObjectInfo: DatabaseScopedConfigurationsInfo;
 	// Query store Tab
@@ -211,8 +215,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			// Initilaize FileGroups Tab
 			if (!isUndefinedOrNull(this.objectInfo.filegroups)) {
 				const rowsFileGroupSection = await this.initializeRowsFileGroupSection();
-				const fileStreamFileGroupSection = this.initializeFileStreamFileGroupSection();
-				const memoryOptimizedFileGroupSection = this.initializeMemoryOptimizedFileGroupSection();
+				const fileStreamFileGroupSection = await this.initializeFileStreamFileGroupSection();
+				const memoryOptimizedFileGroupSection = await this.initializeMemoryOptimizedFileGroupSection();
 				this.fileGroupsTab = {
 					title: localizedConstants.FileGroupsSectionHeader,
 					id: this.fileGroupsTabId,
@@ -784,17 +788,16 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				'margin-left': '10px'
 			}
 		}).component();
-		this.rowsFilegroupNameInput = this.getFilegroupNameInput(this.rowsFilegroupsTable, FileGroupType.RowsFileGroup);
+		this.rowsFilegroupNameContainer = await this.getFilegroupNameGroup(this.rowsFilegroupsTable, FileGroupType.RowsFileGroup);
 		const addButtonComponent: DialogButton = {
 			buttonAriaLabel: localizedConstants.AddFilegroupText,
 			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.rowsFilegroupsTable)
 		};
 		const removeButtonComponent: DialogButton = {
 			buttonAriaLabel: localizedConstants.RemoveButton,
-			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.rowsFilegroupsTable)
+			buttonHandler: () => this.onRemoveDatabaseFileGroupsButtonClicked(this.rowsFilegroupsTable)
 		};
-		const rowsFileGroupButtonContainer = this.addButtonsForTable(this.rowsFilegroupsTable, addButtonComponent, removeButtonComponent);
-
+		this.rowsFileGroupButtonContainer = this.addButtonsForTable(this.rowsFilegroupsTable, addButtonComponent, removeButtonComponent);
 		this.disposables.push(
 			this.rowsFilegroupsTable.onCellAction(async (arg: azdata.ICheckboxCellActionEventArgs) => {
 				let filegroup = this.rowDataFileGroupsTableRows[arg.row];
@@ -820,23 +823,21 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				async () => {
 					if (this.rowsFilegroupsTable.selectedRows.length === 1) {
 						const fileGroup = this.rowDataFileGroupsTableRows[this.rowsFilegroupsTable.selectedRows[0]];
-						await this.rowsFilegroupNameInput.updateCssStyles({ 'visibility': fileGroup.id < 0 ? 'visible' : 'hidden' });
+						this.rowsFilegroupNameContainer.display = fileGroup.id < 0 ? 'inline-flex' : 'none';
 						this.rowsFilegroupNameInput.value = fileGroup.name;
 						this.onFormFieldChange();
 					}
 				}
 			)
 		);
-		const rowContainer = this.modelView.modelBuilder.flexContainer().withItems([this.rowsFilegroupNameInput]).component();
-		rowContainer.addItems([rowsFileGroupButtonContainer], { flex: '0 0 auto' });
-		return this.createGroup(localizedConstants.RowsFileGroupsSectionText, [this.rowsFilegroupsTable, rowContainer], true);
+		return this.createGroup(localizedConstants.RowsFileGroupsSectionText, [this.rowsFilegroupsTable, this.rowsFilegroupNameContainer, this.rowsFileGroupButtonContainer], true);
 	}
 
 	/**
 	 * Initializes the filestream filegroups section and updates the table data
 	 * @returns filestream data filegroups container
 	 */
-	private initializeFileStreamFileGroupSection(): azdata.GroupContainer {
+	private async initializeFileStreamFileGroupSection(): Promise<azdata.GroupContainer> {
 		const data = this.getTableData(FileGroupType.FileStreamDataFileGroup);
 		this.filestreamFilegroupsTable = this.modelView.modelBuilder.table().withProps({
 			columns: [{
@@ -860,7 +861,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				'margin-left': '10px'
 			}
 		}).component();
-		this.filestreamFilegroupNameInput = this.getFilegroupNameInput(this.filestreamFilegroupsTable, FileGroupType.FileStreamDataFileGroup);
+		this.filestreamFilegroupNameContainer = await this.getFilegroupNameGroup(this.filestreamFilegroupsTable, FileGroupType.FileStreamDataFileGroup);
 		const addButtonComponent: DialogButton = {
 			buttonAriaLabel: localizedConstants.AddFilegroupText,
 			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.filestreamFilegroupsTable)
@@ -869,8 +870,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			buttonAriaLabel: localizedConstants.RemoveButton,
 			buttonHandler: () => this.onRemoveDatabaseFileGroupsButtonClicked(this.filestreamFilegroupsTable)
 		};
-		const filestreamFileGroupButtonContainer = this.addButtonsForTable(this.filestreamFilegroupsTable, addButtonComponent, removeButtonComponent);
-
+		this.filestreamFileGroupButtonContainer = this.addButtonsForTable(this.filestreamFilegroupsTable, addButtonComponent, removeButtonComponent);
 		this.disposables.push(
 			this.filestreamFilegroupsTable.onCellAction(async (arg: azdata.ICheckboxCellActionEventArgs) => {
 				let filegroup = this.filestreamDataFileGroupsTableRows[arg.row];
@@ -892,7 +892,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				async () => {
 					if (this.filestreamFilegroupsTable.selectedRows.length === 1) {
 						const fileGroup = this.filestreamDataFileGroupsTableRows[this.filestreamFilegroupsTable.selectedRows[0]];
-						await this.filestreamFilegroupNameInput.updateCssStyles({ 'visibility': fileGroup.id < 0 ? 'visible' : 'hidden' });
+						this.filestreamFilegroupNameContainer.display = fileGroup.id < 0 ? 'inline-flex' : 'none';
 						this.filestreamFilegroupNameInput.value = fileGroup.name;
 						this.onFormFieldChange();
 					}
@@ -900,16 +900,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			)
 		);
 
-		const filestreamContainer = this.modelView.modelBuilder.flexContainer().withItems([this.filestreamFilegroupNameInput]).component();
-		filestreamContainer.addItems([filestreamFileGroupButtonContainer], { flex: '0 0 auto' });
-		return this.createGroup(localizedConstants.FileStreamFileGroupsSectionText, [this.filestreamFilegroupsTable, filestreamContainer], true);
+		return this.createGroup(localizedConstants.FileStreamFileGroupsSectionText, [this.filestreamFilegroupsTable, this.filestreamFilegroupNameContainer, this.filestreamFileGroupButtonContainer], true);
 	}
 
 	/**
 	 * Initializes the memory optimized filegroups section and updates the table data
 	 * @returns Memory optimized filegroups container
 	 */
-	private initializeMemoryOptimizedFileGroupSection(): azdata.GroupContainer {
+	private async initializeMemoryOptimizedFileGroupSection(): Promise<azdata.GroupContainer> {
 		const data = this.getTableData(FileGroupType.MemoryOptimizedDataFileGroup);
 		this.memoryOptimizedFilegroupsTable = this.modelView.modelBuilder.table().withProps({
 			columns: [{
@@ -927,7 +925,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				'margin-left': '10px'
 			}
 		}).component();
-		this.memoryOptimizedFilegroupNameInput = this.getFilegroupNameInput(this.memoryOptimizedFilegroupsTable, FileGroupType.MemoryOptimizedDataFileGroup);
+		this.memoryOptimizedFilegroupNameContainer = await this.getFilegroupNameGroup(this.memoryOptimizedFilegroupsTable, FileGroupType.MemoryOptimizedDataFileGroup);
 		const addButtonComponent: DialogButton = {
 			buttonAriaLabel: localizedConstants.AddFilegroupText,
 			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.memoryOptimizedFilegroupsTable),
@@ -937,14 +935,13 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			buttonAriaLabel: localizedConstants.RemoveButton,
 			buttonHandler: () => this.onRemoveDatabaseFileGroupsButtonClicked(this.memoryOptimizedFilegroupsTable)
 		};
-		const memoryOptimizedFileGroupButtonContainer = this.addButtonsForTable(this.memoryOptimizedFilegroupsTable, addButtonComponent, removeButtonComponent);
-
+		this.memoryOptimizedFileGroupButtonContainer = this.addButtonsForTable(this.memoryOptimizedFilegroupsTable, addButtonComponent, removeButtonComponent);
 		this.disposables.push(
 			this.memoryOptimizedFilegroupsTable.onRowSelected(
 				async () => {
 					if (this.memoryOptimizedFilegroupsTable.selectedRows.length === 1) {
 						const fileGroup = this.memoryoptimizedFileGroupsTableRows[this.memoryOptimizedFilegroupsTable.selectedRows[0]];
-						await this.memoryOptimizedFilegroupNameInput.updateCssStyles({ 'visibility': fileGroup.id < 0 ? 'visible' : 'hidden' });
+						this.memoryOptimizedFilegroupNameContainer.display = fileGroup.id < 0 ? 'inline-flex' : 'none';
 						this.memoryOptimizedFilegroupNameInput.value = fileGroup.name;
 						this.onFormFieldChange();
 					}
@@ -952,9 +949,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			)
 		);
 
-		const memoryOptimizedContainer = this.modelView.modelBuilder.flexContainer().withItems([this.memoryOptimizedFilegroupNameInput]).component();
-		memoryOptimizedContainer.addItems([memoryOptimizedFileGroupButtonContainer], { flex: '0 0 auto' });
-		return this.createGroup(localizedConstants.MemoryOptimizedFileGroupsSectionText, [this.memoryOptimizedFilegroupsTable, memoryOptimizedContainer], true);
+		return this.createGroup(localizedConstants.MemoryOptimizedFileGroupsSectionText, [this.memoryOptimizedFilegroupsTable, this.memoryOptimizedFilegroupNameContainer, this.memoryOptimizedFileGroupButtonContainer], true);
 	}
 
 	/**
@@ -1027,6 +1022,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			// Refresh the table with new row data
 			this.updateFileGroupsOptionsAndTableRows();
 			await this.setTableData(table, newData, DefaultMaxTableRowCount);
+			table.setActiveCell(table.data?.length - 1, 0);
 		}
 	}
 
@@ -1059,7 +1055,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				const removeFilegroupIndex = this.objectInfo.filegroups.indexOf(this.rowDataFileGroupsTableRows[this.rowsFilegroupsTable.selectedRows[0]]);
 				this.objectInfo.filegroups?.splice(removeFilegroupIndex, 1);
 				var newData = this.getTableData(FileGroupType.RowsFileGroup);
-				await this.rowsFilegroupNameInput.updateCssStyles({ 'visibility': 'hidden' });
+				this.rowsFilegroupNameContainer.display = 'none';
 			}
 		}
 		else if (table === this.filestreamFilegroupsTable) {
@@ -1067,7 +1063,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				const removeFilegroupIndex = this.objectInfo.filegroups.indexOf(this.filestreamDataFileGroupsTableRows[this.filestreamFilegroupsTable.selectedRows[0]]);
 				this.objectInfo.filegroups?.splice(removeFilegroupIndex, 1);
 				var newData = this.getTableData(FileGroupType.FileStreamDataFileGroup);
-				await this.filestreamFilegroupNameInput.updateCssStyles({ 'visibility': 'hidden' });
+				this.filestreamFilegroupNameContainer.display = 'none';
 			}
 		}
 		else if (table === this.memoryOptimizedFilegroupsTable) {
@@ -1075,13 +1071,38 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				const removeFilegroupIndex = this.objectInfo.filegroups.indexOf(this.memoryoptimizedFileGroupsTableRows[this.memoryOptimizedFilegroupsTable.selectedRows[0]]);
 				this.objectInfo.filegroups?.splice(removeFilegroupIndex, 1);
 				var newData = this.getTableData(FileGroupType.MemoryOptimizedDataFileGroup);
-				await this.memoryOptimizedFilegroupNameInput.updateCssStyles({ 'visibility': 'hidden' });
+				this.memoryOptimizedFilegroupNameContainer.display = 'none';
 			}
 		}
 
 		// Refresh the individual table rows object and table with updated data
 		this.updateFileGroupsOptionsAndTableRows();
-		await this.setTableData(table, newData)
+		await this.setTableData(table, newData);
+		if (table.selectedRows !== undefined && table.selectedRows[0] !== undefined && table.selectedRows[0] < table.data?.length) {
+			table.setActiveCell(table.selectedRows[0], 0);
+		}
+	}
+
+	/**
+	 * Creates the group container for filegroups input section
+	 * @param table table component
+	 * @param filegroupType filegroup type
+	 * @returns filegroup name group container
+	 */
+	private async getFilegroupNameGroup(table: azdata.TableComponent, filegroupType: FileGroupType): Promise<azdata.FlexContainer> {
+		const fgInput = this.getFilegroupNameInput(table, filegroupType);
+		if (table === this.rowsFilegroupsTable) {
+			this.rowsFilegroupNameInput = fgInput;
+		} else if (table === this.filestreamFilegroupsTable) {
+			this.filestreamFilegroupNameInput = fgInput;
+		} else if (table === this.memoryOptimizedFilegroupsTable) {
+			this.memoryOptimizedFilegroupNameInput = fgInput;
+		}
+
+		let fgInputGroupcontainer = this.createLabelInputContainer(localizedConstants.fileGroupsNameInput, [fgInput], false);
+		await fgInputGroupcontainer.updateCssStyles({ 'margin': '0px 0px -10px 10px' });
+		fgInputGroupcontainer.display = 'none';
+		return fgInputGroupcontainer;
 	}
 
 	/**
@@ -1113,9 +1134,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			inputType: 'text',
 			enabled: true,
 			value: '',
-			width: 200,
-			CSSStyles: { 'margin': '5px 0px 0px 10px', 'visibility': 'hidden' }
-		})
+			width: DefaultInputWidth
+		});
 	}
 
 	/**
@@ -1369,7 +1389,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		//  Cannot set the 'ELEVATE_ONLINE (11) and ELEVATE_RESUMABLE (12)' option for the secondaries replica while this option is only allowed to be set for the primary
 		if (this.currentRowObjectInfo.id === 11 || this.currentRowObjectInfo.id === 12) {
-			await this.dscPrimaryValueDropdownGroup.updateCssStyles({ 'visibility': 'visible' });
+			await this.dscPrimaryValueDropdown.updateCssStyles({ 'display': 'inline-flex' });
 			if (JSON.stringify(this.valueForPrimaryDropdown.values) !== JSON.stringify(this.viewInfo.dscElevateOptions) ||
 				this.valueForPrimaryDropdown.value !== this.currentRowObjectInfo.valueForPrimary) {
 				await this.valueForPrimaryDropdown.updateProperties({
@@ -1392,7 +1412,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 		// Cannot set the 'AUTO_ABORT_PAUSED_INDEX (25)' option for the secondaries replica while this option is only allowed to be set for the primary.
 		else if (this.currentRowObjectInfo.id === 25) {
-			await this.dscPrimaryValueInputGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-175px' });
+			await this.dscPrimaryValueInput.updateCssStyles({ 'display': 'inline-flex' });
 			await this.valueForPrimaryInput.updateProperties({
 				value: this.currentRowObjectInfo.valueForPrimary
 				, max: PAUSED_RESUMABLE_INDEX_Max_Limit
@@ -1421,7 +1441,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Cannot set the 'IDENTITY_CACHE (6)' option for the secondaries replica while this option is only allowed to be set for the primary.
 		// Cannot set the 'GLOBAL_TEMPORARY_TABLE_AUTO_DROP (21)' option for the secondaries replica while this option is only allowed to be set for the primary.
 		else if (this.currentRowObjectInfo.id === 6 || this.currentRowObjectInfo.id === 21) {
-			await this.dscPrimaryValueDropdownGroup.updateCssStyles({ 'visibility': 'visible' });
+			await this.dscPrimaryValueDropdown.updateCssStyles({ 'display': 'inline-flex' });
 			if (JSON.stringify(this.valueForPrimaryDropdown.values) !== JSON.stringify(this.viewInfo.propertiesOnOffOptions) ||
 				this.valueForPrimaryDropdown.value !== this.currentRowObjectInfo.valueForPrimary) {
 				await this.valueForPrimaryDropdown.updateProperties({
@@ -1495,13 +1515,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			width: 150,
 			min: 0
 		});
-		const primaryContainer = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForPrimaryInput);
-		this.dscPrimaryValueInputGroup = this.createGroup('', [primaryContainer], false, true);
-		await this.dscPrimaryValueInputGroup.updateCssStyles({ 'visibility': 'hidden' });
+		this.dscPrimaryValueInput = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForPrimaryInput);
+		this.dscPrimaryValueInput.display = 'none';
 
 		// Apply Primary To Secondary checkbox
 		this.setSecondaryCheckboxForInputType = this.createCheckbox(localizedConstants.SetSecondaryText, async (checked) => {
-			await this.dscSecondaryValueInputGroup.updateCssStyles({ 'visibility': checked ? 'hidden' : 'visible' });
+			await this.dscSecondaryValueInput.updateCssStyles({ 'display': checked ? 'none' : 'inline-flex' });
 			this.currentRowObjectInfo.valueForSecondary = this.currentRowObjectInfo.valueForPrimary;
 			await this.valueForSecondaryInput.updateProperties({ value: this.currentRowObjectInfo.valueForSecondary });
 			if (this.dscTable.data[this.currentRowId][2] !== this.currentRowObjectInfo.valueForSecondary) {
@@ -1509,8 +1528,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				await this.updateDscTable(this.dscTable.data);
 			}
 		}, true);
-		this.dscSecondaryCheckboxForInputGroup = this.createGroup('', [this.setSecondaryCheckboxForInputType], false, true);
-		await this.dscSecondaryCheckboxForInputGroup.updateCssStyles({ 'visibility': 'hidden' });
+		this.setSecondaryCheckboxForInputType.display = 'none';
 
 		// Value for Secondary
 		this.valueForSecondaryInput = this.createInputBox(async (newValue) => {
@@ -1527,13 +1545,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			width: 150,
 			min: 0
 		});
-		const secondaryContainer = this.createLabelInputContainer(localizedConstants.ValueForSecondaryColumnHeader, this.valueForSecondaryInput);
-		this.dscSecondaryValueInputGroup = this.createGroup('', [secondaryContainer], false, true);
-		await this.dscSecondaryValueInputGroup.updateCssStyles({ 'visibility': 'hidden' });
+		this.dscSecondaryValueInput = this.createLabelInputContainer(localizedConstants.ValueForSecondaryColumnHeader, this.valueForSecondaryInput);
+		this.dscSecondaryValueInput.display = 'none';
 
-		const maxDopGroup = this.createGroup('', [this.dscPrimaryValueInputGroup, this.dscSecondaryCheckboxForInputGroup, this.dscSecondaryValueInputGroup], false, true);
-		await maxDopGroup.updateCssStyles({ 'margin-left': '-10px' });
-		return maxDopGroup;
+		const inputTypegroup = this.createGroup('', [this.dscPrimaryValueInput, this.setSecondaryCheckboxForInputType, this.dscSecondaryValueInput], false, true);
+		await inputTypegroup.updateCssStyles({ 'margin-top': '-30px' });
+		return inputTypegroup;
 	}
 
 	/**
@@ -1557,18 +1574,16 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				await this.updateDscTable(this.dscTable.data);
 			}
 		}, [], '', true, 150)
-		const primaryContainer = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForPrimaryDropdown);
-		this.dscPrimaryValueDropdownGroup = this.createGroup('', [primaryContainer], false, true);
-		await this.dscPrimaryValueDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
+		this.dscPrimaryValueDropdown = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForPrimaryDropdown);
+		this.dscPrimaryValueDropdown.display = 'none';
 
 		// Apply Primary To Secondary checkbox
 		this.setSecondaryCheckboxForDropdowns = this.createCheckbox(localizedConstants.SetSecondaryText, async (checked) => {
-			await this.dscSecondaryValueDropdownGroup.updateCssStyles({ 'visibility': checked ? 'hidden' : 'visible' });
+			await this.dscSecondaryValueDropdown.updateCssStyles({ 'display': checked ? 'none' : 'inline-flex' });
 			this.currentRowObjectInfo.valueForSecondary = this.currentRowObjectInfo.valueForPrimary;
 			await this.valueForSecondaryDropdown.updateProperties({ value: this.currentRowObjectInfo.valueForSecondary });
 		}, true);
-		this.dscSecondaryCheckboxForDropdownGroup = this.createGroup('', [this.setSecondaryCheckboxForDropdowns], false, true);
-		await this.dscSecondaryCheckboxForDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
+		this.setSecondaryCheckboxForDropdowns.display = 'none';
 
 		// Value for Secondary
 		this.valueForSecondaryDropdown = this.createDropdown(localizedConstants.ValueForSecondaryColumnHeader, async (newValue) => {
@@ -1580,13 +1595,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				}
 			}
 		}, [], '', true, 150);
-		const secondaryContainer = this.createLabelInputContainer(localizedConstants.ValueForSecondaryColumnHeader, this.valueForSecondaryDropdown);
-		this.dscSecondaryValueDropdownGroup = this.createGroup('', [secondaryContainer], false, true);
-		await this.dscSecondaryValueDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
+		this.dscSecondaryValueDropdown = this.createLabelInputContainer(localizedConstants.ValueForSecondaryColumnHeader, this.valueForSecondaryDropdown);
+		this.dscSecondaryValueDropdown.display = 'none';
 
-		const valueGroup = this.createGroup('', [this.dscPrimaryValueDropdownGroup, this.dscSecondaryCheckboxForDropdownGroup, this.dscSecondaryValueDropdownGroup], true, true);
-		await valueGroup.updateCssStyles({ 'margin-left': '-10px' });
-		return valueGroup;
+		return this.createGroup('', [this.dscPrimaryValueDropdown, this.setSecondaryCheckboxForDropdowns, this.dscSecondaryValueDropdown], true, true);
 	}
 
 	/**
@@ -1595,9 +1607,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 */
 	private async showDropdownsSection(isSecondaryCheckboxChecked: boolean): Promise<void> {
 		this.setSecondaryCheckboxForDropdowns.checked = isSecondaryCheckboxChecked;
-		await this.dscPrimaryValueDropdownGroup.updateCssStyles({ 'visibility': 'visible' });
-		await this.dscSecondaryCheckboxForDropdownGroup.updateCssStyles({ 'visibility': 'visible' });
-		await this.dscSecondaryValueDropdownGroup.updateCssStyles({ 'visibility': isSecondaryCheckboxChecked ? 'hidden' : 'visible' });
+		this.setSecondaryCheckboxForDropdowns.display = 'inline-flex';
+		await this.dscPrimaryValueDropdown.updateCssStyles({ 'display': 'inline-flex' });
+		await this.dscSecondaryValueDropdown.updateCssStyles({ 'display': isSecondaryCheckboxChecked ? 'none' : 'inline-flex' });
 	}
 
 	/**
@@ -1606,21 +1618,21 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 */
 	private async showInputSection(isSecondaryCheckboxChecked: boolean): Promise<void> {
 		this.setSecondaryCheckboxForInputType.checked = isSecondaryCheckboxChecked;
-		await this.dscPrimaryValueInputGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-175px' });
-		await this.dscSecondaryCheckboxForInputGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-120px' });
-		await this.dscSecondaryValueInputGroup.updateCssStyles({ 'visibility': isSecondaryCheckboxChecked ? 'hidden' : 'visible', 'margin-top': '-85px' });
+		this.setSecondaryCheckboxForInputType.display = 'inline-flex';
+		await this.dscPrimaryValueInput.updateCssStyles({ 'display': 'inline-flex' });
+		await this.dscSecondaryValueInput.updateCssStyles({ 'display': isSecondaryCheckboxChecked ? 'none' : 'inline-flex' });
 	}
 
 	/**
 	 * Set all primary and secondary groups to hidden
 	 */
 	private async hideDropdownAndInputSections(): Promise<void> {
-		await this.dscPrimaryValueInputGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
-		await this.dscSecondaryCheckboxForInputGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
-		await this.dscSecondaryValueInputGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
-		await this.dscPrimaryValueDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
-		await this.dscSecondaryCheckboxForDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
-		await this.dscSecondaryValueDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
+		await this.dscPrimaryValueInput.updateCssStyles({ 'display': 'none' });
+		this.setSecondaryCheckboxForInputType.display = 'none';
+		await this.dscSecondaryValueInput.updateCssStyles({ 'display': 'none' });
+		await this.dscPrimaryValueDropdown.updateCssStyles({ 'display': 'none' });
+		this.setSecondaryCheckboxForDropdowns.display = 'none';
+		await this.dscSecondaryValueDropdown.updateCssStyles({ 'display': 'none' });
 	}
 
 	/**

@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import { SubscriptionClient } from '@azure/arm-subscriptions';
 import { AzureAccount, azureResource } from 'azurecore';
 import { IAzureResourceSubscriptionService } from '../interfaces';
-import { TokenCredentials } from '@azure/ms-rest-js';
 import { AzureSubscriptionError } from '../errors';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { Logger } from '../../utils/Logger';
@@ -16,6 +15,7 @@ import { Logger } from '../../utils/Logger';
 import * as nls from 'vscode-nls';
 import { TenantIgnoredError } from '../../utils/TenantIgnoredError';
 import { multiple_matching_tokens_error } from '../../constants';
+import { TokenCredentials } from '@azure/ms-rest-js';
 const localize = nls.loadMessageBundle();
 
 export class AzureResourceSubscriptionService implements IAzureResourceSubscriptionService {
