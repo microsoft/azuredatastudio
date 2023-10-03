@@ -18,6 +18,7 @@ import * as vscode from 'vscode';
 const MAXDOP_Max_Limit = 32767;
 const PAUSED_RESUMABLE_INDEX_Max_Limit = 71582;
 const DscTableRowLength = 15;
+const Dialog_Width = '750px';
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
@@ -122,6 +123,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
+		options.width = Dialog_Width;
 		super(objectManagementService, options);
 	}
 
@@ -267,6 +269,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			const propertiesTabGroup = { title: '', tabs: tabs };
 			const propertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 				.withTabs([propertiesTabGroup])
+				.withLayout({
+					orientation: azdata.TabOrientation.Vertical
+				})
 				.withProps({
 					CSSStyles: {
 						'margin': '-10px 0px 0px -10px'
