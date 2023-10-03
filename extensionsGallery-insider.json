@@ -5266,6 +5266,67 @@
 					],
 					"statistics": [],
 					"flags": ""
+			},
+			{
+				"extensionId": "103",
+				"extensionName": "black",
+				"displayName": "Black",
+				"shortDescription": "A port of the VSCode Black color theme by Jaakkko for use with Azure Data Studio.",
+				"publisher": {
+					"displayName": "Will Hinson",
+					"publisherId": "will-hinson",
+					"publisherName": "will-hinson"
+				},
+				"versions": [
+					{
+						"version": "0.0.1",
+						"lastUpdated": "10/3/2023",
+						"assetUri": "",
+						"fallbackAssetUri": "fallbackAssetUri",
+						"files": [
+							{
+								"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+								"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/packages/black-0.0.1.vsix"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+								"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/assets/icon.png"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+								"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/README.md"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Code.Manifest",
+								"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/package.json"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Content.License",
+								"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/LICENSE"
+							}
+						],
+						"properties": [
+							{
+								"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+								"value": ""
+							},
+							{
+								"key": "Microsoft.VisualStudio.Code.Engine",
+								"value": "*"
+							},
+							{
+								"key": "Microsoft.AzDataEngine",
+								"value": "*"
+							},
+							{
+								"key": "Microsoft.VisualStudio.Services.Links.Source",
+								"value": "https://github.com/will-hinson/ads-black-theme"
+							}
+						]
+					}
+				],
+				"statistics": [],
+				"flags": ""
 			}
 			],
 			"resultMetadata": [
@@ -5274,7 +5335,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 86
+							"count": 87
 						}
 					]
 				}
