@@ -214,7 +214,7 @@ export class ImportPerformanceDataDialog {
 			.withProps({
 				iconHeight: 24,
 				iconWidth: 24,
-				iconPath: IconPathHelper.expandButtonOpen,
+				iconPath: IconPathHelper.openFolder,
 				CSSStyles: { 'margin': '0' }
 			}).component();
 		this._disposables.push(
