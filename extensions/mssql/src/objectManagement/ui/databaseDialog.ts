@@ -18,6 +18,7 @@ import * as vscode from 'vscode';
 const MAXDOP_Max_Limit = 32767;
 const PAUSED_RESUMABLE_INDEX_Max_Limit = 71582;
 const DscTableRowLength = 15;
+const Dialog_Width = '750px';
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
@@ -94,12 +95,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private valueForPrimaryInput: azdata.InputBoxComponent;
 	private valueForSecondaryInput: azdata.InputBoxComponent;
 	private setSecondaryCheckboxForInputType: azdata.CheckBoxComponent;
-	private dscPrimaryValueDropdownGroup: azdata.GroupContainer;
-	private dscSecondaryValueDropdownGroup: azdata.GroupContainer;
-	private dscSecondaryCheckboxForDropdownGroup: azdata.GroupContainer;
-	private dscPrimaryValueInputGroup: azdata.GroupContainer;
-	private dscSecondaryValueInputGroup: azdata.GroupContainer;
-	private dscSecondaryCheckboxForInputGroup: azdata.GroupContainer;
+	private dscPrimaryValueDropdown: azdata.FlexContainer;
+	private dscSecondaryValueDropdown: azdata.FlexContainer;
+	private dscPrimaryValueInput: azdata.FlexContainer;
+	private dscSecondaryValueInput: azdata.FlexContainer;
 	private setFocusToInput: azdata.InputBoxComponent = undefined;
 	private currentRowObjectInfo: DatabaseScopedConfigurationsInfo;
 	// Query store Tab
@@ -124,6 +123,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
+		options.width = Dialog_Width;
 		super(objectManagementService, options);
 	}
 
@@ -269,6 +269,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			const propertiesTabGroup = { title: '', tabs: tabs };
 			const propertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 				.withTabs([propertiesTabGroup])
+				.withLayout({
+					orientation: azdata.TabOrientation.Vertical
+				})
 				.withProps({
 					CSSStyles: {
 						'margin': '-10px 0px 0px -10px'
@@ -1391,7 +1394,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		//  Cannot set the 'ELEVATE_ONLINE (11) and ELEVATE_RESUMABLE (12)' option for the secondaries replica while this option is only allowed to be set for the primary
 		if (this.currentRowObjectInfo.id === 11 || this.currentRowObjectInfo.id === 12) {
-			await this.dscPrimaryValueDropdownGroup.updateCssStyles({ 'visibility': 'visible' });
+			await this.dscPrimaryValueDropdown.updateCssStyles({ 'display': 'inline-flex' });
 			if (JSON.stringify(this.valueForPrimaryDropdown.values) !== JSON.stringify(this.viewInfo.dscElevateOptions) ||
 				this.valueForPrimaryDropdown.value !== this.currentRowObjectInfo.valueForPrimary) {
 				await this.valueForPrimaryDropdown.updateProperties({
@@ -1414,7 +1417,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 		// Cannot set the 'AUTO_ABORT_PAUSED_INDEX (25)' option for the secondaries replica while this option is only allowed to be set for the primary.
 		else if (this.currentRowObjectInfo.id === 25) {
-			await this.dscPrimaryValueInputGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-175px' });
+			await this.dscPrimaryValueInput.updateCssStyles({ 'display': 'inline-flex' });
 			await this.valueForPrimaryInput.updateProperties({
 				value: this.currentRowObjectInfo.valueForPrimary
 				, max: PAUSED_RESUMABLE_INDEX_Max_Limit
@@ -1443,7 +1446,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Cannot set the 'IDENTITY_CACHE (6)' option for the secondaries replica while this option is only allowed to be set for the primary.
 		// Cannot set the 'GLOBAL_TEMPORARY_TABLE_AUTO_DROP (21)' option for the secondaries replica while this option is only allowed to be set for the primary.
 		else if (this.currentRowObjectInfo.id === 6 || this.currentRowObjectInfo.id === 21) {
-			await this.dscPrimaryValueDropdownGroup.updateCssStyles({ 'visibility': 'visible' });
+			await this.dscPrimaryValueDropdown.updateCssStyles({ 'display': 'inline-flex' });
 			if (JSON.stringify(this.valueForPrimaryDropdown.values) !== JSON.stringify(this.viewInfo.propertiesOnOffOptions) ||
 				this.valueForPrimaryDropdown.value !== this.currentRowObjectInfo.valueForPrimary) {
 				await this.valueForPrimaryDropdown.updateProperties({
@@ -1517,13 +1520,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			width: 150,
 			min: 0
 		});
-		const primaryContainer = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForPrimaryInput);
-		this.dscPrimaryValueInputGroup = this.createGroup('', [primaryContainer], false, true);
-		await this.dscPrimaryValueInputGroup.updateCssStyles({ 'visibility': 'hidden' });
+		this.dscPrimaryValueInput = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForPrimaryInput);
+		this.dscPrimaryValueInput.display = 'none';
 
 		// Apply Primary To Secondary checkbox
 		this.setSecondaryCheckboxForInputType = this.createCheckbox(localizedConstants.SetSecondaryText, async (checked) => {
-			await this.dscSecondaryValueInputGroup.updateCssStyles({ 'visibility': checked ? 'hidden' : 'visible' });
+			await this.dscSecondaryValueInput.updateCssStyles({ 'display': checked ? 'none' : 'inline-flex' });
 			this.currentRowObjectInfo.valueForSecondary = this.currentRowObjectInfo.valueForPrimary;
 			await this.valueForSecondaryInput.updateProperties({ value: this.currentRowObjectInfo.valueForSecondary });
 			if (this.dscTable.data[this.currentRowId][2] !== this.currentRowObjectInfo.valueForSecondary) {
@@ -1531,8 +1533,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				await this.updateDscTable(this.dscTable.data);
 			}
 		}, true);
-		this.dscSecondaryCheckboxForInputGroup = this.createGroup('', [this.setSecondaryCheckboxForInputType], false, true);
-		await this.dscSecondaryCheckboxForInputGroup.updateCssStyles({ 'visibility': 'hidden' });
+		this.setSecondaryCheckboxForInputType.display = 'none';
 
 		// Value for Secondary
 		this.valueForSecondaryInput = this.createInputBox(async (newValue) => {
@@ -1549,13 +1550,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			width: 150,
 			min: 0
 		});
-		const secondaryContainer = this.createLabelInputContainer(localizedConstants.ValueForSecondaryColumnHeader, this.valueForSecondaryInput);
-		this.dscSecondaryValueInputGroup = this.createGroup('', [secondaryContainer], false, true);
-		await this.dscSecondaryValueInputGroup.updateCssStyles({ 'visibility': 'hidden' });
+		this.dscSecondaryValueInput = this.createLabelInputContainer(localizedConstants.ValueForSecondaryColumnHeader, this.valueForSecondaryInput);
+		this.dscSecondaryValueInput.display = 'none';
 
-		const maxDopGroup = this.createGroup('', [this.dscPrimaryValueInputGroup, this.dscSecondaryCheckboxForInputGroup, this.dscSecondaryValueInputGroup], false, true);
-		await maxDopGroup.updateCssStyles({ 'margin-left': '-10px' });
-		return maxDopGroup;
+		const inputTypegroup = this.createGroup('', [this.dscPrimaryValueInput, this.setSecondaryCheckboxForInputType, this.dscSecondaryValueInput], false, true);
+		await inputTypegroup.updateCssStyles({ 'margin-top': '-30px' });
+		return inputTypegroup;
 	}
 
 	/**
@@ -1579,18 +1579,16 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				await this.updateDscTable(this.dscTable.data);
 			}
 		}, [], '', true, 150)
-		const primaryContainer = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForPrimaryDropdown);
-		this.dscPrimaryValueDropdownGroup = this.createGroup('', [primaryContainer], false, true);
-		await this.dscPrimaryValueDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
+		this.dscPrimaryValueDropdown = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForPrimaryDropdown);
+		this.dscPrimaryValueDropdown.display = 'none';
 
 		// Apply Primary To Secondary checkbox
 		this.setSecondaryCheckboxForDropdowns = this.createCheckbox(localizedConstants.SetSecondaryText, async (checked) => {
-			await this.dscSecondaryValueDropdownGroup.updateCssStyles({ 'visibility': checked ? 'hidden' : 'visible' });
+			await this.dscSecondaryValueDropdown.updateCssStyles({ 'display': checked ? 'none' : 'inline-flex' });
 			this.currentRowObjectInfo.valueForSecondary = this.currentRowObjectInfo.valueForPrimary;
 			await this.valueForSecondaryDropdown.updateProperties({ value: this.currentRowObjectInfo.valueForSecondary });
 		}, true);
-		this.dscSecondaryCheckboxForDropdownGroup = this.createGroup('', [this.setSecondaryCheckboxForDropdowns], false, true);
-		await this.dscSecondaryCheckboxForDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
+		this.setSecondaryCheckboxForDropdowns.display = 'none';
 
 		// Value for Secondary
 		this.valueForSecondaryDropdown = this.createDropdown(localizedConstants.ValueForSecondaryColumnHeader, async (newValue) => {
@@ -1602,13 +1600,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				}
 			}
 		}, [], '', true, 150);
-		const secondaryContainer = this.createLabelInputContainer(localizedConstants.ValueForSecondaryColumnHeader, this.valueForSecondaryDropdown);
-		this.dscSecondaryValueDropdownGroup = this.createGroup('', [secondaryContainer], false, true);
-		await this.dscSecondaryValueDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
+		this.dscSecondaryValueDropdown = this.createLabelInputContainer(localizedConstants.ValueForSecondaryColumnHeader, this.valueForSecondaryDropdown);
+		this.dscSecondaryValueDropdown.display = 'none';
 
-		const valueGroup = this.createGroup('', [this.dscPrimaryValueDropdownGroup, this.dscSecondaryCheckboxForDropdownGroup, this.dscSecondaryValueDropdownGroup], true, true);
-		await valueGroup.updateCssStyles({ 'margin-left': '-10px' });
-		return valueGroup;
+		return this.createGroup('', [this.dscPrimaryValueDropdown, this.setSecondaryCheckboxForDropdowns, this.dscSecondaryValueDropdown], true, true);
 	}
 
 	/**
@@ -1617,9 +1612,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 */
 	private async showDropdownsSection(isSecondaryCheckboxChecked: boolean): Promise<void> {
 		this.setSecondaryCheckboxForDropdowns.checked = isSecondaryCheckboxChecked;
-		await this.dscPrimaryValueDropdownGroup.updateCssStyles({ 'visibility': 'visible' });
-		await this.dscSecondaryCheckboxForDropdownGroup.updateCssStyles({ 'visibility': 'visible' });
-		await this.dscSecondaryValueDropdownGroup.updateCssStyles({ 'visibility': isSecondaryCheckboxChecked ? 'hidden' : 'visible' });
+		this.setSecondaryCheckboxForDropdowns.display = 'inline-flex';
+		await this.dscPrimaryValueDropdown.updateCssStyles({ 'display': 'inline-flex' });
+		await this.dscSecondaryValueDropdown.updateCssStyles({ 'display': isSecondaryCheckboxChecked ? 'none' : 'inline-flex' });
 	}
 
 	/**
@@ -1628,21 +1623,21 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 */
 	private async showInputSection(isSecondaryCheckboxChecked: boolean): Promise<void> {
 		this.setSecondaryCheckboxForInputType.checked = isSecondaryCheckboxChecked;
-		await this.dscPrimaryValueInputGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-175px' });
-		await this.dscSecondaryCheckboxForInputGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-120px' });
-		await this.dscSecondaryValueInputGroup.updateCssStyles({ 'visibility': isSecondaryCheckboxChecked ? 'hidden' : 'visible', 'margin-top': '-85px' });
+		this.setSecondaryCheckboxForInputType.display = 'inline-flex';
+		await this.dscPrimaryValueInput.updateCssStyles({ 'display': 'inline-flex' });
+		await this.dscSecondaryValueInput.updateCssStyles({ 'display': isSecondaryCheckboxChecked ? 'none' : 'inline-flex' });
 	}
 
 	/**
 	 * Set all primary and secondary groups to hidden
 	 */
 	private async hideDropdownAndInputSections(): Promise<void> {
-		await this.dscPrimaryValueInputGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
-		await this.dscSecondaryCheckboxForInputGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
-		await this.dscSecondaryValueInputGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
-		await this.dscPrimaryValueDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
-		await this.dscSecondaryCheckboxForDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
-		await this.dscSecondaryValueDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
+		await this.dscPrimaryValueInput.updateCssStyles({ 'display': 'none' });
+		this.setSecondaryCheckboxForInputType.display = 'none';
+		await this.dscSecondaryValueInput.updateCssStyles({ 'display': 'none' });
+		await this.dscPrimaryValueDropdown.updateCssStyles({ 'display': 'none' });
+		this.setSecondaryCheckboxForDropdowns.display = 'none';
+		await this.dscSecondaryValueDropdown.updateCssStyles({ 'display': 'none' });
 	}
 
 	/**
