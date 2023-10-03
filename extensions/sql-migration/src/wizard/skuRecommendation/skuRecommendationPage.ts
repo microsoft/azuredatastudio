@@ -59,7 +59,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	protected async registerContent(view: azdata.ModelView) {
 		this._view = view;
 
-		this._skuDataCollectionToolbar = new SkuDataCollectionToolbar(this, this.migrationStateModel);
+		this._skuDataCollectionToolbar = new SkuDataCollectionToolbar(this, this.wizard, this.migrationStateModel);
 		const toolbar = this._skuDataCollectionToolbar.createToolbar(view);
 
 		this._assessmentStatusIcon = this._view.modelBuilder.image()

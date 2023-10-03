@@ -16,6 +16,7 @@ import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import { MigrationStateModel, PerformanceDataSourceOptions } from '../../models/stateMachine';
 import { SKURecommendationPage } from './skuRecommendationPage';
+import { ImportPerformanceDataDialog } from '../../dialog/skuRecommendationResults/importPerformanceDataDialog';
 
 // TODO - "Change this to actual default path once it is available"
 const DEFAULT_PATH_FOR_START_DATA_COLLECTION = "C:\DataPointsCollectionFolder";
@@ -31,7 +32,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 
 	private _disposables: vscode.Disposable[] = [];
 
-	constructor(private skuRecommendationPage: SKURecommendationPage, private migrationStateModel: MigrationStateModel) {
+	constructor(private skuRecommendationPage: SKURecommendationPage, public wizard: azdata.window.Wizard, private migrationStateModel: MigrationStateModel) {
 	}
 
 	public createToolbar(view: azdata.ModelView): azdata.ToolbarContainer {
@@ -171,7 +172,10 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 					...styles.TOOLBAR_CSS
 				}
 			}).component();
-		// TODO - implement onDidClick and add to disposables
+
+		const importPerformanceDataDialog = new ImportPerformanceDataDialog(this.skuRecommendationPage, this.wizard, this.migrationStateModel);
+		this._disposables.push(importPerformanceDataButton.onDidClick(
+			async (e) => await importPerformanceDataDialog.openDialog()));
 		return importPerformanceDataButton;
 	}
 
