@@ -1114,7 +1114,6 @@
 							"dispose",
 							"edit",
 							"end",
-							"execute",
 							"expand",
 							"grant",
 							"hide",
@@ -1136,14 +1135,6 @@
 						]
 					}
 				]
-			}
-		},
-		{
-			"files": [
-				"src/**/{common,browser}/**/*.ts"
-			],
-			"rules": {
-				"local/code-amd-node-module": "warn"
 			}
 		},
 		{
@@ -1183,11 +1174,9 @@
 							"console",
 							"cookie",
 							"crypto",
-							"dns",
 							"electron",
 							"events",
 							"fs",
-							"fs/promises",
 							"graceful-fs",
 							"http",
 							"https",
@@ -1199,7 +1188,6 @@
 							"os",
 							"path",
 							"perf_hooks",
-							"readline",
 							"stream",
 							"string_decoder",
 							"tas-client-umd",
@@ -1550,12 +1538,6 @@
 						]
 					},
 					{
-						"target": "src/vs/amdX.ts",
-						"restrictions": [
-							"vs/base/common/*"
-						]
-					},
-					{
 						"target": "src/vs/workbench/{workbench.desktop.main.nls.js,workbench.web.main.nls.js}",
 						"restrictions": []
 					},
@@ -1617,4 +1599,3 @@
 		}
 	]
 }
-
