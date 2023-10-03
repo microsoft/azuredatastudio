@@ -9,7 +9,7 @@ import * as nls from 'vscode-nls';
 import * as Constants from '../constants';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
-import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult, GetBlobsResult, GetStorageAccountAccessKeyResult, AzureAccount, azureResource, AzureAccountProviderMetadata } from 'azurecore';
+import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult, GetBlobsResult, GetStorageAccountAccessKeyResult, AzureAccount, azureResource, AzureAccountProviderMetadata, AzureNetworkResponse } from 'azurecore';
 import { EOL } from 'os';
 import { AppContext } from '../appContext';
 import { invalidAzureAccount, invalidTenant, unableToFetchTokenError } from '../localizedConstants';
@@ -568,7 +568,7 @@ export async function makeHttpRequest<B>(
 		result.errors.push(error);
 	} else {
 		// We know this isn't an error response at this point
-		result.response = response as AxiosResponse<B>;
+		result.response = response as AzureNetworkResponse<B>;
 	}
 
 	return result;

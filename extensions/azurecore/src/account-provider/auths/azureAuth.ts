@@ -44,7 +44,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly scopesString: string;
 	protected readonly clientId: string;
 	protected readonly resources: Resource[];
-	protected readonly httpClient: HttpClient;
 	private readonly _disposableStore: vscode.Disposable[];
 
 	constructor(
