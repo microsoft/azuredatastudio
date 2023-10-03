@@ -130,7 +130,13 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 			objectExplorerContext: context
 		};
 		const dialog = getDialog(service, options);
+		const startTime = Date.now();
 		await dialog.open();
+		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenNewObjectDialog, {
+			objectType: objectType
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
 	}
 	catch (err) {
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenNewObjectDialog, err).withAdditionalProperties({
@@ -146,31 +152,33 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 	if (!connectionUri) {
 		return;
 	}
+	const object = await getObjectInfoForContext(context);
 	try {
-		const parentUrn = context.isConnectionNode ? undefined : await getParentUrn(context);
-		const objectType = context.nodeInfo ? context.nodeInfo.nodeType as ObjectManagement.NodeType : (context.connectionProfile.databaseName === '' ? ObjectManagement.NodeType.Server : ObjectManagement.NodeType.Database);
-		const objectName = context.nodeInfo ? context.nodeInfo.label : (!context.connectionProfile.databaseName ? context.connectionProfile.serverName : context.connectionProfile.databaseName);
-		const objectUrn = context.nodeInfo ? context.nodeInfo!.metadata!.urn : (context.connectionProfile.databaseName === '' ? 'Server' : `Server/Database[@Name='${escapeSingleQuotes(context.connectionProfile.databaseName)}']`);
-
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
 			isNewObject: false,
-			database: context.connectionProfile!.databaseName!,
-			objectType: objectType,
-			objectName: objectName,
-			parentUrn: parentUrn,
-			objectUrn: objectUrn,
+			database: context.connectionProfile?.databaseName,
+			objectType: object.type,
+			objectName: object.name,
+			parentUrn: object.parentUrn,
+			objectUrn: object.urn,
 			objectExplorerContext: context
 		};
 		const dialog = getDialog(service, options);
+		const startTime = Date.now();
 		await dialog.open();
+		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenPropertiesDialog, {
+			objectType: object.type
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
 	}
 	catch (err) {
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenPropertiesDialog, err).withAdditionalProperties({
-			objectType: context.nodeInfo!.nodeType
+			objectType: object.type
 		}).send();
 		console.error(err);
-		await vscode.window.showErrorMessage(objectManagementLoc.OpenObjectPropertiesDialogError(objectManagementLoc.getNodeTypeDisplayName(context.nodeInfo!.nodeType), context.nodeInfo!.label, getErrorMessage(err)));
+		await vscode.window.showErrorMessage(objectManagementLoc.OpenObjectPropertiesDialogError(objectManagementLoc.getNodeTypeDisplayName(object.type), object.name, getErrorMessage(err)));
 	}
 }
 
@@ -179,16 +187,18 @@ async function handleDropObjectCommand(context: azdata.ObjectExplorerContext, se
 	if (!connectionUri) {
 		return;
 	}
+
+	const object = await getObjectInfoForContext(context);
 	let additionalConfirmationMessage: string | undefined = undefined;
-	switch (context.nodeInfo!.nodeType) {
+	switch (object.type) {
 		case ObjectManagement.NodeType.ServerLevelLogin:
 			additionalConfirmationMessage = objectManagementLoc.DropLoginConfirmationText;
 			break;
 		default:
 			break;
 	}
-	const nodeTypeDisplayName = objectManagementLoc.getNodeTypeDisplayName(context.nodeInfo!.nodeType);
-	let confirmMessage = objectManagementLoc.DropObjectConfirmationText(nodeTypeDisplayName, context.nodeInfo!.label);
+	const nodeTypeDisplayName = objectManagementLoc.getNodeTypeDisplayName(object.type);
+	let confirmMessage = objectManagementLoc.DropObjectConfirmationText(nodeTypeDisplayName, object.name);
 	if (additionalConfirmationMessage) {
 		confirmMessage = `${additionalConfirmationMessage} ${confirmMessage}`;
 	}
@@ -197,23 +207,23 @@ async function handleDropObjectCommand(context: azdata.ObjectExplorerContext, se
 		return;
 	}
 	azdata.tasks.startBackgroundOperation({
-		displayName: objectManagementLoc.DropObjectOperationDisplayName(nodeTypeDisplayName, context.nodeInfo!.label),
+		displayName: objectManagementLoc.DropObjectOperationDisplayName(nodeTypeDisplayName, object.name),
 		description: '',
 		isCancelable: false,
 		operation: async (operation) => {
 			try {
 				const startTime = Date.now();
-				await service.drop(connectionUri, context.nodeInfo.nodeType as ObjectManagement.NodeType, context.nodeInfo!.metadata!.urn);
+				await service.drop(connectionUri, object.type, object.urn);
 				TelemetryReporter.sendTelemetryEvent(TelemetryActions.DropObject, {
-					objectType: context.nodeInfo!.nodeType
+					objectType: object.type
 				}, {
 					elapsedTimeMs: Date.now() - startTime
 				});
 			}
 			catch (err) {
-				operation.updateStatus(azdata.TaskStatus.Failed, objectManagementLoc.DropObjectError(nodeTypeDisplayName, context.nodeInfo!.label, getErrorMessage(err)));
+				operation.updateStatus(azdata.TaskStatus.Failed, objectManagementLoc.DropObjectError(nodeTypeDisplayName, object.name, getErrorMessage(err)));
 				TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.DropObject, err).withAdditionalProperties({
-					objectType: context.nodeInfo!.nodeType
+					objectType: object.type
 				}).send();
 				console.error(err);
 				return;
@@ -229,11 +239,12 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 	if (!connectionUri) {
 		return;
 	}
-	const nodeTypeDisplayName = objectManagementLoc.getNodeTypeDisplayName(context.nodeInfo!.nodeType);
-	const originalName = context.nodeInfo!.metadata!.name;
+
+	const object = await getObjectInfoForContext(context);
+	const nodeTypeDisplayName = objectManagementLoc.getNodeTypeDisplayName(object.type);
 	const newName = await vscode.window.showInputBox({
 		title: objectManagementLoc.RenameObjectDialogTitle,
-		value: originalName,
+		value: object.name,
 		validateInput: (value: string): string | undefined => {
 			if (!value) {
 				return objectManagementLoc.NameCannotBeEmptyError;
@@ -245,28 +256,28 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 	});
 
 	// return if no change was made or the dialog was canceled.
-	if (newName === originalName || !newName) {
+	if (newName === object.name || !newName) {
 		return;
 	}
 
 	azdata.tasks.startBackgroundOperation({
-		displayName: objectManagementLoc.RenameObjectOperationDisplayName(nodeTypeDisplayName, originalName, newName),
+		displayName: objectManagementLoc.RenameObjectOperationDisplayName(nodeTypeDisplayName, object.name, newName),
 		description: '',
 		isCancelable: false,
 		operation: async (operation) => {
 			try {
 				const startTime = Date.now();
-				await service.rename(connectionUri, context.nodeInfo.nodeType as ObjectManagement.NodeType, context.nodeInfo!.metadata!.urn, newName);
+				await service.rename(connectionUri, object.type, object.urn, newName);
 				TelemetryReporter.sendTelemetryEvent(TelemetryActions.RenameObject, {
-					objectType: context.nodeInfo!.nodeType
+					objectType: object.type
 				}, {
 					elapsedTimeMs: Date.now() - startTime
 				});
 			}
 			catch (err) {
-				operation.updateStatus(azdata.TaskStatus.Failed, objectManagementLoc.RenameObjectError(nodeTypeDisplayName, originalName, newName, getErrorMessage(err)));
+				operation.updateStatus(azdata.TaskStatus.Failed, objectManagementLoc.RenameObjectError(nodeTypeDisplayName, object.name, newName, getErrorMessage(err)));
 				TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.RenameObject, err).withAdditionalProperties({
-					objectType: context.nodeInfo!.nodeType
+					objectType: object.type
 				}).send();
 				console.error(err);
 				return;
@@ -282,24 +293,33 @@ async function handleDetachDatabase(context: azdata.ObjectExplorerContext, servi
 	if (!connectionUri) {
 		return;
 	}
+	const object = await getObjectInfoForContext(context);
 	try {
-		const parentUrn = await getParentUrn(context);
+		if (object.type !== ObjectManagement.NodeType.Database) {
+			throw new Error(objectManagementLoc.NotSupportedError(ObjectManagement.NodeType.Database));
+		}
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
 			isNewObject: false,
-			database: context.connectionProfile!.databaseName!,
-			objectType: context.nodeInfo.nodeType as ObjectManagement.NodeType,
-			objectName: context.nodeInfo.label,
-			parentUrn: parentUrn,
-			objectUrn: context.nodeInfo!.metadata!.urn,
+			database: object.name,
+			objectType: object.type,
+			objectName: object.name,
+			parentUrn: object.parentUrn,
+			objectUrn: object.urn,
 			objectExplorerContext: context
 		};
 		const dialog = new DetachDatabaseDialog(service, options);
+		const startTime = Date.now();
 		await dialog.open();
+		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenDetachDatabaseDialog, {
+			objectType: object.type
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
 	}
 	catch (err) {
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenDetachDatabaseDialog, err).withAdditionalProperties({
-			objectType: context.nodeInfo!.nodeType
+			objectType: object.type
 		}).send();
 		console.error(err);
 		await vscode.window.showErrorMessage(objectManagementLoc.OpenDetachDatabaseDialogError(getErrorMessage(err)));
@@ -323,7 +343,13 @@ async function handleAttachDatabase(context: azdata.ObjectExplorerContext, servi
 			objectExplorerContext: context
 		};
 		const dialog = new AttachDatabaseDialog(service, options);
+		const startTime = Date.now();
 		await dialog.open();
+		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenAttachDatabaseDialog, {
+			objectType: ObjectManagement.NodeType.Database
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
 	}
 	catch (err) {
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenAttachDatabaseDialog, err).withAdditionalProperties({
@@ -339,26 +365,33 @@ async function handleDropDatabase(context: azdata.ObjectExplorerContext, service
 	if (!connectionUri) {
 		return;
 	}
+	const object = await getObjectInfoForContext(context);
 	try {
-		const parentUrn = await getParentUrn(context);
-		const objectName = context.nodeInfo?.label ?? context.connectionProfile.databaseName;
-		const objectUrn = context.nodeInfo?.metadata?.urn ?? `Server/Database[@Name='${escapeSingleQuotes(context.connectionProfile.databaseName)}']`;
+		if (object.type !== ObjectManagement.NodeType.Database) {
+			throw new Error(objectManagementLoc.NotSupportedError(ObjectManagement.NodeType.Database));
+		}
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
 			isNewObject: false,
-			database: context.connectionProfile!.databaseName!,
-			objectType: ObjectManagement.NodeType.Database,
-			objectName: objectName,
-			parentUrn: parentUrn,
-			objectUrn: objectUrn,
+			database: object.name,
+			objectType: object.type,
+			objectName: object.name,
+			parentUrn: object.parentUrn,
+			objectUrn: object.urn,
 			objectExplorerContext: context
 		};
 		const dialog = new DropDatabaseDialog(service, options);
+		const startTime = Date.now();
 		await dialog.open();
+		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenDropDatabaseDialog, {
+			objectType: object.type
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
 	}
 	catch (err) {
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenDropDatabaseDialog, err).withAdditionalProperties({
-			objectType: ObjectManagement.NodeType.Database
+			objectType: object.type
 		}).send();
 		console.error(err);
 		await vscode.window.showErrorMessage(objectManagementLoc.OpenDropDatabaseDialogError(getErrorMessage(err)));
@@ -406,4 +439,40 @@ async function getParentUrn(context: azdata.ObjectExplorerContext): Promise<stri
 		parentUrn = node?.metadata?.urn;
 	}
 	return parentUrn;
+}
+
+interface ObjectInfo {
+	parentUrn: string;
+	name: string;
+	type: ObjectManagement.NodeType;
+	urn: string;
+}
+
+async function getObjectInfoForContext(context: azdata.ObjectExplorerContext): Promise<ObjectInfo> {
+	let nodeType: ObjectManagement.NodeType;
+	let objectName: string;
+	let objectUrn: string;
+	if (context.nodeInfo) {
+		nodeType = context.nodeInfo.nodeType as ObjectManagement.NodeType;
+		objectName = context.nodeInfo.metadata?.name;
+		objectUrn = context.nodeInfo.metadata?.urn;
+	} else {
+		// Node info will be missing for top level connection items like servers and databases, so make a best guess here based on connection info.
+		if (context.connectionProfile?.databaseName?.length > 0) {
+			nodeType = ObjectManagement.NodeType.Database;
+			objectName = context.connectionProfile.databaseName;
+			objectUrn = `Server/Database[@Name='${escapeSingleQuotes(objectName)}']`;
+		} else {
+			nodeType = ObjectManagement.NodeType.Server;
+			objectName = context.connectionProfile.serverName;
+			objectUrn = 'Server';
+		}
+	}
+	let parentUrn = await getParentUrn(context);
+	return {
+		parentUrn: parentUrn,
+		name: objectName,
+		type: nodeType,
+		urn: objectUrn
+	}
 }
