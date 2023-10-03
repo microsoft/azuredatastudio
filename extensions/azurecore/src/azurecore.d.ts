@@ -94,11 +94,6 @@ declare module 'azurecore' {
 		microsoftResource: Resource
 
 		/**
-		 * Information that describes the AAD graph resource
-		 */
-		graphResource: Resource;
-
-		/**
 		 * Information that describes the MS graph resource
 		 */
 		msGraphResource?: Resource;

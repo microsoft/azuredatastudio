@@ -41,6 +41,10 @@ steps:
       exec { git config --global https.postBuffer 524288000 }
     displayName: Prepare tooling
 
+  - task: CodeQL3000Init@0
+    displayName: CodeQL Initialize
+    condition: eq(variables['Codeql.enabled'], 'True')
+
   - powershell: |
       git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
       git fetch distro
@@ -343,6 +347,10 @@ steps:
       failTaskOnFailedTests: true
     continueOnError: true
     condition: and(succeededOrFailed(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
+
+  - task: CodeQL3000Finalize@0
+    displayName: CodeQL Finalize
+    condition: eq(variables['Codeql.enabled'], 'True')
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Detection'

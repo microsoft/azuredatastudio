@@ -166,9 +166,6 @@
     <trans-unit id="sql.migration.retry.migration.error">
       <source xml:lang="en">An error occurred while restarting the migration.</source>
     </trans-unit>
-    <trans-unit id="sql.migration.starting.migration.error">
-      <source xml:lang="en">An error occurred while starting the certificate migration: &apos;{0}&apos;</source>
-    </trans-unit>
     <trans-unit id="sql.migration.wizard.login.error.title">
       <source xml:lang="en">An error occurred while trying to get {0} login information.</source>
     </trans-unit>
@@ -231,15 +228,6 @@
     </trans-unit>
     <trans-unit id="sql.migration.authentication.type">
       <source xml:lang="en">Authentication type</source>
-    </trans-unit>
-    <trans-unit id="sql.migration.azure.tenant">
-      <source xml:lang="en">Azure AD tenant</source>
-    </trans-unit>
-    <trans-unit id="sql.login.migration.enter.AAD.domain.name.to.continue">
-      <source xml:lang="en">Azure Active Directory (AAD) Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).</source>
-    </trans-unit>
-    <trans-unit id="sql.login.migration.aad.domain.name.input.box.label">
-      <source xml:lang="en">Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.link.dmsGuide">
       <source xml:lang="en">Azure Database Migration Guides</source>
@@ -459,6 +447,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.tde.wizard.optionscaption">
       <source xml:lang="en">Certificate migration</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.validation.group.title">
+      <source xml:lang="en">Certificate validations</source>
     </trans-unit>
     <trans-unit id="sql.migration.validation.dialog.title">
       <source xml:lang="en">Certificates Migration</source>
@@ -748,6 +739,9 @@
     <trans-unit id="sql.migration.delete.migration">
       <source xml:lang="en">Delete migration</source>
     </trans-unit>
+    <trans-unit id="sql.migration.tde.validation.description">
+      <source xml:lang="en">Description</source>
+    </trans-unit>
     <trans-unit id="sql.migration.description">
       <source xml:lang="en">Description</source>
     </trans-unit>
@@ -877,6 +871,9 @@
     <trans-unit id="sql.migration.username.placeholder">
       <source xml:lang="en">Enter the target user name</source>
     </trans-unit>
+    <trans-unit id="sql.migration.tde.validation.error">
+      <source xml:lang="en">Error</source>
+    </trans-unit>
     <trans-unit id="sql.migration.error">
       <source xml:lang="en">Error</source>
     </trans-unit>
@@ -900,6 +897,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.wizard.perfCollection.error">
       <source xml:lang="en">Error(s) occurred while collecting performance data for the server &apos;{0}&apos;. If these issues persist, try restarting the data collection process:&#10;&#10;{1}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.azure.mi.db.count.threshold.exceeds.error">
+      <source xml:lang="en">Error: Azure SQL Managed Instance supports maximum {0} user databases per instance. Select {0} or less database(s) to proceed further.</source>
     </trans-unit>
     <trans-unit id="sql.login.migration.migrate.server.roles.and.set.permissions">
       <source xml:lang="en">Establishing user mappings completed.&#10;&#10;Currently, migrating server roles, establishing server mappings and setting permissions. This will take some time.</source>
@@ -1050,6 +1050,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.database.migration.migration.mode.tool.tip">
       <source xml:lang="en">In Azure Database Migration Service, you can migrate your databases offline or while they are online. In an offline migration, application downtime starts when the migration starts. To limit downtime to the time it takes you to cut over to the new environment after the migration, use an online migration.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.validation.requirements.message">
+      <source xml:lang="en">In order for certificate migration to succeed, you must meet all of the requirements listed below.&#10;&#10;Click &quot;Run validation&quot; to check that requirements are met.</source>
     </trans-unit>
     <trans-unit id="sql.migration.copy.status.inprogress">
       <source xml:lang="en">In progress</source>
@@ -1224,6 +1227,15 @@
     </trans-unit>
     <trans-unit id="sql.migration.sku.memory.requirement">
       <source xml:lang="en">Memory requirement</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.aad.domain.name.input.box.label">
+      <source xml:lang="en">Microsoft Entra ID Domain Name (only required to migrate Windows Authenication Logins)</source>
+    </trans-unit>
+    <trans-unit id="sql.login.migration.enter.AAD.domain.name.to.continue">
+      <source xml:lang="en">Microsoft Entra ID Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.azure.tenant">
+      <source xml:lang="en">Microsoft Entra tenant</source>
     </trans-unit>
     <trans-unit id="sql.migration.start.login.migration.button">
       <source xml:lang="en">Migrate</source>
@@ -1546,6 +1558,9 @@
     <trans-unit id="sql.migration.state.pending">
       <source xml:lang="en">Pending</source>
     </trans-unit>
+    <trans-unit id="sql.migration.tde.validation.status.pending">
+      <source xml:lang="en">Pending</source>
+    </trans-unit>
     <trans-unit id="sql.migration.validation.state.pending">
       <source xml:lang="en">Pending</source>
     </trans-unit>
@@ -1780,10 +1795,16 @@
     <trans-unit id="sql.migration.resume.title">
       <source xml:lang="en">Run migration workflow again</source>
     </trans-unit>
+    <trans-unit id="sql.migration.tde.validation.run.validation">
+      <source xml:lang="en">Run validation</source>
+    </trans-unit>
     <trans-unit id="sql.migration.run.validation">
       <source xml:lang="en">Run validation</source>
     </trans-unit>
     <trans-unit id="sql.migration.state.running">
+      <source xml:lang="en">Running</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.validation.running">
       <source xml:lang="en">Running</source>
     </trans-unit>
     <trans-unit id="sql.migration.validation.state.running">
@@ -2170,6 +2191,9 @@
     <trans-unit id="sql.migration.state.succeeded">
       <source xml:lang="en">Succeeded</source>
     </trans-unit>
+    <trans-unit id="sql.migration.tde.validation.status.succeeded">
+      <source xml:lang="en">Succeeded</source>
+    </trans-unit>
     <trans-unit id="sql.migration.copy.status.succeeded">
       <source xml:lang="en">Succeeded</source>
     </trans-unit>
@@ -2317,6 +2341,9 @@
     <trans-unit id="sql.migration.database.migration.finish.time.tool.tip">
       <source xml:lang="en">The fininish time for the migration</source>
     </trans-unit>
+    <trans-unit id="sql.migration.starting.migration.error">
+      <source xml:lang="en">The following error has occurred while starting the certificate migration: &apos;{0}&apos;</source>
+    </trans-unit>
     <trans-unit id="sql.migration.service.error.not.ready">
       <source xml:lang="en">The following error occurred while retrieving registration information for Azure Database Migration Service &apos;{0}&apos;. Please click refresh and try again. Error: &apos;{1}&apos;.</source>
     </trans-unit>
@@ -2416,11 +2443,17 @@
     <trans-unit id="sql.migration.database.migration.mode.description">
       <source xml:lang="en">To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.select.azure.mi.db.count.under.threshold">
+      <source xml:lang="en">To proceed, press Select button</source>
+    </trans-unit>
     <trans-unit id="sql.migration.details.serverobjects.all.tables.label">
       <source xml:lang="en">Total tables</source>
     </trans-unit>
     <trans-unit id="sql.migration.restore.backuptype.transactionlog">
       <source xml:lang="en">Transaction log</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.validation.troubleshooting.tips">
+      <source xml:lang="en">Troubleshooting tips</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.link.mi">
       <source xml:lang="en">Tutorial:  Migrate to Azure SQL Managed Instance (online)</source>
@@ -2475,6 +2508,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.starting.login.failed">
       <source xml:lang="en">Validating and migrating logins failed</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tde.validation.title">
+      <source xml:lang="en">Validation</source>
     </trans-unit>
     <trans-unit id="sql.migration.validate.ir.validation.camceled">
       <source xml:lang="en">Validation check canceled</source>
