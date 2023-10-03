@@ -302,15 +302,12 @@ export class SkuRecommendationResultsDialog {
 		const tempTableRow: azdata.DeclarativeTableCellValue[] = [
 			{ value: constants.SQL_TEMPDB },
 			{
-				value: recommendation.targetSku.tempDbDiskSizes!.length > 0
-					? constants.STORAGE_CONFIGURATION(
-						recommendation.targetSku.logDiskSizes!.length,
-						this.getDiskTypeText(recommendation.targetSku.logDiskSizes![0].type),
-						recommendation.targetSku.logDiskSizes![0].size)
+				value: recommendation.targetSku.tempDbDiskSizes!?.length > 0
+					? this.getStorageConfigurationText(recommendation.targetSku.logDiskSizes)
 					: constants.EPHEMERAL_TEMPDB
 			},
 			{
-				value: recommendation.targetSku.tempDbDiskSizes!.length > 0
+				value: recommendation.targetSku.tempDbDiskSizes!?.length > 0
 					? this.getCachingText(recommendation.targetSku.logDiskSizes![0].caching)
 					: constants.CACHING_NA
 			}
@@ -319,10 +316,7 @@ export class SkuRecommendationResultsDialog {
 		const dataDiskTableRow: azdata.DeclarativeTableCellValue[] = [
 			{ value: constants.SQL_DATA_FILES },
 			{
-				value: constants.STORAGE_CONFIGURATION(
-					recommendation.targetSku.dataDiskSizes!.length,
-					this.getDiskTypeText(recommendation.targetSku.dataDiskSizes![0].type),
-					recommendation.targetSku.dataDiskSizes![0].size)
+				value: this.getStorageConfigurationText(recommendation.targetSku.dataDiskSizes)
 			},
 			{ value: this.getCachingText(recommendation.targetSku.dataDiskSizes![0].caching) }
 		];
@@ -330,10 +324,7 @@ export class SkuRecommendationResultsDialog {
 		const logDiskTableRow: azdata.DeclarativeTableCellValue[] = [
 			{ value: constants.SQL_LOG_FILES },
 			{
-				value: constants.STORAGE_CONFIGURATION(
-					recommendation.targetSku.logDiskSizes!.length,
-					this.getDiskTypeText(recommendation.targetSku.logDiskSizes![0].type),
-					recommendation.targetSku.logDiskSizes![0].size)
+				value: this.getStorageConfigurationText(recommendation.targetSku.logDiskSizes)
 			},
 			{ value: this.getCachingText(recommendation.targetSku.logDiskSizes![0].caching) }
 		];
@@ -378,23 +369,46 @@ export class SkuRecommendationResultsDialog {
 		}
 	}
 
-	private getDiskTypeText(type: contracts.AzureManagedDiskType): string {
-		switch (type) {
-			case contracts.AzureManagedDiskType.StandardHDD:
-				return constants.DISKTYPE_STANDARDHDD;
+	// This method looks into Disk SKU list and returns storage configuration text.
+	private getStorageConfigurationText(disks: contracts.AzureManagedDiskSku[]): string {
 
-			case contracts.AzureManagedDiskType.StandardSSD:
-				return constants.DISKTYPE_STANDARDSSD;
-
-			case contracts.AzureManagedDiskType.PremiumSSD:
-				return constants.DISKTYPE_PREMIUMSSD;
-
-			case contracts.AzureManagedDiskType.UltraSSD:
-				return constants.DISKTYPE_ULTRASSD;
-
-			case contracts.AzureManagedDiskType.PremiumSSDV2:
-				return constants.DISKTYPE_PREMIUMSSDV2;
+		const diskTypeCountMap: { [diskConfigurationText: string]: number } = {};
+		if (disks!?.length > 0) {
+			disks.forEach(disk => {
+				const diskConfigurationText = this.GetDiskConfigurationText(disk);
+				if (diskConfigurationText in diskTypeCountMap) {
+					// Check if the key exists in the map
+					diskTypeCountMap[diskConfigurationText]++;
+				} else {
+					// If the key doesn't exist, initialize it with a count of 1
+					diskTypeCountMap[diskConfigurationText] = 1;
+				}
+			});
 		}
+
+		let storageConfigurationText: string = '';
+		for (const diskConfigurationText in diskTypeCountMap) {
+			if (diskTypeCountMap.hasOwnProperty(diskConfigurationText)) {
+				const count: number = diskTypeCountMap[diskConfigurationText];
+				storageConfigurationText = storageConfigurationText.concat(constants.STORAGE_CONFIGURATION(count, diskConfigurationText));
+			}
+
+		}
+
+		return storageConfigurationText;
+	}
+
+	// This method returns single disk configuration text.
+	private GetDiskConfigurationText(disk: contracts.AzureManagedDiskSku): string {
+		return disk!?.type === contracts.AzureManagedDiskType.PremiumSSDV2 ?
+			constants.DISK_CONFIGURATION(this.getDiskTypeText(disk.type), disk.maxSizeInGib, disk.maxIOPS, disk.maxThroughputInMbps) :
+			disk.size;
+	}
+
+	// This method returns disk type text from enum value.
+	private getDiskTypeText(type: contracts.AzureManagedDiskType): string {
+		const diskTypeText = constants.DiskTypeLookup[type];
+		return diskTypeText !== undefined ? diskTypeText : constants.UNKNOWN_DISK_TYPE;
 	}
 
 	private createStoragePropertiesTable(_view: azdata.ModelView, databaseName?: string): azdata.FlexContainer {

@@ -138,6 +138,9 @@ export interface AzureManagedDiskSku {
 	size: string;
 	caching: AzureManagedDiskCaching;
 	type: AzureManagedDiskType;
+	maxSizeInGib: number;
+	maxThroughputInMbps: number;
+	maxIOPS: number;
 }
 
 export interface AzureVirtualMachineSku {

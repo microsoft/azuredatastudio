@@ -8,6 +8,7 @@ import { EOL } from 'os';
 import { MigrationSourceAuthenticationType } from '../models/stateMachine';
 import { BackupTypeCodes, formatNumber, InternalManagedDatabaseRestoreDetailsBackupSetStatusCodes, InternalManagedDatabaseRestoreDetailsStatusCodes, ParallelCopyTypeCodes, PipelineStatusCodes } from './helper';
 import { ValidationError } from '../api/azure';
+import { AzureManagedDiskType } from '../service/contracts';
 const localize = nls.loadMessageBundle();
 
 export const serviceName = 'Sql Migration Service';
@@ -250,8 +251,11 @@ export const SOURCE_PROPERTIES = localize('sql.migration.sku.sourceProperties', 
 export const SQL_TEMPDB = localize('sql.migration.sku.sql.temp', "SQL tempdb");
 export const SQL_DATA_FILES = localize('sql.migration.sku.sql.dataDisk', "SQL data files");
 export const SQL_LOG_FILES = localize('sql.migration.sku.sql.logDisk', "SQL log files");
-export function STORAGE_CONFIGURATION(count: number, type: string, size: string): string {
-	return localize('sql.migration.sku.azureConfiguration.storage', "{0} x {1} ({2})", count, type, size);
+export function STORAGE_CONFIGURATION(count: number, diskConfiguration: string): string {
+	return localize('sql.migration.sku.azureConfiguration.storage', "{0} x {1} ", count, diskConfiguration);
+}
+export function DISK_CONFIGURATION(type: string, maxSizeInGib: number, maxIOPS: number, maxThroughputInMbps: number): string {
+	return localize('sql.migration.sku.azureConfiguration.disk', "{0} {1}GB ({2} IOPS, {3} MB/s)", type, maxSizeInGib, maxIOPS, maxThroughputInMbps);
 }
 export const RECOMMENDED_TARGET_STORAGE_CONFIGURATION = localize('sql.migration.sku.targetStorageConfiguration', "Recommendation target storage configuration");
 export const RECOMMENDED_TARGET_STORAGE_CONFIGURATION_INFO = localize('sql.migration.sku.targetStorageConfiguration.info', "Below is the target storage configuration required to meet your storage performance needs.");
@@ -262,11 +266,7 @@ export function STORAGE_GB(storage: number): string {
 export const RECOMMENDED_STORAGE_CONFIGURATION = localize('sql.migration.sku.targetStorageConfiguration.recommendedStorageConfiguration', "Recommended storage configuration");
 export const EPHEMERAL_TEMPDB = localize('sql.migration.sku.targetStorageConfiguration.ephemeralTempdb', "Place tempdb on the local ephemeral SSD (default D:\\) drive");
 export const LOCAL_SSD = localize('sql.migration.sku.targetStorageConfiguration.local.SSD', "Local SSD");
-export const DISKTYPE_STANDARDHDD = localize('sql.migration.sku.targetStorageConfiguration.disktype.standardHdd', "StandardHDD");
-export const DISKTYPE_STANDARDSSD = localize('sql.migration.sku.targetStorageConfiguration.disktype.StandardSsd', "StandardSSD");
-export const DISKTYPE_PREMIUMSSD = localize('sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsd', "PremiumSSD");
-export const DISKTYPE_ULTRASSD = localize('sql.migration.sku.targetStorageConfiguration.disktype.UltraSsd', "UltraSSD");
-export const DISKTYPE_PREMIUMSSDV2 = localize('sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsdV2', "PremiumSSDV2");
+export const UNKNOWN_DISK_TYPE = localize('sql.migration.sku.targetStorageConfiguration.disktype.unknown', 'Unknown disk type');
 
 export const CACHING = localize('sql.migration.sku.targetStorageConfiguration.caching', "Host caching");
 export const CACHING_NA = localize('sql.migration.sku.targetStorageConfiguration.caching.na', "Not applicable");
@@ -1232,6 +1232,14 @@ export const ParallelCopyType: LookupTable<string | undefined> = {
 	[ParallelCopyTypeCodes.None]: localize('sql.migration.parallel.copy.type.none', 'None'),
 	[ParallelCopyTypeCodes.PhysicalPartitionsOfTable]: localize('sql.migration.parallel.copy.type.physical', 'Physical partitions'),
 	[ParallelCopyTypeCodes.DynamicRange]: localize('sql.migration.parallel.copy.type.dynamic', 'Dynamic range'),
+};
+
+export const DiskTypeLookup: LookupTable<string | undefined> = {
+	[AzureManagedDiskType.StandardHDD]: localize('sql.migration.sku.targetStorageConfiguration.disktype.standardHdd', 'Standard HDD'),
+	[AzureManagedDiskType.StandardSSD]: localize('sql.migration.sku.targetStorageConfiguration.disktype.StandardSsd', 'Standard SSD'),
+	[AzureManagedDiskType.PremiumSSD]: localize('sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsd', 'Premium SSD'),
+	[AzureManagedDiskType.UltraSSD]: localize('sql.migration.sku.targetStorageConfiguration.disktype.UltraSsd', 'Ultra SSD'),
+	[AzureManagedDiskType.PremiumSSDV2]: localize('sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsdV2', 'Premium SSD v2'),
 };
 
 export const BackupTypeLookup: LookupTable<string | undefined> = {

@@ -95,16 +95,16 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 		includePreviewSkus: boolean,
 		databaseAllowList: string[]): Promise<contracts.SkuRecommendationResult | undefined> {
 		let params: contracts.SqlMigrationSkuRecommendationsParams = {
-			dataFolder,
-			perfQueryIntervalInSec,
-			targetPlatforms,
-			targetSqlInstance,
-			targetPercentile,
-			scalingFactor,
-			startTime,
-			endTime,
-			includePreviewSkus,
-			databaseAllowList,
+			dataFolder: dataFolder,
+			perfQueryIntervalInSec: perfQueryIntervalInSec,
+			targetPlatforms: targetPlatforms,
+			targetSqlInstance: targetSqlInstance,
+			targetPercentile: targetPercentile,
+			scalingFactor: scalingFactor,
+			startTime: startTime,
+			endTime: endTime,
+			includePreviewSkus: includePreviewSkus,
+			databaseAllowList: databaseAllowList,
 			isPremiumSSDV2Enabled: true,
 		};
 
