@@ -143,6 +143,8 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	private _state = this._register(new QueryEditorState());
 	public get state(): QueryEditorState { return this._state; }
 
+	public _spid = '';
+
 	constructor(
 		private _description: string | undefined,
 		protected _text: AbstractTextResourceEditorInput,
@@ -306,6 +308,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public onConnectSuccess(params?: INewConnectionParams): void {
 		this.state.connected = true;
 		this.state.connecting = false;
+
+		this.runQueryString(`SELECT @@SPID AS 'ID'`);
+		// TODO - Need to find a way to retrieve results, and clear them after the execution is complete.
 
 		let isRunningQuery = this.queryModelService.isRunningQuery(this.uri);
 		if (!isRunningQuery && params && params.runQueryOnCompletion) {
