@@ -1759,7 +1759,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Wait Statistics Capture Mode - supported from 2017 or higher
 		if (!isUndefinedOrNull(this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode)) {
 			this.waitStatisticsCaptureMode = this.createDropdown(localizedConstants.WaitStatisticsCaptureModeText, async (newValue) => {
-				this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode = newValue as string;
+				// waitStatisticsCaptureMode value comes as On/Off, but options we provide is ON/OFF, handling selected value to match with the incoming value
+				this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode = newValue.charAt(0) + newValue.slice(1).toLowerCase() as string;
 			}, this.viewInfo.propertiesOnOffOptions, this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode.toUpperCase(), this.areQueryStoreOptionsEnabled, DefaultInputWidth);
 			containers.push(this.createLabelInputContainer(localizedConstants.WaitStatisticsCaptureModeText, this.waitStatisticsCaptureMode));
 		}
