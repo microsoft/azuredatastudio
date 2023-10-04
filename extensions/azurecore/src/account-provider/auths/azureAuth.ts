@@ -22,8 +22,7 @@ import { MemoryDatabase } from '../utils/memoryDatabase';
 import { Logger } from '../../utils/Logger';
 import { AzureAuthError } from './azureAuthError';
 import { AccountInfo, AuthError, AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
-import { HttpClient } from './httpClient';
-import { getProxyEnabledHttpClient, getTenantIgnoreList, updateTenantIgnoreList } from '../../utils';
+import { getTenantIgnoreList, updateTenantIgnoreList } from '../../utils';
 import { errorToPromptFailedResult } from './networkUtils';
 import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
 import { isErrorResponseBodyWithError } from '../../azureResource/utils';
@@ -45,7 +44,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly scopesString: string;
 	protected readonly clientId: string;
 	protected readonly resources: Resource[];
-	protected readonly httpClient: HttpClient;
 	private readonly _disposableStore: vscode.Disposable[];
 
 	constructor(
@@ -100,7 +98,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		this.scopes = [...this.metadata.settings.scopes];
 		this.scopesString = this.scopes.join(' ');
-		this.httpClient = getProxyEnabledHttpClient();
 		this._disposableStore.push(this.uriEventEmitter);
 	}
 

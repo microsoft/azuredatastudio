@@ -10,19 +10,12 @@ import * as constants from './constants';
 
 import { AzureRegion, azureResource } from 'azurecore';
 import { AppContext } from './appContext';
-import { HttpClient } from './account-provider/auths/httpClient';
-import { parse } from 'url';
-import { getProxyAgentOptions } from './proxy';
-import { HttpsProxyAgentOptions } from 'https-proxy-agent';
 import { ProviderSettings, ProviderSettingsJson, SettingIds } from './account-provider/interfaces';
 import { AzureResource } from 'azdata';
 import { Logger } from './utils/Logger';
 import { TelemetryAction, TelemetryReporter, TelemetryViews } from './telemetry';
 
 const localize = nls.loadMessageBundle();
-const configProxy = 'proxy';
-const configProxyStrictSSL = 'proxyStrictSSL';
-const configProxyAuthorization = 'proxyAuthorization';
 
 /**
  * Converts a region value (@see AzureRegion) into the localized Display Name
@@ -143,10 +136,6 @@ export function getResourceTypeDisplayName(type: string): string {
 			return loc.azureArcPostgresServer;
 	}
 	return type;
-}
-
-function getHttpConfiguration(): vscode.WorkspaceConfiguration {
-	return vscode.workspace.getConfiguration(constants.httpConfigSectionName);
 }
 
 /**
@@ -301,25 +290,6 @@ export interface IPackageInfo {
 	name: string;
 	version: string;
 	aiKey: string;
-}
-
-export function getProxyEnabledHttpClient(): HttpClient {
-	const proxy = <string>getHttpConfiguration().get(configProxy);
-	const strictSSL = getHttpConfiguration().get(configProxyStrictSSL, true);
-	const authorization = getHttpConfiguration().get(configProxyAuthorization);
-
-	const url = parse(proxy);
-	let agentOptions = getProxyAgentOptions(url, proxy, strictSSL);
-
-	if (authorization && url.protocol === 'https:') {
-		let httpsAgentOptions = agentOptions as HttpsProxyAgentOptions;
-		httpsAgentOptions!.headers = Object.assign(httpsAgentOptions!.headers || {}, {
-			'Proxy-Authorization': authorization
-		});
-		agentOptions = httpsAgentOptions;
-	}
-
-	return new HttpClient(proxy, agentOptions);
 }
 
 /**

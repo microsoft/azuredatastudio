@@ -12,6 +12,8 @@ import * as constants from '../constants';
 import { Server, ServerViewInfo, NumaNode, AffinityType, ServerLoginMode, AuditLevel } from '../interfaces';
 import { isUndefinedOrNull } from '../../types';
 
+const Dialog_Width = '750px';
+
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
 	private generalTab: azdata.Tab;
 	private readonly generalTabId: string = 'generalId';
@@ -91,6 +93,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private shouldRestartServer: boolean = false;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
+		options.width = Dialog_Width;
 		super(objectManagementService, options);
 		this.disposables.push(this.dialogObject.onClosed(async (reason: azdata.window.CloseReason) => {
 			if (reason === 'ok') {
@@ -139,6 +142,9 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab, this.processorsTab, this.securityTab, this.databaseSettingsTab, this.advancedTab] };
 		const serverPropertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 			.withTabs([serverPropertiesTabGroup])
+			.withLayout({
+				orientation: azdata.TabOrientation.Vertical
+			})
 			.withProps({
 				CSSStyles: {
 					'margin': '-10px 0px 0px -10px'
