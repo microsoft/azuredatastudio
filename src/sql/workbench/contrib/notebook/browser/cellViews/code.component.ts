@@ -339,8 +339,8 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			// Have to offset the height based on the contents viewport and the additional scrollbars that are present in markdown editor and notebook
 			let horizontalTop = Math.floor(Math.abs(viewportTop + viewportHeight) - Math.abs(2 * horizontalScrollbar.scrollHeight));
 
-			// Set opacity for both fixed and absolute
-			horizontalScrollbar.style.opacity = '1';
+			// Set display for both fixed and absolute
+			horizontalScrollbar.style.display = 'block';
 
 			// If the bottom of the editor is in the viewport, then set the horizontal scrollbar to the bottom of the editor space
 			if (markdownEditorBottom < viewportBottom) {
@@ -357,7 +357,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			}
 		} else if (this.cellModel.cellType !== CellTypes.Code) {
 			// If horizontal scrollbar is not needed then set do not show it
-			horizontalScrollbar.style.opacity = '0';
+			horizontalScrollbar.style.display = 'none';
 		}
 	}
 
