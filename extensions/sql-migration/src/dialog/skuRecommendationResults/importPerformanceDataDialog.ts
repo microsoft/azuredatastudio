@@ -17,7 +17,7 @@ import { EventEmitter } from 'stream';
 
 export class ImportPerformanceDataDialog {
 	private dialog!: azdata.window.Dialog;
-	private _okButton!: azdata.ButtonComponent;
+	private _importButton!: azdata.ButtonComponent;
 
 	private _disposables: vscode.Disposable[] = [];
 
@@ -61,40 +61,54 @@ export class ImportPerformanceDataDialog {
 	private createContainer(_view: azdata.ModelView): azdata.FlexContainer {
 		const container = _view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
-				'margin': '8px 16px',
+				'margin': '0px',
 				'flex-direction': 'column',
 			}
 		}).component();
-		// const description1 = _view.modelBuilder.text().withProps({
-		// 	value: "Import Performance Data",
-		// 	CSSStyles: {
-		// 		...styles.PAGE_TITLE_CSS,
-		// 	}
-		// }).component();
+		const headingLabel = _view.modelBuilder.text().withProps({
+			value: "Import Performance Data",
+			CSSStyles: {
+				...styles.PAGE_TITLE_CSS,
+				'margin-top': '5px',
+			}
+		}).component();
 		const description = _view.modelBuilder.text().withProps({
-			value: "Import this data file from an existing folder, if you have already collected it using Data Migration Assistant.",
+			value: "Import this data file from an existing folder, if you have \nalready collected it using Data Migration Assistant.",
 			CSSStyles: {
 				...styles.TOOLBAR_CSS,
-				'margin-top': '8px',
 			}
 		}).component();
 
 		this._openExistingContainer = this.createOpenExistingFolderContainer(_view);
 
-		this._okButton = _view.modelBuilder.button().withProps({
-			label: constants.OK,
+		this._importButton = _view.modelBuilder.button().withProps({
+			label: 'Import',
 			width: '80px',
-			enabled: false
+			enabled: false,
+			CSSStyles: {
+				'font-size': '13px',
+				'line-height': '18px',
+				'font-weight': '600',
+				'padding': '3px 20px 3px 20px',
+				'gap': '10px'
+			}
 		}).component();
 
-		this._disposables.push(this._okButton.onDidClick(async () => {
+		this._disposables.push(this._importButton.onDidClick(async () => {
 			await this.execute();
 			this._creationEvent.emit('done');
 		}));
 
 		const cancelButton = _view.modelBuilder.button().withProps({
 			label: constants.CANCEL,
-			width: '80px'
+			width: '80px',
+			CSSStyles: {
+				'font-size': '13px',
+				'line-height': '18px',
+				'font-weight': '600',
+				'padding': '3px 20px 3px 20px',
+				'gap': '10px'
+			}
 		}).component();
 
 		this._disposables.push(cancelButton.onDidClick(e => {
@@ -103,27 +117,28 @@ export class ImportPerformanceDataDialog {
 
 		const buttonContainer = _view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
-				'margin-top': '5px'
+				'height': '48px',
+				// 'width': '300px',
+				'margin-top': '20px',
+				'margin-left': '70px',
 			}
 		}).component();
 
-		buttonContainer.addItem(this._okButton, {
+		buttonContainer.addItem(this._importButton, {
 			flex: '0',
-			CSSStyles: {
-				'width': '80px'
-			}
 		});
 
 		buttonContainer.addItem(cancelButton, {
 			flex: '0',
 			CSSStyles: {
-				'margin-left': '8px',
+				'margin-left': '2px',
 				'width': '80px'
 			}
 		});
 
 
 		container.addItems([
+			headingLabel,
 			description,
 			this._openExistingContainer,
 			buttonContainer
@@ -136,32 +151,32 @@ export class ImportPerformanceDataDialog {
 			this._isOpen = true;
 
 			this.dialog = azdata.window.createModelViewDialog(
-				'Import performance data',
+				'',
 				'ImportPerformanceDataDialog',
-				362,
+				350,
 				'callout',
 				'below',
 				false,
-				true,
+				false,
 				<azdata.window.IDialogProperties>{
-					height: 10,
-					width: 10,
-					xPos: 20,
-					yPos: 20
+					height: 51,
+					width: 0,
+					xPos: 0,
+					yPos: 0
 				}
 			);
 
-			this.dialog.okButton.label = "Import";
-			this.dialog.okButton.position = 'right';
+			// this.dialog.okButton.label = "Import";
+			// this.dialog.okButton.position = 'right';
 
-			this._disposables.push(
-				this.dialog.okButton.onClick(
-					async () => await this.execute()));
+			// this._disposables.push(
+			// 	this.dialog.okButton.onClick(
+			// 		async () => await this.execute()));
 
-			this.dialog.cancelButton.position = 'right';
-			this._disposables.push(
-				this.dialog.cancelButton.onClick(
-					() => this._isOpen = false));
+			// this.dialog.cancelButton.position = 'right';
+			// this._disposables.push(
+			// 	this.dialog.cancelButton.onClick(
+			// 		() => this._isOpen = false));
 
 			const promise = this.initializeDialog(this.dialog);
 			azdata.window.openDialog(this.dialog);
@@ -171,8 +186,12 @@ export class ImportPerformanceDataDialog {
 
 	private createOpenExistingFolderContainer(_view: azdata.ModelView): azdata.FlexContainer {
 		const container = _view.modelBuilder.flexContainer()
-			.withProps(
-				{ CSSStyles: { 'flex-direction': 'column' } })
+			.withProps({
+				CSSStyles: {
+					'flex-direction': 'column',
+					'margin-top': '10px'
+				}
+			})
 			.component();
 
 		const instructions = _view.modelBuilder.text().withProps({
@@ -185,8 +204,13 @@ export class ImportPerformanceDataDialog {
 		}).component();
 
 		const selectFolderContainer = _view.modelBuilder.flexContainer()
-			.withProps(
-				{ CSSStyles: { 'flex-direction': 'row', 'align-items': 'center' } })
+			.withProps({
+				CSSStyles: {
+					'flex-direction': 'row',
+					'align-items': 'center',
+					'marign-right': '30px'
+				}
+			})
 			.component();
 
 		this._openExistingFolderInput = _view.modelBuilder.inputBox().withProps({
@@ -198,6 +222,7 @@ export class ImportPerformanceDataDialog {
 				'font-size': '13px',
 				'line-height': '18px',
 				'font-weight': '400',
+				'margin': '0px',
 			},
 			// ariaLabel: constants.AZURE_RECOMMENDATION_OPEN_EXISTING_FOLDER
 		}).component();
@@ -206,7 +231,7 @@ export class ImportPerformanceDataDialog {
 				if (value) {
 					this.migrationStateModel._skuRecommendationPerformanceLocation = value.trim();
 					this.dialog!.okButton.enabled = true;
-					this._okButton.enabled = true;
+					this._importButton.enabled = true;
 				}
 			}));
 
@@ -215,7 +240,10 @@ export class ImportPerformanceDataDialog {
 				iconHeight: 24,
 				iconWidth: 24,
 				iconPath: IconPathHelper.openFolder,
-				CSSStyles: { 'margin': '0' }
+				CSSStyles: {
+					'margin': '0',
+					'padding': '0',
+				}
 			}).component();
 		this._disposables.push(
 			openButton.onDidClick(

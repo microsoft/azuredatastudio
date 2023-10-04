@@ -173,9 +173,12 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 				}
 			}).component();
 
-		const importPerformanceDataDialog = new ImportPerformanceDataDialog(this.skuRecommendationPage, this.wizard, this.migrationStateModel);
-		this._disposables.push(importPerformanceDataButton.onDidClick(
-			async (e) => await importPerformanceDataDialog.openDialog()));
+		this._disposables.push(
+			importPerformanceDataButton.onDidClick(async (e) => {
+				const importPerformanceDataDialog = new ImportPerformanceDataDialog(this.skuRecommendationPage, this.wizard, this.migrationStateModel);
+				await importPerformanceDataDialog.openDialog();
+			})
+		);
 		return importPerformanceDataButton;
 	}
 
