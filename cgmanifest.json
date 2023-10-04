@@ -528,7 +528,7 @@
 				"git": {
 					"name": "electron",
 					"repositoryUrl": "https://github.com/electron/electron",
-					"commitHash": "84d7f7f071ae11637d4a41b95536410293672750"
+					"commitHash": "dc3ce65dd5fd872db86e5308ae005a898142435a"
 				}
 			},
 			"isOnlyProductionDependency": true,
