@@ -355,7 +355,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 				horizontalScrollbar.style.top = horizontalTop + 'px';
 				horizontalScrollbar.style.bottom = '';
 			}
-		} else {
+		} else if (this.cellModel.cellType !== CellTypes.Code) {
 			// If horizontal scrollbar is not needed then set do not show it
 			horizontalScrollbar.style.opacity = '0';
 		}
