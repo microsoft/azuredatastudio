@@ -99,7 +99,7 @@ export class InstanceSummary {
 		this._totalFindingLabels.value = constants.TOTAL_FINDINGS_LABEL + ": " + this.migrationStateModel._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType).length;
 		const readyDbsCount = this.migrationStateModel._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType).length === 0).length;
 		const notReadyDbsCount = this.migrationStateModel._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType && issue.issueCategory === IssueCategory.Issue).length !== 0).length;
-		const readyWithWarnDbsCount = this.migrationStateModel._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType && issue.issueCategory === IssueCategory.Warning).length !== 0).length;
+		const readyWithWarnDbsCount = this.migrationStateModel._databasesForAssessment?.length - (readyDbsCount + notReadyDbsCount);
 
 		const readinessStates = [
 			{

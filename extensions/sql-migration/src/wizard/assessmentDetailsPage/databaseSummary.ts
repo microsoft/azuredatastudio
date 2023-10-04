@@ -10,6 +10,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { SqlMigrationAssessmentResultItem } from '../../service/contracts';
 import { MigrationTargetType } from '../../api/utils';
 import { AssessmentRuleId } from '../../models/stateMachine';
+import { IssueCategory } from '../../constants/helper';
 
 // Class defines the database summary.
 export class DatabaseSummary {
@@ -165,10 +166,21 @@ export class DatabaseSummary {
 	public async populateDatabaseSummary(issues: SqlMigrationAssessmentResultItem[], dbName: string) {
 		this._readinessTitle.value = constants.DB_READINESS_SECTION_TITLE(dbName);
 		this._totalIssues.value = constants.TOTAL_ISSUES_LABEL + ":" + issues.length;
-		if (issues.length > 0) {
-			this._readinessDescription.value = constants.NON_READINESS_DESCRIPTION(issues.length);
+		const blockingIssues = issues.filter(issue => issue.issueCategory === IssueCategory.Issue).length;
+		const warnings = issues.filter(issue => issue.issueCategory === IssueCategory.Warning).length;
+
+		// if there is even one blocking issues, we categorize database as not ready.
+		// if database has only warnings, then only we categorize database as ready with warnings.
+		if (blockingIssues > 0) {
+			this._readinessDescription.value = constants.NON_READINESS_DESCRIPTION(blockingIssues);
 			this._readinessIcon.iconPath = IconPathHelper.sqlDatabaseNotReadyLogo;
 			this._readinessText.value = constants.NOT_READY;
+		}
+		else if (warnings > 0) {
+			this._readinessDescription.value = constants.WARNING_READINESS_DESCRIPTION(warnings);
+			this._readinessIcon.iconPath = IconPathHelper.sqlDatabaseWarningLogo;
+			this._readinessText.value = constants.READY_WARN;
+
 		}
 		else {
 			this._readinessDescription.value = constants.READINESS_DESCRIPTION;
