@@ -45,6 +45,7 @@ export class AssessmentDetailsBody {
 		}).withProps({
 			CSSStyles: {
 				'border-top': 'solid 1px',
+				'border-bottom': 'solid 1px',
 				'margin-left': '15px'
 			}
 		}).component();
