@@ -172,7 +172,7 @@ export class DatabaseSummary {
 		}
 		else {
 			this._readinessDescription.value = constants.READINESS_DESCRIPTION;
-			this._readinessIcon.iconPath = IconPathHelper.sqlDatabaseLogo;
+			this._readinessIcon.iconPath = IconPathHelper.sqlDatabaseReadyLogo;
 			this._readinessText.value = constants.READY;
 		}
 
