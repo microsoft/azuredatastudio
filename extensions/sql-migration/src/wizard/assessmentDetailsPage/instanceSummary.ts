@@ -6,8 +6,13 @@
 import * as azdata from 'azdata';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
+import * as vscode from 'vscode';
+import * as utils from '../../api/utils';
 import { ColorCodes, IssueCategory } from '../../constants/helper';
-import { MigrationStateModel } from '../../models/stateMachine';
+import { AssessmentRuleId, MigrationStateModel } from '../../models/stateMachine';
+import { TdeConfigurationDialog } from '../../dialog/tdeConfiguration/tdeConfigurationDialog';
+import { ConfigDialogSetting, TdeMigrationModel } from '../../models/tdeModels';
+import { TelemetryAction, TelemetryViews, getTelemetryProps, sendSqlMigrationActionEvent } from '../../telemetry';
 
 interface IActionMetadata {
 	label: string,
@@ -23,20 +28,31 @@ export class InstanceSummary {
 	private _totalFindingLabels!: azdata.TextComponent;
 	private _yAxisLabels: azdata.TextComponent[] = [];
 	private _divs: azdata.FlexContainer[] = [];
+	private _disposables: vscode.Disposable[] = [];
+	private _tdeInfoContainer!: azdata.FlexContainer;
+	private _tdeConfigurationDialog!: TdeConfigurationDialog;
+	private _previousMiTdeMigrationConfig: TdeMigrationModel = new TdeMigrationModel(); // avoid null checks
+	private _tdeDatabaseSelectedHelperText!: azdata.TextComponent;
+	private _tdeEditButton!: azdata.ButtonComponent;
+
+	constructor(public migrationStateModel: MigrationStateModel) { }
 
 	// function to create instance summary components
-	public createInstanceSummaryContainer(view: azdata.ModelView): azdata.FlexContainer {
+	public async createInstanceSummaryContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
 		this._view = view;
 		const instanceSummaryContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
+		}).withProps({
+			CSSStyles: {
+				'padding-left': '10px'
+			}
 		}).component();
 
 		const description = view.modelBuilder.text().withProps({
 			value: constants.READINESS_SECTION_TITLE,
 			CSSStyles: {
 				...styles.SUBTITLE_LABEL_CSS,
-				'margin': '0px',
-				'padding-left': '10px'
+				'margin': '0px'
 			}
 		}).component();
 
@@ -44,8 +60,7 @@ export class InstanceSummary {
 			value: "",
 			CSSStyles: {
 				...styles.LIGHT_LABEL_CSS,
-				'margin': '0px',
-				'padding-left': '10px'
+				'margin': '0px'
 			}
 		}).component();
 
@@ -54,7 +69,6 @@ export class InstanceSummary {
 			CSSStyles: {
 				...styles.SUBTITLE_LABEL_CSS,
 				'margin': '0px',
-				'padding-left': '10px',
 				'margin-top': '30px'
 			}
 		}).component();
@@ -63,25 +77,29 @@ export class InstanceSummary {
 			value: "",
 			CSSStyles: {
 				...styles.LIGHT_LABEL_CSS,
-				'margin': '0px',
-				'padding-left': '10px'
+				'margin': '0px'
 			}
 		}).component();
 
-		instanceSummaryContainer.addItems([description, this._assessedDatabases, this.createGraphComponent(),
-			findingsSummaryTitle, this._totalFindingLabels]);
+		this._tdeInfoContainer = await this.createTdeInfoContainer();
+
+		instanceSummaryContainer.addItems([description,
+			this._assessedDatabases, this.createGraphComponent(),
+			this._tdeInfoContainer, findingsSummaryTitle,
+			this._totalFindingLabels]);
 
 		return instanceSummaryContainer;
 	}
 
 	// function to populate instance summary container with latest values.
-	public populateInstanceSummaryContainer(model: MigrationStateModel): void {
-
-		this._assessedDatabases.value = constants.ASSESSED_DBS_LABEL + ": " + model._databasesForAssessment?.length;
-		this._totalFindingLabels.value = constants.TOTAL_FINDINGS_LABEL + ": " + model._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === model._targetType).length;
-		const readyDbsCount = model._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === model._targetType).length === 0).length;
-		const notReadyDbsCount = model._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === model._targetType && issue.issueCategory === IssueCategory.Issue).length !== 0).length;
-		const readyWithWarnDbsCount = model._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === model._targetType && issue.issueCategory === IssueCategory.Warning).length !== 0).length;
+	public async populateInstanceSummaryContainer(): Promise<void> {
+		this._previousMiTdeMigrationConfig = this.migrationStateModel.tdeMigrationConfig;
+		await this.refreshTdeView();
+		this._assessedDatabases.value = constants.ASSESSED_DBS_LABEL + ": " + this.migrationStateModel._databasesForAssessment?.length;
+		this._totalFindingLabels.value = constants.TOTAL_FINDINGS_LABEL + ": " + this.migrationStateModel._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType).length;
+		const readyDbsCount = this.migrationStateModel._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType).length === 0).length;
+		const notReadyDbsCount = this.migrationStateModel._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType && issue.issueCategory === IssueCategory.Issue).length !== 0).length;
+		const readyWithWarnDbsCount = this.migrationStateModel._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType && issue.issueCategory === IssueCategory.Warning).length !== 0).length;
 
 		const readinessStates = [
 			{
@@ -203,5 +221,132 @@ export class InstanceSummary {
 	private setWidth(value: number, maxValue: number): number {
 		const width = (Math.sqrt(value) / Math.sqrt(maxValue)) * 75;
 		return width;
+	}
+
+	private async createTdeInfoContainer(): Promise<azdata.FlexContainer> {
+		const container = this._view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'flex-direction': 'column'
+			}
+		}).component();
+
+		this._tdeEditButton = this._view.modelBuilder.button().withProps({
+			label: constants.TDE_BUTTON_CAPTION,
+			width: 180,
+			CSSStyles: {
+				...styles.BODY_CSS,
+				'margin': '0',
+				'margin-top': '30px'
+			}
+		}).component();
+		this._tdeConfigurationDialog = new TdeConfigurationDialog(this.migrationStateModel, () => this._onTdeConfigClosed());
+		this._disposables.push(this._tdeEditButton.onDidClick(
+			async (e) => await this._tdeConfigurationDialog.openDialog()));
+
+		this._tdeDatabaseSelectedHelperText = this._view.modelBuilder.text()
+			.withProps({
+				CSSStyles: { ...styles.BODY_CSS },
+				ariaLive: 'polite',
+			}).component();
+
+		container.addItems([
+			this._tdeEditButton,
+			this._tdeDatabaseSelectedHelperText]);
+
+		await utils.updateControlDisplay(container, false);
+
+		return container;
+	}
+
+
+	private _resetTdeConfiguration() {
+		this._previousMiTdeMigrationConfig = this.migrationStateModel.tdeMigrationConfig;
+		this.migrationStateModel.tdeMigrationConfig = new TdeMigrationModel();
+	}
+
+	public async refreshTdeView() {
+
+		if (this.migrationStateModel._targetType !== utils.MigrationTargetType.SQLMI) {
+
+			//Reset the encrypted databases counter on the model to ensure the certificates migration is ignored.
+			this._resetTdeConfiguration();
+
+		} else {
+
+			const encryptedDbFound = this.migrationStateModel._assessmentResults.databaseAssessments
+				.filter(
+					db => this.migrationStateModel._databasesForMigration.findIndex(dba => dba === db.name) >= 0 &&
+						db.issues.findIndex(iss => iss.ruleId === AssessmentRuleId.TdeEnabled && iss.appliesToMigrationTargetPlatform === utils.MigrationTargetType.SQLMI) >= 0
+				)
+				.map(db => db.name);
+
+			if (this._matchWithEncryptedDatabases(encryptedDbFound)) {
+				this.migrationStateModel.tdeMigrationConfig = this._previousMiTdeMigrationConfig;
+			} else {
+				if (!utils.isWindows()) //Only available for windows for now.
+					return;
+
+				//Set encrypted databases
+				this.migrationStateModel.tdeMigrationConfig.setTdeEnabledDatabasesCount(encryptedDbFound);
+
+				if (this.migrationStateModel.tdeMigrationConfig.hasTdeEnabledDatabases()) {
+					//Set the text when there are encrypted databases.
+
+					if (!this.migrationStateModel.tdeMigrationConfig.shownBefore()) {
+						await this._tdeConfigurationDialog.openDialog();
+					}
+				} else {
+					this._tdeDatabaseSelectedHelperText.value = constants.TDE_WIZARD_MSG_EMPTY;
+				}
+
+			}
+		}
+
+		await utils.updateControlDisplay(this._tdeInfoContainer, this.migrationStateModel.tdeMigrationConfig.hasTdeEnabledDatabases());
+	}
+
+	private _onTdeConfigClosed(): Thenable<void> {
+		const tdeMsg = (this.migrationStateModel.tdeMigrationConfig.getAppliedConfigDialogSetting() === ConfigDialogSetting.ExportCertificates) ? constants.TDE_WIZARD_MSG_TDE : constants.TDE_WIZARD_MSG_MANUAL;
+		this._tdeDatabaseSelectedHelperText.value = constants.TDE_MSG_DATABASES_SELECTED(this.migrationStateModel.tdeMigrationConfig.getTdeEnabledDatabasesCount(), tdeMsg);
+
+		let tdeTelemetryAction: TelemetryAction;
+
+		switch (this.migrationStateModel.tdeMigrationConfig.getAppliedConfigDialogSetting()) {
+			case ConfigDialogSetting.ExportCertificates:
+				tdeTelemetryAction = TelemetryAction.TdeConfigurationUseADS;
+				break;
+			case ConfigDialogSetting.DoNotExport:
+				tdeTelemetryAction = TelemetryAction.TdeConfigurationAlreadyMigrated;
+				break;
+			case ConfigDialogSetting.NoSelection:
+				tdeTelemetryAction = TelemetryAction.TdeConfigurationCancelled;
+				break;
+			default:
+				tdeTelemetryAction = TelemetryAction.TdeConfigurationCancelled;
+				break;
+		}
+
+		sendSqlMigrationActionEvent(
+			TelemetryViews.TdeConfigurationDialog,
+			tdeTelemetryAction,
+			{
+				...getTelemetryProps(this.migrationStateModel),
+				'numberOfDbsWithTde': this.migrationStateModel.tdeMigrationConfig.getTdeEnabledDatabasesCount().toString()
+			},
+			{}
+		);
+
+		return this._tdeEditButton.focus();
+	}
+
+	private _matchWithEncryptedDatabases(encryptedDbList: string[]): boolean {
+		var currentTdeDbs = this._previousMiTdeMigrationConfig.getTdeEnabledDatabases();
+
+		if (encryptedDbList.length === 0 || encryptedDbList.length !== currentTdeDbs.length)
+			return false;
+
+		if (encryptedDbList.filter(db => currentTdeDbs.findIndex(dba => dba === db) < 0).length > 0)
+			return false; //There is at least one element that is not in the other array. There should be no risk of duplicates table names
+		return true;
 	}
 }

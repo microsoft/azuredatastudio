@@ -115,6 +115,8 @@ export function NON_READINESS_DESCRIPTION(issueCount: number) {
 export const READINESS_DESCRIPTION = localize('sql.migration.readiness.description', "The database is ready to migrate.");
 export const SELECT_TARGET_LABEL = localize('sql.migration.select.target.label', 'Select target type');
 export const FINDINGS_LABEL = localize('sql.migration.findings.label', "Findings");
+export const ENCRYPTION_LABEL = localize('sql.migration.encryption.label', "Encryption");
+export const ENCRYPTION_DESCRIPTION = localize('sql.migration.encryption.description', "This database is encrypted using Transparent data encryption (TDE). You need to migrate certificates before you can migrate this database.");
 
 // Assessment results and recommendations
 export const ASSESSMENT_RESULTS_AND_RECOMMENDATIONS_PAGE_TITLE = localize('sql.migration.assessment.results.and.recommendations.title', "Assessment results and recommendations");
