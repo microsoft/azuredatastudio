@@ -242,6 +242,10 @@ export function getMigrationStatus(migration: DatabaseMigration | undefined): st
 		?? migration?.properties.provisioningState;
 }
 
+export function getSchemaMigrationStatus(migration: DatabaseMigration | undefined): string | undefined {
+	return migration?.properties?.migrationStatusDetails?.sqlSchemaMigrationStatus?.status;
+}
+
 export function getMigrationStatusString(migration: DatabaseMigration | undefined): string {
 	const migrationStatus = getMigrationStatus(migration) ?? DefaultSettingValue;
 	return loc.StatusLookup[migrationStatus] ?? migrationStatus;

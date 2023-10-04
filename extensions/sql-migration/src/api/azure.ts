@@ -867,6 +867,7 @@ export function getMigrationErrors(migration: DatabaseMigration): string {
 		errors.push(migration.properties.migrationStatusWarnings?.completeRestoreErrorMessage);
 		errors.push(migration.properties.migrationStatusWarnings?.restoreBlockingReason);
 		errors.push(...migration.properties.migrationStatusDetails?.listOfCopyProgressDetails?.flatMap(cp => cp.errors) ?? []);
+		errors.push(...migration.properties.migrationStatusDetails?.sqlSchemaMigrationStatus?.sqlSchemaCopyErrors ?? []);
 	}
 
 	// remove undefined and duplicate error entries
@@ -956,6 +957,8 @@ export interface StartDatabaseMigrationRequest {
 		tableList?: string[],
 		scope: string,
 		offlineConfiguration?: OfflineConfiguration,
+		sqlSchemaMigrationConfiguration?: SqlSchemaMigrationConfiguration,
+		sqlDataMigrationConfiguration?: SqlDataMigrationConfiguration
 	}
 }
 
@@ -1082,6 +1085,8 @@ export interface DatabaseMigrationProperties {
 	migrationOperationId: string;
 	backupConfiguration: BackupConfiguration;
 	offlineConfiguration: OfflineConfiguration;
+	sqlSchemaMigrationConfiguration: SqlSchemaMigrationConfiguration;
+	sqlDataMigrationConfiguration: SqlDataMigrationConfiguration;
 	migrationFailureError: ErrorInfo;
 	tableList: string[];
 }
@@ -1103,6 +1108,7 @@ export interface MigrationStatusDetails {
 	invalidFiles: string[];
 	listOfCopyProgressDetails: CopyProgressDetail[];
 	sqlDataCopyErrors: string[];
+	sqlSchemaMigrationStatus: SqlSchemaMigrationStatus;
 
 	// new fields
 	pendingDiffBackupsCount: number;
@@ -1142,6 +1148,38 @@ export interface CopyProgressDetail {
 	errors: string[];
 }
 
+export interface SqlSchemaMigrationStatus {
+	sqlSchemaCopyErrors: string[];
+	status: 'CollectionCompleted' | 'PrefetchObjects' | 'GetDependency' | 'ScriptObjects' | 'ScriptViewIndexes' | 'ScriptOwnership' | 'GeneratingScript' | 'GeneratingScriptCompleted' | 'DeployingSchema' | 'DeploymentCompleted' | 'Completed' | 'CompletedWithError';
+	objectsCollection: ObjectsCollection;
+	scriptGeneration: ScriptGeneration;
+	scriptDeployment: ScriptDeployment;
+}
+
+export interface ObjectsCollection {
+	totalCountOfObjectsCollected: number;
+	startedOn: string;
+	endedOn: string;
+}
+
+export interface ScriptGeneration {
+	progressInPercentage: string;
+	scriptedObjectsFailedCount: number;
+	scriptedObjectsCount: number;
+	startedOn: string;
+	endedOn: string;
+	errors: string[];
+}
+
+export interface ScriptDeployment {
+	progressInPercentage: string;
+	failedDeploymentCount: number;
+	succeededDeploymentCount: number;
+	startedOn: string;
+	endedOn: string;
+	errors: string[];
+}
+
 export interface BackupConfiguration {
 	sourceLocation?: SourceLocation;
 	targetLocation?: TargetLocation;
@@ -1150,6 +1188,14 @@ export interface BackupConfiguration {
 export interface OfflineConfiguration {
 	offline: boolean;
 	lastBackupName?: string;
+}
+
+export interface SqlSchemaMigrationConfiguration {
+	enableSchemaMigration: boolean;
+}
+
+export interface SqlDataMigrationConfiguration {
+	enableDataMigration: boolean;
 }
 
 export interface ErrorInfo {

@@ -1421,15 +1421,25 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		for (const targetDatabaseInfo of this.migrationStateModel._sourceTargetMapping) {
 			const databaseInfo = targetDatabaseInfo[1];
 			if (databaseInfo) {
+				if (databaseInfo.enableSchemaMigration) {
+					continue;
+				}
+
+				var hasSelectedTables = false;
 				for (const sourceTable of databaseInfo.sourceTables) {
 					const tableInfo = sourceTable[1];
 					if (tableInfo.selectedForMigration === true) {
-						return true;
+						hasSelectedTables = true;
+						break;
 					}
+				}
+
+				if (!hasSelectedTables) {
+					return false;
 				}
 			}
 		}
-		return false;
+		return true;
 	}
 
 	private async validateFields(component?: azdata.Component): Promise<void> {
@@ -1722,7 +1732,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const cssClass = undefined;
 		this._databaseTable = this._view.modelBuilder.table()
 			.withProps({
-				forceFitColumns: azdata.ColumnSizingMode.AutoFit,
+				width: '800px',
 				height: '600px',
 				CSSStyles: { 'margin': '15px 0 0 0' },
 				data: [],
@@ -1740,6 +1750,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						value: 'targetDataase',
 						width: 200,
 						type: azdata.ColumnType.text,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+					{
+						name: constants.SCHEMA_MIGRATION_COLUMN_LABLE,
+						value: 'enableSchemaMigration',
+						width: 100,
+						type: azdata.ColumnType.icon,
 						cssClass: cssClass,
 						headerCssClass: cssClass,
 					},
@@ -1766,7 +1784,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._databaseTable.onCellAction!(
 				async (rowState: azdata.ICellActionEventArgs) => {
 					const buttonState = <azdata.ICellActionEventArgs>rowState;
-					if (buttonState?.column === 2) {
+					if (buttonState?.column === 3) {
 						// open table selection dialog
 						const sourceDatabaseName = this._databaseTable.data[rowState.row][0];
 						const targetDatabaseInfo = this.migrationStateModel._sourceTargetMapping.get(sourceDatabaseName);
@@ -1821,6 +1839,11 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				data.push([
 					sourceDatabaseName,
 					targetDatabaseInfo?.databaseName,
+					<azdata.IconColumnCellValue>{
+						icon: targetDatabaseInfo?.enableSchemaMigration
+							? IconPathHelper.completedMigration
+							: IconPathHelper.cancel,
+					},
 					<azdata.HyperlinkColumnCellValue>{				// table selection
 						icon: hasSelectedTables
 							? IconPathHelper.completedMigration
