@@ -59,7 +59,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	protected async registerContent(view: azdata.ModelView) {
 		this._view = view;
 
-		this._skuDataCollectionToolbar = new SkuDataCollectionToolbar(this, this.migrationStateModel);
+		this._skuDataCollectionToolbar = new SkuDataCollectionToolbar(this, this.wizard, this.migrationStateModel);
 		const toolbar = this._skuDataCollectionToolbar.createToolbar(view);
 
 		this._assessmentStatusIcon = this._view.modelBuilder.image()
@@ -314,11 +314,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					break;
 				}
 
-				// TODO - Will be done once import performance dialog is implemented.
-				// case PerformanceDataSourceOptions.OpenExisting: {
-				// 	shouldGetSkuRecommendations = true;
-				// 	break;
-				// }
+				case PerformanceDataSourceOptions.OpenExisting: {
+					shouldGetSkuRecommendations = true;
+					break;
+				}
 			}
 		}
 
@@ -564,8 +563,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 
 			// TODO - implement the import performance data functionality.
-			// case PerformanceDataSourceOptions.OpenExisting: {
-			// }
+			case PerformanceDataSourceOptions.OpenExisting: {
+				if (this.hasRecommendations()) {
+					// TODO - update the status container, text and icon.
+					// TODO - update the visibility of different button and status message.
+				}
+				break;
+			}
 
 			// initial state before "Get Azure recommendation" dialog
 			default: {

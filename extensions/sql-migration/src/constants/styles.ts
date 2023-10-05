@@ -107,3 +107,9 @@ export const ASSESSMENT_SUMMARY_CARD_CSS = {
 	'font-weight': '700',
 	'margin': '0px',
 };
+
+export const PERFORMANCE_DATA_DIALOG_CSS = {
+	'font-size': '13px',
+	'line-height': '18px',
+	'font-weight': '600',
+};
