@@ -15,6 +15,11 @@ import { getSourceConnectionProfile } from '../../api/sqlUtils';
 import { EOL } from 'os';
 import { EventEmitter } from 'stream';
 
+
+/*---------------------------------------------------------------------------------------------
+* For selecting the path which contains the data files.
+* This file contains the code for import performance data dialog.
+-----------------------------------------------------------------------------------------------*/
 export class ImportPerformanceDataDialog {
 	private dialog!: azdata.window.Dialog;
 	private _importButton!: azdata.ButtonComponent;
@@ -66,14 +71,14 @@ export class ImportPerformanceDataDialog {
 			}
 		}).component();
 		const headingLabel = _view.modelBuilder.text().withProps({
-			value: "Import Performance Data",
+			value: constants.IMPORT_PERFORMANCE_DATA,
 			CSSStyles: {
 				...styles.PAGE_TITLE_CSS,
 				'margin-top': '5px',
 			}
 		}).component();
 		const description = _view.modelBuilder.text().withProps({
-			value: "Import this data file from an existing folder, if you have \nalready collected it using Data Migration Assistant.",
+			value: constants.IMPORT_PERFORMANCE_DATA_DIALOG_DESCRIPTION,
 			CSSStyles: {
 				...styles.TOOLBAR_CSS,
 			}
@@ -82,13 +87,11 @@ export class ImportPerformanceDataDialog {
 		this._openExistingContainer = this.createOpenExistingFolderContainer(_view);
 
 		this._importButton = _view.modelBuilder.button().withProps({
-			label: 'Import',
+			label: constants.IMPORT,
 			width: '80px',
 			enabled: false,
 			CSSStyles: {
-				'font-size': '13px',
-				'line-height': '18px',
-				'font-weight': '600',
+				...styles.PERFORMANCE_DATA_DIALOG_CSS,
 				'padding': '3px 20px 3px 20px',
 				'gap': '10px'
 			}
@@ -101,11 +104,10 @@ export class ImportPerformanceDataDialog {
 
 		const cancelButton = _view.modelBuilder.button().withProps({
 			label: constants.CANCEL,
+			secondary: true,
 			width: '80px',
 			CSSStyles: {
-				'font-size': '13px',
-				'line-height': '18px',
-				'font-weight': '600',
+				...styles.PERFORMANCE_DATA_DIALOG_CSS,
 				'padding': '3px 20px 3px 20px',
 				'gap': '10px'
 			}
@@ -118,7 +120,6 @@ export class ImportPerformanceDataDialog {
 		const buttonContainer = _view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
 				'height': '48px',
-				// 'width': '300px',
 				'margin-top': '20px',
 				'margin-left': '70px',
 			}
@@ -135,7 +136,6 @@ export class ImportPerformanceDataDialog {
 				'width': '80px'
 			}
 		});
-
 
 		container.addItems([
 			headingLabel,
@@ -166,18 +166,6 @@ export class ImportPerformanceDataDialog {
 				}
 			);
 
-			// this.dialog.okButton.label = "Import";
-			// this.dialog.okButton.position = 'right';
-
-			// this._disposables.push(
-			// 	this.dialog.okButton.onClick(
-			// 		async () => await this.execute()));
-
-			// this.dialog.cancelButton.position = 'right';
-			// this._disposables.push(
-			// 	this.dialog.cancelButton.onClick(
-			// 		() => this._isOpen = false));
-
 			const promise = this.initializeDialog(this.dialog);
 			azdata.window.openDialog(this.dialog);
 			await promise;
@@ -195,7 +183,7 @@ export class ImportPerformanceDataDialog {
 			.component();
 
 		const instructions = _view.modelBuilder.text().withProps({
-			value: "Select a folder on your local drive",
+			value: constants.IMPORT_PERFORMANCE_DATA_DIALOG_HELPER_MESSAGE,
 			CSSStyles: {
 				'font-size': '13px',
 				'line-height': '18px',
@@ -214,7 +202,7 @@ export class ImportPerformanceDataDialog {
 			.component();
 
 		this._openExistingFolderInput = _view.modelBuilder.inputBox().withProps({
-			placeHolder: "Select a file",
+			placeHolder: constants.IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FILE,
 			readOnly: true,
 			height: 24,
 			width: 222,
@@ -224,7 +212,6 @@ export class ImportPerformanceDataDialog {
 				'font-weight': '400',
 				'margin': '0px',
 			},
-			// ariaLabel: constants.AZURE_RECOMMENDATION_OPEN_EXISTING_FOLDER
 		}).component();
 		this._disposables.push(
 			this._openExistingFolderInput.onTextChanged(async (value) => {
@@ -266,6 +253,7 @@ export class ImportPerformanceDataDialog {
 		const serverName = (await getSourceConnectionProfile()).serverName;
 		const errors: string[] = [];
 		try {
+			// TODO - ADD the card loading.
 			// await this.skuRecommendationPage.startCardLoading();
 			await this.migrationStateModel.getSkuRecommendations();
 
