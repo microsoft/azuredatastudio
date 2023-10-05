@@ -8,6 +8,7 @@ import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import { MigrationStateModel } from '../../models/stateMachine';
 import { MigrationTargetType } from '../../api/utils';
+import * as utils from '../../api/utils';
 
 interface IActionMetadata {
 	title?: string,
@@ -100,10 +101,12 @@ export class AssessmentDetailsHeader {
 	public async populateAssessmentDetailsHeader(migrationStateModel: MigrationStateModel): Promise<void> {
 		// this value is populated to handle the case when user selects a target type and want to resume later.
 		this._targetSelectionDropdown.value = this.getTargetTypeBasedOnModel(migrationStateModel._targetType);
+
+		const recommendedConfiguration = (await utils.getRecommendedConfiguration(migrationStateModel._targetType, migrationStateModel))[0] ?? "" + "\n" +
+			(await utils.getRecommendedConfiguration(migrationStateModel._targetType, migrationStateModel))[1] ?? ""
 		const assessmentHeaderValues = [
 			{
-				// TODO(stutijain): replace below value with recommended config
-				value: "10 available"
+				value: recommendedConfiguration
 			},
 			{
 				value: String(migrationStateModel?._assessedDatabaseList.length)
