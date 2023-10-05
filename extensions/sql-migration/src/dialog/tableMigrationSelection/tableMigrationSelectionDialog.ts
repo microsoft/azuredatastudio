@@ -473,31 +473,6 @@ export class TableMigrationSelectionDialog {
 		this._disposables.push(
 			table.onRowSelected(
 				async e => {
-					// collect table list selected for migration
-					const selectedRows = this._tableSelectionTable.selectedRows ?? [];
-					if (selectedRows.length === 0) {
-						this._tableSelectionMap.forEach(sourceTable => {
-							sourceTable.selectedForMigration = false;
-							this._tableSelectionMap.set(sourceTable.tableName, sourceTable);
-						})
-					} else {
-						selectedRows.forEach(rowIndex => {
-							// get selected source table name
-							const rowData = this._tableSelectionTable.data[rowIndex];
-							const sourceTableName = rowData.length > 1
-								? rowData[1] as string
-								: '';
-							// get source table info
-							const sourceTableInfo = this._tableSelectionMap.get(sourceTableName);
-							if (sourceTableInfo) {
-								// keep source table selected
-								sourceTableInfo.selectedForMigration = rowData[0] as boolean;
-								// update table selection map with new selectedForMigration value
-								this._tableSelectionMap.set(sourceTableName, sourceTableInfo);
-							}
-						});
-					}
-
 					this._updateRowSelection();
 				}));
 
@@ -546,31 +521,6 @@ export class TableMigrationSelectionDialog {
 		this._disposables.push(
 			table.onRowSelected(
 				async e => {
-					// collect table list selected for migration
-					const selectedRows = this._missingTargetTablesTable.selectedRows ?? [];
-					if (selectedRows.length === 0) {
-						this._missingTableSelectionMap.forEach(sourceTable => {
-							sourceTable.selectedForMigration = false;
-							this._missingTableSelectionMap.set(sourceTable.tableName, sourceTable);
-						})
-					} else {
-						selectedRows.forEach(rowIndex => {
-							// get selected source table name
-							const rowData = this._missingTargetTablesTable.data[rowIndex];
-							const sourceTableName = rowData.length > 1
-								? rowData[1] as string
-								: '';
-							// get source table info
-							const sourceTableInfo = this._missingTableSelectionMap.get(sourceTableName);
-							if (sourceTableInfo) {
-								// keep source table selected
-								sourceTableInfo.selectedForMigration = rowData[0] as boolean;
-								// update table selection map with new selectedForMigration value
-								this._missingTableSelectionMap.set(sourceTableName, sourceTableInfo);
-							}
-						});
-					}
-
 					this._updateRowSelection();
 				}));
 
@@ -593,14 +543,53 @@ export class TableMigrationSelectionDialog {
 	private async _save(): Promise<void> {
 		const targetDatabaseInfo = this._model._sourceTargetMapping.get(this._sourceDatabaseName);
 		if (targetDatabaseInfo) {
-			// collect table list for migration
-			this._tableSelectionMap.forEach(sourcetable => {
-				targetDatabaseInfo.sourceTables.set(sourcetable.tableName, sourcetable);
-			})
-
-			this._missingTableSelectionMap.forEach(sourceTable => {
+			// Reset selectedForMigration as false
+			this._tableSelectionMap.forEach(sourceTable => {
+				sourceTable.selectedForMigration = false;
 				targetDatabaseInfo.sourceTables.set(sourceTable.tableName, sourceTable);
 			})
+
+			// Set selectedForMigration from selectedRows
+			const selectedRows = this._tableSelectionTable.selectedRows ?? [];
+			selectedRows.forEach(rowIndex => {
+				// get selected source table name
+				const rowData = this._tableSelectionTable.data[rowIndex];
+				const sourceTableName = rowData.length > 1
+					? rowData[1] as string
+					: '';
+				// get source table info
+				const sourceTableInfo = this._tableSelectionMap.get(sourceTableName);
+				if (sourceTableInfo) {
+					// keep source table selected
+					sourceTableInfo.selectedForMigration = true;
+					// update table selection map with new selectedForMigration value
+					targetDatabaseInfo.sourceTables.set(sourceTableInfo.tableName, sourceTableInfo);
+				}
+			});
+
+			// Reset selectedForMigration as false
+			this._missingTableSelectionMap.forEach(sourceTable => {
+				sourceTable.selectedForMigration = false;
+				targetDatabaseInfo.sourceTables.set(sourceTable.tableName, sourceTable);
+			})
+
+			//Set selectedForMigration from selectedRows
+			const selectedRowsFromMissingTable = this._missingTargetTablesTable.selectedRows ?? [];
+			selectedRowsFromMissingTable.forEach(rowIndex => {
+				// get selected source table name
+				const rowData = this._missingTargetTablesTable.data[rowIndex];
+				const sourceTableName = rowData.length > 1
+					? rowData[1] as string
+					: '';
+				// get source table info
+				const sourceTableInfo = this._missingTableSelectionMap.get(sourceTableName);
+				if (sourceTableInfo) {
+					// keep source table selected
+					sourceTableInfo.selectedForMigration = true;
+					// update table selection map with new selectedForMigration value
+					targetDatabaseInfo.sourceTables.set(sourceTableInfo.tableName, sourceTableInfo);
+				}
+			});
 
 			this._model._sourceTargetMapping.set(this._sourceDatabaseName, targetDatabaseInfo);
 		}
