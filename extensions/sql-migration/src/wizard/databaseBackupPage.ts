@@ -1422,24 +1422,18 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			const databaseInfo = targetDatabaseInfo[1];
 			if (databaseInfo) {
 				if (databaseInfo.enableSchemaMigration) {
-					continue;
+					return true;
 				}
 
-				var hasSelectedTables = false;
 				for (const sourceTable of databaseInfo.sourceTables) {
 					const tableInfo = sourceTable[1];
 					if (tableInfo.selectedForMigration === true) {
-						hasSelectedTables = true;
-						break;
+						return true;
 					}
-				}
-
-				if (!hasSelectedTables) {
-					return false;
 				}
 			}
 		}
-		return true;
+		return false;
 	}
 
 	private async validateFields(component?: azdata.Component): Promise<void> {
