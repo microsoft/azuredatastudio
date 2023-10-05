@@ -216,6 +216,9 @@ export const START_PERFORMANCE_COLLECTION = localize('sql.migration.sku.start.pe
 export const STOP_PERFORMANCE_COLLECTION = localize('sql.migration.sku.stop.performance.collection', "Stop data collection");
 export const RESTART_PERFORMANCE_COLLECTION = localize('sql.migration.sku.restart.performance.collection', "Restart data collection");
 export const IMPORT_PERFORMANCE_DATA = localize('sql.migration.sku.import.performance.data', "Import performance data");
+export const IMPORT_PERFORMANCE_DATA_DIALOG_DESCRIPTION = localize('sql.migration.sku.import.performance.data.dialog.description', "Import this data file from an existing folder, if you have already collected it using Data Migration Assistant.");
+export const IMPORT_PERFORMANCE_DATA_DIALOG_HELPER_MESSAGE = localize('sql.migration.sku.import.performance.data.dialog.helper.message', "Select a folder on your local drive");
+export const IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FILE = localize('sql.migration.sku.import.performance.data.dialog.open.file', "Select a file");
 // allow-any-unicode-next-line
 export const AZURE_RECOMMENDATION_CARD_NOT_ENABLED = localize('sql.migration.sku.card.azureRecommendation.notEnabled', "Azure recommendation is not available. Click “Start data collection” button above to get started.");
 export const AZURE_RECOMMENDATION_CARD_IN_PROGRESS = localize('sql.migration.sku.card.azureRecommendation.inProgress', "Azure recommendation will be displayed once data collection is complete.");
@@ -972,6 +975,7 @@ export const NAME = localize('sql.migration.name', "Name");
 export const LOCATION = localize('sql.migration.location', "Location");
 export const REFRESH = localize('sql.migration.refresh', "Refresh");
 export const CREATE = localize('sql.migration.create', "Create");
+export const IMPORT = localize('sql.migration.cancel', "Import");
 export const CANCEL = localize('sql.migration.cancel', "Cancel");
 export const TYPE = localize('sql.migration.type', "Type");
 export const USER_ACCOUNT = localize('sql.migration.path.user.account', "User account");

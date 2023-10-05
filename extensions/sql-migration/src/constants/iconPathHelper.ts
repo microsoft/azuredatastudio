@@ -55,6 +55,7 @@ export class IconPathHelper {
 	public static stopDataCollection: IconPath;
 	public static import: IconPath;
 	public static settings: IconPath;
+	public static openFolder: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -233,6 +234,9 @@ export class IconPathHelper {
 			light: context.asAbsolutePath('images/settings.svg'),
 			dark: context.asAbsolutePath('images/settings.svg')
 		};
-
+		IconPathHelper.openFolder = {
+			light: context.asAbsolutePath('images/openFolder.svg'),
+			dark: context.asAbsolutePath('images/openFolder.svg')
+		};
 	}
 }

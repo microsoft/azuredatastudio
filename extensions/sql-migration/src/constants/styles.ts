@@ -108,6 +108,12 @@ export const ASSESSMENT_SUMMARY_CARD_CSS = {
 	'margin': '0px',
 };
 
+export const PERFORMANCE_DATA_DIALOG_CSS = {
+	'font-size': '13px',
+	'line-height': '18px',
+	'font-weight': '600',
+};
+
 export const TDE_VALIDATION_INFO_LABEL = {
 	'font-size': '14px',
 	'line-height': '20px',
