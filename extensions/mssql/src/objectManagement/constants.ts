@@ -16,6 +16,7 @@ export const enum FolderType {
 }
 
 export const PublicServerRoleName = 'public';
+export const Windows = 'Windows';
 
 export const CreateUserDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/create-user-transact-sql';
 export const AlterUserDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/alter-user-transact-sql';
@@ -33,12 +34,14 @@ export const ViewMemoryServerPropertiesDocUrl = 'https://learn.microsoft.com/sql
 export const ViewProcessorsServerPropertiesDocUrl = 'https://learn.microsoft.com/sql/database-engine/configure-windows/server-properties-processors-page';
 export const ViewSecurityServerPropertiesDocUrl = 'https://learn.microsoft.com/sql/database-engine/configure-windows/server-properties-security-page';
 export const ViewDatabaseSettingsPropertiesDocUrl = 'https://learn.microsoft.com/sql/database-engine/configure-windows/server-properties-database-settings-page';
+export const ViewAdvancedServerPropertiesDocUrl = 'https://learn.microsoft.com/sql/database-engine/configure-windows/server-properties-advanced-page';
 export const DetachDatabaseDocUrl = 'https://go.microsoft.com/fwlink/?linkid=2240322';
 export const AttachDatabaseDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/attach-a-database#to-attach-a-database';
 export const DatabaseGeneralPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-general-page';
 export const DatabaseOptionsPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-options-page'
 export const DropDatabaseDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/drop-database-transact-sql';
 export const DatabaseScopedConfigurationPropertiesDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/alter-database-scoped-configuration-transact-sql'
+export const QueryStorePropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-query-store-page'
 export const DatabaseFilesPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-files-page'
 export const DatabaseFileGroupsPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-filegroups-page'
 
@@ -51,7 +54,9 @@ export const enum TelemetryActions {
 	UpdateObject = 'UpdateObject',
 	OpenDetachDatabaseDialog = 'OpenDetachDatabaseDialog',
 	OpenAttachDatabaseDialog = 'OpenAttachDatabaseDialog',
-	OpenDropDatabaseDialog = 'OpenDropDatabaseDialog'
+	OpenDropDatabaseDialog = 'OpenDropDatabaseDialog',
+	AttachDatabase = 'AttachDatabase',
+	DetachDatabase = 'DetachDatabase'
 }
 
 export const ObjectManagementViewName = 'ObjectManagement';

@@ -458,7 +458,7 @@
       <source xml:lang="en">Close</source>
     </trans-unit>
     <trans-unit id="managePackages.dialogName">
-      <source xml:lang="en">Manage Packages</source>
+      <source xml:lang="en">Manage Notebook Packages</source>
     </trans-unit>
   </body></file>
   <file original="extensions/Microsoft.notebook/dist/extension" source-language="en" datatype="plaintext"><body>
@@ -481,6 +481,9 @@
     </trans-unit>
     <trans-unit id="unsupportedFileType">
       <source xml:lang="en">Only .ipynb Notebooks are supported</source>
+    </trans-unit>
+    <trans-unit id="pythonNotSetup">
+      <source xml:lang="en">Python is not currently configured for notebooks. The &apos;Configure Python for Notebooks&apos; command must be run before being able to manage notebook packages.</source>
     </trans-unit>
   </body></file>
   <file original="extensions/Microsoft.notebook/dist/jupyter/jupyterExecuteProvider" source-language="en" datatype="plaintext"><body>
@@ -697,7 +700,7 @@
       <source xml:lang="en">Local path to python installation used by Notebooks.</source>
     </trans-unit>
     <trans-unit id="title.managePackages">
-      <source xml:lang="en">Manage Packages</source>
+      <source xml:lang="en">Manage Notebook Packages</source>
     </trans-unit>
     <trans-unit id="notebook.maxBookSearchDepth.description">
       <source xml:lang="en">Maximum depth of subdirectories to search for Books (Enter 0 for infinite)</source>

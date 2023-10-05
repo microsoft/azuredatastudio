@@ -13,6 +13,8 @@ import { UNSAVED_GROUP_ID, mssqlProviderName, pgsqlProviderName } from 'sql/plat
 import { DataTransfers, IDragAndDropData } from 'vs/base/browser/dnd';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { localize } from 'vs/nls';
 
 export function supportsNodeNameDrop(nodeId: string): boolean {
 	if (nodeId === 'Table' || nodeId === 'Column' || nodeId === 'View' || nodeId === 'Function') {
@@ -52,9 +54,13 @@ function escapeString(input: string | undefined): string | undefined {
  */
 export class ServerTreeDragAndDrop implements IDragAndDrop {
 
+	private rejectDueToDupe: boolean;
+
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@INotificationService private _notificationService: INotificationService
 	) {
+		this.rejectDueToDupe = false;
 	}
 
 	/**
@@ -195,6 +201,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			} else if (targetElement instanceof ConnectionProfile) {
 				canDragOver = source.groupId !== targetElement.groupId &&
 					this._connectionManagementService.canChangeConnectionConfig(source, targetElement.groupId);
+				this.rejectDueToDupe = !canDragOver;
 			} else if (targetElement instanceof TreeNode) {
 				canDragOver = source.groupId !== this.getTreeNodeParentGroup(targetElement).id;
 			}
@@ -263,6 +270,10 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	}
 
 	public dropAbort(tree: ITree, data: IDragAndDropData): void {
+		if (this.rejectDueToDupe) {
+			this.rejectDueToDupe = false;
+			this._notificationService.info(localize('objectExplorer.dragAndDropController.existingIdenticalProfile', 'Cannot drag profile into group: A profile with identical options already exists in the group.'));
+		}
 		TreeUpdateUtils.isInDragAndDrop = false;
 	}
 

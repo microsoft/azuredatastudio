@@ -163,6 +163,18 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.select.azure.mi.db.count.threshold.exceed" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) s.error" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Error: Azure SQL Managed Instance supports maximum {0} user databases per instance. Select {0} or less database(s) to proceed further.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Fehler: Azure SQL Managed Instance unterstützt maximal {0} Benutzerdatenbanken pro Instanz. Wählen Sie {0} oder weniger Datenbanken aus, um den Vorgang fortzusetzen.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureConfiguration.premiumSeriesMemor" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) yOptimized" ItemType="0" PsrId="308" Leaf="true">
@@ -429,10 +441,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.aad.domain.name.input.box.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)]]></Val>
+          <Val><![CDATA[Microsoft Entra ID Domain Name (only required to migrate Windows Authenication Logins)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Active Directory-Domänennamen (nur zum Migrieren von Windows-Authentifizierungsanmeldungen erforderlich)]]></Val>
+            <Val><![CDATA[Microsoft Entra ID-Domänennamen (nur zum Migrieren von Windows-Authentifizierungsanmeldungen erforderlich)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -465,10 +480,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.enter.AAD.domain.name.to.continue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Active Directory (AAD) Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).]]></Val>
+          <Val><![CDATA[Microsoft Entra ID Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Active Directory (AAD)-Domänenname ist erforderlich, um die Windows-Anmeldung zu migrieren. Geben Sie einen AAD-Domänennamen ein, oder heben Sie die Auswahl von Windows-Anmeldungen auf.]]></Val>
+            <Val><![CDATA[Microsoft Entra ID-Domänenname ist erforderlich, um die Windows-Anmeldung zu migrieren. Geben Sie einen AAD-Domänennamen ein, oder heben Sie die Auswahl von Windows-Anmeldungen auf.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Active Directory (AAD) Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1152,10 +1170,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.azure.tenant" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure AD tenant]]></Val>
+          <Val><![CDATA[Microsoft Entra tenant]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure AD-Mandant]]></Val>
+            <Val><![CDATA[Microsoft Entra-Mandant]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure AD tenant]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5083,6 +5104,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.select.azure.mi.db.count.under.threshold" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[To proceed, press Select button]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Um fortzufahren, drücken Sie die Schaltfläche "Auswählen".]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.select.azure.vm" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select your target Azure Subscription and your target SQL Server on Azure Virtual Machine for your target.]]></Val>
@@ -6984,10 +7014,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.starting.migration.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[An error occurred while starting the certificate migration: '{0}']]></Val>
+          <Val><![CDATA[The following error has occurred while starting the certificate migration: '{0}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Fehler beim Starten der Zertifikatmigration: "{0}"]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[An error occurred while starting the certificate migration: '{0}']]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7990,6 +8023,96 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Description]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Beschreibung]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.error" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.group.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Certificate validations]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Zertifikat Validierungen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.requirements.message" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[In order for certificate migration to succeed, you must meet all of the requirements listed below.]A;]A;Click "Run validation" to check that requirements are met.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Damit die Zertifikatmigration erfolgreich ist, müssen Sie alle unten aufgeführten Anforderungen erfüllen.]A;]A;Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderungen erfüllt sind.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.run.validation" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Run validation]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Validierung ausführen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.running" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Running]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Wird ausgeführt]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.status.pending" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Pending]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ausstehend]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.status.succeeded" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Succeeded]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Erfolgreich]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Validation]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Überprüfung]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.troubleshooting.tips" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Troubleshooting tips]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Tipps zur Problembehandlung]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.wizard.databases.selected" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} out of {1} selected database(s) is using transparent data encryption.]]></Val>
@@ -8313,6 +8436,15 @@
           <Val><![CDATA[Stop validation]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Validierung beenden]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.validate.ir.unsuccessful.revalidation" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Revalidate unsuccessful steps]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nicht erfolgreiche Schritte erneut überprüfen]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

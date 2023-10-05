@@ -439,6 +439,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.query-store/dist/common/constants.openInNewTab" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open In New Tab]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Apri in una nuova scheda]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.query-store/dist/common/constants.overallResourceConsumption" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Overall Resource Consumption]]></Val>
@@ -489,6 +498,15 @@
           <Val><![CDATA[Queries]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Query]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.query-store/dist/common/constants.queryStoreDashboardTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Query Store - {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Query Store - {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -664,20 +682,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.query-store/package.queryStore.overallResourceConsumptionOpen" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.query-store/package.queryStore.openQueryStoreDashboard" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Open Overall Resource Consumption]]></Val>
+          <Val><![CDATA[Query Store]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Apri consumo complessivo risorse]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.query-store/package.queryStore.topResourceConsumingQueriesOpen" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Open Top Resource Consuming Queries]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Aprire prime query per consumo di risorse]]></Val>
+            <Val><![CDATA[Query Store]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

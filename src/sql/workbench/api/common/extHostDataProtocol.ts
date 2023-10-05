@@ -420,7 +420,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.QueryProvider>(handle).saveResults(requestParams);
 	}
 
-	override $copyResults(handle: number, requestParams: azdata.CopyResultsRequestParams): Thenable<void> {
+	override $copyResults(handle: number, requestParams: azdata.CopyResultsRequestParams): Thenable<azdata.CopyResultsRequestResult> {
 		const provider = this._resolveProvider<azdata.QueryProvider>(handle);
 		if (provider.copyResults) {
 			return provider.copyResults(requestParams);
@@ -632,8 +632,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	/**
 	 * Open a file browser
 	 */
-	public override $openFileBrowser(handle: number, ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean> {
-		return this._resolveProvider<azdata.FileBrowserProvider>(handle).openFileBrowser(ownerUri, expandPath, fileFilters, changeFilter);
+	public override $openFileBrowser(handle: number, ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean, showFoldersOnly?: boolean): Thenable<boolean> {
+		return this._resolveProvider<azdata.FileBrowserProvider>(handle).openFileBrowser(ownerUri, expandPath, fileFilters, changeFilter, showFoldersOnly);
 	}
 
 	/**
@@ -970,11 +970,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.executionPlan.ExecutionPlanProvider>(handle).isExecutionPlan(value);
 	}
 
-	// Database Server Contextualization API
-
-	public override $generateServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GenerateServerContextualizationResult> {
-		return this._resolveProvider<azdata.contextualization.ServerContextualizationProvider>(handle).generateServerContextualization(ownerUri);
-	}
+	// Server Contextualization API
 
 	public override $getServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GetServerContextualizationResult> {
 		return this._resolveProvider<azdata.contextualization.ServerContextualizationProvider>(handle).getServerContextualization(ownerUri);

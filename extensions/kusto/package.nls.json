@@ -26,7 +26,7 @@
 	"kusto.connectionOptions.databaseName.description": "The name of the initial catalog or database in the data source",
 	"kusto.connectionOptions.authType.displayName": "Authentication type",
 	"kusto.connectionOptions.authType.description": "Specifies the method of authenticating with Kusto Server",
-	"kusto.connectionOptions.authType.categoryValues.azureMFA": "Azure Active Directory - Universal with MFA support",
+	"kusto.connectionOptions.authType.categoryValues.azureMFA": "Microsoft Entra ID - Universal with MFA support",
 	"kusto.connectionOptions.authType.categoryValues.none": "No Authentication",
 	"kusto.connectionOptions.authType.categoryValues.sqlLogin": "User Authentication",
 	"kusto.connectionOptions.userName.displayName": "User name",

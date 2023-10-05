@@ -77,7 +77,8 @@ suite('Data Resource Data Provider', function () {
 			contextService,
 			fileDialogService,
 			notificationService,
-			undefined // IOpenerService
+			undefined, // IOpenerService
+			undefined	// ICommandService
 		);
 		instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Strict);
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(ResultSerializer)))

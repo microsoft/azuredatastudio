@@ -2,6 +2,5 @@
 	"queryStore.displayName": "Query Store",
 	"queryStore.description": "Query Store extension for Azure Data Studio.",
 	"queryStore.category": "Query Store",
-	"queryStore.topResourceConsumingQueriesOpen": "Open Top Resource Consuming Queries",
-	"queryStore.overallResourceConsumptionOpen": "Open Overall Resource Consumption"
+	"queryStore.openQueryStoreDashboard": "Query Store"
 }

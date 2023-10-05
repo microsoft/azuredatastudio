@@ -99,6 +99,9 @@
     <trans-unit id="objectManagement.ObjectSelectionMethodDialog_AllObjectsOfTypes">
       <source xml:lang="en">All objects of certain types</source>
     </trans-unit>
+    <trans-unit id="objectManagement.allowTriggerToFireOthersLabel">
+      <source xml:lang="en">Allow Triggers to Fire Others</source>
+    </trans-unit>
     <trans-unit id="objectManagement.dropObjectError">
       <source xml:lang="en">An error occurred while dropping the {0}: {1}. {2}</source>
       <note>{0} object type, {1}: object name, {2}: error message.</note>
@@ -141,6 +144,9 @@
       <source xml:lang="en">Are you sure you want to drop the {0}: {1}?</source>
       <note>{0} object type, {1}: object name.</note>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.purgeQueryStoreDataMessage">
+      <source xml:lang="en">Are you sure you want to purge the Query Store data from &apos;{0}&apos;?</source>
+    </trans-unit>
     <trans-unit id="objectManagement.associatedDatabaseFiles">
       <source xml:lang="en">Associated Database Files</source>
     </trans-unit>
@@ -153,8 +159,11 @@
     <trans-unit id="objectManagement.attachDatabaseDialogTitle">
       <source xml:lang="en">Attach Database (Preview)</source>
     </trans-unit>
+    <trans-unit id="objectManagement.attachDatabaseOperationName">
+      <source xml:lang="en">Attach database</source>
+    </trans-unit>
     <trans-unit id="objectManagement.user.aadAuth">
-      <source xml:lang="en">Authenticate with Azure Active Directory</source>
+      <source xml:lang="en">Authenticate with Microsoft Entra</source>
     </trans-unit>
     <trans-unit id="objectManagement.user.sqlAuth">
       <source xml:lang="en">Authenticate with password</source>
@@ -192,9 +201,6 @@
     <trans-unit id="objectManagement.autoSetProcessorAffinityMaskForAll">
       <source xml:lang="en">Automatically set processor affinity mask for all processors</source>
     </trans-unit>
-    <trans-unit id="objectManagement.login.aadAuthenticationType">
-      <source xml:lang="en">Azure Active Directory Authentication</source>
-    </trans-unit>
     <trans-unit id="objectManagement.azurePricingLink">
       <source xml:lang="en">Azure SQL Database pricing calculator</source>
     </trans-unit>
@@ -212,6 +218,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.backupChecksumText">
       <source xml:lang="en">Backup checksum</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.blockedProcThresholdLabel">
+      <source xml:lang="en">Blocked Process Threshold</source>
     </trans-unit>
     <trans-unit id="objectManagement.bothFailedAndSuccessfulLoginsText">
       <source xml:lang="en">Both failed and successful logins</source>
@@ -255,6 +264,9 @@
     <trans-unit id="objectManagement.containmentTypeLabel">
       <source xml:lang="en">Containment Type</source>
     </trans-unit>
+    <trans-unit id="objectManagement.costThresholdParallelismLabel">
+      <source xml:lang="en">Cost Threshold Parallelism</source>
+    </trans-unit>
     <trans-unit id="objectManagement.noDialogFoundError">
       <source xml:lang="en">Could not find a supported dialog for node type &apos;{0}&apos; and object type &apos;{1}&apos;.</source>
     </trans-unit>
@@ -268,8 +280,17 @@
     <trans-unit id="objectManagement.blankPasswordConfirmation">
       <source xml:lang="en">Creating a login with a blank password is a security risk.  Are you sure you want to continue?</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.queryStoreCurrentDiskUsageSectionText">
+      <source xml:lang="en">Current Disk Usage</source>
+    </trans-unit>
     <trans-unit id="objectManagement.currentSLOLabel">
       <source xml:lang="en">Current Service Level Objective</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.cursorThresholdLabel">
+      <source xml:lang="en">Cursor Threshold</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.queryStoreCapturemodeCustomText">
+      <source xml:lang="en">Custom</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseName">
       <source xml:lang="en">DB Name</source>
@@ -279,6 +300,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.dataFileLabel">
       <source xml:lang="en">Data</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.dataFlushIntervalInMinutesText">
+      <source xml:lang="en">Data Flush Interval (Minutes)</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.fileGroupNotApplicableText">
       <source xml:lang="en">DataFile &apos;{0}&apos; could not be added to the collection, because it already exists.</source>
@@ -334,6 +358,12 @@
     <trans-unit id="objectManagement.databaseProperties.defaultText">
       <source xml:lang="en">Default</source>
     </trans-unit>
+    <trans-unit id="objectManagement.defaultFullTextLanguageLabel">
+      <source xml:lang="en">Default Full-Text Language</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.defaultLanguageLabel">
+      <source xml:lang="en">Default Language</source>
+    </trans-unit>
     <trans-unit id="objectManagement.login.defaultDatabaseLabel">
       <source xml:lang="en">Default database</source>
     </trans-unit>
@@ -357,6 +387,10 @@
     </trans-unit>
     <trans-unit id="objectManagement.detachDatabaseOptions">
       <source xml:lang="en">Detach Database Options</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.detachDatabaseOperationName">
+      <source xml:lang="en">Detach database &apos;{0}&apos;</source>
+      <note>{0}: object name.</note>
     </trans-unit>
     <trans-unit id="objectManagement.dropButtonLabel">
       <source xml:lang="en">Drop</source>
@@ -409,6 +443,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.renameObjectDialogTitle">
       <source xml:lang="en">Enter new name</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.executionCountText">
+      <source xml:lang="en">Execution Count</source>
     </trans-unit>
     <trans-unit id="objectManagement.explicitPermissionsTableLabel">
       <source xml:lang="en">Explicit permissions for selected securable</source>
@@ -466,6 +503,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.findText">
       <source xml:lang="en">Find</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.fullTextUpgradeOptionLabel">
+      <source xml:lang="en">Full-Text Upgrade Option</source>
     </trans-unit>
     <trans-unit id="objectManagement.generalSectionHeader">
       <source xml:lang="en">General</source>
@@ -533,6 +573,9 @@
     <trans-unit id="objectManagement.loadingObjectsLabel">
       <source xml:lang="en">Loading objects…</source>
     </trans-unit>
+    <trans-unit id="objectManagement.locksLabel">
+      <source xml:lang="en">Locks</source>
+    </trans-unit>
     <trans-unit id="objectManagement.logLocationText">
       <source xml:lang="en">Log</source>
     </trans-unit>
@@ -566,8 +609,20 @@
     <trans-unit id="objectManagement.user.loginMapped">
       <source xml:lang="en">Mapped to a server login</source>
     </trans-unit>
+    <trans-unit id="objectManagement.maxDegreeParallelismLabel">
+      <source xml:lang="en">Max Degree Parallelism</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.maxPlansPerQueryText">
+      <source xml:lang="en">Max Plans Per Query</source>
+    </trans-unit>
     <trans-unit id="objectManagement.maxSizeLabel">
       <source xml:lang="en">Max Size</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.maxSizeInMbText">
+      <source xml:lang="en">Max Size (MB)</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.maxTextReplicationSizeLabel">
+      <source xml:lang="en">Max Text Replication Size</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.maximumFileSizeText">
       <source xml:lang="en">Maximum File Size</source>
@@ -599,8 +654,17 @@
     <trans-unit id="objectManagement.databaseProperties.memoryUsed">
       <source xml:lang="en">Memory Used By Memory Optimized Objects</source>
     </trans-unit>
+    <trans-unit id="objectManagement.login.aadAuthenticationType">
+      <source xml:lang="en">Microsoft Entra ID Authentication</source>
+    </trans-unit>
     <trans-unit id="objectManagement.minServerMemoryText">
       <source xml:lang="en">Minimum Server Memory (MB)</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.monitoringSectionText">
+      <source xml:lang="en">Monitoring</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.notAvailableText">
+      <source xml:lang="en">N/A</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.name">
       <source xml:lang="en">Name</source>
@@ -649,6 +713,15 @@
     </trans-unit>
     <trans-unit id="objectManagement.operatingSystem">
       <source xml:lang="en">Operating System</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.actualOperationModeText">
+      <source xml:lang="en">Operation Mode (Actual)</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.requestedOperationModeText">
+      <source xml:lang="en">Operation Mode (Requested)</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.optimizeAdHocWorkloadsLabel">
+      <source xml:lang="en">Optimize Ad Hoc Workloads</source>
     </trans-unit>
     <trans-unit id="objectManagement.user.ownedSchemasLabel">
       <source xml:lang="en">Owned Schemas</source>
@@ -707,6 +780,30 @@
     <trans-unit id="objectManagement.properties">
       <source xml:lang="en">Properties</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.purgeQueryDataButtonText">
+      <source xml:lang="en">Purge Query Store Data</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.databaseProperties.queryStoreTabHeader">
+      <source xml:lang="en">Query Store</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.queryStoreAvailableText">
+      <source xml:lang="en">Query Store Available</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.queryStoreCaptureModeText">
+      <source xml:lang="en">Query Store Capture Mode</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.queryStoreCapturePolicySectionText">
+      <source xml:lang="en">Query Store Capture Policy</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.queryStoreRetentionSectionText">
+      <source xml:lang="en">Query Store Retention</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.queryStoreUsedText">
+      <source xml:lang="en">Query Store Used</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.queryWaitLabel">
+      <source xml:lang="en">Query Wait</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.rowsDataFileType">
       <source xml:lang="en">ROWS Data</source>
     </trans-unit>
@@ -755,6 +852,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.sqlServerAndWindowsAuthText">
       <source xml:lang="en">SQL Server and Windows Authentication mode</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.scanStartupProcsLabel">
+      <source xml:lang="en">Scan Startup Procs </source>
     </trans-unit>
     <trans-unit id="objectManagement.ObjectSelectionMethodDialog_SelectSchemaDropdownLabel">
       <source xml:lang="en">Schema</source>
@@ -816,6 +916,9 @@
     <trans-unit id="objectManagement.databaseProperties.size">
       <source xml:lang="en">Size (MB)</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.sizeBasedCleanupModeText">
+      <source xml:lang="en">Size Based Cleanup Mode</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.spaceAvailable">
       <source xml:lang="en">Space Available</source>
     </trans-unit>
@@ -825,8 +928,17 @@
     <trans-unit id="objectManagement.login.specifyOldPasswordLabel">
       <source xml:lang="en">Specify old password</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.staleThresholdText">
+      <source xml:lang="en">Stale Threshold</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.stateSectionHeader">
       <source xml:lang="en">State</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.stateQueryThresholdInDaysText">
+      <source xml:lang="en">State Query Threshold (Days)</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.statisticsCollectionInterval">
+      <source xml:lang="en">Statistics Collection Interval</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.status">
       <source xml:lang="en">Status</source>
@@ -842,6 +954,18 @@
     </trans-unit>
     <trans-unit id="objectManagement.collationNotValidError">
       <source xml:lang="en">The selected collation &apos;{0}&apos; is not valid. Please choose a different collation.</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.notSupportedError">
+      <source xml:lang="en">This command is not supported for object type &apos;{0}&apos;.</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.totalCompileCPUTimeInMs">
+      <source xml:lang="en">Total Compile CPU Time (ms)</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.totalExecutionCPUTimeInMsText">
+      <source xml:lang="en">Total Execution CPU Time (ms)</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.twoDigitYearCutoffLabel">
+      <source xml:lang="en">Two Digit Year Cutoff</source>
     </trans-unit>
     <trans-unit id="objectManagement.user.type">
       <source xml:lang="en">Type</source>
@@ -877,8 +1001,14 @@
     <trans-unit id="objectManagement.databaseProperties.valueForSecondaryColumnHeader">
       <source xml:lang="en">Value for Secondary</source>
     </trans-unit>
+    <trans-unit id="objectManagement.locksValidation">
+      <source xml:lang="en">Value should be greater than {0}. Choose 0 for default settings.</source>
+    </trans-unit>
     <trans-unit id="objectManagement.versionText">
       <source xml:lang="en">Version</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.waitStatisticsCaptureModeText">
+      <source xml:lang="en">Wait Statistics Capture Mode</source>
     </trans-unit>
     <trans-unit id="objectManagement.login.windowsAuthenticationType">
       <source xml:lang="en">Windows Authentication</source>
@@ -888,6 +1018,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.withGrantColumnHeader">
       <source xml:lang="en">With Grant</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.yesText">
+      <source xml:lang="en">Yes</source>
     </trans-unit>
     <trans-unit id="objectManagement.ApplicationRoleTypeDisplayName">
       <source xml:lang="en">application role</source>
@@ -1078,9 +1211,6 @@
     <trans-unit id="mssql.connectionOptions.authType.displayName">
       <source xml:lang="en">Authentication type</source>
     </trans-unit>
-    <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
-      <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-    </trans-unit>
     <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS">
       <source xml:lang="en">Azure Attestation</source>
     </trans-unit>
@@ -1223,7 +1353,7 @@
       <source xml:lang="en">Enabled</source>
     </trans-unit>
     <trans-unit id="mssql.enableConnectionPooling">
-      <source xml:lang="en">Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed.</source>
+      <source xml:lang="en">Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed. To clear pooled connections, run the command: &apos;SQL Server: Clear Pooled Connections&apos;</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.description">
       <source xml:lang="en">Enables or disables Always Encrypted for the connection</source>
@@ -1324,6 +1454,9 @@
     <trans-unit id="mssql.query.textSize">
       <source xml:lang="en">Maximum size of text and ntext data returned from a SELECT statement</source>
     </trans-unit>
+    <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
+      <source xml:lang="en">Microsoft Entra ID - Universal with MFA support</source>
+    </trans-unit>
     <trans-unit id="mssql.provider.displayName">
       <source xml:lang="en">Microsoft SQL Server</source>
     </trans-unit>
@@ -1416,6 +1549,9 @@
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.authType.categoryValues.sqlLogin">
       <source xml:lang="en">SQL Login</source>
+    </trans-unit>
+    <trans-unit id="mssql.connection.clearPooledConnections">
+      <source xml:lang="en">SQL Server: Clear Pooled Connections</source>
     </trans-unit>
     <trans-unit id="mssql.objectExplorer.disableGroupBySchemaTitle">
       <source xml:lang="en">SQL Server: Disable Group By Schema</source>
@@ -1610,7 +1746,7 @@
       <source xml:lang="en">[Optional] Should Personally Identifiable Information (PII) be logged in the log file.</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.serverName.placeholder">
-      <source xml:lang="en">e.g. tcp:servername,1433</source>
+      <source xml:lang="en">e.g. servername,port</source>
     </trans-unit>
     <trans-unit id="mssql.format.placeCommasBeforeNextStatement">
       <source xml:lang="en">should commas be placed at the beginning of each statement in a list e.g. &apos;, mycolumn2&apos; instead of at the end e.g. &apos;mycolumn1,&apos;</source>

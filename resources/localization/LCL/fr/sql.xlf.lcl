@@ -1647,6 +1647,18 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@src/sql/workbench/services/objectExplorer/browser/dragAndDropController.objectExplorer.dragAndDropController.exis" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) tingIdenticalProfile" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Cannot drag profile into group: A profile with identical options already exists in the group.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Impossible de faire glisser le profil dans le groupe : un profil avec des options identiques existe déjà dans le groupe.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.greaterThanOrEqualsSel" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) ectBox" ItemType="0" PsrId="308" Leaf="true">
@@ -2496,6 +2508,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.azuredatastudio.themeUpdatedNotification" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Azure Data Studio now ships with a new default theme '{0}'. If you prefer, you can switch back to the old theme or try one of the many other color themes available.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio est désormais livré avec un nouveau thème par défaut ’{0}’. Si vous préférez, vous pouvez revenir à l’ancien thème ou essayer l’un des nombreux autres thèmes de couleur disponibles.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/base/common/locConstants.connectionDialogBrowseTree.context" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The connection dialog's browse tree context menu]]></Val>
@@ -2657,6 +2678,15 @@
           <Val><![CDATA[New Query]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Nouvelle requête]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.newThemeNotification" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Azure Data Studio now ships with a new default theme '{0}'. Do you want to give it a try?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio est désormais livré avec un nouveau thème par défaut ’{0}’. Voulez-vous essayer ?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6566,19 +6596,25 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/connection/browser/connection.contribution.sql.defaultAuthenticationType.AzureMFA" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Active Directory - Universal with MFA support]]></Val>
+          <Val><![CDATA[Microsoft Entra ID - Universal with MFA support]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Active Directory - Authentification universelle avec prise en charge de MFA]]></Val>
+            <Val><![CDATA[Microsoft Entra ID – Universel avec prise en charge MFA]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Active Directory - Universal with MFA support]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/connection/browser/connection.contribution.sql.defaultAuthenticationType.AzureMFAAndUser" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Active Directory - Password]]></Val>
+          <Val><![CDATA[Microsoft Entra ID - Password]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Active Directory - Mot de passe]]></Val>
+            <Val><![CDATA[Identifiant Microsoft Entra – Mot de passe]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Active Directory - Password]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -15390,47 +15426,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome/browser/welcomePage.welcomePage.installExtensionPack" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Install additional support for {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Installer un support supplémentaire pour {0} ]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome/browser/welcomePage.welcomePage.installKeymap" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Install {0} keymap]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Installer le mappage de touches {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/browser/welcomePage.welcomePage.installed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Installé]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome/browser/welcomePage.welcomePage.installedExtensionPack" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0} support is already installed]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Le support {0} est déjà installé.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome/browser/welcomePage.welcomePage.installedKeymap" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0} keymap is already installed]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Le mappage de touches '{0}' est déjà installé]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -15917,10 +15917,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialog.backupRestoreUrlBrowserDialog.tenant" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure AD Tenant]]></Val>
+          <Val><![CDATA[Microsoft Entra Tenant]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Locataire Microsoft Azure Active Directory]]></Val>
+            <Val><![CDATA[Locataire Microsoft Entra]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure AD Tenant]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -16445,10 +16448,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionWidget.connection.azureTenantDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure AD tenant]]></Val>
+          <Val><![CDATA[Microsoft Entra tenant]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Locataire Azure AD]]></Val>
+            <Val><![CDATA[Locataire Microsoft Entra]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure AD tenant]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -18845,6 +18851,15 @@
           <Val><![CDATA[Open file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Ouvrir un fichier]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/query/common/resultSerializer.openFileLocation" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open file location]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ouvrir l’emplacement du fichier]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

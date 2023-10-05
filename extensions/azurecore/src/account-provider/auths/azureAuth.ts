@@ -22,8 +22,7 @@ import { MemoryDatabase } from '../utils/memoryDatabase';
 import { Logger } from '../../utils/Logger';
 import { AzureAuthError } from './azureAuthError';
 import { AccountInfo, AuthError, AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
-import { HttpClient } from './httpClient';
-import { getProxyEnabledHttpClient, getTenantIgnoreList, updateTenantIgnoreList } from '../../utils';
+import { getTenantIgnoreList, updateTenantIgnoreList } from '../../utils';
 import { errorToPromptFailedResult } from './networkUtils';
 import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
 import { isErrorResponseBodyWithError } from '../../azureResource/utils';
@@ -32,6 +31,7 @@ const localize = nls.loadMessageBundle();
 
 export type GetTenantsResponseData = {
 	value: TenantResponse[];
+	error?: string;
 }
 
 export abstract class AzureAuth implements vscode.Disposable {
@@ -44,7 +44,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly scopesString: string;
 	protected readonly clientId: string;
 	protected readonly resources: Resource[];
-	protected readonly httpClient: HttpClient;
+	private readonly _disposableStore: vscode.Disposable[];
 
 	constructor(
 		protected readonly metadata: AzureAccountProviderMetadata,
@@ -55,7 +55,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		protected readonly authType: AzureAuthType,
 		public readonly userFriendlyName: string
 	) {
-
+		this._disposableStore = [];
 		this.loginEndpointUrl = this.metadata.settings.host;
 		this.commonTenant = {
 			id: 'common',
@@ -68,8 +68,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		this.redirectUri = this.metadata.settings.redirectUri;
 		this.clientId = this.metadata.settings.clientId;
 		this.resources = [
-			this.metadata.settings.armResource,
-			this.metadata.settings.graphResource,
+			this.metadata.settings.armResource
 		];
 		if (this.metadata.settings.sqlResource) {
 			this.resources.push(this.metadata.settings.sqlResource);
@@ -99,7 +98,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		this.scopes = [...this.metadata.settings.scopes];
 		this.scopesString = this.scopes.join(' ');
-		this.httpClient = getProxyEnabledHttpClient();
+		this._disposableStore.push(this.uriEventEmitter);
 	}
 
 	public async startLogin(): Promise<AzureAccount | azdata.PromptFailedResult> {
@@ -310,6 +309,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			|| error.errorMessage.includes(Constants.AADSTS50078)
 			|| error.errorMessage.includes(Constants.AADSTS50085)
 			|| error.errorMessage.includes(Constants.AADSTS50089)
+			|| error.errorMessage.includes(Constants.AADSTS700082)
 			|| error.errorMessage.includes(Constants.AADSTS700084);
 	}
 
@@ -510,8 +510,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		this.clientApplication.clearCache();
 
 		// unlink both cache files
-		await this.msalCacheProvider.unlinkMsalCache();
-		await this.msalCacheProvider.unlinkLocalCache();
+		await this.msalCacheProvider.unlinkCacheFiles();
 
 		// Delete Encryption Keys
 		await this.msalCacheProvider.clearCacheEncryptionKeys();
@@ -541,7 +540,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 		await this.msalCacheProvider.clearAccountFromLocalCache(accountKey.accountId);
 	}
 
-	public async dispose() { }
+	public async dispose() {
+		this._disposableStore.forEach(d => d.dispose());
+	}
 
 	public async autoOAuthCancelled(): Promise<void> { }
 
@@ -624,7 +625,7 @@ export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-
 	aud: string;
 	/**
 	 * Identifies the issuer, or "authorization server" that constructs and
-	 * returns the token. It also identifies the Azure AD tenant for which
+	 * returns the token. It also identifies the Microsoft Entra tenant for which
 	 * the user was authenticated. If the token was issued by the v2.0 endpoint,
 	 * the URI will end in /v2.0. The GUID that indicates that the user is a consumer
 	 * user from a Microsoft account is 9188040d-6c67-4c5b-b112-36a304b66dad.
@@ -642,7 +643,7 @@ export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-
 	 * account not in the same tenant as the issuer - guests, for instance.
 	 * If the claim isn't present, it means that the value of iss can be used instead.
 	 * For personal accounts being used in an organizational context (for instance,
-	 * a personal account invited to an Azure AD tenant), the idp claim may be
+	 * a personal account invited to a Microsoft Entra tenant), the idp claim may be
 	 * 'live.com' or an STS URI containing the Microsoft account tenant
 	 * 9188040d-6c67-4c5b-b112-36a304b66dad.
 	 */
@@ -675,7 +676,7 @@ export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-
 	 */
 	at_hash: string;
 	/**
-	 * An internal claim used by Azure AD to record data for token reuse. Should be ignored.
+	 * An internal claim used by Microsoft Entra ID to record data for token reuse. Should be ignored.
 	 */
 	aio: string;
 	/**

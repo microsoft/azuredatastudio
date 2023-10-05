@@ -9,10 +9,12 @@
 	padding-left: 12px;
 	padding-right: 12px;
 	box-sizing: border-box;
+	display: flex;
+	flex-flow: column;
 }
 
 .file-browser-dialog .tree-view {
-	height: calc(100% - 90px);
+	flex: 1 1 auto;
 }
 
 .file-table-content {
@@ -21,8 +23,8 @@
 
 .file-browser-dialog .option-section {
 	padding-top: 10px;
-	height: 90px;
 	box-sizing: border-box;
+	flex: 0 1 auto;
 }
 
 .file-input-label {

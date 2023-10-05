@@ -11,6 +11,8 @@ import * as localizedConstants from '../localizedConstants';
 import * as constants from '../constants';
 import { Server, ServerViewInfo, NumaNode, AffinityType, ServerLoginMode, AuditLevel } from '../interfaces';
 
+const Dialog_Width = '750px';
+
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
 	private generalTab: azdata.Tab;
 	private readonly generalTabId: string = 'generalId';
@@ -69,10 +71,35 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private logLocationInput: azdata.InputBoxComponent;
 	private backupLocationInput: azdata.InputBoxComponent;
 
+	private advancedTab: azdata.Tab;
+	private readonly advancedTabId: string = 'advancedId';
+	private allowTriggerToFireOthersDropdown: azdata.DropDownComponent;
+	private blockedProcThresholdInput: azdata.InputBoxComponent;
+	private cursorThresholdInput: azdata.InputBoxComponent;
+	private defaultFullTextLanguageInput: azdata.InputBoxComponent;
+	private defaultLanguageDropdown: azdata.DropDownComponent;
+	private fullTextUpgradeOptionDropdown: azdata.DropDownComponent;
+	private maxTextReplicationSizeInput: azdata.InputBoxComponent;
+	private optimizeAdHocWorkloadsDropdown: azdata.DropDownComponent;
+	private scanStartupProcsDropdown: azdata.DropDownComponent;
+	private twoDigitYearCutoffInput: azdata.InputBoxComponent;
+	private costThresholdParallelismInput: azdata.InputBoxComponent;
+	private locksInput: azdata.InputBoxComponent;
+	private maxDegreeParallelismInput: azdata.InputBoxComponent;
+	private queryWaitInput: azdata.InputBoxComponent;
+
 	private activeTabId: string;
+	private shouldRestartServer: boolean = false;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
+		options.width = Dialog_Width;
 		super(objectManagementService, options);
+		this.disposables.push(this.dialogObject.onClosed(async (reason: azdata.window.CloseReason) => {
+			if (reason === 'ok') {
+				// only show message if user apply changes
+				await this.notifyServerRestart();
+			}
+		}));
 	}
 
 	protected override get helpUrl(): string {
@@ -93,6 +120,9 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			case this.databaseSettingsTabId:
 				helpUrl = constants.ViewDatabaseSettingsPropertiesDocUrl;
 				break;
+			case this.advancedTabId:
+				helpUrl = constants.ViewAdvancedServerPropertiesDocUrl;
+				break;
 			default:
 				break;
 		}
@@ -107,9 +137,13 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.initializeProcessorsSection();
 		this.initializeSecuritySection();
 		this.initializeDatabaseSettingsSection();
-		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab, this.processorsTab, this.securityTab, this.databaseSettingsTab] };
+		this.initializeAdvancedSection();
+		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab, this.processorsTab, this.securityTab, this.databaseSettingsTab, this.advancedTab] };
 		const serverPropertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 			.withTabs([serverPropertiesTabGroup])
+			.withLayout({
+				orientation: azdata.TabOrientation.Vertical
+			})
 			.withProps({
 				CSSStyles: {
 					'margin': '-10px 0px 0px -10px'
@@ -343,42 +377,58 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		return errors;
 	}
 
+	private async notifyServerRestart(): Promise<void> {
+		if (this.shouldRestartServer) {
+			await vscode.window.showInformationMessage(localizedConstants.needToRestartServer, { modal: true });
+			this.shouldRestartServer = false;
+		}
+	}
+
 	private initializeProcessorsSection(): void {
 		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance;
 		let nodes: NumaNode[] = this.objectInfo.numaNodes;
 		let nodeTableList: azdata.TableComponent[] = [];
 		let tableGroups: azdata.GroupContainer[] = [];
-		for (let node of nodes) {
-			let table = this.createProcessorTable(node);
-			nodeTableList.push(table);
-			tableGroups.push(this.createGroup(localizedConstants.serverNumaNodeLabel(node.numaNodeId), [table], true));
+
+		if (isEnabled) {
+			for (let node of nodes) {
+				let table = this.createProcessorTable(node);
+				nodeTableList.push(table);
+				tableGroups.push(this.createGroup(localizedConstants.serverNumaNodeLabel(node.numaNodeId), [table], true));
+			}
 		}
+
 		this.autoSetProcessorAffinityMaskForAllCheckbox = this.createCheckbox(localizedConstants.autoSetProcessorAffinityMaskForAllText, async (newValue) => {
 			this.objectInfo.autoProcessorAffinityMaskForAll = newValue;
-			for (let table of nodeTableList) {
-				let newData = table.data;
-				for (let i = 0; i < newData.length; i++) {
-					if (newValue) {
-						// if affinity mask for all is checked, then uncheck the individual processors
-						newData[i][AffinityType.ProcessorAffinity] = false;
+			if (isEnabled) {
+				for (let table of nodeTableList) {
+					let newData = table.data;
+					for (let i = 0; i < newData.length; i++) {
+						if (newValue) {
+							// if affinity mask for all is checked, then uncheck the individual processors
+							newData[i][AffinityType.ProcessorAffinity] = false;
+						}
 					}
+					await this.setTableData(table, newData);
 				}
-				await this.setTableData(table, newData);
 			}
+
 		}, this.objectInfo.autoProcessorAffinityMaskForAll, isEnabled);
 
 		this.autoSetProcessorIOAffinityMaskForAllCheckbox = this.createCheckbox(localizedConstants.autoSetProcessorAffinityIOMaskForAllText, async (newValue) => {
 			this.objectInfo.autoProcessorAffinityIOMaskForAll = newValue;
-			for (let table of nodeTableList) {
-				let newData = table.data;
-				for (let i = 0; i < newData.length; i++) {
-					if (newValue) {
-						// if IO affinity mask for all is checked, then uncheck the individual processors
-						newData[i][AffinityType.IOAffinity] = false;
+			if (isEnabled) {
+				for (let table of nodeTableList) {
+					let newData = table.data;
+					for (let i = 0; i < newData.length; i++) {
+						if (newValue) {
+							// if IO affinity mask for all is checked, then uncheck the individual processors
+							newData[i][AffinityType.IOAffinity] = false;
+						}
 					}
+					await this.setTableData(table, newData);
+					this.resetNumaNodes();
 				}
-				await this.setTableData(table, newData);
-				this.resetNumaNodes();
 			}
 		}, this.objectInfo.autoProcessorAffinityIOMaskForAll, isEnabled);
 
@@ -460,8 +510,9 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	}
 
 	private initializeSecuritySection(): void {
+		const isWindows = this.objectInfo.platform === constants.Windows;
 		// cannot change auth mode in sql managed instance or non windows instances
-		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance && this.objectInfo.platform !== 'Windows';
+		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance && isWindows;
 		const radioServerGroupName = 'serverAuthenticationRadioGroup';
 		this.onlyWindowsAuthRadioButton = this.createRadioButton(localizedConstants.onlyWindowsAuthModeText, radioServerGroupName, this.objectInfo.authenticationMode === ServerLoginMode.Integrated, async () => { await this.handleAuthModeChange(); });
 		this.sqlServerAndWindowsAuthRadioButton = this.createRadioButton(localizedConstants.sqlServerAndWindowsAuthText, radioServerGroupName, this.objectInfo.authenticationMode === ServerLoginMode.Mixed, async () => { await this.handleAuthModeChange(); });
@@ -477,6 +528,11 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.failedLoginsOnlyRadioButton = this.createRadioButton(localizedConstants.failedLoginsOnlyText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.Failure, async () => { await this.handleAuditLevelChange(); });
 		this.successfulLoginsOnlyRadioButton = this.createRadioButton(localizedConstants.successfulLoginsOnlyText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.Success, async () => { await this.handleAuditLevelChange(); });
 		this.bothFailedAndSuccessfulLoginsRadioButton = this.createRadioButton(localizedConstants.bothFailedAndSuccessfulLoginsText, radioLoginsGroupName, this.objectInfo.loginAuditing === AuditLevel.All, async () => { await this.handleAuditLevelChange(); });
+		// cannot change values in serverLogin section on Linux
+		this.noneRadioButton.enabled = isWindows;
+		this.failedLoginsOnlyRadioButton.enabled = isWindows;
+		this.successfulLoginsOnlyRadioButton.enabled = isWindows;
+		this.bothFailedAndSuccessfulLoginsRadioButton.enabled = isWindows;
 		const serverLoginSection = this.createGroup(localizedConstants.loginAuditingText, [
 			this.noneRadioButton,
 			this.failedLoginsOnlyRadioButton,
@@ -498,7 +554,9 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		if (this.sqlServerAndWindowsAuthRadioButton.checked) {
 			this.objectInfo.authenticationMode = ServerLoginMode.Mixed;
 		}
-		await vscode.window.showInformationMessage(localizedConstants.needToRestartServer, { modal: true });
+		if (this.objectInfo.authenticationMode !== this.originalObjectInfo.authenticationMode) {
+			this.shouldRestartServer = true;
+		}
 	}
 
 	private async handleAuditLevelChange(): Promise<void> {
@@ -548,21 +606,37 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 		this.dataLocationInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.dataLocation = newValue;
+			if (this.objectInfo.dataLocation !== this.originalObjectInfo.dataLocation) {
+				this.shouldRestartServer = true;
+			}
 		}, dataLocationInputboxProps);
 		const dataLocationButton = this.createBrowseButton(async () => {
 			const newPath = await this.selectFolder(this.objectInfo.dataLocation);
-			this.dataLocationInput.value = newPath;
-			this.objectInfo.dataLocation = newPath;
+			if (newPath) {
+				this.dataLocationInput.value = newPath;
+				this.objectInfo.dataLocation = newPath;
+			}
+			if (this.objectInfo.dataLocation !== this.originalObjectInfo.dataLocation) {
+				this.shouldRestartServer = true;
+			}
 		}, isEnabled);
 		const dataLocationInputContainer = this.createLabelInputContainer(localizedConstants.dataLocationText, [this.dataLocationInput, dataLocationButton])
 
 		this.logLocationInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.logLocation = newValue;
+			if (this.objectInfo.logLocation !== this.originalObjectInfo.logLocation) {
+				this.shouldRestartServer = true;
+			}
 		}, logLocationInputboxProps);
 		const logLocationButton = this.createBrowseButton(async () => {
 			const newPath = await this.selectFolder(this.objectInfo.logLocation);
-			this.logLocationInput.value = newPath;
-			this.objectInfo.logLocation = newPath;
+			if (newPath) {
+				this.logLocationInput.value = newPath;
+				this.objectInfo.logLocation = newPath;
+			}
+			if (this.objectInfo.logLocation !== this.originalObjectInfo.logLocation) {
+				this.shouldRestartServer = true;
+			}
 		}, isEnabled);
 		const logLocationInputContainer = this.createLabelInputContainer(localizedConstants.logLocationText, [this.logLocationInput, logLocationButton])
 
@@ -571,8 +645,10 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		}, backupLocationInputboxProps);
 		const backupLocationButton = this.createBrowseButton(async () => {
 			const newPath = await this.selectFolder(this.objectInfo.backupLocation);
-			this.backupLocationInput.value = newPath;
-			this.objectInfo.backupLocation = newPath;
+			if (newPath) {
+				this.backupLocationInput.value = newPath;
+				this.objectInfo.backupLocation = newPath;
+			}
 		}, isEnabled);
 		const backupLocationInputContainer = this.createLabelInputContainer(localizedConstants.backupLocationText, [this.backupLocationInput, backupLocationButton])
 
@@ -591,20 +667,156 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	}
 
 	public async selectFolder(location: string): Promise<string | undefined> {
-		const allFilesFilter = localizedConstants.allFiles;
-		let filter: any = {};
-		filter[allFilesFilter] = '*';
-		let uris = await vscode.window.showOpenDialog({
-			filters: filter,
-			canSelectFiles: false,
-			canSelectMany: false,
-			canSelectFolders: true,
-			defaultUri: vscode.Uri.file(location),
-			openLabel: localizedConstants.labelSelectFolder
+		let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
+		return await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, [{ label: localizedConstants.allFiles, filters: ['*'] }], true);
+	}
+
+	private initializeAdvancedSection(): void {
+		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance;
+		this.allowTriggerToFireOthersDropdown = this.createDropdown(localizedConstants.allowTriggerToFireOthersLabel, async (newValue) => {
+			this.objectInfo.allowTriggerToFireOthers = newValue === 'True';
+		}, ['True', 'False'], this.objectInfo.allowTriggerToFireOthers ? 'True' : 'False');
+		const allowTriggerToFireOthersContainer = this.createLabelInputContainer(localizedConstants.allowTriggerToFireOthersLabel, this.allowTriggerToFireOthersDropdown);
+
+		this.blockedProcThresholdInput = this.createInputBox(async (newValue) => {
+			this.objectInfo.blockedProcThreshold.value = +newValue;
+		}, {
+			ariaLabel: localizedConstants.blockedProcThresholdLabel,
+			inputType: 'number',
+			min: this.objectInfo.blockedProcThreshold.minimumValue,
+			max: this.objectInfo.blockedProcThreshold.maximumValue,
+			value: this.objectInfo.blockedProcThreshold.value.toString()
 		});
-		if (uris && uris.length > 0) {
-			return uris[0].fsPath;
-		}
-		return undefined;
+		const blockedProcThresholdContainer = this.createLabelInputContainer(localizedConstants.blockedProcThresholdLabel, this.blockedProcThresholdInput);
+
+		this.cursorThresholdInput = this.createInputBox(async (newValue) => {
+			this.objectInfo.cursorThreshold.value = +newValue;
+		}, {
+			ariaLabel: localizedConstants.cursorThresholdLabel,
+			inputType: 'number',
+			min: this.objectInfo.cursorThreshold.minimumValue,
+			max: this.objectInfo.cursorThreshold.maximumValue,
+			value: this.objectInfo.cursorThreshold.value.toString()
+		});
+		const cursorThresholdContainer = this.createLabelInputContainer(localizedConstants.cursorThresholdLabel, this.cursorThresholdInput);
+
+		this.defaultFullTextLanguageInput = this.createInputBox(async (newValue) => {
+			this.objectInfo.defaultFullTextLanguage = newValue;
+		}, {
+			ariaLabel: localizedConstants.defaultFullTextLanguageLabel,
+			value: this.objectInfo.defaultFullTextLanguage
+		});
+		const defaultFullTextLanguageContainer = this.createLabelInputContainer(localizedConstants.defaultFullTextLanguageLabel, this.defaultFullTextLanguageInput);
+
+		this.defaultLanguageDropdown = this.createDropdown(localizedConstants.defaultLanguageLabel, async (newValue) => {
+			this.objectInfo.defaultLanguage = newValue;
+		}, this.viewInfo.languageOptions, this.objectInfo.defaultLanguage);
+		const defaultLanguageContainer = this.createLabelInputContainer(localizedConstants.defaultLanguageLabel, this.defaultLanguageDropdown);
+
+		this.fullTextUpgradeOptionDropdown = this.createDropdown(localizedConstants.fullTextUpgradeOptionLabel, async (newValue) => {
+			this.objectInfo.fullTextUpgradeOption = newValue;
+		}, this.viewInfo.fullTextUpgradeOptions, this.objectInfo.fullTextUpgradeOption, !!this.objectInfo.fullTextUpgradeOption);
+		const fullTextUpgradeOptionContainer = this.createLabelInputContainer(localizedConstants.fullTextUpgradeOptionLabel, this.fullTextUpgradeOptionDropdown);
+
+		this.maxTextReplicationSizeInput = this.createInputBox(async (newValue) => {
+			this.objectInfo.maxTextReplicationSize.value = +newValue;
+		}, {
+			ariaLabel: localizedConstants.maxTextReplicationSizeLabel,
+			inputType: 'number',
+			min: this.objectInfo.maxTextReplicationSize.minimumValue,
+			max: this.objectInfo.maxTextReplicationSize.maximumValue,
+			value: this.objectInfo.maxTextReplicationSize.value.toString()
+		});
+		const maxTextReplicationSizeContainer = this.createLabelInputContainer(localizedConstants.maxTextReplicationSizeLabel, this.maxTextReplicationSizeInput);
+
+		this.optimizeAdHocWorkloadsDropdown = this.createDropdown(localizedConstants.optimizeAdHocWorkloadsLabel, async (newValue) => {
+			this.objectInfo.optimizeAdHocWorkloads = newValue === 'True';
+		}, ['True', 'False'], this.objectInfo.optimizeAdHocWorkloads ? 'True' : 'False');
+		const optimizeAdHocWorkloadsContainer = this.createLabelInputContainer(localizedConstants.optimizeAdHocWorkloadsLabel, this.optimizeAdHocWorkloadsDropdown);
+
+		this.scanStartupProcsDropdown = this.createDropdown(localizedConstants.scanStartupProcsLabel, async (newValue) => {
+			this.objectInfo.scanStartupProcs = newValue === 'True';
+		}, ['True', 'False'], this.objectInfo.scanStartupProcs ? 'True' : 'False', isEnabled);
+		const scanStartupProcsContainer = this.createLabelInputContainer(localizedConstants.scanStartupProcsLabel, this.scanStartupProcsDropdown);
+
+		this.twoDigitYearCutoffInput = this.createInputBox(async (newValue) => {
+			this.objectInfo.twoDigitYearCutoff = +newValue;
+		}, {
+			ariaLabel: localizedConstants.twoDigitYearCutoffLabel,
+			inputType: 'number',
+			value: this.objectInfo.twoDigitYearCutoff.toString()
+		});
+		const twoDigitYearCutoffContainer = this.createLabelInputContainer(localizedConstants.twoDigitYearCutoffLabel, this.twoDigitYearCutoffInput);
+
+		this.costThresholdParallelismInput = this.createInputBox(async (newValue) => {
+			this.objectInfo.costThresholdParallelism.value = +newValue;
+		}, {
+			ariaLabel: localizedConstants.costThresholdParallelismLabel,
+			inputType: 'number',
+			min: this.objectInfo.costThresholdParallelism.minimumValue,
+			max: this.objectInfo.costThresholdParallelism.maximumValue,
+			value: this.objectInfo.costThresholdParallelism.value.toString()
+		});
+		const costThresholdParallelismContainer = this.createLabelInputContainer(localizedConstants.costThresholdParallelismLabel, this.costThresholdParallelismInput);
+
+		this.locksInput = this.createInputBox(async (newValue) => {
+			this.objectInfo.locks.value = +newValue;
+		}, {
+			ariaLabel: localizedConstants.locksLabel,
+			inputType: 'number',
+			enabled: isEnabled,
+			max: this.objectInfo.locks.maximumValue,
+			min: 0,
+			value: this.objectInfo.locks.value.toString(),
+			validationErrorMessage: localizedConstants.locksValidation(this.objectInfo.locks.minimumValue)
+		}, async () => {
+			return !(+this.locksInput.value < this.objectInfo.locks.minimumValue && +this.locksInput.value !== 0);
+		});
+		const locksContainer = this.createLabelInputContainer(localizedConstants.locksLabel, this.locksInput);
+
+		this.maxDegreeParallelismInput = this.createInputBox(async (newValue) => {
+			this.objectInfo.maxDegreeParallelism.value = +newValue;
+		}, {
+			ariaLabel: localizedConstants.maxDegreeParallelismLabel,
+			inputType: 'number',
+			min: this.objectInfo.maxDegreeParallelism.minimumValue,
+			max: this.objectInfo.maxDegreeParallelism.maximumValue,
+			value: this.objectInfo.maxDegreeParallelism.value.toString()
+		});
+		const maxDegreeParallelismContainer = this.createLabelInputContainer(localizedConstants.maxDegreeParallelismLabel, this.maxDegreeParallelismInput);
+
+		this.queryWaitInput = this.createInputBox(async (newValue) => {
+			this.objectInfo.queryWait.value = +newValue;
+		}, {
+			ariaLabel: localizedConstants.queryWaitLabel,
+			inputType: 'number',
+			min: this.objectInfo.queryWait.minimumValue,
+			max: this.objectInfo.queryWait.maximumValue,
+			value: this.objectInfo.queryWait.value.toString()
+		});
+		const queryWaitContainer = this.createLabelInputContainer(localizedConstants.queryWaitLabel, this.queryWaitInput);
+
+		const miscellaneousSection = this.createGroup('Miscellaneous', [
+			allowTriggerToFireOthersContainer,
+			blockedProcThresholdContainer,
+			cursorThresholdContainer,
+			defaultFullTextLanguageContainer,
+			defaultLanguageContainer,
+			fullTextUpgradeOptionContainer,
+			maxTextReplicationSizeContainer,
+			optimizeAdHocWorkloadsContainer,
+			scanStartupProcsContainer,
+			twoDigitYearCutoffContainer
+		], true);
+		const parallelismSection = this.createGroup('Parallelism', [
+			costThresholdParallelismContainer,
+			locksContainer,
+			maxDegreeParallelismContainer,
+			queryWaitContainer
+		], true);
+
+		const advancedTabContainer = this.createGroup('', [miscellaneousSection, parallelismSection])
+
+		this.advancedTab = this.createTab(this.advancedTabId, localizedConstants.AdvancedSectionHeader, advancedTabContainer);
 	}
 }

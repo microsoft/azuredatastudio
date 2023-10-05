@@ -163,6 +163,18 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.select.azure.mi.db.count.threshold.exceed" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) s.error" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Error: Azure SQL Managed Instance supports maximum {0} user databases per instance. Select {0} or less database(s) to proceed further.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[エラー: Azure SQL Managed Instance でサポートされるインスタンスあたりのユーザー データベースは、最大 {0} 個までです。続行するには、選択するデータベース数を {0} 個以下にします。]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureConfiguration.premiumSeriesMemor" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) yOptimized" ItemType="0" PsrId="308" Leaf="true">
@@ -429,10 +441,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.aad.domain.name.input.box.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)]]></Val>
+          <Val><![CDATA[Microsoft Entra ID Domain Name (only required to migrate Windows Authenication Logins)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Active Directory ドメイン名 (Windows 認証ログインの移行にのみ必要)]]></Val>
+            <Val><![CDATA[Microsoft Entra ID ドメイン名 (Windows 認証ログインを移行する場合にのみ必要)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -465,10 +480,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.enter.AAD.domain.name.to.continue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Active Directory (AAD) Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).]]></Val>
+          <Val><![CDATA[Microsoft Entra ID Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Windows ログインを移行するには、Azure Active Directory (AAD) ドメイン名が必要です。AAD ドメイン名を入力するか、Windows ログインの選択を解除してください。]]></Val>
+            <Val><![CDATA[Windows ログインを移行するには、Microsoft Entra ID ドメイン名が必要です。AAD ドメイン名を入力するか、Windows ログインの選択を解除してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Active Directory (AAD) Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1152,10 +1170,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.azure.tenant" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure AD tenant]]></Val>
+          <Val><![CDATA[Microsoft Entra tenant]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure AD テナント]]></Val>
+            <Val><![CDATA[Microsoft Entra テナント]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure AD tenant]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5083,6 +5104,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.select.azure.mi.db.count.under.threshold" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[To proceed, press Select button]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[続行するには、[選択]5D; ボタンを押します]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.select.azure.vm" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select your target Azure Subscription and your target SQL Server on Azure Virtual Machine for your target.]]></Val>
@@ -6984,10 +7014,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.starting.migration.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[An error occurred while starting the certificate migration: '{0}']]></Val>
+          <Val><![CDATA[The following error has occurred while starting the certificate migration: '{0}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[証明書移行の開始中にエラーが発生しました: '{0}']]></Val>
+            <Val><![CDATA[証明書の移行の開始中にエラーが発生しました: '{0}']]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[An error occurred while starting the certificate migration: '{0}']]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7990,6 +8023,96 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Description]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[説明]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.error" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[エラー]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.group.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Certificate validations]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[証明書の検証]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.requirements.message" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[In order for certificate migration to succeed, you must meet all of the requirements listed below.]A;]A;Click "Run validation" to check that requirements are met.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[証明書の移行を成功させるには、以下に示す要件をすべて満たしている必要があります。]A;]A;[検証の実行]5D; をクリックして、要件が満たされていることを確認します。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.run.validation" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Run validation]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[検証の実行]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.running" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Running]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[実行中]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.status.pending" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Pending]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[保留中]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.status.succeeded" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Succeeded]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[成功]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Validation]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[検証]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.validation.troubleshooting.tips" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Troubleshooting tips]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[トラブルシューティングのヒント]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.wizard.databases.selected" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} out of {1} selected database(s) is using transparent data encryption.]]></Val>
@@ -8313,6 +8436,15 @@
           <Val><![CDATA[Stop validation]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[検証を停止]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.validate.ir.unsuccessful.revalidation" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Revalidate unsuccessful steps]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[失敗した手順を再検証する]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
