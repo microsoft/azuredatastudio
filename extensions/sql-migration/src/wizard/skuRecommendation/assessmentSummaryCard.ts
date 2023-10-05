@@ -351,9 +351,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		this._recommendedConfigurationText = view.modelBuilder.text().withProps({
 			value: "",
 			CSSStyles: {
-				'font-size': '13px',
-				'line-height': '18px',
-				'font-weight': '600',
+				...styles.PERFORMANCE_DATA_DIALOG_CSS,
 				'margin': '0px',
 				'display': 'none',
 			},
@@ -382,6 +380,16 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				'display': 'none',
 			}
 		}).component();
+
+		this._viewDetailsLink.onDidClick(async () => {
+			if (this.skuRecommendationPage.hasRecommendations()) {
+				const skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, this.migrationTargetType);
+				await skuRecommendationResultsDialog.openDialog(
+					this.migrationTargetType,
+					this.migrationStateModel._skuRecommendationResults.recommendations
+				);
+			}
+		});
 
 
 		container.addItem(recommendedConfigurationLabel);
@@ -421,16 +429,6 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 
 		this._recommendedConfigurationText.value = skuRecommendation;
 		this._vmRecommendedConfigurationText.value = vmRecommendation;
-
-
-		this._viewDetailsLink.onDidClick(async () => {
-			if (this.skuRecommendationPage.hasRecommendations()) {
-				const skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, this.migrationTargetType);
-				await skuRecommendationResultsDialog.openDialog(
-					this.migrationTargetType,
-					this.migrationStateModel._skuRecommendationResults.recommendations);
-			}
-		});
 	}
 
 	public async loadingSKURecommendation() {
@@ -441,7 +439,6 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 
 		this._recommendedConfigurationText.value = constants.LOADING_RECOMMENDATIONS;
 	}
-
 
 	// TODO - Check this later, if we need to handle this separately.
 	public dispose(): void {
