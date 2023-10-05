@@ -1764,7 +1764,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}, this.viewInfo.propertiesOnOffOptions, this.objectInfo.queryStoreOptions.waitStatisticsCaptureMode.toUpperCase(), this.areQueryStoreOptionsEnabled, DefaultInputWidth);
 			containers.push(this.createLabelInputContainer(localizedConstants.WaitStatisticsCaptureModeText, this.waitStatisticsCaptureMode));
 		}
-		const retentionSection = this.createGroup(localizedConstants.WaitStatisticsCaptureModeText, containers, true);
+		const retentionSection = this.createGroup(localizedConstants.QueryStoreRetentionSectionText, containers, true);
 		this.queryStoreTabSectionsContainer.push(retentionSection);
 	}
 
