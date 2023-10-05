@@ -18,4 +18,6 @@ vscode.db
 /.profile-oss
 *.orig
 /cli/target
+/cli/openssl
 product.overrides.json
+*.snap.actual
