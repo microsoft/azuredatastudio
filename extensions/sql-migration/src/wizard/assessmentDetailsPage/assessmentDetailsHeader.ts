@@ -9,6 +9,7 @@ import * as constants from '../../constants/strings';
 import { MigrationStateModel } from '../../models/stateMachine';
 import { MigrationTargetType } from '../../api/utils';
 import * as utils from '../../api/utils';
+import { IssueCategory } from '../../constants/helper';
 
 interface IActionMetadata {
 	title?: string,
@@ -103,7 +104,7 @@ export class AssessmentDetailsHeader {
 		this._targetSelectionDropdown.value = this.getTargetTypeBasedOnModel(migrationStateModel._targetType);
 
 		const recommendedConfiguration = (await utils.getRecommendedConfiguration(migrationStateModel._targetType, migrationStateModel))[0] ?? "" + "\n" +
-			(await utils.getRecommendedConfiguration(migrationStateModel._targetType, migrationStateModel))[1] ?? ""
+			(await utils.getRecommendedConfiguration(migrationStateModel._targetType, migrationStateModel))[1] ?? "";
 		const assessmentHeaderValues = [
 			{
 				value: recommendedConfiguration
@@ -112,7 +113,7 @@ export class AssessmentDetailsHeader {
 				value: String(migrationStateModel?._assessedDatabaseList.length)
 			},
 			{
-				value: String(migrationStateModel._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === migrationStateModel._targetType).length === 0).length)
+				value: String(migrationStateModel._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === migrationStateModel._targetType && issue.issueCategory === IssueCategory.Issue).length === 0).length)
 			}];
 
 		// iterating over each value container and filling it with the corresponding text.
