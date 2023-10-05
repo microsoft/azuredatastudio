@@ -17,6 +17,7 @@ import * as constants from '../../constants/strings';
 import { MigrationStateModel, PerformanceDataSourceOptions } from '../../models/stateMachine';
 import { SKURecommendationPage } from './skuRecommendationPage';
 import { ImportPerformanceDataDialog } from '../../dialog/skuRecommendationResults/importPerformanceDataDialog';
+import { SkuEditParametersDialog } from '../../dialog/skuRecommendationResults/skuEditParametersDialog';
 
 // TODO - "Change this to actual default path once it is available"
 const DEFAULT_PATH_FOR_START_DATA_COLLECTION = "C:\DataPointsCollectionFolder";
@@ -195,7 +196,11 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 					...styles.TOOLBAR_CSS
 				}
 			}).component();
-		// TODO - implement onDidClick and add to disposables
+
+		let skuEditParametersDialog = new SkuEditParametersDialog(this.skuRecommendationPage, this.migrationStateModel);
+		this._disposables.push(
+			recommendationParametersButton.onDidClick(
+				async () => await skuEditParametersDialog.openDialog()));
 		return recommendationParametersButton;
 	}
 
