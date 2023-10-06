@@ -38,7 +38,7 @@ export class InstanceSummary {
 	constructor(public migrationStateModel: MigrationStateModel) { }
 
 	// function to create instance summary components
-	public async createInstanceSummaryContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
+	public async createInstanceSummaryContainerAsync(view: azdata.ModelView): Promise<azdata.FlexContainer> {
 		this._view = view;
 		const instanceSummaryContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
@@ -81,7 +81,7 @@ export class InstanceSummary {
 			}
 		}).component();
 
-		this._tdeInfoContainer = await this.createTdeInfoContainer();
+		this._tdeInfoContainer = await this.createTdeInfoContainerAsync();
 
 		instanceSummaryContainer.addItems([description,
 			this._assessedDatabases, this.createGraphComponent(),
@@ -92,13 +92,15 @@ export class InstanceSummary {
 	}
 
 	// function to populate instance summary container with latest values.
-	public async populateInstanceSummaryContainer(): Promise<void> {
+	public async populateInstanceSummaryContainerAsync(): Promise<void> {
 		this._previousMiTdeMigrationConfig = this.migrationStateModel.tdeMigrationConfig;
-		await this.refreshTdeView();
+		await this.refreshTdeViewAsync();
 		this._assessedDatabases.value = constants.ASSESSED_DBS_LABEL + ": " + this.migrationStateModel._databasesForAssessment?.length;
 		this._totalFindingLabels.value = constants.TOTAL_FINDINGS_LABEL + ": " + this.migrationStateModel._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType).length;
-		const readyDbsCount = this.migrationStateModel._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType).length === 0).length;
-		const notReadyDbsCount = this.migrationStateModel._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType && issue.issueCategory === IssueCategory.Issue).length !== 0).length;
+
+		const dbAssessments = this.migrationStateModel._assessmentResults.databaseAssessments;
+		const readyDbsCount = dbAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType).length === 0).length;
+		const notReadyDbsCount = dbAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType && issue.issueCategory === IssueCategory.Issue).length !== 0).length;
 		const readyWithWarnDbsCount = this.migrationStateModel._databasesForAssessment?.length - (readyDbsCount + notReadyDbsCount);
 
 		const readinessStates = [
@@ -223,7 +225,7 @@ export class InstanceSummary {
 		return width;
 	}
 
-	private async createTdeInfoContainer(): Promise<azdata.FlexContainer> {
+	private async createTdeInfoContainerAsync(): Promise<azdata.FlexContainer> {
 		const container = this._view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
 				'flex-direction': 'column'
@@ -264,7 +266,7 @@ export class InstanceSummary {
 		this.migrationStateModel.tdeMigrationConfig = new TdeMigrationModel();
 	}
 
-	public async refreshTdeView() {
+	public async refreshTdeViewAsync() {
 
 		if (this.migrationStateModel._targetType !== utils.MigrationTargetType.SQLMI) {
 

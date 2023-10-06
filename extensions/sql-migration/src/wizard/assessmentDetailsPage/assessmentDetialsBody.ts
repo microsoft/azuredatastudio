@@ -38,7 +38,7 @@ export class AssessmentDetailsBody {
 	}
 
 	// function that defines all the components for body section
-	public async createAssessmentDetailsBody(view: azdata.ModelView): Promise<azdata.Component> {
+	public async createAssessmentDetailsBodyAsync(view: azdata.ModelView): Promise<azdata.Component> {
 		this._view = view;
 		const bodyContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
@@ -57,7 +57,7 @@ export class AssessmentDetailsBody {
 		const findingsListComponent = this.createFindingsListComponent();
 
 		// returns the right section of body which defines the summary of selected instance/database.
-		const summaryComponent = await this.createSummaryComponent();
+		const summaryComponent = await this.createSummaryComponentAsync();
 
 		bodyContainer.addItem(treeComponent, { flex: "none" });
 		bodyContainer.addItem(findingsListComponent, { flex: "none" });
@@ -67,11 +67,11 @@ export class AssessmentDetailsBody {
 	}
 
 	// function to populate data for body section
-	public async populateAssessmentBody(): Promise<void> {
+	public async populateAssessmentBodyAsync(): Promise<void> {
 		await this._treeComponent.initialize(this.migrationStateModel);
 		this._activeIssues = this.migrationStateModel._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel?._targetType);
-		await this.refreshResults();
-		await this._instanceSummary.populateInstanceSummaryContainer();
+		await this.refreshResultsAsync();
+		await this._instanceSummary.populateInstanceSummaryContainerAsync();
 	}
 
 	// function to create middle section of body that displays list of warnings/ issues.
@@ -105,7 +105,7 @@ export class AssessmentDetailsBody {
 	}
 
 	// creates ui for summary component based on selections in left panel.
-	private async createSummaryComponent(): Promise<azdata.FlexContainer> {
+	private async createSummaryComponentAsync(): Promise<azdata.FlexContainer> {
 		const summaryContainer = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
 		}).withProps({
@@ -139,7 +139,7 @@ export class AssessmentDetailsBody {
 		}).component();
 
 		// returns the right section of body which defines summary of selected instance.
-		const instanceSummary = await this._instanceSummary.createInstanceSummaryContainer(this._view);
+		const instanceSummary = await this._instanceSummary.createInstanceSummaryContainerAsync(this._view);
 
 		// returns the right section of body which defines summary of selected database.
 		const databaseSummary = this._databaseSummary.createDatabaseSummary(this._view);
@@ -169,8 +169,8 @@ export class AssessmentDetailsBody {
 				'display': 'none'
 			});
 			await subHeading.updateProperty('value', constants.ASSESSMENT_SUMMARY_TITLE);
-			await this.refreshResults();
-			await this._instanceSummary.populateInstanceSummaryContainer();
+			await this.refreshResultsAsync();
+			await this._instanceSummary.populateInstanceSummaryContainerAsync();
 		}));
 
 		// when database is selected
@@ -192,8 +192,8 @@ export class AssessmentDetailsBody {
 				'display': 'block'
 			});
 			await subHeading.updateProperty('value', constants.ASSESSMENT_SUMMARY_TITLE);
-			await this.refreshResults();
-			await this._databaseSummary.populateDatabaseSummary(this._activeIssues, this.migrationStateModel._assessmentResults?.databaseAssessments[e.row]?.name);
+			await this.refreshResultsAsync();
+			await this._databaseSummary.populateDatabaseSummaryAsync(this._activeIssues, this.migrationStateModel._assessmentResults?.databaseAssessments[e.row]?.name);
 			if (this._findingsSummaryList.options.length) {
 				this._findingsSummaryList.selectedOptionId = '0';
 			}
@@ -236,14 +236,14 @@ export class AssessmentDetailsBody {
 				'display': 'block'
 			});
 			await subHeading.updateProperty('value', selectedIssue?.checkId || '');
-			await this._issueSummary.refreshAssessmentDetails(selectedIssue);
+			await this._issueSummary.refreshAssessmentDetailsAsync(selectedIssue);
 		}));
 
 		return summaryContainer;
 	}
 
 	// function to get latest issues/warnings list for the selected instance/database.
-	public async refreshResults(): Promise<void> {
+	public async refreshResultsAsync(): Promise<void> {
 		if (this.migrationStateModel?._targetType === MigrationTargetType.SQLMI ||
 			this.migrationStateModel?._targetType === MigrationTargetType.SQLDB) {
 			let assessmentResults: azdata.ListViewOption[] = this._activeIssues

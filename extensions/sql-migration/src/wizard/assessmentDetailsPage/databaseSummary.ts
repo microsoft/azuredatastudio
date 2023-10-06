@@ -163,7 +163,7 @@ export class DatabaseSummary {
 	}
 
 	// function to populate database summary with latest data values.
-	public async populateDatabaseSummary(issues: SqlMigrationAssessmentResultItem[], dbName: string) {
+	public async populateDatabaseSummaryAsync(issues: SqlMigrationAssessmentResultItem[], dbName: string) {
 		this._readinessTitle.value = constants.DB_READINESS_SECTION_TITLE(dbName);
 		this._totalIssues.value = constants.TOTAL_ISSUES_LABEL + ":" + issues.length;
 		const blockingIssues = issues.filter(issue => issue.issueCategory === IssueCategory.Issue).length;

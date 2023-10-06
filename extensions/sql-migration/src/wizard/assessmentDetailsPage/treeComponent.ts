@@ -215,7 +215,7 @@ export class TreeComponent {
 		).component();
 
 		this._disposables.push(this._databaseTable.onDataChanged(async () => {
-			await this.updateValuesOnSelection(this._model);
+			await this.updateValuesOnSelectionAsync(this._model);
 		}));
 
 		const tableContainer = this._view.modelBuilder.divContainer().withItems([this._databaseTable]).withProps({
@@ -227,7 +227,7 @@ export class TreeComponent {
 		return tableContainer;
 	}
 
-	private async updateValuesOnSelection(migrationStateModel: MigrationStateModel) {
+	private async updateValuesOnSelectionAsync(migrationStateModel: MigrationStateModel) {
 		await this._databaseCount.updateProperties({
 			'value': constants.DATABASES(this.selectedDbs()?.length, migrationStateModel._databasesForAssessment?.length)
 		});
@@ -323,7 +323,7 @@ export class TreeComponent {
 
 		this._databaseTableValues = selectDatabasesFromList(migrationStateModel._databasesForMigration, this._databaseTableValues);
 		await this._databaseTable.setDataValues(this._databaseTableValues);
-		await this.updateValuesOnSelection(migrationStateModel);
+		await this.updateValuesOnSelectionAsync(migrationStateModel);
 		this._databaseCount.value = constants.DATABASES(0, migrationStateModel._databasesForAssessment?.length);
 	}
 
