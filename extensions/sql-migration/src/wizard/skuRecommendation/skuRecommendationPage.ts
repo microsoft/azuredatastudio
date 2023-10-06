@@ -12,13 +12,13 @@ import * as contracts from '../../service/contracts';
 
 import { EOL } from 'os';
 import { MigrationWizardPage } from '../../models/migrationWizardPage';
-import { MigrationStateModel, PerformanceDataSourceOptions, StateChangeEvent, AssessmentRuleId } from '../../models/stateMachine';
+import { MigrationStateModel, PerformanceDataSourceOptions, StateChangeEvent } from '../../models/stateMachine';
 import { SkuDataCollectionToolbar } from './skuDataCollectionToolbar';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { FlexContainer } from 'azdata';
 import { AssessmentSummaryCard } from './assessmentSummaryCard';
 import { MigrationTargetType } from '../../api/utils';
-import { logError, TelemetryViews, TelemetryAction, sendSqlMigrationActionEvent, getTelemetryProps } from '../../telemetry';
+import { logError, TelemetryViews } from '../../telemetry';
 import { getSourceConnectionProfile } from '../../api/sqlUtils';
 import { IssueCategory } from '../../constants/helper';
 
@@ -235,9 +235,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			.withItems([chooseYourTargetText, this._assessmentSummaryCardLoader])
 			.component();
 
-
-		// TODO - OnLinkClick for SKU Recommendations dialog and push it to disposables.
-
 		return component;
 	}
 
@@ -301,8 +298,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}
 
 		if (this.migrationStateModel.savedInfo?.skuRecommendation) {
-			// TODO - Will be needed once the sku parameters dialog is created.
-			// await this.refreshSkuParameters();
 
 			switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
 				case PerformanceDataSourceOptions.CollectData: {
@@ -534,23 +529,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}
 	}
 
-	// TODO - might be needed when SKU recommendation is done.
-	// public async refreshSkuParameters(): Promise<void> {
-	// }
-	// private createSkuEditParameters(_view: azdata.ModelView): azdata.FlexContainer {
-	// }
-	// private createAzureRecommendationContainer(_view: azdata.ModelView): azdata.FlexContainer {
-	// }
-
 	private createPerformanceCollectionStatusContainer(_view: azdata.ModelView): azdata.FlexContainer {
-		const container = _view.modelBuilder.flexContainer()
-			.withProps({
-				CSSStyles: {
-					'flex-direction': 'column',
-					'display': this.migrationStateModel.performanceCollectionNotStarted() ? 'none' : 'block',
-				}
-			}).component();
-
 		this._skuDataCollectionStatusIcon = _view.modelBuilder.image()
 			.withProps({
 				iconPath: IconPathHelper.inProgressMigration,
@@ -566,32 +545,30 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS, 'margin': '0' }
 			}).component();
 
-		const statusIconTextContainer = _view.modelBuilder.flexContainer()
+		this._skuDataCollectionTimerText = _view.modelBuilder.text()
+			.withProps({
+				value: '',
+				CSSStyles: {
+					...styles.LABEL_CSS,
+					'margin': 0,
+					// 'margin': '0 0 8px 20px',
+				}
+			}).component();
+
+		const container = _view.modelBuilder.flexContainer()
 			.withItems([
 				this._skuDataCollectionStatusIcon,
 				this._skuDataCollectionStatusText,
+				this._skuDataCollectionTimerText
 			])
 			.withProps({
 				CSSStyles: {
 					'flex-direction': 'row',
 					'width': 'fit-content',
 					'align-items': 'center',
-					'margin': '0',
+					'display': this.migrationStateModel.performanceCollectionNotStarted() ? 'none' : 'flex',
 				}
 			}).component();
-
-		this._skuDataCollectionTimerText = _view.modelBuilder.text()
-			.withProps({
-				value: '',
-				CSSStyles: {
-					...styles.LIGHT_LABEL_CSS,
-					'margin': '0 0 8px 20px',
-				}
-			}).component();
-
-		container.addItems([
-			statusIconTextContainer,
-			this._skuDataCollectionTimerText]);
 
 		return container;
 	}
@@ -608,7 +585,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
 			case PerformanceDataSourceOptions.CollectData: {
 				if (this.migrationStateModel.performanceCollectionInProgress()) {
-					// TODO - update the status container, text and icon.
 					await this._skuDataCollectionStatusIcon.updateProperties({
 						iconPath: IconPathHelper.inProgressMigration
 					});
@@ -617,32 +593,32 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						: constants.AZURE_RECOMMENDATION_STATUS_IN_PROGRESS;
 
 					if (await this.migrationStateModel.isWaitingForFirstTimeRefresh()) {
-						// TODO - update the sku datacollection timer.
 						const elapsedTimeInMins = Math.abs(new Date().getTime() - new Date(this.migrationStateModel._perfDataCollectionStartDate!).getTime()) / 60000;
 						const skuRecAutoRefreshTimeInMins = this.migrationStateModel.refreshGetSkuRecommendationFrequency / 60000;
 
 						this._skuDataCollectionTimerText.value = constants.AZURE_RECOMMENDATION_STATUS_AUTO_REFRESH_TIMER(Math.ceil(skuRecAutoRefreshTimeInMins - elapsedTimeInMins));
 					} else {
-						// TODO - update the sku datacollection timer.
-						this._skuDataCollectionTimerText.value = constants.AZURE_RECOMMENDATION_STATUS_MANUAL_REFRESH_TIMER;
+						// Timer is only for first refresh.
+						this._skuDataCollectionTimerText.value = '';
 					}
 
 					// TODO - update the visibility of different button and status message.
 					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'block' });
 				}
 
-				// TODO - implement the functionality of stopp data collection button functionality.
 				else if (this.migrationStateModel.performanceCollectionStopped()) {
-					// TODO - update the status container, text and icon.
+					await this._skuDataCollectionStatusIcon.updateProperties({
+						iconPath: IconPathHelper.stop
+					});
+					this._skuDataCollectionStatusText.value = constants.AZURE_RECOMMENDATION_STATUS_STOPPED;
+					this._skuDataCollectionTimerText.value = '';
 					// TODO - update the visibility of different button and status message.
 				}
 				break;
 			}
 
-			// TODO - implement the import performance data functionality.
 			case PerformanceDataSourceOptions.OpenExisting: {
 				if (this.hasRecommendations()) {
-					// TODO - update the status container, text and icon.
 					// TODO - update the visibility of different button and status message.
 				}
 				break;
