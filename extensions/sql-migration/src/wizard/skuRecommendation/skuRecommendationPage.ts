@@ -58,7 +58,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	protected async registerContent(view: azdata.ModelView) {
 		this._view = view;
 
-		this._skuDataCollectionToolbar = new SkuDataCollectionToolbar(this, this.migrationStateModel);
+		this._skuDataCollectionToolbar = new SkuDataCollectionToolbar(this, this.wizard, this.migrationStateModel);
 		const toolbar = this._skuDataCollectionToolbar.createToolbar(view);
 
 		this._assessmentStatusIcon = this._view.modelBuilder.image()
@@ -118,7 +118,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}).component();
 
 		this._disposables.push(refreshAssessmentButton.onDidClick(async () => {
-			// await this.startCardLoading();
+			await this.startCardLoading();
 			this.migrationStateModel._runAssessments = true;
 			await this.constructDetails();
 		}));
@@ -210,9 +210,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 
-		this._dbAssessmentCard = new AssessmentSummaryCard(MigrationTargetType.SQLDB);
-		this._miAssessmentCard = new AssessmentSummaryCard(MigrationTargetType.SQLMI);
-		this._vmAssessmentCard = new AssessmentSummaryCard(MigrationTargetType.SQLVM);
+		this._dbAssessmentCard = new AssessmentSummaryCard(this, MigrationTargetType.SQLDB, this.migrationStateModel);
+		this._miAssessmentCard = new AssessmentSummaryCard(this, MigrationTargetType.SQLMI, this.migrationStateModel);
+		this._vmAssessmentCard = new AssessmentSummaryCard(this, MigrationTargetType.SQLVM, this.migrationStateModel);
 
 		this._assessmentSummaryCard.addItems([
 			this._dbAssessmentCard.createAssessmentSummaryCard(view),
@@ -313,11 +313,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					break;
 				}
 
-				// TODO - Will be done once import performance dialog is implemented.
-				// case PerformanceDataSourceOptions.OpenExisting: {
-				// 	shouldGetSkuRecommendations = true;
-				// 	break;
-				// }
+				case PerformanceDataSourceOptions.OpenExisting: {
+					shouldGetSkuRecommendations = true;
+					break;
+				}
 			}
 		}
 
@@ -466,8 +465,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	// TODO - might be needed when SKU recommendation is done.
-	// public async startCardLoading(): Promise<void> {
-	// }
 	// private createPerformanceCollectionStatusContainer(_view: azdata.ModelView): azdata.FlexContainer {
 	// }
 	// public async refreshSkuParameters(): Promise<void> {
@@ -476,6 +473,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	// }
 	// private createAzureRecommendationContainer(_view: azdata.ModelView): azdata.FlexContainer {
 	// }
+
+	public async startCardLoading(): Promise<void> {
+		// TO-DO: ideally the short SKU recommendation loading time should have a spinning indicator,
+		// but updating the card text will do for now
+		await this._dbAssessmentCard.loadingSKURecommendation();
+		await this._miAssessmentCard.loadingSKURecommendation();
+		await this._vmAssessmentCard.loadingSKURecommendation();
+	}
 
 	public async refreshSkuRecommendationComponents(): Promise<void> {
 		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
@@ -501,8 +506,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 
 			// TODO - implement the import performance data functionality.
-			// case PerformanceDataSourceOptions.OpenExisting: {
-			// }
+			case PerformanceDataSourceOptions.OpenExisting: {
+				if (this.hasRecommendations()) {
+					// TODO - update the status container, text and icon.
+					// TODO - update the visibility of different button and status message.
+				}
+				break;
+			}
 
 			// initial state before "Get Azure recommendation" dialog
 			default: {
@@ -515,8 +525,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	public async refreshAzureRecommendation(): Promise<void> {
-		// TODO - Add cardLoading at start of refresh sku recommendation.
-		// await this.startCardLoading();
+		await this.startCardLoading();
+		// TODO - update the last refresh time.
 		// this._skuLastRefreshTimeText.value = constants.LAST_REFRESHED_TIME();
 		await this.migrationStateModel.getSkuRecommendations();
 
