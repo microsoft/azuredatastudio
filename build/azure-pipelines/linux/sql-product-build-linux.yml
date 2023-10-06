@@ -185,10 +185,11 @@ steps:
   #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
   # {{SQL CARBON TODO}} - end disable extension unit tests while investigating post merge (6/26/2023)
 
-- script:  |
+  - script: |
         set -e
         yarn gulp vscode-linux-x64-prepare-deb
       displayName: Prepare deb package
+      condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
       set -e
@@ -196,10 +197,11 @@ steps:
     displayName: Build deb package
     condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
-  - script:  |
+  - script: |
         set -e
         yarn gulp vscode-linux-x64-prepare-rpm
       displayName: Prepare rpm package
+      condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
       set -e
