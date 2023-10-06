@@ -15,6 +15,7 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { EOL } from 'os';
 import { DashboardStatusBar } from './DashboardStatusBar';
 import { EmptySettingValue } from './tabBase';
+import * as utils from '../api/utils';
 
 const MigrationDetailsTableTabId = 'MigrationDetailsTableTab';
 
@@ -47,7 +48,6 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 	private _targetDatabaseInfoField!: InfoFieldSchema;
 	private _targetServerInfoField!: InfoFieldSchema;
 	private _targetVersionInfoField!: InfoFieldSchema;
-	private _serverObjectsInfoField!: InfoFieldSchema;
 	private _migrationType!: InfoFieldSchema;
 
 	// Schema
@@ -107,6 +107,7 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 			await this.statusBar.clearError();
 			if (initialize) {
 				this._clearControlsValue();
+				await this._showControls();
 			}
 			await this.model.fetchStatus();
 			await this._loadData();
@@ -316,6 +317,27 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 			.component();
 	}
 
+	private async _showControls(): Promise<void> {
+		const migration = this.model?.migration;
+		const isSchemaMigration = migration.properties.sqlSchemaMigrationConfiguration.enableSchemaMigration;
+
+		await utils.updateControlDisplay(this._schemaMigrationStatusInfoField.flexContainer, isSchemaMigration);
+		await utils.updateControlDisplay(this._objectsCollectionCountInfoField.flexContainer, isSchemaMigration);
+		await utils.updateControlDisplay(this._objectsCollectionStartedInfoField.flexContainer, isSchemaMigration);
+		await utils.updateControlDisplay(this._objectsCollectionEndedInfoField.flexContainer, isSchemaMigration);
+		await utils.updateControlDisplay(this._scriptGenerationProgressInfoField.flexContainer, isSchemaMigration);
+		await utils.updateControlDisplay(this._scriptGenerationStartedInfoField.flexContainer, isSchemaMigration);
+		await utils.updateControlDisplay(this._scriptGenerationEndedInfoField.flexContainer, isSchemaMigration);
+		await utils.updateControlDisplay(this._succeededScriptCountInfoField.flexContainer, isSchemaMigration);
+		await utils.updateControlDisplay(this._failedScriptCountInfoField.flexContainer, isSchemaMigration);
+		await utils.updateControlDisplay(this._migrationType.flexContainer, isSchemaMigration);
+		await utils.updateControlDisplay(this._scriptDeploymentProgressInfoField.flexContainer, isSchemaMigration, 'inline-flex');
+		await utils.updateControlDisplay(this._scriptDeploymentStartedField.flexContainer, isSchemaMigration);
+		await utils.updateControlDisplay(this._scriptDeploymentEndedInfoField.flexContainer, isSchemaMigration);
+		await utils.updateControlDisplay(this._succeededDeploymentCountInfoField.flexContainer, isSchemaMigration);
+		await utils.updateControlDisplay(this._failedDeploymentCountInfoField.flexContainer, isSchemaMigration);
+	}
+
 	private async _loadData(): Promise<void> {
 		const migration = this.model?.migration;
 		await this.showMigrationErrors(this.model?.migration);
@@ -446,11 +468,25 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		this._updateInfoFieldValue(this._sourceDatabaseInfoField, '');
 		this._updateInfoFieldValue(this._sourceDetailsInfoField, '');
 		this._updateInfoFieldValue(this._migrationStatusInfoField, '');
+		this._updateInfoFieldValue(this._schemaMigrationStatusInfoField, '');
+		this._updateInfoFieldValue(this._objectsCollectionCountInfoField, '');
+		this._updateInfoFieldValue(this._objectsCollectionStartedInfoField, '');
+		this._updateInfoFieldValue(this._objectsCollectionEndedInfoField, '');
+		this._updateInfoFieldValue(this._scriptGenerationProgressInfoField, '');
+		this._updateInfoFieldValue(this._scriptGenerationStartedInfoField, '');
+		this._updateInfoFieldValue(this._scriptGenerationEndedInfoField, '');
+		this._updateInfoFieldValue(this._succeededScriptCountInfoField, '');
+		this._updateInfoFieldValue(this._failedScriptCountInfoField, '');
 
 		this._updateInfoFieldValue(this._targetDatabaseInfoField, '');
 		this._updateInfoFieldValue(this._targetServerInfoField, '');
 		this._updateInfoFieldValue(this._targetVersionInfoField, '');
-		this._updateInfoFieldValue(this._serverObjectsInfoField, '');
+		this._updateInfoFieldValue(this._migrationType, '');
+		this._updateInfoFieldValue(this._scriptDeploymentProgressInfoField, '');
+		this._updateInfoFieldValue(this._scriptDeploymentStartedField, '');
+		this._updateInfoFieldValue(this._scriptDeploymentEndedInfoField, '');
+		this._updateInfoFieldValue(this._succeededDeploymentCountInfoField, '');
+		this._updateInfoFieldValue(this._failedDeploymentCountInfoField, '');
 	}
 
 	private _sortTableMigrations(data: CopyProgressDetail[], columnName: string, ascending: boolean): void {
