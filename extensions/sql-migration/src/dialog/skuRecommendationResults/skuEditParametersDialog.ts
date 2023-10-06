@@ -302,7 +302,6 @@ export class SkuEditParametersDialog {
 		this.migrationStateModel._skuTargetPercentile = Number((<azdata.CategoryValue>this._targetPercentileDropdown.value).name);
 		this.migrationStateModel._skuEnablePreview = this._enablePreviewValue;
 		this.migrationStateModel._skuEnableElastic = this._enableElasticRecommendation;
-		await this.skuRecommendationPage.refreshSkuParameters();
 		if (this.skuRecommendationPage.hasRecommendations()) {
 			await this.skuRecommendationPage.refreshAzureRecommendation();
 		}

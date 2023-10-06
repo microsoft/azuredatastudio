@@ -56,6 +56,7 @@ export class IconPathHelper {
 	public static import: IconPath;
 	public static settings: IconPath;
 	public static encryption: IconPath;
+	public static openFolder: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -237,6 +238,9 @@ export class IconPathHelper {
 		IconPathHelper.encryption = {
 			light: context.asAbsolutePath('images/encryption.svg'),
 			dark: context.asAbsolutePath('images/encryption.svg')
+		IconPathHelper.openFolder = {
+			light: context.asAbsolutePath('images/openFolder.svg'),
+			dark: context.asAbsolutePath('images/openFolder.svg')
 		};
 	}
 }

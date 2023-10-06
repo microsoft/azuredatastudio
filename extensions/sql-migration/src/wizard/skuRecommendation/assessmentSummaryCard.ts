@@ -15,6 +15,9 @@ import * as styles from '../../constants/styles';
 import { MigrationTargetType } from '../../api/utils';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { ColorCodes } from '../../constants/helper';
+import { SKURecommendationPage } from './skuRecommendationPage';
+import { MigrationStateModel } from '../../models/stateMachine';
+import { SkuRecommendationResultsDialog } from '../../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
 
 export class AssessmentSummaryCard implements vscode.Disposable {
 	private _disposables: vscode.Disposable[] = [];
@@ -29,9 +32,10 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 	private _azureRecommendationNotAvailableText!: azdata.TextComponent;
 	private _recommendedConfigurationText!: azdata.TextComponent;
 	private _vmRecommendedConfigurationText!: azdata.TextComponent;
+	private _viewDetailsLink!: azdata.HyperlinkComponent;
 
 	// Target Type is passed in constructor to create the summary card based on that.
-	constructor(public migrationTargetType: MigrationTargetType) {
+	constructor(public skuRecommendationPage: SKURecommendationPage, public migrationTargetType: MigrationTargetType, public migrationStateModel: MigrationStateModel) {
 	}
 
 	// Creates the whole assessment summary card with Assessment/SKU result summary.
@@ -346,11 +350,8 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 
 		this._recommendedConfigurationText = view.modelBuilder.text().withProps({
 			value: "",
-			height: 18,
 			CSSStyles: {
-				'font-size': '13px',
-				'line-height': '18px',
-				'font-weight': '600',
+				...styles.PERFORMANCE_DATA_DIALOG_CSS,
 				'margin': '0px',
 				'display': 'none',
 			},
@@ -358,7 +359,6 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 
 		this._vmRecommendedConfigurationText = view.modelBuilder.text().withProps({
 			value: "",
-			height: 28,
 			CSSStyles: {
 				'font-size': '10px',
 				'line-height': '14px',
@@ -368,7 +368,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 			},
 		}).component();
 
-		const viewDetailsLink = view.modelBuilder.hyperlink().withProps({
+		this._viewDetailsLink = view.modelBuilder.hyperlink().withProps({
 			label: constants.VIEW_DETAILS,
 			url: '',
 			height: 18,
@@ -381,6 +381,16 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 			}
 		}).component();
 
+		this._viewDetailsLink.onDidClick(async () => {
+			if (this.skuRecommendationPage.hasRecommendations()) {
+				const skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, this.migrationTargetType);
+				await skuRecommendationResultsDialog.openDialog(
+					this.migrationTargetType,
+					this.migrationStateModel._skuRecommendationResults.recommendations
+				);
+			}
+		});
+
 
 		container.addItem(recommendedConfigurationLabel);
 		container.addItem(this._azureRecommendationNotAvailableText)
@@ -389,10 +399,10 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		switch (this.migrationTargetType) {
 			case MigrationTargetType.SQLVM:
 				container.addItem(this._vmRecommendedConfigurationText);
-				container.addItem(viewDetailsLink);
+				container.addItem(this._viewDetailsLink);
 				break;
 			default:
-				container.addItem(viewDetailsLink);
+				container.addItem(this._viewDetailsLink);
 				container.addItem(this._vmRecommendedConfigurationText);
 		}
 
@@ -415,11 +425,20 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		await this._azureRecommendationNotAvailableText.updateCssStyles({ 'display': 'none' });
 		await this._recommendedConfigurationText.updateCssStyles({ 'display': 'block' });
 		await this._vmRecommendedConfigurationText.updateCssStyles({ 'display': 'block' });
+		await this._viewDetailsLink.updateCssStyles({ 'display': 'block' });
 
 		this._recommendedConfigurationText.value = skuRecommendation;
 		this._vmRecommendedConfigurationText.value = vmRecommendation;
 	}
 
+	public async loadingSKURecommendation() {
+		await this._azureRecommendationNotAvailableText.updateCssStyles({ 'display': 'none' });
+		await this._recommendedConfigurationText.updateCssStyles({ 'display': 'block' });
+		await this._vmRecommendedConfigurationText.updateCssStyles({ 'display': 'none' });
+		await this._viewDetailsLink.updateCssStyles({ 'display': 'none' });
+
+		this._recommendedConfigurationText.value = constants.LOADING_RECOMMENDATIONS;
+	}
 
 	// TODO - Check this later, if we need to handle this separately.
 	public dispose(): void {
