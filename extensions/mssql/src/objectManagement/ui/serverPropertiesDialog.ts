@@ -193,27 +193,23 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		const memoryContainer = this.createLabelInputContainer(localizedConstants.MemoryText, this.memoryInput);
 		platformItems.push(memoryContainer);
 
-		if (this.objectInfo.operatingSystem) {
-			this.operatingSystemInput = this.createInputBox(async () => { }, {
-				ariaLabel: localizedConstants.OperatingSystemText,
-				inputType: 'text',
-				enabled: this.options.isNewObject,
-				value: this.objectInfo.operatingSystem
-			});
-			const operatingSystemContainer = this.createLabelInputContainer(localizedConstants.OperatingSystemText, this.operatingSystemInput);
-			platformItems.push(operatingSystemContainer);
-		}
+		this.operatingSystemInput = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.OperatingSystemText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: this.objectInfo.operatingSystem
+		});
+		const operatingSystemContainer = this.createLabelInputContainer(localizedConstants.OperatingSystemText, this.operatingSystemInput);
+		platformItems.push(operatingSystemContainer);
 
-		if (this.objectInfo.platform) {
-			this.platformInput = this.createInputBox(async () => { }, {
-				ariaLabel: localizedConstants.PlatformText,
-				inputType: 'text',
-				enabled: this.options.isNewObject,
-				value: this.objectInfo.platform
-			});
-			const platformContainer = this.createLabelInputContainer(localizedConstants.PlatformText, this.platformInput);
-			platformItems.push(platformContainer);
-		}
+		this.platformInput = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.PlatformText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: this.objectInfo.platform
+		});
+		const platformContainer = this.createLabelInputContainer(localizedConstants.PlatformText, this.platformInput);
+		platformItems.push(platformContainer);
 
 		this.processorsInput = this.createInputBox(async () => { }, {
 			ariaLabel: localizedConstants.ProcessorsText,

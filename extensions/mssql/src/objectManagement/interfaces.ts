@@ -547,8 +547,8 @@ export interface Server extends ObjectManagement.SqlObject {
 	hardwareGeneration?: string;
 	language: string;
 	memoryInMB: number;
-	operatingSystem?: string;
-	platform?: string;
+	operatingSystem: string;
+	platform: string;
 	processors: string;
 	version: string;
 	isClustered: boolean;
