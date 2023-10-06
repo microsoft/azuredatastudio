@@ -49,7 +49,7 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 
 		const headerSection = this._header.createAssessmentDetailsHeader(this._view);
 
-		const bodySection = this._body.createAssessmentDetailsBody(this._view);
+		const bodySection = await this._body.createAssessmentDetailsBodyAsync(this._view);
 
 		// defines the functionality to execute when target platform for the page is changed.
 		this._disposables.push(this._header.targetTypeDropdown.onValueChanged(async (value) => {
@@ -57,7 +57,7 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 				const selectedTargetType = this.getTargetTypeBasedOnSelection(value.selected);
 				this.executeChange(selectedTargetType);
 				await this._header.populateAssessmentDetailsHeader(this.migrationStateModel);
-				await this._body.populateAssessmentBody(this.migrationStateModel);
+				await this._body.populateAssessmentBodyAsync();
 			}
 		}));
 
@@ -123,7 +123,7 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 		this.migrationStateModel._targetType = MigrationTargetType.SQLDB;
 		this.executeChange(this.migrationStateModel._targetType);
 		await this._header.populateAssessmentDetailsHeader(this.migrationStateModel);
-		await this._body.populateAssessmentBody(this.migrationStateModel);
+		await this._body.populateAssessmentBodyAsync();
 		this.wizard.nextButton.enabled = this.migrationStateModel._assessmentResults !== undefined;
 	}
 

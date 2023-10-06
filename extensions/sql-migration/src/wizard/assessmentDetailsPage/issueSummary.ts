@@ -217,7 +217,7 @@ export class IssueSummary {
 	}
 
 	//refresh issue summary values.
-	public async refreshAssessmentDetails(selectedIssue?: SqlMigrationAssessmentResultItem): Promise<void> {
+	public async refreshAssessmentDetailsAsync(selectedIssue?: SqlMigrationAssessmentResultItem): Promise<void> {
 		await this._descriptionText.updateProperty('value', selectedIssue?.description || '');
 		await this._recommendationText.updateProperty('value', selectedIssue?.message || constants.NA);
 
