@@ -161,7 +161,7 @@ export class TableMigrationSelectionDialog {
 		// Schema migration components
 		const schemaMigrationHeader = view.modelBuilder.text()
 			.withProps({
-				value: "Schema migration",
+				value: constants.SCHEMA_MIGRATION_HEADER,
 				requiredIndicator: true,
 				CSSStyles: { ...styles.SECTION_HEADER_CSS, 'margin-top': '4px' }
 			}).component();
@@ -169,7 +169,7 @@ export class TableMigrationSelectionDialog {
 		this._schemaMigrationCheckBox = view.modelBuilder.checkBox()
 			.withProps({
 				checked: false,
-				label: "Migrate schema to target",
+				label: constants.SCHEMA_MIGRATION_CHECKBOX_INFO,
 			}).component();
 
 		this._schemaMigrationInfoBox = view.modelBuilder.infoBox()
@@ -218,7 +218,7 @@ export class TableMigrationSelectionDialog {
 		const dataMigrationHeader = view.modelBuilder.text()
 			.withProps({
 				description: constants.DATA_MIGRATION_INFO,
-				value: "Data migration",
+				value: constants.DATA_MIGRATION_HEADER,
 				requiredIndicator: true,
 				CSSStyles: { ...styles.SECTION_HEADER_CSS, 'margin-top': '4px' }
 			}).component();

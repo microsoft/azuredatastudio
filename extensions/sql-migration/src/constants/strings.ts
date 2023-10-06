@@ -930,6 +930,27 @@ export const PARTIAL_SCHEMA_ON_TARGET = localize('sql.migration.schema.partial.m
 export const FULL_SCHEMA_ON_TARGET = localize('sql.migration.schema.no.missing', "Schema was found on target. Schema migration is not required.");
 export const SCHEMA_MIGRATION_INFO = localize('sql.migration.schema.migration.info', "Select this option to migrate missing tables on your Azure SQL target");
 export const DATA_MIGRATION_INFO = localize('sql.migration.data.migration.info', "Select tables to migrate data to your Azure SQL target");
+export const SCHEMA_MIGRATION_HEADER = localize('sql.migration.schema.migration.header', "Schema migration");
+export const DATA_MIGRATION_HEADER = localize('sql.migration.data.migration.header', "Data migration");
+export const SCHEMA_MIGRATION_CHECKBOX_INFO = localize('sql.migration.schema.migration.checkbox.info', "Migrate schema to target");
+export const SCHEMA_ONLY = localize('sql.migration.schema.only', "Schema only migration");
+export const DATA_ONLY = localize('sql.migration.data.only', "Data only migration");
+export const SCHEMA_AND_DATA = localize('sql.migration.schema.data', "Schema and data migration");
+export const SCHEMA_MIGRATION_STATUS = localize('sql.migration.schema.status', "Schema migration status");
+export const OBJECTS_COLLECTED = localize('sql.migration.schema.objects.collection', "Objects collected");
+export const COLLECTION_STARTED = localize('sql.migration.schema.collection.started', "Collection started");
+export const COLLECTION_ENDED = localize('sql.migration.schema.collection.ended', "Collection ended");
+export const SCRIPT_GENERATION = localize('sql.migration.schema.script.generation', "Script generation");
+export const SCRIPTING_STARTED = localize('sql.migration.schema.script.started', "Scripting started");
+export const SCRIPTING_ENDED = localize('sql.migration.schema.script.ended', "Scripting ended");
+export const SCRIPTED_OBJECTS_COUNT = localize('sql.migration.schema.script.count', "Scripted objects count");
+export const SCRIPTING_ERROR_COUNT = localize('sql.migration.schema.script.fail.count', "Scripting error count");
+export const MIGRATION_TYPE = localize('sql.migration.schema.type', "Migration type");
+export const SCRIPT_DEPLOYMENT = localize('sql.migration.schema.script.deployment', "Script deployment");
+export const DEPLOYMENT_STARTED = localize('sql.migration.schema.script.deployment.started', "Deployment started");
+export const DEPLOYMENT_ENDED = localize('sql.migration.schema.script.deployment.ended', "Deployment ended");
+export const DEPLOYMENT_COUNT = localize('sql.migration.schema.script.deployment.count', "Deployment count");
+export const DEPLOYMENT_ERROR_COUNT = localize('sql.migration.schema.script.deployment.error.count', "Deployment error count");
 
 // common strings
 export const WARNING = localize('sql.migration.warning', "Warning");
@@ -1193,25 +1214,6 @@ export const START_TIME_TOOL_TIP = localize('sql.migration.database.migration.st
 export const FINISH_TIME_TOOL_TIP = localize('sql.migration.database.migration.finish.time.tool.tip', "The fininish time for the migration");
 export const CONTEXT_MENU_TOOL_TIP = localize('sql.migration.database.migration.context.menu.tool.tip', "Click this column to activate the context command menu");
 
-// Schema migration
-export const SCHEMA_ONLY = localize('sql.migration.schema.only', "Schema only migration");
-export const DATA_ONLY = localize('sql.migration.data.only', "Data only migration");
-export const SCHEMA_AND_DATA = localize('sql.migration.schema.data', "Schema and data migration");
-export const SCHEMA_MIGRATION_STATUS = localize('sql.migration.schema.status', "Schema migration status");
-export const OBJECTS_COLLECTED = localize('sql.migration.schema.objects.collection', "Objects collected");
-export const COLLECTION_STARTED = localize('sql.migration.schema.collection.started', "Collection started");
-export const COLLECTION_ENDED = localize('sql.migration.schema.collection.ended', "Collection ended");
-export const SCRIPT_GENERATION = localize('sql.migration.schema.script.generation', "Script generation");
-export const SCRIPTING_STARTED = localize('sql.migration.schema.script.started', "Scripting started");
-export const SCRIPTING_ENDED = localize('sql.migration.schema.script.ended', "Scripting ended");
-export const SCRIPTED_OBJECTS_COUNT = localize('sql.migration.schema.script.count', "Scripted objects count");
-export const SCRIPTING_ERROR_COUNT = localize('sql.migration.schema.script.fail.count', "Scripting error count");
-export const MIGRATION_TYPE = localize('sql.migration.schema.type', "Migration type");
-export const SCRIPT_DEPLOYMENT = localize('sql.migration.schema.script.deployment', "Script deployment");
-export const DEPLOYMENT_STARTED = localize('sql.migration.schema.script.deployment.started', "Deployment started");
-export const DEPLOYMENT_ENDED = localize('sql.migration.schema.script.deployment.ended', "Deployment ended");
-export const DEPLOYMENT_COUNT = localize('sql.migration.schema.script.deployment.count', "Deployment count");
-export const DEPLOYMENT_ERROR_COUNT = localize('sql.migration.schema.script.deployment.error.count', "Deployment error count");
 
 export function STATUS_VALUE(status: string): string {
 	return localize('sql.migration.status.value', "{0}", StatusLookup[status] ?? status);
