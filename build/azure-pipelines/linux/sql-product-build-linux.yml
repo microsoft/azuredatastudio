@@ -188,8 +188,8 @@ steps:
   - script: |
         set -e
         yarn gulp vscode-linux-x64-prepare-deb
-      displayName: Prepare deb package
-      condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
+    displayName: Prepare deb package
+    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
       set -e
@@ -200,8 +200,8 @@ steps:
   - script: |
         set -e
         yarn gulp vscode-linux-x64-prepare-rpm
-      displayName: Prepare rpm package
-      condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
+    displayName: Prepare rpm package
+    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
       set -e
