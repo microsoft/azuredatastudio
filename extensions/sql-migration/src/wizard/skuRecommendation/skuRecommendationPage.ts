@@ -27,7 +27,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 	private _rootContainer!: azdata.FlexContainer;
 	private _assessmentComponent!: azdata.FlexContainer;
-	private _detailsComponent!: azdata.TextComponent;
 
 	private _skuDataCollectionToolbar!: SkuDataCollectionToolbar;
 	private _igComponent!: azdata.TextComponent;
@@ -83,7 +82,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		igContainer.addItem(this._assessmentStatusIcon, { flex: '0 0 auto' });
 		igContainer.addItem(this._igComponent, { flex: '0 0 auto' });
 
-		this._detailsComponent = this.createDetailsComponent(view);
 		this._skuDataCollectionStatusContainer = this.createPerformanceCollectionStatusContainer(view);
 
 		this._skipAssessmentCheckbox = view.modelBuilder.checkBox()
@@ -134,7 +132,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			.withLayout({ flexFlow: 'column' })
 			.withItems([
 				igContainer,
-				this._detailsComponent,
 				this._skuDataCollectionStatusContainer,
 				refreshAssessmentButton,
 				this._skipAssessmentCheckbox,
@@ -191,13 +188,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					'margin-left': '8px'
 				}
 			}).component();
-		return component;
-	}
-
-	private createDetailsComponent(view: azdata.ModelView): azdata.TextComponent {
-		const component = view.modelBuilder.text()
-			.withProps({ CSSStyles: { ...styles.BODY_CSS } })
-			.component();
 		return component;
 	}
 
@@ -273,20 +263,15 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					};
 					this._assessmentStatusIcon.iconPath = IconPathHelper.error;
 					this._igComponent.value = constants.ASSESSMENT_FAILED(this._serverName);
-					this._detailsComponent.value = constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR(this._serverName);
 				} else {
 					this._assessmentStatusIcon.iconPath = IconPathHelper.completedMigration;
 					this._igComponent.value = constants.ASSESSMENT_COMPLETED(this._serverName);
-					this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(
-						this.migrationStateModel._assessmentResults?.databaseAssessments?.length);
 				}
 			}
 		} else {
 			// use prior assessment results
 			this._assessmentStatusIcon.iconPath = IconPathHelper.completedMigration;
 			this._igComponent.value = constants.ASSESSMENT_COMPLETED(this._serverName);
-			this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(
-				this.migrationStateModel._assessmentResults?.databaseAssessments?.length);
 		}
 
 		let shouldGetSkuRecommendations = false;
