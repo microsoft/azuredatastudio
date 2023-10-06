@@ -70,6 +70,7 @@ export class AssessmentDetailsHeader {
 		const cardContainer = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: 190,
+			height: 75
 		}).withProps({
 			CSSStyles: {
 				...styles.CARD_CSS,
