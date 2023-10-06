@@ -330,7 +330,6 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		await utils.updateControlDisplay(this._scriptGenerationEndedInfoField.flexContainer, isSchemaMigration);
 		await utils.updateControlDisplay(this._succeededScriptCountInfoField.flexContainer, isSchemaMigration);
 		await utils.updateControlDisplay(this._failedScriptCountInfoField.flexContainer, isSchemaMigration);
-		await utils.updateControlDisplay(this._migrationType.flexContainer, isSchemaMigration);
 		await utils.updateControlDisplay(this._scriptDeploymentProgressInfoField.flexContainer, isSchemaMigration, 'inline-flex');
 		await utils.updateControlDisplay(this._scriptDeploymentStartedField.flexContainer, isSchemaMigration);
 		await utils.updateControlDisplay(this._scriptDeploymentEndedInfoField.flexContainer, isSchemaMigration);

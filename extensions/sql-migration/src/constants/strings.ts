@@ -585,7 +585,7 @@ export const DATABASE_BACKUP_MIGRATION_MODE_LABEL = localize('sql.migration.data
 export const DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION = localize('sql.migration.database.migration.mode.description', "To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.");
 export const DATABASE_TABLE_SELECTION_LABEL = localize('sql.migration.database.table.selection.label', "Table selection");
 export const DATABASE_TABLE_SELECTION_DESCRIPTION = localize('sql.migration.database.table.selection.description', "For each database below, click Edit to select the tables to migrate from source to target. Then, before clicking Next, validate the provided configuration by clicking 'Run validation'.");
-export const DATABASE_SCHEMA_MIGRATION_HELP = localize('sql.migration.database.schema.migration.help', "Make sure to migrate the database schema from source to target by using the {0} or the {1} in Azure Data Studio before selecting the list of tables to migrate.");
+export const DATABASE_SCHEMA_MIGRATION_HELP = localize('sql.migration.database.schema.migration.help', "Ensure to migrate the database schema from source to target before starting the migration by using the Database Schema Migration feature (Public Preview) or {0} or the {1} in Azure Data Studio before selecting the list of tables to migrate.");
 export const DATABASE_SCHEMA_MIGRATION_DACPAC_EXTENSION = localize('sql.migration.database.schema.migration.dacpac', "SQL Server dacpac extension");
 export const DATABASE_SCHEMA_MIGRATION_PROJECTS_EXTENSION = localize('sql.migration.database.schema.migration.project', "SQL Database Projects extension");
 
