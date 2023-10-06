@@ -103,11 +103,15 @@ export class AssessmentDetailsHeader {
 		// this value is populated to handle the case when user selects a target type and want to resume later.
 		this._targetSelectionDropdown.value = this.getTargetTypeBasedOnModel(migrationStateModel._targetType);
 
-		const recommendedConfiguration = (await utils.getRecommendedConfiguration(migrationStateModel._targetType, migrationStateModel))[0] ?? "" + "\n" +
-			(await utils.getRecommendedConfiguration(migrationStateModel._targetType, migrationStateModel))[1] ?? "";
+		const recommendedConfigurations = await utils.getRecommendedConfiguration(migrationStateModel._targetType, migrationStateModel);
+		let configurationValue = recommendedConfigurations[0] ?? "--";
+
+		if (migrationStateModel._targetType === MigrationTargetType.SQLVM && recommendedConfigurations.length > 1) {
+			configurationValue = recommendedConfigurations[0] + "\n" + recommendedConfigurations[1];
+		}
 		const assessmentHeaderValues = [
 			{
-				value: recommendedConfiguration
+				value: configurationValue
 			},
 			{
 				value: String(migrationStateModel?._assessedDatabaseList.length)

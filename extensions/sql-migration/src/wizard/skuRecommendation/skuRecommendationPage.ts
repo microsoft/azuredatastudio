@@ -417,12 +417,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	// Update the assessment details for each of the target type.
 	private async updateDetailsForEachTarget(targetType: MigrationTargetType, dbCount: number): Promise<void> {
 
+		const targetConfigurations = await utils.getRecommendedConfiguration(targetType, this.migrationStateModel);
+
 		// For Target - SQLVM, all databases can be migrated with issues. So dbReady = dbCount;
 		if (targetType === MigrationTargetType.SQLVM) {
 			this._vmAssessmentCard.updateAssessmentResult(dbCount, dbCount, 0, 0, 0, 0);
-			const vmConfiguration = (await utils.getRecommendedConfiguration(targetType, this.migrationStateModel))[0] ?? "";
-			const vmConfigurationPreview = (await utils.getRecommendedConfiguration(targetType, this.migrationStateModel))[1] ?? "";
-			await this._vmAssessmentCard.updateSkuRecommendation(vmConfiguration, vmConfigurationPreview);
+			if (targetConfigurations.length > 0)
+				await this._vmAssessmentCard.updateSkuRecommendation(targetConfigurations[0], targetConfigurations[1] ?? "");
 			return;
 		}
 
@@ -453,11 +454,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		switch (targetType) {
 			case MigrationTargetType.SQLDB:
 				this._dbAssessmentCard.updateAssessmentResult(dbCount, dbReady, dbReadyWithWarnings, dbNotReady, blockers, warnings);
-				await this._dbAssessmentCard.updateSkuRecommendation((await utils.getRecommendedConfiguration(targetType, this.migrationStateModel))[0] ?? "");
+				if (targetConfigurations.length > 0)
+					await this._dbAssessmentCard.updateSkuRecommendation(targetConfigurations[0]);
 				break;
 			case MigrationTargetType.SQLMI:
 				this._miAssessmentCard.updateAssessmentResult(dbCount, dbReady, dbReadyWithWarnings, dbNotReady, blockers, warnings);
-				await this._miAssessmentCard.updateSkuRecommendation((await utils.getRecommendedConfiguration(targetType, this.migrationStateModel))[0] ?? "");
+				if (targetConfigurations.length > 0)
+					await this._miAssessmentCard.updateSkuRecommendation(targetConfigurations[0]);
 				break;
 		}
 	}

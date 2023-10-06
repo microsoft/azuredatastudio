@@ -1173,83 +1173,75 @@ export async function clearDropDown(dropDown: DropDownComponent): Promise<void> 
 }
 
 export async function getRecommendedConfiguration(targetType: MigrationTargetType, model: MigrationStateModel): Promise<string[]> {
+
+	if (!hasRecommendations(model)) {
+		return [];
+	}
 	let recommendation;
 	switch (targetType) {
 		case MigrationTargetType.SQLVM:
-			if (hasRecommendations(model)) {
-				// elastic model currently doesn't support SQL VM, so show the baseline model results regardless of user preference
-				recommendation = model._skuRecommendationResults.recommendations?.sqlVmRecommendationResults[0];
+			// elastic model currently doesn't support SQL VM, so show the baseline model results regardless of user preference
+			recommendation = model._skuRecommendationResults.recommendations?.sqlVmRecommendationResults[0];
 
-				// result returned but no SKU recommended
-				if (!recommendation?.targetSku) {
-					return [constants.SKU_RECOMMENDATION_NO_RECOMMENDATION];
-				}
-				else {
-					const vmConfiguration = constants.VM_CONFIGURATION(
-						recommendation.targetSku.virtualMachineSize!.sizeName,
-						recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
+			// result returned but no SKU recommended
+			if (!recommendation?.targetSku) {
+				return [constants.SKU_RECOMMENDATION_NO_RECOMMENDATION];
+			}
+			else {
+				const vmConfiguration = constants.VM_CONFIGURATION(
+					recommendation.targetSku.virtualMachineSize!.sizeName,
+					recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
 
-					const dataDisk = constants.STORAGE_CONFIGURATION(
-						recommendation.targetSku.dataDiskSizes![0].size,
-						recommendation.targetSku.dataDiskSizes!.length);
-					const storageDisk = constants.STORAGE_CONFIGURATION(
+				const dataDisk = constants.STORAGE_CONFIGURATION(
+					recommendation.targetSku.dataDiskSizes![0].size,
+					recommendation.targetSku.dataDiskSizes!.length);
+				const storageDisk = constants.STORAGE_CONFIGURATION(
+					recommendation.targetSku.logDiskSizes![0].size,
+					recommendation.targetSku.logDiskSizes!.length);
+				const tempDb = recommendation.targetSku.tempDbDiskSizes!.length > 0
+					? constants.STORAGE_CONFIGURATION(
 						recommendation.targetSku.logDiskSizes![0].size,
-						recommendation.targetSku.logDiskSizes!.length);
-					const tempDb = recommendation.targetSku.tempDbDiskSizes!.length > 0
-						? constants.STORAGE_CONFIGURATION(
-							recommendation.targetSku.logDiskSizes![0].size,
-							recommendation.targetSku.logDiskSizes!.length)
-						: constants.LOCAL_SSD;
-					const vmConfigurationPreview =
-						constants.VM_CONFIGURATION_PREVIEW(dataDisk, storageDisk, tempDb);
+						recommendation.targetSku.logDiskSizes!.length)
+					: constants.LOCAL_SSD;
+				const vmConfigurationPreview =
+					constants.VM_CONFIGURATION_PREVIEW(dataDisk, storageDisk, tempDb);
 
-					return [vmConfiguration, vmConfigurationPreview];
-				}
+				return [vmConfiguration, vmConfigurationPreview];
 			}
 		case MigrationTargetType.SQLDB:
-
-			if (hasRecommendations(model)) {
-				const recommendations = model._skuEnableElastic
-					? model._skuRecommendationResults.recommendations!.elasticSqlDbRecommendationResults
-					: model._skuRecommendationResults.recommendations!.sqlDbRecommendationResults;
-				const successfulRecommendationsCount = recommendations.filter(r => r.targetSku !== null).length;
-				return [constants.RECOMMENDATIONS_AVAILABLE(successfulRecommendationsCount)];
-			}
-			break;
+			const recommendations = model._skuEnableElastic
+				? model._skuRecommendationResults.recommendations!.elasticSqlDbRecommendationResults
+				: model._skuRecommendationResults.recommendations!.sqlDbRecommendationResults;
+			const successfulRecommendationsCount = recommendations.filter(r => r.targetSku !== null).length;
+			return [constants.RECOMMENDATIONS_AVAILABLE(successfulRecommendationsCount)];
 		case MigrationTargetType.SQLMI:
-
-			if (hasRecommendations(model)) {
-				if (model._skuEnableElastic) {
-					recommendation = model._skuRecommendationResults.recommendations?.elasticSqlMiRecommendationResults[0];
-				} else {
-					recommendation = model._skuRecommendationResults.recommendations?.sqlMiRecommendationResults[0];
-				}
-
-				// result returned but no SKU recommended
-				if (!recommendation?.targetSku) {
-					return [constants.SKU_RECOMMENDATION_NO_RECOMMENDATION];
-				}
-				else {
-					const serviceTier = recommendation.targetSku.category?.sqlServiceTier === contracts.AzureSqlPaaSServiceTier.GeneralPurpose
-						? constants.GENERAL_PURPOSE
-						: constants.BUSINESS_CRITICAL;
-					const hardwareType = recommendation.targetSku.category?.hardwareType === contracts.AzureSqlPaaSHardwareType.Gen5
-						? constants.GEN5
-						: recommendation.targetSku.category?.hardwareType === contracts.AzureSqlPaaSHardwareType.PremiumSeries
-							? constants.PREMIUM_SERIES
-							: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
-
-					return [constants.MI_CONFIGURATION_PREVIEW(
-						hardwareType,
-						serviceTier,
-						recommendation.targetSku.computeSize!,
-						recommendation.targetSku.storageMaxSizeInMb! / 1024)];
-				}
+			if (model._skuEnableElastic) {
+				recommendation = model._skuRecommendationResults.recommendations?.elasticSqlMiRecommendationResults[0];
+			} else {
+				recommendation = model._skuRecommendationResults.recommendations?.sqlMiRecommendationResults[0];
 			}
-			break;
-	}
-	return [];
 
+			// result returned but no SKU recommended
+			if (!recommendation?.targetSku) {
+				return [constants.SKU_RECOMMENDATION_NO_RECOMMENDATION];
+			}
+			else {
+				const serviceTier = recommendation.targetSku.category?.sqlServiceTier === contracts.AzureSqlPaaSServiceTier.GeneralPurpose
+					? constants.GENERAL_PURPOSE
+					: constants.BUSINESS_CRITICAL;
+				const hardwareType = recommendation.targetSku.category?.hardwareType === contracts.AzureSqlPaaSHardwareType.Gen5
+					? constants.GEN5
+					: recommendation.targetSku.category?.hardwareType === contracts.AzureSqlPaaSHardwareType.PremiumSeries
+						? constants.PREMIUM_SERIES
+						: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
+
+				return [constants.MI_CONFIGURATION_PREVIEW(
+					hardwareType,
+					serviceTier,
+					recommendation.targetSku.computeSize!,
+					recommendation.targetSku.storageMaxSizeInMb! / 1024)];
+			}
+	}
 }
 
 // Return true if Recommendations are ready and does not  have errors.
