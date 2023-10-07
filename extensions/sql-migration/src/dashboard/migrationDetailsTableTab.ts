@@ -400,7 +400,7 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		this._updateInfoFieldValue(this._scriptGenerationStartedInfoField, scriptGeneration === undefined ? EmptySettingValue : scriptGeneration.startedOn ?? EmptySettingValue);
 		this._updateInfoFieldValue(this._scriptGenerationEndedInfoField, scriptGeneration === undefined ? EmptySettingValue : scriptGeneration.endedOn ?? EmptySettingValue);
 		this._updateInfoFieldValue(this._succeededScriptCountInfoField, scriptGeneration === undefined ? EmptySettingValue : scriptGeneration.scriptedObjectsCount?.toString() ?? EmptySettingValue);
-		this._updateInfoFieldValue(this._failedScriptCountInfoField, scriptGeneration === undefined ? EmptySettingValue : scriptGeneration.scriptedObjectsFailedCount.toString() ?? EmptySettingValue);
+		this._updateInfoFieldValue(this._failedScriptCountInfoField, scriptGeneration === undefined ? EmptySettingValue : scriptGeneration.scriptedObjectsFailedCount?.toString() ?? EmptySettingValue);
 
 		// Right side
 		this._updateInfoFieldValue(this._targetDatabaseInfoField, targetDatabaseName ?? EmptySettingValue);
