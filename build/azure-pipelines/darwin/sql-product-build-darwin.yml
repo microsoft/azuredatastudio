@@ -17,7 +17,7 @@ steps:
 
   - task: NodeTool@0
     inputs:
-      versionSpec: "18.15.13"
+      versionSpec: "18.15.0"
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
