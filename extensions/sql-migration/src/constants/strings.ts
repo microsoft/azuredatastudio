@@ -1304,6 +1304,22 @@ export const InternalManagedDatabaseRestoreDetailsStatusLookup: LookupTable<stri
 	[InternalManagedDatabaseRestoreDetailsStatusCodes.Blocked]: localize('sql.migration.restore.status.blocked', 'Blocked'),
 };
 
+export const SchemaMigrationStatusLookup: LookupTable<string | undefined> = {
+	[MigrationState.CollectionCompleted]: localize('sql.migration.status.collectioncompleted', 'Objects collection completed'),
+	[MigrationState.PrefetchObjects]: localize('sql.migration.status.prefetchobjects', 'Prefetch objects'),
+	[MigrationState.GetDependency]: localize('sql.migration.status.getdependency', 'Get dependency'),
+	[MigrationState.ScriptObjects]: localize('sql.migration.status.scriptobjects', 'Scripting objects'),
+	[MigrationState.ScriptViewIndexes]: localize('sql.migration.status.scriptindexes', 'Scripting indexes'),
+	[MigrationState.ScriptOwnership]: localize('sql.migration.status.scriptownership', 'Scripting ownerships'),
+	[MigrationState.GeneratingScript]: localize('sql.migration.status.generatingscript', 'Generating script'),
+	[MigrationState.GeneratingScriptCompleted]: localize('sql.migration.status.generatingcompleted', 'Script generation completed'),
+	[MigrationState.DeployingSchema]: localize('sql.migration.status.deployingschema', 'Deploying script'),
+	[MigrationState.DeploymentCompleted]: localize('sql.migration.status.deploymentcompleted', 'Deployment completed'),
+	[MigrationState.Completed]: localize('sql.migration.status.completed', 'Completed'),
+	[MigrationState.CompletedWithError]: localize('sql.migration.status.completedwitherrors', 'Completed with errors'),
+	default: undefined
+};
+
 export function STATUS_WARNING_COUNT(status: string, count: number): string | undefined {
 	if (status === MigrationState.InProgress ||
 		status === MigrationState.ReadyForCutover ||

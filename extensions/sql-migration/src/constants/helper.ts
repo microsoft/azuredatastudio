@@ -251,6 +251,11 @@ export function getMigrationStatusString(migration: DatabaseMigration | undefine
 	return loc.StatusLookup[migrationStatus] ?? migrationStatus;
 }
 
+export function getSchemaMigrationStatusString(migration: DatabaseMigration | undefined): string {
+	const schemaMigrationStatus = getSchemaMigrationStatus(migration) ?? DefaultSettingValue;
+	return loc.SchemaMigrationStatusLookup[schemaMigrationStatus] ?? schemaMigrationStatus;
+}
+
 export function hasMigrationOperationId(migration: DatabaseMigration | undefined): boolean {
 	const migrationId = migration?.id ?? '';
 	const migationOperationId = migration?.properties?.migrationOperationId ?? '';
