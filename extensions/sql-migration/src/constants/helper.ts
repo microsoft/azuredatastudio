@@ -205,6 +205,14 @@ export function getMigrationMode(migration: DatabaseMigration | undefined): stri
 		: loc.ONLINE;
 }
 
+export function getMigrationType(migration: DatabaseMigration | undefined): string {
+	var enableSchema = migration?.properties?.sqlSchemaMigrationConfiguration?.enableSchemaMigration ?? false;
+	var enableData = migration?.properties?.sqlDataMigrationConfiguration?.enableDataMigration ?? false;
+	return enableSchema && enableData
+		? loc.SCHEMA_AND_DATA
+		: enableSchema ? loc.SCHEMA_ONLY : loc.DATA_ONLY
+}
+
 export function getMigrationModeEnum(migration: DatabaseMigration | undefined): MigrationMode {
 	return isOfflineMigation(migration)
 		? MigrationMode.OFFLINE

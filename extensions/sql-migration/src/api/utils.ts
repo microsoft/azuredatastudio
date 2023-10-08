@@ -12,7 +12,7 @@ import { azureResource, Tenant } from 'azurecore';
 import * as constants from '../constants/strings';
 import { logError, TelemetryViews } from '../telemetry';
 import { AdsMigrationStatus } from '../dashboard/tabBase';
-import { getMigrationMode, getMigrationStatus, getSchemaMigrationStatus, getMigrationTargetType, hasRestoreBlockingReason, PipelineStatusCodes } from '../constants/helper';
+import { getMigrationMode, getMigrationStatus, getSchemaMigrationStatus, getMigrationTargetType, hasRestoreBlockingReason, PipelineStatusCodes, getMigrationType } from '../constants/helper';
 import * as os from 'os';
 import * as styles from '../constants/styles';
 import { SqlMigrationService, getSqlMigrationServiceAuthKeys, regenerateSqlMigrationServiceAuthKey } from './azure';
@@ -178,6 +178,7 @@ export function filterMigrations(databaseMigrations: azure.DatabaseMigration[], 
 				|| migration.properties.sourceDatabaseName?.toLowerCase().includes(filter)
 				|| getMigrationStatus(migration)?.toLowerCase().includes(filter)
 				|| getMigrationMode(migration)?.toLowerCase().includes(filter)
+				|| getMigrationType(migration)?.toLocaleLowerCase().includes(filter)
 				|| getMigrationTargetType(migration)?.toLowerCase().includes(filter)
 				|| azure.getResourceName(migration.properties.scope)?.toLowerCase().includes(filter)
 				|| azure.getResourceName(migration.id)?.toLowerCase().includes(filter)
