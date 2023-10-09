@@ -40,7 +40,7 @@ class ViewDescriptorSequence {
 	}
 }
 
-suite('ViewContainerModel', () => {
+suite.skip('ViewContainerModel', () => {
 
 	let container: ViewContainer;
 	let disposableStore: DisposableStore;

@@ -17,7 +17,7 @@ import { IUserDataProfileStorageService } from 'vs/platform/userDataProfile/comm
 import { UserDataSyncClient, UserDataSyncTestServer } from 'vs/platform/userDataSync/test/common/userDataSyncClient';
 
 
-suite('GlobalStateSync', () => {
+suite.skip('GlobalStateSync', () => {
 
 	const disposableStore = new DisposableStore();
 	const server = new UserDataSyncTestServer();

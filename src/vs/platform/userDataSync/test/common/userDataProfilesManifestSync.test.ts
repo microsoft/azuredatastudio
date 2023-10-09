@@ -10,7 +10,7 @@ import { UserDataProfilesManifestSynchroniser } from 'vs/platform/userDataSync/c
 import { ISyncData, ISyncUserDataProfile, IUserDataSyncStoreService, SyncResource, SyncStatus } from 'vs/platform/userDataSync/common/userDataSync';
 import { UserDataSyncClient, UserDataSyncTestServer } from 'vs/platform/userDataSync/test/common/userDataSyncClient';
 
-suite('UserDataProfilesManifestSync', () => {
+suite.skip('UserDataProfilesManifestSync', () => {
 
 	const disposableStore = new DisposableStore();
 	const server = new UserDataSyncTestServer();

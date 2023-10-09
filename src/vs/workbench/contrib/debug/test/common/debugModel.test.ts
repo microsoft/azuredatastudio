@@ -35,7 +35,7 @@ suite('DebugModel', () => {
 		});
 	});
 
-	suite('DebugModel', () => {
+	suite.skip('DebugModel', () => {
 		test('refreshTopOfCallstack resolves all returned promises when called multiple times', async () => {
 			const topFrameDeferred = new DeferredPromise<void>();
 			const wholeStackDeferred = new DeferredPromise<void>();

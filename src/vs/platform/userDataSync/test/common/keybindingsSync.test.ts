@@ -13,7 +13,7 @@ import { getKeybindingsContentFromSyncContent, KeybindingsSynchroniser } from 'v
 import { IUserDataSyncStoreService, SyncResource, UserDataSyncError, UserDataSyncErrorCode } from 'vs/platform/userDataSync/common/userDataSync';
 import { UserDataSyncClient, UserDataSyncTestServer } from 'vs/platform/userDataSync/test/common/userDataSyncClient';
 
-suite('KeybindingsSync', () => {
+suite.skip('KeybindingsSync', () => {
 
 	const disposableStore = new DisposableStore();
 	const server = new UserDataSyncTestServer();

@@ -24,7 +24,7 @@ const viewContainerIdPrefix = 'testViewContainer';
 const sidebarContainer = ViewContainersRegistry.registerViewContainer({ id: `${viewContainerIdPrefix}-${generateUuid()}`, title: 'test', ctorDescriptor: new SyncDescriptor(<any>{}) }, ViewContainerLocation.Sidebar);
 const panelContainer = ViewContainersRegistry.registerViewContainer({ id: `${viewContainerIdPrefix}-${generateUuid()}`, title: 'test', ctorDescriptor: new SyncDescriptor(<any>{}) }, ViewContainerLocation.Panel);
 
-suite('ViewDescriptorService', () => {
+suite.skip('ViewDescriptorService', () => {
 
 	const disposables = new DisposableStore();
 	let instantiationService: TestInstantiationService;

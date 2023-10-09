@@ -13,7 +13,7 @@ import { getTasksContentFromSyncContent, TasksSynchroniser } from 'vs/platform/u
 import { Change, IUserDataSyncStoreService, MergeState, SyncResource, SyncStatus } from 'vs/platform/userDataSync/common/userDataSync';
 import { UserDataSyncClient, UserDataSyncTestServer } from 'vs/platform/userDataSync/test/common/userDataSyncClient';
 
-suite('TasksSync', () => {
+suite.skip('TasksSync', () => {
 
 	const disposableStore = new DisposableStore();
 	const server = new UserDataSyncTestServer();

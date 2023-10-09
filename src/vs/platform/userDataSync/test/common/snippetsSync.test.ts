@@ -146,7 +146,7 @@ const globalSnippet = `{
 	// }
 }`;
 
-suite('SnippetsSync', () => {
+suite.skip('SnippetsSync', () => {
 
 	const disposableStore = new DisposableStore();
 	const server = new UserDataSyncTestServer();

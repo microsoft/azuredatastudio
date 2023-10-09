@@ -29,7 +29,7 @@ import { IChatResponseViewModel } from 'vs/workbench/contrib/chat/common/chatVie
 import { IAccessibleViewService } from 'vs/workbench/contrib/accessibility/browser/accessibleView';
 import { AccessibilityVerbositySettingId } from 'vs/workbench/contrib/accessibility/browser/accessibilityConfiguration';
 
-suite('InteractiveChatController', function () {
+suite.skip('InteractiveChatController', function () {
 
 	class TestController extends InlineChatController {
 

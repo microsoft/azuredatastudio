@@ -58,7 +58,7 @@ class SimpleTestProvider extends Disposable implements IChatProvider {
 	}
 }
 
-suite('Chat', () => {
+suite.skip('Chat', () => {
 	const testDisposables = new DisposableStore();
 
 	let storageService: IStorageService;

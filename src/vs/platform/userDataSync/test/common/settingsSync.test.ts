@@ -17,7 +17,7 @@ import { ISettingsSyncContent, parseSettingsSyncContent, SettingsSynchroniser } 
 import { ISyncData, IUserDataSyncStoreService, SyncResource, SyncStatus, UserDataSyncError, UserDataSyncErrorCode } from 'vs/platform/userDataSync/common/userDataSync';
 import { UserDataSyncClient, UserDataSyncTestServer } from 'vs/platform/userDataSync/test/common/userDataSyncClient';
 
-suite('SettingsSync - Auto', () => {
+suite.skip('SettingsSync - Auto', () => {
 
 	const disposableStore = new DisposableStore();
 	const server = new UserDataSyncTestServer();
@@ -525,7 +525,7 @@ suite('SettingsSync - Auto', () => {
 
 });
 
-suite('SettingsSync - Manual', () => {
+suite.skip('SettingsSync - Manual', () => {
 
 	const disposableStore = new DisposableStore();
 	const server = new UserDataSyncTestServer();

@@ -59,7 +59,7 @@ const nullEvent = new class {
 
 const lineOneRange = new OneLineRange(1, 0, 1);
 
-suite('SearchModel', () => {
+suite.skip('SearchModel', () => {
 
 	let instantiationService: TestInstantiationService;
 

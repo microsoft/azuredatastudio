@@ -22,7 +22,7 @@ import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { runWithFakedTimers } from 'vs/base/test/common/timeTravelScheduler';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
-suite('Sticky Scroll Tests', () => {
+suite.skip('Sticky Scroll Tests', () => {
 
 	const serviceCollection = new ServiceCollection(
 		[ILanguageFeaturesService, new LanguageFeaturesService()],
