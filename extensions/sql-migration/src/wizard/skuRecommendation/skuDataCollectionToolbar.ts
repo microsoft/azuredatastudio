@@ -11,6 +11,9 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as utils from '../../api/utils';
+
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
@@ -18,9 +21,6 @@ import { MigrationStateModel, PerformanceDataSourceOptions } from '../../models/
 import { SKURecommendationPage } from './skuRecommendationPage';
 import { ImportPerformanceDataDialog } from '../../dialog/skuRecommendationResults/importPerformanceDataDialog';
 import { SkuEditParametersDialog } from '../../dialog/skuRecommendationResults/skuEditParametersDialog';
-
-// TODO - "Change this to actual default path once it is available"
-const DEFAULT_PATH_FOR_START_DATA_COLLECTION = "C:\DataPointsCollectionFolder";
 
 export class SkuDataCollectionToolbar implements vscode.Disposable {
 	private _refreshButtonSelectionDropdown!: azdata.DropDownComponent;
@@ -32,9 +32,13 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 
 	private _performanceDataSource!: PerformanceDataSourceOptions;
 
+	private _defaultPathForStartDataCollection!: string;
+
 	private _disposables: vscode.Disposable[] = [];
 
 	constructor(private skuRecommendationPage: SKURecommendationPage, public wizard: azdata.window.Wizard, private migrationStateModel: MigrationStateModel) {
+		// TODO - Recheck later if we want to keep this path only. For now this is decided.
+		this._defaultPathForStartDataCollection = utils.getUserHome() + "\\AppData\\Roaming\\azuredatastudio\\logs";
 	}
 
 	public get refreshButtonSelectionDropdown() {
@@ -123,11 +127,17 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 
 			// Default path is selected or no option is selected.
 			if (!selectedOption || selectedOption === defaultPathOption) {
+				// If default path does not exist, create one.
+				if (!fs.existsSync(this._defaultPathForStartDataCollection)) {
+					fs.mkdirSync(this._defaultPathForStartDataCollection);
+				}
+
 				this._performanceDataSource = PerformanceDataSourceOptions.CollectData;
-				this.migrationStateModel._skuRecommendationPerformanceLocation = DEFAULT_PATH_FOR_START_DATA_COLLECTION;
+				this.migrationStateModel._skuRecommendationPerformanceLocation = this._defaultPathForStartDataCollection;
 
 				// Start data collection at default path.
 				await this.executeStartDataCollection();
+
 			}
 			// 'Choose a path' option is selected.
 			else if (selectedOption === choosePathOption) {
@@ -149,9 +159,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 					// Start data collection at folder path selected.
 					await this.executeStartDataCollection();
 				} else {
-					// TODO - What to do if user clicks on "choose a path" and do not selecta folder.
-					// Either 1) start data collection at Default path.
-					// or 2) Do not start data collection and give user a warning that "no path selected".
+					// Do nothing since no path selected.
 				}
 			}
 		}));

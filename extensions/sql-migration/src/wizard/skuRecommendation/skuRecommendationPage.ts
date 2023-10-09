@@ -543,7 +543,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 			// initial state before "Get Azure recommendation" dialog
 			default: {
-				await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'flex' });
+				await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'none' });
 				break;
 			}
 		}
