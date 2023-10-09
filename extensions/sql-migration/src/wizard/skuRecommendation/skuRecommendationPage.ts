@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import * as utils from '../../api/utils';
-import * as contracts from '../../service/contracts';
 
 import { EOL } from 'os';
 import { MigrationWizardPage } from '../../models/migrationWizardPage';
@@ -278,7 +277,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		// // recommendations were already generated, then the user went back and changed the list of databases
 		// // so recommendations should be re-generated
-		if (this.hasRecommendations() && this.migrationStateModel.hasRecommendedDatabaseListChanged()) {
+		if (utils.hasRecommendations(this.migrationStateModel) && this.migrationStateModel.hasRecommendedDatabaseListChanged()) {
 			shouldGetSkuRecommendations = true;
 		}
 
@@ -700,47 +699,19 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	// Update the assessment details for each of the target type.
 	private async updateDetailsForEachTarget(targetType: MigrationTargetType, dbCount: number): Promise<void> {
-		let recommendation;
+
+		const targetConfigurations = await utils.getRecommendedConfiguration(targetType, this.migrationStateModel);
 
 		// For Target - SQLVM, all databases can be migrated with issues. So dbReady = dbCount;
 		if (targetType === MigrationTargetType.SQLVM) {
 			this._vmAssessmentCard.updateAssessmentResult(dbCount, dbCount, 0, 0, 0, 0);
-
-			if (this.hasRecommendations()) {
-				// elastic model currently doesn't support SQL VM, so show the baseline model results regardless of user preference
-				recommendation = this.migrationStateModel._skuRecommendationResults.recommendations?.sqlVmRecommendationResults[0];
-
-				// result returned but no SKU recommended
-				if (!recommendation?.targetSku) {
-					await this._vmAssessmentCard.updateSkuRecommendation(constants.SKU_RECOMMENDATION_NO_RECOMMENDATION);
-				}
-				else {
-					const vmConfiguration = constants.VM_CONFIGURATION(
-						recommendation.targetSku.virtualMachineSize!.sizeName,
-						recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
-
-					const dataDisk = constants.STORAGE_CONFIGURATION(
-						recommendation.targetSku.dataDiskSizes![0].size,
-						recommendation.targetSku.dataDiskSizes!.length);
-					const storageDisk = constants.STORAGE_CONFIGURATION(
-						recommendation.targetSku.logDiskSizes![0].size,
-						recommendation.targetSku.logDiskSizes!.length);
-					const tempDb = recommendation.targetSku.tempDbDiskSizes!.length > 0
-						? constants.STORAGE_CONFIGURATION(
-							recommendation.targetSku.logDiskSizes![0].size,
-							recommendation.targetSku.logDiskSizes!.length)
-						: constants.LOCAL_SSD;
-					const vmConfigurationPreview =
-						constants.VM_CONFIGURATION_PREVIEW(dataDisk, storageDisk, tempDb);
-
-					await this._vmAssessmentCard.updateSkuRecommendation(vmConfiguration, vmConfigurationPreview);
-				}
+			if (targetConfigurations?.length > 0) {
+				await this._vmAssessmentCard.updateSkuRecommendation(targetConfigurations[0], targetConfigurations[1] ?? "");
 			}
-
 			return;
 		}
 
-		// dbReady are thos databases without issues. dbNotReady are those databases with atleast one issue with issueCategory = "Issue".
+		// dbReady are those databases without issues. dbNotReady are those databases with at least one issue with issueCategory = "Issue".
 		// dbReadyWithWarnings can be found by subtraction dbReady and dbNotReady with total dbCount.
 		const dbReady = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db =>
 			!db.issues?.some(issue => issue.appliesToMigrationTargetPlatform === targetType)
@@ -753,60 +724,27 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		// blockers contain count of all the instance level issues with issueCategory = "Issue".
 		var blockers = this.migrationStateModel._assessmentResults?.issues.filter(issue =>
 			(issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === IssueCategory.Issue)).length;
-		// also blockers includes sum of all the dabatase level issues with issueCategory = "Issue" for each database.
+		// also blockers includes sum of all the database level issues with issueCategory = "Issue" for each database.
 		blockers += this.migrationStateModel._assessmentResults?.databaseAssessments?.reduce((count, database) =>
 			count + database.issues.filter(issue => (issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === IssueCategory.Issue)).length, 0);
 
 		// warnings contain count all the instance level issues with issueCategory = "Warning".
 		var warnings = this.migrationStateModel._assessmentResults?.issues.filter(issue =>
 			(issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === IssueCategory.Warning)).length;
-		// also warnings includes sum of all the dabatase level issues with issueCategory = "Warning" for each database.
+		// also warnings includes sum of all the database level issues with issueCategory = "Warning" for each database.
 		warnings += this.migrationStateModel._assessmentResults?.databaseAssessments?.reduce((count, database) =>
 			count + database.issues.filter(issue => (issue.appliesToMigrationTargetPlatform === targetType) && (issue.issueCategory === IssueCategory.Warning)).length, 0);
 
 		switch (targetType) {
 			case MigrationTargetType.SQLDB:
 				this._dbAssessmentCard.updateAssessmentResult(dbCount, dbReady, dbReadyWithWarnings, dbNotReady, blockers, warnings);
-
-				if (this.hasRecommendations()) {
-					const recommendations = this.migrationStateModel._skuEnableElastic
-						? this.migrationStateModel._skuRecommendationResults.recommendations!.elasticSqlDbRecommendationResults
-						: this.migrationStateModel._skuRecommendationResults.recommendations!.sqlDbRecommendationResults;
-					const successfulRecommendationsCount = recommendations.filter(r => r.targetSku !== null).length;
-					await this._dbAssessmentCard.updateSkuRecommendation(constants.RECOMMENDATIONS_AVAILABLE(successfulRecommendationsCount));
-				}
+				if (targetConfigurations.length > 0)
+					await this._dbAssessmentCard.updateSkuRecommendation(targetConfigurations[0]);
 				break;
 			case MigrationTargetType.SQLMI:
 				this._miAssessmentCard.updateAssessmentResult(dbCount, dbReady, dbReadyWithWarnings, dbNotReady, blockers, warnings);
-
-				if (this.hasRecommendations()) {
-					if (this.migrationStateModel._skuEnableElastic) {
-						recommendation = this.migrationStateModel._skuRecommendationResults.recommendations?.elasticSqlMiRecommendationResults[0];
-					} else {
-						recommendation = this.migrationStateModel._skuRecommendationResults.recommendations?.sqlMiRecommendationResults[0];
-					}
-
-					// result returned but no SKU recommended
-					if (!recommendation?.targetSku) {
-						await this._miAssessmentCard.updateSkuRecommendation(constants.SKU_RECOMMENDATION_NO_RECOMMENDATION);
-					}
-					else {
-						const serviceTier = recommendation.targetSku.category?.sqlServiceTier === contracts.AzureSqlPaaSServiceTier.GeneralPurpose
-							? constants.GENERAL_PURPOSE
-							: constants.BUSINESS_CRITICAL;
-						const hardwareType = recommendation.targetSku.category?.hardwareType === contracts.AzureSqlPaaSHardwareType.Gen5
-							? constants.GEN5
-							: recommendation.targetSku.category?.hardwareType === contracts.AzureSqlPaaSHardwareType.PremiumSeries
-								? constants.PREMIUM_SERIES
-								: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
-
-						await this._miAssessmentCard.updateSkuRecommendation(constants.MI_CONFIGURATION_PREVIEW(
-							hardwareType,
-							serviceTier,
-							recommendation.targetSku.computeSize!,
-							recommendation.targetSku.storageMaxSizeInMb! / 1024));
-					}
-				}
+				if (targetConfigurations.length > 0)
+					await this._miAssessmentCard.updateSkuRecommendation(targetConfigurations[0]);
 				break;
 		}
 	}
@@ -869,7 +807,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					await this._skuDataCollectionStatusIcon.updateProperties({
 						iconPath: IconPathHelper.inProgressMigration
 					});
-					this._skuDataCollectionStatusText.value = this.hasRecommendations()
+					this._skuDataCollectionStatusText.value = utils.hasRecommendations(this.migrationStateModel)
 						? constants.AZURE_RECOMMENDATION_STATUS_REFINING
 						: constants.AZURE_RECOMMENDATION_STATUS_IN_PROGRESS;
 
@@ -899,7 +837,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 
 			case PerformanceDataSourceOptions.OpenExisting: {
-				if (this.hasRecommendations()) {
+				if (utils.hasRecommendations(this.migrationStateModel)) {
+					// TODO - update the status container, text and icon.
 					// TODO - update the visibility of different button and status message.
 				}
 				break;
@@ -957,13 +896,5 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this.wizard.registerNavigationValidator(pageChangeInfo => true);
 		this.wizard.message = { text: '' };
 		// this.eventListener?.dispose();
-	}
-
-	// Return true if Recommendations are ready and does not  have errors.
-	public hasRecommendations(): boolean {
-		return this.migrationStateModel._skuRecommendationResults?.recommendations
-			&& !this.migrationStateModel._skuRecommendationResults?.recommendationError
-			? true
-			: false;
 	}
 }

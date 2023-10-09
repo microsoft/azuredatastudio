@@ -243,6 +243,7 @@ export class IconPathHelper {
 		IconPathHelper.encryption = {
 			light: context.asAbsolutePath('images/encryption.svg'),
 			dark: context.asAbsolutePath('images/encryption.svg')
+		};
 		IconPathHelper.openFolder = {
 			light: context.asAbsolutePath('images/openFolder.svg'),
 			dark: context.asAbsolutePath('images/openFolder.svg')

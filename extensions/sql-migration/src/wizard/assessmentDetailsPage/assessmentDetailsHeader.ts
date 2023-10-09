@@ -8,6 +8,8 @@ import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import { MigrationStateModel } from '../../models/stateMachine';
 import { MigrationTargetType } from '../../api/utils';
+import * as utils from '../../api/utils';
+import { IssueCategory } from '../../constants/helper';
 
 interface IActionMetadata {
 	title?: string,
@@ -68,6 +70,7 @@ export class AssessmentDetailsHeader {
 		const cardContainer = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: 190,
+			height: 75
 		}).withProps({
 			CSSStyles: {
 				...styles.CARD_CSS,
@@ -100,16 +103,22 @@ export class AssessmentDetailsHeader {
 	public async populateAssessmentDetailsHeader(migrationStateModel: MigrationStateModel): Promise<void> {
 		// this value is populated to handle the case when user selects a target type and want to resume later.
 		this._targetSelectionDropdown.value = this.getTargetTypeBasedOnModel(migrationStateModel._targetType);
+
+		const recommendedConfigurations = await utils.getRecommendedConfiguration(migrationStateModel._targetType, migrationStateModel);
+		let configurationValue = recommendedConfigurations[0] ?? "--";
+
+		if (migrationStateModel._targetType === MigrationTargetType.SQLVM && recommendedConfigurations?.length > 1) {
+			configurationValue = recommendedConfigurations[0] + "\n" + recommendedConfigurations[1];
+		}
 		const assessmentHeaderValues = [
 			{
-				// TODO(stutijain): replace below value with recommended config
-				value: "10 available"
+				value: configurationValue
 			},
 			{
 				value: String(migrationStateModel?._assessedDatabaseList.length)
 			},
 			{
-				value: String(migrationStateModel._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === migrationStateModel._targetType).length === 0).length)
+				value: String(migrationStateModel._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === migrationStateModel._targetType && issue.issueCategory === IssueCategory.Issue)?.length === 0)?.length)
 			}];
 
 		// iterating over each value container and filling it with the corresponding text.
