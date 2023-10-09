@@ -373,6 +373,18 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			// Need to think what to show if assessment result is coming as null.
 		}
 		else {
+			if (!utils.hasRecommendations(this.migrationStateModel)) {
+				if (this.migrationStateModel._perfDataCollectionStartDate) {
+					await this._dbAssessmentCard.updateSKURecommendationStatus(constants.AZURE_RECOMMENDATION_CARD_IN_PROGRESS);
+					await this._miAssessmentCard.updateSKURecommendationStatus(constants.AZURE_RECOMMENDATION_CARD_IN_PROGRESS);
+					await this._vmAssessmentCard.updateSKURecommendationStatus(constants.AZURE_RECOMMENDATION_CARD_IN_PROGRESS);
+				} else {
+					await this._dbAssessmentCard.updateSKURecommendationStatus(constants.AZURE_RECOMMENDATION_CARD_NOT_ENABLED);
+					await this._miAssessmentCard.updateSKURecommendationStatus(constants.AZURE_RECOMMENDATION_CARD_NOT_ENABLED);
+					await this._vmAssessmentCard.updateSKURecommendationStatus(constants.AZURE_RECOMMENDATION_CARD_NOT_ENABLED);
+				}
+			}
+
 			await this.updateDetailsForEachTarget(MigrationTargetType.SQLDB, dbCount);
 			await this.updateDetailsForEachTarget(MigrationTargetType.SQLMI, dbCount);
 			await this.updateDetailsForEachTarget(MigrationTargetType.SQLVM, dbCount);
@@ -479,9 +491,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	public async startCardLoading(): Promise<void> {
 		// TO-DO: ideally the short SKU recommendation loading time should have a spinning indicator,
 		// but updating the card text will do for now
-		await this._dbAssessmentCard.loadingSKURecommendation();
-		await this._miAssessmentCard.loadingSKURecommendation();
-		await this._vmAssessmentCard.loadingSKURecommendation();
+		await this._dbAssessmentCard.updateSKURecommendationStatus(constants.LOADING_RECOMMENDATIONS);
+		await this._miAssessmentCard.updateSKURecommendationStatus(constants.LOADING_RECOMMENDATIONS);
+		await this._vmAssessmentCard.updateSKURecommendationStatus(constants.LOADING_RECOMMENDATIONS);
 	}
 
 	public async refreshSkuRecommendationComponents(): Promise<void> {

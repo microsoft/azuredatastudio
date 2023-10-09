@@ -431,13 +431,13 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		this._vmRecommendedConfigurationText.value = vmRecommendation;
 	}
 
-	public async loadingSKURecommendation() {
+	public async updateSKURecommendationStatus(status: string) {
 		await this._azureRecommendationNotAvailableText.updateCssStyles({ 'display': 'none' });
 		await this._recommendedConfigurationText.updateCssStyles({ 'display': 'block' });
 		await this._vmRecommendedConfigurationText.updateCssStyles({ 'display': 'none' });
 		await this._viewDetailsLink.updateCssStyles({ 'display': 'none' });
 
-		this._recommendedConfigurationText.value = constants.LOADING_RECOMMENDATIONS;
+		this._recommendedConfigurationText.value = status;
 	}
 
 	// TODO - Check this later, if we need to handle this separately.
