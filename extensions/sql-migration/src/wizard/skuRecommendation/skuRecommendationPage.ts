@@ -12,13 +12,13 @@ import * as contracts from '../../service/contracts';
 
 import { EOL } from 'os';
 import { MigrationWizardPage } from '../../models/migrationWizardPage';
-import { MigrationStateModel, PerformanceDataSourceOptions, StateChangeEvent, AssessmentRuleId } from '../../models/stateMachine';
+import { MigrationStateModel, PerformanceDataSourceOptions, StateChangeEvent } from '../../models/stateMachine';
 import { SkuDataCollectionToolbar } from './skuDataCollectionToolbar';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { FlexContainer } from 'azdata';
 import { AssessmentSummaryCard } from './assessmentSummaryCard';
 import { MigrationTargetType } from '../../api/utils';
-import { logError, TelemetryViews, TelemetryAction, sendSqlMigrationActionEvent, getTelemetryProps } from '../../telemetry';
+import { logError, TelemetryViews } from '../../telemetry';
 import { getSourceConnectionProfile } from '../../api/sqlUtils';
 import { IssueCategory } from '../../constants/helper';
 
@@ -27,7 +27,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 	private _rootContainer!: azdata.FlexContainer;
 	private _assessmentComponent!: azdata.FlexContainer;
-	private _detailsComponent!: azdata.TextComponent;
 
 	private _skuDataCollectionToolbar!: SkuDataCollectionToolbar;
 	private _igComponent!: azdata.TextComponent;
@@ -42,6 +41,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _dbAssessmentCard!: AssessmentSummaryCard;
 	private _miAssessmentCard!: AssessmentSummaryCard;
 	private _vmAssessmentCard!: AssessmentSummaryCard;
+
+	private _skuDataCollectionStatusContainer!: azdata.FlexContainer;
+	private _skuDataCollectionStatusIcon!: azdata.ImageComponent;
+	private _skuDataCollectionStatusText!: azdata.TextComponent;
+	private _skuDataCollectionTimerText!: azdata.TextComponent;
 
 	private _assessmentLoader!: azdata.LoadingComponent;
 	private _assessmentProgress!: azdata.TextComponent;
@@ -78,7 +82,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		igContainer.addItem(this._assessmentStatusIcon, { flex: '0 0 auto' });
 		igContainer.addItem(this._igComponent, { flex: '0 0 auto' });
 
-		this._detailsComponent = this.createDetailsComponent(view);
+		this._skuDataCollectionStatusContainer = this.createPerformanceCollectionStatusContainer(view);
 
 		this._skipAssessmentCheckbox = view.modelBuilder.checkBox()
 			.withProps({
@@ -128,7 +132,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			.withLayout({ flexFlow: 'column' })
 			.withItems([
 				igContainer,
-				this._detailsComponent,
+				this._skuDataCollectionStatusContainer,
 				refreshAssessmentButton,
 				this._skipAssessmentCheckbox,
 				this._skipAssessmentSubText])
@@ -187,13 +191,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		return component;
 	}
 
-	private createDetailsComponent(view: azdata.ModelView): azdata.TextComponent {
-		const component = view.modelBuilder.text()
-			.withProps({ CSSStyles: { ...styles.BODY_CSS } })
-			.component();
-		return component;
-	}
-
 	// Creates the Assessment summary container.
 	private createTargetSummaryComponent(view: azdata.ModelView): FlexContainer {
 		const chooseYourTargetText = this._view.modelBuilder.text().withProps({
@@ -227,9 +224,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const component = this._view.modelBuilder.flexContainer()
 			.withItems([chooseYourTargetText, this._assessmentSummaryCardLoader])
 			.component();
-
-
-		// TODO - OnLinkClick for SKU Recommendations dialog and push it to disposables.
 
 		return component;
 	}
@@ -269,20 +263,15 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					};
 					this._assessmentStatusIcon.iconPath = IconPathHelper.error;
 					this._igComponent.value = constants.ASSESSMENT_FAILED(this._serverName);
-					this._detailsComponent.value = constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR(this._serverName);
 				} else {
 					this._assessmentStatusIcon.iconPath = IconPathHelper.completedMigration;
 					this._igComponent.value = constants.ASSESSMENT_COMPLETED(this._serverName);
-					this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(
-						this.migrationStateModel._assessmentResults?.databaseAssessments?.length);
 				}
 			}
 		} else {
 			// use prior assessment results
 			this._assessmentStatusIcon.iconPath = IconPathHelper.completedMigration;
 			this._igComponent.value = constants.ASSESSMENT_COMPLETED(this._serverName);
-			this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(
-				this.migrationStateModel._assessmentResults?.databaseAssessments?.length);
 		}
 
 		let shouldGetSkuRecommendations = false;
@@ -294,8 +283,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}
 
 		if (this.migrationStateModel.savedInfo?.skuRecommendation) {
-			// TODO - Will be needed once the sku parameters dialog is created.
-			// await this.refreshSkuParameters();
 
 			switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
 				case PerformanceDataSourceOptions.CollectData: {
@@ -527,15 +514,48 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}
 	}
 
-	// TODO - might be needed when SKU recommendation is done.
-	// private createPerformanceCollectionStatusContainer(_view: azdata.ModelView): azdata.FlexContainer {
-	// }
-	// public async refreshSkuParameters(): Promise<void> {
-	// }
-	// private createSkuEditParameters(_view: azdata.ModelView): azdata.FlexContainer {
-	// }
-	// private createAzureRecommendationContainer(_view: azdata.ModelView): azdata.FlexContainer {
-	// }
+	private createPerformanceCollectionStatusContainer(_view: azdata.ModelView): azdata.FlexContainer {
+		this._skuDataCollectionStatusIcon = _view.modelBuilder.image()
+			.withProps({
+				iconPath: IconPathHelper.inProgressMigration,
+				iconHeight: 16,
+				iconWidth: 16,
+				width: 16,
+				height: 16,
+				CSSStyles: { 'margin-right': '4px' }
+			}).component();
+		this._skuDataCollectionStatusText = _view.modelBuilder.text()
+			.withProps({
+				value: '',
+				CSSStyles: { ...styles.BODY_CSS, 'margin': '0' }
+			}).component();
+
+		this._skuDataCollectionTimerText = _view.modelBuilder.text()
+			.withProps({
+				value: '',
+				CSSStyles: {
+					...styles.LABEL_CSS,
+					'margin': 0,
+				}
+			}).component();
+
+		const container = _view.modelBuilder.flexContainer()
+			.withItems([
+				this._skuDataCollectionStatusIcon,
+				this._skuDataCollectionStatusText,
+				this._skuDataCollectionTimerText
+			])
+			.withProps({
+				CSSStyles: {
+					'flex-direction': 'row',
+					'width': 'fit-content',
+					'align-items': 'center',
+					'display': this.migrationStateModel.performanceCollectionNotStarted() ? 'none' : 'flex',
+				}
+			}).component();
+
+		return container;
+	}
 
 	public async startCardLoading(): Promise<void> {
 		// TO-DO: ideally the short SKU recommendation loading time should have a spinning indicator,
@@ -549,29 +569,40 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
 			case PerformanceDataSourceOptions.CollectData: {
 				if (this.migrationStateModel.performanceCollectionInProgress()) {
-					// TODO - update the status container, text and icon.
+					await this._skuDataCollectionStatusIcon.updateProperties({
+						iconPath: IconPathHelper.inProgressMigration
+					});
+					this._skuDataCollectionStatusText.value = this.hasRecommendations()
+						? constants.AZURE_RECOMMENDATION_STATUS_REFINING
+						: constants.AZURE_RECOMMENDATION_STATUS_IN_PROGRESS;
 
 					if (await this.migrationStateModel.isWaitingForFirstTimeRefresh()) {
-						// TODO - update the sku datacollection timer.
+						const elapsedTimeInMins = Math.abs(new Date().getTime() - new Date(this.migrationStateModel._perfDataCollectionStartDate!).getTime()) / 60000;
+						const skuRecAutoRefreshTimeInMins = this.migrationStateModel.refreshGetSkuRecommendationFrequency / 60000;
+
+						this._skuDataCollectionTimerText.value = constants.AZURE_RECOMMENDATION_STATUS_AUTO_REFRESH_TIMER(Math.ceil(skuRecAutoRefreshTimeInMins - elapsedTimeInMins));
 					} else {
-						// TODO - update the sku datacollection timer.
+						// Timer is only for first refresh.
+						this._skuDataCollectionTimerText.value = '';
 					}
 
 					// TODO - update the visibility of different button and status message.
+					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'block' });
 				}
 
-				// TODO - implement the functionality of stopp data collection button functionality.
 				else if (this.migrationStateModel.performanceCollectionStopped()) {
-					// TODO - update the status container, text and icon.
+					await this._skuDataCollectionStatusIcon.updateProperties({
+						iconPath: IconPathHelper.stop
+					});
+					this._skuDataCollectionStatusText.value = constants.AZURE_RECOMMENDATION_STATUS_STOPPED;
+					this._skuDataCollectionTimerText.value = '';
 					// TODO - update the visibility of different button and status message.
 				}
 				break;
 			}
 
-			// TODO - implement the import performance data functionality.
 			case PerformanceDataSourceOptions.OpenExisting: {
 				if (this.hasRecommendations()) {
-					// TODO - update the status container, text and icon.
 					// TODO - update the visibility of different button and status message.
 				}
 				break;
@@ -580,6 +611,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			// initial state before "Get Azure recommendation" dialog
 			default: {
 				// TODO - update the visibility of different button and status message.
+				await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'none' });
 				break;
 			}
 		}
@@ -589,8 +621,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	public async refreshAzureRecommendation(): Promise<void> {
 		await this.startCardLoading();
-		// TODO - update the last refresh time.
-		// this._skuLastRefreshTimeText.value = constants.LAST_REFRESHED_TIME();
 		await this.migrationStateModel.getSkuRecommendations();
 
 		const skuRecommendationError = this.migrationStateModel._skuRecommendationResults?.recommendationError;
@@ -603,8 +633,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}
 
 		await this.refreshSkuRecommendationComponents();
-		// TODO - Update the refreshTime for SKU Recommendation.
-		// this._skuLastRefreshTimeText.value = constants.LAST_REFRESHED_TIME(new Date().toLocaleString());
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
