@@ -54,7 +54,7 @@ steps:
   - powershell: |
       git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
       git fetch distro
-      git cherry-pick 51ef46d56b81ae967f3ae185661996540bf2b642
+      git merge ab87de2203e5a9d8377a74725dc6e2258de6da79
     condition: eq(variables['VSCODE_QUALITY'], 'agc')
     displayName: Merge AGC endpoints
 
