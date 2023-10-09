@@ -23,7 +23,7 @@ import { SkuEditParametersDialog } from '../../dialog/skuRecommendationResults/s
 const DEFAULT_PATH_FOR_START_DATA_COLLECTION = "C:\DataPointsCollectionFolder";
 
 export class SkuDataCollectionToolbar implements vscode.Disposable {
-	private _refreshSKURecommendationButton!: azdata.ButtonComponent;
+	private _refreshButtonSelectionDropdown!: azdata.DropDownComponent;
 	private _startPerformanceCollectionButton!: azdata.ButtonComponent;
 	private _stopPerformanceCollectionButton!: azdata.ButtonComponent;
 	private _importPerformanceDataButton!: azdata.ButtonComponent;
@@ -39,14 +39,14 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 	public createToolbar(view: azdata.ModelView): azdata.ToolbarContainer {
 		const toolbar = view.modelBuilder.toolbarContainer();
 
-		this._refreshSKURecommendationButton = this.createRefreshSKURecommendationButton(view);
+		this._refreshButtonSelectionDropdown = this.createRefreshButtonSelectionDropDown(view);
 		this._startPerformanceCollectionButton = this.createStartPerformanceCollectionButton(view);
 		this._stopPerformanceCollectionButton = this.createStopPerformanceCollectionButton(view);
 		this._importPerformanceDataButton = this.createImportPerformanceDataButton(view);
 		this._recommendationParametersButton = this.createRecommendationParametersButton(view);
 
 		toolbar.addToolbarItems([
-			<azdata.ToolbarComponent>{ component: this._refreshSKURecommendationButton, toolbarSeparatorAfter: true },
+			<azdata.ToolbarComponent>{ component: this._refreshButtonSelectionDropdown, toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this._startPerformanceCollectionButton, toolbarSeparatorAfter: false },
 			<azdata.ToolbarComponent>{ component: this._stopPerformanceCollectionButton, toolbarSeparatorAfter: false },
 			<azdata.ToolbarComponent>{ component: this._importPerformanceDataButton, toolbarSeparatorAfter: true },
@@ -56,24 +56,29 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		return toolbar.component();
 	}
 
-	private createRefreshSKURecommendationButton(view: azdata.ModelView): azdata.ButtonComponent {
-		const refreshSKURecommendationButton = view.modelBuilder.button()
-			.withProps({
-				buttonType: azdata.ButtonType.Normal,
-				label: constants.REFRESH,
-				height: 36,
-				iconHeight: 16,
-				iconWidth: 16,
-				iconPath: IconPathHelper.refresh,
-				CSSStyles: {
-					...styles.TOOLBAR_CSS
-				}
-			}).component();
+	private createRefreshButtonSelectionDropDown(view: azdata.ModelView): azdata.DropDownComponent {
+		const refreshButtonSelectionDropdown = view.modelBuilder.dropDown().withProps({
+			ariaLabel: constants.AZURE_SQL_TARGET,
+			placeholder: "Refresh",
+			values: ["Refresh assessment"],
+			editable: true,
+			fireOnTextChange: true,
+			CSSStyles: {
+				'margin': '0',
+				'padding-top': '5px'
+			},
+		}).component();
 
-		this._disposables.push(refreshSKURecommendationButton.onDidClick(async () => {
-			await this.skuRecommendationPage.refreshAzureRecommendation();
+		this._disposables.push(refreshButtonSelectionDropdown.onValueChanged(async (value) => {
+			if (value === "Refresh assessment") {
+				await this.skuRecommendationPage.refreshAssessment();
+			}
+			else if (value === "Refresh SKU") {
+				await this.skuRecommendationPage.refreshAzureRecommendation();
+			}
 		}));
-		return refreshSKURecommendationButton;
+
+		return refreshButtonSelectionDropdown;
 	}
 
 	private createStartPerformanceCollectionButton(view: azdata.ModelView): azdata.ButtonComponent {

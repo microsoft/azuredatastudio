@@ -109,30 +109,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this._skipAssessmentCheckbox.onChanged(
 				async (value) => await this._setAssessmentState(false, true)));
 
-		const refreshAssessmentButton = this._view.modelBuilder.button()
-			.withProps({
-				iconPath: IconPathHelper.refresh,
-				label: constants.REFRESH_ASSESSMENT_BUTTON_LABEL,
-				width: 160,
-				height: 24,
-				CSSStyles: {
-					...styles.BODY_CSS,
-					'margin': '12px 0 4px 0'
-				}
-			}).component();
-
-		this._disposables.push(refreshAssessmentButton.onDidClick(async () => {
-			await this.startCardLoading();
-			this.migrationStateModel._runAssessments = true;
-			await this.constructDetails();
-		}));
-
 		const statusContainer = this._view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withItems([
 				igContainer,
 				this._skuDataCollectionStatusContainer,
-				refreshAssessmentButton,
 				this._skipAssessmentCheckbox,
 				this._skipAssessmentSubText])
 			.withProps({ CSSStyles: { 'margin': '0' } })
@@ -556,6 +537,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}
 
 		await this.refreshCardText(false);
+	}
+
+	public async refreshAssessment(): Promise<void> {
+		await this.startCardLoading();
+		this.migrationStateModel._runAssessments = true;
+		await this.constructDetails();
 	}
 
 	public async refreshAzureRecommendation(): Promise<void> {
