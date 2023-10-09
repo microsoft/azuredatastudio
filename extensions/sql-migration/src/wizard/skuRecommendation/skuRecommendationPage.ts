@@ -402,7 +402,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		if (targetType === MigrationTargetType.SQLVM) {
 			this._vmAssessmentCard.updateAssessmentResult(dbCount, dbCount, 0, 0, 0, 0);
 			if (targetConfigurations?.length > 0) {
-				await this._vmAssessmentCard.updateSkuRecommendation(targetConfigurations[0], targetConfigurations[1] ?? "");
+				await this._vmAssessmentCard.updateSkuRecommendationDetails(targetConfigurations[0], targetConfigurations[1] ?? "");
 			}
 			return;
 		}
@@ -435,12 +435,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			case MigrationTargetType.SQLDB:
 				this._dbAssessmentCard.updateAssessmentResult(dbCount, dbReady, dbReadyWithWarnings, dbNotReady, blockers, warnings);
 				if (targetConfigurations.length > 0)
-					await this._dbAssessmentCard.updateSkuRecommendation(targetConfigurations[0]);
+					await this._dbAssessmentCard.updateSkuRecommendationDetails(targetConfigurations[0]);
 				break;
 			case MigrationTargetType.SQLMI:
 				this._miAssessmentCard.updateAssessmentResult(dbCount, dbReady, dbReadyWithWarnings, dbNotReady, blockers, warnings);
 				if (targetConfigurations.length > 0)
-					await this._miAssessmentCard.updateSkuRecommendation(targetConfigurations[0]);
+					await this._miAssessmentCard.updateSkuRecommendationDetails(targetConfigurations[0]);
 				break;
 		}
 	}
