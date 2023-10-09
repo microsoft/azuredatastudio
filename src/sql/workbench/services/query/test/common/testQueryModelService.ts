@@ -30,6 +30,9 @@ export class TestQueryModelService implements IQueryModelService {
 	getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Promise<azdata.ResultSetSubset> {
 		throw new Error('Method not implemented.');
 	}
+	runInternalQuery(uri: string, selection: string): Promise<azdata.SimpleExecuteResult> {
+		throw new Error('Method not implemented.');
+	}
 	runQuery(uri: string, range: IRange, runOptions?: azdata.ExecutionPlanOptions): void {
 		throw new Error('Method not implemented.');
 	}

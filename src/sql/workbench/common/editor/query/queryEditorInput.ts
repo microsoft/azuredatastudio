@@ -14,7 +14,7 @@ import { IConnectionManagementService, IConnectableInput, INewConnectionParams, 
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
-import { ExecutionPlanOptions } from 'azdata';
+import { ExecutionPlanOptions, SimpleExecuteResult } from 'azdata';
 import { IRange } from 'vs/editor/common/core/range';
 import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
@@ -143,7 +143,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	private _state = this._register(new QueryEditorState());
 	public get state(): QueryEditorState { return this._state; }
 
-	public _spid = '';
+	private _currentSPID: string = '';
 
 	constructor(
 		private _description: string | undefined,
@@ -201,6 +201,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	// Getters for private properties
+	public get spid(): string { return this._currentSPID }
 	public get uri(): string { return this.resource!.toString(true); }
 	public get text(): AbstractTextResourceEditorInput { return this._text; }
 	public get results(): QueryResultsInput { return this._results; }
@@ -286,6 +287,10 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		this.state.executing = true;
 	}
 
+	public async runInternalQuery(text: string): Promise<SimpleExecuteResult> {
+		return this.queryModelService.runInternalQuery(this.uri, text);
+	}
+
 	public onConnectStart(): void {
 		this.state.connecting = true;
 		this.state.connected = false;
@@ -305,11 +310,10 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		this.state.connecting = false;
 	}
 
-	public onConnectSuccess(params?: INewConnectionParams): void {
+	public async onConnectSuccess(params?: INewConnectionParams): Promise<void> {
 		this.state.connected = true;
 		this.state.connecting = false;
-
-		this.runQueryString(`SELECT @@SPID AS 'ID'`);
+		await this.runInternalQuery(`SELECT @@SPID AS 'ID'`);
 		// TODO - Need to find a way to retrieve results, and clear them after the execution is complete.
 
 		let isRunningQuery = this.queryModelService.isRunningQuery(this.uri);
