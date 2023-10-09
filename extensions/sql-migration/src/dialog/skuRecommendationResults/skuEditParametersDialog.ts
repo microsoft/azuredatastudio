@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { MigrationStateModel } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
-import { selectDropDownIndex } from '../../api/utils';
+import { hasRecommendations, selectDropDownIndex } from '../../api/utils';
 import { SKURecommendationPage } from '../../wizard/skuRecommendation/skuRecommendationPage';
 
 export const TARGET_PERCENTILE_VALUES = [99, 97, 95, 90, 75, 50];
@@ -302,7 +302,7 @@ export class SkuEditParametersDialog {
 		this.migrationStateModel._skuTargetPercentile = Number((<azdata.CategoryValue>this._targetPercentileDropdown.value).name);
 		this.migrationStateModel._skuEnablePreview = this._enablePreviewValue;
 		this.migrationStateModel._skuEnableElastic = this._enableElasticRecommendation;
-		if (this.skuRecommendationPage.hasRecommendations()) {
+		if (hasRecommendations(this.migrationStateModel)) {
 			await this.skuRecommendationPage.refreshAzureRecommendation();
 		}
 	}

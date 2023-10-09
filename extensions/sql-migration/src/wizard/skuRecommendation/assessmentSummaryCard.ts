@@ -12,7 +12,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
-import { MigrationTargetType } from '../../api/utils';
+import { MigrationTargetType, hasRecommendations } from '../../api/utils';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { ColorCodes } from '../../constants/helper';
 import { SKURecommendationPage } from './skuRecommendationPage';
@@ -382,7 +382,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		}).component();
 
 		this._viewDetailsLink.onDidClick(async () => {
-			if (this.skuRecommendationPage.hasRecommendations()) {
+			if (hasRecommendations(this.migrationStateModel)) {
 				const skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, this.migrationTargetType);
 				await skuRecommendationResultsDialog.openDialog(
 					this.migrationTargetType,
