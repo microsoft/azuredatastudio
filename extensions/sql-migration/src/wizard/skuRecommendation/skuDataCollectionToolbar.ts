@@ -158,8 +158,6 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 
 					// Start data collection at folder path selected.
 					await this.executeStartDataCollection();
-				} else {
-					// Do nothing since no path selected.
 				}
 			}
 		}));
