@@ -25,6 +25,7 @@ const DEFAULT_PATH_FOR_START_DATA_COLLECTION = "C:\DataPointsCollectionFolder";
 export class SkuDataCollectionToolbar implements vscode.Disposable {
 	private _refreshButtonSelectionDropdown!: azdata.DropDownComponent;
 	private _startPerformanceCollectionButton!: azdata.ButtonComponent;
+	private _restartPerformanceCollectionButton!: azdata.ButtonComponent;
 	private _stopPerformanceCollectionButton!: azdata.ButtonComponent;
 	private _importPerformanceDataButton!: azdata.ButtonComponent;
 	private _recommendationParametersButton!: azdata.ButtonComponent;
@@ -45,6 +46,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 
 		this._refreshButtonSelectionDropdown = this.createRefreshButtonSelectionDropDown(view);
 		this._startPerformanceCollectionButton = this.createStartPerformanceCollectionButton(view);
+		this._restartPerformanceCollectionButton = this.createRestartPerformanceCollectionButton(view);
 		this._stopPerformanceCollectionButton = this.createStopPerformanceCollectionButton(view);
 		this._importPerformanceDataButton = this.createImportPerformanceDataButton(view);
 		this._recommendationParametersButton = this.createRecommendationParametersButton(view);
@@ -52,6 +54,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		toolbar.addToolbarItems([
 			<azdata.ToolbarComponent>{ component: this._refreshButtonSelectionDropdown, toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this._startPerformanceCollectionButton, toolbarSeparatorAfter: false },
+			<azdata.ToolbarComponent>{ component: this._restartPerformanceCollectionButton, toolbarSeparatorAfter: false },
 			<azdata.ToolbarComponent>{ component: this._stopPerformanceCollectionButton, toolbarSeparatorAfter: false },
 			<azdata.ToolbarComponent>{ component: this._importPerformanceDataButton, toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this._recommendationParametersButton, toolbarSeparatorAfter: false },
@@ -153,6 +156,37 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		return startPerformanceCollectionButton;
 	}
 
+	private createRestartPerformanceCollectionButton(view: azdata.ModelView): azdata.ButtonComponent {
+		const restartPerformanceCollectionButton = view.modelBuilder.button()
+			.withProps({
+				buttonType: azdata.ButtonType.Normal,
+				label: constants.RESTART_PERFORMANCE_COLLECTION,
+				height: 36,
+				iconHeight: 16,
+				iconWidth: 16,
+				iconPath: IconPathHelper.startDataCollection,
+				CSSStyles: {
+					...styles.TOOLBAR_CSS,
+					display: 'none',
+				}
+			}).component();
+		restartPerformanceCollectionButton.enabled = false;
+		this._disposables.push(restartPerformanceCollectionButton.onDidClick(async () => {
+			this._stopPerformanceCollectionButton.enabled = true;
+			this._restartPerformanceCollectionButton.enabled = false;
+
+			await this.migrationStateModel.startPerfDataCollection(
+				this.migrationStateModel._skuRecommendationPerformanceLocation,
+				this.migrationStateModel._performanceDataQueryIntervalInSeconds,
+				this.migrationStateModel._staticDataQueryIntervalInSeconds,
+				this.migrationStateModel._numberOfPerformanceDataQueryIterations,
+				this.skuRecommendationPage);
+			await this.skuRecommendationPage.refreshSkuRecommendationComponents();
+		}));
+
+		return restartPerformanceCollectionButton;
+	}
+
 	private createStopPerformanceCollectionButton(view: azdata.ModelView): azdata.ButtonComponent {
 		const stopPerformanceCollectionButton = view.modelBuilder.button()
 			.withProps({
@@ -169,8 +203,11 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		stopPerformanceCollectionButton.enabled = false;
 		this._disposables.push(stopPerformanceCollectionButton.onDidClick(async () => {
 			this._stopPerformanceCollectionButton.enabled = false;
-			this._startPerformanceCollectionButton.enabled = true;
-			this._startPerformanceCollectionButton.label = constants.RESTART_PERFORMANCE_COLLECTION;
+
+			await this._startPerformanceCollectionButton.updateCssStyles({ 'display': 'none' });
+			await this._restartPerformanceCollectionButton.updateCssStyles({ 'display': 'inline' });
+
+			this._restartPerformanceCollectionButton.enabled = true;
 
 			await this.migrationStateModel.stopPerfDataCollection();
 			await this.skuRecommendationPage.refreshAzureRecommendation();
