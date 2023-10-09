@@ -50,7 +50,7 @@ describe('ProjectsController', function (): void {
 	});
 
 	after(async function (): Promise<void> {
-		//await testUtils.deleteGeneratedTestFolder();
+		await testUtils.deleteGeneratedTestFolder();
 	});
 
 	describe('project controller operations', function (): void {
