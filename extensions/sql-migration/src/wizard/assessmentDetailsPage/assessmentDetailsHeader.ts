@@ -107,7 +107,7 @@ export class AssessmentDetailsHeader {
 		const recommendedConfigurations = await utils.getRecommendedConfiguration(migrationStateModel._targetType, migrationStateModel);
 		let configurationValue = recommendedConfigurations[0] ?? "--";
 
-		if (migrationStateModel._targetType === MigrationTargetType.SQLVM && recommendedConfigurations.length > 1) {
+		if (migrationStateModel._targetType === MigrationTargetType.SQLVM && recommendedConfigurations?.length > 1) {
 			configurationValue = recommendedConfigurations[0] + "\n" + recommendedConfigurations[1];
 		}
 		const assessmentHeaderValues = [
@@ -118,7 +118,7 @@ export class AssessmentDetailsHeader {
 				value: String(migrationStateModel?._assessedDatabaseList.length)
 			},
 			{
-				value: String(migrationStateModel._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === migrationStateModel._targetType && issue.issueCategory === IssueCategory.Issue).length === 0).length)
+				value: String(migrationStateModel._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === migrationStateModel._targetType && issue.issueCategory === IssueCategory.Issue)?.length === 0)?.length)
 			}];
 
 		// iterating over each value container and filling it with the corresponding text.

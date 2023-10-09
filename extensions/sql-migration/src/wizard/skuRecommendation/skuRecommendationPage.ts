@@ -408,8 +408,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		// For Target - SQLVM, all databases can be migrated with issues. So dbReady = dbCount;
 		if (targetType === MigrationTargetType.SQLVM) {
 			this._vmAssessmentCard.updateAssessmentResult(dbCount, dbCount, 0, 0, 0, 0);
-			if (targetConfigurations.length > 0)
+			if (targetConfigurations?.length > 0) {
 				await this._vmAssessmentCard.updateSkuRecommendation(targetConfigurations[0], targetConfigurations[1] ?? "");
+			}
 			return;
 		}
 
@@ -509,7 +510,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					await this._skuDataCollectionStatusIcon.updateProperties({
 						iconPath: IconPathHelper.inProgressMigration
 					});
-					this._skuDataCollectionStatusText.value = this.hasRecommendations()
+					this._skuDataCollectionStatusText.value = utils.hasRecommendations(this.migrationStateModel)
 						? constants.AZURE_RECOMMENDATION_STATUS_REFINING
 						: constants.AZURE_RECOMMENDATION_STATUS_IN_PROGRESS;
 
@@ -539,7 +540,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 
 			case PerformanceDataSourceOptions.OpenExisting: {
-				if (this.hasRecommendations()) {
+				if (utils.hasRecommendations(this.migrationStateModel)) {
+					// TODO - update the status container, text and icon.
 					// TODO - update the visibility of different button and status message.
 				}
 				break;

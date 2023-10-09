@@ -1212,7 +1212,7 @@ export async function getRecommendedConfiguration(targetType: MigrationTargetTyp
 			const recommendations = model._skuEnableElastic
 				? model._skuRecommendationResults.recommendations!.elasticSqlDbRecommendationResults
 				: model._skuRecommendationResults.recommendations!.sqlDbRecommendationResults;
-			const successfulRecommendationsCount = recommendations.filter(r => r.targetSku !== null).length;
+			const successfulRecommendationsCount = recommendations.filter(r => r.targetSku !== null)?.length ?? 0;
 			return [constants.RECOMMENDATIONS_AVAILABLE(successfulRecommendationsCount)];
 		case MigrationTargetType.SQLMI:
 			if (model._skuEnableElastic) {
