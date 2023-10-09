@@ -536,7 +536,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				CSSStyles: {
 					...styles.LABEL_CSS,
 					'margin': 0,
-					// 'margin': '0 0 8px 20px',
 				}
 			}).component();
 
