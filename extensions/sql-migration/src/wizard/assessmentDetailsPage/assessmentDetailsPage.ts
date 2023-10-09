@@ -34,7 +34,7 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 			azdata.window.createWizardPage(constants.ASSESSMENT_RESULTS_PAGE_TITLE),
 			migrationStateModel);
 		this._header = new AssessmentDetailsHeader();
-		this._body = new AssessmentDetailsBody(migrationStateModel);
+		this._body = new AssessmentDetailsBody(migrationStateModel, wizard);
 	}
 
 	// function to register assessment details page content.

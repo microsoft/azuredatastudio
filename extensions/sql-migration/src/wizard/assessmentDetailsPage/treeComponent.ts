@@ -13,6 +13,8 @@ import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
 import { selectDatabasesFromList } from '../../constants/helper';
 import { getSourceConnectionProfile } from '../../api/sqlUtils';
 
+const AZURE_SQL_MI_DB_COUNT_THRESHOLD = 100;
+
 const styleLeft: azdata.CssStyles = {
 	'border': 'none',
 	'text-align': 'left',
@@ -56,6 +58,8 @@ export class TreeComponent {
 	private _databaseCount!: azdata.TextComponent;
 	private _disposables: vscode.Disposable[] = [];
 	private _model!: MigrationStateModel;
+
+	constructor(public wizard: azdata.window.Wizard) { }
 
 	public get instanceTable() {
 		return this._instanceTable;
@@ -228,8 +232,24 @@ export class TreeComponent {
 	}
 
 	private async updateValuesOnSelectionAsync(migrationStateModel: MigrationStateModel) {
+		const selectedDbsCount = this.selectedDbs()?.length;
+		if (migrationStateModel._targetType === MigrationTargetType.SQLMI && selectedDbsCount > AZURE_SQL_MI_DB_COUNT_THRESHOLD) {
+			this.wizard.nextButton.enabled = false;
+			this.wizard.message = {
+				level: azdata.window.MessageLevel.Error,
+				text: constants.AZURE_SQL_MI_DB_COUNT_THRESHOLD_EXCEEDS_ERROR(AZURE_SQL_MI_DB_COUNT_THRESHOLD)
+			};
+		}
+		else if (!this.wizard.nextButton.enabled) {
+			this.wizard.nextButton.enabled = true;
+			this.wizard.message = {
+				level: azdata.window.MessageLevel.Information,
+				text: constants.AZURE_SQL_MI_DB_COUNT_UNDER_THRESHOLD
+			};
+		}
+
 		await this._databaseCount.updateProperties({
-			'value': constants.DATABASES(this.selectedDbs()?.length, migrationStateModel._databasesForAssessment?.length)
+			'value': constants.DATABASES(selectedDbsCount, migrationStateModel._databasesForAssessment?.length)
 		});
 	}
 
@@ -282,6 +302,15 @@ export class TreeComponent {
 				]);
 			});
 		} else {
+
+			if (migrationStateModel._targetType === MigrationTargetType.SQLMI && selectedDbs?.length > AZURE_SQL_MI_DB_COUNT_THRESHOLD) {
+				this.wizard.nextButton.enabled = false;
+				this.wizard.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: constants.AZURE_SQL_MI_DB_COUNT_THRESHOLD_EXCEEDS_ERROR(AZURE_SQL_MI_DB_COUNT_THRESHOLD),
+				};
+			}
+
 			instanceTableValues = [[
 				{
 					value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
