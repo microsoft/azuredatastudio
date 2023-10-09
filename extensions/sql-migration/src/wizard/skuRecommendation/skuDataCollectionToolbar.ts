@@ -36,6 +36,10 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 	constructor(private skuRecommendationPage: SKURecommendationPage, public wizard: azdata.window.Wizard, private migrationStateModel: MigrationStateModel) {
 	}
 
+	public get refreshButtonSelectionDropdown() {
+		return this._refreshButtonSelectionDropdown;
+	}
+
 	public createToolbar(view: azdata.ModelView): azdata.ToolbarContainer {
 		const toolbar = view.modelBuilder.toolbarContainer();
 
@@ -57,10 +61,13 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 	}
 
 	private createRefreshButtonSelectionDropDown(view: azdata.ModelView): azdata.DropDownComponent {
+		const refreshAssessmentOption = constants.REFRESH_ASSESSMENT_LABEL;
+		const refreshSKUOption = constants.REFRESH_SKU_LABEL;
+
 		const refreshButtonSelectionDropdown = view.modelBuilder.dropDown().withProps({
 			ariaLabel: constants.AZURE_SQL_TARGET,
-			placeholder: "Refresh",
-			values: ["Refresh assessment"],
+			placeholder: constants.REFRESH,
+			values: [refreshAssessmentOption],
 			editable: true,
 			fireOnTextChange: true,
 			CSSStyles: {
@@ -70,10 +77,12 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		}).component();
 
 		this._disposables.push(refreshButtonSelectionDropdown.onValueChanged(async (value) => {
-			if (value === "Refresh assessment") {
+			if (value === refreshAssessmentOption) {
+				refreshButtonSelectionDropdown.value = constants.REFRESH;
 				await this.skuRecommendationPage.refreshAssessment();
 			}
-			else if (value === "Refresh SKU") {
+			else if (value === refreshSKUOption) {
+				refreshButtonSelectionDropdown.value = constants.REFRESH;
 				await this.skuRecommendationPage.refreshAzureRecommendation();
 			}
 		}));
@@ -159,6 +168,10 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 			}).component();
 		stopPerformanceCollectionButton.enabled = false;
 		this._disposables.push(stopPerformanceCollectionButton.onDidClick(async () => {
+			this._stopPerformanceCollectionButton.enabled = false;
+			this._startPerformanceCollectionButton.enabled = true;
+			this._startPerformanceCollectionButton.label = constants.RESTART_PERFORMANCE_COLLECTION;
+
 			await this.migrationStateModel.stopPerfDataCollection();
 			await this.skuRecommendationPage.refreshAzureRecommendation();
 		}));
@@ -181,6 +194,9 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 
 		this._disposables.push(
 			importPerformanceDataButton.onDidClick(async (e) => {
+				this._stopPerformanceCollectionButton.enabled = false;
+				this._startPerformanceCollectionButton.enabled = false;
+
 				const importPerformanceDataDialog = new ImportPerformanceDataDialog(this.skuRecommendationPage, this.wizard, this.migrationStateModel);
 				await importPerformanceDataDialog.openDialog();
 			})

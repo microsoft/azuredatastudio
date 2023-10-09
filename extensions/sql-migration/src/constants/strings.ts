@@ -154,7 +154,8 @@ export const PERF_DATA_COLLECTION_ERROR = (serverName: string, errors: string[])
 };
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_BYPASS = localize('sql.migration.wizard.sku.assessment.error.bypass', 'Check this option to skip assessment and continue the migration.');
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_DETAIL = localize('sql.migration.wizard.sku.assessment.error.detail', '[There are no assessment results to validate readiness of your database migration. By checking this box, you acknowledge you want to proceed migrating your database to the desired Azure SQL target.]',);
-export const REFRESH_ASSESSMENT_BUTTON_LABEL = localize('sql.migration.refresh.assessment.button.label', "Refresh assessment");
+export const REFRESH_ASSESSMENT_LABEL = localize('sql.migration.refresh.assessment.label', "Refresh assessment");
+export const REFRESH_SKU_LABEL = localize('sql.migration.refresh.sku.label', "Refresh SKU");
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose your Azure SQL target");
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET_HELP = localize('sql.migration.wizard.sku.choose_a_target.help', "Not sure which Azure SQL target is right for you? Learn more");
 
