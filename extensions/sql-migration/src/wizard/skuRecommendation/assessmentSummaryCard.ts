@@ -106,6 +106,9 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		cardContainer.addItem(this.createAssessmentResultsContainer(view));
 		cardContainer.addItem(this.createRecommendedConfigurationContainer(view));
 
+		this._disposables.push(view.onClosed(
+			e => this.dispose()));
+
 		return cardContainer;
 	}
 
@@ -317,7 +320,6 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 	}
 
 	// Creates the SKU recommendation Part of summary.
-	// TODO - Add the dialog link later which gives the detail of SKU Recommendation.
 	private createRecommendedConfigurationContainer(view: azdata.ModelView) {
 		const container = view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
@@ -441,7 +443,6 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		this._azureRecommendationStatusText.value = status;
 	}
 
-	// TODO - Check this later, if we need to handle this separately.
 	public dispose(): void {
 		this._disposables.forEach(
 			d => { try { d.dispose(); } catch { } });

@@ -60,6 +60,9 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 			<azdata.ToolbarComponent>{ component: this._recommendationParametersButton, toolbarSeparatorAfter: false },
 		]);
 
+		this._disposables.push(view.onClosed(
+			e => this.dispose()));
+
 		return toolbar.component();
 	}
 
@@ -232,7 +235,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		this._disposables.push(
 			importPerformanceDataButton.onDidClick(async (e) => {
 				this._stopPerformanceCollectionButton.enabled = false;
-				this._startPerformanceCollectionButton.enabled = false;
+				this._startPerformanceCollectionButton.enabled = true;
 
 				const importPerformanceDataDialog = new ImportPerformanceDataDialog(this.skuRecommendationPage, this.wizard, this.migrationStateModel);
 				await importPerformanceDataDialog.openDialog();
@@ -280,7 +283,6 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 	}
 
 	public dispose(): void {
-		// TODO - need to call this at the place where toolbar is initialized
 		this._disposables.forEach(
 			d => { try { d.dispose(); } catch { } });
 	}

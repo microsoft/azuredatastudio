@@ -519,8 +519,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						this._skuDataCollectionTimerText.value = '';
 					}
 
-					// TODO - update the visibility of different button and status message.
-					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'block' });
+					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'flex' });
 				}
 
 				else if (this.migrationStateModel.performanceCollectionStopped()) {
@@ -531,15 +530,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					});
 					this._skuDataCollectionStatusText.value = constants.AZURE_RECOMMENDATION_STATUS_STOPPED;
 					this._skuDataCollectionTimerText.value = '';
-					// TODO - update the visibility of different button and status message.
 				}
 				break;
 			}
 
 			case PerformanceDataSourceOptions.OpenExisting: {
 				if (utils.hasRecommendations(this.migrationStateModel)) {
-					// TODO - update the status container, text and icon.
-					// TODO - update the visibility of different button and status message.
 					this._skuDataCollectionToolbar.refreshButtonSelectionDropdown.values = [constants.REFRESH_ASSESSMENT_LABEL, constants.REFRESH_SKU_LABEL];
 				}
 				break;
@@ -547,8 +543,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 			// initial state before "Get Azure recommendation" dialog
 			default: {
-				// TODO - update the visibility of different button and status message.
-				await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'none' });
+				await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'flex' });
 				break;
 			}
 		}
