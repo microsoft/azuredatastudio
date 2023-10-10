@@ -268,9 +268,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		}*/
 
 		await utils.updateControlDisplay(this._certMigrationRequiredInfoBox, this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates());
-		if (!this._azureAccountsDropdown.value) {
-
-		}
 		await this.populateAzureAccountsDropdown();
 		await this.populateLocationDropdown();
 	}
