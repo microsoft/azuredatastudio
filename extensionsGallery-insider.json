@@ -5206,7 +5206,8 @@
 					],
 					"statistics": [],
 					"flags": ""
-			},{
+				},
+				{
 					"extensionId": "102",
 					"extensionName": "storeprocdure2SQL",
 					"displayName": "Store Procdure To SQL",
@@ -5266,68 +5267,133 @@
 					],
 					"statistics": [],
 					"flags": ""
-			},
-			{
-				"extensionId": "103",
-				"extensionName": "black",
-				"displayName": "Black",
-				"shortDescription": "A port of the VSCode Black color theme by Jaakkko for use with Azure Data Studio.",
-				"publisher": {
-					"displayName": "Will Hinson",
-					"publisherId": "will-hinson",
-					"publisherName": "will-hinson"
 				},
-				"versions": [
-					{
-						"version": "0.0.1",
-						"lastUpdated": "10/3/2023",
-						"assetUri": "",
-						"fallbackAssetUri": "fallbackAssetUri",
-						"files": [
-							{
-								"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-								"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/packages/black-0.0.1.vsix"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-								"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/assets/icon.png"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-								"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/README.md"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Code.Manifest",
-								"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/package.json"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Services.Content.License",
-								"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/LICENSE"
-							}
-						],
-						"properties": [
-							{
-								"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
-								"value": ""
-							},
-							{
-								"key": "Microsoft.VisualStudio.Code.Engine",
-								"value": "*"
-							},
-							{
-								"key": "Microsoft.AzDataEngine",
-								"value": "*"
-							},
-							{
-								"key": "Microsoft.VisualStudio.Services.Links.Source",
-								"value": "https://github.com/will-hinson/ads-black-theme"
-							}
-						]
-					}
-				],
-				"statistics": [],
-				"flags": ""
-			}
+				{
+					"extensionId": "103",
+					"extensionName": "black",
+					"displayName": "Black",
+					"shortDescription": "A port of the VSCode Black color theme by Jaakkko for use with Azure Data Studio.",
+					"publisher": {
+						"displayName": "Will Hinson",
+						"publisherId": "will-hinson",
+						"publisherName": "will-hinson"
+					},
+					"versions": [
+						{
+							"version": "0.0.1",
+							"lastUpdated": "10/3/2023",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/packages/black-0.0.1.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/assets/icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/will-hinson/ads-black-theme"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
+				},
+				{
+					"extensionId": "104",
+					"extensionName": "azuredatastudio-oracle-extension-pack",
+					"displayName": "Database Migration Service Pack for Oracle",
+					"shortDescription": "provides seamless assessment, conversion, and data migration to Azure Database PaaS service, eliminating any potential challenges during the migration process",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "1.1.2",
+							"lastUpdated": "10/10/2023",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.2/azuredatastudio-oracle-extension-pack-1.1.2.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.2/extension.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.2/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.2/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.2/LICENSE.html"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionPack",
+									"value": "Microsoft.azuredatastudio-dma-oracle,microsoft.dsct-oracle-to-ms-sql,microsoft.oracle-datamigration"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
+				}
 			],
 			"resultMetadata": [
 				{
@@ -5335,7 +5401,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 87
+							"count": 88
 						}
 					]
 				}
