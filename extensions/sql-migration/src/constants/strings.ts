@@ -549,7 +549,7 @@ export function ACCOUNT_CREDENTIALS_REFRESH(accountName: string): string {
 		"{0} (requires credentials refresh)",
 		accountName);
 }
-export const SELECT_SERVICE_PLACEHOLDER = localize('sql.migration.select.service.select.migration.target', "Select a target server.");
+export const SELECT_SERVICE_PLACEHOLDER = localize('sql.migration.select.service.select.migration.target', "Select a target server");
 
 // database backup page
 export const DATA_SOURCE_CONFIGURATION_PAGE_TITLE = localize('sql.migration.data.source.configuration.page.title', "Data source configuration");
@@ -936,6 +936,7 @@ export const SCHEMA_MIGRATION_CHECKBOX_INFO = localize('sql.migration.schema.mig
 export const SCHEMA_ONLY = localize('sql.migration.schema.only', "Schema only");
 export const DATA_ONLY = localize('sql.migration.data.only', "Data only");
 export const SCHEMA_AND_DATA = localize('sql.migration.schema.data', "Schema and data");
+export const BACKUP_AND_RESTORE = localize('sql.migration.backup.restore', "Backup and restore");
 export const SCHEMA_MIGRATION_STATUS = localize('sql.migration.schema.status', "Schema migration status");
 export const OBJECTS_COLLECTED = localize('sql.migration.schema.objects.collection', "Objects collected");
 export const COLLECTION_STARTED = localize('sql.migration.schema.collection.started', "Collection started");

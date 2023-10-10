@@ -206,6 +206,12 @@ export function getMigrationMode(migration: DatabaseMigration | undefined): stri
 }
 
 export function getMigrationType(migration: DatabaseMigration | undefined): string {
+	// If MI or VM migration, the data type is schema + data
+	var targetType = getMigrationTargetTypeEnum(migration);
+	if (targetType === MigrationTargetType.SQLMI || targetType === MigrationTargetType.SQLVM) {
+		return loc.BACKUP_AND_RESTORE;
+	}
+
 	var enableSchema = migration?.properties?.sqlSchemaMigrationConfiguration?.enableSchemaMigration ?? false;
 	var enableData = migration?.properties?.sqlDataMigrationConfiguration?.enableDataMigration ?? false;
 	return enableSchema && enableData
