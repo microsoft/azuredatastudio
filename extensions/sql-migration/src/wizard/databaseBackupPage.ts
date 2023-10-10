@@ -19,6 +19,7 @@ import * as styles from '../constants/styles';
 import { TableMigrationSelectionDialog } from '../dialog/tableMigrationSelection/tableMigrationSelectionDialog';
 import { ValidateIrDialog } from '../dialog/validationResults/validateIrDialog';
 import { canTargetConnectToStorageAccount, getSourceConnectionCredentials, getSourceConnectionProfile, getSourceConnectionQueryProvider, getSourceConnectionUri } from '../api/sqlUtils';
+import { SchemaMigrationAssessmentDialog } from '../dialog/tableMigrationSelection/schemaMigrationAssessmentDialog';
 
 const WIZARD_TABLE_COLUMN_WIDTH = '200px';
 const WIZARD_TABLE_COLUMN_WIDTH_SMALL = '170px';
@@ -1726,7 +1727,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const cssClass = undefined;
 		this._databaseTable = this._view.modelBuilder.table()
 			.withProps({
-				width: '800px',
+				width: '820px',
 				height: '600px',
 				CSSStyles: { 'margin': '15px 0 0 0' },
 				data: [],
@@ -1747,13 +1748,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						cssClass: cssClass,
 						headerCssClass: cssClass,
 					},
-					{
+					<azdata.HyperlinkColumn>{
 						name: constants.SCHEMA_MIGRATION_COLUMN_LABLE,
 						value: 'enableSchemaMigration',
-						width: 100,
-						type: azdata.ColumnType.icon,
+						width: 180,
+						type: azdata.ColumnType.hyperlink,
 						cssClass: cssClass,
 						headerCssClass: cssClass,
+						icon: IconPathHelper.cancel
 					},
 					<azdata.HyperlinkColumn>{
 						name: constants.DATABASE_TABLE_SELECTED_TABLES_COLUMN_LABEL,
@@ -1778,7 +1780,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._databaseTable.onCellAction!(
 				async (rowState: azdata.ICellActionEventArgs) => {
 					const buttonState = <azdata.ICellActionEventArgs>rowState;
-					if (buttonState?.column === 3) {
+					if (buttonState?.column === 2) {
+						const sourceDatabaseName = this._databaseTable.data[rowState.row][0];
+						if (sourceDatabaseName && this._hasSchemaMigraitonBlockerIssues(sourceDatabaseName)) {
+							await this._openSchemaMigrationAssessmentDialog(sourceDatabaseName, () => this._loadTableData());
+						}
+					} else if (buttonState?.column === 3) {
 						// open table selection dialog
 						const sourceDatabaseName = this._databaseTable.data[rowState.row][0];
 						const targetDatabaseInfo = this.migrationStateModel._sourceTargetMapping.get(sourceDatabaseName);
@@ -1801,6 +1808,16 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				this._databaseTable])
 			.withLayout({ flexFlow: 'column' })
 			.component();
+	}
+
+	private async _openSchemaMigrationAssessmentDialog(
+		sourceDatabaseName: string,
+		onSaveCallback: () => Promise<void>): Promise<void> {
+		const dialog = new SchemaMigrationAssessmentDialog(
+			this.migrationStateModel,
+			sourceDatabaseName,
+			onSaveCallback);
+		await dialog.openDialog("");
 	}
 
 	private async _openTableSelectionDialog(
@@ -1833,10 +1850,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				data.push([
 					sourceDatabaseName,
 					targetDatabaseInfo?.databaseName,
-					<azdata.IconColumnCellValue>{
+					<azdata.HyperlinkColumnCellValue>{
 						icon: targetDatabaseInfo?.enableSchemaMigration
-							? IconPathHelper.completedMigration
+							? this._hasSchemaMigraitonBlockerIssues(sourceDatabaseName) ? IconPathHelper.warning : IconPathHelper.completedMigration
 							: IconPathHelper.cancel,
+						title: targetDatabaseInfo?.enableSchemaMigration
+							? this._hasSchemaMigraitonBlockerIssues(sourceDatabaseName) ? "Assessment results" : ""
+							: "",
 					},
 					<azdata.HyperlinkColumnCellValue>{				// table selection
 						icon: hasSelectedTables
@@ -1851,5 +1871,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		await this._databaseTable.updateProperty('data', data);
 		this._refreshLoading.loading = false;
+	}
+
+	private _hasSchemaMigraitonBlockerIssues(sourceDatabaseName: string): boolean {
+		var assessmentResults = this.migrationStateModel._assessmentResults?.databaseAssessments.find(r => r.name === sourceDatabaseName)?.issues.filter(i => i.appliesToMigrationTargetPlatform === MigrationTargetType.SQLDB) ?? [];
+		if (assessmentResults !== null && assessmentResults !== undefined) {
+			return assessmentResults.find(i => constants.SchemaMigrationFailedRulesLookup[i.ruleId] !== undefined) !== undefined;
+		}
+		return false;
 	}
 }
