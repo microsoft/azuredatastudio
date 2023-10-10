@@ -5267,7 +5267,7 @@
 					"statistics": [],
 					"flags": ""
 			},
-			{
+        	{
 				"extensionId": "103",
 				"extensionName": "black",
 				"displayName": "Black",
@@ -5327,8 +5327,8 @@
 				],
 				"statistics": [],
 				"flags": ""
-			},
-			{
+		},
+		{
 				"extensionId": "104",
 				"extensionName": "azuredatastudio-oracle-extension-pack",
 				"displayName": "Database Migration Service Pack for Oracle",
@@ -5369,7 +5369,11 @@
 						"properties": [
 							{
 								"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
-								"value": "Microsoft.net-6-runtime,Microsoft.azuredatastudio-oracle"
+								"value": ""
+							},
+						    {
+								"key": "Microsoft.VisualStudio.Code.ExtensionPack",
+								"value": "Microsoft.azuredatastudio-dma-oracle,microsoft.dsct-oracle-to-ms-sql,microsoft.oracle-datamigration"
 							},
 							{
 								"key": "Microsoft.VisualStudio.Code.Engine",
@@ -5387,8 +5391,8 @@
 					}
 				],
 				"statistics": [],
-				"flags": "preview"
-			}
+				"flags": ""
+    		}
 			],
 			"resultMetadata": [
 				{
