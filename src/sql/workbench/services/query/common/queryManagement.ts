@@ -339,16 +339,16 @@ export class QueryManagementService implements IQueryManagementService {
 		let item = this._queryRunners.get(oldUri);
 		if (!item) {
 			this._logService.error(`No query runner found for old URI : '${oldUri}'`);
-			throw new Error(nls.localize('queryManagement.noQueryRunnerForUri', 'Could not find Query Runner for uri: {0}', oldUri));
-		}
-		if (this._queryRunners.get(newUri)) {
+		} else if (this._queryRunners.get(newUri)) {
 			this._logService.error(`New URI : '${newUri}' already has a query runner.`);
 			throw new Error(nls.localize('queryManagement.uriAlreadyHasQueryRunner', 'Uri: {0} unexpectedly already has a query runner.', newUri));
+		} else {
+			this._queryRunners.set(newUri, item);
+			this._queryRunners.delete(oldUri);
 		}
-		this._queryRunners.set(newUri, item);
-		this._queryRunners.delete(oldUri);
-		return this._runAction(newUri, (runner) => {
-			return runner.connectionUriChanged(newUri, oldUri);
+
+		return this._runAction(newUri, (handler) => {
+			return handler.connectionUriChanged(newUri, oldUri);
 		});
 	}
 
