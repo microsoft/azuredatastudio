@@ -1360,7 +1360,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			const savedAssessmentResults = this.savedInfo.serverAssessment;
 			if (savedAssessmentResults) {
 				this._assessmentResults = savedAssessmentResults;
-				this._assessedDatabaseList = this.savedInfo.databaseAssessment;
 			}
 
 			const savedSkuRecommendation = this.savedInfo.skuRecommendation;

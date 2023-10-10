@@ -82,6 +82,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _tdeConfigurationDialog!: TdeConfigurationDialog;
 	private _previousMiTdeMigrationConfig: TdeMigrationModel = new TdeMigrationModel(); // avoid null checks
 	private _tdeEditButton!: azdata.ButtonComponent;
+	private _enableNavigationValidation: boolean = true;
 
 	private _serverName: string = '';
 	private _supportedProducts: Product[] = [
@@ -617,7 +618,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = { text: '' };
-			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+			if (pageChangeInfo.newPage <= pageChangeInfo.lastPage) {
+				return true;
+			}
+
+			if (!this._enableNavigationValidation) {
+				this._enableNavigationValidation = true;
 				return true;
 			}
 
@@ -638,6 +644,15 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 			return true;
 		});
+
+		if (this.migrationStateModel.resumeAssessment) {
+			// if start a new session, it won't trigger navigation validator until clicking 'Next'.
+			// It works as expected if no target or databases are selected, it should show errors and block to next page.
+			// However, if resume the previously saved session, wizard.setCurrentPage() will trigger wizard navigation validator without clicking 'Next'.
+			// It should not throw errors without target platform or databases selected because customer doesnt select those in saved session.
+			this._enableNavigationValidation = false;
+		}
+
 		await this.constructDetails();
 		this.wizard.nextButton.enabled = this.migrationStateModel._assessmentResults !== undefined;
 		this._previousMiTdeMigrationConfig = this.migrationStateModel.tdeMigrationConfig;
