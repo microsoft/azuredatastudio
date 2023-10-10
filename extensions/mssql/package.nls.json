@@ -193,6 +193,7 @@
 	"title.newServerRole": "New Server Role (Preview)",
 	"title.objectProperties": "Properties (Preview)",
 	"title.dropObject": "Drop (Preview)",
+	"title.rename": "Rename (Preview)",
 	"title.detachDatabase": "Detach Database (Preview)",
 	"title.attachDatabase": "Attach Database (Preview)"
 }
