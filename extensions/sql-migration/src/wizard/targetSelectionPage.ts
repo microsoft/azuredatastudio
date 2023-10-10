@@ -117,32 +117,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		this._updateNextButton();
 		this._updateTdeMigrationButtonStatus();
 
-		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
-			return;
-		}
-		switch (this.migrationStateModel._targetType) {
-			case MigrationTargetType.SQLMI:
-				this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_MI_CARD_TEXT);
-				this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
-				this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
-				break;
-			case MigrationTargetType.SQLVM:
-				this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_VM_CARD_TEXT);
-				this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
-				this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
-				break;
-			case MigrationTargetType.SQLDB:
-				this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_SQLDB_CARD_TEXT);
-				this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE;
-				this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE;
-				this._updateConnectionButtonState();
-				if (this.migrationStateModel._didUpdateDatabasesForMigration) {
-					await this._resetTargetMapping();
-					this.migrationStateModel._didUpdateDatabasesForMigration = false;
-				}
-				break;
-		}
-
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = { text: '' };
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
