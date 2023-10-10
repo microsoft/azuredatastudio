@@ -106,6 +106,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 		if (this.migrationStateModel.resumeAssessment) {
 			await this.populateAzureAccountsDropdown();
+			await this.populateLocationDropdown();
 		}
 
 		await this._view.initializeModel(form);
@@ -115,32 +116,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].hidden = !this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates();
 		this._updateNextButton();
 		this._updateTdeMigrationButtonStatus();
-
-		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
-			return;
-		}
-		switch (this.migrationStateModel._targetType) {
-			case MigrationTargetType.SQLMI:
-				this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_MI_CARD_TEXT);
-				this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
-				this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
-				break;
-			case MigrationTargetType.SQLVM:
-				this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_VM_CARD_TEXT);
-				this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
-				this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
-				break;
-			case MigrationTargetType.SQLDB:
-				this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_SQLDB_CARD_TEXT);
-				this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE;
-				this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE;
-				this._updateConnectionButtonState();
-				if (this.migrationStateModel._didUpdateDatabasesForMigration) {
-					await this._resetTargetMapping();
-					this.migrationStateModel._didUpdateDatabasesForMigration = false;
-				}
-				break;
-		}
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = { text: '' };
@@ -293,7 +268,11 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		}*/
 
 		await utils.updateControlDisplay(this._certMigrationRequiredInfoBox, this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates());
+		if (!this._azureAccountsDropdown.value) {
+
+		}
 		await this.populateAzureAccountsDropdown();
+		await this.populateLocationDropdown();
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
