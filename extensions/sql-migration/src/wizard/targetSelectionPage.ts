@@ -268,7 +268,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 		await utils.updateControlDisplay(this._certMigrationRequiredInfoBox, this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates());
 		await this.populateAzureAccountsDropdown();
-		await this.populateLocationDropdown();
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
