@@ -107,7 +107,6 @@ export class WizardController {
 		const wizardSetupPromises: Thenable<void>[] = [];
 		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
 		wizardSetupPromises.push(this._wizardObject.open());
-
 		if (this._model.resumeAssessment || this._model.restartMigration) {
 			if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime) {
 				this._model.refreshDatabaseBackupPage = true;
@@ -130,8 +129,8 @@ export class WizardController {
 		this._model.extensionContext.subscriptions.push(
 			this._wizardObject.onPageChanged(
 				async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
-					var newPage = pageChangeInfo.newPage;
-					var lastPage = pageChangeInfo.lastPage;
+					const newPage = pageChangeInfo.newPage;
+					const lastPage = pageChangeInfo.lastPage;
 					this.sendPageButtonClickEvent(TelemetryViews.SqlMigrationWizard, pageChangeInfo)
 						.catch(e => logError(
 							TelemetryViews.MigrationWizardController,
