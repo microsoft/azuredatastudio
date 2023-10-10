@@ -540,10 +540,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		if (this.migrationStateModel.savedInfo?.migrationTargetType) {
 			this._rbg.selectedCardId = this.migrationStateModel._targetType;
-		} else {
-			// Set MI as default target type
-			this.migrationStateModel._targetType = MigrationTargetType.SQLMI;
-			this._rbg.selectedCardId = this.migrationStateModel._targetType;
 		}
 
 		let shouldGetSkuRecommendations = false;
@@ -658,6 +654,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	public async refreshCardText(showLoadingIcon: boolean = true): Promise<void> {
 		this._rbgLoader.loading = showLoadingIcon && true;
+		if (!this._rbg.selectedCardId) {
+			this._rbg.selectedCardId = MigrationTargetType.SQLMI;
+		}
+
 		switch (this._rbg.selectedCardId) {
 			case MigrationTargetType.SQLMI:
 				this.migrationStateModel._databasesForMigration = this.migrationStateModel._miDbs;
