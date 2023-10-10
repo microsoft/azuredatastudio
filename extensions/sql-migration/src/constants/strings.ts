@@ -159,7 +159,8 @@ export const AZURE_SQL_MI_DB_COUNT_THRESHOLD_EXCEEDS_ERROR = (selectedDbCount: n
 	return localize('sql.migration.select.azure.mi.db.count.threshold.exceeds.error', 'Error: Azure SQL Managed Instance supports maximum {0} user databases per instance. Select {0} or less database(s) to proceed further.', selectedDbCount);
 };
 export const AZURE_SQL_MI_DB_COUNT_UNDER_THRESHOLD = localize('sql.migration.select.azure.mi.db.count.under.threshold', 'To proceed, press Select button');
-export const REFRESH_ASSESSMENT_BUTTON_LABEL = localize('sql.migration.refresh.assessment.button.label', "Refresh assessment");
+export const REFRESH_ASSESSMENT_LABEL = localize('sql.migration.refresh.assessment.label', "Refresh assessment");
+export const REFRESH_SKU_LABEL = localize('sql.migration.refresh.sku.label', "Refresh SKU");
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose your Azure SQL target");
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET_HELP = localize('sql.migration.wizard.sku.choose_a_target.help', "Not sure which Azure SQL target is right for you? Learn more");
 
@@ -228,7 +229,7 @@ export const IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FILE = localize('sql.migration.
 export const AZURE_RECOMMENDATION_CARD_NOT_ENABLED = localize('sql.migration.sku.card.azureRecommendation.notEnabled', "Azure recommendation is not available. Click “Start data collection” button above to get started.");
 export const AZURE_RECOMMENDATION_CARD_IN_PROGRESS = localize('sql.migration.sku.card.azureRecommendation.inProgress', "Azure recommendation will be displayed once data collection is complete.");
 export const AZURE_RECOMMENDATION_STATUS_NOT_ENABLED = localize('sql.migration.sku.azureRecommendation.status.notEnabled', "Azure recommendation collects and analyzes performance data and then recommends an appropriate sized target in Azure for your workload.");
-export const AZURE_RECOMMENDATION_STATUS_IN_PROGRESS = localize('sql.migration.sku.azureRecommendation.status.inProgress', "Data collection is in progress. Time before next SKU recommendation update:");
+export const AZURE_RECOMMENDATION_STATUS_IN_PROGRESS = localize('sql.migration.sku.azureRecommendation.status.inProgress', "Data collection is in progress. Time before next SKU recommendation update: ");
 export const AZURE_RECOMMENDATION_STATUS_REFINING = localize('sql.migration.sku.azureRecommendation.status.refining', "Data collection still in progress. Press the 'Refresh recommendation' button for updated recommendations.");
 export const AZURE_RECOMMENDATION_STATUS_STOPPED = localize('sql.migration.sku.azureRecommendation.status.stopped', "Data collection for Azure recommendations has been stopped.");
 export function AZURE_RECOMMENDATION_STATUS_AUTO_REFRESH_TIMER(mins: number): string {
