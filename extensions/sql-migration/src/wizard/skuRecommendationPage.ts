@@ -622,11 +622,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				return true;
 			}
 
-			if (!this._enableNavigationValidation) {
-				this._enableNavigationValidation = true;
-				return true;
-			}
-
 			const errors: string[] = [];
 			if (this._rbg.selectedCardId === undefined || this._rbg.selectedCardId === '') {
 				errors.push(constants.SELECT_TARGET_TO_CONTINUE);
