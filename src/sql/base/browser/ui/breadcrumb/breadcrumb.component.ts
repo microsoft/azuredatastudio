@@ -6,7 +6,7 @@
 import 'vs/css!./media/breadcrumb';
 
 import { Component, Inject, forwardRef, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { IBreadcrumbService, MenuItem } from './interfaces';
 
@@ -36,6 +36,7 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 	constructor(
 		@Inject(forwardRef(() => IBreadcrumbService)) private _breadcrumbService: IBreadcrumbService,
 		@Inject(forwardRef(() => Router)) private _router: Router,
+		@Inject(forwardRef(() => ActivatedRoute)) private _activeRoute: ActivatedRoute,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
 	) { }
 
@@ -53,6 +54,6 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 	}
 
 	public route(link: any[]): Promise<boolean> {
-		return this._router.navigate(link);
+		return this._router.navigate(link, { relativeTo: this._activeRoute, skipLocationChange: true });
 	}
 }

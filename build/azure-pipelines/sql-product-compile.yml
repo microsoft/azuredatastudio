@@ -1,21 +1,7 @@
 steps:
-- script: |
-    mkdir -p .build
-    echo -n $BUILD_SOURCEVERSION > .build/commit
-    echo -n $VSCODE_QUALITY > .build/quality
-  displayName: Prepare cache flag
-
-- task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
-  inputs:
-    keyfile: 'build/.cachesalt, .build/commit, .build/quality'
-    targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
-    vstsFeed: 'BuildCache'
-    platformIndependent: true
-    alias: 'Compilation'
-
 - task: NodeTool@0
   inputs:
-    versionSpec: "12.13.0"
+    versionSpec: "16.x"
 
 - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
   inputs:
@@ -26,7 +12,6 @@ steps:
   inputs:
     azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
     KeyVaultName: ado-secrets
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
 
 - script: |
     set -e
@@ -36,10 +21,15 @@ steps:
     password $(github-distro-mixin-password)
     EOF
 
-    git config user.email "andresse@microsoft.com"
+    git config user.email "sqltools@service.microsoft.com"
     git config user.name "AzureDataStudio"
+
+    # Configure post buffer size to allow larger chunks to download faster to avoid network failures when performing `git fetch` or `pull`.
+    # http.postBuffer: Maximum size in bytes of the buffer used by smart HTTP transports when POSTing data to the remote system.
+    # https://git-scm.com/docs/git-config#Documentation/git-config.txt-httppostBuffer
+    git config --global http.postBuffer 524288000
+    git config --global https.postBuffer 524288000
   displayName: Prepare tooling
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
 
 - script: |
     set -e
@@ -47,59 +37,63 @@ steps:
     git fetch distro
     git merge $(node -p "require('./package.json').distro")
   displayName: Merge distro
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
 
-- task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+- script: |
+    mkdir -p .build
+    node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js > .build/yarnlockhash
+  displayName: Prepare yarn cache key
+
+- task: Cache@2
   inputs:
-    keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
-    targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
-    vstsFeed: 'BuildCache'
+    key: 'nodeModules | $(Agent.OS) | .build/yarnlockhash'
+    path: .build/node_modules_cache
+    cacheHitVar: NODE_MODULES_RESTORED
+  displayName: Restore Cache - Node Modules
+
+- script: |
+    set -e
+    tar -xzf .build/node_modules_cache/cache.tgz
+  condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
+  displayName: Extract node_modules archive
 
 - script: |
     set -e
     CHILD_CONCURRENCY=1 yarn --frozen-lockfile
   displayName: Install dependencies
-  condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+  condition: and(succeeded(), ne(variables['NODE_MODULES_RESTORED'], 'true'))
 
-- task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
-  inputs:
-    keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
-    targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
-    vstsFeed: 'BuildCache'
-  condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+- script: |
+    set -e
+    node build/azure-pipelines/common/listNodeModules.js .build/node_modules_list.txt
+    mkdir -p .build/node_modules_cache
+    tar -czf .build/node_modules_cache/cache.tgz --files-from .build/node_modules_list.txt
+  condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
+  displayName: Create node_modules archive
 
 - script: |
     set -e
     yarn postinstall
   displayName: Run postinstall scripts
-  condition: and(succeeded(), eq(variables['CacheRestored'], 'true'))
+  condition: and(succeeded(), eq(variables['NODE_MODULES_RESTORED'], 'true'))
 
 # Mixin must run before optimize, because the CSS loader will
 # inline small SVGs
 - script: |
     set -e
-    node build/azure-pipelines/mixin
+    node build/azure-pipelines/sql-mixin
   displayName: Mix in quality
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+
+# Run these separately to avoid OOM errors on pipeline machines
+- script: |
+    set -e
+    yarn npm-run-all -lp core-ci extensions-ci
+    yarn npm-run-all -lp hygiene eslint valid-layers-check
+  displayName: Compile & Hygiene
 
 - script: |
     set -e
-    yarn sqllint
-    yarn gulp hygiene
-    yarn strict-vscode
-    yarn valid-layers-check
-  displayName: Run hygiene, eslint
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
-
-- script: |
-    set -e
-    yarn gulp compile-build
-    yarn gulp compile-extensions-build
-    yarn gulp minify-vscode
-    yarn gulp minify-vscode-reh
-    yarn gulp minify-vscode-reh-web
-  displayName: Compile
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+    yarn npm-run-all -lp sqllint extensions-lint
+  displayName: SQL Hygiene
 
 - script: |
     set -e
@@ -107,7 +101,7 @@ steps:
     AZURE_STORAGE_ACCESS_KEY="$(sourcemap-storage-key)" \
       node build/azure-pipelines/upload-sourcemaps
   displayName: Upload sourcemaps
-  condition: and(succeeded(), ne(variables['CacheExists-Compilation'], 'true'))
+  condition: and(succeeded(), ne(variables['VSCODE_PUBLISH'], 'false'))
 
 - script: |
     set -e
@@ -122,11 +116,13 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
 
-- task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
+- script: |
+    set -e
+    tar -czf $(Build.ArtifactStagingDirectory)/compilation.tar.gz .build out-*
+  displayName: Compress compilation artifact
+
+- task: PublishPipelineArtifact@1
   inputs:
-    keyfile: 'build/.cachesalt, .build/commit, .build/quality'
-    targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
-    vstsFeed: 'BuildCache'
-    platformIndependent: true
-    alias: 'Compilation'
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+    targetPath: $(Build.ArtifactStagingDirectory)/compilation.tar.gz
+    artifactName: Compilation
+  displayName: Publish compilation artifact

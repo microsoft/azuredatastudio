@@ -1,7 +1,7 @@
 . build/azure-pipelines/win32/exec.ps1
 $ErrorActionPreference = "Stop"
 
-$Arch = "x64"
+$Arch = $env:VSCODE_ARCH
 
 $Repo = "$(pwd)"
 $Root = "$Repo\.."

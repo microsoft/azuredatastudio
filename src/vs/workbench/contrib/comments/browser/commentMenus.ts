@@ -7,22 +7,28 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IMenuService, MenuId, IMenu } from 'vs/platform/actions/common/actions';
 import { IAction } from 'vs/base/common/actions';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { Comment, CommentThread } from 'vs/editor/common/modes';
+import { Comment } from 'vs/editor/common/languages';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 
 export class CommentMenus implements IDisposable {
 	constructor(
-		@IMenuService private readonly menuService: IMenuService,
-		@IContextMenuService private readonly contextMenuService: IContextMenuService
+		@IMenuService private readonly menuService: IMenuService
 	) { }
 
-	getCommentThreadTitleActions(commentThread: CommentThread, contextKeyService: IContextKeyService): IMenu {
+	getCommentThreadTitleActions(contextKeyService: IContextKeyService): IMenu {
 		return this.getMenu(MenuId.CommentThreadTitle, contextKeyService);
 	}
 
-	getCommentThreadActions(commentThread: CommentThread, contextKeyService: IContextKeyService): IMenu {
+	getCommentThreadActions(contextKeyService: IContextKeyService): IMenu {
 		return this.getMenu(MenuId.CommentThreadActions, contextKeyService);
+	}
+
+	getCommentEditorActions(contextKeyService: IContextKeyService): IMenu {
+		return this.getMenu(MenuId.CommentEditorActions, contextKeyService);
+	}
+
+	getCommentThreadAdditionalActions(contextKeyService: IContextKeyService): IMenu {
+		return this.getMenu(MenuId.CommentThreadAdditionalActions, contextKeyService);
 	}
 
 	getCommentTitleActions(comment: Comment, contextKeyService: IContextKeyService): IMenu {
@@ -33,6 +39,10 @@ export class CommentMenus implements IDisposable {
 		return this.getMenu(MenuId.CommentActions, contextKeyService);
 	}
 
+	getCommentThreadTitleContextActions(contextKeyService: IContextKeyService): IMenu {
+		return this.getMenu(MenuId.CommentThreadTitleContext, contextKeyService);
+	}
+
 	private getMenu(menuId: MenuId, contextKeyService: IContextKeyService): IMenu {
 		const menu = this.menuService.createMenu(menuId, contextKeyService);
 
@@ -40,7 +50,7 @@ export class CommentMenus implements IDisposable {
 		const secondary: IAction[] = [];
 		const result = { primary, secondary };
 
-		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, this.contextMenuService, g => /^inline/.test(g));
+		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, 'inline');
 
 		return menu;
 	}

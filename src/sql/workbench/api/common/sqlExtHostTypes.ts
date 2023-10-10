@@ -3,8 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { nb, IConnectionProfile } from 'azdata';
+import * as azdata from 'azdata';
 import * as vsExtTypes from 'vs/workbench/api/common/extHostTypes';
+import { URI } from 'vs/base/common/uri';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 // SQL added extension host types
 export enum ServiceOptionType {
@@ -118,7 +120,7 @@ export enum AlertType {
 }
 
 export enum FrequencyTypes {
-	Unknown,
+	Unknown = 0,
 	OneTime = 1 << 1,
 	Daily = 1 << 2,
 	Weekly = 1 << 3,
@@ -170,17 +172,24 @@ export enum ModelComponentTypes {
 	FileBrowserTree,
 	Editor,
 	DiffEditor,
-	Dom,
 	Hyperlink,
 	Image,
 	RadioCardGroup,
+	ListView,
 	TabbedPanel,
 	Separator,
-	PropertiesContainer
+	PropertiesContainer,
+	InfoBox,
+	Slider,
+	ExecutionPlan,
+	Chart
 }
 
 export enum ModelViewAction {
-	SelectTab = 'selectTab'
+	SelectTab = 'selectTab',
+	AppendData = 'appendData',
+	Filter = 'filter',
+	SetActiveCell = 'setActiveCell'
 }
 
 export enum ColumnSizingMode {
@@ -211,6 +220,11 @@ export enum StepCompletionAction {
 	GoToStep = 4
 }
 
+export enum ProfilingSessionType {
+	RemoteSession = 0,
+	LocalFile = 1
+}
+
 export interface CheckBoxInfo {
 	row: number;
 	columnName: string;
@@ -239,7 +253,10 @@ export enum ComponentEventType {
 	onSelectedRowChanged,
 	onComponentCreated,
 	onCellAction,
-	onEnterKeyPressed
+	onEnterKeyPressed,
+	onInput,
+	onComponentLoaded,
+	onChildClick
 }
 
 export interface IComponentEventArgs {
@@ -255,6 +272,14 @@ export interface IModelViewDialogDetails {
 	customButtons: number[];
 	message: DialogMessage;
 	width: DialogWidth;
+	dialogStyle: DialogStyle;
+	dialogPosition: DialogPosition;
+	renderHeader: boolean;
+	renderFooter: boolean;
+	dialogProperties: IDialogProperties;
+	loading: boolean;
+	loadingText: string;
+	loadingCompletedText: string;
 }
 
 export interface IModelViewTabDetails {
@@ -268,6 +293,7 @@ export interface IModelViewButtonDetails {
 	hidden: boolean;
 	focused?: boolean;
 	position?: 'left' | 'right';
+	secondary?: boolean;
 }
 
 export interface IModelViewWizardPageDetails {
@@ -276,6 +302,7 @@ export interface IModelViewWizardPageDetails {
 	enabled: boolean;
 	customButtons: number[];
 	description: string;
+	pageName?: string;
 }
 
 export interface IModelViewWizardDetails {
@@ -292,9 +319,46 @@ export interface IModelViewWizardDetails {
 	message: DialogMessage;
 	displayPageTitles: boolean;
 	width: DialogWidth;
+	loading: boolean;
+	loadingText: string;
+	loadingCompletedText: string;
 }
 
-export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
+export type DialogWidth = 'narrow' | 'medium' | 'wide' | number | string;
+
+export type DialogStyle = 'normal' | 'flyout' | 'callout';
+
+export type DialogPosition = 'left' | 'below';
+
+export interface IDialogProperties {
+	xPos: number,
+	yPos: number,
+	width: number,
+	height: number
+}
+
+/**
+ * Provides dialog options to customize modal dialog content and layout
+ */
+export interface IErrorDialogOptions {
+	severity: MessageLevel;
+	headerTitle: string;
+	message: string;
+	messageDetails?: string;
+	telemetryView?: TelemetryView | string;
+	actions?: IDialogAction[];
+	instructionText?: string;
+	readMoreLink?: string;
+}
+
+/**
+ * An action that will be rendered as a button on the dialog.
+ */
+export interface IDialogAction {
+	id: string;
+	label: string;
+	isPrimary: boolean;
+}
 
 export enum MessageLevel {
 	Error = 0,
@@ -356,7 +420,10 @@ export enum DataProviderType {
 	SerializationProvider = 'SerializationProvider',
 	IconProvider = 'IconProvider',
 	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
-	DataGridProvider = 'DataGridProvider'
+	DataGridProvider = 'DataGridProvider',
+	TableDesignerProvider = 'TableDesignerProvider',
+	ExecutionPlanProvider = 'ExecutionPlanProvider',
+	ServerContextualizationProvider = 'ServerContextualizationProvider'
 }
 
 export enum DeclarativeDataType {
@@ -364,13 +431,15 @@ export enum DeclarativeDataType {
 	category = 'category',
 	boolean = 'boolean',
 	editableCategory = 'editableCategory',
-	component = 'component'
+	component = 'component',
+	menu = 'menu'
 }
 
 export enum CardType {
 	VerticalButton = 'VerticalButton',
 	Details = 'Details',
-	ListItem = 'ListItem'
+	ListItem = 'ListItem',
+	Image = 'Image'
 }
 
 export enum Orientation {
@@ -407,26 +476,49 @@ export enum AzureResource {
 	Sql = 1,
 	OssRdbms = 2,
 	AzureKeyVault = 3,
-	Graph = 4,
+	// 4 (formerly Azure Graph) is no longer used.
 	MicrosoftResourceManagement = 5,
-	AzureDevOps = 6
+	AzureDevOps = 6,
+	MsGraph = 7,
+	AzureLogAnalytics = 8,
+	AzureStorage = 9,
+	AzureKusto = 10,
+	PowerBi = 11,
+	Custom = 12 // Handles custom resource URIs as received from server endpoint.
+}
+
+export enum NodeFilterPropertyDataType {
+	String = 0,
+	Number = 1,
+	Boolean = 2,
+	Date = 3,
+	Choice = 4
+}
+
+export enum NodeFilterOperator {
+	Equals = 0,
+	NotEquals = 1,
+	LessThan = 2,
+	LessThanOrEquals = 3,
+	GreaterThan = 4,
+	GreaterThanOrEquals = 5,
+	Between = 6,
+	NotBetween = 7,
+	Contains = 8,
+	NotContains = 9,
+	StartsWith = 10,
+	NotStartsWith = 11,
+	EndsWith = 12,
+	NotEndsWith = 13
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {
-	payload?: IConnectionProfile;
+	payload?: azdata.IConnectionProfile;
 	providerHandle?: string;
 }
 
-export interface ServerInfoOption {
-	isBigDataCluster: boolean;
-	clusterEndpoints: ClusterEndpoint;
-}
-
-export interface ClusterEndpoint {
-	serviceName: string;
-	ipAddress: string;
-	port: number;
-}
+export type ThemedIconPath = { light: string | URI; dark: string | URI };
+export type IconPath = string | URI | ThemedIconPath;
 
 export class SqlThemeIcon {
 
@@ -519,6 +611,8 @@ export class SqlThemeIcon {
 	static readonly ExternalTable = new SqlThemeIcon('ExternalTable');
 	static readonly ColumnMasterKey = new SqlThemeIcon('ColumnMasterKey');
 	static readonly ColumnEncryptionKey = new SqlThemeIcon('ColumnEncryptionKey');
+	static readonly GraphEdge = new SqlThemeIcon('GraphEdge');
+	static readonly GraphNode = new SqlThemeIcon('GraphNode');
 
 	public readonly id: string;
 
@@ -527,9 +621,20 @@ export class SqlThemeIcon {
 	}
 }
 
-export interface INotebookManagerDetails {
+export interface ICellMetadata {
+	language?: string | undefined;
+	tags?: string[] | undefined;
+	azdata_cell_guid?: string | undefined;
+	connection_name?: string;
+}
+
+export interface ISerializationManagerDetails {
 	handle: number;
 	hasContentManager: boolean;
+}
+
+export interface IExecuteManagerDetails {
+	handle: number;
 	hasServerManager: boolean;
 }
 
@@ -567,7 +672,7 @@ export enum FutureMessageType {
 export interface INotebookFutureDone {
 	succeeded: boolean;
 	rejectReason: string;
-	message: nb.IShellMessage;
+	message: azdata.nb.IShellMessage;
 }
 
 export interface ICellRange {
@@ -604,10 +709,47 @@ export class CellRange {
 	}
 }
 
-export interface ISingleNotebookEditOperation {
+export const enum NotebookEditOperationType {
+	/**
+	 * Inserts a new cell with the specified content at the specified position.
+	 */
+	InsertCell = 0,
+	/**
+	 * Deletes a single cell.
+	 */
+	DeleteCell = 1,
+	/**
+	 * Replace the specified cell range with a new cell made from the specified content.
+	 */
+	ReplaceCells = 2,
+	/**
+	 * Update a cell with the specified new values. Currently only supports updating cell output.
+	 */
+	UpdateCell = 3,
+	/**
+	 * Updates a cell outputs with the specified new values.
+	 */
+	UpdateCellOutput = 4
+}
+
+// TODO This should be split up into separate edit operation types
+export interface INotebookEditOperation {
+	/**
+	 * The type of edit operation this is
+	 */
+	type: NotebookEditOperationType;
+	/**
+	 * The range of cells that this edit affects
+	 */
 	range: ICellRange;
-	cell: Partial<nb.ICellContents>;
-	forceMoveMarkers: boolean;
+	/**
+	 * The cell metadata to use for the edit operation (only for some edit operations)
+	 */
+	cell: Partial<azdata.nb.ICellContents>;
+	/**
+	 * Whether to append the content to the existing content or replace it.
+	 */
+	append?: boolean;
 }
 
 export class ConnectionProfile {
@@ -820,7 +962,10 @@ export enum SchemaObjectType {
 export enum ColumnType {
 	text = 0,
 	checkBox = 1,
-	button = 2
+	button = 2,
+	icon = 3,
+	hyperlink = 4,
+	contextMenu = 5
 }
 
 export enum ActionOnCellCheckboxCheck {
@@ -861,4 +1006,125 @@ export enum SqlAssessmentResultItemKind {
 	RealResult = 0,
 	Warning = 1,
 	Error = 2
+}
+
+export enum ButtonType {
+	File = 'File',
+	Normal = 'Normal',
+	Informational = 'Informational'
+}
+
+export enum TextType {
+	Normal = 'Normal',
+	Error = 'Error',
+	UnorderedList = 'UnorderedList',
+	OrderedList = 'OrderedList'
+}
+
+export namespace designers {
+	export enum TableProperty {
+		Schema = 'schema',
+		Name = 'name',
+		Description = 'description',
+		Columns = 'columns',
+		Script = 'script',
+		ForeignKeys = 'foreignKeys',
+		CheckConstraints = 'checkConstraints',
+		Indexes = 'indexes',
+		PrimaryKey = 'primaryKey',
+		PrimaryKeyName = 'primaryKeyName',
+		PrimaryKeyDescription = 'primaryKeyDescription',
+		PrimaryKeyColumns = 'primaryKeyColumns'
+	}
+
+	export enum TableColumnProperty {
+		Name = 'name',
+		Description = 'description',
+		AdvancedType = 'advancedType',
+		Type = 'type',
+		AllowNulls = 'allowNulls',
+		DefaultValue = 'defaultValue',
+		Length = 'length',
+		IsPrimaryKey = 'isPrimaryKey',
+		Precision = 'precision',
+		Scale = 'scale'
+	}
+
+	export enum TableForeignKeyProperty {
+		Name = 'name',
+		Description = 'description',
+		ForeignTable = 'foreignTable',
+		OnDeleteAction = 'onDeleteAction',
+		OnUpdateAction = 'onUpdateAction',
+		Columns = 'columns'
+	}
+
+	export enum ForeignKeyColumnMappingProperty {
+		Column = 'column',
+		ForeignColumn = 'foreignColumn'
+	}
+
+	export enum TableCheckConstraintProperty {
+		Name = 'name',
+		Description = 'description',
+		Expression = 'expression'
+	}
+
+	export enum TableIndexProperty {
+		Name = 'name',
+		Description = 'description',
+		Columns = 'columns'
+	}
+
+	export enum TableIndexColumnSpecificationProperty {
+		Column = 'column'
+	}
+
+	export enum DesignerEditType {
+		Add = 0,
+		Remove = 1,
+		Update = 2,
+		Move = 3
+	}
+
+	export enum TableIcon {
+		Basic = 'Basic',
+		Temporal = 'Temporal',
+		GraphEdge = 'GraphEdge',
+		GraphNode = 'GraphNode'
+	}
+}
+
+export namespace executionPlan {
+	export enum BadgeType {
+		Warning = 0,
+		CriticalWarning = 1,
+		Parallelism = 2
+	}
+
+	export enum ExecutionPlanGraphElementPropertyDataType {
+		Number = 0,
+		String = 1,
+		Boolean = 2,
+		Nested = 3
+	}
+
+	export enum ExecutionPlanGraphElementPropertyBetterValue {
+		LowerNumber = 0,
+		HigherNumber = 1,
+		True = 2,
+		False = 3,
+		None = 4
+	}
+}
+
+export namespace env {
+	/**
+	 * Well-known app quality values
+	 */
+	export enum AppQuality {
+		stable = 'stable',
+		insider = 'insider',
+		dev = 'dev'
+	}
 }

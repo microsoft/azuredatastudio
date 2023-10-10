@@ -6,16 +6,23 @@
 import { localize } from 'vs/nls';
 import { tocData as vstocData, ITOCEntry } from 'vs/workbench/contrib/preferences/browser/settingsLayout';
 
+export const OBJECT_EXPLORER_CONFIG_PREFIX = 'objectExplorer';
+
 // Copy existing table of contents and append
-export const tocData: ITOCEntry = Object.assign({}, vstocData);
-let sqlTocItems: ITOCEntry[] = [{
+export const tocData: ITOCEntry<string> = Object.assign({}, vstocData);
+let sqlTocItems: ITOCEntry<string>[] = [{
 	id: 'data',
 	label: localize('data', "Data"),
 	children: [
 		{
 			id: 'data/connection',
 			label: localize('connection', "Connection"),
-			settings: ['startup.alwaysShowServersView', 'connection.*', 'serverGroup.*', 'datasource.*']
+			settings: ['connection.*', 'datasource.*']
+		},
+		{
+			id: 'data/objectExplorer',
+			label: localize('objectExplorer', "Object Explorer"),
+			settings: ['startup.alwaysShowServersView', 'serverTree.*', 'serverGroup.*']
 		},
 		{
 			id: 'data/queryEditor',
@@ -36,6 +43,21 @@ let sqlTocItems: ITOCEntry[] = [{
 			id: 'data/profiler',
 			label: localize('profiler', "Profiler"),
 			settings: ['profiler.*']
+		},
+		{
+			id: 'data/builtinCharts',
+			label: localize('builtinCharts', "Built-in Charts"),
+			settings: ['builtinCharts.*']
+		},
+		{
+			id: 'data/tableDesigner',
+			label: localize('tableDesigner', "Table Designer"),
+			settings: ['tableDesigner.*']
+		},
+		{
+			id: 'data/executionPlan',
+			label: localize('executionPlan', "Execution Plan"),
+			settings: ['executionPlan.*']
 		}
 	]
 }];

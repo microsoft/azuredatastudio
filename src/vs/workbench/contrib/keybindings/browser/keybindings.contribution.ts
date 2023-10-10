@@ -7,10 +7,9 @@ import * as nls from 'vs/nls';
 import { Action2, registerAction2 } from 'vs/platform/actions/common/actions';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { rendererLogChannelId } from 'vs/workbench/contrib/logs/common/logConstants';
-import { IOutputService } from 'vs/workbench/contrib/output/common/output';
-
-const developerCategory = { value: nls.localize({ key: 'developer', comment: ['A developer on Code itself or someone diagnosing issues in Code'] }, "Developer"), original: 'Developer' };
+import { Categories } from 'vs/platform/action/common/actionCommonCategories';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { showWindowLogActionId } from 'vs/workbench/services/log/common/logConstants';
 
 class ToggleKeybindingsLogAction extends Action2 {
 
@@ -18,7 +17,7 @@ class ToggleKeybindingsLogAction extends Action2 {
 		super({
 			id: 'workbench.action.toggleKeybindingsLog',
 			title: { value: nls.localize('toggleKeybindingsLog', "Toggle Keyboard Shortcuts Troubleshooting"), original: 'Toggle Keyboard Shortcuts Troubleshooting' },
-			category: developerCategory,
+			category: Categories.Developer,
 			f1: true
 		});
 	}
@@ -26,8 +25,8 @@ class ToggleKeybindingsLogAction extends Action2 {
 	run(accessor: ServicesAccessor): void {
 		const logging = accessor.get(IKeybindingService).toggleLogging();
 		if (logging) {
-			const outputService = accessor.get(IOutputService);
-			outputService.showChannel(rendererLogChannelId);
+			const commandService = accessor.get(ICommandService);
+			commandService.executeCommand(showWindowLogActionId);
 		}
 	}
 }

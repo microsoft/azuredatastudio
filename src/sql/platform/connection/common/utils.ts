@@ -6,7 +6,8 @@
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
+import { applicationName } from 'sql/platform/connection/common/constants';
 
 // CONSTANTS //////////////////////////////////////////////////////////////////////////////////////
 const msInH = 3.6e6;
@@ -29,7 +30,7 @@ export const ConnectionUriRestoreIdAttributeName = 'restoreId';
 
 /**
  * Takes a string in the format of HH:MM:SS.MS and returns a number representing the time in
- * miliseconds
+ * milliseconds
  * @param value The string to convert to milliseconds
  * @return False is returned if the string is an invalid format,
  *		 the number of milliseconds in the time string is returned otherwise.
@@ -134,9 +135,51 @@ export function findProfileInGroup(og: IConnectionProfile, groups: ConnectionPro
 	return undefined;
 }
 
-export function isMaster(profile: IConnectionProfile): boolean {
-	// TODO: the connection profile should have a property to indicate whether the connection is a server connection or database connection
-	// created issue to track the problem: https://github.com/Microsoft/azuredatastudio/issues/5193.
-	return (profile.providerName === mssqlProviderName && profile.databaseName?.toLowerCase() === 'master')
-		|| (profile.providerName.toLowerCase() === 'pgsql' && profile.databaseName?.toLowerCase() === 'postgres');
+export function isServerConnection(profile: IConnectionProfile): boolean {
+	// If the user did not specify a database in the original connection, then this is considered a server-level connection
+	return !profile.options.originalDatabase;
+}
+
+/**
+ * Convert a IConnectionProfile with services to an azdata.connection.ConnectionProfile
+ * shaped object that can be sent via RPC.
+ * @param profile The profile to be converted.
+ * @returns An azdata.connection.ConnectionProfile shaped object that contains only the data and none of the services.
+ */
+export function convertToRpcConnectionProfile(profile: IConnectionProfile | undefined): sqlExtHostTypes.ConnectionProfile | undefined {
+	if (!profile) {
+		return undefined;
+	}
+
+	let connection: sqlExtHostTypes.ConnectionProfile = {
+		providerId: profile.providerName,
+		connectionId: profile.id,
+		options: profile.options,
+		connectionName: profile.connectionName,
+		serverName: profile.serverName,
+		databaseName: profile.databaseName,
+		userName: profile.userName,
+		password: profile.password,
+		authenticationType: profile.authenticationType,
+		savePassword: profile.savePassword,
+		groupFullName: profile.groupFullName,
+		groupId: profile.groupId,
+		saveProfile: profile.saveProfile,
+		azureTenantId: profile.azureTenantId,
+		azureAccount: profile.azureAccount
+	}
+
+	return connection;
+}
+
+export function adjustForMssqlAppName(currentAppName: string, suffix?: string): string {
+	let appName = suffix ? applicationName + '-' + suffix : applicationName;
+	let finalSuffix = '-' + appName;
+	return (currentAppName && currentAppName !== appName && !currentAppName.endsWith(finalSuffix))
+		? currentAppName + finalSuffix
+		: currentAppName ?? appName;
+}
+
+export function delay(time: number): Promise<void> {
+	return new Promise(resolve => setTimeout(resolve, time));
 }

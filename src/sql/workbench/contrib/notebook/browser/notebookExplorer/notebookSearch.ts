@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SearchView, SearchUIState } from 'vs/workbench/contrib/search/browser/searchView';
-import { IViewPaneOptions, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { SearchLinkButton, SearchView } from 'vs/workbench/contrib/search/browser/searchView';
+import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPane';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IProgressService } from 'vs/platform/progress/common/progress';
@@ -12,9 +12,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IViewDescriptorService, IViewsService } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
-import { ISearchWorkbenchService, Match, FileMatch, SearchModel, IChangeEvent, searchMatchComparer, RenderableMatch, FolderMatch, SearchResult } from 'vs/workbench/contrib/search/common/searchModel';
+import { ISearchWorkbenchService, Match, FileMatch, SearchModel, IChangeEvent, searchMatchComparer, RenderableMatch, FolderMatch, SearchResult } from 'vs/workbench/contrib/search/browser/searchModel';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IReplaceService } from 'vs/workbench/contrib/search/common/replace';
+import { IReplaceService } from 'vs/workbench/contrib/search/browser/replace';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { IPreferencesService } from 'vs/workbench/services/preferences/common/preferences';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -27,22 +27,29 @@ import { ISearchHistoryService } from 'vs/workbench/contrib/search/common/search
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import * as dom from 'vs/base/browser/dom';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
 import { ISearchComplete, SearchCompletionExitCode, ITextQuery, SearchSortOrder, ISearchConfigurationProperties } from 'vs/workbench/services/search/common/search';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as aria from 'vs/base/browser/ui/aria/aria';
 import * as errors from 'vs/base/common/errors';
 import { NotebookSearchWidget } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchWidget';
-import { ITreeElement, ITreeContextMenuEvent } from 'vs/base/browser/ui/tree/tree';
+import { ICompressedTreeElement } from 'vs/base/browser/ui/tree/compressedObjectTreeModel';
+import { ITreeContextMenuEvent, ObjectTreeElementCollapseState } from 'vs/base/browser/ui/tree/tree';
 import { Iterable } from 'vs/base/common/iterator';
 import { searchClearIcon, searchCollapseAllIcon, searchExpandAllIcon, searchStopIcon } from 'vs/workbench/contrib/search/browser/searchIcons';
 import { Action, IAction } from 'vs/base/common/actions';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { Memento } from 'vs/workbench/common/memento';
+import { SearchUIState } from 'vs/workbench/contrib/search/common/search';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
+import { INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
+import { ILogService } from 'vs/platform/log/common/log';
 
 const $ = dom.$;
 
@@ -57,37 +64,46 @@ export class NotebookSearchView extends SearchView {
 
 	constructor(
 		options: IViewPaneOptions,
-		@IFileService readonly fileService: IFileService,
-		@IEditorService readonly editorService: IEditorService,
-		@IProgressService readonly progressService: IProgressService,
-		@INotificationService readonly notificationService: INotificationService,
-		@IDialogService readonly dialogService: IDialogService,
-		@IContextViewService readonly contextViewService: IContextViewService,
+		@IFileService fileService: IFileService,
+		@IEditorService editorService: IEditorService,
+		@ICodeEditorService codeEditorService: ICodeEditorService,
+		@IProgressService progressService: IProgressService,
+		@INotificationService notificationService: INotificationService,
+		@IDialogService dialogService: IDialogService,
+		@IContextViewService contextViewService: IContextViewService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IWorkspaceContextService readonly contextService: IWorkspaceContextService,
-		@ISearchWorkbenchService readonly searchWorkbenchService: ISearchWorkbenchService,
-		@IContextKeyService readonly contextKeyService: IContextKeyService,
-		@IReplaceService readonly replaceService: IReplaceService,
-		@ITextFileService readonly textFileService: ITextFileService,
-		@IPreferencesService readonly preferencesService: IPreferencesService,
+		@IWorkspaceContextService contextService: IWorkspaceContextService,
+		@ISearchWorkbenchService searchWorkbenchService: ISearchWorkbenchService,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IReplaceService replaceService: IReplaceService,
+		@ITextFileService textFileService: ITextFileService,
+		@IPreferencesService preferencesService: IPreferencesService,
 		@IThemeService themeService: IThemeService,
-		@ISearchHistoryService readonly searchHistoryService: ISearchHistoryService,
+		@ISearchHistoryService searchHistoryService: ISearchHistoryService,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IMenuService readonly menuService: IMenuService,
-		@IAccessibilityService readonly accessibilityService: IAccessibilityService,
+		@IMenuService menuService: IMenuService,
+		@IAccessibilityService accessibilityService: IAccessibilityService,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IStorageService storageService: IStorageService,
 		@IOpenerService openerService: IOpenerService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@ICommandService readonly commandService: ICommandService,
+		@ICommandService commandService: ICommandService,
+		@INotebookService notebookService: INotebookService,
+		@ILogService logService: ILogService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 	) {
 
-		super(options, fileService, editorService, progressService, notificationService, dialogService, contextViewService, instantiationService, viewDescriptorService, configurationService, contextService, searchWorkbenchService, contextKeyService, replaceService, textFileService, preferencesService, themeService, searchHistoryService, contextMenuService, menuService, accessibilityService, keybindingService, storageService, openerService, telemetryService);
+		super(options, fileService, editorService, codeEditorService, progressService,
+			notificationService, dialogService, commandService, contextViewService, instantiationService,
+			viewDescriptorService, configurationService, contextService, searchWorkbenchService, contextKeyService,
+			replaceService, textFileService, preferencesService, themeService, searchHistoryService, contextMenuService,
+			menuService, accessibilityService, keybindingService, storageService, openerService, telemetryService,
+			notebookService, logService);
 
 		this.memento = new Memento(this.id, storageService);
-		this.viewletState = this.memento.getMemento(StorageScope.WORKSPACE);
+		this.viewletState = this.memento.getMemento(StorageScope.WORKSPACE, StorageTarget.MACHINE);
 		this.viewActions = [
 			this._register(this.instantiationService.createInstance(ClearSearchResultsAction, ClearSearchResultsAction.ID, ClearSearchResultsAction.LABEL)),
 		];
@@ -99,7 +115,7 @@ export class NotebookSearchView extends SearchView {
 		this.toggleExpandAction = this._register(this.instantiationService.createInstance(ToggleCollapseAndExpandAction, ToggleCollapseAndExpandAction.ID, ToggleCollapseAndExpandAction.LABEL, collapseDeepestExpandedLevelAction, expandAllAction));
 	}
 
-	protected get searchConfig(): ISearchConfigurationProperties {
+	protected override get searchConfig(): ISearchConfigurationProperties {
 		return this.configurationService.getValue<ISearchConfigurationProperties>('notebookExplorerSearch');
 	}
 
@@ -115,11 +131,7 @@ export class NotebookSearchView extends SearchView {
 		return this.state !== SearchUIState.Idle;
 	}
 
-	public updateActions(): void {
-		if (!this.isVisible()) {
-			this.updatedActionsWhileHidden = true;
-		}
-
+	public override updateActions(): void {
 		for (const action of this.viewActions) {
 			action.update();
 		}
@@ -137,7 +149,7 @@ export class NotebookSearchView extends SearchView {
 		this.toggleExpandAction];
 	}
 
-	protected onContextMenu(e: ITreeContextMenuEvent<RenderableMatch | null>): void {
+	protected override onContextMenu(e: ITreeContextMenuEvent<RenderableMatch | null>): void {
 		if (!this.contextMenu) {
 			this.contextMenu = this._register(this.menuService.createMenu(MenuId.SearchContext, this.contextKeyService));
 		}
@@ -146,23 +158,23 @@ export class NotebookSearchView extends SearchView {
 		e.browserEvent.stopPropagation();
 
 		const actions: IAction[] = [];
-		const actionsDisposable = createAndFillInContextMenuActions(this.contextMenu, { shouldForwardArgs: true }, actions, this.contextMenuService);
+		createAndFillInContextMenuActions(this.contextMenu, { shouldForwardArgs: true }, actions);
 
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => e.anchor,
 			getActions: () => actions,
 			getActionsContext: () => e.element,
-			onHide: () => dispose(actionsDisposable)
+			onHide: () => { }
 		});
 	}
 
-	public reLayout(): void {
+	public override reLayout(): void {
 		if (this.isDisposed) {
 			return;
 		}
 
 		const actionsPosition = this.searchConfig.actionsPosition;
-		dom.toggleClass(this.getContainer(), SearchView.ACTIONS_RIGHT_CLASS_NAME, actionsPosition === 'right');
+		this.getContainer().classList.toggle(SearchView.ACTIONS_RIGHT_CLASS_NAME, actionsPosition === 'right');
 
 		const messagesSize = this.messagesElement.style.display === 'none' ?
 			0 :
@@ -182,7 +194,7 @@ export class NotebookSearchView extends SearchView {
 		}
 	}
 
-	renderBody(parent: HTMLElement): void {
+	protected override renderBody(parent: HTMLElement): void {
 		super.callRenderBody(parent);
 
 		this.container = dom.append(parent, dom.$('.search-view'));
@@ -201,7 +213,7 @@ export class NotebookSearchView extends SearchView {
 		this.setExpanded(false);
 	}
 
-	protected showSearchWithoutFolderMessage(): void {
+	protected override showSearchWithoutFolderMessage(): void {
 		this.searchWithoutFolderMessageElement = this.clearMessage();
 
 		const textEl = dom.append(this.searchWithoutFolderMessageElement,
@@ -210,14 +222,14 @@ export class NotebookSearchView extends SearchView {
 		const openFolderLink = dom.append(textEl,
 			$('a.pointer.prominent', { tabindex: 0 }, nls.localize('openNotebookFolder', "Open Notebooks")));
 
-		this.messageDisposables.push(dom.addDisposableListener(openFolderLink, dom.EventType.CLICK, async (e: MouseEvent) => {
+		this.messageDisposables.add(dom.addDisposableListener(openFolderLink, dom.EventType.CLICK, async (e: MouseEvent) => {
 			dom.EventHelper.stop(e, false);
 			this.commandService.executeCommand('notebook.command.openNotebookFolder');
 			this.setExpanded(false);
 		}));
 	}
 
-	protected createSearchResultsView(container: HTMLElement): void {
+	protected override createSearchResultsView(container: HTMLElement): void {
 		super.createSearchResultsView(container);
 
 		this._register(this.tree.onContextMenu(e => this.onContextMenu(e)));
@@ -229,18 +241,20 @@ export class NotebookSearchView extends SearchView {
 				let element = this.tree.getSelection()[0] as Match;
 				const resource = element instanceof Match ? element.parent().resource : (<FileMatch>element).resource;
 				if (resource.fsPath.endsWith('.md')) {
-					this.commandService.executeCommand('markdown.showPreview', resource);
+					await this.commandService.executeCommand('markdown.showPreview', resource);
 				} else {
-					await this.open(this.tree.getSelection()[0] as Match, true, false, false);
+					await this.commandService.executeCommand('bookTreeView.openNotebook', resource.fsPath);
 				}
+				await this.commandService.executeCommand('notebook.action.launchFindInNotebook', this.viewModel.searchResult.query?.contentPattern?.pattern);
 			}
 		}));
 	}
 
 	public startSearch(query: ITextQuery, excludePatternText: string, includePatternText: string, triggeredOnType: boolean, searchWidget: NotebookSearchWidget): Thenable<void> {
+		let start = new Date().getTime();
 		let progressComplete: () => void;
 		this.progressService.withProgress({ location: this.getProgressLocation(), delay: triggeredOnType ? 300 : 0 }, _progress => {
-			return new Promise(resolve => progressComplete = resolve);
+			return new Promise<void>(resolve => progressComplete = resolve);
 		});
 
 		this.state = SearchUIState.Searching;
@@ -252,6 +266,12 @@ export class NotebookSearchView extends SearchView {
 		}, 2000);
 
 		const onComplete = async (completed?: ISearchComplete) => {
+			let end = new Date().getTime();
+			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.SearchCompleted)
+				.withAdditionalProperties({ resultsReturned: completed?.results.length })
+				.withAdditionalMeasurements({ timeTakenMs: end - start })
+				.send();
+
 			clearTimeout(slowTimer);
 			this.state = SearchUIState.Idle;
 
@@ -259,7 +279,7 @@ export class NotebookSearchView extends SearchView {
 			progressComplete();
 
 			// Do final render, then expand if just 1 file with less than 50 matches
-			await this.onSearchResultsChanged();
+			this.onSearchResultsChanged();
 
 			const collapseResults = this.searchConfig.collapseResults;
 			if (collapseResults !== 'alwaysCollapse' && this.viewModel.searchResult.matches().length === 1) {
@@ -307,26 +327,16 @@ export class NotebookSearchView extends SearchView {
 				const p = dom.append(messageEl, $('p', undefined, message));
 
 				if (!completed) {
-					const searchAgainLink = dom.append(p, $('a.pointer.prominent', undefined, nls.localize('rerunSearch.message', "Search again")));
-					this.messageDisposables.push(dom.addDisposableListener(searchAgainLink, dom.EventType.CLICK, (e: MouseEvent) => {
-						dom.EventHelper.stop(e, false);
-						this.triggerSearchQueryChange(query, excludePatternText, includePatternText, triggeredOnType, searchWidget);
-					}));
-					// cancel search
-					dom.append(p, $('span', undefined, ' / '));
-					const cancelSearchLink = dom.append(p, $('a.pointer.prominent', undefined, nls.localize('cancelSearch.message', "Cancel Search")));
-					this.messageDisposables.push(dom.addDisposableListener(cancelSearchLink, dom.EventType.CLICK, (e: MouseEvent) => {
-						dom.EventHelper.stop(e, false);
-						this.cancelSearch();
-					}));
+					const searchAgainButton = this.messageDisposables.add(new SearchLinkButton(
+						nls.localize('rerunSearch.message', "Search again"),
+						() => this.triggerQueryChange({ preserveFocus: false })));
+					dom.append(p, searchAgainButton.element);
 				} else if (hasIncludes || hasExcludes) {
-					const searchAgainLink = dom.append(p, $('a.pointer.prominent', { tabindex: 0 }, nls.localize('rerunSearchInAll.message', "Search again in all files")));
-					this.messageDisposables.push(dom.addDisposableListener(searchAgainLink, dom.EventType.CLICK, (e: MouseEvent) => {
-						dom.EventHelper.stop(e, false);
-					}));
+					const searchAgainButton = this.messageDisposables.add(new SearchLinkButton(nls.localize('rerunSearchInAll.message', "Search again in all files"), this.onSearchAgain.bind(this)));
+					dom.append(p, searchAgainButton.element);
 				} else {
-					const openSettingsLink = dom.append(p, $('a.pointer.prominent', { tabindex: 0 }, nls.localize('openSettings.message', "Open Settings")));
-					this.addClickEvents(openSettingsLink, this.onOpenSettings);
+					const openSettingsButton = this.messageDisposables.add(new SearchLinkButton(nls.localize('openSettings.message', "Open Settings"), this.onOpenSettings.bind(this)));
+					dom.append(p, openSettingsButton.element);
 				}
 
 				if (this.contextService.getWorkbenchState() === WorkbenchState.EMPTY && !this.contextKeyService.getContextKeyValue('bookOpened')) {
@@ -344,7 +354,7 @@ export class NotebookSearchView extends SearchView {
 		const onError = (e: any) => {
 			clearTimeout(slowTimer);
 			this.state = SearchUIState.Idle;
-			if (errors.isPromiseCanceledError(e)) {
+			if (errors.isCancellationError(e)) {
 				return onComplete(undefined);
 			} else {
 				this.updateActions();
@@ -383,12 +393,12 @@ export class NotebookSearchView extends SearchView {
 			.then(onComplete, onError);
 	}
 
-	protected async refreshAndUpdateCount(event?: IChangeEvent): Promise<void> {
+	protected override async refreshAndUpdateCount(event?: IChangeEvent): Promise<void> {
 		this.updateSearchResultCount(this.viewModel.searchResult.query!.userDisabledExcludesAndIgnoreFiles);
 		return this.refreshTree(event);
 	}
 
-	async refreshTree(event?: IChangeEvent): Promise<void> {
+	override async refreshTree(event?: IChangeEvent): Promise<void> {
 		const collapseResults = this.searchConfig.collapseResults;
 		if (!event || event.added || event.removed) {
 			// Refresh whole tree
@@ -414,52 +424,56 @@ export class NotebookSearchView extends SearchView {
 		}
 	}
 
-	cancelSearch(focus: boolean = true): boolean {
+	override cancelSearch(focus: boolean = true): boolean {
 		if (this.viewModel.cancelSearch(false)) {
 			return true;
 		}
 		return false;
 	}
 
-	private createSearchResultIterator(collapseResults: ISearchConfigurationProperties['collapseResults']): Iterable<ITreeElement<RenderableMatch>> {
+	private createSearchResultIterator(collapseResults: ISearchConfigurationProperties['collapseResults']): Iterable<ICompressedTreeElement<RenderableMatch>> {
 		const folderMatches = this.searchResult.folderMatches()
 			.filter(fm => !fm.isEmpty())
 			.sort(searchMatchComparer);
 
 		if (folderMatches.length === 1) {
-			return this.createSearchFolderIterator(folderMatches[0], collapseResults);
+			return this.createSearchFolderIterator(folderMatches[0], collapseResults, true);
 		}
 
 		return Iterable.map(folderMatches, folderMatch => {
-			const children = this.createSearchFolderIterator(folderMatch, collapseResults);
-			return <ITreeElement<RenderableMatch>>{ element: folderMatch, children };
+			const children = this.createSearchFolderIterator(folderMatch, collapseResults, true);
+			return <ICompressedTreeElement<RenderableMatch>>{ element: folderMatch, children };
 		});
 	}
 
-	private createSearchFolderIterator(folderMatch: FolderMatch, collapseResults: ISearchConfigurationProperties['collapseResults']): Iterable<ITreeElement<RenderableMatch>> {
+	private createSearchFolderIterator(folderMatch: FolderMatch, collapseResults: ISearchConfigurationProperties['collapseResults'], childFolderIncompressible: boolean): Iterable<ICompressedTreeElement<RenderableMatch>> {
 		const sortOrder = this.searchConfig.sortOrder;
-		const matches = folderMatch.matches().sort((a, b) => searchMatchComparer(a, b, sortOrder));
 
-		return Iterable.map(matches, fileMatch => {
-			//const children = this.createFileIterator(fileMatch);
-			let nodeExists = true;
-			try { this.tree.getNode(fileMatch); } catch (e) { nodeExists = false; }
+		const matchArray = this.isTreeLayoutViewVisible ? folderMatch.matches() : folderMatch.allDownstreamFileMatches();
+		const matches = matchArray.sort((a, b) => searchMatchComparer(a, b, sortOrder));
 
-			const collapsed = nodeExists ? undefined :
-				(collapseResults === 'alwaysCollapse' || (fileMatch.matches().length > 10 && collapseResults !== 'alwaysExpand'));
+		return Iterable.map(matches, match => {
+			let children;
+			if (match instanceof FileMatch) {
+				children = this.createSearchFileIterator(match);
+			} else {
+				children = this.createSearchFolderIterator(match, collapseResults, false);
+			}
 
-			return <ITreeElement<RenderableMatch>>{ element: fileMatch, undefined, collapsed, collapsible: false };
+			const collapsed = (collapseResults === 'alwaysCollapse' || (match.count() > 10 && collapseResults !== 'alwaysExpand')) ? ObjectTreeElementCollapseState.PreserveOrCollapsed : ObjectTreeElementCollapseState.PreserveOrExpanded;
+
+			return <ICompressedTreeElement<RenderableMatch>>{ element: match, children, collapsed, incompressible: (match instanceof FileMatch) ? true : childFolderIncompressible };
 		});
 	}
 
-	private createSearchFileIterator(fileMatch: FileMatch): Iterable<ITreeElement<RenderableMatch>> {
+	private createSearchFileIterator(fileMatch: FileMatch): Iterable<ICompressedTreeElement<RenderableMatch>> {
 		const matches = fileMatch.matches().sort(searchMatchComparer);
-		return Iterable.map(matches, r => (<ITreeElement<RenderableMatch>>{ element: r }));
+		return Iterable.map(matches, r => (<ICompressedTreeElement<RenderableMatch>>{ element: r }));
 	}
 
-	private createSearchIterator(match: FolderMatch | FileMatch | SearchResult, collapseResults: ISearchConfigurationProperties['collapseResults']): Iterable<ITreeElement<RenderableMatch>> {
+	private createSearchIterator(match: FolderMatch | FileMatch | SearchResult, collapseResults: ISearchConfigurationProperties['collapseResults']): Iterable<ICompressedTreeElement<RenderableMatch>> {
 		return match instanceof SearchResult ? this.createSearchResultIterator(collapseResults) :
-			match instanceof FolderMatch ? this.createSearchFolderIterator(match, collapseResults) :
+			match instanceof FolderMatch ? this.createSearchFolderIterator(match, collapseResults, false) :
 				this.createSearchFileIterator(match);
 	}
 
@@ -471,7 +485,7 @@ export class NotebookSearchView extends SearchView {
 			.then(() => undefined, () => undefined);
 	}
 
-	public saveState(): void {
+	public override saveState(): void {
 		const preserveCase = this.viewModel.preserveCase;
 		this.viewletState['query.preserveCase'] = preserveCase;
 
@@ -480,7 +494,7 @@ export class NotebookSearchView extends SearchView {
 		ViewPane.prototype.saveState.call(this);
 	}
 
-	dispose(): void {
+	override dispose(): void {
 		this.isDisposed = true;
 		this.saveState();
 		this.treeSelectionChangeListener.dispose();
@@ -532,13 +546,13 @@ class ToggleCollapseAndExpandAction extends Action {
 				if (!viewer.isCollapsed(node)) {
 					return true;
 				}
-			} while (node = navigator.next());
+			} while (node = navigator.next()); // eslint-disable-line no-cond-assign
 		}
 		return false;
 	}
 
 
-	async run(): Promise<void> {
+	override async run(): Promise<void> {
 		await this.determineAction().run();
 	}
 }
@@ -551,7 +565,7 @@ class CancelSearchAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchStopIcon.classNames);
+		super(id, label, 'search-action ' + searchStopIcon.id);
 		this.update();
 	}
 
@@ -560,7 +574,7 @@ class CancelSearchAction extends Action {
 		this.enabled = !!searchView && searchView.isSlowSearch();
 	}
 
-	run(): Promise<void> {
+	override run(): Promise<void> {
 		const searchView = getSearchView(this.viewsService);
 		if (searchView) {
 			searchView.cancelSearch();
@@ -578,7 +592,7 @@ class ExpandAllAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchExpandAllIcon.classNames);
+		super(id, label, 'search-action ' + searchExpandAllIcon.id);
 		this.update();
 	}
 
@@ -587,7 +601,7 @@ class ExpandAllAction extends Action {
 		this.enabled = !!searchView && searchView.hasSearchResults();
 	}
 
-	run(): Promise<void> {
+	override run(): Promise<void> {
 		const searchView = getSearchView(this.viewsService);
 		if (searchView) {
 			const viewer = searchView.getControl();
@@ -607,7 +621,7 @@ class CollapseDeepestExpandedLevelAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchCollapseAllIcon.classNames);
+		super(id, label, 'search-action ' + searchCollapseAllIcon.id);
 		this.update();
 	}
 
@@ -616,7 +630,7 @@ class CollapseDeepestExpandedLevelAction extends Action {
 		this.enabled = !!searchView && searchView.hasSearchResults();
 	}
 
-	run(): Promise<void> {
+	override run(): Promise<void> {
 		const searchView = getSearchView(this.viewsService);
 		if (searchView) {
 			const viewer = searchView.getControl();
@@ -629,7 +643,7 @@ class CollapseDeepestExpandedLevelAction extends Action {
 			let node = navigator.first();
 			let collapseFileMatchLevel = false;
 			if (node instanceof FolderMatch) {
-				while (node = navigator.next()) {
+				while (node = navigator.next()) { // eslint-disable-line no-cond-assign
 					if (node instanceof Match) {
 						collapseFileMatchLevel = true;
 						break;
@@ -643,7 +657,7 @@ class CollapseDeepestExpandedLevelAction extends Action {
 					if (node instanceof FileMatch) {
 						viewer.collapse(node);
 					}
-				} while (node = navigator.next());
+				} while (node = navigator.next()); // eslint-disable-line no-cond-assign
 			} else {
 				viewer.collapseAll();
 			}
@@ -663,7 +677,7 @@ class ClearSearchResultsAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchClearIcon.classNames);
+		super(id, label, 'search-action ' + searchClearIcon.id);
 		this.update();
 	}
 
@@ -672,7 +686,7 @@ class ClearSearchResultsAction extends Action {
 		this.enabled = !!searchView && searchView.hasSearchResults();
 	}
 
-	run(): Promise<void> {
+	override run(): Promise<void> {
 		const searchView = getSearchView(this.viewsService);
 		if (searchView) {
 			searchView.clearSearchResults();

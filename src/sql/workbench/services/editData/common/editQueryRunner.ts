@@ -12,9 +12,9 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { Emitter } from 'vs/base/common/event';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -28,7 +28,7 @@ export default class EditQueryRunner extends QueryRunner {
 	public readonly onEditSessionReady = this._onEditSessionReady.event;
 
 	constructor(
-		public uri: string,
+		uri: string,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IQueryManagementService queryManagementService: IQueryManagementService,
 		@IConfigurationService configurationService: IConfigurationService,

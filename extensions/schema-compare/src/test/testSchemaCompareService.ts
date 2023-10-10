@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 
 export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 
@@ -20,7 +20,11 @@ export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 		}
 	}
 
-	schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+	schemaComparePublishDatabaseChanges(_operationId: string, _targetServerName: string, _targetDatabaseName: string, _taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+		throw new Error('Method not implemented.');
+	}
+
+	schemaComparePublishProjectChanges(_operationId: string, _targetProjectPath: string, _targetFolderStructure: mssql.ExtractTarget, _taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaComparePublishProjectResult> {
 		throw new Error('Method not implemented.');
 	}
 
@@ -34,20 +38,19 @@ export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 		return Promise.resolve(result);
 	}
 
-	schemaCompareIncludeExcludeNode(operationId: string, diffEntry: mssql.DiffEntry, IncludeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaCompareIncludeExcludeResult> {
+	schemaCompareIncludeExcludeNode(_operationId: string, _diffEntry: mssql.DiffEntry, _IncludeRequest: boolean, _taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaCompareIncludeExcludeResult> {
 		throw new Error('Method not implemented.');
 	}
 
-	schemaCompareOpenScmp(filePath: string): Thenable<mssql.SchemaCompareOpenScmpResult> {
+	schemaCompareOpenScmp(_filePath: string): Thenable<mssql.SchemaCompareOpenScmpResult> {
 		throw new Error('Method not implemented.');
 	}
 
-
-	schemaCompareSaveScmp(sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, targetEndpointInfo: mssql.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: mssql.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: mssql.SchemaCompareObjectId[], excludedTargetObjects: mssql.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> {
+	schemaCompareSaveScmp(_sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, _targetEndpointInfo: mssql.SchemaCompareEndpointInfo, _taskExecutionMode: azdata.TaskExecutionMode, _deploymentOptions: mssql.DeploymentOptions, _scmpFilePath: string, _excludedSourceObjects: mssql.SchemaCompareObjectId[], _excludedTargetObjects: mssql.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> {
 		throw new Error('Method not implemented.');
 	}
 
-	schemaCompare(operationId: string, sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, targetEndpointInfo: mssql.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaCompareResult> {
+	schemaCompare(_operationId: string, _sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, _targetEndpointInfo: mssql.SchemaCompareEndpointInfo, _taskExecutionMode: azdata.TaskExecutionMode, _deploymentOptions: mssql.DeploymentOptions): Thenable<mssql.SchemaCompareResult> {
 		let result: mssql.SchemaCompareResult;
 		if (this.testState === testStateScmp.FAILURE) {
 			result = {
@@ -102,18 +105,46 @@ export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 		return Promise.resolve(result);
 	}
 
-	schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-		return undefined;
+	schemaCompareGenerateScript(_operationId: string, _targetServerName: string, _targetDatabaseName: string, _taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+		let result: azdata.ResultStatus;
+		if (this.testState === testStateScmp.FAILURE) {
+			result = {
+				success: false,
+				errorMessage: 'Test failure'
+			};
+		}
+		else {
+			result = {
+				success: true,
+				errorMessage: ''
+			};
+		}
+
+		return Promise.resolve(result);
 	}
 
-	schemaCompareCancel(operationId: string): Thenable<azdata.ResultStatus> {
-		return undefined;
+	schemaCompareCancel(_operationId: string): Thenable<azdata.ResultStatus> {
+		let result: azdata.ResultStatus;
+		if (this.testState === testStateScmp.FAILURE) {
+			result = {
+				success: false,
+				errorMessage: 'Test failure'
+			};
+		}
+		else {
+			result = {
+				success: true,
+				errorMessage: ''
+			};
+		}
+
+		return Promise.resolve(result);
 	}
 
 	handle?: number;
 	readonly providerId: string = 'MSSQL';
 
-	registerOnUpdated(handler: () => any): void {
+	registerOnUpdated(_handler: () => any): void {
 	}
 }
 

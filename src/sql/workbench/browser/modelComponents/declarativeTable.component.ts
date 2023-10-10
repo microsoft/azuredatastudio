@@ -4,26 +4,33 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/declarativeTable';
-
-import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnDestroy, AfterViewInit
-} from '@angular/core';
-
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnDestroy } from '@angular/core';
 import * as azdata from 'azdata';
-
-import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
-import { find, equals as arrayEquals } from 'vs/base/common/arrays';
-import { localize } from 'vs/nls';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
+import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
+import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
+import { EventHelper } from 'vs/base/browser/dom';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
+import { equals as arrayEquals } from 'vs/base/common/arrays';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { localize } from 'vs/nls';
+import { ILogService } from 'vs/platform/log/common/log';
+import * as colorRegistry from 'vs/platform/theme/common/colorRegistry';
+import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
+import { equals } from 'vs/base/common/objects';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { MenuItemAction, MenuRegistry } from 'vs/platform/actions/common/actions';
+import { IAction, Separator } from 'vs/base/common/actions';
 
 export enum DeclarativeDataType {
 	string = 'string',
 	category = 'category',
 	boolean = 'boolean',
 	editableCategory = 'editableCategory',
-	component = 'component'
+	component = 'component',
+	menu = 'menu'
 }
 
 @Component({
@@ -35,30 +42,53 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	@Input() modelStore: IModelStore;
 
 	private _data: azdata.DeclarativeTableCellValue[][] = [];
+	private _filteredRowIndexes: number[] | undefined = undefined;
 	private columns: azdata.DeclarativeTableColumn[] = [];
-	private _selectedRow: number;
+	private _colorTheme: IColorTheme;
+	private _hasFocus: boolean;
+
+	/**
+	 * The flag is set to true when the table gains focus. When a row is selected and the flag is true the row selected event will
+	 * fire regardless whether the row is already selected.
+	 *
+	 */
+	private _rowSelectionFocusFlag: boolean = false;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService,
+		@Inject(IThemeService) themeService: IThemeService,
+		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService
 	) {
-		super(changeRef, el);
-	}
-
-	ngOnInit(): void {
-		this.baseInit();
+		super(changeRef, el, logService);
+		this._colorTheme = themeService.getColorTheme();
+		this._register(themeService.onDidColorThemeChange((colorTheme) => {
+			this._colorTheme = colorTheme;
+		}));
 	}
 
 	ngAfterViewInit(): void {
+		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
+	public headerCheckboxVisible(colIdx: number): boolean {
+		return this.columns[colIdx].showCheckAll && this.isCheckBox(colIdx);
+	}
+
 	public isHeaderChecked(colIdx: number): boolean {
-		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
-		return column.isChecked;
+		for (const row of this.data) {
+			const cellData = row[colIdx];
+			if (cellData.value === false && cellData.enabled !== false) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public isCheckBox(colIdx: number): boolean {
@@ -66,9 +96,14 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		return column.valueType === DeclarativeDataType.boolean;
 	}
 
-	public isControlEnabled(colIdx: number): boolean {
-		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
-		return !column.isReadOnly;
+	public isContextMenuColumn(colIdx: number): boolean {
+		return this.columns[colIdx].valueType === DeclarativeDataType.menu;
+	}
+
+	public isControlEnabled(rowIdx: number, colIdx: number): boolean {
+		const cellData = this.data[rowIdx][colIdx];
+		const column: azdata.DeclarativeTableColumn = this.columns[colIdx];
+		return !column.isReadOnly && cellData.enabled !== false;
 	}
 
 	private isLabel(colIdx: number): boolean {
@@ -94,22 +129,14 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		this.onCellDataChanged(e, rowIdx, colIdx);
 		// If all of the rows in that column are now checked, let's update the header.
 		if (this.columns[colIdx].showCheckAll) {
-			if (e) {
-				for (let rowIdx = 0; rowIdx < this.data.length; rowIdx++) {
-					if (this.data[rowIdx][colIdx].value === false) {
-						return;
-					}
-				}
-			}
-			this.columns[colIdx].isChecked = e;
 			this._changeRef.detectChanges();
 		}
 	}
 
 	public onHeaderCheckBoxChanged(e: boolean, colIdx: number): void {
-		this.columns[colIdx].isChecked = e;
 		this.data.forEach((row, rowIdx) => {
-			if (row[colIdx].value !== e) {
+			const cellData = row[colIdx];
+			if (cellData.value !== e && cellData.enabled !== false) {
 				this.onCellDataChanged(e, rowIdx, colIdx);
 			}
 		});
@@ -125,7 +152,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 		if (column.categoryValues) {
 			if (typeof e === 'string') {
-				let category = find(column.categoryValues, c => c.displayName === e);
+				let category = column.categoryValues.find(c => c.displayName === e);
 				if (category) {
 					this.onCellDataChanged(category.name, rowIdx, colIdx);
 				} else {
@@ -139,7 +166,13 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 	private onCellDataChanged(newValue: string | number | boolean | any, rowIdx: number, colIdx: number): void {
 		this.data[rowIdx][colIdx].value = newValue;
-		this.setPropertyFromUI<any[][]>((props, value) => props.data = value, this.data);
+
+		if (this.properties.data) {
+			this.setPropertyFromUI<any[][]>((props, value) => props.data = value, this.data);
+		} else {
+			this.setPropertyFromUI<any[][]>((props, value) => props.dataValues = value, this.data);
+		}
+
 		let newCellData: azdata.TableCell = {
 			row: rowIdx,
 			column: colIdx,
@@ -184,7 +217,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
 		let cellData = this.data[rowIdx][colIdx];
 		if (cellData && column.categoryValues) {
-			let category = find(column.categoryValues, v => v.name === cellData.value);
+			let category = column.categoryValues.find(v => v.name === cellData.value);
 			if (category) {
 				return category.displayName;
 			} else if (this.isEditableSelectBox(colIdx)) {
@@ -209,9 +242,20 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 			} else {
 				return localize('blankValue', "blank");
 			}
+		} else if (cellData?.ariaLabel) {
+			return cellData.ariaLabel;
 		}
 
 		return '';
+	}
+
+	public getCheckAllColumnAriaLabel(colIdx: number): string {
+		return localize('checkAllColumnLabel', "check all checkboxes in column: {0}", this.columns[colIdx].displayName);
+	}
+
+	public getHeaderAriaLabel(colIdx: number): string {
+		const column = this.columns[colIdx];
+		return (column.ariaLabel) ? column.ariaLabel : column.displayName;
 	}
 
 	public getItemDescriptor(componentId: string): IComponentDescriptor {
@@ -226,9 +270,10 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	}
 
 	private static ACCEPTABLE_VALUES = new Set<string>(['number', 'string', 'boolean']);
-	public setProperties(properties: azdata.DeclarativeTableProperties): void {
-		const basicData: any[][] = properties.data ?? [];
-		const complexData: azdata.DeclarativeTableCellValue[][] = properties.dataValues;
+	public override setProperties(properties: { [key: string]: any; }): void {
+		let castProperties = properties as azdata.DeclarativeTableProperties;
+		const basicData: any[][] = castProperties.data ?? [];
+		const complexData: azdata.DeclarativeTableCellValue[][] = castProperties.dataValues ?? [];
 		let finalData: azdata.DeclarativeTableCellValue[][];
 
 		finalData = basicData.map(row => {
@@ -249,11 +294,13 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 			finalData = complexData;
 		}
 
-		this.columns = properties.columns ?? [];
+		this.columns = castProperties.columns ?? [];
 
 		// check whether the data property is changed before actually setting the properties.
 		const isDataPropertyChanged = !arrayEquals(this.data, finalData ?? [], (a, b) => {
-			return arrayEquals(a, b);
+			return arrayEquals(a, b, (cell1, cell2) => {
+				return equals(cell1, cell2);
+			});
 		});
 
 		// the angular is using reference compare to determine whether the data is changed or not
@@ -263,15 +310,25 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		if (isDataPropertyChanged) {
 			this.clearContainer();
 			this._data = finalData;
-			this.data?.forEach(row => {
-				for (let i = 0; i < row.length; i++) {
-					if (this.isComponent(i)) {
-						this.addToContainer(this.getItemDescriptor(row[i].value as string), undefined);
-					}
+		}
+
+		const previousSelectedRow = this.selectedRow;
+
+		super.setProperties(properties);
+
+		if (this.selectedRow !== previousSelectedRow && this.enableRowSelection) {
+			this.fireEvent({
+				eventType: ComponentEventType.onSelectedRowChanged,
+				args: {
+					row: this.selectedRow
 				}
 			});
 		}
-		super.setProperties(properties);
+	}
+
+	public override clearContainer(): void {
+		super.clearContainer();
+		this.selectedRow = -1;
 	}
 
 	public get data(): azdata.DeclarativeTableCellValue[][] {
@@ -279,28 +336,154 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	}
 
 	public isRowSelected(row: number): boolean {
-		// Only react when the user wants you to
-		if (this.getProperties().selectEffect !== true) {
+		if (!this.enableRowSelection) {
 			return false;
 		}
-		return this._selectedRow === row;
+		return this.selectedRow === row;
 	}
 
-	public onCellClick(row: number) {
-		// Only react when the user wants you to
-		if (this.getProperties().selectEffect !== true) {
+	public onRowSelected(row: number) {
+		if (!this.enableRowSelection) {
 			return;
 		}
-		if (!this.isRowSelected(row)) {
-			this._selectedRow = row;
+		if (this._rowSelectionFocusFlag || !this.isRowSelected(row)) {
+			this.selectedRow = row;
+			this._rowSelectionFocusFlag = false;
 			this._changeRef.detectChanges();
 
 			this.fireEvent({
-				eventType: ComponentEventType.onDidClick,
+				eventType: ComponentEventType.onSelectedRowChanged,
 				args: {
 					row
 				}
 			});
 		}
+	}
+
+	public get contextMenuButtonTitle(): string {
+		return localize('declarativeTable.showActions', "Show Actions");
+	}
+
+	public onContextMenuButtonKeyDown(event: KeyboardEvent, row: number, column: number): void {
+		const keyboardEvent = new StandardKeyboardEvent(event);
+		if (keyboardEvent.keyCode === KeyCode.Space ||
+			keyboardEvent.keyCode === KeyCode.Enter) {
+			this.showContextMenu(event, row, column);
+		}
+	}
+
+	public onContextMenuButtonClick(event: MouseEvent, row: number, column: number): void {
+		this.showContextMenu(event, row, column);
+	}
+
+	private showContextMenu(event: MouseEvent | KeyboardEvent, row: number, column: number): void {
+		EventHelper.stop(event, true);
+		const cellValue = this.data[row][column].value as azdata.DeclarativeTableMenuCellValue;
+		const actions: IAction[] = [];
+		let addSeparator = false;
+		for (const [index, command] of cellValue.commands.entries()) {
+			const isCommand = typeof command === 'string';
+			if (addSeparator || (!isCommand && index !== 0)) {
+				actions.push(new Separator());
+			}
+			if (typeof command === 'string') {
+				addSeparator = false;
+				actions.push(this.createMenuItem(command));
+			} else {
+				addSeparator = true;
+				actions.push(...command.map(cmd => {
+					return this.createMenuItem(cmd);
+				}));
+			}
+		}
+		this.contextMenuService.showContextMenu({
+			getAnchor: () => event.currentTarget as HTMLElement,
+			getActions: () => actions,
+			getActionsContext: () => cellValue.context
+		});
+	}
+
+	private createMenuItem(commandId: string): MenuItemAction {
+		const command = MenuRegistry.getCommand(commandId);
+		return this.instantiationService.createInstance(MenuItemAction, command, undefined, { shouldForwardArgs: true }, undefined);
+	}
+
+	public onKey(e: KeyboardEvent, row: number) {
+		// Ignore the bubble up events
+		if (e.target !== e.currentTarget) {
+			return;
+		}
+		const event = new StandardKeyboardEvent(e);
+		if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
+			this.onRowSelected(row);
+			EventHelper.stop(e, true);
+		}
+	}
+
+	public override doAction(action: string, ...args: any[]): void {
+		if (action === ModelViewAction.Filter) {
+			this._filteredRowIndexes = args[0];
+		}
+		this._changeRef.detectChanges();
+	}
+
+	/**
+	 * Checks whether a given row is filtered (not visible)
+	 * @param rowIndex The row to check
+	 */
+	public isFiltered(rowIndex: number): boolean {
+		if (this._filteredRowIndexes === undefined) {
+			return false;
+		}
+		return this._filteredRowIndexes.includes(rowIndex) ? false : true;
+	}
+
+	public override get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth(),
+			'height': this.getHeight()
+		});
+	}
+
+	public getRowStyle(rowIndex: number): azdata.CssStyles {
+		if (this.isRowSelected(rowIndex)) {
+			const bgColor = this._hasFocus ? colorRegistry.listActiveSelectionBackground : colorRegistry.listInactiveSelectionBackground;
+			const color = this._hasFocus ? colorRegistry.listActiveSelectionForeground : colorRegistry.listInactiveSelectionForeground;
+			return {
+				'background-color': this._colorTheme.getColor(bgColor)?.toString(),
+				'color': this._colorTheme.getColor(color)?.toString()
+			};
+		} else {
+			return {};
+		}
+	}
+
+	onFocusIn() {
+		this._hasFocus = true;
+		this._rowSelectionFocusFlag = true;
+		this._changeRef.detectChanges();
+	}
+
+	onFocusOut() {
+		this._hasFocus = false;
+		this._changeRef.detectChanges();
+	}
+
+	public get enableRowSelection(): boolean {
+		return this.getPropertyOrDefault<boolean>((props) => props.enableRowSelection, false);
+	}
+
+	public get selectedRow(): number {
+		return this.getPropertyOrDefault<number>((props) => props.selectedRow, -1);
+	}
+
+	public set selectedRow(row: number) {
+		if (row !== this.selectedRow) {
+			this.setPropertyFromUI<number>((properties, value) => { properties.selectedRow = value; }, row);
+		}
+	}
+
+	public showColumn(column: azdata.DeclarativeTableColumn): boolean {
+		return column.hidden === undefined || !column.hidden;
 	}
 }

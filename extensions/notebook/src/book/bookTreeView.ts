@@ -8,26 +8,28 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as constants from '../common/constants';
-import { IPrompter, IQuestion, confirm } from '../prompts/question';
+import { IPrompter } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
-import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
-import { BookModel, BookVersion } from './bookModel';
+import { BookTreeItem } from './bookTreeItem';
+import { BookModel } from './bookModel';
 import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
-import { IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
-import { debounce, getPinnedNotebooks } from '../common/utils';
+import { getPinnedNotebooks, getNotebookType, confirmMessageDialog, FileExtension, IPinnedNotebook, BookTreeItemType } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
-
-const content = 'content';
+import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
+import { CreateBookDialog } from '../dialog/createBookDialog';
+import { AddTocEntryDialog } from '../dialog/addTocEntryDialog';
+import { getContentPath } from './bookVersionHandler';
+import { sendNotebookActionEvent, NbTelemetryView, NbTelemetryAction } from '../telemetry';
 
 interface BookSearchResults {
 	notebookPaths: string[];
 	bookPaths: string[];
 }
 
-export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider {
+export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider, vscode.TreeDragAndDropController<BookTreeItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined> = new vscode.EventEmitter<BookTreeItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<BookTreeItem | undefined> = this._onDidChangeTreeData.event;
 	private _extensionContext: vscode.ExtensionContext;
@@ -36,30 +38,49 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _openAsUntitled: boolean;
 	private _bookTrustManager: IBookTrustManager;
 	public bookPinManager: IBookPinManager;
+	public bookTocManager: IBookTocManager;
 
 	private _bookViewer: vscode.TreeView<BookTreeItem>;
 	public viewId: string;
-	public books: BookModel[];
-	public currentBook: BookModel;
+	public books: BookModel[] = [];
+	public currentBook: BookModel | undefined;
+	dropMimeTypes = ['application/vnd.code.tree.BookTreeViewProvider'];
+	dragMimeTypes = ['text/uri-list'];
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, public providerId: string) {
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
-		this.books = [];
 		this.bookPinManager = new BookPinManager();
 		this.viewId = view;
 		this.initialize(workspaceFolders).catch(e => console.error(e));
 		this.prompter = new CodeAdapter();
 		this._bookTrustManager = new BookTrustManager(this.books);
-
+		this.bookTocManager = new BookTocManager();
+		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, canSelectMany: true, treeDataProvider: this, dragAndDropController: this });
+		this._bookViewer.onDidChangeVisibility(async e => {
+			await this.initialized;
+			// Whenever the viewer changes visibility then try and reveal the currently active document
+			// in the tree view
+			let openDocument = azdata.nb.activeNotebookEditor;
+			let notebookPath = openDocument?.document.uri;
+			// Find the book that this notebook belongs to
+			const book = this.books.find(book => notebookPath?.fsPath.replace(/\\/g, '/').indexOf(book.bookPath) >= -1);
+			// Only reveal if...
+			if (e.visible && // If the view is currently visible - if not then we'll just wait until this is called when the view is made visible
+				book && // The notebook is part of a book in the viewlet (otherwise nothing to reveal)
+				(this._openAsUntitled ? notebookPath?.scheme === 'untitled' : notebookPath?.scheme !== 'untitled')) // The notebook is of the correct type for this tree view
+			{
+				await this.revealDocumentInTreeView(notebookPath, true, true);
+			}
+		});
 		this._extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(this));
 	}
 
 	private async initialize(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
 		if (this.viewId === constants.PINNED_BOOKS_VIEWID) {
-			await Promise.all(getPinnedNotebooks().map(async (notebookPath) => {
+			await Promise.all(getPinnedNotebooks().map(async (notebook) => {
 				try {
-					await this.createAndAddBookModel(notebookPath, true);
+					await this.createAndAddBookModel(notebook.notebookPath, true, notebook);
 				} catch {
 					// no-op, not all workspace folders are going to be valid books
 				}
@@ -86,13 +107,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	set _visitedNotebooks(value: string[]) {
-		this._extensionContext.globalState.update(constants.visitedNotebooksMementoKey, value);
+		void this._extensionContext.globalState.update(constants.visitedNotebooksMementoKey, value);
 	}
 
-	trustBook(bookTreeItem?: BookTreeItem): void {
-		let bookPathToTrust = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath;
+	async trustBook(bookTreeItem?: BookTreeItem): Promise<void> {
+		let bookPathToTrust: string = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath;
 		if (bookPathToTrust) {
-			let trustChanged = this._bookTrustManager.setBookAsTrusted(bookPathToTrust);
+			let trustChanged = await this._bookTrustManager.setBookAsTrusted(bookPathToTrust, true);
 			if (trustChanged) {
 				let notebookDocuments = azdata.nb.notebookDocuments;
 				if (notebookDocuments) {
@@ -104,9 +125,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						}
 					});
 				}
-				vscode.window.showInformationMessage(loc.msgBookTrusted);
+				sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.TrustNotebook);
+				void vscode.window.showInformationMessage(loc.msgBookTrusted);
 			} else {
-				vscode.window.showInformationMessage(loc.msgBookAlreadyTrusted);
+				void vscode.window.showInformationMessage(loc.msgBookAlreadyTrusted);
 			}
 		}
 	}
@@ -114,9 +136,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async pinNotebook(bookTreeItem: BookTreeItem): Promise<void> {
 		let bookPathToUpdate = bookTreeItem.book?.contentPath;
 		if (bookPathToUpdate) {
-			let pinStatusChanged = this.bookPinManager.pinNotebook(bookTreeItem);
+			let pinStatusChanged = await this.bookPinManager.pinNotebook(bookTreeItem);
+			sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.PinNotebook);
 			if (pinStatusChanged) {
-				bookTreeItem.contextValue = 'pinnedNotebook';
+				bookTreeItem.contextValue = BookTreeItemType.pinnedNotebook;
+				this._onDidChangeTreeData.fire(bookTreeItem);
 			}
 		}
 	}
@@ -124,9 +148,93 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async unpinNotebook(bookTreeItem: BookTreeItem): Promise<void> {
 		let bookPathToUpdate = bookTreeItem.book?.contentPath;
 		if (bookPathToUpdate) {
-			let pinStatusChanged = this.bookPinManager.unpinNotebook(bookTreeItem);
+			let pinStatusChanged = await this.bookPinManager.unpinNotebook(bookTreeItem);
 			if (pinStatusChanged) {
-				bookTreeItem.contextValue = 'savedNotebook';
+				// reset to original context value
+				bookTreeItem.contextValue = bookTreeItem.book.type === BookTreeItemType.Markdown ? BookTreeItemType.Markdown : getNotebookType(bookTreeItem.book);
+				// to search for notebook in allNotebooks dictionary we need to format uri
+				const notebookUri = vscode.Uri.file(bookTreeItem.book.contentPath).fsPath;
+				// if notebook is not in current book then it is a standalone notebook
+				let itemOpenedInBookTreeView = this.currentBook?.getNotebook(notebookUri) ?? this.books.find(book => book.bookPath === bookTreeItem.book.contentPath)?.getNotebook(notebookUri);
+				if (itemOpenedInBookTreeView) {
+					itemOpenedInBookTreeView.contextValue = bookTreeItem.contextValue;
+					this._onDidChangeTreeData.fire(itemOpenedInBookTreeView.parent);
+				}
+			}
+		}
+	}
+
+	async createBook(): Promise<void> {
+		const dialog = new CreateBookDialog(this.bookTocManager);
+		sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.CreateBook);
+		return dialog.createDialog();
+	}
+
+	async bookSectionQuickPick(): Promise<quickPickResults> {
+		let bookOptions: vscode.QuickPickItem[] = [];
+		let pickedSection: vscode.QuickPickItem;
+		this.books.forEach(book => {
+			if (!book.isNotebook) {
+				bookOptions.push({ label: book.bookItems[0].title, detail: book.bookPath });
+			}
+		});
+		let pickedBook = await vscode.window.showQuickPick(bookOptions, {
+			canPickMany: false,
+			placeHolder: loc.labelBookFolder
+		});
+
+		if (pickedBook) {
+			const updateBook = this.books.find(book => book.bookPath === pickedBook.detail).bookItems[0];
+			if (updateBook) {
+				let bookSections = updateBook.sections;
+				while (bookSections) {
+					bookOptions = [{ label: loc.labelAddToLevel, detail: pickedSection ? pickedSection.detail : '' }];
+					bookSections.forEach(section => {
+						if (section.sections) {
+							bookOptions.push({ label: section.title ? section.title : section.file, detail: section.file });
+						}
+					});
+					bookSections = undefined;
+					if (bookOptions.length >= 1) {
+						pickedSection = await vscode.window.showQuickPick(bookOptions, {
+							canPickMany: false,
+							placeHolder: loc.labelBookSection
+						});
+
+						if (pickedSection && pickedSection.label === loc.labelAddToLevel) {
+							break;
+						}
+						else if (pickedSection && pickedSection.detail) {
+							bookSections = updateBook.findChildSection(pickedSection.detail).sections;
+						}
+					}
+				}
+			}
+			return pickedSection ? { quickPickSection: pickedSection, book: updateBook } : undefined;
+		}
+		return undefined;
+	}
+
+	/**
+	 * Move selected tree items (sections/notebooks) using the move option tree item entry point.
+	 * A quick pick menu will show all the possible books and sections for the user to choose
+	 * the target element to add the selected tree items.
+	 * @param treeItems Elements to be moved
+	 */
+	async moveTreeItems(treeItems: BookTreeItem[]): Promise<void> {
+		sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.MoveNotebook);
+		const selectionResults = await this.bookSectionQuickPick();
+		if (selectionResults) {
+			let pickedSection = selectionResults.quickPickSection;
+			// filter target from sources
+			let movingElements = treeItems.filter(item => item.uri !== pickedSection.detail);
+			const targetBookItem = selectionResults.book;
+			const targetSection = pickedSection.detail !== undefined ? targetBookItem.findChildSection(pickedSection.detail) : undefined;
+			let sourcesByBook = this.groupTreeItemsByBookModel(movingElements);
+			const targetBookModel = this.books.find(book => book.bookPath === targetBookItem.book.root);
+			for (let [bookModel, items] of sourcesByBook) {
+				this.bookTocManager = new BookTocManager(bookModel, targetBookModel);
+				await this.bookTocManager.updateBook(items, targetBookItem, targetSection);
 			}
 		}
 	}
@@ -142,34 +250,33 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				this.currentBook = existingBook;
 			} else {
 				await this.createAndAddBookModel(bookPath, !!isNotebook);
-				this.currentBook = this.books.find(book => book.bookPath === bookPath);
 			}
 
 			if (showPreview) {
-				this._bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
+				this.currentBook = this.books.find(book => book.bookPath === bookPath);
+				// Only attempt a reveal if current book has been found, but always try to preview the file
+				if (this.currentBook) {
+					await this._bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
+				}
 				await this.showPreviewFile(urlToOpen);
 			}
 
-			// add file watcher on toc file.
-			if (!isNotebook) {
-				fs.watchFile(this.currentBook.tableOfContentsPath, async (curr, prev) => {
-					if (curr.mtime > prev.mtime) {
-						let book = this.books.find(book => book.bookPath === bookPath);
-						if (book) {
-							this.fireBookRefresh(book);
-						}
-					}
-				});
-			}
+			sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.OpenBook);
 		} catch (e) {
-			vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
+			// if there is an error remove book from context
+			const index = this.books.findIndex(book => book.bookPath === bookPath);
+			if (index !== -1) {
+				this.books.splice(index, 1);
+			}
+			void vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
 		}
 	}
 
 	async addNotebookToPinnedView(bookItem: BookTreeItem): Promise<void> {
 		let notebookPath: string = bookItem.book.contentPath;
 		if (notebookPath) {
-			await this.createAndAddBookModel(notebookPath, true);
+			let notebookDetails: IPinnedNotebook = getNotebookType(bookItem.book) === BookTreeItemType.savedBookNotebook ? { bookPath: bookItem.book.root, notebookPath: notebookPath, title: bookItem.book.title } : { notebookPath: notebookPath };
+			await this.createAndAddBookModel(notebookPath, true, notebookDetails);
 		}
 	}
 
@@ -180,11 +287,31 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	@debounce(1500)
-	async fireBookRefresh(book: BookModel): Promise<void> {
-		await book.initializeContents().then(() => {
-			this._onDidChangeTreeData.fire(undefined);
-		});
+	async createMarkdownFile(bookItem: BookTreeItem): Promise<void> {
+		const book = this.books.find(b => b.bookPath === bookItem.root);
+		this.bookTocManager = new BookTocManager(book);
+		const dialog = new AddTocEntryDialog(this.bookTocManager, bookItem, FileExtension.Markdown);
+		await dialog.createDialog();
+	}
+
+	async createNotebook(bookItem: BookTreeItem): Promise<void> {
+		const book = this.books.find(b => b.bookPath === bookItem.root);
+		this.bookTocManager = new BookTocManager(book);
+		const dialog = new AddTocEntryDialog(this.bookTocManager, bookItem, FileExtension.Notebook);
+		await dialog.createDialog();
+	}
+
+	async createSection(bookItem: BookTreeItem): Promise<void> {
+		const book = this.books.find(b => b.bookPath === bookItem.root);
+		this.bookTocManager = new BookTocManager(book);
+		const dialog = new AddTocEntryDialog(this.bookTocManager, bookItem, FileExtension.Markdown, true);
+		await dialog.createDialog();
+	}
+
+	async removeNotebook(bookItem: BookTreeItem): Promise<void> {
+		const book = this.books.find(b => b.bookPath === bookItem.root);
+		this.bookTocManager = new BookTocManager(book);
+		return this.bookTocManager.removeNotebook(bookItem);
 	}
 
 	async closeBook(book: BookTreeItem): Promise<void> {
@@ -201,12 +328,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				}
 				this._onDidChangeTreeData.fire(undefined);
 			}
+			sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.CloseBook);
 		} catch (e) {
-			vscode.window.showErrorMessage(loc.closeBookError(book.root, e instanceof Error ? e.message : e));
+			void vscode.window.showErrorMessage(loc.closeBookError(book.root, e instanceof Error ? e.message : e));
 		} finally {
 			// remove watch on toc file.
 			if (deletedBook && !deletedBook.isNotebook) {
-				fs.unwatchFile(deletedBook.tableOfContentsPath);
+				deletedBook.unwatchTOC();
 			}
 		}
 	}
@@ -215,24 +343,18 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 * Creates a model for the specified folder path and adds it to the known list of books if we
 	 * were able to successfully parse it.
 	 * @param bookPath The path to the book folder to create the model for
+	 * @param isNotebook A boolean value to know we are creating a model for a notebook or a book
+	 * @param notebookDetails
 	 */
-	private async createAndAddBookModel(bookPath: string, isNotebook: boolean): Promise<void> {
+	private async createAndAddBookModel(bookPath: string, isNotebook: boolean, notebookDetails?: IPinnedNotebook): Promise<void> {
 		if (!this.books.find(x => x.bookPath === bookPath)) {
-			const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext);
+			const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext, this._onDidChangeTreeData, notebookDetails);
 			await book.initializeContents();
 			this.books.push(book);
 			if (!this.currentBook) {
 				this.currentBook = book;
 			}
-			this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
-			this._bookViewer.onDidChangeVisibility(e => {
-				let openDocument = azdata.nb.activeNotebookEditor;
-				let notebookPath = openDocument?.document.uri;
-				// call reveal only once on the correct view
-				if (e.visible && ((!this._openAsUntitled && notebookPath?.scheme !== 'untitled') || (this._openAsUntitled && notebookPath?.scheme === 'untitled'))) {
-					this.revealActiveDocumentInViewlet();
-				}
-			});
+			this._onDidChangeTreeData.fire(undefined);
 		}
 	}
 
@@ -245,9 +367,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				if (urlToOpen) {
 					const bookRoot = this.currentBook.bookItems[0];
 					const sectionToOpen = bookRoot.findChildSection(urlToOpen);
-					urlPath = sectionToOpen?.url;
+					urlPath = sectionToOpen?.file;
 				} else {
-					urlPath = this.currentBook.version === BookVersion.v1 ? (this.currentBook.bookItems[0].tableOfContents.sections[0] as IJupyterBookSectionV1).url : (this.currentBook.bookItems[0].tableOfContents.sections[0] as IJupyterBookSectionV2).file;
+					urlPath = this.currentBook.bookItems[0].tableOfContents.sections[0].file;
 				}
 			}
 			if (urlPath) {
@@ -273,13 +395,23 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
+	private get useVSCodeNotebooks(): boolean {
+		let workbench = vscode.workspace.getConfiguration('workbench');
+		return workbench?.get<boolean>('useVSCodeNotebooks') && workbench?.get<boolean>('enablePreviewFeatures');
+	}
+
 	async openNotebook(resource: string): Promise<void> {
 		try {
 			await vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, constants.unsavedBooksContextKey, false);
 			if (this._openAsUntitled) {
 				await this.openNotebookAsUntitled(resource);
 			} else {
-				await azdata.nb.showNotebookDocument(vscode.Uri.file(resource));
+				if (this.useVSCodeNotebooks) {
+					let doc = await vscode.workspace.openNotebookDocument(vscode.Uri.file(resource));
+					await vscode.window.showNotebookDocument(doc);
+				} else {
+					await azdata.nb.showNotebookDocument(vscode.Uri.file(resource));
+				}
 				// let us keep a list of already visited notebooks so that we do not trust them again, potentially
 				// overriding user changes
 				let normalizedResource = path.normalize(resource);
@@ -291,12 +423,19 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					this._visitedNotebooks = this._visitedNotebooks.concat([normalizedResource]);
 				}
 			}
+			sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.OpenNotebookFromBook);
 		} catch (e) {
-			vscode.window.showErrorMessage(loc.openNotebookError(resource, e instanceof Error ? e.message : e));
+			void vscode.window.showErrorMessage(loc.openNotebookError(resource, e instanceof Error ? e.message : e));
 		}
 	}
 
-	async revealActiveDocumentInViewlet(uri?: vscode.Uri, shouldReveal: boolean = true): Promise<BookTreeItem | undefined> {
+	/**
+	 * Reveals the given uri in the tree view.
+	 * @param uri The path to the notebook. If it's undefined then the current active notebook is revealed in the Tree View.
+	 * @param shouldReveal A boolean to expand the parent node.
+	 * @param shouldFocus A boolean to focus on the tree item.
+	 */
+	async revealDocumentInTreeView(uri: vscode.Uri | undefined, shouldReveal: boolean, shouldFocus: boolean): Promise<BookTreeItem | undefined> {
 		let bookItem: BookTreeItem;
 		let notebookPath: string;
 		// If no uri is passed in, try to use the current active notebook editor
@@ -310,58 +449,114 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 
 		if (shouldReveal || this._bookViewer?.visible) {
-			bookItem = notebookPath ? await this.findAndExpandParentNode(notebookPath) : undefined;
+			// CAVEAT: findAndExpandParentNode assumes that the file structure defined in the toc
+			// follows the location on disk, it can fail otherwise.
+			bookItem = notebookPath ? await this.findAndExpandParentNode(notebookPath, shouldFocus) : undefined;
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
-			if (bookItem?.contextValue !== 'pinnedNotebook') {
+			if (bookItem?.contextValue && bookItem.contextValue !== 'pinnedNotebook') {
 				// Note: 3 is the maximum number of levels that the vscode APIs let you expand to
-				await this._bookViewer.reveal(bookItem, { select: true, focus: true, expand: true });
+				await this._bookViewer.reveal(bookItem, { select: true, focus: shouldFocus, expand: true });
 			}
 		}
+
 		return bookItem;
 	}
 
-	async findAndExpandParentNode(notebookPath: string): Promise<BookTreeItem> {
-		let bookItem: BookTreeItem = this.currentBook?.getNotebook(notebookPath);
-		// if the node is not expanded getNotebook returns undefined, try to expand the parent node or getChildren of
-		// the root node.
-		if (!bookItem) {
-			// get the parent node and expand it if it's not already
-			let allNodes = this.currentBook?.getAllNotebooks();
-			let book = allNodes ? Array.from(allNodes?.keys())?.filter(x => x.indexOf(notebookPath.substring(0, notebookPath.lastIndexOf(path.sep))) > -1) : undefined;
-			let bookNode = book?.length > 0 ? this.currentBook?.getNotebook(book.find(x => x.substring(0, x.lastIndexOf(path.sep)) === notebookPath.substring(0, notebookPath.lastIndexOf(path.sep)))) : undefined;
-			if (bookNode) {
-				if (this._bookViewer?.visible) {
-					await this._bookViewer.reveal(bookNode, { select: true, focus: false, expand: 3 });
-				} else {
-					await this.getChildren(bookNode);
-				}
-
-				bookItem = this.currentBook?.getNotebook(notebookPath);
+	async findAndExpandParentNode(notebookPath: string, shouldFocus: boolean): Promise<BookTreeItem | undefined> {
+		notebookPath = notebookPath.replace(/\\/g, '/');
+		const parentBook = this.books.find(b => notebookPath.indexOf(b.bookPath) > -1);
+		if (!parentBook) {
+			// No parent book, likely because the Notebook is at the top level and not under a Notebook.
+			// Nothing to expand in that case so just return immediately
+			return undefined;
+		}
+		this.currentBook = parentBook;
+		let bookItem: BookTreeItem = parentBook.getNotebook(notebookPath);
+		if (bookItem) {
+			// We already have the Notebook loaded so just return it immediately
+			return bookItem;
+		}
+		// We couldn't find the Notebook which may mean that we don't have it loaded yet, starting from
+		// the top we'll expand nodes until we find the parent of the Notebook we're looking for
+		// get the children of root node and expand the nodes to the notebook level.
+		await this.getChildren(parentBook.rootNode);
+		// The path to the Notebook we're looking for (these are the nodes we're looking to expand)
+		const notebookFolders = notebookPath.split('/');
+		// Find number of directories between the Notebook path and the root of the book it's contained in
+		// so we know how many parent nodes to expand
+		let depthOfNotebookInBook: number = path.relative(notebookPath, parentBook.bookPath).split(path.sep).length;
+		// Walk the tree, expanding parent nodes as needed to load the child nodes until
+		// we find the one for our Notebook
+		let expandedBookItems: BookTreeItem[] = [parentBook.rootNode];
+		while (depthOfNotebookInBook > -1) {
+			// check if the notebook is available in already expanded levels.
+			bookItem = parentBook.bookItems.find(b => b.tooltip === notebookPath);
+			if (bookItem) {
+				return bookItem;
 			}
+			// Walk down from the top level parent folder one level at each iteration
+			// and keep expanding until we reach the target notebook leaf
+			let parentBookPath: string = notebookFolders.slice(0, notebookFolders.length - depthOfNotebookInBook).join('/');
+			let bookItemToExpand = parentBook.bookItems.find(b => b.tooltip.indexOf(parentBookPath) > -1) ??
+				parentBook.bookItems.find(b => path.relative(notebookPath, b.tooltip)?.split(path.sep)?.length === depthOfNotebookInBook);
+
+			if (!bookItemToExpand) {
+				// if the book isn't found, check if the book is in the same level as the parent
+				// since bookItems will not have them yet, check the sections->file property
+				bookItemToExpand = parentBook.bookItems.find(b => b.sections?.find(n => notebookFolders[notebookFolders.length - depthOfNotebookInBook - 1].indexOf(n.file.substring(n.file.lastIndexOf('/') + 1)) > -1));
+				// book isn't found even in the same level, break out and return.
+				if (!bookItemToExpand || expandedBookItems.includes(bookItemToExpand)) {
+					break;
+				}
+				// Since we don't have the same structure defined in the toc on disk,
+				// Check to see if the files are in the same level as the parent ->
+				// increment to reset the depth since parent is in the same level
+				depthOfNotebookInBook++;
+			}
+			if (!bookItemToExpand.hasChildren) {
+				// We haven't loaded children of this node yet so do that now so we can
+				// continue expanding and search its children
+				await this.getChildren(bookItemToExpand);
+			}
+			try {
+				// TO DO: Check why the reveal fails during initial load with 'TreeError [bookTreeView] Tree element not found'
+				await this._bookViewer.reveal(bookItemToExpand, { select: false, focus: shouldFocus, expand: true });
+				expandedBookItems.push(bookItemToExpand);
+			}
+			catch (e) {
+				console.error(e);
+			}
+			depthOfNotebookInBook--;
 		}
 		return bookItem;
 	}
 
 	openMarkdown(resource: string): void {
 		try {
-			vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(resource));
+			void vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(resource));
 		} catch (e) {
-			vscode.window.showErrorMessage(loc.openMarkdownError(resource, e instanceof Error ? e.message : e));
+			void vscode.window.showErrorMessage(loc.openMarkdownError(resource, e instanceof Error ? e.message : e));
 		}
 	}
 
 	async openNotebookAsUntitled(resource: string): Promise<void> {
 		try {
 			await vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, constants.unsavedBooksContextKey, true);
-			let untitledFileName: vscode.Uri = this.getUntitledNotebookUri(resource);
-			let document: vscode.TextDocument = await vscode.workspace.openTextDocument(resource);
-			await azdata.nb.showNotebookDocument(untitledFileName, {
-				connectionProfile: null,
-				initialContent: document.getText(),
-				initialDirtyState: false
-			});
+			let untitledFileUri: vscode.Uri = this.getUntitledNotebookUri(resource);
+
+			if (this.useVSCodeNotebooks) {
+				let doc = await vscode.workspace.openNotebookDocument(untitledFileUri);
+				await vscode.window.showNotebookDocument(doc);
+			} else {
+				let document: vscode.TextDocument = await vscode.workspace.openTextDocument(resource);
+				await azdata.nb.showNotebookDocument(untitledFileUri, {
+					connectionProfile: null,
+					initialContent: document.getText(),
+					initialDirtyState: false
+				});
+			}
 		} catch (e) {
-			vscode.window.showErrorMessage(loc.openUntitledNotebookError(resource, e instanceof Error ? e.message : e));
+			void vscode.window.showErrorMessage(loc.openUntitledNotebookError(resource, e instanceof Error ? e.message : e));
 		}
 	}
 
@@ -382,7 +577,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, path.basename(this.currentBook.bookPath)));
 				if (destinationUri) {
 					if (await fs.pathExists(destinationUri.fsPath)) {
-						let doReplace = await this.confirmReplace();
+						let doReplace = await confirmMessageDialog(this.prompter, loc.confirmReplace);
 						if (!doReplace) {
 							return undefined;
 						}
@@ -401,7 +596,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						this.books.splice(untitledBookIndex, 1);
 						this.currentBook = undefined;
 						this._onDidChangeTreeData.fire(undefined);
-						vscode.commands.executeCommand('bookTreeView.openBook', destinationUri.fsPath, false, undefined);
+						void vscode.commands.executeCommand('bookTreeView.openBook', destinationUri.fsPath, false, undefined);
 					}
 				}
 			}
@@ -411,29 +606,16 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public async searchJupyterBooks(treeItem?: BookTreeItem): Promise<void> {
 		let folderToSearch: string;
 		if (treeItem && treeItem.sections !== undefined) {
-			if (treeItem.book.version === BookVersion.v1) {
-				if (treeItem.uri) {
-					folderToSearch = path.join(treeItem.book.root, content, path.dirname(treeItem.uri));
-				} else {
-					folderToSearch = path.join(treeItem.root, content);
-				}
-			} else if (treeItem.book.version === BookVersion.v2) {
-				if (treeItem.uri) {
-					folderToSearch = path.join(treeItem.book.root, path.dirname(treeItem.uri));
-				} else {
-					folderToSearch = path.join(treeItem.root);
-				}
-			}
-
+			folderToSearch = treeItem.uri ? getContentPath(treeItem.book.version, treeItem.book.root, path.dirname(treeItem.uri)) : getContentPath(treeItem.book.version, treeItem.book.root, '');
 		} else if (this.currentBook && !this.currentBook.isNotebook) {
 			folderToSearch = path.join(this.currentBook.contentFolderPath);
 		} else {
-			vscode.window.showErrorMessage(loc.noBooksSelectedError);
+			void vscode.window.showErrorMessage(loc.noBooksSelectedError);
 		}
 
 		if (folderToSearch) {
 			let filesToIncludeFiltered = path.join(folderToSearch, '**', '*.md') + ',' + path.join(folderToSearch, '**', '*.ipynb');
-			vscode.commands.executeCommand('workbench.action.findInFiles', { filesToInclude: filesToIncludeFiltered, query: '' });
+			void vscode.commands.executeCommand('workbench.action.findInFiles', { filesToInclude: filesToIncludeFiltered, query: '' });
 		}
 	}
 
@@ -474,7 +656,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	public async loadNotebooksInFolder(folderPath: string, urlToOpen?: string, showPreview?: boolean) {
+	public async loadNotebooksInFolder(folderPath: string, urlToOpen?: string, showPreview?: boolean): Promise<void> {
 		let bookCollection = await this.getNotebooksInTree(folderPath);
 		for (let i = 0; i < bookCollection.bookPaths.length; i++) {
 			await this.openBook(bookCollection.bookPaths[i], urlToOpen, showPreview);
@@ -526,61 +708,42 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		try {
 			await vscode.env.openExternal(vscode.Uri.parse(resource));
 		} catch (e) {
-			vscode.window.showErrorMessage(loc.openExternalLinkError(resource, e instanceof Error ? e.message : e));
+			void vscode.window.showErrorMessage(loc.openExternalLinkError(resource, e instanceof Error ? e.message : e));
 		}
 	}
 
-	getTreeItem(element: BookTreeItem): vscode.TreeItem {
+	async getTreeItem(element: BookTreeItem): Promise<vscode.TreeItem> {
 		return element;
 	}
 
 	getChildren(element?: BookTreeItem): Thenable<BookTreeItem[]> {
 		if (element) {
-			if (element.sections) {
-				return Promise.resolve(this.currentBook.getSections(element.tableOfContents, element.sections, element.root, element.book).then(sections => { return sections; }));
+			if (element.sections && this.currentBook) {
+				return Promise.resolve(this.currentBook.getSections(element));
 			} else {
 				return Promise.resolve([]);
 			}
 		} else {
-			let bookItems: BookTreeItem[] = [];
-			this.books.map(book => {
-				bookItems = bookItems.concat(book.bookItems);
-			});
-			return Promise.resolve(bookItems);
+			return Promise.resolve(this.books.map(book => book.rootNode));
 		}
 	}
 
+	/**
+	 * Optional method on the vscode interface.
+	 * Implementing getParent, due to reveal method in extHostTreeView.ts
+	 * throwing error if it is not implemented.
+	 */
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
-		if (element?.uri) {
-			let parentPath: string;
-			let contentFolder = element.book.version === BookVersion.v1 ? path.join(element.book.root, content) : element.book.root;
-			parentPath = path.join(contentFolder, element.uri.substring(0, element.uri.lastIndexOf(path.posix.sep)));
-			if (parentPath === element.root) {
-				return undefined;
-			}
-			let parentPaths = Array.from(this.currentBook.getAllNotebooks()?.keys()).filter(x => x.indexOf(parentPath) > -1);
-			return parentPaths.length > 0 ? this.currentBook.getAllNotebooks().get(parentPaths[0]) : undefined;
-		} else {
-			return undefined;
-		}
+		return element?.parent;
 	}
 
 	getUntitledNotebookUri(resource: string): vscode.Uri {
 		let untitledFileName = vscode.Uri.parse(`untitled:${resource}`);
-		if (!this.currentBook.getAllNotebooks().get(untitledFileName.fsPath) && !this.currentBook.getAllNotebooks().get(path.basename(untitledFileName.fsPath))) {
-			let notebook = this.currentBook.getAllNotebooks().get(resource);
-			this.currentBook.getAllNotebooks().set(path.basename(untitledFileName.fsPath), notebook);
+		if (this.currentBook && !this.currentBook.getAllNotebooks().get(untitledFileName.fsPath)) {
+			let notebookTreeItem = this.currentBook.getAllNotebooks().get(resource);
+			this.currentBook.getAllNotebooks().set(path.basename(untitledFileName.fsPath), notebookTreeItem);
 		}
 		return untitledFileName;
-	}
-
-	//Confirmation message dialog
-	private async confirmReplace(): Promise<boolean> {
-		return await this.prompter.promptSingle<boolean>(<IQuestion>{
-			type: confirm,
-			message: loc.confirmReplace,
-			default: false
-		});
 	}
 
 	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {
@@ -602,4 +765,69 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 		return Promise.resolve(result);
 	}
+
+	groupTreeItemsByBookModel(treeItems: BookTreeItem[]): Map<BookModel, BookTreeItem[]> {
+		const sourcesByBook = new Map<BookModel, BookTreeItem[]>();
+		for (let item of treeItems) {
+			const book = this.books.find(book => book.bookPath === item.book.root);
+			if (sourcesByBook.has(book)) {
+				sourcesByBook.get(book).push(item);
+			} else {
+				sourcesByBook.set(book, [item]);
+			}
+		}
+		return sourcesByBook;
+	}
+
+	handleDrag(treeItems: readonly BookTreeItem[], dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): Thenable<void> | void {
+		dataTransfer.set('application/vnd.code.tree.BookTreeViewProvider', new vscode.DataTransferItem(treeItems));
+	}
+
+	async handleDrop(target: BookTreeItem | undefined, sources: vscode.DataTransfer, token: vscode.CancellationToken): Promise<void> {
+		const transferItem = sources.get('application/vnd.code.tree.BookTreeViewProvider');
+		if (!transferItem) {
+			return;
+		}
+		if (target.contextValue === BookTreeItemType.savedBook || target.contextValue === BookTreeItemType.section) {
+			sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.DragAndDrop);
+			// gets the tree items that are dragged and dropped
+			const treeItems: BookTreeItem[] = transferItem.value;
+			let rootItems = this.getLocalRoots(treeItems);
+			rootItems = rootItems.filter(item => item.resourceUri !== target.resourceUri);
+			if (rootItems && target) {
+				let sourcesByBook = this.groupTreeItemsByBookModel(rootItems);
+				const targetBook = this.books.find(book => book.bookPath === target.book.root);
+				for (let [book, items] of sourcesByBook) {
+					this.bookTocManager = new BookTocManager(book, targetBook);
+					this.bookTocManager.enableDnd = true;
+					await this.bookTocManager.updateBook(items, target);
+				}
+			}
+		}
+	}
+
+	/**
+	 * From the tree items moved find the local roots.
+	 * We don't need to move a child element if the parent element has been selected as well, since every time that an element is moved
+	 * we add its children.
+	 * @param bookItems that have been dragged and dropped
+	 * @returns an array of tree items that do not share a parent element.
+	 */
+	public getLocalRoots(bookItems: BookTreeItem[]): BookTreeItem[] {
+		const localRoots = [];
+		for (let i = 0; i < bookItems.length; i++) {
+			const parent = bookItems[i].book.parent;
+			if (parent) {
+				const isInList = bookItems.find(item => item.resourceUri.path === parent.resourceUri.path && parent.contextValue !== 'savedBook');
+				if (isInList === undefined) {
+					localRoots.push(bookItems[i]);
+				}
+			} else {
+				localRoots.push(bookItems[i]);
+			}
+		}
+		return localRoots;
+	}
+
+	dispose(): void { }
 }

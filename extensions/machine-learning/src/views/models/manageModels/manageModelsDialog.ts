@@ -5,7 +5,7 @@
 
 import { CurrentModelsComponent } from './currentModelsComponent';
 
-import { ModelViewBase, RegisterModelEventName } from '../modelViewBase';
+import { ModelViewBase, RegisterModelEventName, ModelSourceType } from '../modelViewBase';
 import * as constants from '../../../common/constants';
 import { ApiWrapper } from '../../../common/apiWrapper';
 import { DialogView } from '../../dialogView';
@@ -33,14 +33,16 @@ export class ManageModelsDialog extends ModelViewBase {
 			editable: true,
 			selectable: false
 		});
+		this.currentLanguagesTab.modelSourceType = ModelSourceType.RegisteredModels;
 
 		let registerModelButton = this._apiWrapper.createButton(constants.registerModelTitle);
 		registerModelButton.onClick(async () => {
 			await this.sendDataRequest(RegisterModelEventName, this.currentLanguagesTab?.modelTable?.importTable);
 		});
 
-		let dialog = this.dialogView.createDialog(constants.importedModelTitle, [this.currentLanguagesTab]);
+		let dialog = this.dialogView.createDialog(constants.viewImportModelsTitle, [this.currentLanguagesTab]);
 		dialog.isWide = true;
+		dialog.dialogStyle = 'flyout';
 		dialog.customButtons = [registerModelButton];
 		this.mainViewPanel = dialog;
 		dialog.okButton.hidden = true;

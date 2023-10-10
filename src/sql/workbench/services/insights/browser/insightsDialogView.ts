@@ -7,7 +7,6 @@ import 'vs/css!./media/insightsDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import { attachButtonStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IInsightsDialogModel, ListResource, IInsightDialogActionContext, insertValueRegex } from 'sql/workbench/services/insights/browser/insightsDialogService';
@@ -17,7 +16,6 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { CopyInsightDialogSelectionAction } from 'sql/workbench/services/insights/browser/insightDialogActions';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
-import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
@@ -37,10 +35,10 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
 import { TaskRegistry } from 'sql/workbench/services/tasks/browser/tasksRegistry';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { ViewPane, IViewPaneOptions, ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPane';
+import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { attachPanelStyler, attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { IViewDescriptorService, IViewContainersRegistry, ViewContainerLocation, Extensions as ViewContainerExtensions, IViewsRegistry } from 'vs/workbench/common/views';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
@@ -49,6 +47,13 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInsightsConfigDetails } from 'sql/platform/extensions/common/extensions';
+import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { convertJQueryKeyDownEvent } from 'sql/base/browser/dom';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -60,7 +65,7 @@ export class InsightsDetailPaneContainer extends ViewPaneContainer { }
 
 export const INSIGHTS_DETAIL_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
-	name: nls.localize('insightsDetailView.name', "Insight Details"),
+	title: nls.localize('insightsDetailView.name', "Insight Details"),
 	ctorDescriptor: new SyncDescriptor(InsightsDetailPaneContainer),
 	storageId: `${VIEWLET_ID}.state`
 }, ViewContainerLocation.Dialog);
@@ -85,18 +90,22 @@ class InsightTableView extends ViewPane {
 		@IOpenerService openerService: IOpenerService,
 		@IThemeService themeService: IThemeService,
 		@ITelemetryService telemetryService: ITelemetryService,
+		@IAccessibilityService private _accessibilityService: IAccessibilityService,
+		@IQuickInputService private _quickInputService: IQuickInputService,
+		@IComponentContextService private readonly _componentContextService: IComponentContextService
 	) {
 		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
 	}
 
-	protected renderBody(container: HTMLElement): void {
-		this._table = new Table(container, {
+	protected override renderBody(container: HTMLElement): void {
+		this._table = new Table(container, this._accessibilityService, this._quickInputService, defaultTableStyles, {
 			columns: this.columns,
 			dataProvider: this.data
 		}, this.tableOptions);
+		this._register(this._componentContextService.registerTable(this._table));
 	}
 
-	protected layoutBody(size: number): void {
+	protected override layoutBody(size: number): void {
 		this._table.layout(size, Orientation.VERTICAL);
 	}
 
@@ -194,7 +203,7 @@ export class InsightsDialogView extends Modal {
 		@ICapabilitiesService private readonly _capabilitiesService: ICapabilitiesService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.Insights, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
+		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.ModalDialogName.Insights, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
 		this._model.onDataChange(e => this.build());
 	}
 
@@ -297,11 +306,8 @@ export class InsightsDialogView extends Modal {
 		this._splitView.addView(topTableView, Sizing.Distribute);
 		this._splitView.addView(bottomTableView, Sizing.Distribute);
 
-		this._register(attachTableStyler(this._topTable, this._themeService));
-		this._register(attachTableStyler(this._bottomTable, this._themeService));
-
-		this._topTable.grid.onKeyDown.subscribe(e => {
-			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
+		this._topTable.grid.onKeyDown.subscribe((e: DOMEvent) => {
+			const event = convertJQueryKeyDownEvent(e);
 			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				topTableView.focus();
 				e.stopImmediatePropagation();
@@ -311,8 +317,8 @@ export class InsightsDialogView extends Modal {
 			}
 		});
 
-		this._bottomTable.grid.onKeyDown.subscribe(e => {
-			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
+		this._bottomTable.grid.onKeyDown.subscribe((e: DOMEvent) => {
+			const event = convertJQueryKeyDownEvent(e);
 			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				bottomTableView.focus();
 				e.stopImmediatePropagation();
@@ -334,10 +340,9 @@ export class InsightsDialogView extends Modal {
 		});
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		this._closeButton = this.addFooterButton('Close', () => this.close());
-		this._register(attachButtonStyler(this._closeButton, this._themeService));
 		this._register(attachModalDialogStyler(this, this._themeService));
 	}
 
@@ -389,10 +394,9 @@ export class InsightsDialogView extends Modal {
 						}
 						let context = this.topInsightContext(resource);
 						this._commandService.executeCommand(action, context).catch(err => onUnexpectedError(err));
-					}, 'left');
+					}, 'left', true);
 					button.enabled = false;
 					this._taskButtonDisposables.push(button);
-					this._taskButtonDisposables.push(attachButtonStyler(button, this._themeService));
 				}
 			}
 		}
@@ -413,12 +417,12 @@ export class InsightsDialogView extends Modal {
 
 
 	public close() {
-		this.hide();
+		this.hide('close');
 		dispose(this._taskButtonDisposables);
 		this._taskButtonDisposables = [];
 	}
 
-	protected onClose(e: StandardKeyboardEvent) {
+	protected override onClose(e: StandardKeyboardEvent) {
 		this.close();
 	}
 

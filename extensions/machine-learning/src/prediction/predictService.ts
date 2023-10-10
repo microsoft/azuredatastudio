@@ -80,11 +80,7 @@ export class PredictService {
 				predictParams.outputColumns || [],
 				predictParams);
 		}
-		let document = await this._apiWrapper.openTextDocument({
-			language: 'sql',
-			content: query
-		});
-		await this._apiWrapper.executeCommand('vscode.open', document.uri);
+		const document = await azdata.queryeditor.openQueryDocument({ content: query });
 		await this._apiWrapper.connect(document.uri.toString(), connection.connectionId);
 		this._apiWrapper.runQuery(document.uri.toString(), undefined, false);
 		return query;
@@ -127,7 +123,8 @@ export class PredictService {
 				result.rows.forEach(row => {
 					list.push({
 						columnName: row[0].displayValue,
-						dataType: row[1].displayValue.toLocaleUpperCase()
+						dataType: row[1].displayValue.toLocaleUpperCase(),
+						maxLength: row[2].isNull ? undefined : +row[2].displayValue.toLocaleUpperCase()
 					});
 				});
 			}

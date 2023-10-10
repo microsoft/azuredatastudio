@@ -16,7 +16,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 export class TestCapabilitiesService implements ICapabilitiesService {
 
 	private pgsqlProviderName = 'PGSQL';
-	private kustoProviderName = 'KUSTO';
+	private fakeProviderName = 'FAKE';
 	public _serviceBrand: undefined;
 
 	public capabilities: { [id: string]: ProviderFeatures } = {};
@@ -97,25 +97,40 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 				valueType: ServiceOptionType.string
 			}
 		];
+		let mssqlAdvancedOptions: azdata.ConnectionOption[] = [
+			{
+				name: 'trustServerCertificate',
+				displayName: undefined!,
+				description: undefined!,
+				groupName: undefined!,
+				categoryValues: undefined!,
+				defaultValue: 'false',
+				isIdentity: false,
+				isRequired: false,
+				specialValueType: undefined!,
+				valueType: ServiceOptionType.boolean
+			}
+		];
 		let msSQLCapabilities = {
 			providerId: mssqlProviderName,
 			displayName: 'MSSQL',
-			connectionOptions: connectionProvider,
+			connectionOptions: connectionProvider.concat(mssqlAdvancedOptions),
+			useFullOptions: true,
 		};
 		let pgSQLCapabilities = {
 			providerId: this.pgsqlProviderName,
 			displayName: 'PostgreSQL',
 			connectionOptions: connectionProvider,
 		};
-		let kustoCapabilities = {
-			providerId: this.kustoProviderName,
-			displayName: 'Kusto',
+		let fakeCapabilities = {
+			providerId: this.fakeProviderName,
+			displayName: 'fakeName',
 			connectionOptions: connectionProvider,
-			notebookKernelAlias: 'Kusto'
+			notebookKernelAlias: 'fakeAlias'
 		};
 		this.capabilities[mssqlProviderName] = { connection: msSQLCapabilities };
 		this.capabilities[this.pgsqlProviderName] = { connection: pgSQLCapabilities };
-		this.capabilities[this.kustoProviderName] = { connection: kustoCapabilities };
+		this.capabilities[this.fakeProviderName] = { connection: fakeCapabilities };
 	}
 
 	registerConnectionProvider(id: string, properties: ConnectionProviderProperties): IDisposable {

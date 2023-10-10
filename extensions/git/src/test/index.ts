@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-const path = require('path');
-const testRunner = require('vscode/lib/testrunner');
+import * as path from 'path';
+import * as testRunner from '../../../../test/integration/electron/testrunner';
 
-const options: any = {
+const options: import('mocha').MochaOptions = {
 	ui: 'tdd',
-	useColors: (!process.env.BUILD_ARTIFACTSTAGINGDIRECTORY && process.platform !== 'win32'),
+	color: true,
 	timeout: 60000
 };
 

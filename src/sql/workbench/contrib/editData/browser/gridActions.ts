@@ -9,9 +9,12 @@ import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { localize } from 'vs/nls';
 import { IAction, Action } from 'vs/base/common/actions';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export const GRID_SAVECSV_ID = 'grid.saveAsCsv';
 export const GRID_SAVEJSON_ID = 'grid.saveAsJson';
+export const GRID_SAVEMARKDOWN_ID = 'grid.saveAsMarkdown';
 export const GRID_SAVEEXCEL_ID = 'grid.saveAsExcel';
 export const GRID_SAVEXML_ID = 'grid.saveAsXml';
 export const GRID_COPY_ID = 'grid.copySelection';
@@ -30,7 +33,9 @@ export class GridActionProvider {
 
 	constructor(
 		protected _dataService: DataService,
-		protected _selectAllCallback: (index: number) => void
+		protected _selectAllCallback: (index: number) => void,
+		@IInstantiationService protected _instantiationService: IInstantiationService,
+		@IConfigurationService protected _configurationService: IConfigurationService,
 	) {
 
 	}
@@ -40,13 +45,14 @@ export class GridActionProvider {
 	 */
 	public getGridActions(): IAction[] {
 		const actions: IAction[] = [];
-		actions.push(new SaveResultAction(SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveFormat.CSV, this._dataService));
-		actions.push(new SaveResultAction(SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveFormat.JSON, this._dataService));
-		actions.push(new SaveResultAction(SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveFormat.EXCEL, this._dataService));
-		actions.push(new SaveResultAction(SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveFormat.XML, this._dataService));
-		actions.push(new SelectAllGridAction(SelectAllGridAction.ID, SelectAllGridAction.LABEL, this._selectAllCallback));
-		actions.push(new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false, this._dataService));
-		actions.push(new CopyResultAction(CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true, this._dataService));
+		actions.push(this._instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveFormat.CSV, this._dataService));
+		actions.push(this._instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveFormat.JSON, this._dataService));
+		actions.push(this._instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveFormat.MARKDOWN, this._dataService));
+		actions.push(this._instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveFormat.EXCEL, this._dataService));
+		actions.push(this._instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveFormat.XML, this._dataService));
+		actions.push(this._instantiationService.createInstance(SelectAllGridAction, SelectAllGridAction.ID, SelectAllGridAction.LABEL, this._selectAllCallback));
+		actions.push(this._instantiationService.createInstance(CopyResultAction, CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false, this._dataService));
+		actions.push(this._instantiationService.createInstance(CopyResultAction, CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true, this._dataService));
 
 		return actions;
 	}
@@ -58,6 +64,9 @@ class SaveResultAction extends Action {
 
 	public static SAVEJSON_ID = GRID_SAVEJSON_ID;
 	public static SAVEJSON_LABEL = localize('saveAsJson', "Save As JSON");
+
+	public static SAVEMARKDOWN_ID = GRID_SAVEMARKDOWN_ID;
+	public static SAVEMARKDOWN_LABEL = localize('saveAsMarkdown', "Save As Markdown");
 
 	public static SAVEEXCEL_ID = GRID_SAVEEXCEL_ID;
 	public static SAVEEXCEL_LABEL = localize('saveAsExcel', "Save As Excel");
@@ -74,14 +83,13 @@ class SaveResultAction extends Action {
 		super(id, label);
 	}
 
-	public run(gridInfo: IGridInfo): Promise<boolean> {
+	public override async run(gridInfo: IGridInfo): Promise<void> {
 		this.dataService.sendSaveRequest({
 			batchIndex: gridInfo.batchIndex,
 			resultSetNumber: gridInfo.resultSetNumber,
 			selection: gridInfo.selection,
 			format: this.format
 		});
-		return Promise.resolve(true);
 	}
 }
 
@@ -96,14 +104,15 @@ class CopyResultAction extends Action {
 		id: string,
 		label: string,
 		private copyHeader: boolean,
-		private dataService: DataService
+		private dataService: DataService,
+		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super(id, label);
 	}
 
-	public run(gridInfo: IGridInfo): Promise<boolean> {
-		this.dataService.copyResults(gridInfo.selection, gridInfo.batchIndex, gridInfo.resultSetNumber, this.copyHeader);
-		return Promise.resolve(true);
+	public override async run(gridInfo: IGridInfo): Promise<void> {
+		const includeHeader = this.configurationService.getValue<boolean>('queryEditor.results.copyIncludeHeaders') || this.copyHeader;
+		this.dataService.copyResults(gridInfo.selection, gridInfo.batchIndex, gridInfo.resultSetNumber, includeHeader);
 	}
 }
 
@@ -119,8 +128,7 @@ class SelectAllGridAction extends Action {
 		super(id, label);
 	}
 
-	public run(gridInfo: IGridInfo): Promise<boolean> {
+	public override async run(gridInfo: IGridInfo): Promise<void> {
 		this.selectAllCallback(gridInfo.gridIndex);
-		return Promise.resolve(true);
 	}
 }

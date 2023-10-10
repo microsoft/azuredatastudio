@@ -3,13 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { MiaaResourceInfo, ResourceInfo, ResourceType } from 'arc';
+import { MiaaResourceInfo, PGResourceInfo, ResourceInfo, ResourceType } from 'arc';
 import * as vscode from 'vscode';
-import { UserCancelledError } from '../../common/utils';
+import { UserCancelledError } from '../../common/api';
 import * as loc from '../../localizedConstants';
 import { ControllerModel, Registration } from '../../models/controllerModel';
 import { MiaaModel } from '../../models/miaaModel';
 import { PostgresModel } from '../../models/postgresModel';
+import { ResourceModel } from '../../models/resourceModel';
 import { ControllerDashboard } from '../dashboards/controller/controllerDashboard';
 import { AzureArcTreeDataProvider } from './azureArcTreeDataProvider';
 import { MiaaTreeNode } from './miaaTreeNode';
@@ -24,9 +25,9 @@ import { TreeNode } from './treeNode';
  */
 export class ControllerTreeNode extends TreeNode {
 
-	private _children: ResourceTreeNode[] = [];
+	private _children: ResourceTreeNode<ResourceModel>[] = [];
 
-	constructor(public model: ControllerModel, private _context: vscode.ExtensionContext, private _treeDataProvider: AzureArcTreeDataProvider) {
+	constructor(public model: ControllerModel, private _treeDataProvider: AzureArcTreeDataProvider) {
 		super(model.label, vscode.TreeItemCollapsibleState.Collapsed, ResourceType.dataControllers);
 		model.onInfoUpdated(_ => {
 			this.label = model.label;
@@ -36,14 +37,14 @@ export class ControllerTreeNode extends TreeNode {
 		});
 	}
 
-	public async getChildren(): Promise<TreeNode[]> {
+	public override async getChildren(): Promise<TreeNode[]> {
 		try {
-			await this.model.refresh(false);
+			await this.model.refresh(false, this.model.info.namespace);
 			this.updateChildren(this.model.registrations);
 		} catch (err) {
 			vscode.window.showErrorMessage(loc.errorConnectingToController(err));
 			try {
-				await this.model.refresh(false, true);
+				await this.model.refresh(false, this.model.info.namespace);
 				this.updateChildren(this.model.registrations);
 			} catch (err) {
 				if (!(err instanceof UserCancelledError)) {
@@ -59,7 +60,7 @@ export class ControllerTreeNode extends TreeNode {
 		return this._children.length > 0 ? this._children : [new NoInstancesTreeNode()];
 	}
 
-	public async openDashboard(): Promise<void> {
+	public override async openDashboard(): Promise<void> {
 		const controllerDashboard = new ControllerDashboard(this.model);
 		await controllerDashboard.showDashboard();
 	}
@@ -69,14 +70,14 @@ export class ControllerTreeNode extends TreeNode {
 	 * @param resourceType The resourceType of the node
 	 * @param name The name of the node
 	 */
-	public getResourceNode(resourceType: string, name: string): ResourceTreeNode | undefined {
+	public getResourceNode(resourceType: string, name: string): ResourceTreeNode<ResourceModel> | undefined {
 		return this._children.find(c =>
 			c.model?.info.resourceType === resourceType &&
 			c.model.info.name === name);
 	}
 
 	private updateChildren(registrations: Registration[]): void {
-		const newChildren: ResourceTreeNode[] = [];
+		const newChildren: ResourceTreeNode<ResourceModel>[] = [];
 		registrations.forEach(registration => {
 			if (!registration.instanceName) {
 				console.warn('Registration is missing required name value, skipping');
@@ -101,14 +102,23 @@ export class ControllerTreeNode extends TreeNode {
 
 				switch (registration.instanceType) {
 					case ResourceType.postgresInstances:
-						const postgresModel = new PostgresModel(this.model, resourceInfo, registration);
-						node = new PostgresTreeNode(postgresModel, this.model, this._context);
+						// Fill in the username too if we already have it
+						(resourceInfo as PGResourceInfo).userName = (this.model.info.resources.find(info =>
+							info.name === resourceInfo.name &&
+							info.resourceType === resourceInfo.resourceType) as PGResourceInfo)?.userName;
+						const postgresModel = new PostgresModel(this.model, resourceInfo, registration, this._treeDataProvider);
+						node = new PostgresTreeNode(postgresModel, this.model);
 						break;
 					case ResourceType.sqlManagedInstances:
-						// Fill in the username too if we already have it
-						(resourceInfo as MiaaResourceInfo).userName = (this.model.info.resources.find(info =>
+						// Fill in the username and connection properties too if we already have them
+						let miaaResourceInfo = this.model.info.resources.find(info =>
 							info.name === resourceInfo.name &&
-							info.resourceType === resourceInfo.resourceType) as MiaaResourceInfo)?.userName;
+							info.resourceType === resourceInfo.resourceType) as MiaaResourceInfo;
+						if (miaaResourceInfo) {
+							(resourceInfo as MiaaResourceInfo).userName = miaaResourceInfo.userName;
+							(resourceInfo as MiaaResourceInfo).encrypt = miaaResourceInfo.encrypt;
+							(resourceInfo as MiaaResourceInfo).trustServerCertificate = miaaResourceInfo.trustServerCertificate;
+						}
 						const miaaModel = new MiaaModel(this.model, resourceInfo, registration, this._treeDataProvider);
 						node = new MiaaTreeNode(miaaModel, this.model);
 						break;

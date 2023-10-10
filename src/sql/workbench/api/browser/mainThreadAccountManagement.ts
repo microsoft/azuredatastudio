@@ -8,15 +8,12 @@ import { IAccountManagementService } from 'sql/platform/accounts/common/interfac
 import { Disposable } from 'vs/base/common/lifecycle';
 import {
 	ExtHostAccountManagementShape,
-	MainThreadAccountManagementShape,
-	SqlExtHostContext,
-	SqlMainContext
+	MainThreadAccountManagementShape
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { values } from 'vs/base/common/collections';
-import { firstIndex } from 'vs/base/common/arrays';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadAccountManagement)
 export class MainThreadAccountManagement extends Disposable implements MainThreadAccountManagementShape {
@@ -38,7 +35,7 @@ export class MainThreadAccountManagement extends Disposable implements MainThrea
 				return;
 			}
 
-			const providerMetadataIndex = firstIndex(values(this._providerMetadata), (providerMetadata: azdata.AccountProviderMetadata) => providerMetadata.id === e.providerId);
+			const providerMetadataIndex = values(this._providerMetadata).findIndex((providerMetadata: azdata.AccountProviderMetadata) => providerMetadata.id === e.providerId);
 			if (providerMetadataIndex === -1) {
 				return;
 			}
@@ -75,11 +72,10 @@ export class MainThreadAccountManagement extends Disposable implements MainThrea
 			clear(accountKey: azdata.AccountKey): Thenable<void> {
 				return self._proxy.$clear(handle, accountKey);
 			},
-
 			getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}> {
 				return self._proxy.$getSecurityToken(account, resource);
 			},
-			getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Thenable<{ token: string }> {
+			getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Thenable<azdata.accounts.AccountSecurityToken> {
 				return self._proxy.$getAccountSecurityToken(account, tenant, resource);
 			},
 			initialize(restoredAccounts: azdata.Account[]): Thenable<azdata.Account[]> {

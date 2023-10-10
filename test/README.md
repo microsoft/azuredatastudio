@@ -20,6 +20,23 @@ Run these with the script `./scripts/test-extensions-unit.[bat|sh]`
 
 Code coverage is enabled by default. Reports can be found in the coverage folder at the root of the folder for each extension that ran.
 
+To run just the tests from a specific extension run
+
+`node ./scripts/test-extensions-unit.js [extensionName]`
+
+e.g.
+
+`node ./scripts/test-extensions-unit.js notebook`
+
+will run all tests from the notebook extension.
+
+In addition the extensions also support the [grep Mocha option](https://mochajs.org/api/mocha#grep). Set the `ADS_TEST_GREP` environment variable to a string that will be used to match the full test title.
+
+e.g.
+
+`$ENV:ADS_TEST_GREP="my test name"`
+
+and then running one of the above test commands will run only the tests which contain the phrase `my test name` in the title.
 
 ### Integration tests
 
@@ -46,8 +63,36 @@ The same principle can be applied to the vscode/azdata APIs. The object in this 
 
 **IMPORTANT** When using Sinon make sure to call `sinon.restore()` after every test run (using `afterEach` typically) to ensure that the stub doesn't affect other tests.
 
+#### Mocking Events through TypeMoq
+Mocking Events can be done by setting up the mocked property to return the the event. In order to have the event callback be registered, the promise that registers the mock element must be setup prior to the event firing. Therefore, once the event is fired it will be triggered as expected.
+
+**Example of an event mock using TypeMoq:**
+``` typescript
+// create test event emitter
+const onDidChangeSelectionEventEmitter = new vscode.EventEmitter<IConnectionCredentialsQuickPickItem[]>();
+// setup the mock property to return the test event 
+quickPickMock.setup(q => q.onDidChangeSelection).returns(() => onDidChangeSelectionEventEmitter.event);
+
+// register the function that is being tested 
+const promptPromise = connectionUI.promptForConnection();
+// Trigger onDidChangeSelection event to simulate user selecting item
+onDidChangeSelectionEventEmitter.fire([item]);
+// await the registered promise
+await promptPromise;
+```
+
+### azdata-test package
+
+The [@microsoft/azdata-test](https://www.npmjs.com/package/@microsoft/azdata-test) package contains a number of things that may be helpful to extension tests. These include stubs, mocks and general helper functions that many extensions may need to use - such as common patterns for mocking out parts of the extension API.
+
 ## Code Coverage
 
 To generate a report combining the code coverage for extensions + core run `node ./test/combineCoverage`. Currently this will combine coverage from the Core Unit Tests, Extension Unit Tests and Extension Integration tests - see above docs for instructions on how to run those to generate coverage.
 
 Once ran the combined coverage report will be located in `./test/coverage`.
+
+## Troubleshooting
+
+### When debugging extension unit tests my breakpoints aren't being hit
+
+There's a known issue when code coverage is enabled that breakpoints won't be hit. See https://github.com/microsoft/azuredatastudio/issues/17985 for more details and a workaround.

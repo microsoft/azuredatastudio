@@ -4,26 +4,25 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/accountDialog';
-import 'vs/css!./media/accountActions';
 import * as DOM from 'vs/base/browser/dom';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
-import { IAction } from 'vs/base/common/actions';
+import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { MenuId, Action2, registerAction2 } from 'vs/platform/actions/common/actions';
+import { IContextKeyService, ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 import * as azdata from 'azdata';
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { Modal } from 'sql/workbench/browser/modal/modal';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
+import { Codicon } from 'vs/base/common/codicons';
+import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import { AccountViewModel } from 'sql/platform/accounts/common/accountViewModel';
 import { AddAccountAction } from 'sql/platform/accounts/common/accountActions';
 import { AccountListRenderer, AccountListDelegate } from 'sql/workbench/services/accountManagement/browser/accountListRenderer';
@@ -31,9 +30,10 @@ import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 's
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { IViewPaneOptions, ViewPane, ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPane';
+import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { attachModalDialogStyler, attachPanelStyler } from 'sql/workbench/common/styler';
 import { IViewDescriptorService, IViewsRegistry, Extensions as ViewContainerExtensions, IViewContainersRegistry, ViewContainerLocation } from 'vs/workbench/common/views';
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
@@ -44,17 +44,18 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Iterable } from 'vs/base/common/iterator';
+import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 import { Tenant, TenantListDelegate, TenantListRenderer } from 'sql/workbench/services/accountManagement/browser/tenantListRenderer';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export const VIEWLET_ID = 'workbench.view.accountpanel';
 
-export class AccountPaneContainer extends ViewPaneContainer {
-
-}
+export class AccountPaneContainer extends ViewPaneContainer { }
 
 export const ACCOUNT_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
-	name: localize('accountExplorer.name', "Accounts"),
+	title: localize('accountExplorer.name', "Accounts"),
 	ctorDescriptor: new SyncDescriptor(AccountPaneContainer),
 	storageId: `${VIEWLET_ID}.state`
 }, ViewContainerLocation.Dialog);
@@ -66,7 +67,7 @@ class AccountPanel extends ViewPane {
 
 
 	constructor(
-		private options: IViewPaneOptions,
+		options: IViewPaneOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
@@ -80,14 +81,17 @@ class AccountPanel extends ViewPane {
 		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
 	}
 
-	protected renderBody(container: HTMLElement): void {
+	protected override renderBody(container: HTMLElement): void {
 		this.accountList = new List<azdata.Account>('AccountList', container, new AccountListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(AccountListRenderer)]);
 		this.tenantList = new List<Tenant>('TenantList', container, new TenantListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(TenantListRenderer)]);
 		this._register(attachListStyler(this.accountList, this.themeService));
 		this._register(attachListStyler(this.tenantList, this.themeService));
+
+		// Temporary workaround for https://github.com/microsoft/azuredatastudio/issues/14808 so that we can close an accessibility issue.
+		this.tenantList.getHTMLElement().tabIndex = -1;
 	}
 
-	protected layoutBody(size: number): void {
+	protected override layoutBody(size: number): void {
 		this.accountList?.layout(size);
 		this.tenantList?.layout(size);
 	}
@@ -96,7 +100,7 @@ class AccountPanel extends ViewPane {
 		return this.accountList!.length;
 	}
 
-	public focus() {
+	public override focus() {
 		this.accountList!.domFocus();
 	}
 
@@ -112,13 +116,6 @@ class AccountPanel extends ViewPane {
 	private updateTenants(account: azdata.Account) {
 		this.tenantList!.splice(0, this.tenantList!.length, account.properties?.tenants ?? []);
 	}
-
-	public getActions(): IAction[] {
-		return [this.instantiationService.createInstance(
-			AddAccountAction,
-			this.options.id
-		)];
-	}
 }
 
 export interface IProviderViewUiComponent {
@@ -133,6 +130,7 @@ export class AccountDialog extends Modal {
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _providerViewsMap = new Map<string, IProviderViewUiComponent>();
+	private _loadingSpinner: LoadingSpinner;
 
 	private _closeButton?: Button;
 	private _addAccountButton?: Button;
@@ -164,19 +162,19 @@ export class AccountDialog extends Modal {
 		@IQuickInputService private _quickInputService: IQuickInputService,
 		@INotificationService private _notificationService: INotificationService,
 		@IOpenerService protected readonly openerService: IOpenerService,
-		@ITelemetryService private readonly vstelemetryService: ITelemetryService
+		@ITelemetryService private readonly vstelemetryService: ITelemetryService,
+		@IAccountManagementService private readonly _accountManagementService: IAccountManagementService,
 	) {
 		super(
 			localize('linkedAccounts', "Linked accounts"),
-			TelemetryKeys.Accounts,
+			TelemetryKeys.ModalDialogName.Accounts,
 			telemetryService,
 			layoutService,
 			clipboardService,
 			themeService,
 			logService,
 			textResourcePropertiesService,
-			contextKeyService,
-			{ hasSpinner: true }
+			contextKeyService
 		);
 
 		// Setup the event emitters
@@ -203,7 +201,7 @@ export class AccountDialog extends Modal {
 		this._splitView!.layout(DOM.getContentHeight(this._container!));
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 		this._closeButton = this.addFooterButton(localize('accountDialog.close', "Close"), () => this.close());
@@ -212,6 +210,9 @@ export class AccountDialog extends Modal {
 
 	protected renderBody(container: HTMLElement) {
 		this._container = container;
+
+		this._loadingSpinner = new LoadingSpinner(this._container, { showText: true, fullSize: true });
+
 		this._splitViewContainer = DOM.$('div.account-view.monaco-pane-view');
 		DOM.append(container, this._splitViewContainer);
 		this._splitView = new SplitView(this._splitViewContainer);
@@ -222,39 +223,12 @@ export class AccountDialog extends Modal {
 		noAccountTitle.innerText = noAccountLabel;
 
 		// Show the add account button for the first provider
-		// Todo: If we have more than 1 provider, need to show all add account buttons for all providers
 		const buttonSection = DOM.append(this._noaccountViewContainer, DOM.$('div.button-section'));
-		this._addAccountButton = new Button(buttonSection);
+		this._addAccountButton = new Button(buttonSection, defaultButtonStyles);
 		this._addAccountButton.label = localize('accountDialog.addConnection', "Add an account");
 
 		this._register(this._addAccountButton.onDidClick(async () => {
-			const vals = Iterable.consume(this._providerViewsMap.values())[0];
-
-			let pickedValue: string | undefined;
-			if (vals.length === 0) {
-				this._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
-				return;
-			}
-			if (vals.length > 1) {
-				const buttons: IQuickPickItem[] = vals.map(v => {
-					return { label: v.view.title } as IQuickPickItem;
-				});
-
-				const picked = await this._quickInputService.pick(buttons, { canPickMany: false });
-
-				pickedValue = picked?.label;
-			} else {
-				pickedValue = vals[0].view.title;
-			}
-
-			const v = vals.filter(v => v.view.title === pickedValue)?.[0];
-
-			if (!v) {
-				this._notificationService.error(localize('accountDialog.didNotPickAuthProvider', "You didn't select any authentication provider. Please try again."));
-				return;
-			}
-
-			v.addAccountAction.run();
+			await this.runAddAccountAction();
 		}));
 
 		DOM.append(container, this._noaccountViewContainer);
@@ -262,49 +236,68 @@ export class AccountDialog extends Modal {
 
 	private registerListeners(): void {
 		// Theme styler
-		this._register(attachButtonStyler(this._closeButton!, this._themeService));
-		this._register(attachButtonStyler(this._addAccountButton!, this._themeService));
+		this._register(this._closeButton!);
+		this._register(this._addAccountButton!);
 	}
 
 	/* Overwrite escape key behavior */
-	protected onClose() {
+	protected override onClose() {
 		this.close();
 	}
 
 	/* Overwrite enter key behavior */
-	protected onAccept() {
-		this.close();
+	protected override onAccept() {
+		this.close('ok');
 	}
 
-	public close() {
+	public close(hideReason: HideReason = 'close') {
 		this._onCloseEmitter.fire();
-		this.hide();
+		this.hide(hideReason);
 	}
 
-	public open() {
+	public async open() {
+		let accountMetadata = await this._accountManagementService.getAccountProviderMetadata();
 		this.show();
 		if (!this.isEmptyLinkedAccount()) {
 			this.showSplitView();
-		} else {
+		}
+		else if (accountMetadata.length === 0) {
+			this.showLoadingSpinner();
+		}
+		else if (accountMetadata.length > 1) {
+			this.showSplitView();
+		}
+		else {
 			this.showNoAccountContainer();
 		}
-
 	}
 
 	private showNoAccountContainer() {
+		this._loadingSpinner.loading = false;
 		this._splitViewContainer!.hidden = true;
 		this._noaccountViewContainer!.hidden = false;
 		this._addAccountButton!.focus();
 	}
 
+	private showLoadingSpinner() {
+		this._loadingSpinner.loadingMessage = localize('accountDialog.loadingProviderLabel', "Loading accounts...");
+		this._loadingSpinner.loading = true;
+		this._splitViewContainer!.hidden = true;
+		this._noaccountViewContainer!.hidden = true;
+	}
+
 	private showSplitView() {
+		this._loadingSpinner.loading = false;
 		this._splitViewContainer!.hidden = false;
 		this._noaccountViewContainer!.hidden = true;
 		if (Iterable.consume(this._providerViewsMap.values()).length > 0) {
 			const firstView = this._providerViewsMap.values().next().value;
-			if (firstView instanceof AccountPanel) {
-				firstView.setSelection([0]);
-				firstView.focus();
+			if (firstView && firstView.view instanceof AccountPanel) {
+				// Handle index error with length 0
+				if (firstView.view.length > 0) {
+					firstView.view.setSelection([0]);
+				}
+				firstView.view.focus();
 			}
 		}
 	}
@@ -319,7 +312,7 @@ export class AccountDialog extends Modal {
 		return true;
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		super.dispose();
 		for (const provider of this._providerViewsMap.values()) {
 			if (provider.addAccountAction) {
@@ -334,8 +327,10 @@ export class AccountDialog extends Modal {
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private addProvider(newProvider: AccountProviderAddedEventParams) {
 
+		this.logService.debug(`Adding new provider ${newProvider.addedProvider.id}`);
 		// Skip adding the provider if it already exists
 		if (this._providerViewsMap.get(newProvider.addedProvider.id)) {
+			this.logService.debug(`Provider ${newProvider.addedProvider.id} is already registered!`);
 			return;
 		}
 
@@ -345,9 +340,8 @@ export class AccountDialog extends Modal {
 			AddAccountAction,
 			newProvider.addedProvider.id
 		);
-		addAccountAction.addAccountCompleteEvent(() => this.spinner = false);
+		this._register(addAccountAction);
 		addAccountAction.addAccountErrorEvent(msg => this._onAddAccountErrorEmitter.fire(msg));
-		addAccountAction.addAccountStartEvent(() => this.spinner = true);
 
 		let providerView = new AccountPanel(
 			{
@@ -365,11 +359,16 @@ export class AccountDialog extends Modal {
 			this.vstelemetryService
 		);
 
-		Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{
-			id: newProvider.addedProvider.id,
-			name: newProvider.addedProvider.displayName,
-			ctorDescriptor: new SyncDescriptor(AccountPanel),
-		}], ACCOUNT_VIEW_CONTAINER);
+		// Check if view is registered, if it isn't, register the view
+		if (!Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(newProvider.addedProvider.id)) {
+			Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{
+				id: newProvider.addedProvider.id,
+				name: newProvider.addedProvider.displayName,
+				ctorDescriptor: new SyncDescriptor(AccountPanel),
+			}], ACCOUNT_VIEW_CONTAINER);
+			this.registerActions(newProvider.addedProvider.id);
+		}
+
 
 		attachPanelStyler(providerView, this._themeService);
 
@@ -378,6 +377,13 @@ export class AccountDialog extends Modal {
 
 		// Append the list view to the split view
 		this._splitView!.addView(providerView, Sizing.Distribute, insertIndex);
+		// Increment index for each provider
+		this._providerViewsMap.forEach((provider) => {
+			if (provider.view.index > providerView.index) {
+				provider.view.index++;
+			}
+		})
+
 		providerView.index = insertIndex;
 
 		this._splitView!.layout(DOM.getContentHeight(this._container!));
@@ -385,29 +391,42 @@ export class AccountDialog extends Modal {
 		// Set the initial items of the list
 		providerView.updateAccounts(newProvider.initialAccounts);
 
-		if (newProvider.initialAccounts.length > 0 && this._splitViewContainer!.hidden) {
+		if ((newProvider.initialAccounts.length > 0 && this._splitViewContainer!.hidden) || this._providerViewsMap.size > 1) {
 			this.showSplitView();
 		}
 
 		this.layout();
 
+		this.logService.debug(`Storing view for provider ${newProvider.addedProvider.id}`);
 		// Store the view for the provider and action
 		this._providerViewsMap.set(newProvider.addedProvider.id, { view: providerView, addAccountAction: addAccountAction });
 	}
 
 	private removeProvider(removedProvider: azdata.AccountProviderMetadata) {
+		this.logService.debug(`Removing provider ${removedProvider.id}`);
 		// Skip removing the provider if it doesn't exist
 		const providerView = this._providerViewsMap.get(removedProvider.id);
 		if (!providerView || !providerView.view) {
+			this.logService.warn(`Provider ${removedProvider.id} doesn't exist while removing`);
 			return;
 		}
 
 		// Remove the list view from the split view
 		this._splitView!.removeView(providerView.view.index!);
+		// Decrement index for each provider
+		this._providerViewsMap.forEach((provider) => {
+			if (provider.view.index > providerView.view.index) {
+				provider.view.index--;
+			}
+		})
 		this._splitView!.layout(DOM.getContentHeight(this._container!));
-
 		// Remove the list view from our internal map
 		this._providerViewsMap.delete(removedProvider.id);
+		this.logService.debug(`Provider ${removedProvider.id} removed`);
+		// Update view after removing provider
+		if (this._splitViewContainer!.hidden) {
+			this.showSplitView();
+		}
 		this.layout();
 	}
 
@@ -418,14 +437,74 @@ export class AccountDialog extends Modal {
 		}
 		providerMapping.view.updateAccounts(args.accountList);
 
-		if (args.accountList.length > 0 && this._splitViewContainer!.hidden) {
+		if ((args.accountList.length > 0 && this._splitViewContainer!.hidden) || this._providerViewsMap.size > 1) {
 			this.showSplitView();
 		}
 
-		if (this.isEmptyLinkedAccount() && this._noaccountViewContainer!.hidden) {
+		if (this.isEmptyLinkedAccount() && this._noaccountViewContainer!.hidden && this._providerViewsMap.size === 1) {
 			this.showNoAccountContainer();
 		}
 
 		this.layout();
+	}
+
+	private registerActions(providerId: string) {
+		const that = this;
+		registerAction2(class extends Action2 {
+			constructor() {
+				super({
+					id: `workbench.actions.accountDialog.${providerId}.addAccount`,
+					title: { value: localize('accountDialog.addConnection', "Add an account"), original: 'Add an account' },
+					f1: true,
+					icon: { id: Codicon.add.id },
+					menu: {
+						id: MenuId.ViewTitle,
+						group: 'navigation',
+						when: ContextKeyEqualsExpr.create('view', providerId),
+						order: 1
+					}
+				});
+			}
+
+			async run() {
+				await that.runAddAccountAction(providerId);
+			}
+		});
+	}
+
+	private async runAddAccountAction(providerId?: string) {
+		this.logService.debug(`Adding account - providers ${JSON.stringify(Iterable.consume(this._providerViewsMap.keys()))}`);
+		const vals = Iterable.consume(this._providerViewsMap.values())[0];
+		let pickedValue: string | undefined;
+		let v: IProviderViewUiComponent | undefined;
+		if (providerId) {
+			pickedValue = providerId;
+			v = vals.filter(v => v.view.id === pickedValue)?.[0];
+		} else {
+			let pickedValue: string | undefined;
+			if (vals.length === 0) {
+				this._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
+				return;
+			}
+			if (vals.length > 1) {
+				const buttons: IQuickPickItem[] = vals.map(v => {
+					return { label: v.view.title } as IQuickPickItem;
+				});
+
+				const picked = await this._quickInputService.pick(buttons, { canPickMany: false });
+
+				pickedValue = picked?.label;
+			} else {
+				pickedValue = vals[0].view.title;
+			}
+			v = vals.filter(v => v.view.title === pickedValue)?.[0];
+		}
+
+		if (!v) {
+			this._notificationService.error(localize('accountDialog.didNotPickAuthProvider', "You didn't select any authentication provider. Please try again."));
+			return;
+		}
+
+		v.addAccountAction.run();
 	}
 }

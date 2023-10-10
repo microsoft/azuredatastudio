@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { MainThreadDashboardWebviewShape, SqlMainContext, ExtHostDashboardWebviewsShape, SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
+import { MainThreadDashboardWebviewShape, ExtHostDashboardWebviewsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IDashboardViewService, IDashboardWebview } from 'sql/platform/dashboard/browser/dashboardViewService';
-import { find } from 'vs/base/common/arrays';
+import { Disposable } from 'vs/base/common/lifecycle';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadDashboardWebview)
-export class MainThreadDashboardWebview implements MainThreadDashboardWebviewShape {
+export class MainThreadDashboardWebview extends Disposable implements MainThreadDashboardWebviewShape {
 
 	private static _handlePool = 0;
 	private readonly _proxy: ExtHostDashboardWebviewsShape;
@@ -22,9 +22,10 @@ export class MainThreadDashboardWebview implements MainThreadDashboardWebviewSha
 		context: IExtHostContext,
 		@IDashboardViewService viewService: IDashboardViewService
 	) {
+		super();
 		this._proxy = context.getProxy(SqlExtHostContext.ExtHostDashboardWebviews);
-		viewService.onRegisteredWebview(e => {
-			if (find(this.knownWidgets, x => x === e.id)) {
+		this._register(viewService.onRegisteredWebview(e => {
+			if (this.knownWidgets.find(x => x === e.id)) {
 				let handle = MainThreadDashboardWebview._handlePool++;
 				this._dialogs.set(handle, e);
 				this._proxy.$registerWidget(handle, e.id, e.connection, e.serverInfo);
@@ -32,11 +33,7 @@ export class MainThreadDashboardWebview implements MainThreadDashboardWebviewSha
 					this._proxy.$onMessage(handle, e);
 				});
 			}
-		});
-	}
-
-	public dispose(): void {
-		throw new Error('Method not implemented.');
+		}));
 	}
 
 	$sendMessage(handle: number, message: string) {

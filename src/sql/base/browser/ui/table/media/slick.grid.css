@@ -186,3 +186,15 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
+
+
+.slick-header-column.slick-header-with-filter {
+	display: flex;
+}
+
+.slick-header-with-filter .slick-column-name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: inline-block;
+	flex: 1 1 auto;
+}

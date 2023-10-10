@@ -7,8 +7,8 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IFileService } from 'vs/platform/files/common/files';
 import { basename, dirname } from 'vs/base/common/resources';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
-import { URI } from 'vs/base/common/uri';
-import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
+import { ILifecycleService } from 'vs/workbench/services/lifecycle/common/lifecycle';
+import { Promises } from 'vs/base/common/async';
 
 export class LogsDataCleaner extends Disposable {
 
@@ -24,14 +24,13 @@ export class LogsDataCleaner extends Disposable {
 	private cleanUpOldLogsSoon(): void {
 		let handle: any = setTimeout(async () => {
 			handle = undefined;
-			const logsPath = URI.file(this.environmentService.logsPath).with({ scheme: this.environmentService.logFile.scheme });
-			const stat = await this.fileService.resolve(dirname(logsPath));
+			const stat = await this.fileService.resolve(dirname(this.environmentService.logsHome));
 			if (stat.children) {
-				const currentLog = basename(logsPath);
+				const currentLog = basename(this.environmentService.logsHome);
 				const allSessions = stat.children.filter(stat => stat.isDirectory && /^\d{8}T\d{6}$/.test(stat.name));
 				const oldSessions = allSessions.sort().filter((d, i) => d.name !== currentLog);
 				const toDelete = oldSessions.slice(0, Math.max(0, oldSessions.length - 49));
-				Promise.all(toDelete.map(stat => this.fileService.del(stat.resource, { recursive: true })));
+				Promises.settled(toDelete.map(stat => this.fileService.del(stat.resource, { recursive: true })));
 			}
 		}, 10 * 1000);
 		this.lifecycleService.onWillShutdown(() => {

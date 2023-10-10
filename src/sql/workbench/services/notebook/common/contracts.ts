@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { localize } from 'vs/nls';
 
 export type CellType = 'code' | 'markdown' | 'raw';
 
@@ -41,10 +42,21 @@ export enum NotebookChangeType {
 	CellOutputUpdated,
 	DirtyStateChanged,
 	KernelChanged,
+	MetadataChanged,
 	TrustChanged,
 	Saved,
+	CellExecutionStarted,
 	CellExecuted,
 	CellInputVisibilityChanged,
+	CellAwaitingInput,
 	CellOutputCleared,
 	CellMetadataUpdated
+}
+
+export const ImageMimeTypes = ['image/bmp', 'image/png', 'image/jpeg', 'image/gif'];
+
+export class TextCellEditModes {
+	public static readonly RichText = localize('notebook.richTextEditMode', 'Rich Text');
+	public static readonly SplitView = localize('notebook.splitViewEditMode', 'Split View');
+	public static readonly Markdown = localize('notebook.markdownEditMode', 'Markdown');
 }

@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
-import { find } from 'vs/base/common/arrays';
 
 export class JobManagementUtilities {
 
@@ -41,16 +40,16 @@ export class JobManagementUtilities {
 		return bool ? nls.localize('agentUtilities.yes', "Yes") : nls.localize('agentUtilities.no', "No");
 	}
 
-	public static convertToNextRun(date: string) {
-		if (find(date, x => x === '1/1/0001')) {
+	public static convertToNextRun(date: string): string {
+		if (date.includes('1/1/0001')) {
 			return nls.localize('agentUtilities.notScheduled', "Not Scheduled");
 		} else {
 			return date;
 		}
 	}
 
-	public static convertToLastRun(date: string) {
-		if (find(date, x => x === '1/1/0001')) {
+	public static convertToLastRun(date: string): string {
+		if (date.includes('1/1/0001')) {
 			return nls.localize('agentUtilities.neverRun', "Never Run");
 		} else {
 			return date;
@@ -58,9 +57,7 @@ export class JobManagementUtilities {
 	}
 
 	public static setRunnable(icon: HTMLElement, index: number) {
-		if (find(icon.className, x => x === 'non-runnable')) {
-			icon.className = icon.className.slice(0, index);
-		}
+		icon.classList.remove('non-runnable');
 	}
 
 	public static getActionIconClassName(startIcon: HTMLElement, stopIcon: HTMLElement, executionStatus: number) {

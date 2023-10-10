@@ -65,6 +65,10 @@ const tabSchema: IJSONSchema = {
 			description: localize('azdata.extension.contributes.dashboard.tab.group', "The unique identifier of the group this tab belongs to, value for home group: home."),
 			type: 'string'
 		},
+		hideRefreshTask: {
+			description: localize('azdata.extension.contributes.dashboard.tab.hideRefreshTask', "Flag used to show/hide refresh button in toolbar. By default, the value is false"),
+			type: 'boolean'
+		},
 		icon: {
 			description: localize('dazdata.extension.contributes.dashboard.tab.icon', "(Optional) Icon which is used to represent this tab in the UI. Either a file path or a themeable configuration"),
 			anyOf: [{
@@ -101,7 +105,7 @@ const tabContributionSchema: IJSONSchema = {
 ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabContrib[]>({ extensionPoint: 'dashboard.tabs', jsonSchema: tabContributionSchema }).setHandler(extensions => {
 
 	function handleTab(tab: IDashboardTabContrib, extension: IExtensionPointUser<any>) {
-		let { description, container, provider, title, when, id, alwaysShow, isHomeTab, group, icon } = tab;
+		let { description, container, provider, title, when, id, alwaysShow, isHomeTab, group, icon, hideRefreshTask } = tab;
 
 		// If always show is not specified, set it to true by default.
 		if (!types.isBoolean(alwaysShow)) {
@@ -155,7 +159,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 			iconClass = createCSSRuleForIcon(icon, extension);
 		}
 		if (result) {
-			registerTab({ description, title, container, provider, when, id, alwaysShow, publisher, isHomeTab, group, iconClass });
+			registerTab({ description, title, container, provider, when, id, alwaysShow, publisher, isHomeTab, group, iconClass, hideRefreshTask });
 		}
 	}
 

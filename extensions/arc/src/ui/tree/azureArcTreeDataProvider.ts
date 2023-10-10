@@ -4,13 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ControllerInfo } from 'arc';
-import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ControllerModel } from '../../models/controllerModel';
 import { ControllerTreeNode } from './controllerTreeNode';
 import { TreeNode } from './treeNode';
 
-const mementoToken = 'arcControllers';
+const mementoToken = 'arcDataControllers.v2';
 
 /**
  * The TreeDataProvider for the Azure Arc view, which displays a list of registered
@@ -18,7 +17,6 @@ const mementoToken = 'arcControllers';
  */
 export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNode> {
 
-	private _credentialsProvider = azdata.credentials.getProvider('arcControllerPasswords');
 	private _onDidChangeTreeData: vscode.EventEmitter<TreeNode | undefined> = new vscode.EventEmitter<TreeNode | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<TreeNode | undefined> = this._onDidChangeTreeData.event;
 
@@ -51,14 +49,13 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 		return element;
 	}
 
-	public async addOrUpdateController(model: ControllerModel, password: string, refreshTree = true): Promise<void> {
+	public async addOrUpdateController(model: ControllerModel, refreshTree = true): Promise<void> {
 		const controllerNode = this.getControllerNode(model);
 		if (controllerNode) {
 			controllerNode.model.info = model.info;
 		} else {
-			this._controllerNodes.push(new ControllerTreeNode(model, this._context, this));
+			this._controllerNodes.push(new ControllerTreeNode(model, this));
 		}
-		await this.updatePassword(model, password);
 		if (refreshTree) {
 			this._onDidChangeTreeData.fire(undefined);
 		}
@@ -71,20 +68,8 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 
 	public async removeController(controllerNode: ControllerTreeNode): Promise<void> {
 		this._controllerNodes = this._controllerNodes.filter(node => node !== controllerNode);
-		await this.deletePassword(controllerNode.model.info);
 		this._onDidChangeTreeData.fire(undefined);
 		await this.saveControllers();
-	}
-
-	public async getPassword(info: ControllerInfo): Promise<string> {
-		const provider = await this._credentialsProvider;
-		const credential = await provider.readCredential(info.id);
-		return credential.password;
-	}
-
-	private async deletePassword(info: ControllerInfo): Promise<void> {
-		const provider = await this._credentialsProvider;
-		await provider.deleteCredential(info.id);
 	}
 
 	/**
@@ -95,21 +80,12 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 		this._onDidChangeTreeData.fire(node);
 	}
 
-	private async updatePassword(model: ControllerModel, password: string): Promise<void> {
-		const provider = await this._credentialsProvider;
-		if (model.info.rememberPassword) {
-			await provider.saveCredential(model.info.id, password);
-		} else {
-			await provider.deleteCredential(model.info.id);
-		}
-	}
-
 	private async loadSavedControllers(): Promise<void> {
 		try {
 			const controllerMementos: ControllerInfo[] = this._context.globalState.get(mementoToken) || [];
 			this._controllerNodes = controllerMementos.map(memento => {
 				const controllerModel = new ControllerModel(this, memento);
-				return new ControllerTreeNode(controllerModel, this._context, this);
+				return new ControllerTreeNode(controllerModel, this);
 			});
 		} finally {
 			this._loading = false;
@@ -135,10 +111,14 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 			if (resourceNode) {
 				await resourceNode.openDashboard();
 			} else {
-				console.log(`Couldn't find resource node for ${name} (${resourceType})`);
+				const errMsg = `Couldn't find resource node for ${name} (${resourceType})`;
+				console.log(errMsg);
+				throw new Error(errMsg);
 			}
 		} else {
-			console.log('Couldn\'t find controller node for opening dashboard');
+			const errMsg = 'Couldn\'t find controller node for opening dashboard';
+			console.log(errMsg);
+			throw new Error(errMsg);
 		}
 	}
 }

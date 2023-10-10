@@ -4,15 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/dialogModal';
-import { Modal, IModalOptions } from 'sql/workbench/browser/modal/modal';
+import { Modal, IModalOptions, HideReason } from 'sql/workbench/browser/modal/modal';
 import { Dialog, DialogButton } from 'sql/workbench/services/dialog/common/dialogTypes';
 import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Button } from 'vs/base/browser/ui/button/button';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -20,10 +18,10 @@ import { DialogMessage } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { append, $ } from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { attachModalDialogStyler } from 'sql/workbench/common/styler';
+import { attachCustomDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 export class DialogModal extends Modal {
@@ -50,33 +48,38 @@ export class DialogModal extends Modal {
 		super(_dialog.title, name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
 	}
 
-	public layout(): void {
+	protected layout(): void {
 		this._dialogPane.layout();
 	}
 
-	public render() {
+	public override render() {
 		super.render();
-		attachModalDialogStyler(this, this._themeService);
+		attachCustomDialogStyler(this, this._themeService, this._modalOptions.dialogStyle);
 
-		if (this.backButton) {
-			this.backButton.onDidClick(() => this.cancel());
-			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
+		if (this._modalOptions.renderFooter !== false) {
+			this._modalOptions.renderFooter = true;
 		}
 
-		if (this._dialog.customButtons) {
+		if (this._modalOptions.renderFooter && this.backButton) {
+			this.backButton.onDidClick(() => this.cancel());
+		}
+
+		if (this._modalOptions.renderFooter && this._dialog.customButtons) {
 			this._dialog.customButtons.forEach(button => {
 				let buttonElement = this.addDialogButton(button);
 				this.updateButtonElement(buttonElement, button);
 			});
 		}
 
-		this._doneButton = this.addDialogButton(this._dialog.okButton, () => this.done(), false, true);
-		this._dialog.okButton.registerClickEvent(this._onDone.event);
-		this._dialog.onValidityChanged(valid => {
-			this._doneButton.enabled = valid && this._dialog.okButton.enabled;
-		});
-		this.addDialogButton(this._dialog.cancelButton, () => this.cancel(), false);
-		this._dialog.cancelButton.registerClickEvent(this._onCancel.event);
+		if (this._modalOptions.renderFooter) {
+			this._doneButton = this.addDialogButton(this._dialog.okButton, () => this.done(), false, true);
+			this._dialog.okButton.registerClickEvent(this._onDone.event);
+			this._dialog.onValidityChanged(valid => {
+				this._doneButton.enabled = valid && this._dialog.okButton.enabled;
+			});
+			this.addDialogButton(this._dialog.cancelButton, () => this.cancel(), false);
+			this._dialog.cancelButton.registerClickEvent(this._onCancel.event);
+		}
 
 		let messageChangeHandler = (message: DialogMessage) => {
 			if (message && message.text) {
@@ -87,11 +90,21 @@ export class DialogModal extends Modal {
 		};
 
 		messageChangeHandler(this._dialog.message);
-		this._dialog.onMessageChange(message => messageChangeHandler(message));
+		this._register(this._dialog.onMessageChange(message => messageChangeHandler(message)));
+		this._register(this._dialog.onLoadingChange((loadingState) => {
+			this.spinner = loadingState;
+		}));
+		this._register(this._dialog.onLoadingTextChange((loadingText) => {
+			this._modalOptions.spinnerTitle = loadingText;
+
+		}));
+		this._register(this._dialog.onLoadingCompletedTextChange((loadingCompletedText) => {
+			this._modalOptions.onSpinnerHideText = loadingCompletedText;
+		}));
 	}
 
 	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true, requireDialogValid: boolean = false): Button {
-		let buttonElement = this.addFooterButton(button.label, onSelect, button.position);
+		let buttonElement = this.addFooterButton(button.label, onSelect, button.position, button.secondary);
 		buttonElement.enabled = button.enabled;
 		if (registerClickEvent) {
 			button.registerClickEvent(buttonElement.onDidClick);
@@ -99,7 +112,6 @@ export class DialogModal extends Modal {
 		button.onUpdate(() => {
 			this.updateButtonElement(buttonElement, button, requireDialogValid);
 		});
-		attachButtonStyler(buttonElement, this._themeService);
 		this.updateButtonElement(buttonElement, button, requireDialogValid);
 		return buttonElement;
 	}
@@ -126,13 +138,14 @@ export class DialogModal extends Modal {
 		if (this._doneButton.enabled) {
 			let buttonSpinnerHandler = setTimeout(() => {
 				this._doneButton.enabled = false;
-				this._doneButton.element.innerHTML = '&nbsp';
+				// Temporarily set the label to empty since we're showing a spinner instead
+				this._doneButton.label = ''
 				this._doneButton.element.classList.add('validating');
 			}, 100);
 			if (await this._dialog.validateClose()) {
 				this._onDone.fire();
 				this.dispose();
-				this.hide('close');
+				this.hide('ok');
 			}
 			clearTimeout(buttonSpinnerHandler);
 			this._doneButton.element.classList.remove('validating');
@@ -140,27 +153,31 @@ export class DialogModal extends Modal {
 		}
 	}
 
-	public cancel(): void {
+	public close(): void {
+		this.cancel('close');
+	}
+
+	public cancel(hideReason: HideReason = 'cancel'): void {
 		this._onCancel.fire();
 		this.dispose();
-		this.hide('cancel');
+		this.hide(hideReason);
 	}
 
 	/**
 	 * Overridable to change behavior of escape key
 	 */
-	protected onClose(e: StandardKeyboardEvent): void {
+	protected override onClose(e: StandardKeyboardEvent): void {
 		this.cancel();
 	}
 
 	/**
 	 * Overridable to change behavior of enter key
 	 */
-	protected onAccept(e: StandardKeyboardEvent): void {
+	protected override onAccept(e: StandardKeyboardEvent): void {
 		this.done().catch(err => onUnexpectedError(err));
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		super.dispose();
 		this._dialogPane.dispose();
 	}

@@ -6,12 +6,10 @@
 import * as should from 'should';
 import * as vscode from 'vscode';
 import * as assert from 'assert';
-import * as path from 'path';
 import 'mocha';
 
 import { JupyterController } from '../jupyter/jupyterController';
 import { JupyterServerInstallation, PythonPkgDetails } from '../jupyter/jupyterServerInstallation';
-import { pythonBundleVersion } from '../common/constants';
 import { executeStreamedCommand, sortPackageVersions } from '../common/utils';
 
 describe('Notebook Extension Python Installation', function () {
@@ -59,16 +57,15 @@ describe('Notebook Extension Python Installation', function () {
 
 		console.log('Uninstalling existing pip dependencies');
 		let install = jupyterController.jupyterInstallation;
-		let pythonExe = JupyterServerInstallation.getPythonExePath(pythonInstallDir, false);
-		let command = `"${pythonExe}" -m pip uninstall -y jupyter pandas sparkmagic prose-codeaccelerator`;
+		let pythonExe = JupyterServerInstallation.getPythonExePath(pythonInstallDir);
+		let command = `"${pythonExe}" -m pip uninstall -y jupyter`;
 		await executeStreamedCommand(command, { env: install.execOptions.env }, install.outputChannel);
 		console.log('Uninstalling existing pip dependencies is done');
 
 		console.log('Start Existing Python Installation');
-		let existingPythonPath = path.join(pythonInstallDir, pythonBundleVersion);
-		await install.startInstallProcess(false, { installPath: existingPythonPath, existingPython: true, packages: [] });
+		await install.startInstallProcess(false, { installPath: pythonInstallDir, existingPython: true, packages: [] });
 		should(JupyterServerInstallation.isPythonInstalled()).be.true();
-		should(JupyterServerInstallation.getPythonInstallPath()).be.equal(existingPythonPath);
+		should(JupyterServerInstallation.getPythonInstallPath()).be.equal(pythonInstallDir);
 		should(JupyterServerInstallation.getExistingPythonSetting()).be.true();
 
 		// Redo "new" install to restore original settings.
@@ -87,15 +84,15 @@ describe('Notebook Extension Python Installation', function () {
 		let testPkgVersion = '0.24.2';
 		let expectedPkg: PythonPkgDetails = { name: testPkg, version: testPkgVersion };
 
-		await install.installPipPackages([{ name: testPkg, version: testPkgVersion}], false);
+		await install.installPipPackages([{ name: testPkg, version: testPkgVersion }], false);
 		let packages = await install.getInstalledPipPackages();
 		should(packages).containEql(expectedPkg);
 
-		await install.uninstallPipPackages([{ name: testPkg, version: testPkgVersion}]);
+		await install.uninstallPipPackages([{ name: testPkg, version: testPkgVersion }]);
 		packages = await install.getInstalledPipPackages();
 		should(packages).not.containEql(expectedPkg);
 
-		await install.installPipPackages([{ name: testPkg, version: testPkgVersion}], false);
+		await install.installPipPackages([{ name: testPkg, version: testPkgVersion }], false);
 		packages = await install.getInstalledPipPackages();
 		should(packages).containEql(expectedPkg);
 	});

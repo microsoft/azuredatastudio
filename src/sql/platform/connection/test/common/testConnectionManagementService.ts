@@ -24,14 +24,29 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	_serviceBrand: undefined;
 	onAddConnectionProfile = undefined!;
 	onDeleteConnectionProfile = undefined!;
-	onConnectionChanged = undefined!;
 	onLanguageFlavorChanged = undefined!;
+
+	public onConnectionProfileCreated: Event<any> = Event.None;
+	public onConnectionProfileEdited: Event<any> = Event.None;
+	public onConnectionProfileDeleted: Event<any> = Event.None;
+	public onConnectionProfileMoved: Event<any> = Event.None;
+	public onConnectionProfileConnected: Event<any> = Event.None;
+	public onConnectionProfileDisconnected: Event<any> = Event.None;
+	public onConnectionProfileGroupCreated: Event<any> = Event.None;
+	public onConnectionProfileGroupEdited: Event<any> = Event.None;
+	public onConnectionProfileGroupDeleted: Event<any> = Event.None;
+	public onConnectionProfileGroupMoved: Event<any> = Event.None;
+	public onRecentConnectionProfileDeleted: Event<any> = Event.None;
 
 	public get onConnect(): Event<any> {
 		return Event.None;
 	}
 
 	public get onDisconnect(): Event<any> {
+		return Event.None;
+	}
+
+	public get onConnectionChanged(): Event<any> {
 		return Event.None;
 	}
 
@@ -44,6 +59,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	registerIconProvider(providerId: string, provider: azdata.IconProvider): void {
+
+	}
+
+	changeConnectionUri(newUri: string, oldUri: string): void {
 
 	}
 
@@ -81,6 +100,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	getConnectionGroups(providers?: string[]): ConnectionProfileGroup[] {
 		return [];
+	}
+
+	getConnectionGroupById(id: string): ConnectionProfileGroup | undefined {
+		return undefined;
 	}
 
 	getActiveConnections(providers?: string[]): ConnectionProfile[] {
@@ -163,14 +186,22 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined!;
 	}
 
+	async fixProfile(profile?: IConnectionProfile): Promise<IConnectionProfile> {
+		return profile;
+	}
+
 	connect(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		return new Promise<IConnectionResult>((resolve, reject) => {
-			resolve({ connected: true, errorMessage: undefined!, errorCode: undefined!, callStack: undefined! });
+			resolve({ connected: true, errorMessage: undefined!, errorCode: undefined!, messageDetails: undefined! });
 		});
 	}
 
 	connectAndSaveProfile(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		return new Promise<IConnectionResult>(() => true);
+	}
+
+	changePassword(connection: IConnectionProfile, uri: string, newPassword: string): Promise<azdata.PasswordChangeResult> {
+		return Promise.resolve(undefined!);
 	}
 
 	disconnectEditor(owner: IConnectableInput): Promise<boolean> {
@@ -264,14 +295,14 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	getServerInfo(profileId: string): azdata.ServerInfo {
-		return undefined!;
+		return undefined;
 	}
 
 	getConnectionString(connectionId: string): Thenable<string> {
 		return undefined!;
 	}
 
-	buildConnectionInfo(connectionString: string, provider?: string): Thenable<azdata.ConnectionInfo> {
+	buildConnectionInfo(connectionString: string, provider: string): Promise<azdata.ConnectionInfo> {
 		return undefined!;
 	}
 
@@ -299,11 +330,32 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined!;
 	}
 
+	getDefaultAuthenticationTypeId(providerName: string): string {
+		return undefined!;
+	}
+
+
 	getConnections(activeConnectionsOnly?: boolean): ConnectionProfile[] {
 		return [];
 	}
 
 	getConnection(uri: string): ConnectionProfile {
 		return undefined!;
+	}
+
+	refreshAzureAccountTokenIfNecessary(uriOrConnectionProfile: string | ConnectionProfile): Promise<boolean> {
+		return undefined;
+	}
+
+	async handleUnsupportedProvider(providerName: string): Promise<boolean> {
+		return true;
+	}
+
+	openChangePasswordDialog(profile: IConnectionProfile): Promise<string | undefined> {
+		return undefined;
+	}
+
+	openCustomErrorDialog(options: azdata.window.IErrorDialogOptions): Promise<string | undefined> {
+		return undefined;
 	}
 }

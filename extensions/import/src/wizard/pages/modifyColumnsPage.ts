@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { ColumnMetadata, ColumnMetadataArray } from '../api/models';
+import { ColumnMetadata } from '../api/models';
 import { ImportPage } from '../api/importPage';
 import * as constants from '../../common/constants';
 
@@ -83,8 +83,25 @@ export class ModifyColumnsPage extends ImportPage {
 		this._form = form;
 	}
 
-	private static convertMetadata(column: ColumnMetadata): any[] {
-		return [column.columnName, column.dataType, false, column.nullable];
+	private static convertMetadata(column: ColumnMetadata): azdata.DeclarativeTableCellValue[] {
+		return [
+			{
+				value: column.columnName,
+			},
+			{
+				value: column.dataType,
+			},
+			{
+				value: false,
+				ariaLabel: constants.primaryKeyText,
+				enabled: true
+			},
+			{
+				value: column.nullable,
+				ariaLabel: constants.allowNullsText,
+				enabled: true
+			}
+		];
 	}
 
 	async start(): Promise<boolean> {
@@ -94,16 +111,15 @@ export class ModifyColumnsPage extends ImportPage {
 
 		this.table.onDataChanged((e) => {
 			this.model.proseColumns = [];
-			this.table.data.forEach((row) => {
+			this.table.dataValues.forEach((row) => {
 				this.model.proseColumns.push({
-					columnName: row[0],
-					dataType: row[1],
-					primaryKey: row[2],
-					nullable: row[3]
+					columnName: <string>row[0].value,
+					dataType: <string>row[1].value,
+					primaryKey: <boolean>row[2].value,
+					nullable: <boolean>row[3].value
 				});
 			});
 		});
-
 
 		this.form = this.view.modelBuilder.formContainer()
 			.withFormItems(
@@ -131,36 +147,43 @@ export class ModifyColumnsPage extends ImportPage {
 		await this.populateTable();
 		this.instance.changeNextButtonLabel(constants.importDataText);
 		this.loading.loading = false;
-
+		this.instance.registerNavigationValidator((info) => {
+			return this.table.dataValues && this.table.dataValues.length > 0;
+		});
 		return true;
 	}
 
-	async onPageLeave(): Promise<boolean> {
+	override async onPageLeave(): Promise<boolean> {
+		this.emptyTable();
 		this.instance.changeNextButtonLabel(constants.nextText);
+		this.instance.registerNavigationValidator((info) => {
+			return true;
+		});
 		return undefined;
 	}
 
-	async cleanup(): Promise<boolean> {
+	private emptyTable() {
+		this.table.updateProperties({
+			dataValues: [],
+			columns: []
+		});
+	}
+
+	override async cleanup(): Promise<boolean> {
 		delete this.model.proseColumns;
 		this.instance.changeNextButtonLabel(constants.nextText);
 
 		return true;
 	}
 
-	public setupNavigationValidator() {
-		this.instance.registerNavigationValidator((info) => {
-			return !this.loading.loading && this.table.data && this.table.data.length > 0;
-		});
-	}
-
 	private async populateTable() {
-		let data: ColumnMetadataArray[] = [];
+		let data: azdata.DeclarativeTableCellValue[][] = [];
 
 		this.model.proseColumns.forEach((column) => {
 			data.push(ModifyColumnsPage.convertMetadata(column));
 		});
 
-		this.table.updateProperties({
+		this.table.updateProperties(<azdata.DeclarativeTableProperties>{
 			columns: [{
 				displayName: constants.columnNameText,
 				valueType: azdata.DeclarativeDataType.string,
@@ -185,7 +208,7 @@ export class ModifyColumnsPage extends ImportPage {
 				width: '100px',
 				showCheckAll: true
 			}],
-			data: data
+			dataValues: data
 		});
 	}
 }

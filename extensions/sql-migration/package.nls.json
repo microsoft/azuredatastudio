@@ -1,4 +1,21 @@
 {
-	"displayName": "SQL Migration",
-	"description": "SQL migration description"
+	"displayName": "Azure SQL Migration",
+	"description": "Azure SQL migration description",
+	"migration-notebook-command-title": "Open Azure SQL migration notebooks",
+	"migration-dashboard-title": "Azure SQL Migration",
+	"migration-dashboard-tasks": "Migration Tasks",
+	"migration-command-category": "Azure SQL Migration",
+	"start-migration-command": "Migrate to Azure SQL",
+	"send-feedback-command": "Feedback",
+	"new-support-request-command": "New support request",
+	"refresh-migrations-command": "Refresh",
+	"migration-context-menu-category": "Migration Context Menu",
+	"complete-cutover-menu": "Complete cutover",
+	"database-details-menu": "Database details",
+	"view-target-menu": "Azure SQL Target details",
+	"view-service-menu": "Database Migration Service details",
+	"copy-migration-menu": "Copy migration details",
+	"cancel-migration-menu": "Cancel migration",
+	"delete-migration-menu": "Delete migration",
+	"retry-migration-menu": "Retry migration"
 }

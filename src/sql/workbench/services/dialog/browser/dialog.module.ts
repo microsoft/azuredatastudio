@@ -18,16 +18,17 @@ import { ModelComponentWrapper } from 'sql/workbench/browser/modelComponents/mod
 import { ComponentHostDirective } from 'sql/base/browser/componentHost.directive';
 import { providerIterator } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
-import { EditableDropDown } from 'sql/platform/browser/editableDropdown/editableDropdown.component';
+import { EditableDropDown } from 'sql/platform/editableDropdown/browser/editableDropdown.component';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
-import { SelectBox } from 'sql/platform/browser/selectBox/selectBox.component';
-import { InputBox } from 'sql/platform/browser/inputbox/inputBox.component';
+import { SelectBox } from 'sql/platform/selectBox/browser/selectBox.component';
+import { InputBox } from 'sql/platform/inputBox/browser/inputBox.component';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IBootstrapParams, ISelector } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
 import { PropertiesContainerModule } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.module';
+import { ChartModule } from 'sql/base/browser/ui/chart/chart.module';
 
 export const DialogModule = (params: IBootstrapParams, selector: string, instantiationService: IInstantiationService): any => {
 
@@ -53,7 +54,8 @@ export const DialogModule = (params: IBootstrapParams, selector: string, instant
 			CommonModule,
 			BrowserModule,
 			PanelModule,
-			PropertiesContainerModule
+			PropertiesContainerModule,
+			ChartModule
 		],
 		providers: [
 			{ provide: APP_BASE_HREF, useValue: '/' },

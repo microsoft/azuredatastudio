@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TernarySearchTree } from 'vs/base/common/map';
 import { URI } from 'vs/base/common/uri';
 import { nullExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
-import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
 import * as azdata from 'azdata';
 import { IAzdataExtensionApiFactory } from 'sql/workbench/api/common/sqlExtHost.api.impl';
 import { INodeModuleFactory } from 'vs/workbench/api/common/extHostRequireInterceptor';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ExtensionPaths } from 'vs/workbench/api/common/extHostExtensionService';
 
 export class AzdataNodeModuleFactory implements INodeModuleFactory {
 	public readonly nodeModuleName = 'azdata';
@@ -20,7 +20,7 @@ export class AzdataNodeModuleFactory implements INodeModuleFactory {
 
 	constructor(
 		private readonly _apiFactory: IAzdataExtensionApiFactory,
-		private readonly _extensionPaths: TernarySearchTree<string, IExtensionDescription>,
+		private readonly _extensionPaths: ExtensionPaths, // TernarySearchTree<URI, IExtensionDescription>,
 		private readonly _logService: ILogService
 	) {
 	}
@@ -28,7 +28,7 @@ export class AzdataNodeModuleFactory implements INodeModuleFactory {
 	public load(request: string, parent: URI): any {
 
 		// get extension id from filename and api for extension
-		const ext = this._extensionPaths.findSubstr(parent.fsPath);
+		const ext = this._extensionPaths.findSubstr(parent);
 		if (ext) {
 			let apiImpl = this._extApiImpl.get(ExtensionIdentifier.toKey(ext.identifier));
 			if (!apiImpl) {

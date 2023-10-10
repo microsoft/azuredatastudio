@@ -12,11 +12,18 @@ import * as Utils from 'sql/platform/connection/common/utils';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as nls from 'vs/nls';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { find, firstIndex } from 'vs/base/common/arrays';
 import { deepClone } from 'vs/base/common/objects';
+import { isDisposable } from 'vs/base/common/lifecycle';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
-const GROUPS_CONFIG_KEY = 'datasource.connectionGroups';
-const CONNECTIONS_CONFIG_KEY = 'datasource.connections';
+export const GROUPS_CONFIG_KEY = 'datasource.connectionGroups';
+export const CONNECTIONS_CONFIG_KEY = 'datasource.connections';
+export const CONNECTIONS_SORT_BY_CONFIG_KEY = 'datasource.connectionsSortOrder';
+
+export const enum ConnectionsSortOrder {
+	dateAdded = 'dateAdded',
+	displayName = 'displayName'
+}
 
 export interface ISaveGroupResult {
 	groups: IConnectionProfileGroup[];
@@ -42,14 +49,20 @@ export class ConnectionConfig {
 		const config = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY);
 		let { userValue } = config;
 		const { workspaceValue } = config;
+		const sortBy = this.configurationService.getValue<string>(CONNECTIONS_SORT_BY_CONFIG_KEY);
 
 		if (userValue) {
 			if (workspaceValue) {
-				userValue = userValue.filter(x => find(workspaceValue, f => this.isSameGroupName(f, x)) === undefined);
+				userValue = userValue.filter(x => workspaceValue.find(f => this.isSameGroupName(f, x)) === undefined);
 				allGroups = allGroups.concat(workspaceValue);
 			}
 			allGroups = allGroups.concat(userValue);
 		}
+
+		if (sortBy === ConnectionsSortOrder.displayName) {
+			allGroups.sort((a, b) => a.name.localeCompare(b.name));
+		}
+
 		return deepClone(allGroups).map(g => {
 			if (g.parentId === '' || !g.parentId) {
 				g.parentId = undefined;
@@ -59,37 +72,87 @@ export class ConnectionConfig {
 	}
 
 	/**
+	 * Checks to make sure that the profile that is being edited is not identical to another profile.
+	 */
+	public async isDuplicateEdit(profile: IConnectionProfile, matcher: ProfileMatcher = ConnectionProfile.matchesProfile): Promise<boolean> {
+		let profiles = deepClone(this.configurationService.inspect<IConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).userValue as IConnectionProfileStore[]);
+		if (!profiles) {
+			profiles = [];
+		}
+
+		let groupId = await this.addGroupFromProfile(profile);
+
+		let connectionProfile = this.getConnectionProfileInstance(profile, groupId);
+		// Profile to be stored during an edit, used to check for duplicate profile edits.
+		let firstMatchProfile = undefined;
+
+		profiles.find(value => {
+			const providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
+			const match = matcher(providerConnectionProfile, connectionProfile);
+			// If we have a profile match, and the matcher is an edit, we must store this match.
+			if (match && (matcher.toString() !== ConnectionProfile.matchesProfile.toString())) {
+				firstMatchProfile = value;
+			}
+			return match;
+		});
+
+		// If a profile edit, we must now check to see it does not match the other profiles available.
+		if (firstMatchProfile) {
+			// Copy over profile list so that we can remove the actual profile we want to edit.
+			const index = profiles.indexOf(firstMatchProfile);
+			if (index > -1) {
+				profiles.splice(index, 1);
+			}
+
+			// Use the regular profile matching here to find if edit is duplicate.
+			let matchesExistingProfile = profiles.find(value => {
+				const providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
+				const match = ConnectionProfile.matchesProfile(providerConnectionProfile, connectionProfile);
+				return match;
+			});
+
+			return matchesExistingProfile !== undefined;
+		}
+		return false;
+	}
+
+	/**
 	 * Add a new connection to the connection config.
 	 */
-	public addConnection(profile: IConnectionProfile, matcher: ProfileMatcher = ConnectionProfile.matchesProfile): Promise<IConnectionProfile> {
+	public async addConnection(profile: IConnectionProfile, matcher: ProfileMatcher = ConnectionProfile.matchesProfile): Promise<IConnectionProfile> {
 		if (profile.saveProfile) {
-			return this.addGroupFromProfile(profile).then(groupId => {
-				let profiles = deepClone(this.configurationService.inspect<IConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).userValue);
-				if (!profiles) {
-					profiles = [];
-				}
+			let groupId = await this.addGroupFromProfile(profile)
 
-				let connectionProfile = this.getConnectionProfileInstance(profile, groupId);
-				let newProfile = ConnectionProfile.convertToProfileStore(this._capabilitiesService, connectionProfile);
 
-				// Remove the profile if already set
-				let sameProfileInList = find(profiles, value => {
-					let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
-					return matcher(providerConnectionProfile, connectionProfile);
-				});
-				if (sameProfileInList) {
-					let profileIndex = firstIndex(profiles, value => value === sameProfileInList);
-					newProfile.id = sameProfileInList.id;
-					connectionProfile.id = sameProfileInList.id;
-					profiles[profileIndex] = newProfile;
-				} else {
-					profiles.push(newProfile);
-				}
+			let profiles = deepClone(this.configurationService.inspect<IConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).userValue as IConnectionProfileStore[]);
+			if (!profiles) {
+				profiles = [];
+			}
 
-				return this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, ConfigurationTarget.USER).then(() => connectionProfile);
+			let connectionProfile = this.getConnectionProfileInstance(profile, groupId);
+			let newProfile = ConnectionProfile.convertToProfileStore(this._capabilitiesService, connectionProfile);
+
+			// Remove the profile if already set
+			let sameProfileInList = profiles.find(value => {
+				const providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
+				return matcher(providerConnectionProfile, connectionProfile);
 			});
+			if (sameProfileInList) {
+				let profileIndex = profiles.findIndex(value => value === sameProfileInList);
+				profiles[profileIndex] = newProfile;
+			} else {
+				profiles.push(newProfile);
+			}
+
+			await this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, ConfigurationTarget.USER);
+			profiles.forEach(p => {
+				if (p && isDisposable(p)) {
+					p.dispose();
+				}
+			});
+			return connectionProfile;
 		} else {
-			return Promise.resolve(profile);
+			return profile;
 		}
 	}
 
@@ -105,15 +168,16 @@ export class ConnectionConfig {
 	/**
 	 *Returns group id
 	 */
-	public addGroupFromProfile(profile: IConnectionProfile): Promise<string> {
+	public async addGroupFromProfile(profile: IConnectionProfile): Promise<string> {
 		if (profile.groupId && profile.groupId !== Utils.defaultGroupId) {
-			return Promise.resolve(profile.groupId);
+			return profile.groupId;
 		} else {
-			let groups = deepClone(this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).userValue);
+			let groups = deepClone(this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).userValue as IConnectionProfileGroup[]);
 			let result = this.saveGroup(groups!, profile.groupFullName, undefined, undefined);
 			groups = result.groups;
 
-			return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER).then(() => result.newGroupId!);
+			await this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER);
+			return result.newGroupId!;
 		}
 	}
 
@@ -124,8 +188,8 @@ export class ConnectionConfig {
 		if (profileGroup.id) {
 			return Promise.resolve(profileGroup.id);
 		} else {
-			let groups = deepClone(this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).userValue);
-			let sameNameGroup = groups ? find(groups, group => group.name === profileGroup.name) : undefined;
+			let groups = deepClone(this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).userValue as IConnectionProfileGroup[]);
+			let sameNameGroup = groups ? groups.find(group => group.name === profileGroup.name) : undefined;
 			if (sameNameGroup) {
 				let errMessage: string = nls.localize('invalidServerName', "A server group with the same name already exists.");
 				return Promise.reject(errMessage);
@@ -144,9 +208,9 @@ export class ConnectionConfig {
 		if (configs) {
 			let fromConfig: IConnectionProfileStore[] | undefined;
 			if (configTarget === ConfigurationTarget.USER) {
-				fromConfig = configs.userValue;
+				fromConfig = configs.userValue as IConnectionProfileStore[];
 			} else if (configTarget === ConfigurationTarget.WORKSPACE) {
-				fromConfig = configs.workspaceValue || [];
+				fromConfig = configs.workspaceValue as IConnectionProfileStore[] || [];
 			}
 			if (fromConfig) {
 				profiles = deepClone(fromConfig);
@@ -176,6 +240,11 @@ export class ConnectionConfig {
 			}
 			if (profile.id in idsCache) {
 				profile.id = generateUuid();
+				changed = true;
+			}
+			// SSMS 19 requires "user", fix any profiles created without user property.
+			if (profile.providerName === 'MSSQL' && isUndefinedOrNull(profile.options.user)) {
+				profile.options.user = '';
 				changed = true;
 			}
 			idsCache[profile.id] = true;
@@ -214,6 +283,11 @@ export class ConnectionConfig {
 		let connectionProfiles = this.getIConnectionProfileStores(getWorkspaceConnections).map(p => {
 			return ConnectionProfile.createFromStoredProfile(p, this._capabilitiesService);
 		});
+		const sortBy = this.configurationService.getValue<string>(CONNECTIONS_SORT_BY_CONFIG_KEY);
+
+		if (sortBy === ConnectionsSortOrder.displayName) {
+			connectionProfiles.sort((a, b) => a.title.localeCompare(b.title));
+		}
 
 		return connectionProfiles;
 	}
@@ -245,18 +319,25 @@ export class ConnectionConfig {
 		subgroups.push(group);
 		// Get all connections in the settings
 		let profiles = this.configurationService.inspect<IConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).userValue;
-		// Remove the profiles from the connections
-		profiles = profiles!.filter(value => {
-			let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
-			return !connections.some((val) => val.getOptionsKey() === providerConnectionProfile.getOptionsKey());
-		});
+
+		if (profiles) {
+			// Remove the profiles from the connections
+			profiles = profiles!.filter(value => {
+				let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
+				return !connections.some((val) => val.getOptionsKey() === providerConnectionProfile.getOptionsKey());
+			});
+		}
 
 		// Get all groups in the settings
 		let groups = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).userValue;
-		// Remove subgroups in the settings
-		groups = groups!.filter((grp) => {
-			return !subgroups.some((item) => item.id === grp.id);
-		});
+
+		if (groups) {
+			// Remove subgroups in the settings
+			groups = groups!.filter((grp) => {
+				return !subgroups.some((item) => item.id === grp.id);
+			});
+		}
+
 		return Promise.all([
 			this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, ConfigurationTarget.USER),
 			this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER)
@@ -282,22 +363,36 @@ export class ConnectionConfig {
 	 */
 	public canChangeConnectionConfig(profile: ConnectionProfile, newGroupID: string): boolean {
 		let profiles = this.getIConnectionProfileStores(true);
-		let existingProfile = find(profiles, p =>
-			p.providerName === profile.providerName &&
-			p.options.authenticationType === profile.options.authenticationType &&
-			p.options.database === profile.options.database &&
-			p.options.server === profile.options.server &&
-			p.options.user === profile.options.user &&
-			p.groupId === newGroupID);
+		let existingProfile = profiles.find(p => {
+			let authenticationCheck = this.checkIfAuthenticationOptionsMatch(p, profile);
+			let nonDefaultCheck = this.checkIfNonDefaultOptionsMatch(p, profile);
+			let basicOptionCheck = p.providerName === profile.providerName &&
+				p.options.database === profile.options.database &&
+				p.options.server === profile.options.server &&
+				p.options.user === profile.options.user &&
+				p.options.connectionName === profile.options.connectionName &&
+				p.groupId === newGroupID;
+			return authenticationCheck && nonDefaultCheck && basicOptionCheck;
+		});
 		return existingProfile === undefined;
+	}
+
+	private checkIfNonDefaultOptionsMatch(profileStore: IConnectionProfileStore, profile: ConnectionProfile): boolean {
+		let tempProfile = ConnectionProfile.createFromStoredProfile(profileStore, this._capabilitiesService);
+		let result = profile.getNonDefaultOptionsString() === tempProfile.getNonDefaultOptionsString();
+		return result;
+	}
+
+	private checkIfAuthenticationOptionsMatch(profileStore: IConnectionProfileStore, profile: ConnectionProfile): boolean {
+		return ((profileStore.options.authenticationType === undefined || profileStore.options.authenticationType === '') && (profile.options.authenticationType === undefined || profile.options.authenticationType === '')) || profileStore.options.authenticationType === profile.options.authenticationType;
 	}
 
 	/**
 	 * Moves the connection under the target group with the new ID.
 	 */
 	private changeGroupIdForConnectionInSettings(profile: ConnectionProfile, newGroupID: string, target: ConfigurationTarget = ConfigurationTarget.USER): Promise<void> {
-		let profiles = deepClone(target === ConfigurationTarget.USER ? this.configurationService.inspect<IConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).userValue :
-			this.configurationService.inspect<IConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).workspaceValue);
+		let profiles = deepClone(target === ConfigurationTarget.USER ? this.configurationService.inspect<IConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).userValue as IConnectionProfileStore[] :
+			this.configurationService.inspect<IConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).workspaceValue as IConnectionProfileStore[]);
 		if (profiles) {
 			if (profile.parent && profile.parent.id === UNSAVED_GROUP_ID) {
 				profile.groupId = newGroupID;
@@ -338,7 +433,7 @@ export class ConnectionConfig {
 
 	public editGroup(source: ConnectionProfileGroup): Promise<void> {
 		let groups = deepClone(this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).userValue);
-		let sameNameGroup = groups ? find(groups, group => group.name === source.name && group.id !== source.id) : undefined;
+		let sameNameGroup = groups ? groups.find(group => group.name === source.name && group.id !== source.id) : undefined;
 		if (sameNameGroup) {
 			let errMessage: string = nls.localize('invalidServerName', "A server group with the same name already exists.");
 			return Promise.reject(errMessage);
@@ -379,7 +474,7 @@ export class ConnectionConfig {
 				color: color,
 				description: description
 			} as IConnectionProfileGroup;
-			let found = find(groupTree, group => this.isSameGroupName(group, newGroup));
+			let found = groupTree.find(group => this.isSameGroupName(group, newGroup));
 			if (found) {
 				if (index === groupNames.length - 1) {
 					newGroupId = found.id;

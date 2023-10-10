@@ -4,59 +4,163 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { AzureActiveDirectoryService, onDidChangeSessions } from './AADHelper';
-import TelemetryReporter from 'vscode-extension-telemetry';
+import { AzureActiveDirectoryService, IStoredSession } from './AADHelper';
+import { BetterTokenStorage } from './betterSecretStorage';
+import { UriEventHandler } from './UriEventHandler';
+import TelemetryReporter from '@vscode/extension-telemetry';
 
-export const DEFAULT_SCOPES = 'https://management.core.windows.net/.default offline_access';
+async function initMicrosoftSovereignCloudAuthProvider(context: vscode.ExtensionContext, telemetryReporter: TelemetryReporter, uriHandler: UriEventHandler, tokenStorage: BetterTokenStorage<IStoredSession>): Promise<vscode.Disposable | undefined> {
+	let settingValue = vscode.workspace.getConfiguration('microsoft-sovereign-cloud').get<string | undefined>('endpoint');
+	let authProviderName: string | undefined;
+	if (!settingValue) {
+		return undefined;
+	} else if (settingValue === 'Azure China') {
+		authProviderName = settingValue;
+		settingValue = 'https://login.chinacloudapi.cn/';
+	} else if (settingValue === 'Azure US Government') {
+		authProviderName = settingValue;
+		settingValue = 'https://login.microsoftonline.us/';
+	}
 
-export async function activate(context: vscode.ExtensionContext) {
-	const { name, version, aiKey } = require('../package.json') as { name: string, version: string, aiKey: string };
-	const telemetryReporter = new TelemetryReporter(name, version, aiKey);
+	// validate user value
+	let uri: vscode.Uri;
+	try {
+		uri = vscode.Uri.parse(settingValue, true);
+	} catch (e) {
+		vscode.window.showErrorMessage(vscode.l10n.t('Microsoft Sovereign Cloud login URI is not a valid URI: {0}', e.message ?? e));
+		return;
+	}
 
-	const loginService = new AzureActiveDirectoryService();
+	// Add trailing slash if needed
+	if (!settingValue.endsWith('/')) {
+		settingValue += '/';
+	}
 
-	await loginService.initialize();
+	const aadService = new AzureActiveDirectoryService(
+		vscode.window.createOutputChannel(vscode.l10n.t('Microsoft Sovereign Cloud Authentication'), { log: true }),
+		context,
+		uriHandler,
+		tokenStorage,
+		telemetryReporter,
+		settingValue);
+	await aadService.initialize();
 
-	context.subscriptions.push(vscode.authentication.registerAuthenticationProvider({
-		id: 'microsoft',
-		label: 'Microsoft',
-		supportsMultipleAccounts: true,
-		onDidChangeSessions: onDidChangeSessions.event,
-		getSessions: () => Promise.resolve(loginService.sessions),
-		login: async (scopes: string[]) => {
+	authProviderName ||= uri.authority;
+	const disposable = vscode.authentication.registerAuthenticationProvider('microsoft-sovereign-cloud', authProviderName, {
+		onDidChangeSessions: aadService.onDidChangeSessions,
+		getSessions: (scopes: string[]) => aadService.getSessions(scopes),
+		createSession: async (scopes: string[]) => {
 			try {
 				/* __GDPR__
-					"login" : { }
+					"login" : {
+						"owner": "TylerLeonhardt",
+						"comment": "Used to determine the usage of the Microsoft Sovereign Cloud Auth Provider.",
+						"scopes": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight", "comment": "Used to determine what scope combinations are being requested." }
+					}
 				*/
-				telemetryReporter.sendTelemetryEvent('login');
+				telemetryReporter.sendTelemetryEvent('loginMicrosoftSovereignCloud', {
+					// Get rid of guids from telemetry.
+					scopes: JSON.stringify(scopes.map(s => s.replace(/[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}/i, '{guid}'))),
+				});
 
-				const session = await loginService.login(scopes.sort().join(' '));
-				onDidChangeSessions.fire({ added: [session.id], removed: [], changed: [] });
-				return session;
+				return await aadService.createSession(scopes.sort());
 			} catch (e) {
 				/* __GDPR__
-					"loginFailed" : { }
+					"loginFailed" : { "owner": "TylerLeonhardt", "comment": "Used to determine how often users run into issues with the login flow." }
+				*/
+				telemetryReporter.sendTelemetryEvent('loginMicrosoftSovereignCloudFailed');
+
+				throw e;
+			}
+		},
+		removeSession: async (id: string) => {
+			try {
+				/* __GDPR__
+					"logout" : { "owner": "TylerLeonhardt", "comment": "Used to determine how often users log out." }
+				*/
+				telemetryReporter.sendTelemetryEvent('logoutMicrosoftSovereignCloud');
+
+				await aadService.removeSessionById(id);
+			} catch (e) {
+				/* __GDPR__
+					"logoutFailed" : { "owner": "TylerLeonhardt", "comment": "Used to determine how often fail to log out." }
+				*/
+				telemetryReporter.sendTelemetryEvent('logoutMicrosoftSovereignCloudFailed');
+			}
+		}
+	}, { supportsMultipleAccounts: true });
+
+	context.subscriptions.push(disposable);
+	return disposable;
+}
+
+export async function activate(context: vscode.ExtensionContext) {
+	const aiKey: string = context.extension.packageJSON.aiKey;
+	const telemetryReporter = new TelemetryReporter(aiKey);
+
+	const uriHandler = new UriEventHandler();
+	context.subscriptions.push(uriHandler);
+	context.subscriptions.push(vscode.window.registerUriHandler(uriHandler));
+	const betterSecretStorage = new BetterTokenStorage<IStoredSession>('microsoft.login.keylist', context);
+
+	const loginService = new AzureActiveDirectoryService(
+		vscode.window.createOutputChannel(vscode.l10n.t('Microsoft Authentication'), { log: true }),
+		context,
+		uriHandler,
+		betterSecretStorage,
+		telemetryReporter);
+	await loginService.initialize();
+
+	context.subscriptions.push(vscode.authentication.registerAuthenticationProvider('microsoft', 'Microsoft', {
+		onDidChangeSessions: loginService.onDidChangeSessions,
+		getSessions: (scopes: string[]) => loginService.getSessions(scopes),
+		createSession: async (scopes: string[]) => {
+			try {
+				/* __GDPR__
+					"login" : {
+						"owner": "TylerLeonhardt",
+						"comment": "Used to determine the usage of the Microsoft Auth Provider.",
+						"scopes": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight", "comment": "Used to determine what scope combinations are being requested." }
+					}
+				*/
+				telemetryReporter.sendTelemetryEvent('login', {
+					// Get rid of guids from telemetry.
+					scopes: JSON.stringify(scopes.map(s => s.replace(/[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}/i, '{guid}'))),
+				});
+
+				return await loginService.createSession(scopes.sort());
+			} catch (e) {
+				/* __GDPR__
+					"loginFailed" : { "owner": "TylerLeonhardt", "comment": "Used to determine how often users run into issues with the login flow." }
 				*/
 				telemetryReporter.sendTelemetryEvent('loginFailed');
 
 				throw e;
 			}
 		},
-		logout: async (id: string) => {
+		removeSession: async (id: string) => {
 			try {
 				/* __GDPR__
-					"logout" : { }
+					"logout" : { "owner": "TylerLeonhardt", "comment": "Used to determine how often users log out." }
 				*/
 				telemetryReporter.sendTelemetryEvent('logout');
 
-				await loginService.logout(id);
-				onDidChangeSessions.fire({ added: [], removed: [id], changed: [] });
+				await loginService.removeSessionById(id);
 			} catch (e) {
 				/* __GDPR__
-					"logoutFailed" : { }
+					"logoutFailed" : { "owner": "TylerLeonhardt", "comment": "Used to determine how often fail to log out." }
 				*/
 				telemetryReporter.sendTelemetryEvent('logoutFailed');
 			}
+		}
+	}, { supportsMultipleAccounts: true }));
+
+	let microsoftSovereignCloudAuthProviderDisposable = await initMicrosoftSovereignCloudAuthProvider(context, telemetryReporter, uriHandler, betterSecretStorage);
+
+	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async e => {
+		if (e.affectsConfiguration('microsoft-sovereign-cloud.endpoint')) {
+			microsoftSovereignCloudAuthProviderDisposable?.dispose();
+			microsoftSovereignCloudAuthProviderDisposable = await initMicrosoftSovereignCloudAuthProvider(context, telemetryReporter, uriHandler, betterSecretStorage);
 		}
 	}));
 

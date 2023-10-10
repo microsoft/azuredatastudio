@@ -1,5 +1,5 @@
 {
-	"extends": "../shared.tsconfig.json",
+	"extends": "../tsconfig.base.json",
 	"compileOnSave": true,
 	"compilerOptions": {
 		"outDir": "./out",
@@ -10,7 +10,8 @@
 		"experimentalDecorators": true,
 		"moduleResolution": "node",
 		"strict": false,
-		"noUnusedParameters": false
+		"noUnusedParameters": false,
+		"strictNullChecks": false
 	},
 	"exclude": [
 		"node_modules"

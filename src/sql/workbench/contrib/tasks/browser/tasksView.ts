@@ -7,14 +7,14 @@ import 'vs/css!./media/tasksPanel';
 import * as errors from 'vs/base/common/errors';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
+import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { DefaultFilter, DefaultDragAndDrop, DefaultAccessibilityProvider } from 'vs/base/parts/tree/browser/treeDefaults';
+import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
+import { ITree } from 'sql/base/parts/tree/browser/tree';
+import { DefaultFilter, DefaultDragAndDrop, DefaultAccessibilityProvider } from 'sql/base/parts/tree/browser/treeDefaults';
 import { localize } from 'vs/nls';
 import { hide, $, append } from 'vs/base/browser/dom';
-import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPane';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -59,7 +59,7 @@ export class TaskHistoryView extends ViewPane {
 	/**
 	 * Render the view body
 	 */
-	public renderBody(container: HTMLElement): void {
+	protected override renderBody(container: HTMLElement): void {
 		super.renderBody(container);
 
 		let taskNode = this.taskService.getAllTasks();
@@ -102,6 +102,8 @@ export class TaskHistoryView extends ViewPane {
 		const dnd = new DefaultDragAndDrop();
 		const filter = new DefaultFilter();
 		const accessibilityProvider = new DefaultAccessibilityProvider();
+
+		treeContainer.classList.add('task-history');
 
 		return new Tree(treeContainer, {
 			dataSource, renderer, controller, dnd, filter, accessibilityProvider
@@ -169,7 +171,7 @@ export class TaskHistoryView extends ViewPane {
 	/**
 	 * set the layout of the view
 	 */
-	public layoutBody(height: number, width: number): void {
+	protected override layoutBody(height: number, width: number): void {
 		super.layoutBody(height, width);
 		if (this._tree) {
 			this._tree.layout(height);

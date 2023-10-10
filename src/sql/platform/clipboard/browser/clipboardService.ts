@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
-import { IClipboardService as vsIClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { ClipboardData, IClipboardService as vsIClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
@@ -18,11 +18,15 @@ export class BrowserClipboardService implements IClipboardService {
 	) { }
 
 	/**
-	 * Writes the input image as a dataurl to the clipbaord
+	 * Writes the input image as a dataurl to the clipboard
 	 */
 	async writeImageDataUrl(data: string): Promise<void> {
 		// not implemented until web standards catch up
 		this._notificationService.info(localize('imageCopyingNotSupported', "Copying images is not supported"));
+	}
+
+	write(data: ClipboardData): Promise<void> {
+		return this._vsClipboardService.write(data);
 	}
 
 	writeText(text: string): Promise<void> {

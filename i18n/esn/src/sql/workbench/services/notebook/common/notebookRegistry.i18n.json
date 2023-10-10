@@ -8,11 +8,11 @@
 	],
 	"carbon.extension.contributes.notebook.provider": "Identificador del proveedor del cuaderno.",
 	"carbon.extension.contributes.notebook.fileExtensions": "Extensiones de archivo que deben estar registradas en este proveedor de cuadernos",
-	"carbon.extension.contributes.notebook.standardKernels": "Qué núcleos deben ser estándar con este proveedor de cuadernos",
+	"carbon.extension.contributes.notebook.standardKernels": "Núcleos que deben ser estándar con este proveedor de cuadernos",
 	"vscode.extension.contributes.notebook.providers": "Aporta proveedores de cuadernos.",
-	"carbon.extension.contributes.notebook.magic": "Nombre del magic de la celda, como \"%%sql\".",
+	"carbon.extension.contributes.notebook.magic": "Nombre del magic de celda, como \"%%sql\".",
 	"carbon.extension.contributes.notebook.language": "El lenguaje de celda que se usará si este magic de celda se incluye en la celda",
 	"carbon.extension.contributes.notebook.executionTarget": "Objetivo de ejecución opcional indicado por este magic, por ejemplo Spark vs SQL",
-	"carbon.extension.contributes.notebook.kernels": "Este conjunto de kernel es válido para, por ejemplo, python3, pyspark3, sql",
+	"carbon.extension.contributes.notebook.kernels": "Conjunto opcional de kernels para los que esto es válido, por ejemplo python3, pyspark, sql",
 	"vscode.extension.contributes.notebook.languagemagics": "Aporta el lenguaje del cuaderno."
 }

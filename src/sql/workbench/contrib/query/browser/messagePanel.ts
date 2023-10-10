@@ -9,13 +9,13 @@ import { IQueryMessage } from 'sql/workbench/services/query/common/query';
 
 import { ITreeRenderer, IDataSource, ITreeNode, ITreeContextMenuEvent } from 'vs/base/browser/ui/tree/tree';
 import { generateUuid } from 'vs/base/common/uuid';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { WorkbenchDataTree } from 'vs/platform/list/browser/listService';
-import { isArray, isString } from 'vs/base/common/types';
+import { isString } from 'vs/base/common/types';
 import { Disposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
-import { $, Dimension, createStyleSheet, addStandardDisposableGenericMouseDownListner, toggleClass } from 'vs/base/browser/dom';
+import { $, Dimension, createStyleSheet, addStandardDisposableGenericMouseDownListener } from 'vs/base/browser/dom';
 import { resultsErrorColor } from 'sql/platform/theme/common/colors';
 import { CachedListVirtualDelegate, IIdentityProvider } from 'vs/base/browser/ui/list/list';
 import { FuzzyScore } from 'vs/base/common/filters';
@@ -24,16 +24,16 @@ import { localize } from 'vs/nls';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IAction, Action } from 'vs/base/common/actions';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
 import { URI } from 'vs/base/common/uri';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IDataTreeViewState } from 'vs/base/browser/ui/tree/dataTree';
 import { IRange } from 'vs/editor/common/core/range';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { AbstractTreeViewState } from 'vs/base/browser/ui/tree/abstractTree';
 
 export interface IResultMessageIntern {
 	id?: string;
@@ -70,6 +70,15 @@ const TemplateIds = {
 	ERROR: 'error'
 };
 
+function getTimestampDisplayString(message: IResultMessageIntern): string | undefined {
+	if (message.time) {
+		const time = isString(message.time) ? new Date(message.time!) : message.time;
+		return time.toLocaleTimeString();
+	} else {
+		return undefined;
+	}
+}
+
 export class AccessibilityProvider implements IListAccessibilityProvider<IResultMessageIntern> {
 
 	getWidgetAriaLabel(): string {
@@ -77,7 +86,11 @@ export class AccessibilityProvider implements IListAccessibilityProvider<IResult
 	}
 
 	getAriaLabel(element: IResultMessageIntern): string {
-		return element.message;
+		if (element.time && element.range) {
+			return localize('messagePanel.message', "Timestamp: {0}, Message: {1}", getTimestampDisplayString(element), element.message);
+		} else {
+			return element.message;
+		}
 	}
 }
 
@@ -93,7 +106,7 @@ export class MessagePanel extends Disposable {
 	private styleElement = createStyleSheet(this.container);
 
 	private queryRunnerDisposables = this._register(new DisposableStore());
-	private _treeStates = new Map<string, IDataTreeViewState>();
+	private _treeStates = new Map<string, AbstractTreeViewState>();
 	private currenturi: string;
 
 	private tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>;
@@ -108,7 +121,7 @@ export class MessagePanel extends Disposable {
 	) {
 		super();
 		const wordWrap = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').messages.wordwrap;
-		toggleClass(this.container, 'word-wrap', wordWrap);
+		this.container.classList.toggle('word-wrap', wordWrap);
 		this.tree = <WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>>instantiationService.createInstance(
 			WorkbenchDataTree,
 			'MessagePanel',
@@ -200,7 +213,7 @@ export class MessagePanel extends Disposable {
 	}
 
 	private onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
-		if (isArray(message)) {
+		if (Array.isArray(message)) {
 			this.model.messages.push(...message);
 		} else {
 			this.model.messages.push(message);
@@ -235,7 +248,7 @@ export class MessagePanel extends Disposable {
 		this.reset();
 	}
 
-	public dispose() {
+	public override dispose() {
 		if (this.container) {
 			this.container.remove();
 			this.container = undefined;
@@ -321,14 +334,12 @@ class BatchMessageRenderer implements ITreeRenderer<IResultMessageIntern, void, 
 	}
 
 	renderElement(node: ITreeNode<IResultMessageIntern, void>, index: number, templateData: IBatchTemplate): void {
-		if (isString(node.element.time)) {
-			node.element.time = new Date(node.element.time!);
-		}
-		templateData.timeStamp.innerText = (node.element.time as Date).toLocaleTimeString();
+		templateData.timeStamp.innerText = getTimestampDisplayString(node.element);
 		templateData.message.innerText = node.element.message;
 		if (node.element.range) {
-			templateData.disposable.add(addStandardDisposableGenericMouseDownListner(templateData.message, () => {
-				let editor = this.editorService.activeEditorPane as QueryEditor;
+			templateData.disposable.add(addStandardDisposableGenericMouseDownListener(templateData.message, () => {
+				// {{SQL CARBON TODO}} - does this cast still work
+				let editor = <unknown>this.editorService.activeEditorPane as QueryEditor;
 				const codeEditor = <ICodeEditor>editor.getControl();
 				codeEditor.focus();
 				codeEditor.setSelection(node.element.range);

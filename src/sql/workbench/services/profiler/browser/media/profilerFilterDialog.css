@@ -4,8 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 .profiler-filter-dialog {
-	height: 300px;
 	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	height: calc(100% - 20px);
+	overflow: flex;
 }
 
 .profiler-filter-clause-table {
@@ -13,9 +16,9 @@
 	margin-bottom: 10px;
 }
 
-.clause-table-container{
-	max-height: 270px;
+.clause-table-container {
 	overflow-y: scroll;
+	flex: 1 1 auto;
 }
 
 .profiler-filter-remove-condition {
@@ -24,10 +27,14 @@
 	cursor: pointer;
 }
 
+.profiler-filter-dialog .actions-container {
+	display: flex;
+	flex-direction: row;
+}
+
 .profiler-filter-clause-table-action {
 	cursor: pointer;
 	margin-right: 10px;
 	padding: 2px;
 	text-decoration: underline;
-	display: inline-block;
 }

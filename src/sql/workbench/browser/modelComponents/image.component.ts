@@ -8,16 +8,16 @@ import {
 	OnDestroy, AfterViewInit, ElementRef, ViewChild
 } from '@angular/core';
 
-import * as DOM from 'vs/base/browser/dom';
 import * as azdata from 'azdata';
 import { ITitledComponent } from 'sql/workbench/browser/modelComponents/interfaces';
 import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-image',
 	template: `
-		<div #imageContainer [title]="title" [style.width]="getWidth()" [style.height]="getHeight()" [style.background-size]="getImageSize()">`
+		<div #imageContainer role="img" [ngStyle]="CSSStyles" [title]="title">`
 })
 export default class ImageComponent extends ComponentWithIconBase<azdata.ImageComponentProperties> implements ITitledComponent, IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
@@ -26,18 +26,16 @@ export default class ImageComponent extends ComponentWithIconBase<azdata.ImageCo
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
-		super(changeRef, el);
-	}
-
-	ngOnInit(): void {
-		this.baseInit();
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService) {
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {
+		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -47,17 +45,17 @@ export default class ImageComponent extends ComponentWithIconBase<azdata.ImageCo
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this.updateIcon();
 		this._changeRef.detectChanges();
 	}
 
-	protected updateIcon() {
+	protected override updateIcon() {
 		if (this.iconPath) {
 			if (!this._iconClass) {
 				super.updateIcon();
-				DOM.addClasses(this.imageContainer.nativeElement, this._iconClass, 'icon');
+				this.imageContainer.nativeElement.classList.add(this._iconClass, 'icon');
 			} else {
 				super.updateIcon();
 			}
@@ -69,5 +67,13 @@ export default class ImageComponent extends ComponentWithIconBase<azdata.ImageCo
 	 */
 	public getImageSize(): string {
 		return `${this.getIconWidth()} ${this.getIconHeight()}`;
+	}
+
+	public override get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'background-size': this.getImageSize(),
+			'width': this.getWidth(),
+			'height': this.getHeight()
+		});
 	}
 }

@@ -24,7 +24,8 @@ export function createContext(): TestContext {
 			clear: () => { },
 			show: () => { },
 			hide: () => { },
-			dispose: () => { }
+			dispose: () => { },
+			replace: () => { }
 		},
 		op: {
 			updateStatus: (status: azdata.TaskStatus) => {

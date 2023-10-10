@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as mssql from '../../../../mssql';
+import * as mssql from 'mssql';
 import { LanguageViewBase } from './languageViewBase';
 import * as constants from '../../common/constants';
 import { ApiWrapper } from '../../common/apiWrapper';
@@ -31,7 +31,7 @@ export class LanguageContentView extends LanguageViewBase {
 	) {
 		super(apiWrapper, parent.root, parent);
 		this._localPath = this._modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				value: 'local',
 				name: 'extensionLocation',
 				label: constants.extLangLocal,
@@ -39,7 +39,7 @@ export class LanguageContentView extends LanguageViewBase {
 			}).component();
 
 		this._serverPath = this._modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				value: 'server',
 				name: 'extensionLocation',
 				label: this.getServerTitle(),
@@ -62,16 +62,17 @@ export class LanguageContentView extends LanguageViewBase {
 				this._localPath, this._serverPath]
 			).component();
 
-		this.extensionFile = this._modelBuilder.inputBox().withProperties({
+		this.extensionFile = this._modelBuilder.inputBox().withProps({
 			value: '',
 			width: parent.componentMaxLength - parent.browseButtonMaxLength - parent.spaceBetweenComponentsLength
 		}).component();
-		let fileBrowser = this._modelBuilder.button().withProperties({
+		let fileBrowser = this._modelBuilder.button().withProps({
 			label: '...',
 			width: parent.browseButtonMaxLength,
 			CSSStyles: {
 				'text-align': 'end'
-			}
+			},
+			secondary: true
 		}).component();
 
 		let flexFilePathModel = this._modelBuilder.flexContainer()
@@ -88,16 +89,16 @@ export class LanguageContentView extends LanguageViewBase {
 			this.onOpenFileBrowser({ filePath: '', target: this._isLocalPath ? constants.localhost : this.connectionUrl });
 		});
 
-		this.extensionFileName = this._modelBuilder.inputBox().withProperties({
+		this.extensionFileName = this._modelBuilder.inputBox().withProps({
 			value: '',
 			width: parent.componentMaxLength
 		}).component();
 
-		this.envVariables = this._modelBuilder.inputBox().withProperties({
+		this.envVariables = this._modelBuilder.inputBox().withProps({
 			value: '',
 			width: parent.componentMaxLength
 		}).component();
-		this.parameters = this._modelBuilder.inputBox().withProperties({
+		this.parameters = this._modelBuilder.inputBox().withProps({
 			value: '',
 			width: parent.componentMaxLength
 		}).component();
@@ -145,10 +146,10 @@ export class LanguageContentView extends LanguageViewBase {
 
 	public get updatedContent(): mssql.ExternalLanguageContent {
 		return {
-			pathToExtension: this.extensionFile.value || '',
-			extensionFileName: this.extensionFileName.value || '',
-			parameters: this.parameters.value || '',
-			environmentVariables: this.envVariables.value || '',
+			pathToExtension: this.extensionFile.value as string || '',
+			extensionFileName: this.extensionFileName.value as string || '',
+			parameters: this.parameters.value as string || '',
+			environmentVariables: this.envVariables.value as string || '',
 			isLocalFile: this._isLocalPath || false,
 			platform: this._languageContent?.platform
 		};

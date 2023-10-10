@@ -3,24 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Event } from 'vs/base/common/event';
-import { INativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
-import { IURLService } from 'vs/platform/url/common/url';
-import product from 'vs/platform/product/common/product';
 import { app, Event as ElectronEvent } from 'electron';
-import { URI } from 'vs/base/common/uri';
-import { IDisposable, DisposableStore, Disposable } from 'vs/base/common/lifecycle';
-import { IWindowsMainService } from 'vs/platform/windows/electron-main/windows';
-import { isWindows } from 'vs/base/common/platform';
 import { disposableTimeout } from 'vs/base/common/async';
-
-function uriFromRawUrl(url: string): URI | null {
-	try {
-		return URI.parse(url);
-	} catch (e) {
-		return null;
-	}
-}
+import { Event } from 'vs/base/common/event';
+import { Disposable, DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
+import { isWindows } from 'vs/base/common/platform';
+import { URI } from 'vs/base/common/uri';
+import { IEnvironmentMainService } from 'vs/platform/environment/electron-main/environmentMainService';
+import { ILogService } from 'vs/platform/log/common/log';
+import { IProductService } from 'vs/platform/product/common/productService';
+import { IURLService } from 'vs/platform/url/common/url';
+import { IProtocolUrl } from 'vs/platform/url/electron-main/url';
+import { IWindowsMainService } from 'vs/platform/windows/electron-main/windows';
 
 /**
  * A listener for URLs that are opened from the OS and handled by VSCode.
@@ -34,26 +28,31 @@ function uriFromRawUrl(url: string): URI | null {
  */
 export class ElectronURLListener {
 
-	private uris: URI[] = [];
+	private uris: IProtocolUrl[] = [];
 	private retryCount = 0;
 	private flushDisposable: IDisposable = Disposable.None;
-	private disposables = new DisposableStore();
+	private readonly disposables = new DisposableStore();
 
 	constructor(
-		initialUrisToHandle: URI[],
+		initialProtocolUrls: IProtocolUrl[] | undefined,
 		private readonly urlService: IURLService,
 		windowsMainService: IWindowsMainService,
-		environmentService: INativeEnvironmentService
+		environmentMainService: IEnvironmentMainService,
+		productService: IProductService,
+		private readonly logService: ILogService
 	) {
+		if (initialProtocolUrls) {
+			logService.trace('ElectronURLListener initialUrisToHandle:', initialProtocolUrls.map(url => url.originalUrl));
 
-		// the initial set of URIs we need to handle once the window is ready
-		this.uris = initialUrisToHandle;
+			// the initial set of URIs we need to handle once the window is ready
+			this.uris = initialProtocolUrls;
+		}
 
 		// Windows: install as protocol handler
 		if (isWindows) {
-			const windowsParameters = environmentService.isBuilt ? [] : [`"${environmentService.appRoot}"`];
+			const windowsParameters = environmentMainService.isBuilt ? [] : [`"${environmentMainService.appRoot}"`];
 			windowsParameters.push('--open-url', '--');
-			app.setAsDefaultProtocolClient(product.urlProtocol, process.execPath, windowsParameters);
+			app.setAsDefaultProtocolClient(productService.urlProtocol, process.execPath, windowsParameters);
 		}
 
 		// macOS: listen to `open-url` events from here on to handle
@@ -61,36 +60,62 @@ export class ElectronURLListener {
 			Event.fromNodeEventEmitter(app, 'open-url', (event: ElectronEvent, url: string) => ({ event, url })),
 			({ event, url }) => {
 				event.preventDefault(); // always prevent default and return the url as string
+
 				return url;
 			});
 
-		const onOpenUrl = Event.filter<URI | null, URI>(Event.map(onOpenElectronUrl, uriFromRawUrl), (uri): uri is URI => !!uri);
-		onOpenUrl(this.urlService.open, this.urlService, this.disposables);
+		this.disposables.add(onOpenElectronUrl(url => {
+			const uri = this.uriFromRawUrl(url);
+			if (!uri) {
+				return;
+			}
+
+			this.urlService.open(uri, { originalUrl: url });
+		}));
 
 		// Send initial links to the window once it has loaded
 		const isWindowReady = windowsMainService.getWindows()
-			.filter(w => w.isReady)
+			.filter(window => window.isReady)
 			.length > 0;
 
 		if (isWindowReady) {
+			logService.trace('ElectronURLListener: window is ready to handle URLs');
+
 			this.flush();
 		} else {
-			Event.once(windowsMainService.onWindowReady)(this.flush, this, this.disposables);
+			logService.trace('ElectronURLListener: waiting for window to be ready to handle URLs...');
+
+			Event.once(windowsMainService.onDidSignalReadyWindow)(this.flush, this, this.disposables);
+		}
+	}
+
+	private uriFromRawUrl(url: string): URI | undefined {
+		try {
+			return URI.parse(url);
+		} catch (e) {
+			return undefined;
 		}
 	}
 
 	private async flush(): Promise<void> {
 		if (this.retryCount++ > 10) {
+			this.logService.trace('ElectronURLListener#flush(): giving up after 10 retries');
+
 			return;
 		}
 
-		const uris: URI[] = [];
+		this.logService.trace('ElectronURLListener#flush(): flushing URLs');
 
-		for (const uri of this.uris) {
-			const handled = await this.urlService.open(uri);
+		const uris: IProtocolUrl[] = [];
 
-			if (!handled) {
-				uris.push(uri);
+		for (const obj of this.uris) {
+			const handled = await this.urlService.open(obj.uri, { originalUrl: obj.originalUrl });
+			if (handled) {
+				this.logService.trace('ElectronURLListener#flush(): URL was handled', obj.originalUrl);
+			} else {
+				this.logService.trace('ElectronURLListener#flush(): URL was not yet handled', obj.originalUrl);
+
+				uris.push(obj);
 			}
 		}
 

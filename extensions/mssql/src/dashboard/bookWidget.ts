@@ -28,9 +28,10 @@ export function registerBooksWidget(bookContributionProvider: BookContributionPr
 			const bookRow = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'row'
 			}).component();
-			const tsgbooklink = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			const tsgbooklink = view.modelBuilder.button().withProps({
 				label: contribution.name,
-				title: contribution.name
+				title: contribution.name,
+				secondary: true
 			}).component();
 			tsgbooklink.onDidClick(() => {
 				let uri: vscode.Uri = vscode.Uri.file(contribution.path);
@@ -68,5 +69,5 @@ export function registerBooksWidget(bookContributionProvider: BookContributionPr
 }
 
 function openBookViewlet(folderUri: vscode.Uri): void {
-	vscode.commands.executeCommand('bookTreeView.openBook', folderUri.fsPath, true, undefined);
+	void vscode.commands.executeCommand('bookTreeView.openBook', folderUri.fsPath, true, undefined);
 }

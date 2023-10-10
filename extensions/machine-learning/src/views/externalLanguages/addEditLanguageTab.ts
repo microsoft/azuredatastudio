@@ -26,7 +26,7 @@ export class AddEditLanguageTab extends LanguageViewBase {
 		this._dialogTab.registerContent(async view => {
 			let language = this._languageUpdateModel.language;
 			let content = this._languageUpdateModel.content;
-			this.languageName = view.modelBuilder.inputBox().withProperties({
+			this.languageName = view.modelBuilder.inputBox().withProps({
 				value: language.name,
 				width: '150px',
 				enabled: !this._editMode
@@ -42,7 +42,7 @@ export class AddEditLanguageTab extends LanguageViewBase {
 			this.languageView = new LanguageContentView(this._apiWrapper, this, view.modelBuilder, formBuilder, content);
 
 			if (!this._editMode) {
-				this.saveButton = view.modelBuilder.button().withProperties({
+				this.saveButton = view.modelBuilder.button().withProps({
 					label: constants.extLangInstallButtonText,
 					width: '100px'
 				}).component();
@@ -68,7 +68,7 @@ export class AddEditLanguageTab extends LanguageViewBase {
 	public get updatedData(): LanguageUpdateModel {
 		return {
 			language: {
-				name: this.languageName?.value || '',
+				name: this.languageName?.value as string || '',
 				contents: this._languageUpdateModel.language.contents
 			},
 			content: this.languageView?.updatedContent || this._languageUpdateModel.content,

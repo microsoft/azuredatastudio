@@ -13,8 +13,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITextModel } from 'vs/editor/common/model';
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
-import { IModeService } from 'vs/editor/common/services/modeService';
-import { IModelService } from 'vs/editor/common/services/modelService';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
@@ -26,6 +24,8 @@ import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
+import { IModelService } from 'vs/editor/common/services/model';
+// import { ILanguageService } from 'vs/editor/common/languages/language';
 
 @Component({
 	template: '',
@@ -48,19 +48,20 @@ export default class EditorComponent extends ComponentBase<azdata.EditorProperti
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
-		@Inject(IModeService) private _modeService: IModeService,
+		// @Inject(ILanguageService) private _languageService: ILanguageService,
 		@Inject(ILogService) private _logService: ILogService,
-		@Inject(IEditorService) private readonly editorService: IEditorService
+		@Inject(IEditorService) private readonly editorService: IEditorService,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
+	ngAfterViewInit(): void {
 		this._createEditor().catch((e) => this._logService.error(e));
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
 			this.layout();
 		}));
+		this.baseInit();
 	}
 
 	private async _createEditor(): Promise<void> {
@@ -69,9 +70,12 @@ export default class EditorComponent extends ComponentBase<azdata.EditorProperti
 		this._editor.create(this._el.nativeElement);
 		this._editor.setVisible(true);
 		let uri = this.createUri();
-		this._editorInput = this.editorService.createEditorInput({ forceUntitled: true, resource: uri, mode: 'plaintext' }) as UntitledTextEditorInput;
+
+		this._editorInput = await this.editorService.createEditorInput({ forceUntitled: true, resource: uri, languageId: 'plaintext' }) as UntitledTextEditorInput;
+
 		await this._editor.setInput(this._editorInput, undefined, undefined);
 		const model = await this._editorInput.resolve();
+
 		this._editorModel = model.textEditorModel;
 		this.fireEvent({
 			eventType: ComponentEventType.onComponentCreated,
@@ -105,13 +109,13 @@ export default class EditorComponent extends ComponentBase<azdata.EditorProperti
 		return uri;
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
 	/// IComponent implementation
 
-	public layout(): void {
+	public override layout(): void {
 		let width: number = convertSizeToNumber(this.width);
 
 		let height: number = convertSizeToNumber(this.height);
@@ -137,8 +141,9 @@ export default class EditorComponent extends ComponentBase<azdata.EditorProperti
 	private updateLanguageMode() {
 		if (this._editorModel && this._editor) {
 			this._languageMode = this.languageMode;
-			let languageSelection = this._modeService.create(this._languageMode);
-			this._modelService.setMode(this._editorModel, languageSelection);
+			// {{SQL CARBON TODO}} - call set mode
+			// let languageSelection = this._languageService.createById(this._languageMode);
+			//this._modelService.setMode(this._editorModel, languageSelection);
 		}
 	}
 
@@ -148,7 +153,7 @@ export default class EditorComponent extends ComponentBase<azdata.EditorProperti
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		if (this.content !== this._renderedContent) {
 			this.updateModel();

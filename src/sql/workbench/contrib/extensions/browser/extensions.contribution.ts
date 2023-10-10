@@ -4,15 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { Registry } from 'vs/platform/registry/common/platform';
-import { IWorkbenchActionRegistry, Extensions as WorkbenchActionExtensions } from 'vs/workbench/common/actions';
-import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
-import { ExtensionsLabel } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtensionGalleryService, IGalleryExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { OpenExtensionAuthoringDocsAction } from 'sql/workbench/contrib/extensions/browser/extensionsActions';
+import { localize } from 'vs/nls';
+import { deepClone } from 'vs/base/common/objects';
+import { CancellationToken } from 'vs/base/common/cancellation';
+import { registerAction2 } from 'vs/platform/actions/common/actions';
 
 // Global Actions
-const actionRegistry = Registry.as<IWorkbenchActionRegistry>(WorkbenchActionExtensions.WorkbenchActions);
-actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(OpenExtensionAuthoringDocsAction), 'Extensions: Author an Extension...', ExtensionsLabel);
+
+
+registerAction2(OpenExtensionAuthoringDocsAction);
 
 // Register Commands
 CommandsRegistry.registerCommand('azdata.extension.open', (accessor: ServicesAccessor, extension: { id: string }) => {
@@ -21,5 +23,29 @@ CommandsRegistry.registerCommand('azdata.extension.open', (accessor: ServicesAcc
 		return commandService.executeCommand('extension.open', extension.id);
 	} else {
 		throw new Error('Extension id is not provided');
+	}
+});
+
+CommandsRegistry.registerCommand({
+	id: 'workbench.extensions.getExtensionFromGallery',
+	description: {
+		description: localize('workbench.extensions.getExtensionFromGallery.description', "Gets extension information from the gallery"),
+		args: [
+			{
+				name: localize('workbench.extensions.getExtensionFromGallery.arg.name', "Extension id"),
+				schema: {
+					'type': ['string']
+				}
+			}
+		]
+	},
+	handler: async (accessor, arg: string): Promise<IGalleryExtension> => {
+		const extensionGalleryService = accessor.get(IExtensionGalleryService);
+		const [extension] = await extensionGalleryService.getExtensions([{ id: arg }], { source: 'getExtensionFromGallery' }, CancellationToken.None);
+		if (extension) {
+			return deepClone(extension);
+		} else {
+			throw new Error(localize('notFound', "Extension '{0}' not found.", arg));
+		}
 	}
 });

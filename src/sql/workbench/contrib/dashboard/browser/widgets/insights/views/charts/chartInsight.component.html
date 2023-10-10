@@ -1,0 +1,4 @@
+<div style="display: block; width: 100%; height: 100%; position: relative">
+	<div #chartContainer *ngIf="_isDataAvailable && _hasInit" style="width: 100%; height: 100%"></div>
+	<div *ngIf="_hasError">{{CHART_ERROR_MESSAGE}}</div>
+</div>

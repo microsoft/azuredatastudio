@@ -6,11 +6,11 @@
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import * as types from 'vs/base/common/types';
-import { ILocalizedString, ICommandAction } from 'vs/platform/actions/common/actions';
 import { Event } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { ICommandAction, ILocalizedString } from 'vs/platform/action/common/action';
 
 export interface ITaskOptions {
 	id: string;

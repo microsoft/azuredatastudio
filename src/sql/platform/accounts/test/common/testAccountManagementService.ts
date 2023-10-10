@@ -35,8 +35,8 @@ export class TestAccountManagementService implements IAccountManagementService {
 		return undefined;
 	}
 
-	copyUserCodeAndOpenBrowser(userCode: string, uri: string): void {
-		return undefined;
+	async copyUserCodeAndOpenBrowser(userCode: string, uri: string): Promise<boolean> {
+		return true;
 	}
 
 	getAccountProviderMetadata(): Promise<azdata.AccountProviderMetadata[]> {
@@ -55,8 +55,12 @@ export class TestAccountManagementService implements IAccountManagementService {
 		return Promise.resolve([]);
 	}
 
-	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<{ token: string }> {
+	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<azdata.accounts.AccountSecurityToken> {
 		return Promise.resolve(undefined!);
+	}
+
+	promptProvider() {
+		return Promise.resolve('');
 	}
 
 	removeAccount(accountKey: azdata.AccountKey): Promise<boolean> {
@@ -107,6 +111,7 @@ export class AccountProviderStub implements azdata.AccountProvider {
 	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Thenable<{ token: string }> {
 		return Promise.resolve(undefined!);
 	}
+
 	initialize(storedAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
 		return Promise.resolve(storedAccounts);
 	}

@@ -19,8 +19,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
-import { find } from 'vs/base/common/arrays';
 import { RowDetailView, ExtendedItem } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import {
 	IAssessmentComponent,
@@ -43,10 +41,15 @@ import { AssessmentType, TARGET_ICON_CLASS } from 'sql/workbench/contrib/assessm
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 import * as themeColors from 'vs/workbench/common/theme';
-import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 import { LocalizedStrings } from 'sql/workbench/contrib/assessment/common/strings';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { DASHBOARD_BORDER } from 'sql/workbench/common/theme';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultTableFilterStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export const ASMTRESULTSVIEW_SELECTOR: string = 'asmt-results-view-component';
 export const ROW_HEIGHT: number = 25;
@@ -142,13 +145,17 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService,
 		@Inject(IAdsTelemetryService) private _telemetryService: IAdsTelemetryService,
-		@Inject(ILogService) protected _logService: ILogService
+		@Inject(ILogService) protected _logService: ILogService,
+		@Inject(IContextViewService) private _contextViewService: IContextViewService,
+		@Inject(IAccessibilityService) private _accessibilityService: IAccessibilityService,
+		@Inject(IQuickInputService) private _quickInputService: IQuickInputService,
+		@Inject(IComponentContextService) private componentContextService: IComponentContextService
 	) {
 		super();
 		let self = this;
 		const profile = this._commonService.connectionManagementService.connectionInfo.connectionProfile;
 
-		this.isServerMode = !profile.databaseName || Utils.isMaster(profile);
+		this.isServerMode = !profile.databaseName || Utils.isServerConnection(profile);
 
 		if (this.isServerMode) {
 			this.placeholderNoResultsLabel = nls.localize('asmt.TargetInstanceComplient', "Instance {0} is totally compliant with the best practices. Good job!", profile.serverName);
@@ -167,7 +174,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		this._telemetryService.sendViewEvent(TelemetryView.SqlAssessment);
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.isVisible = false;
 		this.rowDetail?.destroy();
 		this.filterPlugin.destroy();
@@ -317,8 +324,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		columnDef.formatter = (row, cell, value, columnDef, dataContext) => this.detailSelectionFormatter(row, cell, value, columnDef, dataContext as ExtendedItem<Slick.SlickData>);
 		columns.unshift(columnDef);
 
-		let filterPlugin = new HeaderFilter<Slick.SlickData>();
-		this._register(attachButtonStyler(filterPlugin, this._themeService));
+		let filterPlugin = new HeaderFilter<Slick.SlickData>(defaultTableFilterStyles, this._contextViewService);
 		this.filterPlugin = filterPlugin;
 		this.filterPlugin.onFilterApplied.subscribe((e, args) => {
 			let filterValues = args.column.filterValues;
@@ -334,7 +340,6 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		// we need to be able to show distinct array values in filter dialog for columns with array data
 		filterPlugin['getFilterValues'] = this.getFilterValues;
 		filterPlugin['getAllFilterValues'] = this.getAllFilterValues;
-		filterPlugin['getFilterValuesByInput'] = this.getFilterValuesByInput;
 
 		dom.clearNode(this._gridEl.nativeElement);
 		dom.clearNode(this.actionBarContainer.nativeElement);
@@ -351,11 +356,11 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 			this.initActionBar(databaseInvokeAsmt, databaseSelectAsmt);
 		}
 
-		this._table = this._register(new Table(this._gridEl.nativeElement, { columns }, options));
+		this._table = this._register(new Table(this._gridEl.nativeElement, this._accessibilityService, this._quickInputService, defaultTableStyles, { columns }, options));
 		this._table.grid.setData(this.dataView, true);
 		this._table.registerPlugin(<any>this.rowDetail);
 		this._table.registerPlugin(filterPlugin);
-
+		this._register(this.componentContextService.registerTable(this._table));
 
 		this.placeholderElem = document.createElement('span');
 		this.placeholderElem.className = 'placeholder';
@@ -478,13 +483,13 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 			let filterValues = col.filterValues;
 			if (filterValues && filterValues.length > 0) {
 				if (item._parent) {
-					value = value && find(filterValues, x => x === item._parent[col.field]);
+					value = value && filterValues.find(x => x === item._parent[col.field]);
 				} else {
 					let colValue = item[col.field];
 					if (colValue instanceof Array) {
-						value = value && find(filterValues, x => colValue.indexOf(x) >= 0);
+						value = value && filterValues.find(x => colValue.indexOf(x) >= 0);
 					} else {
-						value = value && find(filterValues, x => x === colValue);
+						value = value && filterValues.find(x => x === colValue);
 					}
 				}
 			}
@@ -587,60 +592,8 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		return seen.sort((v) => { return v; });
 	}
 
-	private getFilterValuesByInput($input: JQuery<HTMLElement>): Array<string> {
-		const column = $input.data('column'),
-			filter = $input.val() as string,
-			dataView = this['grid'].getData() as Slick.DataProvider<Slick.SlickData>,
-			seen: Array<any> = [];
-
-		for (let i = 0; i < dataView.getLength(); i++) {
-			const value = dataView.getItem(i)[column.field];
-			if (value instanceof Array) {
-				if (filter.length > 0) {
-					const itemValue = !value ? [] : value;
-					const lowercaseFilter = filter.toString().toLowerCase();
-					const lowercaseVals = itemValue.map(v => v.toLowerCase());
-					for (let valIdx = 0; valIdx < value.length; valIdx++) {
-						if (!seen.some(x => x === value[valIdx]) && lowercaseVals[valIdx].indexOf(lowercaseFilter) > -1) {
-							seen.push(value[valIdx]);
-						}
-					}
-				}
-				else {
-					for (let item = 0; item < value.length; item++) {
-						if (!seen.some(x => x === value[item])) {
-							seen.push(value[item]);
-						}
-					}
-				}
-
-			} else {
-				if (filter.length > 0) {
-					const itemValue = !value ? '' : value;
-					const lowercaseFilter = filter.toString().toLowerCase();
-					const lowercaseVal = itemValue.toString().toLowerCase();
-
-					if (!seen.some(x => x === value) && lowercaseVal.indexOf(lowercaseFilter) > -1) {
-						seen.push(value);
-					}
-				}
-				else {
-					if (!seen.some(x => x === value)) {
-						seen.push(value);
-					}
-				}
-			}
-		}
-
-		return seen.sort((v) => { return v; });
-	}
-
 	private _updateStyles(theme: IColorTheme): void {
-		this.actionBarContainer.nativeElement.style.borderTopColor = theme.getColor(themeColors.DASHBOARD_BORDER, true).toString();
-		let tableStyle: ITableStyles = {
-			tableHeaderBackground: theme.getColor(themeColors.PANEL_BACKGROUND)
-		};
-		this._table.style(tableStyle);
+		this.actionBarContainer.nativeElement.style.borderTopColor = theme.getColor(DASHBOARD_BORDER, true).toString();
 		const rowExclSelector = '.asmtview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row';
 		dom.removeCSSRulesContainingSelector(`${rowExclSelector} .${KIND_CLASS[AssessmentResultItemKind.Error]}`);
 		dom.createCSSRule(`${rowExclSelector} .${KIND_CLASS[AssessmentResultItemKind.Error]}`, `color: ${theme.getColor(themeColors.NOTIFICATIONS_ERROR_ICON_FOREGROUND).toString()}`);

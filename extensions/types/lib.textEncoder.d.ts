@@ -7,5 +7,7 @@
 //
 // Proper fix: https://github.com/microsoft/TypeScript/issues/31535
 
+/* eslint-disable no-var */
+
 declare var TextDecoder: typeof import('util').TextDecoder;
 declare var TextEncoder: typeof import('util').TextEncoder;

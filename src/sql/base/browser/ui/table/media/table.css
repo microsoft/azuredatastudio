@@ -18,32 +18,64 @@
 	height: 100%;
 }
 
-.slick-sort-indicator-asc {
-	background: url('sort-asc.gif');
+.monaco-table .slick-sort-indicator {
+	background-size: 8px;
+	background-repeat: no-repeat;
 }
 
-.slick-sort-indicator-desc {
-	background: url('sort-desc.gif');
+.vs .slick-header-menuicon.ascending,
+.hc-light .slick-header-menuicon.ascending,
+.vs .monaco-table .slick-sort-indicator-asc,
+.hc-light .monaco-table .slick-sort-indicator-asc {
+	background-image: url('sort_asc.svg');
 }
 
-.slick-sort-indicator {
+.vs-dark .slick-header-menuicon.ascending,
+.hc-black .slick-header-menuicon.ascending,
+.vs-dark .monaco-table .slick-sort-indicator-asc,
+.hc-black .monaco-table .slick-sort-indicator-asc {
+	background-image: url('sort_asc_inverse.svg');
+}
+
+.vs .slick-header-menuicon.descending,
+.hc-light .slick-header-menuicon.descending,
+.vs .monaco-table .slick-sort-indicator-desc,
+.hc-light .monaco-table .slick-sort-indicator-desc {
+	background-image: url('sort_desc.svg');
+}
+
+.vs-dark .slick-header-menuicon.descending,
+.hc-black .slick-header-menuicon.descending,
+.vs-dark .monaco-table .slick-sort-indicator-desc,
+.hc-black .monaco-table .slick-sort-indicator-desc {
+	background-image: url('sort_desc_inverse.svg');
+}
+
+.monaco-table .slick-sort-indicator {
 	display: inline-block;
 	width: 8px;
-	height: 5px;
+	height: 8px;
 	margin-left: 4px;
+	margin-right: 4px;
 	margin-top: 6px;
+	flex: 0 0 auto;
 }
 
 .slick-header-menubutton {
 	background-position: center center;
 	background-repeat: no-repeat;
-	bottom: 0;
 	cursor: pointer;
 	display: inline-block;
-	position: absolute;
-	right: 10px;
-	top: 0;
-	width: 18px;
+	width: 16px;
+	background-image: url('down.svg');
+	flex: 0 0 auto;
+	margin-right: 2px;
+	background-color: transparent;
+	border: 0px;
+	padding: 0px;
+}
+
+.hc-light .slick-header-menubutton {
 	background-image: url('down.svg');
 }
 
@@ -52,7 +84,8 @@
 	background-image: url('down-inverse.svg');
 }
 
-.slick-header-menubutton.filtered {
+.slick-header-menubutton.filtered,
+.hc-light .slick-header-menubutton.filtered {
 	background-image: url('filter.svg');
 }
 
@@ -68,9 +101,14 @@
 	padding: 4px;
 	z-index: 100000;
 	cursor: default;
-	display: inline-block;
+	display: flex;
+	flex-direction: column;
 	margin: 0;
 	position: absolute;
+}
+
+.hc-light .slick-header-menu {
+	background: none repeat scroll 0 0 #F3F2F1;
 }
 
 .vs-dark .slick-header-menu {
@@ -81,23 +119,86 @@
 	background: none repeat scroll 0 0 #000000;
 }
 
+.slick-header-menu-image-button-container {
+	flex: 0 0 auto;
+}
+
 .slick-header-menu a.monaco-button.monaco-text-button {
 	width: 60px;
-	margin: 6px 6px 6px 6px;
-	padding: 4px;
+	margin: 5px;
+	padding: 2px;
 }
+
+.slick-header-menu .searchbox-row
+{
+	display: flex;
+	align-items: center;
+	padding-left: 5px;
+	margin-top: 5px;
+	flex: 0 0 auto;
+}
+
+.slick-header-menu .searchbox-row .select-all-checkbox
+{
+	flex: 0;
+}
+
+.slick-header-menu .searchbox-row .search-input
+{
+	flex: 1 1 auto;
+}
+
+.slick-header-menu .searchbox-row .search-input input
+{
+	padding-right: 70px;
+}
+
+.slick-header-menu .searchbox-row .selected-count
+{
+	position: absolute;
+	right: 8px;
+	align-self: center;
+	align-items: center;
+	display: flex;
+}
+
+.slick-header-menu .searchbox-row .visible-count
+{
+	position: absolute;
+	/* visible count badge is not visible but will be read by the screen reader */
+	left: -10000px;
+}
+
 
 .slick-header-menu .filter
 {
 	border: 1px solid #BFBDBD;
 	font-size: 8pt;
-	height: 250px;
 	margin-top: 6px;
-	overflow: scroll;
-	padding: 4px;
+	overflow: hidden;
+	padding: 1px;
 	white-space: nowrap;
-	width: 200px;
-	display: grid;
+	align-content: flex-start;
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+}
+
+.slick-header-menu .filter .filter-option {
+	display: flex;
+	align-items: center;
+	padding-left: 3px;
+}
+
+.slick-header-menu .filter-menu-button-container {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	flex: 0 0 auto;
+}
+
+.slick-header-menu .filter-menu-button {
+	flex: 0 0 auto;
 }
 
 .monaco-table label {
@@ -114,25 +215,17 @@
 	margin: 0;
 }
 
-.slick-header-menuicon
+.slick-header-menu a.monaco-button.monaco-text-button.slick-header-menuicon
 {
 	display: inline-block;
-	height: 16px;
-	margin-right: 4px;
-	vertical-align: middle;
-	width: 16px;
-}
-
-.slick-header-menuicon.ascending {
-	background: url('sort-asc.gif');
-	background-position: center center;
+	background-position: 2px center;
 	background-repeat: no-repeat;
-}
-
-.slick-header-menuicon.descending {
-	background: url('sort-desc.gif');
-	background-position: center center;
-	background-repeat: no-repeat;
+	padding-left: 18px;
+	text-align: left;
+	width: 100%;
+	padding: 0 0 0 18px;
+	margin: 0px;
+	background-size: 10px;
 }
 
 .slick-header-menucontent {
@@ -150,21 +243,7 @@
 	z-index: 999;
 }
 
-.vs-dark .slick-header-menu > input.input {
-	color: #4a4a4a;
-}
-
-.hc-black .slick-header-menu > input.input {
-	color: #000000;
-}
-
-.vs-dark .slick-header-menu,
-.hc-black .slick-header-menu {
-	color: #FFFFFF;
-}
-
-.slick-icon-cell-content,
-.slick-button-cell-content {
+.slick-icon-cell-content {
 	background-position: 5px center !important;
 	background-repeat: no-repeat;
 	background-size: 16px !important;
@@ -176,8 +255,7 @@
 	align-items: center;
 }
 
-.slick-button-cell-content {
-	cursor: pointer;
-	border-width: 0px;
-	padding: 0px;
+.slick-cell .toggle {
+	font-size: 12px !important;
+	margin-right: -5px;
 }

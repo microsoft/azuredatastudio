@@ -9,28 +9,27 @@ import { Colorbox } from 'sql/base/browser/ui/colorbox/colorbox';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { KeyCode } from 'vs/base/common/keyCodes';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachInputBoxStyler, attachCheckboxStyler } from 'vs/platform/theme/common/styler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { Modal } from 'sql/workbench/browser/modal/modal';
+import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ServerGroupViewModel } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { Color } from 'vs/base/common/color';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { assertIsDefined, isUndefinedOrNull } from 'vs/base/common/types';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 interface IRenderedServerGroupDialog {
 	groupNameInputBox: InputBox;
@@ -73,16 +72,16 @@ export class ServerGroupDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(localize('ServerGroupsDialogTitle', "Server Groups"), TelemetryKeys.ServerGroups, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
+		super(localize('ServerGroupsDialogTitle', "Server Groups"), TelemetryKeys.ModalDialogName.ServerGroups, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 		const okLabel = localize('serverGroup.ok', "OK");
 		const cancelLabel = localize('serverGroup.cancel', "Cancel");
 		this._addServerButton = this.addFooterButton(okLabel, () => this.addGroup());
-		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel());
+		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel(), 'right', true);
 		this.isRendered = true;
 		this.registerListeners();
 	}
@@ -97,13 +96,15 @@ export class ServerGroupDialog extends Modal {
 		// Connection Group Name
 		const serverGroupNameLabel = localize('connectionGroupName', "Server group name");
 
-		DOM.append(body, DOM.$('.dialog-label')).innerText = serverGroupNameLabel;
+		DOM.append(body, DOM.$(`.dialog-label.${RequiredIndicatorClassName}`)).innerText = serverGroupNameLabel;
 
 		this._groupNameInputBox = new InputBox(DOM.append(body, DOM.$('.input-divider')), this._contextViewService, {
 			validationOptions: {
 				validation: (value: string) => !value && !this._skipGroupNameValidation ? ({ type: MessageType.ERROR, content: localize('MissingGroupNameError', "Group name is required.") }) : null
 			},
-			ariaLabel: serverGroupNameLabel
+			ariaLabel: serverGroupNameLabel,
+			required: true,
+			inputBoxStyles: defaultInputBoxStyles
 		});
 
 		// Connection Group Description
@@ -111,7 +112,8 @@ export class ServerGroupDialog extends Modal {
 		DOM.append(body, DOM.$('.dialog-label')).innerText = groupDescriptionLabel;
 
 		this._groupDescriptionInputBox = new InputBox(DOM.append(body, DOM.$('.input-divider')), this._contextViewService, {
-			ariaLabel: groupDescriptionLabel
+			ariaLabel: groupDescriptionLabel,
+			inputBoxStyles: defaultInputBoxStyles
 		});
 
 		// Connection Group Color
@@ -119,16 +121,12 @@ export class ServerGroupDialog extends Modal {
 		DOM.append(body, DOM.$('.dialog-label')).innerText = groupColorLabel;
 
 		this._serverGroupContainer = DOM.append(body, DOM.$('.group-color-options'));
+		this._serverGroupContainer.setAttribute('role', 'radiogroup');
+		this._serverGroupContainer.setAttribute('aria-label', groupColorLabel);
 		this.fillGroupColors(this._serverGroupContainer);
 
-		DOM.addStandardDisposableListener(body, DOM.EventType.KEY_DOWN, (event: StandardKeyboardEvent) => {
-			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
-				this.preventDefaultKeyboardEvent(event);
-				this.focusPrevious();
-			} else if (event.equals(KeyCode.Tab)) {
-				this.preventDefaultKeyboardEvent(event);
-				this.focusNext();
-			} else if (event.equals(KeyCode.RightArrow) || event.equals(KeyCode.LeftArrow)) {
+		DOM.addStandardDisposableListener(this._serverGroupContainer, DOM.EventType.KEY_DOWN, (event: StandardKeyboardEvent) => {
+			if (event.equals(KeyCode.RightArrow) || event.equals(KeyCode.LeftArrow)) {
 				this.preventDefaultKeyboardEvent(event);
 				this.focusNextColor(event.equals(KeyCode.RightArrow));
 			}
@@ -140,52 +138,10 @@ export class ServerGroupDialog extends Modal {
 		e.stopPropagation();
 	}
 
-	private isFocusOnColors(): boolean {
-		let result = false;
-		this._colorColorBoxesMap.forEach(({ colorbox: colorbox }) => {
-			if (document.activeElement === colorbox.domNode) {
-				result = true;
-			}
-		});
-
-		return result;
-	}
-
-	private focusNext(): void {
-		const renderedDialog = this.withRenderedDialog;
-		if (renderedDialog.groupNameInputBox.hasFocus()) {
-			renderedDialog.groupDescriptionInputBox.focus();
-		} else if (renderedDialog.groupDescriptionInputBox.hasFocus()) {
-			this._colorColorBoxesMap[this._selectedColorOption ?? 0].colorbox.focus();
-		} else if (this.isFocusOnColors()) {
-			renderedDialog.addServerButton.enabled ? renderedDialog.addServerButton.focus() : renderedDialog.closeButton.focus();
-		} else if (document.activeElement === renderedDialog.addServerButton.element) {
-			renderedDialog.closeButton.focus();
-		}
-		else if (document.activeElement === renderedDialog.closeButton.element) {
-			renderedDialog.groupNameInputBox.focus();
-		}
-	}
-
-	private focusPrevious(): void {
-		const renderedDialog = this.withRenderedDialog;
-		if (document.activeElement === renderedDialog.closeButton.element) {
-			renderedDialog.addServerButton.enabled ? renderedDialog.addServerButton.focus() : this._colorColorBoxesMap[this._selectedColorOption ?? 0].colorbox.focus();
-		} else if (document.activeElement === renderedDialog.addServerButton.element) {
-			this._colorColorBoxesMap[this._selectedColorOption ?? 0].colorbox.focus();
-		} else if (this.isFocusOnColors()) {
-			renderedDialog.groupDescriptionInputBox.focus();
-		} else if (renderedDialog.groupDescriptionInputBox.hasFocus()) {
-			renderedDialog.groupNameInputBox.focus();
-		} else if (renderedDialog.groupNameInputBox.hasFocus()) {
-			renderedDialog.closeButton.focus();
-		}
-	}
-
 	private focusNextColor(moveRight: boolean): void {
 		let focusIndex: number = -1;
 		for (let i = 0; i < this._colorColorBoxesMap.length; i++) {
-			if (document.activeElement === this._colorColorBoxesMap[i].colorbox.domNode) {
+			if (document.activeElement === this._colorColorBoxesMap[i].colorbox.radioButton) {
 				focusIndex = i;
 				break;
 			}
@@ -218,11 +174,8 @@ export class ServerGroupDialog extends Modal {
 
 	private registerListeners(): void {
 		const renderedDialog = this.withRenderedDialog;
-		// Theme styler
-		this._register(attachInputBoxStyler(renderedDialog.groupNameInputBox, this._themeService));
-		this._register(attachInputBoxStyler(renderedDialog.groupDescriptionInputBox, this._themeService));
-		this._register(attachButtonStyler(renderedDialog.addServerButton, this._themeService));
-		this._register(attachButtonStyler(renderedDialog.closeButton, this._themeService));
+		this._register(renderedDialog.addServerButton);
+		this._register(renderedDialog.closeButton);
 
 		// handler for name change events
 		this._register(renderedDialog.groupNameInputBox.onDidChange(groupName => {
@@ -239,24 +192,16 @@ export class ServerGroupDialog extends Modal {
 		for (let i = 0; i < this.withViewModel.colors.length; i++) {
 			const color = this.withViewModel.colors[i];
 
-			const colorColorBox = new Colorbox(container, {
+			const colorBox = this._register(new Colorbox(container, {
 				name: 'server-group-color',
-				class: ['server-group-color'],
-				label: `Colobox Color: ${color}`,
-			});
-
-			this._register(colorColorBox.onSelect((viaKeyboard) => {
+				color: color
+			}));
+			this._register(colorBox.onSelect((viaKeyboard) => {
 				this.onSelectGroupColor(color);
 			}));
-			colorColorBox.style({
-				backgroundColor: Color.fromHex(color)
-			});
-
-			// Theme styler
-			this._register(attachCheckboxStyler(colorColorBox, this._themeService));
 
 			// add the new colorbox to the color map
-			this._colorColorBoxesMap[i] = { color, colorbox: colorColorBox };
+			this._colorColorBoxesMap[i] = { color, colorbox: colorBox };
 		}
 	}
 
@@ -308,11 +253,11 @@ export class ServerGroupDialog extends Modal {
 
 	private validateInputs(): boolean {
 		const renderedDialog = this.withRenderedDialog;
-		let validate = renderedDialog.groupNameInputBox.validate();
-		if (!validate) {
+		const isNameValid = renderedDialog.groupNameInputBox.validate() === undefined;
+		if (!isNameValid) {
 			renderedDialog.groupNameInputBox.focus();
 		}
-		return validate;
+		return isNameValid;
 	}
 
 	// initialize the view based on the current state of the view model
@@ -350,22 +295,22 @@ export class ServerGroupDialog extends Modal {
 	}
 
 	/* Overwrite escape key behavior */
-	protected onClose() {
+	protected override onClose() {
 		this.cancel();
 	}
 
 	/* Overwrite enter key behavior */
-	protected onAccept() {
+	protected override onAccept() {
 		this.addGroup();
 	}
 
 	public cancel() {
 		this._onCancel.fire();
-		this.close();
+		this.close('cancel');
 	}
 
-	public close() {
-		this.hide();
+	public close(hideReason: HideReason = 'close') {
+		this.hide(hideReason);
 		this.withRenderedDialog.groupNameInputBox.hideMessage();
 		this._onCloseEvent.fire();
 	}

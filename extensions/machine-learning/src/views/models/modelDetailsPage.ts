@@ -73,7 +73,11 @@ export class ModelDetailsPage extends ModelViewBase implements IPageView, IDataC
 	}
 
 	public validate(): Promise<boolean> {
-		if (this.data && this.data.length > 0 && !this.data.find(x => !x.modelDetails?.modelName)) {
+		if (!this.data || this.data.length === 0) {
+			this.showErrorMessage(constants.modelsRequiredError);
+			return Promise.resolve(false);
+		}
+		else if (this.data && this.data.length > 0 && !this.data.find(x => !x.modelDetails?.modelName)) {
 			return Promise.resolve(true);
 		} else {
 			this.showErrorMessage(constants.modelNameRequiredError);

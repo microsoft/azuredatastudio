@@ -11,27 +11,27 @@ import {
 import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
+import { IInputOptions, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 
-import { IInputOptions, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import * as nls from 'vs/nls';
-import { inputBackground, inputBorder } from 'vs/platform/theme/common/colorRegistry';
+import { asCssVariable, inputBackground, inputBorder } from 'vs/platform/theme/common/colorRegistry';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
-import { assign } from 'vs/base/common/objects';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { isNumber } from 'vs/base/common/types';
 import { convertSize, convertSizeToNumber } from 'sql/base/browser/dom';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
+import { getInputBoxStyle } from 'vs/platform/theme/browser/defaultStyles';
 
 @Component({
 	selector: 'modelview-inputBox',
 	template: `
-			<div [style.display]="getInputBoxDisplay()" #input style="width: 100%"></div>
-			<div [style.display]="getTextAreaDisplay()" #textarea style="width: 100%"></div>
+			<div #input [ngStyle]="inputBoxCSSStyles"></div>
+			<div #textarea [ngStyle]="textAreaCSSStyles"></div>
 	`
 })
 export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProperties> implements IComponent, OnDestroy, AfterViewInit {
@@ -44,15 +44,11 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 	@ViewChild('textarea', { read: ElementRef }) private _textareaContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
-	}
-
-	ngOnInit(): void {
-		this.baseInit();
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {
@@ -65,15 +61,20 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 						return undefined;
 					} else {
 						return {
-							content: this.inputElement.inputElement.validationMessage || nls.localize('invalidValueError', "Invalid value"),
+							content: this.inputElement.inputElement.validationMessage || this.validationErrorMessage || nls.localize('invalidValueError', "Invalid value"),
 							type: MessageType.ERROR
 						};
 					}
 				}
 			},
-			useDefaultValidation: true
+			useDefaultValidation: true,
+			inputBoxStyles: getInputBoxStyle({
+				inputValidationInfoBackground: asCssVariable(inputBackground),
+				inputValidationInfoBorder: asCssVariable(inputBorder),
+			})
 		};
 		if (this._inputContainer) {
+			inputOptions.requireForceValidations = true; // Non-text area input boxes handle our own validations when the text changes so don't run the base ones
 			this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
 			this.onkeydown(this._input.inputElement, (e: StandardKeyboardEvent) => {
 				if (e.keyCode === KeyCode.Enter) {
@@ -89,7 +90,7 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 			this.registerInput(this._input, () => !this.multiline);
 		}
 		if (this._textareaContainer) {
-			let textAreaInputOptions = assign({}, inputOptions, { flexibleHeight: true, type: 'textarea' });
+			let textAreaInputOptions = Object.assign({}, inputOptions, { flexibleHeight: true, type: 'textarea' });
 			this._textAreaInput = new InputBox(this._textareaContainer.nativeElement, this.contextViewService, textAreaInputOptions);
 			this.onkeydown(this._textAreaInput.inputElement, (e: StandardKeyboardEvent) => {
 				if (this.tryHandleKeyEvent(e)) {
@@ -110,6 +111,7 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 			this.registerInput(this._textAreaInput, () => this.multiline);
 		}
 		this.inputElement.hideErrors = true;
+		this.baseInit();
 	}
 
 	private tryHandleKeyEvent(e: StandardKeyboardEvent): boolean {
@@ -130,17 +132,11 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 			this._validations.push(() => !input.inputElement.validationMessage);
 
 			this._register(input);
-			this._register(attachInputBoxStyler(input, this.themeService, {
-				inputValidationInfoBackground: inputBackground,
-				inputValidationInfoBorder: inputBorder,
-			}));
 			this._register(input.onDidChange(async e => {
 				if (checkOption()) {
 					this.value = input.value;
+					input.hideErrors = false;
 					await this.validate();
-					if (input.hideErrors) {
-						input.hideErrors = false;
-					}
 					this.fireEvent({
 						eventType: ComponentEventType.onDidChange,
 						args: e
@@ -158,36 +154,31 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		return this.multiline ? '' : 'none';
 	}
 
-	public validate(): Thenable<boolean> {
-		return super.validate().then(valid => {
-			const otherErrorMsg = valid || this.inputElement.value === '' ? undefined : this.validationErrorMessage;
-			valid = valid && this.inputElement.validate();
+	public override async validate(): Promise<boolean> {
+		await super.validate();
+		// Let the input validate handle showing/hiding the error message
+		const valid = this.inputElement.validate(true) === undefined;
 
-			// set aria label based on validity of input
-			if (valid) {
-				this.inputElement.setAriaLabel(this.ariaLabel);
+		// set aria label based on validity of input
+		if (valid) {
+			this.inputElement.setAriaLabel(this.ariaLabel);
+		} else {
+			if (this.ariaLabel) {
+				this.inputElement.setAriaLabel(nls.localize('period', "{0}. {1}", this.ariaLabel, this.inputElement.inputElement.validationMessage));
 			} else {
-				if (otherErrorMsg) {
-					this.inputElement.showMessage({ type: MessageType.ERROR, content: otherErrorMsg }, true);
-				}
-				if (this.ariaLabel) {
-					this.inputElement.setAriaLabel(nls.localize('period', "{0}. {1}", this.ariaLabel, this.inputElement.inputElement.validationMessage));
-				} else {
-					this.inputElement.setAriaLabel(this.inputElement.inputElement.validationMessage);
-				}
+				this.inputElement.setAriaLabel(this.inputElement.inputElement.validationMessage);
 			}
-
-			return valid;
-		});
+		}
+		return valid;
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
 	/// IComponent implementation
 
-	public layout(): void {
+	public override layout(): void {
 		super.layout();
 		this.layoutInputBox();
 	}
@@ -206,10 +197,10 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this.setInputProperties(this.inputElement);
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	private setInputProperties(input: InputBox): void {
@@ -229,6 +220,7 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		input.setAriaLabel(this.ariaLabel);
 		input.setPlaceHolder(this.placeHolder);
 		input.setEnabled(this.enabled);
+		input.setMaxLength(this.maxLength);
 		this.layoutInputBox();
 		if (this.multiline) {
 			if (isNumber(this.rows)) {
@@ -245,6 +237,11 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 
 		input.inputElement.required = this.required;
 		input.inputElement.readOnly = this.readOnly;
+
+		// only update title if there's a value, otherwise title gets set to placeholder above
+		if (this.title) {
+			input.inputElement.title = this.title;
+		}
 	}
 
 	// CSS-bound properties
@@ -267,6 +264,14 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 
 	public set placeHolder(newValue: string) {
 		this.setPropertyFromUI<string>((props, value) => props.placeHolder = value, newValue);
+	}
+
+	public get title(): string {
+		return this.getPropertyOrDefault<string>((props) => props.title, '');
+	}
+
+	public set title(newValue: string) {
+		this.setPropertyFromUI<string>((props, value) => props.title = value, newValue);
 	}
 
 	public set columns(newValue: number) {
@@ -341,7 +346,11 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		this.setPropertyFromUI<boolean>((props, value) => props.stopEnterPropagation = value, newValue);
 	}
 
-	public focus(): void {
+	public get maxLength(): number | undefined {
+		return this.getPropertyOrDefault<number | undefined>((props) => props.maxLength, undefined);
+	}
+
+	public override focus(): void {
 		this.inputElement.focus();
 	}
 
@@ -351,5 +360,19 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 
 	public set validationErrorMessage(newValue: string) {
 		this.setPropertyFromUI<string>((props, value) => props.validationErrorMessage = value, newValue);
+	}
+
+	public get inputBoxCSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth(),
+			'display': this.getInputBoxDisplay()
+		});
+	}
+
+	public get textAreaCSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth(),
+			'display': this.getTextAreaDisplay()
+		});
 	}
 }

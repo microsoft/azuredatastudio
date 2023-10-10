@@ -673,6 +673,18 @@ declare namespace Slick {
 		 *
 		 */
 		minRowBuffer?: number;
+
+		/**
+		 * Disable dom virtualization based on visible columns. When true, the grid will render all columns, even if they are not visible.
+		 * This is a mitigation for screen reader issues not announcing column number of visible cells properly.
+		 * Link to the accessibility issue: https://github.com/microsoft/azuredatastudio/issues/20784
+		 */
+		disableColumnBasedCellVirtualization?: boolean;
+
+		/**
+		 * Whether tab/shift+tab can be used to navigate within the grid, if disabled, the focus will move out of the grid. The default value is true.
+		 */
+		enableInGridTabNavigation?: boolean;
 	}
 
 	export interface DataProvider<T extends SlickData> {
@@ -876,8 +888,9 @@ declare namespace Slick {
 		/**
 		* Extends grid options with a given hash. If an there is an active edit, the grid will attempt to commit the changes and only continue if the attempt succeeds.
 		* @options An object with configuration options.
+		* @suppressRender A boolean telling setOptions to not rerender the grid upon options being changed.
 		**/
-		public setOptions(options: GridOptions<T>): void;
+		public setOptions(options: GridOptions<T>, suppressRender?: boolean): void;
 
 		/**
 		* Accepts an array of row indices and applies the current selectedCellCssClass to the cells in the row, respecting whether cells have been flagged as selectable.
@@ -943,6 +956,11 @@ declare namespace Slick {
 		* @return
 		**/
 		public getSortColumns(): { columnId: string; sortAsc: boolean }[];
+
+		/**
+		 * sorts the table by the active cell column values.
+		 */
+		public sortColumnByActiveCell(): void;
 
 		/**
 		* Updates an existing column definition and a corresponding header DOM element with the new title and tooltip.
@@ -1220,10 +1238,12 @@ declare namespace Slick {
 		public onCellCssStylesChanged: Slick.Event<OnCellCssStylesChangedEventArgs<T>>;
 		public onViewportChanged: Slick.Event<OnViewportChangedEventArgs<T>>;
 		public onRendered: Slick.Event<OnRenderedEventArgs<T>>;
+		public onAfterKeyboardNavigation: Slick.Event<OnAfterKeyboardNavigationEventArgs<T>>;
 		// #endregion Events
 
 		// #region Plugins
 
+		public getPlugins(): Plugin<T>[];
 		public registerPlugin(plugin: Plugin<T>): void;
 		public unregisterPlugin(plugin: Plugin<T>): void;
 
@@ -1438,6 +1458,9 @@ declare namespace Slick {
 		endRow: number;
 	}
 
+	export interface OnAfterKeyboardNavigationEventArgs<T extends SlickData> extends GridEventArgs<T> {
+	}
+
 	export interface SortColumn<T extends SlickData> {
 		sortCol: Column<T>;
 		sortAsc: boolean;
@@ -1554,7 +1577,7 @@ declare namespace Slick {
 	}
 
 	export interface Formatter<T extends SlickData> {
-		(row: number, cell: number, value: any, columnDef: Column<T>, dataContext: T): string | undefined;
+		(row: number, cell: number, value: any, columnDef: Column<T>, dataContext: T): string | undefined | { text: string, addClasses: string };
 	}
 
 	export module Formatters {
@@ -1584,6 +1607,7 @@ declare namespace Slick {
 			public setPagingOptions(args: PagingOptions): void;
 			public getPagingInfo(): PagingOptions;
 			public getItems(): T[];
+			public getFilteredItems(): T[]; // manually adding this type - it's present in the definition but not the typings file from DefinitelyTyped
 			public setItems(data: T[], objectIdProperty?: string): void;
 			public setFilter(filterFn: (item: T, args: any) => boolean): void;	// todo: typeof(args)
 			public sort(comparer: Function, ascending: boolean): void;		// todo: typeof(comparer), should be the same callback as Array.sort

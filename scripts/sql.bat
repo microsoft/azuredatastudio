@@ -21,7 +21,7 @@ if %errorlevel% neq 0 node .\node_modules\gulp\bin\gulp.js electron
 node build\lib\builtInExtensions.js
 
 :: Build
-if not exist out node .\node_modules\gulp\bin\gulp.js compile
+if not exist out node .\node_modules\gulp\bin\gulp.js compile --max_old_space_size=4095
 
 :: Configuration
 set NODE_ENV=development
@@ -36,7 +36,7 @@ set ELECTRON_ENABLE_STACK_DUMPING=1
 :: Use the following to get v8 tracing:
 :: %CODE% --js-flags="--trace-hydrogen --trace-phase=Z --trace-deopt --code-comments --hydrogen-track-positions --redirect-code-traces" . %*
 
-%CODE% . %*
+%CODE% . %* --remote-debugging-port=9222
 
 popd
 

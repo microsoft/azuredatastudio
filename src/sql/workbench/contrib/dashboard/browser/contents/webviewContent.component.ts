@@ -17,7 +17,7 @@ import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 
 import * as azdata from 'azdata';
-import { WebviewElement, IWebviewService } from 'vs/workbench/contrib/webview/browser/webview';
+import { IWebviewElement, IWebviewService } from 'vs/workbench/contrib/webview/browser/webview';
 
 @Component({
 	template: '',
@@ -32,7 +32,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	public readonly onMessage: Event<string> = this._onMessage.event;
 
 	private _onMessageDisposable: IDisposable;
-	private _webview: WebviewElement;
+	private _webview: IWebviewElement;
 	private _html: string;
 
 	constructor(
@@ -79,7 +79,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	public setHtml(html: string): void {
 		this._html = html;
 		if (this._webview) {
-			this._webview.html = html;
+			this._webview.setHtml(html);
 		}
 	}
 
@@ -98,19 +98,23 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 			this._onMessageDisposable.dispose();
 		}
 
-		this._webview = this.webviewService.createWebviewElement(this.id,
-			{},
-			{
-				allowScripts: true
-			}, undefined);
+		this._webview = this.webviewService.createWebviewElement({
+			providedViewType: this.id,
+			title: this.id,
+			contentOptions: {
+				allowScripts: true,
+			},
+			options: {},
+			extension: undefined
+		});
 
 		this._webview.mountTo(this._el.nativeElement);
 
 		this._onMessageDisposable = this._webview.onMessage(e => {
-			this._onMessage.fire(e);
+			this._onMessage.fire(e.message);
 		});
 		if (this._html) {
-			this._webview.html = this._html;
+			this._webview.setHtml(this._html);
 		}
 	}
 }

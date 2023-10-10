@@ -3,27 +3,28 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SqlExtHostContext, SqlMainContext, ExtHostConnectionManagementShape, MainThreadConnectionManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { ExtHostConnectionManagementShape, MainThreadConnectionManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import * as azdata from 'azdata';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IConnectionManagementService, ConnectionType, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { generateUuid } from 'vs/base/common/uuid';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { deepClone } from 'vs/base/common/objects';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadConnectionManagement)
 export class MainThreadConnectionManagement extends Disposable implements MainThreadConnectionManagementShape {
 
 	private _proxy: ExtHostConnectionManagementShape;
+	private _connectionEventListenerDisposables = new Map<number, IDisposable>();
 
 	constructor(
 		extHostContext: IExtHostContext,
@@ -39,7 +40,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		}
 	}
 
-	public $registerConnectionEventListener(handle: number, providerId: string): void {
+	public $registerConnectionEventListener(handle: number): void {
 
 		let stripProfile = (inputProfile: azdata.IConnectionProfile) => {
 			if (!inputProfile) {
@@ -66,17 +67,28 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			return outputProfile;
 		};
 
-		this._connectionManagementService.onConnect((params: IConnectionParams) => {
+		const disposable = new DisposableStore();
+		disposable.add(this._connectionManagementService.onConnect((params: IConnectionParams) => {
 			this._proxy.$onConnectionEvent(handle, 'onConnect', params.connectionUri, stripProfile(params.connectionProfile));
-		});
+		}));
 
-		this._connectionManagementService.onConnectionChanged((params: IConnectionParams) => {
+		disposable.add(this._connectionManagementService.onConnectionChanged((params: IConnectionParams) => {
 			this._proxy.$onConnectionEvent(handle, 'onConnectionChanged', params.connectionUri, stripProfile(params.connectionProfile));
-		});
+		}));
 
-		this._connectionManagementService.onDisconnect((params: IConnectionParams) => {
+		disposable.add(this._connectionManagementService.onDisconnect((params: IConnectionParams) => {
 			this._proxy.$onConnectionEvent(handle, 'onDisconnect', params.connectionUri, stripProfile(params.connectionProfile));
-		});
+		}));
+
+		this._connectionEventListenerDisposables.set(handle, disposable);
+	}
+
+	public $unregisterConnectionEventListener(handle: number): void {
+		const disposable = this._connectionEventListenerDisposables.get(handle);
+		if (disposable) {
+			disposable.dispose();
+			this._connectionEventListenerDisposables.delete(handle);
+		}
 	}
 
 	public $getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
@@ -84,7 +96,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public $getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile> {
-		let profile = this._connectionManagementService.getConnection(uri);
+		const profile = this._connectionManagementService.getConnectionProfile(uri);
 		if (!profile) {
 			return Promise.resolve(undefined);
 		}
@@ -129,8 +141,13 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Promise<azdata.connection.Connection | undefined> {
-		// Here we default to ConnectionType.editor which saves the connecton in the connection store by default
-		let connectionType = ConnectionType.editor;
+		if (initialConnectionProfile?.providerName && this._capabilitiesService.providers[initialConnectionProfile.providerName] === undefined) {
+			await this._connectionManagementService.handleUnsupportedProvider(initialConnectionProfile.providerName);
+			return undefined;
+		}
+
+		// Here we default to ConnectionType.default which saves the connection in the connection store and server tree by default
+		let connectionType = ConnectionType.default;
 
 		// If the API call explicitly set saveConnection to false, set it to ConnectionType.extension
 		// which doesn't save the connection by default
@@ -152,17 +169,20 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		} : undefined;
 
 		if (connectionCompletionOptions && connectionCompletionOptions.saveConnection) {
-			// Somehow, connectionProfile.saveProfile is false even if initialConnectionProfile.saveProfile is true, reset the flag here.
-			connectionProfile.saveProfile = initialConnectionProfile.saveProfile;
 			await this._connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
 				saveTheConnection: isUndefinedOrNull(connectionCompletionOptions.saveConnection) ? true : connectionCompletionOptions.saveConnection,
 				showDashboard: isUndefinedOrNull(connectionCompletionOptions.showDashboard) ? false : connectionCompletionOptions.showDashboard,
-				params: undefined,
 				showConnectionDialogOnError: isUndefinedOrNull(connectionCompletionOptions.showConnectionDialogOnError) ? true : connectionCompletionOptions.showConnectionDialogOnError,
 				showFirewallRuleOnError: isUndefinedOrNull(connectionCompletionOptions.showFirewallRuleOnError) ? true : connectionCompletionOptions.showFirewallRuleOnError
 			});
 		}
 		return connection;
+	}
+
+	public $openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined> {
+		// Need to have access to getOptionsKey, so recreate profile from details.
+		let convertedProfile = new ConnectionProfile(this._capabilitiesService, profile);
+		return this._connectionManagementService.openChangePasswordDialog(convertedProfile);
 	}
 
 	public async $listDatabases(connectionId: string): Promise<string[]> {
@@ -222,7 +242,6 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		return this._connectionManagementService.connectAndSaveProfile(profile, undefined, {
 			saveTheConnection: saveConnection,
 			showDashboard: showDashboard,
-			params: undefined,
 			showConnectionDialogOnError: true,
 			showFirewallRuleOnError: true
 		}).then((result) => {

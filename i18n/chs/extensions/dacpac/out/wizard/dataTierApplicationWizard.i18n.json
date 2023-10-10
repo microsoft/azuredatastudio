@@ -18,10 +18,10 @@
 	"dacFx.importButton": "导入",
 	"dacFx.exportButton": "导出",
 	"dacFx.generateScriptButton": "生成脚本",
-	"alertData.deployErrorMessage": "部署失败的“{0}”",
-	"alertData.extractErrorMessage": "提取失败的“{0}”",
-	"alertData.exportErrorMessage": "导出失败的“{0}”",
-	"alertData.importErrorMessage": "导入失败的“{0}”",
+	"alertData.deployErrorMessage": "部署失败“{0}”",
+	"alertData.extractErrorMessage": "提取失败“{0}”",
+	"alertData.exportErrorMessage": "导出失败“{0}”",
+	"alertData.importErrorMessage": "导入失败“{0}”",
 	"dacfx.scriptGeneratingMessage": "关闭向导后，可在任务视图中查看脚本生成的状态。生成的脚本将在完成后打开。",
-	"alertData.deployPlanErrorMessage": "部署计划生成失败“{0}”"
+	"alertData.deployPlanErrorMessage": "生成部署计划失败“{0}”"
 }

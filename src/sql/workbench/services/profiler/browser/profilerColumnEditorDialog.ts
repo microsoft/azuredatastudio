@@ -14,19 +14,20 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
+import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import * as DOM from 'vs/base/browser/dom';
-import { IDataSource, ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { IDataSource, ITree, IRenderer } from 'sql/base/parts/tree/browser/tree';
+import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { defaultSelectBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 class EventItem {
 
@@ -307,10 +308,10 @@ export class ProfilerColumnEditorDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(nls.localize('profilerColumnDialog.profiler', "Profiler"), TelemetryKeys.Profiler, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
+		super(nls.localize('profilerColumnDialog.profiler', "Profiler"), TelemetryKeys.ModalDialogName.Profiler, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
 	}
 
-	public render(): void {
+	public override render(): void {
 		super.render();
 		this._register(attachModalDialogStyler(this, this._themeService));
 		this.addFooterButton(nls.localize('profilerColumnDialog.ok', "OK"), () => this.onAccept(undefined));
@@ -319,7 +320,7 @@ export class ProfilerColumnEditorDialog extends Modal {
 
 	protected renderBody(container: HTMLElement): void {
 		const body = DOM.append(container, DOM.$(''));
-		this._selectBox = new SelectBox(this._options, 0, this._contextViewService);
+		this._selectBox = new SelectBox(this._options, 0, this._contextViewService, defaultSelectBoxStyles);
 		this._selectBox.render(body);
 		this._register(this._selectBox.onDidSelect(e => {
 			this._element!.changeSort(e.index === 0 ? 'event' : 'column');
@@ -337,7 +338,7 @@ export class ProfilerColumnEditorDialog extends Modal {
 		this._updateList();
 	}
 
-	protected onAccept(e?: StandardKeyboardEvent): void {
+	protected override onAccept(e?: StandardKeyboardEvent): void {
 		this._updateInput();
 		super.onAccept(e);
 	}

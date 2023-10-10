@@ -7,7 +7,7 @@ import { ChartInsight } from 'sql/workbench/contrib/dashboard/browser/widgets/in
 import { ChangeDetectorRef, Inject, forwardRef } from '@angular/core';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { ChartType } from 'sql/workbench/contrib/charts/browser/interfaces';
 
 export default class PieChart extends ChartInsight {
 	protected readonly chartType: ChartType = ChartType.Pie;

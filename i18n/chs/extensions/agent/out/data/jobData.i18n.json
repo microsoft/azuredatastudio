@@ -12,6 +12,6 @@
 	"jobData.jobNameRequired": "必须提供作业名称",
 	"jobData.saveErrorMessage": "作业更新失败“{0}”",
 	"jobData.newJobErrorMessage": "作业创建失败“{0}”",
-	"jobData.saveSucessMessage": "作业“{0}”已成功更新",
+	"jobData.saveSucessMessage": "已成功更新作业“{0}”",
 	"jobData.newJobSuccessMessage": "已成功创建作业“{0}”"
 }

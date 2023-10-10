@@ -29,7 +29,7 @@ export class TabComponent implements OnDestroy {
 	@Input() public canClose!: boolean;
 	@Input() public actions?: Array<Action>;
 	@Input() public iconClass?: string;
-	public _active = false;
+	private _selected = false;
 	@Input() public identifier!: string;
 	@Input() public type: TabType = 'tab';
 	@Input() private visibilityType: 'if' | 'visibility' = 'if';
@@ -38,7 +38,7 @@ export class TabComponent implements OnDestroy {
 
 	@ContentChild(TabChild) public set child(tab: TabChild) {
 		this._child = tab;
-		if (this.active && this._child) {
+		if (this.selected && this._child) {
 			this._child.layout();
 		}
 	}
@@ -47,21 +47,21 @@ export class TabComponent implements OnDestroy {
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef
 	) { }
 
-	public set active(val: boolean) {
+	public set selected(val: boolean) {
 		if (!this.destroyed) {
-			this._active = val;
-			if (this.active) {
+			this._selected = val;
+			if (this.selected) {
 				this.rendered = true;
 			}
 			this._cd.detectChanges();
-			if (this.active && this._child) {
+			if (this.selected && this._child) {
 				this._child.layout();
 			}
 		}
 	}
 
-	public get active(): boolean {
-		return this._active;
+	public get selected(): boolean {
+		return this._selected;
 	}
 
 	ngOnDestroy() {
@@ -72,7 +72,7 @@ export class TabComponent implements OnDestroy {
 	}
 
 	shouldBeIfed(): boolean {
-		if (this.active) {
+		if (this.selected) {
 			return true;
 		} else if (this.visibilityType === 'visibility' && this.rendered) {
 			return true;
@@ -82,7 +82,7 @@ export class TabComponent implements OnDestroy {
 	}
 
 	shouldBeHidden(): boolean {
-		if (this.visibilityType === 'visibility' && !this.active) {
+		if (this.visibilityType === 'visibility' && !this.selected) {
 			return true;
 		} else {
 			return false;

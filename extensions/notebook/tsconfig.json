@@ -1,5 +1,5 @@
 {
-	"extends": "../shared.tsconfig.json",
+	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
 		"experimentalDecorators": true,
 		"lib": [
@@ -10,7 +10,8 @@
 		"noUnusedParameters": false,
 		"typeRoots": [
 			"./node_modules/@types"
-		]
+		],
+		"strictNullChecks": false
 	},
 	"include": [
 		"src/**/*"

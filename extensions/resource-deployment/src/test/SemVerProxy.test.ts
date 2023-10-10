@@ -80,14 +80,14 @@ function validate(test: TestDefinition, semVerProxy: SymVerProxyTest) {
 	for (const key in test.expected) {
 		const expected = test.expected[key];
 		if (expected) {
-			assert.equal(semVerProxy[key].toString(), expected.toString(), `validation for property ${key} failed.`);
+			assert.strictEqual(semVerProxy[key].toString(), expected.toString(), `validation for property ${key} failed.`);
 		}
 	}
 }
 
-suite('SemVeryProxy Tests', function (): void {
+describe('SemVeryProxy Tests', function (): void {
 	testDefinitions.forEach((semVerTest: TestDefinition) => {
-		test(semVerTest.testName, () => {
+		it(semVerTest.testName, () => {
 			const semVerProxy = new SymVerProxyTest(semVerTest.inputVersion);
 			validate(semVerTest, semVerProxy);
 		});

@@ -5,11 +5,13 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as path from 'path';
+import * as sqldbproj from 'sqldbproj';
+import * as mssql from 'mssql';
 import * as loc from '../localizedConstants';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { TelemetryReporter, TelemetryViews } from '../telemetry';
-import { getEndpointName, getRootPath, exists } from '../utils';
-import * as mssql from '../../../mssql';
+import { getEndpointName, getRootPath, exists, getAzdataApi, getSchemaCompareEndpointString } from '../utils';
 
 const titleFontSize: number = 13;
 
@@ -17,42 +19,63 @@ interface Deferred<T> {
 	resolve: (result: T | Promise<T>) => void;
 	reject: (reason: any) => void;
 }
+
 export class SchemaCompareDialog {
 	public dialog: azdata.window.Dialog;
 	public dialogName: string;
+	private schemaCompareTab: azdata.window.DialogTab;
 	private sourceDacpacRadioButton: azdata.RadioButtonComponent;
 	private sourceDatabaseRadioButton: azdata.RadioButtonComponent;
-	private schemaCompareTab: azdata.window.DialogTab;
+	private sourceProjectRadioButton: azdata.RadioButtonComponent;
 	private sourceDacpacComponent: azdata.FormComponent;
+	private sourceProjectFilePathComponent: azdata.FormComponent;
 	private sourceTextBox: azdata.InputBoxComponent;
 	private sourceFileButton: azdata.ButtonComponent;
 	private sourceServerComponent: azdata.FormComponent;
-	private sourceServerDropdown: azdata.DropDownComponent;
+	protected sourceServerDropdown: azdata.DropDownComponent;
+	private sourceConnectionButton: azdata.ButtonComponent;
 	private sourceDatabaseComponent: azdata.FormComponent;
 	private sourceDatabaseDropdown: azdata.DropDownComponent;
-	private sourceNoActiveConnectionsText: azdata.FormComponent;
+	private sourceEndpointType: mssql.SchemaCompareEndpointType;
+	private sourceDbEditable: string;
+	private sourceDacpacPath: string;
+	private sourceProjectFilePath: string;
 	private targetDacpacComponent: azdata.FormComponent;
+	private targetProjectFilePathComponent: azdata.FormComponent;
+	private targetProjectStructureComponent: azdata.FormComponent;
 	private targetTextBox: azdata.InputBoxComponent;
 	private targetFileButton: azdata.ButtonComponent;
+	private targetStructureDropdown: azdata.DropDownComponent;
 	private targetServerComponent: azdata.FormComponent;
-	private targetServerDropdown: azdata.DropDownComponent;
+	protected targetServerDropdown: azdata.DropDownComponent;
+	private targetConnectionButton: azdata.ButtonComponent;
 	private targetDatabaseComponent: azdata.FormComponent;
 	private targetDatabaseDropdown: azdata.DropDownComponent;
-	private targetNoActiveConnectionsText: azdata.FormComponent;
-	private formBuilder: azdata.FormBuilder;
-	private sourceIsDacpac: boolean;
-	private targetIsDacpac: boolean;
-	private connectionId: string;
-	private sourceDbEditable: string;
+	private targetDacpacPath: string;
+	private targetProjectFilePath: string;
+	private targetEndpointType: mssql.SchemaCompareEndpointType;
 	private targetDbEditable: string;
 	private previousSource: mssql.SchemaCompareEndpointInfo;
 	private previousTarget: mssql.SchemaCompareEndpointInfo;
+	private formBuilder: azdata.FormBuilder;
+	private connectionId: string;
+	private toDispose: vscode.Disposable[] = [];
 	private initDialogComplete: Deferred<void>;
 	private initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
 
-	constructor(private schemaCompareMainWindow: SchemaCompareMainWindow, private view?: azdata.ModelView) {
+	private textBoxWidth: number = 280;
+
+	public promise;
+	public promise2;
+
+	constructor(private schemaCompareMainWindow: SchemaCompareMainWindow, private view?: azdata.ModelView, private extensionContext?: vscode.ExtensionContext) {
 		this.previousSource = schemaCompareMainWindow.sourceEndpointInfo;
 		this.previousTarget = schemaCompareMainWindow.targetEndpointInfo;
+
+		this.dialog = azdata.window.createModelViewDialog(loc.SchemaCompareLabel);
+		this.dialog.registerCloseValidator(async () => {
+			return this.validate();
+		});
 	}
 
 	protected async initializeDialog(): Promise<void> {
@@ -65,7 +88,7 @@ export class SchemaCompareDialog {
 		// connection to use if schema compare wasn't launched from a database or no previous source/target
 		let connection = await azdata.connection.getCurrentConnection();
 		if (connection) {
-			this.connectionId = connection.connectionId;
+			this.connectionId = connection.connectionId;	// current active connection
 		}
 
 		this.dialog = azdata.window.createModelViewDialog(loc.SchemaCompareLabel);
@@ -73,59 +96,107 @@ export class SchemaCompareDialog {
 
 		this.dialog.okButton.label = loc.OkButtonText;
 		this.dialog.okButton.enabled = false;
-		this.dialog.okButton.onClick(async () => await this.execute());
+		this.toDispose.push(this.dialog.okButton.onClick(async () => await this.handleOkButtonClick()));
 
 		this.dialog.cancelButton.label = loc.CancelButtonText;
-		this.dialog.cancelButton.onClick(async () => await this.cancel());
+		this.toDispose.push(this.dialog.cancelButton.onClick(async () => await this.cancel()));
 
 		azdata.window.openDialog(this.dialog);
 		await this.initDialogPromise;
 	}
 
 	public async execute(): Promise<void> {
-		if (this.sourceIsDacpac) {
+		if (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Database) {
+			const sourceServerDropdownValue = this.sourceServerDropdown.value as ConnectionDropdownValue;
+			const ownerUri = await azdata.connection.getUriForConnection(sourceServerDropdownValue.connection.connectionId);
+
+			this.schemaCompareMainWindow.sourceEndpointInfo = {
+				endpointType: mssql.SchemaCompareEndpointType.Database,
+				serverDisplayName: sourceServerDropdownValue.displayName,
+				serverName: sourceServerDropdownValue.name,
+				databaseName: this.sourceDatabaseDropdown.value.toString(),
+				ownerUri: ownerUri,
+				projectFilePath: '',
+				targetScripts: [],
+				extractTarget: mssql.ExtractTarget.schemaObjectType,
+				packageFilePath: '',
+				dataSchemaProvider: '',
+				connectionDetails: undefined,
+				connectionName: sourceServerDropdownValue.connection.options.connectionName
+			};
+		} else if (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Dacpac) {
 			this.schemaCompareMainWindow.sourceEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
 				serverDisplayName: '',
 				serverName: '',
 				databaseName: '',
 				ownerUri: '',
+				projectFilePath: '',
+				targetScripts: [],
+				extractTarget: mssql.ExtractTarget.schemaObjectType,
+				dataSchemaProvider: '',
 				packageFilePath: this.sourceTextBox.value,
 				connectionDetails: undefined
 			};
 		} else {
-			let ownerUri = await azdata.connection.getUriForConnection((this.sourceServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
-
 			this.schemaCompareMainWindow.sourceEndpointInfo = {
-				endpointType: mssql.SchemaCompareEndpointType.Database,
-				serverDisplayName: (this.sourceServerDropdown.value as ConnectionDropdownValue).displayName,
-				serverName: (this.sourceServerDropdown.value as ConnectionDropdownValue).name,
-				databaseName: this.sourceDatabaseDropdown.value.toString(),
-				ownerUri: ownerUri,
+				endpointType: mssql.SchemaCompareEndpointType.Project,
+				projectFilePath: this.sourceTextBox.value,
+				targetScripts: await this.getProjectScriptFiles(this.sourceTextBox.value),
+				dataSchemaProvider: await this.getDatabaseSchemaProvider(this.sourceTextBox.value),
+				extractTarget: mssql.ExtractTarget.schemaObjectType,
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: '',
 				packageFilePath: '',
 				connectionDetails: undefined
 			};
 		}
 
-		if (this.targetIsDacpac) {
+		if (this.targetEndpointType === mssql.SchemaCompareEndpointType.Database) {
+			const targetServerDropdownValue = this.targetServerDropdown.value as ConnectionDropdownValue;
+			const ownerUri = await azdata.connection.getUriForConnection(targetServerDropdownValue.connection.connectionId);
+
+			this.schemaCompareMainWindow.targetEndpointInfo = {
+				endpointType: mssql.SchemaCompareEndpointType.Database,
+				serverDisplayName: targetServerDropdownValue.displayName,
+				serverName: targetServerDropdownValue.name,
+				databaseName: this.targetDatabaseDropdown.value.toString(),
+				ownerUri: ownerUri,
+				projectFilePath: '',
+				extractTarget: mssql.ExtractTarget.schemaObjectType,
+				targetScripts: [],
+				packageFilePath: '',
+				dataSchemaProvider: '',
+				connectionDetails: undefined,
+				connectionName: targetServerDropdownValue.connection.options.connectionName
+			};
+		} else if (this.targetEndpointType === mssql.SchemaCompareEndpointType.Dacpac) {
 			this.schemaCompareMainWindow.targetEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
 				serverDisplayName: '',
 				serverName: '',
 				databaseName: '',
 				ownerUri: '',
+				projectFilePath: '',
+				extractTarget: mssql.ExtractTarget.schemaObjectType,
+				targetScripts: [],
+				dataSchemaProvider: '',
 				packageFilePath: this.targetTextBox.value,
 				connectionDetails: undefined
 			};
 		} else {
-			let ownerUri = await azdata.connection.getUriForConnection((this.targetServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
-
 			this.schemaCompareMainWindow.targetEndpointInfo = {
-				endpointType: mssql.SchemaCompareEndpointType.Database,
-				serverDisplayName: (this.targetServerDropdown.value as ConnectionDropdownValue).displayName,
-				serverName: (this.targetServerDropdown.value as ConnectionDropdownValue).name,
-				databaseName: this.targetDatabaseDropdown.value.toString(),
-				ownerUri: ownerUri,
+				endpointType: mssql.SchemaCompareEndpointType.Project,
+				projectFilePath: this.targetTextBox.value,
+				extractTarget: mapExtractTargetEnum(<string>this.targetStructureDropdown!.value),
+				targetScripts: await this.getProjectScriptFiles(this.targetTextBox.value),
+				dataSchemaProvider: await this.getDatabaseSchemaProvider(this.targetTextBox.value),
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: '',
 				packageFilePath: '',
 				connectionDetails: undefined
 			};
@@ -133,8 +204,8 @@ export class SchemaCompareDialog {
 
 		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareDialog, 'SchemaCompareStart')
 			.withAdditionalProperties({
-				sourceIsDacpac: this.sourceIsDacpac.toString(),
-				targetIsDacpac: this.targetIsDacpac.toString()
+				sourceEndpointType: getSchemaCompareEndpointString(this.sourceEndpointType),
+				targetEndpointType: getSchemaCompareEndpointString(this.targetEndpointType)
 			}).send();
 
 		// update source and target values that are displayed
@@ -172,6 +243,7 @@ export class SchemaCompareDialog {
 	}
 
 	protected async cancel(): Promise<void> {
+		this.dispose();
 	}
 
 	private async initializeSchemaCompareTab(): Promise<void> {
@@ -180,79 +252,106 @@ export class SchemaCompareDialog {
 				this.view = view;
 			}
 
-			this.sourceTextBox = this.view.modelBuilder.inputBox().withProperties({
-				value: this.schemaCompareMainWindow.sourceEndpointInfo ? this.schemaCompareMainWindow.sourceEndpointInfo.packageFilePath : '',
-				width: 275,
+			let sourceValue = '';
+
+			if (this.schemaCompareMainWindow.sourceEndpointInfo && this.schemaCompareMainWindow.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Dacpac) {
+				sourceValue = this.schemaCompareMainWindow.sourceEndpointInfo.packageFilePath;
+			} else if (this.schemaCompareMainWindow.sourceEndpointInfo && this.schemaCompareMainWindow.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
+				sourceValue = this.schemaCompareMainWindow.sourceEndpointInfo.projectFilePath;
+			}
+
+			this.sourceTextBox = this.view.modelBuilder.inputBox().withProps({
+				value: sourceValue,
+				width: this.textBoxWidth,
 				ariaLabel: loc.sourceFile
 			}).component();
 
 			this.sourceTextBox.onTextChanged(async (e) => {
 				this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
+
+				if (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Dacpac) {
+					this.sourceDacpacPath = e;
+				} else if (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Project) {
+					this.sourceProjectFilePath = e;
+				}
 			});
 
-			this.targetTextBox = this.view.modelBuilder.inputBox().withProperties({
-				value: this.schemaCompareMainWindow.targetEndpointInfo ? this.schemaCompareMainWindow.targetEndpointInfo.packageFilePath : '',
-				width: 275,
+			let targetValue = '';
+
+			if (this.schemaCompareMainWindow.targetEndpointInfo && this.schemaCompareMainWindow.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Dacpac) {
+				targetValue = this.schemaCompareMainWindow.targetEndpointInfo.packageFilePath;
+			} else if (this.schemaCompareMainWindow.targetEndpointInfo && this.schemaCompareMainWindow.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
+				targetValue = this.schemaCompareMainWindow.targetEndpointInfo.projectFilePath;
+			}
+
+			this.targetTextBox = this.view.modelBuilder.inputBox().withProps({
+				value: targetValue,
+				width: this.textBoxWidth,
 				ariaLabel: loc.targetFile
 			}).component();
 
-			this.targetTextBox.onTextChanged(async () => {
+			this.targetTextBox.onTextChanged(async (e) => {
 				this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
+
+				if (this.targetEndpointType === mssql.SchemaCompareEndpointType.Dacpac) {
+					this.targetDacpacPath = e;
+				} else if (this.targetEndpointType === mssql.SchemaCompareEndpointType.Project) {
+					this.targetProjectFilePath = e;
+				}
 			});
 
-			this.sourceServerComponent = await this.createSourceServerDropdown();
-			await this.populateServerDropdown(false);
+			this.sourceServerComponent = this.createSourceServerDropdown();
+			this.sourceDatabaseComponent = this.createSourceDatabaseDropdown();
 
-			this.sourceDatabaseComponent = await this.createSourceDatabaseDropdown();
-			if ((this.sourceServerDropdown.value as ConnectionDropdownValue)) {
-				await this.populateDatabaseDropdown((this.sourceServerDropdown.value as ConnectionDropdownValue).connection, false);
-			}
+			this.targetServerComponent = this.createTargetServerDropdown();
+			this.targetDatabaseComponent = this.createTargetDatabaseDropdown();
 
-			this.targetServerComponent = await this.createTargetServerDropdown();
-			await this.populateServerDropdown(true);
+			this.sourceDacpacComponent = this.createFileBrowser(false, true, this.schemaCompareMainWindow.sourceEndpointInfo);
+			this.targetDacpacComponent = this.createFileBrowser(true, true, this.schemaCompareMainWindow.targetEndpointInfo);
 
-			this.targetDatabaseComponent = await this.createTargetDatabaseDropdown();
-			if ((this.targetServerDropdown.value as ConnectionDropdownValue)) {
-				await this.populateDatabaseDropdown((this.targetServerDropdown.value as ConnectionDropdownValue).connection, true);
-			}
+			this.sourceProjectFilePathComponent = this.createFileBrowser(false, false, this.schemaCompareMainWindow.sourceEndpointInfo);
+			this.targetProjectFilePathComponent = this.createFileBrowser(true, false, this.schemaCompareMainWindow.targetEndpointInfo);
 
-			this.sourceDacpacComponent = await this.createFileBrowser(false, this.schemaCompareMainWindow.sourceEndpointInfo);
-			this.targetDacpacComponent = await this.createFileBrowser(true, this.schemaCompareMainWindow.targetEndpointInfo);
+			this.targetProjectStructureComponent = this.createStructureDropdown();
 
-			let sourceRadioButtons = await this.createSourceRadiobuttons();
-			let targetRadioButtons = await this.createTargetRadiobuttons();
-
-			this.sourceNoActiveConnectionsText = await this.createNoActiveConnectionsText();
-			this.targetNoActiveConnectionsText = await this.createNoActiveConnectionsText();
+			let sourceRadioButtons = this.createSourceRadioButtons();
+			let targetRadioButtons = this.createTargetRadioButtons();
 
 			let sourceComponents = [];
 			let targetComponents = [];
 
-			// start source and target with either dacpac or database selection based on what the previous value was
-			if (this.schemaCompareMainWindow.sourceEndpointInfo && this.schemaCompareMainWindow.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
-				sourceComponents = [
-					sourceRadioButtons,
-					this.sourceServerComponent,
-					this.sourceDatabaseComponent
-				];
-			} else {
-				sourceComponents = [
-					sourceRadioButtons,
-					this.sourceDacpacComponent,
-				];
+			// start source and target with either dacpac, database, or project selection based on what the previous value was
+			sourceComponents = [sourceRadioButtons];
+
+			switch (this.sourceEndpointType) {
+				case mssql.SchemaCompareEndpointType.Database:
+					sourceComponents.push(
+						this.sourceServerComponent,
+						this.sourceDatabaseComponent);
+					break;
+				case mssql.SchemaCompareEndpointType.Dacpac:
+					sourceComponents.push(this.sourceDacpacComponent);
+					break;
+				case mssql.SchemaCompareEndpointType.Project:
+					sourceComponents.push(this.sourceProjectFilePathComponent);
+					break;
 			}
 
-			if (this.schemaCompareMainWindow.targetEndpointInfo && this.schemaCompareMainWindow.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
-				targetComponents = [
-					targetRadioButtons,
-					this.targetServerComponent,
-					this.targetDatabaseComponent
-				];
-			} else {
-				targetComponents = [
-					targetRadioButtons,
-					this.targetDacpacComponent,
-				];
+			targetComponents = [targetRadioButtons];
+
+			switch (this.targetEndpointType) {
+				case mssql.SchemaCompareEndpointType.Database:
+					targetComponents.push(
+						this.targetServerComponent,
+						this.targetDatabaseComponent);
+					break;
+				case mssql.SchemaCompareEndpointType.Dacpac:
+					targetComponents.push(this.targetDacpacComponent);
+					break;
+				case mssql.SchemaCompareEndpointType.Project:
+					targetComponents.push(this.targetProjectFilePathComponent);
+					targetComponents.push(this.targetProjectStructureComponent);
+					break;
 			}
 
 			this.formBuilder = <azdata.FormBuilder>this.view.modelBuilder.formContainer()
@@ -275,34 +374,46 @@ export class SchemaCompareDialog {
 
 			let formModel = this.formBuilder.component();
 			await this.view.initializeModel(formModel);
-			if (this.sourceIsDacpac) {
-				await this.sourceDacpacRadioButton.focus();
-			} else {
-				await this.sourceDatabaseRadioButton.focus();
+
+			switch (this.sourceEndpointType) {
+				case (mssql.SchemaCompareEndpointType.Database):
+					await this.sourceDatabaseRadioButton.focus();
+					break;
+				case (mssql.SchemaCompareEndpointType.Dacpac):
+					await this.sourceDacpacRadioButton.focus();
+					break;
+				case (mssql.SchemaCompareEndpointType.Project):
+					await this.sourceProjectRadioButton.focus();
+					break;
 			}
+
 			this.initDialogComplete.resolve();
 		});
 	}
 
-	private createFileBrowser(isTarget: boolean, endpoint: mssql.SchemaCompareEndpointInfo): azdata.FormComponent {
+	private createFileBrowser(isTarget: boolean, dacpac: boolean, endpoint: mssql.SchemaCompareEndpointInfo): azdata.FormComponent {
 		let currentTextbox = isTarget ? this.targetTextBox : this.sourceTextBox;
+
 		if (isTarget) {
-			this.targetFileButton = this.view.modelBuilder.button().withProperties({
-				label: '•••',
+			this.targetFileButton = this.view.modelBuilder.button().withProps({
 				title: loc.selectTargetFile,
-				ariaLabel: loc.selectTargetFile
+				ariaLabel: loc.selectTargetFile,
+				secondary: true,
+				iconPath: path.join(this.extensionContext.extensionPath, 'media', 'folder.svg')
 			}).component();
 		} else {
-			this.sourceFileButton = this.view.modelBuilder.button().withProperties({
-				label: '•••',
+			this.sourceFileButton = this.view.modelBuilder.button().withProps({
 				title: loc.selectSourceFile,
-				ariaLabel: loc.selectSourceFile
+				ariaLabel: loc.selectSourceFile,
+				secondary: true,
+				iconPath: path.join(this.extensionContext.extensionPath, 'media', 'folder.svg')
 			}).component();
 		}
 
 		let currentButton = isTarget ? this.targetFileButton : this.sourceFileButton;
+		const filter = dacpac ? 'dacpac' : 'sqlproj';
 
-		currentButton.onDidClick(async (click) => {
+		currentButton.onDidClick(async () => {
 			// file browser should open where the current dacpac is or the appropriate default folder
 			let rootPath = getRootPath();
 			let defaultUri = endpoint && endpoint.packageFilePath && await exists(endpoint.packageFilePath) ? endpoint.packageFilePath : rootPath;
@@ -315,7 +426,7 @@ export class SchemaCompareDialog {
 					defaultUri: vscode.Uri.file(defaultUri),
 					openLabel: loc.open,
 					filters: {
-						'dacpac Files': ['dacpac'],
+						'Files': [filter],
 					}
 				}
 			);
@@ -335,54 +446,99 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	private createSourceRadiobuttons(): azdata.FormComponent {
+	private createStructureDropdown(): azdata.FormComponent {
+		const value = !this.schemaCompareMainWindow.targetEndpointInfo ? loc.schemaObjectType : mapExtractTargetToString(this.schemaCompareMainWindow.targetEndpointInfo.extractTarget);
+		this.targetStructureDropdown = this.view.modelBuilder.dropDown().withProps({
+			editable: true,
+			fireOnTextChange: true,
+			ariaLabel: loc.targetStructure,
+			width: this.textBoxWidth,
+			values: [loc.file, loc.flat, loc.objectType, loc.schema, loc.schemaObjectType],
+			value: value,
+		}).component();
+
+		return {
+			component: this.targetStructureDropdown,
+			title: loc.StructureDropdownLabel,
+		};
+	}
+
+	private createSourceRadioButtons(): azdata.FormComponent {
 		this.sourceDacpacRadioButton = this.view.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				name: 'source',
 				label: loc.DacpacRadioButtonLabel
 			}).component();
 
 		this.sourceDatabaseRadioButton = this.view.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				name: 'source',
 				label: loc.DatabaseRadioButtonLabel
 			}).component();
 
+		this.sourceProjectRadioButton = this.view.modelBuilder.radioButton()
+			.withProps({
+				name: 'source',
+				label: loc.ProjectRadioButtonLabel
+			}).component();
+
 		// show dacpac file browser
 		this.sourceDacpacRadioButton.onDidClick(async () => {
-			this.sourceIsDacpac = true;
-			this.formBuilder.removeFormItem(this.sourceNoActiveConnectionsText);
+			this.sourceEndpointType = mssql.SchemaCompareEndpointType.Dacpac;
+			this.sourceTextBox.value = this.sourceDacpacPath;
 			this.formBuilder.removeFormItem(this.sourceServerComponent);
 			this.formBuilder.removeFormItem(this.sourceDatabaseComponent);
+			this.formBuilder.removeFormItem(this.sourceProjectFilePathComponent);
 			this.formBuilder.insertFormItem(this.sourceDacpacComponent, 2, { horizontal: true, titleFontSize: titleFontSize });
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
-		// show server and db dropdowns or 'No active connections' text
+		// show server and db dropdowns
 		this.sourceDatabaseRadioButton.onDidClick(async () => {
-			this.sourceIsDacpac = false;
-			if ((this.sourceServerDropdown.value as ConnectionDropdownValue)) {
-				this.formBuilder.insertFormItem(this.sourceServerComponent, 2, { horizontal: true, titleFontSize: titleFontSize });
-				this.formBuilder.insertFormItem(this.sourceDatabaseComponent, 3, { horizontal: true, titleFontSize: titleFontSize });
-			} else {
-				this.formBuilder.insertFormItem(this.sourceNoActiveConnectionsText, 2, { horizontal: true, titleFontSize: titleFontSize });
-			}
+			this.sourceEndpointType = mssql.SchemaCompareEndpointType.Database;
+			this.formBuilder.insertFormItem(this.sourceServerComponent, 2, { horizontal: true, titleFontSize: titleFontSize });
+			this.formBuilder.insertFormItem(this.sourceDatabaseComponent, 3, { horizontal: true, titleFontSize: titleFontSize });
 			this.formBuilder.removeFormItem(this.sourceDacpacComponent);
+			this.formBuilder.removeFormItem(this.sourceProjectFilePathComponent);
+
+			await this.populateServerDropdown(false);
+		});
+
+		// show project directory browser
+		this.sourceProjectRadioButton.onDidClick(async () => {
+			this.sourceEndpointType = mssql.SchemaCompareEndpointType.Project;
+			this.sourceTextBox.value = this.sourceProjectFilePath;
+			this.formBuilder.removeFormItem(this.sourceServerComponent);
+			this.formBuilder.removeFormItem(this.sourceDatabaseComponent);
+			this.formBuilder.removeFormItem(this.sourceDacpacComponent);
+			this.formBuilder.insertFormItem(this.sourceProjectFilePathComponent, 2, { horizontal: true, titleFontSize: titleFontSize });
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
-		// if source is currently a db, show it in the server and db dropdowns
-		if (this.schemaCompareMainWindow.sourceEndpointInfo && this.schemaCompareMainWindow.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
-			this.sourceDatabaseRadioButton.checked = true;
-			this.sourceIsDacpac = false;
-		} else {
-			this.sourceDacpacRadioButton.checked = true;
-			this.sourceIsDacpac = true;
+		this.sourceEndpointType = this.schemaCompareMainWindow.sourceEndpointInfo?.endpointType ?? mssql.SchemaCompareEndpointType.Database; // default to database if no specific source is passed
+
+		switch (this.sourceEndpointType) {
+			case mssql.SchemaCompareEndpointType.Dacpac:
+				this.sourceDacpacRadioButton.checked = true;
+				break;
+			case mssql.SchemaCompareEndpointType.Project:
+				this.sourceProjectRadioButton.checked = true;
+				break;
+			case mssql.SchemaCompareEndpointType.Database:
+				this.sourceDatabaseRadioButton.checked = true;
+				break;
 		}
+
+		let radioButtons = [this.sourceDatabaseRadioButton, this.sourceDacpacRadioButton];
+
+		if (vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId)) {
+			radioButtons.push(this.sourceProjectRadioButton);
+		}
+
 		let flexRadioButtonsModel = this.view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
-			.withItems([this.sourceDacpacRadioButton, this.sourceDatabaseRadioButton])
-			.withProperties({ ariaRole: 'radiogroup' })
+			.withItems(radioButtons)
+			.withProps({ ariaRole: 'radiogroup' })
 			.component();
 
 		return {
@@ -391,56 +547,86 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	private createTargetRadiobuttons(): azdata.FormComponent {
-		let dacpacRadioButton = this.view.modelBuilder.radioButton()
-			.withProperties({
+	private createTargetRadioButtons(): azdata.FormComponent {
+		let targetDacpacRadioButton = this.view.modelBuilder.radioButton()
+			.withProps({
 				name: 'target',
 				label: loc.DacpacRadioButtonLabel
 			}).component();
 
-		let databaseRadioButton = this.view.modelBuilder.radioButton()
-			.withProperties({
+		let targetDatabaseRadioButton = this.view.modelBuilder.radioButton()
+			.withProps({
 				name: 'target',
 				label: loc.DatabaseRadioButtonLabel
 			}).component();
 
+		let targetProjectRadioButton = this.view.modelBuilder.radioButton()
+			.withProps({
+				name: 'target',
+				label: loc.ProjectRadioButtonLabel
+			}).component();
+
 		// show dacpac file browser
-		dacpacRadioButton.onDidClick(async () => {
-			this.targetIsDacpac = true;
-			this.formBuilder.removeFormItem(this.targetNoActiveConnectionsText);
+		targetDacpacRadioButton.onDidClick(async () => {
+			this.targetEndpointType = mssql.SchemaCompareEndpointType.Dacpac;
+			this.targetTextBox.value = this.targetDacpacPath;
 			this.formBuilder.removeFormItem(this.targetServerComponent);
 			this.formBuilder.removeFormItem(this.targetDatabaseComponent);
+			this.formBuilder.removeFormItem(this.targetProjectFilePathComponent);
+			this.formBuilder.removeFormItem(this.targetProjectStructureComponent);
 			this.formBuilder.addFormItem(this.targetDacpacComponent, { horizontal: true, titleFontSize: titleFontSize });
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
-		// show server and db dropdowns or 'No active connections' text
-		databaseRadioButton.onDidClick(async () => {
-			this.targetIsDacpac = false;
+		// show server and db dropdowns
+		targetDatabaseRadioButton.onDidClick(async () => {
+			this.targetEndpointType = mssql.SchemaCompareEndpointType.Database;
 			this.formBuilder.removeFormItem(this.targetDacpacComponent);
-			if ((this.targetServerDropdown.value as ConnectionDropdownValue)) {
-				this.formBuilder.addFormItem(this.targetServerComponent, { horizontal: true, titleFontSize: titleFontSize });
-				this.formBuilder.addFormItem(this.targetDatabaseComponent, { horizontal: true, titleFontSize: titleFontSize });
-			} else {
-				this.formBuilder.addFormItem(this.targetNoActiveConnectionsText, { horizontal: true, titleFontSize: titleFontSize });
-			}
+			this.formBuilder.removeFormItem(this.targetProjectFilePathComponent);
+			this.formBuilder.removeFormItem(this.targetProjectStructureComponent);
+			this.formBuilder.addFormItem(this.targetServerComponent, { horizontal: true, titleFontSize: titleFontSize });
+			this.formBuilder.addFormItem(this.targetDatabaseComponent, { horizontal: true, titleFontSize: titleFontSize });
+
+			await this.populateServerDropdown(true);
+		});
+
+		// show project directory browser
+		targetProjectRadioButton.onDidClick(async () => {
+			this.targetEndpointType = mssql.SchemaCompareEndpointType.Project;
+			this.targetTextBox.value = this.targetProjectFilePath;
+			this.formBuilder.removeFormItem(this.targetServerComponent);
+			this.formBuilder.removeFormItem(this.targetDatabaseComponent);
+			this.formBuilder.removeFormItem(this.targetDacpacComponent);
+			this.formBuilder.addFormItem(this.targetProjectFilePathComponent, { horizontal: true, titleFontSize: titleFontSize });
+			this.formBuilder.addFormItem(this.targetProjectStructureComponent, { horizontal: true, titleFontSize: titleFontSize });
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
-		// if target is currently a db, show it in the server and db dropdowns
-		if (this.schemaCompareMainWindow.targetEndpointInfo && this.schemaCompareMainWindow.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
-			databaseRadioButton.checked = true;
-			this.targetIsDacpac = false;
-		} else {
-			dacpacRadioButton.checked = true;
-			this.targetIsDacpac = true;
+
+		this.targetEndpointType = this.schemaCompareMainWindow.targetEndpointInfo?.endpointType ?? mssql.SchemaCompareEndpointType.Database; // default to database if no specific target is passed
+
+		switch (this.targetEndpointType) {
+			case mssql.SchemaCompareEndpointType.Dacpac:
+				targetDacpacRadioButton.checked = true;
+				break;
+			case mssql.SchemaCompareEndpointType.Project:
+				targetProjectRadioButton.checked = true;
+				break;
+			case mssql.SchemaCompareEndpointType.Database:
+				targetDatabaseRadioButton.checked = true;
+				break;
+		}
+
+		let radioButtons = [targetDatabaseRadioButton, targetDacpacRadioButton];
+
+		if (vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId)) {
+			radioButtons.push(targetProjectRadioButton);
 		}
 
 		let flexRadioButtonsModel = this.view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
-			.withItems([dacpacRadioButton, databaseRadioButton]
-			)
-			.withProperties({ ariaRole: 'radiogroup' })
+			.withItems(radioButtons)
+			.withProps({ ariaRole: 'radiogroup' })
 			.component();
 
 		return {
@@ -450,80 +636,208 @@ export class SchemaCompareDialog {
 	}
 
 	private async shouldEnableOkayButton(): Promise<boolean> {
-
-		let sourcefilled = (this.sourceIsDacpac && await this.existsDacpac(this.sourceTextBox.value))
-			|| (!this.sourceIsDacpac && !isNullOrUndefined(this.sourceDatabaseDropdown.value) && this.sourceDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.sourceDbEditable)) !== -1);
-		let targetfilled = (this.targetIsDacpac && await this.existsDacpac(this.targetTextBox.value))
-			|| (!this.targetIsDacpac && !isNullOrUndefined(this.targetDatabaseDropdown.value) && this.targetDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.targetDbEditable)) !== -1);
+		let sourcefilled = (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Dacpac && await this.existsDacpac(this.sourceTextBox.value))
+			|| (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Project && await this.existsProjectFile(this.sourceTextBox.value))
+			|| (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Database && !isNullOrUndefined(this.sourceDatabaseDropdown.value) && this.sourceDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.sourceDbEditable)) !== -1);
+		let targetfilled = (this.targetEndpointType === mssql.SchemaCompareEndpointType.Dacpac && await this.existsDacpac(this.targetTextBox.value))
+			|| (this.targetEndpointType === mssql.SchemaCompareEndpointType.Project && await this.existsProjectFile(this.targetTextBox.value))
+			|| (this.targetEndpointType === mssql.SchemaCompareEndpointType.Database && !isNullOrUndefined(this.targetDatabaseDropdown.value) && this.targetDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.targetDbEditable)) !== -1);
 
 		return sourcefilled && targetfilled;
+	}
+
+	public async handleOkButtonClick(): Promise<void> {
+		await this.execute();
+		this.dispose();
+	}
+
+	protected showErrorMessage(message: string): void {
+		this.dialog.message = {
+			text: message,
+			level: getAzdataApi()!.window.MessageLevel.Error
+		};
+	}
+
+	async validate(): Promise<boolean> {
+		try {
+			// check project extension is installed
+			if (!vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId) &&
+				(this.sourceEndpointType === mssql.SchemaCompareEndpointType.Project ||
+					this.targetEndpointType === mssql.SchemaCompareEndpointType.Project)) {
+				this.showErrorMessage(loc.noProjectExtension);
+				return false;
+			}
+
+			// check Database Schema Providers are set and valid
+			if (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Project) {
+				try {
+					await this.getDatabaseSchemaProvider(this.sourceTextBox.value);
+				} catch (err) {
+					this.showErrorMessage(loc.dspErrorSource);
+				}
+			}
+
+			if (this.targetEndpointType === mssql.SchemaCompareEndpointType.Project) {
+				try {
+					await this.getDatabaseSchemaProvider(this.targetTextBox.value);
+				} catch (err) {
+					this.showErrorMessage(loc.dspErrorTarget);
+				}
+			}
+
+			return true;
+		} catch (e) {
+			this.showErrorMessage(e?.message ? e.message : e);
+			return false;
+		}
+	}
+
+	private dispose(): void {
+		this.toDispose.forEach(disposable => disposable.dispose());
 	}
 
 	private async existsDacpac(filename: string): Promise<boolean> {
 		return !isNullOrUndefined(filename) && await exists(filename) && (filename.toLocaleLowerCase().endsWith('.dacpac'));
 	}
 
+	private async existsProjectFile(filename: string): Promise<boolean> {
+		return !isNullOrUndefined(filename) && await exists(filename) && (filename.toLocaleLowerCase().endsWith('.sqlproj'));
+	}
+
+	private async getProjectScriptFiles(projectFilePath: string): Promise<string[]> {
+		const databaseProjectsExtension = vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId);
+
+		if (databaseProjectsExtension) {
+			return await (await databaseProjectsExtension.activate() as sqldbproj.IExtension).getProjectScriptFiles(projectFilePath);
+		}
+	}
+
+	private async getDatabaseSchemaProvider(projectFilePath: string): Promise<string> {
+		const databaseProjectsExtension = vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId);
+
+		if (databaseProjectsExtension) {
+			return await (await databaseProjectsExtension.activate() as sqldbproj.IExtension).getProjectDatabaseSchemaProvider(projectFilePath);
+		}
+	}
+
 	protected createSourceServerDropdown(): azdata.FormComponent {
-		this.sourceServerDropdown = this.view.modelBuilder.dropDown().withProperties(
+		this.sourceServerDropdown = this.view.modelBuilder.dropDown().withProps(
 			{
 				editable: true,
 				fireOnTextChange: true,
-				ariaLabel: loc.sourceServer
+				ariaLabel: loc.sourceServer,
+				width: this.textBoxWidth
 			}
 		).component();
+
+		this.sourceConnectionButton = this.createConnectionButton(false);
+
 		this.sourceServerDropdown.onValueChanged(async (value) => {
-			if (this.sourceServerDropdown.values.findIndex(x => this.matchesValue(x, value)) === -1) {
+			if (value.selected && this.sourceServerDropdown.values.findIndex(x => this.matchesValue(x, value.selected)) === -1) {
 				await this.sourceDatabaseDropdown.updateProperties({
 					values: [],
 					value: '  '
 				});
 			}
 			else {
+				this.sourceConnectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
 				await this.populateDatabaseDropdown((this.sourceServerDropdown.value as ConnectionDropdownValue).connection, false);
 			}
 		});
 
+		// don't await so that dialog loading won't be blocked. Dropdown will show loading indicator until it is populated
+		this.populateServerDropdown(false);
+
 		return {
 			component: this.sourceServerDropdown,
-			title: loc.ServerDropdownLabel
+			title: loc.ServerDropdownLabel,
+			actions: [this.sourceConnectionButton]
 		};
 	}
 
+	private createConnectionButton(isTarget: boolean): azdata.ButtonComponent {
+		const selectConnectionButton = this.view.modelBuilder.button().withProps({
+			ariaLabel: loc.selectConnection,
+			iconPath: path.join(this.extensionContext.extensionPath, 'media', 'selectConnection.svg'),
+			height: '20px',
+			width: '20px'
+		}).component();
+
+		selectConnectionButton.onDidClick(async () => {
+			await this.connectionButtonClick(isTarget);
+			selectConnectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
+		});
+
+		return selectConnectionButton;
+	}
+
+	public async connectionButtonClick(isTarget: boolean): Promise<void> {
+		let connection = await azdata.connection.openConnectionDialog();
+		if (connection) {
+			this.connectionId = connection.connectionId;
+			this.promise = this.populateServerDropdown(isTarget);
+			this.promise2 = this.populateServerDropdown(!isTarget, true);		// passively populate the other server dropdown as well to add the new connections
+		}
+	}
+
 	protected createTargetServerDropdown(): azdata.FormComponent {
-		this.targetServerDropdown = this.view.modelBuilder.dropDown().withProperties(
+		this.targetServerDropdown = this.view.modelBuilder.dropDown().withProps(
 			{
 				editable: true,
 				fireOnTextChange: true,
-				ariaLabel: loc.targetServer
+				ariaLabel: loc.targetServer,
+				width: this.textBoxWidth
 			}
 		).component();
+		this.targetConnectionButton = this.createConnectionButton(true);
 		this.targetServerDropdown.onValueChanged(async (value) => {
-			if (this.targetServerDropdown.values.findIndex(x => this.matchesValue(x, value)) === -1) {
+			if (value.selected && this.targetServerDropdown.values.findIndex(x => this.matchesValue(x, value.selected)) === -1) {
 				await this.targetDatabaseDropdown.updateProperties({
 					values: [],
 					value: '  '
 				});
 			}
 			else {
+				this.targetConnectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
 				await this.populateDatabaseDropdown((this.targetServerDropdown.value as ConnectionDropdownValue).connection, true);
 			}
 		});
-
+		// don't await so that dialog loading won't be blocked. Dropdown will show loading indicator until it is populated
+		this.populateServerDropdown(true);
 		return {
 			component: this.targetServerDropdown,
-			title: loc.ServerDropdownLabel
+			title: loc.ServerDropdownLabel,
+			actions: [this.targetConnectionButton]
 		};
 	}
 
-	protected async populateServerDropdown(isTarget: boolean): Promise<void> {
-		let currentDropdown = isTarget ? this.targetServerDropdown : this.sourceServerDropdown;
-		let values = await this.getServerValues(isTarget);
+	protected async populateServerDropdown(isTarget: boolean, passivelyPopulate: boolean = false): Promise<void> {
+		const currentDropdown = isTarget ? this.targetServerDropdown : this.sourceServerDropdown;
+
+		if (passivelyPopulate && isNullOrUndefined(currentDropdown.value)) {
+			passivelyPopulate = false;		// Populate the dropdown if it is empty
+		}
+
+		currentDropdown.loading = true;
+		const values = await this.getServerValues(isTarget);
 
 		if (values && values.length > 0) {
-			await currentDropdown.updateProperties({
-				values: values,
-				value: values[0]
-			});
+			if (passivelyPopulate) {	// only update the dropdown values, not the selected value
+				await currentDropdown.updateProperties({
+					values: values
+				});
+			} else {
+				await currentDropdown.updateProperties({
+					values: values,
+					value: values[0]
+				});
+			}
+		}
+
+		currentDropdown.loading = false;
+
+		if (!passivelyPopulate && currentDropdown.value) {
+			await this.populateDatabaseDropdown((currentDropdown.value as ConnectionDropdownValue).connection, isTarget);
 		}
 	}
 
@@ -533,6 +847,10 @@ export class SchemaCompareDialog {
 		if (!cons || cons.length === 0) {
 			return undefined;
 		}
+
+		// Update connection icon to "connected" state
+		let connectionButton = isTarget ? this.targetConnectionButton : this.sourceConnectionButton;
+		connectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
 
 		let endpointInfo = isTarget ? this.schemaCompareMainWindow.targetEndpointInfo : this.schemaCompareMainWindow.sourceEndpointInfo;
 		// reverse list so that most recent connections are first
@@ -544,20 +862,25 @@ export class SchemaCompareDialog {
 			count++;
 
 			let usr = c.options.user;
-			let srv = c.options.server;
 
 			if (!usr) {
 				usr = loc.defaultText;
 			}
 
+			let srv = c.options.server;
+
 			let finalName = `${srv} (${usr})`;
-			// use previously selected server or current connection if there is one
-			if (endpointInfo && !isNullOrUndefined(endpointInfo.serverName) && !isNullOrUndefined(endpointInfo.serverDisplayName)
-				&& c.options.server.toLowerCase() === endpointInfo.serverName.toLowerCase()
-				&& finalName.toLowerCase() === endpointInfo.serverDisplayName.toLowerCase()) {
-				idx = count;
+
+			if (c.options.connectionName) {
+				finalName = c.options.connectionName;
 			}
-			else if (c.connectionId === this.connectionId) {
+
+			// use current connection else use previously selected server if there is one
+			if ((c.connectionId === this.connectionId) ||
+				(endpointInfo && !isNullOrUndefined(endpointInfo.serverName) && !isNullOrUndefined(endpointInfo.serverDisplayName)
+					&& c.options.server.toLowerCase() === endpointInfo.serverName.toLowerCase()
+					&& finalName.toLowerCase() === endpointInfo.serverDisplayName.toLowerCase()
+					&& idx === -1)) { // select previous server only if current connection hasn't been set already
 				idx = count;
 			}
 
@@ -588,15 +911,16 @@ export class SchemaCompareDialog {
 	}
 
 	protected createSourceDatabaseDropdown(): azdata.FormComponent {
-		this.sourceDatabaseDropdown = this.view.modelBuilder.dropDown().withProperties(
+		this.sourceDatabaseDropdown = this.view.modelBuilder.dropDown().withProps(
 			{
 				editable: true,
 				fireOnTextChange: true,
-				ariaLabel: loc.sourceDatabase
+				ariaLabel: loc.sourceDatabase,
+				width: this.textBoxWidth
 			}
 		).component();
 		this.sourceDatabaseDropdown.onValueChanged(async (value) => {
-			this.sourceDbEditable = value;
+			this.sourceDbEditable = value as string;
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
@@ -607,15 +931,16 @@ export class SchemaCompareDialog {
 	}
 
 	protected createTargetDatabaseDropdown(): azdata.FormComponent {
-		this.targetDatabaseDropdown = this.view.modelBuilder.dropDown().withProperties(
+		this.targetDatabaseDropdown = this.view.modelBuilder.dropDown().withProps(
 			{
 				editable: true,
 				fireOnTextChange: true,
-				ariaLabel: loc.targetDatabase
+				ariaLabel: loc.targetDatabase,
+				width: this.textBoxWidth
 			}
 		).component();
 		this.targetDatabaseDropdown.onValueChanged(async (value) => {
-			this.targetDbEditable = value;
+			this.targetDbEditable = value as string;
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
@@ -630,8 +955,12 @@ export class SchemaCompareDialog {
 	}
 
 	protected async populateDatabaseDropdown(connectionProfile: azdata.connection.ConnectionProfile, isTarget: boolean): Promise<void> {
-		let currentDropdown = isTarget ? this.targetDatabaseDropdown : this.sourceDatabaseDropdown;
-		await currentDropdown.updateProperties({ values: [], value: null });
+		const currentDropdown = isTarget ? this.targetDatabaseDropdown : this.sourceDatabaseDropdown;
+		currentDropdown.loading = true;
+		await currentDropdown.updateProperties({
+			values: [],
+			value: undefined
+		});
 
 		let values = [];
 		try {
@@ -647,6 +976,9 @@ export class SchemaCompareDialog {
 				value: values[0],
 			});
 		}
+
+		this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
+		currentDropdown.loading = false;
 	}
 
 	protected async getDatabaseValues(connectionId: string, isTarget: boolean): Promise<string[]> {
@@ -673,21 +1005,39 @@ export class SchemaCompareDialog {
 		}
 		return values;
 	}
-
-	protected createNoActiveConnectionsText(): azdata.FormComponent {
-		let noActiveConnectionsText = this.view.modelBuilder.text().withProperties({ value: loc.NoActiveConnectionsLabel }).component();
-
-		return {
-			component: noActiveConnectionsText,
-			title: ''
-		};
-	}
 }
 
-interface ConnectionDropdownValue extends azdata.CategoryValue {
+export interface ConnectionDropdownValue extends azdata.CategoryValue {
 	connection: azdata.connection.ConnectionProfile;
 }
 
 function isNullOrUndefined(val: any): boolean {
 	return val === null || val === undefined;
+}
+
+/**
+ * Function to map folder structure string to enum
+ * @param inputTarget folder structure in string
+ * @returns folder structure in enum format
+ */
+export function mapExtractTargetEnum(inputTarget: string): mssql.ExtractTarget {
+	switch (inputTarget) {
+		case loc.file: return mssql.ExtractTarget.file;
+		case loc.flat: return mssql.ExtractTarget.flat;
+		case loc.objectType: return mssql.ExtractTarget.objectType;
+		case loc.schema: return mssql.ExtractTarget.schema;
+		case loc.schemaObjectType:
+		default: return mssql.ExtractTarget.schemaObjectType;
+	}
+}
+
+export function mapExtractTargetToString(inputTarget: mssql.ExtractTarget) {
+	switch (inputTarget) {
+		case mssql.ExtractTarget.file: return loc.file;
+		case mssql.ExtractTarget.flat: return loc.flat;
+		case mssql.ExtractTarget.objectType: return loc.objectType;
+		case mssql.ExtractTarget.schema: return loc.schema;
+		case mssql.ExtractTarget.schemaObjectType:
+		default: return loc.schemaObjectType;
+	}
 }

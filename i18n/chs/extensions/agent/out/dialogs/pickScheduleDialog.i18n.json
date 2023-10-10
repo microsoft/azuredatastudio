@@ -9,7 +9,7 @@
 	"pickSchedule.jobSchedules": "作业计划",
 	"pickSchedule.ok": "确定",
 	"pickSchedule.cancel": "取消",
-	"pickSchedule.availableSchedules": "可用日程安排:",
+	"pickSchedule.availableSchedules": "可用计划:",
 	"pickSchedule.scheduleName": "名称",
 	"pickSchedule.scheduleID": "ID",
 	"pickSchedule.description": "说明"

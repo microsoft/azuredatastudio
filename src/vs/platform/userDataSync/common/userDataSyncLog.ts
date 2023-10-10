@@ -3,21 +3,20 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IUserDataSyncLogService } from 'vs/platform/userDataSync/common/userDataSync';
-import { AbstractLogService, ILoggerService, ILogger } from 'vs/platform/log/common/log';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { localize } from 'vs/nls';
+import { AbstractLogger, ILogger, ILoggerService } from 'vs/platform/log/common/log';
+import { IUserDataSyncLogService, USER_DATA_SYNC_LOG_ID } from 'vs/platform/userDataSync/common/userDataSync';
 
-export class UserDataSyncLogService extends AbstractLogService implements IUserDataSyncLogService {
+export class UserDataSyncLogService extends AbstractLogger implements IUserDataSyncLogService {
 
 	declare readonly _serviceBrand: undefined;
 	private readonly logger: ILogger;
 
 	constructor(
 		@ILoggerService loggerService: ILoggerService,
-		@IEnvironmentService environmentService: IEnvironmentService
 	) {
 		super();
-		this.logger = this._register(loggerService.getLogger(environmentService.userDataSyncLogResource));
+		this.logger = this._register(loggerService.createLogger(USER_DATA_SYNC_LOG_ID, { name: localize('userDataSyncLog', "Settings Sync") }));
 	}
 
 	trace(message: string, ...args: any[]): void {
@@ -38,10 +37,6 @@ export class UserDataSyncLogService extends AbstractLogService implements IUserD
 
 	error(message: string | Error, ...args: any[]): void {
 		this.logger.error(message, ...args);
-	}
-
-	critical(message: string | Error, ...args: any[]): void {
-		this.logger.critical(message, ...args);
 	}
 
 	flush(): void {

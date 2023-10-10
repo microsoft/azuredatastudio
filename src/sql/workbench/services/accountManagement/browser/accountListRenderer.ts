@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/accountListRenderer';
-import 'vs/css!./media/accountActions';
 
 import * as DOM from 'vs/base/browser/dom';
 import { IListRenderer, IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
@@ -99,11 +98,11 @@ export class AccountListRenderer extends AccountPickerListRenderer {
 		super();
 	}
 
-	public get templateId(): string {
+	public override get templateId(): string {
 		return AccountListRenderer.TEMPLATE_ID;
 	}
 
-	public renderTemplate(container: HTMLElement): AccountListTemplate {
+	public override renderTemplate(container: HTMLElement): AccountListTemplate {
 		const tableTemplate = super.renderTemplate(container) as AccountListTemplate;
 		tableTemplate.content = DOM.append(tableTemplate.label, DOM.$('div.content'));
 		tableTemplate.actions = new ActionBar(tableTemplate.root, { animated: false });
@@ -111,7 +110,7 @@ export class AccountListRenderer extends AccountPickerListRenderer {
 		return tableTemplate;
 	}
 
-	public renderElement(account: azdata.Account, index: number, templateData: AccountListTemplate): void {
+	public override renderElement(account: azdata.Account, index: number, templateData: AccountListTemplate): void {
 		super.renderElement(account, index, templateData);
 		if (account.isStale) {
 			templateData.content.innerText = localize('refreshCredentials', "You need to refresh the credentials for this account.");

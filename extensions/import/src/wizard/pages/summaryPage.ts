@@ -8,6 +8,8 @@ import * as azdata from 'azdata';
 import { ImportPage } from '../api/importPage';
 import { InsertDataResponse } from '../../services/contracts';
 import * as constants from '../../common/constants';
+import { EOL } from 'os';
+import { isMssqlAuthProviderEnabled } from '../../common/utils';
 
 export class SummaryPage extends ImportPage {
 	private _table: azdata.TableComponent;
@@ -49,7 +51,12 @@ export class SummaryPage extends ImportPage {
 
 	async start(): Promise<boolean> {
 		this.table = this.view.modelBuilder.table().component();
-		this.statusText = this.view.modelBuilder.text().component();
+		this.statusText = this.view.modelBuilder.text().withProps({
+			CSSStyles: {
+				'user-select': 'text',
+				'font-size': '13px'
+			}
+		}).component();
 		this.loading = this.view.modelBuilder.loadingComponent().withItem(this.statusText).component();
 
 		this.form = this.view.modelBuilder.formContainer().withFormItems(
@@ -79,21 +86,16 @@ export class SummaryPage extends ImportPage {
 		return true;
 	}
 
-	async onPageLeave(): Promise<boolean> {
+	override async onPageLeave(): Promise<boolean> {
 		this.instance.setImportAnotherFileVisibility(false);
 
 		return true;
-	}
-	public setupNavigationValidator() {
-		this.instance.registerNavigationValidator((info) => {
-			return !this.loading.loading;
-		});
 	}
 
 	private populateTable() {
 		this.table.updateProperties({
 			data: [
-				[constants.serverNameText, this.model.server.providerName],
+				[constants.serverNameText, this.model.server.options.server],
 				[constants.databaseText, this.model.database],
 				[constants.tableNameText, this.model.table],
 				[constants.tableSchemaText, this.model.schema],
@@ -104,10 +106,9 @@ export class SummaryPage extends ImportPage {
 		});
 	}
 
-	private async handleImport(): Promise<boolean> {
-		let changeColumnResults = [];
+	private async handleImport(): Promise<void> {
 		let i = 0;
-
+		const changeColumnSettingsErrors = [];
 		for (let val of this.model.proseColumns) {
 			let columnChangeParams = {
 				index: i++,
@@ -117,18 +118,44 @@ export class SummaryPage extends ImportPage {
 				newInPrimaryKey: val.primaryKey
 			};
 			const changeColumnResult = await this.provider.sendChangeColumnSettingsRequest(columnChangeParams);
-			changeColumnResults.push(changeColumnResult);
+			if (changeColumnResult?.result?.errorMessage) {
+				changeColumnSettingsErrors.push(changeColumnResult.result.errorMessage);
+			}
+		}
+
+		// Stopping import if there are errors in change column setting.
+		if (changeColumnSettingsErrors.length !== 0) {
+			let updateText: string;
+			updateText = changeColumnSettingsErrors.join(EOL);
+			this.statusText.updateProperties({
+				value: updateText
+			});
+			return;
 		}
 
 		let result: InsertDataResponse;
 		let err;
-		let includePasswordInConnectionString = (this.model.server.options.connectionId === 'Integrated') ? false : true;
+
+		const currentServer = this.model.server;
+		const includePasswordInConnectionString = (currentServer.options.authenticationType === azdata.connection.AuthenticationType.Integrated) ? false : true;
+		let connectionString = await azdata.connection.getConnectionString(currentServer.connectionId, includePasswordInConnectionString);
+
+		let accessToken = undefined;
+		if (currentServer.options.authenticationType === azdata.connection.AuthenticationType.AzureMFA) {
+			// Remove authentication properties from connection string if SQL Authentication Provider is enabled
+			if (isMssqlAuthProviderEnabled()) {
+				connectionString = this.updateConnectionStringForAccessToken(connectionString);
+			}
+			const azureAccount = (await azdata.accounts.getAllAccounts()).filter(v => v.key.accountId === currentServer.options.azureAccount)[0];
+			accessToken = (await azdata.accounts.getAccountSecurityToken(azureAccount, currentServer.options.azureTenantId, azdata.AzureResource.Sql)).token;
+		}
 
 		try {
 			result = await this.provider.sendInsertDataRequest({
-				connectionString: await azdata.connection.getConnectionString(this.model.server.connectionId, includePasswordInConnectionString),
+				connectionString: connectionString,
 				//TODO check what SSMS uses as batch size
-				batchSize: 500
+				batchSize: 500,
+				azureAccessToken: accessToken
 			});
 		} catch (e) {
 			err = e.toString();
@@ -154,7 +181,21 @@ export class SummaryPage extends ImportPage {
 		this.statusText.updateProperties({
 			value: updateText
 		});
-		return true;
+	}
+
+	/**
+	 * Removes authentication related properties from connection string as SQL Tools Service now supports
+	 * 'EnableSqlAuthenticationProvider' which sets the below properties on connection string that conflict with access token:
+	 *   1. User Id
+	 *   2. Authentication
+	 * Since we need to set access token, we cannot use the same connection string as is.
+	 * @param connString Connection string to fix
+	 * @returns Updated connection string
+	 */
+	private updateConnectionStringForAccessToken(connString: string): string {
+		return connString ? connString.split(';').filter(prop =>
+			!['user', 'uid', 'password', 'pwd', 'authentication'].some(prefix => prop.toLocaleLowerCase().startsWith(prefix))
+		).join(';') : connString;
 	}
 
 	// private async getCountRowsInserted(): Promise<Number> {

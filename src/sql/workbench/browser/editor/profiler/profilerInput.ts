@@ -11,7 +11,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 
-import { EditorInput } from 'vs/workbench/common/editor';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -19,7 +19,6 @@ import * as types from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import { FilterData } from 'sql/workbench/services/profiler/browser/profilerFilter';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
-import { find } from 'vs/base/common/arrays';
 
 export interface ColumnDefinition extends Slick.Column<Slick.SlickData> {
 	name: string;
@@ -42,10 +41,13 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	private _onColumnsChanged = new Emitter<Slick.Column<Slick.SlickData>[]>();
 	public onColumnsChanged: Event<Slick.Column<Slick.SlickData>[]> = this._onColumnsChanged.event;
 
+	private _initializerSetup: boolean = true;
+
 	private _filter: ProfilerFilter = { clauses: [] };
 
 	constructor(
-		public connection: IConnectionProfile,
+		public connection: IConnectionProfile | undefined,
+		public fileURI: URI | undefined,
 		@IProfilerService private _profilerService: IProfilerService,
 		@INotificationService private _notificationService: INotificationService
 	) {
@@ -64,6 +66,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			this._id = id;
 			this.state.change({ isConnected: true });
 		});
+
 		let searchFn = (val: { [x: string]: string }, exp: string): Array<number> => {
 			let ret = new Array<number>();
 			for (let i = 0; i < this._columns.length; i++) {
@@ -118,11 +121,11 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return this._sessionName;
 	}
 
-	public getTypeId(): string {
+	override get typeId(): string {
 		return ProfilerInput.ID;
 	}
 
-	public getName(): string {
+	public override getName(): string {
 		let name: string = nls.localize('profilerInput.profiler', "Profiler");
 		if (!this.connection) {
 			return name;
@@ -155,6 +158,24 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		} else {
 			return [];
 		}
+	}
+
+	public get isFileSession(): boolean {
+		return !!this.fileURI;
+	}
+
+	public get isSetupPhase(): boolean {
+		return this._initializerSetup;
+	}
+
+	public setInitializerPhase(isSetupPhase: boolean) {
+		this._initializerSetup = isSetupPhase;
+	}
+
+	public setConnectionState(isConnected: boolean): void {
+		this.state.change({
+			isConnected: isConnected
+		});
 	}
 
 	public setColumns(columns: Array<string>) {
@@ -194,7 +215,9 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public onSessionStopped(notification: azdata.ProfilerSessionStoppedParams) {
-		this._notificationService.error(nls.localize("profiler.sessionStopped", "XEvent Profiler Session stopped unexpectedly on the server {0}.", this.connection.serverName));
+		if (!this.isFileSession) {	// File session do not have serverName, so ignore notification error based off of server
+			this._notificationService.error(nls.localize("profiler.sessionStopped", "XEvent Profiler Session stopped unexpectedly on the server {0}.", this.connection.serverName));
+		}
 
 		this.state.change({
 			isStopped: true,
@@ -208,11 +231,11 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			this._notificationService.error(nls.localize("profiler.sessionCreationError", "Error while starting new session"));
 		} else {
 			this._sessionName = params.sessionName;
-			let sessionTemplate = find(this._profilerService.getSessionTemplates(), (template) => {
+			let sessionTemplate = this._profilerService.getSessionTemplates().find((template) => {
 				return template.name === params.templateName;
 			});
 			if (!types.isUndefinedOrNull(sessionTemplate)) {
-				let newView = find(this._profilerService.getViewTemplates(), (view) => {
+				let newView = this._profilerService.getViewTemplates().find((view) => {
 					return view.name === sessionTemplate!.defaultView;
 				});
 				if (!types.isUndefinedOrNull(newView)) {
@@ -278,11 +301,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		this.data.clearFilter();
 	}
 
-	isDirty(): boolean {
-		return this.state.isRunning || !!this.state.isPaused;
-	}
-
-	dispose() {
+	override dispose() {
 		super.dispose();
 		this._profilerService.disconnectSession(this.id);
 	}

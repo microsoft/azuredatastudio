@@ -1,14 +1,14 @@
 {
   "name": "kusto",
-  "version": "0.1.1",
+  "version": "0.5.9",
   "publisher": "Microsoft",
-  "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
+  "aiKey": "29a207bb14f84905966a8f22524cb730-25407f35-11b6-4d4e-8114-ab9e843cb52f-7380",
   "activationEvents": [
     "*"
   ],
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.22.0"
+    "azdata": ">=1.28.0"
   },
   "main": "./out/main",
   "repository": {
@@ -20,6 +20,12 @@
     "compile": "gulp compile-extension:kusto-client",
     "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-kusto ./syntaxes/kusto.tmLanguage"
   },
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
   "contributes": {
     "commands": [
       {
@@ -217,6 +223,7 @@
       "languageMode": "kusto",
       "notebookKernelAlias": "Kusto",
       "displayName": "%kusto.provider.displayName%",
+      "azureResource": "AzureKusto",
       "iconPath": [
         {
           "id": "kusto:cloud",
@@ -241,7 +248,7 @@
           "name": "connectionName",
           "displayName": "%kusto.connectionOptions.connectionName.displayName%",
           "description": "%kusto.connectionOptions.connectionName.description%",
-          "groupName": "Source",
+          "groupName": "%kusto.connectionOptions.groupName.source%",
           "valueType": "string",
           "defaultValue": null,
           "objectType": null,
@@ -255,7 +262,7 @@
           "name": "server",
           "displayName": "%kusto.connectionOptions.serverName.displayName%",
           "description": "%kusto.connectionOptions.serverName.description%",
-          "groupName": "Source",
+          "groupName": "%kusto.connectionOptions.groupName.source%",
           "valueType": "string",
           "defaultValue": null,
           "objectType": null,
@@ -269,7 +276,7 @@
           "name": "database",
           "displayName": "%kusto.connectionOptions.databaseName.displayName%",
           "description": "%kusto.connectionOptions.databaseName.description%",
-          "groupName": "Source",
+          "groupName": "%kusto.connectionOptions.groupName.source%",
           "valueType": "string",
           "defaultValue": null,
           "objectType": null,
@@ -283,7 +290,7 @@
           "name": "authenticationType",
           "displayName": "%kusto.connectionOptions.authType.displayName%",
           "description": "%kusto.connectionOptions.authType.description%",
-          "groupName": "Security",
+          "groupName": "%kusto.connectionOptions.groupName.security%",
           "valueType": "category",
           "defaultValue": "AzureMFA",
           "objectType": null,
@@ -291,6 +298,14 @@
             {
               "displayName": "%kusto.connectionOptions.authType.categoryValues.azureMFA%",
               "name": "AzureMFA"
+            },
+            {
+              "displayName": "%kusto.connectionOptions.authType.categoryValues.none%",
+              "name": "None"
+            },
+            {
+              "displayName": "%kusto.connectionOptions.authType.categoryValues.sqlLogin%",
+              "name": "SqlLogin"
             }
           ],
           "isRequired": true,
@@ -302,7 +317,7 @@
           "name": "user",
           "displayName": "%kusto.connectionOptions.userName.displayName%",
           "description": "%kusto.connectionOptions.userName.description%",
-          "groupName": "Security",
+          "groupName": "%kusto.connectionOptions.groupName.security%",
           "valueType": "string",
           "defaultValue": null,
           "objectType": null,
@@ -316,7 +331,7 @@
           "name": "password",
           "displayName": "%kusto.connectionOptions.password.displayName%",
           "description": "%kusto.connectionOptions.password.description%",
-          "groupName": "Security",
+          "groupName": "%kusto.connectionOptions.groupName.security%",
           "valueType": "password",
           "defaultValue": null,
           "objectType": null,
@@ -330,7 +345,7 @@
           "name": "connectTimeout",
           "displayName": "%kusto.connectionOptions.connectTimeout.displayName%",
           "description": "%kusto.connectionOptions.connectTimeout.description%",
-          "groupName": "Initialization",
+          "groupName": "%kusto.connectionOptions.groupName.initialization%",
           "valueType": "number",
           "defaultValue": "30",
           "objectType": null,
@@ -344,7 +359,7 @@
           "name": "connectRetryCount",
           "displayName": "%kusto.connectionOptions.connectRetryCount.displayName%",
           "description": "%kusto.connectionOptions.connectRetryCount.description%",
-          "groupName": "Connection Resiliency",
+          "groupName": "%kusto.connectionOptions.groupName.connectionResiliency%",
           "valueType": "number",
           "defaultValue": "1",
           "objectType": null,
@@ -358,7 +373,7 @@
           "name": "connectRetryInterval",
           "displayName": "%kusto.connectionOptions.connectRetryInterval.displayName%",
           "description": "%kusto.connectionOptions.connectRetryInterval.description%",
-          "groupName": "Connection Resiliency",
+          "groupName": "%kusto.connectionOptions.groupName.connectionResiliency%",
           "valueType": "number",
           "defaultValue": "10",
           "objectType": null,
@@ -372,7 +387,7 @@
           "name": "applicationName",
           "displayName": "%kusto.connectionOptions.applicationName.displayName%",
           "description": "%kusto.connectionOptions.applicationName.description%",
-          "groupName": "Context",
+          "groupName": "%kusto.connectionOptions.groupName.context%",
           "valueType": "string",
           "defaultValue": null,
           "objectType": null,
@@ -386,7 +401,7 @@
           "name": "workstationId",
           "displayName": "%kusto.connectionOptions.workstationId.displayName%",
           "description": "%kusto.connectionOptions.workstationId.description%",
-          "groupName": "Context",
+          "groupName": "%kusto.connectionOptions.groupName.context%",
           "valueType": "string",
           "defaultValue": null,
           "objectType": null,
@@ -400,7 +415,7 @@
           "name": "failoverPartner",
           "displayName": "%kusto.connectionOptions.failoverPartner.displayName%",
           "description": "%kusto.connectionOptions.failoverPartner.description%",
-          "groupName": " Source",
+          "groupName": "%kusto.connectionOptions.groupName.source%",
           "valueType": "string",
           "defaultValue": null,
           "objectType": null,
@@ -412,11 +427,11 @@
     }
   },
   "dependencies": {
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.1.0",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.3.8",
     "figures": "^2.0.0",
     "find-remove": "1.2.1",
-    "service-downloader": "0.2.1",
-    "vscode-extension-telemetry": "0.1.0",
+    "@microsoft/ads-service-downloader": "^1.2.1",
+    "@microsoft/ads-extension-telemetry": "^3.0.1",
     "vscode-languageclient": "5.2.1",
     "vscode-nls": "^4.0.0"
   },
@@ -424,5 +439,10 @@
     "@types/kerberos": "^1.1.0",
     "@types/request": "^2.48.2",
     "@types/through2": "^2.0.34"
+  },
+  "__metadata": {
+    "id": "74",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
   }
 }

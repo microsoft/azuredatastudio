@@ -10,9 +10,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { buttonBackground } from 'vs/platform/theme/common/colorRegistry';
-import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
@@ -22,16 +20,16 @@ import * as azdata from 'azdata';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { FirewallRuleViewModel } from 'sql/platform/accounts/common/firewallRuleViewModel';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IAccountPickerService } from 'sql/workbench/services/accountManagement/browser/accountPicker';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 // TODO: Make the help link 1) extensible (01/08/2018, https://github.com/Microsoft/azuredatastudio/issues/450)
 // in case that other non-Azure sign in is to be used
@@ -39,13 +37,24 @@ const firewallHelpUri = 'https://aka.ms/sqlopsfirewallhelp';
 
 const LocalizedStrings = {
 	FROM: localize('from', "From"),
-	TO: localize('to', "To")
+	TO: localize('to', "To"),
+	OK: localize('firewall.ok', "OK"),
+	Cancel: localize('firewall.cancel', "Cancel"),
+	RuleName: localize('firewall.ruleName', "Rule name"),
+	CreateNewFirewallRule: localize('createNewFirewallRule', "Create new firewall rule"),
+	FirewallRuleLabel: localize('filewallRule', "Firewall rule"),
+	FirewallRuleDescription: localize('firewallRuleDescription',
+		"A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule."),
+	FirewallRuleHelpLink: localize('firewallRuleHelpLink', "Learn more about firewall rules"),
+	AddClientIPLabel: localize('addIPAddressLabel', "Add my client IP "),
+	AddIPRangeLabel: localize('addIpRangeLabel', "Add my subnet IP range")
 };
 
 export class FirewallRuleDialog extends Modal {
 	public viewModel: FirewallRuleViewModel;
 	private _createButton?: Button;
 	private _closeButton?: Button;
+	private _ruleNameInpuBox?: InputBox;
 	private _fromRangeinputBox?: InputBox;
 	private _toRangeinputBox?: InputBox;
 
@@ -78,8 +87,8 @@ export class FirewallRuleDialog extends Modal {
 		@IOpenerService private readonly openerService: IOpenerService
 	) {
 		super(
-			localize('createNewFirewallRule', "Create new firewall rule"),
-			TelemetryKeys.FireWallRule,
+			LocalizedStrings.CreateNewFirewallRule,
+			TelemetryKeys.ModalDialogName.FireWallRule,
 			telemetryService,
 			layoutService,
 			clipboardService,
@@ -88,7 +97,7 @@ export class FirewallRuleDialog extends Modal {
 			textResourcePropertiesService,
 			contextKeyService,
 			{
-				isFlyout: true,
+				dialogStyle: 'flyout',
 				hasBackButton: true,
 				hasSpinner: true
 			}
@@ -102,35 +111,105 @@ export class FirewallRuleDialog extends Modal {
 		this.viewModel = this._instantiationService.createInstance(FirewallRuleViewModel);
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 		this.backButton!.onDidClick(() => this.cancel());
-		this._register(attachButtonStyler(this.backButton!, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND }));
-		this._createButton = this.addFooterButton(localize('firewall.ok', "OK"), () => this.createFirewallRule());
-		this._closeButton = this.addFooterButton(localize('firewall.cancel', "Cancel"), () => this.cancel());
+		this._register(this.backButton!);
+		this._createButton = this.addFooterButton(LocalizedStrings.OK, () => this.createFirewallRule());
+		this._closeButton = this.addFooterButton(LocalizedStrings.Cancel, () => this.cancel(), 'right', true);
 		this.registerListeners();
 	}
 
 	protected renderBody(container: HTMLElement) {
-		const body = DOM.append(container, DOM.$('.firewall-rule-dialog'));
-		const descriptionSection = DOM.append(body, DOM.$('.firewall-rule-description-section.new-section'));
+		const dialogBody = DOM.append(container, DOM.$('.firewall-rule-dialog'));
 
+		this.createFirewallRuleHeader(dialogBody);
+		this.createAccountPicker(dialogBody);
+
+		// Firewall rule section
+		const firewallRuleSection = DOM.append(dialogBody, DOM.$('.firewall-rule-section.new-section'));
+		this.createLabelElement(firewallRuleSection, LocalizedStrings.FirewallRuleLabel, true);
+		const radioContainer = DOM.append(firewallRuleSection, DOM.$('.radio-section'));
+		const form = DOM.append(radioContainer, DOM.$('form.firewall-rule'));
+
+		// Firewall rule name inputBox
+		const descriptionDiv = DOM.append(form, DOM.$('div.firewall-rulename dialog-input'));
+		const descInputContainer = DOM.append(descriptionDiv, DOM.$('.dialog-input-section'));
+		DOM.append(descInputContainer, DOM.$('.dialog-label')).innerText = LocalizedStrings.RuleName;
+		this._ruleNameInpuBox = new InputBox(DOM.append(descInputContainer, DOM.$('.dialog-input')), this._contextViewService, {
+			ariaLabel: LocalizedStrings.RuleName,
+			inputBoxStyles: defaultInputBoxStyles
+		});
+
+		// Single IP Address radio button
+		const IPAddressDiv = DOM.append(form, DOM.$('div.firewall-ip-address dialog-input'));
+		const subnetIPRangeDiv = DOM.append(form, DOM.$('div.firewall-subnet-ip-range dialog-input'));
+		const IPAddressContainer = DOM.append(IPAddressDiv, DOM.$('div.option-container'));
+		this._IPAddressInput = DOM.append(IPAddressContainer, DOM.$('input.option-input'));
+		this._IPAddressInput.setAttribute('type', 'radio');
+		this._IPAddressInput.setAttribute('name', 'firewallRuleChoice');
+		this._IPAddressInput.setAttribute('value', 'ipAddress');
+		const IPAddressDescription = DOM.append(IPAddressContainer, DOM.$('div.option-description'));
+		IPAddressDescription.innerText = LocalizedStrings.AddClientIPLabel;
+		this._IPAddressElement = DOM.append(IPAddressContainer, DOM.$('div.option-ip-address'));
+
+		// IP Range radio button
+		const subnetIpRangeContainer = DOM.append(subnetIPRangeDiv, DOM.$('div.option-container'));
+		this._subnetIPRangeInput = DOM.append(subnetIpRangeContainer, DOM.$('input.option-input'));
+		this._subnetIPRangeInput.setAttribute('type', 'radio');
+		this._subnetIPRangeInput.setAttribute('name', 'firewallRuleChoice');
+		this._subnetIPRangeInput.setAttribute('value', 'ipRange');
+		const subnetIPRangeDescription = DOM.append(subnetIpRangeContainer, DOM.$('div.option-description'));
+		subnetIPRangeDescription.innerText = LocalizedStrings.AddIPRangeLabel;
+
+		// IP Range input boxes
+		const subnetIPRangeSection = DOM.append(subnetIPRangeDiv, DOM.$('.subnet-ip-range-input'));
+		const inputContainer = DOM.append(subnetIPRangeSection, DOM.$('.dialog-input-section'));
+
+		DOM.append(inputContainer, DOM.$('.dialog-label')).innerText = LocalizedStrings.FROM;
+		this._fromRangeinputBox = new InputBox(DOM.append(inputContainer, DOM.$('.dialog-input')), this._contextViewService, {
+			ariaLabel: LocalizedStrings.FROM,
+			inputBoxStyles: defaultInputBoxStyles
+		});
+
+		DOM.append(inputContainer, DOM.$('.dialog-label')).innerText = LocalizedStrings.TO;
+		this._toRangeinputBox = new InputBox(DOM.append(inputContainer, DOM.$('.dialog-input')), this._contextViewService, {
+			ariaLabel: LocalizedStrings.TO,
+			inputBoxStyles: defaultInputBoxStyles
+		});
+
+		// Register events
+		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
+		this.updateTheme(this._themeService.getColorTheme());
+
+		this._register(DOM.addDisposableListener(this._IPAddressInput, DOM.EventType.CLICK, () => {
+			this.onFirewallRuleOptionSelected(true);
+		}));
+
+		this._register(DOM.addDisposableListener(this._subnetIPRangeInput, DOM.EventType.CLICK, () => {
+			this.onFirewallRuleOptionSelected(false);
+		}));
+	}
+
+	// Create firewall rule header
+	private createFirewallRuleHeader(dialogBody: HTMLElement) {
+		const descriptionSection = DOM.append(dialogBody, DOM.$('.firewall-rule-description-section.new-section'));
 		DOM.append(descriptionSection, DOM.$('div.firewall-rule-icon'));
-
 		const textDescriptionContainer = DOM.append(descriptionSection, DOM.$('div.firewall-rule-description'));
-		const dialogDescription = localize('firewallRuleDialogDescription',
-			"Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.");
-		this.createLabelElement(textDescriptionContainer, dialogDescription, false);
 
+		this.createLabelElement(textDescriptionContainer, LocalizedStrings.FirewallRuleDescription, false);
 		this._helpLink = DOM.append(textDescriptionContainer, DOM.$('a.help-link'));
+
 		this._helpLink.setAttribute('href', firewallHelpUri);
-		this._helpLink.innerHTML += localize('firewallRuleHelpDescription', "Learn more about firewall settings");
+		this._helpLink.innerHTML += LocalizedStrings.FirewallRuleHelpLink;
 		this._helpLink.onclick = () => {
 			this.openerService.open(URI.parse(firewallHelpUri));
 		};
+	}
 
-		// Create account picker with event handling
+	// Create account picker with event handling
+	private createAccountPicker(dialogBody: HTMLElement) {
 		this._accountPickerService.addAccountCompleteEvent(() => this.spinner = false);
 		this._accountPickerService.addAccountErrorEvent((msg) => {
 			this.spinner = false;
@@ -140,68 +219,22 @@ export class FirewallRuleDialog extends Modal {
 		this._accountPickerService.onAccountSelectionChangeEvent((account) => this.onAccountSelectionChange(account));
 		this._accountPickerService.onTenantSelectionChangeEvent((tenantId) => !!tenantId && this.onTenantSelectionChange(tenantId));
 
-		const azureAccountSection = DOM.append(body, DOM.$('.azure-account-section.new-section'));
+		const azureAccountSection = DOM.append(dialogBody, DOM.$('.azure-account-section.new-section'));
 		this._accountPickerService.renderAccountPicker(azureAccountSection);
-
-		const firewallRuleSection = DOM.append(body, DOM.$('.firewall-rule-section.new-section'));
-		const firewallRuleLabel = localize('filewallRule', "Firewall rule");
-		this.createLabelElement(firewallRuleSection, firewallRuleLabel, true);
-		const radioContainer = DOM.append(firewallRuleSection, DOM.$('.radio-section'));
-		const form = DOM.append(radioContainer, DOM.$('form.firewall-rule'));
-		const IPAddressDiv = DOM.append(form, DOM.$('div.firewall-ip-address dialog-input'));
-		const subnetIPRangeDiv = DOM.append(form, DOM.$('div.firewall-subnet-ip-range dialog-input'));
-
-		const IPAddressContainer = DOM.append(IPAddressDiv, DOM.$('div.option-container'));
-		this._IPAddressInput = DOM.append(IPAddressContainer, DOM.$('input.option-input'));
-		this._IPAddressInput.setAttribute('type', 'radio');
-		this._IPAddressInput.setAttribute('name', 'firewallRuleChoice');
-		this._IPAddressInput.setAttribute('value', 'ipAddress');
-		const IPAddressDescription = DOM.append(IPAddressContainer, DOM.$('div.option-description'));
-		IPAddressDescription.innerText = localize('addIPAddressLabel', "Add my client IP ");
-		this._IPAddressElement = DOM.append(IPAddressContainer, DOM.$('div.option-ip-address'));
-
-		const subnetIpRangeContainer = DOM.append(subnetIPRangeDiv, DOM.$('div.option-container'));
-		this._subnetIPRangeInput = DOM.append(subnetIpRangeContainer, DOM.$('input.option-input'));
-		this._subnetIPRangeInput.setAttribute('type', 'radio');
-		this._subnetIPRangeInput.setAttribute('name', 'firewallRuleChoice');
-		this._subnetIPRangeInput.setAttribute('value', 'ipRange');
-		const subnetIPRangeDescription = DOM.append(subnetIpRangeContainer, DOM.$('div.option-description'));
-		subnetIPRangeDescription.innerText = localize('addIpRangeLabel', "Add my subnet IP range");
-		const subnetIPRangeSection = DOM.append(subnetIPRangeDiv, DOM.$('.subnet-ip-range-input'));
-
-		const inputContainer = DOM.append(subnetIPRangeSection, DOM.$('.dialog-input-section'));
-
-		DOM.append(inputContainer, DOM.$('.dialog-label')).innerText = LocalizedStrings.FROM;
-
-		this._fromRangeinputBox = new InputBox(DOM.append(inputContainer, DOM.$('.dialog-input')), this._contextViewService, {
-			ariaLabel: LocalizedStrings.FROM
-		});
-
-		DOM.append(inputContainer, DOM.$('.dialog-label')).innerText = LocalizedStrings.TO;
-
-		this._toRangeinputBox = new InputBox(DOM.append(inputContainer, DOM.$('.dialog-input')), this._contextViewService, {
-			ariaLabel: LocalizedStrings.TO
-		});
-
-		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
-		this.updateTheme(this._themeService.getColorTheme());
-
-		this._register(DOM.addDisposableListener(this._IPAddressElement, DOM.EventType.CLICK, () => {
-			this.onFirewallRuleOptionSelected(true);
-		}));
-
-		this._register(DOM.addDisposableListener(this._subnetIPRangeInput, DOM.EventType.CLICK, () => {
-			this.onFirewallRuleOptionSelected(false);
-		}));
 	}
 
 	private onFirewallRuleOptionSelected(isIPAddress: boolean) {
 		this.viewModel.isIPAddressSelected = isIPAddress;
-		if (this._fromRangeinputBox) {
-			isIPAddress ? this._fromRangeinputBox.disable() : this._fromRangeinputBox.enable();
-		}
-		if (this._toRangeinputBox) {
-			isIPAddress ? this._toRangeinputBox.disable() : this._toRangeinputBox.enable();
+		if (isIPAddress) {
+			this._fromRangeinputBox!.disable();
+			this._fromRangeinputBox!.value = '';
+			this._toRangeinputBox!.disable();
+			this._toRangeinputBox!.value = '';
+		} else {
+			this._fromRangeinputBox!.enable();
+			this._fromRangeinputBox!.value = this.viewModel!.defaultFromSubnetIPRange ?? '';
+			this._toRangeinputBox!.enable();
+			this._toRangeinputBox!.value = this.viewModel!.defaultToSubnetIPRange ?? '';
 		}
 	}
 
@@ -212,7 +245,7 @@ export class FirewallRuleDialog extends Modal {
 	private createLabelElement(container: HTMLElement, content: string, isHeader?: boolean) {
 		let className = 'dialog-label';
 		if (isHeader) {
-			className += ' header';
+			className += '.header';
 		}
 		const element = DOM.append(container, DOM.$(`.${className}`));
 		element.innerText = content;
@@ -230,10 +263,13 @@ export class FirewallRuleDialog extends Modal {
 
 	private registerListeners(): void {
 		// Theme styler
-		this._register(attachButtonStyler(this._createButton!, this._themeService));
-		this._register(attachButtonStyler(this._closeButton!, this._themeService));
-		this._register(attachInputBoxStyler(this._fromRangeinputBox!, this._themeService));
-		this._register(attachInputBoxStyler(this._toRangeinputBox!, this._themeService));
+		this._register(this._createButton!);
+		this._register(this._closeButton!);
+
+		// handler for firewall rule name change events
+		this._register(this._ruleNameInpuBox!.onDidChange(ruleName => {
+			this.firewallRuleNameChanged(ruleName);
+		}));
 
 		// handler for from subnet ip range change events
 		this._register(this._fromRangeinputBox!.onDidChange(IPAddress => {
@@ -246,6 +282,10 @@ export class FirewallRuleDialog extends Modal {
 		}));
 	}
 
+	private firewallRuleNameChanged(ruleName: string) {
+		this.viewModel.firewallRuleName = ruleName;
+	}
+
 	private fromRangeInputChanged(IPAddress: string) {
 		this.viewModel.fromSubnetIPRange = IPAddress;
 	}
@@ -254,23 +294,23 @@ export class FirewallRuleDialog extends Modal {
 		this.viewModel.toSubnetIPRange = IPAddress;
 	}
 
-	/* Overwrite esapce key behavior */
-	protected onClose() {
+	/* Overwrite escape key behavior */
+	protected override onClose() {
 		this.cancel();
 	}
 
 	/* Overwrite enter key behavior */
-	protected onAccept() {
+	protected override onAccept() {
 		this.createFirewallRule();
 	}
 
 	public cancel() {
 		this._onCancel.fire();
-		this.close();
+		this.hide('cancel');
 	}
 
 	public close() {
-		this.hide();
+		this.hide('close');
 	}
 
 	public createFirewallRule() {
@@ -279,6 +319,10 @@ export class FirewallRuleDialog extends Modal {
 			this.spinner = true;
 			this._onCreateFirewallRule.fire();
 		}
+	}
+
+	public setInitialAccountTenant(account: string, tenant: string) {
+		this._accountPickerService.setInitialAccountTenant(account, tenant);
 	}
 
 	public onAccountSelectionChange(account: azdata.Account | undefined): void {
@@ -302,9 +346,10 @@ export class FirewallRuleDialog extends Modal {
 	public open() {
 		this._IPAddressInput!.click();
 		this.onAccountSelectionChange(this._accountPickerService.selectedAccount);
+		this._ruleNameInpuBox!.value = this.viewModel!.defaultFirewallRuleName ?? '';
 		this._fromRangeinputBox!.setPlaceHolder(this.viewModel!.defaultFromSubnetIPRange ?? '');
 		this._toRangeinputBox!.setPlaceHolder(this.viewModel!.defaultToSubnetIPRange ?? '');
-		this._IPAddressElement!.innerText = '(' + this.viewModel.defaultIPAddress ?? '' + ')';
+		this._IPAddressElement!.innerText = `(${this.viewModel.defaultIPAddress ?? ''})`;
 
 		this.show();
 	}

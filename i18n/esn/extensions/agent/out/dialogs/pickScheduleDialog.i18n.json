@@ -11,6 +11,6 @@
 	"pickSchedule.cancel": "Cancelar",
 	"pickSchedule.availableSchedules": "Programaciones disponibles:",
 	"pickSchedule.scheduleName": "Nombre",
-	"pickSchedule.scheduleID": "ID.",
+	"pickSchedule.scheduleID": "Id.",
 	"pickSchedule.description": "Descripción"
 }

@@ -4,40 +4,68 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/resourceViewerTable';
+import * as azdata from 'azdata';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { attachTableStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
-
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { slickGridDataItemColumnValueExtractor } from 'sql/base/browser/ui/table/formatters';
-import { HeaderFilter, CommandEventArgs, IExtendedColumn } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
+import { HyperlinkCellValue, isHyperlinkCellValue, TextCellValue } from 'sql/base/browser/ui/table/formatters';
+import { HeaderFilter, CommandEventArgs } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
+import { FilterableColumn, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { isString } from 'vs/base/common/types';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { localize } from 'vs/nls';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { ColumnDefinition } from 'sql/workbench/browser/editor/resourceViewer/resourceViewerInput';
+import { Emitter } from 'vs/base/common/event';
+import { ContextMenuAnchor } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerEditor';
+import { LoadingSpinnerPlugin } from 'sql/base/browser/ui/table/plugins/loadingSpinner.plugin';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultTableFilterStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export class ResourceViewerTable extends Disposable {
 
-	private _resourceViewerTable!: Table<Slick.SlickData>;
-	private _dataView: TableDataView<Slick.SlickData>;
+	private _resourceViewerTable!: Table<azdata.DataGridItem>;
+	private _dataView: TableDataView<azdata.DataGridItem>;
+	private _loadingSpinnerPlugin = new LoadingSpinnerPlugin<azdata.DataGridItem>();
+	private _onContextMenu = new Emitter<{ anchor: ContextMenuAnchor, item: azdata.DataGridItem }>();
+	public onContextMenu = this._onContextMenu.event;
 
-	constructor(parent: HTMLElement, @IWorkbenchThemeService private _themeService: IWorkbenchThemeService) {
+	constructor(parent: HTMLElement,
+		@IOpenerService private _openerService: IOpenerService,
+		@ICommandService private _commandService: ICommandService,
+		@INotificationService private _notificationService: INotificationService,
+		@IContextViewService private _contextViewService: IContextViewService,
+		@IAccessibilityService private _accessibilityService: IAccessibilityService,
+		@IQuickInputService private _quickInputService: IQuickInputService,
+		@IComponentContextService private readonly _componentContextService: IComponentContextService) {
 		super();
-		let filterFn = (data: Array<Slick.SlickData>): Array<Slick.SlickData> => {
+		let filterFn = (data: Array<azdata.DataGridItem>): Array<azdata.DataGridItem> => {
 			return data.filter(item => this.filter(item));
 		};
 
-		this._dataView = new TableDataView<Slick.SlickData>(undefined, undefined, undefined, filterFn);
-		this._resourceViewerTable = this._register(new Table(parent, {
+		this._dataView = new TableDataView<azdata.DataGridItem>(undefined, undefined, undefined, filterFn);
+		this._resourceViewerTable = this._register(new Table(parent, this._accessibilityService, this._quickInputService, defaultTableStyles, {
 			sorter: (args) => {
 				this._dataView.sort(args);
 			}
 		}, {
-			dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor,
-			forceFitColumns: true
+			dataItemColumnValueExtractor: dataGridColumnValueExtractor
 		}));
+
 		this._resourceViewerTable.setSelectionModel(new RowSelectionModel());
-		let filterPlugin = new HeaderFilter<Slick.SlickData>();
-		this._register(attachButtonStyler(filterPlugin, this._themeService));
-		this._register(attachTableStyler(this._resourceViewerTable, this._themeService));
+		let filterPlugin = new HeaderFilter<azdata.DataGridItem>(defaultTableFilterStyles, this._contextViewService);
+		this._register(this._resourceViewerTable.onClick(this.onTableClick, this));
+		this._register(this._resourceViewerTable.onContextMenu((e: ITableMouseEvent) => {
+			this._onContextMenu.fire({
+				anchor: e.anchor,
+				item: this._dataView.getItem(e.cell.row)
+			});
+		}));
 		filterPlugin.onFilterApplied.subscribe(() => {
 			this._dataView.filter();
 			this._resourceViewerTable.grid.invalidate();
@@ -45,7 +73,7 @@ export class ResourceViewerTable extends Disposable {
 			this._resourceViewerTable.grid.resetActiveCell();
 			this._resourceViewerTable.grid.resizeCanvas();
 		});
-		filterPlugin.onCommand.subscribe((e, args: CommandEventArgs<Slick.SlickData>) => {
+		filterPlugin.onCommand.subscribe((e, args: CommandEventArgs<azdata.DataGridItem>) => {
 			// Convert filter command to SlickGrid sort args
 			this._dataView.sort({
 				grid: args.grid,
@@ -57,9 +85,11 @@ export class ResourceViewerTable extends Disposable {
 			this._resourceViewerTable.grid.render();
 		});
 		this._resourceViewerTable.registerPlugin(filterPlugin);
+		this._resourceViewerTable.registerPlugin(this._loadingSpinnerPlugin);
+		this._register(this._componentContextService.registerTable(this._resourceViewerTable));
 	}
 
-	public set data(data: Slick.SlickData[]) {
+	public set data(data: azdata.DataGridItem[]) {
 		this._dataView.clear();
 		this._dataView.push(data);
 		this._resourceViewerTable.grid.setData(this._dataView, true);
@@ -67,7 +97,29 @@ export class ResourceViewerTable extends Disposable {
 	}
 
 	public set columns(columns: Slick.Column<Slick.SlickData>[]) {
-		this._resourceViewerTable.columns = columns;
+		this._resourceViewerTable.columns = columns as any; // Cast to any to fix strict type assertion error
+		this._resourceViewerTable.autosizeColumns();
+	}
+
+	public set loading(isLoading: boolean) {
+		this._loadingSpinnerPlugin.loading = isLoading;
+	}
+
+	public set title(title: string) {
+		this._resourceViewerTable.setTableTitle(title);
+	}
+
+	public registerPlugin(plugin: Slick.Plugin<azdata.DataGridItem>): void {
+		this._resourceViewerTable.registerPlugin(plugin);
+	}
+
+	public unregisterPlugin(plugin: Slick.Plugin<azdata.DataGridItem>): void {
+		this._resourceViewerTable.unregisterPlugin(plugin);
+	}
+
+	public layout(): void {
+		this._resourceViewerTable.resizeCanvas();
+		this._resourceViewerTable.autosizeColumns();
 	}
 
 	public focus(): void {
@@ -78,7 +130,7 @@ export class ResourceViewerTable extends Disposable {
 		const columns = this._resourceViewerTable.grid.getColumns();
 		let value = true;
 		for (let i = 0; i < columns.length; i++) {
-			const col: IExtendedColumn<Slick.SlickData> = columns[i];
+			const col: FilterableColumn<Slick.SlickData> = columns[i] as any; // Cast to any to fix strict type assertion error
 			if (!col.field) {
 				continue;
 			}
@@ -92,5 +144,43 @@ export class ResourceViewerTable extends Disposable {
 			}
 		}
 		return value;
+	}
+
+	private async onTableClick(event: ITableMouseEvent): Promise<void> {
+		const column = this._resourceViewerTable.columns[event.cell.cell] as ColumnDefinition;
+		if (column) {
+			const row = this._dataView.getItem(event.cell.row);
+			const value = row[column.field];
+			if (isHyperlinkCellValue(value)) {
+				if (isString(value.linkOrCommand)) {
+					try {
+						await this._openerService.open(value.linkOrCommand);
+					} catch (err) {
+						this._notificationService.error(localize('resourceViewerTable.openError', "Error opening link : {0}", err.message ?? err));
+					}
+				} else {
+					try {
+						await this._commandService.executeCommand(value.linkOrCommand.id, ...(value.linkOrCommand.args ?? []));
+					} catch (err) {
+						this._notificationService.error(localize('resourceViewerTable.commandError', "Error executing command '{0}' : {1}", value.linkOrCommand.id, err.message ?? err));
+					}
+				}
+			}
+		}
+	}
+}
+
+/**
+ * Extracts the specified field into the expected object to be handled by SlickGrid and/or formatters as needed.
+ */
+function dataGridColumnValueExtractor(value: azdata.DataGridItem, columnDef: ColumnDefinition): TextCellValue | HyperlinkCellValue {
+	const fieldValue = value[columnDef.field];
+	if (columnDef.type === 'hyperlink') {
+		return fieldValue as HyperlinkCellValue;
+	} else {
+		return <TextCellValue>{
+			text: fieldValue,
+			ariaLabel: fieldValue ? escape(fieldValue as string) : fieldValue
+		};
 	}
 }

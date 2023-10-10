@@ -10,3 +10,4 @@ export const fileFiltersSet: { label: string, filters: string[] }[] = [
 	{ label: localize('backup.filterBackupFiles', "Backup Files"), filters: ['*.bak', '*.trn', '*.log'] },
 	{ label: localize('backup.allFiles', "All Files"), filters: ['*'] }
 ];
+

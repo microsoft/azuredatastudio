@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../../common/constants';
 import { ApiWrapper } from '../../common/apiWrapper';
-import * as mssql from '../../../../mssql';
+import * as mssql from 'mssql';
 import * as path from 'path';
 
 export interface LanguageUpdateModel {

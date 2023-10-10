@@ -8,8 +8,8 @@ import 'vs/css!./media/icons';
 
 import { ActionBar } from './actionbar';
 
-import { IActionRunner, IAction, IActionViewItem } from 'vs/base/common/actions';
-import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IActionRunner, IAction } from 'vs/base/common/actions';
+import { ActionsOrientation, IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IToolBarOptions } from 'vs/base/browser/ui/toolbar/toolbar';
 import { OverflowActionBar } from 'sql/base/browser/ui/taskbar/overflowActionbar';
 
@@ -52,7 +52,7 @@ export class Taskbar {
 					orientation: options.orientation,
 					ariaLabel: options.ariaLabel,
 					actionViewItemProvider: (action: IAction): IActionViewItem | undefined => {
-						return options.actionViewItemProvider ? options.actionViewItemProvider(action) : undefined;
+						return options.actionViewItemProvider ? options.actionViewItemProvider(action, {}) : undefined;
 					}
 				}
 			);
@@ -63,7 +63,7 @@ export class Taskbar {
 					orientation: options.orientation,
 					ariaLabel: options.ariaLabel,
 					actionViewItemProvider: (action: IAction): IActionViewItem | undefined => {
-						return options.actionViewItemProvider ? options.actionViewItemProvider(action) : undefined;
+						return options.actionViewItemProvider ? options.actionViewItemProvider(action, {}) : undefined;
 					}
 				}
 			);
@@ -162,4 +162,7 @@ export class Taskbar {
 		this.actionBar.dispose();
 	}
 
+	public clear(): void {
+		this.actionBar.clear();
+	}
 }

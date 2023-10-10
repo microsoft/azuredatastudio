@@ -17,16 +17,24 @@
 }
 
 .slick-cell a,
-.slick-cell a:link,
-.resultsMessageValue a,
-.resultsMessageValue a:link {
+.resultsMessageValue a {
 	color: var(--color-grid-link);
+	cursor: pointer;
+	white-space: inherit;
+}
+
+.resultsMessageValue a {
 	text-decoration: underline;
+}
+
+.slick-cell a {
+	text-decoration: none;
 }
 
 .slick-cell a:hover,
 .resultsMessageValue a:hover {
 	color: var(--color-grid-link-hover);
+	text-decoration: underline;
 }
 
 /*
@@ -61,6 +69,11 @@
 .vs .codicon.saveExcel {
 	/* ResultToXlsx_16x_vscode */
 	background-image: url("saveExcel.svg");
+}
+
+.vs .codicon.saveMarkdown {
+	/* ResultToMarkdown_16x_vscode */
+	background-image: url("saveMarkdown.svg");
 }
 
 .vs .codicon.saveXml {
@@ -142,10 +155,19 @@
 }
 
 /* icons */
+.hc-light .codicon.extendFullScreen {
+	/* ExtendToFullScreen_16x_vscode_inverse.svg */
+	background-image: url("extendFullScreen.svg");
+}
+
 .vs-dark .codicon.extendFullScreen,
 .hc-black .codicon.extendFullScreen {
 	/* ExtendToFullScreen_16x_vscode_inverse.svg */
 	background-image: url("extendFullScreen_inverse.svg");
+}
+
+.hc-light .codicon.exitFullScreen {
+	background-image: url("exitFullScreen.svg");
 }
 
 .vs-dark .codicon.exitFullScreen,
@@ -154,10 +176,18 @@
 	background-image: url("exitFullScreen_inverse.svg");
 }
 
+.hc-light .codicon.saveJson {
+	background-image: url("saveJson.svg");
+}
+
 .vs-dark .codicon.saveJson,
 .hc-black .codicon.saveJson {
 	/* ResultToJSON_16x_vscode_inverse.svg */
 	background-image: url("saveJson_inverse.svg");
+}
+
+.hc-light .codicon.saveCsv {
+	background-image: url("saveCsv.svg");
 }
 
 .vs-dark .codicon.saveCsv,
@@ -166,10 +196,28 @@
 	background-image: url("saveCsv_inverse.svg");
 }
 
+.hc-light .codicon.saveExcel {
+	background-image: url("saveExcel.svg");
+}
+
 .vs-dark .codicon.saveExcel,
 .hc-black .codicon.saveExcel {
 	/* ResultToXlsx_16x_vscode_inverse.svg */
 	background-image: url("saveExcel_inverse.svg");
+}
+
+.hc-light .codicon.saveMarkdown {
+	background-image: url("saveMarkdown.svg");
+}
+
+.vs-dark .codicon.saveMarkdown,
+.hc-black .codicon.saveMarkdown {
+	/* ResultToMarkdown_16x_vscode_inverse.svg */
+	background-image: url("saveMarkdown_inverse.svg");
+}
+
+.hc-light .codicon.saveXml {
+	background-image: url("saveXml.svg");
 }
 
 .vs-dark .codicon.saveXml,
@@ -178,10 +226,18 @@
 	background-image: url("saveXml_inverse.svg");
 }
 
+.hc-light .codicon.viewChart {
+	background-image: url("viewChart.svg");
+}
+
 .vs-dark .codicon.viewChart,
 .hc-black .codicon.viewChart {
 	/* ResultToXlsx_16x_vscode */
 	background-image: url("viewChart_inverse.svg");
+}
+
+.hc-light .codicon.viewVisualizer {
+	background-image: url("viewVisualizer.svg");
 }
 
 .vs-dark .codicon.viewVisualizer,

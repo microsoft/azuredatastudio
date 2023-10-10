@@ -9,14 +9,11 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { StopWatch } from 'vs/base/common/stopwatch';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { join } from 'vs/base/common/path';
 import * as Utils from 'sql/platform/connection/common/utils';
 import * as azdata from 'azdata';
-import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
-import { startsWith } from 'vs/base/common/strings';
+import * as nls from 'vs/nls';
 import { values } from 'vs/base/common/collections';
-import { firstIndex, find } from 'vs/base/common/arrays';
+import { Schemas } from 'vs/base/common/network';
 
 export class ConnectionStatusManager {
 
@@ -24,9 +21,7 @@ export class ConnectionStatusManager {
 
 	constructor(
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@ILogService private _logService: ILogService,
-		@IEnvironmentService private _environmentService: IEnvironmentService,
-		@INotificationService private _notificationService: INotificationService) {
+		@ILogService private _logService: ILogService) {
 		this._connections = {};
 	}
 
@@ -39,7 +34,7 @@ export class ConnectionStatusManager {
 	}
 
 	public findConnectionByProfileId(profileId: string): ConnectionManagementInfo | undefined {
-		return find(values(this._connections), connection => connection.connectionProfile.id === profileId);
+		return values(this._connections).find(connection => connection.connectionProfile.id === profileId);
 	}
 
 	public findConnectionProfile(connectionProfile: IConnectionProfile): ConnectionManagementInfo | undefined {
@@ -49,6 +44,21 @@ export class ConnectionStatusManager {
 
 	public hasConnection(id: string): Boolean {
 		return !!this.findConnection(id);
+	}
+
+	public changeConnectionUri(newUri: string, oldUri: string): void {
+		let info = this.findConnection(oldUri);
+		if (!info) {
+			this._logService.error(`No connection found associated with old URI : '${oldUri}'`);
+			throw new Error(nls.localize('connectionStatusManager.noConnectionForUri', 'Could not find connection with uri: {0}', oldUri));
+		}
+		if (this._connections[newUri]) {
+			this._logService.error(`New URI : '${newUri}' is already in the connections list.`);
+			throw new Error(nls.localize('connectionStatusManager.uriAlreadyInConnectionsList', 'There is already a connection with uri: {0}', newUri));
+		}
+		info.ownerUri = newUri;
+		this._connections[newUri] = info;
+		delete this._connections[oldUri];
 	}
 
 	public deleteConnection(id: string): void {
@@ -128,10 +138,6 @@ export class ConnectionStatusManager {
 		let connection = this._connections[summary.ownerUri];
 		if (!connection) {
 			this._logService.error(`OnConnectionComplete but no connection found '${summary.ownerUri}' Connections = [${Object.keys(this._connections)}]`);
-			this._notificationService.notify({
-				severity: Severity.Error,
-				message: `An unexpected error occurred while connecting. Please [file an issue](command:workbench.action.openIssueReporter) with the title 'Unexpected Error Occurred while Connecting' and include the log file [${join(this._environmentService.logsPath, 'renderer1.log')}](command:workbench.action.openLogsFolder)`
-			});
 			// Bail out at this point - there's nothing else we can do since this is an unexpected state.
 			throw new Error('Unexpected error occurred while connecting.');
 		}
@@ -168,7 +174,6 @@ export class ConnectionStatusManager {
 	 * Only if the db name in the original uri is different when connection is complete, we need to use the original uri
 	 * Returns the generated ownerUri for the connection profile if not existing connection found
 	 * @param ownerUri connection owner uri to find an existing connection
-	 * @param purpose purpose for the connection
 	 */
 	public getOriginalOwnerUri(ownerUri: string): string {
 		let ownerUriToReturn: string = ownerUri;
@@ -194,7 +199,7 @@ export class ConnectionStatusManager {
 	}
 
 	private isSharedSession(fileUri: string): boolean {
-		return !!(fileUri && startsWith(fileUri, 'vsls:'));
+		return !!(fileUri && fileUri.startsWith('vsls:'));
 	}
 
 	public isConnected(id: string): boolean {
@@ -209,7 +214,11 @@ export class ConnectionStatusManager {
 	}
 
 	public isDefaultTypeUri(uri: string): boolean {
-		return !!(uri && startsWith(uri, Utils.uriPrefixes.default));
+		return !!(uri && uri.startsWith(Utils.uriPrefixes.default));
+	}
+
+	public isEditorTypeUri(uri: string): boolean {
+		return !!(uri && (uri.startsWith(Schemas.untitled) || uri.startsWith(Schemas.file)));
 	}
 
 	public getProviderIdFromUri(ownerUri: string): string {
@@ -231,10 +240,10 @@ export class ConnectionStatusManager {
 	public getActiveConnectionProfiles(providers?: string[]): ConnectionProfile[] {
 		let profiles = values(this._connections).map((connectionInfo: ConnectionManagementInfo) => connectionInfo.connectionProfile);
 		// Remove duplicate profiles that may be listed multiple times under different URIs by filtering for profiles that don't have the same ID as an earlier profile in the list
-		profiles = profiles.filter((profile, index) => firstIndex(profiles, otherProfile => otherProfile.id === profile.id) === index);
+		profiles = profiles.filter((profile, index) => profiles.findIndex(otherProfile => otherProfile.id === profile.id) === index);
 
 		if (providers) {
-			profiles = profiles.filter(f => find(providers, x => x === f.providerName));
+			profiles = profiles.filter(f => providers.find(x => x === f.providerName));
 		}
 		return profiles;
 	}

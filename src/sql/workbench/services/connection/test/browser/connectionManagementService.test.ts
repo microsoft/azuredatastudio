@@ -20,23 +20,27 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { TestConnectionProvider } from 'sql/platform/connection/test/common/testConnectionProvider';
 import { TestResourceProvider } from 'sql/workbench/services/resourceProvider/test/common/testResourceProviderService';
+import { TestErrorDiagnosticsService } from 'sql/workbench/services/connection/test/common/testErrorDiagnosticsService';
 
 import * as azdata from 'azdata';
 
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
+import * as sinon from 'sinon';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
-import { TestEnvironmentService, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
-import { NullLogService } from 'vs/platform/log/common/log';
-import { assign } from 'vs/base/common/objects';
+import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { TestInstantiationService } from 'sql/platform/instantiation/test/common/instantiationServiceMock';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 suite('SQL ConnectionManagementService tests', () => {
 
@@ -49,6 +53,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	let workspaceConfigurationServiceMock: TypeMoq.Mock<TestConfigurationService>;
 	let resourceProviderStubMock: TypeMoq.Mock<TestResourceProvider>;
 	let accountManagementService: TypeMoq.Mock<TestAccountManagementService>;
+	let errorDiagnosticsService: TestErrorDiagnosticsService;
 
 	let none: void;
 
@@ -58,11 +63,13 @@ suite('SQL ConnectionManagementService tests', () => {
 		databaseName: 'database',
 		userName: 'user',
 		password: 'password',
-		authenticationType: 'integrated',
+		authenticationType: Constants.AuthenticationType.Integrated,
 		savePassword: true,
 		groupFullName: 'g2/g2-2',
 		groupId: 'group id',
+		serverCapabilities: undefined,
 		getOptionsKey: () => { return 'connectionId'; },
+		getOptionKeyIdNames: undefined!,
 		matches: undefined,
 		providerName: 'MSSQL',
 		options: {},
@@ -70,9 +77,9 @@ suite('SQL ConnectionManagementService tests', () => {
 		id: undefined
 	};
 	let connectionProfileWithEmptySavedPassword: IConnectionProfile =
-		assign({}, connectionProfile, { password: '', serverName: connectionProfile.serverName + 1 });
+		Object.assign({}, connectionProfile, { password: '', serverName: connectionProfile.serverName + 1 });
 	let connectionProfileWithEmptyUnsavedPassword: IConnectionProfile =
-		assign({}, connectionProfile, { password: '', serverName: connectionProfile.serverName + 2, savePassword: false });
+		Object.assign({}, connectionProfile, { password: '', serverName: connectionProfile.serverName + 2, savePassword: false });
 
 	let connectionManagementService: ConnectionManagementService;
 	let configResult: { [key: string]: any } = {};
@@ -91,11 +98,12 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionDialogService = TypeMoq.Mock.ofType(TestConnectionDialogService);
 		connectionStore = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
 		workbenchEditorService = TypeMoq.Mock.ofType(TestEditorService);
-		connectionStatusManager = new ConnectionStatusManager(capabilitiesService, new NullLogService(), TestEnvironmentService, new TestNotificationService());
+		connectionStatusManager = new ConnectionStatusManager(capabilitiesService, new NullLogService());
 		mssqlConnectionProvider = TypeMoq.Mock.ofType(TestConnectionProvider);
 		let resourceProviderStub = new TestResourceProvider();
 		resourceProviderStubMock = TypeMoq.Mock.ofInstance(resourceProviderStub);
 		accountManagementService = TypeMoq.Mock.ofType(TestAccountManagementService);
+		errorDiagnosticsService = new TestErrorDiagnosticsService();
 		let root = new ConnectionProfileGroup(ConnectionProfileGroup.RootGroupName, undefined, ConnectionProfileGroup.RootGroupName, undefined, undefined);
 		root.connections = [ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile)];
 
@@ -117,7 +125,12 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is<IConnectionProfile>(
 			c => c.serverName === connectionProfileWithEmptyUnsavedPassword.serverName))).returns(
 				() => Promise.resolve({ profile: connectionProfileWithEmptyUnsavedPassword, savedCred: false }));
-		connectionStore.setup(x => x.isPasswordRequired(TypeMoq.It.isAny())).returns(() => true);
+		connectionStore.setup(x => x.isPasswordRequired(TypeMoq.It.isAny())).returns((profile) => {
+			if (profile.authenticationType === Constants.AuthenticationType.AzureMFA) {
+				return false;
+			}
+			return true;
+		});
 		connectionStore.setup(x => x.getConnectionProfileGroups(false, undefined)).returns(() => [root]);
 		connectionStore.setup(x => x.savePassword(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 
@@ -156,11 +169,16 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	function createConnectionManagementService(): ConnectionManagementService {
+		const testInstantiationService = new TestInstantiationService();
+		const testLogService = new NullLogService();
+		testInstantiationService.stub(IStorageService, new TestStorageService());
+		testInstantiationService.stub(ICapabilitiesService, capabilitiesService);
+		testInstantiationService.stub(ILogService, testLogService);
+		testInstantiationService.stubCreateInstance(ConnectionStore, connectionStore.object);
+
 		let connectionManagementService = new ConnectionManagementService(
-			connectionStore.object,
-			undefined,
 			connectionDialogService.object,
-			undefined, // IInstantiationService
+			testInstantiationService,
 			workbenchEditorService.object,
 			new NullAdsTelemetryService(), // ITelemetryService
 			workspaceConfigurationServiceMock.object,
@@ -168,12 +186,15 @@ suite('SQL ConnectionManagementService tests', () => {
 			undefined, // IQuickInputService
 			new TestNotificationService(),
 			resourceProviderStubMock.object,
+			errorDiagnosticsService,
 			undefined, // IAngularEventingService
 			accountManagementService.object,
-			new NullLogService(), // ILogService
+			testLogService, // ILogService
 			undefined, // IStorageService
-			TestEnvironmentService,
-			getBasicExtensionService()
+			getBasicExtensionService(),
+			undefined,
+			undefined,
+			undefined
 		);
 		return connectionManagementService;
 	}
@@ -184,7 +205,7 @@ suite('SQL ConnectionManagementService tests', () => {
 				TypeMoq.It.isAny(),
 				TypeMoq.It.is<INewConnectionParams>(p => p.connectionType === connectionType && (uri === undefined || p.input.uri === uri)),
 				TypeMoq.It.is<IConnectionProfile>(c => c !== undefined && c.serverName === connectionProfile.serverName),
-				connectionResult ? TypeMoq.It.is<IConnectionResult>(r => r.errorMessage === connectionResult.errorMessage && r.callStack === connectionResult.callStack) : undefined,
+				connectionResult ? TypeMoq.It.is<IConnectionResult>(r => r.errorMessage === connectionResult.errorMessage && r.messageDetails === connectionResult.messageDetails) : undefined,
 				options ? TypeMoq.It.isAny() : undefined),
 				didShow ? TypeMoq.Times.once() : TypeMoq.Times.never());
 
@@ -193,7 +214,7 @@ suite('SQL ConnectionManagementService tests', () => {
 				TypeMoq.It.isAny(),
 				TypeMoq.It.is<INewConnectionParams>(p => p.connectionType === connectionType && ((uri === undefined && p.input === undefined) || p.input.uri === uri)),
 				undefined,
-				connectionResult ? TypeMoq.It.is<IConnectionResult>(r => r.errorMessage === connectionResult.errorMessage && r.callStack === connectionResult.callStack) : undefined,
+				connectionResult ? TypeMoq.It.is<IConnectionResult>(r => r.errorMessage === connectionResult.errorMessage && r.messageDetails === connectionResult.messageDetails) : undefined,
 				options ? TypeMoq.It.isAny() : undefined),
 				didShow ? TypeMoq.Times.once() : TypeMoq.Times.never());
 		}
@@ -292,8 +313,8 @@ suite('SQL ConnectionManagementService tests', () => {
 		await connect(params.input.uri);
 		let saveConnection = connectionManagementService.getConnectionProfile(params.input.uri);
 
-		assert.notEqual(saveConnection, undefined, `profile was not added to the connections`);
-		assert.equal(saveConnection.serverName, connectionProfile.serverName, `Server names are different`);
+		assert.notStrictEqual(saveConnection, undefined, `profile was not added to the connections`);
+		assert.strictEqual(saveConnection.serverName, connectionProfile.serverName, `Server names are different`);
 		await connectionManagementService.showConnectionDialog(params);
 		verifyShowConnectionDialog(connectionProfile, params.connectionType, params.input.uri, false);
 	});
@@ -319,7 +340,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('getDefaultProviderId is MSSQL', () => {
 		let defaultProvider = connectionManagementService.getDefaultProviderId();
-		assert.equal(defaultProvider, 'MSSQL', `Default provider is not equal to MSSQL`);
+		assert.strictEqual(defaultProvider, 'MSSQL', `Default provider is not equal to MSSQL`);
 	});
 
 	/* Andresse  10/5/17 commented this test out since it was only working before my changes by the chance of how Promises work
@@ -365,8 +386,8 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		await connect(uri, options);
 		verifyOptions(options);
-		assert.notEqual(paramsInOnConnectSuccess, undefined);
-		assert.equal(paramsInOnConnectSuccess.connectionType, options.params.connectionType);
+		assert.notStrictEqual(paramsInOnConnectSuccess, undefined);
+		assert.strictEqual(paramsInOnConnectSuccess.connectionType, options.params.connectionType);
 	});
 
 	test('connectAndSaveProfile should show not load the password', async () => {
@@ -382,7 +403,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		let options: IConnectionCompletionOptions = undefined;
 
 		await connect(uri, options);
-		assert.equal(connectionManagementService.isProfileConnected(connectionProfile), true);
+		assert.strictEqual(connectionManagementService.isProfileConnected(connectionProfile), true);
 	});
 
 	test('failed connection should open the dialog if connection fails', async () => {
@@ -403,12 +424,12 @@ suite('SQL ConnectionManagementService tests', () => {
 			connected: expectedConnection,
 			errorMessage: error,
 			errorCode: errorCode,
-			callStack: errorCallStack
+			messageDetails: errorCallStack
 		};
 
 		let result = await connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack);
-		assert.equal(result.connected, expectedConnection);
-		assert.equal(result.errorMessage, connectionResult.errorMessage);
+		assert.strictEqual(result.connected, expectedConnection);
+		assert.strictEqual(result.errorMessage, connectionResult.errorMessage);
 		verifyShowFirewallRuleDialog(connectionProfile, false);
 		verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, true, connectionResult);
 	});
@@ -431,23 +452,23 @@ suite('SQL ConnectionManagementService tests', () => {
 			connected: expectedConnection,
 			errorMessage: error,
 			errorCode: errorCode,
-			callStack: errorCallStack
+			messageDetails: errorCallStack
 		};
 
 		let result = await connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack);
-		assert.equal(result.connected, expectedConnection);
-		assert.equal(result.errorMessage, connectionResult.errorMessage);
+		assert.strictEqual(result.connected, expectedConnection);
+		assert.strictEqual(result.errorMessage, connectionResult.errorMessage);
 		verifyShowFirewallRuleDialog(connectionProfile, false);
 		verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, true, connectionResult, false);
 	});
 
 	test('Accessors for event emitters should return emitter function', () => {
 		let onAddConnectionProfile1 = connectionManagementService.onAddConnectionProfile;
-		assert.equal(typeof (onAddConnectionProfile1), 'function');
+		assert.strictEqual(typeof (onAddConnectionProfile1), 'function');
 		let onDeleteConnectionProfile1 = connectionManagementService.onDeleteConnectionProfile;
-		assert.equal(typeof (onDeleteConnectionProfile1), 'function');
+		assert.strictEqual(typeof (onDeleteConnectionProfile1), 'function');
 		let onConnect1 = connectionManagementService.onConnect;
-		assert.equal(typeof (onConnect1), 'function');
+		assert.strictEqual(typeof (onConnect1), 'function');
 	});
 
 	test('onConnectionChangedNotification should call onConnectionChanged event', async () => {
@@ -465,8 +486,8 @@ suite('SQL ConnectionManagementService tests', () => {
 		let changedConnectionInfo: azdata.ChangedConnectionInfo = { connectionUri: uri, connection: saveConnection };
 		let called = false;
 		connectionManagementService.onConnectionChanged((params: IConnectionParams) => {
-			assert.equal(uri, params.connectionUri);
-			assert.equal(saveConnection, params.connectionProfile);
+			assert.strictEqual(uri, params.connectionUri);
+			assert.strictEqual(saveConnection, params.connectionProfile);
 			called = true;
 		});
 		connectionManagementService.onConnectionChangedNotification(0, changedConnectionInfo);
@@ -474,13 +495,13 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('changeGroupIdForconnection should change the groupId for a connection profile', async () => {
-		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		let newGroupId = 'new_group_id';
 		connectionStore.setup(x => x.changeGroupIdForConnection(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		await connectionManagementService.changeGroupIdForConnection(profile, newGroupId);
-		assert.equal(profile.groupId, newGroupId);
+		assert.strictEqual(profile.groupId, newGroupId);
 	});
 
 	test('changeGroupIdForConnectionGroup should call changeGroupIdForConnectionGroup in ConnectionStore', async () => {
@@ -495,8 +516,8 @@ suite('SQL ConnectionManagementService tests', () => {
 		assert.ok(called, 'expected changeGroupIdForConnectionGroup to be called on ConnectionStore');
 	});
 
-	test('findExistingConnection should find connection for connectionProfile with same info', async () => {
-		let profile = <ConnectionProfile>assign({}, connectionProfile);
+	test('findExistingConnection should find connection for connectionProfile with same basic info', async () => {
+		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		let uri1 = 'connection:connectionId';
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -523,11 +544,11 @@ suite('SQL ConnectionManagementService tests', () => {
 			+ profile.serverName + '|userName:' + profile.userName;
 		await connect(uri1, options, true, profile);
 		let returnedProfile = connectionManagementService.findExistingConnection(profile);
-		assert.equal(returnedProfile.getConnectionInfoId(), connectionInfoString);
+		assert.strictEqual(returnedProfile.getConnectionInfoId(), connectionInfoString);
 	});
 
 	test('deleteConnection should delete the connection properly', async () => {
-		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		let uri1 = 'connection:connectionId';
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -558,7 +579,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('deleteConnectionGroup should delete connections in connection group', async () => {
-		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		let profileGroup = createConnectionGroup('original_id');
 		profileGroup.addConnections([profile]);
 		let uri1 = 'connection:connectionId';
@@ -593,13 +614,13 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionStore.setup(x => x.canChangeConnectionConfig(TypeMoq.It.isAny(), TypeMoq.It.isAnyString())).returns(() => {
 			return true;
 		});
-		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		let newGroupId = 'test_group_id';
 		assert(connectionManagementService.canChangeConnectionConfig(profile, newGroupId));
 	});
 
 	test('isProfileConnecting should return false for already connected profile', async () => {
-		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		let uri = 'Editor Uri';
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -627,7 +648,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('disconnect should disconnect the profile when given ConnectionProfile', async () => {
-		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -656,7 +677,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('disconnect should disconnect the profile when given uri string', async () => {
-		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -685,7 +706,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('cancelConnection should disconnect the profile', async () => {
-		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -738,12 +759,12 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		await connect(uri, options);
 		let result = await connectionManagementService.cancelEditorConnection(options.params.input);
-		assert.equal(result, false);
+		assert.strictEqual(result, false);
 		assert(connectionManagementService.isConnected(uri));
 	});
 
 	test('getConnection should grab connection that is connected', async () => {
-		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let badString = 'bad_string';
 		let options: IConnectionCompletionOptions = {
@@ -769,14 +790,14 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		await connect(uri, options, true, profile);
 		// invalid uri check.
-		assert.equal(connectionManagementService.getConnection(badString), undefined);
-		let returnedProfile = connectionManagementService.getConnection(uri);
-		assert.equal(returnedProfile.groupFullName, profile.groupFullName);
-		assert.equal(returnedProfile.groupId, profile.groupId);
+		assert.strictEqual(connectionManagementService.getConnectionProfile(badString), undefined);
+		let returnedProfile = connectionManagementService.getConnectionProfile(uri);
+		assert.strictEqual(returnedProfile.groupFullName, profile.groupFullName);
+		assert.strictEqual(returnedProfile.groupId, profile.groupId);
 	});
 
 	test('connectIfNotConnected should not try to connect with already connected profile', async () => {
-		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -801,16 +822,16 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		await connect(uri, options, true, profile);
 		let result = await connectionManagementService.connectIfNotConnected(profile, undefined, true);
-		assert.equal(result, uri);
+		assert.strictEqual(result, uri);
 	});
 
 	test('getServerInfo should return undefined when given an invalid string', () => {
 		let badString = 'bad_string';
-		assert.equal(connectionManagementService.getServerInfo(badString), undefined);
+		assert.strictEqual(connectionManagementService.getServerInfo(badString), undefined);
 	});
 
 	test('getConnectionString should get connection string of connectionId', async () => {
-		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let badString = 'bad_string';
 		let options: IConnectionCompletionOptions = {
@@ -836,7 +857,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		let getConnectionResult = await connectionManagementService.getConnectionString(badString);
 		// test for invalid profile id
-		assert.equal(getConnectionResult, undefined);
+		assert.strictEqual(getConnectionResult, undefined);
 		await connect(uri, options, true, profile);
 		let currentConnections = connectionManagementService.getConnections(true);
 		let profileId = currentConnections[0].id;
@@ -850,7 +871,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 
 	test('rebuildIntellisenseCache should call rebuildIntelliSenseCache on provider', async () => {
-		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -885,7 +906,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('buildConnectionInfo should get connection string of connectionId', async () => {
-		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -916,22 +937,27 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 		await connect(uri, options, true, profile);
 		let result = await connectionManagementService.buildConnectionInfo(testConnectionString, providerName);
-		assert.equal(result.options, options);
+		assert.strictEqual(result.options, options);
+	});
+
+	test('buildConnectionInfo with unknown provider should throw', async () => {
+		let testConnectionString = 'test_connection_string';
+		await assert.rejects(() => connectionManagementService.buildConnectionInfo(testConnectionString, 'INVALID'));
 	});
 
 	test('removeConnectionProfileCredentials should return connection profile without password', () => {
-		let profile = assign({}, connectionProfile);
+		let profile = Object.assign({}, connectionProfile);
 		connectionStore.setup(x => x.getProfileWithoutPassword(TypeMoq.It.isAny())).returns(() => {
-			let profileWithoutPass = assign({}, connectionProfile);
+			let profileWithoutPass = Object.assign({}, connectionProfile);
 			profileWithoutPass.password = undefined;
 			return <ConnectionProfile>profileWithoutPass;
 		});
 		let clearedProfile = connectionManagementService.removeConnectionProfileCredentials(profile);
-		assert.equal(clearedProfile.password, undefined);
+		assert.strictEqual(clearedProfile.password, undefined);
 	});
 
 	test('getConnectionProfileById should return profile when given profileId', async () => {
-		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let badString = 'bad_string';
 		let options: IConnectionCompletionOptions = {
@@ -955,17 +981,17 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 		let result = await connect(uri, options, true, profile);
-		assert.equal(result.connected, true);
-		assert.equal(connectionManagementService.getConnectionProfileById(badString), undefined);
+		assert.strictEqual(result.connected, true);
+		assert.strictEqual(connectionManagementService.getConnectionProfileById(badString), undefined);
 		let currentConnections = connectionManagementService.getConnections(true);
 		let profileId = currentConnections[0].id;
 		let returnedProfile = connectionManagementService.getConnectionProfileById(profileId);
-		assert.equal(returnedProfile.groupFullName, profile.groupFullName);
-		assert.equal(returnedProfile.groupId, profile.groupId);
+		assert.strictEqual(returnedProfile.groupFullName, profile.groupFullName);
+		assert.strictEqual(returnedProfile.groupId, profile.groupId);
 	});
 
 	test('Edit Connection - Changing connection profile name for same URI should persist after edit', async () => {
-		let profile = assign({}, connectionProfile);
+		let profile = Object.assign({}, connectionProfile);
 		let uri1 = 'test_uri1';
 		let newname = 'connection renamed';
 		let options: IConnectionCompletionOptions = {
@@ -989,18 +1015,27 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
+		let originalProfileKey = '';
+		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((inputProfile, matcher) => {
+			let newProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), inputProfile);
+			let result = newProfile.getOptionsKey() === originalProfileKey;
+			return Promise.resolve(result);
+		});
+
 		await connect(uri1, options, true, profile);
-		let newProfile = assign({}, connectionProfile);
+		let originalProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), connectionProfile);
+		originalProfileKey = originalProfile.getOptionsKey();
+		let newProfile = Object.assign({}, connectionProfile);
 		newProfile.connectionName = newname;
 		options.params.isEditConnection = true;
 		await connect(uri1, options, true, newProfile);
-		assert.equal(connectionManagementService.getConnectionProfile(uri1).connectionName, newname);
+		assert.strictEqual(connectionManagementService.getConnectionProfile(uri1).connectionName, newname);
 	});
 
 	test('Edit Connection - Connecting a different URI with same profile via edit should not change profile ID.', async () => {
 		let uri1 = 'test_uri1';
 		let uri2 = 'test_uri2';
-		let profile = assign({}, connectionProfile);
+		let profile = Object.assign({}, connectionProfile);
 		profile.id = '0451';
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -1023,12 +1058,55 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
+		// In an actual edit situation, the profile options would be different for different URIs, as a placeholder, we check the test uris instead here.
+		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(uri1 === uri2));
+
 		await connect(uri1, options, true, profile);
 		options.params.isEditConnection = true;
 		await connect(uri2, options, true, profile);
 		let uri1info = connectionManagementService.getConnectionInfo(uri1);
 		let uri2info = connectionManagementService.getConnectionInfo(uri2);
-		assert.equal(uri1info.connectionProfile.id, uri2info.connectionProfile.id);
+		assert.strictEqual(uri1info.connectionProfile.id, uri2info.connectionProfile.id);
+	});
+
+	test('Edit Connection - Connecting with an already connected profile via edit should throw an error', async () => {
+		let uri1 = 'test_uri1';
+		let profile = Object.assign({}, connectionProfile);
+		profile.id = '0451';
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri1
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: true
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		let originalProfileKey = '';
+		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((inputProfile, matcher) => {
+			let newProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), inputProfile);
+			let result = newProfile.getOptionsKey() === originalProfileKey;
+			return Promise.resolve(result)
+		});
+
+		await connect(uri1, options, true, profile);
+		let originalProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), connectionProfile);
+		originalProfileKey = originalProfile.getOptionsKey();
+		let newProfile = Object.assign({}, connectionProfile);
+		options.params.isEditConnection = true;
+		await assert.rejects(async () => await connect(uri1, options, true, newProfile));
 	});
 
 
@@ -1051,8 +1129,8 @@ suite('SQL ConnectionManagementService tests', () => {
 		};
 
 		let result = await connect(uri, options, false, connectionProfile, error, errorCode);
-		assert.equal(result.connected, expectedConnection);
-		assert.equal(result.errorMessage, expectedError);
+		assert.strictEqual(result.connected, expectedConnection);
+		assert.strictEqual(result.errorMessage, expectedError);
 		verifyShowFirewallRuleDialog(connectionProfile, true);
 	});
 
@@ -1078,12 +1156,12 @@ suite('SQL ConnectionManagementService tests', () => {
 			connected: expectedConnection,
 			errorMessage: error,
 			errorCode: errorCode,
-			callStack: errorCallStack
+			messageDetails: errorCallStack
 		};
 
 		let result = await connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack);
-		assert.equal(result.connected, expectedConnection);
-		assert.equal(result.errorMessage, connectionResult.errorMessage);
+		assert.strictEqual(result.connected, expectedConnection);
+		assert.strictEqual(result.errorMessage, connectionResult.errorMessage);
 		verifyShowFirewallRuleDialog(connectionProfile, false);
 		verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, true, connectionResult, false);
 	});
@@ -1094,25 +1172,25 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('getConnectionIconId should return undefined as there is no mementoObj service', () => {
 		let connectionId = 'connection:connectionId';
-		assert.equal(connectionManagementService.getConnectionIconId(connectionId), undefined);
+		assert.strictEqual(connectionManagementService.getConnectionIconId(connectionId), undefined);
 	});
 
 	test('getAdvancedProperties should return a list of properties for connectionManagementService', () => {
 		let propertyNames = ['connectionName', 'serverName', 'databaseName', 'userName', 'authenticationType', 'password'];
 		let advancedProperties = connectionManagementService.getAdvancedProperties();
-		assert.equal(propertyNames[0], advancedProperties[0].name);
-		assert.equal(propertyNames[1], advancedProperties[1].name);
-		assert.equal(propertyNames[2], advancedProperties[2].name);
-		assert.equal(propertyNames[3], advancedProperties[3].name);
-		assert.equal(propertyNames[4], advancedProperties[4].name);
-		assert.equal(propertyNames[5], advancedProperties[5].name);
+		assert.strictEqual(propertyNames[0], advancedProperties[0].name);
+		assert.strictEqual(propertyNames[1], advancedProperties[1].name);
+		assert.strictEqual(propertyNames[2], advancedProperties[2].name);
+		assert.strictEqual(propertyNames[3], advancedProperties[3].name);
+		assert.strictEqual(propertyNames[4], advancedProperties[4].name);
+		assert.strictEqual(propertyNames[5], advancedProperties[5].name);
 	});
 
 	test('saveProfileGroup should return groupId from connection group', async () => {
 		let newConnectionGroup = createConnectionGroup(connectionProfile.groupId);
 		connectionStore.setup(x => x.saveProfileGroup(TypeMoq.It.isAny())).returns(() => Promise.resolve(connectionProfile.groupId));
 		let result = await connectionManagementService.saveProfileGroup(newConnectionGroup);
-		assert.equal(result, connectionProfile.groupId);
+		assert.strictEqual(result, connectionProfile.groupId);
 	});
 
 	test('editGroup should fire onAddConnectionProfile', async () => {
@@ -1130,10 +1208,10 @@ suite('SQL ConnectionManagementService tests', () => {
 		let testUri = 'connection:';
 		let formattedUri = 'connection:connectionId';
 		let badUri = 'bad_uri';
-		assert.equal(formattedUri, connectionManagementService.getFormattedUri(testUri, connectionProfile));
-		assert.equal(formattedUri, connectionManagementService.getFormattedUri(formattedUri, connectionProfile));
+		assert.strictEqual(formattedUri, connectionManagementService.getFormattedUri(testUri, connectionProfile));
+		assert.strictEqual(formattedUri, connectionManagementService.getFormattedUri(formattedUri, connectionProfile));
 		// test for invalid URI
-		assert.equal(badUri, connectionManagementService.getFormattedUri(badUri, connectionProfile));
+		assert.strictEqual(badUri, connectionManagementService.getFormattedUri(badUri, connectionProfile));
 	});
 
 	test('failed firewall rule connection and failed during open firewall rule should open the firewall rule dialog and connection dialog with error', async () => {
@@ -1158,12 +1236,12 @@ suite('SQL ConnectionManagementService tests', () => {
 			connected: expectedConnection,
 			errorMessage: error,
 			errorCode: errorCode,
-			callStack: errorCallStack
+			messageDetails: errorCallStack
 		};
 
 		let result = await connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack);
-		assert.equal(result.connected, expectedConnection);
-		assert.equal(result.errorMessage, connectionResult.errorMessage);
+		assert.strictEqual(result.connected, expectedConnection);
+		assert.strictEqual(result.errorMessage, connectionResult.errorMessage);
 		verifyShowFirewallRuleDialog(connectionProfile, true);
 		verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, true, connectionResult, true);
 	});
@@ -1190,11 +1268,11 @@ suite('SQL ConnectionManagementService tests', () => {
 			connected: expectedConnection,
 			errorMessage: error,
 			errorCode: errorCode,
-			callStack: errorCallStack
+			messageDetails: errorCallStack
 		};
 
 		let result = await connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack);
-		assert.equal(result, undefined);
+		assert.strictEqual(result, undefined);
 		verifyShowFirewallRuleDialog(connectionProfile, true);
 		verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, true, connectionResult, false);
 	});
@@ -1214,12 +1292,12 @@ suite('SQL ConnectionManagementService tests', () => {
 			connected: expectedConnection,
 			errorMessage: undefined,
 			errorCode: undefined,
-			callStack: undefined
+			messageDetails: undefined
 		};
 
 		let result = await connect(uri, options, false, connectionProfileWithEmptyUnsavedPassword);
-		assert.equal(result.connected, expectedConnection);
-		assert.equal(result.errorMessage, connectionResult.errorMessage);
+		assert.strictEqual(result.connected, expectedConnection);
+		assert.strictEqual(result.errorMessage, connectionResult.errorMessage);
 		verifyShowConnectionDialog(connectionProfileWithEmptyUnsavedPassword, ConnectionType.default, uri, true, connectionResult);
 		verifyShowFirewallRuleDialog(connectionProfile, false);
 	});
@@ -1239,12 +1317,12 @@ suite('SQL ConnectionManagementService tests', () => {
 			connected: expectedConnection,
 			errorMessage: undefined,
 			errorCode: undefined,
-			callStack: undefined
+			messageDetails: undefined
 		};
 
 		let result = await connect(uri, options, false, connectionProfileWithEmptySavedPassword);
-		assert.equal(result.connected, expectedConnection);
-		assert.equal(result.errorMessage, connectionResult.errorMessage);
+		assert.strictEqual(result.connected, expectedConnection);
+		assert.strictEqual(result.errorMessage, connectionResult.errorMessage);
 		verifyShowConnectionDialog(connectionProfileWithEmptySavedPassword, ConnectionType.default, uri, true, connectionResult, false);
 	});
 
@@ -1275,12 +1353,12 @@ suite('SQL ConnectionManagementService tests', () => {
 			connected: expectedConnection,
 			errorMessage: undefined,
 			errorCode: undefined,
-			callStack: undefined
+			messageDetails: undefined
 		};
 
 		let result = await connect(uri, options, false, connectionProfileWithEmptySavedPassword);
-		assert.equal(result.connected, expectedConnection);
-		assert.equal(result.errorMessage, connectionResult.errorMessage);
+		assert.strictEqual(result.connected, expectedConnection);
+		assert.strictEqual(result.errorMessage, connectionResult.errorMessage);
 		verifyShowConnectionDialog(connectionProfileWithEmptySavedPassword, ConnectionType.editor, uri, true, connectionResult, false);
 	});
 
@@ -1312,7 +1390,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('registerIconProvider should register icon provider for connectionManagementService', async () => {
-		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		let serverInfo: azdata.ServerInfo = {
 			serverMajorVersion: 0,
 			serverMinorVersion: 0,
@@ -1323,8 +1401,10 @@ suite('SQL ConnectionManagementService tests', () => {
 			serverEdition: 'test_edition',
 			azureVersion: 0,
 			osVersion: 'test_version',
-			options: { isBigDataCluster: 'test' },
-			isCloud: true
+			options: {},
+			isCloud: true,
+			cpuCount: 0,
+			physicalMemoryInMb: 0
 		};
 		let uri: string = 'Editor Uri';
 		let options: IConnectionCompletionOptions = {
@@ -1356,8 +1436,6 @@ suite('SQL ConnectionManagementService tests', () => {
 				if (connection.providerName === 'MSSQL') {
 					if (serverInfo.isCloud) {
 						iconName = 'mssql:cloud';
-					} else if (serverInfo.options['isBigDataCluster']) {
-						iconName = 'mssql:cluster';
 					}
 				}
 				called = true;
@@ -1374,8 +1452,8 @@ suite('SQL ConnectionManagementService tests', () => {
 		let pgsqlId = 'PGSQL';
 		let mssqlProperties = connectionManagementService.getProviderProperties('MSSQL');
 		let pgsqlProperties = connectionManagementService.getProviderProperties('PGSQL');
-		assert.equal(mssqlProperties.providerId, mssqlId);
-		assert.equal(pgsqlProperties.providerId, pgsqlId);
+		assert.strictEqual(mssqlProperties.providerId, mssqlId);
+		assert.strictEqual(pgsqlProperties.providerId, pgsqlId);
 	});
 
 	test('doChangeLanguageFlavor should throw on unknown provider', () => {
@@ -1395,9 +1473,9 @@ suite('SQL ConnectionManagementService tests', () => {
 		let called = false;
 		connectionManagementService.onLanguageFlavorChanged((changeParams: azdata.DidChangeLanguageFlavorParams) => {
 			called = true;
-			assert.equal(changeParams.uri, uri);
-			assert.equal(changeParams.language, language);
-			assert.equal(changeParams.flavor, flavor);
+			assert.strictEqual(changeParams.uri, uri);
+			assert.strictEqual(changeParams.language, language);
+			assert.strictEqual(changeParams.flavor, flavor);
 		});
 		connectionManagementService.doChangeLanguageFlavor(uri, language, flavor);
 		assert.ok(called, 'expected onLanguageFlavorChanged event to be sent');
@@ -1407,17 +1485,17 @@ suite('SQL ConnectionManagementService tests', () => {
 	test('getUniqueConnectionProvidersByNameMap should return non CMS providers', () => {
 		let nameToDisplayNameMap: { [providerDisplayName: string]: string } = { 'MSSQL': 'SQL Server', 'MSSQL-CMS': 'SQL Server' };
 		let providerNames = Object.keys(connectionManagementService.getUniqueConnectionProvidersByNameMap(nameToDisplayNameMap));
-		assert.equal(providerNames.length, 1);
-		assert.equal(providerNames[0], 'MSSQL');
+		assert.strictEqual(providerNames.length, 1);
+		assert.strictEqual(providerNames[0], 'MSSQL');
 	});
 
 	test('providerNameToDisplayNameMap should return all providers', () => {
-		let expectedNames = ['MSSQL', 'PGSQL', 'KUSTO'];
+		let expectedNames = ['MSSQL', 'PGSQL', 'FAKE'];
 		let providerNames = Object.keys(connectionManagementService.providerNameToDisplayNameMap);
-		assert.equal(providerNames.length, 3);
-		assert.equal(providerNames[0], expectedNames[0]);
-		assert.equal(providerNames[1], expectedNames[1]);
-		assert.equal(providerNames[2], expectedNames[2]);
+		assert.strictEqual(providerNames.length, 3);
+		assert.strictEqual(providerNames[0], expectedNames[0]);
+		assert.strictEqual(providerNames[1], expectedNames[1]);
+		assert.strictEqual(providerNames[2], expectedNames[2]);
 	});
 
 	test('ensureDefaultLanguageFlavor should send event if uri is not connected', () => {
@@ -1446,7 +1524,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		await connect(uri, options);
 		called = false; //onLanguageFlavorChanged is called when connecting, must set back to false.
 		connectionManagementService.ensureDefaultLanguageFlavor(uri);
-		assert.equal(called, false, 'do not expect flavor change to be called');
+		assert.strictEqual(called, false, 'do not expect flavor change to be called');
 	});
 
 	test('getConnectionId returns the URI associated with a connection that has had its database filled in', async () => {
@@ -1454,9 +1532,9 @@ suite('SQL ConnectionManagementService tests', () => {
 		let dbName = 'master';
 		let serverName = 'test_server';
 		let userName = 'test_user';
-		let connectionProfileWithoutDb: IConnectionProfile = assign(connectionProfile,
+		let connectionProfileWithoutDb: IConnectionProfile = Object.assign(connectionProfile,
 			{ serverName: serverName, databaseName: '', userName: userName, getOptionsKey: () => undefined });
-		let connectionProfileWithDb: IConnectionProfile = assign(connectionProfileWithoutDb, { databaseName: dbName });
+		let connectionProfileWithDb: IConnectionProfile = Object.assign(connectionProfileWithoutDb, { databaseName: dbName });
 		// Save the database with a URI that has the database name filled in, to mirror Carbon's behavior
 		let ownerUri = Utils.generateUri(connectionProfileWithDb);
 		await connect(ownerUri, undefined, false, connectionProfileWithoutDb);
@@ -1466,8 +1544,8 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		// Then the retrieved URIs should match the one on the connection
 		let expectedUri = Utils.generateUri(connectionProfileWithoutDb);
-		assert.equal(actualUriWithDb, expectedUri);
-		assert.equal(actualUriWithoutDb, expectedUri);
+		assert.strictEqual(actualUriWithDb, expectedUri);
+		assert.strictEqual(actualUriWithoutDb, expectedUri);
 	});
 
 	test('list and change database tests', async () => {
@@ -1476,9 +1554,9 @@ suite('SQL ConnectionManagementService tests', () => {
 		let newDbName = 'renamed_master';
 		let serverName = 'test_server';
 		let userName = 'test_user';
-		let connectionProfileWithoutDb: IConnectionProfile = assign(connectionProfile,
+		let connectionProfileWithoutDb: IConnectionProfile = Object.assign(connectionProfile,
 			{ serverName: serverName, databaseName: '', userName: userName, getOptionsKey: () => undefined });
-		let connectionProfileWithDb: IConnectionProfile = assign(connectionProfileWithoutDb, { databaseName: dbName });
+		let connectionProfileWithDb: IConnectionProfile = Object.assign(connectionProfileWithoutDb, { databaseName: dbName });
 		// Save the database with a URI that has the database name filled in, to mirror Carbon's behavior
 		let ownerUri = Utils.generateUri(connectionProfileWithDb);
 		let listDatabasesThenable = (connectionUri: string) => {
@@ -1499,11 +1577,11 @@ suite('SQL ConnectionManagementService tests', () => {
 		mssqlConnectionProvider.setup(x => x.changeDatabase(ownerUri, newDbName)).returns(() => changeDatabasesThenable(ownerUri, newDbName));
 		await connect(ownerUri, undefined, false, connectionProfileWithoutDb);
 		let listDatabasesResult = await connectionManagementService.listDatabases(ownerUri);
-		assert.equal(listDatabasesResult.databaseNames.length, 1);
-		assert.equal(listDatabasesResult.databaseNames[0], dbName);
+		assert.strictEqual(listDatabasesResult.databaseNames.length, 1);
+		assert.strictEqual(listDatabasesResult.databaseNames[0], dbName);
 		let changeDatabaseResults = await connectionManagementService.changeDatabase(ownerUri, newDbName);
 		assert(changeDatabaseResults);
-		assert.equal(newDbName, connectionManagementService.getConnectionProfile(ownerUri).databaseName);
+		assert.strictEqual(newDbName, connectionManagementService.getConnectionProfile(ownerUri).databaseName);
 	});
 
 	test('list and change database tests for invalid uris', async () => {
@@ -1518,7 +1596,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	test('getTabColorForUri returns undefined when there is no connection for the given URI', () => {
 		let connectionManagementService = createConnectionManagementService();
 		let color = connectionManagementService.getTabColorForUri('invalidUri');
-		assert.equal(color, undefined);
+		assert.strictEqual(color, undefined);
 	});
 
 	test('getTabColorForUri returns the group color corresponding to the connection for a URI', async () => {
@@ -1531,17 +1609,17 @@ suite('SQL ConnectionManagementService tests', () => {
 		let uri = 'testUri';
 		await connect(uri);
 		let tabColor = connectionManagementService.getTabColorForUri(uri);
-		assert.equal(tabColor, expectedColor);
+		assert.strictEqual(tabColor, expectedColor);
 	});
 
 	test('getConnectionCredentials returns the credentials dictionary for an active connection profile', async () => {
-		let profile = assign({}, connectionProfile);
+		let profile = Object.assign({}, connectionProfile);
 		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		connectionStatusManager.addConnection(profile, 'test_uri');
 		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
 		let credentials = await connectionManagementService.getConnectionCredentials(profile.id);
-		assert.equal(credentials['password'], profile.options['password']);
+		assert.strictEqual(credentials['password'], profile.options['password']);
 	});
 
 	test('getConnectionCredentials returns the credentials dictionary for a recently used connection profile', async () => {
@@ -1556,14 +1634,17 @@ suite('SQL ConnectionManagementService tests', () => {
 			profile.password = test_password;
 			return { profile: profile, savedCred: true };
 		});
-		const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, undefined, undefined, undefined, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService());
-		assert.equal(profile.password, '', 'Profile should not have password initially');
-		assert.equal(profile.options['password'], '', 'Profile options should not have password initially');
+		const testInstantiationService = new TestInstantiationService();
+		testInstantiationService.stub(IStorageService, new TestStorageService());
+		testInstantiationService.stubCreateInstance(ConnectionStore, connectionStoreMock.object);
+		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, workspaceConfigurationServiceMock.object, new TestCapabilitiesService(), undefined, undefined, undefined, errorDiagnosticsService, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
+		assert.strictEqual(profile.password, '', 'Profile should not have password initially');
+		assert.strictEqual(profile.options['password'], '', 'Profile options should not have password initially');
 		// Check for invalid profile id
 		let badCredentials = await connectionManagementService.getConnectionCredentials(badString);
-		assert.equal(badCredentials, undefined);
+		assert.strictEqual(badCredentials, undefined);
 		let credentials = await connectionManagementService.getConnectionCredentials(profile.id);
-		assert.equal(credentials['password'], test_password);
+		assert.strictEqual(credentials['password'], test_password);
 	});
 
 	test('getConnectionCredentials returns the credentials dictionary for a saved connection profile', async () => {
@@ -1582,15 +1663,19 @@ suite('SQL ConnectionManagementService tests', () => {
 			profile.password = test_password;
 			return { profile: profile, savedCred: true };
 		});
-		const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, undefined, undefined, undefined, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService());
-		assert.equal(profile.password, '', 'Profile should not have password initially');
-		assert.equal(profile.options['password'], '', 'Profile options should not have password initially');
+		const testInstantiationService = new TestInstantiationService();
+		testInstantiationService.stub(IStorageService, new TestStorageService());
+		testInstantiationService.stubCreateInstance(ConnectionStore, connectionStoreMock.object);
+
+		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, workspaceConfigurationServiceMock.object, new TestCapabilitiesService(), undefined, undefined, undefined, errorDiagnosticsService, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
+		assert.strictEqual(profile.password, '', 'Profile should not have password initially');
+		assert.strictEqual(profile.options['password'], '', 'Profile options should not have password initially');
 		let credentials = await connectionManagementService.getConnectionCredentials(profile.id);
-		assert.equal(credentials['password'], test_password);
+		assert.strictEqual(credentials['password'], test_password);
 	});
 
 	test('getConnectionUriFromId returns a URI of an active connection with the given id', () => {
-		let profile = assign({}, connectionProfile);
+		let profile = Object.assign({}, connectionProfile);
 		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		let uri = 'test_initial_uri';
@@ -1601,15 +1686,15 @@ suite('SQL ConnectionManagementService tests', () => {
 		let foundUri = connectionManagementService.getConnectionUriFromId(profile.id);
 
 		// Then the returned URI matches the connection's original URI
-		assert.equal(foundUri, uri);
+		assert.strictEqual(foundUri, uri);
 	});
 
 	test('provider is registered and working', () => {
-		assert.equal(connectionManagementService.providerRegistered('MSSQL'), true);
+		assert.strictEqual(connectionManagementService.providerRegistered('MSSQL'), true);
 	});
 
 	test('getConectionUriFromId returns undefined if the given connection is not active', () => {
-		let profile = assign({}, connectionProfile);
+		let profile = Object.assign({}, connectionProfile);
 		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		connectionStatusManager.addConnection(profile, Utils.generateUri(profile));
@@ -1619,13 +1704,13 @@ suite('SQL ConnectionManagementService tests', () => {
 		let foundUri = connectionManagementService.getConnectionUriFromId('different_id');
 
 		// Then undefined is returned
-		assert.equal(foundUri, undefined);
+		assert.strictEqual(foundUri, undefined);
 	});
 
 	test('addSavedPassword fills in Azure access tokens for Azure accounts', async () => {
 		// Set up a connection profile that uses Azure
 		let azureConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
-		azureConnectionProfile.authenticationType = 'AzureMFA';
+		azureConnectionProfile.authenticationType = Constants.AuthenticationType.AzureMFA;
 		let username = 'testuser@microsoft.com';
 		azureConnectionProfile.azureAccount = username;
 		let servername = 'test-database.database.windows.net';
@@ -1664,7 +1749,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			token: testToken,
 			tokenType: 'Bearer'
 		}));
-		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === 'AzureMFA'))).returns(profile => Promise.resolve({
+		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === Constants.AuthenticationType.AzureMFA))).returns(profile => Promise.resolve({
 			profile: profile,
 			savedCred: false
 		}));
@@ -1673,14 +1758,161 @@ suite('SQL ConnectionManagementService tests', () => {
 		let profileWithCredentials = await connectionManagementService.addSavedPassword(azureConnectionProfile);
 
 		// Then the returned profile has the account token set
-		assert.equal(profileWithCredentials.userName, azureConnectionProfile.userName);
-		assert.equal(profileWithCredentials.options['azureAccountToken'], testToken);
+		assert.strictEqual(profileWithCredentials.userName, azureConnectionProfile.userName);
+		assert.strictEqual(profileWithCredentials.options['azureAccountToken'], testToken);
+	});
+
+	test('refreshAzureAccountTokenIfNecessary refreshes Azure access token if existing token is expired', async () => {
+		const uri: string = 'Editor Uri';
+		// Set up a connection profile that uses Azure
+		const azureConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
+		azureConnectionProfile.authenticationType = Constants.AuthenticationType.AzureMFA;
+		const username = 'testuser@microsoft.com';
+		azureConnectionProfile.azureAccount = username;
+		const servername = 'test-database.database.windows.net';
+		azureConnectionProfile.serverName = servername;
+		const providerId = 'azure_PublicCloud';
+		azureConnectionProfile.azureTenantId = 'testTenant';
+
+		const expiredToken = {
+			token: 'expiredToken',
+			tokenType: 'Bearer',
+			expiresOn: 0,
+		};
+
+		const freshToken = {
+			token: 'freshToken',
+			tokenType: 'Bearer',
+			expiresOn: new Date().getTime() / 1000 + 7200,
+		};
+
+		// every connectionStatusManager.connect will call accountManagementService.getAccountSecurityToken twice
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(expiredToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(expiredToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(freshToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(freshToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(expiredToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(expiredToken));
+
+		accountManagementService.setup(x => x.getAccounts()).returns(() => {
+			return Promise.resolve<azdata.Account[]>([
+				{
+					key: {
+						accountId: username,
+						providerId: providerId
+					},
+					displayInfo: undefined,
+					isStale: false,
+					properties: undefined
+				}
+			]);
+		});
+
+		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === Constants.AuthenticationType.AzureMFA))).returns(profile => Promise.resolve({
+			profile: profile,
+			savedCred: false
+		}));
+
+		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
+		await connect(uri, undefined, false, azureConnectionProfile);
+
+		const oldProfile = connectionStatusManager.getConnectionProfile(uri);
+		assert.strictEqual(oldProfile.options['expiresOn'], expiredToken.expiresOn);
+
+		const refreshRes1 = await connectionManagementService.refreshAzureAccountTokenIfNecessary(uri);
+		assert.strictEqual(refreshRes1, true);
+
+		// first refresh should give us the new token
+		const newProfile1 = connectionStatusManager.getConnectionProfile(uri);
+		assert.strictEqual(newProfile1.options['expiresOn'], freshToken.expiresOn);
+
+		const refreshRes2 = await connectionManagementService.refreshAzureAccountTokenIfNecessary(uri);
+		assert.strictEqual(refreshRes2, true);
+
+		// second refresh should be a no-op
+		const newProfile2 = connectionStatusManager.getConnectionProfile(uri);
+		assert.strictEqual(newProfile2.options['expiresOn'], freshToken.expiresOn);
+	});
+
+	test('refreshAzureAccountTokenIfNecessary does not refresh Azure access token for non-Azure authentication', async () => {
+		const uri: string = 'Editor Uri';
+		// Set up a connection profile that uses Azure
+		const sqlAuthConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
+		sqlAuthConnectionProfile.authenticationType = Constants.AuthenticationType.SqlLogin;
+		sqlAuthConnectionProfile.userName = 'testuser';
+		sqlAuthConnectionProfile.password = 'testpassword';
+
+		// For mocking purpose only.
+		const username = 'testuser@microsoft.com';
+		const providerId = 'azure_PublicCloud';
+
+		const expiredToken = {
+			token: 'expiredToken',
+			tokenType: 'Bearer',
+			expiresOn: 0,
+		};
+
+		const freshToken = {
+			token: 'freshToken',
+			tokenType: 'Bearer',
+			expiresOn: new Date().getTime() / 1000 + 7200,
+		};
+
+		// every connectionStatusManager.connect will call accountManagementService.getAccountSecurityToken twice
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(expiredToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(expiredToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(freshToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(freshToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(expiredToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(expiredToken));
+
+		accountManagementService.setup(x => x.getAccounts()).returns(() => {
+			return Promise.resolve<azdata.Account[]>([
+				{
+					key: {
+						accountId: username,
+						providerId: providerId
+					},
+					displayInfo: undefined,
+					isStale: false,
+					properties: undefined
+				}
+			]);
+		});
+
+		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === Constants.AuthenticationType.AzureMFA))).returns(profile => Promise.resolve({
+			profile: profile,
+			savedCred: false
+		}));
+
+		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
+		await connect(uri, undefined, false, sqlAuthConnectionProfile);
+
+		const oldProfile = connectionStatusManager.getConnectionProfile(uri);
+		assert.strictEqual(oldProfile.options['expiresOn'], undefined);
+		assert.strictEqual(oldProfile.options['azureAccountToken'], undefined);
+
+		const refreshRes1 = await connectionManagementService.refreshAzureAccountTokenIfNecessary(uri);
+		assert.strictEqual(refreshRes1, false);
+
+		// refresh should not populate expiresOn or token
+		const newProfile1 = connectionStatusManager.getConnectionProfile(uri);
+		assert.strictEqual(newProfile1.options['expiresOn'], undefined);
+		assert.strictEqual(newProfile1.options['azureAccountToken'], undefined);
+
+		const refreshRes2 = await connectionManagementService.refreshAzureAccountTokenIfNecessary(uri);
+		assert.strictEqual(refreshRes2, false);
+
+		// second refresh should be a no-op - no change on properties
+		const newProfile2 = connectionStatusManager.getConnectionProfile(uri);
+		assert.strictEqual(newProfile2.options['expiresOn'], undefined);
+		assert.strictEqual(newProfile1.options['azureAccountToken'], undefined);
 	});
 
 	test('addSavedPassword fills in Azure access token for selected tenant', async () => {
 		// Set up a connection profile that uses Azure
 		let azureConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
-		azureConnectionProfile.authenticationType = 'AzureMFA';
+		azureConnectionProfile.authenticationType = Constants.AuthenticationType.AzureMFA;
 		let username = 'testuser@microsoft.com';
 		azureConnectionProfile.azureAccount = username;
 		let servername = 'test-database.database.windows.net';
@@ -1718,7 +1950,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		let returnedToken = { token: 'testToken', tokenType: 'Bearer' };
 		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(returnedToken));
-		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === 'AzureMFA'))).returns(profile => Promise.resolve({
+		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === Constants.AuthenticationType.AzureMFA))).returns(profile => Promise.resolve({
 			profile: profile,
 			savedCred: false
 		}));
@@ -1727,14 +1959,13 @@ suite('SQL ConnectionManagementService tests', () => {
 		let profileWithCredentials = await connectionManagementService.addSavedPassword(azureConnectionProfile);
 
 		// Then the returned profile has the account token set corresponding to the requested tenant
-		assert.equal(profileWithCredentials.userName, azureConnectionProfile.userName);
-		assert.equal(profileWithCredentials.options['azureAccountToken'], returnedToken.token);
+		assert.strictEqual(profileWithCredentials.userName, azureConnectionProfile.userName);
+		assert.strictEqual(profileWithCredentials.options['azureAccountToken'], returnedToken.token);
 	});
 
 	test('getConnections test', () => {
 		const connectionStatusManagerMock = TypeMoq.Mock.ofType(ConnectionStatusManager, TypeMoq.MockBehavior.Loose);
 		const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
-
 		connectionStatusManagerMock.setup(x => x.getActiveConnectionProfiles(undefined)).returns(() => {
 			return [createConnectionProfile('1'), createConnectionProfile('2')];
 		});
@@ -1750,13 +1981,19 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionStoreMock.setup(x => x.getConnectionProfileGroups(TypeMoq.It.isAny(), undefined)).returns(() => {
 			return [group1];
 		});
-		const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, connectionStatusManagerMock.object, undefined, undefined, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService());
+
+		const testInstantiationService = new TestInstantiationService();
+		const createInstanceStub = sinon.stub(testInstantiationService, 'createInstance');
+		createInstanceStub.withArgs(ConnectionStore).returns(connectionStoreMock.object);
+		createInstanceStub.withArgs(ConnectionStatusManager).returns(connectionStatusManagerMock.object);
+
+		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, workspaceConfigurationServiceMock.object, new TestCapabilitiesService(), undefined, undefined, undefined, errorDiagnosticsService, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
 
 		// dupe connections have been seeded the numbers below already reflected the de-duped results
 
 		const verifyConnections = (actualConnections: ConnectionProfile[], expectedConnectionIds: string[], scenario: string) => {
-			assert.equal(actualConnections.length, expectedConnectionIds.length, 'incorrect number of connections returned, ' + scenario);
-			assert.deepEqual(actualConnections.map(conn => conn.id).sort(), expectedConnectionIds.sort(), 'connections do not match expectation, ' + scenario);
+			assert.strictEqual(actualConnections.length, expectedConnectionIds.length, 'incorrect number of connections returned, ' + scenario);
+			assert.deepStrictEqual(actualConnections.map(conn => conn.id).sort(), expectedConnectionIds.sort(), 'connections do not match expectation, ' + scenario);
 		};
 
 		// no parameter - default to false
@@ -1771,38 +2008,42 @@ suite('SQL ConnectionManagementService tests', () => {
 		connections = connectionManagementService.getConnections(true);
 		verifyConnections(connections, ['1', '2'], 'parameter is true');
 	});
-});
 
-test('isRecent should evaluate whether a profile was recently connected or not', () => {
-	const connectionStatusManagerMock = TypeMoq.Mock.ofType(ConnectionStatusManager, TypeMoq.MockBehavior.Loose);
-	const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
-	connectionStoreMock.setup(x => x.getRecentlyUsedConnections()).returns(() => {
-		return [createConnectionProfile('1')];
+	test('isRecent should evaluate whether a profile was recently connected or not', () => {
+		const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
+		const testInstantiationService = new TestInstantiationService();
+		testInstantiationService.stub(IStorageService, new TestStorageService());
+		sinon.stub(testInstantiationService, 'createInstance').withArgs(ConnectionStore).returns(connectionStoreMock.object);
+		connectionStoreMock.setup(x => x.getRecentlyUsedConnections()).returns(() => {
+			return [createConnectionProfile('1')];
+		});
+		let profile1 = createConnectionProfile('1');
+		let profile2 = createConnectionProfile('2');
+		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, workspaceConfigurationServiceMock.object, new TestCapabilitiesService(), undefined, undefined, undefined, new TestErrorDiagnosticsService(), undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
+		assert(connectionManagementService.isRecent(profile1));
+		assert(!connectionManagementService.isRecent(profile2));
 	});
-	let profile1 = createConnectionProfile('1');
-	let profile2 = createConnectionProfile('2');
-	const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, connectionStatusManagerMock.object, undefined, undefined, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService());
-	assert(connectionManagementService.isRecent(profile1));
-	assert(!connectionManagementService.isRecent(profile2));
-});
 
-test('clearRecentConnection and ConnectionsList should call connectionStore functions', () => {
-	const connectionStatusManagerMock = TypeMoq.Mock.ofType(ConnectionStatusManager, TypeMoq.MockBehavior.Loose);
-	const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
-	let called = false;
-	connectionStoreMock.setup(x => x.clearRecentlyUsed()).returns(() => {
-		called = true;
+	test('clearRecentConnection and ConnectionsList should call connectionStore functions', () => {
+		const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
+		let called = false;
+		connectionStoreMock.setup(x => x.clearRecentlyUsed()).returns(() => {
+			called = true;
+		});
+		connectionStoreMock.setup(x => x.removeRecentConnection(TypeMoq.It.isAny())).returns(() => {
+			called = true;
+		});
+		const testInstantiationService = new TestInstantiationService();
+		testInstantiationService.stub(IStorageService, new TestStorageService());
+		sinon.stub(testInstantiationService, 'createInstance').withArgs(ConnectionStore).returns(connectionStoreMock.object);
+		let profile1 = createConnectionProfile('1');
+		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, workspaceConfigurationServiceMock.object, new TestCapabilitiesService(), undefined, undefined, undefined, new TestErrorDiagnosticsService(), undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
+		connectionManagementService.clearRecentConnection(profile1);
+		assert(called);
+		called = false;
+		connectionManagementService.clearRecentConnectionsList();
+		assert(called);
 	});
-	connectionStoreMock.setup(x => x.removeRecentConnection(TypeMoq.It.isAny())).returns(() => {
-		called = true;
-	});
-	let profile1 = createConnectionProfile('1');
-	const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, connectionStatusManagerMock.object, undefined, undefined, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService());
-	connectionManagementService.clearRecentConnection(profile1);
-	assert(called);
-	called = false;
-	connectionManagementService.clearRecentConnectionsList();
-	assert(called);
 });
 
 export function createConnectionProfile(id: string, password?: string): ConnectionProfile {
@@ -1813,7 +2054,7 @@ export function createConnectionProfile(id: string, password?: string): Connecti
 		groupFullName: 'testGroup',
 		serverName: 'testServerName',
 		databaseName: 'testDatabaseName',
-		authenticationType: Constants.integrated,
+		authenticationType: Constants.AuthenticationType.Integrated,
 		password: password ?? 'test',
 		userName: 'testUsername',
 		groupId: undefined,

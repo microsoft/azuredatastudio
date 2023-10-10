@@ -2,33 +2,34 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 import 'vs/css!./media/chartView';
-
-import { IPanelView } from 'sql/base/browser/ui/panel/panel';
-import { Insight } from './insight';
-import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { ICellValue } from 'sql/workbench/services/query/common/query';
-import { ChartOptions, IChartOption, ControlType } from './chartOptions';
-import { Extensions, IInsightRegistry, IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
-import { Registry } from 'vs/platform/registry/common/platform';
-import * as DOM from 'vs/base/browser/dom';
-import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
-import { attachSelectBoxStyler, attachInputBoxStyler } from 'vs/platform/theme/common/styler';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { isUndefinedOrNull } from 'vs/base/common/types';
-import { CreateInsightAction, CopyAction, SaveImageAction, IChartActionContext, ConfigureChartAction } from 'sql/workbench/contrib/charts/browser/actions';
-import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
-import { IInsightOptions, ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IPanelView } from 'sql/base/browser/ui/panel/panel';
+import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
+import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { Extensions, IInsightData, IInsightRegistry } from 'sql/platform/dashboard/browser/insightRegistry';
 import { ChartState } from 'sql/workbench/common/editor/query/chartState';
+import { ConfigureChartAction, CopyAction, CreateInsightAction, IChartActionContext, SaveImageAction } from 'sql/workbench/contrib/charts/browser/actions';
+import { getChartMaxRowCount } from 'sql/workbench/contrib/charts/browser/utils';
+import { ChartType, IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/browser/interfaces';
+import { ICellValue, VisualizationOptions } from 'sql/workbench/services/query/common/query';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
+import * as DOM from 'vs/base/browser/dom';
+import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
+import { Emitter, Event } from 'vs/base/common/event';
+import { Disposable, dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 import * as nls from 'vs/nls';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { Event, Emitter } from 'vs/base/common/event';
+import { Registry } from 'vs/platform/registry/common/platform';
+import { ChartOptions, ControlType, IChartOption } from './chartOptions';
+import { Insight } from './insight';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
+
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -87,9 +88,9 @@ export class ChartView extends Disposable implements IPanelView {
 	constructor(
 		private readonly _isQueryEditorChart: boolean,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IThemeService private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@INotificationService private readonly _notificationService: INotificationService
+		@INotificationService private readonly _notificationService: INotificationService,
+		@IConfigurationService private readonly _configurationService: IConfigurationService
 	) {
 		super();
 		this.taskbarContainer = DOM.$('div.taskbar-container');
@@ -163,7 +164,7 @@ export class ChartView extends Disposable implements IPanelView {
 		return option.map(o => altNameHash[o] || o);
 	}
 
-	public dispose() {
+	public override dispose() {
 		dispose(this.optionDisposables);
 		super.dispose();
 	}
@@ -195,7 +196,7 @@ export class ChartView extends Disposable implements IPanelView {
 	public chart(dataId: { batchId: number, resultId: number }) {
 		this.state.dataId = dataId;
 		this._currentData = dataId;
-		this.shouldGraph();
+		this.fetchData();
 	}
 
 	layout(dimension: DOM.Dimension): void {
@@ -204,12 +205,9 @@ export class ChartView extends Disposable implements IPanelView {
 		}
 	}
 
-	focus(): void {
-	}
-
 	public set queryRunner(runner: QueryRunner) {
 		this._queryRunner = runner;
-		this.shouldGraph();
+		this.fetchData();
 	}
 
 	public setData(rows: ICellValue[][], columns: string[]): void {
@@ -228,7 +226,7 @@ export class ChartView extends Disposable implements IPanelView {
 		}
 	}
 
-	private shouldGraph() {
+	private fetchData(): void {
 		// Check if we have the necessary information
 		if (this._currentData && this._queryRunner) {
 			// check if we are being asked to graph something that is available
@@ -236,7 +234,7 @@ export class ChartView extends Disposable implements IPanelView {
 			if (batch) {
 				let summary = batch.resultSetSummaries[this._currentData.resultId];
 				if (summary) {
-					this._queryRunner.getQueryRows(0, summary.rowCount, this._currentData.batchId, this._currentData.resultId).then(d => {
+					this._queryRunner.getQueryRowsPaged(0, Math.min(getChartMaxRowCount(this._configurationService), summary.rowCount), this._currentData.batchId, this._currentData.resultId).then(d => {
 						let rows = d.rows;
 						let columns = summary.columnInfo.map(c => c.columnName);
 						this.setData(rows, columns);
@@ -315,19 +313,21 @@ export class ChartView extends Disposable implements IPanelView {
 	}
 
 	private createOption(option: IChartOption, container: HTMLElement) {
-		const label = DOM.$('div.option-label');
-		label.innerText = option.label;
 		const optionContainer = DOM.$('div.option-container');
 		const optionInput = DOM.$('div.option-input');
-		optionContainer.appendChild(label);
+		if (option.type !== ControlType.checkbox) {
+			const label = DOM.$('div.option-label');
+			label.innerText = option.label;
+			optionContainer.appendChild(label);
+		}
 		optionContainer.appendChild(optionInput);
 		let setFunc: ((val: string) => void) | ((val: number) => void) | ((val: boolean) => void);
 		let entry = option.configEntry as keyof IInsightOptions;
 		let value = this.state ? this.state.options[entry] || option.default : option.default;
 		switch (option.type) {
 			case ControlType.checkbox:
-				let checkbox = new Checkbox(optionInput, {
-					label: '',
+				let checkbox = this._register(new Checkbox(optionInput, {
+					label: option.label,
 					ariaLabel: option.label,
 					checked: value,
 					onChange: () => {
@@ -338,88 +338,94 @@ export class ChartView extends Disposable implements IPanelView {
 							}
 						}
 					}
-				});
+				}));
 				setFunc = (val: boolean) => {
 					checkbox.checked = val;
 				};
 				break;
 			case ControlType.combo:
 				//pass options into changeAltNames in order for SelectBox to show user-friendly names.
-				let dropdown = new SelectBox(option.displayableOptions || this.changeToAltNames(option.options!), undefined!, this._contextViewService);
+				let dropdown = this._register(new SelectBox(option.displayableOptions || this.changeToAltNames(option.options!), undefined!, defaultSelectBoxStyles, this._contextViewService));
 				dropdown.setAriaLabel(option.label);
 				dropdown.select(option.options!.indexOf(value));
 				dropdown.render(optionInput);
-				dropdown.onDidSelect(e => {
+				this._register(dropdown.onDidSelect(e => {
 					if (this._options[entry] !== option.options![e.index]) {
 						(this._options[entry] as any) = option.options![e.index];
 						if (this.insight) {
 							this.insight.options = this._options;
 						}
 					}
-				});
+				}));
 				setFunc = (val: string) => {
 					if (!isUndefinedOrNull(val)) {
 						dropdown.select(option.options!.indexOf(val));
 					}
 				};
-				this.optionDisposables.push(attachSelectBoxStyler(dropdown, this._themeService));
 				break;
 			case ControlType.input:
-				let input = new InputBox(optionInput, this._contextViewService);
-				input.setAriaLabel(option.label);
+				let input = this._register(new InputBox(optionInput, this._contextViewService, {
+					ariaLabel: option.label,
+					inputBoxStyles: defaultInputBoxStyles
+				}));
 				input.value = value || '';
-				input.onDidChange(e => {
+				this._register(input.onDidChange(e => {
 					if (this._options[entry] !== e) {
 						(this._options[entry] as any) = e;
 						if (this.insight) {
 							this.insight.options = this._options;
 						}
 					}
-				});
+				}));
 				setFunc = (val: string) => {
 					if (!isUndefinedOrNull(val)) {
 						input.value = val;
 					}
 				};
-				this.optionDisposables.push(attachInputBoxStyler(input, this._themeService));
 				break;
 			case ControlType.numberInput:
-				let numberInput = new InputBox(optionInput, this._contextViewService, { type: 'number' });
-				numberInput.setAriaLabel(option.label);
+				let numberInput = this._register(new InputBox(optionInput, this._contextViewService, {
+					type: 'number',
+					ariaLabel: option.label,
+					inputBoxStyles: defaultInputBoxStyles
+				}));
 				numberInput.value = value || '';
-				numberInput.onDidChange(e => {
-					if (this._options[entry] !== Number(e)) {
-						(this._options[entry] as any) = Number(e);
+				this._register(numberInput.onDidChange(e => {
+					if (this._options[entry] !== e) {
+						// When user clears the input box, the value we get from the input box will be empty string.
+						(this._options[entry] as any) = (e === '' ? undefined : Number(e));
 						if (this.insight) {
 							this.insight.options = this._options;
 						}
 					}
-				});
+				}));
 				setFunc = (val: string) => {
 					if (!isUndefinedOrNull(val)) {
 						numberInput.value = val;
 					}
 				};
-				this.optionDisposables.push(attachInputBoxStyler(numberInput, this._themeService));
 				break;
 			case ControlType.dateInput:
-				let dateInput = new InputBox(optionInput, this._contextViewService, { type: 'datetime-local' });
-				dateInput.setAriaLabel(option.label);
+				let dateInput = this._register(new InputBox(optionInput, this._contextViewService, {
+					type: 'datetime-local',
+					ariaLabel: option.label,
+					inputBoxStyles: defaultInputBoxStyles
+				}));
+
 				dateInput.value = value || '';
-				dateInput.onDidChange(e => {
+				this._register(dateInput.onDidChange(e => {
 					if (this._options[entry] !== e) {
 						(this._options[entry] as any) = e;
 						if (this.insight) {
 							this.insight.options = this._options;
 						}
 					}
-				});
+				}));
 				setFunc = (val: string) => {
 					if (!isUndefinedOrNull(val)) {
 						dateInput.value = val;
 					}
 				};
-				this.optionDisposables.push(attachInputBoxStyler(dateInput, this._themeService));
 				break;
 		}
 		this.optionMap[entry] = { element: optionContainer, set: setFunc };
@@ -451,6 +457,18 @@ export class ChartView extends Disposable implements IPanelView {
 					(this.optionMap[key] as any).set(newOptions[key as keyof IInsightOptions]);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Set the visualization options, this method handles the conversion from VisualizationOptions(defined in azdata typing) to IInsightOptions
+	 * @param options visualization options returned by query
+	 */
+	public setVisualizationOptions(options: VisualizationOptions): void {
+		if (options?.type) {
+			this.options = {
+				type: options.type as (ChartType | InsightType)
+			};
 		}
 	}
 }

@@ -10,8 +10,8 @@
 	"warningAltText": "Avviso",
 	"errorAltText": "Errore",
 	"showMessageDetails": "Mostra dettagli",
-	"hideMessageDetails": "Nascondi dettagli",
 	"copyMessage": "Copia",
 	"closeMessage": "Chiudi",
-	"modalBack": "Indietro"
+	"modal.back": "Indietro",
+	"hideMessageDetails": "Nascondi dettagli"
 }

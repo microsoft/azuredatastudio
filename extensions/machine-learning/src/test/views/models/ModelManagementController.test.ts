@@ -9,7 +9,7 @@ import * as TypeMoq from 'typemoq';
 import 'mocha';
 import { createContext } from './utils';
 import { ImportedModel, ModelParameters, WorkspaceModel } from '../../../modelManagement/interfaces';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { ModelManagementController } from '../../../views/models/modelManagementController';
 import { DatabaseTable, TableColumn } from '../../../prediction/interfaces';
@@ -42,7 +42,10 @@ const groups: azureResource.AzureResourceResourceGroup[] = [
 	{
 		name: 'group',
 		id: '3',
-		subscriptionId: 's1'
+		subscription: {
+			id: 's1',
+			name: 's1'
+		}
 	}
 ];
 const workspaces: Workspace[] = [

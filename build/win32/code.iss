@@ -27,7 +27,7 @@ SetupIconFile={#RepoDir}\resources\win32\code.ico
 UninstallDisplayIcon={app}\{#ExeBasename}.exe
 ChangesEnvironment=true
 ChangesAssociations=true
-MinVersion=6.1.7600
+MinVersion=6.2
 SourceDir={#SourceDir}
 AppVersion={#Version}
 VersionInfoVersion={#RawVersion}
@@ -63,13 +63,13 @@ Name: "hungarian"; MessagesFile: "{#RepoDir}\build\win32\i18n\Default.hu.isl,{#R
 Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl,{#RepoDir}\build\win32\i18n\messages.tr.isl" {#LocalizedLanguageFile("trk")}
 
 [InstallDelete]
-Type: filesandordirs; Name: "{app}\resources\app\out"; Check: IsNotUpdate
-Type: filesandordirs; Name: "{app}\resources\app\plugins"; Check: IsNotUpdate
-Type: filesandordirs; Name: "{app}\resources\app\extensions"; Check: IsNotUpdate
-Type: filesandordirs; Name: "{app}\resources\app\node_modules"; Check: IsNotUpdate
-Type: filesandordirs; Name: "{app}\resources\app\node_modules.asar.unpacked"; Check: IsNotUpdate
-Type: files; Name: "{app}\resources\app\node_modules.asar"; Check: IsNotUpdate
-Type: files; Name: "{app}\resources\app\Credits_45.0.2454.85.html"; Check: IsNotUpdate
+Type: filesandordirs; Name: "{app}\resources\app\out"; Check: IsNotBackgroundUpdate
+Type: filesandordirs; Name: "{app}\resources\app\plugins"; Check: IsNotBackgroundUpdate
+Type: filesandordirs; Name: "{app}\resources\app\extensions"; Check: IsNotBackgroundUpdate
+Type: filesandordirs; Name: "{app}\resources\app\node_modules"; Check: IsNotBackgroundUpdate
+Type: filesandordirs; Name: "{app}\resources\app\node_modules.asar.unpacked"; Check: IsNotBackgroundUpdate
+Type: files; Name: "{app}\resources\app\node_modules.asar"; Check: IsNotBackgroundUpdate
+Type: files; Name: "{app}\resources\app\Credits_45.0.2454.85.html"; Check: IsNotBackgroundUpdate
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\_"
@@ -77,9 +77,13 @@ Type: filesandordirs; Name: "{app}\_"
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked;
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
+Name: "addcontextmenufolders"; Description: "{cm:AddContextMenuFolders,{#NameShort}}"; GroupDescription: "{cm:Other}"; Flags: unchecked
 Name: "associatewithfiles"; Description: "{cm:AssociateWithFiles,{#NameLong}}"; GroupDescription: "{cm:Other}"; Flags: unchecked
 Name: "addtopath"; Description: "{cm:AddToPath}"; GroupDescription: "{cm:Other}"
 Name: "runcode"; Description: "{cm:RunAfter,{#NameShort}}"; GroupDescription: "{cm:Other}"; Check: WizardSilent
+
+[Dirs]
+Name: "{app}"; AfterInstall: DisableAppDirInheritance
 
 [Files]
 Source: "*"; Excludes: "\CodeSignSummary*.md,\tools,\tools\*,\resources\app\product.json"; DestDir: "{code:GetDestDir}"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -112,6 +116,7 @@ Root: {#SoftwareClassesRootKey}; Subkey: "Software\Classes\.sql\OpenWithProgids"
 Root: {#SoftwareClassesRootKey}; Subkey: "Software\Classes\{#RegValueName}.sql"; ValueType: string; ValueName: ""; ValueData: "{cm:SourceFile,SQL}"; Flags: uninsdeletekey; Tasks: associatewithfiles
 Root: {#SoftwareClassesRootKey}; Subkey: "Software\Classes\{#RegValueName}.sql"; ValueType: string; ValueName: "AppUserModelID"; ValueData: "{#AppUserId}"; Flags: uninsdeletekey; Tasks: associatewithfiles
 Root: {#SoftwareClassesRootKey}; Subkey: "Software\Classes\{#RegValueName}.sql\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\resources\app\resources\win32\sql.ico"; Tasks: associatewithfiles
+Root: {#SoftwareClassesRootKey}; Subkey: "Software\Classes\{#RegValueName}.sql\shell\open"; ValueType: string; ValueName: "Icon"; ValueData: """{app}\{#ExeBasename}.exe"""; Tasks: associatewithfiles
 Root: {#SoftwareClassesRootKey}; Subkey: "Software\Classes\{#RegValueName}.sql\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#ExeBasename}.exe"" ""%1"""; Tasks: associatewithfiles
 
 ; .ipynb
@@ -138,6 +143,16 @@ Root: {#SoftwareClassesRootKey}; Subkey: "Software\Classes\{#RegValueName}.ipynb
 Root: {#EnvironmentRootKey}; Subkey: "{#EnvironmentKey}"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}\bin"; Tasks: addtopath; Check: NeedsAddPath(ExpandConstant('{app}\bin'))
 
 [Code]
+function IsBackgroundUpdate(): Boolean;
+begin
+  Result := ExpandConstant('{param:update|false}') <> 'false';
+end;
+
+function IsNotBackgroundUpdate(): Boolean;
+begin
+  Result := not IsBackgroundUpdate();
+end;
+
 // Don't allow installing conflicting architectures
 function InitializeSetup(): Boolean;
 var
@@ -190,6 +205,13 @@ begin
       MsgBox('Please uninstall the ' + AltArch + '-bit version of {#NameShort} before installing this ' + ThisArch + '-bit version.', mbInformation, MB_OK);
     end;
   end;
+
+  if IsNotBackgroundUpdate() and CheckForMutexes('{#TunnelMutex}') then
+  begin
+     MsgBox('{#NameShort} is still running a tunnel. Please stop the tunnel before installing.', mbInformation, MB_OK);
+		 Result := false
+  end;
+
 end;
 
 function WizardNotSilent(): Boolean;
@@ -198,14 +220,44 @@ begin
 end;
 
 // Updates
-function IsBackgroundUpdate(): Boolean;
+
+var
+	ShouldRestartTunnelService: Boolean;
+
+procedure StopTunnelServiceIfNeeded();
+var
+	StopServiceResultCode: Integer;
+	WaitCounter: Integer;
 begin
-  Result := ExpandConstant('{param:update|false}') <> 'false';
+  ShouldRestartTunnelService := False;
+ 	if CheckForMutexes('{#TunnelServiceMutex}') then begin
+		// stop the tunnel service
+		Log('Stopping the tunnel service using ' + ExpandConstant('"{app}\bin\{#ApplicationName}.cmd"'));
+		ShellExec('', ExpandConstant('"{app}\bin\{#ApplicationName}.cmd"'), 'tunnel service uninstall', '', SW_HIDE, ewWaitUntilTerminated, StopServiceResultCode);
+
+		Log('Stopping the tunnel service completed with result code ' + IntToStr(StopServiceResultCode));
+
+		WaitCounter := 10;
+		while (WaitCounter > 0) and CheckForMutexes('{#TunnelServiceMutex}') do
+		begin
+			Log('Tunnel service is still running, waiting');
+			Sleep(500);
+			WaitCounter := WaitCounter - 1
+		end;
+		if CheckForMutexes('{#TunnelServiceMutex}') then
+			Log('Unable to stop tunnel service')
+		else
+			ShouldRestartTunnelService := True;
+	end
 end;
 
-function IsNotUpdate(): Boolean;
+
+// called before the wizard checks for running application
+function PrepareToInstall(var NeedsRestart: Boolean): String;
 begin
-  Result := not IsBackgroundUpdate();
+  if IsNotBackgroundUpdate() then
+    StopTunnelServiceIfNeeded();
+  Result := ''
 end;
 
 // AzureDataStudio will create a flag file before the update starts (/update=C:\foo\bar)
@@ -222,6 +274,11 @@ begin
     Result := not LockFileExists()
   else
     Result := True;
+end;
+
+function IsWindows11OrLater(): Boolean;
+begin
+  Result := (GetWindowsVersion >= $0A0055F0);
 end;
 
 function GetAppMutex(Value: string): string;
@@ -248,21 +305,69 @@ begin
     Result := 'false';
 end;
 
+function QualityIsInsiders(): boolean;
+begin
+  if '{#Quality}' = 'insider' then
+    Result := True
+  else
+    Result := False;
+end;
+
+#ifdef AppxPackageFullname
+procedure AddAppxPackage();
+var
+  AddAppxPackageResultCode: Integer;
+begin
+  if WizardIsTaskSelected('addcontextmenufiles') then begin
+    ShellExec('', 'powershell.exe', '-Command ' + AddQuotes('Add-AppxPackage -Path ''' + ExpandConstant('{app}\appx\{#AppxPackage}') + ''' -ExternalLocation ''' + ExpandConstant('{app}\appx') + ''''), '', SW_HIDE, ewWaitUntilTerminated, AddAppxPackageResultCode);
+    RegDeleteKeyIncludingSubkeys({#EnvironmentRootKey}, 'Software\Classes\*\shell\{#RegValueName}');
+    RegDeleteKeyIncludingSubkeys({#EnvironmentRootKey}, 'Software\Classes\directory\shell\{#RegValueName}');
+    RegDeleteKeyIncludingSubkeys({#EnvironmentRootKey}, 'Software\Classes\directory\background\shell\{#RegValueName}');
+    RegDeleteKeyIncludingSubkeys({#EnvironmentRootKey}, 'Software\Classes\Drive\shell\{#RegValueName}');
+  end;
+end;
+
+procedure RemoveAppxPackage();
+var
+  RemoveAppxPackageResultCode: Integer;
+begin
+  ShellExec('', 'powershell.exe', '-Command ' + AddQuotes('Remove-AppxPackage -Package ''{#AppxPackageFullname}'''), '', SW_HIDE, ewWaitUntilTerminated, RemoveAppxPackageResultCode);
+  if not WizardIsTaskSelected('addcontextmenufiles') then begin
+    RegDeleteKeyIncludingSubkeys({#EnvironmentRootKey}, 'Software\Classes\{#RegValueName}ContextMenu');
+  end;
+end;
+#endif
+
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   UpdateResultCode: Integer;
+	StartServiceResultCode: Integer;
 begin
-  if IsBackgroundUpdate() and (CurStep = ssPostInstall) then
+  if CurStep = ssPostInstall then
   begin
-    CreateMutex('{#AppMutex}-ready');
-
-    while (CheckForMutexes('{#AppMutex}')) do
+    if IsBackgroundUpdate() then
     begin
-      Log('Application is still running, waiting');
-      Sleep(1000);
+      CreateMutex('{#AppMutex}-ready');
+
+      while (CheckForMutexes('{#AppMutex}')) do
+      begin
+        Log('Application is still running, waiting');
+        Sleep(1000)
+      end;
+
+      StopTunnelServiceIfNeeded();
+
+      Exec(ExpandConstant('{app}\tools\inno_updater.exe'), ExpandConstant('"{app}\{#ExeBasename}.exe" ' + BoolToStr(LockFileExists())), '', SW_SHOW, ewWaitUntilTerminated, UpdateResultCode);
     end;
 
-    Exec(ExpandConstant('{app}\tools\inno_updater.exe'), ExpandConstant('"{app}\{#ExeBasename}.exe" ' + BoolToStr(LockFileExists())), '', SW_SHOW, ewWaitUntilTerminated, UpdateResultCode);
+    if ShouldRestartTunnelService then
+    begin
+      // start the tunnel service
+      Log('Restarting the tunnel service...');
+      ShellExec('', ExpandConstant('"{app}\bin\{#ApplicationName}.cmd"'), 'tunnel service install', '', SW_HIDE, ewWaitUntilTerminated, StartServiceResultCode);
+      Log('Starting the tunnel service completed with result code ' + IntToStr(StartServiceResultCode));
+      ShouldRestartTunnelService := False
+    end;
   end;
 end;
 
@@ -331,3 +436,19 @@ end;
 #ifdef Debug
   #expr SaveToFile(AddBackslash(SourcePath) + "code-processed.iss")
 #endif
+
+// https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/icacls
+// https://docs.microsoft.com/en-US/windows/security/identity-protection/access-control/security-identifiers
+procedure DisableAppDirInheritance();
+var
+  ResultCode: Integer;
+  Permissions: string;
+begin
+  Permissions := '/grant:r "*S-1-5-18:(OI)(CI)F" /grant:r "*S-1-5-32-544:(OI)(CI)F" /grant:r "*S-1-5-11:(OI)(CI)RX" /grant:r "*S-1-5-32-545:(OI)(CI)RX"';
+
+  #if "user" == InstallTarget
+    Permissions := Permissions + Format(' /grant:r "*S-1-3-0:(OI)(CI)F" /grant:r "%s:(OI)(CI)F"', [GetUserNameString()]);
+  #endif
+
+  Exec(ExpandConstant('{sys}\icacls.exe'), ExpandConstant('"{app}" /inheritancelevel:r ') + Permissions, '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+end;

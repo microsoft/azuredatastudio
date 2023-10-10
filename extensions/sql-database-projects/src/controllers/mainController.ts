@@ -3,37 +3,35 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
+import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
+import * as vscodeMssql from 'vscode-mssql';
+import * as mssql from 'mssql';
 import * as templates from '../templates/templates';
-import * as constants from '../common/constants';
 import * as path from 'path';
-import * as newProjectTool from '../tools/newProjectTool';
 
-import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { getErrorMessage, getSqlProjectFilesInFolder } from '../common/utils';
 import { ProjectsController } from './projectController';
-import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
-import { NetCoreTool } from '../tools/netcoreTool';
-import { Project } from '../models/project';
-import { FileNode, FolderNode } from '../models/tree/fileFolderTreeItem';
+import { DBProjectConfigurationKey, DotnetInstallLocationKey, NetCoreInstallLocationKey, NetCoreTool } from '../tools/netcoreTool';
 import { IconPathHelper } from '../common/iconHelper';
-import { IProjectProvider } from 'dataworkspace';
+import { WorkspaceTreeItem } from 'dataworkspace';
+import * as constants from '../common/constants';
 import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
-
-const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
+import { EntryType, GenerateProjectFromOpenApiSpecOptions, ItemType } from 'sqldbproj';
+import { FileNode, TableFileNode } from '../models/tree/fileFolderTreeItem';
+import { getAzdataApi } from '../common/utils';
+import { Project } from '../models/project';
 
 /**
  * The main controller class that initializes the extension
  */
 export default class MainController implements vscode.Disposable {
-	protected dbProjectTreeViewProvider: SqlDatabaseProjectTreeViewProvider = new SqlDatabaseProjectTreeViewProvider();
 	protected projectsController: ProjectsController;
 	protected netcoreTool: NetCoreTool;
+	private _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(constants.projectsOutputChannel);
 
 	public constructor(private context: vscode.ExtensionContext) {
-		this.projectsController = new ProjectsController(this.dbProjectTreeViewProvider);
-		this.netcoreTool = new NetCoreTool();
+		this.projectsController = new ProjectsController(this._outputChannel);
+		this.netcoreTool = new NetCoreTool(this._outputChannel);
 	}
 
 	public get extensionContext(): vscode.ExtensionContext {
@@ -47,147 +45,81 @@ export default class MainController implements vscode.Disposable {
 	public deactivate(): void {
 	}
 
-	public async activate(): Promise<IProjectProvider> {
+	public async activate(): Promise<SqlDatabaseProjectProvider> {
+		// upgrade path from former netCoreSDKLocation setting to dotnetSDK Location setting
+		// copy old setting's value to new setting
+		const oldNetCoreInstallSetting = vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreInstallLocationKey];
+		if (oldNetCoreInstallSetting && !vscode.workspace.getConfiguration(DBProjectConfigurationKey)[DotnetInstallLocationKey]) {
+			await vscode.workspace.getConfiguration(DBProjectConfigurationKey).update(DotnetInstallLocationKey, oldNetCoreInstallSetting, true);
+		}
+
 		await this.initializeDatabaseProjects();
-		return new SqlDatabaseProjectProvider();
+		return new SqlDatabaseProjectProvider(this.projectsController);
 	}
 
 	private async initializeDatabaseProjects(): Promise<void> {
 		// init commands
-		vscode.commands.registerCommand('sqlDatabaseProjects.new', async () => { await this.createNewProject(); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.open', async () => { await this.openProjectFromFile(); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.close', (node: BaseProjectTreeItem) => { this.projectsController.closeProject(node); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.properties', async (node: BaseProjectTreeItem) => { await vscode.window.showErrorMessage(`Properties not yet implemented: ${node.uri.path}`); }); // TODO
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.properties', async (node: WorkspaceTreeItem) => { return vscode.window.showErrorMessage(`Properties not yet implemented: ${node.element.uri.path}`); })); // TODO
 
-		vscode.commands.registerCommand('sqlDatabaseProjects.build', async (node: BaseProjectTreeItem) => { await this.projectsController.buildProject(node); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.publish', async (node: BaseProjectTreeItem) => { await this.projectsController.publishProject(node); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.schemaCompare', async (node: BaseProjectTreeItem) => { await this.projectsController.schemaCompare(node); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.importDatabase', async (profile: azdata.IConnectionProfile) => { await this.projectsController.importNewDatabaseProject(profile); });
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.build', async (node: WorkspaceTreeItem) => { return this.projectsController.buildProject(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.publish', async (node: WorkspaceTreeItem) => { return this.projectsController.publishProject(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.schemaCompare', async (node: WorkspaceTreeItem) => { return this.projectsController.schemaCompare(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.schemaComparePublishProjectChanges', async (operationId: string, projectFilePath: string, folderStructure: mssql.ExtractTarget): Promise<mssql.SchemaComparePublishProjectResult> => { return await this.projectsController.schemaComparePublishProjectChanges(operationId, projectFilePath, folderStructure); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.updateProjectFromDatabase', async (node: azdataType.IConnectionProfile | vscodeMssql.ITreeNodeInfo | WorkspaceTreeItem) => { await this.projectsController.updateProjectFromDatabase(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.createProjectFromDatabase', async (context: azdataType.IConnectionProfile | vscodeMssql.ITreeNodeInfo | undefined) => { return this.projectsController.createProjectFromDatabase(context); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.generateProjectFromOpenApiSpec', async (options?: GenerateProjectFromOpenApiSpecOptions) => { return this.projectsController.generateProjectFromOpenApiSpec(options); }));
 
-		vscode.commands.registerCommand('sqlDatabaseProjects.newScript', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.script); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newPreDeploymentScript', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.preDeployScript); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newPostDeploymentScript', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.postDeployScript); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newTable', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.table); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newView', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.view); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newStoredProcedure', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.storedProcedure); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newItem', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newFolder', async (node: BaseProjectTreeItem) => { await this.projectsController.addFolderPrompt(node); });
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.newScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.script); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.newPreDeploymentScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.preDeployScript); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.newPostDeploymentScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.postDeployScript); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.newTable', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.table); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.newView', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.view); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.newStoredProcedure', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.storedProcedure); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.newItem', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.addExistingItem', async (node: WorkspaceTreeItem) => { return this.projectsController.addExistingItemPrompt(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.newFolder', async (node: WorkspaceTreeItem) => { return this.projectsController.addFolderPrompt(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.newPublishProfile', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.publishProfile); }));
 
-		vscode.commands.registerCommand('sqlDatabaseProjects.addDatabaseReference', async (node: BaseProjectTreeItem) => { await this.projectsController.addDatabaseReference(node); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.openContainingFolder', async (node: BaseProjectTreeItem) => { await this.projectsController.openContainingFolder(node); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.editProjectFile', async (node: BaseProjectTreeItem) => { await this.projectsController.editProjectFile(node); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.delete', async (node: BaseProjectTreeItem) => { await this.projectsController.delete(node); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: FileNode | FolderNode) => { await this.projectsController.exclude(node); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.changeTargetPlatform', async (node: BaseProjectTreeItem) => { await this.projectsController.changeTargetPlatform(node); });
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.addDatabaseReference', async (node: WorkspaceTreeItem) => { return this.projectsController.addDatabaseReference(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.openReferencedSqlProject', async (node: WorkspaceTreeItem) => { return this.projectsController.openReferencedSqlProject(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.openContainingFolder', async (node: WorkspaceTreeItem) => { return this.projectsController.openContainingFolder(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.editProjectFile', async (node: WorkspaceTreeItem) => { return this.projectsController.editProjectFile(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.delete', async (node: WorkspaceTreeItem) => { return this.projectsController.delete(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: WorkspaceTreeItem) => { return this.projectsController.exclude(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.rename', async (node: WorkspaceTreeItem) => { return this.projectsController.rename(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.editSqlCmdVariable', async (node: WorkspaceTreeItem) => { return this.projectsController.editSqlCmdVariable(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.addSqlCmdVariable', async (node: WorkspaceTreeItem) => { return this.projectsController.addSqlCmdVariable(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.changeTargetPlatform', async (node: WorkspaceTreeItem) => { return this.projectsController.changeTargetPlatform(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.validateExternalStreamingJob', async (node: WorkspaceTreeItem) => { return this.projectsController.validateExternalStreamingJob(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.openFileWithWatcher', async (fileSystemUri: vscode.Uri, node: FileNode) => { return this.projectsController.openFileWithWatcher(fileSystemUri, node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.openInDesigner', async (node: WorkspaceTreeItem) => {
+			if (node?.element instanceof TableFileNode) {
+				const tableFileNode = node.element as TableFileNode;
+
+				const projectPath = tableFileNode.projectFileUri.fsPath;
+				const project = await Project.openProject(projectPath);
+				const targetVersion = project.getProjectTargetVersion();
+				const filePath = tableFileNode.fileSystemUri.fsPath;
+
+				await getAzdataApi()!.designers.openTableDesigner('MSSQL', {
+					title: tableFileNode.friendlyName,
+					tooltip: `${projectPath} - ${tableFileNode.friendlyName}`,
+					id: filePath,
+					isNewTable: false,
+					tableScriptPath: filePath,
+					projectFilePath: projectPath,
+					allScripts: project.sqlObjectScripts.filter(entry => entry.type === EntryType.File && path.extname(entry.fsUri.fsPath).toLowerCase() === constants.sqlFileExtension)
+						.map(entry => entry.fsUri.fsPath),
+					targetVersion: targetVersion
+				}, {
+					'ProjectTargetVersion': targetVersion
+				});
+			}
+		}));
 
 		IconPathHelper.setExtensionContext(this.extensionContext);
 
-		// init view
-		const treeView = vscode.window.createTreeView(SQL_DATABASE_PROJECTS_VIEW_ID, {
-			treeDataProvider: this.dbProjectTreeViewProvider,
-			showCollapseAll: true
-		});
-		this.dbProjectTreeViewProvider.setTreeView(treeView);
-
-		this.extensionContext.subscriptions.push(treeView);
-
 		await templates.loadTemplates(path.join(this.context.extensionPath, 'resources', 'templates'));
-
-		// ensure .net core is installed
-		await this.netcoreTool.findOrInstallNetCore();
-
-		// set the user settings around saving new projects to default value
-		await newProjectTool.initializeSaveLocationSetting();
-
-		// load any sql projects that are open in workspace folder
-		await this.loadProjectsInWorkspace();
-	}
-
-	public async loadProjectsInWorkspace(): Promise<void> {
-		const workspaceFolders = vscode.workspace.workspaceFolders;
-		if (workspaceFolders?.length) {
-			await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
-				await this.loadProjectsInFolder(workspaceFolder.uri.fsPath);
-			}));
-		}
-	}
-
-	public async loadProjectsInFolder(folderPath: string): Promise<void> {
-		const results = await getSqlProjectFilesInFolder(folderPath);
-
-		for (let f in results) {
-			// open the project, but don't switch focus to the file explorer viewlet
-			await this.projectsController.openProject(vscode.Uri.file(results[f]), false);
-		}
-	}
-
-	/**
-	 * Prompts the user to select a .sqlproj file to open
-	 * TODO: define behavior once projects are automatically opened from workspace
-	 */
-	public async openProjectFromFile(): Promise<void> {
-		try {
-			let filter: { [key: string]: string[] } = {};
-
-			filter[constants.sqlDatabaseProject] = ['sqlproj'];
-
-			let files: vscode.Uri[] | undefined = await vscode.window.showOpenDialog({ filters: filter });
-
-			if (files) {
-				for (const file of files) {
-					await this.projectsController.openProject(file);
-				}
-			}
-		}
-		catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
-		}
-	}
-
-	/**
-	 * Creates a new SQL database project from a template, prompting the user for a name and location
-	 */
-	public async createNewProject(): Promise<Project | undefined> {
-		try {
-			let newProjName = await vscode.window.showInputBox({
-				prompt: constants.newDatabaseProjectName,
-				value: newProjectTool.defaultProjectNameNewProj()
-			});
-
-			newProjName = newProjName?.trim();
-
-			if (!newProjName) {
-				// TODO: is this case considered an intentional cancellation (shouldn't warn) or an error case (should warn)?
-				vscode.window.showErrorMessage(constants.projectNameRequired);
-				return undefined;
-			}
-
-			let selectionResult = await vscode.window.showOpenDialog({
-				canSelectFiles: false,
-				canSelectFolders: true,
-				canSelectMany: false,
-				defaultUri: newProjectTool.defaultProjectSaveLocation()
-			});
-
-			if (!selectionResult) {
-				vscode.window.showErrorMessage(constants.projectLocationRequired);
-				return undefined;
-			}
-
-			// TODO: what if the selected folder is outside the workspace?
-
-			const newProjFolderUri = (selectionResult as vscode.Uri[])[0];
-			const newProjFilePath = await this.projectsController.createNewProject(<string>newProjName, newProjFolderUri, true);
-			const proj = await this.projectsController.openProject(vscode.Uri.file(newProjFilePath));
-
-			newProjectTool.updateSaveLocationSetting();
-
-			return proj;
-		}
-		catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
-			return undefined;
-		}
 	}
 
 	public dispose(): void {

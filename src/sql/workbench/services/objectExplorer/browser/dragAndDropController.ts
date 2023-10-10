@@ -6,19 +6,34 @@
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ITree, IDragAndDrop, IDragOverReaction, DRAG_OVER_ACCEPT_BUBBLE_DOWN, DRAG_OVER_REJECT } from 'vs/base/parts/tree/browser/tree';
+import { ITree, IDragAndDrop, IDragOverReaction, DRAG_OVER_ACCEPT_BUBBLE_DOWN, DRAG_OVER_REJECT } from 'sql/base/parts/tree/browser/tree';
 import { DragMouseEvent } from 'vs/base/browser/mouseEvent';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
-import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
+import { UNSAVED_GROUP_ID, mssqlProviderName, pgsqlProviderName } from 'sql/platform/connection/common/constants';
 import { DataTransfers, IDragAndDropData } from 'vs/base/browser/dnd';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { localize } from 'vs/nls';
 
 export function supportsNodeNameDrop(nodeId: string): boolean {
 	if (nodeId === 'Table' || nodeId === 'Column' || nodeId === 'View' || nodeId === 'Function') {
 		return true;
 	}
 	return false;
+}
+
+/**
+ * Whether the specified node supports having a schema
+ * @param node The node being dragged
+ * @returns True if the node supports having the schema appended to its name, false if not
+ */
+function supportsSchema(node: TreeNode): boolean {
+	// Currently the tree node created by SQL Tools Service will set the schema for a node to the schema
+	// of its parent node if it doesn't have one itself. While it's not clear why this is being done
+	// changing it at this point would be risky so instead just doing a check here so that we don't
+	// accidently put a schema on an element that doesn't support it
+	return node.nodeTypeId === 'Column' ? false : true;
 }
 
 export function supportsFolderNodeNameDrop(nodeId: string, label: string): boolean {
@@ -39,9 +54,13 @@ function escapeString(input: string | undefined): string | undefined {
  */
 export class ServerTreeDragAndDrop implements IDragAndDrop {
 
+	private rejectDueToDupe: boolean;
+
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@INotificationService private _notificationService: INotificationService
 	) {
+		this.rejectDueToDupe = false;
 	}
 
 	/**
@@ -95,25 +114,36 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		let escapedSchema, escapedName, finalString;
 		TreeUpdateUtils.isInDragAndDrop = true;
 		const data = dragAndDropData.getData();
-		const element = data[0];
+		const element = data[0] as TreeNode;
 		if (supportsNodeNameDrop(element.nodeTypeId)) {
-			escapedSchema = escapeString(element.metadata.schema);
+			escapedSchema = supportsSchema(element) ? escapeString(element.metadata.schema) : undefined;
 			escapedName = escapeString(element.metadata.name);
 			let providerName = this.getProviderNameFromElement(element);
 			if (providerName === 'KUSTO') {
 				finalString = element.nodeTypeId !== 'Function' && escapedName.indexOf(' ') > 0 ? `[@"${escapedName}"]` : escapedName;
-			} else {
+			} else if (providerName === mssqlProviderName) {
 				finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+			} else if (providerName === pgsqlProviderName) {
+				finalString = element.metadata.schema ? `"${element.metadata.schema}"."${element.metadata.name}"` : `"${element.metadata.name}"`;
+			} else {
+				finalString = element.metadata.schema ? `${element.metadata.schema}.${element.metadata.name}` : `${element.metadata.name}`;
 			}
 			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${finalString}`]));
 		}
 		if (supportsFolderNodeNameDrop(element.nodeTypeId, element.label)) {
 			// get children
 			let returnString = '';
+			let providerName = this.getProviderNameFromElement(element);
 			for (let child of element.children) {
-				escapedSchema = escapeString(child.metadata.schema);
+				escapedSchema = supportsSchema(child) ? escapeString(child.metadata.schema) : undefined;
 				escapedName = escapeString(child.metadata.name);
-				finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+				if (providerName === mssqlProviderName) {
+					finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+				} else if (providerName === pgsqlProviderName) {
+					finalString = child.metadata.schema ? `"${child.metadata.schema}"."${child.metadata.name}"` : `"${child.metadata.name}"`;
+				} else {
+					finalString = child.metadata.schema ? `${child.metadata.schema}.${child.metadata.name}` : `${child.metadata.name}`;
+				}
 				returnString = returnString ? `${returnString},${finalString}` : `${finalString}`;
 			}
 
@@ -143,7 +173,6 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			// to avoid creating a circular structure.
 			canDragOver = source.id !== targetConnectionProfileGroup.id && !source.isAncestorOf(targetConnectionProfileGroup);
 		}
-
 		return canDragOver;
 	}
 
@@ -155,33 +184,42 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	public onDragOver(tree: AsyncServerTree | ITree, data: IDragAndDropData, targetElement: any, originalEvent: DragMouseEvent): IDragOverReaction {
 		let canDragOver: boolean = true;
 
-		if (targetElement instanceof ConnectionProfile || targetElement instanceof ConnectionProfileGroup) {
-			let targetConnectionProfileGroup = this.getTargetGroup(targetElement);
-			// Verify if the connection can be moved to the target group
-			const source = data.getData()[0];
-			if (source instanceof ConnectionProfile) {
-				if (!this._connectionManagementService.canChangeConnectionConfig(source, targetConnectionProfileGroup.id!)) {
-					canDragOver = false;
-				}
-			} else if (source instanceof ConnectionProfileGroup) {
-				// Dropping a group to itself or its descendants nodes is not allowed
-				// to avoid creating a circular structure.
-				canDragOver = source.id !== targetElement.id && !source.isAncestorOf(targetElement);
+		const source = data.getData()[0];
+		if (source instanceof ConnectionProfileGroup) {
+			if (targetElement instanceof ConnectionProfileGroup) {
+				// If target group is parent of the source connection, then don't allow drag over
+				canDragOver = this.canDragToConnectionProfileGroup(source, targetElement);
+			} else if (targetElement instanceof ConnectionProfile) {
+				canDragOver = source.parentId !== targetElement.groupId;
+			} else if (targetElement instanceof TreeNode) {
+				const treeNodeParentGroupId = this.getTreeNodeParentGroup(targetElement).id;
+				canDragOver = source.parentId !== treeNodeParentGroupId && source.id !== treeNodeParentGroupId;
 			}
-		} else {
-			canDragOver = true;
+		} else if (source instanceof ConnectionProfile) {
+			if (targetElement instanceof ConnectionProfileGroup) {
+				canDragOver = this.canDragToConnectionProfileGroup(source, targetElement);
+			} else if (targetElement instanceof ConnectionProfile) {
+				canDragOver = source.groupId !== targetElement.groupId &&
+					this._connectionManagementService.canChangeConnectionConfig(source, targetElement.groupId);
+				this.rejectDueToDupe = !canDragOver;
+			} else if (targetElement instanceof TreeNode) {
+				canDragOver = source.groupId !== this.getTreeNodeParentGroup(targetElement).id;
+			}
+		} else if (source instanceof TreeNode) {
+			canDragOver = false;
 		}
-
 		if (canDragOver) {
 			if (targetElement instanceof ConnectionProfile) {
 				const isConnected = this._connectionManagementService.isProfileConnected(targetElement);
 				// Don't auto-expand disconnected connections - doing so will try to connect the connection
 				// when expanded which is not something we want to support currently
 				return DRAG_OVER_ACCEPT_BUBBLE_DOWN(isConnected);
+			} else if (targetElement instanceof ConnectionProfileGroup) {
+				return DRAG_OVER_ACCEPT_BUBBLE_DOWN(true);
+			} else {
+				// Don't auto-expand treeNodes as we don't support drag and drop on them
+				return DRAG_OVER_ACCEPT_BUBBLE_DOWN(false);
 			}
-			// Auto-expand other elements (groups, tree nodes) so their children can be
-			// exposed for further dragging
-			return DRAG_OVER_ACCEPT_BUBBLE_DOWN(true);
 		} else {
 			return DRAG_OVER_REJECT;
 		}
@@ -200,39 +238,56 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			let oldParent: ConnectionProfileGroup = source.getParent();
 			const self = this;
 			if (this.isDropAllowed(targetConnectionProfileGroup, oldParent, source)) {
-
-				if (source instanceof ConnectionProfile) {
-					// Change group id of profile
-					this._connectionManagementService.changeGroupIdForConnection(source, targetConnectionProfileGroup.id!).then(() => {
-						if (tree) {
-							TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService, targetConnectionProfileGroup);
+				if (tree instanceof AsyncServerTree) {
+					if (oldParent && source && targetConnectionProfileGroup) {
+						if (source instanceof ConnectionProfileGroup) {
+							this._connectionManagementService.changeGroupIdForConnectionGroup(source, targetConnectionProfileGroup);
+						} else if (source instanceof ConnectionProfile) {
+							this._connectionManagementService.changeGroupIdForConnection(source, targetConnectionProfileGroup.id!);
 						}
+					}
 
-					});
-				} else if (source instanceof ConnectionProfileGroup) {
-					// Change parent id of group
-					this._connectionManagementService.changeGroupIdForConnectionGroup(source, targetConnectionProfileGroup).then(() => {
-						if (tree) {
-							TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService);
-						}
+				} else {
+					if (source instanceof ConnectionProfile) {
+						// Change group id of profile
+						this._connectionManagementService.changeGroupIdForConnection(source, targetConnectionProfileGroup.id!).then(async () => {
+							if (tree) {
+								TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService, targetConnectionProfileGroup);
+							}
 
-					});
+						});
+					} else if (source instanceof ConnectionProfileGroup) {
+						// Change parent id of group
+						this._connectionManagementService.changeGroupIdForConnectionGroup(source, targetConnectionProfileGroup).then(async () => {
+							if (tree) {
+								TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService);
+							}
+						});
+					}
 				}
 			}
 		}
 	}
 
 	public dropAbort(tree: ITree, data: IDragAndDropData): void {
+		if (this.rejectDueToDupe) {
+			this.rejectDueToDupe = false;
+			this._notificationService.info(localize('objectExplorer.dragAndDropController.existingIdenticalProfile', 'Cannot drag profile into group: A profile with identical options already exists in the group.'));
+		}
 		TreeUpdateUtils.isInDragAndDrop = false;
 	}
 
-	private getTargetGroup(targetElement: ConnectionProfileGroup | ConnectionProfile): ConnectionProfileGroup {
+	private getTargetGroup(targetElement: ConnectionProfileGroup | ConnectionProfile | TreeNode): ConnectionProfileGroup {
 		let targetConnectionProfileGroup: ConnectionProfileGroup;
 		if (targetElement instanceof ConnectionProfile) {
 			targetConnectionProfileGroup = targetElement.getParent()!;
-		}
-		else {
+		} else if (targetElement instanceof ConnectionProfileGroup) {
 			targetConnectionProfileGroup = targetElement;
+		} else if (targetElement instanceof TreeNode) {
+			targetConnectionProfileGroup = this.getTreeNodeParentGroup(targetElement);
+			if (!targetConnectionProfileGroup) {
+				throw new Error('Cannot find parent for the node');
+			}
 		}
 
 		return targetConnectionProfileGroup;
@@ -246,6 +301,20 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		let isDropToSameLevel = oldParent && oldParent.equals(targetConnectionProfileGroup);
 		let isUnsavedDrag = source && (source instanceof ConnectionProfileGroup) && (source.id === UNSAVED_GROUP_ID);
 		return (!isDropToSameLevel && !isDropToItself && !isUnsavedDrag);
+	}
+
+	private getTreeNodeParentGroup(element: TreeNode): ConnectionProfileGroup | undefined {
+		let treeNode = element;
+		while (!treeNode?.connection) {
+			treeNode = treeNode.parent;
+		}
+		if (treeNode) {
+			const groupId = treeNode.connection.groupId;
+			if (groupId) {
+				return this._connectionManagementService.getConnectionGroupById(groupId);
+			}
+		}
+		return undefined;
 	}
 }
 

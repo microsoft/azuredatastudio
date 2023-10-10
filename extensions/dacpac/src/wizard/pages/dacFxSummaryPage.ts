@@ -20,8 +20,10 @@ export class DacFxSummaryPage extends BasePage {
 	}
 
 	async start(): Promise<boolean> {
-		this.table = this.view.modelBuilder.table().withProperties({
-			title: loc.summaryTableTitle
+		this.table = this.view.modelBuilder.table().withProps({
+			title: loc.summaryTableTitle,
+			data: [],
+			columns: []
 		}).component();
 		this.loader = this.view.modelBuilder.loadingComponent().withItem(this.table).component();
 		this.form = this.view.modelBuilder.formContainer().withFormItems(
@@ -48,7 +50,7 @@ export class DacFxSummaryPage extends BasePage {
 		return true;
 	}
 
-	async onPageLeave(): Promise<boolean> {
+	override async onPageLeave(): Promise<boolean> {
 		this.instance.wizard.generateScriptButton.hidden = true;
 		return true;
 	}

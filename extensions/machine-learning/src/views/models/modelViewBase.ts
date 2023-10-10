@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { ViewBase } from '../viewBase';
 import { ImportedModel, WorkspaceModel, ImportedModelDetails, ModelParameters } from '../../modelManagement/interfaces';
@@ -28,9 +28,14 @@ export interface PredictModelEventArgs extends PredictParameters {
 
 
 export enum ModelSourceType {
-	Local,
-	Azure,
-	RegisteredModels
+	Local = 'Local',
+	Azure = 'Azure',
+	RegisteredModels = 'RegisteredModels'
+}
+
+export enum ModelActionType {
+	Import,
+	Predict
 }
 
 export interface ModelViewData {
@@ -56,6 +61,7 @@ export const RegisterAzureModelEventName = 'registerAzureLocalModel';
 export const DownloadAzureModelEventName = 'downloadAzureLocalModel';
 export const DownloadRegisteredModelEventName = 'downloadRegisteredModel';
 export const PredictModelEventName = 'predictModel';
+export const PredictWizardEventName = 'predictWizard';
 export const RegisterModelEventName = 'registerModel';
 export const EditModelEventName = 'editModel';
 export const UpdateModelEventName = 'updateModel';
@@ -74,12 +80,13 @@ export abstract class ModelViewBase extends ViewBase {
 	private _modelSourceType: ModelSourceType = ModelSourceType.Local;
 	private _modelsViewData: ModelViewData[] = [];
 	private _importTable: DatabaseTable | undefined;
+	private _modelActionType: ModelActionType = ModelActionType.Import;
 
 	constructor(apiWrapper: ApiWrapper, root?: string, parent?: ModelViewBase) {
 		super(apiWrapper, root, parent);
 	}
 
-	protected getEventNames(): string[] {
+	protected override getEventNames(): string[] {
 		return super.getEventNames().concat([ListModelsEventName,
 			ListAzureModelsEventName,
 			ListAccountsEventName,
@@ -102,7 +109,8 @@ export abstract class ModelViewBase extends ViewBase {
 			EditModelEventName,
 			UpdateModelEventName,
 			DeleteModelEventName,
-			SignInToAzureEventName]);
+			SignInToAzureEventName,
+			PredictWizardEventName]);
 	}
 
 	/**
@@ -168,7 +176,7 @@ export abstract class ModelViewBase extends ViewBase {
 
 	/**
 	 * registers local model
-	 * @param localFilePath local file path
+	 * @param models
 	 */
 	public async importLocalModel(models: ModelViewData[]): Promise<void> {
 		return await this.sendDataRequest(RegisterLocalModelEventName, models);
@@ -184,7 +192,7 @@ export abstract class ModelViewBase extends ViewBase {
 
 	/**
 	 * download azure model
-	 * @param args azure resource
+	 * @param resource azure resource
 	 */
 	public async downloadAzureModel(resource: AzureModelResource | undefined): Promise<string> {
 		return await this.sendDataRequest(DownloadAzureModelEventName, resource);
@@ -199,7 +207,7 @@ export abstract class ModelViewBase extends ViewBase {
 
 	/**
 	 * registers azure model
-	 * @param args azure resource
+	 * @param models
 	 */
 	public async importAzureModel(models: ModelViewData[]): Promise<void> {
 		return await this.sendDataRequest(RegisterAzureModelEventName, models);
@@ -209,7 +217,7 @@ export abstract class ModelViewBase extends ViewBase {
 	 * Stores the name of the table as recent config table for importing models
 	 */
 	public async storeImportConfigTable(): Promise<void> {
-		await this.sendRequest(StoreImportTableEventName, this.importTable);
+		this.sendRequest(StoreImportTableEventName, this.importTable);
 	}
 
 	/**
@@ -221,7 +229,9 @@ export abstract class ModelViewBase extends ViewBase {
 
 	/**
 	 * registers azure model
-	 * @param args azure resource
+	 * @param model
+	 * @param filePath
+	 * @param params
 	 */
 	public async generatePredictScript(model: ImportedModel | undefined, filePath: string | undefined, params: PredictParameters | undefined): Promise<void> {
 		const args: PredictModelEventArgs = Object.assign({}, params, {
@@ -243,6 +253,28 @@ export abstract class ModelViewBase extends ViewBase {
 			subscription: subscription
 		};
 		return await this.sendDataRequest(ListGroupsEventName, args);
+	}
+
+	/**
+	 * Sets model action type
+	 */
+	public set modelActionType(value: ModelActionType) {
+		if (this.parent) {
+			this.parent.modelActionType = value;
+		} else {
+			this._modelActionType = value;
+		}
+	}
+
+	/**
+	 * Returns model action type
+	 */
+	public get modelActionType(): ModelActionType {
+		if (this.parent) {
+			return this.parent.modelActionType;
+		} else {
+			return this._modelActionType;
+		}
 	}
 
 	/**

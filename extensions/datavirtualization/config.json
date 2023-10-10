@@ -1,0 +1,15 @@
+{
+	"downloadUrl": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/service/{#version#}/scaleoutdataservice-{#fileName#}",
+	"version": "1.11.0",
+	"downloadFileNames": {
+		"Windows": "win-x64.zip",
+		"Windows_86": "win-x86.zip",
+		"OSX": "osx-x64.tar.gz",
+		"Linux": "linux-x64.tar.gz"
+	},
+	"installDirectory": "scaleoutdataservice/{#platform#}/{#version#}",
+	"executableFiles": [
+		"MicrosoftSqlToolsScaleOutData",
+		"MicrosoftSqlToolsScaleOutData.exe"
+	]
+}

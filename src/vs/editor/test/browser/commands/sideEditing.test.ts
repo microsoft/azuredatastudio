@@ -4,14 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { EditOperation } from 'vs/editor/common/core/editOperation';
+import { EditOperation, ISingleEditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 import { Range } from 'vs/editor/common/core/range';
 import { Selection } from 'vs/editor/common/core/selection';
-import { IIdentifiedSingleEditOperation } from 'vs/editor/common/model';
 import { withTestCodeEditor } from 'vs/editor/test/browser/testCodeEditor';
 
-function testCommand(lines: string[], selections: Selection[], edits: IIdentifiedSingleEditOperation[], expectedLines: string[], expectedSelections: Selection[]): void {
+function testCommand(lines: string[], selections: Selection[], edits: ISingleEditOperation[], expectedLines: string[], expectedSelections: Selection[]): void {
 	withTestCodeEditor(lines, {}, (editor, viewModel) => {
 		const model = editor.getModel()!;
 
@@ -19,10 +18,10 @@ function testCommand(lines: string[], selections: Selection[], edits: IIdentifie
 
 		model.applyEdits(edits);
 
-		assert.deepEqual(model.getLinesContent(), expectedLines);
+		assert.deepStrictEqual(model.getLinesContent(), expectedLines);
 
-		let actualSelections = viewModel.getSelections();
-		assert.deepEqual(actualSelections.map(s => s.toString()), expectedSelections.map(s => s.toString()));
+		const actualSelections = viewModel.getSelections();
+		assert.deepStrictEqual(actualSelections.map(s => s.toString()), expectedSelections.map(s => s.toString()));
 
 	});
 }
@@ -47,7 +46,7 @@ suite('Editor Side Editing - collapsed selection', () => {
 				'third line',
 				'fourth'
 			],
-			[new Selection(1, 1, 1, 11)]
+			[new Selection(1, 11, 1, 11)]
 		);
 	});
 
@@ -202,7 +201,7 @@ suite('SideEditing', () => {
 				forceMoveMarkers: editForceMoveMarkers
 			}]);
 			const actual = viewModel.getSelection();
-			assert.deepEqual(actual.toString(), expected.toString(), msg);
+			assert.deepStrictEqual(actual.toString(), expected.toString(), msg);
 		});
 	}
 
@@ -234,7 +233,7 @@ suite('SideEditing', () => {
 					new Range(1, 4, 1, 4),
 					new Range(1, 4, 1, 4), 'xx',
 					[
-						[new Selection(1, 4, 1, 6), new Selection(1, 4, 1, 6)],
+						[new Selection(1, 6, 1, 6), new Selection(1, 6, 1, 6)],
 						[new Selection(1, 6, 1, 6), new Selection(1, 6, 1, 6)],
 					]
 				);
@@ -705,7 +704,7 @@ suite('SideEditing', () => {
 					new Range(1, 4, 1, 4),
 					new Range(1, 2, 1, 4), 'cccc',
 					[
-						[new Selection(1, 4, 1, 6), new Selection(1, 4, 1, 6)],
+						[new Selection(1, 6, 1, 6), new Selection(1, 6, 1, 6)],
 						[new Selection(1, 6, 1, 6), new Selection(1, 6, 1, 6)],
 					]
 				);

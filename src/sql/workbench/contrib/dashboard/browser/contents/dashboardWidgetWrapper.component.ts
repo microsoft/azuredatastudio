@@ -26,7 +26,6 @@ import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
-import * as themeColors from 'vs/workbench/common/theme';
 import { Action, IAction } from 'vs/base/common/actions';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -36,6 +35,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ILogService } from 'vs/platform/log/common/log';
 import { values } from 'vs/base/common/collections';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { DASHBOARD_BORDER } from 'sql/workbench/common/theme';
 
 const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 	'properties-widget': PropertiesWidgetComponent,
@@ -257,25 +257,11 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		if (!this._config.hideHeader) {
 			const el = <HTMLElement>this._ref.nativeElement;
 			const headerEl: HTMLElement = this.header.nativeElement;
-			let borderColor = theme.getColor(themeColors.DASHBOARD_BORDER);
-			let backgroundColor = theme.getColor(colors.editorBackground, true);
-			const foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
+			let borderColor = theme.getColor(DASHBOARD_BORDER);
 			const border = theme.getColor(colors.contrastBorder, true);
-
-			if (this._config.background_color) {
-				backgroundColor = theme.getColor(this._config.background_color);
-			}
 
 			if (this._config.border === 'none') {
 				borderColor = undefined;
-			}
-
-			if (backgroundColor) {
-				el.style.backgroundColor = backgroundColor.toString();
-			}
-
-			if (foregroundColor) {
-				el.style.color = foregroundColor.toString();
 			}
 
 			let borderString = undefined;

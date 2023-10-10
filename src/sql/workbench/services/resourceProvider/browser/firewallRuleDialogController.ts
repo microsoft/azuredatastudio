@@ -10,10 +10,11 @@ import * as azdata from 'azdata';
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { FirewallRuleDialog } from 'sql/workbench/services/resourceProvider/browser/firewallRuleDialog';
-import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { Deferred } from 'sql/base/common/promise';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { AzureResource } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class FirewallRuleDialogController {
 
@@ -47,6 +48,7 @@ export class FirewallRuleDialogController {
 		this._connection = connection;
 		this._resourceProviderId = resourceProviderId;
 		this._firewallRuleDialog.viewModel.updateDefaultValues(ipAddress);
+		this._firewallRuleDialog.setInitialAccountTenant(connection.azureAccount, connection.azureTenantId);
 		this._firewallRuleDialog.open();
 		this._deferredPromise = new Deferred();
 		return this._deferredPromise.promise;
@@ -67,6 +69,7 @@ export class FirewallRuleDialogController {
 			};
 
 			const firewallRuleInfo: azdata.FirewallRuleInfo = {
+				firewallRuleName: this._firewallRuleDialog!.viewModel.firewallRuleName,
 				startIpAddress: this._firewallRuleDialog!.viewModel.isIPAddressSelected ? this._firewallRuleDialog!.viewModel.defaultIPAddress : this._firewallRuleDialog!.viewModel.fromSubnetIPRange,
 				endIpAddress: this._firewallRuleDialog!.viewModel.isIPAddressSelected ? this._firewallRuleDialog!.viewModel.defaultIPAddress : this._firewallRuleDialog!.viewModel.toSubnetIPRange,
 				serverName: this._connection!.serverName,

@@ -27,12 +27,12 @@ export abstract class BasePage {
 	/**
 	 * This method constructs all the elements of the page.
 	 */
-	public async abstract start(): Promise<boolean>;
+	public abstract start(): Promise<boolean>;
 
 	/**
 	 * This method is called when the user is entering the page.
 	 */
-	public async abstract onPageEnter(): Promise<boolean>;
+	public abstract onPageEnter(): Promise<boolean>;
 
 	/**
 	 * This method is called when the user is leaving the page.

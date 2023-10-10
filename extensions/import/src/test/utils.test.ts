@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ImportDataModel, ColumnMetadata } from '../wizard/api/models';
-import { FlatFileProvider, PROSEDiscoveryParams, InsertDataParams, GetColumnInfoParams, ChangeColumnSettingsParams, PROSEDiscoveryResponse, InsertDataResponse, ChangeColumnSettingsResponse, GetColumnInfoResponse } from '../services/contracts';
+import { FlatFileProvider, PROSEDiscoveryParams, InsertDataParams, GetColumnInfoParams, ChangeColumnSettingsParams, PROSEDiscoveryResponse, InsertDataResponse, ChangeColumnSettingsResponse, GetColumnInfoResponse, LearnTransformationParams, LearnTransformationResponse, SaveTransformationParams, SaveTransformationResponse } from '../services/contracts';
 
 export class ImportTestUtils {
 
@@ -37,12 +37,12 @@ export class ImportTestUtils {
 	}
 
 	public static async getExtensionPath(): Promise<string> {
-		return await vscode.extensions.getExtension('Microsoft.import').extensionPath;
+		return vscode.extensions.getExtension('Microsoft.import').extensionPath;
 	}
 
 	public static async getTestExtensionContext(): Promise<TestExtensionContext> {
 		let testContext = new TestExtensionContext();
-		testContext.extensionPath = await vscode.extensions.getExtension('Microsoft.import').extensionPath;
+		testContext.extensionPath = vscode.extensions.getExtension('Microsoft.import').extensionPath;
 		return testContext;
 	}
 }
@@ -72,7 +72,13 @@ export class TestQueryProvider implements azdata.QueryProvider {
 	disposeQuery(ownerUri: string): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
+	connectionUriChanged(newUri: string, oldUri: string): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult> {
+		throw new Error('Method not implemented.');
+	}
+	copyResults(requestParams: azdata.CopyResultsRequestParams): Thenable<azdata.CopyResultsRequestResult> {
 		throw new Error('Method not implemented.');
 	}
 	setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void> {
@@ -131,6 +137,10 @@ export class TestQueryProvider implements azdata.QueryProvider {
 
 }
 
+export interface ExtensionGlobalMemento extends vscode.Memento {
+	setKeysForSync(keys: string[]): void;
+}
+
 export class TestExtensionContext implements vscode.ExtensionContext {
 	storageUri: vscode.Uri;
 	globalStorageUri: vscode.Uri;
@@ -138,7 +148,7 @@ export class TestExtensionContext implements vscode.ExtensionContext {
 	extensionMode: vscode.ExtensionMode;
 	subscriptions: { dispose(): any; }[];
 	workspaceState: vscode.Memento;
-	globalState: vscode.Memento;
+	globalState: ExtensionGlobalMemento;
 	extensionUri: vscode.Uri;
 	extensionPath: string;
 	environmentVariableCollection: vscode.EnvironmentVariableCollection;
@@ -148,6 +158,8 @@ export class TestExtensionContext implements vscode.ExtensionContext {
 	storagePath: string;
 	globalStoragePath: string;
 	logPath: string;
+	secrets: vscode.SecretStorage;
+	extension: vscode.Extension<any>;
 }
 
 export class TestImportDataModel implements ImportDataModel {
@@ -161,6 +173,10 @@ export class TestImportDataModel implements ImportDataModel {
 	schema: string;
 	filePath: string;
 	fileType: string;
+	transPreviews: string[][];
+	originalProseColumns: ColumnMetadata[];
+	derivedColumnName: string;
+	newFileSelected: boolean;
 }
 
 export class TestFlatFileProvider implements FlatFileProvider {
@@ -177,5 +193,45 @@ export class TestFlatFileProvider implements FlatFileProvider {
 	sendChangeColumnSettingsRequest(params: ChangeColumnSettingsParams): Thenable<ChangeColumnSettingsResponse> {
 		throw new Error('Method not implemented.');
 	}
+	sendLearnTransformationRequest(params: LearnTransformationParams): Thenable<LearnTransformationResponse> {
+		throw new Error('Method not implemented.');
+	}
+	sendSaveTransformationRequest(params: SaveTransformationParams): Thenable<SaveTransformationResponse> {
+		throw new Error('Method not implemented.');
+	}
 
 }
+
+export function getAzureAccounts(): azdata.Account[] {
+	return [
+		{
+			isStale: false,
+			key: {
+				providerId: 'account1Provider',
+				accountId: 'account1Id'
+			},
+			displayInfo: {
+				accountType: 'account1Type',
+				contextualDisplayName: 'account1ContextualDisplayName',
+				displayName: 'account1DisplayName',
+				userId: 'account1@microsoft.com'
+			},
+			properties: {}
+		},
+		{
+			isStale: false,
+			key: {
+				providerId: 'account2Provider',
+				accountId: 'account2Id'
+			},
+			displayInfo: {
+				accountType: 'account2Type',
+				contextualDisplayName: 'account2ContextualDisplayName',
+				displayName: 'account2DisplayName',
+				userId: 'account2@microsoft.com'
+			},
+			properties: {}
+		},
+	];
+}
+

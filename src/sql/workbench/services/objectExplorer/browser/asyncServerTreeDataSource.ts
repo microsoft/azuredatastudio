@@ -12,7 +12,9 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import Severity from 'vs/base/common/severity';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IAsyncDataSource } from 'vs/base/browser/ui/tree/tree';
-import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { ConnectionError, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { getErrorMessage } from 'vs/base/common/errors';
 
 /**
  * Implements the DataSource(that returns a parent/children of an element) for the server tree
@@ -22,6 +24,7 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 	constructor(
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IConfigurationService private _configurationService: IConfigurationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService
 	) {
 	}
@@ -45,22 +48,20 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 	public async getChildren(element: ServerTreeElement): Promise<ServerTreeElement[]> {
 		try {
 			if (element instanceof ConnectionProfile) {
-				return await TreeUpdateUtils.getAsyncConnectionNodeChildren(element, this._connectionManagementService, this._objectExplorerService);
+				return await TreeUpdateUtils.getAsyncConnectionNodeChildren(element, this._connectionManagementService, this._objectExplorerService, this._configurationService);
 			} else if (element instanceof ConnectionProfileGroup) {
-				return (element as ConnectionProfileGroup).getChildren();
+				return element.getChildren();
 			} else if (element instanceof TreeNode) {
-				if (element.children) {
-					return element.children;
-				} else {
-					return await this._objectExplorerService.resolveTreeNodeChildren(element.getSession()!, element);
-				}
+				return await this._objectExplorerService.resolveTreeNodeChildren(element.getSession()!, element);
 			}
 		} catch (err) {
+			const errorMessage = getErrorMessage(err);
 			if (element instanceof TreeNode) {
-				element.errorStateMessage = err.message ?? err;
+				element.errorStateMessage = errorMessage;
 			}
-			if (err.message) {
-				this.showError(err.message);
+			// In case of connection profile, we won't show the error here and let the connection service handle it.
+			if (errorMessage && !(err instanceof ConnectionError)) {
+				this.showError(errorMessage);
 			}
 
 			throw err;

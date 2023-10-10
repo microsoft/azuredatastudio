@@ -10,7 +10,7 @@
 	"createSessionDialog.create": "Inicio",
 	"createSessionDialog.title": "Iniciar nueva sesión de Profiler",
 	"createSessionDialog.templatesInvalid": "Lista de plantillas no válida, no se puede abrir el cuadro de diálogo",
-	"createSessionDialog.dialogOwnerInvalid": "Propietario de diálogo no válido, no se puede abrir el diálogo",
+	"createSessionDialog.dialogOwnerInvalid": "Propietario de cuadro de diálogo no válido, no se puede abrir el cuadro de diálogo",
 	"createSessionDialog.invalidProviderType": "Tipo de proveedor no válido, no se puede abrir el cuadro de diálogo",
 	"createSessionDialog.selectTemplates": "Seleccione plantilla de sesión:",
 	"createSessionDialog.enterSessionName": "Escriba el nombre de la sesión:",

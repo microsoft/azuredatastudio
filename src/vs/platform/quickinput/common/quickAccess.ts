@@ -3,31 +3,51 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IQuickPick, IQuickPickItem, IQuickNavigateConfiguration } from 'vs/platform/quickinput/common/quickInput';
-import { CancellationToken } from 'vs/base/common/cancellation';
-import { Registry } from 'vs/platform/registry/common/platform';
 import { coalesce } from 'vs/base/common/arrays';
+import { CancellationToken } from 'vs/base/common/cancellation';
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
-import { ItemActivation } from 'vs/base/parts/quickinput/common/quickInput';
+import { ItemActivation, IQuickNavigateConfiguration, IQuickPick, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
+import { Registry } from 'vs/platform/registry/common/platform';
+
+/**
+ * Provider specific options for this particular showing of the
+ * quick access.
+ */
+export interface IQuickAccessProviderRunOptions {
+	readonly from?: string;
+}
+
+/**
+ * The specific options for the AnythingQuickAccessProvider. Put here to share between layers.
+ */
+export interface AnythingQuickAccessProviderRunOptions extends IQuickAccessProviderRunOptions {
+	readonly includeHelp?: boolean;
+}
 
 export interface IQuickAccessOptions {
 
 	/**
 	 * Allows to enable quick navigate support in quick input.
 	 */
-	quickNavigateConfiguration?: IQuickNavigateConfiguration;
+	readonly quickNavigateConfiguration?: IQuickNavigateConfiguration;
 
 	/**
 	 * Allows to configure a different item activation strategy.
 	 * By default the first item in the list will get activated.
 	 */
-	itemActivation?: ItemActivation;
+	readonly itemActivation?: ItemActivation;
 
 	/**
 	 * Whether to take the input value as is and not restore it
 	 * from any existing value if quick access is visible.
 	 */
-	preserveValue?: boolean;
+	readonly preserveValue?: boolean;
+
+	/**
+	 * Provider specific options for this particular showing of the
+	 * quick access.
+	 */
+	readonly providerOptions?: IQuickAccessProviderRunOptions;
 }
 
 export interface IQuickAccessController {
@@ -36,6 +56,13 @@ export interface IQuickAccessController {
 	 * Open the quick access picker with the optional value prefilled.
 	 */
 	show(value?: string, options?: IQuickAccessOptions): void;
+
+	/**
+	 * Same as `show()` but instead of executing the selected pick item,
+	 * it will be returned. May return `undefined` in case no item was
+	 * picked by the user.
+	 */
+	pick(value?: string, options?: IQuickAccessOptions): Promise<IQuickPickItem[] | undefined>;
 }
 
 export enum DefaultQuickAccessFilterValue {
@@ -73,10 +100,12 @@ export interface IQuickAccessProvider {
 	 * a long running operation or from event handlers because it could be that the
 	 * picker has been closed or changed meanwhile. The token can be used to find out
 	 * that the picker was closed without picking an entry (e.g. was canceled by the user).
+	 * @param options additional configuration specific for this provider that will
+	 * influence what picks will be shown.
 	 * @return a disposable that will automatically be disposed when the picker
 	 * closes or is replaced by another picker.
 	 */
-	provide(picker: IQuickPick<IQuickPickItem>, token: CancellationToken): IDisposable;
+	provide(picker: IQuickPick<IQuickPickItem>, token: CancellationToken, options?: IQuickAccessProviderRunOptions): IDisposable;
 }
 
 export interface IQuickAccessProviderHelp {
@@ -85,17 +114,17 @@ export interface IQuickAccessProviderHelp {
 	 * The prefix to show for the help entry. If not provided,
 	 * the prefix used for registration will be taken.
 	 */
-	prefix?: string;
+	readonly prefix?: string;
 
 	/**
 	 * A description text to help understand the intent of the provider.
 	 */
-	description: string;
+	readonly description: string;
 
 	/**
-	 * Separation between provider for editors and global ones.
+	 * The command to bring up this quick access provider.
 	 */
-	needsEditor: boolean;
+	readonly commandId?: string;
 }
 
 export interface IQuickAccessProviderDescriptor {
@@ -152,6 +181,7 @@ export interface IQuickAccessRegistry {
 }
 
 export class QuickAccessRegistry implements IQuickAccessRegistry {
+
 	private providers: IQuickAccessProviderDescriptor[] = [];
 	private defaultProvider: IQuickAccessProviderDescriptor | undefined = undefined;
 

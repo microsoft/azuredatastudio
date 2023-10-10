@@ -32,16 +32,11 @@ dashboard-page .default-tab-icon {
 	background-image: url("media/default.svg");
 }
 
-dashboard-page .actions-container .action-item .action-label{
+dashboard-page .carbon-taskbar .monaco-action-bar .actions-container .action-item .action-label{
 	padding-left: 20px;
 	padding-right: 5px;
 	background-size: 16px;
 	background-position: left;
-}
-
-dashboard-page .actions-container .taskbarSeparator {
-	height: 14px;
-	margin-right: 16px;
 }
 
 dashboard-page .editor-toolbar {
@@ -58,7 +53,8 @@ dashboard-page .editor-toolbar {
 	background-size: 8px;
 }
 
-.dashboardEditor breadcrumb {
+.dashboardEditor breadcrumb,
+.hc-light .dashboardEditor breadcrumb {
 	font-size: 13px;
 	color: #323130;
 }

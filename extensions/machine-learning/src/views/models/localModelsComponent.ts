@@ -33,13 +33,16 @@ export class LocalModelsComponent extends ModelViewBase implements IDataComponen
 	 * @param modelBuilder Register the components
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
-		this._localPath = modelBuilder.inputBox().withProperties({
+		this._localPath = modelBuilder.inputBox().withProps({
 			value: '',
 			width: this.componentMaxLength - this.browseButtonMaxLength - this.spaceBetweenComponentsLength
 		}).component();
-		this._localBrowse = modelBuilder.button().withProperties({
-			label: constants.browseModels,
-			width: this.browseButtonMaxLength
+		this._localBrowse = modelBuilder.button().withProps({
+			iconPath: { light: this.asAbsolutePath('images/light/browseLocal.svg'), dark: this.asAbsolutePath('images/dark/browseLocal.svg') },
+			iconHeight: '24px',
+			iconWidth: '24px',
+			width: '24px',
+			height: '24px'
 		}).component();
 		this._localBrowse.onDidClick(async () => {
 

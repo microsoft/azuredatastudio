@@ -1,7 +1,8 @@
 {
-	"extends": "../shared.tsconfig.json",
+	"extends": "../tsconfig.base.json",
 	"compileOnSave": true,
 	"compilerOptions": {
+		"experimentalDecorators": true,
 		"outDir": "./out",
 		"lib": [
 			"es6",

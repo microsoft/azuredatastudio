@@ -22,3 +22,7 @@
 	pointer-events: none;
 	opacity: 0.3;
 }
+
+input[type='checkbox'] {
+	margin: 0px 5px 0px 0px;
+}

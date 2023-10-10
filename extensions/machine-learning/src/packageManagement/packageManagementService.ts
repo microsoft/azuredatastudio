@@ -45,7 +45,6 @@ export class PackageManagementService {
 	/**
 	 * Updates external script config
 	 * @param connection SQL Connection
-	 * @param enable if true external script will be enabled
 	 */
 	public async enableExternalScriptConfig(connection: azdata.connection.ConnectionProfile): Promise<boolean> {
 		let current = await this._queryRunner.isMachineLearningServiceEnabled(connection);

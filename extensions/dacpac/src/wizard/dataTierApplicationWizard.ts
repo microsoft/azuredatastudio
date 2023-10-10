@@ -6,6 +6,8 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../localizedConstants';
+import * as mssql from 'mssql';
+import * as utils from '../utils';
 import { SelectOperationPage } from './pages/selectOperationpage';
 import { DeployConfigPage } from './pages/deployConfigPage';
 import { DeployPlanPage } from './pages/deployPlanPage';
@@ -15,9 +17,9 @@ import { ExtractConfigPage } from './pages/extractConfigPage';
 import { ImportConfigPage } from './pages/importConfigPage';
 import { DacFxDataModel } from './api/models';
 import { BasePage } from './api/basePage';
-import * as mssql from '../../../mssql';
+import { TelemetryAction, TelemetryReporter, TelemetryViews } from '../telemetry';
+import { TelemetryEventMeasures, TelemetryEventProperties } from '@microsoft/ads-extension-telemetry';
 
-const msSqlProvider = 'MSSQL';
 class Page {
 	wizardPage: azdata.window.WizardPage;
 	dacFxPage: BasePage;
@@ -82,13 +84,15 @@ export class DataTierApplicationWizard {
 	public model: DacFxDataModel;
 	public pages: Map<string, Page> = new Map<string, Page>();
 	public selectedOperation: Operation;
+	public extensionContextExtensionPath: string;
 
-	constructor(dacfxInputService?: mssql.IDacFxService) {
-		this.wizard = azdata.window.createWizard(loc.wizardTitle);
+	constructor(dacfxInputService?: mssql.IDacFxService, extensionContext?: vscode.ExtensionContext) {
+		this.wizard = azdata.window.createWizard(loc.wizardTitle, 'Data Tier Application Wizard');
 		this.dacfxService = dacfxInputService;
+		this.extensionContextExtensionPath = extensionContext?.extensionPath ?? '';
 	}
 
-	public async start(p: any, ...args: any[]): Promise<boolean> {
+	public async start(p: any): Promise<boolean> {
 		this.model = <DacFxDataModel>{};
 
 		let profile = p ? <azdata.IConnectionProfile>p.connectionProfile : undefined;
@@ -97,7 +101,16 @@ export class DataTierApplicationWizard {
 			this.model.database = profile.databaseName;
 		}
 
-		this.connection = await azdata.connection.getCurrentConnection();
+		// get the connection of the node the wizard was launched from
+		if (profile?.id) {
+			this.connection = await azdata.connection.getConnection(await azdata.connection.getUriForConnection((profile.id)));
+		}
+
+		// if no profile was passed in if launched from command palette, try using the current active connection
+		if (!this.connection) {
+			this.connection = await azdata.connection.getCurrentConnection();
+		}
+
 		if (!this.connection || (profile && this.connection.connectionId !== profile.id)) {
 			// check if there are any active connections
 			const connections = await azdata.connection.getConnections(true);
@@ -110,6 +123,8 @@ export class DataTierApplicationWizard {
 			}
 			// don't open the wizard if connection dialog is cancelled
 			if (!this.connection) {
+				//Reporting Dacpac wizard cancelled event to Telemetry
+				TelemetryReporter.sendActionEvent(TelemetryViews.DataTierApplicationWizard, TelemetryAction.ConnectionDialogCancelled);
 				return false;
 			}
 		}
@@ -118,18 +133,27 @@ export class DataTierApplicationWizard {
 		this.setPages();
 		this.configureButtons();
 
-		this.wizard.open();
+		// the wizard was started from the context menu of a database or server if the connectionProfile is not undefined
+		// Otherwise it was launched from the command palette
+		let launchedFrom: string;
+		if (profile) {
+			launchedFrom = profile.databaseName ? 'database context menu' : 'server context menu';
+		} else {
+			launchedFrom = 'command palette';
+		}
+
+		this.wizard.open(launchedFrom);
 		return true;
 	}
 
 	public setPages(): void {
-		let selectOperationWizardPage = azdata.window.createWizardPage(loc.selectOperationPageName);
-		let deployConfigWizardPage = azdata.window.createWizardPage(loc.deployConfigPageName);
-		let deployPlanWizardPage = azdata.window.createWizardPage(loc.deployPlanPageName);
-		let summaryWizardPage = azdata.window.createWizardPage(loc.summaryPageName);
-		let extractConfigWizardPage = azdata.window.createWizardPage(loc.extractConfigPageName);
-		let importConfigWizardPage = azdata.window.createWizardPage(loc.importConfigPageName);
-		let exportConfigWizardPage = azdata.window.createWizardPage(loc.exportConfigPageName);
+		let selectOperationWizardPage = azdata.window.createWizardPage(loc.selectOperationPageName, 'Select an Operation Page');
+		let deployConfigWizardPage = azdata.window.createWizardPage(loc.deployConfigPageName, 'Deploy Config Page');
+		let deployPlanWizardPage = azdata.window.createWizardPage(loc.deployPlanPageName, 'Deploy Plan Page');
+		let summaryWizardPage = azdata.window.createWizardPage(loc.summaryPageName, 'Summary Page');
+		let extractConfigWizardPage = azdata.window.createWizardPage(loc.extractConfigPageName, 'Extract Config Page');
+		let importConfigWizardPage = azdata.window.createWizardPage(loc.importConfigPageName, 'Import Config Page');
+		let exportConfigWizardPage = azdata.window.createWizardPage(loc.exportConfigPageName, 'Export Config Page');
 
 		this.pages.set(PageName.selectOperation, new Page(selectOperationWizardPage));
 		this.pages.set(PageName.deployConfig, new Page(deployConfigWizardPage));
@@ -206,6 +230,7 @@ export class DataTierApplicationWizard {
 		this.wizard.generateScriptButton.hidden = true;
 		this.wizard.generateScriptButton.onClick(async () => await this.generateDeployScript());
 		this.wizard.doneButton.onClick(async () => await this.executeOperation());
+		this.wizard.cancelButton.onClick(() => this.cancelDataTierApplicationWizard());
 	}
 
 	public registerNavigationValidator(validator: (pageChangeInfo: azdata.window.WizardPageChangeInfo) => boolean) {
@@ -242,60 +267,177 @@ export class DataTierApplicationWizard {
 	}
 
 	public async executeOperation(): Promise<mssql.DacFxResult> {
+		let result: mssql.DacFxResult;
+
 		switch (this.selectedOperation) {
 			case Operation.deploy: {
-				return await this.deploy();
+				result = await this.deploy();
+				break;
 			}
 			case Operation.extract: {
-				return await this.extract();
+				result = await this.extract();
+				break;
 			}
 			case Operation.import: {
-				return await this.import();
+				result = await this.import();
+				break;
 			}
 			case Operation.export: {
-				return await this.export();
+				result = await this.export();
+				break;
+			}
+		}
+
+		if (!result?.success && result.errorMessage) {
+			vscode.window.showErrorMessage(this.getOperationErrorMessage(this.selectedOperation, result.errorMessage));
+		}
+
+		return result;
+	}
+
+	private getOperationErrorMessage(operation: Operation, error: any): string {
+		switch (this.selectedOperation) {
+			case Operation.deploy: {
+				return loc.operationErrorMessage(loc.deploy, error);
+			}
+			case Operation.extract: {
+				return loc.operationErrorMessage(loc.extract, error);
+			}
+			case Operation.import: {
+				return loc.operationErrorMessage(loc.importText, error);
+			}
+			case Operation.export: {
+				return loc.operationErrorMessage(loc.exportText, error);
 			}
 		}
 	}
 
+	// Cancel button on click event is using to send the data loss information to telemetry
+	private cancelDataTierApplicationWizard(): void {
+		TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, TelemetryAction.WizardCanceled)
+			.withAdditionalProperties({
+				isPotentialDataLoss: this.model.potentialDataLoss?.toString(),
+				page: this.wizard.currentPage.toString(),
+				selectedOperation: this.selectedOperation.toString()
+			}).send();
+	}
+
 	public async deploy(): Promise<mssql.DacFxResult> {
-		const service = await this.getService(msSqlProvider);
+		let additionalProps: TelemetryEventProperties = {};
+		let additionalMeasurements: TelemetryEventMeasures = {};
+
+		const service = await this.getService();
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		return await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
+		const deployStartTime = new Date().getTime();
+		const result = await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
+
+		additionalMeasurements.totalDurationMs = (new Date().getTime() - deployStartTime);
+		additionalMeasurements.deployDacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
+		additionalProps.upgradeExistingDatabase = this.model.upgradeExisting.toString();
+		additionalProps.potentialDataLoss = this.model.potentialDataLoss?.toString();
+
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.DeployDacpac, additionalProps, additionalMeasurements);
+
+		return result;
 	}
 
 	private async extract(): Promise<mssql.DacFxResult> {
-		const service = await this.getService(msSqlProvider);
+		let additionalMeasurements: TelemetryEventMeasures = {};
+
+		const service = await this.getService();
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		return await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
+		const extractStartTime = new Date().getTime();
+		const result = await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
+
+		additionalMeasurements.totalDurationMs = (new Date().getTime() - extractStartTime);
+		additionalMeasurements.extractedDacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
+
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.ExtractDacpac, { version: this.model.version }, additionalMeasurements);
+
+		return result;
 	}
 
 	private async export(): Promise<mssql.DacFxResult> {
-		const service = await this.getService(msSqlProvider);
+		let additionalMeasurements: TelemetryEventMeasures = {};
+
+		const service = await this.getService();
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		return await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
+		const exportStartTime = new Date().getTime();
+		const result = await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
+
+		additionalMeasurements.totalDurationMs = (new Date().getTime() - exportStartTime);
+		additionalMeasurements.exportedBacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
+
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.ExportBacpac, undefined, additionalMeasurements);
+
+		return result;
 	}
 
 	private async import(): Promise<mssql.DacFxResult> {
-		const service = await this.getService(msSqlProvider);
+		let additionalMeasurements: TelemetryEventMeasures = {};
+
+		const service = await this.getService();
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		return await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
+		const importStartTime = new Date().getTime();
+		const result = await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
+
+		additionalMeasurements.totalDurationMs = (new Date().getTime() - importStartTime);
+		additionalMeasurements.importedBacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
+
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.ImportBacpac, undefined, additionalMeasurements);
+
+		return result;
 	}
 
-	private async generateDeployScript(): Promise<mssql.DacFxResult> {
-		const service = await this.getService(msSqlProvider);
-		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+	public async generateDeployScript(): Promise<mssql.DacFxResult> {
+		let additionalProps: TelemetryEventProperties = {};
+		let additionalMeasurements: TelemetryEventMeasures = {};
 		this.wizard.message = {
 			text: loc.generatingScriptMessage,
-			level: azdata.window.MessageLevel.Information,
-			description: ''
+			level: azdata.window.MessageLevel.Information
 		};
 
-		return await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
+		const service = await this.getService();
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+
+		const genScriptStartTime = new Date().getTime();
+		const result = await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
+
+		additionalMeasurements.totalDurationMs = (new Date().getTime() - genScriptStartTime);
+		additionalMeasurements.deployDacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
+		additionalProps.potentialDataLoss = this.model.potentialDataLoss.toString();
+
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.GenerateScript, undefined, additionalMeasurements);
+
+		if (!result?.success && result.errorMessage) {
+			vscode.window.showErrorMessage(loc.generateDeployErrorMessage(result.errorMessage));
+		}
+
+		return result;
+	}
+
+	public async generateDeployPlan(): Promise<string> {
+		let additionalMeasurements: TelemetryEventMeasures = {};
+
+		const service = await this.getService();
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+
+		const deployPlanStartTime = new Date().getTime();
+		const result = await service.generateDeployPlan(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
+
+		additionalMeasurements.totalDurationMs = (new Date().getTime() - deployPlanStartTime);
+
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.GenerateDeployPlan, undefined, additionalMeasurements);
+
+		if (!result?.success && result.errorMessage) {
+			vscode.window.showErrorMessage(loc.deployPlanErrorMessage(result.errorMessage));
+		}
+
+		return result.report;
 	}
 
 	public getPage(idx: number): Page {
@@ -337,23 +479,24 @@ export class DataTierApplicationWizard {
 			|| (this.selectedOperation === Operation.deploy) && idx === DeployOperationPath.summary;
 	}
 
-	public async generateDeployPlan(): Promise<string> {
-		const service = await this.getService(msSqlProvider);
-		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
-
-		const result = await service.generateDeployPlan(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
-
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(loc.deployPlanErrorMessage(result.errorMessage));
-		}
-
-		return result.report;
-	}
-
-	private async getService(providerName: string): Promise<mssql.IDacFxService> {
+	private async getService(): Promise<mssql.IDacFxService> {
 		if (!this.dacfxService) {
 			this.dacfxService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).dacFx;
 		}
 		return this.dacfxService;
+	}
+
+	private sendDacFxOperationTelemetryEvent(result: azdata.ResultStatus, telemetryAction: TelemetryAction, additionalProps: TelemetryEventProperties, additionalMeasurements: TelemetryEventMeasures): void {
+		if (result?.success) {
+			TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, telemetryAction)
+				.withAdditionalProperties(additionalProps)
+				.withAdditionalMeasurements(additionalMeasurements)
+				.send();
+		} else {
+			TelemetryReporter.createErrorEvent2(TelemetryViews.DataTierApplicationWizard, telemetryAction)
+				.withAdditionalProperties(additionalProps)
+				.withAdditionalMeasurements(additionalMeasurements)
+				.send();
+		}
 	}
 }

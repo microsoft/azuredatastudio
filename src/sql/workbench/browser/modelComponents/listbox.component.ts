@@ -13,17 +13,17 @@ import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 
 import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
-import { attachListBoxStyler } from 'sql/platform/theme/common/styler';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { ILogService } from 'vs/platform/log/common/log';
+import { defaultListBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 @Component({
 	selector: 'modelview-listBox',
 	template: `
-		<div #input style="width: 100%"></div>
+		<div #input [ngStyle]="CSSStyles"></div>
 	`
 })
 export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProperties> implements IComponent, OnDestroy, AfterViewInit {
@@ -34,28 +34,26 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IClipboardService) private clipboardService: IClipboardService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
-	}
-
-	ngOnInit(): void {
-		this.baseInit();
-
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
-			this._input = new ListBox([], this.contextViewService);
-			this._input.onKeyDown(e => {
+			this._input = new ListBox({
+				items: [],
+				...defaultListBoxStyles
+			}, this.contextViewService);
+			this._register(this._input.onKeyDown(e => {
 				if (this._input.selectedOptions.length > 0) {
 					const key = e.keyCode;
 					const ctrlOrCmd = e.ctrlKey || e.metaKey;
 
-					if (ctrlOrCmd && key === KeyCode.KEY_C) {
+					if (ctrlOrCmd && key === KeyCode.KeyC) {
 						let textToCopy = this._input.selectedOptions[0];
 						for (let i = 1; i < this._input.selectedOptions.length; i++) {
 							textToCopy = textToCopy + ', ' + this._input.selectedOptions[i];
@@ -67,11 +65,10 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 						e.stopPropagation();
 					}
 				}
-			});
+			}));
 			this._input.render(this._inputContainer.nativeElement);
 
 			this._register(this._input);
-			this._register(attachListBoxStyler(this._input, this.themeService));
 			this._register(this._input.onDidSelect(e => {
 				this.selectedRow = e.index;
 				this.fireEvent({
@@ -80,15 +77,10 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 				});
 			}));
 		}
+		this.baseInit();
 	}
 
-	public validate(): Thenable<boolean> {
-		return super.validate().then(valid => {
-			return valid;
-		});
-	}
-
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -98,11 +90,9 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._input.setOptions(this.values.map(value => { return { text: value }; }), this.selectedRow);
-
-		this.validate();
 	}
 
 	// CSS-bound properties
@@ -121,5 +111,12 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 
 	private set selectedRow(newValue: number) {
 		this.setPropertyFromUI<number>((props, value) => props.selectedRow = value, newValue);
+	}
+
+
+	public override get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': '100%'
+		});
 	}
 }

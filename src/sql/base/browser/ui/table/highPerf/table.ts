@@ -36,7 +36,7 @@ export interface ITableEvent<T> {
 }
 
 export interface ITableMouseEvent<T> {
-	browserEvent: MouseEvent;
+	browserEvent: PointerEvent;
 	buttons: number;
 	element: T | undefined;
 	index: IGridPosition | undefined;

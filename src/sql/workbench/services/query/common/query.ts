@@ -11,12 +11,19 @@ export interface IColumn {
 	isJson?: boolean;
 }
 
+export type VisualizationType = 'bar' | 'count' | 'doughnut' | 'horizontalBar' | 'image' | 'line' | 'pie' | 'scatter' | 'table' | 'timeSeries';
+
+export interface VisualizationOptions {
+	type: VisualizationType
+}
+
 export interface ResultSetSummary {
 	id: number;
 	batchId: number;
 	rowCount: number;
 	columnInfo: IColumn[];
 	complete: boolean;
+	visualization?: VisualizationOptions;
 }
 
 export interface BatchStartSummary {
@@ -27,7 +34,7 @@ export interface BatchStartSummary {
 
 export interface BatchSummary extends BatchStartSummary {
 	hasError: boolean;
-	resultSetSummaries: ResultSetSummary[];
+	resultSetSummaries: ResultSetSummary[] | null;
 }
 
 export interface CompleteBatchSummary extends BatchSummary {
@@ -66,4 +73,5 @@ export interface ResultSetSubset {
 export interface ICellValue {
 	displayValue: string;
 	isNull?: boolean;
+	invariantCultureDisplayValue?: string;
 }

@@ -11,6 +11,7 @@ import { AccountViewModel } from 'sql/platform/accounts/common/accountViewModel'
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
 import { EventVerifierSingle } from 'sql/base/test/common/event';
+import { NullLogService } from 'vs/platform/log/common/log';
 
 // SUITE STATE /////////////////////////////////////////////////////////////
 let mockAddProviderEmitter: Emitter<AccountProviderAddedEventParams>;
@@ -63,13 +64,13 @@ suite('Account Management Dialog ViewModel Tests', () => {
 	test('Construction - Events are properly defined', () => {
 		// If: I create an account viewmodel
 		let mockAccountManagementService = getMockAccountManagementService(false, false);
-		let vm = new AccountViewModel(mockAccountManagementService.object);
+		let vm = new AccountViewModel(mockAccountManagementService.object, new NullLogService());
 
 		// Then:
 		// ... All the events for the view models should be properly initialized
-		assert.notEqual(vm.addProviderEvent, undefined);
-		assert.notEqual(vm.removeProviderEvent, undefined);
-		assert.notEqual(vm.updateAccountListEvent, undefined);
+		assert.notStrictEqual(vm.addProviderEvent, undefined);
+		assert.notStrictEqual(vm.removeProviderEvent, undefined);
+		assert.notStrictEqual(vm.updateAccountListEvent, undefined);
 
 		// ... All the events should properly fire
 		let argAddProvider: AccountProviderAddedEventParams = { addedProvider: providers[0], initialAccounts: [] };
@@ -112,9 +113,9 @@ suite('Account Management Dialog ViewModel Tests', () => {
 
 				// ... The results that were returned should be an array of account provider added event params
 				assert.ok(Array.isArray(results));
-				assert.equal(results.length, 1);
-				assert.equal(results[0].addedProvider, providers[0]);
-				assert.equal(results[0].initialAccounts, accounts);
+				assert.strictEqual(results.length, 1);
+				assert.strictEqual(results[0].addedProvider, providers[0]);
+				assert.strictEqual(results[0].initialAccounts, accounts);
 			});
 	});
 
@@ -139,7 +140,7 @@ suite('Account Management Dialog ViewModel Tests', () => {
 
 				// ... The results that were returned should be an empty array
 				assert.ok(Array.isArray(results));
-				assert.equal(results.length, 0);
+				assert.strictEqual(results.length, 0);
 			});
 	});
 
@@ -164,9 +165,9 @@ suite('Account Management Dialog ViewModel Tests', () => {
 
 				// ... The results should include the provider
 				assert.ok(Array.isArray(result));
-				assert.equal(result.length, 1);
-				assert.equal(result[0].addedProvider, providers[0]);
-				assert.equal(result[0].initialAccounts, accounts);
+				assert.strictEqual(result.length, 1);
+				assert.strictEqual(result[0].addedProvider, providers[0]);
+				assert.strictEqual(result[0].initialAccounts, accounts);
 			});
 	});
 });
@@ -195,7 +196,7 @@ function getViewModel(
 	evRemove: EventVerifierSingle<azdata.AccountProviderMetadata>,
 	evUpdate: EventVerifierSingle<UpdateAccountListEventParams>
 ): AccountViewModel {
-	let vm = new AccountViewModel(ams);
+	let vm = new AccountViewModel(ams, new NullLogService());
 	vm.addProviderEvent(evAdd.eventHandler);
 	vm.removeProviderEvent(evRemove.eventHandler);
 	vm.updateAccountListEvent(evUpdate.eventHandler);

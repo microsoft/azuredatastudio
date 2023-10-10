@@ -3,16 +3,21 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Schemas } from 'vs/base/common/network';
 import * as osPath from 'vs/base/common/path';
 import * as platform from 'vs/base/common/platform';
 import { URI } from 'vs/base/common/uri';
-import * as nls from 'vs/nls';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { IPathService } from 'vs/workbench/services/path/common/pathService';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { localize } from 'vs/nls';
+import { ITunnelService } from 'vs/platform/tunnel/common/tunnel';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const CONTROL_CODES = '\\u0000-\\u0020\\u007f-\\u009f';
 const WEB_LINK_REGEX = new RegExp('(?:[a-zA-Z][a-zA-Z0-9+.-]{2,}:\\/\\/|data:|www\\.)[^\\s' + CONTROL_CODES + '"]{2,}[^\\s' + CONTROL_CODES + '"\')}\\],:;.!?]', 'ug');
@@ -23,6 +28,7 @@ const WIN_PATH = new RegExp(`(${WIN_ABSOLUTE_PATH.source}|${WIN_RELATIVE_PATH.so
 const POSIX_PATH = /((?:\~|\.)?(?:\/[\w\.-]*)+)/;
 const LINE_COLUMN = /(?:\:([\d]+))?(?:\:([\d]+))?/;
 const PATH_LINK_REGEX = new RegExp(`${platform.isWindows ? WIN_PATH.source : POSIX_PATH.source}${LINE_COLUMN.source}`, 'g');
+const LINE_COLUMN_REGEX = /:([\d]+)(?::([\d]+))?$/;
 
 const MAX_LENGTH = 2000;
 
@@ -39,7 +45,9 @@ export class LinkDetector {
 		@IFileService private readonly fileService: IFileService,
 		@IOpenerService private readonly openerService: IOpenerService,
 		@IPathService private readonly pathService: IPathService,
-		@IWorkbenchEnvironmentService private readonly workbenchEnvironmentService: IWorkbenchEnvironmentService
+		@ITunnelService private readonly tunnelService: ITunnelService,
+		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService,
+		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		// noop
 	}
@@ -51,7 +59,7 @@ export class LinkDetector {
 	 * When splitLines is true, each line of the text, even if it contains no links, is wrapped in a <span>
 	 * and added as a child of the returned <span>.
 	 */
-	linkify(text: string, splitLines?: boolean, workspaceFolder?: IWorkspaceFolder): HTMLElement {
+	linkify(text: string, splitLines?: boolean, workspaceFolder?: IWorkspaceFolder, includeFulltext?: boolean): HTMLElement {
 		if (splitLines) {
 			const lines = text.split('\n');
 			for (let i = 0; i < lines.length - 1; i++) {
@@ -61,7 +69,7 @@ export class LinkDetector {
 				// Remove the last element ('') that split added.
 				lines.pop();
 			}
-			const elements = lines.map(line => this.linkify(line, false, workspaceFolder));
+			const elements = lines.map(line => this.linkify(line, false, workspaceFolder, includeFulltext));
 			if (elements.length === 1) {
 				// Do not wrap single line with extra span.
 				return elements[0];
@@ -79,14 +87,15 @@ export class LinkDetector {
 						container.appendChild(document.createTextNode(part.value));
 						break;
 					case 'web':
-						container.appendChild(this.createWebLink(part.value));
+						container.appendChild(this.createWebLink(includeFulltext ? text : undefined, part.value));
 						break;
-					case 'path':
+					case 'path': {
 						const path = part.captures[0];
 						const lineNumber = part.captures[1] ? Number(part.captures[1]) : 0;
 						const columnNumber = part.captures[2] ? Number(part.captures[2]) : 0;
-						container.appendChild(this.createPathLink(part.value, path, lineNumber, columnNumber, workspaceFolder));
+						container.appendChild(this.createPathLink(includeFulltext ? text : undefined, part.value, path, lineNumber, columnNumber, workspaceFolder));
 						break;
+					}
 				}
 			} catch (e) {
 				container.appendChild(document.createTextNode(part.value));
@@ -95,27 +104,64 @@ export class LinkDetector {
 		return container;
 	}
 
-	private createWebLink(url: string): Node {
+	private createWebLink(fulltext: string | undefined, url: string): Node {
 		const link = this.createLink(url);
-		const uri = URI.parse(url);
-		this.decorateLink(link, () => this.openerService.open(uri, { allowTunneling: !!this.workbenchEnvironmentService.configuration.remoteAuthority }));
+
+		let uri = URI.parse(url);
+		// if the URI ends with something like `foo.js:12:3`, parse
+		// that into a fragment to reveal that location (#150702)
+		const lineCol = LINE_COLUMN_REGEX.exec(uri.path);
+		if (lineCol) {
+			uri = uri.with({
+				path: uri.path.slice(0, lineCol.index),
+				fragment: `L${lineCol[0].slice(1)}`
+			});
+		}
+
+		this.decorateLink(link, uri, fulltext, async () => {
+
+			if (uri.scheme === Schemas.file) {
+				// Just using fsPath here is unsafe: https://github.com/microsoft/vscode/issues/109076
+				const fsPath = uri.fsPath;
+				const path = await this.pathService.path;
+				const fileUrl = osPath.normalize(((path.sep === osPath.posix.sep) && platform.isWindows) ? fsPath.replace(/\\/g, osPath.posix.sep) : fsPath);
+
+				const fileUri = URI.parse(fileUrl);
+				const exists = await this.fileService.exists(fileUri);
+				if (!exists) {
+					return;
+				}
+
+				await this.editorService.openEditor({
+					resource: fileUri,
+					options: {
+						pinned: true,
+						selection: lineCol ? { startLineNumber: +lineCol[1], startColumn: +lineCol[2] } : undefined,
+					},
+				});
+				return;
+			}
+
+			this.openerService.open(url, { allowTunneling: (!!this.environmentService.remoteAuthority && this.configurationService.getValue('remote.forwardOnOpen')) });
+		});
+
 		return link;
 	}
 
-	private createPathLink(text: string, path: string, lineNumber: number, columnNumber: number, workspaceFolder: IWorkspaceFolder | undefined): Node {
+	private createPathLink(fulltext: string | undefined, text: string, path: string, lineNumber: number, columnNumber: number, workspaceFolder: IWorkspaceFolder | undefined): Node {
 		if (path[0] === '/' && path[1] === '/') {
 			// Most likely a url part which did not match, for example ftp://path.
 			return document.createTextNode(text);
 		}
 
+		const options = { selection: { startLineNumber: lineNumber, startColumn: columnNumber } };
 		if (path[0] === '.') {
 			if (!workspaceFolder) {
 				return document.createTextNode(text);
 			}
 			const uri = workspaceFolder.toResource(path);
-			const options = { selection: { startLineNumber: lineNumber, startColumn: columnNumber } };
 			const link = this.createLink(text);
-			this.decorateLink(link, () => this.editorService.openEditor({ resource: uri, options }));
+			this.decorateLink(link, uri, fulltext, (preserveFocus: boolean) => this.editorService.openEditor({ resource: uri, options: { ...options, preserveFocus } }));
 			return link;
 		}
 
@@ -127,13 +173,13 @@ export class LinkDetector {
 		}
 
 		const link = this.createLink(text);
+		link.tabIndex = 0;
 		const uri = URI.file(osPath.normalize(path));
-		this.fileService.resolve(uri).then(stat => {
+		this.fileService.stat(uri).then(stat => {
 			if (stat.isDirectory) {
 				return;
 			}
-			const options = { selection: { startLineNumber: lineNumber, startColumn: columnNumber } };
-			this.decorateLink(link, () => this.editorService.openEditor({ resource: uri, options }));
+			this.decorateLink(link, uri, fulltext, (preserveFocus: boolean) => this.editorService.openEditor({ resource: uri, options: { ...options, preserveFocus } }));
 		}).catch(() => {
 			// If the uri can not be resolved we should not spam the console with error, remain quite #86587
 		});
@@ -146,9 +192,12 @@ export class LinkDetector {
 		return link;
 	}
 
-	private decorateLink(link: HTMLElement, onclick: () => void) {
+	private decorateLink(link: HTMLElement, uri: URI, fulltext: string | undefined, onClick: (preserveFocus: boolean) => void) {
 		link.classList.add('link');
-		link.title = platform.isMacintosh ? nls.localize('fileLinkMac', "Cmd + click to follow link") : nls.localize('fileLink', "Ctrl + click to follow link");
+		const followLink = this.tunnelService.canTunnel(uri) ? localize('followForwardedLink', "follow link using forwarded port") : localize('followLink', "follow link");
+		link.title = fulltext
+			? (platform.isMacintosh ? localize('fileLinkWithPathMac', "Cmd + click to {0}\n{1}", followLink, fulltext) : localize('fileLinkWithPath', "Ctrl + click to {0}\n{1}", followLink, fulltext))
+			: (platform.isMacintosh ? localize('fileLinkMac', "Cmd + click to {0}", followLink) : localize('fileLink', "Ctrl + click to {0}", followLink));
 		link.onmousemove = (event) => { link.classList.toggle('pointer', platform.isMacintosh ? event.metaKey : event.ctrlKey); };
 		link.onmouseleave = () => link.classList.remove('pointer');
 		link.onclick = (event) => {
@@ -159,9 +208,18 @@ export class LinkDetector {
 			if (!(platform.isMacintosh ? event.metaKey : event.ctrlKey)) {
 				return;
 			}
+
 			event.preventDefault();
 			event.stopImmediatePropagation();
-			onclick();
+			onClick(false);
+		};
+		link.onkeydown = e => {
+			const event = new StandardKeyboardEvent(e);
+			if (event.keyCode === KeyCode.Enter || event.keyCode === KeyCode.Space) {
+				event.preventDefault();
+				event.stopPropagation();
+				onClick(event.keyCode === KeyCode.Space);
+			}
 		};
 	}
 

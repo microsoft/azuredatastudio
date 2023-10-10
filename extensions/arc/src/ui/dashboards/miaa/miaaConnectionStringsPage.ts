@@ -8,7 +8,6 @@ import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { KeyValueContainer, KeyValue, InputKeyValue, MultilineInputKeyValue } from '../../components/keyValueContainer';
 import { DashboardPage } from '../../components/dashboardPage';
-import { ControllerModel } from '../../../models/controllerModel';
 import { MiaaModel } from '../../../models/miaaModel';
 import { parseIpAndPort } from '../../../common/utils';
 
@@ -17,9 +16,11 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 	private _keyValueContainer!: KeyValueContainer;
 	private _connectionStringsMessage!: azdata.TextComponent;
 
-	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
-		super(modelView);
-		this.disposables.push(this._controllerModel.onRegistrationsUpdated(_ =>
+	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _miaaModel: MiaaModel) {
+		super(modelView, dashboard);
+		this.disposables.push(this._miaaModel.onConfigUpdated(_ =>
+			this.eventuallyRunOnInitialized(() => this.updateConnectionStrings())));
+		this.disposables.push(this._miaaModel.onDatabasesUpdated(_ =>
 			this.eventuallyRunOnInitialized(() => this.updateConnectionStrings())));
 	}
 
@@ -40,12 +41,12 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 		const content = this.modelView.modelBuilder.divContainer().component();
 		root.addItem(content, { CSSStyles: { 'margin': '20px' } });
 
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.connectionStrings,
 			CSSStyles: { ...cssStyles.title }
 		}).component());
 
-		const info = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const info = this.modelView.modelBuilder.text().withProps({
 			value: `${loc.selectConnectionString}`,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
@@ -59,7 +60,7 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 		content.addItem(this._keyValueContainer.container);
 
 		this._connectionStringsMessage = this.modelView.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ CSSStyles: { 'text-align': 'center' } })
+			.withProps({ CSSStyles: { 'text-align': 'center' } })
 			.component();
 		content.addItem(this._connectionStringsMessage);
 
@@ -73,12 +74,12 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 
 	private getConnectionStrings(): KeyValue[] {
 		const config = this._miaaModel.config;
-		if (!config?.status.externalEndpoint) {
+		if (!config?.status.endpoints.primary) {
 			return [];
 		}
 
-		const externalEndpoint = parseIpAndPort(config.status.externalEndpoint);
-		const username = this._miaaModel.username;
+		const externalEndpoint = parseIpAndPort(config.status.endpoints.primary);
+		const username = this._miaaModel.username ?? '{your_username_here}';
 
 		return [
 			new InputKeyValue(this.modelView.modelBuilder, 'ADO.NET', `Server=tcp:${externalEndpoint.ip},${externalEndpoint.port};Persist Security Info=False;User ID=${username};Password={your_password_here};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;`),
@@ -91,13 +92,12 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 $serverName = "${externalEndpoint.ip},${externalEndpoint.port}";
 $conn = sqlsrv_connect($serverName, $connectionInfo);`),
 			new InputKeyValue(this.modelView.modelBuilder, 'Python', `dbname='master' user='${username}' host='${externalEndpoint.ip}' password='{your_password_here}' port='${externalEndpoint.port}' sslmode='true'`),
-			new InputKeyValue(this.modelView.modelBuilder, 'Ruby', `host=${externalEndpoint.ip}; user=${username} password={your_password_here} port=${externalEndpoint.port} sslmode=require`),
-			new InputKeyValue(this.modelView.modelBuilder, 'Web App', `Database=master; Data Source=${externalEndpoint.ip}; User Id=${username}; Password={your_password_here}`)
+			new InputKeyValue(this.modelView.modelBuilder, 'Ruby', `host=${externalEndpoint.ip}; user=${username} password={your_password_here} port=${externalEndpoint.port} sslmode=require`)
 		];
 	}
 
 	private updateConnectionStrings(): void {
-		this._connectionStringsMessage.value = !this._miaaModel.config?.status.externalEndpoint ? loc.noExternalEndpoint : '';
+		this._connectionStringsMessage.value = !this._miaaModel.config?.status.endpoints.primary ? loc.noExternalEndpoint : '';
 		this._keyValueContainer.refresh(this.getConnectionStrings());
 	}
 }

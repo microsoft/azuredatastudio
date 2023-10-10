@@ -1,0 +1,22 @@
+{
+	"extends": "../tsconfig.base.json",
+	"compileOnSave": true,
+	"compilerOptions": {
+		"outDir": "./out",
+		"lib": [
+			"es6",
+			"dom"
+		],
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"strict": false,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"noImplicitAny": false,
+		"noImplicitReturns": false,
+		"noImplicitOverride": false
+	},
+	"exclude": [
+		"node_modules"
+	]
+}

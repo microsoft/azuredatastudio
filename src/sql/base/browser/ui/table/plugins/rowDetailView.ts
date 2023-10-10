@@ -1,5 +1,6 @@
 // Adopted and converted to typescript from https://github.com/6pac/SlickGrid/blob/master/plugins/slick.rowdetailview.js
 // heavily modified
+import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
 import { escape } from 'sql/base/common/strings';
 import { mixin } from 'vs/base/common/objects';
 import * as nls from 'vs/nls';
@@ -338,9 +339,10 @@ export class RowDetailView<T extends Slick.SlickData> {
 		}
 	}
 
-	public getColumnDefinition(): Slick.Column<T> {
+	public getColumnDefinition(): FilterableColumn<T> {
 		return {
 			id: this._options.columnId,
+			filterable: false,
 			name: '',
 			toolTip: this._options.toolTip,
 			field: 'sel',

@@ -12,11 +12,10 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
 import { NotebookFindNextAction, NotebookFindPreviousAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
-import { NBTestQueryManagementService } from 'sql/workbench/contrib/notebook/test/nbTestQueryManagementService';
-import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
-import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
-import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
-import { ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { NBTestQueryManagementService } from 'sql/workbench/contrib/notebook/test/common/nbTestQueryManagementService';
+import * as stubs from 'sql/workbench/contrib/notebook/test/browser/stubs';
+import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/browser/testCommon';
+import { CellEditModes, ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookEditor, INotebookParams, INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
@@ -29,23 +28,19 @@ import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IOverlayWidget, IOverlayWidgetPosition } from 'vs/editor/browser/editorBrowser';
-import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
-import { FindReplaceStateChangedEvent, INewFindReplaceState } from 'vs/editor/contrib/find/findState';
-import { getRandomString } from 'vs/editor/test/common/model/linesTextBuffer/textBufferAutoTestUtils';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
-import { DidInstallExtensionEvent, DidUninstallExtensionEvent, IExtensionManagementService, InstallExtensionEvent } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { DidUninstallExtensionEvent, IExtensionManagementService, InstallExtensionEvent } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
 import { IFileService } from 'vs/platform/files/common/files';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
-import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
+import { ILifecycleService } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { EditorOptions } from 'vs/workbench/common/editor';
 import { ICell } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -57,39 +52,62 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IProductService } from 'vs/platform/product/common/productService';
-import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
-import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IHostColorSchemeService } from 'vs/workbench/services/themes/common/hostColorSchemeService';
+import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
+import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfiguration';
+import { FindReplaceStateChangedEvent, INewFindReplaceState } from 'vs/editor/contrib/find/browser/findState';
+import { IEditorResolverService } from 'vs/workbench/services/editor/common/editorResolverService';
+import { CharCode } from 'vs/base/common/charCode';
+
+function getRandomInt(min: number, max: number): number {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getRandomString(minLength: number, maxLength: number): string {
+	const length = getRandomInt(minLength, maxLength);
+	let r = '';
+	for (let i = 0; i < length; i++) {
+		r += String.fromCharCode(getRandomInt(CharCode.a, CharCode.z));
+	}
+	return r;
+}
 
 class NotebookModelStub extends stubs.NotebookModelStub {
-	private _cells: Array<ICellModel> = [new CellModel(undefined, undefined)];
 	public contentChangedEmitter = new Emitter<NotebookContentChange>();
 	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
 	private _onActiveCellChanged = new Emitter<ICellModel>();
 
-	get cells(): ReadonlyArray<ICellModel> {
-		return this._cells;
-	}
-	public get contentChanged(): Event<NotebookContentChange> {
+	public override get contentChanged(): Event<NotebookContentChange> {
 		return this.contentChangedEmitter.event;
 	}
 
-	get kernelChanged(): Event<nb.IKernelChangedArgs> {
+	override get kernelChanged(): Event<nb.IKernelChangedArgs> {
 		return this._kernelChangedEmitter.event;
 	}
 
-	get onActiveCellChanged(): Event<ICellModel> {
+	override get onActiveCellChanged(): Event<ICellModel> {
 		return this._onActiveCellChanged.event;
 	}
 
-	updateActiveCell(cell: ICellModel) {
+	override updateActiveCell(cell: ICellModel) {
 		// do nothing.
 		// When relevant a mock is used to intercept this call to do any verifications or run
 		// any code relevant for testing in the context of the test.
 	}
+
+	override get activeCell(): ICellModel {
+		return <ICellModel>{};
+	}
 }
 
-suite.skip('Test class NotebookEditor:', () => {
+suite('Test class NotebookEditor:', () => {
 	let instantiationService = <TestInstantiationService>workbenchInstantiationService();
+	instantiationService.stub(IHostColorSchemeService, {
+		dark: true,
+		highContrast: false,
+		onDidChangeColorScheme: new Emitter<void>().event
+	});
 	let workbenchThemeService = instantiationService.createInstance(WorkbenchThemeService);
 	let notebookEditor: NotebookEditor;
 	let testTitle: string;
@@ -99,11 +117,11 @@ suite.skip('Test class NotebookEditor:', () => {
 	let queryTextEditor: QueryTextEditor;
 	let untitledNotebookInput: UntitledNotebookInput;
 	let notebookEditorStub: NotebookEditorStub;
-	let notificationService: TypeMoq.Mock<INotificationService>;
+	let editorResolverService: IEditorResolverService;
 
 	setup(async () => {
 		// setup services
-		({ instantiationService, workbenchThemeService, notebookService, testTitle, extensionService, cellTextEditorGuid, queryTextEditor, untitledNotebookInput, notebookEditorStub, notificationService } = setupServices({ instantiationService, workbenchThemeService }));
+		({ instantiationService, workbenchThemeService, notebookService, testTitle, extensionService, cellTextEditorGuid, queryTextEditor, untitledNotebookInput, notebookEditorStub, editorResolverService } = setupServices({ instantiationService, workbenchThemeService }));
 		// Create notebookEditor
 		notebookEditor = createNotebookEditor(instantiationService, workbenchThemeService, notebookService);
 	});
@@ -124,12 +142,12 @@ suite.skip('Test class NotebookEditor:', () => {
 			const untitledTextInput = instantiationService.createInstance(UntitledTextEditorInput, untitledTextEditorService.create({ associatedResource: untitledUri }));
 			const untitledNotebookInput = new UntitledNotebookInput(
 				testTitle, untitledUri, untitledTextInput,
-				undefined, instantiationService, notebookService, extensionService, notificationService.object
+				undefined, instantiationService, notebookService, extensionService, editorResolverService
 			);
 			const testNotebookEditor = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: notebookModel, notebookParams: <INotebookParams>{ notebookUri: untitledNotebookInput.notebookUri } });
 			notebookService.addNotebookEditor(testNotebookEditor);
 			notebookEditor.clearInput();
-			await notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({ pinned: true }), undefined);
+			await notebookEditor.setInput(untitledNotebookInput, { pinned: true }, undefined);
 			untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
 			const result = await notebookEditor.getNotebookModel();
 			assert.strictEqual(result, notebookModel, `getNotebookModel() should return the model set in the INotebookEditor object`);
@@ -174,7 +192,7 @@ suite.skip('Test class NotebookEditor:', () => {
 		});
 	}
 
-	test.skip('Verifies that getCellEditor() returns a valid text editor object for valid guid input', async () => {
+	test('Verifies that getCellEditor() returns a valid text editor object for valid guid input', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		const result = notebookEditor.getCellEditor(cellTextEditorGuid);
 		assert.strictEqual(result, queryTextEditor, 'notebookEditor.getCellEditor() should return an expected QueryTextEditor when a guid corresponding to that editor is passed in.');
@@ -212,7 +230,7 @@ suite.skip('Test class NotebookEditor:', () => {
 
 	test('Tests setInput call with various states of input on a notebookEditor object', async () => {
 		createEditor(notebookEditor);
-		const editorOptions = EditorOptions.create({ pinned: true });
+		const editorOptions: IEditorOptions = { pinned: true };
 		for (const input of [
 			untitledNotebookInput /* set to a known input */,
 			untitledNotebookInput /* tries to set the same input that was previously set */
@@ -224,7 +242,7 @@ suite.skip('Test class NotebookEditor:', () => {
 
 	test('Tests setInput call with various states of findState.isRevealed on a notebookEditor object', async () => {
 		createEditor(notebookEditor);
-		const editorOptions = EditorOptions.create({ pinned: true });
+		const editorOptions: IEditorOptions = { pinned: true };
 		for (const isRevealed of [true, false]) {
 			notebookEditor['_findState']['_isRevealed'] = isRevealed;
 			notebookEditor.clearInput();
@@ -260,7 +278,7 @@ suite.skip('Test class NotebookEditor:', () => {
 			changeDecorationsCalled = true;
 			return returnObject;
 		});
-		assert.notEqual(changeDecorationsCalled, true, `changeDecorations callback should not have been called`);
+		assert.notStrictEqual(changeDecorationsCalled, true, `changeDecorations callback should not have been called`);
 		assert.notStrictEqual(result, returnObject, 'object returned by the callback given to changeDecorations() call must not be returned by it');
 		assert.strictEqual(result, null, 'return value of changeDecorations() call must be null when no input is set on notebookEditor object');
 	});
@@ -434,7 +452,7 @@ suite.skip('Test class NotebookEditor:', () => {
 				TypeMoq.It.isAny(),
 				TypeMoq.It.isAnyNumber()
 			), TypeMoq.Times.once());
-			findDecorationsMock.verify(x => x.clearDecorations(), TypeMoq.Times.never());
+			findDecorationsMock.verify(x => x.clearDecorations(), TypeMoq.Times.once());
 			notebookFindModelMock.verify(x => x.clearFind(), TypeMoq.Times.never());
 			if (visibility === 'visible') {
 				assert.strictEqual(notebookEditor.getPosition(), currentMatch, `position must be set to the same NotebookRange that we set for '_currentMatch' property of notebookEditor`);
@@ -456,8 +474,9 @@ suite.skip('Test class NotebookEditor:', () => {
 		});
 		untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
 		const notebookModel = <NotebookModelStub>await notebookEditor.getNotebookModel();
+		notebookModel['_cells'] = [new CellModel({ cell_type: 'code', source: '' }, { isTrusted: true, notebook: notebookModel })];
 		notebookEditor['registerModelChanges']();
-		notebookModel.cells[0]['_onCellModeChanged'].fire(true); //fire cellModeChanged event on the first sell of our test notebookModel
+		notebookModel.cells[0]['_onCurrentEditModeChanged'].fire(CellEditModes.SPLIT); //fire onCurrentEditModeChanged event on the first cell of our test notebookModel
 		notebookModel.contentChangedEmitter.fire({ changeType: NotebookChangeType.Saved });
 		(<NotebookService>notebookService)['_onNotebookEditorAdd'].fire(<INotebookEditor>{});
 		notebookFindModelMock.verify(x => x.find(
@@ -616,7 +635,9 @@ async function findStateChangeSetup(instantiationService: TestInstantiationServi
 		matchesPosition: false,
 		matchesCount: false,
 		currentMatch: false,
-		loop: false
+		loop: false,
+		isSearching: false,
+		filters: undefined
 	};
 
 	const notebookEditor = createNotebookEditor(instantiationService, workbenchThemeService, notebookService);
@@ -668,11 +689,9 @@ async function findStateChangeSetup(instantiationService: TestInstantiationServi
 
 function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, instantiationService?: TestInstantiationService } = {}) {
 	const installEvent: Emitter<InstallExtensionEvent> = new Emitter<InstallExtensionEvent>();
-	const didInstallEvent = new Emitter<DidInstallExtensionEvent>();
 	const uninstallEvent = new Emitter<IExtensionIdentifier>();
 	const didUninstallEvent = new Emitter<DidUninstallExtensionEvent>();
 
-	const notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
 	const instantiationService = arg.instantiationService ?? <TestInstantiationService>workbenchInstantiationService();
 	const workbenchThemeService = arg.workbenchThemeService ?? instantiationService.createInstance(WorkbenchThemeService);
 	instantiationService.stub(IWorkbenchThemeService, workbenchThemeService);
@@ -681,7 +700,6 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 
 	instantiationService.stub(IExtensionManagementService, ExtensionManagementService);
 	instantiationService.stub(IExtensionManagementService, 'onInstallExtension', installEvent.event);
-	instantiationService.stub(IExtensionManagementService, 'onDidInstallExtension', didInstallEvent.event);
 	instantiationService.stub(IExtensionManagementService, 'onUninstallExtension', uninstallEvent.event);
 	instantiationService.stub(IExtensionManagementService, 'onDidUninstallExtension', didUninstallEvent.event);
 
@@ -698,7 +716,11 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 		instantiationService.get(ILogService),
 		queryManagementService,
 		instantiationService.get(IContextKeyService),
-		instantiationService.get(IProductService)
+		instantiationService.get(IProductService),
+		undefined,
+		undefined,
+		undefined,
+		undefined,
 	);
 
 	instantiationService.stub(INotebookService, notebookService);
@@ -707,9 +729,10 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 	const untitledUri = URI.from({ scheme: Schemas.untitled, path: 'NotebookEditor.Test-TestPath' });
 	const untitledTextEditorService = instantiationService.get(IUntitledTextEditorService);
 	const untitledTextInput = instantiationService.createInstance(UntitledTextEditorInput, untitledTextEditorService.create({ associatedResource: untitledUri }));
+	let editorResolverService = instantiationService.get(IEditorResolverService);
 	const untitledNotebookInput = new UntitledNotebookInput(
 		testTitle, untitledUri, untitledTextInput,
-		undefined, instantiationService, notebookService, extensionService, notificationService.object
+		undefined, instantiationService, notebookService, extensionService, editorResolverService
 	);
 
 	const cellTextEditorGuid = generateUuid();
@@ -720,11 +743,12 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 		instantiationService.get(ITextResourceConfigurationService),
 		instantiationService.get(IThemeService),
 		instantiationService.get(IEditorGroupsService),
-		instantiationService.get(IEditorService)
+		instantiationService.get(IEditorService),
+		instantiationService.get(IFileService)
 	);
 	const notebookEditorStub = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: new NotebookModelStub(), notebookParams: <INotebookParams>{ notebookUri: untitledNotebookInput.notebookUri } });
 	notebookService.addNotebookEditor(notebookEditorStub);
-	return { instantiationService, workbenchThemeService, notebookService, testTitle, extensionService, cellTextEditorGuid, queryTextEditor, untitledNotebookInput, notebookEditorStub, notificationService };
+	return { instantiationService, workbenchThemeService, notebookService, testTitle, extensionService, cellTextEditorGuid, queryTextEditor, untitledNotebookInput, notebookEditorStub, editorResolverService };
 }
 
 function createNotebookEditor(instantiationService: TestInstantiationService, workbenchThemeService: WorkbenchThemeService, notebookService: NotebookService) {
@@ -747,7 +771,7 @@ async function setupNotebookEditor(notebookEditor: NotebookEditor, untitledNoteb
 }
 
 async function setInputDocument(notebookEditor: NotebookEditor, untitledNotebookInput: UntitledNotebookInput): Promise<void> {
-	const editorOptions = EditorOptions.create({ pinned: true });
+	const editorOptions: IEditorOptions = { pinned: true };
 	await notebookEditor.setInput(untitledNotebookInput, editorOptions, undefined);
 	assert.strictEqual(notebookEditor.options, editorOptions, 'NotebookEditor options must be the ones that we set');
 }

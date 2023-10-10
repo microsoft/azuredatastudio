@@ -3,13 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IDashboardTable, IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import 'mocha';
+import * as should from 'should';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import * as should from 'should';
 import { WorkspaceTreeDataProvider } from '../common/workspaceTreeDataProvider';
 import { WorkspaceService } from '../services/workspaceService';
-import { IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import { MockTreeDataProvider } from './projectProviderRegistry.test';
 
 suite('workspaceTreeDataProvider Tests', function (): void {
@@ -20,18 +20,18 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 		sinon.restore();
 	});
 
-	test('test refresh()', () => {
+	test('test refresh()', async () => {
 		const treeDataChangeHandler = sinon.stub();
 		treeProvider.onDidChangeTreeData!((e) => {
 			treeDataChangeHandler(e);
 		});
-		treeProvider.refresh();
+		await treeProvider.refresh();
 		should.strictEqual(treeDataChangeHandler.calledOnce, true);
 	});
 
-	test('test getTreeItem()', () => {
+	test('test getTreeItem()', async function (): Promise<void> {
 		const getTreeItemStub = sinon.stub();
-		treeProvider.getTreeItem(({
+		await treeProvider.getTreeItem(({
 			treeDataProvider: ({
 				getTreeItem: (arg: WorkspaceTreeItem) => {
 					return getTreeItemStub(arg);
@@ -53,7 +53,7 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 		};
 		const children = await treeProvider.getChildren(element);
 		should.strictEqual(children.length, 0, 'children count should be 0');
-		should.strictEqual(getChildrenStub.calledWithExactly('obj1'), true, 'getChildren parameter should be obj1')
+		should.strictEqual(getChildrenStub.calledWithExactly('obj1'), true, 'getChildren parameter should be obj1');
 	});
 
 	test('test getChildren() for root element', async () => {
@@ -66,15 +66,49 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 		const treeDataProvider = new MockTreeDataProvider();
 		const projectProvider: IProjectProvider = {
 			supportedProjectTypes: [{
+				id: 'sp1',
 				projectFileExtension: 'sqlproj',
 				icon: '',
-				displayName: 'sql project'
+				displayName: 'sql project',
+				description: ''
 			}],
-			RemoveProject: (projectFile: vscode.Uri): Promise<void> => {
-				return Promise.resolve();
-			},
 			getProjectTreeDataProvider: (projectFile: vscode.Uri): Promise<vscode.TreeDataProvider<any>> => {
 				return Promise.resolve(treeDataProvider);
+			},
+			createProject: (name: string, location: vscode.Uri): Promise<vscode.Uri> => {
+				return Promise.resolve(location);
+			},
+			projectToolbarActions: [{
+				id: 'Add',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Schema Compare',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Build',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Publish',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Target Version',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			}],
+			getDashboardComponents: (projectFile: string): IDashboardTable[] => {
+				return [{
+					name: 'Deployments',
+					columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+					data: [['d1']]
+				},
+				{
+					name: 'Builds',
+					columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+					data: [['d1']]
+				}];
 			}
 		};
 		const getProjectProviderStub = sinon.stub(workspaceService, 'getProjectProvider');

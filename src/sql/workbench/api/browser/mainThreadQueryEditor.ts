@@ -3,24 +3,28 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SqlExtHostContext, SqlMainContext, ExtHostQueryEditorShape, MainThreadQueryEditorShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
+import { ExtHostQueryEditorShape, MainThreadQueryEditorShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import * as azdata from 'azdata';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ILogService } from 'vs/platform/log/common/log';
+import { URI } from 'vs/base/common/uri';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
 export class MainThreadQueryEditor extends Disposable implements MainThreadQueryEditorShape {
 
 	private _proxy: ExtHostQueryEditorShape;
+	private _queryEventListenerDisposables = new Map<number, IDisposable>();
 
 	constructor(
 		extHostContext: IExtHostContext,
@@ -28,7 +32,9 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorService private _editorService: IEditorService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
-		@ILogService private _logService: ILogService
+		@ILogService private _logService: ILogService,
+		@IQueryEditorService private _queryEditorService: IQueryEditorService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		super();
 		if (extHostContext) {
@@ -66,34 +72,25 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 		});
 	}
 
-	private static connectionProfileToIConnectionProfile(connection: azdata.connection.ConnectionProfile): IConnectionProfile {
-		let profile: ConnectionProfile = new ConnectionProfile(undefined, undefined);
-		profile.options = connection.options;
-		profile.providerName = connection.options['providerName'];
-		return profile.toIConnectionProfile();
-	}
-
-	public $connectWithProfile(fileUri: string, connection: azdata.connection.ConnectionProfile): Thenable<void> {
-		return new Promise<void>(async (resolve, reject) => {
-			let editors = this._editorService.visibleEditorPanes.filter(resource => {
-				return !!resource && resource.input.resource.toString() === fileUri;
-			});
-			let editor = editors && editors.length > 0 ? editors[0] : undefined;
-
-			let options: IConnectionCompletionOptions = {
-				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: editor ? editor.input as any : undefined },
-				saveTheConnection: false,
-				showDashboard: false,
-				showConnectionDialogOnError: false,
-				showFirewallRuleOnError: false,
-			};
-
-			let profile: IConnectionProfile = MainThreadQueryEditor.connectionProfileToIConnectionProfile(connection);
-			let connectionResult = await this._connectionManagementService.connect(profile, fileUri, options);
-			if (connectionResult && connectionResult.connected) {
-				this._logService.info(`editor ${fileUri} connected`);
-			}
+	public async $connectWithProfile(fileUri: string, connection: azdata.connection.ConnectionProfile): Promise<void> {
+		let editors = this._editorService.visibleEditorPanes.filter(resource => {
+			return !!resource && resource.input.resource.toString() === fileUri;
 		});
+		let editor = editors && editors.length > 0 ? editors[0] : undefined;
+
+		let options: IConnectionCompletionOptions = {
+			params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: editor ? editor.input as any : undefined },
+			saveTheConnection: false,
+			showDashboard: false,
+			showConnectionDialogOnError: false,
+			showFirewallRuleOnError: false,
+		};
+
+		let profile: IConnectionProfile = new ConnectionProfile(this._capabilitiesService, connection).toIConnectionProfile();
+		let connectionResult = await this._connectionManagementService.connect(profile, fileUri, options);
+		if (connectionResult && connectionResult.connected) {
+			this._logService.info(`editor ${fileUri} connected`);
+		}
 	}
 
 	public $runQuery(fileUri: string, runCurrentQuery: boolean = true): void {
@@ -112,10 +109,19 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 	}
 
 	public $registerQueryInfoListener(handle: number): void {
-		this._register(this._queryModelService.onQueryEvent(event => {
-			let connectionProfile = this._connectionManagementService.getConnectionProfile(event.uri);
+		const disposable = this._queryModelService.onQueryEvent(event => {
+			const connectionProfile = this._connectionManagementService.getConnectionProfile(event.uri);
 			this._proxy.$onQueryEvent(connectionProfile?.providerName, handle, event.uri, event);
-		}));
+		});
+		this._queryEventListenerDisposables.set(handle, disposable);
+	}
+
+	public $unregisterQueryInfoListener(handle: number): void {
+		const disposable = this._queryEventListenerDisposables.get(handle);
+		if (disposable) {
+			disposable.dispose();
+			this._queryEventListenerDisposables.delete(handle);
+		}
 	}
 
 	public $createQueryTab(fileUri: string, title: string, componentId: string): void {
@@ -125,7 +131,8 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 
 		let editor = editors && editors.length > 0 ? editors[0] : undefined;
 		if (editor) {
-			let queryEditor = editor as QueryEditor;
+			// {{SQL CARBON TODO}} - cast incompatible type to unknown
+			let queryEditor = (<unknown>editor) as QueryEditor;
 			if (queryEditor) {
 				queryEditor.registerQueryModelViewTab(title, componentId);
 			}
@@ -134,5 +141,10 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 
 	public $setQueryExecutionOptions(fileUri: string, options: azdata.QueryExecutionOptions): Thenable<void> {
 		return this._queryManagementService.setQueryExecutionOptions(fileUri, options);
+	}
+
+	public async $createQueryDocument(options?: { content?: string }, providerId?: string): Promise<URI> {
+		const queryInput = await this._queryEditorService.newSqlEditor({ initialContent: options.content }, providerId);
+		return queryInput.resource;
 	}
 }

@@ -7,15 +7,16 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 import { MainContext, IMainContext, ExtHostFileSystemShape, MainThreadFileSystemShape, IFileChangeDto } from './extHost.protocol';
 import type * as vscode from 'vscode';
 import * as files from 'vs/platform/files/common/files';
-import { IDisposable, toDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { FileChangeType } from 'vs/workbench/api/common/extHostTypes';
 import * as typeConverter from 'vs/workbench/api/common/extHostTypeConverters';
 import { ExtHostLanguageFeatures } from 'vs/workbench/api/common/extHostLanguageFeatures';
-import { Schemas } from 'vs/base/common/network';
-import { State, StateMachine, LinkComputer, Edge } from 'vs/editor/common/modes/linkComputer';
+import { State, StateMachine, LinkComputer, Edge } from 'vs/editor/common/languages/linkComputer';
 import { commonPrefixLength } from 'vs/base/common/strings';
 import { CharCode } from 'vs/base/common/charCode';
 import { VSBuffer } from 'vs/base/common/buffer';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { checkProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
 
 class FsLinkProvider {
 
@@ -113,7 +114,7 @@ export class ExtHostFileSystem implements ExtHostFileSystemShape {
 	private readonly _proxy: MainThreadFileSystemShape;
 	private readonly _linkProvider = new FsLinkProvider();
 	private readonly _fsProvider = new Map<number, vscode.FileSystemProvider>();
-	private readonly _usedSchemes = new Set<string>();
+	private readonly _registeredSchemes = new Set<string>();
 	private readonly _watches = new Map<number, IDisposable>();
 
 	private _linkProviderRegistration?: IDisposable;
@@ -121,33 +122,29 @@ export class ExtHostFileSystem implements ExtHostFileSystemShape {
 
 	constructor(mainContext: IMainContext, private _extHostLanguageFeatures: ExtHostLanguageFeatures) {
 		this._proxy = mainContext.getProxy(MainContext.MainThreadFileSystem);
-
-		// register used schemes
-		Object.keys(Schemas).forEach(scheme => this._usedSchemes.add(scheme));
 	}
 
 	dispose(): void {
-		dispose(this._linkProviderRegistration);
+		this._linkProviderRegistration?.dispose();
 	}
 
-	private _registerLinkProviderIfNotYetRegistered(): void {
-		if (!this._linkProviderRegistration) {
-			this._linkProviderRegistration = this._extHostLanguageFeatures.registerDocumentLinkProvider(undefined, '*', this._linkProvider);
-		}
-	}
+	registerFileSystemProvider(extension: IExtensionDescription, scheme: string, provider: vscode.FileSystemProvider, options: { isCaseSensitive?: boolean; isReadonly?: boolean } = {}) {
 
-	registerFileSystemProvider(scheme: string, provider: vscode.FileSystemProvider, options: { isCaseSensitive?: boolean, isReadonly?: boolean } = {}) {
+		// validate the given provider is complete
+		ExtHostFileSystem._validateFileSystemProvider(provider);
 
-		if (this._usedSchemes.has(scheme)) {
+		if (this._registeredSchemes.has(scheme)) {
 			throw new Error(`a provider for the scheme '${scheme}' is already registered`);
 		}
 
 		//
-		this._registerLinkProviderIfNotYetRegistered();
+		if (!this._linkProviderRegistration) {
+			this._linkProviderRegistration = this._extHostLanguageFeatures.registerDocumentLinkProvider(extension, '*', this._linkProvider);
+		}
 
 		const handle = this._handlePool++;
 		this._linkProvider.add(scheme);
-		this._usedSchemes.add(scheme);
+		this._registeredSchemes.add(scheme);
 		this._fsProvider.set(handle, provider);
 
 		let capabilities = files.FileSystemProviderCapabilities.FileReadWrite;
@@ -163,15 +160,19 @@ export class ExtHostFileSystem implements ExtHostFileSystemShape {
 		if (typeof provider.open === 'function' && typeof provider.close === 'function'
 			&& typeof provider.read === 'function' && typeof provider.write === 'function'
 		) {
+			checkProposedApiEnabled(extension, 'fsChunks');
 			capabilities += files.FileSystemProviderCapabilities.FileOpenReadWriteClose;
 		}
 
-		this._proxy.$registerFileSystemProvider(handle, scheme, capabilities);
+		this._proxy.$registerFileSystemProvider(handle, scheme, capabilities).catch(err => {
+			console.error(`FAILED to register filesystem provider of ${extension.identifier.value}-extension for the scheme ${scheme}`);
+			console.error(err);
+		});
 
 		const subscription = provider.onDidChangeFile(event => {
 			const mapped: IFileChangeDto[] = [];
 			for (const e of event) {
-				let { uri: resource, type } = e;
+				const { uri: resource, type } = e;
 				if (resource.scheme !== scheme) {
 					// dropping events for wrong scheme
 					continue;
@@ -198,19 +199,49 @@ export class ExtHostFileSystem implements ExtHostFileSystemShape {
 		return toDisposable(() => {
 			subscription.dispose();
 			this._linkProvider.delete(scheme);
-			this._usedSchemes.delete(scheme);
+			this._registeredSchemes.delete(scheme);
 			this._fsProvider.delete(handle);
 			this._proxy.$unregisterProvider(handle);
 		});
 	}
 
+	private static _validateFileSystemProvider(provider: vscode.FileSystemProvider) {
+		if (!provider) {
+			throw new Error('MISSING provider');
+		}
+		if (typeof provider.watch !== 'function') {
+			throw new Error('Provider does NOT implement watch');
+		}
+		if (typeof provider.stat !== 'function') {
+			throw new Error('Provider does NOT implement stat');
+		}
+		if (typeof provider.readDirectory !== 'function') {
+			throw new Error('Provider does NOT implement readDirectory');
+		}
+		if (typeof provider.createDirectory !== 'function') {
+			throw new Error('Provider does NOT implement createDirectory');
+		}
+		if (typeof provider.readFile !== 'function') {
+			throw new Error('Provider does NOT implement readFile');
+		}
+		if (typeof provider.writeFile !== 'function') {
+			throw new Error('Provider does NOT implement writeFile');
+		}
+		if (typeof provider.delete !== 'function') {
+			throw new Error('Provider does NOT implement delete');
+		}
+		if (typeof provider.rename !== 'function') {
+			throw new Error('Provider does NOT implement rename');
+		}
+	}
+
 	private static _asIStat(stat: vscode.FileStat): files.IStat {
-		const { type, ctime, mtime, size } = stat;
-		return { type, ctime, mtime, size };
+		const { type, ctime, mtime, size, permissions } = stat;
+		return { type, ctime, mtime, size, permissions };
 	}
 
 	$stat(handle: number, resource: UriComponents): Promise<files.IStat> {
-		return Promise.resolve(this._getFsProvider(handle).stat(URI.revive(resource))).then(ExtHostFileSystem._asIStat);
+		return Promise.resolve(this._getFsProvider(handle).stat(URI.revive(resource))).then(stat => ExtHostFileSystem._asIStat(stat));
 	}
 
 	$readdir(handle: number, resource: UriComponents): Promise<[string, files.FileType][]> {
@@ -221,19 +252,19 @@ export class ExtHostFileSystem implements ExtHostFileSystemShape {
 		return Promise.resolve(this._getFsProvider(handle).readFile(URI.revive(resource))).then(data => VSBuffer.wrap(data));
 	}
 
-	$writeFile(handle: number, resource: UriComponents, content: VSBuffer, opts: files.FileWriteOptions): Promise<void> {
+	$writeFile(handle: number, resource: UriComponents, content: VSBuffer, opts: files.IFileWriteOptions): Promise<void> {
 		return Promise.resolve(this._getFsProvider(handle).writeFile(URI.revive(resource), content.buffer, opts));
 	}
 
-	$delete(handle: number, resource: UriComponents, opts: files.FileDeleteOptions): Promise<void> {
+	$delete(handle: number, resource: UriComponents, opts: files.IFileDeleteOptions): Promise<void> {
 		return Promise.resolve(this._getFsProvider(handle).delete(URI.revive(resource), opts));
 	}
 
-	$rename(handle: number, oldUri: UriComponents, newUri: UriComponents, opts: files.FileOverwriteOptions): Promise<void> {
+	$rename(handle: number, oldUri: UriComponents, newUri: UriComponents, opts: files.IFileOverwriteOptions): Promise<void> {
 		return Promise.resolve(this._getFsProvider(handle).rename(URI.revive(oldUri), URI.revive(newUri), opts));
 	}
 
-	$copy(handle: number, oldUri: UriComponents, newUri: UriComponents, opts: files.FileOverwriteOptions): Promise<void> {
+	$copy(handle: number, oldUri: UriComponents, newUri: UriComponents, opts: files.IFileOverwriteOptions): Promise<void> {
 		const provider = this._getFsProvider(handle);
 		if (!provider.copy) {
 			throw new Error('FileSystemProvider does not implement "copy"');
@@ -258,7 +289,7 @@ export class ExtHostFileSystem implements ExtHostFileSystemShape {
 		}
 	}
 
-	$open(handle: number, resource: UriComponents, opts: files.FileOpenOptions): Promise<number> {
+	$open(handle: number, resource: UriComponents, opts: files.IFileOpenOptions): Promise<number> {
 		const provider = this._getFsProvider(handle);
 		if (!provider.open) {
 			throw new Error('FileSystemProvider does not implement "open"');

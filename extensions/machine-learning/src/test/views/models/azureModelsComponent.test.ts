@@ -9,7 +9,7 @@ import 'mocha';
 import { createContext, ParentDialog } from './utils';
 import { AzureModelsComponent } from '../../../views/models/azureModelsComponent';
 import { ListAccountsEventName, ListSubscriptionsEventName, ListGroupsEventName, ListWorkspacesEventName, ListAzureModelsEventName } from '../../../views/models/modelViewBase';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { ViewBase } from '../../../views/viewBase';
 import { WorkspaceModel } from '../../../modelManagement/interfaces';
@@ -57,7 +57,10 @@ describe('Azure Models Component', () => {
 			{
 				name: 'group',
 				id: '3',
-				subscriptionId: 's1'
+				subscription: {
+					id: 's1',
+					name: 's1'
+				}
 			}
 		];
 		let workspaces: Workspace[] = [

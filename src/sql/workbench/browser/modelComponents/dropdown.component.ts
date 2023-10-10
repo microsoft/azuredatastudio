@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./media/dropdown';
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
 	ViewChild, ElementRef, OnDestroy, AfterViewInit
@@ -11,29 +12,39 @@ import {
 import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { Dropdown, IDropdownOptions } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
-import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
-
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { find } from 'vs/base/common/arrays';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { localize } from 'vs/nls';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
+import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { errorForeground, inputValidationErrorBorder } from 'vs/platform/theme/common/colorRegistry';
+import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
+import { defaultEditableDropdownStyles, defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 @Component({
 	selector: 'modelview-dropdown',
 	template: `
 
-	<div [style.width]="getWidth()">
-		<div [style.display]="getLoadingDisplay()" style="width: 100%; position: relative">
+	<div [ngStyle]="CSSStyles">
+		<div *ngIf="loading" style="width: 100%; position: relative">
 			<div class="modelview-loadingComponent-spinner" style="position:absolute; right: 0px; margin-right: 5px; height:15px; z-index:1" #spinnerElement></div>
-			<div [style.display]="getLoadingDisplay()" #loadingBox style="width: 100%;"></div>
+			<div #loadingBox style="width: 100%;"></div>
 		</div>
 		<div [style.display]="getEditableDisplay()" #editableDropDown style="width: 100%;"></div>
 		<div [style.display]="getNotEditableDisplay()" #dropDown style="width: 100%;"></div>
+		<label #errorMessage tabindex="-1"
+		aria-live="polite" [attr.id]="errorId" aria-atomic="true"
+		*ngIf="!_valid && validationErrorMessages && validationErrorMessages.length!==0 && !isInitState">
+			<ng-container *ngFor="let error of validationErrorMessages">
+				<div  class="dropdown-error-container">
+					<div class="sql codicon error dropdown-error-icon"></div>
+					<span class="dropdown-error-text">{{error}}</span>
+				</div>
+			</ng-container>
+		</label>
 	</div>
 	`
 })
@@ -44,82 +55,103 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 	private _selectBox: SelectBox;
 	private _isInAccessibilityMode: boolean;
 	private _loadingBox: SelectBox;
+	/**
+	 * This flag is used to hide the error message in the initial state of the dropdown. We do not want to show the error message before user has interacted with it.
+	 */
+	public isInitState: boolean = true;
 
 	@ViewChild('editableDropDown', { read: ElementRef }) private _editableDropDownContainer: ElementRef;
 	@ViewChild('dropDown', { read: ElementRef }) private _dropDownContainer: ElementRef;
 	@ViewChild('loadingBox', { read: ElementRef }) private _loadingBoxContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(IConfigurationService) private readonly configurationService: IConfigurationService
+		@Inject(IConfigurationService) private readonly configurationService: IConfigurationService,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 
 		if (this.configurationService) {
 			this._isInAccessibilityMode = this.configurationService.getValue('editor.accessibilitySupport') === 'on';
 		}
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-	}
-
 	ngAfterViewInit(): void {
 		if (this._editableDropDownContainer) {
 			let dropdownOptions: IDropdownOptions = {
 				values: [],
-				strictSelection: false,
-				placeholder: '',
+				strictSelection: this.strictSelection ?? false,
+				placeholder: this.placeholder,
 				maxHeight: 125,
 				ariaLabel: '',
-				actionLabel: ''
+				...defaultEditableDropdownStyles
 			};
-			this._editableDropdown = new Dropdown(this._editableDropDownContainer.nativeElement, this.contextViewService,
-				dropdownOptions);
-
+			this._editableDropdown = new Dropdown(this._editableDropDownContainer.nativeElement, this.contextViewService, dropdownOptions);
 			this._register(this._editableDropdown);
-			this._register(attachEditableDropdownStyler(this._editableDropdown, this.themeService));
 			this._register(this._editableDropdown.onValueChange(async e => {
 				if (this.editable) {
-					this.setSelectedValue(this._editableDropdown.value);
+					this.setSelectedValue(e);
 					await this.validate();
 					this.fireEvent({
 						eventType: ComponentEventType.onDidChange,
 						args: e
 					});
 				}
+				this.isInitState = false;
 			}));
 			this._validations.push(() => !this.required || !this.editable || !!this._editableDropdown.value);
 		}
 		if (this._dropDownContainer) {
-			this._selectBox = new SelectBox(this.getValues(), this.getSelectedValue(), this.contextViewService, this._dropDownContainer.nativeElement);
+			this._selectBox = new SelectBox(this.getValues(), this.getSelectedValue(), defaultSelectBoxStyles, this.contextViewService, this._dropDownContainer.nativeElement);
 			this._selectBox.render(this._dropDownContainer.nativeElement);
 			this._register(this._selectBox);
-			this._register(attachSelectBoxStyler(this._selectBox, this.themeService));
 			this._register(this._selectBox.onDidSelect(async e => {
-				if (!this.editable) {
-					this.setSelectedValue(this._selectBox.value);
+				// also update the selected value here while in accessibility mode since the read-only selectbox
+				// is used even if the editable flag is true
+				if (!this.editable || (this._isInAccessibilityMode && !this.loading)) {
+					this.setSelectedValue(e.selected);
 					await this.validate();
+				}
+				if (!this.editable) {
+					// This is currently sending the ISelectData as the args, but to change this now would be a breaking
+					// change for extensions using it. So while not ideal this should be left as is for the time being.
 					this.fireEvent({
 						eventType: ComponentEventType.onDidChange,
 						args: e
 					});
 				}
+				this.isInitState = false;
 			}));
 			this._validations.push(() => !this.required || this.editable || !!this._selectBox.value);
 		}
-
-		this._loadingBox = new SelectBox([this.getStatusText()], this.getStatusText(), this.contextViewService, this._loadingBoxContainer.nativeElement);
-		this._loadingBox.render(this._loadingBoxContainer.nativeElement);
-		this._register(this._loadingBox);
-		this._register(attachSelectBoxStyler(this._loadingBox, this.themeService));
-		this._loadingBoxContainer.nativeElement.className = ''; // Removing the dropdown arrow icon from the right
+		this._validations.push(() => !this.loading);
+		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
+	}
+
+	public override async validate(): Promise<boolean> {
+		const validationResult = await super.validate();
+		this._changeRef.detectChanges();
+
+		const element = this.editable ? this._editableDropdown.input.inputElement : this._selectBox.selectElem;
+		const styleElement = this.editable ? this._editableDropdown.input.element : element; 		// In case of editable dropdown the border and focus styling comes from the parent element 2 levels up
+		if (!validationResult) {
+			element.setAttribute('aria-describedby', this.errorId);
+			element.setAttribute('aria-errormessage', this.errorId);
+			element.setAttribute('aria-invalid', 'true');
+			styleElement.classList.add('error-dropdown');
+		} else {
+			element.removeAttribute('aria-describedby');
+			element.removeAttribute('aria-errormessage');
+			element.removeAttribute('aria-invalid');
+			styleElement.classList.remove('error-dropdown');
+		}
+
+		return validationResult;
 	}
 
 	/// IComponent implementation
@@ -129,13 +161,14 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 
 		if (this.ariaLabel !== '') {
-			this._selectBox.setAriaLabel(this.ariaLabel);
-			this._editableDropdown.ariaLabel = this.ariaLabel;
-			this._loadingBox.setAriaLabel(this.ariaLabel);
+			this._selectBox?.setAriaLabel(this.ariaLabel);
+			if (this._editableDropdown) {
+				this._editableDropdown.ariaLabel = this.ariaLabel;
+			}
 		}
 
 		if (this.editable && !this._isInAccessibilityMode) {
@@ -145,6 +178,13 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			}
 			this._editableDropdown.enabled = this.enabled;
 			this._editableDropdown.fireOnTextChange = this.fireOnTextChange;
+			this._editableDropdown.strictSelection = this.strictSelection;
+			if (this.placeholder) {
+				this._editableDropdown.input.setPlaceHolder(this.placeholder);
+			}
+
+			// Add tooltip when editable dropdown is disabled to show overflow text
+			this._editableDropdown.input.setTooltip(!this.enabled ? this._editableDropdown.input.value : '');
 		} else {
 			this._selectBox.setOptions(this.getValues());
 			this._selectBox.selectWithOptionName(this.getSelectedValue());
@@ -156,16 +196,24 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		}
 
 		if (this.loading) {
+			// Lazily create the select box for the loading portion since many dropdowns won't use it
+			if (!this._loadingBox) {
+				this._loadingBox = new SelectBox([this.getStatusText()], this.getStatusText(), defaultSelectBoxStyles, this.contextViewService, this._loadingBoxContainer.nativeElement);
+				this._loadingBox.render(this._loadingBoxContainer.nativeElement);
+				this._register(this._loadingBox);
+				this._loadingBoxContainer.nativeElement.className = ''; // Removing the dropdown arrow icon from the right
+			}
+			if (this.ariaLabel !== '') {
+				this._loadingBox.setAriaLabel(this.ariaLabel);
+			}
 			this._loadingBox.setOptions([this.getStatusText()]);
 			this._loadingBox.selectWithOptionName(this.getStatusText());
 			this._loadingBox.enable();
-		} else {
-			this._loadingBox.disable();
 		}
 
 		this._selectBox.selectElem.required = this.required;
 		this._editableDropdown.inputElement.required = this.required;
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	private getValues(): string[] {
@@ -186,7 +234,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 	private getSelectedValue(): string {
 		if (this.values && this.values.length > 0 && this.valuesHaveDisplayName()) {
 			let selectedValue = <azdata.CategoryValue>this.value || <azdata.CategoryValue>this.values[0];
-			let valueCategory = find(<azdata.CategoryValue[]>this.values, v => v.name === selectedValue.name);
+			let valueCategory = (<azdata.CategoryValue[]>this.values).find(v => v.name === selectedValue.name);
 			return valueCategory && valueCategory.displayName;
 		} else {
 			if (!this.value && this.values && this.values.length > 0) {
@@ -198,7 +246,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 
 	private setSelectedValue(newValue: string): void {
 		if (this.values && this.valuesHaveDisplayName()) {
-			let valueCategory = find((<azdata.CategoryValue[]>this.values), v => v.displayName === newValue);
+			let valueCategory = (<azdata.CategoryValue[]>this.values).find(v => v.displayName === newValue);
 			this.value = valueCategory;
 		} else {
 			this.value = newValue;
@@ -225,10 +273,6 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 
 	public getNotEditableDisplay(): string {
 		return (!this.editable || this._isInAccessibilityMode) && !this.loading ? '' : 'none';
-	}
-
-	public getLoadingDisplay(): string {
-		return this.loading ? '' : 'none';
 	}
 
 	private set value(newValue: string | azdata.CategoryValue) {
@@ -259,7 +303,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		this.setPropertyFromUI<boolean>((props, value) => props.required = value, newValue);
 	}
 
-	public focus(): void {
+	public override focus(): void {
 		if (this.editable && !this._isInAccessibilityMode) {
 			this._editableDropdown.focus();
 		} else {
@@ -286,4 +330,51 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 	public getStatusText(): string {
 		return this.loading ? this.loadingText : this.loadingCompletedText;
 	}
+
+	public override get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth()
+		});
+	}
+
+	public get placeholder(): string | undefined {
+		return this.getPropertyOrDefault<string | undefined>((props) => props.placeholder, undefined);
+	}
+
+	public get strictSelection(): boolean | undefined {
+		return this.getPropertyOrDefault<boolean | undefined>((props) => props.strictSelection, undefined);
+	}
+
+	public get validationErrorMessages(): string[] | undefined {
+		let validationErrorMessages = this.getPropertyOrDefault<string[]>((props) => props.validationErrorMessages, undefined);
+		// Showing the default error message only when user has set a validation error message for the dropdown.
+		if (this.required && this.editable && validationErrorMessages && (!this._editableDropdown.input.value || this._editableDropdown.input.value === '')) {
+			return [localize('defaultDropdownErrorMessage', "Please fill out this field.")]; // Adding a default error message for required editable dropdowns having an empty value.
+		}
+		return validationErrorMessages;
+	}
+
+	public get errorId(): string {
+		return this.descriptor.id + '-err';
+	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const errorForegroundColor = theme.getColor(errorForeground);
+	if (errorForegroundColor) {
+		collector.addRule(`
+		modelview-dropdown .dropdown-error-text {
+			color: ${errorForegroundColor};
+		}
+		`);
+	}
+	const inputValidationErrorBorderColor = theme.getColor(inputValidationErrorBorder);
+	if (inputValidationErrorBorderColor) {
+		collector.addRule(`
+		modelview-dropdown .error-dropdown {
+			border-color: ${inputValidationErrorBorderColor} !important;
+			outline-offset: 2px !important
+		}
+		`);
+	}
+});

@@ -10,6 +10,7 @@ import * as types from 'vs/base/common/types';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { coalesce } from 'vs/base/common/arrays';
+import { MediaDeviceType } from 'sql/workbench/common/backup/constants';
 
 export interface RestoreOptionsElement {
 	optionMetadata: azdata.ServiceOption;
@@ -46,6 +47,8 @@ export class RestoreViewModel {
 	public readHeaderFromMedia?: boolean;
 	public selectedBackupSets?: string[];
 	public defaultBackupFolder?: string;
+	public deviceType?: MediaDeviceType;
+	public databases?: string[];
 
 	private _onSetLastBackupTaken = new Emitter<string>();
 	public onSetLastBackupTaken: Event<string> = this._onSetLastBackupTaken.event;
@@ -245,13 +248,13 @@ export class RestoreViewModel {
 	/**
 	* Reset restore options to the default value
 	*/
-	public resetRestoreOptions(databaseName: string): void {
+	public resetRestoreOptions(databaseName: string, databaseList: string[] = []): void {
 		this.sourceDatabaseName = databaseName ? databaseName : '';
 		this.updateTargetDatabaseName(databaseName);
-		this.updateSourceDatabaseNames([], this.sourceDatabaseName);
+		this.databaseList = databaseList;
+		this.updateSourceDatabaseNames(this.databaseList, this.sourceDatabaseName);
 		this.updateFilePath('');
 		this.updateLastBackupTaken('');
-		this.databaseList = [];
 		this.selectedBackupSets = undefined;
 		for (let key in this._optionsMap) {
 			this._optionsMap[key].defaultValue = this.getDisplayValue(this._optionsMap[key].optionMetadata, this._optionsMap[key].optionMetadata.defaultValue);

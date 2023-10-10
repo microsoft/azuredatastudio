@@ -32,7 +32,7 @@ const testColumns: string[] = [
 ];
 
 suite('Insights Dialog Controller Tests', () => {
-	test('updates correctly with good input', async (done) => {
+	test('updates correctly with good input', (done) => {
 
 		let model = new InsightsDialogModel();
 
@@ -45,8 +45,6 @@ suite('Insights Dialog Controller Tests', () => {
 		let testinstantiationService = new TestInstantiationService();
 		testinstantiationService.stub(IStorageService, new TestStorageService());
 		let connMoq = Mock.ofType(ConnectionManagementService, MockBehavior.Strict,
-			undefined, // connection store
-			undefined, // connection status manager
 			undefined, // connection dialog service
 			testinstantiationService, // instantiation service
 			undefined, // editor service
@@ -76,7 +74,9 @@ suite('Insights Dialog Controller Tests', () => {
 			savePassword: true,
 			groupFullName: '',
 			groupId: '',
+			serverCapabilities: undefined,
 			getOptionsKey: () => '',
+			getOptionKeyIdNames: undefined!,
 			matches: undefined,
 			providerName: '',
 			saveProfile: true,
@@ -84,19 +84,21 @@ suite('Insights Dialog Controller Tests', () => {
 			options: {}
 		};
 
-		await controller.update(<IInsightsConfigDetails>{ query: 'query' }, profile);
-		// Once we update the controller, listen on when it changes the model and verify the data it
-		// puts in is correct
-		model.onDataChange(() => {
-			for (let i = 0; i < testData.length; i++) {
-				for (let j = 0; j < testData[i].length; j++) {
-					equal(testData[i][j], model.rows[i][j]);
+		controller.update(<IInsightsConfigDetails>{ query: 'query' }, profile).then(() => {
+			// Once we update the controller, listen on when it changes the model and verify the data it
+			// puts in is correct
+			model.onDataChange(() => {
+				for (let i = 0; i < testData.length; i++) {
+					for (let j = 0; j < testData[i].length; j++) {
+						equal(testData[i][j], model.rows[i][j]);
+					}
 				}
-			}
-			done();
+				done();
+			});
+			// Fake the query Runner telling the controller the query is complete
+			complete();
 		});
-		// Fake the query Runner telling the controller the query is complete
-		complete();
+
 	});
 });
 
@@ -128,7 +130,7 @@ function getPrimedQueryRunner(data: string[][], columns: string[]): IPrimedQuery
 		];
 	});
 
-	querymock.setup(x => x.getQueryRows(It.isAnyNumber(), It.isAnyNumber(), It.isAnyNumber(), It.isAnyNumber()))
+	querymock.setup(x => x.getQueryRowsPaged(It.isAnyNumber(), It.isAnyNumber(), It.isAnyNumber(), It.isAnyNumber()))
 		.returns(x => Promise.resolve(<ResultSetSubset>{
 			rowCount: data.length,
 			rows: data.map(r => r.map(c => { return { displayValue: c }; }))

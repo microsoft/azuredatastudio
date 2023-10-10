@@ -12,6 +12,8 @@ export class ObjectMetadataWrapper implements ObjectMetadata {
 	public urn: string;
 	public name: string;
 	public schema: string;
+	public parentName: string;
+	public parentTypeName: string;
 
 	public get fullName(): string {
 		return `${this.schema}.${this.name}`;
@@ -23,6 +25,8 @@ export class ObjectMetadataWrapper implements ObjectMetadata {
 		this.urn = from.urn;
 		this.name = from.name;
 		this.schema = from.schema;
+		this.parentName = from.parentName;
+		this.parentTypeName = from.parentTypeName;
 	}
 
 	public matches(other: ObjectMetadataWrapper): boolean {
@@ -32,7 +36,8 @@ export class ObjectMetadataWrapper implements ObjectMetadata {
 
 		return this.metadataType === other.metadataType
 			&& this.schema === other.schema
-			&& this.name === other.name;
+			&& this.name === other.name
+			&& this.parentName === other.parentName;
 	}
 
 	// custom sort : Table > View > Stored Procedures > Function

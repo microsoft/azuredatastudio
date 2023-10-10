@@ -6,7 +6,7 @@
   "publisher": "vscode",
   "license": "MIT",
   "engines": {
-    "vscode": "0.10.x"
+    "vscode": "0.10.0"
   },
   "scripts": {
     "update-grammar": "node ./build/update-grammars.js"
@@ -29,12 +29,14 @@
           ".ts.map",
           ".har",
           ".jslintrc",
-          ".jsonld"
+          ".jsonld",
+          ".geojson",
+		      ".ipynb",
+          ".vuerc"
         ],
         "filenames": [
           "composer.lock",
-          ".watchmanconfig",
-          ".ember-cli"
+          ".watchmanconfig"
         ],
         "mimetypes": [
           "application/json",
@@ -57,6 +59,23 @@
           ".hintrc",
           ".babelrc"
         ],
+        "filenames": [
+          "babel.config.json",
+          ".babelrc.json",
+          ".ember-cli",
+          "typedoc.json"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jsonl",
+        "aliases": [
+          "JSON Lines"
+        ],
+        "extensions": [
+          ".jsonl"
+        ],
+        "filenames": [],
         "configuration": "./language-configuration.json"
       }
     ],
@@ -70,7 +89,16 @@
         "language": "jsonc",
         "scopeName": "source.json.comments",
         "path": "./syntaxes/JSONC.tmLanguage.json"
+      },
+      {
+        "language": "jsonl",
+        "scopeName": "source.json.lines",
+        "path": "./syntaxes/JSONL.tmLanguage.json"
       }
     ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/microsoft/vscode.git"
   }
 }

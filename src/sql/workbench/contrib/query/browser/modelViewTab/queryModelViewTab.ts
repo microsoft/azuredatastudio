@@ -63,9 +63,6 @@ export class QueryModelViewTabView implements IPanelView {
 	public layout(dimension: Dimension): void {
 	}
 
-	public focus(): void {
-	}
-
 	public get componentId(): string {
 		return this.state.componentId;
 	}

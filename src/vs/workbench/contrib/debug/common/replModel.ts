@@ -3,32 +3,92 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as nls from 'vs/nls';
+import { Emitter, Event } from 'vs/base/common/event';
 import severity from 'vs/base/common/severity';
-import { IReplElement, IStackFrame, IExpression, IReplElementSource, IDebugSession } from 'vs/workbench/contrib/debug/common/debug';
-import { ExpressionContainer } from 'vs/workbench/contrib/debug/common/debugModel';
-import { isString, isUndefinedOrNull, isObject } from 'vs/base/common/types';
-import { basenameOrAuthority } from 'vs/base/common/resources';
-import { URI } from 'vs/base/common/uri';
-import { endsWith } from 'vs/base/common/strings';
+import { isObject, isString } from 'vs/base/common/types';
 import { generateUuid } from 'vs/base/common/uuid';
-import { Emitter } from 'vs/base/common/event';
+import * as nls from 'vs/nls';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IDebugConfiguration, IDebugSession, IExpression, INestingReplElement, IReplElement, IReplElementSource, IStackFrame } from 'vs/workbench/contrib/debug/common/debug';
+import { ExpressionContainer } from 'vs/workbench/contrib/debug/common/debugModel';
 
 const MAX_REPL_LENGTH = 10000;
 let topReplElementCounter = 0;
+const getUniqueId = () => `topReplElement:${topReplElementCounter++}`;
 
-export class SimpleReplElement implements IReplElement {
+/**
+ * General case of data from DAP the `output` event. {@link ReplVariableElement}
+ * is used instead only if there is a `variablesReference` with no `output` text.
+ */
+export class ReplOutputElement implements INestingReplElement {
+
+	private _count = 1;
+	private _onDidChangeCount = new Emitter<void>();
+
 	constructor(
 		public session: IDebugSession,
 		private id: string,
 		public value: string,
 		public severity: severity,
 		public sourceData?: IReplElementSource,
-	) { }
+		public readonly expression?: IExpression,
+	) {
+	}
+
+	toString(includeSource = false): string {
+		let valueRespectCount = this.value;
+		for (let i = 1; i < this.count; i++) {
+			valueRespectCount += (valueRespectCount.endsWith('\n') ? '' : '\n') + this.value;
+		}
+		const sourceStr = (this.sourceData && includeSource) ? ` ${this.sourceData.source.name}` : '';
+		return valueRespectCount + sourceStr;
+	}
+
+	getId(): string {
+		return this.id;
+	}
+
+	getChildren(): Promise<IReplElement[]> {
+		return this.expression?.getChildren() || Promise.resolve([]);
+	}
+
+	set count(value: number) {
+		this._count = value;
+		this._onDidChangeCount.fire();
+	}
+
+	get count(): number {
+		return this._count;
+	}
+
+	get onDidChangeCount(): Event<void> {
+		return this._onDidChangeCount.event;
+	}
+
+	get hasChildren() {
+		return !!this.expression?.hasChildren;
+	}
+}
+
+/** Top-level variable logged via DAP output when there's no `output` string */
+export class ReplVariableElement implements INestingReplElement {
+	public readonly hasChildren: boolean;
+	private readonly id = generateUuid();
+
+	constructor(
+		public readonly expr: IExpression,
+		public readonly severity: severity,
+		public readonly sourceData?: IReplElementSource,
+	) {
+		this.hasChildren = expr.hasChildren;
+	}
+
+	getChildren(): IReplElement[] | Promise<IReplElement[]> {
+		return this.expr.getChildren();
+	}
 
 	toString(): string {
-		const sourceStr = this.sourceData ? ` ${this.sourceData.source.name}` : '';
-		return this.value + sourceStr;
+		return this.expr.toString();
 	}
 
 	getId(): string {
@@ -36,7 +96,7 @@ export class SimpleReplElement implements IReplElement {
 	}
 }
 
-export class RawObjectReplElement implements IExpression {
+export class RawObjectReplElement implements IExpression, INestingReplElement {
 
 	private static readonly MAX_CHILDREN = 1000; // upper bound of children per value
 
@@ -62,6 +122,10 @@ export class RawObjectReplElement implements IExpression {
 
 	get hasChildren(): boolean {
 		return (Array.isArray(this.valueObj) && this.valueObj.length > 0) || (isObject(this.valueObj) && Object.getOwnPropertyNames(this.valueObj).length > 0);
+	}
+
+	evaluateLazy(): Promise<void> {
+		throw new Error('Method not implemented.');
 	}
 
 	getChildren(): Promise<IExpression[]> {
@@ -109,19 +173,19 @@ export class ReplEvaluationResult extends ExpressionContainer implements IReplEl
 		super(undefined, undefined, 0, generateUuid());
 	}
 
-	async evaluateExpression(expression: string, session: IDebugSession | undefined, stackFrame: IStackFrame | undefined, context: string): Promise<boolean> {
+	override async evaluateExpression(expression: string, session: IDebugSession | undefined, stackFrame: IStackFrame | undefined, context: string): Promise<boolean> {
 		const result = await super.evaluateExpression(expression, session, stackFrame, context);
 		this._available = result;
 
 		return result;
 	}
 
-	toString(): string {
+	override toString(): string {
 		return `${this.value}`;
 	}
 }
 
-export class ReplGroup implements IReplElement {
+export class ReplGroup implements INestingReplElement {
 
 	private children: IReplElement[] = [];
 	private id: string;
@@ -144,8 +208,8 @@ export class ReplGroup implements IReplElement {
 		return this.id;
 	}
 
-	toString(): string {
-		const sourceStr = this.sourceData ? ` ${this.sourceData.source.name}` : '';
+	toString(includeSource = false): string {
+		const sourceStr = (includeSource && this.sourceData) ? ` ${this.sourceData.source.name}` : '';
 		return this.name + sourceStr;
 	}
 
@@ -176,10 +240,30 @@ export class ReplGroup implements IReplElement {
 	}
 }
 
+function areSourcesEqual(first: IReplElementSource | undefined, second: IReplElementSource | undefined): boolean {
+	if (!first && !second) {
+		return true;
+	}
+	if (first && second) {
+		return first.column === second.column && first.lineNumber === second.lineNumber && first.source.uri.toString() === second.source.uri.toString();
+	}
+
+	return false;
+}
+
+export interface INewReplElementData {
+	output: string;
+	expression?: IExpression;
+	sev: severity;
+	source?: IReplElementSource;
+}
+
 export class ReplModel {
 	private replElements: IReplElement[] = [];
 	private readonly _onDidChangeElements = new Emitter<void>();
 	readonly onDidChangeElements = this._onDidChangeElements.event;
+
+	constructor(private readonly configurationService: IConfigurationService) { }
 
 	getReplElements(): IReplElement[] {
 		return this.replElements;
@@ -192,30 +276,43 @@ export class ReplModel {
 		this.addReplElement(result);
 	}
 
-	appendToRepl(session: IDebugSession, data: string | IExpression, sev: severity, source?: IReplElementSource): void {
+	appendToRepl(session: IDebugSession, { output, expression, sev, source }: INewReplElementData): void {
 		const clearAnsiSequence = '\u001b[2J';
-		if (typeof data === 'string' && data.indexOf(clearAnsiSequence) >= 0) {
+		const clearAnsiIndex = output.lastIndexOf(clearAnsiSequence);
+		if (clearAnsiIndex !== -1) {
 			// [2J is the ansi escape sequence for clearing the display http://ascii-table.com/ansi-escape-sequences.php
 			this.removeReplExpressions();
-			this.appendToRepl(session, nls.localize('consoleCleared', "Console was cleared"), severity.Ignore);
-			data = data.substr(data.lastIndexOf(clearAnsiSequence) + clearAnsiSequence.length);
+			this.appendToRepl(session, { output: nls.localize('consoleCleared', "Console was cleared"), sev: severity.Ignore });
+			output = output.substring(clearAnsiIndex + clearAnsiSequence.length);
 		}
 
-		if (typeof data === 'string') {
-			const previousElement = this.replElements.length ? this.replElements[this.replElements.length - 1] : undefined;
-			if (previousElement instanceof SimpleReplElement && previousElement.severity === sev && !endsWith(previousElement.value, '\n') && !endsWith(previousElement.value, '\r\n')) {
-				previousElement.value += data;
-				this._onDidChangeElements.fire();
-			} else {
-				const element = new SimpleReplElement(session, `topReplElement:${topReplElementCounter++}`, data, sev, source);
-				this.addReplElement(element);
-			}
-		} else {
-			// TODO@Isidor hack, we should introduce a new type which is an output that can fetch children like an expression
-			(<any>data).severity = sev;
-			(<any>data).sourceData = source;
-			this.addReplElement(data);
+		if (expression) {
+			// if there is an output string, prefer to show that, since the DA could
+			// have formatted it nicely e.g. with ANSI color codes.
+			this.addReplElement(output
+				? new ReplOutputElement(session, getUniqueId(), output, sev, source, expression)
+				: new ReplVariableElement(expression, sev, source));
+			return;
 		}
+
+		const previousElement = this.replElements.length ? this.replElements[this.replElements.length - 1] : undefined;
+		if (previousElement instanceof ReplOutputElement && previousElement.severity === sev) {
+			const config = this.configurationService.getValue<IDebugConfiguration>('debug');
+			if (previousElement.value === output && areSourcesEqual(previousElement.sourceData, source) && config.console.collapseIdenticalLines) {
+				previousElement.count++;
+				// No need to fire an event, just the count updates and badge will adjust automatically
+				return;
+			}
+			if (!previousElement.value.endsWith('\n') && !previousElement.value.endsWith('\r\n') && previousElement.count === 1) {
+				this.replElements[this.replElements.length - 1] = new ReplOutputElement(
+					session, getUniqueId(), previousElement.value + output, sev, source);
+				this._onDidChangeElements.fire();
+				return;
+			}
+		}
+
+		const element = new ReplOutputElement(session, getUniqueId(), output, sev, source);
+		this.addReplElement(element);
 	}
 
 	startGroup(name: string, autoExpand: boolean, sourceData?: IReplElementSource): void {
@@ -244,83 +341,17 @@ export class ReplModel {
 		this._onDidChangeElements.fire();
 	}
 
-	logToRepl(session: IDebugSession, sev: severity, args: any[], frame?: { uri: URI, line: number, column: number }) {
-
-		let source: IReplElementSource | undefined;
-		if (frame) {
-			source = {
-				column: frame.column,
-				lineNumber: frame.line,
-				source: session.getSource({
-					name: basenameOrAuthority(frame.uri),
-					path: frame.uri.fsPath
-				})
-			};
-		}
-
-		// add output for each argument logged
-		let simpleVals: any[] = [];
-		for (let i = 0; i < args.length; i++) {
-			let a = args[i];
-
-			// undefined gets printed as 'undefined'
-			if (typeof a === 'undefined') {
-				simpleVals.push('undefined');
-			}
-
-			// null gets printed as 'null'
-			else if (a === null) {
-				simpleVals.push('null');
-			}
-
-			// objects & arrays are special because we want to inspect them in the REPL
-			else if (isObject(a) || Array.isArray(a)) {
-
-				// flush any existing simple values logged
-				if (simpleVals.length) {
-					this.appendToRepl(session, simpleVals.join(' '), sev, source);
-					simpleVals = [];
-				}
-
-				// show object
-				this.appendToRepl(session, new RawObjectReplElement(`topReplElement:${topReplElementCounter++}`, (<any>a).prototype, a, undefined, nls.localize('snapshotObj', "Only primitive values are shown for this object.")), sev, source);
-			}
-
-			// string: watch out for % replacement directive
-			// string substitution and formatting @ https://developer.chrome.com/devtools/docs/console
-			else if (typeof a === 'string') {
-				let buf = '';
-
-				for (let j = 0, len = a.length; j < len; j++) {
-					if (a[j] === '%' && (a[j + 1] === 's' || a[j + 1] === 'i' || a[j + 1] === 'd' || a[j + 1] === 'O')) {
-						i++; // read over substitution
-						buf += !isUndefinedOrNull(args[i]) ? args[i] : ''; // replace
-						j++; // read over directive
-					} else {
-						buf += a[j];
-					}
-				}
-
-				simpleVals.push(buf);
-			}
-
-			// number or boolean is joined together
-			else {
-				simpleVals.push(a);
-			}
-		}
-
-		// flush simple values
-		// always append a new line for output coming from an extension such that separate logs go to separate lines #23695
-		if (simpleVals.length) {
-			this.appendToRepl(session, simpleVals.join(' ') + '\n', sev, source);
-		}
-	}
-
 	removeReplExpressions(): void {
 		if (this.replElements.length > 0) {
 			this.replElements = [];
 			this._onDidChangeElements.fire();
 		}
+	}
+
+	/** Returns a new REPL model that's a copy of this one. */
+	clone() {
+		const newRepl = new ReplModel(this.configurationService);
+		newRepl.replElements = this.replElements.slice();
+		return newRepl;
 	}
 }

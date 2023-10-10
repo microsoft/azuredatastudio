@@ -20,14 +20,20 @@ export enum ComponentEventType {
 	onSelectedRowChanged,
 	onComponentCreated,
 	onCellAction,
-	onEnterKeyPressed
+	onEnterKeyPressed,
+	onInput,
+	onComponentLoaded,
+	onChildClick
 }
 
 /**
  * Actions that can be handled by ModelView components
  */
 export enum ModelViewAction {
-	SelectTab = 'selectTab'
+	SelectTab = 'selectTab',
+	AppendData = 'appendData',
+	Filter = 'filter',
+	SetActiveCell = 'setActiveCell'
 }
 
 /**
@@ -68,7 +74,7 @@ export interface IModelStore {
 	 * @param componentId unique identifier of the component
 	 * @param action some action to perform
 	 */
-	eventuallyRunOnComponent<T>(componentId: string, action: (component: IComponent) => T): Promise<T>;
+	eventuallyRunOnComponent<T>(componentId: string, action: (component: IComponent) => T, initial: boolean): void;
 	/**
 	 * Register a callback that will validate components when given a component ID
 	 */
@@ -76,7 +82,7 @@ export interface IModelStore {
 	/**
 	 * Run all validations for the given component and return the new validation value
 	 */
-	validate(component: IComponent): Thenable<boolean>;
+	validate(component: IComponent): Promise<boolean>;
 }
 
 /**
@@ -90,7 +96,12 @@ export interface IComponent extends IDisposable {
 	layout(): void;
 	registerEventHandler(handler: (event: IComponentEventArgs) => void): IDisposable;
 	clearContainer?: () => void;
-	addToContainer?: (componentDescriptor: IComponentDescriptor, config: any, index?: number) => void;
+	/**
+	 * Called when child components are added to this component
+	 * @param items The list of items to add. Each item consists of a descriptor for identifying the component,
+	 * the config defined and an optional index to insert it at
+	 */
+	addToContainer?: (items: { componentDescriptor: IComponentDescriptor, config: any, index?: number }[]) => void;
 	removeFromContainer?: (componentDescriptor: IComponentDescriptor) => void;
 	setLayout?: (layout: any) => void;
 	setItemLayout?: (componentDescriptor: IComponentDescriptor, config: any) => void;
@@ -98,7 +109,7 @@ export interface IComponent extends IDisposable {
 	setProperties?: (properties: { [key: string]: any; }) => void;
 	enabled: boolean;
 	readonly valid?: boolean;
-	validate(): Thenable<boolean>;
+	validate(): Promise<boolean>;
 	setDataProvider(handle: number, componentId: string, context: any): void;
 	refreshDataProvider(item: any): void;
 	focus(): void;
@@ -131,11 +142,15 @@ export enum ModelComponentTypes {
 	FileBrowserTree,
 	Editor,
 	DiffEditor,
-	Dom,
 	Hyperlink,
 	Image,
 	RadioCardGroup,
+	ListView,
 	TabbedPanel,
 	Separator,
-	PropertiesContainer
+	PropertiesContainer,
+	InfoBox,
+	Slider,
+	ExecutionPlan,
+	Chart
 }

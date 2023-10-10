@@ -5,7 +5,7 @@
   "version": "0.0.1",
   "publisher": "demo",
   "engines": {
-    "vscode": "^1.26.0",
+    "vscode": "*",
     "azdata": "*"
   },
   "categories": [
@@ -44,9 +44,23 @@
       {
         "command": "sqlservices.openModelViewDashboard",
         "title": "sqlservices.openModelViewDashboard"
+      },
+      {
+        "command": "sqlservices.updateObjectExplorerNode",
+        "title": "sqlservices.updateObjectExplorerNode"
       }
     ],
     "dashboard.tabs": [
+      {
+        "id": "sqlservices-home",
+        "isHomeTab": true,
+        "description": "",
+        "title": "Home",
+        "provider": "TESTPROVIDER",
+        "container": {
+          "modelview-container": null
+        }
+      },
       {
         "id": "sqlservices.tab",
         "title": "sqlservices",
@@ -55,6 +69,7 @@
           "dark": "./out/src/media/insights_inverse.svg"
         },
         "description": "Shows available services running in the SQL Server instance",
+        "provider": "*",
         "container": {
           "nav-section": [
             {
@@ -82,23 +97,138 @@
           ]
         }
       }
-    ]
+    ],
+    "connectionProvider": {
+      "providerId": "TESTPROVIDER",
+      "languageMode": "sql",
+      "isQueryProvider": false,
+      "displayName": "Test Provider",
+      "iconPath": [
+        {
+          "id": "myprovidericon",
+          "path": {
+            "light": "images/user.svg",
+            "dark": "images/user_inverse.svg"
+          },
+          "default": true
+        }
+      ],
+      "connectionOptions": [
+        {
+          "specialValueType": "connectionName",
+          "isIdentity": true,
+          "name": "connectionName",
+          "displayName": "",
+          "description": "",
+          "groupName": "Source",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": "serverName",
+          "isIdentity": true,
+          "name": "server",
+          "displayName": "Server name",
+          "description": "Server name",
+          "groupName": "Source",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "authType",
+          "isIdentity": true,
+          "name": "authenticationType",
+          "displayName": "Authentication type",
+          "description": "",
+          "groupName": "Security",
+          "valueType": "category",
+          "defaultValue": "SqlLogin",
+          "objectType": null,
+          "categoryValues": [
+            {
+              "displayName": "Basic",
+              "name": "SqlLogin"
+            }
+          ],
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "userName",
+          "isIdentity": true,
+          "name": "user",
+          "displayName": "Username",
+          "description": "",
+          "groupName": "Security",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "password",
+          "isIdentity": true,
+          "name": "password",
+          "displayName": "Password",
+          "description": "",
+          "groupName": "Security",
+          "valueType": "password",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "appName",
+          "isIdentity": false,
+          "name": "applicationName",
+          "displayName": "Application Name",
+          "description": "",
+          "groupName": "Context",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        }
+      ]
+    },
+    "menus": {
+      "objectExplorer/item/context": [
+        {
+          "command": "sqlservices.updateObjectExplorerNode",
+          "when": "connectionProvider == TESTPROVIDER"
+        }
+      ]
+    }
   },
   "scripts": {
     "build": "gulp build",
     "compile": "gulp compile",
-    "watch": "gulp watch",
-    "typings": "gulp copytypings",
-    "postinstall": "node ./node_modules/vscode/bin/install && node ./node_modules/azdata/bin/install && gulp copytypings"
+    "watch": "gulp watch"
   },
   "dependencies": {
     "fs-extra": "^5.0.0",
-    "handlebars": "^4.5.3",
-    "vscode-nls": "^4.0.0"
+    "handlebars": "^4.7.7",
+    "vscode-nls": "^4.0.0",
+    "uuid": "^8.3.0"
   },
   "devDependencies": {
     "@types/node": "^7.0.43",
-    "azdata": "^1.0.0",
+    "@types/vscode": "^1.77.0",
+    "@types/azdata": "^1.43.0",
     "braces": "^2.3.2",
     "child-process-promise": "^2.2.1",
     "del": "^3.0.0",
@@ -107,11 +237,11 @@
     "gulp-sourcemaps": "^2.6.5",
     "gulp-tslint": "^6.0.2",
     "gulp-typescript": "^3.2.4",
+    "gulp-remote-src": "^0.4.3",
     "tslint": "^3.14.0",
-    "typescript": "^2.6.1",
-    "url-parse": "^1.4.4",
-    "vsce": "^1.57.1",
-    "vscode": "^1.1.30"
+    "typescript": "^4.1.0-dev.20200824",
+    "@vscode/vsce": "^2.18.0",
+    "@types/uuid": "^8.3.0"
   },
   "repository": {
     "type": "git",

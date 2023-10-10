@@ -8,7 +8,8 @@ import { EditDataInput } from 'sql/workbench/browser/editData/editDataInput';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { EditDataResultsEditor } from 'sql/workbench/contrib/editData/browser/editDataResultsEditor';
 import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataResultsInput';
-import { EditorDescriptor, IEditorRegistry, Extensions } from 'vs/workbench/browser/editor';
+import { EditorPaneDescriptor, IEditorPaneRegistry } from 'vs/workbench/browser/editor';
+import { EditorExtensions } from 'vs/workbench/common/editor';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
@@ -17,7 +18,7 @@ import * as editDataActions from 'sql/workbench/contrib/editData/browser/editDat
 import * as nls from 'vs/nls';
 
 // Editor
-const editDataEditorDescriptor = EditorDescriptor.create(
+const editDataEditorDescriptor = EditorPaneDescriptor.create(
 	EditDataEditor,
 	EditDataEditor.ID,
 	'EditData'
@@ -37,18 +38,18 @@ configurationRegistry.registerConfiguration({
 	}
 });
 
-Registry.as<IEditorRegistry>(Extensions.Editors)
-	.registerEditor(editDataEditorDescriptor, [new SyncDescriptor(EditDataInput)]);
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
+	.registerEditorPane(editDataEditorDescriptor, [new SyncDescriptor(EditDataInput)]);
 
 // Editor
-const editDataResultsEditorDescriptor = EditorDescriptor.create(
+const editDataResultsEditorDescriptor = EditorPaneDescriptor.create(
 	EditDataResultsEditor,
 	EditDataResultsEditor.ID,
 	'EditDataResults'
 );
 
-Registry.as<IEditorRegistry>(Extensions.Editors)
-	.registerEditor(editDataResultsEditorDescriptor, [new SyncDescriptor(EditDataResultsInput)]);
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
+	.registerEditorPane(editDataResultsEditorDescriptor, [new SyncDescriptor(EditDataResultsInput)]);
 
 // Keybinding for toggling the query pane
 KeybindingsRegistry.registerCommandAndKeybindingRule({

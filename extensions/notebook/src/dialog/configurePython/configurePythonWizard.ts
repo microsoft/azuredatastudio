@@ -12,7 +12,9 @@ import { JupyterServerInstallation, PythonPkgDetails, PythonInstallSettings } fr
 import * as utils from '../../common/utils';
 import { promises as fs } from 'fs';
 import { Deferred } from '../../common/promise';
-import { PythonPathInfo, PythonPathLookup } from '../pythonPathLookup';
+import { PythonPathLookup } from '../pythonPathLookup';
+import { linuxPlatform, macPlatform } from '../../common/constants';
+import * as os from 'os';
 
 const localize = nls.loadMessageBundle();
 
@@ -20,9 +22,10 @@ export interface ConfigurePythonModel {
 	kernelName: string;
 	pythonLocation: string;
 	useExistingPython: boolean;
-	pythonPathsPromise: Promise<PythonPathInfo[]>;
+	pythonPathLookup: PythonPathLookup;
 	packagesToInstall: PythonPkgDetails[];
 	installation: JupyterServerInstallation;
+	packageUpgradeOnly: boolean;
 }
 
 export class ConfigurePythonWizard {
@@ -34,11 +37,9 @@ export class ConfigurePythonWizard {
 	private model: ConfigurePythonModel;
 
 	private _setupComplete: Deferred<void>;
-	private pythonPathsPromise: Promise<PythonPathInfo[]>;
 
 	constructor(private jupyterInstallation: JupyterServerInstallation) {
 		this._setupComplete = new Deferred<void>();
-		this.pythonPathsPromise = (new PythonPathLookup()).getSuggestions();
 	}
 
 	public get wizard(): azdata.window.Wizard {
@@ -49,14 +50,18 @@ export class ConfigurePythonWizard {
 		return this._setupComplete.promise;
 	}
 
-	public async start(kernelName?: string, rejectOnCancel?: boolean, ...args: any[]): Promise<void> {
+	public async start(kernelName?: string, rejectOnCancel?: boolean): Promise<void> {
 		this.model = <ConfigurePythonModel>{
 			kernelName: kernelName,
-			pythonPathsPromise: this.pythonPathsPromise,
+			pythonPathLookup: new PythonPathLookup(),
 			installation: this.jupyterInstallation,
 			pythonLocation: JupyterServerInstallation.getPythonPathSetting(),
 			useExistingPython: JupyterServerInstallation.getExistingPythonSetting()
 		};
+		// Default to using existing Python on Mac and Linux, since they have python installed by default
+		if (os.platform() === macPlatform || os.platform() === linuxPlatform) {
+			this.model.useExistingPython = true;
+		}
 
 		let pages: Map<number, BasePage> = new Map<number, BasePage>();
 
@@ -100,6 +105,10 @@ export class ConfigurePythonWizard {
 		});
 
 		this._wizard.registerNavigationValidator(async (info) => {
+			// The pages have not been registered yet
+			if (pages.size === 0) {
+				return false;
+			}
 			let lastPage = pages.get(info.lastPage);
 			let newPage = pages.get(info.newPage);
 
@@ -129,6 +138,13 @@ export class ConfigurePythonWizard {
 		await this._wizard.close();
 	}
 
+	public showInfoMessage(errorMsg: string) {
+		this._wizard.message = <azdata.window.DialogMessage>{
+			text: errorMsg,
+			level: azdata.window.MessageLevel.Information
+		};
+	}
+
 	public showErrorMessage(errorMsg: string) {
 		this._wizard.message = <azdata.window.DialogMessage>{
 			text: errorMsg,
@@ -150,7 +166,7 @@ export class ConfigurePythonWizard {
 			}
 
 			if (useExistingPython) {
-				let exePath = JupyterServerInstallation.getPythonExePath(pythonLocation, true);
+				let exePath = JupyterServerInstallation.getPythonExePath(pythonLocation);
 				let pythonExists = await utils.exists(exePath);
 				if (!pythonExists) {
 					this.showErrorMessage(this.PythonNotFoundMsg);
@@ -166,7 +182,8 @@ export class ConfigurePythonWizard {
 		let installSettings: PythonInstallSettings = {
 			installPath: pythonLocation,
 			existingPython: useExistingPython,
-			packages: this.model.packagesToInstall
+			packages: this.model.packagesToInstall,
+			packageUpgradeOnly: this.model.packageUpgradeOnly
 		};
 		this.jupyterInstallation.startInstallProcess(false, installSettings)
 			.then(() => {

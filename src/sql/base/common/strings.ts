@@ -8,13 +8,13 @@
  * being used e.g. in HTMLElement.innerHTML.
  */
 export function escape(html: string): string {
-	return html.replace(/[<|>|&|"]/g, function (match) {
+	return html.replace(/[<|>|&|"|\']/g, function (match) {
 		switch (match) {
 			case '<': return '&lt;';
 			case '>': return '&gt;';
 			case '&': return '&amp;';
 			case '"': return '&quot;';
-			case '\'': return '&#39';
+			case '\'': return '&#39;';
 			default: return match;
 		}
 	});
@@ -35,4 +35,49 @@ export function raw(callSite: any, ...substitutions: any[]): string {
 		}
 		return substitutions[i - 1] ? substitutions[i - 1] + chunk : chunk;
 	}).join('');
+}
+
+/**
+ * @deprecated ES6: use `String.startsWith`
+ */
+export function startsWith(haystack: string, needle: string): boolean {
+	if (haystack.length < needle.length) {
+		return false;
+	}
+
+	if (haystack === needle) {
+		return true;
+	}
+
+	for (let i = 0; i < needle.length; i++) {
+		if (haystack[i] !== needle[i]) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+/**
+ * @deprecated ES6: use `String.endsWith`
+ */
+export function endsWith(haystack: string, needle: string): boolean {
+	const diff = haystack.length - needle.length;
+	if (diff > 0) {
+		return haystack.indexOf(needle, diff) === diff;
+	} else if (diff === 0) {
+		return haystack === needle;
+	} else {
+		return false;
+	}
+}
+
+/**
+ * Remove line breaks/eols from a string across different operating systems.
+ * @param str target strings that needs line breaks removed.
+ * @param replace optional string that replaces the line breaks.
+ * @returns string with removed line breaks.
+ */
+export function removeLineBreaks(str: string, replace?: string): string {
+	return str.replace(/(\r\n|\n|\r)/gm, replace ?? '');
 }

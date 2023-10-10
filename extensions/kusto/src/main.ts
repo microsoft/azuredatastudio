@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as path from 'path';
 
@@ -16,9 +17,11 @@ import { KustoObjectExplorerNodeProvider } from './objectExplorerNodeProvider/ob
 import { registerSearchServerCommand } from './objectExplorerNodeProvider/command';
 import { KustoIconProvider } from './iconProvider';
 import { createKustoApi } from './kustoApiFactory';
-import { localize } from './localize';
 import { KustoServer } from './kustoServer';
 import { promises as fs } from 'fs';
+import { TelemetryReporter } from './telemetry';
+
+const localize = nls.loadMessageBundle();
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension | undefined> {
 	// lets make sure we support this platform first
@@ -51,8 +54,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	// initialize client last so we don't have features stuck behind it
 	const server = new KustoServer();
 	context.subscriptions.push(server);
-	await server.start(appContext);		// Commented out until we have Kusto binaries properly setup in Blob location.
-
+	await server.start(appContext);
+	context.subscriptions.push(TelemetryReporter);
 	return createKustoApi(appContext);
 }
 

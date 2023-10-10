@@ -18,13 +18,13 @@ export abstract class TreeNode {
 		return path;
 	}
 
-	public findNodeByPath(path: string, expandIfNeeded: boolean = false): Promise<TreeNode> {
+	public findNodeByPath(path: string, expandIfNeeded: boolean = false): Promise<TreeNode | undefined> {
 		let condition: TreeNodePredicate = (node: TreeNode) => node.getNodeInfo().nodePath === path;
 		let filter: TreeNodePredicate = (node: TreeNode) => path.startsWith(node.getNodeInfo().nodePath);
 		return TreeNode.findNode(this, condition, filter, true);
 	}
 
-	public static async findNode(node: TreeNode, condition: TreeNodePredicate, filter: TreeNodePredicate, expandIfNeeded: boolean): Promise<TreeNode> {
+	public static async findNode(node: TreeNode, condition: TreeNodePredicate, filter: TreeNodePredicate, expandIfNeeded: boolean): Promise<TreeNode | undefined> {
 		if (!node) {
 			return undefined;
 		}
@@ -39,7 +39,7 @@ export abstract class TreeNode {
 		}
 
 		// TODO support filtering by already expanded / not yet expanded
-		let children = await node.getChildren(false);
+		let children = await node.getChildren();
 		if (children) {
 			for (let child of children) {
 				if (filter && filter(child)) {
@@ -53,15 +53,9 @@ export abstract class TreeNode {
 		return undefined;
 	}
 
-	public get parent(): TreeNode {
-		return this._parent;
-	}
+	public parent: TreeNode | undefined = undefined;
 
-	public set parent(node: TreeNode) {
-		this._parent = node;
-	}
-
-	public abstract getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]>;
+	public abstract getChildren(): TreeNode[] | Promise<TreeNode[]>;
 	public abstract getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem>;
 
 	public abstract getNodeInfo(): azdata.NodeInfo;
@@ -70,6 +64,4 @@ export abstract class TreeNode {
 	 * The value to use for this node in the node path
 	 */
 	public abstract get nodePathValue(): string;
-
-	private _parent: TreeNode = undefined;
 }

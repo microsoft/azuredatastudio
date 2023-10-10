@@ -9,12 +9,12 @@ import {
 	ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
-import { FormLayout, FormItemLayout } from 'azdata';
+import { FormLayout, FormItemLayout, CssStyles } from 'azdata';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { find } from 'vs/base/common/arrays';
 import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export interface TitledFormItemLayout {
 	title: string;
@@ -36,7 +36,7 @@ class FormItem {
 
 @Component({
 	template: `
-		<div #container *ngIf="items" class="form-table" [style.padding]="getFormPadding()" [style.width]="getFormWidth()" [style.height]="getFormHeight()" role="presentation">
+		<div #container [ngStyle]="CSSStyles" *ngIf="items" class="form-table" role="presentation">
 			<ng-container *ngFor="let item of items">
 			<div class="form-row" *ngIf="isGroupLabel(item)" [style.font-size]="getItemTitleFontSize(item)">
 				<div class="form-item-row form-group-label">
@@ -48,7 +48,7 @@ class FormItem {
 					<ng-container *ngIf="isHorizontal(item)">
 						<div *ngIf="hasItemTitle(item)" class="form-cell form-cell-title" [style.font-size]="getItemTitleFontSize(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
 							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
-							<span class="codicon help form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
+							<span class="codicon help form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)" role="tooltip"></span>
 						</div>
 						<div class="form-cell">
 							<div class="form-component-container">
@@ -68,13 +68,13 @@ class FormItem {
 					<div class="form-vertical-container" *ngIf="isVertical(item)" [style.height]="getRowHeight(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
 						<div class="form-item-row" [style.font-size]="getItemTitleFontSize(item)">
 							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
-							<span class="codicon help form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
+							<span class="codicon help form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)" role="tooltip"></span>
 						</div>
 						<div class="form-item-row" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
 							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
 							</model-component-wrapper>
 						</div>
-						<div *ngIf="itemHasActions(item)" class="form-item-row form-actions-table form-item-last-row">
+						<div *ngIf="itemHasActions(item)" class="form-item-row form-actions-table form-item-last-row" role="presentation">
 								<div *ngFor="let actionItem of getActionComponents(item)" class="form-actions-cell" >
 									<model-component-wrapper  [descriptor]="actionItem.descriptor" [modelStore]="modelStore">
 									</model-component-wrapper>
@@ -96,22 +96,20 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
-		super(changeRef, el);
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService) {
+		super(changeRef, el, logService);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-	}
-
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
 	ngAfterViewInit(): void {
+		this.baseInit();
 	}
 
-	public layout(): void {
+	public override layout(): void {
 		super.layout();
 	}
 
@@ -186,7 +184,7 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		let itemConfig = item.config;
 		if (itemConfig && itemConfig.actions) {
 			let resultItems = itemConfig.actions.map(x => {
-				let actionComponent = find(items, i => i.descriptor.id === x);
+				let actionComponent = items.find(i => i.descriptor.id === x);
 				return <FormItem>actionComponent;
 			});
 
@@ -224,5 +222,13 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 
 	public isVertical(item: FormItem): boolean {
 		return item && item.config && !item.config.horizontal;
+	}
+
+	public override get CSSStyles(): CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'padding': this.getFormPadding(),
+			'width': this.getFormWidth(),
+			'height': this.getFormHeight()
+		});
 	}
 }
