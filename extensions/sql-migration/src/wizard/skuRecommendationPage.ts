@@ -617,7 +617,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = { text: '' };
-			if (pageChangeInfo.newPage <= pageChangeInfo.lastPage) {
+			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
 			}
 
@@ -638,7 +638,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 			return true;
 		});
-
 		await this.constructDetails();
 		this.wizard.nextButton.enabled = this.migrationStateModel._assessmentResults !== undefined;
 		this._previousMiTdeMigrationConfig = this.migrationStateModel.tdeMigrationConfig;
