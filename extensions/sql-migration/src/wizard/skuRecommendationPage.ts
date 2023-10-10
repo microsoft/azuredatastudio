@@ -541,10 +541,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		if (this.migrationStateModel.savedInfo?.migrationTargetType) {
 			this._rbg.selectedCardId = this.migrationStateModel._targetType;
-		} else {
-			// Set MI as default target type
-			this.migrationStateModel._targetType = MigrationTargetType.SQLMI;
-			this._rbg.selectedCardId = this.migrationStateModel._targetType;
 		}
 
 		let shouldGetSkuRecommendations = false;
