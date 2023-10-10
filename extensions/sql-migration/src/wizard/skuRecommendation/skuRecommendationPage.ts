@@ -109,30 +109,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this._skipAssessmentCheckbox.onChanged(
 				async (value) => await this._setAssessmentState(false, true)));
 
-		const refreshAssessmentButton = this._view.modelBuilder.button()
-			.withProps({
-				iconPath: IconPathHelper.refresh,
-				label: constants.REFRESH_ASSESSMENT_BUTTON_LABEL,
-				width: 160,
-				height: 24,
-				CSSStyles: {
-					...styles.BODY_CSS,
-					'margin': '12px 0 4px 0'
-				}
-			}).component();
-
-		this._disposables.push(refreshAssessmentButton.onDidClick(async () => {
-			await this.startCardLoading();
-			this.migrationStateModel._runAssessments = true;
-			await this.constructDetails();
-		}));
-
 		const statusContainer = this._view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withItems([
 				igContainer,
 				this._skuDataCollectionStatusContainer,
-				refreshAssessmentButton,
 				this._skipAssessmentCheckbox,
 				this._skipAssessmentSubText])
 			.withProps({ CSSStyles: { 'margin': '0' } })
@@ -392,6 +373,18 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			// Need to think what to show if assessment result is coming as null.
 		}
 		else {
+			if (!utils.hasRecommendations(this.migrationStateModel)) {
+				if (this.migrationStateModel._perfDataCollectionStartDate) {
+					await this._dbAssessmentCard.updateSKURecommendationStatus(constants.AZURE_RECOMMENDATION_CARD_IN_PROGRESS);
+					await this._miAssessmentCard.updateSKURecommendationStatus(constants.AZURE_RECOMMENDATION_CARD_IN_PROGRESS);
+					await this._vmAssessmentCard.updateSKURecommendationStatus(constants.AZURE_RECOMMENDATION_CARD_IN_PROGRESS);
+				} else {
+					await this._dbAssessmentCard.updateSKURecommendationStatus(constants.AZURE_RECOMMENDATION_CARD_NOT_ENABLED);
+					await this._miAssessmentCard.updateSKURecommendationStatus(constants.AZURE_RECOMMENDATION_CARD_NOT_ENABLED);
+					await this._vmAssessmentCard.updateSKURecommendationStatus(constants.AZURE_RECOMMENDATION_CARD_NOT_ENABLED);
+				}
+			}
+
 			await this.updateDetailsForEachTarget(MigrationTargetType.SQLDB, dbCount);
 			await this.updateDetailsForEachTarget(MigrationTargetType.SQLMI, dbCount);
 			await this.updateDetailsForEachTarget(MigrationTargetType.SQLVM, dbCount);
@@ -409,7 +402,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		if (targetType === MigrationTargetType.SQLVM) {
 			this._vmAssessmentCard.updateAssessmentResult(dbCount, dbCount, 0, 0, 0, 0);
 			if (targetConfigurations?.length > 0) {
-				await this._vmAssessmentCard.updateSkuRecommendation(targetConfigurations[0], targetConfigurations[1] ?? "");
+				await this._vmAssessmentCard.updateSkuRecommendationDetails(targetConfigurations[0], targetConfigurations[1] ?? "");
 			}
 			return;
 		}
@@ -442,12 +435,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			case MigrationTargetType.SQLDB:
 				this._dbAssessmentCard.updateAssessmentResult(dbCount, dbReady, dbReadyWithWarnings, dbNotReady, blockers, warnings);
 				if (targetConfigurations.length > 0)
-					await this._dbAssessmentCard.updateSkuRecommendation(targetConfigurations[0]);
+					await this._dbAssessmentCard.updateSkuRecommendationDetails(targetConfigurations[0]);
 				break;
 			case MigrationTargetType.SQLMI:
 				this._miAssessmentCard.updateAssessmentResult(dbCount, dbReady, dbReadyWithWarnings, dbNotReady, blockers, warnings);
 				if (targetConfigurations.length > 0)
-					await this._miAssessmentCard.updateSkuRecommendation(targetConfigurations[0]);
+					await this._miAssessmentCard.updateSkuRecommendationDetails(targetConfigurations[0]);
 				break;
 		}
 	}
@@ -498,15 +491,17 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	public async startCardLoading(): Promise<void> {
 		// TO-DO: ideally the short SKU recommendation loading time should have a spinning indicator,
 		// but updating the card text will do for now
-		await this._dbAssessmentCard.loadingSKURecommendation();
-		await this._miAssessmentCard.loadingSKURecommendation();
-		await this._vmAssessmentCard.loadingSKURecommendation();
+		await this._dbAssessmentCard.updateSKURecommendationStatus(constants.LOADING_RECOMMENDATIONS);
+		await this._miAssessmentCard.updateSKURecommendationStatus(constants.LOADING_RECOMMENDATIONS);
+		await this._vmAssessmentCard.updateSKURecommendationStatus(constants.LOADING_RECOMMENDATIONS);
 	}
 
 	public async refreshSkuRecommendationComponents(): Promise<void> {
 		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
 			case PerformanceDataSourceOptions.CollectData: {
 				if (this.migrationStateModel.performanceCollectionInProgress()) {
+					this._skuDataCollectionToolbar.refreshButtonSelectionDropdown.values = [constants.REFRESH_ASSESSMENT_LABEL, constants.REFRESH_SKU_LABEL];
+
 					await this._skuDataCollectionStatusIcon.updateProperties({
 						iconPath: IconPathHelper.inProgressMigration
 					});
@@ -524,38 +519,42 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						this._skuDataCollectionTimerText.value = '';
 					}
 
-					// TODO - update the visibility of different button and status message.
-					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'block' });
+					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'flex' });
 				}
 
 				else if (this.migrationStateModel.performanceCollectionStopped()) {
+					this._skuDataCollectionToolbar.refreshButtonSelectionDropdown.values = [constants.REFRESH_ASSESSMENT_LABEL, constants.REFRESH_SKU_LABEL];
+
 					await this._skuDataCollectionStatusIcon.updateProperties({
 						iconPath: IconPathHelper.stop
 					});
 					this._skuDataCollectionStatusText.value = constants.AZURE_RECOMMENDATION_STATUS_STOPPED;
 					this._skuDataCollectionTimerText.value = '';
-					// TODO - update the visibility of different button and status message.
 				}
 				break;
 			}
 
 			case PerformanceDataSourceOptions.OpenExisting: {
 				if (utils.hasRecommendations(this.migrationStateModel)) {
-					// TODO - update the status container, text and icon.
-					// TODO - update the visibility of different button and status message.
+					this._skuDataCollectionToolbar.refreshButtonSelectionDropdown.values = [constants.REFRESH_ASSESSMENT_LABEL, constants.REFRESH_SKU_LABEL];
 				}
 				break;
 			}
 
 			// initial state before "Get Azure recommendation" dialog
 			default: {
-				// TODO - update the visibility of different button and status message.
 				await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'none' });
 				break;
 			}
 		}
 
 		await this.refreshCardText(false);
+	}
+
+	public async refreshAssessment(): Promise<void> {
+		await this.startCardLoading();
+		this.migrationStateModel._runAssessments = true;
+		await this.constructDetails();
 	}
 
 	public async refreshAzureRecommendation(): Promise<void> {

@@ -29,7 +29,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 	private _blockersText!: azdata.TextComponent;
 	private _warningsText!: azdata.TextComponent;
 
-	private _azureRecommendationNotAvailableText!: azdata.TextComponent;
+	private _azureRecommendationStatusText!: azdata.TextComponent;
 	private _recommendedConfigurationText!: azdata.TextComponent;
 	private _vmRecommendedConfigurationText!: azdata.TextComponent;
 	private _viewDetailsLink!: azdata.HyperlinkComponent;
@@ -50,7 +50,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				'justify-content': 'center',
 				'box-shadow': '0px 1px 4px rgba(0, 0, 0, 0.13)',
 				'border-radius': '2px',
-				'padding': '16px 8px, 16px, 8px',
+				'padding': '16px 8px 16px 8px',
 				'gap': '16px'
 			}
 		}).component();
@@ -105,6 +105,9 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		cardContainer.addItem(labelContainer);
 		cardContainer.addItem(this.createAssessmentResultsContainer(view));
 		cardContainer.addItem(this.createRecommendedConfigurationContainer(view));
+
+		this._disposables.push(view.onClosed(
+			e => this.dispose()));
 
 		return cardContainer;
 	}
@@ -317,7 +320,6 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 	}
 
 	// Creates the SKU recommendation Part of summary.
-	// TODO - Add the dialog link later which gives the detail of SKU Recommendation.
 	private createRecommendedConfigurationContainer(view: azdata.ModelView) {
 		const container = view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
@@ -339,7 +341,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 			},
 		}).component();
 
-		this._azureRecommendationNotAvailableText = view.modelBuilder.text().withProps({
+		this._azureRecommendationStatusText = view.modelBuilder.text().withProps({
 			value: constants.AZURE_RECOMMENDATION_CARD_NOT_ENABLED,
 			CSSStyles: {
 				'font-size': '13px',
@@ -393,7 +395,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 
 
 		container.addItem(recommendedConfigurationLabel);
-		container.addItem(this._azureRecommendationNotAvailableText)
+		container.addItem(this._azureRecommendationStatusText)
 		container.addItem(this._recommendedConfigurationText);
 
 		switch (this.migrationTargetType) {
@@ -420,9 +422,9 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		this._warningsText.value = warnings.toString();
 	}
 
-	public async updateSkuRecommendation(
+	public async updateSkuRecommendationDetails(
 		skuRecommendation: string, vmRecommendation: string = '') {
-		await this._azureRecommendationNotAvailableText.updateCssStyles({ 'display': 'none' });
+		await this._azureRecommendationStatusText.updateCssStyles({ 'display': 'none' });
 		await this._recommendedConfigurationText.updateCssStyles({ 'display': 'block' });
 		await this._vmRecommendedConfigurationText.updateCssStyles({ 'display': 'block' });
 		await this._viewDetailsLink.updateCssStyles({ 'display': 'block' });
@@ -431,16 +433,16 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		this._vmRecommendedConfigurationText.value = vmRecommendation;
 	}
 
-	public async loadingSKURecommendation() {
-		await this._azureRecommendationNotAvailableText.updateCssStyles({ 'display': 'none' });
-		await this._recommendedConfigurationText.updateCssStyles({ 'display': 'block' });
+	public async updateSKURecommendationStatus(status: string) {
+		await this._azureRecommendationStatusText.updateCssStyles({ 'display': 'none' });
+		await this._recommendedConfigurationText.updateCssStyles({ 'display': 'none' });
 		await this._vmRecommendedConfigurationText.updateCssStyles({ 'display': 'none' });
 		await this._viewDetailsLink.updateCssStyles({ 'display': 'none' });
+		await this._azureRecommendationStatusText.updateCssStyles({ 'display': 'block' });
 
-		this._recommendedConfigurationText.value = constants.LOADING_RECOMMENDATIONS;
+		this._azureRecommendationStatusText.value = status;
 	}
 
-	// TODO - Check this later, if we need to handle this separately.
 	public dispose(): void {
 		this._disposables.forEach(
 			d => { try { d.dispose(); } catch { } });
