@@ -204,6 +204,9 @@
     <trans-unit id="objectManagement.azurePricingLink">
       <source xml:lang="en">Azure SQL Database pricing calculator</source>
     </trans-unit>
+    <trans-unit id="objectManagement.backButtonLabel">
+      <source xml:lang="en">Back</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.backupSectionHeader">
       <source xml:lang="en">Backup</source>
     </trans-unit>
@@ -482,6 +485,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.filegroupText">
       <source xml:lang="en">Filegroup</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.filegroupsNameInput">
+      <source xml:lang="en">Filegroup Name</source>
     </trans-unit>
     <trans-unit id="objectManagement.filegroupsSectionHeader">
       <source xml:lang="en">Filegroups</source>
