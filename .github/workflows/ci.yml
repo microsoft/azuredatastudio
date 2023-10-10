@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2.2.0
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v3
       with:
-        node-version: 14.17.3
+        node-version: latest
     - run: yarn install --frozen-lockfile
       name: Install dependencies
     - run: node scripts/validateGalleries.js ${GITHUB_BASE_REF}
