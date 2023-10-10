@@ -1603,6 +1603,12 @@
     <trans-unit id="sql.migration.service.selection.location.msg">
       <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsd">
+      <source xml:lang="en">Premium SSD</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsdV2">
+      <source xml:lang="en">Premium SSD v2</source>
+    </trans-unit>
     <trans-unit id="sql.migration.sku.azureConfiguration.premiumSeries">
       <source xml:lang="en">Premium-series</source>
     </trans-unit>
@@ -2083,6 +2089,12 @@
     <trans-unit id="sql.migration.source.version">
       <source xml:lang="en">Source version</source>
     </trans-unit>
+    <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.standardHdd">
+      <source xml:lang="en">Standard HDD</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.StandardSsd">
+      <source xml:lang="en">Standard SSD</source>
+    </trans-unit>
     <trans-unit id="sql.migration.sku.azureRecommendation.start">
       <source xml:lang="en">Start</source>
     </trans-unit>
@@ -2473,8 +2485,14 @@
     <trans-unit id="sql.migration.impact.object.type">
       <source xml:lang="en">Type: {0}</source>
     </trans-unit>
+    <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.UltraSsd">
+      <source xml:lang="en">Ultra SSD</source>
+    </trans-unit>
     <trans-unit id="sql.migration.restore.backuptype.unknown">
       <source xml:lang="en">Unknown</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.unknown">
+      <source xml:lang="en">Unknown disk type</source>
     </trans-unit>
     <trans-unit id="sql.migration.field.label.unrestorable.files">
       <source xml:lang="en">Unrestorable files</source>
@@ -2768,7 +2786,10 @@
       <source xml:lang="en">{0} sec</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.azureConfiguration.storage">
-      <source xml:lang="en">{0} x {1}</source>
+      <source xml:lang="en">{0} x {1} </source>
+    </trans-unit>
+    <trans-unit id="sql.migration.sku.azureConfiguration.disk">
+      <source xml:lang="en">{0} {1}GB ({2} IOPS, {3} MB/s)</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.percentage">
       <source xml:lang="en">{0}%</source>
