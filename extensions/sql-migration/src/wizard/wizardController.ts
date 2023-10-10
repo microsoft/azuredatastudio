@@ -108,34 +108,30 @@ export class WizardController {
 		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
 		wizardSetupPromises.push(this._wizardObject.open());
 
+		if (this._model.resumeAssessment || this._model.restartMigration) {
+			if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime) {
+				this._model.refreshDatabaseBackupPage = true;
+			}
+
+			if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime && this._model.isSqlDbTarget) {
+				// if the user selected the tables and selected save & close afterwards in SQLDB scenario,
+				// it should always return to the target database selection page so that the user can input their password again
+				wizardSetupPromises.push(this._wizardObject.setCurrentPage(Page.TargetSelection));
+			} else if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime &&
+				this._model.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
+				// if the user selected network share and selected save & close afterwards, it should always return to the database backup page so that
+				// the user can input their password again
+				wizardSetupPromises.push(this._wizardObject.setCurrentPage(Page.IntegrationRuntime));
+			} else {
+				wizardSetupPromises.push(this._wizardObject.setCurrentPage(this._model.savedInfo.closedPage));
+			}
+		}
+
 		this._model.extensionContext.subscriptions.push(
 			this._wizardObject.onPageChanged(
 				async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 					var newPage = pageChangeInfo.newPage;
 					var lastPage = pageChangeInfo.lastPage;
-					if (this._model.resumeAssessment || this._model.restartMigration) {
-						if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime) {
-							this._model.refreshDatabaseBackupPage = true;
-						}
-
-						if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime && this._model.isSqlDbTarget) {
-							// if the user selected the tables and selected save & close afterwards in SQLDB scenario,
-							// it should always return to the target database selection page so that the user can input their password again
-							wizardSetupPromises.push(this._wizardObject.setCurrentPage(Page.TargetSelection));
-							newPage = Page.TargetSelection;
-						} else if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime &&
-							this._model.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
-							// if the user selected network share and selected save & close afterwards, it should always return to the database backup page so that
-							// the user can input their password again
-							wizardSetupPromises.push(this._wizardObject.setCurrentPage(Page.IntegrationRuntime));
-							newPage = Page.IntegrationRuntime;
-						} else {
-							wizardSetupPromises.push(this._wizardObject.setCurrentPage(this._model.savedInfo.closedPage));
-							newPage = this._model.savedInfo.closedPage;
-						}
-					}
-
-					pageChangeInfo.newPage = newPage;
 					this.sendPageButtonClickEvent(TelemetryViews.SqlMigrationWizard, pageChangeInfo)
 						.catch(e => logError(
 							TelemetryViews.MigrationWizardController,

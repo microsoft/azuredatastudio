@@ -44,7 +44,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	private _targetPasswordInputBox!: azdata.InputBoxComponent;
 	private _testConectionButton!: azdata.ButtonComponent;
 	private _connectionResultsInfoBox!: azdata.InfoBoxComponent;
-	private _migrationTargetPlatform!: utils.MigrationTargetType;
 	private _serviceContext!: MigrationServiceContext;
 	private _certMigrationEventEmitter: vscode.EventEmitter<TdeMigrationResult>;
 	private _certMigrationRequiredInfoBox!: azdata.InfoBoxComponent;
@@ -271,7 +270,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		await this._targetPasswordInputBox.updateProperties({ required: isSqlDbTarget });
 		await utils.updateControlDisplay(this._resourceAuthenticationContainer, isSqlDbTarget);
 
-		if (this._migrationTargetPlatform !== this.migrationStateModel._targetType) {
+		/*if (this._migrationTargetPlatform !== this.migrationStateModel._targetType) {
 			// if the user had previously selected values on this page, then went back to change the migration target platform
 			// and came back, forcibly reload the location/resource group/resource values since they will now be different
 			this._migrationTargetPlatform = this.migrationStateModel._targetType;
@@ -291,7 +290,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			await utils.clearDropDown(this._azureLocationDropdown);
 			await utils.clearDropDown(this._azureResourceGroupDropdown);
 			await utils.clearDropDown(this._azureResourceDropdown);
-		}
+		}*/
 
 		await utils.updateControlDisplay(this._certMigrationRequiredInfoBox, this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates());
 		await this.populateAzureAccountsDropdown();
@@ -700,9 +699,13 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				await this.populateResourceInstanceDropdown();
 			}));
 
+		const resourceDropDownValue = this.migrationStateModel._targetType === MigrationTargetType.SQLMI
+			? constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE
+			: this.migrationStateModel._targetType === MigrationTargetType.SQLDB ? constants.AZURE_SQL_DATABASE : constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
+
 		this._azureResourceDropdownLabel = this._view.modelBuilder.text()
 			.withProps({
-				value: constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE,
+				value: resourceDropDownValue,
 				description: constants.TARGET_RESOURCE_INFO,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				requiredIndicator: true,
@@ -710,7 +713,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}).component();
 		this._azureResourceDropdown = this._view.modelBuilder.dropDown()
 			.withProps({
-				ariaLabel: constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE,
+				ariaLabel: resourceDropDownValue,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				editable: true,
 				required: true,
