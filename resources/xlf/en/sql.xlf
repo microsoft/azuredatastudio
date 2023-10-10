@@ -5922,8 +5922,8 @@ Error Message: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/fileBrowser/browser/fileBrowserDialog" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="fileBrowser.discard">
-      <source xml:lang="en">Discard</source>
+    <trans-unit id="fileBrowser.back">
+      <source xml:lang="en">Back</source>
     </trans-unit>
     <trans-unit id="fileBrowser.ok">
       <source xml:lang="en">OK</source>
