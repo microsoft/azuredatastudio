@@ -16,8 +16,7 @@ import {
 	EditRevertCellResult,
 	ExecutionPlanOptions,
 	queryeditor,
-	executionPlan,
-	SimpleExecuteResult
+	executionPlan
 } from 'azdata';
 import { QueryInfo } from 'sql/workbench/services/query/common/queryModelService';
 import { IRange } from 'vs/editor/common/core/range';
@@ -62,7 +61,6 @@ export interface IQueryModelService {
 	getQueryRunner(uri: string): QueryRunner | undefined;
 
 	getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Promise<ResultSetSubset | undefined>;
-	runInternalQuery(uri: string, selection: string): Promise<SimpleExecuteResult | undefined>;
 	runQuery(uri: string, range: IRange | undefined, runOptions?: ExecutionPlanOptions): void;
 	runQueryStatement(uri: string, range: IRange | undefined): void;
 	runQueryString(uri: string, selection: string | undefined): void;

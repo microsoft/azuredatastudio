@@ -195,32 +195,6 @@ export class QueryModelService implements IQueryModelService {
 			: this._getQueryInfo(uri)!.queryRunner!.isExecuting;
 	}
 
-	public async runInternalQuery(uri: string, selection: string): Promise<azdata.SimpleExecuteResult> {
-		// Reuse existing query runner if it exists
-		let queryRunner: QueryRunner | undefined;
-		let info: QueryInfo;
-
-		if (this._queryInfoMap.has(uri)) {
-			info = this._getQueryInfo(uri)!;
-			let existingRunner: QueryRunner = info.queryRunner!;
-
-			// If the query is already in progress, don't attempt to send it
-			if (existingRunner.isExecuting) {
-				return undefined;
-			}
-
-			// If the query is not in progress, we can reuse the query runner
-			queryRunner = existingRunner!;
-			info.batchRanges = [];
-			info.selectionSnippet = undefined;
-		} else {
-			// Cannot create new Query Runner as we need to use the same one as used by an existing query.
-			return undefined
-		}
-
-		return queryRunner.runInternalQuery(selection);
-	}
-
 	/**
 	 * Run a query for the given URI with the given text selection
 	 */

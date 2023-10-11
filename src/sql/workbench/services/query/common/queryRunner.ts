@@ -31,7 +31,6 @@ import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { SimpleExecuteResult } from 'azdata';
 
 /*
 * Query Runner class which handles running a query, reports the results to the content manager,
@@ -43,7 +42,6 @@ export default class QueryRunner extends Disposable {
 	private _resultColumnOffset?: number;
 	protected _totalElapsedMilliseconds: number = 0;
 	protected _isExecuting: boolean = false;
-	protected _isExecutingInternal: boolean = false;
 	private _hasCompleted: boolean = false;
 	private _batchSets: BatchSummary[] = [];
 	private _messages: IQueryMessage[] = [];
@@ -138,13 +136,6 @@ export default class QueryRunner extends Disposable {
 	}
 
 	// PUBLIC METHODS ======================================================
-
-	/**
-	 * Used to run queries for gathering information for internal use.
-	 */
-	public runInternalQuery(input: string): Promise<SimpleExecuteResult> {
-		return Promise.resolve(undefined);
-	}
 
 	/**
 	 * Cancels the running query, if there is one
