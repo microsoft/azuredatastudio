@@ -22,7 +22,7 @@ import { MigrationStateModel, SavedInfo } from '../models/stateMachine';
 import { logError, TelemetryViews } from '../telemetry';
 import { WizardController } from '../wizard/wizardController';
 import { DashboardStatusBar, ErrorEvent } from './DashboardStatusBar';
-import { DashboardTab, DashboardTabId } from './dashboardTab';
+import { DashboardTab } from './dashboardTab';
 import { MigrationsTab, MigrationsTabId } from './migrationsTab';
 import { AdsMigrationStatus, MigrationDetailsEvent, ServiceContextChangeEvent } from './tabBase';
 import { migrationServiceProvider } from '../service/provider';
@@ -137,10 +137,9 @@ export class DashboardWidget {
 			disposables.push(
 				tabs.onTabChanged(async tabId => {
 					await this.clearError(await getSourceConnectionId());
-					if (tabId === MigrationsTabId) {
+					if (tabId === MigrationsTabId && !migrationsTabInitialized) {
+						migrationsTabInitialized = true;
 						await this._migrationsTab.refresh();
-					} else if (tabId === DashboardTabId) {
-						await dashboardTab.refresh();
 					}
 				}));
 
