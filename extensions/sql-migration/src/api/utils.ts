@@ -12,7 +12,7 @@ import { azureResource, Tenant } from 'azurecore';
 import * as constants from '../constants/strings';
 import { logError, TelemetryViews } from '../telemetry';
 import { AdsMigrationStatus } from '../dashboard/tabBase';
-import { getMigrationMode, getMigrationStatus, getSchemaMigrationStatus, getMigrationTargetType, hasRestoreBlockingReason, PipelineStatusCodes, getMigrationType } from '../constants/helper';
+import { getMigrationMode, getMigrationStatus, getMigrationTargetType, hasRestoreBlockingReason, PipelineStatusCodes } from '../constants/helper';
 import * as os from 'os';
 import * as styles from '../constants/styles';
 import { SqlMigrationService, getSqlMigrationServiceAuthKeys, regenerateSqlMigrationServiceAuthKey } from './azure';
@@ -178,7 +178,6 @@ export function filterMigrations(databaseMigrations: azure.DatabaseMigration[], 
 				|| migration.properties.sourceDatabaseName?.toLowerCase().includes(filter)
 				|| getMigrationStatus(migration)?.toLowerCase().includes(filter)
 				|| getMigrationMode(migration)?.toLowerCase().includes(filter)
-				|| getMigrationType(migration)?.toLocaleLowerCase().includes(filter)
 				|| getMigrationTargetType(migration)?.toLowerCase().includes(filter)
 				|| azure.getResourceName(migration.properties.scope)?.toLowerCase().includes(filter)
 				|| azure.getResourceName(migration.id)?.toLowerCase().includes(filter)
@@ -397,93 +396,6 @@ export function getMigrationStatusImage(migration: azure.DatabaseMigration): Ico
 		case constants.MigrationState.Failed:
 		default:
 			return IconPathHelper.error;
-	}
-}
-
-export function getSchemaMigrationStatusImage(migration: azure.DatabaseMigration): IconPath {
-	const status = getSchemaMigrationStatus(migration);
-	switch (status) {
-		case constants.MigrationState.CollectionCompleted:
-		case constants.MigrationState.PrefetchObjects:
-		case constants.MigrationState.GetDependency:
-		case constants.MigrationState.ScriptObjects:
-		case constants.MigrationState.ScriptViewIndexes:
-		case constants.MigrationState.ScriptOwnership:
-		case constants.MigrationState.GeneratingScript:
-		case constants.MigrationState.DeployingSchema:
-		case constants.MigrationState.GeneratingScriptCompleted:
-		case constants.MigrationState.DeploymentCompleted:
-			return IconPathHelper.inProgressMigration;
-		case constants.MigrationState.Completed:
-			return IconPathHelper.completedMigration;
-		case constants.MigrationState.Failed:
-		case constants.MigrationState.CompletedWithError:
-			return IconPathHelper.error;
-		default:
-			return IconPathHelper.notStartedMigration;
-	}
-}
-
-export function getObjectsCollectionStatusImage(migration: azure.DatabaseMigration): IconPath {
-	const status = getSchemaMigrationStatus(migration);
-	switch (status) {
-		case constants.MigrationState.CollectionCompleted:
-		case constants.MigrationState.PrefetchObjects:
-		case constants.MigrationState.GetDependency:
-		case constants.MigrationState.ScriptObjects:
-		case constants.MigrationState.ScriptViewIndexes:
-		case constants.MigrationState.ScriptOwnership:
-		case constants.MigrationState.GeneratingScript:
-		case constants.MigrationState.GeneratingScriptCompleted:
-		case constants.MigrationState.DeployingSchema:
-		case constants.MigrationState.DeploymentCompleted:
-		case constants.MigrationState.Completed:
-		case constants.MigrationState.CompletedWithError:
-			return IconPathHelper.completedMigration;
-		default:
-			return IconPathHelper.notStartedMigration;
-	}
-}
-
-export function getScriptGenerationStatusImage(migration: azure.DatabaseMigration): IconPath {
-	var scriptGeneration = migration?.properties.migrationStatusDetails?.sqlSchemaMigrationStatus?.scriptGeneration ?? undefined;
-	var errors = scriptGeneration === undefined ? [] : scriptGeneration.errors ?? [];
-
-	const status = getSchemaMigrationStatus(migration);
-	switch (status) {
-		case constants.MigrationState.PrefetchObjects:
-		case constants.MigrationState.GetDependency:
-		case constants.MigrationState.ScriptObjects:
-		case constants.MigrationState.ScriptViewIndexes:
-		case constants.MigrationState.ScriptOwnership:
-		case constants.MigrationState.GeneratingScript:
-			return IconPathHelper.inProgressMigration;
-		case constants.MigrationState.Completed:
-		case constants.MigrationState.CompletedWithError:
-		case constants.MigrationState.GeneratingScriptCompleted:
-		case constants.MigrationState.DeployingSchema:
-		case constants.MigrationState.DeploymentCompleted:
-			return errors.length > 0 ? IconPathHelper.error : IconPathHelper.completedMigration;
-		default:
-			return IconPathHelper.notStartedMigration;
-	}
-}
-
-export function getScriptDeploymentStatusImage(migration: azure.DatabaseMigration): IconPath {
-	var scriptDeployment = migration?.properties.migrationStatusDetails?.sqlSchemaMigrationStatus?.scriptDeployment ?? undefined;
-	var errors = scriptDeployment === undefined ? [] : scriptDeployment.errors ?? [];
-
-	const status = getSchemaMigrationStatus(migration);
-	switch (status) {
-		case constants.MigrationState.DeployingSchema:
-			return IconPathHelper.inProgressMigration;
-		case constants.MigrationState.Completed:
-		case constants.MigrationState.DeploymentCompleted:
-			return IconPathHelper.completedMigration;
-		case constants.MigrationState.CompletedWithError:
-			return errors.length > 0 ? IconPathHelper.error : IconPathHelper.completedMigration;
-		default:
-			return IconPathHelper.notStartedMigration;
 	}
 }
 
@@ -1256,10 +1168,4 @@ export function createRegistrationInstructions(view: ModelView, testConnectionBu
 export async function clearDropDown(dropDown: DropDownComponent): Promise<void> {
 	await dropDown.updateProperty('value', undefined);
 	await dropDown.updateProperty('values', []);
-}
-
-export async function clearDropDownWithLoading(dropDown: DropDownComponent, placeHolder: string | undefined = undefined): Promise<void> {
-	dropDown.loading = true;
-	await dropDown.updateProperties({ 'values': [], 'value': undefined, 'placeholder': placeHolder });
-
 }
