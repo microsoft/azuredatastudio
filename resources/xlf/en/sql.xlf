@@ -944,11 +944,18 @@ Default Skipped Commands:
     <trans-unit id="profiler.sessionStopped">
       <source xml:lang="en">XEvent Profiler Session stopped unexpectedly on the server {0}.</source>
     </trans-unit>
+    <trans-unit id="profilerInput.connDetails">
+      <source xml:lang="en">Connection Details: </source>
+    </trans-unit>
     <trans-unit id="profilerInput.notConnected">
       <source xml:lang="en">Not connected</source>
     </trans-unit>
     <trans-unit id="profilerInput.profiler">
       <source xml:lang="en">Profiler</source>
+    </trans-unit>
+    <trans-unit id="profilerInput.sessionName">
+      <source xml:lang="en">: Session Name: {0}
+</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/editor/resourceViewer/resourceViewerInput" source-language="en" datatype="plaintext"><body>
