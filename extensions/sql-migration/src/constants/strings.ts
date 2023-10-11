@@ -8,6 +8,7 @@ import { EOL } from 'os';
 import { MigrationSourceAuthenticationType } from '../models/stateMachine';
 import { BackupTypeCodes, formatNumber, InternalManagedDatabaseRestoreDetailsBackupSetStatusCodes, InternalManagedDatabaseRestoreDetailsStatusCodes, ParallelCopyTypeCodes, PipelineStatusCodes } from './helper';
 import { ValidationError } from '../api/azure';
+import { AzureManagedDiskType } from '../service/contracts';
 const localize = nls.loadMessageBundle();
 
 export const serviceName = 'Sql Migration Service';
@@ -38,6 +39,18 @@ export enum MigrationState {
 	Succeeded = 'Succeeded',
 	UploadingFullBackup = 'UploadingFullBackup',
 	UploadingLogBackup = 'UploadingLogBackup',
+	CollectionCompleted = 'CollectionCompleted',
+	GeneratingScript = 'GeneratingScript',
+	PrefetchObjects = 'PrefetchObjects',
+	GetDependency = 'GetDependency',
+	ScriptObjects = 'ScriptObjects',
+	ScriptViewIndexes = 'ScriptViewIndexes',
+	ScriptOwnership = 'ScriptOwnership',
+	GeneratingScriptCompleted = 'GeneratingScriptCompleted',
+	DeployingSchema = 'DeployingSchema',
+	DeploymentCompleted = 'DeploymentCompleted',
+	Completed = 'Completed',
+	CompletedWithError = 'CompletedWithError'
 }
 
 export enum ProvisioningState {
@@ -250,8 +263,11 @@ export const SOURCE_PROPERTIES = localize('sql.migration.sku.sourceProperties', 
 export const SQL_TEMPDB = localize('sql.migration.sku.sql.temp', "SQL tempdb");
 export const SQL_DATA_FILES = localize('sql.migration.sku.sql.dataDisk', "SQL data files");
 export const SQL_LOG_FILES = localize('sql.migration.sku.sql.logDisk', "SQL log files");
-export function STORAGE_CONFIGURATION(size: string, count: number): string {
-	return localize('sql.migration.sku.azureConfiguration.storage', "{0} x {1}", size, count);
+export function STORAGE_CONFIGURATION(count: number, diskConfiguration: string): string {
+	return localize('sql.migration.sku.azureConfiguration.storage', "{0} x {1} ", count, diskConfiguration);
+}
+export function DISK_CONFIGURATION(type: string, maxSizeInGib: number, maxIOPS: number, maxThroughputInMbps: number): string {
+	return localize('sql.migration.sku.azureConfiguration.disk', "{0} {1}GB ({2} IOPS, {3} MB/s)", type, maxSizeInGib, maxIOPS, maxThroughputInMbps);
 }
 export const RECOMMENDED_TARGET_STORAGE_CONFIGURATION = localize('sql.migration.sku.targetStorageConfiguration', "Recommendation target storage configuration");
 export const RECOMMENDED_TARGET_STORAGE_CONFIGURATION_INFO = localize('sql.migration.sku.targetStorageConfiguration.info', "Below is the target storage configuration required to meet your storage performance needs.");
@@ -262,6 +278,8 @@ export function STORAGE_GB(storage: number): string {
 export const RECOMMENDED_STORAGE_CONFIGURATION = localize('sql.migration.sku.targetStorageConfiguration.recommendedStorageConfiguration', "Recommended storage configuration");
 export const EPHEMERAL_TEMPDB = localize('sql.migration.sku.targetStorageConfiguration.ephemeralTempdb', "Place tempdb on the local ephemeral SSD (default D:\\) drive");
 export const LOCAL_SSD = localize('sql.migration.sku.targetStorageConfiguration.local.SSD', "Local SSD");
+export const UNKNOWN_DISK_TYPE = localize('sql.migration.sku.targetStorageConfiguration.disktype.unknown', 'Unknown disk type');
+
 export const CACHING = localize('sql.migration.sku.targetStorageConfiguration.caching', "Host caching");
 export const CACHING_NA = localize('sql.migration.sku.targetStorageConfiguration.caching.na', "Not applicable");
 export const CACHING_NONE = localize('sql.migration.sku.targetStorageConfiguration.caching.none', "None");
@@ -541,7 +559,7 @@ export function ACCOUNT_CREDENTIALS_REFRESH(accountName: string): string {
 		"{0} (requires credentials refresh)",
 		accountName);
 }
-export const SELECT_SERVICE_PLACEHOLDER = localize('sql.migration.select.service.select.migration.target', "Select a target server.");
+export const SELECT_SERVICE_PLACEHOLDER = localize('sql.migration.select.service.select.migration.target', "Select a target server");
 
 // database backup page
 export const DATA_SOURCE_CONFIGURATION_PAGE_TITLE = localize('sql.migration.data.source.configuration.page.title', "Data source configuration");
@@ -577,13 +595,14 @@ export const DATABASE_BACKUP_MIGRATION_MODE_LABEL = localize('sql.migration.data
 export const DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION = localize('sql.migration.database.migration.mode.description', "To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.");
 export const DATABASE_TABLE_SELECTION_LABEL = localize('sql.migration.database.table.selection.label', "Table selection");
 export const DATABASE_TABLE_SELECTION_DESCRIPTION = localize('sql.migration.database.table.selection.description', "For each database below, click Edit to select the tables to migrate from source to target. Then, before clicking Next, validate the provided configuration by clicking 'Run validation'.");
-export const DATABASE_SCHEMA_MIGRATION_HELP = localize('sql.migration.database.schema.migration.help', "Make sure to migrate the database schema from source to target by using the {0} or the {1} in Azure Data Studio before selecting the list of tables to migrate.");
+export const DATABASE_SCHEMA_MIGRATION_HELP = localize('sql.migration.database.schema.migration.help', "Ensure to migrate the database schema from source to target before starting the migration by using the Database Schema Migration feature (Public Preview) or {0} or the {1} in Azure Data Studio before selecting the list of tables to migrate.");
 export const DATABASE_SCHEMA_MIGRATION_DACPAC_EXTENSION = localize('sql.migration.database.schema.migration.dacpac', "SQL Server dacpac extension");
 export const DATABASE_SCHEMA_MIGRATION_PROJECTS_EXTENSION = localize('sql.migration.database.schema.migration.project', "SQL Database Projects extension");
 
 export const DATABASE_TABLE_REFRESH_LABEL = localize('sql.migration.database.table.refresh.label', "Refresh");
 export const DATABASE_TABLE_SOURCE_DATABASE_COLUMN_LABEL = localize('sql.migration.database.table.source.column.label', "Source database");
 export const DATABASE_TABLE_TARGET_DATABASE_COLUMN_LABEL = localize('sql.migration.database.table.target.column.label', "Target database");
+export const SCHEMA_MIGRATION_COLUMN_LABLE = localize('sql.migration.schema.migration.column.label', "Schema migration");
 export const DATABASE_TABLE_SELECTED_TABLES_COLUMN_LABEL = localize('sql.migration.database.table.tables.column.label', "Select tables");
 export const DATABASE_TABLE_CONNECTION_ERROR = localize('sql.migration.database.connection.error', "An error occurred while connecting to target migration database.");
 export function DATABASE_TABLE_CONNECTION_ERROR_MESSAGE(message: string): string {
@@ -682,14 +701,17 @@ export const TABLE_SELECTION_EDIT = localize('sql.migration.table.selection.edit
 export function TABLE_SELECTION_COUNT(selectedCount: number, rowCount: number): string {
 	return localize('sql.migration.table.selection.count', "{0} of {1}", formatNumber(selectedCount), formatNumber(rowCount));
 }
-export function TABLE_SELECTED_COUNT(selectedCount: number, rowCount: number): string {
-	return localize('sql.migration.table.selected.count', "{0} of {1} tables selected", formatNumber(selectedCount), formatNumber(rowCount));
+export function TABLE_SELECTION_COUNT_TO_TARGET(selectedCount: number, rowCount: number): string {
+	return localize('sql.migration.table.selection.count.to.target', "{0} of {1} tables selected for migration", formatNumber(selectedCount), formatNumber(rowCount));
 }
-export function MISSING_TARGET_TABLES_COUNT(tables: number): string {
-	return localize('sql.migration.table.missing.count', "Tables missing on target: {0}", formatNumber(tables));
+export function AVAILABLE_TABLE_COUNT_ON_TARGET(rowCount: number): string {
+	return localize('sql.migration.available.table.count.on.target', "Available on target ({0})", formatNumber(rowCount));
+}
+export function MISSING_TARGET_TABLES_COUNT(missingCount: number): string {
+	return localize('sql.migration.table.missing.count', "Missing on target ({0})", formatNumber(missingCount));
 }
 export const SELECT_TABLES_FOR_MIGRATION = localize('sql.migration.select.migration.tables', "Select tables for migration");
-export const DATABASE_MISSING_TABLES = localize('sql.migration.database.missing.tables', "0 tables found on source database.");
+export const DATABASE_MISSING_TABLES = localize('sql.migration.database.missing.tables', "0 tables on source database found in target database. To migrate the data in the tables select the migrate schema option above.");
 export const DATABASE_LOADING_TABLES = localize('sql.migration.database.loading.tables', "Loading tables list...");
 export const TABLE_SELECTION_FILTER = localize('sql.migration.table.selection.filter', "Filter tables");
 export const TABLE_SELECTION_UPDATE_BUTTON = localize('sql.migration.table.selection.update.button', "Update");
@@ -911,6 +933,50 @@ export function VALIDATE_IR_SQLDB_VALIDATION_RESULT_ERROR(sourceDatabaseName: st
 		error.code,
 		error.message);
 }
+
+// Schema migration
+export const FULL_SCHEMA_MISSING_ON_TARGET = localize('sql.migration.schema.full.missing', "No schema was found on target. This option must be selected to migrate this database.");
+export const PARTIAL_SCHEMA_ON_TARGET = localize('sql.migration.schema.partial.missing', "Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected.");
+export const FULL_SCHEMA_ON_TARGET = localize('sql.migration.schema.no.missing', "Schema was found on target. Schema migration is not required.");
+export const SCHEMA_MIGRATION_INFO = localize('sql.migration.schema.migration.info', "Select this option to migrate missing tables on your Azure SQL target");
+export const DATA_MIGRATION_INFO = localize('sql.migration.data.migration.info', "Select tables to migrate data to your Azure SQL target");
+export const SCHEMA_MIGRATION_HEADER = localize('sql.migration.schema.migration.header', "Schema migration");
+export const DATA_MIGRATION_HEADER = localize('sql.migration.data.migration.header', "Data migration");
+export const SCHEMA_MIGRATION_CHECKBOX_INFO = localize('sql.migration.schema.migration.checkbox.info', "Migrate schema to target");
+export const SCHEMA_ONLY = localize('sql.migration.schema.only', "Schema only");
+export const DATA_ONLY = localize('sql.migration.data.only', "Data only");
+export const SCHEMA_AND_DATA = localize('sql.migration.schema.data', "Schema and data");
+export const BACKUP_AND_RESTORE = localize('sql.migration.backup.restore', "Backup and restore");
+export const SCHEMA_MIGRATION_STATUS = localize('sql.migration.schema.status', "Schema migration status");
+export const OBJECTS_COLLECTED = localize('sql.migration.schema.objects.collection', "Objects collected");
+export const COLLECTION_STARTED = localize('sql.migration.schema.collection.started', "Collection started");
+export const COLLECTION_ENDED = localize('sql.migration.schema.collection.ended', "Collection ended");
+export const SCRIPT_GENERATION = localize('sql.migration.schema.script.generation', "Script generation");
+export const SCRIPTING_STARTED = localize('sql.migration.schema.script.started', "Scripting started");
+export const SCRIPTING_ENDED = localize('sql.migration.schema.script.ended', "Scripting ended");
+export const SCRIPTED_OBJECTS_COUNT = localize('sql.migration.schema.script.count', "Scripted objects count");
+export const SCRIPTING_ERROR_COUNT = localize('sql.migration.schema.script.fail.count', "Scripting error count");
+export const MIGRATION_TYPE = localize('sql.migration.schema.type', "Migration type");
+export const SCRIPT_DEPLOYMENT = localize('sql.migration.schema.script.deployment', "Script deployment");
+export const DEPLOYMENT_STARTED = localize('sql.migration.schema.script.deployment.started', "Deployment started");
+export const DEPLOYMENT_ENDED = localize('sql.migration.schema.script.deployment.ended', "Deployment ended");
+export const DEPLOYMENT_COUNT = localize('sql.migration.schema.script.deployment.count', "Deployment count");
+export const DEPLOYMENT_ERROR_COUNT = localize('sql.migration.schema.script.deployment.error.count', "Deployment error count");
+export const SCHEMA_MIGRATION_ASSESSMENT_WARNING_MESSAGE = localize('sql.migration.schema.assessment.warning.message', "The detected issues shown below might fail the schema migration. Some of them might be entirely unsupported and the others might be partially supported in Azure SQL Database. \nTherefore, please review the assessment results and make sure all of the issues will not fail the schema migration.\nHowever, it is allowed to proceed the schema migration and DMS will migrate the objects as possible as it can.");
+
+export const SchemaMigrationFailedRulesLookup: LookupTable<string | undefined> = {
+	["ComputeClause"]: localize('sql.migration.schema.rule.compute', 'COMPUTE'),
+	["CrossDatabaseReferences"]: localize('sql.migration.schema.rule.crossdatabasereferences', 'CROSS DATABASE REFERENCE'),
+	["FileStream"]: localize('sql.migration.schema.filestream', 'FILESTREAM'),
+	["OpenRowsetWithNonBlobDataSourceBulk"]: localize('sql.migration.schema.openrowset.nonazureblob', 'OPENROWSET WITH NON-AZURE BLOB'),
+	["OpenRowsetWithSQLAndNonSQLProvider"]: localize('sql.migration.schema.openrowset.provider', 'OPENROWSET WITH PROVIDER'),
+	["BulkInsert"]: localize('sql.migration.schema.bulkinsert', 'BULK INSERT'),
+	["CryptographicProvider"]: localize('sql.migration.schema.cryptographicprovider', 'CRYPTOGRAPHIC PROVIDER'),
+	["MSDTCTransactSQL"]: localize('sql.migration.schema.msdtctransactsql', 'BEGIN DISTRIBUTED TRANSACTION'),
+	["DisableDefCNSTCHK"]: localize('sql.migration.schema.disabledefcnstchk', 'DISABLE_DEF_CNST_CHK'),
+	["FastFirstRowHint"]: localize('sql.migration.schema.fastfirstrow', 'FASTFIRSTROW'),
+	default: undefined
+};
 
 // common strings
 export const WARNING = localize('sql.migration.warning', "Warning");
@@ -1170,9 +1236,11 @@ export const AZURE_SQL_TARGET_TOOL_TIP = localize('sql.migration.database.migrat
 export const TARGET_SERVER_TOOL_TIP = localize('sql.migration.database.migration.target.instance.server.name.tool.tip', "The target server name");
 export const TARGET_DATABASE_TOOL_TIP = localize('sql.migration.database.migration.target.instance.database.name.tool.tip', "The target database name");
 export const MIGRATION_MODE_TOOL_TIP = localize('sql.migration.database.migration.migration.mode.tool.tip', "In Azure Database Migration Service, you can migrate your databases offline or while they are online. In an offline migration, application downtime starts when the migration starts. To limit downtime to the time it takes you to cut over to the new environment after the migration, use an online migration.");
+export const MIGRATION_TYPE_TOOL_TIP = localize('sql.migration.database.migration.migration.type.tool.tip', "Migration type includes: Schema only migration, Data only migration, Schema and data migration.");
 export const START_TIME_TOOL_TIP = localize('sql.migration.database.migration.start.time.tool.tip', "The start time for the migration");
 export const FINISH_TIME_TOOL_TIP = localize('sql.migration.database.migration.finish.time.tool.tip', "The fininish time for the migration");
 export const CONTEXT_MENU_TOOL_TIP = localize('sql.migration.database.migration.context.menu.tool.tip', "Click this column to activate the context command menu");
+
 
 export function STATUS_VALUE(status: string): string {
 	return localize('sql.migration.status.value', "{0}", StatusLookup[status] ?? status);
@@ -1228,6 +1296,14 @@ export const ParallelCopyType: LookupTable<string | undefined> = {
 	[ParallelCopyTypeCodes.DynamicRange]: localize('sql.migration.parallel.copy.type.dynamic', 'Dynamic range'),
 };
 
+export const DiskTypeLookup: LookupTable<string | undefined> = {
+	[AzureManagedDiskType.StandardHDD]: localize('sql.migration.sku.targetStorageConfiguration.disktype.standardHdd', 'Standard HDD'),
+	[AzureManagedDiskType.StandardSSD]: localize('sql.migration.sku.targetStorageConfiguration.disktype.StandardSsd', 'Standard SSD'),
+	[AzureManagedDiskType.PremiumSSD]: localize('sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsd', 'Premium SSD'),
+	[AzureManagedDiskType.UltraSSD]: localize('sql.migration.sku.targetStorageConfiguration.disktype.UltraSsd', 'Ultra SSD'),
+	[AzureManagedDiskType.PremiumSSDV2]: localize('sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsdV2', 'Premium SSD v2'),
+};
+
 export const BackupTypeLookup: LookupTable<string | undefined> = {
 	[BackupTypeCodes.Unknown]: localize('sql.migration.restore.backuptype.unknown', 'Unknown'),
 	[BackupTypeCodes.Database]: localize('sql.migration.restore.backuptype.database', 'Database'),
@@ -1261,6 +1337,22 @@ export const InternalManagedDatabaseRestoreDetailsStatusLookup: LookupTable<stri
 	[InternalManagedDatabaseRestoreDetailsStatusCodes.Failed]: localize('sql.migration.restore.status.failed', 'Failed'),
 	[InternalManagedDatabaseRestoreDetailsStatusCodes.Completed]: localize('sql.migration.restore.status.completed', 'Completed'),
 	[InternalManagedDatabaseRestoreDetailsStatusCodes.Blocked]: localize('sql.migration.restore.status.blocked', 'Blocked'),
+};
+
+export const SchemaMigrationStatusLookup: LookupTable<string | undefined> = {
+	[MigrationState.CollectionCompleted]: localize('sql.migration.status.collectioncompleted', 'Objects collection completed'),
+	[MigrationState.PrefetchObjects]: localize('sql.migration.status.prefetchobjects', 'Prefetch objects'),
+	[MigrationState.GetDependency]: localize('sql.migration.status.getdependency', 'Get dependency'),
+	[MigrationState.ScriptObjects]: localize('sql.migration.status.scriptobjects', 'Scripting objects'),
+	[MigrationState.ScriptViewIndexes]: localize('sql.migration.status.scriptindexes', 'Scripting indexes'),
+	[MigrationState.ScriptOwnership]: localize('sql.migration.status.scriptownership', 'Scripting ownerships'),
+	[MigrationState.GeneratingScript]: localize('sql.migration.status.generatingscript', 'Generating script'),
+	[MigrationState.GeneratingScriptCompleted]: localize('sql.migration.status.generatingcompleted', 'Script generation completed'),
+	[MigrationState.DeployingSchema]: localize('sql.migration.status.deployingschema', 'Deploying script'),
+	[MigrationState.DeploymentCompleted]: localize('sql.migration.status.deploymentcompleted', 'Deployment completed'),
+	[MigrationState.Completed]: localize('sql.migration.status.completed', 'Completed'),
+	[MigrationState.CompletedWithError]: localize('sql.migration.status.completedwitherrors', 'Completed with errors'),
+	default: undefined
 };
 
 export function STATUS_WARNING_COUNT(status: string, count: number): string | undefined {

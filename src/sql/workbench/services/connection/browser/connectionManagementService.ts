@@ -480,6 +480,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				profile.userName = accounts?.find(a => a.key.accountId === profile.azureAccount)?.displayInfo.displayName
 					?? profile.userName;
 			}
+			// This is used to specify whether a connection is server level or database level
+			if (profile.databaseName !== 'master' || !profile.databaseName) {
+				profile.options.originalDatabase = profile.databaseName
+			}
 		}
 		return profile;
 	}

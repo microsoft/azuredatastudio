@@ -205,6 +205,20 @@ export function getMigrationMode(migration: DatabaseMigration | undefined): stri
 		: loc.ONLINE;
 }
 
+export function getMigrationType(migration: DatabaseMigration | undefined): string {
+	// If MI or VM migration, the data type is schema + data
+	var targetType = getMigrationTargetTypeEnum(migration);
+	if (targetType === MigrationTargetType.SQLMI || targetType === MigrationTargetType.SQLVM) {
+		return loc.BACKUP_AND_RESTORE;
+	}
+
+	var enableSchema = migration?.properties?.sqlSchemaMigrationConfiguration?.enableSchemaMigration ?? false;
+	var enableData = migration?.properties?.sqlDataMigrationConfiguration?.enableDataMigration ?? false;
+	return enableSchema && enableData
+		? loc.SCHEMA_AND_DATA
+		: enableSchema ? loc.SCHEMA_ONLY : loc.DATA_ONLY
+}
+
 export function getMigrationModeEnum(migration: DatabaseMigration | undefined): MigrationMode {
 	return isOfflineMigation(migration)
 		? MigrationMode.OFFLINE
@@ -242,9 +256,18 @@ export function getMigrationStatus(migration: DatabaseMigration | undefined): st
 		?? migration?.properties.provisioningState;
 }
 
+export function getSchemaMigrationStatus(migration: DatabaseMigration | undefined): string | undefined {
+	return migration?.properties?.migrationStatusDetails?.sqlSchemaMigrationStatus?.status;
+}
+
 export function getMigrationStatusString(migration: DatabaseMigration | undefined): string {
 	const migrationStatus = getMigrationStatus(migration) ?? DefaultSettingValue;
 	return loc.StatusLookup[migrationStatus] ?? migrationStatus;
+}
+
+export function getSchemaMigrationStatusString(migration: DatabaseMigration | undefined): string {
+	const schemaMigrationStatus = getSchemaMigrationStatus(migration) ?? DefaultSettingValue;
+	return loc.SchemaMigrationStatusLookup[schemaMigrationStatus] ?? schemaMigrationStatus;
 }
 
 export function hasMigrationOperationId(migration: DatabaseMigration | undefined): boolean {

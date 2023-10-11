@@ -8,6 +8,7 @@ declare module 'azurecore' {
 	import * as vscode from 'vscode';
 	import * as msRest from '@azure/ms-rest-js';
 	import { BlobItem } from '@azure/storage-blob';
+	import { AxiosResponse } from 'axios';
 
 	/**
 	 * Covers defining what the azurecore extension exports to other extensions
@@ -273,17 +274,6 @@ declare module 'azurecore' {
 		PATCH
 	}
 
-	/**
-	 * Custom version of NetworkResponse from @azure\msal-common\dist\network\NetworkManager.d.ts
-	 * with body renamed to data to avoid breaking changes with extensions. See
-	 * https://github.com/microsoft/azuredatastudio/pull/22761 for details.
-	 */
-	export type AzureNetworkResponse<T> = {
-		headers: Record<string, string>;
-		data: T;
-		status: number;
-	};
-
 	export interface IExtension {
 		/**
 		 * Gets the list of subscriptions for the specified AzureAccount
@@ -350,7 +340,7 @@ declare module 'azurecore' {
 	export type GetFileSharesResult = { fileShares: azureResource.FileShare[], errors: Error[] };
 	export type CreateResourceGroupResult = { resourceGroup: azureResource.AzureResourceResourceGroup | undefined, errors: Error[] };
 	export type ResourceQueryResult<T extends azureResource.AzureGraphResource> = { resources: T[], errors: Error[] };
-	export type AzureRestResponse<B> = { response: AzureNetworkResponse<B> | undefined, errors: Error[] };
+	export type AzureRestResponse<B> = { response: AxiosResponse<B> | undefined, errors: Error[] };
 	export type GetBlobsResult = { blobs: azureResource.Blob[], errors: Error[] };
 	export type GetStorageAccountAccessKeyResult = { keyName1: string, keyName2: string, errors: Error[] };
 	export type CacheEncryptionKeys = { key: string; iv: string; }

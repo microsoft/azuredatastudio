@@ -10,6 +10,9 @@ import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import * as constants from '../constants';
 import { Server, ServerViewInfo, NumaNode, AffinityType, ServerLoginMode, AuditLevel } from '../interfaces';
+import { isUndefinedOrNull } from '../../types';
+
+const Dialog_Width = '750px';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
 	private generalTab: azdata.Tab;
@@ -90,6 +93,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private shouldRestartServer: boolean = false;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
+		options.width = Dialog_Width;
 		super(objectManagementService, options);
 		this.disposables.push(this.dialogObject.onClosed(async (reason: azdata.window.CloseReason) => {
 			if (reason === 'ok') {
@@ -138,6 +142,9 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab, this.processorsTab, this.securityTab, this.databaseSettingsTab, this.advancedTab] };
 		const serverPropertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 			.withTabs([serverPropertiesTabGroup])
+			.withLayout({
+				orientation: azdata.TabOrientation.Vertical
+			})
 			.withProps({
 				CSSStyles: {
 					'margin': '-10px 0px 0px -10px'
@@ -151,6 +158,19 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	}
 
 	private initializeGeneralSection(): void {
+		// Information about the platform that the SQL instance is running on
+		let platformItems: azdata.Component[] = [];
+		if (this.objectInfo.hardwareGeneration) {
+			this.hardwareGenerationInput = this.createInputBox(async () => { }, {
+				ariaLabel: localizedConstants.HardwareGenerationText,
+				inputType: 'text',
+				enabled: this.options.isNewObject,
+				value: this.objectInfo.hardwareGeneration.toString()
+			});
+			const hardwareGenerationContainer = this.createLabelInputContainer(localizedConstants.HardwareGenerationText, this.hardwareGenerationInput);
+			platformItems.push(hardwareGenerationContainer);
+		}
+
 		this.nameInput = this.createInputBox(async () => { }, {
 			ariaLabel: localizedConstants.NameText,
 			inputType: 'text',
@@ -158,17 +178,11 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			value: this.objectInfo.name
 		});
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
-
-		this.hardwareGenerationInput = this.createInputBox(async () => { }, {
-			ariaLabel: localizedConstants.HardwareGenerationText,
-			inputType: 'text',
-			enabled: this.options.isNewObject,
-			value: this.objectInfo.hardwareGeneration.toString()
-		});
-		const hardwareGenerationContainer = this.createLabelInputContainer(localizedConstants.HardwareGenerationText, this.hardwareGenerationInput);
+		platformItems.push(nameContainer);
 
 		this.languageDropdown = this.createDropdown(localizedConstants.LanguageText, async () => { }, [this.objectInfo.language], this.objectInfo.language, this.options.isNewObject);
 		const languageContainer = this.createLabelInputContainer(localizedConstants.LanguageText, this.languageDropdown);
+		platformItems.push(languageContainer);
 
 		this.memoryInput = this.createInputBox(async () => { }, {
 			ariaLabel: localizedConstants.MemoryText,
@@ -177,6 +191,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			value: localizedConstants.StringValueInMB(this.objectInfo.memoryInMB.toString())
 		});
 		const memoryContainer = this.createLabelInputContainer(localizedConstants.MemoryText, this.memoryInput);
+		platformItems.push(memoryContainer);
 
 		this.operatingSystemInput = this.createInputBox(async () => { }, {
 			ariaLabel: localizedConstants.OperatingSystemText,
@@ -185,6 +200,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			value: this.objectInfo.operatingSystem
 		});
 		const operatingSystemContainer = this.createLabelInputContainer(localizedConstants.OperatingSystemText, this.operatingSystemInput);
+		platformItems.push(operatingSystemContainer);
 
 		this.platformInput = this.createInputBox(async () => { }, {
 			ariaLabel: localizedConstants.PlatformText,
@@ -193,6 +209,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			value: this.objectInfo.platform
 		});
 		const platformContainer = this.createLabelInputContainer(localizedConstants.PlatformText, this.platformInput);
+		platformItems.push(platformContainer);
 
 		this.processorsInput = this.createInputBox(async () => { }, {
 			ariaLabel: localizedConstants.ProcessorsText,
@@ -201,7 +218,10 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			value: this.objectInfo.processors
 		});
 		const processorsContainer = this.createLabelInputContainer(localizedConstants.ProcessorsText, this.processorsInput);
+		platformItems.push(processorsContainer);
 
+		// Information about the SQL instance itself
+		let sqlServerItems: azdata.Component[] = [];
 		this.isClusteredInput = this.createInputBox(async () => { }, {
 			ariaLabel: localizedConstants.IsClusteredText,
 			inputType: 'text',
@@ -209,6 +229,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			value: this.objectInfo.isClustered.toString()
 		});
 		const isClusteredContainer = this.createLabelInputContainer(localizedConstants.IsClusteredText, this.isClusteredInput);
+		sqlServerItems.push(isClusteredContainer);
 
 		this.isHadrEnabledInput = this.createInputBox(async () => { }, {
 			ariaLabel: localizedConstants.IsHadrEnabledText,
@@ -217,22 +238,29 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			value: this.objectInfo.isHadrEnabled.toString()
 		});
 		const isHadrEnabledContainer = this.createLabelInputContainer(localizedConstants.IsHadrEnabledText, this.isHadrEnabledInput);
+		sqlServerItems.push(isHadrEnabledContainer);
 
-		this.isPolyBaseInstalledInput = this.createInputBox(async () => { }, {
-			ariaLabel: localizedConstants.IsPolyBaseInstalledText,
-			inputType: 'text',
-			enabled: this.options.isNewObject,
-			value: this.objectInfo.isPolyBaseInstalled.toString()
-		});
-		const isPolyBaseInstalledContainer = this.createLabelInputContainer(localizedConstants.IsPolyBaseInstalledText, this.isPolyBaseInstalledInput);
+		if (!isUndefinedOrNull(this.objectInfo.isPolyBaseInstalled)) {
+			this.isPolyBaseInstalledInput = this.createInputBox(async () => { }, {
+				ariaLabel: localizedConstants.IsPolyBaseInstalledText,
+				inputType: 'text',
+				enabled: this.options.isNewObject,
+				value: this.objectInfo.isPolyBaseInstalled.toString()
+			});
+			const isPolyBaseInstalledContainer = this.createLabelInputContainer(localizedConstants.IsPolyBaseInstalledText, this.isPolyBaseInstalledInput);
+			sqlServerItems.push(isPolyBaseInstalledContainer);
+		}
 
-		this.isXTPSupportedInput = this.createInputBox(async () => { }, {
-			ariaLabel: localizedConstants.IsXTPSupportedText,
-			inputType: 'text',
-			enabled: this.options.isNewObject,
-			value: this.objectInfo.isXTPSupported.toString()
-		});
-		const isXTPSupportedContainer = this.createLabelInputContainer(localizedConstants.IsXTPSupportedText, this.isXTPSupportedInput);
+		if (!isUndefinedOrNull(this.objectInfo.isXTPSupported)) {
+			this.isXTPSupportedInput = this.createInputBox(async () => { }, {
+				ariaLabel: localizedConstants.IsXTPSupportedText,
+				inputType: 'text',
+				enabled: this.options.isNewObject,
+				value: this.objectInfo.isXTPSupported.toString()
+			});
+			const isXTPSupportedContainer = this.createLabelInputContainer(localizedConstants.IsXTPSupportedText, this.isXTPSupportedInput);
+			sqlServerItems.push(isXTPSupportedContainer);
+		}
 
 		this.productInput = this.createInputBox(async () => { }, {
 			ariaLabel: localizedConstants.ProductText,
@@ -241,14 +269,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			value: this.objectInfo.product
 		});
 		const productContainer = this.createLabelInputContainer(localizedConstants.ProductText, this.productInput);
-
-		this.reservedStorageSizeInMBInput = this.createInputBox(async () => { }, {
-			ariaLabel: localizedConstants.ReservedStorageSizeInMBText,
-			inputType: 'text',
-			enabled: this.options.isNewObject,
-			value: localizedConstants.StringValueInMB(this.objectInfo.reservedStorageSizeMB.toString())
-		});
-		const reservedStorageSizeInMBContainer = this.createLabelInputContainer(localizedConstants.ReservedStorageSizeInMBText, this.reservedStorageSizeInMBInput);
+		sqlServerItems.push(productContainer);
 
 		this.rootDirectoryInput = this.createInputBox(async () => { }, {
 			ariaLabel: localizedConstants.RootDirectoryText,
@@ -257,6 +278,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			value: this.objectInfo.rootDirectory
 		});
 		const rootDirectoryContainer = this.createLabelInputContainer(localizedConstants.RootDirectoryText, this.rootDirectoryInput);
+		sqlServerItems.push(rootDirectoryContainer);
 
 		this.serverCollationInput = this.createInputBox(async () => { }, {
 			ariaLabel: localizedConstants.ServerCollationText,
@@ -265,22 +287,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			value: this.objectInfo.serverCollation
 		});
 		const serverCollationContainer = this.createLabelInputContainer(localizedConstants.ServerCollationText, this.serverCollationInput);
-
-		this.serviceTierInput = this.createInputBox(async () => { }, {
-			ariaLabel: localizedConstants.ServiceTierText,
-			inputType: 'text',
-			enabled: this.options.isNewObject,
-			value: this.objectInfo.serviceTier
-		});
-		const serviceTierContainer = this.createLabelInputContainer(localizedConstants.ServiceTierText, this.serviceTierInput);
-
-		this.storageSpaceUsageInMBInput = this.createInputBox(async () => { }, {
-			ariaLabel: localizedConstants.StorageSpaceUsageInMBText,
-			inputType: 'text',
-			enabled: this.options.isNewObject,
-			value: localizedConstants.StringValueInMB(this.objectInfo.storageSpaceUsageInMB.toString())
-		});
-		const storageSpaceUsageInMbContainer = this.createLabelInputContainer(localizedConstants.StorageSpaceUsageInMBText, this.storageSpaceUsageInMBInput);
+		sqlServerItems.push(serverCollationContainer);
 
 		this.versionInput = this.createInputBox(async () => { }, {
 			ariaLabel: localizedConstants.VersionText,
@@ -289,32 +296,39 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			value: this.objectInfo.version
 		});
 		const versionContainer = this.createLabelInputContainer(localizedConstants.VersionText, this.versionInput);
+		sqlServerItems.push(versionContainer);
 
-		let platformItems = [
-			nameContainer,
-			languageContainer,
-			memoryContainer,
-			operatingSystemContainer,
-			platformContainer,
-			processorsContainer
-		];
+		if (!isUndefinedOrNull(this.objectInfo.reservedStorageSizeMB)) {
+			this.reservedStorageSizeInMBInput = this.createInputBox(async () => { }, {
+				ariaLabel: localizedConstants.ReservedStorageSizeInMBText,
+				inputType: 'text',
+				enabled: this.options.isNewObject,
+				value: localizedConstants.StringValueInMB(this.objectInfo.reservedStorageSizeMB.toString())
+			});
+			const reservedStorageSizeInMBContainer = this.createLabelInputContainer(localizedConstants.ReservedStorageSizeInMBText, this.reservedStorageSizeInMBInput);
+			sqlServerItems.push(reservedStorageSizeInMBContainer);
+		}
 
-		let sqlServerItems = [
-			isClusteredContainer,
-			isHadrEnabledContainer,
-			isPolyBaseInstalledContainer,
-			isXTPSupportedContainer,
-			productContainer,
-			rootDirectoryContainer,
-			serverCollationContainer,
-			versionContainer
-		];
+		if (this.objectInfo.serviceTier) {
+			this.serviceTierInput = this.createInputBox(async () => { }, {
+				ariaLabel: localizedConstants.ServiceTierText,
+				inputType: 'text',
+				enabled: this.options.isNewObject,
+				value: this.objectInfo.serviceTier
+			});
+			const serviceTierContainer = this.createLabelInputContainer(localizedConstants.ServiceTierText, this.serviceTierInput);
+			sqlServerItems.push(serviceTierContainer);
+		}
 
-		if (this.engineEdition === azdata.DatabaseEngineEdition.SqlManagedInstance) {
-			platformItems.unshift(hardwareGenerationContainer);
-			sqlServerItems.push(reservedStorageSizeInMBContainer, serviceTierContainer, storageSpaceUsageInMbContainer);
-			// remove isXTPSupported
-			sqlServerItems.splice(3, 1);
+		if (!isUndefinedOrNull(this.objectInfo.storageSpaceUsageInMB)) {
+			this.storageSpaceUsageInMBInput = this.createInputBox(async () => { }, {
+				ariaLabel: localizedConstants.StorageSpaceUsageInMBText,
+				inputType: 'text',
+				enabled: this.options.isNewObject,
+				value: localizedConstants.StringValueInMB(this.objectInfo.storageSpaceUsageInMB.toString())
+			});
+			const storageSpaceUsageInMbContainer = this.createLabelInputContainer(localizedConstants.StorageSpaceUsageInMBText, this.storageSpaceUsageInMBInput);
+			sqlServerItems.push(storageSpaceUsageInMbContainer);
 		}
 
 		this.platformSection = this.createGroup('Platform', platformItems, true);
