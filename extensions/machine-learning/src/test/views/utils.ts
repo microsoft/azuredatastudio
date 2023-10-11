@@ -16,6 +16,7 @@ export interface ViewTestContext {
 
 export function createViewContext(): ViewTestContext {
 	let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let onChange: vscode.EventEmitter<boolean> = new vscode.EventEmitter<boolean>();
 
 	let apiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 	let componentBase: azdata.Component = {
@@ -26,7 +27,8 @@ export function createViewContext(): ViewTestContext {
 		onValidityChanged: undefined!,
 		valid: true,
 		validate: undefined!,
-		focus: undefined!
+		focus: undefined!,
+		dispose() { }
 	};
 	let button: azdata.ButtonComponent = Object.assign({}, componentBase, {
 		onDidClick: onClick.event
@@ -38,7 +40,8 @@ export function createViewContext(): ViewTestContext {
 	});
 	let radioButton: azdata.RadioButtonComponent = Object.assign({}, componentBase, {
 		checked: true,
-		onDidClick: onClick.event
+		onDidClick: onClick.event,
+		onDidChangeCheckedState: onChange.event,
 	});
 	let checkbox: azdata.CheckBoxComponent = Object.assign({}, componentBase, {
 		checked: true,
@@ -86,7 +89,7 @@ export function createViewContext(): ViewTestContext {
 		withProps: () => checkBoxBuilder,
 		withValidation: () => checkBoxBuilder
 	};
-	let inputBox: () => azdata.InputBoxComponent = () => Object.assign({}, componentBase, {
+	let inputBox: () => azdata.InputBoxComponent = () => Object.assign(<azdata.InputBoxComponent>Object.assign({}, componentBase), {
 		onTextChanged: onClick.event!,
 		onEnterKeyPressed: undefined!,
 		value: ''
@@ -105,8 +108,10 @@ export function createViewContext(): ViewTestContext {
 	let declarativeTable: () => azdata.DeclarativeTableComponent = () => Object.assign({}, componentBase, {
 		onDataChanged: undefined!,
 		onRowSelected: undefined!,
+		setFilter: undefined!,
 		data: [],
-		columns: []
+		columns: [],
+		setDataValues: undefined!
 	});
 
 	let loadingComponent: () => azdata.LoadingComponent = () => Object.assign({}, componentBase, {
@@ -227,12 +232,13 @@ export function createViewContext(): ViewTestContext {
 		validate: undefined!,
 		initializeModel: () => { return Promise.resolve(); },
 		modelBuilder: {
+			listView: undefined!,
 			radioCardGroup: undefined!,
+			chart: undefined!,
 			navContainer: undefined!,
 			divContainer: () => divBuilder,
 			flexContainer: () => flexBuilder,
 			splitViewContainer: undefined!,
-			dom: undefined!,
 			card: () => cardBuilder,
 			inputBox: () => inputBoxBuilder,
 			checkBox: () => checkBoxBuilder!,
@@ -258,8 +264,12 @@ export function createViewContext(): ViewTestContext {
 			hyperlink: () => hyperLinkBuilder,
 			tabbedPanel: undefined!,
 			separator: undefined!,
-			propertiesContainer: undefined!
-		}
+			propertiesContainer: undefined!,
+			infoBox: undefined!,
+			slider: undefined!,
+			executionPlan: undefined!,
+		},
+		dispose() { }
 	};
 	let tab: azdata.window.DialogTab = {
 		title: '',
@@ -273,7 +283,8 @@ export function createViewContext(): ViewTestContext {
 		},
 		onValidityChanged: undefined!,
 		valid: true,
-		modelView: undefined!
+		modelView: undefined!,
+		dispose() { }
 	};
 
 	let dialogButton: azdata.window.Button = {
@@ -297,9 +308,14 @@ export function createViewContext(): ViewTestContext {
 		registerCloseValidator: () => { },
 		registerOperation: () => { },
 		onValidityChanged: new vscode.EventEmitter<boolean>().event,
+		onClosed: new vscode.EventEmitter<azdata.window.CloseReason>().event,
 		registerContent: () => { },
 		modelView: undefined!,
-		valid: true
+		valid: true,
+		loading: false,
+		loadingText: '',
+		loadingCompletedText: '',
+		dispose() { }
 	};
 	let wizard: azdata.window.Wizard = {
 		title: '',
@@ -320,7 +336,10 @@ export function createViewContext(): ViewTestContext {
 		close: () => { return Promise.resolve(); },
 		registerNavigationValidator: () => { },
 		message: dialogMessage,
-		registerOperation: () => { }
+		registerOperation: () => { },
+		loading: false,
+		loadingText: '',
+		loadingCompletedText: ''
 	};
 	let wizardPage: azdata.window.WizardPage = {
 		title: '',
@@ -337,7 +356,8 @@ export function createViewContext(): ViewTestContext {
 			}
 		},
 		modelView: undefined!,
-		valid: true
+		valid: true,
+		dispose() { }
 	};
 	apiWrapper.setup(x => x.createButton(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => dialogButton);
 	apiWrapper.setup(x => x.createTab(TypeMoq.It.isAny())).returns(() => tab);

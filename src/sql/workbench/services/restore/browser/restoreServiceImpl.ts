@@ -23,6 +23,8 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { invalidProvider } from 'sql/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { localize } from 'vs/nls';
 
 export class RestoreService implements IRestoreService {
 
@@ -60,7 +62,7 @@ export class RestoreService implements IRestoreService {
 		return new Promise<azdata.RestoreResponse>((resolve, reject) => {
 			const providerResult = this.getProvider(connectionUri);
 			if (providerResult) {
-				this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.RestoreRequested)
+				this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.RestoreRequested)
 					.withAdditionalProperties({
 						provider: providerResult.providerName
 					}).send();
@@ -249,6 +251,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 				restoreInfo.targetDatabaseName = restoreDialog.viewModel.targetDatabaseName;
 			}
 			restoreInfo.overwriteTargetDatabase = overwriteTargetDatabase;
+			restoreInfo.deviceType = restoreDialog.viewModel.deviceType;
 
 			// Set other restore options
 			restoreDialog.viewModel.getRestoreAdvancedOptions(restoreInfo.options);
@@ -298,6 +301,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 				this._connectionService.connect(connection, this._ownerUri).then(connectionResult => {
 					this._sessionId = undefined;
 					this._currentProvider = this.getCurrentProviderId();
+					const dialogTitle = localize('restoreDialogTitle', 'Restore database - {0}:{1}', connection.serverName, connection.databaseName);
 					if (!this._restoreDialogs[this._currentProvider]) {
 						let newRestoreDialog: RestoreDialog | OptionsDialog;
 						if (this._currentProvider === ConnectionConstants.mssqlProviderName) {
@@ -309,19 +313,25 @@ export class RestoreDialogController implements IRestoreDialogController {
 							newRestoreDialog.onDatabaseListFocused(() => this.fetchDatabases(provider));
 						} else {
 							newRestoreDialog = this._instantiationService.createInstance(
-								OptionsDialog, 'Restore database - ' + connection.serverName + ':' + connection.databaseName, 'RestoreOptions', undefined);
+								OptionsDialog, dialogTitle, 'RestoreOptions', undefined);
 							newRestoreDialog.onOk(() => this.handleOnRestore());
 						}
 						newRestoreDialog.onCloseEvent(() => this.handleOnClose());
 						newRestoreDialog.render();
 						this._restoreDialogs[this._currentProvider] = newRestoreDialog;
+					} else if (this._currentProvider !== ConnectionConstants.mssqlProviderName) {
+						// Update the title for non-MSSQL restores each time so they show the correct database name since those
+						// use just a basic OptionsDialog which doesn't get updated on every open
+						this._restoreDialogs[this._currentProvider].title = dialogTitle;
 					}
 
 					if (this._currentProvider === ConnectionConstants.mssqlProviderName) {
 						let restoreDialog = this._restoreDialogs[this._currentProvider] as RestoreDialog;
-						restoreDialog.viewModel.resetRestoreOptions(connection.databaseName!);
 						this.getMssqlRestoreConfigInfo().then(() => {
-							restoreDialog.open(connection.serverName, this._ownerUri!);
+							const engineEdition: DatabaseEngineEdition = this._connectionService.getConnectionInfo(this._ownerUri).serverInfo.engineEditionId;
+							// database list is filled only after getMssqlRestoreConfigInfo() calling before will always set to empty value
+							restoreDialog.viewModel.resetRestoreOptions(connection.databaseName!, restoreDialog.viewModel.databaseList);
+							restoreDialog.open(connection.serverName, this._ownerUri!, engineEdition);
 							restoreDialog.validateRestore();
 						}, restoreConfigError => {
 							reject(restoreConfigError);

@@ -5,13 +5,20 @@
 
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IWindowOpenable, IOpenWindowOptions, IOpenEmptyWindowOptions } from 'vs/platform/windows/common/windows';
+import { IWindowOpenable, IOpenWindowOptions, IOpenEmptyWindowOptions } from 'vs/platform/window/common/window';
 
 export const IHostService = createDecorator<IHostService>('hostService');
 
+/**
+ * A set of methods supported in both web and native environments.
+ *
+ * @see {@link INativeHostService} for methods that are specific to native
+ * environments.
+ */
 export interface IHostService {
 
 	readonly _serviceBrand: undefined;
+
 
 	//#region Focus
 
@@ -64,7 +71,6 @@ export interface IHostService {
 
 	//#endregion
 
-
 	//#region Lifecycle
 
 	/**
@@ -75,7 +81,12 @@ export interface IHostService {
 	/**
 	 * Reload the currently active window.
 	 */
-	reload(): Promise<void>;
+	reload(options?: { disableExtensions?: boolean }): Promise<void>;
+
+	/**
+	 * Attempt to close the active window.
+	 */
+	close(): Promise<void>;
 
 	//#endregion
 }

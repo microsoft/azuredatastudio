@@ -9,6 +9,8 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 export const SERVICE_ID = 'dataGridProviderService';
 export const IDataGridProviderService = createDecorator<IDataGridProviderService>(SERVICE_ID);
 
+export interface DataGridProvider extends azdata.DataGridProvider { }
+
 export interface IDataGridProviderService {
 	_serviceBrand: undefined;
 
@@ -23,12 +25,9 @@ export interface IDataGridProviderService {
 	unregisterProvider(providerId: string): void;
 
 	/**
-	 * Gets a list of data grid items from the specified provider
+	 * Gets a registered data grid provider, throwing if none are registered with the specified ID
+	 * @param providerId The id of the registered provider
 	 */
-	getDataGridItems(providerId: string): Promise<azdata.DataGridItem[]>;
+	getDataGridProvider(providerId: string): DataGridProvider;
 
-	/**
-	* Gets a list of data grid columns from the specified provider
-	*/
-	getDataGridColumns(providerId: string): Promise<azdata.DataGridColumn[]>;
 }

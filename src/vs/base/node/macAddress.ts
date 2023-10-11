@@ -3,13 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { exec } from 'child_process';
-import { isWindows } from 'vs/base/common/platform';
-
-const cmdline = {
-	windows: 'getmac.exe',
-	unix: '/sbin/ifconfig -a || /sbin/ip link'
-};
+import { networkInterfaces } from 'os';
 
 const invalidMacAddresses = new Set([
 	'00:00:00:00:00:00',
@@ -22,42 +16,18 @@ function validateMacAddress(candidate: string): boolean {
 	return !invalidMacAddresses.has(tempCandidate);
 }
 
-export function getMac(): Promise<string> {
-	return new Promise(async (resolve, reject) => {
-		const timeout = setTimeout(() => reject('Unable to retrieve mac address (timeout after 10s)'), 10000);
-
-		try {
-			resolve(await doGetMac());
-		} catch (error) {
-			reject(error);
-		} finally {
-			clearTimeout(timeout);
-		}
-	});
-}
-
-function doGetMac(): Promise<string> {
-	return new Promise((resolve, reject) => {
-		try {
-			exec(isWindows ? cmdline.windows : cmdline.unix, { timeout: 10000 }, (err, stdout, stdin) => {
-				if (err) {
-					return reject(`Unable to retrieve mac address (${err.toString()})`);
-				} else {
-					const regex = /(?:[a-f\d]{2}[:\-]){5}[a-f\d]{2}/gi;
-
-					let match;
-					while ((match = regex.exec(stdout)) !== null) {
-						const macAddressCandidate = match[0];
-						if (validateMacAddress(macAddressCandidate)) {
-							return resolve(macAddressCandidate);
-						}
-					}
-
-					return reject('Unable to retrieve mac address (unexpected format)');
+export function getMac(): string {
+	const ifaces = networkInterfaces();
+	for (const name in ifaces) {
+		const networkInterface = ifaces[name];
+		if (networkInterface) {
+			for (const { mac } of networkInterface) {
+				if (validateMacAddress(mac)) {
+					return mac;
 				}
-			});
-		} catch (err) {
-			reject(err);
+			}
 		}
-	});
+	}
+
+	throw new Error('Unable to retrieve mac address (unexpected format)');
 }

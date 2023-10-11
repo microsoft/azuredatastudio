@@ -2,19 +2,21 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
+import 'vs/css!./media/card';
+import 'vs/css!./media/verticalCard';
 import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import * as azdata from 'azdata';
+import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
-
-import 'vs/css!./media/card';
-import 'vs/css!./media/verticalCard';
-
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { deepClone } from 'vs/base/common/objects';
+import { ILogService } from 'vs/platform/log/common/log';
+import { focusBorder, textLinkForeground } from 'vs/platform/theme/common/colorRegistry';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('./radioCardGroup.component.html'))
@@ -30,11 +32,12 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
-	ngOnInit(): void {
+	ngAfterViewInit(): void {
 		this.baseInit();
 	}
 
@@ -42,7 +45,7 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 		this.layout();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		Object.keys(this.iconClasses).forEach((key) => {
 			DOM.removeCSSRulesContainingSelector(this.iconClasses[key]);
 		});
@@ -115,6 +118,22 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 		return this.getProperties().iconHeight ?? undefined;
 	}
 
+	public get textHeight(): string | undefined {
+		return this.calculateTextContainerHeight();
+	}
+
+	public calculateTextContainerHeight(): string | undefined {
+		if (this.cardHeight.endsWith('px') && this.iconHeight.endsWith('px')) {
+			const padding = 30; // icon-container padding + text-container padding
+			let height = Number.parseInt(this.cardHeight.substr(0, this.cardHeight.length - 2)) - Number.parseInt(this.iconHeight.substr(0, this.cardHeight.length - 2));
+			height = height - padding;
+
+			return height.toString() + 'px';
+		} else {
+			return undefined;
+		}
+	}
+
 	public get selectedCardId(): string | undefined {
 		return this.getProperties().selectedCardId ?? undefined;
 	}
@@ -143,7 +162,7 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 		return this.iconClasses[cardId];
 	}
 
-	public setProperties(properties: { [key: string]: any }) {
+	public override setProperties(properties: { [key: string]: any }) {
 		super.setProperties(properties);
 		// This is the entry point for the extension to set the selectedCardId
 		if (this.selectedCardId) {
@@ -172,9 +191,9 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 		event.stopPropagation();
 		this.fireEvent({
 			eventType: ComponentEventType.onDidClick,
-			args: {
+			args: <azdata.RadioCardLinkClickEvent>{
 				cardId,
-				textContents: deepClone(textContents),
+				description: deepClone(textContents),
 				card: deepClone(this.getCardById(cardId))
 			}
 		});
@@ -207,4 +226,25 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 	public onCardBlur(cardId: string): void {
 		this.focusedCardId = undefined;
 	}
+
+	public override get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth(),
+			'height': this.getHeight()
+		});
+	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const linkForeground = theme.getColor(textLinkForeground);
+	const focusOutline = theme.getColor(focusBorder);
+	if (focusOutline && linkForeground) {
+		collector.addRule(`
+		.card-group .link-value {
+			color: ${linkForeground};
+		}
+		.card-group .link-value:focus {
+			outline-color: ${focusOutline};
+		}`);
+	}
+});

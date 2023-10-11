@@ -10,10 +10,14 @@ import { Event } from 'vs/base/common/event';
 import { QueryInfo } from 'sql/workbench/services/query/common/queryModelService';
 import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { IRange } from 'vs/editor/common/core/range';
-
+import { ICellValue } from 'sql/workbench/services/query/common/query';
 export class TestQueryModelService implements IQueryModelService {
 	_serviceBrand: any;
 	onRunQueryUpdate: Event<string>;
+	onCellSelectionChanged: Event<ICellValue[]>;
+	notifyCellSelectionChanged(selectedCells: ICellValue[]): void {
+		throw new Error('Method not implemented.');
+	}
 	getQueryRunner(uri: string): QueryRunner {
 		throw new Error('Method not implemented.');
 	}
@@ -39,6 +43,9 @@ export class TestQueryModelService implements IQueryModelService {
 		throw new Error('Method not implemented.');
 	}
 	disposeQuery(uri: string): void {
+		throw new Error('Method not implemented.');
+	}
+	changeConnectionUri(newUri: string, oldUri: string): void {
 		throw new Error('Method not implemented.');
 	}
 	isRunningQuery(uri: string): boolean {

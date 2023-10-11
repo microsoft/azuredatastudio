@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-var updateGrammar = require('../../../build/npm/update-grammar');
+var updateGrammar = require('vscode-grammar-updater');
 
-function adaptJSON(grammar, replacementScope) {
-	grammar.name = 'JSON with comments';
+function adaptJSON(grammar, name, replacementScope) {
+	grammar.name = name;
 	grammar.scopeName = `source${replacementScope}`;
 
-	var fixScopeNames = function(rule) {
+	var fixScopeNames = function (rule) {
 		if (typeof rule.name === 'string') {
 			rule.name = rule.name.replace(/\.json/g, replacementScope);
 		}
@@ -31,11 +31,7 @@ function adaptJSON(grammar, replacementScope) {
 	}
 }
 
-var tsGrammarRepo = 'Microsoft/vscode-JSON.tmLanguage';
+var tsGrammarRepo = 'microsoft/vscode-JSON.tmLanguage';
 updateGrammar.update(tsGrammarRepo, 'JSON.tmLanguage', './syntaxes/JSON.tmLanguage.json');
-updateGrammar.update(tsGrammarRepo, 'JSON.tmLanguage', './syntaxes/JSONC.tmLanguage.json', grammar => adaptJSON(grammar, '.json.comments'));
-
-
-
-
-
+updateGrammar.update(tsGrammarRepo, 'JSON.tmLanguage', './syntaxes/JSONC.tmLanguage.json', grammar => adaptJSON(grammar, 'JSON with Comments', '.json.comments'));
+updateGrammar.update(tsGrammarRepo, 'JSON.tmLanguage', './syntaxes/JSONL.tmLanguage.json', grammar => adaptJSON(grammar, 'JSON Lines', '.json.lines'));

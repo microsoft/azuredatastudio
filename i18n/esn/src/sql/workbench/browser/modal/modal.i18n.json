@@ -8,10 +8,10 @@
 	],
 	"infoAltText": "Información",
 	"warningAltText": "Advertencia",
-	"errorAltText": "Fehler",
+	"errorAltText": "Error",
 	"showMessageDetails": "Mostrar detalles",
-	"hideMessageDetails": "Ocultar detalles",
 	"copyMessage": "Copiar",
 	"closeMessage": "Cerrar",
-	"modalBack": "Atrás"
+	"modal.back": "Atrás",
+	"hideMessageDetails": "Ocultar detalles"
 }

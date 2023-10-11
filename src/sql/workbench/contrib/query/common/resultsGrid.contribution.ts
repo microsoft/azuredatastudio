@@ -7,12 +7,8 @@ import { Extensions, IConfigurationRegistry, IConfigurationNode } from 'vs/platf
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as nls from 'vs/nls';
 import * as editorOptions from 'vs/editor/common/config/editorOptions';
+import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
 import EDITOR_FONT_DEFAULTS = editorOptions.EDITOR_FONT_DEFAULTS;
-
-export const RESULTS_GRID_DEFAULTS = {
-	cellPadding: [5, 8, 4],
-	rowHeight: 24
-};
 
 const configurationRegistry = <IConfigurationRegistry>Registry.as(Extensions.Configuration);
 
@@ -69,8 +65,13 @@ const resultsGridConfiguration: IConfigurationNode = {
 		},
 		'resultsGrid.maxColumnWidth': {
 			type: 'number',
-			default: 212,
+			default: 400,
 			description: nls.localize('maxColumnWidth', "The maximum width in pixels for auto-sized columns")
+		},
+		'resultsGrid.showJsonAsLink': {
+			'type': 'boolean',
+			'description': nls.localize('resultsGrid.showJsonAsLink', "Whether to show cells with JSON formatted string as hyperlink. When enabled, upon click the JSON value will be opened in another tab. The default value is true."),
+			'default': true
 		}
 	}
 };

@@ -3,53 +3,46 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
-import { Event, Emitter } from 'vs/base/common/event';
+import { Emitter, Event } from 'vs/base/common/event';
+import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import * as nls from 'vs/nls';
 
 export interface ITelemetryData {
 	readonly from?: string;
 	readonly target?: string;
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 export type WorkbenchActionExecutedClassification = {
-	id: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	from: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
+	id: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'The identifier of the action that was run.' };
+	from: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'The name of the component the action was run from.' };
+	detail?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'Optional details about how the action was run, e.g which keybinding was used.' };
+	owner: 'bpasero';
+	comment: 'Provides insight into actions that are executed within the workbench.';
 };
 
 export type WorkbenchActionExecutedEvent = {
 	id: string;
 	from: string;
+	detail?: string;
 };
 
-export interface IAction extends IDisposable {
+export interface IAction {
 	readonly id: string;
 	label: string;
 	tooltip: string;
 	class: string | undefined;
 	enabled: boolean;
-	checked: boolean;
-	expanded: boolean | undefined; // {{SQL CARBON EDIT}}
-	run(event?: any): Promise<any>;
+	checked?: boolean;
+	expanded?: boolean | undefined; // {{SQL CARBON EDIT}}
+	run(...args: unknown[]): unknown;
 }
 
 export interface IActionRunner extends IDisposable {
-	run(action: IAction, context?: any): Promise<any>;
 	readonly onDidRun: Event<IRunEvent>;
-	readonly onDidBeforeRun: Event<IRunEvent>;
-}
+	readonly onWillRun: Event<IRunEvent>;
 
-export interface IActionViewItem extends IDisposable {
-	actionRunner: IActionRunner;
-	setActionContext(context: any): void;
-	render(element: any /* HTMLElement */): void;
-	isEnabled(): boolean;
-	focus(fromRight?: boolean): void; // TODO@isidorn what is this?
-	blur(): void;
-}
-
-export interface IActionViewItemProvider {
-	(action: IAction): IActionViewItem | undefined;
+	run(action: IAction, context?: unknown): unknown;
 }
 
 export interface IActionChangeEvent {
@@ -64,18 +57,18 @@ export interface IActionChangeEvent {
 export class Action extends Disposable implements IAction {
 
 	protected _onDidChange = this._register(new Emitter<IActionChangeEvent>());
-	readonly onDidChange: Event<IActionChangeEvent> = this._onDidChange.event;
+	readonly onDidChange = this._onDidChange.event;
 
 	protected readonly _id: string;
 	protected _label: string;
 	protected _tooltip: string | undefined;
 	protected _cssClass: string | undefined;
 	protected _enabled: boolean = true;
-	protected _checked: boolean = false;
+	protected _checked?: boolean;
 	protected _expanded: boolean = false; // {{SQL CARBON EDIT}}
-	protected readonly _actionCallback?: (event?: any) => Promise<any>;
+	protected readonly _actionCallback?: (event?: unknown) => unknown;
 
-	constructor(id: string, label: string = '', cssClass: string = '', enabled: boolean = true, actionCallback?: (event?: any) => Promise<any>) {
+	constructor(id: string, label: string = '', cssClass: string = '', enabled: boolean = true, actionCallback?: (event?: unknown) => unknown) {
 		super();
 		this._id = id;
 		this._label = label;
@@ -148,15 +141,15 @@ export class Action extends Disposable implements IAction {
 		}
 	}
 
-	get checked(): boolean {
+	get checked(): boolean | undefined {
 		return this._checked;
 	}
 
-	set checked(value: boolean) {
+	set checked(value: boolean | undefined) {
 		this._setChecked(value);
 	}
 
-	protected _setChecked(value: boolean): void {
+	protected _setChecked(value: boolean | undefined): void {
 		if (this._checked !== value) {
 			this._checked = value;
 			this._onDidChange.fire({ checked: value });
@@ -179,89 +172,130 @@ export class Action extends Disposable implements IAction {
 		}
 	}
 
-	run(event?: any, _data?: ITelemetryData): Promise<any> {
+	async run(event?: unknown, data?: ITelemetryData): Promise<void> {
 		if (this._actionCallback) {
-			return this._actionCallback(event);
+			await this._actionCallback(event);
 		}
-
-		return Promise.resolve(true);
 	}
 }
 
 export interface IRunEvent {
 	readonly action: IAction;
-	readonly result?: any;
-	readonly error?: any;
+	readonly error?: Error;
 }
 
 export class ActionRunner extends Disposable implements IActionRunner {
 
-	private _onDidBeforeRun = this._register(new Emitter<IRunEvent>());
-	readonly onDidBeforeRun: Event<IRunEvent> = this._onDidBeforeRun.event;
+	private readonly _onWillRun = this._register(new Emitter<IRunEvent>());
+	readonly onWillRun = this._onWillRun.event;
 
-	private _onDidRun = this._register(new Emitter<IRunEvent>());
-	readonly onDidRun: Event<IRunEvent> = this._onDidRun.event;
+	private readonly _onDidRun = this._register(new Emitter<IRunEvent>());
+	readonly onDidRun = this._onDidRun.event;
 
-	async run(action: IAction, context?: any): Promise<any> {
+	async run(action: IAction, context?: unknown): Promise<void> {
 		if (!action.enabled) {
-			return Promise.resolve(null);
+			return;
 		}
 
-		this._onDidBeforeRun.fire({ action: action });
+		this._onWillRun.fire({ action });
 
+		let error: Error | undefined = undefined;
 		try {
-			const result = await this.runAction(action, context);
-			this._onDidRun.fire({ action: action, result: result });
-		} catch (error) {
-			this._onDidRun.fire({ action: action, error: error });
+			await this.runAction(action, context);
+		} catch (e) {
+			error = e;
 		}
+
+		this._onDidRun.fire({ action, error });
 	}
 
-	protected runAction(action: IAction, context?: any): Promise<any> {
-		const res = context ? action.run(context) : action.run();
-		return Promise.resolve(res);
+	protected async runAction(action: IAction, context?: unknown): Promise<void> {
+		await action.run(context);
 	}
 }
 
-export class RadioGroup extends Disposable {
+export class Separator implements IAction {
 
-	constructor(readonly actions: Action[]) {
-		super();
-
-		for (const action of actions) {
-			this._register(action.onDidChange(e => {
-				if (e.checked && action.checked) {
-					for (const candidate of actions) {
-						if (candidate !== action) {
-							candidate.checked = false;
-						}
-					}
-				}
-			}));
+	/**
+	 * Joins all non-empty lists of actions with separators.
+	 */
+	public static join(...actionLists: readonly IAction[][]) {
+		let out: IAction[] = [];
+		for (const list of actionLists) {
+			if (!list.length) {
+				// skip
+			} else if (out.length) {
+				out = [...out, new Separator(), ...list];
+			} else {
+				out = list;
+			}
 		}
-	}
-}
 
-export class Separator extends Action {
+		return out;
+	}
 
 	static readonly ID = 'vs.actions.separator';
 
-	constructor(label?: string) {
-		super(Separator.ID, label, label ? 'separator text' : 'separator');
-		this.checked = false;
-		this.enabled = false;
+	readonly id: string = Separator.ID;
+
+	readonly label: string = '';
+	readonly tooltip: string = '';
+	readonly class: string = 'separator';
+	readonly enabled: boolean = false;
+	readonly checked: boolean = false;
+	async run() { }
+}
+
+export class SubmenuAction implements IAction {
+
+	readonly id: string;
+	readonly label: string;
+	readonly class: string | undefined;
+	readonly tooltip: string = '';
+	readonly enabled: boolean = true;
+	readonly checked: undefined = undefined;
+
+	private readonly _actions: readonly IAction[];
+	get actions(): readonly IAction[] { return this._actions; }
+
+	constructor(id: string, label: string, actions: readonly IAction[], cssClass?: string) {
+		this.id = id;
+		this.label = label;
+		this.class = cssClass;
+		this._actions = actions;
+	}
+
+	async run(): Promise<void> { }
+
+	// {{SQL CARBON EDIT}}
+	get expanded(): boolean {
+		return false;
+	}
+	set expanded(value: boolean) {
+	}
+	protected _setExpanded(value: boolean): void {
 	}
 }
 
-export type SubmenuActions = IAction[] | (() => IAction[]);
+export class EmptySubmenuAction extends Action {
 
-export class SubmenuAction extends Action {
+	static readonly ID = 'vs.actions.empty';
 
-	get actions(): IAction[] {
-		return Array.isArray(this._actions) ? this._actions : this._actions();
+	constructor() {
+		super(EmptySubmenuAction.ID, nls.localize('submenu.empty', '(empty)'), undefined, false);
 	}
+}
 
-	constructor(id: string, label: string, private _actions: SubmenuActions, cssClass?: string) {
-		super(id, label, cssClass, true);
-	}
+export function toAction(props: { id: string; label: string; enabled?: boolean; checked?: boolean; run: Function }): IAction {
+	return {
+		id: props.id,
+		label: props.label,
+		class: undefined,
+		// {{SQL CARBON EDIT}} - add expanded type
+		expanded: false,
+		enabled: props.enabled ?? true,
+		checked: props.checked ?? false,
+		run: async () => props.run(),
+		tooltip: props.label
+	};
 }

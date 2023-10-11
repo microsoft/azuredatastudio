@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 (async () => {
-	const serviceDownloader = require('service-downloader').ServiceDownloadProvider;
+	const serviceDownloader = require('@microsoft/ads-service-downloader').ServiceDownloadProvider;
 	const path = require('path');
 	const fs = require('fs').promises;
 	const rimraf = require('rimraf');

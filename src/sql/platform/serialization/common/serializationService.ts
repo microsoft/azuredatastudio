@@ -9,7 +9,6 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
 import { getErrorMessage } from 'vs/base/common/errors';
-import { find } from 'vs/base/common/arrays';
 
 export const SERVICE_ID = 'serializationService';
 
@@ -18,6 +17,10 @@ const saveAsNotSupported = localize('saveAsNotSupported', "Saving results into d
 const defaultBatchSize = 500;
 
 export interface SerializeDataParams {
+	/**
+	 *  The serializer to use for this request. Typically this is the ID of the connection provider used to run the query.
+	 */
+	serializationProviderId: string;
 	/**
 	 * 'csv', 'json', 'excel', 'xml'
 	 */
@@ -46,6 +49,8 @@ export interface ISerializationService {
 
 	hasProvider(): boolean;
 
+	isProviderRegistered(providerId: string): boolean;
+
 	saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<azdata.SaveResultRequestResult>;
 
 	disabledSaveAs(): Thenable<azdata.SaveResultRequestResult>;
@@ -72,6 +77,10 @@ export class SerializationService implements ISerializationService {
 	) {
 	}
 
+	public isProviderRegistered(providerId: string): boolean {
+		return this.providers.find(provider => provider.providerId.toUpperCase() === providerId.toUpperCase()) !== undefined;
+	}
+
 	public registerProvider(providerId: string, provider: azdata.SerializationProvider): void {
 		this.providers.push({ providerId: providerId, provider: provider });
 	}
@@ -96,7 +105,7 @@ export class SerializationService implements ISerializationService {
 		let providerCapabilities = this._capabilitiesService.getLegacyCapabilities(providerId);
 
 		if (providerCapabilities) {
-			return find(providerCapabilities.features, f => f.featureName === SERVICE_ID);
+			return providerCapabilities.features.find(f => f.featureName === SERVICE_ID);
 		}
 
 		return undefined;
@@ -116,7 +125,13 @@ export class SerializationService implements ISerializationService {
 		}
 		try {
 			// Create a new session with the provider and send initial data
-			let provider = this.providers[0].provider;
+			let provider = this.providers.find(provider => provider.providerId === serializationRequest.serializationProviderId)?.provider;
+			if (!provider) {
+				return <azdata.SerializeDataResult>{
+					messages: localize('missingSerializationProviderError', "Could not find a serialization provider with the specified ID '{0}'", serializationRequest.serializationProviderId),
+					succeeded: false
+				};
+			}
 			let index = 0;
 			let startRequestParams = this.createStartRequest(serializationRequest, index);
 			index = index + startRequestParams.rows.length;
@@ -186,7 +201,7 @@ export class SerializationService implements ISerializationService {
 
 	private createContinueRequest(serializationRequest: SerializeDataParams, index: number): azdata.SerializeDataContinueRequestParams {
 		let numberOfRows = getBatchSize(serializationRequest.rowCount, index);
-		let rows = serializationRequest.getRowRange(index, serializationRequest.includeHeaders ?? false, numberOfRows);
+		let rows = serializationRequest.getRowRange(index, false, numberOfRows);
 		let isLastBatch = index + rows.length >= serializationRequest.rowCount;
 		let continueSerializeRequest: azdata.SerializeDataContinueRequestParams = {
 			filePath: serializationRequest.filePath,

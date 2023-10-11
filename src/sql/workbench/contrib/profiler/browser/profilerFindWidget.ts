@@ -12,19 +12,19 @@ import * as dom from 'vs/base/browser/dom';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
-import { FindInput, IFindInputStyles } from 'vs/base/browser/ui/findinput/findInput';
+import { FindInput } from 'vs/base/browser/ui/findinput/findInput';
 import { IMessage as InputBoxMessage } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { Sash, ISashEvent, Orientation, IVerticalSashLayoutProvider } from 'vs/base/browser/ui/sash/sash';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IOverlayWidget, IOverlayWidgetPosition, OverlayWidgetPositionPreference } from 'vs/editor/browser/editorBrowser';
-import { FIND_IDS, CONTEXT_FIND_INPUT_FOCUSED } from 'vs/editor/contrib/find/findModel';
-import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
-import * as colors from 'vs/platform/theme/common/colorRegistry';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IDisposable } from 'vs/base/common/lifecycle';
+import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/browser/findState';
+import { CONTEXT_FIND_INPUT_FOCUSED, FIND_IDS } from 'vs/editor/contrib/find/browser/findModel';
+import { defaultInputBoxStyles, defaultToggleStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 const NLS_FIND_INPUT_LABEL = nls.localize('label.find', "Find");
 const NLS_FIND_INPUT_PLACEHOLDER = nls.localize('placeholder.find', "Find");
@@ -127,9 +127,9 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 			if (FIND_WIDGET_INITIAL_WIDTH + 28 - MAX_MATCHES_COUNT_WIDTH >= editorWidth + 50) {
 				collapsedFindWidget = true;
 			}
-			dom.toggleClass(this._domNode, 'collapsed-find-widget', collapsedFindWidget);
-			dom.toggleClass(this._domNode, 'narrow-find-widget', narrowFindWidget);
-			dom.toggleClass(this._domNode, 'reduced-find-widget', reducedFindWidget);
+			this._domNode.classList.toggle('collapsed-find-widget', collapsedFindWidget);
+			this._domNode.classList.toggle('narrow-find-widget', narrowFindWidget);
+			this._domNode.classList.toggle('reduced-find-widget', reducedFindWidget);
 
 			if (!narrowFindWidget && !collapsedFindWidget) {
 				// the minimal left offset of findwidget is 15px.
@@ -155,9 +155,6 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 		});
 
 		this._tableController.addOverlayWidget(this);
-
-		this._applyTheme(themeService.getColorTheme());
-		this._register(themeService.onDidColorThemeChange(this._applyTheme.bind(this)));
 	}
 
 	// ----- IOverlayWidget API
@@ -204,7 +201,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 		}
 		if (e.searchString || e.matchesCount || e.matchesPosition) {
 			let showRedOutline = (this._state.searchString.length > 0 && this._state.matchesCount === 0);
-			dom.toggleClass(this._domNode, 'no-results', showRedOutline);
+			this._domNode.classList.toggle('no-results', showRedOutline);
 
 			this._updateMatchesCount();
 		}
@@ -260,12 +257,13 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 			this._updateButtons();
 
 			setTimeout(() => {
-				dom.addClass(this._domNode, 'visible');
+				this._domNode.classList.add('visible');
 				this._domNode.setAttribute('aria-hidden', 'false');
+				this._domNode.style.display = '';
 				if (!animate) {
-					dom.addClass(this._domNode, 'noanimation');
+					this._domNode.classList.add('noanimation');
 					setTimeout(() => {
-						dom.removeClass(this._domNode, 'noanimation');
+						this._domNode.classList.remove('noanimation');
 					}, 200);
 				}
 			}, 0);
@@ -279,29 +277,14 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 
 			this._updateButtons();
 
-			dom.removeClass(this._domNode, 'visible');
+			this._domNode.classList.remove('visible');
 			this._domNode.setAttribute('aria-hidden', 'true');
+			this._domNode.style.display = 'none';
 			if (focusTheEditor) {
 				this._tableController.focus();
 			}
 			this._tableController.layoutOverlayWidget(this);
 		}
-	}
-
-	private _applyTheme(theme: IColorTheme) {
-		let inputStyles: IFindInputStyles = {
-			inputActiveOptionBorder: theme.getColor(colors.inputActiveOptionBorder),
-			inputBackground: theme.getColor(colors.inputBackground),
-			inputForeground: theme.getColor(colors.inputForeground),
-			inputBorder: theme.getColor(colors.inputBorder),
-			inputValidationInfoBackground: theme.getColor(colors.inputValidationInfoBackground),
-			inputValidationInfoBorder: theme.getColor(colors.inputValidationInfoBorder),
-			inputValidationWarningBackground: theme.getColor(colors.inputValidationWarningBackground),
-			inputValidationWarningBorder: theme.getColor(colors.inputValidationWarningBorder),
-			inputValidationErrorBackground: theme.getColor(colors.inputValidationErrorBackground),
-			inputValidationErrorBorder: theme.getColor(colors.inputValidationErrorBorder)
-		};
-		this._findInput.style(inputStyles);
 	}
 
 	// ----- Public
@@ -365,7 +348,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 
 	private _buildFindPart(): HTMLElement {
 		// Find input
-		this._findInput = this._register(new FindInput(null, this._contextViewProvider, true, {
+		this._findInput = this._register(new FindInput(null, this._contextViewProvider, {
 			width: FIND_INPUT_AREA_WIDTH,
 			label: NLS_FIND_INPUT_LABEL,
 			placeholder: NLS_FIND_INPUT_PLACEHOLDER,
@@ -387,7 +370,9 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 				} catch (e) {
 					return { content: e.message };
 				}
-			}
+			},
+			toggleStyles: defaultToggleStyles,
+			inputBoxStyles: defaultInputBoxStyles
 		}));
 		this._findInput.setRegex(!!this._state.isRegex);
 		this._findInput.setCaseSensitive(!!this._state.matchCase);
@@ -471,6 +456,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 		this._domNode = document.createElement('div');
 		this._domNode.className = 'editor-widget find-widget';
 		this._domNode.setAttribute('aria-hidden', 'true');
+		this._domNode.style.display = 'none';
 
 		this._domNode.appendChild(findPart);
 
@@ -552,7 +538,7 @@ class SimpleButton extends Widget {
 	}
 
 	public setEnabled(enabled: boolean): void {
-		dom.toggleClass(this._domNode, 'disabled', !enabled);
+		this._domNode.classList.toggle('disabled', !enabled);
 		this._domNode.setAttribute('aria-disabled', String(!enabled));
 		this._domNode.tabIndex = enabled ? 0 : -1;
 	}
@@ -562,6 +548,6 @@ class SimpleButton extends Widget {
 	}
 
 	public toggleClass(className: string, shouldHaveIt: boolean): void {
-		dom.toggleClass(this._domNode, className, shouldHaveIt);
+		this._domNode.classList.toggle(className, shouldHaveIt);
 	}
 }

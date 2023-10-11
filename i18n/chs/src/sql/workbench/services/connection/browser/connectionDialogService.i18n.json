@@ -9,5 +9,5 @@
 	"connectionError": "连接错误",
 	"kerberosErrorStart": "由于 Kerberos 错误，连接失败。",
 	"kerberosHelpLink": "可在 {0} 处获取有关配置 Kerberos 的帮助",
-	"kerberosKinit": "如果之前已连接过，则可能需要重新运行 kinit。"
+	"kerberosKinit": "如果之前已连接，可能需要重新运行 kinit。"
 }

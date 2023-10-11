@@ -5,33 +5,39 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as azdataExt from 'azdata-ext';
+import * as azExt from 'az-ext';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles, Endpoints } from '../../../constants';
+import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
-import { promptAndConfirmPassword, promptForInstanceDeletion } from '../../../common/utils';
+import { promptForInstanceDeletion } from '../../../common/utils';
 import { ResourceType } from 'arc';
+
+export type PodStatusModel = {
+	podName: azdata.Component,
+	status: string
+};
 
 export class PostgresOverviewPage extends DashboardPage {
 
-	private propertiesLoading?: azdata.LoadingComponent;
-	private kibanaLoading?: azdata.LoadingComponent;
-	private grafanaLoading?: azdata.LoadingComponent;
+	private propertiesLoading!: azdata.LoadingComponent;
+	private serverGroupNodesLoading!: azdata.LoadingComponent;
+	private kibanaLoading!: azdata.LoadingComponent;
+	private grafanaLoading!: azdata.LoadingComponent;
 
-	private properties?: azdata.PropertiesContainerComponent;
-	private kibanaLink?: azdata.HyperlinkComponent;
-	private grafanaLink?: azdata.HyperlinkComponent;
+	private properties!: azdata.PropertiesContainerComponent;
+	private kibanaLink!: azdata.HyperlinkComponent;
+	private grafanaLink!: azdata.HyperlinkComponent;
+	private deleteButton!: azdata.ButtonComponent;
 
-	private readonly _azdataApi: azdataExt.IExtension;
+	private readonly _azApi: azExt.IExtension;
 
-	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
-		super(modelView);
-		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
+		super(modelView, dashboard);
+		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 
 		this.disposables.push(
-			this._controllerModel.onEndpointsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdated())),
 			this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleRegistrationsUpdated())),
 			this._postgresModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleConfigUpdated())));
 	}
@@ -55,13 +61,13 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		// Properties
 		this.properties = this.modelView.modelBuilder.propertiesContainer()
-			.withProperties<azdata.PropertiesContainerComponentProperties>({
+			.withProps({
 				propertyItems: this.getProperties()
 			}).component();
 
 		this.propertiesLoading = this.modelView.modelBuilder.loadingComponent()
 			.withItem(this.properties)
-			.withProperties<azdata.LoadingComponentProperties>({
+			.withProps({
 				loading: !this._controllerModel.registrationsLastUpdated && !this._postgresModel.configLastUpdated
 			}).component();
 
@@ -69,37 +75,36 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		// Service endpoints
 		const titleCSS = { ...cssStyles.title, 'margin-block-start': '2em', 'margin-block-end': '0' };
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.serviceEndpoints,
-			CSSStyles: titleCSS
+			CSSStyles: titleCSS,
+			headingLevel: 1
 		}).component());
 
-		this.kibanaLink = this.modelView.modelBuilder.hyperlink()
-			.withProperties<azdata.HyperlinkComponentProperties>({
-				label: this.getKibanaLink(),
-				url: this.getKibanaLink()
-			}).component();
+		this.kibanaLink = this.modelView.modelBuilder.hyperlink().component();
 
-		this.grafanaLink = this.modelView.modelBuilder.hyperlink()
-			.withProperties<azdata.HyperlinkComponentProperties>({
-				label: this.getGrafanaLink(),
-				url: this.getGrafanaLink()
-			}).component();
+		this.grafanaLink = this.modelView.modelBuilder.hyperlink().component();
 
 		this.kibanaLoading = this.modelView.modelBuilder.loadingComponent()
-			.withItem(this.kibanaLink)
-			.withProperties<azdata.LoadingComponentProperties>({
-				loading: !this._controllerModel.endpointsLastUpdated
-			}).component();
+			.withProps(
+				{ loading: !this._postgresModel?.configLastUpdated }
+			)
+			.component();
 
 		this.grafanaLoading = this.modelView.modelBuilder.loadingComponent()
-			.withItem(this.grafanaLink)
-			.withProperties<azdata.LoadingComponentProperties>({
-				loading: !this._controllerModel.endpointsLastUpdated
-			}).component();
+			.withProps(
+				{ loading: !this._postgresModel?.configLastUpdated }
+			)
+			.component();
 
-		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+		this.refreshDashboardLinks();
+
+		this.kibanaLoading.component = this.kibanaLink;
+		this.grafanaLoading.component = this.grafanaLink;
+
+		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
+			ariaLabel: loc.serviceEndpoints,
 			columns: [
 				{
 					displayName: loc.name,
@@ -132,54 +137,26 @@ export class PostgresOverviewPage extends DashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				}
 			],
-			data: [
-				[loc.kibanaDashboard, this.kibanaLoading, loc.kibanaDashboardDescription],
-				[loc.grafanaDashboard, this.grafanaLoading, loc.grafanaDashboardDescription]]
+			dataValues: [
+				[{ value: loc.kibanaDashboard }, { value: this.kibanaLoading }, { value: loc.kibanaDashboardDescription }],
+				[{ value: loc.grafanaDashboard }, { value: this.grafanaLoading }, { value: loc.grafanaDashboardDescription }]]
 		}).component();
-
 		content.addItem(endpointsTable);
+
 		this.initialized = true;
 		return root;
 	}
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
-		// Reset password
-		const resetPasswordButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: loc.resetPassword,
-			iconPath: IconPathHelper.edit
-		}).component();
-
-		this.disposables.push(
-			resetPasswordButton.onDidClick(async () => {
-				resetPasswordButton.enabled = false;
-				try {
-					const password = await promptAndConfirmPassword(input => !input ? loc.enterANonEmptyPassword : '');
-					if (password) {
-						await this._azdataApi.azdata.arc.postgres.server.edit(
-							this._postgresModel.info.name,
-							{
-								adminPassword: true,
-								noWait: true
-							},
-							{ 'AZDATA_PASSWORD': password });
-						vscode.window.showInformationMessage(loc.passwordReset);
-					}
-				} catch (error) {
-					vscode.window.showErrorMessage(loc.passwordResetFailed(error));
-				} finally {
-					resetPasswordButton.enabled = true;
-				}
-			}));
-
 		// Delete service
-		const deleteButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.deleteButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.deleteText,
 			iconPath: IconPathHelper.delete
 		}).component();
 
 		this.disposables.push(
-			deleteButton.onDidClick(async () => {
-				deleteButton.enabled = false;
+			this.deleteButton.onDidClick(async () => {
+				this.deleteButton.enabled = false;
 				try {
 					if (await promptForInstanceDeletion(this._postgresModel.info.name)) {
 						await vscode.window.withProgress(
@@ -188,22 +165,29 @@ export class PostgresOverviewPage extends DashboardPage {
 								title: loc.deletingInstance(this._postgresModel.info.name),
 								cancellable: false
 							},
-							(_progress, _token) => {
-								return this._azdataApi.azdata.arc.postgres.server.delete(this._postgresModel.info.name);
+							async (_progress, _token) => {
+								return await this._azApi.az.postgres.serverarc.delete(this._postgresModel.info.name, this._postgresModel.controllerModel.info.namespace, this._controllerModel.azAdditionalEnvVars);
 							}
 						);
 						await this._controllerModel.refreshTreeNode();
 						vscode.window.showInformationMessage(loc.instanceDeleted(this._postgresModel.info.name));
+						try {
+							await this.dashboard.close();
+						} catch (err) {
+							// Failures closing the dashboard aren't something we need to show users
+							console.log('Error closing Arc Postgres dashboard ', err);
+						}
+
 					}
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceDeletionFailed(this._postgresModel.info.name, error));
 				} finally {
-					deleteButton.enabled = true;
+					this.deleteButton.enabled = true;
 				}
 			}));
 
 		// Refresh
-		const refreshButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const refreshButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.refresh,
 			iconPath: IconPathHelper.refresh
 		}).component();
@@ -213,12 +197,13 @@ export class PostgresOverviewPage extends DashboardPage {
 				refreshButton.enabled = false;
 				try {
 					this.propertiesLoading!.loading = true;
+					this.serverGroupNodesLoading!.loading = true;
 					this.kibanaLoading!.loading = true;
 					this.grafanaLoading!.loading = true;
 
 					await Promise.all([
 						this._postgresModel.refresh(),
-						this._controllerModel.refresh()
+						this._controllerModel.refresh(false, this._controllerModel.info.namespace)
 					]);
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.refreshFailed(error));
@@ -229,7 +214,7 @@ export class PostgresOverviewPage extends DashboardPage {
 			}));
 
 		// Open in Azure portal
-		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.openInAzurePortal,
 			iconPath: IconPathHelper.openInTab
 		}).component();
@@ -239,15 +224,14 @@ export class PostgresOverviewPage extends DashboardPage {
 				const azure = this._controllerModel.controllerConfig?.spec.settings.azure;
 				if (azure) {
 					vscode.env.openExternal(vscode.Uri.parse(
-						`https://portal.azure.com/#resource/subscriptions/${azure.subscription}/resourceGroups/${azure.resourceGroup}/providers/Microsoft.AzureData/${ResourceType.postgresInstances}/${this._postgresModel.info.name}`));
+						`https://portal.azure.com/#resource/subscriptions/${azure.subscription}/resourceGroups/${azure.resourceGroup}/providers/Microsoft.AzureArcData/${ResourceType.postgresInstances}/${this._postgresModel.info.name}`));
 				} else {
 					vscode.window.showErrorMessage(loc.couldNotFindControllerRegistration);
 				}
 			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
-			{ component: resetPasswordButton },
-			{ component: deleteButton },
+			{ component: this.deleteButton },
 			{ component: refreshButton, toolbarSeparatorAfter: true },
 			{ component: openInAzurePortalButton }
 		]).component();
@@ -263,35 +247,23 @@ export class PostgresOverviewPage extends DashboardPage {
 			{ displayName: loc.region, value: azure?.location || '-' },
 			{ displayName: loc.namespace, value: this._postgresModel.config?.metadata.namespace || '-' },
 			{ displayName: loc.subscriptionId, value: azure?.subscription || '-' },
-			{ displayName: loc.externalEndpoint, value: this._postgresModel.config?.status.externalEndpoint || '-' },
-			{ displayName: loc.status, value: status ? `${status.state} (${status.readyPods} ${loc.podsReady})` : '-' },
-			{ displayName: loc.postgresAdminUsername, value: 'postgres' },
-			{ displayName: loc.postgresVersion, value: this._postgresModel.engineVersion ?? '-' },
-			{ displayName: loc.nodeConfiguration, value: this._postgresModel.scaleConfiguration || '-' }
+			{ displayName: loc.externalEndpoint, value: this._postgresModel.config?.status.primaryEndpoint || '-' },
+			{ displayName: loc.status, value: status ? `${status.state} (${status.readyPods} ${loc.podsReady})` : '-' }
 		];
 	}
 
-	private getKibanaLink(): string {
-		const namespace = this._postgresModel.config?.metadata.namespace;
-		const kibanaQuery = `kubernetes_namespace:"${namespace}" and custom_resource_name:"${this._postgresModel.info.name}"`;
-		return `${this._controllerModel.getEndpoint(Endpoints.logsui)?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
+	private refreshDashboardLinks(): void {
+		if (this._postgresModel.config) {
+			const kibanaUrl = this._postgresModel.config.status.logSearchDashboard ?? '';
+			this.kibanaLink.label = kibanaUrl;
+			this.kibanaLink.url = kibanaUrl;
+			this.kibanaLoading.loading = false;
 
-	}
-
-	private getGrafanaLink(): string {
-		const namespace = this._postgresModel.config?.metadata.namespace;
-		const grafanaQuery = `var-Namespace=${namespace}&var-Name=${this._postgresModel.info.name}`;
-		return `${this._controllerModel.getEndpoint(Endpoints.metricsui)?.endpoint}/d/postgres-metrics?${grafanaQuery}`;
-	}
-
-	private handleEndpointsUpdated() {
-		this.kibanaLink!.label = this.getKibanaLink();
-		this.kibanaLink!.url = this.getKibanaLink();
-		this.kibanaLoading!.loading = false;
-
-		this.grafanaLink!.label = this.getGrafanaLink();
-		this.grafanaLink!.url = this.getGrafanaLink();
-		this.grafanaLoading!.loading = false;
+			const grafanaUrl = this._postgresModel.config.status.metricsDashboard ?? '';
+			this.grafanaLink.label = grafanaUrl;
+			this.grafanaLink.url = grafanaUrl;
+			this.grafanaLoading.loading = false;
+		}
 	}
 
 	private handleRegistrationsUpdated() {
@@ -302,5 +274,6 @@ export class PostgresOverviewPage extends DashboardPage {
 	private handleConfigUpdated() {
 		this.properties!.propertyItems = this.getProperties();
 		this.propertiesLoading!.loading = false;
+		this.refreshDashboardLinks();
 	}
 }

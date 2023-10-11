@@ -16,11 +16,12 @@ import { ok } from 'vs/base/common/assert';
 import { localize } from 'vs/nls';
 
 import {
-	SqlMainContext, INotebookDocumentsAndEditorsDelta, ExtHostNotebookDocumentsAndEditorsShape,
+	INotebookDocumentsAndEditorsDelta, ExtHostNotebookDocumentsAndEditorsShape,
 	MainThreadNotebookDocumentsAndEditorsShape, INotebookShowOptions, INotebookModelChangedData
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/common/extHostNotebookDocumentData';
 import { ExtHostNotebookEditor } from 'sql/workbench/api/common/extHostNotebookEditor';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 type Adapter = azdata.nb.NavigationProvider;
 
@@ -39,13 +40,14 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	private readonly _onDidChangeVisibleNotebookEditors = new Emitter<ExtHostNotebookEditor[]>();
 	private readonly _onDidChangeActiveNotebookEditor = new Emitter<ExtHostNotebookEditor>();
 	private _onDidOpenNotebook = new Emitter<azdata.nb.NotebookDocument>();
+	private _onDidCloseNotebook = new Emitter<azdata.nb.NotebookDocument>();
 	private _onDidChangeNotebookCell = new Emitter<azdata.nb.NotebookCellChangeEvent>();
 
 	readonly onDidChangeVisibleNotebookEditors: Event<ExtHostNotebookEditor[]> = this._onDidChangeVisibleNotebookEditors.event;
 	readonly onDidChangeActiveNotebookEditor: Event<ExtHostNotebookEditor> = this._onDidChangeActiveNotebookEditor.event;
 	readonly onDidOpenNotebookDocument: Event<azdata.nb.NotebookDocument> = this._onDidOpenNotebook.event;
+	readonly onDidCloseNotebookDocument: Event<azdata.nb.NotebookDocument> = this._onDidCloseNotebook.event;
 	readonly onDidChangeNotebookCell: Event<azdata.nb.NotebookCellChangeEvent> = this._onDidChangeNotebookCell.event;
-
 
 	constructor(
 		private readonly _mainContext: IMainContext,
@@ -79,17 +81,19 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		if (delta.addedDocuments) {
 			for (const data of delta.addedDocuments) {
 				const resource = URI.revive(data.uri);
-				ok(!this._documents.has(resource.toString()), `document '${resource} already exists!'`);
-
-				const documentData = new ExtHostNotebookDocumentData(
-					this._proxy,
-					resource,
-					data.providerId,
-					data.isDirty,
-					data.cells
-				);
-				this._documents.set(resource.toString(), documentData);
-				addedDocuments.push(documentData);
+				// Can potentially have a document with this URI already if it was created
+				// separately from the notebook editor.
+				if (!this._documents.has(resource.toString())) {
+					const documentData = new ExtHostNotebookDocumentData(
+						this._proxy,
+						resource,
+						data.providerId,
+						data.isDirty,
+						data.cells
+					);
+					this._documents.set(resource.toString(), documentData);
+					addedDocuments.push(documentData);
+				}
 			}
 		}
 
@@ -128,7 +132,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 
 		// now that the internal state is complete, fire events
 		if (removedDocuments) {
-			// TODO add doc close event
+			removedDocuments.forEach(d => this._onDidCloseNotebook.fire(d.document));
 		}
 		if (addedDocuments) {
 			addedDocuments.forEach(d => this._onDidOpenNotebook.fire(d.document));
@@ -247,7 +251,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 
 	registerNavigationProvider(provider: azdata.nb.NavigationProvider): vscode.Disposable {
 		if (!provider || !provider.providerId) {
-			throw new Error(localize('providerRequired', "A NotebookProvider with valid providerId must be passed to this method"));
+			throw new Error(localize('navigationProviderRequired', "A NavigationProvider with valid providerId must be passed to this method"));
 		}
 		const handle = this._addNewAdapter(provider);
 		this._proxy.$registerNavigationProvider(provider.providerId, handle);
@@ -255,6 +259,5 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 			this._adapters.delete(handle);
 		});
 	}
-
 	//#endregion
 }

@@ -14,11 +14,13 @@ import * as nls from 'vs/nls';
 import Severity from 'vs/base/common/severity';
 import { INotificationService, INotification } from 'vs/platform/notification/common/notification';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { getRootPath, resolveCurrentDirectory } from 'sql/platform/common/pathUtilities';
+import { getRootPath, resolveCurrentDirectory } from 'sql/platform/workspace/common/pathUtilities';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IFileDialogService, FileFilter } from 'vs/platform/dialogs/common/dialogs';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { Schemas } from 'vs/base/common/network';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 let prevSavePath: URI;
 
@@ -37,6 +39,7 @@ export interface SaveResultsResponse {
 export enum SaveFormat {
 	CSV = 'csv',
 	JSON = 'json',
+	MARKDOWN = 'markdown',
 	EXCEL = 'excel',
 	XML = 'xml'
 }
@@ -56,7 +59,8 @@ export class ResultSerializer {
 		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
 		@IFileDialogService private readonly fileDialogService: IFileDialogService,
 		@INotificationService private _notificationService: INotificationService,
-		@IOpenerService private readonly openerService: IOpenerService
+		@IOpenerService private readonly openerService: IOpenerService,
+		@ICommandService private readonly commandService: ICommandService
 	) { }
 
 	/**
@@ -99,23 +103,23 @@ export class ResultSerializer {
 		return getRootPath(this._contextService);
 	}
 
-	private promptForFilepath(format: SaveFormat, resourceUri: string): Promise<URI | undefined> {
+	private async promptForFilepath(format: SaveFormat, resourceUri: string): Promise<URI | undefined> {
 		let filepathPlaceHolder = prevSavePath ? path.dirname(prevSavePath.fsPath) : resolveCurrentDirectory(resourceUri, this.rootPath);
-		if (filepathPlaceHolder) {
-			filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(format));
+		if (!filepathPlaceHolder) {
+			// If we haven't saved previously and there isn't a file path associated with this resource (e.g. for untitled files)
+			// then fall back to the system default
+			filepathPlaceHolder = (await this.fileDialogService.defaultFilePath(Schemas.file)).fsPath;
 		}
-
-		return this.fileDialogService.showSaveDialog({
+		filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(format));
+		const fileUri = await this.fileDialogService.showSaveDialog({
 			title: nls.localize('resultsSerializer.saveAsFileTitle', "Choose Results File"),
 			defaultUri: filepathPlaceHolder ? URI.file(filepathPlaceHolder) : undefined,
 			filters: this.getResultsFileExtension(format)
-		}).then(filePath => {
-			if (filePath) {
-				prevSavePath = filePath;
-				return filePath;
-			}
-			return undefined;
 		});
+		if (fileUri) {
+			prevSavePath = fileUri;
+		}
+		return fileUri;
 	}
 
 	private getResultsDefaultFilename(format: SaveFormat): string {
@@ -126,6 +130,9 @@ export class ResultSerializer {
 				break;
 			case SaveFormat.JSON:
 				fileName = fileName + '.json';
+				break;
+			case SaveFormat.MARKDOWN:
+				fileName = fileName + '.md';
 				break;
 			case SaveFormat.EXCEL:
 				fileName = fileName + '.xlsx';
@@ -152,6 +159,10 @@ export class ResultSerializer {
 				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionJSONTitle', "JSON");
 				fileFilter.extensions = ['json'];
 				break;
+			case SaveFormat.MARKDOWN:
+				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionMarkdownTitle', "Markdown");
+				fileFilter.extensions = ['md'];
+				break;
 			case SaveFormat.EXCEL:
 				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionExcelTitle', "Excel Workbook");
 				fileFilter.extensions = ['xlsx'];
@@ -169,27 +180,27 @@ export class ResultSerializer {
 		return fileFilters;
 	}
 
-	public getBasicSaveParameters(format: string): SaveResultsRequestParams {
-		let saveResultsParams: SaveResultsRequestParams;
-
-		if (format === SaveFormat.CSV) {
-			saveResultsParams = this.getConfigForCsv();
-		} else if (format === SaveFormat.JSON) {
-			saveResultsParams = this.getConfigForJson();
-		} else if (format === SaveFormat.EXCEL) {
-			saveResultsParams = this.getConfigForExcel();
-		} else if (format === SaveFormat.XML) {
-			saveResultsParams = this.getConfigForXml();
+	public getBasicSaveParameters(format: SaveFormat): SaveResultsRequestParams {
+		switch (format) {
+			case SaveFormat.CSV:
+				return this.getConfigForCsv();
+			case SaveFormat.EXCEL:
+				return this.getConfigForExcel();
+			case SaveFormat.JSON:
+				return this.getConfigForJson();
+			case SaveFormat.MARKDOWN:
+				return this.getConfigForMarkdown();
+			case SaveFormat.XML:
+				return this.getConfigForXml();
 		}
-		return saveResultsParams!; // this could be unsafe
 	}
-
 
 	private getConfigForCsv(): SaveResultsRequestParams {
 		let saveResultsParams = <SaveResultsRequestParams>{ resultFormat: SaveFormat.CSV as string };
 
 		// get save results config from vscode config
 		let saveConfig = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.saveAsCsv;
+
 		// if user entered config, set options
 		if (saveConfig) {
 			if (saveConfig.includeHeaders !== undefined) {
@@ -214,21 +225,43 @@ export class ResultSerializer {
 
 	private getConfigForJson(): SaveResultsRequestParams {
 		// JSON does not currently have special conditions
-		let saveResultsParams = <SaveResultsRequestParams>{ resultFormat: SaveFormat.JSON as string };
+		return <SaveResultsRequestParams>{ resultFormat: SaveFormat.JSON as string };
+	}
+
+	private getConfigForMarkdown(): SaveResultsRequestParams {
+		let saveResultsParams = <SaveResultsRequestParams>{ resultFormat: SaveFormat.MARKDOWN as string };
+
+		// Get config from VSCode config and build params with it if user has set config
+		const saveConfig = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.saveAsMarkdown;
+		if (saveConfig) {
+			if (saveConfig.encoding) {
+				saveResultsParams.encoding = saveConfig.encoding;
+			}
+			if (saveConfig.includeHeaders !== undefined) {
+				saveResultsParams.includeHeaders = saveConfig.includeHeaders;
+			}
+			if (saveConfig.lineSeparator !== undefined) {
+				saveResultsParams.lineSeperator = saveConfig.lineSeparator;
+			}
+		}
+
 		return saveResultsParams;
 	}
 
 	private getConfigForExcel(): SaveResultsRequestParams {
-		// get save results config from vscode config
-		// Note: we are currently using the configSaveAsCsv setting since it has the option mssql.saveAsCsv.includeHeaders
-		// and we want to have just 1 setting that lists this.
-		let config = this.getConfigForCsv();
-		config.resultFormat = SaveFormat.EXCEL;
-		config.delimiter = undefined;
-		config.lineSeperator = undefined;
-		config.textIdentifier = undefined;
-		config.encoding = undefined;
-		return config;
+		let saveResultsParams = <SaveResultsRequestParams>{ resultFormat: SaveFormat.EXCEL as string };
+
+		// Get save results config from vscode config
+		let saveConfig = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.saveAsExcel;
+
+		// If user entered config, set options
+		if (saveConfig) {
+			if (saveConfig.includeHeaders !== undefined) {
+				saveResultsParams.includeHeaders = saveConfig.includeHeaders;
+			}
+		}
+
+		return saveResultsParams;
 	}
 
 	private getConfigForXml(): SaveResultsRequestParams {
@@ -236,6 +269,7 @@ export class ResultSerializer {
 
 		// get save results config from vscode config
 		let saveConfig = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.saveAsXml;
+
 		// if user entered config, set options
 		if (saveConfig) {
 			if (saveConfig.formatted !== undefined) {
@@ -250,7 +284,14 @@ export class ResultSerializer {
 	}
 
 
-	private getParameters(uri: string, filePath: URI, batchIndex: number, resultSetNo: number, format: string, selection?: Slick.Range): SaveResultsRequestParams {
+	private getParameters(
+		uri: string,
+		filePath: URI,
+		batchIndex: number,
+		resultSetNo: number,
+		format: SaveFormat,
+		selection?: Slick.Range
+	): SaveResultsRequestParams {
 		let saveResultsParams = this.getBasicSaveParameters(format);
 		saveResultsParams.filePath = filePath.fsPath;
 		saveResultsParams.ownerUri = uri;
@@ -314,7 +355,8 @@ export class ResultSerializer {
 	 * Open the saved file in a new vscode editor pane
 	 */
 	private openSavedFile(filePath: URI, format: string): void {
-		if (format !== SaveFormat.EXCEL) {
+		const openAfterSaveConfig = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.openAfterSave;
+		if (format !== SaveFormat.EXCEL && openAfterSaveConfig) {
 			this._editorService.openEditor({ resource: filePath }).then((result) => {
 
 			}, (error: any) => {
@@ -326,11 +368,17 @@ export class ResultSerializer {
 		} else {
 			this._notificationService.prompt(
 				Severity.Info,
-				nls.localize('msgSaveSucceeded', "Successfully saved results to {0}", filePath.path),
+				nls.localize('msgSaveSucceeded', "Successfully saved results to {0}", filePath.fsPath),
 				[{
 					label: nls.localize('openFile', "Open file"),
 					run: () => {
-						this.openerService.open(filePath, { openExternal: true });
+						this.openerService.open(filePath, { openExternal: format === SaveFormat.EXCEL });
+					}
+				},
+				{
+					label: nls.localize('openFileLocation', "Open file location"),
+					run: async () => {
+						this.commandService.executeCommand('revealFileInOS', filePath);
 					}
 				}]
 			);

@@ -7,7 +7,7 @@ import * as should from 'should';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
 
-import { IPrompter, confirm, IQuestion } from '../../prompts/question';
+import { IPrompter, IQuestion, QuestionTypes } from '../../prompts/question';
 import CodeAdapter from '../../prompts/adapter';
 
 
@@ -42,7 +42,7 @@ describe('Prompt', () => {
 	it('Should find prompt for confirm type', async function (): Promise<void> {
 		const quickPickSpy = sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve('Yes') as any);
 		await prompter.promptSingle<boolean>(<IQuestion>{
-			type: confirm,
+			type: QuestionTypes.confirm,
 			message: 'sample message',
 			default: false
 		});

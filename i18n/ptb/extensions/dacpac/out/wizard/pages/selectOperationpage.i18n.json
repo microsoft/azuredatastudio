@@ -9,5 +9,5 @@
 	"dacFx.deployRadioButtonLabel": "Implantar um arquivo .dacpac de aplicativo de camada de dados em uma instância do SQL Server [implantar Dacpac]",
 	"dacFx.extractRadioButtonLabel": "Extrair um aplicativo de camada de dados de uma instância do SQL Server para um arquivo .dacpac [Extrair Dacpac]",
 	"dacFx.importRadioButtonLabel": "Criar um banco de dados de um arquivo .bacpac [Importar Bacpac]",
-	"dacFx.exportRadioButtonLabel": "Exportar o esquema e os dados de um banco de dados para o formato de arquivo lógico .bacpac [exportar Bacpac]"
+	"dacFx.exportRadioButtonLabel": "Exportar o esquema e os dados de um banco de dados para o formato de arquivo lógico .bacpac [Exportar Bacpac]"
 }

@@ -18,7 +18,7 @@ import { getErrorMessage } from 'vs/base/common/errors';
 
 let notebookMoreActionMsg = localize('notebook.failed', "Please select active cell and try again");
 const emptyExecutionCountLabel = '[ ]';
-const HIDE_ICON_CLASS = ' hideIcon';
+const HIDE_ICON_CLASS = 'hideIcon';
 
 function hasModelAndCell(context: CellContext, notificationService: INotificationService): boolean {
 	if (!context || !context.model) {
@@ -53,11 +53,10 @@ export abstract class CellActionBase extends Action {
 		return true;
 	}
 
-	public run(context: CellContext): Promise<boolean> {
+	public override async run(context: CellContext): Promise<void> {
 		if (hasModelAndCell(context, this.notificationService)) {
-			return this.doRun(context).then(() => true);
+			return this.doRun(context);
 		}
-		return Promise.resolve(true);
 	}
 
 	abstract doRun(context: CellContext): Promise<void>;
@@ -71,7 +70,7 @@ interface IActionStateData {
 	commandId?: string;
 }
 
-class IMultiStateData<T> {
+export class IMultiStateData<T> {
 	private _stateMap = new Map<T, IActionStateData>();
 	constructor(mappings: { key: T, value: IActionStateData }[], private _state: T, private _baseClass?: string) {
 		if (mappings) {
@@ -121,7 +120,7 @@ class IMultiStateData<T> {
 	}
 }
 
-abstract class MultiStateAction<T> extends Action {
+export abstract class MultiStateAction<T> extends Action {
 	constructor(
 		id: string,
 		protected states: IMultiStateData<T>,
@@ -172,8 +171,8 @@ export class RunCellAction extends MultiStateAction<CellExecutionState> {
 		this.ensureContextIsUpdated(context);
 	}
 
-	public run(context?: CellContext): Promise<boolean> {
-		return this.doRun(context).then(() => true);
+	public override async run(context?: CellContext): Promise<void> {
+		return this.doRun(context);
 	}
 
 	public async doRun(context: CellContext): Promise<void> {

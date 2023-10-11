@@ -3,77 +3,119 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import * as path from 'path';
+import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
-import * as cp from 'promisify-child-process';
-import * as nls from 'vscode-nls';
+import * as path from 'path';
+import * as semver from 'semver';
 import { isNullOrUndefined } from 'util';
+import * as vscode from 'vscode';
+import * as nls from 'vscode-nls';
+import { DoNotAskAgain, Install, DotnetInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, UpdateDotnetLocation } from '../common/constants';
 import * as utils from '../common/utils';
+import { ShellCommandOptions, ShellExecutionHelper } from './shellExecutionHelper';
 const localize = nls.loadMessageBundle();
 
 export const DBProjectConfigurationKey: string = 'sqlDatabaseProjects';
 export const NetCoreInstallLocationKey: string = 'netCoreSDKLocation';
-export const NextCoreNonWindowsDefaultPath = '/usr/local/share';
-export const NetCoreInstallationConfirmation: string = localize('sqlDatabaseProjects.NetCoreInstallationConfirmation', "The .NET Core SDK cannnot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .Net Core SDK location in settings if already installed.");
-export const UpdateNetCoreLocation: string = localize('sqlDatabaseProjects.UpdateNetCoreLocation', "Update .Net Core location");
-export const InstallNetCore: string = localize('sqlDatabaseProjects.InstallNetCore', "Install .Net Core SDK");
+export const DotnetInstallLocationKey: string = 'dotnetSDK Location';
+export const NetCoreDoNotAskAgainKey: string = 'netCoreDoNotAsk';
+export const NetCoreMacDefaultPath = '/usr/local/share';
+export const NetCoreLinuxDefaultPath = '/usr/share';
+export const winPlatform: string = 'win32';
+export const macPlatform: string = 'darwin';
+export const linuxPlatform: string = 'linux';
+export const minSupportedNetCoreVersionForBuild: string = '3.1.0'; // TODO: watch out for EOL support in Dec 2022 https://github.com/microsoft/azuredatastudio/issues/17800
 
-const projectsOutputChannel = localize('sqlDatabaseProjects.outputChannel', "Database Projects");
-const dotnet = os.platform() === 'win32' ? 'dotnet.exe' : 'dotnet';
-
-export interface DotNetCommandOptions {
-	workingDirectory?: string;
-	additionalEnvironmentVariables?: NodeJS.ProcessEnv;
-	commandTitle?: string;
-	argument?: string;
+export const enum netCoreInstallState {
+	netCoreNotPresent,
+	netCoreVersionNotSupported,
+	netCoreVersionSupported
 }
 
-export class NetCoreTool {
+const dotnet = os.platform() === 'win32' ? 'dotnet.exe' : 'dotnet';
 
-	private static _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(projectsOutputChannel);
+export class NetCoreTool extends ShellExecutionHelper {
 
-	public async findOrInstallNetCore(): Promise<boolean> {
-		if (!this.isNetCoreInstallationPresent) {
-			await this.showInstallDialog();
-			return false;
+	private osPlatform: string = os.platform();
+	private netCoreSdkInstalledVersion: string | undefined;
+	private netCoreInstallState: netCoreInstallState = netCoreInstallState.netCoreVersionSupported;
+
+	/**
+	 * This method presents the installation dialog for .NET Core, if not already present/supported
+	 * @param skipVersionSupportedCheck If true then skip the check to determine whether the .NET version is supported (for commands that work on all versions)
+	 * @returns True if .NET version was found and is supported
+	 * 			False if .NET version isn't present or present but not supported
+	 */
+	public async findOrInstallNetCore(skipVersionSupportedCheck = false): Promise<boolean> {
+		if (!this.isNetCoreInstallationPresent || (this.isNetCoreInstallationPresent && !skipVersionSupportedCheck)) {
+			if ((!this.isNetCoreInstallationPresent || !await this.isNetCoreVersionSupportedForBuild())) {
+				if (vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDoNotAskAgainKey] !== true) {
+					void this.showInstallDialog();		// Removing await so that Build and extension load process doesn't wait on user input
+				}
+				return false;
+			}
 		}
+
+		this.netCoreInstallState = netCoreInstallState.netCoreVersionSupported;
 		return true;
 	}
 
-	private async showInstallDialog(): Promise<void> {
-		let result = await vscode.window.showInformationMessage(NetCoreInstallationConfirmation, UpdateNetCoreLocation, InstallNetCore);
-		if (result === UpdateNetCoreLocation) {
+	constructor(_outputChannel: vscode.OutputChannel) {
+		super(_outputChannel);
+	}
+
+	public async showInstallDialog(): Promise<void> {
+		let result;
+		if (this.netCoreInstallState === netCoreInstallState.netCoreNotPresent) {
+			result = await vscode.window.showErrorMessage(DotnetInstallationConfirmation, UpdateDotnetLocation, Install, DoNotAskAgain);
+		} else {
+			result = await vscode.window.showErrorMessage(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!), UpdateDotnetLocation, Install, DoNotAskAgain);
+		}
+
+		if (result === UpdateDotnetLocation) {
 			//open settings
 			await vscode.commands.executeCommand('workbench.action.openGlobalSettings');
-		}
-		else if (result === InstallNetCore) {
+		} else if (result === Install) {
 			//open install link
-			const dotnetcoreURL = 'https://dotnet.microsoft.com/download/dotnet-core/3.1';
-			await vscode.env.openExternal(vscode.Uri.parse(dotnetcoreURL));
+			const dotnetSdkUrl = 'https://aka.ms/sqlprojects-dotnet';
+			await vscode.env.openExternal(vscode.Uri.parse(dotnetSdkUrl));
+		} else if (result === DoNotAskAgain) {
+			const config = vscode.workspace.getConfiguration(DBProjectConfigurationKey);
+			await config.update(NetCoreDoNotAskAgainKey, true, vscode.ConfigurationTarget.Global);
 		}
 	}
 
-	private get isNetCoreInstallationPresent(): Boolean {
-		return (!isNullOrUndefined(this.netcoreInstallLocation) && fs.existsSync(this.netcoreInstallLocation));
+	private get isNetCoreInstallationPresent(): boolean {
+		const netCoreInstallationPresent = (!isNullOrUndefined(this.netcoreInstallLocation) && fs.existsSync(this.netcoreInstallLocation));
+		if (!netCoreInstallationPresent) {
+			this.netCoreInstallState = netCoreInstallState.netCoreNotPresent;
+		}
+		return netCoreInstallationPresent;
 	}
 
 	public get netcoreInstallLocation(): string {
-		return vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreInstallLocationKey] ||
+		return vscode.workspace.getConfiguration(DBProjectConfigurationKey)[DotnetInstallLocationKey] ||
 			this.defaultLocalInstallLocationByDistribution;
 	}
 
 	private get defaultLocalInstallLocationByDistribution(): string | undefined {
-		const osPlatform: string = os.platform();
-		return (osPlatform === 'win32') ? this.defaultWindowsLocation :
-			(osPlatform === 'darwin' || osPlatform === 'linux') ? this.defaultnonWindowsLocation :
-				undefined;
+		switch (this.osPlatform) {
+			case winPlatform: return this.defaultWindowsLocation;
+			case macPlatform: return this.defaultMacLocation;
+			case linuxPlatform: return this.defaultLinuxLocation;
+			default: return undefined;
+		}
 	}
 
-	private get defaultnonWindowsLocation(): string | undefined {
-		const defaultNonWindowsInstallLocation = NextCoreNonWindowsDefaultPath; //default folder for net core sdk
-		return this.getDotnetPathIfPresent(defaultNonWindowsInstallLocation) ||
+	private get defaultMacLocation(): string | undefined {
+		return this.getDotnetPathIfPresent(NetCoreMacDefaultPath) ||			//default folder for net core sdk on Mac
+			this.getDotnetPathIfPresent(os.homedir()) ||
+			undefined;
+	}
+
+	private get defaultLinuxLocation(): string | undefined {
+		return this.getDotnetPathIfPresent(NetCoreLinuxDefaultPath) ||			//default folder for net core sdk on Linux
 			this.getDotnetPathIfPresent(os.homedir()) ||
 			undefined;
 	}
@@ -91,70 +133,93 @@ export class NetCoreTool {
 		return undefined;
 	}
 
-	public async runDotnetCommand(options: DotNetCommandOptions): Promise<string> {
+	/**
+	 * This function checks if the installed dotnet version is at least minSupportedNetCoreVersionForBuild.
+	 * Versions lower than minSupportedNetCoreVersionForBuild aren't supported for building projects.
+	 * Returns: True if installed dotnet version is supported, false otherwise.
+	 * 			Undefined if dotnet isn't installed.
+	 */
+	private async isNetCoreVersionSupportedForBuild(): Promise<boolean | undefined> {
+		try {
+			const spawn = child_process.spawn;
+			let child: child_process.ChildProcessWithoutNullStreams;
+			let isSupported: boolean = false;
+			const stdoutBuffers: Buffer[] = [];
+
+			child = spawn('dotnet --version', [], {
+				shell: true
+			});
+
+			child.stdout.on('data', (b: Buffer) => stdoutBuffers.push(b));
+
+			await new Promise((resolve, reject) => {
+				child.on('exit', () => {
+					this.netCoreSdkInstalledVersion = Buffer.concat(stdoutBuffers).toString('utf8').trim();
+
+					try {
+						if (semver.gte(this.netCoreSdkInstalledVersion, minSupportedNetCoreVersionForBuild)) {		// Net core version greater than or equal to minSupportedNetCoreVersion are supported for Build
+							isSupported = true;
+						} else {
+							isSupported = false;
+						}
+						resolve({ stdout: this.netCoreSdkInstalledVersion });
+					} catch (err) {
+						console.log(err);
+						reject(err);
+					}
+				});
+				child.on('error', (err) => {
+					console.log(err);
+					this.netCoreInstallState = netCoreInstallState.netCoreNotPresent;
+					reject(err);
+				});
+			});
+
+			if (isSupported) {
+				this.netCoreInstallState = netCoreInstallState.netCoreVersionSupported;
+			} else {
+				this.netCoreInstallState = netCoreInstallState.netCoreVersionNotSupported;
+			}
+
+			return isSupported;
+		} catch (err) {
+			console.log(err);
+			this.netCoreInstallState = netCoreInstallState.netCoreNotPresent;
+			return undefined;
+		}
+	}
+
+	/**
+	 * Runs the specified dotnet command
+	 * @param options The options to use when launching the process
+	 * @param skipVersionSupportedCheck If true then skip the check to determine whether the .NET version is supported (for commands that work on all versions)
+	 * @returns
+	 */
+	public async runDotnetCommand(options: ShellCommandOptions, skipVersionSupportedCheck = false): Promise<string> {
 		if (options && options.commandTitle !== undefined && options.commandTitle !== null) {
-			NetCoreTool._outputChannel.appendLine(`\t[ ${options.commandTitle} ]`);
+			this._outputChannel.appendLine(`\t[ ${options.commandTitle} ]`);
 		}
 
-		if (!this.findOrInstallNetCore()) {
-			throw new Error(NetCoreInstallationConfirmation);
+		if (!(await this.findOrInstallNetCore(skipVersionSupportedCheck))) {
+			if (this.netCoreInstallState === netCoreInstallState.netCoreNotPresent) {
+				throw new DotNetError(DotnetInstallationConfirmation);
+			} else {
+				throw new DotNetError(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!));
+			}
 		}
 
 		const dotnetPath = utils.getQuotedPath(path.join(this.netcoreInstallLocation, dotnet));
 		const command = dotnetPath + ' ' + options.argument;
 
 		try {
-			return await this.runStreamedCommand(command, NetCoreTool._outputChannel, options);
+			return await this.runStreamedCommand(command, options);
 		} catch (error) {
-			NetCoreTool._outputChannel.append(localize('sqlDatabaseProject.RunCommand.ErroredOut', "\t>>> {0}   … errored out: {1}", command, utils.getErrorMessage(error))); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
+			this._outputChannel.append(localize('sqlDatabaseProject.RunCommand.ErroredOut', "\t>>> {0}   … errored out: {1}", command, utils.getErrorMessage(error))); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
 			throw error;
 		}
 	}
+}
 
-	// spawns the dotnet command with arguments and redirects the error and output to ADS output channel
-	public async runStreamedCommand(command: string, outputChannel: vscode.OutputChannel, options?: DotNetCommandOptions): Promise<string> {
-		const stdoutData: string[] = [];
-		outputChannel.appendLine(`    > ${command}`);
+export class DotNetError extends Error {
 
-		const spawnOptions = {
-			cwd: options && options.workingDirectory,
-			env: Object.assign({}, process.env, options && options.additionalEnvironmentVariables),
-			encoding: 'utf8',
-			maxBuffer: 10 * 1024 * 1024, // 10 Mb of output can be captured.
-			shell: true,
-			detached: false,
-			windowsHide: true
-		};
-
-		const child = cp.spawn(command, [], spawnOptions);
-		outputChannel.show();
-
-		// Add listeners to print stdout and stderr and exit code
-		child.on('exit', (code: number | null, signal: string | null) => {
-			if (code !== null) {
-				outputChannel.appendLine(localize('sqlDatabaseProjects.RunStreamedCommand.ExitedWithCode', "    >>> {0}    … exited with code: {1}", command, code));
-			} else {
-				outputChannel.appendLine(localize('sqlDatabaseProjects.RunStreamedCommand.ExitedWithSignal', "    >>> {0}   … exited with signal: {1}", command, signal));
-			}
-		});
-
-		child.stdout!.on('data', (data: string | Buffer) => {
-			stdoutData.push(data.toString());
-			this.outputDataChunk(data, outputChannel, localize('sqlDatabaseProjects.RunCommand.stdout', "    stdout: "));
-		});
-
-		child.stderr!.on('data', (data: string | Buffer) => {
-			this.outputDataChunk(data, outputChannel, localize('sqlDatabaseProjects.RunCommand.stderr', "    stderr: "));
-		});
-		await child;
-
-		return stdoutData.join('');
-	}
-
-	private outputDataChunk(data: string | Buffer, outputChannel: vscode.OutputChannel, header: string): void {
-		data.toString().split(/\r?\n/)
-			.forEach(line => {
-				outputChannel.appendLine(header + line);
-			});
-	}
 }

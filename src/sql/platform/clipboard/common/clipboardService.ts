@@ -11,7 +11,7 @@ export const IClipboardService = createDecorator<IClipboardService>('sqlclipboar
 
 export interface IClipboardService extends vsIClipboardService {
 	/**
-	 * Writes the input image as a dataurl to the clipbaord
+	 * Writes the input image as a dataurl to the clipboard
 	 */
 	writeImageDataUrl(data: string): Promise<void>;
 }

@@ -20,13 +20,22 @@
 	border: 1px solid;
 }
 
-.declarative-table-cell>checkbox {
-	float: left;
-	margin: 0 auto;
-	width: 100%;
-	text-align: center;
+.declarative-table .declarative-table-cell .codicon.toggle-more {
+	border-width: 0px;
+	height: 16px;
+	width: 26px;
+	vertical-align: middle;
+	cursor: pointer;
 }
 
-.declarative-table-row.selected {
-	background-color: rgb(0, 120, 215);
+.declarative-table .declarative-table-cell .codicon.toggle-more:focus {
+	outline-style: solid;
+}
+
+.declarative-table checkbox input[type='checkbox'] {
+	margin: 3px;
+}
+
+.declarative-table-cell-checkbox {
+	text-align: center;
 }

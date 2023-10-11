@@ -1,0 +1,5 @@
+{
+	"extensionDependencies": [
+		"ms-mssql.mssql"
+	]
+}

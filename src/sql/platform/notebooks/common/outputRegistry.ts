@@ -10,13 +10,15 @@ export const Extensions = {
 };
 
 export const HideInputTag = 'hide_input';
+export const ParametersTag = 'parameters';
+export const InjectedParametersTag = 'injected-parameters';
 
-export interface ICellComponenetRegistry {
+export interface ICellComponentRegistry {
 	registerComponent(component: any): void;
 	getComponents(): Array<any>;
 }
 
-class CellComponenetRegistry implements ICellComponenetRegistry {
+class CellComponentRegistry implements ICellComponentRegistry {
 	private components = new Array<any>();
 
 	registerComponent(component: any): void {
@@ -28,7 +30,7 @@ class CellComponenetRegistry implements ICellComponenetRegistry {
 	}
 }
 
-const componentRegistry = new CellComponenetRegistry();
+const componentRegistry = new CellComponentRegistry();
 Registry.add(Extensions.CellComponentContributions, componentRegistry);
 
 export function registerCellComponent(component: any): void {

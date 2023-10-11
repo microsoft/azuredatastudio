@@ -28,9 +28,9 @@ import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IntervalTimer, createCancelablePromise } from 'vs/base/common/async';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { toDisposable } from 'vs/base/common/lifecycle';
-import { isPromiseCanceledError } from 'vs/base/common/errors';
+import { isCancellationError } from 'vs/base/common/errors';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
@@ -71,7 +71,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
 		@Inject(forwardRef(() => CommonServiceInterface)) private dashboardService: CommonServiceInterface,
-		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
+		@Inject(WIDGET_CONFIG) _config: WidgetConfig,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => Injector)) private _injector: Injector,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
@@ -80,6 +80,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(IFileService) private readonly fileService: IFileService
 	) {
 		super(changeRef);
+		this._config = _config;
 		this.insightConfig = <IInsightsConfig>this._config.widget['insights-widget'];
 		this._loadingMessage = nls.localize('insightsWidgetLoadingMessage', "Loading {0}", this._config.name);
 		this._loadingCompletedMessage = nls.localize('insightsWidgetLoadingCompletedMessage', "Loading {0} completed", this._config.name);
@@ -100,7 +101,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 							}
 						},
 						error => {
-							if (isPromiseCanceledError(error)) {
+							if (isCancellationError(error)) {
 								return;
 							}
 							if (this._inited) {
@@ -164,7 +165,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		this._changeRef.detectChanges();
 	}
 
-	get actions(): Array<Action> {
+	override get actions(): Array<Action> {
 		const actions: Array<Action> = [];
 		if (this.insightConfig.details && (this.insightConfig.details.query || this.insightConfig.details.queryFile)) {
 			actions.push(this.instantiationService.createInstance(InsightAction, InsightAction.ID, InsightAction.LABEL));
@@ -189,14 +190,14 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			};
 			this.lastUpdated = nls.localize('insights.lastUpdated', "Last Updated: {0} {1}", currentTime.toLocaleTimeString(), currentTime.toLocaleDateString());
 			this._changeRef.detectChanges();
-			this.storageService.store(this._getStorageKey(), JSON.stringify(store), StorageScope.GLOBAL);
+			this.storageService.store(this._getStorageKey(), JSON.stringify(store), StorageScope.APPLICATION, StorageTarget.MACHINE);
 		}
 		return result;
 	}
 
 	private _checkStorage(): boolean {
 		if (this.insightConfig.cacheId) {
-			const storage = this.storageService.get(this._getStorageKey(), StorageScope.GLOBAL);
+			const storage = this.storageService.get(this._getStorageKey(), StorageScope.APPLICATION);
 			if (storage) {
 				const storedResult: IStorageResult = JSON.parse(storage);
 				const date = new Date(storedResult.date);

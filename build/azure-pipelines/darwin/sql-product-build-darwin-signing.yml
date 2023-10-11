@@ -9,20 +9,27 @@ steps:
     displayName: 'Download Build Artifacts'
     inputs:
       downloadType: specific
-      itemPattern: 'drop/darwin/archive/azuredatastudio-darwin-unsigned.zip'
+      itemPattern: 'drop/darwin/archive/azuredatastudio-darwin-$(VSCODE_ARCH)-unsigned.zip'
       downloadPath: '$(Build.SourcesDirectory)/.build/'
 
   - script: |
       pushd $(Build.SourcesDirectory)/.build/drop/darwin/archive
-      mv azuredatastudio-darwin-unsigned.zip azuredatastudio-darwin.zip
+      mv azuredatastudio-darwin-$(VSCODE_ARCH)-unsigned.zip azuredatastudio-darwin-$(VSCODE_ARCH).zip
     displayName: 'Rename the file'
+
+  - task: UseDotNet@2
+    displayName: 'Install .NET Core sdk for signing'
+    inputs:
+      packageType: sdk
+      version: 2.1.x
+      installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning'
     inputs:
       ConnectedServiceName: 'Code Signing'
       FolderPath: '$(Build.SourcesDirectory)/.build/drop/darwin/archive'
-      Pattern: 'azuredatastudio-darwin.zip'
+      Pattern: 'azuredatastudio-darwin-$(VSCODE_ARCH).zip'
       signConfigType: inlineSignParams
       inlineOperation: |
         [
@@ -40,7 +47,7 @@ steps:
     condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
-      zip -d $(Build.SourcesDirectory)/.build/drop/darwin/archive/azuredatastudio-darwin.zip "*.pkg"
+      zip -d $(Build.SourcesDirectory)/.build/drop/darwin/archive/azuredatastudio-darwin-$(VSCODE_ARCH).zip "*.pkg"
     displayName: Clean Archive
     condition: and(succeeded(), eq(variables['signed'], true))
 
@@ -49,7 +56,7 @@ steps:
     inputs:
       ConnectedServiceName: 'Code Signing'
       FolderPath: '$(Build.SourcesDirectory)/.build/drop/darwin/archive'
-      Pattern: 'azuredatastudio-darwin.zip'
+      Pattern: 'azuredatastudio-darwin-$(VSCODE_ARCH).zip'
       signConfigType: inlineSignParams
       inlineOperation: |
         [

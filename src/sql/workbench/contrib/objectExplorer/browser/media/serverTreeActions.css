@@ -4,29 +4,62 @@
  *--------------------------------------------------------------------------------------------*/
 
 /* Icons for various registered servers actions */
-.monaco-workbench .add-server-action {
-	background-image: url('add_server.svg');
+.monaco-workbench .actions-container .action-label.add-server-action,
+.monaco-workbench.hc-light .actions-container .action-label.add-server-action {
+	background-image: url('add_server.svg') !important;
 }
 
-.monaco-workbench.vs-dark .add-server-action,
-.monaco-workbench.hc-black .add-server-action {
-	background-image: url('add_server_inverse.svg');
+.monaco-workbench.vs-dark .actions-container .action-label.add-server-action,
+.monaco-workbench.hc-black .actions-container .action-label.add-server-action,
+.monaco-list:focus .monaco-list-rows .monaco-list-row.selected .actions-container .action-label.add-server-action {
+	background-image: url('add_server_inverse.svg') !important;
 }
 
-.monaco-workbench .add-server-group-action {
-	background-image: url('new_servergroup.svg');
+.monaco-workbench .actions-container .action-label.add-server-group-action,
+.monaco-workbench.hc-light .actions-container .action-label.add-server-group-action {
+	background-image: url('new_servergroup.svg') !important;
 }
 
-.monaco-workbench.vs-dark .add-server-group-action,
-.monaco-workbench.hc-black .add-server-group-action {
-	background-image: url('new_servergroup_inverse.svg');
+.monaco-workbench.vs-dark .actions-container .action-label.add-server-group-action,
+.monaco-workbench.hc-black .actions-container .action-label.add-server-group-action {
+	background-image: url('new_servergroup_inverse.svg') !important;
 }
 
-.monaco-workbench .active-connections-action {
-	background-image: url('connected_active_server.svg');
+.monaco-workbench .actions-container .action-label.active-connections-action,
+.monaco-workbench.hc-light .actions-container .action-label.active-connections-action {
+	background-image: url('connected_active_server.svg') !important;
 }
 
-.monaco-workbench.vs-dark .active-connections-action,
-.monaco-workbench.hc-black .active-connections-action{
-	background-image: url('connected_active_server_inverse.svg');
+.monaco-workbench.vs-dark .actions-container .action-label.active-connections-action,
+.monaco-workbench.hc-black .actions-container .action-label.active-connections-action {
+	background-image: url('connected_active_server_inverse.svg') !important;
+}
+
+.monaco-workbench .actions-container .action-label.server-page,
+.monaco-workbench.hc-light .actions-container .action-label.server-page {
+	background-image: url('server_page.svg') !important;
+}
+
+.monaco-workbench.vs-dark .actions-container .action-label.server-page,
+.monaco-workbench.hc-black .actions-container .action-label.server-page {
+	background-image: url('server_page_inverse.svg') !important;
+}
+
+.monaco-workbench .actions-container .action-label.remove-filter-action,
+.monaco-workbench.hc-light .actions-container .action-label.remove-filter-action {
+	background-image: url('remove_filter.svg') !important;
+}
+
+.monaco-workbench.vs-dark .actions-container .action-label.remove-filter-action,
+.monaco-workbench.hc-black .actions-container .action-label.remove-filter-action,
+.monaco-list:focus .monaco-list-rows .monaco-list-row.selected .actions-container .action-label.remove-filter-action {
+	background-image: url('remove_filter_inverse.svg') !important;
+}
+
+/* styles for action labels - without these, the buttons for the Servers view will not be sized correctly */
+.monaco-pane-view .pane > .pane-header > .actions .action-label.icon,
+.monaco-pane-view .pane > .pane-header > .actions .action-label.codicon {
+	background-size: 16px;
+	background-position: center center;
+	background-repeat: no-repeat;
 }

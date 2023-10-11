@@ -25,7 +25,6 @@ import LoadingComponent from 'sql/workbench/browser/modelComponents/loadingCompo
 import FileBrowserTreeComponent from 'sql/workbench/browser/modelComponents/fileBrowserTree.component';
 import EditorComponent from 'sql/workbench/browser/modelComponents/editor.component';
 import DiffEditorComponent from 'sql/workbench/browser/modelComponents/diffeditor.component';
-import DomComponent from 'sql/workbench/browser/modelComponents/dom.component';
 import { registerComponentType } from 'sql/platform/dashboard/browser/modelComponentRegistry';
 import HyperlinkComponent from 'sql/workbench/browser/modelComponents/hyperlink.component';
 import SplitViewContainer from 'sql/workbench/browser/modelComponents/splitviewContainer.component';
@@ -34,6 +33,12 @@ import TabbedPanelComponent from 'sql/workbench/browser/modelComponents/tabbedPa
 import SeparatorComponent from 'sql/workbench/browser/modelComponents/separator.component';
 import { ModelComponentTypes } from 'sql/platform/dashboard/browser/interfaces';
 import PropertiesContainerComponent from 'sql/workbench/browser/modelComponents/propertiesContainer.component';
+import ListViewComponent from 'sql/workbench/browser/modelComponents/listView.component';
+import InfoBoxComponent from 'sql/workbench/browser/modelComponents/infoBox.component';
+import SliderComponent from 'sql/workbench/browser/modelComponents/slider.component';
+import ExecutionPlanComponent from 'sql/workbench/browser/modelComponents/executionPlan.component';
+import ChartComponent from 'sql/workbench/browser/modelComponents/chart.component';
+
 export const DIV_CONTAINER = 'div-container';
 registerComponentType(DIV_CONTAINER, ModelComponentTypes.DivContainer, DivContainer);
 
@@ -104,14 +109,14 @@ registerComponentType(EDITOR_COMPONENT, ModelComponentTypes.Editor, EditorCompon
 export const DIFF_EDITOR_COMPONENT = 'diff-editor-component';
 registerComponentType(DIFF_EDITOR_COMPONENT, ModelComponentTypes.DiffEditor, DiffEditorComponent);
 
-export const DOM_COMPONENT = 'dom-component';
-registerComponentType(DOM_COMPONENT, ModelComponentTypes.Dom, DomComponent);
-
 export const HYPERLINK_COMPONENT = 'hyperlink-component';
 registerComponentType(HYPERLINK_COMPONENT, ModelComponentTypes.Hyperlink, HyperlinkComponent);
 
 export const RADIOCARDGROUP_COMPONENT = 'radiocardgroup-component';
 registerComponentType(RADIOCARDGROUP_COMPONENT, ModelComponentTypes.RadioCardGroup, RadioCardGroup);
+
+export const LISTVIEW_COMPONENT = 'listView-component';
+registerComponentType(LISTVIEW_COMPONENT, ModelComponentTypes.ListView, ListViewComponent);
 
 export const TABBEDPANEL_COMPONENT = 'tabbedpanel-component';
 registerComponentType(TABBEDPANEL_COMPONENT, ModelComponentTypes.TabbedPanel, TabbedPanelComponent);
@@ -121,3 +126,15 @@ registerComponentType(SEPARATOR_COMPONENT, ModelComponentTypes.Separator, Separa
 
 export const PROPERTIESCONTAINER_COMPONENT = 'propertiescontainer-component';
 registerComponentType(PROPERTIESCONTAINER_COMPONENT, ModelComponentTypes.PropertiesContainer, PropertiesContainerComponent);
+
+export const INFOBOX_COMPONENT = 'infobox-component';
+registerComponentType(INFOBOX_COMPONENT, ModelComponentTypes.InfoBox, InfoBoxComponent);
+
+export const SLIDER_COMPONENT = 'slider-component';
+registerComponentType(SLIDER_COMPONENT, ModelComponentTypes.Slider, SliderComponent);
+
+export const EXECUTION_PLAN_COMPONENT = 'executionplan-component';
+registerComponentType(EXECUTION_PLAN_COMPONENT, ModelComponentTypes.ExecutionPlan, ExecutionPlanComponent);
+
+export const CHART_COMPONENT = 'chart-component';
+registerComponentType(CHART_COMPONENT, ModelComponentTypes.Chart, ChartComponent);

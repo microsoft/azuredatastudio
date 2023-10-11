@@ -62,12 +62,18 @@ export default class MainController implements vscode.Disposable {
 	 * Returns an instance of Server Installation from notebook extension
 	 */
 	private async getNotebookExtensionApis(): Promise<nbExtensionApis.IExtensionApi> {
-		let nbExtension = this._apiWrapper.getExtension(constants.notebookExtensionName);
-		if (nbExtension) {
-			await nbExtension.activate();
-			return (nbExtension.exports as nbExtensionApis.IExtensionApi);
-		} else {
-			throw new Error(constants.notebookExtensionNotLoaded);
+		try {
+			let nbExtension = this._apiWrapper.getExtension(constants.notebookExtensionName);
+			if (nbExtension) {
+				await nbExtension.activate();
+				return (nbExtension.exports as nbExtensionApis.IExtensionApi);
+			} else {
+				throw new Error(constants.notebookExtensionNotLoaded);
+			}
+		} catch (err) {
+			this._outputChannel.appendLine(constants.notebookExtensionFailedError);
+			this._apiWrapper.showErrorMessage(constants.notebookExtensionFailedError);
+			throw err;
 		}
 	}
 

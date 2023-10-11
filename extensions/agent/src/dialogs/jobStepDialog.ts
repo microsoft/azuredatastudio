@@ -154,18 +154,20 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 
 	private createCommands(view: azdata.ModelView, queryProvider: azdata.QueryProvider) {
 		this.openButton = view.modelBuilder.button()
-			.withProperties({
+			.withProps({
 				label: this.OpenCommandText,
 				title: this.OpenCommandText,
 				width: '80px',
-				isFile: true
+				isFile: true,
+				secondary: true
 			}).component();
 		this.parseButton = view.modelBuilder.button()
-			.withProperties({
+			.withProps({
 				label: this.ParseCommandText,
 				title: this.ParseCommandText,
 				width: '80px',
-				isFile: false
+				isFile: false,
+				secondary: true
 			}).component();
 		this.openButton.onDidClick(e => {
 			let queryContent = e.fileContent;
@@ -183,7 +185,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 			}
 		});
 		this.commandTextBox = view.modelBuilder.inputBox()
-			.withProperties({
+			.withProps({
 				height: 300,
 				width: 400,
 				multiline: true,
@@ -197,7 +199,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 	private createGeneralTab(databases: string[], queryProvider: azdata.QueryProvider) {
 		this.generalTab.registerContent(async (view) => {
 			this.nameTextBox = view.modelBuilder.inputBox()
-				.withProperties({
+				.withProps({
 					ariaLabel: this.StepNameLabelString,
 					placeHolder: this.StepNameLabelString
 				}).component();
@@ -209,26 +211,26 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 			});
 
 			this.typeDropdown = view.modelBuilder.dropDown()
-				.withProperties({
+				.withProps({
 					value: JobStepDialog.TSQLScript,
 					values: [JobStepDialog.TSQLScript, JobStepDialog.CmdExec, JobStepDialog.Powershell]
 				})
 				.component();
 			this.runAsDropdown = view.modelBuilder.dropDown()
-				.withProperties({
+				.withProps({
 					value: '',
 					values: ['']
 				})
 				.component();
 			this.runAsDropdown.enabled = false;
 			this.databaseDropdown = view.modelBuilder.dropDown()
-				.withProperties({
+				.withProps({
 					value: databases[0],
 					values: databases
 				}).component();
 
 			this.processExitCodeBox = view.modelBuilder.inputBox()
-				.withProperties({
+				.withProps({
 					ariaLabel: this.ProcessExitCodeText,
 					placeHolder: this.ProcessExitCodeText
 				}).component();
@@ -313,7 +315,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 	private createAdvancedTab() {
 		this.advancedTab.registerContent(async (view) => {
 			this.successActionDropdown = view.modelBuilder.dropDown()
-				.withProperties({
+				.withProps({
 					width: '100%',
 					value: JobStepDialog.NextStep,
 					values: [JobStepDialog.NextStep, JobStepDialog.QuitJobReportingSuccess, JobStepDialog.QuitJobReportingFailure]
@@ -322,18 +324,18 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 			let retryFlexContainer = this.createRetryCounters(view);
 
 			this.failureActionDropdown = view.modelBuilder.dropDown()
-				.withProperties({
+				.withProps({
 					value: JobStepDialog.QuitJobReportingFailure,
 					values: [JobStepDialog.QuitJobReportingFailure, JobStepDialog.NextStep, JobStepDialog.QuitJobReportingSuccess]
 				})
 				.component();
 			let optionsGroup = this.createTSQLOptions(view);
 			this.logToTableCheckbox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: this.LogToTableLabel
 				}).component();
 			let appendToExistingEntryInTableCheckbox = view.modelBuilder.checkBox()
-				.withProperties({ label: this.AppendExistingTableEntryLabel }).component();
+				.withProps({ label: this.AppendExistingTableEntryLabel }).component();
 			appendToExistingEntryInTableCheckbox.enabled = false;
 			this.logToTableCheckbox.onChanged(e => {
 				appendToExistingEntryInTableCheckbox.enabled = e;
@@ -344,9 +346,9 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 				.withLayout({ flexFlow: 'row', justifyContent: 'space-between', width: 300 })
 				.withItems([this.logToTableCheckbox]).component();
 			this.logStepOutputHistoryCheckbox = view.modelBuilder.checkBox()
-				.withProperties({ label: this.IncludeStepOutputHistoryLabel }).component();
+				.withProps({ label: this.IncludeStepOutputHistoryLabel }).component();
 			this.userInputBox = view.modelBuilder.inputBox()
-				.withProperties({ inputType: 'text', width: '100%' }).component();
+				.withProps({ inputType: 'text', width: '100%' }).component();
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems(
 					[{
@@ -398,18 +400,18 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 	private createRetryCounters(view: azdata.ModelView) {
 		this.retryAttemptsBox = view.modelBuilder.inputBox()
 			.withValidation(component => Number(component.value) >= 0)
-			.withProperties({
+			.withProps({
 				inputType: 'number',
 				width: '100%',
-				placeHolder: '0'
+				value: '0'
 			})
 			.component();
 		this.retryIntervalBox = view.modelBuilder.inputBox()
 			.withValidation(component => Number(component.value) >= 0)
-			.withProperties({
+			.withProps({
 				inputType: 'number',
 				width: '100%',
-				placeHolder: '0'
+				value: '0'
 			}).component();
 
 		let retryAttemptsContainer = view.modelBuilder.formContainer()
@@ -447,23 +449,23 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		this.fileBrowserDialog.content = [fileBrowserTab];
 		fileBrowserTab.registerContent(async (view) => {
 			this.fileBrowserTree = view.modelBuilder.fileBrowserTree()
-				.withProperties({ ownerUri: this.ownerUri, width: 420, height: 700 })
+				.withProps({ ownerUri: this.ownerUri, width: 420, height: 700 })
 				.component();
 			this.selectedPathTextBox = view.modelBuilder.inputBox()
-				.withProperties({ inputType: 'text' })
+				.withProps({ inputType: 'text' })
 				.component();
 			this.fileBrowserTree.onDidChange((args) => {
 				this.selectedPathTextBox.value = args.fullPath;
 				this.fileBrowserNameBox.value = args.isFile ? path.win32.basename(args.fullPath) : '';
 			});
 			this.fileTypeDropdown = view.modelBuilder.dropDown()
-				.withProperties({
+				.withProps({
 					value: this.AllFilesLabelString,
 					values: [this.AllFilesLabelString]
 				})
 				.component();
 			this.fileBrowserNameBox = view.modelBuilder.inputBox()
-				.withProperties({})
+				.withProps({})
 				.component();
 			let fileBrowserContainer = view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -492,10 +494,14 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 
 	private createTSQLOptions(view: azdata.ModelView) {
 		this.outputFileBrowserButton = view.modelBuilder.button()
-			.withProperties({ width: '20px', label: '...' }).component();
+			.withProps({
+				width: '20px',
+				label: '...',
+				secondary: true
+			}).component();
 		this.outputFileBrowserButton.onDidClick(() => this.openFileBrowserDialog());
 		this.outputFileNameBox = view.modelBuilder.inputBox()
-			.withProperties({
+			.withProps({
 				width: 250,
 				inputType: 'text'
 			}).component();
@@ -513,7 +519,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 				flex: '1 1 50%'
 			}).component();
 		this.appendToExistingFileCheckbox = view.modelBuilder.checkBox()
-			.withProperties({
+			.withProps({
 				label: this.AppendOutputToFileLabel
 			}).component();
 		this.appendToExistingFileCheckbox.enabled = false;

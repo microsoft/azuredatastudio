@@ -3,16 +3,21 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtractTarget } from '../../../../mssql';
+import * as mssql from 'mssql';
+import * as vscodeMssql from 'vscode-mssql';
+
+type ExtractTarget = mssql.ExtractTarget | vscodeMssql.ExtractTarget;
 
 /**
  * Data model to communicate for Import API
  */
 export interface ImportDataModel {
-	serverId: string;
+	connectionUri: string;
 	database: string;
 	projName: string;
 	filePath: string;
 	version: string;
 	extractTarget: ExtractTarget;
+	sdkStyle: boolean;
+	includePermissions?: boolean;
 }

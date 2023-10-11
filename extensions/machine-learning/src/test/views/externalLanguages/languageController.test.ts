@@ -8,7 +8,7 @@ import 'mocha';
 import * as TypeMoq from 'typemoq';
 import { createContext } from './utils';
 import { LanguageController } from '../../../views/externalLanguages/languageController';
-import * as mssql from '../../../../../mssql';
+import * as mssql from 'mssql';
 
 describe('External Languages Controller', () => {
 	it('Should open dialog for manage languages successfully ', async function (): Promise<void> {
@@ -21,7 +21,7 @@ describe('External Languages Controller', () => {
 
 	it('Should list languages successfully ', async function (): Promise<void> {
 		let testContext = createContext();
-		let languages: mssql.ExternalLanguage[]  = [{
+		let languages: mssql.ExternalLanguage[] = [{
 			name: '',
 			contents: [{
 				extensionFileName: '',
@@ -30,7 +30,7 @@ describe('External Languages Controller', () => {
 			}]
 		}];
 
-		testContext.dialogModel.setup( x=> x.getLanguageList()).returns(() => Promise.resolve(languages));
+		testContext.dialogModel.setup(x => x.getLanguageList()).returns(() => Promise.resolve(languages));
 		let controller = new LanguageController(testContext.apiWrapper.object, '', testContext.dialogModel.object);
 		let dialog = await controller.manageLanguages();
 		let actual = await dialog.listLanguages();
@@ -48,7 +48,7 @@ describe('External Languages Controller', () => {
 			}]
 		};
 
-		testContext.dialogModel.setup( x=> x.updateLanguage(language)).returns(() => Promise.resolve());
+		testContext.dialogModel.setup(x => x.updateLanguage(language)).returns(() => Promise.resolve());
 		let controller = new LanguageController(testContext.apiWrapper.object, '', testContext.dialogModel.object);
 		let dialog = await controller.manageLanguages();
 		await dialog.updateLanguage({
@@ -70,7 +70,7 @@ describe('External Languages Controller', () => {
 			}]
 		};
 
-		testContext.dialogModel.setup( x=> x.deleteLanguage(language.name)).returns(() => Promise.resolve());
+		testContext.dialogModel.setup(x => x.deleteLanguage(language.name)).returns(() => Promise.resolve());
 		let controller = new LanguageController(testContext.apiWrapper.object, '', testContext.dialogModel.object);
 		let dialog = await controller.manageLanguages();
 		await dialog.deleteLanguage({

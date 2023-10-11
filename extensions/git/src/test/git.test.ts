@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'mocha';
-import { GitStatusParser, parseGitCommits, parseGitmodules, parseLsTree, parseLsFiles } from '../git';
+import { GitStatusParser, parseGitCommits, parseGitmodules, parseLsTree, parseLsFiles, parseGitRemotes } from '../git';
 import * as assert from 'assert';
 import { splitInChunks } from '../util';
 
@@ -12,19 +12,19 @@ suite('git', () => {
 	suite('GitStatusParser', () => {
 		test('empty parser', () => {
 			const parser = new GitStatusParser();
-			assert.deepEqual(parser.status, []);
+			assert.deepStrictEqual(parser.status, []);
 		});
 
 		test('empty parser 2', () => {
 			const parser = new GitStatusParser();
 			parser.update('');
-			assert.deepEqual(parser.status, []);
+			assert.deepStrictEqual(parser.status, []);
 		});
 
 		test('simple', () => {
 			const parser = new GitStatusParser();
 			parser.update('?? file.txt\0');
-			assert.deepEqual(parser.status, [
+			assert.deepStrictEqual(parser.status, [
 				{ path: 'file.txt', rename: undefined, x: '?', y: '?' }
 			]);
 		});
@@ -34,7 +34,7 @@ suite('git', () => {
 			parser.update('?? file.txt\0');
 			parser.update('?? file2.txt\0');
 			parser.update('?? file3.txt\0');
-			assert.deepEqual(parser.status, [
+			assert.deepStrictEqual(parser.status, [
 				{ path: 'file.txt', rename: undefined, x: '?', y: '?' },
 				{ path: 'file2.txt', rename: undefined, x: '?', y: '?' },
 				{ path: 'file3.txt', rename: undefined, x: '?', y: '?' }
@@ -51,7 +51,7 @@ suite('git', () => {
 			parser.update('');
 			parser.update('?? file3.txt\0');
 			parser.update('');
-			assert.deepEqual(parser.status, [
+			assert.deepStrictEqual(parser.status, [
 				{ path: 'file.txt', rename: undefined, x: '?', y: '?' },
 				{ path: 'file2.txt', rename: undefined, x: '?', y: '?' },
 				{ path: 'file3.txt', rename: undefined, x: '?', y: '?' }
@@ -61,7 +61,7 @@ suite('git', () => {
 		test('combined', () => {
 			const parser = new GitStatusParser();
 			parser.update('?? file.txt\0?? file2.txt\0?? file3.txt\0');
-			assert.deepEqual(parser.status, [
+			assert.deepStrictEqual(parser.status, [
 				{ path: 'file.txt', rename: undefined, x: '?', y: '?' },
 				{ path: 'file2.txt', rename: undefined, x: '?', y: '?' },
 				{ path: 'file3.txt', rename: undefined, x: '?', y: '?' }
@@ -72,7 +72,7 @@ suite('git', () => {
 			const parser = new GitStatusParser();
 			parser.update('?? file.txt\0?? file2');
 			parser.update('.txt\0?? file3.txt\0');
-			assert.deepEqual(parser.status, [
+			assert.deepStrictEqual(parser.status, [
 				{ path: 'file.txt', rename: undefined, x: '?', y: '?' },
 				{ path: 'file2.txt', rename: undefined, x: '?', y: '?' },
 				{ path: 'file3.txt', rename: undefined, x: '?', y: '?' }
@@ -83,7 +83,7 @@ suite('git', () => {
 			const parser = new GitStatusParser();
 			parser.update('?? file.txt');
 			parser.update('\0?? file2.txt\0?? file3.txt\0');
-			assert.deepEqual(parser.status, [
+			assert.deepStrictEqual(parser.status, [
 				{ path: 'file.txt', rename: undefined, x: '?', y: '?' },
 				{ path: 'file2.txt', rename: undefined, x: '?', y: '?' },
 				{ path: 'file3.txt', rename: undefined, x: '?', y: '?' }
@@ -94,7 +94,7 @@ suite('git', () => {
 			const parser = new GitStatusParser();
 			parser.update('?? file.txt\0?? file2.txt\0?? file3.txt');
 			parser.update('\0');
-			assert.deepEqual(parser.status, [
+			assert.deepStrictEqual(parser.status, [
 				{ path: 'file.txt', rename: undefined, x: '?', y: '?' },
 				{ path: 'file2.txt', rename: undefined, x: '?', y: '?' },
 				{ path: 'file3.txt', rename: undefined, x: '?', y: '?' }
@@ -104,7 +104,7 @@ suite('git', () => {
 		test('rename', () => {
 			const parser = new GitStatusParser();
 			parser.update('R  newfile.txt\0file.txt\0?? file2.txt\0?? file3.txt\0');
-			assert.deepEqual(parser.status, [
+			assert.deepStrictEqual(parser.status, [
 				{ path: 'file.txt', rename: 'newfile.txt', x: 'R', y: ' ' },
 				{ path: 'file2.txt', rename: undefined, x: '?', y: '?' },
 				{ path: 'file3.txt', rename: undefined, x: '?', y: '?' }
@@ -115,7 +115,7 @@ suite('git', () => {
 			const parser = new GitStatusParser();
 			parser.update('R  newfile.txt\0fil');
 			parser.update('e.txt\0?? file2.txt\0?? file3.txt\0');
-			assert.deepEqual(parser.status, [
+			assert.deepStrictEqual(parser.status, [
 				{ path: 'file.txt', rename: 'newfile.txt', x: 'R', y: ' ' },
 				{ path: 'file2.txt', rename: undefined, x: '?', y: '?' },
 				{ path: 'file3.txt', rename: undefined, x: '?', y: '?' }
@@ -127,7 +127,7 @@ suite('git', () => {
 			parser.update('?? file2.txt\0R  new');
 			parser.update('file.txt\0fil');
 			parser.update('e.txt\0?? file3.txt\0');
-			assert.deepEqual(parser.status, [
+			assert.deepStrictEqual(parser.status, [
 				{ path: 'file2.txt', rename: undefined, x: '?', y: '?' },
 				{ path: 'file.txt', rename: 'newfile.txt', x: 'R', y: ' ' },
 				{ path: 'file3.txt', rename: undefined, x: '?', y: '?' }
@@ -137,7 +137,7 @@ suite('git', () => {
 
 	suite('parseGitmodules', () => {
 		test('empty', () => {
-			assert.deepEqual(parseGitmodules(''), []);
+			assert.deepStrictEqual(parseGitmodules(''), []);
 		});
 
 		test('sample', () => {
@@ -146,7 +146,7 @@ suite('git', () => {
 	url = https://github.com/gabime/spdlog.git
 `;
 
-			assert.deepEqual(parseGitmodules(sample), [
+			assert.deepStrictEqual(parseGitmodules(sample), [
 				{ name: 'deps/spdlog', path: 'deps/spdlog', url: 'https://github.com/gabime/spdlog.git' }
 			]);
 		});
@@ -166,7 +166,7 @@ suite('git', () => {
 	url = https://github.com/gabime/spdlog4.git
 `;
 
-			assert.deepEqual(parseGitmodules(sample), [
+			assert.deepStrictEqual(parseGitmodules(sample), [
 				{ name: 'deps/spdlog', path: 'deps/spdlog', url: 'https://github.com/gabime/spdlog.git' },
 				{ name: 'deps/spdlog2', path: 'deps/spdlog2', url: 'https://github.com/gabime/spdlog.git' },
 				{ name: 'deps/spdlog3', path: 'deps/spdlog3', url: 'https://github.com/gabime/spdlog.git' },
@@ -180,9 +180,91 @@ suite('git', () => {
 	url  = https://github.com/gabime/spdlog.git
 `;
 
-			assert.deepEqual(parseGitmodules(sample), [
+			assert.deepStrictEqual(parseGitmodules(sample), [
 				{ name: 'deps/spdlog', path: 'deps/spdlog', url: 'https://github.com/gabime/spdlog.git' }
 			]);
+		});
+
+		test('whitespace again #108371', () => {
+			const sample = `[submodule "deps/spdlog"]
+	path= deps/spdlog
+	url=https://github.com/gabime/spdlog.git
+`;
+
+			assert.deepStrictEqual(parseGitmodules(sample), [
+				{ name: 'deps/spdlog', path: 'deps/spdlog', url: 'https://github.com/gabime/spdlog.git' }
+			]);
+		});
+	});
+
+	suite('parseGitRemotes', () => {
+		test('empty', () => {
+			assert.deepStrictEqual(parseGitRemotes(''), []);
+		});
+
+		test('single remote', () => {
+			const sample = `[remote "origin"]
+	url = https://github.com/microsoft/vscode.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+`;
+
+			assert.deepStrictEqual(parseGitRemotes(sample), [
+				{ name: 'origin', fetchUrl: 'https://github.com/microsoft/vscode.git', pushUrl: 'https://github.com/microsoft/vscode.git', isReadOnly: false }
+			]);
+		});
+
+		test('single remote (multiple urls)', () => {
+			const sample = `[remote "origin"]
+	url = https://github.com/microsoft/vscode.git
+	url = https://github.com/microsoft/vscode2.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+`;
+
+			assert.deepStrictEqual(parseGitRemotes(sample), [
+				{ name: 'origin', fetchUrl: 'https://github.com/microsoft/vscode.git', pushUrl: 'https://github.com/microsoft/vscode.git', isReadOnly: false }
+			]);
+		});
+
+		test('multiple remotes', () => {
+			const sample = `[remote "origin"]
+	url = https://github.com/microsoft/vscode.git
+	pushurl = https://github.com/microsoft/vscode1.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[remote "remote2"]
+	url = https://github.com/microsoft/vscode2.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+`;
+
+			assert.deepStrictEqual(parseGitRemotes(sample), [
+				{ name: 'origin', fetchUrl: 'https://github.com/microsoft/vscode.git', pushUrl: 'https://github.com/microsoft/vscode1.git', isReadOnly: false },
+				{ name: 'remote2', fetchUrl: 'https://github.com/microsoft/vscode2.git', pushUrl: 'https://github.com/microsoft/vscode2.git', isReadOnly: false }
+			]);
+		});
+
+		test('remotes (white space)', () => {
+			const sample = ` [remote "origin"]
+	url  =  https://github.com/microsoft/vscode.git
+	pushurl=https://github.com/microsoft/vscode1.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[ remote"remote2"]
+	url = https://github.com/microsoft/vscode2.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+`;
+
+			assert.deepStrictEqual(parseGitRemotes(sample), [
+				{ name: 'origin', fetchUrl: 'https://github.com/microsoft/vscode.git', pushUrl: 'https://github.com/microsoft/vscode1.git', isReadOnly: false },
+				{ name: 'remote2', fetchUrl: 'https://github.com/microsoft/vscode2.git', pushUrl: 'https://github.com/microsoft/vscode2.git', isReadOnly: false }
+			]);
+		});
+
+		test('remotes (invalid section)', () => {
+			const sample = `[remote "origin"
+	url = https://github.com/microsoft/vscode.git
+	pushurl = https://github.com/microsoft/vscode1.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+`;
+
+			assert.deepStrictEqual(parseGitRemotes(sample), []);
 		});
 	});
 
@@ -194,9 +276,10 @@ john.doe@mail.com
 1580811030
 1580811031
 8e5a374372b8393906c7e380dbb09349c5385554
+main,branch
 This is a commit message.\x00`;
 
-			assert.deepEqual(parseGitCommits(GIT_OUTPUT_SINGLE_PARENT), [{
+			assert.deepStrictEqual(parseGitCommits(GIT_OUTPUT_SINGLE_PARENT), [{
 				hash: '52c293a05038d865604c2284aa8698bd087915a1',
 				message: 'This is a commit message.',
 				parents: ['8e5a374372b8393906c7e380dbb09349c5385554'],
@@ -204,6 +287,7 @@ This is a commit message.\x00`;
 				authorName: 'John Doe',
 				authorEmail: 'john.doe@mail.com',
 				commitDate: new Date(1580811031000),
+				refNames: ['main', 'branch'],
 			}]);
 		});
 
@@ -214,9 +298,10 @@ john.doe@mail.com
 1580811030
 1580811031
 8e5a374372b8393906c7e380dbb09349c5385554 df27d8c75b129ab9b178b386077da2822101b217
+main
 This is a commit message.\x00`;
 
-			assert.deepEqual(parseGitCommits(GIT_OUTPUT_MULTIPLE_PARENTS), [{
+			assert.deepStrictEqual(parseGitCommits(GIT_OUTPUT_MULTIPLE_PARENTS), [{
 				hash: '52c293a05038d865604c2284aa8698bd087915a1',
 				message: 'This is a commit message.',
 				parents: ['8e5a374372b8393906c7e380dbb09349c5385554', 'df27d8c75b129ab9b178b386077da2822101b217'],
@@ -224,6 +309,7 @@ This is a commit message.\x00`;
 				authorName: 'John Doe',
 				authorEmail: 'john.doe@mail.com',
 				commitDate: new Date(1580811031000),
+				refNames: ['main'],
 			}]);
 		});
 
@@ -234,9 +320,10 @@ john.doe@mail.com
 1580811030
 1580811031
 
+main
 This is a commit message.\x00`;
 
-			assert.deepEqual(parseGitCommits(GIT_OUTPUT_NO_PARENTS), [{
+			assert.deepStrictEqual(parseGitCommits(GIT_OUTPUT_NO_PARENTS), [{
 				hash: '52c293a05038d865604c2284aa8698bd087915a1',
 				message: 'This is a commit message.',
 				parents: [],
@@ -244,6 +331,7 @@ This is a commit message.\x00`;
 				authorName: 'John Doe',
 				authorEmail: 'john.doe@mail.com',
 				commitDate: new Date(1580811031000),
+				refNames: ['main'],
 			}]);
 		});
 	});
@@ -264,7 +352,7 @@ This is a commit message.\x00`;
 
 			const output = parseLsTree(input);
 
-			assert.deepEqual(output, [
+			assert.deepStrictEqual(output, [
 				{ mode: '040000', type: 'tree', object: '0274a81f8ee9ca3669295dc40f510bd2021d0043', size: '-', file: '.vscode' },
 				{ mode: '100644', type: 'blob', object: '1d487c1817262e4f20efbfa1d04c18f51b0046f6', size: '491570', file: 'Screen Shot 2018-06-01 at 14.48.05.png' },
 				{ mode: '100644', type: 'blob', object: '686c16e4f019b734655a2576ce8b98749a9ffdb9', size: '764420', file: 'Screen Shot 2018-06-07 at 20.04.59.png' },
@@ -296,7 +384,7 @@ This is a commit message.\x00`;
 
 			const output = parseLsFiles(input);
 
-			assert.deepEqual(output, [
+			assert.deepStrictEqual(output, [
 				{ mode: '100644', object: '7a73a41bfdf76d6f793007240d80983a52f15f97', stage: '0', file: '.vscode/settings.json' },
 				{ mode: '100644', object: '1d487c1817262e4f20efbfa1d04c18f51b0046f6', stage: '0', file: 'Screen Shot 2018-06-01 at 14.48.05.png' },
 				{ mode: '100644', object: '686c16e4f019b734655a2576ce8b98749a9ffdb9', stage: '0', file: 'Screen Shot 2018-06-07 at 20.04.59.png' },
@@ -314,72 +402,72 @@ This is a commit message.\x00`;
 
 	suite('splitInChunks', () => {
 		test('unit tests', function () {
-			assert.deepEqual(
+			assert.deepStrictEqual(
 				[...splitInChunks(['hello', 'there', 'cool', 'stuff'], 6)],
 				[['hello'], ['there'], ['cool'], ['stuff']]
 			);
 
-			assert.deepEqual(
+			assert.deepStrictEqual(
 				[...splitInChunks(['hello', 'there', 'cool', 'stuff'], 10)],
 				[['hello', 'there'], ['cool', 'stuff']]
 			);
 
-			assert.deepEqual(
+			assert.deepStrictEqual(
 				[...splitInChunks(['hello', 'there', 'cool', 'stuff'], 12)],
 				[['hello', 'there'], ['cool', 'stuff']]
 			);
 
-			assert.deepEqual(
+			assert.deepStrictEqual(
 				[...splitInChunks(['hello', 'there', 'cool', 'stuff'], 14)],
 				[['hello', 'there', 'cool'], ['stuff']]
 			);
 
-			assert.deepEqual(
+			assert.deepStrictEqual(
 				[...splitInChunks(['hello', 'there', 'cool', 'stuff'], 2000)],
 				[['hello', 'there', 'cool', 'stuff']]
 			);
 
-			assert.deepEqual(
+			assert.deepStrictEqual(
 				[...splitInChunks(['0', '01', '012', '0', '01', '012', '0', '01', '012'], 1)],
 				[['0'], ['01'], ['012'], ['0'], ['01'], ['012'], ['0'], ['01'], ['012']]
 			);
 
-			assert.deepEqual(
+			assert.deepStrictEqual(
 				[...splitInChunks(['0', '01', '012', '0', '01', '012', '0', '01', '012'], 2)],
 				[['0'], ['01'], ['012'], ['0'], ['01'], ['012'], ['0'], ['01'], ['012']]
 			);
 
-			assert.deepEqual(
+			assert.deepStrictEqual(
 				[...splitInChunks(['0', '01', '012', '0', '01', '012', '0', '01', '012'], 3)],
 				[['0', '01'], ['012'], ['0', '01'], ['012'], ['0', '01'], ['012']]
 			);
 
-			assert.deepEqual(
+			assert.deepStrictEqual(
 				[...splitInChunks(['0', '01', '012', '0', '01', '012', '0', '01', '012'], 4)],
 				[['0', '01'], ['012', '0'], ['01'], ['012', '0'], ['01'], ['012']]
 			);
 
-			assert.deepEqual(
+			assert.deepStrictEqual(
 				[...splitInChunks(['0', '01', '012', '0', '01', '012', '0', '01', '012'], 5)],
 				[['0', '01'], ['012', '0'], ['01', '012'], ['0', '01'], ['012']]
 			);
 
-			assert.deepEqual(
+			assert.deepStrictEqual(
 				[...splitInChunks(['0', '01', '012', '0', '01', '012', '0', '01', '012'], 6)],
 				[['0', '01', '012'], ['0', '01', '012'], ['0', '01', '012']]
 			);
 
-			assert.deepEqual(
+			assert.deepStrictEqual(
 				[...splitInChunks(['0', '01', '012', '0', '01', '012', '0', '01', '012'], 7)],
 				[['0', '01', '012', '0'], ['01', '012', '0'], ['01', '012']]
 			);
 
-			assert.deepEqual(
+			assert.deepStrictEqual(
 				[...splitInChunks(['0', '01', '012', '0', '01', '012', '0', '01', '012'], 8)],
 				[['0', '01', '012', '0'], ['01', '012', '0', '01'], ['012']]
 			);
 
-			assert.deepEqual(
+			assert.deepStrictEqual(
 				[...splitInChunks(['0', '01', '012', '0', '01', '012', '0', '01', '012'], 9)],
 				[['0', '01', '012', '0', '01'], ['012', '0', '01', '012']]
 			);

@@ -67,10 +67,12 @@ export class KubeCtlTool extends ToolBase {
 	}
 
 	public async getStorageClasses(): Promise<{ storageClasses: string[], defaultStorageClass: string }> {
-		const storageClasses: KubeStorageClass[] = JSON.parse(await this.platformService.runCommand('kubectl get sc -o json')).items;
+		// Ignore any values without metadata - that should never happen but if it doesn't we don't have anything useful to do with it anyways
+		const storageClasses = (JSON.parse(await this.platformService.runCommand('kubectl get sc -o json')).items as KubeStorageClass[])
+			.filter(sc => sc.metadata);
 		return {
 			storageClasses: storageClasses.map(sc => sc.metadata.name),
-			defaultStorageClass: storageClasses.find(sc => sc.metadata.annotations['storageclass.kubernetes.io/is-default-class'] === 'true')?.metadata.name ?? ''
+			defaultStorageClass: storageClasses.find(sc => sc.metadata.annotations?.['storageclass.kubernetes.io/is-default-class'] === 'true')?.metadata.name ?? ''
 		};
 	}
 
@@ -96,7 +98,7 @@ export class KubeCtlTool extends ToolBase {
 			command: this.discoveryCommandString('kubectl')
 		};
 	}
-	protected async getSearchPaths(): Promise<string[]> {
+	protected override async getSearchPaths(): Promise<string[]> {
 		switch (this.osDistribution) {
 			case OsDistribution.win32:
 				return [this.storagePath];
@@ -111,7 +113,7 @@ export class KubeCtlTool extends ToolBase {
 		[OsDistribution.others, defaultInstallationCommands]
 	]);
 
-	protected dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>([
+	protected override dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>([
 		[OsDistribution.debian, []],
 		[OsDistribution.win32, []],
 		[OsDistribution.darwin, [dependencyType.Brew]],

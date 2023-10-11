@@ -3,13 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
+import { IEditorOpenContext } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
-import { getZoomLevel } from 'vs/base/browser/browser';
+import { getZoomLevel, PixelRatio } from 'vs/base/browser/browser';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
@@ -19,23 +19,17 @@ import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResult
 import { QueryResultsView } from 'sql/workbench/contrib/query/browser/queryResultsView';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/contrib/query/common/resultsGrid.contribution';
+import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
+import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { IResultGridConfiguration } from 'sql/platform/query/common/query';
 
 export const TextCompareEditorVisible = new RawContextKey<boolean>('textCompareEditorVisible', false);
 
 export class BareResultsGridInfo extends BareFontInfo {
 
-	public static createFromRawSettings(opts: {
-		fontFamily?: string;
-		fontWeight?: string;
-		fontSize?: number;
-		lineHeight?: number;
-		letterSpacing?: number;
-		cellPadding?: number | number[];
-	}, zoomLevel: number): BareResultsGridInfo {
+	public static override createFromRawSettings(opts: IResultGridConfiguration, zoomLevel: number): BareResultsGridInfo {
 		let cellPadding = !types.isUndefinedOrNull(opts.cellPadding) ? opts.cellPadding : RESULTS_GRID_DEFAULTS.cellPadding;
-
-		return new BareResultsGridInfo(BareFontInfo.createFromRawSettings(opts, zoomLevel), { cellPadding });
+		return new BareResultsGridInfo(BareFontInfo.createFromRawSettings(opts, PixelRatio.value, false), { cellPadding });
 	}
 
 	readonly cellPadding: number | number[];
@@ -97,7 +91,7 @@ export class QueryResultsEditor extends EditorPane {
 		this.applySettings();
 	}
 
-	public get input(): QueryResultsInput {
+	public override get input(): QueryResultsInput {
 		return this._input as QueryResultsInput;
 	}
 
@@ -113,7 +107,7 @@ export class QueryResultsEditor extends EditorPane {
 		this.styleSheet.innerHTML = content;
 	}
 
-	createEditor(parent: HTMLElement): void {
+	protected createEditor(parent: HTMLElement): void {
 		this.styleSheet.remove();
 		parent.appendChild(this.styleSheet);
 		if (!this.resultsView) {
@@ -121,7 +115,7 @@ export class QueryResultsEditor extends EditorPane {
 		}
 	}
 
-	dispose() {
+	override dispose() {
 		this.styleSheet.remove();
 		this.styleSheet = undefined;
 		super.dispose();
@@ -131,13 +125,13 @@ export class QueryResultsEditor extends EditorPane {
 		this.resultsView.layout(dimension);
 	}
 
-	setInput(input: QueryResultsInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
+	override setInput(input: QueryResultsInput, options: IEditorOptions, context: IEditorOpenContext): Promise<void> {
 		super.setInput(input, options, context, CancellationToken.None);
 		this.resultsView.input = input;
 		return Promise.resolve<void>(null);
 	}
 
-	clearInput() {
+	override clearInput() {
 		this.resultsView.clearInput();
 		super.clearInput();
 	}
@@ -146,11 +140,15 @@ export class QueryResultsEditor extends EditorPane {
 		this.resultsView.chartData(dataId);
 	}
 
-	public showQueryPlan(xml: string) {
-		this.resultsView.showPlan(xml);
+	public showTopOperation(xml: string) {
+		this.resultsView.showTopOperations(xml);
 	}
 
 	public registerQueryModelViewTab(title: string, componentId: string): void {
 		this.resultsView.registerQueryModelViewTab(title, componentId);
+	}
+
+	public override focus(): void {
+		this.resultsView.focus();
 	}
 }

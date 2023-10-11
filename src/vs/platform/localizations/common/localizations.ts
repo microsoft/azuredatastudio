@@ -3,31 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ILocalizationContribution } from 'vs/platform/extensions/common/extensions';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { Event } from 'vs/base/common/event';
-
-export interface ILocalization {
-	languageId: string;
-	languageName?: string;
-	localizedLanguageName?: string;
-	translations: ITranslation[];
-	minimalTranslations?: { [key: string]: string };
-}
-
-export interface ITranslation {
-	id: string;
-	path: string;
-}
 
 export const ILocalizationsService = createDecorator<ILocalizationsService>('localizationsService');
 export interface ILocalizationsService {
 	readonly _serviceBrand: undefined;
-
-	readonly onDidLanguagesChange: Event<void>;
 	getLanguageIds(): Promise<string[]>;
 }
 
-export function isValidLocalization(localization: ILocalization): boolean {
+export function isValidLocalization(localization: ILocalizationContribution): boolean {
 	if (typeof localization.languageId !== 'string') {
 		return false;
 	}

@@ -5,12 +5,14 @@
 
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
-import { IModelService } from 'vs/editor/common/services/modelService';
+import { IModelService } from 'vs/editor/common/services/model';
 import { ResourceMap } from 'vs/base/common/map';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { Emitter, Event } from 'vs/base/common/event';
 import { ITextModel } from 'vs/editor/common/model';
 import { ResourceEdit, ResourceFileEdit, ResourceTextEdit } from 'vs/editor/browser/services/bulkEditService';
+import { ResourceNotebookCellEdit } from 'vs/workbench/contrib/bulkEdit/browser/bulkCellEdits';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class ConflictDetector {
 
@@ -24,11 +26,12 @@ export class ConflictDetector {
 		edits: ResourceEdit[],
 		@IFileService fileService: IFileService,
 		@IModelService modelService: IModelService,
+		@ILogService logService: ILogService,
 	) {
 
 		const _workspaceEditResources = new ResourceMap<boolean>();
 
-		for (let edit of edits) {
+		for (const edit of edits) {
 			if (edit instanceof ResourceTextEdit) {
 				_workspaceEditResources.set(edit.resource, true);
 				if (typeof edit.versionId === 'number') {
@@ -46,27 +49,25 @@ export class ConflictDetector {
 				} else if (edit.oldResource) {
 					_workspaceEditResources.set(edit.oldResource, true);
 				}
+			} else if (edit instanceof ResourceNotebookCellEdit) {
+				_workspaceEditResources.set(edit.resource, true);
 
 			} else {
-				//todo@jrieken
-				console.log('UNKNOWN EDIT TYPE');
+				logService.warn('UNKNOWN edit type', edit);
 			}
 		}
 
 		// listen to file changes
 		this._disposables.add(fileService.onDidFilesChange(e => {
-			for (let change of e.changes) {
 
-				if (modelService.getModel(change.resource)) {
-					// ignore changes for which a model exists
-					// because we have a better check for models
-					continue;
-				}
-
-				// conflict
-				if (_workspaceEditResources.has(change.resource)) {
-					this._conflicts.set(change.resource, true);
+			for (const uri of _workspaceEditResources.keys()) {
+				// conflict happens when a file that we are working
+				// on changes on disk. ignore changes for which a model
+				// exists because we have a better check for models
+				if (!modelService.getModel(uri) && e.contains(uri)) {
+					this._conflicts.set(uri, true);
 					this._onDidConflict.fire(this);
+					break;
 				}
 			}
 		}));
@@ -80,7 +81,7 @@ export class ConflictDetector {
 				this._onDidConflict.fire(this);
 			}
 		};
-		for (let model of modelService.getModels()) {
+		for (const model of modelService.getModels()) {
 			this._disposables.add(model.onDidChangeContent(() => onDidChangeModel(model)));
 		}
 	}

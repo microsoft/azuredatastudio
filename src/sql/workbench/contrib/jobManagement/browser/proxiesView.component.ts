@@ -24,6 +24,10 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { ProxiesCacheObject } from 'sql/workbench/services/jobManagement/common/jobManagementService';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export const VIEW_SELECTOR: string = 'jobproxiesview-component';
 export const ROW_HEIGHT: number = 45;
@@ -62,7 +66,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 	private _proxiesCacheObject: ProxiesCacheObject;
 
 	public proxies: azdata.AgentProxyInfo[];
-	public readonly contextAction = NewProxyAction;
+	public override readonly contextAction = NewProxyAction;
 
 	private _didTabChange: boolean;
 	@ViewChild('proxiesgrid') _gridEl: ElementRef;
@@ -76,7 +80,10 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
-		@Inject(IDashboardService) _dashboardService: IDashboardService
+		@Inject(IDashboardService) _dashboardService: IDashboardService,
+		@Inject(IAccessibilityService) private _accessibilityService: IAccessibilityService,
+		@Inject(IQuickInputService) private _quickInputService: IQuickInputService,
+		@Inject(IComponentContextService) private _componentContextService: IComponentContextService
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
@@ -97,7 +104,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 		this._parentComponent = this._agentViewComponent;
 	}
 
-	ngOnDestroy() {
+	override ngOnDestroy() {
 		this._didTabChange = true;
 	}
 
@@ -143,7 +150,8 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 		jQuery(this._gridEl.nativeElement).empty();
 		jQuery(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
-		this._table = new Table(this._gridEl.nativeElement, { columns }, this.options);
+		this._table = new Table(this._gridEl.nativeElement, this._accessibilityService, this._quickInputService, defaultTableStyles, { columns }, this.options);
+		this._register(this._componentContextService.registerTable(this._table));
 		this._table.grid.setData(this.dataView, true);
 
 		this._register(this._table.onContextMenu(e => {
@@ -196,14 +204,14 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 		this._table.resizeCanvas();
 	}
 
-	protected getTableActions(): IAction[] {
+	protected override getTableActions(): IAction[] {
 		return [
 			this._instantiationService.createInstance(EditProxyAction),
 			this._instantiationService.createInstance(DeleteProxyAction)
 		];
 	}
 
-	protected getCurrentTableObject(rowIndex: number): any {
+	protected override getCurrentTableObject(rowIndex: number): any {
 		return (this.proxies && this.proxies.length >= rowIndex)
 			? this.proxies[rowIndex]
 			: undefined;

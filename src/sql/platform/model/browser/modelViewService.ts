@@ -33,16 +33,21 @@ export interface IModelViewEventArgs extends IComponentEventArgs {
 export interface IModelView extends IView {
 	initializeModel(rootComponent: IComponentShape, validationCallback?: (componentId: string) => Thenable<boolean>): void;
 	clearContainer(componentId: string): void;
-	addToContainer(containerId: string, item: IItemConfig, index?: number): void;
+	/**
+	 * Adds the specified items as children of the specified parent container
+	 * @param containerId The ID of the container component to add the items to
+	 * @param items The list of items to add to the container
+	 */
+	addToContainer(containerId: string, items: { itemConfig: IItemConfig, index?: number }[]): void;
 	removeFromContainer(containerId: string, item: IItemConfig): void;
-	setLayout(componentId: string, layout: any): void;
+	setLayout(componentId: string, layout: any, initial?: boolean): void;
 	setItemLayout(componentId: string, item: IItemConfig): void;
-	setProperties(componentId: string, properties: { [key: string]: any }): void;
+	setProperties(componentId: string, properties: { [key: string]: any }, initial?: boolean): void;
 	setDataProvider(handle: number, componentId: string, context: any): void;
 	refreshDataProvider(componentId: string, item: any): void;
-	registerEvent(componentId: string): void;
+	registerEvent(componentId: string, initial?: boolean): void;
 	onEvent: Event<IModelViewEventArgs>;
-	validate(componentId: string): Thenable<boolean>;
+	validate(componentId: string): Promise<boolean>;
 	readonly onDestroy: Event<void>;
 	focus(componentId: string): void;
 	doAction(componentId: string, action: string, ...args: any[]): void;

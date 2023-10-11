@@ -155,7 +155,6 @@ export class DeployedModelService {
 	/**
 	 * Verifies if the given table name is valid to be used as import table. If table doesn't exist returns true to create new table
 	 * Otherwise verifies the schema and returns true if the schema is supported
-	 * @param connection database connection
 	 * @param table config table name
 	 */
 	public async verifyConfigTable(table: DatabaseTable): Promise<boolean> {
@@ -165,7 +164,7 @@ export class DeployedModelService {
 
 			// If database exist verify the table schema
 			//
-			if ((await databases).find(x => x === table.databaseName)) {
+			if (databases.find(x => x === table.databaseName)) {
 				const query = queries.getConfigTableVerificationQuery(table);
 				const result = await this._queryRunner.runWithDatabaseChange(connection, query, table.databaseName);
 				return result !== undefined && result.rows.length > 0 && result.rows[0][0].displayValue === '1';

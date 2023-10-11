@@ -9,20 +9,21 @@ import {
 	ElementRef, OnDestroy
 } from '@angular/core';
 
-import { FlexLayout, FlexItemLayout } from 'azdata';
+import * as azdata from 'azdata';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class FlexItem {
-	constructor(public descriptor: IComponentDescriptor, public config: FlexItemLayout) { }
+	constructor(public descriptor: IComponentDescriptor, public config: azdata.FlexItemLayout) { }
 }
 
 @Component({
 	template: `
 		<div *ngIf="items" class="flexContainer" [ngStyle]="CSSStyles" [style.display]="display" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent" [style.position]="position"
-				[style.alignItems]="alignItems" [style.alignContent]="alignContent" [style.height]="height" [style.width]="width" [style.flex-wrap]="flexWrap" [attr.role]="ariaRole">
+				[style.alignItems]="alignItems" [style.alignContent]="alignContent" [style.height]="height" [style.width]="width" [style.flex-wrap]="flexWrap" [attr.role]="ariaRole" [attr.aria-live] = "ariaLive" [attr.aria-label]="ariaLabel">
 			<div *ngFor="let item of items" [style.flex]="getItemFlex(item)" [style.textAlign]="textAlign" [style.order]="getItemOrder(item)" [ngStyle]="getItemStyles(item)">
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
@@ -30,7 +31,7 @@ export class FlexItem {
 		</div>
 	`
 })
-export default class FlexContainer extends ContainerBase<FlexItemLayout> implements IComponent, OnDestroy {
+export default class FlexContainer extends ContainerBase<azdata.FlexItemLayout> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _flexFlow: string;
@@ -45,25 +46,26 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 		this._flexFlow = '';	// default
 		this._justifyContent = '';	// default
 	}
 
-	ngOnInit(): void {
+	ngAfterViewInit(): void {
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
 
 	/// IComponent implementation
 
-	public setLayout(layout: FlexLayout): void {
+	public setLayout(layout: azdata.FlexLayout): void {
 		this._flexFlow = layout.flexFlow ? layout.flexFlow : '';
 		this._justifyContent = layout.justifyContent ? layout.justifyContent : '';
 		this._alignItems = layout.alignItems ? layout.alignItems : '';
@@ -90,11 +92,11 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 		return this._alignItems;
 	}
 
-	public get height(): string {
+	public override get height(): string {
 		return this._height;
 	}
 
-	public get width(): string {
+	public override get width(): string {
 		return this._width;
 	}
 
@@ -106,7 +108,7 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 		return this._textAlign;
 	}
 
-	public get position(): string {
+	public override get position(): string {
 		return this._position;
 	}
 
@@ -120,7 +122,7 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 	public getItemOrder(item: FlexItem): number {
 		return item.config ? item.config.order : 0;
 	}
-	public getItemStyles(item: FlexItem): { [key: string]: string } {
+	public getItemStyles(item: FlexItem): azdata.CssStyles {
 		return item.config && item.config.CSSStyles ? item.config.CSSStyles : {};
 	}
 }

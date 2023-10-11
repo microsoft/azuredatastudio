@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { SelectBox, SelectOptionItemSQL } from 'sql/base/browser/ui/selectBox/selectBox';
+import { ISelectBoxStyles, SelectBox, SelectOptionItemSQL } from 'sql/base/browser/ui/selectBox/selectBox';
 import { deepClone, equals } from 'vs/base/common/objects';
 
 const options: SelectOptionItemSQL[] = [
@@ -15,13 +15,13 @@ const options: SelectOptionItemSQL[] = [
 suite('Select Box tests', () => {
 	test('default value', () => {
 
-		const sb = new SelectBox(options, options[1].value, undefined!, undefined!, undefined!);
-
+		const sb = new SelectBox(options, options[1].value, <ISelectBoxStyles>{}, undefined!, undefined!, undefined!);
 		assert(sb.value === options[1].value);
+		sb.dispose();
 	});
 
 	test('values change', () => {
-		const sb = new SelectBox(options, options[1].value, undefined!, undefined!, undefined!);
+		const sb = new SelectBox(options, options[1].value, <ISelectBoxStyles>{}, undefined!, undefined!, undefined!);
 		const newOptions = deepClone(options);
 		{
 			const moreOptions: SelectOptionItemSQL[] = [
@@ -34,10 +34,11 @@ suite('Select Box tests', () => {
 
 		sb.setOptions(newOptions);
 		assert(equals(sb.values, newOptions.map(s => s.value)));
+		sb.dispose();
 	});
 
 	test('the selected option changes', () => {
-		const sb = new SelectBox(options, options[1].value, undefined!, undefined!, undefined!);
+		const sb = new SelectBox(options, options[1].value, <ISelectBoxStyles>{}, undefined!, undefined!, undefined!);
 
 		sb.onSelect({
 			index: 0,
@@ -46,12 +47,14 @@ suite('Select Box tests', () => {
 
 		assert(sb.value === options[0].value);
 		assert(sb.label === options[0].text);
+		sb.dispose();
 	});
 
 	test('values get auto populated', () => {
 		const newOptions = deepClone(options).map(s => { return { text: s.text, value: s.text }; });
-		const sb = new SelectBox(newOptions, undefined!, undefined!, undefined!, undefined!);
+		const sb = new SelectBox(newOptions, undefined!, <ISelectBoxStyles>{}, undefined!, undefined!, undefined!);
 
 		assert(equals(sb.values, newOptions.map(s => s.text)));
+		sb.dispose();
 	});
 });

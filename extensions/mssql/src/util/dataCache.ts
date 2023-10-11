@@ -7,7 +7,7 @@ export class DataItemCache<T> {
 
 	millisecondsToLive: number;
 	getValueFunction: (...args: any[]) => Promise<T>;
-	cachedItem: T;
+	cachedItem: T | undefined;
 	fetchDate: Date;
 
 	constructor(getValueFunction: (...args: any[]) => Promise<T>, secondsToLive: number) {

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IMirrorModel, IWorkerContext } from 'vs/editor/common/services/editorSimpleWorker';
-import { ILink } from 'vs/editor/common/modes';
+import { ILink } from 'vs/editor/common/languages';
 import { URI } from 'vs/base/common/uri';
 import * as extpath from 'vs/base/common/extpath';
 import * as resources from 'vs/base/common/resources';
@@ -12,7 +12,6 @@ import * as strings from 'vs/base/common/strings';
 import { Range } from 'vs/editor/common/core/range';
 import { isWindows } from 'vs/base/common/platform';
 import { Schemas } from 'vs/base/common/network';
-import { find } from 'vs/base/common/arrays';
 
 export interface ICreateData {
 	workspaceFolders: string[];
@@ -47,7 +46,7 @@ export class OutputLinkComputer {
 	private getModel(uri: string): IMirrorModel | undefined {
 		const models = this.ctx.getMirrorModels();
 
-		return find(models, model => model.uri.toString() === uri);
+		return models.find(model => model.uri.toString() === uri);
 	}
 
 	computeLinks(uri: string): ILink[] {
@@ -57,7 +56,7 @@ export class OutputLinkComputer {
 		}
 
 		const links: ILink[] = [];
-		const lines = model.getValue().split(/\r\n|\r|\n/);
+		const lines = strings.splitLines(model.getValue());
 
 		// For each workspace root patterns
 		for (const [folderUri, folderPatterns] of this.patterns) {
@@ -156,7 +155,7 @@ export class OutputLinkComputer {
 				const fullMatch = strings.rtrim(match[0], '.'); // remove trailing "." that likely indicate end of sentence
 
 				const index = line.indexOf(fullMatch, offset);
-				offset += index + fullMatch.length;
+				offset = index + fullMatch.length;
 
 				const linkRange = {
 					startColumn: index + 1,
@@ -180,6 +179,7 @@ export class OutputLinkComputer {
 	}
 }
 
+// Export this function because this will be called by the web worker for computing links
 export function create(ctx: IWorkerContext, createData: ICreateData): OutputLinkComputer {
 	return new OutputLinkComputer(ctx, createData);
 }

@@ -13,6 +13,7 @@
 	"notebook.useExistingPython.description": "Lokaler Pfad zu einer bereits vorhandenen Python-Installation, die von Notebooks verwendet wird.",
 	"notebook.overrideEditorTheming.description": "Hiermit setzen Sie die Editor-Standardeinstellungen im Notebook-Editor außer Kraft. Zu den Einstellungen gehören Hintergrundfarbe, Farbe der aktuellen Zeile und Rahmen.",
 	"notebook.maxTableRows.description": "Maximale Anzahl von Zeilen, die pro Tabelle im Notebook-Editor zurückgegeben werden",
+	"notebook.maxBookSearchDepth.description": "Maximale Tiefe von Unterverzeichnissen für die Suche nach Books (0 entspricht unendlich)",
 	"notebook.command.new": "Neues Notebook",
 	"notebook.command.open": "Notebook öffnen",
 	"notebook.analyzeJupyterNotebook": "In Notebook analysieren",
@@ -32,5 +33,11 @@
 	"config.jupyter.kernelConfigValuesDescription": "Konfigurationsoptionen für Jupyter-Kernel. Diese werden automatisch verwaltet und sollten nicht manuell bearbeitet werden.",
 	"title.reinstallNotebookDependencies": "Notebook-Abhängigkeiten neu installieren",
 	"title.configurePython": "Python für Notebooks konfigurieren",
-	"title.managePackages": "Pakete verwalten"
+	"title.managePackages": "Pakete verwalten",
+	"title.SQL19PreviewBook": "Leitfaden zu SQL Server 2019",
+	"books-preview-category": "Jupyter-Books",
+	"title.saveJupyterBook": "Book speichern",
+	"title.searchJupyterBook": "Book durchsuchen",
+	"title.SavedBooks": "Gespeicherte Books",
+	"title.UntitledBooks": "Books ohne Titel"
 }

@@ -3,14 +3,26 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { URI } from 'vs/base/common/uri';
+import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 export const IClipboardService = createDecorator<IClipboardService>('clipboardService');
+
+// Added type https://www.electronjs.org/docs/api/clipboard#clipboardwritedata-type
+export interface ClipboardData {	// {{SQL CARBON EDIT}}
+	text?: string;
+	html?: string;
+	rtf?: string;
+	bookmark?: string;
+}
 
 export interface IClipboardService {
 
 	readonly _serviceBrand: undefined;
+	/**
+	 * Writes data to the system clipboard.
+	 */
+	write(data: ClipboardData, type?: string): Promise<void>;	// {{SQL CARBON EDIT}}
 
 	/**
 	 * Writes text to the system clipboard.

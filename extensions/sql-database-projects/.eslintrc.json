@@ -1,0 +1,16 @@
+{
+	"parserOptions": {
+		"project": "./extensions/sql-database-projects/tsconfig.json"
+	},
+	"rules": {
+		"@typescript-eslint/no-floating-promises": [
+			"error",
+			{
+				"ignoreVoid": true
+			}
+		],
+		// Disabled until the issues can be fixed
+		"@typescript-eslint/explicit-function-return-type": ["off"],
+		"@typescript-eslint/no-unsafe-assignment": "off"
+	}
+}

@@ -38,7 +38,7 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 			databaseName: '',
 			userName: undefined as string,
 			password: undefined as string,
-			authenticationType: 'Integrated',
+			authenticationType: azdata.connection.AuthenticationType.Integrated,
 			savePassword: false,
 			groupFullName: '',
 			groupId: '',
@@ -71,6 +71,7 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 			errorMessage: undefined,
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
+			parentNodePath: this.parent?.generateNodePath() ?? '',
 			nodeStatus: undefined,
 			nodeType: CmsResourceItemType.registeredServer,
 			nodeSubType: undefined

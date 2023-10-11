@@ -3,16 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { MainThreadModelViewShape, SqlMainContext, ExtHostModelViewShape, SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
+import { MainThreadModelViewShape, ExtHostModelViewShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { Disposable } from 'vs/base/common/lifecycle';
-
 
 import { IModelViewService } from 'sql/platform/modelComponents/browser/modelViewService';
 import { IItemConfig, IComponentShape, IModelView } from 'sql/platform/model/browser/modelViewService';
-import { find } from 'vs/base/common/arrays';
-
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelView)
 export class MainThreadModelView extends Disposable implements MainThreadModelViewShape {
@@ -29,7 +26,7 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 		super();
 		this._proxy = _context.getProxy(SqlExtHostContext.ExtHostModelView);
 		viewService.onRegisteredModelView(view => {
-			if (find(this.knownWidgets, x => x === view.id)) {
+			if (this.knownWidgets.find(x => x === view.id)) {
 				let handle = MainThreadModelView._handlePool++;
 				this._dialogs.set(handle, view);
 				this._proxy.$registerWidget(handle, view.id, view.connection, view.serverInfo);
@@ -52,9 +49,9 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 		return this.execModelViewAction(handle, (modelView) => modelView.clearContainer(componentId));
 	}
 
-	$addToContainer(handle: number, containerId: string, item: IItemConfig, index?: number): Thenable<void> {
+	$addToContainer(handle: number, containerId: string, items: { itemConfig: IItemConfig, index?: number }[]): Thenable<void> {
 		return this.execModelViewAction(handle,
-			(modelView) => modelView.addToContainer(containerId, item, index));
+			(modelView) => modelView.addToContainer(containerId, items));
 	}
 
 	$removeFromContainer(handle: number, containerId: string, item: IItemConfig): Thenable<void> {

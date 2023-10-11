@@ -4,34 +4,30 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
-import { azureResource } from 'azureResource';
+import { ResourceServiceBase } from '../resourceTreeDataProviderBase';
+import { azureResource } from 'azurecore';
+import { postgresServerQuery } from '../queryStringConstants';
+import { DbServerGraphData } from '../../interfaces';
+import { POSTGRES_SERVER_PROVIDER_ID } from '../../../constants';
 
+export class PostgresServerService extends ResourceServiceBase<DbServerGraphData> {
 
-interface DbServerGraphData extends GraphData {
-	properties: {
-		fullyQualifiedDomainName: string;
-		administratorLogin: string;
-	};
-}
+	public override queryFilter: string = postgresServerQuery;
 
-const serversQuery = `where type == "${azureResource.AzureResourceType.postgresServer}"`;
-
-export class PostgresServerService extends ResourceServiceBase<DbServerGraphData, azureResource.AzureResourceDatabaseServer> {
-
-	protected get query(): string {
-		return serversQuery;
-	}
-
-	protected convertResource(resource: DbServerGraphData): azureResource.AzureResourceDatabaseServer {
+	public override convertServerResource(resource: DbServerGraphData): azureResource.AzureResourceDatabaseServer | undefined {
 		return {
 			id: resource.id,
 			name: resource.name,
+			provider: POSTGRES_SERVER_PROVIDER_ID,
 			fullName: resource.properties.fullyQualifiedDomainName,
 			loginName: resource.properties.administratorLogin,
 			defaultDatabaseName: 'postgres',
-			subscriptionId: resource.subscriptionId,
-			tenant: resource.tenantId
+			subscription: {
+				id: resource.subscriptionId,
+				name: resource.subscriptionName || ''
+			},
+			tenant: resource.tenantId,
+			resourceGroup: resource.resourceGroup
 		};
 	}
 }

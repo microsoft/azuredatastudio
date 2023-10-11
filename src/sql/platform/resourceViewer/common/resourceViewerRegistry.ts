@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Emitter, Event } from 'vs/base/common/event';
+import { URI } from 'vs/base/common/uri';
 import { Registry } from 'vs/platform/registry/common/platform';
 
 export const Extensions = {
@@ -12,7 +13,7 @@ export const Extensions = {
 
 export interface ResourceType {
 	readonly id: string;
-	readonly icon: string;
+	readonly icon: URI;
 	readonly name: string;
 }
 
@@ -22,7 +23,7 @@ export interface ResourceViewerResourcesRegistry {
 	readonly onDidRegisterResource: Event<void>;
 }
 
-const resourceViewerResourceRegistery = new class implements ResourceViewerResourcesRegistry {
+const resourceViewerResourceRegistry = new class implements ResourceViewerResourcesRegistry {
 
 	private readonly resources: ResourceType[] = [];
 	private readonly _onDidRegisterResource = new Emitter<void>();
@@ -38,4 +39,4 @@ const resourceViewerResourceRegistery = new class implements ResourceViewerResou
 	}
 };
 
-Registry.add(Extensions.ResourceViewerExtension, resourceViewerResourceRegistery);
+Registry.add(Extensions.ResourceViewerExtension, resourceViewerResourceRegistry);

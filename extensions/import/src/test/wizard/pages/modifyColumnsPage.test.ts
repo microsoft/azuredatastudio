@@ -36,7 +36,7 @@ describe('import extension modify Column Page', function () {
 
 	it('checking if all components are initialized properly', async function () {
 
-		await new Promise(function (resolve) {
+		await new Promise<void>(function (resolve) {
 			page.registerContent(async (view) => {
 				modifyColumnsPage = new ModifyColumnsPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny());
 				pages.set(1, modifyColumnsPage);
@@ -56,9 +56,7 @@ describe('import extension modify Column Page', function () {
 		should.notEqual(modifyColumnsPage.form, undefined, 'form should not be undefined');
 	});
 
-	it('handleImport updates table value correctly when import is successful', async function() {
-
-
+	it('handleImport updates table value correctly when import is successful', async function () {
 		let testProseColumns = [
 			{
 				columnName: 'column1',
@@ -75,13 +73,40 @@ describe('import extension modify Column Page', function () {
 		];
 
 		let testTableData = [
-			[ 'column1', 'nvarchar(50)', false, false],
-			[ 'column2', 'nvarchar(50)', false, false]
+			[
+				{
+					value: 'column1'
+				}, {
+					value: 'nvarchar(50)'
+				}, {
+					value: false,
+					ariaLabel: constants.primaryKeyText,
+					enabled: true
+				}, {
+					value: false,
+					ariaLabel: constants.allowNullsText,
+					enabled: true
+				}
+			], [
+				{
+					value: 'column2'
+				}, {
+					value: 'nvarchar(50)'
+				}, {
+					value: false,
+					ariaLabel: constants.primaryKeyText,
+					enabled: true
+				}, {
+					value: false,
+					ariaLabel: constants.allowNullsText,
+					enabled: true
+				}
+			]
 		];
 
 		mockImportModel.object.proseColumns = testProseColumns;
 
-		await new Promise(function (resolve) {
+		await new Promise<void>(function (resolve) {
 			page.registerContent(async (view) => {
 				modifyColumnsPage = new ModifyColumnsPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny());
 				pages.set(1, modifyColumnsPage);
@@ -98,7 +123,7 @@ describe('import extension modify Column Page', function () {
 		await modifyColumnsPage.onPageEnter();
 
 		// checking if all the required components are correctly initialized
-		should.deepEqual(modifyColumnsPage.table.data, testTableData);
+		should.deepEqual(modifyColumnsPage.table.dataValues, testTableData);
 
 	});
 });

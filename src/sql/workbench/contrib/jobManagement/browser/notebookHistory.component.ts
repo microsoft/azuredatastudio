@@ -24,9 +24,9 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export const DASHBOARD_SELECTOR: string = 'notebookhistory-component';
 export class GridSection {
@@ -82,7 +82,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		@Inject(ICommandService) private _commandService: ICommandService,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) dashboardService: IDashboardService,
-		@Inject(ITelemetryService) private _telemetryService: ITelemetryService,
+		@Inject(IAdsTelemetryService) private _telemetryService: IAdsTelemetryService,
 		@Inject(IQuickInputService) private _quickInputService: IQuickInputService
 	) {
 		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
@@ -104,7 +104,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		this._parentComponent = this._agentViewComponent;
 		this._agentNotebookInfo = this._agentViewComponent.agentNotebookInfo;
 		this.initActionBar();
-		this._telemetryService.publicLog(TelemetryKeys.JobHistoryView);
+		this._telemetryService.sendViewEvent(TelemetryView.AgentNotebookHistory);
 	}
 
 	private loadHistory() {
@@ -262,7 +262,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		}
 	}
 
-	protected initActionBar() {
+	protected override initActionBar() {
 		this._runJobAction = this.instantiationService.createInstance(RunJobAction);
 		this._stopJobAction = this.instantiationService.createInstance(StopJobAction);
 		this._editNotebookJobAction = this.instantiationService.createInstance(EditNotebookJobAction);
@@ -402,7 +402,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		if (history.materializedNotebookName && history.materializedNotebookName !== '') {
 			tooltipString = history.materializedNotebookName;
 		}
-		let dateOptions = {
+		let dateOptions: Intl.DateTimeFormatOptions = {
 			weekday: 'long',
 			year: 'numeric',
 			month: 'long',
@@ -494,7 +494,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		}
 	}
 
-	public refreshJobs() {
+	public override refreshJobs() {
 		this._agentViewComponent.refresh = true;
 		this.loadHistory();
 	}

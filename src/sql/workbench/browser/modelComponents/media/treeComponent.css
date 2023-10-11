@@ -17,3 +17,7 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+
+.tree-component-node-tile .checkboxWrapper .checkbox {
+	margin: 3px;
+}

@@ -7,19 +7,20 @@
 
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
-import { deepClone, assign } from 'vs/base/common/objects';
+import { deepClone } from 'vs/base/common/objects';
 import { URI } from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
-import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape, ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { ExtHostModelViewShape, MainThreadModelViewShape, ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, ColumnSizingMode, ModelViewAction } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { firstIndex } from 'vs/base/common/arrays';
 import { ILogService } from 'vs/platform/log/common/log';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 class ModelBuilderImpl implements azdata.ModelBuilder {
 	private nextComponentId: number;
@@ -37,49 +38,49 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 
 	navContainer(): azdata.ContainerBuilder<azdata.NavContainer, any, any, azdata.ComponentProperties> {
 		let id = this.getNextComponentId();
-		let container: GenericContainerBuilder<azdata.NavContainer, any, any, azdata.ComponentProperties> = new GenericContainerBuilder(this._proxy, this._handle, ModelComponentTypes.NavContainer, id);
+		let container: GenericContainerBuilder<azdata.NavContainer, any, any, azdata.ComponentProperties> = new GenericContainerBuilder(this._proxy, this._handle, ModelComponentTypes.NavContainer, id, this.logService);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
 
 	divContainer(): azdata.DivBuilder {
 		let id = this.getNextComponentId();
-		let container = new DivContainerBuilder(this._proxy, this._handle, ModelComponentTypes.DivContainer, id);
+		let container = new DivContainerBuilder(this._proxy, this._handle, ModelComponentTypes.DivContainer, id, this.logService);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
 
 	flexContainer(): azdata.FlexBuilder {
 		let id = this.getNextComponentId();
-		let container: GenericContainerBuilder<azdata.FlexContainer, any, any, azdata.ComponentProperties> = new GenericContainerBuilder<azdata.FlexContainer, azdata.FlexLayout, azdata.FlexItemLayout, azdata.ComponentProperties>(this._proxy, this._handle, ModelComponentTypes.FlexContainer, id);
+		let container: GenericContainerBuilder<azdata.FlexContainer, any, any, azdata.ContainerProperties> = new GenericContainerBuilder<azdata.FlexContainer, azdata.FlexLayout, azdata.FlexItemLayout, azdata.ContainerProperties>(this._proxy, this._handle, ModelComponentTypes.FlexContainer, id, this.logService);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
 
 	splitViewContainer(): azdata.SplitViewBuilder {
 		let id = this.getNextComponentId();
-		let container: GenericContainerBuilder<azdata.SplitViewContainer, any, any, azdata.SplitViewContainer> = new GenericContainerBuilder<azdata.SplitViewContainer, azdata.SplitViewLayout, azdata.FlexItemLayout, azdata.SplitViewContainer>(this._proxy, this._handle, ModelComponentTypes.SplitViewContainer, id);
+		let container: GenericContainerBuilder<azdata.SplitViewContainer, any, any, azdata.SplitViewContainer> = new GenericContainerBuilder<azdata.SplitViewContainer, azdata.SplitViewLayout, azdata.FlexItemLayout, azdata.SplitViewContainer>(this._proxy, this._handle, ModelComponentTypes.SplitViewContainer, id, this.logService);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
 
 	formContainer(): azdata.FormBuilder {
 		let id = this.getNextComponentId();
-		let container = new FormContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Form, id, this);
+		let container = new FormContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Form, id, this, this.logService);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
 
 	toolbarContainer(): azdata.ToolbarBuilder {
 		let id = this.getNextComponentId();
-		let container = new ToolbarContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Toolbar, id);
+		let container = new ToolbarContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Toolbar, id, this.logService);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
 
 	groupContainer(): azdata.GroupBuilder {
 		let id = this.getNextComponentId();
-		let container = new GroupContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Group, id);
+		let container = new GroupContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Group, id, this.logService);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
@@ -91,176 +92,207 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 			this.cardDeprecationMessagePrinted = true;
 		}
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.CardComponent, azdata.CardProperties> = this.getComponentBuilder(new CardWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.CardComponent, azdata.CardProperties> = this.getComponentBuilder(new CardWrapper(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	tree<T>(): azdata.ComponentBuilder<azdata.TreeComponent<T>, azdata.TreeProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.TreeComponent<T>, azdata.TreeProperties> = this.getComponentBuilder(new TreeComponentWrapper(this._extHostModelViewTree, this._proxy, this._handle, id, this._extension), id);
+		let builder: ComponentBuilderImpl<azdata.TreeComponent<T>, azdata.TreeProperties> = this.getComponentBuilder(new TreeComponentWrapper(this._extHostModelViewTree, this._proxy, this._handle, id, this._extension, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	inputBox(): azdata.ComponentBuilder<azdata.InputBoxComponent, azdata.InputBoxProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.InputBoxComponent, azdata.InputBoxProperties> = this.getComponentBuilder(new InputBoxWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.InputBoxComponent, azdata.InputBoxProperties> = this.getComponentBuilder(new InputBoxWrapper(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	text(): azdata.ComponentBuilder<azdata.TextComponent, azdata.TextComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.TextComponent, azdata.TextComponentProperties> = this.getComponentBuilder(new TextComponentWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.TextComponent, azdata.TextComponentProperties> = this.getComponentBuilder(new TextComponentWrapper(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	image(): azdata.ComponentBuilder<azdata.ImageComponent, azdata.ImageComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.ImageComponent, azdata.ImageComponentProperties> = this.getComponentBuilder(new ImageComponentWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.ImageComponent, azdata.ImageComponentProperties> = this.getComponentBuilder(new ImageComponentWrapper(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	radioButton(): azdata.ComponentBuilder<azdata.RadioButtonComponent, azdata.RadioButtonProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.RadioButtonComponent, azdata.RadioButtonProperties> = this.getComponentBuilder(new RadioButtonWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.RadioButtonComponent, azdata.RadioButtonProperties> = this.getComponentBuilder(new RadioButtonWrapper(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	checkBox(): azdata.ComponentBuilder<azdata.CheckBoxComponent, azdata.CheckBoxProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.CheckBoxComponent, azdata.CheckBoxProperties> = this.getComponentBuilder(new CheckBoxWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.CheckBoxComponent, azdata.CheckBoxProperties> = this.getComponentBuilder(new CheckBoxWrapper(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	webView(): azdata.ComponentBuilder<azdata.WebViewComponent, azdata.WebViewProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.WebViewComponent, azdata.WebViewProperties> = this.getComponentBuilder(new WebViewWrapper(this._proxy, this._handle, id, this._extension.extensionLocation), id);
+		let builder: ComponentBuilderImpl<azdata.WebViewComponent, azdata.WebViewProperties> = this.getComponentBuilder(new WebViewWrapper(this._proxy, this._handle, id, this._extension.extensionLocation, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	editor(): azdata.ComponentBuilder<azdata.EditorComponent, azdata.EditorProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.EditorComponent, azdata.EditorProperties> = this.getComponentBuilder(new EditorWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.EditorComponent, azdata.EditorProperties> = this.getComponentBuilder(new EditorWrapper(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	diffeditor(): azdata.ComponentBuilder<azdata.DiffEditorComponent, azdata.DiffEditorComponent> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.DiffEditorComponent, azdata.DiffEditorComponent> = this.getComponentBuilder(new DiffEditorWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.DiffEditorComponent, azdata.DiffEditorComponent> = this.getComponentBuilder(new DiffEditorWrapper(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	button(): azdata.ComponentBuilder<azdata.ButtonComponent, azdata.ButtonProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.ButtonComponent, azdata.ButtonProperties> = this.getComponentBuilder(new ButtonWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.ButtonComponent, azdata.ButtonProperties> = this.getComponentBuilder(new ButtonWrapper(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	separator(): azdata.ComponentBuilder<azdata.SeparatorComponent, azdata.SeparatorComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.SeparatorComponent, azdata.SeparatorComponentProperties> = this.getComponentBuilder(new SeparatorWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.SeparatorComponent, azdata.SeparatorComponentProperties> = this.getComponentBuilder(new SeparatorWrapper(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	dropDown(): azdata.ComponentBuilder<azdata.DropDownComponent, azdata.DropDownProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.DropDownComponent, azdata.DropDownProperties> = this.getComponentBuilder(new DropDownWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.DropDownComponent, azdata.DropDownProperties> = this.getComponentBuilder(new DropDownWrapper(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	listBox(): azdata.ComponentBuilder<azdata.ListBoxComponent, azdata.ListBoxProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.ListBoxComponent, azdata.ListBoxProperties> = this.getComponentBuilder(new ListBoxWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.ListBoxComponent, azdata.ListBoxProperties> = this.getComponentBuilder(new ListBoxWrapper(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	table(): azdata.ComponentBuilder<azdata.TableComponent, azdata.TableComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.TableComponent, azdata.TableComponentProperties> = this.getComponentBuilder(new TableComponentWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.TableComponent, azdata.TableComponentProperties> = this.getComponentBuilder(new TableComponentWrapper(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	declarativeTable(): azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties> = this.getComponentBuilder(new DeclarativeTableWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties> = this.getComponentBuilder(new DeclarativeTableWrapper(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	dashboardWidget(widgetId: string): azdata.ComponentBuilder<azdata.DashboardWidgetComponent, azdata.ComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder = this.getComponentBuilder<azdata.DashboardWidgetComponent, azdata.ComponentProperties>(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWidget, id), id);
+		let builder = this.getComponentBuilder<azdata.DashboardWidgetComponent, azdata.ComponentProperties>(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWidget, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	dashboardWebview(webviewId: string): azdata.ComponentBuilder<azdata.DashboardWebviewComponent, azdata.ComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.DashboardWebviewComponent, azdata.ComponentProperties> = this.getComponentBuilder(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWebview, id), id);
+		let builder: ComponentBuilderImpl<azdata.DashboardWebviewComponent, azdata.ComponentProperties> = this.getComponentBuilder(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWebview, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	loadingComponent(): azdata.LoadingComponentBuilder {
 		let id = this.getNextComponentId();
-		let builder = new LoadingComponentBuilder(new LoadingComponentWrapper(this._proxy, this._handle, id));
+		let builder = new LoadingComponentBuilder(new LoadingComponentWrapper(this._proxy, this._handle, id, this.logService));
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	fileBrowserTree(): azdata.ComponentBuilder<azdata.FileBrowserTreeComponent, azdata.FileBrowserTreeProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.FileBrowserTreeComponent, azdata.FileBrowserTreeProperties> = this.getComponentBuilder(new FileBrowserTreeComponentWrapper(this._proxy, this._handle, id), id);
-		this._componentBuilders.set(id, builder);
-		return builder;
-	}
-
-	dom(): azdata.ComponentBuilder<azdata.DomComponent, azdata.DomProperties> {
-		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.DomComponent, azdata.DomProperties> = this.getComponentBuilder(new DomComponentWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.FileBrowserTreeComponent, azdata.FileBrowserTreeProperties> = this.getComponentBuilder(new FileBrowserTreeComponentWrapper(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	hyperlink(): azdata.ComponentBuilder<azdata.HyperlinkComponent, azdata.HyperlinkComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.HyperlinkComponent, azdata.HyperlinkComponentProperties> = this.getComponentBuilder(new HyperlinkComponentWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.HyperlinkComponent, azdata.HyperlinkComponentProperties> = this.getComponentBuilder(new HyperlinkComponentWrapper(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	radioCardGroup(): azdata.ComponentBuilder<azdata.RadioCardGroupComponent, azdata.RadioCardGroupComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.RadioCardGroupComponent, azdata.RadioCardGroupComponentProperties> = this.getComponentBuilder(new RadioCardGroupComponentWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.RadioCardGroupComponent, azdata.RadioCardGroupComponentProperties> = this.getComponentBuilder(new RadioCardGroupComponentWrapper(this._proxy, this._handle, id, this.logService), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	listView(): azdata.ComponentBuilder<azdata.ListViewComponent, azdata.ListViewComponentProperties> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.ListViewComponent, azdata.ListViewComponentProperties> = this.getComponentBuilder(new ListViewComponentWrapper(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	tabbedPanel(): azdata.TabbedPanelComponentBuilder {
 		let id = this.getNextComponentId();
-		let builder = new TabbedPanelComponentBuilder(new TabbedPanelComponentWrapper(this._proxy, this._handle, id));
+		let builder = new TabbedPanelComponentBuilder(new TabbedPanelComponentWrapper(this._proxy, this._handle, id, this.logService));
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	propertiesContainer(): azdata.ComponentBuilder<azdata.PropertiesContainerComponent, azdata.PropertiesContainerComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.PropertiesContainerComponent, azdata.PropertiesContainerComponentProperties> = this.getComponentBuilder(new PropertiesContainerComponentWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.PropertiesContainerComponent, azdata.PropertiesContainerComponentProperties> = this.getComponentBuilder(new PropertiesContainerComponentWrapper(this._proxy, this._handle, id, this.logService), id);
 
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	infoBox(): azdata.ComponentBuilder<azdata.InfoBoxComponent, azdata.InfoBoxComponentProperties> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.InfoBoxComponent, azdata.InfoBoxComponentProperties> = this.getComponentBuilder(new InfoBoxComponentWrapper(this._proxy, this._handle, id, this.logService), id);
+
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	slider(): azdata.ComponentBuilder<azdata.SliderComponent, azdata.SliderComponentProperties> {
+		const id = this.getNextComponentId();
+		const builder: ComponentBuilderImpl<azdata.SliderComponent, azdata.SliderComponentProperties> = this.getComponentBuilder(new SliderComponentWrapper(this._proxy, this._handle, id, this.logService), id);
+
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	executionPlan(): azdata.ComponentBuilder<azdata.ExecutionPlanComponent, azdata.ExecutionPlanComponentProperties> {
+		const id = this.getNextComponentId();
+		const builder: ComponentBuilderImpl<azdata.ExecutionPlanComponent, azdata.ExecutionPlanComponentProperties> = this.getComponentBuilder(new ExecutionPlanComponentWrapper(this._proxy, this._handle, id, this.logService), id);
+
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	chart<TChartType extends azdata.ChartType, TData extends azdata.ChartData<TChartType>, TOptions extends azdata.ChartOptions<TChartType>>(): azdata.ComponentBuilder<azdata.ChartComponent<TChartType, TData, TOptions>, azdata.ChartComponentProperties<TChartType, TData, TOptions>> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.ChartComponent<TChartType, TData, TOptions>, azdata.ChartComponentProperties<TChartType, TData, TOptions>> = this.getComponentBuilder(new ChartComponentWrapper<TChartType, TData, TOptions>(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -278,7 +310,7 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		}
 	}
 
-	public runCustomValidations(componentId: string): boolean {
+	public runCustomValidations(componentId: string): Thenable<boolean> {
 		let component = this._componentBuilders.get(componentId).componentWrapper();
 		return component.runCustomValidations();
 	}
@@ -308,17 +340,17 @@ class ComponentBuilderImpl<T extends azdata.Component, TPropertyBag extends azda
 
 	withProperties<U>(properties: U): azdata.ComponentBuilder<T, TPropertyBag> {
 		// Keep any properties that may have been set during initial object construction
-		this._component.properties = assign({}, this._component.properties, properties);
+		this._component.properties = Object.assign({}, this._component.properties, properties);
 		return this;
 	}
 
 	withProps(properties: TPropertyBag): azdata.ComponentBuilder<T, TPropertyBag> {
-		this._component.properties = assign({}, this._component.properties, properties);
+		this._component.properties = Object.assign({}, this._component.properties, properties);
 		return this;
 	}
 
-	withValidation(validation: (component: T) => boolean): azdata.ComponentBuilder<T, TPropertyBag> {
-		this._component.customValidations.push(validation);
+	withValidation(validation: (component: T) => boolean | Thenable<boolean>): azdata.ComponentBuilder<T, TPropertyBag> {
+		this._component.customValidations.push(validation as (component: ThisType<ComponentWrapper>) => boolean | Thenable<boolean>); // Use specific type to avoid type assertion error
 		return this;
 	}
 
@@ -327,9 +359,15 @@ class ComponentBuilderImpl<T extends azdata.Component, TPropertyBag extends azda
 	}
 }
 
-class ContainerBuilderImpl<TComponent extends azdata.Component, TLayout, TItemLayout, TPropertyBag extends azdata.ComponentProperties> extends ComponentBuilderImpl<TComponent, TPropertyBag> implements azdata.ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag> {
+class ContainerBuilderImpl<TComponent extends azdata.Component, TLayout, TItemLayout, TPropertyBag extends azdata.ContainerProperties> extends ComponentBuilderImpl<TComponent, TPropertyBag> implements azdata.ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag> {
 	constructor(componentWrapper: ComponentWrapper) {
 		super(componentWrapper);
+	}
+
+	override withProps(properties: TPropertyBag): azdata.ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag> {
+		// We use the same basic logic to set the properties but return this so we can return the container object type
+		super.withProps(properties);
+		return this;
 	}
 
 	withLayout(layout: TLayout): azdata.ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag> {
@@ -346,21 +384,21 @@ class ContainerBuilderImpl<TComponent extends azdata.Component, TLayout, TItemLa
 	}
 }
 
-class GenericContainerBuilder<T extends azdata.Component, TLayout, TItemLayout, TPropertyBag extends azdata.ComponentProperties> extends ContainerBuilderImpl<T, TLayout, TItemLayout, TPropertyBag> {
-	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
-		super(new ComponentWrapper(proxy, handle, type, id));
+class GenericContainerBuilder<T extends azdata.Component, TLayout, TItemLayout, TPropertyBag extends azdata.ContainerProperties> extends ContainerBuilderImpl<T, TLayout, TItemLayout, TPropertyBag> {
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string, logService: ILogService) {
+		super(new ComponentWrapper(proxy, handle, type, id, logService));
 	}
 }
 
 class DivContainerBuilder extends ContainerBuilderImpl<azdata.DivContainer, azdata.DivLayout, azdata.DivItemLayout, azdata.DivContainerProperties> {
-	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
-		super(new DivContainerWrapper(proxy, handle, type, id));
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string, logService: ILogService) {
+		super(new DivContainerWrapper(proxy, handle, type, id, logService));
 	}
 }
 
 class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer, azdata.FormLayout, azdata.FormItemLayout, azdata.ComponentProperties> implements azdata.FormBuilder {
-	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string, private _builder: ModelBuilderImpl) {
-		super(proxy, handle, type, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string, private _builder: ModelBuilderImpl, logService: ILogService) {
+		super(proxy, handle, type, id, logService);
 	}
 
 	withFormItems(components: (azdata.FormComponent | azdata.FormComponentGroup)[], itemLayout?: azdata.FormItemLayout): azdata.FormBuilder {
@@ -391,7 +429,7 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 			});
 		}
 
-		return new InternalItemConfig(componentWrapper, assign({}, itemLayout || {}, {
+		return new InternalItemConfig(componentWrapper, Object.assign({}, itemLayout || {}, {
 			title: formComponent.title,
 			actions: actions,
 			isFormComponent: true,
@@ -457,7 +495,7 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 		let result: boolean = false;
 		if (componentGroup && componentGroup.components !== undefined) {
 			let firstComponent = componentGroup.components[0];
-			let index = firstIndex(this._component.itemConfigs, x => x.component.id === firstComponent.component.id);
+			let index = this._component.itemConfigs.findIndex(x => x.component.id === firstComponent.component.id);
 			if (index !== -1) {
 				result = this._component.removeItemAt(index - 1);
 			}
@@ -477,8 +515,8 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 }
 
 class GroupContainerBuilder extends ContainerBuilderImpl<azdata.GroupContainer, azdata.GroupLayout, azdata.GroupItemLayout, azdata.GroupContainerProperties> {
-	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
-		super(new GroupContainerComponentWrapper(proxy, handle, type, id));
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string, logService: ILogService) {
+		super(new GroupContainerComponentWrapper(proxy, handle, type, id, logService));
 	}
 }
 
@@ -533,7 +571,7 @@ function createFromTabs(items: (azdata.Tab | azdata.TabGroup)[]): InternalItemCo
 	return itemConfigs;
 }
 
-function toTabItemConfig(content: azdata.Component, title: string, id?: string, group?: string, icon?: string | URI | { light: string | URI; dark: string | URI }): InternalItemConfig {
+function toTabItemConfig(content: azdata.Component, title: string, id?: string, group?: string, icon?: azdata.IconPath): InternalItemConfig {
 	return new InternalItemConfig(content as ComponentWrapper, {
 		title: title,
 		group: group,
@@ -564,26 +602,34 @@ class InternalItemConfig {
 	}
 }
 
-class ComponentWrapper implements azdata.Component {
+class ComponentWrapper extends Disposable implements azdata.Component {
 	public properties: { [key: string]: any } = {};
 	public layout: any;
 	public itemConfigs: InternalItemConfig[];
-	public customValidations: ((component: ThisType<ComponentWrapper>) => boolean)[] = [];
+	public customValidations: ((component: ThisType<ComponentWrapper>) => boolean | Thenable<boolean>)[] = [];
 	private _valid: boolean = true;
-	private _onValidityChangedEmitter = new Emitter<boolean>();
+	private _onValidityChangedEmitter = this._register(new Emitter<boolean>());
 	public readonly onValidityChanged = this._onValidityChangedEmitter.event;
 
-	private _onErrorEmitter = new Emitter<Error>();
+	private _onErrorEmitter = this._register(new Emitter<Error>());
 	public readonly onError: vscode.Event<Error> = this._onErrorEmitter.event;
 	protected _emitterMap = new Map<ComponentEventType, Emitter<any>>();
 
 	constructor(protected readonly _proxy: MainThreadModelViewShape,
 		protected readonly _handle: number,
 		protected _type: ModelComponentTypes,
-		protected _id: string
+		protected _id: string,
+		protected _logService: ILogService
 	) {
+		super();
 		this.properties = {};
 		this.itemConfigs = [];
+	}
+
+	public getRegisteredEmitter<T>(): Emitter<T> {
+		let emitter = new Emitter<T>();
+		this._register(emitter);
+		return emitter;
 	}
 
 	public get id(): string {
@@ -693,9 +739,23 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public addItems(items: Array<azdata.Component>, itemLayout?: any): void {
-		for (let item of items) {
-			this.addItem(item, itemLayout);
+		items = items.filter(item => {
+			if (this.itemConfigs.find(itemConfig => itemConfig.component.id === item.id)) {
+				this._logService.warn(`Trying to add duplicate component ${item.id} to container ${this.id}`);
+				return false;
+			}
+			this._register(item);
+			return true;
+		});
+		if (items.length === 0) {
+			return;
 		}
+		const itemConfigs = items.map(item => {
+			return {
+				itemConfig: this.createAndAddItemConfig(item, itemLayout).toIItemConfig()
+			};
+		});
+		this._proxy.$addToContainer(this._handle, this.id, itemConfigs).then(undefined, (err) => this.handleError(err));
 	}
 
 	public removeItemAt(index: number): boolean {
@@ -709,7 +769,7 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public removeItem(item: azdata.Component): boolean {
-		let index = firstIndex(this.itemConfigs, c => c.component.id === item.id);
+		let index = this.itemConfigs.findIndex(c => c.component.id === item.id);
 		if (index >= 0 && index < this.itemConfigs.length) {
 			return this.removeItemAt(index);
 		}
@@ -721,11 +781,28 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public addItem(item: azdata.Component, itemLayout?: any, index?: number): void {
-		let itemImpl = item as ComponentWrapper;
+		if (this.itemConfigs.find(itemConfig => itemConfig.component.id === item.id)) {
+			this._logService.warn(`Trying to add duplicate component ${item.id} to container ${this.id}`);
+			return;
+		}
+		this._register(item);
+		const config = this.createAndAddItemConfig(item, itemLayout, index);
+		this._proxy.$addToContainer(this._handle, this.id, [{ itemConfig: config.toIItemConfig(), index }]).then(undefined, (err) => this.handleError(err));
+	}
+
+	/**
+	 * Creates the internal item config for the component and adds it to the list of child configs for this component.
+	 * @param item The child component to add
+	 * @param itemLayout The optional layout to apply to the child component
+	 * @param index The optional index to insert the child component at
+	 */
+	private createAndAddItemConfig(item: azdata.Component, itemLayout?: any, index?: number): InternalItemConfig {
+		const itemImpl = item as ComponentWrapper;
 		if (!itemImpl) {
 			throw new Error(nls.localize('unknownComponentType', "Unknown component type. Must use ModelBuilder to create objects"));
 		}
-		let config = new InternalItemConfig(itemImpl, itemLayout);
+		this._register(itemImpl);
+		const config = new InternalItemConfig(itemImpl, itemLayout);
 		if (index !== undefined && index >= 0 && index <= this.items.length) {
 			this.itemConfigs.splice(index, 0, config);
 		} else if (!index) {
@@ -733,7 +810,7 @@ class ComponentWrapper implements azdata.Component {
 		} else {
 			throw new Error(nls.localize('invalidIndex', "The index {0} is invalid.", index));
 		}
-		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig(), index).then(undefined, (err) => this.handleError(err));
+		return config;
 	}
 
 	public setLayout(layout: any): Thenable<void> {
@@ -750,7 +827,7 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public updateProperties(properties: { [key: string]: any }): Thenable<void> {
-		this.properties = assign(this.properties, properties);
+		this.properties = Object.assign(this.properties, properties);
 		return this.notifyPropertyChanged();
 	}
 
@@ -759,7 +836,7 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void> {
-		this.properties.CSSStyles = assign(this.properties.CSSStyles || {}, cssStyles);
+		this.properties.CSSStyles = Object.assign(this.properties.CSSStyles || {}, cssStyles);
 		return this.notifyPropertyChanged();
 	}
 
@@ -802,14 +879,14 @@ class ComponentWrapper implements azdata.Component {
 		this._onErrorEmitter.fire(err);
 	}
 
-	public runCustomValidations(): boolean {
+	public async runCustomValidations(): Promise<boolean> {
 		let isValid = true;
 		try {
-			this.customValidations.forEach(validation => {
-				if (!validation(this)) {
+			await Promise.all(this.customValidations.map(async validation => {
+				if (!await validation(this)) {
 					isValid = false;
 				}
-			});
+			}));
 		} catch (e) {
 			isValid = false;
 		}
@@ -835,14 +912,14 @@ class ComponentWrapper implements azdata.Component {
 
 class ComponentWithIconWrapper extends ComponentWrapper {
 
-	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
-		super(proxy, handle, type, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string, logService: ILogService) {
+		super(proxy, handle, type, id, logService);
 	}
 
-	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
+	public get iconPath(): azdata.IconPath {
 		return this.properties['iconPath'];
 	}
-	public set iconPath(v: string | URI | { light: string | URI; dark: string | URI }) {
+	public set iconPath(v: azdata.IconPath) {
 		this.setProperty('iconPath', v);
 	}
 
@@ -870,10 +947,10 @@ class ComponentWithIconWrapper extends ComponentWrapper {
 
 class CardWrapper extends ComponentWrapper implements azdata.CardComponent {
 
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.Card, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.Card, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidClick, this.getRegisteredEmitter<any>());
 	}
 
 	public get label(): string {
@@ -906,10 +983,10 @@ class CardWrapper extends ComponentWrapper implements azdata.CardComponent {
 	public set actions(a: azdata.ActionDescriptor[]) {
 		this.setProperty('actions', a);
 	}
-	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
+	public get iconPath(): azdata.IconPath {
 		return this.properties['iconPath'];
 	}
-	public set iconPath(v: string | URI | { light: string | URI; dark: string | URI }) {
+	public set iconPath(v: azdata.IconPath) {
 		this.setProperty('iconPath', v);
 	}
 
@@ -939,11 +1016,11 @@ class CardWrapper extends ComponentWrapper implements azdata.CardComponent {
 
 class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxComponent {
 
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.InputBox, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.InputBox, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onEnterKeyPressed, new Emitter<string>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<any>());
+		this._emitterMap.set(ComponentEventType.onEnterKeyPressed, this.getRegisteredEmitter<string>());
 	}
 
 	public get value(): string {
@@ -953,10 +1030,10 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		this.setProperty('value', v);
 	}
 
-	public get ariaLive(): string {
+	public get ariaLive(): azdata.AriaLiveValue | undefined {
 		return this.properties['ariaLive'];
 	}
-	public set ariaLive(v: string) {
+	public set ariaLive(v: azdata.AriaLiveValue | undefined) {
 		this.setProperty('ariaLive', v);
 	}
 
@@ -965,6 +1042,13 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 	}
 	public set placeHolder(v: string) {
 		this.setProperty('placeHolder', v);
+	}
+
+	public get title(): string {
+		return this.properties['title'];
+	}
+	public set title(v: string) {
+		this.setProperty('title', v);
 	}
 
 	public get rows(): number {
@@ -1016,6 +1100,21 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		this.setProperty('stopEnterPropagation', v);
 	}
 
+	public get validationErrorMessage(): string {
+		return this.properties['validationErrorMessage'];
+	}
+	public set validationErrorMessage(v: string) {
+		this.setProperty('validationErrorMessage', v);
+	}
+
+	public get maxLength(): number | undefined {
+		return this.properties['maxLength'];
+	}
+
+	public set maxLength(v: number | undefined) {
+		this.setProperty('maxLength', v);
+	}
+
 	public get onTextChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
@@ -1029,10 +1128,10 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 
 class CheckBoxWrapper extends ComponentWrapper implements azdata.CheckBoxComponent {
 
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.CheckBox, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.CheckBox, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<any>());
 	}
 
 	public get checked(): boolean {
@@ -1056,12 +1155,12 @@ class CheckBoxWrapper extends ComponentWrapper implements azdata.CheckBoxCompone
 }
 
 class WebViewWrapper extends ComponentWrapper implements azdata.WebViewComponent {
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, private _extensionLocation: URI) {
-		super(proxy, handle, ModelComponentTypes.WebView, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, private _extensionLocation: URI, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.WebView, id, logService);
 		this.properties = {
 			'extensionLocation': this._extensionLocation
 		};
-		this._emitterMap.set(ComponentEventType.onMessage, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onMessage, this.getRegisteredEmitter<any>());
 	}
 
 	public get message(): any {
@@ -1091,27 +1190,12 @@ class WebViewWrapper extends ComponentWrapper implements azdata.WebViewComponent
 	}
 }
 
-class DomComponentWrapper extends ComponentWrapper implements azdata.DomComponent {
-
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.Dom, id);
-		this.properties = {};
-	}
-
-	public get html(): string {
-		return this.properties['html'];
-	}
-	public set html(html: string) {
-		this.setProperty('html', html);
-	}
-}
-
 class EditorWrapper extends ComponentWrapper implements azdata.EditorComponent {
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.Editor, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.Editor, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onComponentCreated, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<any>());
+		this._emitterMap.set(ComponentEventType.onComponentCreated, this.getRegisteredEmitter<any>());
 	}
 
 	public get content(): string {
@@ -1160,11 +1244,11 @@ class EditorWrapper extends ComponentWrapper implements azdata.EditorComponent {
 }
 
 class DiffEditorWrapper extends ComponentWrapper implements azdata.DiffEditorComponent {
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.DiffEditor, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.DiffEditor, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onComponentCreated, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<any>());
+		this._emitterMap.set(ComponentEventType.onComponentCreated, this.getRegisteredEmitter<any>());
 	}
 
 	public get contentLeft(): string {
@@ -1247,10 +1331,11 @@ class DiffEditorWrapper extends ComponentWrapper implements azdata.DiffEditorCom
 
 class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonComponent {
 
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.RadioButton, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.RadioButton, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidClick, this.getRegisteredEmitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<boolean>());
 	}
 
 	public get name(): string {
@@ -1284,19 +1369,24 @@ class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonC
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
 	}
+
+	public get onDidChangeCheckedState(): vscode.Event<boolean> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
 }
 
 class TextComponentWrapper extends ComponentWrapper implements azdata.TextComponentProperties {
 
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.Text, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.Text, id, logService);
 		this.properties = {};
 	}
 
-	public get value(): string {
+	public get value(): string | string[] {
 		return this.properties['value'];
 	}
-	public set value(v: string) {
+	public set value(v: string | string[]) {
 		this.setProperty('value', v);
 	}
 
@@ -1306,23 +1396,52 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	public set title(title: string) {
 		this.setProperty('title', title);
 	}
+
+	public get requiredIndicator(): boolean {
+		return this.properties['requiredIndicator'];
+	}
+	public set requiredIndicator(requiredIndicator: boolean) {
+		this.setProperty('requiredIndicator', requiredIndicator);
+	}
+
+	public get headingLevel(): azdata.HeadingLevel | undefined {
+		return this.properties['headingLevel'];
+	}
+	public set headingLevel(headingLevel: azdata.HeadingLevel | undefined) {
+		this.setProperty('headingLevel', headingLevel);
+	}
+
+	public get textType(): azdata.TextType | undefined {
+		return this.properties['textType'];
+	}
+	public set textType(type: azdata.TextType | undefined) {
+		this.setProperty('textType', type);
+	}
+
+	public get ariaLive(): azdata.AriaLiveValue | undefined {
+		return this.properties['ariaLive'];
+	}
+
+	public set ariaLive(ariaLive: azdata.AriaLiveValue | undefined) {
+		this.setProperty('ariaLive', ariaLive);
+	}
 }
 
 class ImageComponentWrapper extends ComponentWithIconWrapper implements azdata.ImageComponentProperties {
 
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.Image, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.Image, id, logService);
 		this.properties = {};
 	}
 }
 
 class TableComponentWrapper extends ComponentWrapper implements azdata.TableComponent {
 
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.Table, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.Table, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onCellAction, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, this.getRegisteredEmitter<any>());
+		this._emitterMap.set(ComponentEventType.onCellAction, this.getRegisteredEmitter<any>());
 	}
 
 	public get data(): any[][] {
@@ -1407,15 +1526,21 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		return emitter && emitter.event;
 	}
 
+	public appendData(v: any[][]): Thenable<void> {
+		return this.doAction(ModelViewAction.AppendData, v);
+	}
 
+	public setActiveCell(row: number, column: number): void {
+		this.doAction(ModelViewAction.SetActiveCell, row, column);
+	}
 }
 
 class DropDownWrapper extends ComponentWrapper implements azdata.DropDownComponent {
 
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.DropDown, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.DropDown, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<any>());
 	}
 
 	public get value(): string | azdata.CategoryValue {
@@ -1470,15 +1595,31 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
+
+	public get placeholder(): string | undefined {
+		return this.properties['placeholder'];
+	}
+
+	public set placeholder(v: string) {
+		this.setProperty('placeholder', v);
+	}
+
+	public get validationErrorMessages(): string[] | undefined {
+		return this.properties['validationErrorMessages'];
+	}
+
+	public set validationErrorMessages(v: string[]) {
+		this.setProperty('validationErrorMessages', v);
+	}
 }
 
 class DeclarativeTableWrapper extends ComponentWrapper implements azdata.DeclarativeTableComponent {
 
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.DeclarativeTable, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.DeclarativeTable, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<any>());
+		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, this.getRegisteredEmitter<azdata.DeclarativeTableRowSelectedEvent>());
 
 	}
 
@@ -1487,7 +1628,9 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 	}
 
 	public set data(v: any[][]) {
-		this.setProperty('data', v);
+		this.clearItems().then(() => {
+			this.setProperty('data', v);
+		});
 	}
 
 	public get dataValues(): azdata.DeclarativeTableCellValue[][] {
@@ -1495,7 +1638,14 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 	}
 
 	public set dataValues(v: azdata.DeclarativeTableCellValue[][]) {
-		this.setProperty('dataValues', v);
+		this.clearItems().then(() => {
+			this.setProperty('dataValues', v);
+		});
+	}
+
+	async setDataValues(v: azdata.DeclarativeTableCellValue[][]): Promise<void> {
+		await this.clearItems();
+		await this.setProperty('dataValues', v);
 	}
 
 	public get columns(): azdata.DeclarativeTableColumn[] {
@@ -1511,24 +1661,36 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		return emitter && emitter.event;
 	}
 
-	public get onRowSelected(): vscode.Event<any> {
-		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+	public get onRowSelected(): vscode.Event<azdata.DeclarativeTableRowSelectedEvent> {
+		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
 		return emitter && emitter.event;
 	}
 
-	protected notifyPropertyChanged(): Thenable<void> {
+	protected override notifyPropertyChanged(): Thenable<void> {
 		return this._proxy.$setProperties(this._handle, this._id, this.getPropertiesForMainThread());
 	}
 
-	public get selectEffect(): boolean | undefined {
-		return this.properties['selectEffect'];
+	public get enableRowSelection(): boolean | undefined {
+		return this.properties['enableRowSelection'];
 	}
 
-	public set selectEffect(v: boolean | undefined) {
-		this.setProperty('selectEffect', v);
+	public set enableRowSelection(v: boolean | undefined) {
+		this.setProperty('enableRowSelection', v);
 	}
 
-	public toComponentShape(): IComponentShape {
+	public setFilter(rowIndexes: number[]): void {
+		this._proxy.$doAction(this._handle, this._id, ModelViewAction.Filter, rowIndexes);
+	}
+
+	public get selectedRow(): number {
+		return this.properties['selectedRow'] ?? -1;
+	}
+
+	public set selectedRow(v: number) {
+		this.setProperty('selectedRow', v);
+	}
+
+	public override toComponentShape(): IComponentShape {
 		// Overridden to ensure we send the correct properties mapping.
 		return <IComponentShape>{
 			id: this.id,
@@ -1547,30 +1709,52 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		// and so map them into their IDs instead. We don't want to update the actual
 		// data property though since the caller would still expect that to contain
 		// the Component objects they created
-		const properties = assign({}, this.properties);
-		if (properties.data) {
+		const properties = Object.assign({}, this.properties);
+		const componentsToAdd: ComponentWrapper[] = [];
+		if (properties.data?.length > 0) {
+
 			properties.data = properties.data.map((row: any[]) => row.map(cell => {
 				if (cell instanceof ComponentWrapper) {
-					// First ensure that we register the component using addItem
-					// such that it gets added to the ModelStore. We don't want to
-					// make the table component an actual container since that exposes
-					// a lot of functionality we don't need.
-					this.addItem(cell);
+					if (!this.itemConfigs.find(item => item.component.id === cell.id)) {
+						// First ensure that we register the component using addItem
+						// such that it gets added to the ModelStore. We don't want to
+						// make the table component an actual container since that exposes
+						// a lot of functionality we don't need.
+						componentsToAdd.push(cell);
+					}
 					return cell.id;
 				}
 				return cell;
 			}));
+		} else {
+			if (properties.dataValues) {
+				properties.dataValues = properties.dataValues.map((row: azdata.DeclarativeTableCellValue[]) => row.map(cell => {
+					const cellValue = cell.value;
+					if (cellValue instanceof ComponentWrapper) {
+						if (!this.itemConfigs.find(item => item.component.id === cellValue.id)) {
+							// First ensure that we register the component using addItem
+							// such that it gets added to the ModelStore. We don't want to
+							// make the table component an actual container since that exposes
+							// a lot of functionality we don't need.
+							componentsToAdd.push(cellValue);
+						}
+						return { value: cellValue.id, ariaLabel: cell.ariaLabel, style: cell.style };
+					}
+					return cell;
+				}));
+			}
 		}
+		this.addItems(componentsToAdd);
 		return properties;
 	}
 }
 
 class ListBoxWrapper extends ComponentWrapper implements azdata.ListBoxComponent {
 
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.ListBox, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.ListBox, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, this.getRegisteredEmitter<any>());
 	}
 
 	public get selectedRow(): number {
@@ -1595,10 +1779,10 @@ class ListBoxWrapper extends ComponentWrapper implements azdata.ListBoxComponent
 
 class ButtonWrapper extends ComponentWithIconWrapper implements azdata.ButtonComponent {
 
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.Button, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.Button, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidClick, this.getRegisteredEmitter<any>());
 	}
 
 	public get label(): string {
@@ -1608,6 +1792,13 @@ class ButtonWrapper extends ComponentWithIconWrapper implements azdata.ButtonCom
 		this.setProperty('label', v);
 	}
 
+	public get fileType(): string {
+		return this.properties['fileType'];
+	}
+	public set fileType(v: string) {
+		this.setProperty('fileType', v);
+	}
+
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
@@ -1615,10 +1806,11 @@ class ButtonWrapper extends ComponentWithIconWrapper implements azdata.ButtonCom
 }
 
 class LoadingComponentWrapper extends ComponentWrapper implements azdata.LoadingComponent {
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.LoadingComponent, id);
-		this.properties = {};
-		this.loading = true;
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.LoadingComponent, id, logService);
+		this.properties = {
+			loading: true
+		};
 	}
 
 	public get loading(): boolean {
@@ -1627,6 +1819,30 @@ class LoadingComponentWrapper extends ComponentWrapper implements azdata.Loading
 
 	public set loading(value: boolean) {
 		this.setProperty('loading', value);
+	}
+
+	public get showText(): boolean {
+		return this.properties['showText'];
+	}
+
+	public set showText(value: boolean) {
+		this.setProperty('showText', value);
+	}
+
+	public get loadingText(): string {
+		return this.properties['loadingText'];
+	}
+
+	public set loadingText(value: string) {
+		this.setProperty('loadingText', value);
+	}
+
+	public get loadingCompletedText(): string {
+		return this.properties['loadingCompletedText'];
+	}
+
+	public set loadingCompletedText(value: string) {
+		this.setProperty('loadingCompletedText', value);
 	}
 
 	public get component(): azdata.Component {
@@ -1640,10 +1856,10 @@ class LoadingComponentWrapper extends ComponentWrapper implements azdata.Loading
 
 class FileBrowserTreeComponentWrapper extends ComponentWrapper implements azdata.FileBrowserTreeComponent {
 
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.FileBrowserTree, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.FileBrowserTree, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<any>());
 	}
 
 	public get ownerUri(): string {
@@ -1661,16 +1877,16 @@ class FileBrowserTreeComponentWrapper extends ComponentWrapper implements azdata
 }
 
 class SeparatorWrapper extends ComponentWrapper implements azdata.SeparatorComponent {
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.Separator, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.Separator, id, logService);
 	}
 }
 
 class DivContainerWrapper extends ComponentWrapper implements azdata.DivContainer {
-	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
-		super(proxy, handle, type, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string, logService: ILogService) {
+		super(proxy, handle, type, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidClick, this.getRegisteredEmitter<any>());
 	}
 
 	public get overflowY(): string {
@@ -1699,8 +1915,8 @@ class TreeComponentWrapper<T> extends ComponentWrapper implements azdata.TreeCom
 
 	constructor(
 		private _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
-		proxy: MainThreadModelViewShape, handle: number, id: string, private _extension: IExtensionDescription) {
-		super(proxy, handle, ModelComponentTypes.TreeComponent, id);
+		proxy: MainThreadModelViewShape, handle: number, id: string, private _extension: IExtensionDescription, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.TreeComponent, id, logService);
 		this.properties = {};
 	}
 
@@ -1719,10 +1935,10 @@ class TreeComponentWrapper<T> extends ComponentWrapper implements azdata.TreeCom
 
 class HyperlinkComponentWrapper extends ComponentWrapper implements azdata.HyperlinkComponentProperties {
 
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.Hyperlink, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.Hyperlink, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidClick, this.getRegisteredEmitter<any>());
 	}
 
 	public get label(): string {
@@ -1746,12 +1962,12 @@ class HyperlinkComponentWrapper extends ComponentWrapper implements azdata.Hyper
 }
 
 class RadioCardGroupComponentWrapper extends ComponentWrapper implements azdata.RadioCardGroupComponent {
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.RadioCardGroup, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.RadioCardGroup, id, logService);
 		this.properties = {};
 
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<azdata.RadioCardSelectionChangedEvent>());
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<azdata.RadioCardLinkClickEvent>());
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<azdata.RadioCardSelectionChangedEvent>());
+		this._emitterMap.set(ComponentEventType.onDidClick, this.getRegisteredEmitter<azdata.RadioCardLinkClickEvent>());
 	}
 
 	public get iconWidth(): string | undefined {
@@ -1820,11 +2036,48 @@ class RadioCardGroupComponentWrapper extends ComponentWrapper implements azdata.
 	}
 }
 
-class TabbedPanelComponentWrapper extends ComponentWrapper implements azdata.TabbedPanelComponent {
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.TabbedPanel, id);
+class ListViewComponentWrapper extends ComponentWrapper implements azdata.ListViewComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.ListView, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<string>());
+
+		this._emitterMap.set(ComponentEventType.onDidClick, this.getRegisteredEmitter<azdata.ListViewClickEvent>());
+	}
+
+	public get title(): azdata.ListViewTitle {
+		return this.properties['title'];
+	}
+
+	public set title(v: azdata.ListViewTitle) {
+		this.setProperty('title', v);
+	}
+
+	public get options(): azdata.ListViewOption[] {
+		return this.properties['options'];
+	}
+	public set options(v: azdata.ListViewOption[]) {
+		this.setProperty('options', v);
+	}
+
+	public get selectedOptionId(): string | undefined {
+		return this.properties['selectedOptionId'];
+	}
+
+	public set selectedOptionId(v: string | undefined) {
+		this.setProperty('selectedOptionId', v);
+	}
+
+	public get onDidClick(): vscode.Event<azdata.ListViewClickEvent> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
+	}
+}
+
+class TabbedPanelComponentWrapper extends ComponentWrapper implements azdata.TabbedPanelComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.TabbedPanel, id, logService);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<string>());
 	}
 
 	updateTabs(tabs: (azdata.Tab | azdata.TabGroup)[]): void {
@@ -1853,8 +2106,8 @@ class TabbedPanelComponentWrapper extends ComponentWrapper implements azdata.Tab
 }
 
 class PropertiesContainerComponentWrapper extends ComponentWrapper implements azdata.PropertiesContainerComponent {
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.PropertiesContainer, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.PropertiesContainer, id, logService);
 		this.properties = {};
 	}
 
@@ -1873,9 +2126,150 @@ class PropertiesContainerComponentWrapper extends ComponentWrapper implements az
 	}
 }
 
+class InfoBoxComponentWrapper extends ComponentWrapper implements azdata.InfoBoxComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.InfoBox, id, logService);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidClick, this.getRegisteredEmitter<any>());
+		this._emitterMap.set(ComponentEventType.onChildClick, this.getRegisteredEmitter<any>());
+	}
+
+	public get style(): azdata.InfoBoxStyle {
+		return this.properties['style'];
+	}
+
+	public set style(v: azdata.InfoBoxStyle) {
+		this.setProperty('style', v);
+	}
+
+	public get text(): string {
+		return this.properties['text'];
+	}
+
+	public set text(v: string) {
+		this.setProperty('text', v);
+	}
+
+	public get links(): azdata.LinkArea[] {
+		return this.properties['links'];
+	}
+
+	public set links(v: azdata.LinkArea[]) {
+		this.setProperty('links', v);
+	}
+
+	public get announceText(): boolean {
+		return this.properties['announceText'];
+	}
+
+	public set announceText(v: boolean) {
+		this.setProperty('announceText', v);
+	}
+
+	public get isClickable(): boolean {
+		return this.properties['isClickable'];
+	}
+
+	public set isClickable(v: boolean) {
+		this.setProperty('isClickable', v);
+	}
+
+	public get clickableButtonAriaLabel(): string {
+		return this.properties['clickableButtonAriaLabel'];
+	}
+
+	public set clickableButtonAriaLabel(v: string) {
+		this.setProperty('clickableButtonAriaLabel', v);
+	}
+
+	public get onDidClick(): vscode.Event<void> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
+	}
+
+	public get onLinkClick(): vscode.Event<azdata.InfoBoxLinkClickEventArgs> {
+		let emitter = this._emitterMap.get(ComponentEventType.onChildClick);
+		return emitter && emitter.event;
+	}
+}
+
+class SliderComponentWrapper extends ComponentWrapper implements azdata.SliderComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.Slider, id, logService);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<number>());
+		this._emitterMap.set(ComponentEventType.onInput, this.getRegisteredEmitter<number>());
+	}
+
+	public get min(): number | undefined {
+		return this.properties['min'];
+	}
+
+	public set min(v: number | undefined) {
+		this.setProperty('min', v);
+	}
+
+	public get max(): number | undefined {
+		return this.properties['max'];
+	}
+
+	public set max(v: number | undefined) {
+		this.setProperty('max', v);
+	}
+
+	public get step(): number | undefined {
+		return this.properties['step'];
+	}
+
+	public set step(v: number | undefined) {
+		this.setProperty('step', v);
+	}
+
+	public get value(): number | undefined {
+		return this.properties['value'];
+	}
+
+	public set value(v: number | undefined) {
+		this.setProperty('value', v);
+	}
+
+	public get showTicks(): boolean | undefined {
+		return this.properties['showTicks'];
+	}
+
+	public set showTicks(v: boolean | undefined) {
+		this.setProperty('showTicks', v);
+	}
+
+	public get onChanged(): vscode.Event<number> {
+		const emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter!.event;
+	}
+
+	public get onInput(): vscode.Event<number> {
+		const emitter = this._emitterMap.get(ComponentEventType.onInput);
+		return emitter!.event;
+	}
+}
+
+class ExecutionPlanComponentWrapper extends ComponentWrapper implements azdata.ExecutionPlanComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.ExecutionPlan, id, logService);
+		this.properties = {};
+	}
+
+	public get data(): azdata.ExecutionPlanData {
+		return this.properties['data'];
+	}
+
+	public set data(v: azdata.ExecutionPlanData) {
+		this.setProperty('data', v);
+	}
+}
+
 class GroupContainerComponentWrapper extends ComponentWrapper implements azdata.GroupContainer {
-	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
-		super(proxy, handle, type, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string, logService: ILogService) {
+		super(proxy, handle, type, id, logService);
 		this.properties = {};
 	}
 	public get collapsed(): boolean {
@@ -1886,10 +2280,48 @@ class GroupContainerComponentWrapper extends ComponentWrapper implements azdata.
 	}
 }
 
-class ModelViewImpl implements azdata.ModelView {
+class ChartComponentWrapper<TChartType extends azdata.ChartType, TData extends azdata.ChartData<TChartType>, TOptions extends azdata.ChartOptions<TChartType>> extends ComponentWrapper implements azdata.ChartComponent<TChartType, TData, TOptions> {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.Chart, id, logService);
+		this.properties = {};
 
-	public onClosedEmitter = new Emitter<any>();
-	private _onValidityChangedEmitter = new Emitter<boolean>();
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+	}
+
+	public set chartType(v: TChartType) {
+		this.setProperty('chartType', v);
+	}
+
+	public get chartType(): TChartType {
+		return this.properties['chartType'];
+	}
+
+	public set data(v: TData) {
+		this.setProperty('data', v);
+	}
+
+	public get data(): TData {
+		return this.properties['data'];
+	}
+
+	public set options(v: TOptions) {
+		this.setProperty('options', v);
+	}
+
+	public get options(): TOptions {
+		return this.properties['options'];
+	}
+
+	public get onDidClick(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
+	}
+}
+
+class ModelViewImpl extends Disposable implements azdata.ModelView {
+
+	public onClosedEmitter = this._register(new Emitter<any>());
+	private _onValidityChangedEmitter = this._register(new Emitter<boolean>());
 	public readonly onValidityChanged = this._onValidityChangedEmitter.event;
 
 	private _modelBuilder: ModelBuilderImpl;
@@ -1904,6 +2336,7 @@ class ModelViewImpl implements azdata.ModelView {
 		_extension: IExtensionDescription,
 		logService: ILogService
 	) {
+		super();
 		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle, this._extHostModelViewTree, _extension, logService);
 	}
 
@@ -1945,14 +2378,13 @@ class ModelViewImpl implements azdata.ModelView {
 		return this._proxy.$validate(this._handle, this._component.id);
 	}
 
-	public runCustomValidations(componentId: string): boolean {
+	public runCustomValidations(componentId: string): Thenable<boolean> {
 		return this._modelBuilder.runCustomValidations(componentId);
 	}
 }
 
 export class ExtHostModelView implements ExtHostModelViewShape {
 	private readonly _proxy: MainThreadModelViewShape;
-
 	private readonly _modelViews = new Map<number, ModelViewImpl>();
 	private readonly _handlers = new Map<string, (view: azdata.ModelView) => void>();
 	private readonly _handlerToExtension = new Map<string, IExtensionDescription>();
@@ -1992,6 +2424,6 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 
 	$runCustomValidations(handle: number, componentId: string): Thenable<boolean> {
 		const view = this._modelViews.get(handle);
-		return Promise.resolve(view.runCustomValidations(componentId));
+		return view.runCustomValidations(componentId);
 	}
 }

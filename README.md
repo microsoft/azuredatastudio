@@ -1,36 +1,66 @@
 # Azure Data Studio
 
 [![Join the chat at https://gitter.im/Microsoft/sqlopsstudio](https://badges.gitter.im/Microsoft/sqlopsstudio.svg)](https://gitter.im/Microsoft/sqlopsstudio?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://dev.azure.com/azuredatastudio/azuredatastudio/_apis/build/status/Azure%20Data%20Studio%20CI?branchName=main)](https://dev.azure.com/azuredatastudio/azuredatastudio/_build/latest?definitionId=4&branchName=main)
+[![Build Status](https://dev.azure.com/ms/azuredatastudio/_apis/build/status/AzureDataStudio-Localization-CI?branchName=main)](https://dev.azure.com/ms/azuredatastudio/_build/latest?definitionId=453&branchName=main)
 [![Twitter Follow](https://img.shields.io/twitter/follow/azuredatastudio?style=social)](https://twitter.com/azuredatastudio)
 
-Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
+Azure Data Studio is a data management and development tool with connectivity to popular cloud and on-premises databases. Azure Data Studio supports Windows, macOS, and Linux, with immediate capability to connect to Azure SQL and SQL Server.  Browse the [extension library](https://github.com/microsoft/azuredatastudio/wiki/List-of-Extensions) for additional database support options including MySQL, PostgreSQL, and MongoDB.
 
 ## **Download the latest Azure Data Studio release**
 
-| Platform																|
-| ---------------------------------------	|
-| [Windows User Installer][win-user]			|
-| [Windows System Installer][win-system]	|
-| [Windows ZIP][win-zip]									|
-| [macOS ZIP][osx-zip]										|
-| [Linux TAR.GZ][linux-zip]								|
-| [Linux RPM][linux-rpm]									|
-| [Linux DEB][linux-deb]									|
+|Platform |Type             |Download |
+| --------|-----------------|----------------------- |
+|Windows  |User Installer   |[64 bit][win-user]&emsp;[ARM][win-user-arm64] |
+|         |System Installer |[64 bit][win-system]&emsp;[ARM][win-system-arm64] |
+|         |.zip             |[64 bit][win-zip]&emsp;[ARM][win-zip-arm64] |
+|Linux    |.tar.gz          |[64 bit][linux-zip] |
+|         |.deb             |[64 bit][linux-deb] |
+|         |.rpm             |[64 bit][linux-rpm] |
+|Mac      |.zip             |[Universal][osx-universal]&emsp;[Intel Chip][osx-zip]&emsp;[Apple Silicon][osx-arm64] |
 
+[win-user]: https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-user/stable
+[win-system]: https://azuredatastudio-update.azurewebsites.net/latest/win32-x64/stable
+[win-zip]: https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-archive/stable
+[win-user-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/win32-arm64-user/stable
+[win-system-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/win32-arm64/stable
+[win-zip-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/win32-arm64-archive/stable
+[linux-zip]: https://azuredatastudio-update.azurewebsites.net/latest/linux-x64/stable
+[linux-deb]: https://azuredatastudio-update.azurewebsites.net/latest/linux-deb-x64/stable
+[linux-rpm]: https://azuredatastudio-update.azurewebsites.net/latest/linux-rpm-x64/stable
+[osx-universal]: https://azuredatastudio-update.azurewebsites.net/latest/darwin-universal/stable
+[osx-zip]: https://azuredatastudio-update.azurewebsites.net/latest/darwin/stable
+[osx-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/darwin-arm64/stable
 
 Go to our [download page](https://aka.ms/getazuredatastudio) for more specific instructions.
 
-## Try out the latest insiders build from `main`:
-- [Windows User Installer - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-user/insider)
-- [Windows System Installer - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64/insider)
-- [Windows ZIP - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-archive/insider)
-- [macOS ZIP - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/darwin/insider)
-- [Linux TAR.GZ - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/linux-x64/insider)
+## Try out the latest insiders build from `main` branch:
 
-See the [change log](https://github.com/Microsoft/azuredatastudio/blob/main/CHANGELOG.md) for additional details of what's in this release.
-Go to our [download page](https://aka.ms/getazuredatastudio) for more specific instructions.
+|Platform |Type             |Download - Insiders Build |
+| --------|-----------------|----------------------- |
+|Windows  |User Installer   |[64 bit][in-win-user]&emsp;[ARM][in-win-user-arm64] |
+|         |System Installer |[64 bit][in-win-system]&emsp;[ARM][in-win-system-arm64] |
+|         |.zip             |[64 bit][in-win-zip]&emsp;[ARM][in-win-zip-arm64] |
+|Linux    |.tar.gz          |[64 bit][in-linux-zip] |
+|         |.deb             |[64 bit][in-linux-deb] |
+|         |.rpm             |[64 bit][in-linux-rpm] |
+|Mac      |.zip             |[Universal][in-osx-universal]&emsp;[Intel Chip][in-osx-zip]&emsp;[Apple Silicon][in-osx-arm64] |
 
+[in-win-user]: https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-user/insider
+[in-win-system]: https://azuredatastudio-update.azurewebsites.net/latest/win32-x64/insider
+[in-win-zip]: https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-archive/insider
+[in-win-user-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/win32-arm64-user/insider
+[in-win-system-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/win32-arm64/insider
+[in-win-zip-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/win32-arm64-archive/insider
+[in-linux-zip]:https://azuredatastudio-update.azurewebsites.net/latest/linux-x64/insider
+[in-linux-deb]:https://azuredatastudio-update.azurewebsites.net/latest/linux-deb-x64/insider
+[in-linux-rpm]:https://azuredatastudio-update.azurewebsites.net/latest/linux-rpm-x64/insider
+[in-osx-universal]: https://azuredatastudio-update.azurewebsites.net/latest/darwin-universal/insider
+[in-osx-zip]: https://azuredatastudio-update.azurewebsites.net/latest/darwin/insider
+[in-osx-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/darwin-arm64/insider
+
+Please visit our [download page](https://aka.ms/getazuredatastudio) for more specific installation instructions.
+Check out the [change log](https://github.com/Microsoft/azuredatastudio/blob/main/CHANGELOG.md) or [release notes](https://learn.microsoft.com/sql/azure-data-studio/release-notes-azure-data-studio) for additional details of what's in the each release.
+The [Azure Data Studio documentation](https://learn.microsoft.com/sql/azure-data-studio) includes complete details on getting started, connection quickstarts, and feature tutorials.
 
 ## **Feature Highlights**
 
@@ -64,8 +94,12 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 ## Localization
 Azure Data Studio is localized into 10 languages: French, Italian, German, Spanish, Simplified Chinese, Traditional Chinese, Japanese, Korean, Russian, and Portuguese (Brazil). The language packs are available in the Extension Manager marketplace. Simply, search for the specific language using the extension marketplace and install. Once you install the selected language, Azure Data Studio will prompt you to restart with the new language.
 
+## Telemetry
+
+Azure Data Studio collects telemetry data, which is used to help understand how to improve the product. For example, this usage data helps to debug issues, such as slow start-up times, and to prioritize new features. While we appreciate the insights this data provides, we also know that not everyone wants to send usage data and you can disable telemetry as described in the [disable telemetry reporting](https://aka.ms/ads-disable-telemetry) documentation.
+
 ## Privacy Statement
-The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement) describes the privacy statement of this software.
+The [Microsoft Privacy Statement](https://go.microsoft.com/fwlink/?LinkID=824704) describes the privacy statement of this software.
 
 ## Contributions and "Thank You"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
@@ -130,11 +164,3 @@ And of course, we'd like to thank the authors of all upstream dependencies.  Ple
 Copyright (c) Microsoft Corporation. All rights reserved.
 
 Licensed under the [Source EULA](LICENSE.txt).
-
-[win-user]: https://go.microsoft.com/fwlink/?linkid=2144429
-[win-system]: https://go.microsoft.com/fwlink/?linkid=2144430
-[win-zip]: https://go.microsoft.com/fwlink/?linkid=2144183
-[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2144184
-[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2144187
-[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2144185
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2144186

@@ -25,7 +25,6 @@ export interface IMimeComponent {
 	cellOutput?: nb.ICellOutput;
 	batchId?: number;
 	id?: number;
-	queryRunnerUri?: string;
 	layout(): void;
 }
 

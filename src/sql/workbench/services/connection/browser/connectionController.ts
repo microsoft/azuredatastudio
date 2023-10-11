@@ -17,8 +17,6 @@ import { ConnectionWidget } from 'sql/workbench/services/connection/browser/conn
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
-import { assign } from 'vs/base/common/objects';
-import { find } from 'vs/base/common/arrays';
 
 export class ConnectionController implements IConnectionComponentController {
 	private _advancedController: AdvancedPropertiesController;
@@ -42,14 +40,14 @@ export class ConnectionController implements IConnectionComponentController {
 		this._callback = callback;
 		this._providerOptions = connectionProperties.connectionOptions;
 		let specialOptions = this._providerOptions.filter(
-			(property) => (property.specialValueType !== null && property.specialValueType !== undefined));
+			(property) => (property.specialValueType !== null && property.specialValueType !== undefined || property.showOnConnectionDialog));
 		this._connectionWidget = this._instantiationService.createInstance(ConnectionWidget, specialOptions, {
 			onSetConnectButton: (enable: boolean) => this._callback.onSetConnectButton(enable),
 			onCreateNewServerGroup: () => this.onCreateNewServerGroup(),
 			onAdvancedProperties: () => this.handleOnAdvancedProperties(),
 			onSetAzureTimeOut: () => this.handleonSetAzureTimeOut(),
-			onFetchDatabases: (serverName: string, authenticationType: string, userName?: string, password?: string) => this.onFetchDatabases(
-				serverName, authenticationType, userName, password).then(result => {
+			onFetchDatabases: (serverName: string, authenticationType: string, userName?: string, password?: string, authToken?: string) => this.onFetchDatabases(
+				serverName, authenticationType, userName, password, authToken).then(result => {
 					return result;
 				}),
 			onAzureTenantSelection: (azureTenantId?: string) => this.onAzureTenantSelection(azureTenantId),
@@ -57,7 +55,7 @@ export class ConnectionController implements IConnectionComponentController {
 		this._providerName = providerName;
 	}
 
-	protected async onFetchDatabases(serverName: string, authenticationType: string, userName?: string, password?: string): Promise<string[]> {
+	protected async onFetchDatabases(serverName: string, authenticationType: string, userName?: string, password?: string, authToken?: string): Promise<string[]> {
 		let tempProfile = this._model;
 		tempProfile.serverName = serverName;
 		tempProfile.authenticationType = authenticationType;
@@ -65,6 +63,7 @@ export class ConnectionController implements IConnectionComponentController {
 		tempProfile.password = password;
 		tempProfile.groupFullName = '';
 		tempProfile.saveProfile = false;
+		tempProfile.azureAccount = authToken;
 		let uri = this._connectionManagementService.getConnectionUri(tempProfile);
 		if (this._databaseCache.has(uri)) {
 			let cachedDatabases: string[] = this._databaseCache.get(uri);
@@ -113,10 +112,6 @@ export class ConnectionController implements IConnectionComponentController {
 		if (this._model.azureTenantId !== azureTenantId) {
 			this._model.azureTenantId = azureTenantId;
 		}
-
-		if (this._model.options.azureTenantId !== azureTenantId) {
-			this._model.azureTenantId = azureTenantId;
-		}
 	}
 
 	protected handleOnAdvancedProperties(): void {
@@ -124,7 +119,7 @@ export class ConnectionController implements IConnectionComponentController {
 			this._advancedController = this._instantiationService.createInstance(AdvancedPropertiesController, () => this._connectionWidget.focusOnAdvancedButton());
 		}
 		let advancedOption = this._providerOptions.filter(
-			(property) => (property.specialValueType === undefined || property.specialValueType === null));
+			(property) => (property.specialValueType === undefined || property.specialValueType === null && !property.showOnConnectionDialog));
 		this._advancedController.showDialog(advancedOption, this._model.options);
 	}
 
@@ -153,12 +148,11 @@ export class ConnectionController implements IConnectionComponentController {
 		} else {
 			defaultGroupId = Utils.defaultGroupId;
 		}
-		allGroups.push(assign({}, this._connectionWidget.DefaultServerGroup, { id: defaultGroupId }));
+		allGroups.push(Object.assign({}, this._connectionWidget.DefaultServerGroup, { id: defaultGroupId }));
 		allGroups.push(this._connectionWidget.NoneServerGroup);
-		if (connectionGroupRoot && connectionGroupRoot.length > 0) {
+		if (connectionGroupRoot?.length > 0) {
 			this.flattenGroups(connectionGroupRoot[0], allGroups);
 		}
-		connectionGroupRoot.forEach(cpg => cpg.dispose());
 		return allGroups;
 	}
 
@@ -166,10 +160,16 @@ export class ConnectionController implements IConnectionComponentController {
 		this._connectionWidget.updateServerGroup(this.getAllServerGroups(providers));
 		this._model = connectionInfo;
 		this._model.providerName = this._providerName;
-		let appNameOption = find(this._providerOptions, option => option.specialValueType === ConnectionOptionSpecialType.appName);
+		// MSSQL and MSSQL-CMS Provider don't treat appName as special type anymore.
+		let appNameOption = this._providerOptions.find(option => option.specialValueType === ConnectionOptionSpecialType.appName);
 		if (appNameOption) {
 			let appNameKey = appNameOption.name;
 			this._model.options[appNameKey] = Constants.applicationName;
+		} else {
+			appNameOption = this._providerOptions.find(option => option.name === Constants.mssqlApplicationNameOption);
+			if (appNameOption && (this._model.providerName === Constants.mssqlProviderName || this._model.providerName === Constants.mssqlCmsProviderName)) {
+				this._model.options[Constants.mssqlApplicationNameOption] = Utils.adjustForMssqlAppName(this._model.options[Constants.mssqlApplicationNameOption]);
+			}
 		}
 		this._connectionWidget.initDialog(this._model);
 	}
@@ -178,8 +178,8 @@ export class ConnectionController implements IConnectionComponentController {
 		this._connectionWidget.focusOnOpen();
 	}
 
-	public validateConnection(): IConnectionValidateResult {
-		return { isValid: this._connectionWidget.connect(this._model), connection: this._model };
+	public async validateConnection(): Promise<IConnectionValidateResult> {
+		return { isValid: await this._connectionWidget.connect(this._model), connection: this._model };
 	}
 
 	public fillInConnectionInputs(connectionInfo: IConnectionProfile): void {

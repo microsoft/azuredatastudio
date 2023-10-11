@@ -13,6 +13,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { TreeNode, TreeDataProvider } from './treeDataProvider';
 import * as dashboard from './modelViewDashboard';
+import { ConnectionProvider } from '../featureProviders/connectionProvider';
+import { IconProvider } from '../featureProviders/iconProvider';
+import { ObjectExplorerProvider } from '../featureProviders/objectExplorerProvider';
+import * as chartExamples from '../chartExamples';
 
 /**
  * The main controller class that initializes the extension
@@ -37,17 +41,29 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	public activate(): Promise<boolean> {
+		const connectionProvider = new ConnectionProvider();
+		const iconProvider = new IconProvider();
+		const objectExplorer = new ObjectExplorerProvider(this.context);
+		azdata.dataprotocol.registerConnectionProvider(connectionProvider);
+		azdata.dataprotocol.registerIconProvider(iconProvider);
+		azdata.dataprotocol.registerObjectExplorerProvider(objectExplorer);
+
 		const buttonHtml = fs.readFileSync(path.join(__dirname, 'button.html')).toString();
 		const counterHtml = fs.readFileSync(path.join(__dirname, 'counter.html')).toString();
 		this.registerSqlServicesModelView();
 		this.registerSplitPanelModelView();
+		this.registerModelViewDashboardTab();
+
+		vscode.commands.registerCommand('sqlservices.openEditor', () => { this.openEditor(); });
+		vscode.commands.registerCommand('sqlservices.openDialog', () => { this.openDialog(); });
+		vscode.commands.registerCommand('sqlservices.openEditorWithWebView', () => { this.openEditorWithWebview(buttonHtml, counterHtml); });
+		vscode.commands.registerCommand('sqlservices.openEditorWithWebView2', () => { this.openEditorWithWebview2(); });
+		vscode.commands.registerCommand('sqlservices.openWizard', () => { this.openWizard(); });
+		vscode.commands.registerCommand('sqlservices.openModelViewDashboard', () => { dashboard.openModelViewDashboard(this.context); });
+		vscode.commands.registerCommand('sqlservices.updateObjectExplorerNode', async (context: azdata.ObjectExplorerContext) => { await objectExplorer.updateNode(context); });
 
 		azdata.tasks.registerTask('sqlservices.clickTask', (profile) => {
 			vscode.window.showInformationMessage(`Clicked from profile ${profile.serverName}.${profile.databaseName}`);
-		});
-
-		vscode.commands.registerCommand('sqlservices.openDialog', () => {
-			this.openDialog();
 		});
 
 		vscode.commands.registerCommand('sqlservices.openConnectionDialog', async () => {
@@ -57,30 +73,234 @@ export default class MainController implements vscode.Disposable {
 			}
 		});
 
-		vscode.commands.registerCommand('sqlservices.openEditor', () => {
-			this.openEditor();
-		});
-
-		vscode.commands.registerCommand('sqlservices.openEditorWithWebView', () => {
-			this.openEditorWithWebview(buttonHtml, counterHtml);
-		});
-
-		vscode.commands.registerCommand('sqlservices.openEditorWithWebView2', () => {
-			this.openEditorWithWebview2();
-		});
-
-		vscode.commands.registerCommand('sqlservices.openWizard', () => {
-			this.openWizard();
-		});
-
-		vscode.commands.registerCommand('sqlservices.openModelViewDashboard', () => {
-			dashboard.openModelViewDashboard(this.context);
-		});
-
 		return Promise.resolve(true);
 	}
 
-	private async getTab3Content(view: azdata.ModelView): Promise<void> {
+	//#region Primary entrypoints
+
+	private openDialog(): void {
+		let dialog = azdata.window.createModelViewDialog('Test dialog', '', 'wide');
+
+		// Dialog button customizations
+
+		dialog.okButton.onClick(() => console.log('ok clicked!'));
+		dialog.okButton.label = 'ok';
+
+		dialog.cancelButton.onClick(() => console.log('cancel clicked!'));
+		dialog.cancelButton.label = 'no';
+
+		const customButton1 = azdata.window.createButton('Load name');
+		customButton1.onClick(() => console.log('button 1 clicked!'));
+
+		const customButton2 = azdata.window.createButton('Load all');
+		customButton2.onClick(() => console.log('button 2 clicked!'));
+
+		dialog.customButtons = [customButton1, customButton2];
+
+		// Dialog tabs
+
+		dialog.content = [];
+
+		const basicUiTab = azdata.window.createTab('Basic UI Controls');
+		basicUiTab.registerContent(async (view) => {
+			await this.getBasicUiTabContent(view, customButton1, customButton2, 400);
+		});
+		dialog.content.push(basicUiTab);
+
+		const widgetTab = azdata.window.createTab('Widget');
+		widgetTab.content = 'sqlservices';
+		dialog.content.push(widgetTab);
+
+		const treeTab = azdata.window.createTab('Tree');
+		treeTab.registerContent(async (view) => {
+			await this.getTreeTabContent(view);
+		});
+		dialog.content.push(treeTab);
+
+		const graphTab = azdata.window.createTab('Graphs');
+		graphTab.registerContent(async (view) => {
+			await this.getGraphTabContent(view);
+		});
+		dialog.content.push(graphTab);
+
+		// Open the dialog
+
+		azdata.window.openDialog(dialog);
+	}
+
+	private openWizard(): void {
+		let wizard = azdata.window.createWizard('Test wizard');
+		let page1 = azdata.window.createWizardPage('First wizard page');
+		let page2 = azdata.window.createWizardPage('Second wizard page');
+		page2.content = 'sqlservices';
+		let customButton1 = azdata.window.createButton('Load name');
+		customButton1.onClick(() => console.log('button 1 clicked!'));
+		let customButton2 = azdata.window.createButton('Load all');
+		customButton2.onClick(() => console.log('button 2 clicked!'));
+		wizard.customButtons = [customButton1, customButton2];
+		page1.registerContent(async (view) => {
+			await this.getBasicUiTabContent(view, customButton1, customButton2, 800);
+		});
+
+		wizard.registerOperation({
+			displayName: 'test task',
+			description: 'task description',
+			isCancelable: true,
+			connection: undefined,
+			operation: op => {
+				op.updateStatus(azdata.TaskStatus.InProgress);
+				op.updateStatus(azdata.TaskStatus.InProgress, 'Task is running');
+				setTimeout(() => {
+					op.updateStatus(azdata.TaskStatus.Succeeded);
+				}, 5000);
+			}
+		});
+		wizard.pages = [page1, page2];
+		wizard.open();
+	}
+
+	private openEditor(): void {
+		let editor = azdata.workspace.createModelViewEditor('Test Model View');
+		editor.registerContent(async view => {
+			let inputBox = view.modelBuilder.inputBox()
+				.withValidation(component => component.value !== 'valid')
+				.component();
+			let formModel = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: inputBox,
+					title: 'Enter anything but "valid"'
+				}]).component();
+			view.onClosed((params) => {
+				vscode.window.showInformationMessage('The model view editor is closed.');
+			});
+			await view.initializeModel(formModel);
+		});
+		editor.openEditor();
+	}
+
+	private openEditorWithWebview(html1: string, html2: string): void {
+		let editor = azdata.workspace.createModelViewEditor('Editor webview', { retainContextWhenHidden: true });
+		editor.registerContent(async view => {
+			let count = 0;
+			let webview1 = view.modelBuilder.webView()
+				.withProps({
+					html: html1
+				})
+				.component();
+			let webview2 = view.modelBuilder.webView()
+				.withProps({
+					html: html2
+				})
+				.component();
+			webview1.onMessage((params) => {
+				count++;
+				webview2.message = count;
+			});
+
+			let editor1 = view.modelBuilder.editor()
+				.withProps({
+					content: 'select * from sys.tables'
+				})
+				.component();
+
+			let editor2 = view.modelBuilder.editor()
+				.withProps({
+					content: 'print("Hello World !")',
+					languageMode: 'python'
+				})
+				.component();
+
+			let flexModel = view.modelBuilder.flexContainer().component();
+			flexModel.addItem(editor1, { flex: '1' });
+			flexModel.addItem(editor2, { flex: '1' });
+			flexModel.setLayout({
+				flexFlow: 'column',
+				alignItems: 'stretch',
+				height: '100%'
+			});
+
+			view.onClosed((params) => {
+				vscode.window.showInformationMessage('editor1: language: ' + editor1.languageMode + ' Content1: ' + editor1.content);
+				vscode.window.showInformationMessage('editor2: language: ' + editor2.languageMode + ' Content2: ' + editor2.content);
+			});
+			await view.initializeModel(flexModel);
+		});
+		editor.openEditor();
+	}
+
+	private openEditorWithWebview2(): void {
+		let editor = azdata.workspace.createModelViewEditor('Editor webview2', { retainContextWhenHidden: true });
+		editor.registerContent(async view => {
+
+			let inputBox = view.modelBuilder.inputBox().component();
+			let dropdown = view.modelBuilder.dropDown()
+				.withProps({
+					value: 'aa',
+					values: ['aa', 'bb', 'cc']
+				})
+				.component();
+			let runIcon = path.join(__dirname, '..', 'media', 'start.svg');
+			let runButton = view.modelBuilder.button()
+				.withProps({
+					label: 'Run',
+					iconPath: runIcon,
+					title: 'Run title'
+				}).component();
+
+			let monitorLightPath = vscode.Uri.file(path.join(__dirname, '..', 'media', 'monitor.svg'));
+			let monitorIcon = {
+				light: monitorLightPath,
+				dark: path.join(__dirname, '..', 'media', 'monitor_inverse.svg')
+			};
+
+			let monitorButton = view.modelBuilder.button()
+				.withProps({
+					label: 'Monitor',
+					iconPath: monitorIcon,
+					title: 'Monitor title'
+				}).component();
+			let toolbarModel = view.modelBuilder.toolbarContainer()
+				.withToolbarItems([{
+					component: inputBox,
+					title: 'User name:'
+				}, {
+					component: dropdown,
+					title: 'favorite:'
+				}, {
+					component: runButton
+				}, {
+					component: monitorButton
+				}]).component();
+
+
+			let webview = view.modelBuilder.webView()
+				.component();
+
+			let flexModel = view.modelBuilder.flexContainer().component();
+			flexModel.addItem(toolbarModel, { flex: '0' });
+			flexModel.addItem(webview, { flex: '1' });
+			flexModel.setLayout({
+				flexFlow: 'column',
+				alignItems: 'stretch',
+				height: '100%'
+			});
+
+			let templateValues = { url: 'http://whoisactive.com/docs/' };
+			Utils.renderTemplateHtml(path.join(__dirname, '..'), 'templateTab.html', templateValues)
+				.then(html => {
+					webview.html = html;
+				});
+
+			await view.initializeModel(flexModel);
+		});
+		editor.openEditor();
+	}
+
+	//#endregion
+
+	//#region Component helpers
+
+	private async getTreeTabContent(view: azdata.ModelView): Promise<void> {
 		let treeData = {
 			label: '1',
 			children: [
@@ -123,7 +343,7 @@ export default class MainController implements vscode.Disposable {
 
 		let treeDataProvider = new TreeDataProvider(root);
 
-		let tree: azdata.TreeComponent<TreeNode> = view.modelBuilder.tree<TreeNode>().withProperties({
+		let tree: azdata.TreeComponent<TreeNode> = view.modelBuilder.tree<TreeNode>().withProps({
 			'withCheckbox': true
 		}).component();
 		let treeView = tree.registerDataProvider(treeDataProvider);
@@ -153,10 +373,10 @@ export default class MainController implements vscode.Disposable {
 
 		await view.initializeModel(formWrapper);
 	}
-	private async getTabContent(view: azdata.ModelView, customButton1: azdata.window.Button, customButton2: azdata.window.Button, componentWidth: number | string
-	): Promise<void> {
+
+	private async getBasicUiTabContent(view: azdata.ModelView, customButton1: azdata.window.Button, customButton2: azdata.window.Button, componentWidth: number | string): Promise<void> {
 		let inputBox = view.modelBuilder.inputBox()
-			.withProperties({
+			.withProps({
 				multiline: true,
 				height: 100
 			}).component();
@@ -170,7 +390,7 @@ export default class MainController implements vscode.Disposable {
 		let backupFilesInputBox = view.modelBuilder.inputBox().component();
 
 		let checkbox = view.modelBuilder.checkBox()
-			.withProperties({
+			.withProps({
 				label: 'Copy-only backup'
 			})
 			.component();
@@ -179,11 +399,11 @@ export default class MainController implements vscode.Disposable {
 			inputBox.enabled = !inputBox.enabled;
 		});
 		let button = view.modelBuilder.button()
-			.withProperties({
+			.withProps({
 				label: '+'
 			}).component();
 		let button3 = view.modelBuilder.button()
-			.withProperties({
+			.withProps({
 				label: '-'
 
 			}).component();
@@ -191,7 +411,7 @@ export default class MainController implements vscode.Disposable {
 			backupFilesInputBox.value = 'Button clicked';
 		});
 		let dropdown = view.modelBuilder.dropDown()
-			.withProperties({
+			.withProps({
 				value: 'Full',
 				values: ['Full', 'Differential', 'Transaction Log']
 			})
@@ -208,7 +428,7 @@ export default class MainController implements vscode.Disposable {
 			console.info('dropdown change ' + dropdown.value.toString());
 		});
 		let radioButton = view.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				value: 'option1',
 				name: 'radioButtonOptions',
 				label: 'Option 1',
@@ -216,7 +436,7 @@ export default class MainController implements vscode.Disposable {
 				// width: 300
 			}).component();
 		let radioButton2 = view.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				value: 'option2',
 				name: 'radioButtonOptions',
 				label: 'Option 2'
@@ -239,25 +459,89 @@ export default class MainController implements vscode.Disposable {
 				form2Model
 			]).component();
 
-		let table = view.modelBuilder.table().withProperties({
+		const checkedRows: number[] = [2];
+
+		const startIcon = path.join(__dirname, '..', 'media', 'start.svg');
+		const monitorIcon = {
+			light: path.join(__dirname, '..', 'media', 'monitor.svg'),
+			dark: path.join(__dirname, '..', 'media', 'monitor_inverse.svg')
+		};
+		let table = view.modelBuilder.table().withProps({
 			data: [
-				['1', '2', '2'],
-				['4', '5', '6'],
-				['7', '8', '9']
-			], columns: ['c1', 'c2', 'c3'],
+				['1', '2', '2', { enabled: false, checked: false },
+					undefined, // for button/hyperlink column, 'undefined' means to use the default information provided by the column definition
+					undefined,
+					undefined,
+					undefined
+				],
+				['4', '5', '6', false,
+					<azdata.ButtonColumnCellValue>{ // use cell specific icon and title
+						icon: monitorIcon,
+						title: 'Monitor'
+					}, <azdata.ButtonColumnCellValue>{ // use cell specific title
+						title: 'Monitor'
+					}, <azdata.HyperlinkColumnCellValue>{
+						icon: monitorIcon,
+						title: 'Monitor'
+					}, <azdata.HyperlinkColumnCellValue>{
+						title: 'Monitor',
+						url: 'https://www.microsoft.com'
+					}],
+				['7', '8', '9', { enabled: true, checked: true }, undefined, undefined, undefined, undefined]
+			],
+			columns: [
+				{ value: 'c1' },
+				{ value: 'c2' },
+				{ value: 'c3' }, {
+					value: 'checkbox',
+					type: azdata.ColumnType.checkBox,
+					options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction }
+				}, <azdata.ButtonColumn>{ // image button
+					value: 'Start1',
+					icon: startIcon,
+					type: azdata.ColumnType.button
+				}, <azdata.ButtonColumn>{ // text button
+					value: 'Start',
+					showText: true,
+					type: azdata.ColumnType.button,
+					name: 'Button 2'
+				}, <azdata.HyperlinkColumn>{
+					value: 'Start Image Link',
+					icon: startIcon,
+					type: azdata.ColumnType.hyperlink,
+					name: 'Link 1'
+				}, <azdata.HyperlinkColumn>{
+					value: 'Start Link',
+					type: azdata.ColumnType.hyperlink,
+					name: 'Link 2'
+				}],
 			height: 250,
+			width: 800,
 			selectedRows: [0]
 		}).component();
 		table.onRowSelected(e => {
 			// TODO:
 		});
-		let listBox = view.modelBuilder.listBox().withProperties({
+		table.onCellAction((arg: azdata.ICellActionEventArgs) => {
+			if (arg.column === 3) { // checkbox column
+				if ((<azdata.ICheckboxCellActionEventArgs>arg).checked) {
+					checkedRows.push(arg.row);
+				} else {
+					checkedRows.splice(checkedRows.indexOf(arg.row), 1);
+				}
+				vscode.window.showInformationMessage('checked rows: ' + checkedRows.join(','));
+			} else {
+				vscode.window.showInformationMessage(`cell action triggere. row: ${arg.row}, cell: ${arg.column}`);
+			}
+		});
+
+		let listBox = view.modelBuilder.listBox().withProps({
 			values: ['1', '2', '3'],
 			selectedRow: 2
 		}).component();
 
 		let declarativeTable = view.modelBuilder.declarativeTable()
-			.withProperties({
+			.withProps({
 				columns: [{
 					displayName: 'Column 1',
 					valueType: azdata.DeclarativeDataType.string,
@@ -321,6 +605,47 @@ export default class MainController implements vscode.Disposable {
 				component: declarativeTable,
 				title: 'Declarative Table'
 			}], formItemLayout);
+
+		const img = view.modelBuilder.image().withProps({
+			iconPath: startIcon,
+			iconHeight: 16,
+			iconWidth: 16,
+			width: 16,
+			height: 16
+		}).component();
+		const text1 = view.modelBuilder.text().withProps({ value: 'text1' }).component();
+		const text2 = view.modelBuilder.text().withProps({ value: 'text2' }).component();
+		const flex = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'row',
+			alignItems: 'center',
+			width: 100,
+			height: 30
+		}).withProps({
+			CSSStyles: {
+				'border-style': 'solid',
+				'border-width': '1px'
+			},
+			width: 100,
+			height: 40
+		}).component();
+		flex.addItem(img, {
+			flex: '0 0 auto'
+		});
+		flex.addItem(text1, {
+			flex: '1 1 auto'
+		});
+		flex.addItem(text2, {
+			flex: '0 0 auto',
+			CSSStyles: {
+				'font-size': 'large'
+			}
+		});
+		const compositeButton = view.modelBuilder.divContainer().withItems([flex]).withProps({
+			ariaRole: 'button',
+			ariaLabel: 'show status',
+			clickable: true
+		}).component();
+
 		let groupItems = {
 			components: [{
 				component: table,
@@ -328,6 +653,9 @@ export default class MainController implements vscode.Disposable {
 			}, {
 				component: listBox,
 				title: 'List Box'
+			}, {
+				component: compositeButton,
+				title: 'compositeButton'
 			}], title: 'group'
 		};
 		formBuilder.addFormItem(groupItems, formItemLayout);
@@ -380,201 +708,141 @@ export default class MainController implements vscode.Disposable {
 		await view.initializeModel(formWrapper);
 	}
 
-	private openDialog(): void {
-		let dialog = azdata.window.createModelViewDialog('Test dialog');
-		let tab1 = azdata.window.createTab('Test tab 1');
+	private async getGraphTabContent(view: azdata.ModelView): Promise<void> {
+		const barChart = view.modelBuilder.chart<'bar', azdata.BarChartData, azdata.BarChartOptions>()
+			.withProps({
+				chartType: 'bar',
+				data: chartExamples.barData,
+				options: chartExamples.barOptions,
+				width: '500px',
+				height: '300px'
+			}).component();
 
-		let tab2 = azdata.window.createTab('Test tab 2');
-		let tab3 = azdata.window.createTab('Test tab 3');
-		tab2.content = 'sqlservices';
-		dialog.content = [tab1, tab2, tab3];
-		dialog.okButton.onClick(() => console.log('ok clicked!'));
-		dialog.cancelButton.onClick(() => console.log('cancel clicked!'));
-		dialog.okButton.label = 'ok';
-		dialog.cancelButton.label = 'no';
-		let customButton1 = azdata.window.createButton('Load name');
-		customButton1.onClick(() => console.log('button 1 clicked!'));
-		let customButton2 = azdata.window.createButton('Load all');
-		customButton2.onClick(() => console.log('button 2 clicked!'));
-		dialog.customButtons = [customButton1, customButton2];
-		tab1.registerContent(async (view) => {
-			await this.getTabContent(view, customButton1, customButton2, 400);
-		});
+		const horizontalBarChart = view.modelBuilder.chart<'horizontalBar', azdata.HorizontalBarChartData, azdata.HorizontalBarChartOptions>()
+			.withProps({
+				chartType: 'horizontalBar',
+				data: chartExamples.horizontalBarData,
+				options: chartExamples.horizontalBarOptions,
+				width: '500px',
+				height: '300px'
+			}).component();
 
-		tab3.registerContent(async (view) => {
-			await this.getTab3Content(view);
-		});
-		azdata.window.openDialog(dialog);
-	}
+		const lineChart = view.modelBuilder.chart<'line', azdata.LineChartData, azdata.LineChartOptions>()
+			.withProps({
+				chartType: 'line',
+				data: chartExamples.lineData,
+				options: chartExamples.lineOptions,
+				width: '500px',
+				height: '300px'
+			}).component();
 
-	private openWizard(): void {
-		let wizard = azdata.window.createWizard('Test wizard');
-		let page1 = azdata.window.createWizardPage('First wizard page');
-		let page2 = azdata.window.createWizardPage('Second wizard page');
-		page2.content = 'sqlservices';
-		let customButton1 = azdata.window.createButton('Load name');
-		customButton1.onClick(() => console.log('button 1 clicked!'));
-		let customButton2 = azdata.window.createButton('Load all');
-		customButton2.onClick(() => console.log('button 2 clicked!'));
-		wizard.customButtons = [customButton1, customButton2];
-		page1.registerContent(async (view) => {
-			await this.getTabContent(view, customButton1, customButton2, 800);
-		});
+		const pieChart = view.modelBuilder.chart<'pie', azdata.PieChartData, azdata.PieChartOptions>()
+			.withProps({
+				chartType: 'pie',
+				data: chartExamples.pieData,
+				options: chartExamples.pieOptions,
+				width: '300px',
+				height: '300px'
+			}).component();
 
-		wizard.registerOperation({
-			displayName: 'test task',
-			description: 'task description',
-			isCancelable: true,
-			connection: undefined,
-			operation: op => {
-				op.updateStatus(azdata.TaskStatus.InProgress);
-				op.updateStatus(azdata.TaskStatus.InProgress, 'Task is running');
-				setTimeout(() => {
-					op.updateStatus(azdata.TaskStatus.Succeeded);
-				}, 5000);
+		const doughnutChart = view.modelBuilder.chart<'doughnut', azdata.DoughnutChartData, azdata.DoughnutChartOptions>()
+			.withProps({
+				chartType: 'doughnut',
+				data: chartExamples.doughnutData,
+				options: chartExamples.doughnutOptions,
+				width: '400px',
+				height: '400px'
+			}).component();
+
+		const scatterplot = view.modelBuilder.chart<'scatter', azdata.ScatterplotData, azdata.ScatterplotOptions>()
+			.withProps({
+				chartType: 'scatter',
+				data: chartExamples.scatterData,
+				options: chartExamples.scatterOptions,
+				width: '400px',
+				height: '400px'
+			}).component();
+
+		const bubbleChart = view.modelBuilder.chart<'bubble', azdata.BubbleChartData, azdata.BubbleChartOptions>()
+			.withProps({
+				chartType: 'bubble',
+				data: chartExamples.bubbleData,
+				options: chartExamples.bubbleOptions,
+				width: '500px',
+				height: '500px'
+			}).component();
+
+		const polarChart = view.modelBuilder.chart<'polarArea', azdata.PolarAreaChartData, azdata.PolarAreaChartOptions>()
+			.withProps({
+				chartType: 'polarArea',
+				data: chartExamples.polarData,
+				options: chartExamples.polarOptions,
+				width: '500px',
+				height: '500px'
+			}).component();
+
+		const radarChart = view.modelBuilder.chart<'radar', azdata.RadarChartData, azdata.RadarChartOptions>()
+			.withProps({
+				chartType: 'radar',
+				data: chartExamples.radarData,
+				options: chartExamples.radarOptions,
+				width: '500px',
+				height: '500px'
+			}).component();
+
+		const button = view.modelBuilder.button()
+			.withProps({
+				label: 'Click to change bar chart data'
+			}).component();
+
+		button.onDidClick(async () => {
+			// To update data, a new data object must be created and passed.
+			// If the existing one is updated, it's detected as the same object, and "saves" the effort of send propertyChanged events.
+
+			const newDataSets: azdata.BarChartDataSet[] = [];
+
+			for (let i = 0; i < chartExamples.barData.datasets.length; i++) {
+				const newSet: azdata.BarChartDataSet = {
+					...chartExamples.barData.datasets[i], // spread to preserve existing colors and label
+					data: []
+				};
+
+				for (let j = 0; j < chartExamples.barData.datasets[i].data.length; j++) {
+					newSet.data.push(Math.random() * 8);
+				}
+
+				newDataSets.push(newSet);
 			}
-		});
-		wizard.pages = [page1, page2];
-		wizard.open();
-	}
 
-	private openEditor(): void {
-		let editor = azdata.workspace.createModelViewEditor('Test Model View');
-		editor.registerContent(async view => {
-			let inputBox = view.modelBuilder.inputBox()
-				.withValidation(component => component.value !== 'valid')
-				.component();
-			let formModel = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: inputBox,
-					title: 'Enter anything but "valid"'
-				}]).component();
-			view.onClosed((params) => {
-				vscode.window.showInformationMessage('The model view editor is closed.');
-			});
-			await view.initializeModel(formModel);
-		});
-		editor.openEditor();
-	}
-
-	private openEditorWithWebview(html1: string, html2: string): void {
-		let editor = azdata.workspace.createModelViewEditor('Editor webview', { retainContextWhenHidden: true });
-		editor.registerContent(async view => {
-			let count = 0;
-			let webview1 = view.modelBuilder.webView()
-				.withProperties({
-					html: html1
-				})
-				.component();
-			let webview2 = view.modelBuilder.webView()
-				.withProperties({
-					html: html2
-				})
-				.component();
-			webview1.onMessage((params) => {
-				count++;
-				webview2.message = count;
-			});
-
-			let editor1 = view.modelBuilder.editor()
-				.withProperties({
-					content: 'select * from sys.tables'
-				})
-				.component();
-
-			let editor2 = view.modelBuilder.editor()
-				.withProperties({
-					content: 'print("Hello World !")',
-					languageMode: 'python'
-				})
-				.component();
-
-			let flexModel = view.modelBuilder.flexContainer().component();
-			flexModel.addItem(editor1, { flex: '1' });
-			flexModel.addItem(editor2, { flex: '1' });
-			flexModel.setLayout({
-				flexFlow: 'column',
-				alignItems: 'stretch',
-				height: '100%'
-			});
-
-			view.onClosed((params) => {
-				vscode.window.showInformationMessage('editor1: language: ' + editor1.languageMode + ' Content1: ' + editor1.content);
-				vscode.window.showInformationMessage('editor2: language: ' + editor2.languageMode + ' Content2: ' + editor2.content);
-			});
-			await view.initializeModel(flexModel);
-		});
-		editor.openEditor();
-	}
-
-	private openEditorWithWebview2(): void {
-		let editor = azdata.workspace.createModelViewEditor('Editor webview2', { retainContextWhenHidden: true });
-		editor.registerContent(async view => {
-
-			let inputBox = view.modelBuilder.inputBox().component();
-			let dropdown = view.modelBuilder.dropDown()
-				.withProperties({
-					value: 'aa',
-					values: ['aa', 'bb', 'cc']
-				})
-				.component();
-			let runIcon = path.join(__dirname, '..', 'media', 'start.svg');
-			let runButton = view.modelBuilder.button()
-				.withProperties({
-					label: 'Run',
-					iconPath: runIcon,
-					title: 'Run title'
-				}).component();
-
-			let monitorLightPath = vscode.Uri.file(path.join(__dirname, '..', 'media', 'monitor.svg'));
-			let monitorIcon = {
-				light: monitorLightPath,
-				dark: path.join(__dirname, '..', 'media', 'monitor_inverse.svg')
+			const newData: azdata.BarChartData = {
+				labels: chartExamples.barData.labels,
+				datasets: newDataSets
 			};
 
-			let monitorButton = view.modelBuilder.button()
-				.withProperties({
-					label: 'Monitor',
-					iconPath: monitorIcon,
-					title: 'Monitor title'
-				}).component();
-			let toolbarModel = view.modelBuilder.toolbarContainer()
-				.withToolbarItems([{
-					component: inputBox,
-					title: 'User name:'
-				}, {
-					component: dropdown,
-					title: 'favorite:'
-				}, {
-					component: runButton
-				}, {
-					component: monitorButton
-				}]).component();
-
-
-			let webview = view.modelBuilder.webView()
-				.component();
-
-			let flexModel = view.modelBuilder.flexContainer().component();
-			flexModel.addItem(toolbarModel, { flex: '0' });
-			flexModel.addItem(webview, { flex: '1' });
-			flexModel.setLayout({
-				flexFlow: 'column',
-				alignItems: 'stretch',
-				height: '100%'
-			});
-
-			let templateValues = { url: 'http://whoisactive.com/docs/' };
-			Utils.renderTemplateHtml(path.join(__dirname, '..'), 'templateTab.html', templateValues)
-				.then(html => {
-					webview.html = html;
-				});
-
-			await view.initializeModel(flexModel);
+			await barChart.updateProperty('data', newData);
 		});
-		editor.openEditor();
-	}
 
+		const flexContainer = view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' })
+			.withProps({ CSSStyles: { 'padding': '20px 15px' } })
+			.component();
+
+		flexContainer.addItem(button, { flex: '0 0 auto' });
+		flexContainer.addItem(barChart, { flex: '0 0 auto' });
+		flexContainer.addItem(horizontalBarChart, { flex: '0 0 auto' });
+		flexContainer.addItem(lineChart, { flex: '0 0 auto' });
+		flexContainer.addItem(pieChart, { flex: '0 0 auto' });
+		flexContainer.addItem(doughnutChart, { flex: '0 0 auto' });
+		flexContainer.addItem(scatterplot, { flex: '0 0 auto' });
+		flexContainer.addItem(bubbleChart, { flex: '0 0 auto' });
+		flexContainer.addItem(polarChart, { flex: '0 0 auto' });
+		flexContainer.addItem(radarChart, { flex: '0 0 auto' });
+
+		const flexWrapper = view.modelBuilder.loadingComponent().withItem(flexContainer).component();
+		flexWrapper.loading = false;
+
+		await view.initializeModel(flexWrapper);
+	}
 
 	private registerSqlServicesModelView(): void {
 		azdata.ui.registerModelViewProvider('sqlservices', async (view) => {
@@ -592,7 +860,7 @@ export default class MainController implements vscode.Disposable {
 						})
 						.withItems([
 							view.modelBuilder.card()
-								.withProperties<azdata.CardProperties>({
+								.withProps({
 									label: 'label1',
 									value: 'value1',
 									actions: [{ label: 'action' }]
@@ -604,7 +872,7 @@ export default class MainController implements vscode.Disposable {
 						.withLayout({ flexFlow: 'column' })
 						.withItems([
 							view.modelBuilder.card()
-								.withProperties<azdata.CardProperties>({
+								.withProps({
 									label: 'label2',
 									value: 'value2',
 									actions: [{ label: 'action' }]
@@ -614,6 +882,15 @@ export default class MainController implements vscode.Disposable {
 				], { flex: '1 1 50%' })
 				.component();
 			await view.initializeModel(flexModel);
+		});
+	}
+
+	private registerModelViewDashboardTab(): void {
+		azdata.ui.registerModelViewProvider('sqlservices-home', async (view) => {
+			const text = view.modelBuilder.text().withProps({
+				value: 'home tab content place holder'
+			}).component();
+			await view.initializeModel(text);
 		});
 	}
 
@@ -638,5 +915,6 @@ export default class MainController implements vscode.Disposable {
 
 		});
 	}
-}
 
+	//#endregion
+}

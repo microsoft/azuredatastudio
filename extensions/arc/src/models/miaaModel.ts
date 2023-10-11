@@ -5,41 +5,62 @@
 
 import { MiaaResourceInfo } from 'arc';
 import * as azdata from 'azdata';
-import * as azdataExt from 'azdata-ext';
+import * as azExt from 'az-ext';
 import * as vscode from 'vscode';
+import { UserCancelledError } from '../common/api';
 import { Deferred } from '../common/promise';
-import { createCredentialId, parseIpAndPort, UserCancelledError } from '../common/utils';
-import { credentialNamespace } from '../constants';
+import { getTimeStamp, parseIpAndPort } from '../common/utils';
 import * as loc from '../localizedConstants';
-import { ConnectToSqlDialog } from '../ui/dialogs/connectSqlDialog';
+import { ConnectToMiaaSqlDialog } from '../ui/dialogs/connectMiaaDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { ControllerModel, Registration } from './controllerModel';
 import { ResourceModel } from './resourceModel';
 
-export type DatabaseModel = { name: string, status: string };
+export type DatabaseModel = { name: string, status: string, earliestBackup: string, lastBackup: string };
+export type RPModel = { recoveryPointObjective: string, retentionDays: string };
+export type PITRModel = {
+	instanceName: string,
+	resourceGroupName: string,
+	location: string,
+	subscriptionId: string,
+	dbName: string,
+	restorePoint: string,
+	earliestPitr: string,
+	latestPitr: string,
+	destDbName: string
+};
+export type UpgradeModel = {};
 
+export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
 export class MiaaModel extends ResourceModel {
 
-	private _config: azdataExt.SqlMiShowResult | undefined;
+	private _config: azExt.SqlMiShowResult | undefined;
 	private _databases: DatabaseModel[] = [];
-	// The saved connection information
-	private _connectionProfile: azdata.IConnectionProfile | undefined = undefined;
-	// The ID of the active connection used to query the server
-	private _activeConnectionId: string | undefined = undefined;
-
-	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.SqlMiShowResult | undefined>();
+	private readonly _onConfigUpdated = new vscode.EventEmitter<azExt.SqlMiShowResult | undefined>();
 	private readonly _onDatabasesUpdated = new vscode.EventEmitter<DatabaseModel[]>();
-	private readonly _azdataApi: azdataExt.IExtension;
+	private readonly _azApi: azExt.IExtension;
 	public onConfigUpdated = this._onConfigUpdated.event;
 	public onDatabasesUpdated = this._onDatabasesUpdated.event;
-	public configLastUpdated?: Date;
-	public databasesLastUpdated?: Date;
+	public configLastUpdated: Date | undefined;
+	public databasesLastUpdated: Date | undefined;
+	public rpSettings: RPModel = {
+		recoveryPointObjective: '',
+		retentionDays: ''
+	};
+	private _databaseTimeWindow: Map<string, string[]>;
 
 	private _refreshPromise: Deferred<void> | undefined = undefined;
-
-	constructor(private _controllerModel: ControllerModel, private _miaaInfo: MiaaResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
-		super(_miaaInfo, registration);
-		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+	private _pitrArgs = {
+		destName: '',
+		managedInstance: '',
+		time: '',
+		noWait: true,
+		dryRun: false
+	};
+	constructor(_controllerModel: ControllerModel, private _miaaInfo: MiaaResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
+		super(_controllerModel, _miaaInfo, registration);
+		this._azApi = <azExt.IExtension>vscode.extensions.getExtension(azExt.extension.name)?.exports;
+		this._databaseTimeWindow = new Map<string, string[]>();
 	}
 
 	/**
@@ -52,7 +73,7 @@ export class MiaaModel extends ResourceModel {
 	/**
 	 * The status of this instance
 	 */
-	public get config(): azdataExt.SqlMiShowResult | undefined {
+	public get config(): azExt.SqlMiShowResult | undefined {
 		return this._config;
 	}
 
@@ -76,12 +97,21 @@ export class MiaaModel extends ResourceModel {
 		}
 		this._refreshPromise = new Deferred();
 		try {
-			await this._controllerModel.azdataLogin();
 			try {
-				const result = await this._azdataApi.azdata.arc.sql.mi.show(this.info.name);
-				this._config = result.result;
+				let result;
+				result = await this._azApi.az.sql.miarc.show(
+					this.info.name,
+					{
+						resourceGroup: undefined,
+						namespace: this.controllerModel.info.namespace
+					},
+					this.controllerModel.azAdditionalEnvVars
+				);
+				this._config = result.stdout;
 				this.configLastUpdated = new Date();
+				this.rpSettings.retentionDays = this._config?.spec?.backup?.retentionPeriodInDays?.toString() ?? '';
 				this._onConfigUpdated.fire(this._config);
+				this._onDatabasesUpdated.fire(this._databases);
 			} catch (err) {
 				// If an error occurs show a message so the user knows something failed but still
 				// fire the event so callers can know to update (e.g. so dashboards don't show the
@@ -93,23 +123,17 @@ export class MiaaModel extends ResourceModel {
 			}
 
 			// If we have an external endpoint configured then fetch the databases now
-			if (this._config.status.externalEndpoint) {
-				this.getDatabases().catch(err => {
-					// If an error occurs show a message so the user knows something failed but still
-					// fire the event so callers can know to update (e.g. so dashboards don't show the
-					// loading icon forever)
-					if (err instanceof UserCancelledError) {
-						vscode.window.showWarningMessage(loc.connectionRequired);
-					} else {
-						vscode.window.showErrorMessage(loc.fetchDatabasesFailed(this.info.name, err));
-					}
-					this.databasesLastUpdated = new Date();
+			if (this._config.status.endpoints.primary) {
+				this.getDatabases(false).catch(_err => {
+					// If an error occurs still fire the event so callers can know to
+					// update (e.g. so dashboards don't show the loading icon forever)
+
+					this.databasesLastUpdated = undefined;
 					this._onDatabasesUpdated.fire(this._databases);
-					throw err;
 				});
 			} else {
 				// Otherwise just fire the event so dashboards can update appropriately
-				this.databasesLastUpdated = new Date();
+				this.databasesLastUpdated = undefined;
 				this._onDatabasesUpdated.fire(this._databases);
 			}
 
@@ -122,48 +146,71 @@ export class MiaaModel extends ResourceModel {
 		}
 	}
 
-	private async getDatabases(): Promise<void> {
-		await this.getConnectionProfile();
-		if (this._connectionProfile) {
-			// We haven't connected yet so do so now and then store the ID for the active connection
-			if (!this._activeConnectionId) {
-				const result = await azdata.connection.connect(this._connectionProfile, false, false);
-				if (!result.connected) {
-					throw new Error(result.errorMessage);
-				}
-				this._activeConnectionId = result.connectionId;
-			}
-
-			const provider = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(this._connectionProfile.providerName, azdata.DataProviderType.MetadataProvider);
-			const ownerUri = await azdata.connection.getUriForConnection(this._activeConnectionId);
-			const databases = await provider.getDatabases(ownerUri);
-			if (!databases) {
-				throw new Error('Could not fetch databases');
-			}
-			if (databases.length > 0 && typeof (databases[0]) === 'object') {
-				this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'] }; });
+	public async callGetDatabases(): Promise<void> {
+		try {
+			await this.getDatabases();
+		} catch (error) {
+			if (error instanceof UserCancelledError) {
+				vscode.window.showWarningMessage(loc.miaaConnectionRequired);
 			} else {
-				this._databases = (<string[]>databases).map(db => { return { name: db, status: '-' }; });
+				vscode.window.showErrorMessage(loc.fetchDatabasesFailed(this.info.name, error));
 			}
-			this.databasesLastUpdated = new Date();
-			this._onDatabasesUpdated.fire(this._databases);
+			throw error;
 		}
 	}
+
 	/**
-	 * Loads the saved connection profile associated with this model. Will prompt for one if
-	 * we don't have one or can't find it (it was deleted)
+	 * Gets the list of databases and adds backup earliest and latest point in time
+	 * information, this could be used as an upper and lower time limit for restoring
+	 * backup.
 	 */
-	private async getConnectionProfile(): Promise<void> {
-		if (this._connectionProfile) {
-			return;
+	public async getDatabases(promptForConnection: boolean = true): Promise<void> {
+		if (!this._connectionProfile) {
+			await this.getConnectionProfile(promptForConnection);
 		}
 
-		const ipAndPort = parseIpAndPort(this.config?.status.externalEndpoint || '');
-		let connectionProfile: azdata.IConnectionProfile | undefined = {
+		// We haven't connected yet so do so now and then store the ID for the active connection
+		if (!this._activeConnectionId) {
+			const result = await azdata.connection.connect(this._connectionProfile!, false, false);
+			if (!result.connected) {
+				throw new Error(result.errorMessage);
+			}
+			this._activeConnectionId = result.connectionId!;
+		}
+
+		const provider = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(this._connectionProfile!.providerName, azdata.DataProviderType.MetadataProvider);
+		const ownerUri = await azdata.connection.getUriForConnection(this._activeConnectionId);
+		const databases = await provider.getDatabases(ownerUri);
+		if (!databases) {
+			throw new Error('Could not fetch databases');
+		}
+		else {
+			if (databases.length > 0 && typeof (databases[0]) === 'object') {
+				for (let i in databases) {
+					const di: azdata.DatabaseInfo = <azdata.DatabaseInfo>databases[i];
+					const name = di.options['name'];
+					await this.executeDryRun(di.options['name']);
+					const dm: DatabaseModel = {
+						name: name, status: di.options['state'], earliestBackup: this._databaseTimeWindow.get(name)?.[0] ?? '',
+						lastBackup: this._databaseTimeWindow.get(name)?.[1] ?? ''
+					};
+					this._databases[i] = dm;
+				}
+			} else {
+				this._databases = (<string[]>databases).map(db => { return { name: db, status: '-', earliestBackup: '', lastBackup: '' }; });
+			}
+		}
+		this.databasesLastUpdated = new Date();
+		this._onDatabasesUpdated.fire(this._databases);
+	}
+
+	protected createConnectionProfile(): azdata.IConnectionProfile {
+		const ipAndPort = parseIpAndPort(this.config?.status.endpoints.primary || '');
+		return {
 			serverName: `${ipAndPort.ip},${ipAndPort.port}`,
 			databaseName: '',
-			authenticationType: 'SqlLogin',
-			providerName: 'MSSQL',
+			authenticationType: azdata.connection.AuthenticationType.SqlLogin,
+			providerName: loc.miaaProviderName,
 			connectionName: '',
 			userName: this._miaaInfo.userName || '',
 			password: '',
@@ -172,52 +219,61 @@ export class MiaaModel extends ResourceModel {
 			saveProfile: true,
 			id: '',
 			groupId: undefined,
-			options: {}
-		};
-
-		// If we have the ID stored then try to retrieve the password from previous connections
-		if (this.info.connectionId) {
-			try {
-				const credentialProvider = await azdata.credentials.getProvider(credentialNamespace);
-				const credentials = await credentialProvider.readCredential(createCredentialId(this._controllerModel.info.id, this.info.resourceType, this.info.name));
-				if (credentials.password) {
-					// Try to connect to verify credentials are still valid
-					connectionProfile.password = credentials.password;
-					// If we don't have a username for some reason then just continue on and we'll prompt for the username below
-					if (connectionProfile.userName) {
-						const result = await azdata.connection.connect(connectionProfile, false, false);
-						if (!result.connected) {
-							vscode.window.showErrorMessage(loc.connectToSqlFailed(connectionProfile.serverName, result.errorMessage));
-							const connectToSqlDialog = new ConnectToSqlDialog(this._controllerModel, this);
-							connectToSqlDialog.showDialog(connectionProfile);
-							connectionProfile = await connectToSqlDialog.waitForClose();
-						}
-					}
-				}
-			} catch (err) {
-				console.warn(`Unexpected error fetching password for MIAA instance ${err}`);
-				// ignore - something happened fetching the password so just reprompt
+			options: {
+				encrypt: this._miaaInfo.encrypt || true,
+				trustServerCertificate: this._miaaInfo.trustServerCertificate || false
 			}
-		}
+		};
+	}
 
-		if (!connectionProfile?.userName || !connectionProfile?.password) {
-			// Need to prompt user for password since we don't have one stored
-			const connectToSqlDialog = new ConnectToSqlDialog(this._controllerModel, this);
-			connectToSqlDialog.showDialog(connectionProfile);
-			connectionProfile = await connectToSqlDialog.waitForClose();
-		}
+	protected async promptForConnection(connectionProfile: azdata.IConnectionProfile): Promise<void> {
+		const connectToSqlDialog = new ConnectToMiaaSqlDialog(this.controllerModel, this);
+		connectToSqlDialog.showDialog(loc.connectToMSSql(this.info.name), connectionProfile);
+		let profileFromDialog = await connectToSqlDialog.waitForClose();
 
-		if (connectionProfile) {
-			this.updateConnectionProfile(connectionProfile);
+		if (profileFromDialog) {
+			this.updateConnectionProfile(profileFromDialog);
 		} else {
 			throw new UserCancelledError();
 		}
 	}
 
-	private async updateConnectionProfile(connectionProfile: azdata.IConnectionProfile): Promise<void> {
+	protected async updateConnectionProfile(connectionProfile: azdata.IConnectionProfile): Promise<void> {
 		this._connectionProfile = connectionProfile;
+		this._activeConnectionId = connectionProfile.id;
 		this.info.connectionId = connectionProfile.id;
 		this._miaaInfo.userName = connectionProfile.userName;
+		this._miaaInfo.encrypt = connectionProfile.options.encrypt;
+		this._miaaInfo.trustServerCertificate = connectionProfile.options.trustServerCertificate;
 		await this._treeDataProvider.saveControllers();
+	}
+
+	protected async executeDryRun(dbName: string): Promise<void> {
+		// Allow next dry Run to be executed only after 5(300000 ms ) minutes from current time as the log backups are
+		// generated only at 5 minutes interval
+		if ((systemDbs.indexOf(dbName) === -1) && (Date.now() - getTimeStamp(this._databaseTimeWindow.get(dbName)?.[1]) >= 300000)) {
+			try {
+				//Execute dryRun for earliestTime and save latest time as well so there is one call to az cli
+				this._pitrArgs.destName = dbName + '-' + Date.now().toString();
+				this._pitrArgs.managedInstance = this.info.name;
+				this._pitrArgs.time = new Date().toISOString();
+				this._pitrArgs.noWait = false;
+				this._pitrArgs.dryRun = true;
+				const result = await this._azApi.az.sql.midbarc.restore(
+					dbName, this._pitrArgs, this.controllerModel.info.namespace, this.controllerModel.azAdditionalEnvVars);
+				const restoreResult = result.stdout;
+				if (restoreResult) {
+					const earliestTime = restoreResult['earliestRestoreTime'];
+					const latestTime = restoreResult['latestRestoreTime'];
+					console.log(loc.earliestPitrRestorePoint + '-' + dbName + ':' + earliestTime);
+					console.log(loc.latestpitrRestorePoint + '-' + dbName + ':' + latestTime);
+					this._databaseTimeWindow.set(dbName, [earliestTime, latestTime]);
+				}
+			}
+			catch (err) {
+				console.log(loc.pitr + ' ' + loc.failed + ':' + err);
+				this._databaseTimeWindow.set(dbName, ['', '']);
+			}
+		}
 	}
 }

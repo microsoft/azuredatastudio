@@ -8,9 +8,9 @@
 	],
 	"insights.item": "Elemento",
 	"insights.value": "Valore",
-	"property": "Proprietà.",
+	"property": "Proprietà",
 	"value": "Valore",
-	"InsightsDialogTitle": "Insights",
+	"InsightsDialogTitle": "Dati analitici",
 	"insights.dialog.items": "Elementi",
 	"insights.dialog.itemDetails": "Dettagli elemento"
 }

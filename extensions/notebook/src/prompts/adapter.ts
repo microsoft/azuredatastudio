@@ -54,7 +54,7 @@ export default class CodeAdapter implements IPrompter {
 				return undefined;
 			}
 
-			vscode.window.showErrorMessage(err.message);
+			void vscode.window.showErrorMessage(err.message);
 		});
 	}
 }

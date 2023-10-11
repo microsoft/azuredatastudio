@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Action, IActionViewItem, IActionRunner } from 'vs/base/common/actions';
+import { Action, IAction, IActionRunner } from 'vs/base/common/actions';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -14,9 +14,8 @@ import * as dom from 'vs/base/browser/dom';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
-import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { firstIndex } from 'vs/base/common/arrays';
+import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 const $ = dom.$;
 
 /**
@@ -32,11 +31,6 @@ export abstract class EditDataAction extends Action {
 		this.enabled = true;
 		this.setClass(enabledClass);
 	}
-
-	/**
-	 * This method is executed when the button is clicked.
-	 */
-	public abstract run(): Promise<void>;
 
 	protected setClass(enabledClass: string): void {
 		this._classes = [];
@@ -74,7 +68,7 @@ export class RefreshTableAction extends EditDataAction {
 		this.label = nls.localize('editData.run', "Run");
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		if (this.isConnected(this.editor)) {
 			let input = this.editor.editDataInput;
 
@@ -117,7 +111,7 @@ export class StopRefreshTableAction extends EditDataAction {
 		this.label = nls.localize('editData.stop', "Stop");
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		let input = this.editor.editDataInput;
 		this._queryModelService.disposeEdit(input.uri);
 		return Promise.resolve(null);
@@ -140,7 +134,7 @@ export class ChangeMaxRowsAction extends EditDataAction {
 		this.class = ChangeMaxRowsAction.EnabledClass;
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 
 		return Promise.resolve(null);
 	}
@@ -162,17 +156,15 @@ export class ChangeMaxRowsActionItem extends Disposable implements IActionViewIt
 
 	constructor(
 		private _editor: EditDataEditor,
-		@IContextViewService contextViewService: IContextViewService,
-		@IThemeService private _themeService: IThemeService) {
+		public action: IAction,
+		@IContextViewService contextViewService: IContextViewService) {
 		super();
 		this._options = ['200', '1000', '10000'];
 		this._currentOptionsIndex = 0;
-		this.selectBox = new SelectBox(this._options, this._options[this._currentOptionsIndex], contextViewService);
+		this.selectBox = this._register(new SelectBox(this._options, this._options[this._currentOptionsIndex], defaultSelectBoxStyles, contextViewService));
 		this._registerListeners();
 		this._refreshOptions();
 		this.defaultRowCount = Number(this._options[this._currentOptionsIndex]);
-
-		this._register(attachSelectBoxStyler(this.selectBox, _themeService));
 	}
 
 	public render(container: HTMLElement): void {
@@ -196,7 +188,7 @@ export class ChangeMaxRowsActionItem extends Disposable implements IActionViewIt
 	}
 
 	public set setCurrentOptionIndex(selection: number) {
-		this._currentOptionsIndex = firstIndex(this._options, x => x === selection.toString());
+		this._currentOptionsIndex = this._options.findIndex(x => x === selection.toString());
 		this._refreshOptions();
 	}
 
@@ -214,10 +206,9 @@ export class ChangeMaxRowsActionItem extends Disposable implements IActionViewIt
 
 	private _registerListeners(): void {
 		this._register(this.selectBox.onDidSelect(selection => {
-			this._currentOptionsIndex = firstIndex(this._options, x => x === selection.selected);
+			this._currentOptionsIndex = this._options.findIndex(x => x === selection.selected);
 			this._editor.editDataInput.onRowDropDownSet(Number(selection.selected));
 		}));
-		this._register(attachSelectBoxStyler(this.selectBox, this._themeService));
 	}
 }
 
@@ -229,7 +220,7 @@ export class ShowQueryPaneAction extends EditDataAction {
 	private static EnabledClass = 'filterLabel';
 	public static ID = 'showQueryPaneAction';
 	private readonly showSqlLabel = nls.localize('editData.showSql', "Show SQL Pane");
-	private readonly closeSqlLabel = nls.localize('editData.closeSql', "Close SQL Pane");
+	private readonly closeSqlLabel = nls.localize('editData.hideSql', "Hide SQL Pane");
 
 	constructor(editor: EditDataEditor,
 		@IConnectionManagementService _connectionManagementService: IConnectionManagementService
@@ -250,7 +241,7 @@ export class ShowQueryPaneAction extends EditDataAction {
 		}
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		this.editor.toggleQueryPane();
 		this.updateLabel(this.editor.queryPaneEnabled());
 		return Promise.resolve(null);

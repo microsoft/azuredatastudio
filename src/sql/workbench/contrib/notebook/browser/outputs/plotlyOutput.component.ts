@@ -12,7 +12,10 @@ import { IMimeComponent } from 'sql/workbench/contrib/notebook/browser/outputs/m
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { MimeModel } from 'sql/workbench/services/notebook/browser/outputs/mimemodel';
 import { getErrorMessage } from 'vs/base/common/errors';
-
+import * as Plotly from 'plotly.js';
+import * as DOM from 'vs/base/browser/dom';
+import { Disposable } from 'vs/base/common/lifecycle';
+import { IDimension } from 'vs/base/browser/dom';
 type ObjectType = object;
 
 interface FigureLayout extends ObjectType {
@@ -26,12 +29,6 @@ interface Figure extends ObjectType {
 	layout: Partial<FigureLayout>;
 }
 
-declare class PlotlyHTMLElement extends HTMLDivElement {
-	data: object;
-	layout: object;
-	newPlot: () => void;
-	redraw: () => void;
-}
 
 @Component({
 	selector: PlotlyOutputComponent.SELECTOR,
@@ -42,7 +39,7 @@ declare class PlotlyHTMLElement extends HTMLDivElement {
 export class PlotlyOutputComponent extends AngularDisposable implements IMimeComponent, OnInit {
 	public static readonly SELECTOR: string = 'plotly-output';
 
-	private static Plotly?: Promise<typeof import('plotly.js-dist-min')>;
+	private static Plotly?: Promise<typeof Plotly>;
 
 	@ViewChild('output', { read: ElementRef }) private output: ElementRef;
 
@@ -50,7 +47,8 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 	private _rendered: boolean = false;
 	private _cellModel: ICellModel;
 	private _bundleOptions: MimeModel.IOptions;
-	private _plotDiv: PlotlyHTMLElement;
+	private _plotDiv: Plotly.PlotlyHTMLElement;
+	private _plotly: typeof Plotly;
 	public errorText: string;
 
 	constructor() {
@@ -82,8 +80,13 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 			PlotlyOutputComponent.Plotly = import('plotly.js-dist-min');
 		}
 		this._plotDiv = this.output.nativeElement;
+		this._plotDiv.style.width = '100%';
 		this.renderPlotly();
 		this._initialized = true;
+
+		this._register(getResizesObserver(this._plotDiv, undefined, () => {
+			this.resize();
+		})).startObserving();
 	}
 
 	renderPlotly(): void {
@@ -103,13 +106,10 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 		this.errorText = undefined;
 		const figure = this.getFigure(true);
 		if (figure) {
-			figure.layout = figure.layout || {};
-			if (!figure.layout.width && !figure.layout.autosize) {
-				// Workaround: to avoid filling up the entire cell, use plotly's default
-				figure.layout.width = Math.min(700, this._plotDiv.clientWidth);
-			}
+			let config = { responsive: true };
 			PlotlyOutputComponent.Plotly.then(plotly => {
-				return plotly.newPlot(this._plotDiv, figure.data, figure.layout);
+				this._plotly = plotly;
+				return plotly.newPlot(this._plotDiv, figure.data, figure.layout, config);
 			}).catch(e => this.displayError(e));
 		}
 		this._rendered = true;
@@ -140,8 +140,76 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 		// No need to re-layout for now as Plotly is doing its own resize handling.
 	}
 
+	private resize() {
+		this._plotly.Plots.resize(this._plotDiv);
+	}
+
 	public hasError(): boolean {
 		return !types.isUndefinedOrNull(this.errorText);
 	}
 
+}
+
+// port the below code from vscode cellWidgets file since it was deleted
+export interface IResizeObserver {
+	startObserving: () => void;
+	stopObserving: () => void;
+	getWidth(): number;
+	getHeight(): number;
+	dispose(): void;
+}
+
+export class BrowserResizeObserver extends Disposable implements IResizeObserver {
+	private readonly referenceDomElement: HTMLElement | null;
+
+	private readonly observer: ResizeObserver;
+	private width: number;
+	private height: number;
+
+	constructor(referenceDomElement: HTMLElement | null, dimension: IDimension | undefined, changeCallback: () => void) {
+		super();
+
+		this.referenceDomElement = referenceDomElement;
+		this.width = -1;
+		this.height = -1;
+
+		this.observer = new ResizeObserver((entries: any) => {
+			for (const entry of entries) {
+				if (entry.target === referenceDomElement && entry.contentRect) {
+					if (this.width !== entry.contentRect.width || this.height !== entry.contentRect.height) {
+						this.width = entry.contentRect.width;
+						this.height = entry.contentRect.height;
+						DOM.scheduleAtNextAnimationFrame(() => {
+							changeCallback();
+						});
+					}
+				}
+			}
+		});
+	}
+
+	getWidth(): number {
+		return this.width;
+	}
+
+	getHeight(): number {
+		return this.height;
+	}
+
+	startObserving(): void {
+		this.observer.observe(this.referenceDomElement!);
+	}
+
+	stopObserving(): void {
+		this.observer.unobserve(this.referenceDomElement!);
+	}
+
+	override dispose(): void {
+		this.observer.disconnect();
+		super.dispose();
+	}
+}
+
+export function getResizesObserver(referenceDomElement: HTMLElement | null, dimension: IDimension | undefined, changeCallback: () => void): IResizeObserver {
+	return new BrowserResizeObserver(referenceDomElement, dimension, changeCallback);
 }

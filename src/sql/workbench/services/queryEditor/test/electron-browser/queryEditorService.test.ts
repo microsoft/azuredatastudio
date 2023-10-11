@@ -9,15 +9,15 @@ import { QueryEditorService } from 'sql/workbench/services/queryEditor/browser/q
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { workbenchInstantiationService } from 'sql/workbench/test/workbenchTestServices';
+import { workbenchInstantiationService } from 'sql/workbench/test/browser/workbenchTestServices';
 
 suite('Query Editor Service', () => {
 	test('does open input when requested', async () => {
 		const instantiationService = workbenchInstantiationService();
 		const editorService = instantiationService.invokeFunction(accessor => accessor.get(IEditorService));
 		const untitledService = instantiationService.invokeFunction(accessor => accessor.get(IUntitledTextEditorService));
-		const openStub = sinon.stub(editorService, 'openEditor', () => Promise.resolve());
-		sinon.stub(editorService, 'createEditorInput', () => instantiationService.createInstance(UntitledTextEditorInput, untitledService.create()));
+		const openStub = sinon.stub(editorService, 'openEditor').callsFake(() => Promise.resolve(undefined));
+		sinon.stub(editorService, 'createEditorInput').callsFake(() => <any>instantiationService.createInstance(UntitledTextEditorInput, untitledService.create()));
 		const queryEditorService = instantiationService.createInstance(QueryEditorService);
 
 		await queryEditorService.newSqlEditor({ open: true });
@@ -29,8 +29,8 @@ suite('Query Editor Service', () => {
 		const instantiationService = workbenchInstantiationService();
 		const editorService = instantiationService.invokeFunction(accessor => accessor.get(IEditorService));
 		const untitledService = instantiationService.invokeFunction(accessor => accessor.get(IUntitledTextEditorService));
-		const openStub = sinon.stub(editorService, 'openEditor', () => Promise.resolve());
-		sinon.stub(editorService, 'createEditorInput', () => instantiationService.createInstance(UntitledTextEditorInput, untitledService.create()));
+		const openStub = sinon.stub(editorService, 'openEditor').callsFake(() => Promise.resolve(undefined));
+		sinon.stub(editorService, 'createEditorInput').callsFake(() => <any>instantiationService.createInstance(UntitledTextEditorInput, untitledService.create()));
 		const queryEditorService = instantiationService.createInstance(QueryEditorService);
 
 		await queryEditorService.newSqlEditor();
@@ -42,8 +42,8 @@ suite('Query Editor Service', () => {
 		const instantiationService = workbenchInstantiationService();
 		const editorService = instantiationService.invokeFunction(accessor => accessor.get(IEditorService));
 		const untitledService = instantiationService.invokeFunction(accessor => accessor.get(IUntitledTextEditorService));
-		const openStub = sinon.stub(editorService, 'openEditor', () => Promise.resolve());
-		sinon.stub(editorService, 'createEditorInput', () => instantiationService.createInstance(UntitledTextEditorInput, untitledService.create()));
+		const openStub = sinon.stub(editorService, 'openEditor').callsFake(() => Promise.resolve(undefined));
+		sinon.stub(editorService, 'createEditorInput').callsFake(() => <any>instantiationService.createInstance(UntitledTextEditorInput, untitledService.create()));
 		const queryEditorService = instantiationService.createInstance(QueryEditorService);
 
 		await queryEditorService.newSqlEditor({ open: false });

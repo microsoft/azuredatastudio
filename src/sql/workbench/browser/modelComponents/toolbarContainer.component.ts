@@ -11,6 +11,7 @@ import {
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export enum Orientation {
 	Horizontal = 'horizontal',
@@ -33,7 +34,7 @@ export class ToolbarItem {
 @Component({
 	selector: 'modelview-toolbarContainer',
 	template: `
-		<div #container *ngIf="items" [class]="toolbarClass" >
+		<div #container *ngIf="items" [class]="toolbarClass" [ngStyle]="CSSStyles">
 			<ng-container *ngFor="let item of items">
 			<div class="modelview-toolbar-item" [style.paddingTop]="paddingTop">
 				<div *ngIf="shouldShowTitle(item)" class="modelview-toolbar-title" >
@@ -58,20 +59,18 @@ export default class ToolbarContainer extends ContainerBase<ToolbarItemConfig> i
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
-		super(changeRef, el);
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService) {
+		super(changeRef, el, logService);
 		this._orientation = Orientation.Horizontal;
 	}
 
-	ngOnInit(): void {
+	ngAfterViewInit(): void {
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
-	}
-
-	ngAfterViewInit(): void {
 	}
 
 	/// IComponent implementation

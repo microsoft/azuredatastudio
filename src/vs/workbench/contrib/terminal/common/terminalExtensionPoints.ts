@@ -4,33 +4,47 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as extensionsRegistry from 'vs/workbench/services/extensions/common/extensionsRegistry';
-import { ITerminalTypeContribution, ITerminalContributions, terminalContributionsDescriptor } from 'vs/workbench/contrib/terminal/common/terminal';
-import { flatten } from 'vs/base/common/arrays';
+import { terminalContributionsDescriptor } from 'vs/workbench/contrib/terminal/common/terminal';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { IExtensionTerminalProfile, ITerminalContributions, ITerminalProfileContribution } from 'vs/platform/terminal/common/terminal';
+import { URI } from 'vs/base/common/uri';
 
 // terminal extension point
-export const terminalsExtPoint = extensionsRegistry.ExtensionsRegistry.registerExtensionPoint<ITerminalContributions>(terminalContributionsDescriptor);
+const terminalsExtPoint = extensionsRegistry.ExtensionsRegistry.registerExtensionPoint<ITerminalContributions>(terminalContributionsDescriptor);
 
 export interface ITerminalContributionService {
 	readonly _serviceBrand: undefined;
 
-	readonly terminalTypes: ReadonlyArray<ITerminalTypeContribution>;
+	readonly terminalProfiles: ReadonlyArray<IExtensionTerminalProfile>;
 }
 
 export const ITerminalContributionService = createDecorator<ITerminalContributionService>('terminalContributionsService');
 
 export class TerminalContributionService implements ITerminalContributionService {
-	public readonly _serviceBrand = undefined;
+	declare _serviceBrand: undefined;
 
-	private _terminalTypes: ReadonlyArray<ITerminalTypeContribution> = [];
-
-	public get terminalTypes() {
-		return this._terminalTypes;
-	}
+	private _terminalProfiles: ReadonlyArray<IExtensionTerminalProfile> = [];
+	get terminalProfiles() { return this._terminalProfiles; }
 
 	constructor() {
 		terminalsExtPoint.setHandler(contributions => {
-			this._terminalTypes = flatten(contributions.filter(c => c.description.enableProposedApi).map(c => c.value?.types ?? []));
+			this._terminalProfiles = contributions.map(c => {
+				return c.value?.profiles?.filter(p => hasValidTerminalIcon(p)).map(e => {
+					return { ...e, extensionIdentifier: c.description.identifier.value };
+				}) || [];
+			}).flat();
 		});
 	}
+}
+
+function hasValidTerminalIcon(profile: ITerminalProfileContribution): boolean {
+	return !profile.icon ||
+		(
+			typeof profile.icon === 'string' ||
+			URI.isUri(profile.icon) ||
+			(
+				'light' in profile.icon && 'dark' in profile.icon &&
+				URI.isUri(profile.icon.light) && URI.isUri(profile.icon.dark)
+			)
+		);
 }

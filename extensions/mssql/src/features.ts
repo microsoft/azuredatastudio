@@ -6,12 +6,14 @@ import * as nls from 'vscode-nls';
 import { SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import { ClientCapabilities, StaticFeature, RPCMessageType, ServerCapabilities } from 'vscode-languageclient';
 import { Disposable, window, QuickPickItem, QuickPickOptions } from 'vscode';
-import { Telemetry } from './telemetry';
+import { TelemetryReporter } from './telemetry';
 import * as contracts from './contracts';
 import * as azdata from 'azdata';
 import * as Utils from './utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { DataItemCache } from './util/dataCache';
+import * as azurecore from 'azurecore';
+import * as localizedConstants from './localizedConstants';
 
 const localize = nls.loadMessageBundle();
 
@@ -25,7 +27,7 @@ export class TelemetryFeature implements StaticFeature {
 
 	initialize(): void {
 		this._client.onNotification(contracts.TelemetryNotification.type, e => {
-			Telemetry.sendTelemetryEvent(e.params.eventName, e.params.properties, e.params.measures);
+			TelemetryReporter.sendTelemetryEvent(e.params.eventName, e.params.properties, e.params.measures);
 		});
 	}
 }
@@ -42,17 +44,27 @@ export class AccountFeature implements StaticFeature {
 		let timeToLiveInSeconds = 10;
 		this.tokenCache = new DataItemCache(this.getToken, timeToLiveInSeconds);
 		this._client.onRequest(contracts.SecurityTokenRequest.type, async (request): Promise<contracts.RequestSecurityTokenResponse | undefined> => {
-			return this.tokenCache.getData(request);
+			return await this.tokenCache.getData(request);
+		});
+		this._client.onNotification(contracts.RefreshTokenNotification.type, async (request) => {
+			// Refresh token, then inform client the token has been updated. This is done as separate notification messages due to the synchronous processing nature of STS currently https://github.com/microsoft/azuredatastudio/issues/17179
+			let result = await this.refreshToken(request);
+			if (!result) {
+				void window.showErrorMessage(localizedConstants.tokenRefreshFailed('autocompletion'));
+				console.log(`Token Refresh Failed ${request.toString()}`);
+				throw Error(localizedConstants.tokenRefreshFailed('autocompletion'));
+			}
+			this._client.sendNotification(contracts.TokenRefreshedNotification.type, result);
 		});
 	}
 
 	protected async getToken(request: contracts.RequestSecurityTokenParams): Promise<contracts.RequestSecurityTokenResponse | undefined> {
 		const accountList = await azdata.accounts.getAllAccounts();
-		let account: azdata.Account;
+		let account: azurecore.AzureAccount;
 
 		if (accountList.length < 1) {
 			// TODO: Prompt user to add account
-			window.showErrorMessage(localize('mssql.missingLinkedAzureAccount', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query."));
+			void window.showErrorMessage(localize('mssql.missingLinkedAzureAccount', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query."));
 			return undefined;
 		} else if (accountList.length > 1) {
 			let options: QuickPickOptions = {
@@ -62,7 +74,7 @@ export class AccountFeature implements StaticFeature {
 			let items = accountList.map(a => new AccountFeature.AccountQuickPickItem(a));
 			let selectedItem = await window.showQuickPick(items, options);
 			if (!selectedItem) { // The user canceled the selection.
-				window.showErrorMessage(localize('mssql.canceledLinkedAzureAccountSelection', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted."));
+				void window.showErrorMessage(localize('mssql.canceledLinkedAzureAccountSelection', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted."));
 				return undefined;
 			}
 			account = selectedItem.account;
@@ -70,22 +82,54 @@ export class AccountFeature implements StaticFeature {
 			account = accountList[0];
 		}
 
-		const tenant = account.properties.tenants.find((t: { [key: string]: string }) => request.authority.includes(t.id));
+		const tenant = account.properties.tenants.find(tenant => request.authority.includes(tenant.id));
 		const unauthorizedMessage = localize('mssql.insufficientlyPrivelagedAzureAccount', "The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.", account.key.accountId);
 		if (!tenant) {
-			window.showErrorMessage(unauthorizedMessage);
+			void window.showErrorMessage(unauthorizedMessage);
 			return undefined;
 		}
-		const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenant, azdata.AzureResource.AzureKeyVault);
+		const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.AzureKeyVault);
 
 		if (!securityToken?.token) {
-			window.showErrorMessage(unauthorizedMessage);
+			void window.showErrorMessage(unauthorizedMessage);
 			return undefined;
 		}
 
 		let params: contracts.RequestSecurityTokenResponse = {
 			accountKey: JSON.stringify(account.key),
 			token: securityToken.token
+		};
+
+		return params;
+	}
+
+	protected async refreshToken(request: contracts.RefreshTokenParams): Promise<contracts.TokenRefreshedParams> {
+
+		// find account
+		const accountList = await azdata.accounts.getAllAccounts();
+		const account: azurecore.AzureAccount | undefined = accountList.find(a => a.key.accountId === request.accountId);
+		if (!account) {
+			console.log(`Failed to find azure account ${request.accountId} when executing token refresh`);
+			throw Error(localizedConstants.failedToFindAccount(request.accountId));
+		}
+
+		// find tenant
+		const tenant = account.properties.tenants.find(tenant => tenant.id === request.tenantId);
+		if (!tenant) {
+			console.log(`Failed to find tenant ${request.tenantId} in account ${account.displayInfo.displayName} when refreshing security token`);
+			throw Error(localizedConstants.failedToFindTenants(request.tenantId, account.displayInfo.displayName));
+		}
+
+		// Get the updated token, which will handle refreshing it if necessary
+		const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
+		if (!securityToken) {
+			console.log('Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected');
+			throw Error(localizedConstants.tokenRefreshFailedNoSecurityToken);
+		}
+		let params: contracts.TokenRefreshedParams = {
+			token: securityToken.token,
+			expiresOn: securityToken.expiresOn!,
+			uri: request.uri
 		};
 
 		return params;
@@ -148,12 +192,12 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 
 		// Job management methods
 		let getJobs = (ownerUri: string): Thenable<azdata.AgentJobsResult> => {
-			let params: contracts.AgentJobsParams = { ownerUri: ownerUri, jobId: null };
+			let params: contracts.AgentJobsParams = { ownerUri: ownerUri, jobId: '' };
 			return client.sendRequest(contracts.AgentJobsRequest.type, params).then(
 				r => r,
 				e => {
 					client.logFailedRequest(contracts.AgentJobsRequest.type, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -165,7 +209,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				r => r,
 				e => {
 					client.logFailedRequest(contracts.AgentJobHistoryRequest.type, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -176,7 +220,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				r => r,
 				e => {
 					client.logFailedRequest(contracts.AgentJobActionRequest.type, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -194,7 +238,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -213,7 +257,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -231,7 +275,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -245,7 +289,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				r => r,
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -264,7 +308,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -283,7 +327,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -301,7 +345,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -313,7 +357,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				r => r,
 				e => {
 					client.logFailedRequest(contracts.AgentNotebooksRequest.type, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -326,7 +370,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 					r => r,
 					e => {
 						client.logFailedRequest(contracts.AgentNotebookHistoryRequest.type, e);
-						return Promise.resolve(undefined);
+						return Promise.reject(e);
 					}
 				);
 		};
@@ -338,7 +382,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 					r => r,
 					e => {
 						client.logFailedRequest(contracts.AgentNotebookMaterializedRequest.type, e);
-						return Promise.resolve(undefined);
+						return Promise.reject(e);
 					}
 				);
 		};
@@ -350,7 +394,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 					r => r,
 					e => {
 						client.logFailedRequest(contracts.AgentNotebookTemplateRequest.type, e);
-						return Promise.resolve(undefined);
+						return Promise.reject(e);
 					}
 				);
 		};
@@ -369,7 +413,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -390,7 +434,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -408,7 +452,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -420,7 +464,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 					r => r,
 					e => {
 						client.logFailedRequest(contracts.DeleteMaterializedNotebookRequest.type, e);
-						return Promise.resolve(undefined);
+						return Promise.reject(e);
 					}
 				);
 		};
@@ -432,7 +476,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 					r => r,
 					e => {
 						client.logFailedRequest(contracts.UpdateAgentNotebookRunNameRequest.type, e);
-						return Promise.resolve(undefined);
+						return Promise.reject(e);
 					}
 				);
 		};
@@ -444,7 +488,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 					r => r,
 					e => {
 						client.logFailedRequest(contracts.UpdateAgentNotebookRunPinRequest.type, e);
-						return Promise.resolve(undefined);
+						return Promise.reject(e);
 					}
 				);
 		};
@@ -461,7 +505,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				r => r,
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -479,7 +523,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -498,7 +542,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -516,7 +560,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -531,7 +575,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				r => r,
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -549,7 +593,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -568,7 +612,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -586,7 +630,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -601,12 +645,12 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				r => r,
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
 
-		let createProxy = (ownerUri: string, proxyInfo: azdata.AgentProxyInfo): Thenable<azdata.CreateAgentOperatorResult> => {
+		let createProxy = (ownerUri: string, proxyInfo: azdata.AgentProxyInfo): Thenable<azdata.CreateAgentProxyResult> => {
 			let params: contracts.CreateAgentProxyParams = {
 				ownerUri: ownerUri,
 				proxy: proxyInfo
@@ -619,12 +663,12 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
 
-		let updateProxy = (ownerUri: string, originalProxyName: string, proxyInfo: azdata.AgentProxyInfo): Thenable<azdata.UpdateAgentOperatorResult> => {
+		let updateProxy = (ownerUri: string, originalProxyName: string, proxyInfo: azdata.AgentProxyInfo): Thenable<azdata.UpdateAgentProxyResult> => {
 			let params: contracts.UpdateAgentProxyParams = {
 				ownerUri: ownerUri,
 				originalProxyName: originalProxyName,
@@ -638,7 +682,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -656,7 +700,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -671,7 +715,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				r => r,
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -687,7 +731,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				r => r,
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -705,7 +749,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -724,7 +768,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -742,7 +786,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(requestType, e);
-					return Promise.resolve(undefined);
+					return Promise.reject(e);
 				}
 			);
 		};
@@ -882,9 +926,8 @@ export class SqlAssessmentServicesFeature extends SqlOpsFeature<undefined> {
 			}
 			catch (e) {
 				client.logFailedRequest(contracts.SqlAssessmentInvokeRequest.type, e);
+				throw e;
 			}
-
-			return undefined;
 		};
 
 		let getAssessmentItems = async (ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult> => {
@@ -894,9 +937,8 @@ export class SqlAssessmentServicesFeature extends SqlOpsFeature<undefined> {
 			}
 			catch (e) {
 				client.logFailedRequest(contracts.GetSqlAssessmentItemsRequest.type, e);
+				throw e;
 			}
-
-			return undefined;
 		};
 
 		let generateAssessmentScript = async (items: azdata.SqlAssessmentResultItem[]): Promise<azdata.ResultStatus> => {
@@ -906,9 +948,8 @@ export class SqlAssessmentServicesFeature extends SqlOpsFeature<undefined> {
 			}
 			catch (e) {
 				client.logFailedRequest(contracts.GenerateSqlAssessmentScriptRequest.type, e);
+				throw e;
 			}
-
-			return undefined;
 		};
 
 		return azdata.dataprotocol.registerSqlAssessmentServicesProvider({
@@ -960,10 +1001,11 @@ export class ProfilerFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let startSession = (ownerUri: string, sessionName: string): Thenable<boolean> => {
+		let startSession = (ownerUri: string, sessionName: string, sessionType: azdata.ProfilingSessionType = azdata.ProfilingSessionType.RemoteSession): Thenable<boolean> => {
 			let params: contracts.StartProfilingParams = {
 				ownerUri,
-				sessionName
+				sessionName,
+				sessionType
 			};
 
 			return client.sendRequest(contracts.StartProfilingRequest.type, params).then(
@@ -1018,7 +1060,7 @@ export class ProfilerFeature extends SqlOpsFeature<undefined> {
 		};
 
 		let connectSession = (sessionId: string): Thenable<boolean> => {
-			return undefined;
+			return Promise.resolve(false);
 		};
 
 		let disconnectSession = (ownerUri: string): Thenable<boolean> => {
@@ -1081,3 +1123,230 @@ export class ProfilerFeature extends SqlOpsFeature<undefined> {
 	}
 }
 
+
+/**
+ * Table Designer Feature
+ * TODO: Move this feature to data protocol client repo once stablized
+ */
+export class TableDesignerFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		contracts.ProcessTableDesignerEditRequest.type,
+	];
+	constructor(client: SqlOpsDataClient) {
+		super(client, TableDesignerFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		const initializeTableDesigner = (tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> => {
+			try {
+				return client.sendRequest(contracts.InitializeTableDesignerRequest.type, tableInfo);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.InitializeTableDesignerRequest.type, e);
+				return Promise.reject(e);
+			}
+		};
+		const processTableEdit = (tableInfo: azdata.designers.TableInfo, tableChangeInfo: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult<azdata.designers.TableDesignerView>> => {
+			let params: contracts.TableDesignerEditRequestParams = {
+				tableInfo: tableInfo,
+				tableChangeInfo: tableChangeInfo
+			};
+			try {
+				return client.sendRequest(contracts.ProcessTableDesignerEditRequest.type, params);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.ProcessTableDesignerEditRequest.type, e);
+				return Promise.reject(e);
+			}
+		};
+
+		const publishChanges = (tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.PublishChangesResult> => {
+			try {
+				return client.sendRequest(contracts.PublishTableDesignerChangesRequest.type, tableInfo);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.PublishTableDesignerChangesRequest.type, e);
+				return Promise.reject(e);
+			}
+		};
+
+		const generateScript = (tableInfo: azdata.designers.TableInfo): Thenable<string> => {
+			try {
+				return client.sendRequest(contracts.TableDesignerGenerateScriptRequest.type, tableInfo);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.TableDesignerGenerateScriptRequest.type, e);
+				return Promise.reject(e);
+			}
+		};
+
+		const generatePreviewReport = (tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.GeneratePreviewReportResult> => {
+			try {
+				return client.sendRequest(contracts.TableDesignerGenerateChangePreviewReportRequest.type, tableInfo);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.TableDesignerGenerateChangePreviewReportRequest.type, e);
+				return Promise.reject(e);
+			}
+		};
+
+		const disposeTableDesigner = (tableInfo: azdata.designers.TableInfo): Thenable<void> => {
+			try {
+				return client.sendRequest(contracts.DisposeTableDesignerRequest.type, tableInfo);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.DisposeTableDesignerRequest.type, e);
+				return Promise.reject(e);
+			}
+		};
+
+		return azdata.dataprotocol.registerTableDesignerProvider({
+			providerId: client.providerId,
+			initializeTableDesigner,
+			processTableEdit,
+			publishChanges,
+			generateScript,
+			generatePreviewReport,
+			disposeTableDesigner
+		});
+	}
+}
+
+
+/**
+ * Execution Plan Service Feature
+ * TODO: Move this feature to data protocol client repo once stablized
+ */
+export class ExecutionPlanServiceFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		contracts.GetExecutionPlanRequest.type,
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, ExecutionPlanServiceFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		const getExecutionPlan = (planFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.GetExecutionPlanResult> => {
+			const params: contracts.GetExecutionPlanParams = { graphInfo: planFile };
+			return client.sendRequest(contracts.GetExecutionPlanRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(contracts.GetExecutionPlanRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		const compareExecutionPlanGraph = (firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.ExecutionPlanComparisonResult> => {
+			const params: contracts.ExecutionPlanComparisonParams = {
+				firstExecutionPlanGraphInfo: firstPlanFile,
+				secondExecutionPlanGraphInfo: secondPlanFile
+			};
+
+			return client.sendRequest(contracts.ExecutionPlanComparisonRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(contracts.ExecutionPlanComparisonRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		const isExecutionPlan = (value: string): Thenable<azdata.executionPlan.IsExecutionPlanResult> => {
+			return new Promise((resolve) => {
+				let isExecutionPlan = false;
+				let queryExecutionPlanFileExtension = '';
+
+				if (value.includes('ShowPlanXML')) {
+					isExecutionPlan = true;
+					queryExecutionPlanFileExtension = 'sqlplan';
+				}
+
+				const result: azdata.executionPlan.IsExecutionPlanResult = {
+					isExecutionPlan: isExecutionPlan,
+					queryExecutionPlanFileExtension: queryExecutionPlanFileExtension,
+				};
+
+				return resolve(result);
+			});
+		};
+
+		return azdata.dataprotocol.registerExecutionPlanProvider({
+			providerId: client.providerId,
+			getExecutionPlan,
+			compareExecutionPlanGraph,
+			isExecutionPlan
+		});
+	}
+}
+
+/**
+ * Server Contextualization Service Feature
+ */
+export class ServerContextualizationServiceFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		contracts.GetServerContextualizationRequest.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, ServerContextualizationServiceFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		const getServerContextualization = (ownerUri: string): Thenable<azdata.contextualization.GetServerContextualizationResult> => {
+			const params: contracts.ServerContextualizationParams = {
+				ownerUri: ownerUri
+			};
+
+			return client.sendRequest(contracts.GetServerContextualizationRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(contracts.GetServerContextualizationRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		return azdata.dataprotocol.registerServerContextualizationProvider({
+			providerId: client.providerId,
+			getServerContextualization: getServerContextualization
+		});
+	}
+}

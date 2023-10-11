@@ -9,7 +9,7 @@
 	"flatFileImport.importData": "匯入資料",
 	"flatFileImport.next": "下一個",
 	"flatFileImport.columnName": "資料行名稱",
-	"flatFileImport.dataType": "資料型態",
+	"flatFileImport.dataType": "資料類型",
 	"flatFileImport.primaryKey": "主索引鍵",
-	"flatFileImport.allowNulls": "允許 Null"
+	"flatFileImport.allowNulls": "允許 Null 值"
 }

@@ -3,34 +3,29 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { azureResource } from 'azureResource';
-import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
+import { azureResource } from 'azurecore';
+import { kustoClusterQuery } from '../queryStringConstants';
+import { ResourceServiceBase } from '../resourceTreeDataProviderBase';
+import { KustoGraphData } from '../../interfaces';
+import { KUSTO_PROVIDER_ID } from '../../../constants';
 
-export interface KustoGraphData extends GraphData {
-	properties: {
-		fullyQualifiedDomainName: string;
-		administratorLogin: string;
-		uri: string;
-	};
-}
+export class KustoResourceService extends ResourceServiceBase<KustoGraphData> {
+	public override queryFilter: string = kustoClusterQuery;
 
-const instanceQuery = `where type == "${azureResource.AzureResourceType.kustoClusters}"`;
-
-export class KustoResourceService extends ResourceServiceBase<KustoGraphData, azureResource.AzureResourceDatabaseServer> {
-
-	protected get query(): string {
-		return instanceQuery;
-	}
-
-	protected convertResource(resource: KustoGraphData): azureResource.AzureResourceDatabaseServer {
+	public convertServerResource(resource: KustoGraphData): azureResource.AzureResourceDatabaseServer | undefined {
 		return {
 			id: resource.id,
 			name: resource.name,
+			provider: KUSTO_PROVIDER_ID,
 			fullName: resource.properties.uri.replace('https://', ''),
 			loginName: '',
 			defaultDatabaseName: '',
-			subscriptionId: resource.subscriptionId,
-			tenant: resource.tenantId
+			subscription: {
+				id: resource.subscriptionId,
+				name: resource.subscriptionName || ''
+			},
+			tenant: resource.tenantId,
+			resourceGroup: resource.resourceGroup
 		};
 	}
 }

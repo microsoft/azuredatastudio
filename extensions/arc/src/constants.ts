@@ -28,19 +28,28 @@ export class IconPathHelper {
 	public static collapseUp: IconPath;
 	public static collapseDown: IconPath;
 	public static postgres: IconPath;
+	public static extensions: IconPath;
 	public static computeStorage: IconPath;
 	public static connection: IconPath;
 	public static backup: IconPath;
 	public static properties: IconPath;
 	public static networking: IconPath;
+	public static pitr: IconPath;
+	public static upgrade: IconPath;
 	public static refresh: IconPath;
+	public static reset: IconPath;
 	public static support: IconPath;
 	public static wrench: IconPath;
 	public static miaa: IconPath;
 	public static controller: IconPath;
 	public static health: IconPath;
 	public static success: IconPath;
+	public static save: IconPath;
+	public static discard: IconPath;
 	public static fail: IconPath;
+	public static information: IconPath;
+	public static gearBlue: IconPath;
+	public static gearGray: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.context = context;
@@ -68,6 +77,10 @@ export class IconPathHelper {
 			light: IconPathHelper.context.asAbsolutePath('images/postgres.svg'),
 			dark: IconPathHelper.context.asAbsolutePath('images/postgres.svg')
 		};
+		IconPathHelper.extensions = {
+			light: IconPathHelper.context.asAbsolutePath('images/extensions.svg'),
+			dark: IconPathHelper.context.asAbsolutePath('images/extensions.svg')
+		};
 		IconPathHelper.computeStorage = {
 			light: context.asAbsolutePath('images/billing.svg'),
 			dark: context.asAbsolutePath('images/billing.svg')
@@ -91,6 +104,10 @@ export class IconPathHelper {
 		IconPathHelper.refresh = {
 			light: context.asAbsolutePath('images/refresh.svg'),
 			dark: context.asAbsolutePath('images/refresh.svg')
+		};
+		IconPathHelper.reset = {
+			light: context.asAbsolutePath('images/reset.svg'),
+			dark: context.asAbsolutePath('images/reset.svg')
 		};
 		IconPathHelper.support = {
 			light: context.asAbsolutePath('images/support.svg'),
@@ -116,9 +133,37 @@ export class IconPathHelper {
 			light: context.asAbsolutePath('images/success.svg'),
 			dark: context.asAbsolutePath('images/success.svg'),
 		};
+		IconPathHelper.save = {
+			light: context.asAbsolutePath('images/save.svg'),
+			dark: context.asAbsolutePath('images/save.svg'),
+		};
+		IconPathHelper.discard = {
+			light: context.asAbsolutePath('images/discard.svg'),
+			dark: context.asAbsolutePath('images/discard.svg'),
+		};
 		IconPathHelper.fail = {
 			light: context.asAbsolutePath('images/fail.svg'),
 			dark: context.asAbsolutePath('images/fail.svg'),
+		};
+		IconPathHelper.information = {
+			light: context.asAbsolutePath('images/information.svg'),
+			dark: context.asAbsolutePath('images/information.svg'),
+		};
+		IconPathHelper.gearBlue = {
+			light: context.asAbsolutePath('images/gear-colored-blue.svg'),
+			dark: context.asAbsolutePath('images/gear-colored-blue.svg'),
+		};
+		IconPathHelper.gearGray = {
+			light: context.asAbsolutePath('images/gear-colored-gray.svg'),
+			dark: context.asAbsolutePath('images/gear-colored-gray.svg'),
+		};
+		IconPathHelper.pitr = {
+			light: context.asAbsolutePath('images/pitr.svg'),
+			dark: context.asAbsolutePath('images/pitr.svg'),
+		};
+		IconPathHelper.upgrade = {
+			light: context.asAbsolutePath('images/upgrade.svg'),
+			dark: context.asAbsolutePath('images/upgrade.svg'),
 		};
 	}
 }
@@ -138,9 +183,14 @@ export const enum ConnectionMode {
 
 export namespace cssStyles {
 	export const text = { 'user-select': 'text', 'cursor': 'text' };
+	export const code = { 'user-select': 'text', 'cursor': 'text', 'font-style': 'italic' };
 	export const title = { ...text, 'font-weight': 'bold', 'font-size': '14px' };
 	export const tableHeader = { ...text, 'text-align': 'left', 'border': 'none' };
 	export const tableRow = { ...text, 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none' };
 }
 
 export const iconSize = '20px';
+
+export const encryptOption = 'encrypt';
+export const trustServerCertificateOption = 'trustServerCertificate';
+export const encryptReadMoreLink = 'https://learn.microsoft.com/sql/database-engine/configure-windows/enable-encrypted-connections-to-the-database-engine';

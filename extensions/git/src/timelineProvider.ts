@@ -3,13 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as nls from 'vscode-nls';
-import { CancellationToken, Disposable, env, Event, EventEmitter, ThemeIcon, Timeline, TimelineChangeEvent, TimelineItem, TimelineOptions, TimelineProvider, Uri, workspace } from 'vscode';
+import { CancellationToken, ConfigurationChangeEvent, Disposable, env, Event, EventEmitter, MarkdownString, ThemeIcon, Timeline, TimelineChangeEvent, TimelineItem, TimelineOptions, TimelineProvider, Uri, workspace, l10n } from 'vscode';
 import { Model } from './model';
 import { Repository, Resource } from './repository';
 import { debounce } from './decorators';
-
-const localize = nls.loadMessageBundle();
+import { emojify, ensureEmojis } from './emoji';
+import { CommandCenter } from './commands';
+import { OperationKind, OperationResult } from './operation';
 
 export class GitTimelineItem extends TimelineItem {
 	static is(item: TimelineItem): item is GitTimelineItem {
@@ -48,6 +48,20 @@ export class GitTimelineItem extends TimelineItem {
 		return this.shortenRef(this.previousRef);
 	}
 
+	setItemDetails(author: string, email: string | undefined, date: string, message: string): void {
+		this.tooltip = new MarkdownString('', true);
+
+		if (email) {
+			const emailTitle = l10n.t('Email');
+			this.tooltip.appendMarkdown(`$(account) [**${author}**](mailto:${email} "${emailTitle} ${author}")\n\n`);
+		} else {
+			this.tooltip.appendMarkdown(`$(account) **${author}**\n\n`);
+		}
+
+		this.tooltip.appendMarkdown(`$(history) ${date}\n\n`);
+		this.tooltip.appendMarkdown(message);
+	}
+
 	private shortenRef(ref: string): string {
 		if (ref === '' || ref === '~' || ref === 'HEAD') {
 			return ref;
@@ -57,24 +71,25 @@ export class GitTimelineItem extends TimelineItem {
 }
 
 export class GitTimelineProvider implements TimelineProvider {
-	private _onDidChange = new EventEmitter<TimelineChangeEvent>();
-	get onDidChange(): Event<TimelineChangeEvent> {
+	private _onDidChange = new EventEmitter<TimelineChangeEvent | undefined>();
+	get onDidChange(): Event<TimelineChangeEvent | undefined> {
 		return this._onDidChange.event;
 	}
 
 	readonly id = 'git-history';
-	readonly label = localize('git.timeline.source', 'Git History');
+	readonly label = l10n.t('Git History');
 
 	private readonly disposable: Disposable;
 	private providerDisposable: Disposable | undefined;
 
 	private repo: Repository | undefined;
 	private repoDisposable: Disposable | undefined;
-	private repoStatusDate: Date | undefined;
+	private repoOperationDate: Date | undefined;
 
-	constructor(private readonly model: Model) {
+	constructor(private readonly model: Model, private commands: CommandCenter) {
 		this.disposable = Disposable.from(
 			model.onDidOpenRepository(this.onRepositoriesChanged, this),
+			workspace.onDidChangeConfiguration(this.onConfigurationChanged, this)
 		);
 
 		if (model.repositories.length) {
@@ -88,12 +103,12 @@ export class GitTimelineProvider implements TimelineProvider {
 	}
 
 	async provideTimeline(uri: Uri, options: TimelineOptions, _token: CancellationToken): Promise<Timeline> {
-		// console.log(`GitTimelineProvider.provideTimeline: uri=${uri} state=${this._model.state}`);
+		// console.log(`GitTimelineProvider.provideTimeline: uri=${uri}`);
 
 		const repo = this.model.getRepository(uri);
 		if (!repo) {
 			this.repoDisposable?.dispose();
-			this.repoStatusDate = undefined;
+			this.repoOperationDate = undefined;
 			this.repo = undefined;
 
 			return { items: [] };
@@ -103,12 +118,15 @@ export class GitTimelineProvider implements TimelineProvider {
 			this.repoDisposable?.dispose();
 
 			this.repo = repo;
-			this.repoStatusDate = new Date();
+			this.repoOperationDate = new Date();
 			this.repoDisposable = Disposable.from(
 				repo.onDidChangeRepository(uri => this.onRepositoryChanged(repo, uri)),
-				repo.onDidRunGitStatus(() => this.onRepositoryStatusChanged(repo))
+				repo.onDidRunGitStatus(() => this.onRepositoryStatusChanged(repo)),
+				repo.onDidRunOperation(result => this.onRepositoryOperationRun(repo, result))
 			);
 		}
+
+		const config = workspace.getConfiguration('git.timeline');
 
 		// TODO@eamodio: Ensure that the uri is a file -- if not we could get the history of the repo?
 
@@ -129,6 +147,8 @@ export class GitTimelineProvider implements TimelineProvider {
 			limit = options.limit === undefined ? undefined : options.limit + 1;
 		}
 
+		await ensureEmojis();
+
 		const commits = await repo.logFile(uri, {
 			maxEntries: limit,
 			hash: options.cursor,
@@ -146,59 +166,83 @@ export class GitTimelineProvider implements TimelineProvider {
 
 		const dateFormatter = new Intl.DateTimeFormat(env.language, { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' });
 
-		const items = commits.map<GitTimelineItem>((c, i) => {
-			const date = c.commitDate; // c.authorDate
+		const dateType = config.get<'committed' | 'authored'>('date');
+		const showAuthor = config.get<boolean>('showAuthor');
+		const showUncommitted = config.get<boolean>('showUncommitted');
 
-			const item = new GitTimelineItem(c.hash, commits[i + 1]?.hash ?? `${c.hash}^`, c.message, date?.getTime() ?? 0, c.hash, 'git:file:commit');
-			item.iconPath = new (ThemeIcon as any)('git-commit');
-			item.description = c.authorName;
-			item.detail = `${c.authorName} (${c.authorEmail}) \u2014 ${c.hash.substr(0, 8)}\n${dateFormatter.format(date)}\n\n${c.message}`;
-			item.command = {
-				title: 'Open Comparison',
-				command: 'git.timeline.openDiff',
-				arguments: [item, uri, this.id]
-			};
+		const openComparison = l10n.t('Open Comparison');
+
+		const items = commits.map<GitTimelineItem>((c, i) => {
+			const date = dateType === 'authored' ? c.authorDate : c.commitDate;
+
+			const message = emojify(c.message);
+
+			const item = new GitTimelineItem(c.hash, commits[i + 1]?.hash ?? `${c.hash}^`, message, date?.getTime() ?? 0, c.hash, 'git:file:commit');
+			item.iconPath = new ThemeIcon('git-commit');
+			if (showAuthor) {
+				item.description = c.authorName;
+			}
+
+			item.setItemDetails(c.authorName!, c.authorEmail, dateFormatter.format(date), message);
+
+			const cmd = this.commands.resolveTimelineOpenDiffCommand(item, uri);
+			if (cmd) {
+				item.command = {
+					title: openComparison,
+					command: cmd.command,
+					arguments: cmd.arguments,
+				};
+			}
 
 			return item;
 		});
 
 		if (options.cursor === undefined) {
-			const you = localize('git.timeline.you', 'You');
+			const you = l10n.t('You');
 
 			const index = repo.indexGroup.resourceStates.find(r => r.resourceUri.fsPath === uri.fsPath);
 			if (index) {
-				const date = this.repoStatusDate ?? new Date();
+				const date = this.repoOperationDate ?? new Date();
 
-				const item = new GitTimelineItem('~', 'HEAD', localize('git.timeline.stagedChanges', 'Staged Changes'), date.getTime(), 'index', 'git:file:index');
+				const item = new GitTimelineItem('~', 'HEAD', l10n.t('Staged Changes'), date.getTime(), 'index', 'git:file:index');
 				// TODO@eamodio: Replace with a better icon -- reflecting its status maybe?
-				item.iconPath = new (ThemeIcon as any)('git-commit');
+				item.iconPath = new ThemeIcon('git-commit');
 				item.description = '';
-				item.detail = localize('git.timeline.detail', '{0}  \u2014 {1}\n{2}\n\n{3}', you, localize('git.index', 'Index'), dateFormatter.format(date), Resource.getStatusText(index.type));
-				item.command = {
-					title: 'Open Comparison',
-					command: 'git.timeline.openDiff',
-					arguments: [item, uri, this.id]
-				};
+				item.setItemDetails(you, undefined, dateFormatter.format(date), Resource.getStatusText(index.type));
+
+				const cmd = this.commands.resolveTimelineOpenDiffCommand(item, uri);
+				if (cmd) {
+					item.command = {
+						title: openComparison,
+						command: cmd.command,
+						arguments: cmd.arguments,
+					};
+				}
 
 				items.splice(0, 0, item);
 			}
 
-			const working = repo.workingTreeGroup.resourceStates.find(r => r.resourceUri.fsPath === uri.fsPath);
-			if (working) {
-				const date = new Date();
+			if (showUncommitted) {
+				const working = repo.workingTreeGroup.resourceStates.find(r => r.resourceUri.fsPath === uri.fsPath);
+				if (working) {
+					const date = new Date();
 
-				const item = new GitTimelineItem('', index ? '~' : 'HEAD', localize('git.timeline.uncommitedChanges', 'Uncommited Changes'), date.getTime(), 'working', 'git:file:working');
-				// TODO@eamodio: Replace with a better icon -- reflecting its status maybe?
-				item.iconPath = new (ThemeIcon as any)('git-commit');
-				item.description = '';
-				item.detail = localize('git.timeline.detail', '{0}  \u2014 {1}\n{2}\n\n{3}', you, localize('git.workingTree', 'Working Tree'), dateFormatter.format(date), Resource.getStatusText(working.type));
-				item.command = {
-					title: 'Open Comparison',
-					command: 'git.timeline.openDiff',
-					arguments: [item, uri, this.id]
-				};
+					const item = new GitTimelineItem('', index ? '~' : 'HEAD', l10n.t('Uncommitted Changes'), date.getTime(), 'working', 'git:file:working');
+					item.iconPath = new ThemeIcon('circle-outline');
+					item.description = '';
+					item.setItemDetails(you, undefined, dateFormatter.format(date), Resource.getStatusText(working.type));
 
-				items.splice(0, 0, item);
+					const cmd = this.commands.resolveTimelineOpenDiffCommand(item, uri);
+					if (cmd) {
+						item.command = {
+							title: openComparison,
+							command: cmd.command,
+							arguments: cmd.arguments,
+						};
+					}
+
+					items.splice(0, 0, item);
+				}
 			}
 		}
 
@@ -210,7 +254,13 @@ export class GitTimelineProvider implements TimelineProvider {
 
 	private ensureProviderRegistration() {
 		if (this.providerDisposable === undefined) {
-			this.providerDisposable = workspace.registerTimelineProvider(['file', 'git', 'vscode-remote', 'gitlens-git'], this);
+			this.providerDisposable = workspace.registerTimelineProvider(['file', 'git', 'vscode-remote', 'vscode-local-history'], this);
+		}
+	}
+
+	private onConfigurationChanged(e: ConfigurationChangeEvent) {
+		if (e.affectsConfiguration('git.timeline.date') || e.affectsConfiguration('git.timeline.showAuthor') || e.affectsConfiguration('git.timeline.showUncommitted')) {
+			this.fireChanged();
 		}
 	}
 
@@ -232,10 +282,25 @@ export class GitTimelineProvider implements TimelineProvider {
 	private onRepositoryStatusChanged(_repo: Repository) {
 		// console.log(`GitTimelineProvider.onRepositoryStatusChanged`);
 
-		// This is less than ideal, but for now just save the last time a status was run and use that as the timestamp for staged items
-		this.repoStatusDate = new Date();
+		const config = workspace.getConfiguration('git.timeline');
+		const showUncommitted = config.get<boolean>('showUncommitted') === true;
 
-		this.fireChanged();
+		if (showUncommitted) {
+			this.fireChanged();
+		}
+	}
+
+	private onRepositoryOperationRun(_repo: Repository, _result: OperationResult) {
+		// console.log(`GitTimelineProvider.onRepositoryOperationRun`);
+
+		// Successful operations that are not read-only and not status operations
+		if (!_result.error && !_result.operation.readOnly && _result.operation.kind !== OperationKind.Status) {
+			// This is less than ideal, but for now just save the last time an
+			// operation was run and use that as the timestamp for staged items
+			this.repoOperationDate = new Date();
+
+			this.fireChanged();
+		}
 	}
 
 	@debounce(500)

@@ -4,14 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { getPathFromAmdModule } from 'vs/base/common/amd';
+import { FileAccess } from 'vs/base/common/network';
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
+import { flakySuite } from 'vs/base/test/node/testUtils';
 import { IFileQuery, IFolderQuery, ISerializedSearchProgressItem, isProgressMessage, QueryType } from 'vs/workbench/services/search/common/search';
 import { SearchService } from 'vs/workbench/services/search/node/rawSearchService';
 
-const TEST_FIXTURES = path.normalize(getPathFromAmdModule(require, './fixtures'));
-const TEST_FIXTURES2 = path.normalize(getPathFromAmdModule(require, './fixtures2'));
+const TEST_FIXTURES = path.normalize(FileAccess.asFileUri('vs/workbench/services/search/test/node/fixtures').fsPath);
+const TEST_FIXTURES2 = path.normalize(FileAccess.asFileUri('vs/workbench/services/search/test/node/fixtures2').fsPath);
 const EXAMPLES_FIXTURES = path.join(TEST_FIXTURES, 'examples');
 const MORE_FIXTURES = path.join(TEST_FIXTURES, 'more');
 const TEST_ROOT_FOLDER: IFolderQuery = { folder: URI.file(TEST_FIXTURES) };
@@ -38,11 +39,10 @@ async function doSearchTest(query: IFileQuery, expectedResultCount: number | Fun
 		}
 	});
 
-	assert.equal(results.length, expectedResultCount, `rg ${results.length} !== ${expectedResultCount}`);
+	assert.strictEqual(results.length, expectedResultCount, `rg ${results.length} !== ${expectedResultCount}`);
 }
 
-suite('FileSearch-integration', function () {
-	this.timeout(1000 * 60); // increase timeout for this suite
+flakySuite('FileSearch-integration', function () {
 
 	test('File - simple', () => {
 		const config: IFileQuery = {

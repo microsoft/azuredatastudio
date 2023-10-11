@@ -15,6 +15,7 @@ import { ViewBase } from 'sql/workbench/browser/modelComponents/viewBase';
 import { IModelViewService } from 'sql/platform/modelComponents/browser/modelViewService';
 
 import * as azdata from 'azdata';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-content',
@@ -28,17 +29,18 @@ import * as azdata from 'azdata';
 export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 	@Input() private modelViewId: string;
 
-	private _onResize = new Emitter<void>();
+	private _onResize = this._register(new Emitter<void>());
 	public readonly onResize: Event<void> = this._onResize.event;
-	private _onMessage = new Emitter<string>();
+	private _onMessage = this._register(new Emitter<string>());
 	public readonly onMessage: Event<string> = this._onMessage.event;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IModelViewService) private modelViewService: IModelViewService
+		@Inject(IModelViewService) private modelViewService: IModelViewService,
+		@Inject(ILogService) logService
 	) {
-		super(changeRef);
+		super(changeRef, logService);
 	}
 
 	ngOnInit() {
@@ -48,7 +50,7 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 		}));
 	}
 
-	ngOnDestroy() {
+	override ngOnDestroy() {
 		this._onDestroy.fire();
 		super.ngOnDestroy();
 	}

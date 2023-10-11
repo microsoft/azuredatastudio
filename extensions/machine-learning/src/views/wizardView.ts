@@ -110,14 +110,4 @@ export class WizardView extends MainViewBase {
 	public get wizard(): azdata.window.Wizard | undefined {
 		return this._wizard;
 	}
-
-	public async refresh(): Promise<void> {
-		for (let index = 0; index < this._pages.length; index++) {
-			const page = this._pages[index];
-			if (this._wizard?.pages[index]?.title !== page.title) {
-				this.addWizardPage(page, index);
-			}
-		}
-		await super.refresh();
-	}
 }

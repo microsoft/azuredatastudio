@@ -3,37 +3,35 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TreeItem, ExtensionNodeType, Account } from 'azdata';
+import { TreeItem, ExtensionNodeType } from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { azureResource } from 'azureResource';
-import { AzureResourceItemType } from '../../../azureResource/constants';
+import { AzureResourceItemType, AzureResourcePrefixes, mssqlProvider } from '../../../azureResource/constants';
 import { generateGuid } from '../../utils';
-import { IAzureResourceService } from '../../interfaces';
+import { DatabaseGraphData, DbServerGraphData } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
+import { AzureAccount, azureResource } from 'azurecore';
 
-export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabase> {
+export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProviderBase<DbServerGraphData, DatabaseGraphData> {
 
 	private static readonly containerId = 'azure.resource.providers.database.treeDataProvider.databaseContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.database.treeDataProvider.databaseContainerLabel', "SQL database");
+	private static readonly containerLabel = localize('azure.resource.providers.database.treeDataProvider.databaseContainerLabel', "SQL databases");
 
 	public constructor(
-		databaseService: IAzureResourceService<azureResource.AzureResourceDatabase>,
+		databaseService: azureResource.IAzureResourceService,
 		private _extensionContext: vscode.ExtensionContext
 	) {
 		super(databaseService);
 	}
-	protected getTreeItemForResource(database: azureResource.AzureResourceDatabase, account: Account): TreeItem {
+
+	public getTreeItemForResource(database: azureResource.AzureResourceDatabase, account: AzureAccount): TreeItem {
 		return {
-			id: `databaseServer_${database.serverFullName}.database_${database.name}`,
-			label: `${database.name} (${database.serverName})`,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_database_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/sql_database.svg')
-			},
-			collapsibleState: vscode.workspace.getConfiguration('connection').get<boolean>('dialog.browse') ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed,
+			id: `${AzureResourcePrefixes.database}${account.key.accountId}${database.tenant}${database.serverFullName}.${AzureResourcePrefixes.database}${database.id ?? database.name}`,
+			label: this.browseConnectionMode ? `${database.serverName}/${database.name} (${AzureResourceDatabaseTreeDataProvider.containerLabel}, ${database.subscription.name})` : `${database.name} (${database.serverName})`,
+			iconPath: this._extensionContext.asAbsolutePath('resources/sqlDatabase.svg'),
+			collapsibleState: this.browseConnectionMode ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.database,
 			payload: {
 				id: generateGuid(),
@@ -42,11 +40,11 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 				databaseName: database.name,
 				userName: database.loginName,
 				password: '',
-				authenticationType: 'SqlLogin',
+				authenticationType: '',
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: 'MSSQL',
+				providerName: mssqlProvider,
 				saveProfile: false,
 				options: {},
 				azureAccount: account.key.accountId,
@@ -54,26 +52,18 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 				azureTenantId: database.tenant,
 				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
-			childProvider: 'MSSQL',
+			childProvider: mssqlProvider,
 			type: ExtensionNodeType.Database
 		};
 	}
 
-	protected createContainerNode(): azureResource.IAzureResourceNode {
+	public async getRootChild(): Promise<TreeItem> {
 		return {
-			account: undefined,
-			subscription: undefined,
-			tenantId: undefined,
-			treeItem: {
-				id: AzureResourceDatabaseTreeDataProvider.containerId,
-				label: AzureResourceDatabaseTreeDataProvider.containerLabel,
-				iconPath: {
-					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-				},
-				collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
-				contextValue: AzureResourceItemType.databaseContainer
-			}
+			id: AzureResourceDatabaseTreeDataProvider.containerId,
+			label: AzureResourceDatabaseTreeDataProvider.containerLabel,
+			iconPath: this._extensionContext.asAbsolutePath('resources/sqlDatabase.svg'),
+			collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
+			contextValue: AzureResourceItemType.databaseContainer
 		};
 	}
 }

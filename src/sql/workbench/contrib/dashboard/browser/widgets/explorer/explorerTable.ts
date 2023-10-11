@@ -3,14 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
+import { IconCellValue } from 'sql/base/browser/ui/table/plugins/tableColumn';
 import { TextWithIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
+import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { BaseActionContext, ManageActionContext } from 'sql/workbench/browser/actions';
 import { getFlavor, ObjectListViewProperty } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
@@ -18,22 +19,28 @@ import { ExplorerFilter } from 'sql/workbench/contrib/dashboard/browser/widgets/
 import { ExplorerView, NameProperty } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerView';
 import { ObjectMetadataWrapper } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/objectMetadataWrapper';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import * as DOM from 'vs/base/browser/dom';
 import { status } from 'vs/base/browser/ui/aria/aria';
 import { IAction } from 'vs/base/common/actions';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const ShowActionsText: string = nls.localize('dashboard.explorer.actions', "Show Actions");
-const IconClassProperty: string = 'iconClass';
+const LabelColoumnActions: string = nls.localize('dashboard.explorer.actionsColumn', "Actions");
+const ActionsColumnWidth: number = 50;
+const NameWithIconProperty: string = 'NameWithIcon';
 export const ConnectionProfilePropertyName: string = 'connection_profile';
 
 /**
@@ -49,6 +56,7 @@ export class ExplorerTable extends Disposable {
 	private _propertiesToDisplay: ObjectListViewProperty[];
 
 	constructor(private parentElement: HTMLElement,
+		private readonly activeRoute: ActivatedRoute,
 		private readonly router: Router,
 		private readonly context: string,
 		private readonly bootStrapService: CommonServiceInterface,
@@ -57,7 +65,11 @@ export class ExplorerTable extends Disposable {
 		private readonly menuService: IMenuService,
 		private readonly contextKeyService: IContextKeyService,
 		private readonly progressService: IEditorProgressService,
-		private readonly logService: ILogService) {
+		private readonly logService: ILogService,
+		private readonly dashboardService: IDashboardService,
+		readonly accessibilityService: IAccessibilityService,
+		readonly quickInputService: IQuickInputService,
+		private readonly componentContextService: IComponentContextService) {
 		super();
 		this._explorerView = new ExplorerView(this.context);
 		const connectionInfo = this.bootStrapService.connectionManagementService.connectionInfo;
@@ -66,12 +78,15 @@ export class ExplorerTable extends Disposable {
 		this._view = new TableDataView<Slick.SlickData>(undefined, undefined, undefined, (data: Slick.SlickData[]): Slick.SlickData[] => {
 			return explorerFilter.filter(this._filterStr, data);
 		});
-		this._table = new Table<Slick.SlickData>(parentElement, { dataProvider: this._view }, { forceFitColumns: true });
+		this._table = new Table<Slick.SlickData>(parentElement, accessibilityService, quickInputService, defaultTableStyles, { dataProvider: this._view }, { forceFitColumns: true });
 		this._table.setSelectionModel(new RowSelectionModel());
 		this._actionsColumn = new ButtonColumn<Slick.SlickData>({
 			id: 'actions',
 			iconCssClass: 'toggle-more',
-			title: ShowActionsText
+			title: ShowActionsText,
+			name: LabelColoumnActions,
+			width: ActionsColumnWidth,
+			resizable: false
 		});
 		this._table.registerPlugin(this._actionsColumn);
 		this._register(this._actionsColumn.onClick((args) => {
@@ -87,7 +102,6 @@ export class ExplorerTable extends Disposable {
 				this.handleDoubleClick(this._view.getItem(e.cell.row));
 			}
 		}));
-		this._register(attachTableStyler(this._table, themeService));
 		this._register(this._view);
 		this._register(this._view.onRowCountChange(() => {
 			this._table.updateRowCount();
@@ -96,6 +110,11 @@ export class ExplorerTable extends Disposable {
 			this._table.grid.invalidateAllRows();
 			this._table.updateRowCount();
 		}));
+		this._register(this.dashboardService.onLayout(() => {
+			this._table.grid.invalidateAllRows();
+			this._table.updateRowCount();
+		}));
+		this._register(this.componentContextService.registerTable(this._table));
 	}
 
 	private showContextMenu(item: Slick.SlickData, anchor: HTMLElement | { x: number, y: number }): void {
@@ -126,7 +145,7 @@ export class ExplorerTable extends Disposable {
 		const primary: IAction[] = [];
 		const secondary: IAction[] = [];
 		const result = { primary, secondary };
-		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, this.contextMenuService, g => g === 'inline');
+		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, 'inline');
 
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => anchor,
@@ -138,7 +157,7 @@ export class ExplorerTable extends Disposable {
 	private handleDoubleClick(item: Slick.SlickData): void {
 		if (this.context === 'server') {
 			this.progressService.showWhile(this.bootStrapService.connectionManagementService.changeDatabase(item[NameProperty]).then(result => {
-				this.router.navigate(['database-dashboard']).catch(onUnexpectedError);
+				this.router.navigate(['database-dashboard'], { relativeTo: this.activeRoute, skipLocationChange: true }).catch(onUnexpectedError);
 			}));
 		}
 	}
@@ -171,7 +190,10 @@ export class ExplorerTable extends Disposable {
 		this._view.clear();
 		this._view.clearFilter();
 		items.forEach(item => {
-			item[IconClassProperty] = this._explorerView.getIconClass(item);
+			item[NameWithIconProperty] = <IconCellValue>{
+				iconCssClass: this._explorerView.getIconClass(item),
+				title: item[NameProperty]
+			};
 		});
 		this._view.push(items);
 	}
@@ -190,9 +212,8 @@ export class ExplorerTable extends Disposable {
 			if (property.value === NameProperty) {
 				const nameColumn = new TextWithIconColumn({
 					id: property.value,
-					iconCssClassField: IconClassProperty,
 					width: columnWidth,
-					field: property.value,
+					field: NameWithIconProperty,
 					name: property.displayName
 				});
 				return nameColumn.definition;

@@ -8,7 +8,8 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IExtensionPoint, ExtensionsRegistry, ExtensionMessageCollector } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { ResourceViewerResourcesRegistry, Extensions } from 'sql/platform/resourceViewer/common/resourceViewerRegistry';
+import { ResourceViewerResourcesRegistry, Extensions, ResourceType } from 'sql/platform/resourceViewer/common/resourceViewerRegistry';
+import * as resources from 'vs/base/common/resources';
 
 interface IUserFriendlyViewDescriptor {
 	id: string;
@@ -59,8 +60,13 @@ export class ResourceViewResourcesExtensionHandler implements IWorkbenchContribu
 					if (!this.isValidResource(descriptor, collector)) {
 						return;
 					}
-
-					resourceRegistry.registerResource(descriptor);
+					const iconPath = resources.joinPath(extension.description.extensionLocation, descriptor.icon);
+					const resourceType: ResourceType = {
+						name: descriptor.name,
+						id: descriptor.id,
+						icon: iconPath
+					};
+					resourceRegistry.registerResource(resourceType);
 				}
 			}
 		});

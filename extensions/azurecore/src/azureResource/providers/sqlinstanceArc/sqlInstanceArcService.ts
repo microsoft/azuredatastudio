@@ -3,32 +3,30 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
-import { azureResource } from 'azureResource';
+import { ResourceServiceBase } from '../resourceTreeDataProviderBase';
+import { azureResource } from 'azurecore';
+import { sqlInstanceArcQuery } from '../queryStringConstants';
+import { SqlInstanceArcGraphData } from '../../interfaces';
+import { SQLINSTANCE_ARC_PROVIDER_ID } from '../../../constants';
 
-export interface SqlInstanceArcGraphData extends GraphData {
-	properties: {
-		admin: string;
-		hybridDataManager: string;
-	};
-}
+export class SqlInstanceArcResourceService extends ResourceServiceBase<SqlInstanceArcGraphData> {
 
-const instanceQuery = `where type == "${azureResource.AzureResourceType.azureArcSqlManagedInstance}"`;
-export class SqlInstanceArcResourceService extends ResourceServiceBase<SqlInstanceArcGraphData, azureResource.AzureResourceDatabaseServer> {
+	public override queryFilter: string = sqlInstanceArcQuery;
 
-	protected get query(): string {
-		return instanceQuery;
-	}
-
-	protected convertResource(resource: SqlInstanceArcGraphData): azureResource.AzureResourceDatabaseServer {
+	public override convertServerResource(resource: SqlInstanceArcGraphData): azureResource.AzureResourceDatabaseServer | undefined {
 		return {
 			id: resource.id,
 			name: resource.name,
+			provider: SQLINSTANCE_ARC_PROVIDER_ID,
 			fullName: resource.name,
 			loginName: resource.properties.admin,
 			defaultDatabaseName: 'master',
-			subscriptionId: resource.subscriptionId,
-			tenant: resource.tenantId
+			subscription: {
+				id: resource.subscriptionId,
+				name: resource.subscriptionName || ''
+			},
+			tenant: resource.tenantId,
+			resourceGroup: resource.resourceGroup
 		};
 	}
 }

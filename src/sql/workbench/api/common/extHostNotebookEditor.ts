@@ -12,15 +12,8 @@ import { readonly } from 'vs/base/common/errors';
 
 import { MainThreadNotebookDocumentsAndEditorsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/common/extHostNotebookDocumentData';
-import { CellRange, ISingleNotebookEditOperation, ICellRange } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { find } from 'vs/base/common/arrays';
+import { CellRange, INotebookEditOperation, ICellRange, NotebookEditOperationType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { HideInputTag } from 'sql/platform/notebooks/common/outputRegistry';
-
-export interface INotebookEditOperation {
-	range: azdata.nb.CellRange;
-	cell: Partial<azdata.nb.ICellContents>;
-	forceMoveMarkers: boolean;
-}
 
 export interface INotebookEditData {
 	documentVersionId: number;
@@ -65,7 +58,7 @@ export class NotebookEditorEdit {
 
 	replace(location: number | CellRange, value: Partial<azdata.nb.ICellContents>): void {
 		let range: CellRange = this.getAsRange(location);
-		this._pushEdit(range, value, false);
+		this._pushEdit(NotebookEditOperationType.ReplaceCells, range, value);
 	}
 
 	private getAsRange(location: number | CellRange): CellRange {
@@ -96,11 +89,11 @@ export class NotebookEditorEdit {
 				value.metadata = { tags: [HideInputTag] };
 			} else if (!value.metadata.tags) {
 				value.metadata.tags = [HideInputTag];
-			} else if (!find(value.metadata.tags, x => x === HideInputTag)) {
+			} else if (!value.metadata.tags.find(x => x === HideInputTag)) {
 				value.metadata.tags.push(HideInputTag);
 			}
 		}
-		this._pushEdit(new CellRange(index, index), value, true);
+		this._pushEdit(NotebookEditOperationType.InsertCell, new CellRange(index, index), value);
 	}
 
 	deleteCell(index: number): void {
@@ -115,15 +108,24 @@ export class NotebookEditorEdit {
 			throw new Error('Unrecognized index');
 		}
 
-		this._pushEdit(range, null, true);
+		this._pushEdit(NotebookEditOperationType.DeleteCell, range, null);
 	}
 
-	private _pushEdit(range: azdata.nb.CellRange, cell: Partial<azdata.nb.ICellContents>, forceMoveMarkers: boolean): void {
+	updateCell(index: number, updatedContent: Partial<azdata.nb.ICellContents>, append: boolean): void {
+		this._pushEdit(NotebookEditOperationType.UpdateCell, new CellRange(index, index + 1), updatedContent, append);
+	}
+
+	updateCellOutput(cellIndex: number, updatedContent: Partial<azdata.nb.ICellContents>, append: boolean): void {
+		this._pushEdit(NotebookEditOperationType.UpdateCellOutput, new CellRange(cellIndex, cellIndex + 1), updatedContent, append);
+	}
+
+	private _pushEdit(type: NotebookEditOperationType, range: azdata.nb.CellRange, cell: Partial<azdata.nb.ICellContents>, append?: boolean): void {
 		let validRange = this._document.validateCellRange(range);
 		this._collectedEdits.push({
+			type: type,
 			range: validRange,
 			cell: cell,
-			forceMoveMarkers: forceMoveMarkers
+			append: append
 		});
 	}
 }
@@ -189,7 +191,7 @@ export class ExtHostNotebookEditor implements azdata.nb.NotebookEditor, IDisposa
 		return this._proxy.$changeKernel(this._id, kernel);
 	}
 
-	public edit(callback: (editBuilder: azdata.nb.NotebookEditorEdit) => void, options?: { undoStopBefore: boolean; undoStopAfter: boolean; }): Thenable<boolean> {
+	public edit(callback: (editBuilder: NotebookEditorEdit) => void, options?: { undoStopBefore: boolean; undoStopAfter: boolean; }): Thenable<boolean> {
 		if (this._disposed) {
 			return Promise.reject(new Error('NotebookEditor#edit not possible on closed editors'));
 		}
@@ -229,11 +231,12 @@ export class ExtHostNotebookEditor implements azdata.nb.NotebookEditor, IDisposa
 		}
 
 		// prepare data for serialization
-		let edits: ISingleNotebookEditOperation[] = editData.edits.map((edit) => {
+		let edits: INotebookEditOperation[] = editData.edits.map((edit) => {
 			return {
+				type: edit.type,
 				range: toICellRange(edit.range),
 				cell: edit.cell,
-				forceMoveMarkers: edit.forceMoveMarkers
+				append: edit.append
 			};
 		});
 

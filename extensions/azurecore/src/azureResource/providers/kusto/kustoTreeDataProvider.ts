@@ -3,38 +3,34 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionNodeType, TreeItem, Account } from 'azdata';
-import { TreeItemCollapsibleState, ExtensionContext, workspace } from 'vscode';
+import { connection, ExtensionNodeType, TreeItem } from 'azdata';
+import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { AzureResourceItemType } from '../../constants';
+import { AzureResourceItemType, AzureResourcePrefixes, kustoProvider } from '../../constants';
 import { generateGuid } from '../../utils';
-import { IAzureResourceService } from '../../interfaces';
+import { GraphData, KustoGraphData } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
-import { azureResource } from 'azureResource';
+import { AzureAccount, azureResource } from 'azurecore';
 
-export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
+export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, KustoGraphData> {
 	private static readonly containerId = 'azure.resource.providers.KustoContainer';
 	private static readonly containerLabel = localize('azure.resource.providers.KustoContainerLabel', "Azure Data Explorer Clusters");
 
 	public constructor(
-		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
+		databaseServerService: azureResource.IAzureResourceService,
 		private _extensionContext: ExtensionContext
 	) {
 		super(databaseServerService);
 	}
 
-
-	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: Account): TreeItem {
+	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `Kusto_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
-			label: databaseServer.name,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/azureDE_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/azureDE.svg')
-			},
-			collapsibleState: workspace.getConfiguration('connection').get<boolean>('dialog.browse') ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
+			id: `${AzureResourcePrefixes.kusto}${account.key.accountId}${databaseServer.tenant}${databaseServer.id ?? databaseServer.name}`,
+			label: this.browseConnectionMode ? `${databaseServer.name} (${KustoTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
+			iconPath: this._extensionContext.asAbsolutePath('resources/dataExplorerClusterDb.svg'),
+			collapsibleState: this.browseConnectionMode ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.azureDataExplorer,
 			payload: {
 				id: generateGuid(),
@@ -43,35 +39,30 @@ export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<azureRes
 				databaseName: databaseServer.defaultDatabaseName,
 				userName: databaseServer.loginName,
 				password: '',
-				authenticationType: 'AzureMFA',
+				authenticationType: connection.AuthenticationType.AzureMFA,
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: 'KUSTO',
+				providerName: kustoProvider,
 				saveProfile: false,
 				options: {},
-				azureAccount: account.key.accountId
+				azureAccount: account.key.accountId,
+				azureTenantId: databaseServer.tenant,
+				azureResourceId: databaseServer.id,
+				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
-			childProvider: 'KUSTO',
+			childProvider: kustoProvider,
 			type: ExtensionNodeType.Server
 		};
 	}
 
-	protected createContainerNode(): azureResource.IAzureResourceNode {
+	public async getRootChild(): Promise<TreeItem> {
 		return {
-			account: undefined,
-			subscription: undefined,
-			tenantId: undefined,
-			treeItem: {
-				id: KustoTreeDataProvider.containerId,
-				label: KustoTreeDataProvider.containerLabel,
-				iconPath: {
-					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-				},
-				collapsibleState: TreeItemCollapsibleState.Collapsed,
-				contextValue: AzureResourceItemType.databaseServerContainer
-			}
+			id: KustoTreeDataProvider.containerId,
+			label: KustoTreeDataProvider.containerLabel,
+			iconPath: this._extensionContext.asAbsolutePath('resources/dataExplorerClusterDb.svg'),
+			collapsibleState: TreeItemCollapsibleState.Collapsed,
+			contextValue: AzureResourceItemType.databaseServerContainer
 		};
 	}
 }

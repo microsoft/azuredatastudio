@@ -6,18 +6,18 @@
 import { NgModuleRef, PlatformRef, Provider, enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { IInstantiationService, _util, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { IEditorInput } from 'vs/workbench/common/editor';
 import { Trace } from 'vs/platform/instantiation/common/instantiationService';
 import { IModuleFactory, IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { ILogService } from 'vs/platform/log/common/log';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 
 const selectorCounter = new Map<string, number>();
 
 export function providerIterator(service: IInstantiationService): Provider[] {
 	return Array.from(_util.serviceIds.values()).map(v => {
 		let factory = () => {
-			return (<any>service)._getOrCreateServiceInstance(v, Trace.traceCreation(v));
+			return (<any>service)._getOrCreateServiceInstance(v, Trace.traceCreation(false, v));
 		};
 		factory.prototype = factory;
 		return {
@@ -39,7 +39,7 @@ function createUniqueSelector(selector: string): string {
 
 let platform: PlatformRef;
 
-export function bootstrapAngular<T>(accessor: ServicesAccessor, moduleType: IModuleFactory<T>, container: HTMLElement, selectorString: string, params: IBootstrapParams, input?: IEditorInput, callbackSetModule?: (value: NgModuleRef<T>) => void): string {
+export function bootstrapAngular<T>(accessor: ServicesAccessor, moduleType: IModuleFactory<T>, container: HTMLElement, selectorString: string, params: IBootstrapParams, input?: EditorInput, callbackSetModule?: (value: NgModuleRef<T>) => void): string {
 	// Create the uniqueSelectorString
 	let uniqueSelectorString = createUniqueSelector(selectorString);
 	let selector = document.createElement(uniqueSelectorString);
@@ -59,7 +59,7 @@ export function bootstrapAngular<T>(accessor: ServicesAccessor, moduleType: IMod
 
 	platform.bootstrapModule(moduleType(params, uniqueSelectorString, instantiationService)).then(moduleRef => {
 		if (input) {
-			input.onDispose(() => {
+			input.onWillDispose(() => {
 				moduleRef.destroy();
 			});
 		}

@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
+
 /*
 	TODO: Due to a runtime error, I duplicated this file at these 2 locations:
 	$/extensions/integration-test/src/testConfig.ts
@@ -38,14 +40,13 @@ export enum ConnectionProvider {
 export enum EngineType {
 	Standalone,
 	Azure,
-	BigDataCluster
 }
 
 let connectionProviderMapping: { [key: string]: { name: string; displayName: string } } = {};
 let authenticationTypeMapping: { [key: string]: { name: string; displayName: string } } = {};
 connectionProviderMapping[ConnectionProvider.SQLServer] = { name: 'MSSQL', displayName: 'Microsoft SQL Server' };
 
-authenticationTypeMapping[AuthenticationType.SqlLogin] = { name: 'SqlLogin', displayName: 'SQL Login' };
+authenticationTypeMapping[AuthenticationType.SqlLogin] = { name: azdata.connection.AuthenticationType.SqlLogin, displayName: 'SQL Login' };
 authenticationTypeMapping[AuthenticationType.Windows] = { name: 'Integrated', displayName: 'Windows Authentication' };
 
 export function getConfigValue(name: string): string {
@@ -53,9 +54,6 @@ export function getConfigValue(name: string): string {
 	return configValue ? configValue.toString() : '';
 }
 
-export const EnvironmentVariable_BDC_SERVER: string = 'BDC_BACKEND_HOSTNAME';
-export const EnvironmentVariable_BDC_USERNAME: string = 'BDC_BACKEND_USERNAME';
-export const EnvironmentVariable_BDC_PASSWORD: string = 'BDC_BACKEND_PWD';
 export const EnvironmentVariable_STANDALONE_SERVER: string = 'STANDALONE_SQL';
 export const EnvironmentVariable_STANDALONE_USERNAME: string = 'STANDALONE_SQL_USERNAME';
 export const EnvironmentVariable_STANDALONE_PASSWORD: string = 'STANDALONE_SQL_PWD';
@@ -116,17 +114,6 @@ let TestingServers: TestServerProfile[] = [
 		}),
 	new TestServerProfile(
 		{
-			serverName: getConfigValue(EnvironmentVariable_BDC_SERVER),
-			userName: getConfigValue(EnvironmentVariable_BDC_USERNAME),
-			password: getConfigValue(EnvironmentVariable_BDC_PASSWORD),
-			authenticationType: AuthenticationType.SqlLogin,
-			database: 'master',
-			provider: ConnectionProvider.SQLServer,
-			version: '2019',
-			engineType: EngineType.BigDataCluster
-		}),
-	new TestServerProfile(
-		{
 			serverName: getConfigValue(EnvironmentVariable_STANDALONE_SERVER_2019),
 			userName: getConfigValue(EnvironmentVariable_STANDALONE_USERNAME_2019),
 			password: getConfigValue(EnvironmentVariable_STANDALONE_PASSWORD_2019),
@@ -155,11 +142,6 @@ export async function getAzureServer(): Promise<TestServerProfile> {
 export async function getStandaloneServer(version: '2017' | '2019' = '2017'): Promise<TestServerProfile> {
 	let servers = await getTestingServers();
 	return servers.filter(s => s.version === version && s.engineType === EngineType.Standalone)[0];
-}
-
-export async function getBdcServer(): Promise<TestServerProfile> {
-	let servers = await getTestingServers();
-	return servers.filter(s => s.version === '2019' && s.engineType === EngineType.BigDataCluster)[0];
 }
 
 export async function getTestingServers(): Promise<TestServerProfile[]> {

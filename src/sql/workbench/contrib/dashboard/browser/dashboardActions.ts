@@ -5,6 +5,7 @@
 
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { generateUri } from 'sql/platform/connection/common/utils';
@@ -19,26 +20,32 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IViewsService } from 'vs/workbench/common/views';
 import { ConnectionViewletPanel } from 'sql/workbench/contrib/dataExplorer/browser/connectionViewletPanel';
+import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 
 export const DE_MANAGE_COMMAND_ID = 'dataExplorer.manage';
 
 // Manage
 CommandsRegistry.registerCommand({
 	id: DE_MANAGE_COMMAND_ID,
-	handler: (accessor, args: TreeViewItemHandleArg) => {
+	handler: async (accessor, args: TreeViewItemHandleArg) => {
 		if (args.$treeItem) {
 			const connectionService = accessor.get(IConnectionManagementService);
 			const capabilitiesService = accessor.get(ICapabilitiesService);
-			let options = {
-				showDashboard: true,
-				saveTheConnection: false,
-				params: undefined,
-				showConnectionDialogOnError: true,
-				showFirewallRuleOnError: true
-			};
-			let profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-			let uri = generateUri(profile, 'dashboard');
-			return connectionService.connect(new ConnectionProfile(capabilitiesService, args.$treeItem.payload), uri, options);
+			const providerName = args.$treeItem?.payload?.providerName;
+			if (providerName && capabilitiesService.providers[providerName] === undefined) {
+				await connectionService.handleUnsupportedProvider(providerName);
+			} else {
+				let options = {
+					showDashboard: true,
+					saveTheConnection: false,
+					showConnectionDialogOnError: true,
+					showFirewallRuleOnError: true
+				};
+				let payload = await connectionService.fixProfile(args.$treeItem.payload);
+				let profile = new ConnectionProfile(capabilitiesService, payload);
+				let uri = generateUri(profile, 'dashboard');
+				return connectionService.connect(new ConnectionProfile(capabilitiesService, args.$treeItem.payload), uri, options);
+			}
 		}
 		return Promise.resolve(true);
 	}
@@ -64,6 +71,7 @@ export class OEManageConnectionAction extends Action {
 		id: string,
 		label: string,
 		@IConnectionManagementService protected readonly _connectionManagementService: IConnectionManagementService,
+		@IEditorService private readonly _editorService: IEditorService,
 		@ICapabilitiesService protected readonly _capabilitiesService: ICapabilitiesService,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@IObjectExplorerService private readonly _objectExplorerService: IObjectExplorerService,
@@ -72,28 +80,24 @@ export class OEManageConnectionAction extends Action {
 		super(id, label);
 	}
 
-	run(actionContext: ObjectExplorerActionsContext): Promise<any> {
+	override async run(actionContext: ObjectExplorerActionsContext): Promise<void> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		this._treeSelectionHandler.onTreeActionStateChange(true);
-		let self = this;
-		let promise = new Promise<boolean>((resolve, reject) => {
-			self.doManage(actionContext).then((success) => {
-				self.done();
-				resolve(success);
-			}, error => {
-				self.done();
-				reject(error);
-			});
-		});
-		return promise;
+		try {
+			await this.doManage(actionContext);
+		} finally {
+			this.done();
+		}
 	}
 
 	private async doManage(actionContext: ObjectExplorerActionsContext): Promise<boolean> {
 		let treeNode: TreeNode = undefined;
-		let connectionProfile: ConnectionProfile = undefined;
+		let connectionProfile: ConnectionProfile | undefined;
+
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			// Must use a real connection profile for this action due to lookup
-			connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, actionContext.connectionProfile);
+			let updatedIConnProfile = await this._connectionManagementService.fixProfile(actionContext.connectionProfile);
+			connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, updatedIConnProfile);
 			if (!actionContext.isConnectionNode) {
 				treeNode = await getTreeNode(actionContext, this._objectExplorerService);
 				if (TreeUpdateUtils.isDatabaseNode(treeNode)) {
@@ -101,15 +105,22 @@ export class OEManageConnectionAction extends Action {
 				}
 			}
 		}
+		else if (!actionContext) {
+			const globalProfile = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService);
+			connectionProfile = globalProfile ? ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, globalProfile) : undefined;
+		}
 
 		if (!connectionProfile) {
-			// This should never happen. There should be always a valid connection if the manage action is called for
-			// an OE node or a database node
+			// No valid connection (e.g. This was triggered without an active context to get the connection from) so just return early
+			return true;
+		}
+
+		if (!this._capabilitiesService.getCapabilities(connectionProfile.providerName)) {
+			this._connectionManagementService.handleUnsupportedProvider(connectionProfile.providerName);
 			return true;
 		}
 
 		let options: IConnectionCompletionOptions = {
-			params: undefined,
 			saveTheConnection: false,
 			showConnectionDialogOnError: true,
 			showDashboard: true,
@@ -130,7 +141,7 @@ export class OEManageConnectionAction extends Action {
 		this._treeSelectionHandler.onTreeActionStateChange(false);
 	}
 
-	dispose(): void {
+	override dispose(): void {
 		super.dispose();
 	}
 }

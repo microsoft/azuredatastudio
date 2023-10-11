@@ -39,7 +39,7 @@ export class AzCliTool extends ToolBase {
 		return 'https://docs.microsoft.com/cli/azure/install-azure-cli';
 	}
 
-	protected async getSearchPaths(): Promise<string[]> {
+	protected override async getSearchPaths(): Promise<string[]> {
 		switch (this.osDistribution) {
 			case OsDistribution.win32:
 				return [win32InstallationRoot];
@@ -57,7 +57,7 @@ export class AzCliTool extends ToolBase {
 
 	protected getVersionFromOutput(output: string): SemVer | undefined {
 		if (output && output.includes('azure-cli')) {
-			return new SemVer(output.split(EOL)[0].replace('azure-cli', '').replace(/ /g, '').replace('*', '')); //lgtm [js/incomplete-sanitization]
+			return new SemVer(output.split(EOL)[0].replace(/azure-cli/g, '').replace(/ /g, '').replace(/\*/g, ''));
 		} else {
 			return undefined;
 		}
@@ -69,7 +69,7 @@ export class AzCliTool extends ToolBase {
 		};
 	}
 
-	protected dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>([
+	protected override dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>([
 		[OsDistribution.debian, []],
 		[OsDistribution.win32, []],
 		[OsDistribution.darwin, [dependencyType.Brew]],

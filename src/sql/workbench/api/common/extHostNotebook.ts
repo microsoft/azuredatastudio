@@ -3,18 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
-import * as vscode from 'vscode';
+import type * as azdata from 'azdata';
+import type * as vscode from 'vscode';
 
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import { localize } from 'vs/nls';
 import { URI, UriComponents } from 'vs/base/common/uri';
 
-import { ExtHostNotebookShape, MainThreadNotebookShape, SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ExtHostNotebookShape, MainThreadNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { IExecuteManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, ISerializationManagerDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
-type Adapter = azdata.nb.NotebookProvider | azdata.nb.NotebookManager | azdata.nb.ISession | azdata.nb.IKernel | azdata.nb.IFuture;
+type Adapter = azdata.nb.NotebookSerializationProvider | azdata.nb.SerializationManager | azdata.nb.NotebookExecuteProvider | azdata.nb.ExecuteManager | azdata.nb.ISession | azdata.nb.IKernel | azdata.nb.IFuture;
 
 export class ExtHostNotebook implements ExtHostNotebookShape {
 	private static _handlePool: number = 0;
@@ -28,30 +29,35 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	}
 
 	//#region APIs called by main thread
-	async $getNotebookManager(providerHandle: number, notebookUri: UriComponents): Promise<INotebookManagerDetails> {
+	async $getSerializationManagerDetails(providerHandle: number, notebookUri: UriComponents): Promise<ISerializationManagerDetails> {
 		let uri = URI.revive(notebookUri);
-		let uriString = uri.toString();
-		let adapter = this.findManagerForUri(uriString);
-		if (!adapter) {
-			adapter = await this._withProvider(providerHandle, (provider) => {
-				return this.getOrCreateManager(provider, uri);
-			});
-		}
+		let adapter = await this._withSerializationProvider(providerHandle, (provider) => {
+			return this.getOrCreateSerializationManager(provider, uri);
+		});
 
 		return {
 			handle: adapter.handle,
-			hasContentManager: !!adapter.contentManager,
+			hasContentManager: !!adapter.contentManager
+		};
+	}
+	async $getExecuteManagerDetails(providerHandle: number, notebookUri: UriComponents): Promise<IExecuteManagerDetails> {
+		let uri = URI.revive(notebookUri);
+		let adapter = await this._withExecuteProvider(providerHandle, (provider) => {
+			return this.getOrCreateExecuteManager(provider, uri);
+		});
+
+		return {
+			handle: adapter.handle,
 			hasServerManager: !!adapter.serverManager
 		};
 	}
 	$handleNotebookClosed(notebookUri: UriComponents): void {
 		let uri = URI.revive(notebookUri);
 		let uriString = uri.toString();
-		let manager = this.findManagerForUri(uriString);
-		if (manager) {
+		this.findExecuteManagersForUri(uriString).forEach(manager => {
 			manager.provider.handleNotebookClosed(uri);
 			this._adapters.delete(manager.handle);
-		}
+		});
 	}
 
 	$doStartServer(managerHandle: number, kernelSpec: azdata.nb.IKernelSpec): Thenable<void> {
@@ -62,12 +68,12 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return this._withServerManager(managerHandle, (serverManager) => serverManager.stopServer());
 	}
 
-	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<azdata.nb.INotebookContents> {
-		return this._withContentManager(managerHandle, (contentManager) => contentManager.getNotebookContents(URI.revive(notebookUri)));
+	$deserializeNotebook(managerHandle: number, contents: string): Thenable<azdata.nb.INotebookContents> {
+		return this._withContentManager(managerHandle, (contentManager) => contentManager.deserializeNotebook(contents));
 	}
 
-	$save(managerHandle: number, notebookUri: UriComponents, notebook: azdata.nb.INotebookContents): Thenable<azdata.nb.INotebookContents> {
-		return this._withContentManager(managerHandle, (contentManager) => contentManager.save(URI.revive(notebookUri), notebook));
+	$serializeNotebook(managerHandle: number, notebook: azdata.nb.INotebookContents): Thenable<string> {
+		return this._withContentManager(managerHandle, (contentManager) => contentManager.serializeNotebook(notebook));
 	}
 
 	$refreshSpecs(managerHandle: number): Thenable<azdata.nb.IAllKernels> {
@@ -98,7 +104,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 				};
 				return details;
 			} catch (error) {
-				throw typeof (error) === 'string' ? new Error(error) : error;
+				throw typeof (error) === 'string' ? new Error(error) : Object.assign(error, { errorCode: error.response?.status }); // Add errorCode so that status info persists over RPC
 			}
 		});
 	}
@@ -123,6 +129,12 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		}
 		return this._withSessionManager(managerHandle, async (sessionManager) => {
 			return sessionManager.shutdown(sessionId);
+		});
+	}
+
+	$shutdownAll(managerHandle: number): Thenable<void> {
+		return this._withSessionManager(managerHandle, async (sessionManager) => {
+			return sessionManager.shutdownAll();
 		});
 	}
 
@@ -197,6 +209,11 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return kernel.interrupt();
 	}
 
+	$restartKernel(kernelId: number): Thenable<void> {
+		let kernel = this._getAdapter<azdata.nb.IKernel>(kernelId);
+		return kernel.restart();
+	}
+
 	$sendInputReply(futureId: number, content: azdata.nb.IInputReply): void {
 		let future = this._getAdapter<azdata.nb.IFuture>(futureId);
 		return future.sendInputReply(content);
@@ -207,22 +224,34 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		future.dispose();
 	}
 
+	$dispose(managerHandle: number): Thenable<void> {
+		return this._withSessionManager(managerHandle, async (sessionManager) => {
+			return sessionManager.dispose();
+		});
+	}
 	//#endregion
 
 	//#region APIs called by extensions
-	registerNotebookProvider(provider: azdata.nb.NotebookProvider): vscode.Disposable {
+	registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable {
 		if (!provider || !provider.providerId) {
-			throw new Error(localize('providerRequired', "A NotebookProvider with valid providerId must be passed to this method"));
+			throw new Error(localize('executeProviderRequired', "A NotebookExecuteProvider with valid providerId must be passed to this method"));
 		}
 		const handle = this._addNewAdapter(provider);
-		this._proxy.$registerNotebookProvider(provider.providerId, handle);
+		this._proxy.$registerExecuteProvider(provider.providerId, handle);
+		return this._createDisposable(handle);
+	}
+
+	registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): vscode.Disposable {
+		if (!provider || !provider.providerId) {
+			throw new Error(localize('serializationProviderRequired', "A NotebookSerializationProvider with valid providerId must be passed to this method"));
+		}
+		const handle = this._addNewAdapter(provider);
+		this._proxy.$registerSerializationProvider(provider.providerId, handle);
 		return this._createDisposable(handle);
 	}
 	//#endregion
 
-
 	//#region private methods
-
 	private getAdapters<A>(ctor: { new(...args: any[]): A }): A[] {
 		let matchingAdapters = [];
 		this._adapters.forEach(a => {
@@ -233,20 +262,29 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return matchingAdapters;
 	}
 
-	private findManagerForUri(uriString: string): NotebookManagerAdapter {
-		for (let manager of this.getAdapters(NotebookManagerAdapter)) {
-			if (manager.uriString === uriString) {
-				return manager;
-			}
-		}
-		return undefined;
+	private findExecuteManagersForUri(uriString: string): ExecuteManagerAdapter[] {
+		return this.getAdapters(ExecuteManagerAdapter).filter(adapter => adapter.uriString === uriString);
 	}
 
-	private async getOrCreateManager(provider: azdata.nb.NotebookProvider, notebookUri: URI): Promise<NotebookManagerAdapter> {
-		let manager = await provider.getNotebookManager(notebookUri);
+	private async getOrCreateSerializationManager(provider: azdata.nb.NotebookSerializationProvider, notebookUri: URI): Promise<SerializationManagerAdapter> {
 		let uriString = notebookUri.toString();
-		let adapter = new NotebookManagerAdapter(provider, manager, uriString);
-		adapter.handle = this._addNewAdapter(adapter);
+		let adapter = this.getAdapters(SerializationManagerAdapter).find(a => a.uriString === uriString && a.provider.providerId === provider.providerId);
+		if (!adapter) {
+			let manager = await provider.getSerializationManager(notebookUri);
+			adapter = new SerializationManagerAdapter(provider, manager, uriString);
+			adapter.handle = this._addNewAdapter(adapter);
+		}
+		return adapter;
+	}
+
+	private async getOrCreateExecuteManager(provider: azdata.nb.NotebookExecuteProvider, notebookUri: URI): Promise<ExecuteManagerAdapter> {
+		let uriString = notebookUri.toString();
+		let adapter = this.getAdapters(ExecuteManagerAdapter).find(a => a.uriString === uriString && a.provider.providerId === provider.providerId);
+		if (!adapter) {
+			let manager = await provider.getExecuteManager(notebookUri);
+			adapter = new ExecuteManagerAdapter(provider, manager, uriString);
+			adapter.handle = this._addNewAdapter(adapter);
+		}
 		return adapter;
 	}
 
@@ -260,23 +298,39 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return ExtHostNotebook._handlePool++;
 	}
 
-	private _withProvider<R>(handle: number, callback: (provider: azdata.nb.NotebookProvider) => R | PromiseLike<R>): Promise<R> {
-		let provider = this._adapters.get(handle) as azdata.nb.NotebookProvider;
+	private _withSerializationProvider(handle: number, callback: (provider: azdata.nb.NotebookSerializationProvider) => SerializationManagerAdapter | PromiseLike<SerializationManagerAdapter>): Promise<SerializationManagerAdapter> {
+		let provider = this._adapters.get(handle) as azdata.nb.NotebookSerializationProvider;
 		if (provider === undefined) {
-			return Promise.reject(new Error(localize('errNoProvider', "no notebook provider found")));
+			return Promise.reject(new Error(localize('errNoSerializationProvider', "No notebook serialization provider found")));
 		}
 		return Promise.resolve(callback(provider));
 	}
 
-	private _withNotebookManager<R>(handle: number, callback: (manager: NotebookManagerAdapter) => R | PromiseLike<R>): Promise<R> {
-		let manager = this._adapters.get(handle) as NotebookManagerAdapter;
-		if (manager === undefined) {
-			return Promise.reject(new Error(localize('errNoManager', "No Manager found")));
+	private _withExecuteProvider(handle: number, callback: (provider: azdata.nb.NotebookExecuteProvider) => ExecuteManagerAdapter | PromiseLike<ExecuteManagerAdapter>): Promise<ExecuteManagerAdapter> {
+		let provider = this._adapters.get(handle) as azdata.nb.NotebookExecuteProvider;
+		if (provider === undefined) {
+			return Promise.reject(new Error(localize('errNoExecuteProvider', "No notebook execute provider found")));
 		}
-		return this.callbackWithErrorWrap<R>(callback, manager);
+		return Promise.resolve(callback(provider));
 	}
 
-	private async callbackWithErrorWrap<R>(callback: (manager: NotebookManagerAdapter) => R | PromiseLike<R>, manager: NotebookManagerAdapter): Promise<R> {
+	private _withSerializationManager<R>(handle: number, callback: (manager: SerializationManagerAdapter) => R | PromiseLike<R>): Promise<R> {
+		let manager = this._adapters.get(handle) as SerializationManagerAdapter;
+		if (manager === undefined) {
+			return Promise.reject(new Error(localize('errNoSerializationManager', "No serialization manager found")));
+		}
+		return this.callbackWithErrorWrap<SerializationManagerAdapter, R>(callback, manager);
+	}
+
+	private _withExecuteManager<R>(handle: number, callback: (manager: ExecuteManagerAdapter) => R | PromiseLike<R>): Promise<R> {
+		let manager = this._adapters.get(handle) as ExecuteManagerAdapter;
+		if (manager === undefined) {
+			return Promise.reject(new Error(localize('errNoExecuteManager', "No execute manager found")));
+		}
+		return this.callbackWithErrorWrap<ExecuteManagerAdapter, R>(callback, manager);
+	}
+
+	private async callbackWithErrorWrap<A, R>(callback: (manager: A) => R | PromiseLike<R>, manager: A): Promise<R> {
 		try {
 			let value = await callback(manager);
 			return value;
@@ -286,7 +340,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	}
 
 	private _withServerManager<R>(handle: number, callback: (manager: azdata.nb.ServerManager) => PromiseLike<R>): Promise<R> {
-		return this._withNotebookManager(handle, (notebookManager) => {
+		return this._withExecuteManager(handle, (notebookManager) => {
 			let serverManager = notebookManager.serverManager;
 			if (!serverManager) {
 				return Promise.reject(new Error(localize('noServerManager', "Notebook Manager for notebook {0} does not have a server manager. Cannot perform operations on it", notebookManager.uriString)));
@@ -296,7 +350,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	}
 
 	private _withContentManager<R>(handle: number, callback: (manager: azdata.nb.ContentManager) => PromiseLike<R>): Promise<R> {
-		return this._withNotebookManager(handle, (notebookManager) => {
+		return this._withSerializationManager(handle, (notebookManager) => {
 			let contentManager = notebookManager.contentManager;
 			if (!contentManager) {
 				return Promise.reject(new Error(localize('noContentManager', "Notebook Manager for notebook {0} does not have a content manager. Cannot perform operations on it", notebookManager.uriString)));
@@ -306,7 +360,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	}
 
 	private _withSessionManager<R>(handle: number, callback: (manager: azdata.nb.SessionManager) => PromiseLike<R>): Promise<R> {
-		return this._withNotebookManager(handle, (notebookManager) => {
+		return this._withExecuteManager(handle, (notebookManager) => {
 			let sessionManager = notebookManager.sessionManager;
 			if (!sessionManager) {
 				return Promise.reject(new Error(localize('noSessionManager', "Notebook Manager for notebook {0} does not have a session manager. Cannot perform operations on it", notebookManager.uriString)));
@@ -332,18 +386,27 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	//#endregion
 }
 
-
-class NotebookManagerAdapter implements azdata.nb.NotebookManager {
+class SerializationManagerAdapter implements azdata.nb.SerializationManager {
 	public handle: number;
 	constructor(
-		public readonly provider: azdata.nb.NotebookProvider,
-		private manager: azdata.nb.NotebookManager,
+		public readonly provider: azdata.nb.NotebookSerializationProvider,
+		private manager: azdata.nb.SerializationManager,
 		public readonly uriString: string
 	) {
 	}
 
 	public get contentManager(): azdata.nb.ContentManager {
 		return this.manager.contentManager;
+	}
+}
+
+class ExecuteManagerAdapter implements azdata.nb.ExecuteManager {
+	public handle: number;
+	constructor(
+		public readonly provider: azdata.nb.NotebookExecuteProvider,
+		private manager: azdata.nb.ExecuteManager,
+		public readonly uriString: string
+	) {
 	}
 
 	public get sessionManager(): azdata.nb.SessionManager {

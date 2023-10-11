@@ -3,11 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SqlMainContext, MainThreadModalDialogShape, ExtHostModalDialogsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { MainThreadModalDialogShape, ExtHostModalDialogsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { Emitter } from 'vs/base/common/event';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 class ExtHostDialog implements azdata.ModalDialog {
 	private _title: string;

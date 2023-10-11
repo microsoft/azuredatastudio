@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { Modal } from 'sql/workbench/browser/modal/modal';
+import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -14,9 +13,9 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { localize } from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IWebviewService, WebviewElement } from 'vs/workbench/contrib/webview/browser/webview';
+import { IWebviewService, IWebviewElement } from 'vs/workbench/contrib/webview/browser/webview';
 import { generateUuid } from 'vs/base/common/uuid';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
@@ -27,14 +26,12 @@ export class WebViewDialog extends Modal {
 	private _okButton?: Button;
 	private _okLabel: string;
 	private _closeLabel: string;
-	private _webview?: WebviewElement;
+	private _webview?: IWebviewElement;
 	private _html?: string;
 	private _headerTitle?: string;
 
 	private _onOk = new Emitter<void>();
 	public onOk: Event<void> = this._onOk.event;
-	private _onClosed = new Emitter<void>();
-	public onClosed: Event<void> = this._onClosed.event;
 	private _onMessage = new Emitter<any>();
 
 	private readonly id = generateUuid();
@@ -49,7 +46,7 @@ export class WebViewDialog extends Modal {
 		@IWebviewService private readonly webviewService: IWebviewService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super('', TelemetryKeys.WebView, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
+		super('', TelemetryKeys.ModalDialogName.WebView, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
 		this._okLabel = localize('webViewDialog.ok', "OK");
 		this._closeLabel = localize('webViewDialog.close', "Close");
 	}
@@ -89,11 +86,15 @@ export class WebViewDialog extends Modal {
 	protected renderBody(container: HTMLElement) {
 		this._body = DOM.append(container, DOM.$('div.webview-dialog'));
 
-		this._webview = this.webviewService.createWebviewElement(this.id,
-			{},
-			{
-				allowScripts: true
-			}, undefined);
+		this._webview = this.webviewService.createWebviewElement({
+			providedViewType: this.id,
+			title: this.id,
+			contentOptions: {
+				allowScripts: true,
+			},
+			options: {},
+			extension: undefined
+		});
 
 		this._webview.mountTo(this._body);
 
@@ -106,12 +107,12 @@ export class WebViewDialog extends Modal {
 		return this._onMessage.event;
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		this._register(attachModalDialogStyler(this, this._themeService));
 
 		this._okButton = this.addFooterButton(this._okLabel, () => this.ok());
-		this._register(attachButtonStyler(this._okButton, this._themeService));
+		this._register(this._okButton);
 	}
 
 	protected layout(height?: number): void {
@@ -120,28 +121,27 @@ export class WebViewDialog extends Modal {
 
 	private updateDialogBody(): void {
 		if (this.html) {
-			this._webview!.html = this.html;
+			this._webview!.setHtml(this.html);
 		}
 	}
 
 	/* espace key */
-	protected onClose() {
+	protected override onClose() {
 		this.ok();
 	}
 
 	/* enter key */
-	protected onAccept() {
+	protected override onAccept() {
 		this.ok();
 	}
 
 	public ok(): void {
 		this._onOk.fire();
-		this.close();
+		this.close('ok');
 	}
 
-	public close() {
-		this.hide();
-		this._onClosed.fire();
+	public close(hideReason: HideReason = 'close') {
+		this.hide(hideReason);
 	}
 
 	public sendMessage(message: any): void {

@@ -10,7 +10,7 @@
 	"azure.description": "Durchsuchen und Arbeiten mit Azure-Ressourcen",
 	"azure.title": "Azure",
 	"azure.resource.config.title": "Konfiguration von Azure-Ressourcen",
-	"azure.resource.config.filter.description": "Der Ressourcenfilter, jedes Element in Form einer Konto-ID, eine Abonnement-ID und ein Name (durch Schrägstriche getrennt)",
+	"azure.resource.config.filter.description": "Der Ressourcenfilter, jedes Element besteht aus einer Konto-ID, einer Abonnement-ID und einem Namen (durch Schrägstriche getrennt)",
 	"azure.resource.explorer.title": "Azure",
 	"azure.resource.refreshall.title": "Azure: Alle Konten aktualisieren",
 	"azure.resource.refresh.title": "Aktualisieren",
@@ -19,8 +19,8 @@
 	"azure.resource.connectsqlserver.title": "Verbinden",
 	"azure.resource.connectsqldb.title": "Zu Servern hinzufügen",
 	"accounts.clearTokenCache": "Tokencache für Azure-Konto löschen",
-	"config.enablePublicCloudDescription": "Legt fest, ob die Integration der öffentlichen Azure-Cloud aktiviert werden soll",
-	"config.enableUsGovCloudDescription": "Legt fest, ob die Integration der Azure-Cloud für die US-Regierung (Fairfax) aktiviert werden soll",
-	"config.enableChinaCloudDescription": "Legt fest, ob die Integration von Azure China aktiviert werden soll",
-	"config.enableGermanyCloudDescription": "Legt fest, ob die Integration von Azure Deutschland aktiviert werden soll"
+	"config.enablePublicCloudDescription": "Hiermit wird festgelegt, ob die Integration der öffentlichen Azure-Cloud aktiviert werden soll.",
+	"config.enableUsGovCloudDescription": "Hiermit wird festgelegt, ob die Integration der Azure-Cloud für US-Behörden (Fairfax) aktiviert werden soll.",
+	"config.enableChinaCloudDescription": "Hiermit wird festgelegt, ob die Azure China-Integration aktiviert werden soll.",
+	"config.enableGermanyCloudDescription": "Hiermit wird festgelegt, ob die Azure Deutschland-Integration aktiviert werden soll."
 }

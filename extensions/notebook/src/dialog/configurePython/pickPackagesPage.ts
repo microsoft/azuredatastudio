@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { BasePage } from './basePage';
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
-import { python3DisplayName, pysparkDisplayName, sparkScalaDisplayName, sparkRDisplayName, powershellDisplayName, allKernelsName } from '../../common/constants';
+import { python3DisplayName, powershellDisplayName, allKernelsName } from '../../common/constants';
 import { getDropdownValue } from '../../common/utils';
 
 const localize = nls.loadMessageBundle();
@@ -35,12 +35,12 @@ export class PickPackagesPage extends BasePage {
 	public async initialize(): Promise<boolean> {
 		if (this.model.kernelName) {
 			// Wizard was started for a specific kernel, so don't populate any other options
-			this.kernelLabel = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			this.kernelLabel = this.view.modelBuilder.text().withProps({
 				value: this.model.kernelName
 			}).component();
 		} else {
-			let dropdownValues = [python3DisplayName, pysparkDisplayName, sparkScalaDisplayName, sparkRDisplayName, powershellDisplayName, allKernelsName];
-			this.kernelDropdown = this.view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+			let dropdownValues = [python3DisplayName, powershellDisplayName, allKernelsName];
+			this.kernelDropdown = this.view.modelBuilder.dropDown().withProps({
 				value: dropdownValues[0],
 				values: dropdownValues,
 				width: '300px'
@@ -53,7 +53,7 @@ export class PickPackagesPage extends BasePage {
 		let nameColumn = localize('configurePython.pkgNameColumn', "Name");
 		let existingVersionColumn = localize('configurePython.existingVersionColumn', "Existing Version");
 		let requiredVersionColumn = localize('configurePython.requiredVersionColumn', "Required Version");
-		this.requiredPackagesTable = this.view.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+		this.requiredPackagesTable = this.view.modelBuilder.declarativeTable().withProps({
 			columns: [{
 				displayName: nameColumn,
 				ariaLabel: nameColumn,
@@ -110,7 +110,7 @@ export class PickPackagesPage extends BasePage {
 
 	public async onPageEnter(): Promise<void> {
 		this.packageVersionMap.clear();
-		let pythonExe = JupyterServerInstallation.getPythonExePath(this.model.pythonLocation, this.model.useExistingPython);
+		let pythonExe = JupyterServerInstallation.getPythonExePath(this.model.pythonLocation);
 		this.packageVersionRetrieval = this.model.installation.getInstalledPipPackages(pythonExe)
 			.then(installedPackages => {
 				if (installedPackages) {
@@ -158,9 +158,9 @@ export class PickPackagesPage extends BasePage {
 				this.requiredPackagesTable.data = requiredPkgVersions.map(pkg => [pkg.name, pkg.existingVersion ?? '-', pkg.requiredVersion]);
 				this.model.packagesToInstall = requiredPackages;
 			} else {
-				this.instance.showErrorMessage(localize('msgUnsupportedKernel', "Could not retrieve packages for kernel {0}", kernelName));
+				this.instance.showInfoMessage(localize('msgNoRequirementsForKernel', "No packages are required by default for the kernel '{0}'", kernelName));
 				this.requiredPackagesTable.data = [['-', '-', '-']];
-				this.model.packagesToInstall = undefined;
+				this.model.packagesToInstall = [];
 			}
 		} finally {
 			this.instance.wizard.doneButton.enabled = true;

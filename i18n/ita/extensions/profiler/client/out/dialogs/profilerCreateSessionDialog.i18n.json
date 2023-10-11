@@ -9,10 +9,10 @@
 	"createSessionDialog.cancel": "Annulla",
 	"createSessionDialog.create": "Avvia",
 	"createSessionDialog.title": "Avvia nuova sessione del profiler",
-	"createSessionDialog.templatesInvalid": "Lista di modelli non valida, impossibile aprire la finestra di dialogo",
-	"createSessionDialog.dialogOwnerInvalid": "Proprietario della finestra di dialogo non valido. Non è possibile aprire la finestra di dialogo",
-	"createSessionDialog.invalidProviderType": "Tipo di provider non valido. Non è possibile aprire la finestra di dialogo",
-	"createSessionDialog.selectTemplates": "Selezionare il modello di sessione:",
-	"createSessionDialog.enterSessionName": "Immettere il nome della sessione:",
+	"createSessionDialog.templatesInvalid": "L'elenco di modelli non è valido. Non è possibile aprire la finestra di dialogo",
+	"createSessionDialog.dialogOwnerInvalid": "Il proprietario della finestra di dialogo non è valido. Non è possibile aprire la finestra di dialogo",
+	"createSessionDialog.invalidProviderType": "Il tipo di provider non è valido. Non è possibile aprire la finestra di dialogo",
+	"createSessionDialog.selectTemplates": "Seleziona il modello di sessione:",
+	"createSessionDialog.enterSessionName": "Immetti il nome della sessione:",
 	"createSessionDialog.createSessionFailed": "Non è stato possibile creare una sessione"
 }

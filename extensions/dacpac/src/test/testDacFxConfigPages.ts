@@ -22,7 +22,7 @@ export class TestDeployConfigPage extends DeployConfigPage {
 	}
 
 	SetDatabaseDropDown(): void {
-		this.databaseDropdown.value = { name: 'DummyDatabase', displayName: 'DummyDatabase' };
+		this.databaseDropdown.value = 'DummyDatabase';
 	}
 
 	SetFileName(): void {

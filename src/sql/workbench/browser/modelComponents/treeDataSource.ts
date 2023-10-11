@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
+import { ITree, IDataSource } from 'sql/base/parts/tree/browser/tree';
 import { IModelViewTreeViewDataProvider, ITreeComponentItem } from 'sql/workbench/common/views';
 import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 

@@ -10,13 +10,13 @@ import { mixin, deepClone } from 'vs/base/common/objects';
 import { ChangeDetectorRef, Inject, forwardRef } from '@angular/core';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { ChartType } from 'sql/workbench/contrib/charts/browser/interfaces';
 
 const defaultScatterConfig = mixin(deepClone(defaultChartConfig), { dataType: 'point', dataDirection: 'horizontal' }) as ILineConfig;
 
 export default class ScatterChart extends LineChart {
-	protected readonly chartType: ChartType = ChartType.Scatter;
-	protected _defaultConfig = defaultScatterConfig;
+	protected override readonly chartType: ChartType = ChartType.Scatter;
+	protected override _defaultConfig = defaultScatterConfig;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _changeRef: ChangeDetectorRef,

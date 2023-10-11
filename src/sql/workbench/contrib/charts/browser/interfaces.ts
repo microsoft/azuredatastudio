@@ -6,9 +6,9 @@
 import { Dimension } from 'vs/base/browser/dom';
 import { mixin } from 'sql/base/common/objects';
 import * as types from 'vs/base/common/types';
-import { IInsightOptions, InsightType, ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
 import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 import { BrandedService } from 'vs/platform/instantiation/common/instantiation';
+import * as chartjs from 'chart.js';
 
 export interface IPointDataSet {
 	data: Array<{ x: number | string, y: number }>;
@@ -20,7 +20,7 @@ export interface IPointDataSet {
 export function customMixin(destination: any, source: any, overwrite?: boolean): any {
 	if (types.isObject(source)) {
 		mixin(destination, source, overwrite, customMixin);
-	} else if (types.isArray(source)) {
+	} else if (Array.isArray(source)) {
 		for (let i = 0; i < source.length; i++) {
 			if (destination[i]) {
 				mixin(destination[i], source[i], overwrite, customMixin);
@@ -45,4 +45,78 @@ export interface IInsight {
 export interface IInsightCtor {
 	new <Services extends BrandedService[]>(container: HTMLElement, options: IInsightOptions, ...services: Services): IInsight;
 	readonly types: Array<InsightType | ChartType>;
+}
+
+export interface IChartsConfiguration {
+	readonly maxRowCount: number;
+}
+
+export interface IInsightOptions {
+	type: InsightType | ChartType;
+	dataDirection?: DataDirection;
+	dataType?: DataType;
+	labelFirstColumn?: boolean;
+	columnsAsLabels?: boolean;
+	legendPosition?: LegendPosition;
+	yAxisLabel?: string;
+	yAxisMin?: number;
+	yAxisMax?: number;
+	xAxisLabel?: string;
+	xAxisMin?: number;
+	xAxisMax?: number;
+	encoding?: string;
+	imageFormat?: string;
+	indexAxis?: string;
+}
+
+export enum InsightType {
+	Image = 'image',
+	Table = 'table',
+	Count = 'count'
+}
+
+export enum ChartType {
+	Bar = 'bar',
+	Doughnut = 'doughnut',
+	HorizontalBar = 'horizontalBar',
+	Line = 'line',
+	Pie = 'pie',
+	TimeSeries = 'timeSeries',
+	Scatter = 'scatter'
+}
+
+export const ChartTypeToChartJsType: { [key in ChartType]: chartjs.ChartType } = {
+	'bar': 'bar',
+	'doughnut': 'doughnut',
+	'horizontalBar': 'bar',
+	'line': 'line',
+	'pie': 'pie',
+	'timeSeries': 'line',
+	'scatter': 'scatter'
+}
+
+export enum LegendPosition {
+	Top = 'top',
+	Bottom = 'bottom',
+	Left = 'left',
+	Right = 'right',
+	None = 'none'
+}
+
+export const LegendPositionToChartJsPosition: { [key in LegendPosition]: chartjs.LayoutPosition } = {
+	'top': 'top',
+	'bottom': 'bottom',
+	'left': 'left',
+	'right': 'right',
+	'none': 'left' // chart.js doesn't have a 'none' option, so we use 'left' and then hide the legend
+}
+
+export enum DataType {
+	Number = 'number',
+	Point = 'point'
+}
+
+export enum DataDirection {
+	Vertical = 'vertical',
+	Horizontal = 'horizontal'
 }

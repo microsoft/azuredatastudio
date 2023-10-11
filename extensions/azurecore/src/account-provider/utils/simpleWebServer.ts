@@ -5,27 +5,34 @@
 import * as http from 'http';
 import * as url from 'url';
 import { AddressInfo } from 'net';
+import { Logger } from '../../utils/Logger';
 
 export type WebHandler = (req: http.IncomingMessage, reqUrl: url.UrlWithParsedQuery, res: http.ServerResponse) => void;
 
 export class AlreadyRunningError extends Error { }
 
 export class SimpleWebServer {
-	private hasStarted: boolean;
+	private hasStarted: boolean = false;
 
 	private readonly pathMappings = new Map<string, WebHandler>();
 	private readonly server: http.Server;
-	private lastUsed: number;
+	private lastUsed: number = new Date().getTime();
 	private shutoffInterval: NodeJS.Timer;
 
 	constructor(private readonly autoShutoffTimer = 5 * 60 * 1000) { // Default to five minutes.
 		this.bumpLastUsed();
-		this.autoShutoff();
+		this.shutoffInterval = setInterval(() => {
+			const time = new Date().getTime();
+
+			if (time - this.lastUsed > this.autoShutoffTimer) {
+				Logger.verbose('Shutting off webserver...');
+				this.shutdown().catch(console.error);
+			}
+		}, 1000);
 		this.server = http.createServer((req, res) => {
 			this.bumpLastUsed();
 			const reqUrl = url.parse(req.url!, /* parseQueryString */ true);
-
-			const handler = this.pathMappings.get(reqUrl.pathname);
+			const handler = reqUrl.pathname ? this.pathMappings.get(reqUrl.pathname) : undefined;
 			if (handler) {
 				return handler(req, reqUrl, res);
 			}
@@ -94,16 +101,5 @@ export class SimpleWebServer {
 
 	public on(pathMapping: string, handler: WebHandler) {
 		this.pathMappings.set(pathMapping, handler);
-	}
-
-	private autoShutoff(): void {
-		this.shutoffInterval = setInterval(() => {
-			const time = new Date().getTime();
-
-			if (time - this.lastUsed > this.autoShutoffTimer) {
-				console.log('Shutting off webserver...');
-				this.shutdown().catch(console.error);
-			}
-		}, 1000);
 	}
 }

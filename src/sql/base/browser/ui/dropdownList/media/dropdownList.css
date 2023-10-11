@@ -3,14 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.monaco-dropdown {
-	width: 100%;
-	/* TODO: Determine a more permanent fix; vs/dropdown is overwriting this selector in packaged builds */
-	display: flex !important;
-	align-items: flex-start;
-	cursor: pointer;
-}
-
 .monaco-dropdown > .dropdown-label {
 	width: 100%;
 }
@@ -26,6 +18,10 @@
 	content: url("dropdownarrow.svg");
 	align-self: center;
 	padding-right: 10px;
+}
+
+.hc-light .monaco-dropdown > .dropdown-icon{
+	content: url("dropdownarrow.svg");
 }
 
 .vs-dark .monaco-dropdown > .dropdown-icon,

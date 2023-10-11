@@ -11,7 +11,7 @@ import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyt
 import * as utils from '../../common/utils';
 import { ManagePackagesDialog } from './managePackagesDialog';
 import CodeAdapter from '../../prompts/adapter';
-import { IQuestion, confirm } from '../../prompts/question';
+import { IQuestion, QuestionTypes } from '../../prompts/question';
 import { IconPathHelper } from '../../common/iconHelper';
 
 const localize = nls.loadMessageBundle();
@@ -27,6 +27,7 @@ export class InstalledPackagesTab {
 	private installedPackagesTable: azdata.TableComponent;
 	private installedPackagesLoader: azdata.LoadingComponent;
 	private uninstallPackageButton: azdata.ButtonComponent;
+	private uninstallProgressSpinner: azdata.LoadingComponent;
 	private view: azdata.ModelView | undefined;
 	private formBuilder: azdata.FormBuilder;
 	private disposables: vscode.Disposable[] = [];
@@ -52,9 +53,9 @@ export class InstalledPackagesTab {
 				};
 			});
 			let defaultPackageType = this.dialog.model.getDefaultPackageType();
-			this.packageTypeDropdown = view.modelBuilder.dropDown().withProperties({
+			this.packageTypeDropdown = view.modelBuilder.dropDown().withProps({
 				values: dropdownValues,
-				value: defaultPackageType
+				value: defaultPackageType.providerId
 			}).component();
 			this.dialog.changeProvider(defaultPackageType.providerId);
 			this.packageTypeDropdown.onValueChanged(async () => {
@@ -65,17 +66,16 @@ export class InstalledPackagesTab {
 				}
 				catch (err) {
 					this.dialog.showErrorMessage(utils.getErrorMessage(err));
-
 				}
 
 			});
 
-			this.installedPackageCount = view.modelBuilder.text().withProperties({
+			this.installedPackageCount = view.modelBuilder.text().withProps({
 				value: ''
 			}).component();
 
 			this.installedPackagesTable = view.modelBuilder.table()
-				.withProperties({
+				.withProps({
 					columns: [
 						{
 							value: localize('managePackages.pkgNameColumn', "Name"),
@@ -85,16 +85,15 @@ export class InstalledPackagesTab {
 							value: localize('managePackages.newPkgVersionColumn', "Version"),
 							type: azdata.ColumnType.text
 						},
+						<azdata.ButtonColumn>
 						{
 							value: localize('managePackages.deleteColumn', "Delete"),
 							type: azdata.ColumnType.button,
-							options: {
-								icon: IconPathHelper.delete
-							}
+							icon: IconPathHelper.delete
 						}
 					],
 					data: [[]],
-					height: '600px',
+					height: '430px',
 					width: '400px'
 				}).component();
 			this.disposables.push(this.installedPackagesTable.onCellAction(async (rowState) => {
@@ -105,11 +104,20 @@ export class InstalledPackagesTab {
 			}));
 
 			this.uninstallPackageButton = view.modelBuilder.button()
-				.withProperties({
+				.withProps({
 					label: localize('managePackages.uninstallButtonText', "Uninstall selected packages"),
-					width: '200px'
+					width: '200px',
+					secondary: true
 				}).component();
 			this.uninstallPackageButton.onDidClick(() => this.doUninstallPackage(this.installedPackagesTable.selectedRows));
+
+			this.uninstallProgressSpinner = view.modelBuilder.loadingComponent()
+				.withProps({
+					loadingText: localize('managePackages.uninstallProgressText', "Uninstalling package"),
+					showText: true,
+					loadingCompletedText: localize('managePackages.uninstallCompleteText', "Package uninstalled"),
+					loading: false
+				}).component();
 
 			this.formBuilder = view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -124,19 +132,22 @@ export class InstalledPackagesTab {
 				}, {
 					component: this.uninstallPackageButton,
 					title: ''
+				}, {
+					component: this.uninstallProgressSpinner,
+					title: ''
 				}]);
 			await this.resetLocations();
 
 			this.installedPackagesLoader = view.modelBuilder.loadingComponent()
 				.withItem(this.formBuilder.component())
-				.withProperties({
+				.withProps({
 					loading: true
 				}).component();
 
 			await view.initializeModel(this.installedPackagesLoader);
 
 			await this.loadInstalledPackagesInfo();
-			this.packageTypeDropdown.focus();
+			await this.packageTypeDropdown.focus();
 		});
 	}
 
@@ -168,7 +179,7 @@ export class InstalledPackagesTab {
 		let location: string;
 		let component: azdata.Component;
 		if (locations && locations.length === 1) {
-			component = view.modelBuilder.text().withProperties({
+			component = view.modelBuilder.text().withProps({
 				value: locations[0].displayName
 			}).component();
 			location = locations[0].name;
@@ -182,7 +193,7 @@ export class InstalledPackagesTab {
 			const currentLocation = await dialog.model.getCurrentLocation();
 			const selectedLocation = dropdownValues.find(x => x.name === currentLocation);
 			location = currentLocation || locations[0].name;
-			let locationDropDown = view.modelBuilder.dropDown().withProperties({
+			let locationDropDown = view.modelBuilder.dropDown().withProps({
 				values: dropdownValues,
 				value: selectedLocation || dropdownValues[0]
 			}).component();
@@ -198,7 +209,7 @@ export class InstalledPackagesTab {
 			});
 			component = locationDropDown;
 		} else {
-			component = view.modelBuilder.text().withProperties({
+			component = view.modelBuilder.text().withProps({
 			}).component();
 		}
 		if (location) {
@@ -228,7 +239,7 @@ export class InstalledPackagesTab {
 		let packageCount: number;
 		if (pythonPackages) {
 			packageCount = pythonPackages.length;
-			packageData = pythonPackages.map(pkg => [pkg.name, pkg.version]);
+			packageData = pythonPackages.map(pkg => [pkg.name, pkg.version, undefined]);
 		} else {
 			packageCount = 0;
 		}
@@ -253,9 +264,9 @@ export class InstalledPackagesTab {
 			return;
 		}
 
-		this.uninstallPackageButton.updateProperties({ enabled: false });
+		this.uninstallPackageButton.enabled = false;
 		let doUninstall = await this.prompter.promptSingle<boolean>(<IQuestion>{
-			type: confirm,
+			type: QuestionTypes.confirm,
 			message: localize('managePackages.confirmUninstall', "Are you sure you want to uninstall the specified packages?"),
 			default: false
 		});
@@ -282,6 +293,7 @@ export class InstalledPackagesTab {
 					description: taskName,
 					isCancelable: false,
 					operation: op => {
+						this.uninstallProgressSpinner.loading = true;
 						let uninstallPromise: Promise<void> = this.dialog.model.uninstallPackages(packages);
 						uninstallPromise
 							.then(async () => {
@@ -302,14 +314,18 @@ export class InstalledPackagesTab {
 
 								op.updateStatus(azdata.TaskStatus.Failed, uninstallFailedMsg);
 								this.jupyterInstallation.outputChannel.appendLine(uninstallFailedMsg);
+							})
+							.finally(() => {
+								this.uninstallPackageButton.enabled = true;
+								this.uninstallProgressSpinner.loading = false;
 							});
 					}
 				});
 			} catch (err) {
 				this.dialog.showErrorMessage(utils.getErrorMessage(err));
 			}
+		} else {
+			this.uninstallPackageButton.enabled = true;
 		}
-
-		this.uninstallPackageButton.updateProperties({ enabled: true });
 	}
 }

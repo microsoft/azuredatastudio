@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
-import { SqlMainContext, MainThreadCredentialManagementShape, ExtHostCredentialManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { MainThreadCredentialManagementShape, ExtHostCredentialManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 class CredentialAdapter {
 	public provider: azdata.CredentialProvider;
@@ -78,15 +79,15 @@ export class ExtHostCredentialManagement extends ExtHostCredentialManagementShap
 		);
 	}
 
-	public $saveCredential(credentialId: string, password: string): Thenable<boolean> {
+	public override $saveCredential(credentialId: string, password: string): Thenable<boolean> {
 		return this._withAdapter(0, CredentialAdapter, adapter => adapter.saveCredential(credentialId, password));
 	}
 
-	public $readCredential(credentialId: string): Thenable<azdata.Credential> {
+	public override $readCredential(credentialId: string): Thenable<azdata.Credential> {
 		return this._withAdapter(0, CredentialAdapter, adapter => adapter.readCredential(credentialId));
 	}
 
-	public $deleteCredential(credentialId: string): Thenable<boolean> {
+	public override $deleteCredential(credentialId: string): Thenable<boolean> {
 		return this._withAdapter(0, CredentialAdapter, adapter => adapter.deleteCredential(credentialId));
 	}
 

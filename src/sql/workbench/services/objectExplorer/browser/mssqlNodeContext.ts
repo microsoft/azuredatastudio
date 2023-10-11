@@ -20,13 +20,20 @@ export interface INodeContextValue {
 	viewId: string;
 }
 
+/**
+ * This context key is for Data Explorer nodes only - it is not used for Object Explorer nodes. For that use
+ * [treeNodeContextKey](https://github.com/Microsoft/azuredatastudio/blob/main/src/sql/workbench/services/objectExplorer/common/treeNodeContextKey.ts),
+ * [connectionContextKey](https://github.com/Microsoft/azuredatastudio/blob/main/src/sql/workbench/services/connection/common/connectionContextKey.ts) or
+ * [serverInfoContextKey](https://github.com/Microsoft/azuredatastudio/blob/main/src/sql/workbench/services/connection/common/serverInfoContextKey.ts)
+ */
 export class MssqlNodeContext extends Disposable {
 
-	static readonly canSelect = new Set([NodeType.Table, NodeType.View]);
+	static readonly canSelect = new Set([NodeType.HistoryTable, NodeType.Table, NodeType.View]);
 	static readonly canEditData = new Set([NodeType.Table]);
 	static readonly canCreateOrDelete = new Set([NodeType.AggregateFunction, NodeType.PartitionFunction, NodeType.ScalarValuedFunction,
 	NodeType.Schema, NodeType.StoredProcedure, NodeType.Table, NodeType.TableValuedFunction,
-	NodeType.User, NodeType.UserDefinedTableType, NodeType.View]);
+	NodeType.User, NodeType.UserDefinedTableType, NodeType.View, NodeType.Trigger, NodeType.DatabaseTrigger,
+	NodeType.Index, NodeType.User, NodeType.DatabaseRole, NodeType.ApplicationRole, NodeType.Key]);
 	static readonly canExecute = new Set([NodeType.StoredProcedure, NodeType.Function]);
 	static readonly canAlter = new Set([NodeType.AggregateFunction, NodeType.PartitionFunction, NodeType.ScalarValuedFunction,
 	NodeType.StoredProcedure, NodeType.TableValuedFunction, NodeType.View, NodeType.Function]);
@@ -37,6 +44,8 @@ export class MssqlNodeContext extends Disposable {
 	static IsWindows = new RawContextKey<boolean>('isWindows', isWindows);
 	static IsCloud = new RawContextKey<boolean>('isCloud', false);
 	static NodeType = new RawContextKey<string>('nodeType', undefined);
+	static NodePath = new RawContextKey<string>('nodePath', undefined);
+	static ObjectType = new RawContextKey<string>('objectType', undefined);
 	static NodeLabel = new RawContextKey<string>('nodeLabel', undefined);
 	static EngineEdition = new RawContextKey<number>('engineEdition', DatabaseEngineEdition.Unknown);
 	static CanOpenInAzurePortal = new RawContextKey<boolean>('canOpenInAzurePortal', false);
@@ -47,10 +56,13 @@ export class MssqlNodeContext extends Disposable {
 	static CanScriptAsCreateOrDelete = new RawContextKey<boolean>('canScriptAsCreateOeDelete', false);
 	static CanScriptAsExecute = new RawContextKey<boolean>('canScriptAsExecute', false);
 	static CanScriptAsAlter = new RawContextKey<boolean>('canScriptAsAlter', false);
+	static IsQueryProvider = new RawContextKey<boolean>('isQueryProvider', false);
 
 	private nodeProviderKey!: IContextKey<string>;
 	private isCloudKey!: IContextKey<boolean>;
 	private nodeTypeKey!: IContextKey<string>;
+	private nodePathKey!: IContextKey<string>;
+	private objectTypeKey!: IContextKey<string>;
 	private nodeLabelKey!: IContextKey<string>;
 	private isDatabaseOrServerKey!: IContextKey<boolean>;
 	private engineEditionKey!: IContextKey<number>;
@@ -61,6 +73,8 @@ export class MssqlNodeContext extends Disposable {
 	private canScriptAsCreateOrDeleteKey!: IContextKey<boolean>;
 	private canScriptAsExecuteKey!: IContextKey<boolean>;
 	private canScriptAsAlterKey!: IContextKey<boolean>;
+	private isQueryProviderKey!: IContextKey<boolean>;
+
 
 	constructor(
 		private nodeContextValue: INodeContextValue,
@@ -87,10 +101,15 @@ export class MssqlNodeContext extends Disposable {
 					this.setScriptingContextKeys();
 					this.nodeTypeKey.set(node.contextValue);
 				}
+				if (node.nodeInfo?.nodePath) {
+					this.nodePathKey.set(node.nodeInfo.nodePath);
+				}
+				this.setQueryEnabledKey();
 			}
 			if (node.label) {
 				this.nodeLabelKey.set(node.label.label);
 			}
+			this.objectTypeKey.set(node.nodeInfo?.objectType);
 		}
 	}
 
@@ -98,6 +117,8 @@ export class MssqlNodeContext extends Disposable {
 		this.isCloudKey = MssqlNodeContext.IsCloud.bindTo(this.contextKeyService);
 		this.engineEditionKey = MssqlNodeContext.EngineEdition.bindTo(this.contextKeyService);
 		this.nodeTypeKey = MssqlNodeContext.NodeType.bindTo(this.contextKeyService);
+		this.nodePathKey = MssqlNodeContext.NodePath.bindTo(this.contextKeyService);
+		this.objectTypeKey = MssqlNodeContext.ObjectType.bindTo(this.contextKeyService);
 		this.nodeLabelKey = MssqlNodeContext.NodeLabel.bindTo(this.contextKeyService);
 		this.isDatabaseOrServerKey = MssqlNodeContext.IsDatabaseOrServer.bindTo(this.contextKeyService);
 		this.canScriptAsSelectKey = MssqlNodeContext.CanScriptAsSelect.bindTo(this.contextKeyService);
@@ -107,6 +128,7 @@ export class MssqlNodeContext extends Disposable {
 		this.canScriptAsAlterKey = MssqlNodeContext.CanScriptAsAlter.bindTo(this.contextKeyService);
 		this.nodeProviderKey = MssqlNodeContext.NodeProvider.bindTo(this.contextKeyService);
 		this.canOpenInAzurePortal = MssqlNodeContext.CanOpenInAzurePortal.bindTo(this.contextKeyService);
+		this.isQueryProviderKey = MssqlNodeContext.IsQueryProvider.bindTo(this.contextKeyService);
 	}
 
 	/**
@@ -201,5 +223,14 @@ export class MssqlNodeContext extends Disposable {
 		if (MssqlNodeContext.canSelect.has(nodeType)) {
 			this.canScriptAsSelectKey.set(true);
 		}
+	}
+
+	/**
+	 * Set whether the current node's provider is also a query provider.
+	 */
+	private setQueryEnabledKey(): void {
+		const provider = this.nodeContextValue?.node?.payload?.providerName || this.nodeContextValue.node.childProvider;
+		const capabilities = provider ? this.capabilitiesService.getCapabilities(provider) : undefined;
+		this.isQueryProviderKey.set(capabilities?.connection.isQueryProvider);
 	}
 }

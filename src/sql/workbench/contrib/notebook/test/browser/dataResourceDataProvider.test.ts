@@ -13,9 +13,9 @@ import * as uuid from 'uuid';
 import * as sinon from 'sinon';
 import { DataResourceDataProvider } from '../../browser/outputs/gridOutput.component';
 import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
-import { ResultSetSubset, ResultSetSummary } from 'sql/workbench/services/query/common/query';
+import { ResultSetSummary } from 'sql/workbench/services/query/common/query';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
-import { TestFileDialogService, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestFileDialogService, TestEditorService, TestPathService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestContextService } from 'vs/workbench/test/common/workbenchTestServices';
 import { SerializationService } from 'sql/platform/serialization/common/serializationService';
 import { SaveFormat, ResultSerializer } from 'sql/workbench/services/query/common/resultSerializer';
@@ -23,20 +23,21 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import { URI } from 'vs/base/common/uri';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { createandLoadNotebookModel } from 'sql/workbench/contrib/notebook/test/browser/cellToolbarActions.test';
-import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
+import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
+import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 
-export class TestSerializationProvider implements azdata.SerializationProvider {
+class TestSerializationProvider implements azdata.SerializationProvider {
 	providerId: string;
 	constructor(providerId: string = 'providerId') { }
 
 	// Write data to file
 	async startSerialization(requestParams: azdata.SerializeDataStartRequestParams): Promise<azdata.SerializeDataResult> {
 		let data: string = '';
+		if (requestParams.includeHeaders) {
+			data = requestParams.columns.map(c => c.name).join(' ') + '\n';
+		}
 		requestParams.rows.forEach((row) => {
-			row.forEach((element) => {
-				data += element.displayValue + ' ';
-			});
-			data += '\n';
+			data += row.map(c => c.displayValue).join(' ') + '\n';
 		});
 		await fs.promises.writeFile(requestParams.filePath, data);
 		return Promise.resolve({ succeeded: true, messages: undefined });
@@ -48,25 +49,13 @@ export class TestSerializationProvider implements azdata.SerializationProvider {
 }
 
 suite('Data Resource Data Provider', function () {
-	let fileDialogService: TypeMoq.Mock<TestFileDialogService>;
+	let fileDialogService: TestFileDialogService;
 	let serializer: ResultSerializer;
 	let notificationService: TestNotificationService;
 	let serializationService: SerializationService;
 	let instantiationService: TypeMoq.Mock<InstantiationService>;
 	let cellModel = TypeMoq.Mock.ofType(CellModel);
-
-	// Create test data with two rows and two columns
-	let source: IDataResource = {
-		data: [{ 0: '1', 1: '2' }, { 0: '3', 1: '4' }],
-		schema: { fields: [{ name: 'col1' }, { name: 'col2' }] }
-	};
-	let resultSet: ResultSetSummary = {
-		batchId: 0,
-		columnInfo: [{ columnName: 'col1' }, { columnName: 'col2' }],
-		complete: true,
-		id: 0,
-		rowCount: 2
-	};
+	let configurationService = new TestConfigurationService();
 
 	suiteSetup(async () => {
 		let notebookModel = await createandLoadNotebookModel();
@@ -76,18 +65,20 @@ suite('Data Resource Data Provider', function () {
 		let editorService = TypeMoq.Mock.ofType(TestEditorService, TypeMoq.MockBehavior.Strict);
 		editorService.setup(x => x.openEditor(TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
 		let contextService = new TestContextService();
-		fileDialogService = TypeMoq.Mock.ofType(TestFileDialogService, TypeMoq.MockBehavior.Strict);
+		let pathService = new TestPathService();
+		fileDialogService = new TestFileDialogService(pathService);
 		notificationService = new TestNotificationService();
 		serializationService = new SerializationService(undefined, undefined); //_connectionService _capabilitiesService
-		serializationService.registerProvider('testProviderId', new TestSerializationProvider());
+		serializationService.registerProvider('MSSQL', new TestSerializationProvider());
 		serializer = new ResultSerializer(
 			undefined, // IQueryManagementService
-			undefined, // IConfigurationService
+			configurationService,
 			editorService.object,
 			contextService,
-			fileDialogService.object,
+			fileDialogService,
 			notificationService,
-			undefined // IOpenerService
+			undefined, // IOpenerService
+			undefined	// ICommandService
 		);
 		instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Strict);
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(ResultSerializer)))
@@ -95,12 +86,36 @@ suite('Data Resource Data Provider', function () {
 	});
 
 	test('serializeResults call is successful', async function (): Promise<void> {
+		// Create test data with two rows and two columns
+		let source: IDataResource = {
+			data: [{ 'col1': '1', 'col2': '2' }, { 'col1': '3', 'col2': '4' }],
+			schema: { fields: [{ name: 'col1' }, { name: 'col2' }] }
+		};
+
+		await runSerializeTest(source);
+	});
+
+	test('serializeResults call is successful with ordinal keys for source data', async function (): Promise<void> {
+		// Create test data with two rows and two columns
+		let source: IDataResource = {
+			data: [{ 0: '1', 1: '2' }, { 0: '3', 1: '4' }],
+			schema: { fields: [{ name: 'col1' }, { name: 'col2' }] }
+		};
+
+		await runSerializeTest(source);
+	});
+
+	async function runSerializeTest(source: IDataResource): Promise<void> {
+		let resultSet: ResultSetSummary = {
+			batchId: 0,
+			columnInfo: [{ columnName: 'col1' }, { columnName: 'col2' }],
+			complete: true,
+			id: 0,
+			rowCount: 2
+		};
 		let tempFolderPath = path.join(os.tmpdir(), `TestDataResourceDataProvider_${uuid.v4()}`);
 		await fs.mkdir(tempFolderPath);
 		let dataResourceDataProvider = new DataResourceDataProvider(
-			0, // batchId
-			0, // id
-			undefined, // QueryRunner
 			source,
 			resultSet,
 			cellModel.object,
@@ -111,58 +126,34 @@ suite('Data Resource Data Provider', function () {
 			serializationService,
 			instantiationService.object
 		);
+		configurationService.updateValue('queryEditor', {
+			results: {
+				saveAsCsv: {
+					includeHeaders: false
+				}
+			}
+		}, ConfigurationTarget.USER);
 		let noHeadersFile = URI.file(path.join(tempFolderPath, 'result_noHeaders.csv'));
-		let fileDialogServiceStub = sinon.stub(fileDialogService.object, 'showSaveDialog').returns(Promise.resolve(noHeadersFile));
-		let serializerStub = sinon.stub(serializer, 'getBasicSaveParameters').returns({ resultFormat: SaveFormat.CSV as string, includeHeaders: false });
+		let fileDialogServiceStub = sinon.stub(fileDialogService, 'showSaveDialog').returns(Promise.resolve(noHeadersFile));
 		await dataResourceDataProvider.serializeResults(SaveFormat.CSV, undefined);
 		fileDialogServiceStub.restore();
-		serializerStub.restore();
 
+		configurationService.updateValue('queryEditor', {
+			results: {
+				saveAsCsv: {
+					includeHeaders: true
+				}
+			}
+		}, ConfigurationTarget.USER);
 		let withHeadersFile = URI.file(path.join(tempFolderPath, 'result_withHeaders.csv'));
-		fileDialogServiceStub = sinon.stub(fileDialogService.object, 'showSaveDialog').returns(Promise.resolve(withHeadersFile));
-		serializerStub = sinon.stub(serializer, 'getBasicSaveParameters').returns({ resultFormat: SaveFormat.CSV as string, includeHeaders: true });
+		fileDialogServiceStub = sinon.stub(fileDialogService, 'showSaveDialog').returns(Promise.resolve(withHeadersFile));
 		await dataResourceDataProvider.serializeResults(SaveFormat.CSV, undefined);
 		fileDialogServiceStub.restore();
-		serializerStub.restore();
 
 		const noHeadersResult = await fs.readFile(noHeadersFile.fsPath);
-		assert.equal(noHeadersResult.toString(), '1 2 \n3 4 \n', 'result data should not include headers');
+		assert.strictEqual(noHeadersResult.toString(), '1 2\n3 4\n', 'result data should not include headers');
 
 		const withHeadersResult = await fs.readFile(withHeadersFile.fsPath);
-		assert.equal(withHeadersResult.toString(), 'col1 col2 \n1 2 \n3 4 \n', 'result data should include headers');
-	});
-
-	test('convertAllData correctly converts row data to mimetype and html', async function (): Promise<void> {
-		let resultSetSubset: ResultSetSubset = {
-			rowCount: 2,
-			rows: [[{ displayValue: '1' }, { displayValue: '2' }], [{ displayValue: '3' }, { displayValue: '4' }]]
-		};
-		let queryRunner: TypeMoq.Mock<QueryRunner> = TypeMoq.Mock.ofType(QueryRunner);
-		queryRunner.setup(x => x.getQueryRows(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(resultSetSubset));
-		let dataResourceDataProvider = new DataResourceDataProvider(
-			0, // batchId
-			0, // id
-			queryRunner.object,
-			source,
-			resultSet,
-			cellModel.object,
-			notificationService,
-			undefined, // IClipboardService
-			undefined, // IConfigurationService
-			undefined, // ITextResourcePropertiesService
-			serializationService,
-			instantiationService.object
-		);
-		let spy = sinon.spy(cellModel.object, 'updateOutputData');
-		let expectedData = {
-			'application/vnd.dataresource+json': {
-				data: [{ 0: '1', 1: '2' }, { 0: '3', 1: '4' }],
-				schema: { fields: [{ name: 'col1' }, { name: 'col2' }] }
-			},
-			'text/html': ['<table>', '<tr><th>col1</th><th>col2</th></tr>', '<tr><td>1</td><td>2</td></tr>', '<tr><td>3</td><td>4</td></tr>', '</table>']
-		};
-		await dataResourceDataProvider.convertAllData(resultSet);
-		sinon.assert.calledOnce(spy);
-		sinon.assert.calledWithExactly(spy, 0, 0, expectedData);
-	});
+		assert.strictEqual(withHeadersResult.toString(), 'col1 col2\n1 2\n3 4\n', 'result data should include headers');
+	}
 });

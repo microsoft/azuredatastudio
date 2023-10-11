@@ -10,10 +10,12 @@ import { IExtensionService } from 'vs/workbench/services/extensions/common/exten
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { INotificationService } from 'vs/platform/notification/common/notification';
+import { EditorInputCapabilities } from 'vs/workbench/common/editor';
+import { UNTITLED_NOTEBOOK_TYPEID } from 'sql/workbench/common/constants';
+import { IEditorResolverService } from 'vs/workbench/services/editor/common/editorResolverService';
 
 export class UntitledNotebookInput extends NotebookInput {
-	public static ID: string = 'workbench.editorinputs.untitledNotebookInput';
+	public static ID: string = UNTITLED_NOTEBOOK_TYPEID;
 
 	constructor(
 		title: string,
@@ -23,25 +25,31 @@ export class UntitledNotebookInput extends NotebookInput {
 		@IInstantiationService instantiationService: IInstantiationService,
 		@INotebookService notebookService: INotebookService,
 		@IExtensionService extensionService: IExtensionService,
-		@INotificationService notificationService: INotificationService
+		@IEditorResolverService editorResolverService: IEditorResolverService,
 	) {
-		super(title, resource, textInput, textModelService, instantiationService, notebookService, extensionService, notificationService);
+		super(title, resource, textInput, true, textModelService, instantiationService, notebookService, extensionService, editorResolverService);
+		// Set the mode explicitly so that the auto language detection doesn't run and mark the model as being JSON
+		this.textInput.resolve().then(() => this.setMode(textInput.model.getLanguageId()));
 	}
 
-	public get textInput(): UntitledTextEditorInput {
+	public override get textInput(): UntitledTextEditorInput {
 		return super.textInput as UntitledTextEditorInput;
 	}
 
 	public setMode(mode: string): void {
-		this.textInput.setMode(mode);
+		this.textInput.setLanguageId(mode);
 	}
 
-	isUntitled(): boolean {
+	override get capabilities(): EditorInputCapabilities {
 		// Subclasses need to explicitly opt-in to being untitled.
-		return true;
+		return EditorInputCapabilities.Untitled;
 	}
 
-	public getTypeId(): string {
+	override get typeId(): string {
 		return UntitledNotebookInput.ID;
+	}
+
+	public getEncoding(): string | undefined {
+		return this.textInput.getEncoding();
 	}
 }

@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
 import * as types from './types';
-import * as Constants from './constants';
 
 enum BuiltInCommands {
 	SetContext = 'setContext',
@@ -16,14 +15,13 @@ enum BuiltInCommands {
 enum ContextKeys {
 	ISCLOUD = 'mssql:iscloud',
 	EDITIONID = 'mssql:engineedition',
-	ISCLUSTER = 'mssql:iscluster',
 	SERVERMAJORVERSION = 'mssql:servermajorversion'
 }
 
 const isCloudEditions = [
-	5,
-	6,
-	11
+	azdata.DatabaseEngineEdition.SqlDatabase,
+	azdata.DatabaseEngineEdition.SqlDataWarehouse,
+	azdata.DatabaseEngineEdition.SqlOnDemand
 ];
 
 function setCommandContext(key: ContextKeys | string, value: any) {
@@ -39,46 +37,30 @@ export default class ContextProvider {
 	}
 
 	public onDashboardOpen(e: azdata.DashboardDocument): void {
-		let iscloud: boolean;
-		let edition: number;
-		let isCluster: boolean = false;
-		let serverMajorVersion: number;
+		let isCloud: boolean = false;
+		let edition: number | undefined;
+		let serverMajorVersion: number | undefined;
 		if (e.profile.providerName.toLowerCase() === 'mssql' && !types.isUndefinedOrNull(e.serverInfo) && !types.isUndefinedOrNull(e.serverInfo.engineEditionId)) {
-			if (isCloudEditions.some(i => i === e.serverInfo.engineEditionId)) {
-				iscloud = true;
-			} else {
-				iscloud = false;
-			}
-
+			isCloud = isCloudEditions.some(i => i === e.serverInfo.engineEditionId);
 			edition = e.serverInfo.engineEditionId;
-
-			if (!types.isUndefinedOrNull(e.serverInfo.options)) {
-				let isBigDataCluster = e.serverInfo.options[Constants.isBigDataClusterProperty];
-				if (isBigDataCluster) {
-					isCluster = isBigDataCluster;
-				}
-			}
 			serverMajorVersion = e.serverInfo.serverMajorVersion;
 		}
 
-		if (iscloud === true || iscloud === false) {
-			setCommandContext(ContextKeys.ISCLOUD, iscloud);
+		if (isCloud === true || isCloud === false) {
+			void setCommandContext(ContextKeys.ISCLOUD, isCloud);
 		}
 
 		if (!types.isUndefinedOrNull(edition)) {
-			setCommandContext(ContextKeys.EDITIONID, edition);
-		}
-
-		if (!types.isUndefinedOrNull(isCluster)) {
-			setCommandContext(ContextKeys.ISCLUSTER, isCluster);
+			void setCommandContext(ContextKeys.EDITIONID, edition);
 		}
 
 		if (!types.isUndefinedOrNull(serverMajorVersion)) {
-			setCommandContext(ContextKeys.SERVERMAJORVERSION, serverMajorVersion);
+			void setCommandContext(ContextKeys.SERVERMAJORVERSION, serverMajorVersion);
 		}
 	}
 
 	dispose(): void {
-		this._disposables = this._disposables.map(i => i.dispose());
+		this._disposables.forEach(i => i.dispose());
+		this._disposables = [];
 	}
 }

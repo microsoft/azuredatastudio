@@ -15,17 +15,22 @@ import * as uuid from 'uuid';
 import { promises as fs } from 'fs';
 import { tryDeleteFile } from './testUtils';
 import { CellTypes } from '../../contracts/content';
+import { NBFORMAT, NBFORMAT_MINOR } from '../../common/constants';
 
 describe('notebookUtils Tests', function (): void {
 	let notebookUtils: NotebookUtils = new NotebookUtils();
 	let showErrorMessageSpy: sinon.SinonSpy;
 
-	beforeEach(function(): void {
+	beforeEach(function (): void {
 		showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 	});
 
-	afterEach(function(): void {
+	afterEach(function (): void {
 		sinon.restore();
+	});
+
+	this.beforeAll(async function (): Promise<void> {
+		await vscode.commands.executeCommand('workbench.action.closeAllEditors');
 	});
 
 	this.afterAll(async function (): Promise<void> {
@@ -35,7 +40,7 @@ describe('notebookUtils Tests', function (): void {
 	describe('newNotebook', function (): void {
 		it('Should open a new notebook successfully', async function (): Promise<void> {
 			should(azdata.nb.notebookDocuments.length).equal(0, 'There should be not any open Notebook documents');
-			await notebookUtils.newNotebook(undefined);
+			await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
 			should(azdata.nb.notebookDocuments.length).equal(1, 'There should be exactly 1 open Notebook document');
 			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 			should(azdata.nb.notebookDocuments.length).equal(0, 'There should be not any open Notebook documents');
@@ -43,24 +48,25 @@ describe('notebookUtils Tests', function (): void {
 
 		it('Opening an untitled editor after closing should re-use previous untitled name', async function (): Promise<void> {
 			should(azdata.nb.notebookDocuments.length).equal(0, 'There should be not any open Notebook documents');
-			await notebookUtils.newNotebook(undefined);
+			await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
 			should(azdata.nb.notebookDocuments.length).equal(1, 'There should be exactly 1 open Notebook document');
-			should(azdata.nb.notebookDocuments[0].fileName).equal('Notebook-0', 'The first Untitled Notebook should have an index of 0');
+			should(azdata.nb.notebookDocuments[0].fileName).equal('Notebook-1', 'The first Untitled Notebook should have an index of 1');
 			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 			should(azdata.nb.notebookDocuments.length).equal(0, 'There should be not any open Notebook documents');
-			await notebookUtils.newNotebook(undefined);
+			await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
 			should(azdata.nb.notebookDocuments.length).equal(1, 'There should be exactly 1 open Notebook document after second opening');
-			should(azdata.nb.notebookDocuments[0].fileName).equal('Notebook-0', 'The first Untitled Notebook should have an index of 0 after closing first Untitled Notebook');
+			should(azdata.nb.notebookDocuments[0].fileName).equal('Notebook-1', 'The first Untitled Notebook should have an index of 1 after closing first Untitled Notebook');
 			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 		});
 
 		it('Untitled Name index should increase', async function (): Promise<void> {
 			should(azdata.nb.notebookDocuments.length).equal(0, 'There should be not any open Notebook documents');
-			await notebookUtils.newNotebook(undefined);
+			await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
 			should(azdata.nb.notebookDocuments.length).equal(1, 'There should be exactly 1 open Notebook document');
-			const secondNotebook = await notebookUtils.newNotebook(undefined);
+			await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
 			should(azdata.nb.notebookDocuments.length).equal(2, 'There should be exactly 2 open Notebook documents');
-			should(secondNotebook.document.fileName).equal('Notebook-1', 'The second Untitled Notebook should have an index of 1');
+			let secondNotebook = azdata.nb.activeNotebookEditor;
+			should(secondNotebook.document.fileName).equal('Notebook-2', 'The second Untitled Notebook should have an index of 2');
 			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 			should(azdata.nb.notebookDocuments.length).equal(0, 'There should be not any open Notebook documents');
@@ -78,7 +84,7 @@ describe('notebookUtils Tests', function (): void {
 				should(azdata.nb.notebookDocuments.find(doc => doc.fileName === notebookUri.fsPath)).not.be.undefined();
 				await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 			} finally {
-				tryDeleteFile(notebookPath);
+				await tryDeleteFile(notebookPath);
 			}
 		});
 
@@ -86,6 +92,34 @@ describe('notebookUtils Tests', function (): void {
 			sinon.stub(vscode.window, 'showOpenDialog').throws(new Error('Unexpected error'));
 			await notebookUtils.openNotebook();
 			should(showErrorMessageSpy.calledOnce).be.true('showErrorMessage should have been called');
+		});
+
+		it('closing and opening an untitled notebook shows correct contents', async function (): Promise<void> {
+			await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
+			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+			await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }), {
+				initialContent: {
+					cells: [{
+						source: 'test content',
+						cell_type: 'markdown'
+					}],
+					metadata: {
+						kernelspec: {
+							name: 'SQL',
+							language: 'sql',
+							display_name: 'SQL'
+						}
+					},
+					nbformat: NBFORMAT,
+					nbformat_minor: NBFORMAT_MINOR
+				}
+			});
+			let activeEditor = azdata.nb.activeNotebookEditor;
+			let cells = activeEditor.document.cells;
+			// We currently can't retrieve the cell source from the extension API, but all we care
+			// about is that the notebook doesn't open as empty again, so just check the number of
+			// cells here.
+			should(cells.length).be.greaterThan(0);
 		});
 	});
 
@@ -109,7 +143,7 @@ describe('notebookUtils Tests', function (): void {
 			sinon.replaceGetter(azdata.nb, 'activeNotebookEditor', () => undefined);
 			await notebookUtils.clearActiveCellOutput();
 			should(showErrorMessageSpy.calledOnce).be.true('showErrorMessage should be called exactly once');
-});
+		});
 
 		it('does not show error when notebook visible', async function (): Promise<void> {
 			let mockNotebookEditor = TypeMoq.Mock.ofType<azdata.nb.NotebookEditor>();
@@ -150,7 +184,8 @@ describe('notebookUtils Tests', function (): void {
 		});
 
 		it('does not show error when notebook visible for code cell', async function (): Promise<void> {
-			const notebookEditor = await notebookUtils.newNotebook(undefined);
+			await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
+			const notebookEditor = azdata.nb.activeNotebookEditor;
 			sinon.replaceGetter(azdata.nb, 'activeNotebookEditor', () => notebookEditor);
 			await notebookUtils.addCell('code');
 			should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should never be called');
@@ -159,45 +194,13 @@ describe('notebookUtils Tests', function (): void {
 		});
 
 		it('does not show error when notebook visible for markdown cell', async function (): Promise<void> {
-			const notebookEditor = await notebookUtils.newNotebook(undefined);
+			await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
+			const notebookEditor = azdata.nb.activeNotebookEditor;
 			sinon.replaceGetter(azdata.nb, 'activeNotebookEditor', () => notebookEditor);
 			await notebookUtils.addCell('markdown');
 			should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should never be called');
 			should(notebookEditor.document.cells.length).equal(1);
 			should(notebookEditor.document.cells[0].contents.cell_type).equal(CellTypes.Markdown);
-		});
-	});
-
-	describe('analyzeNotebook', function () {
-		it('creates cell when oeContext exists', async function (): Promise<void> {
-			const notebookEditor = await notebookUtils.newNotebook(undefined);
-			sinon.replaceGetter(azdata.nb, 'activeNotebookEditor', () => notebookEditor);
-			sinon.stub(azdata.nb, 'showNotebookDocument').returns(Promise.resolve(notebookEditor));
-			const oeContext: azdata.ObjectExplorerContext = {
-				connectionProfile: undefined,
-				isConnectionNode: true,
-				nodeInfo: {
-					nodePath: 'path/HDFS/path2',
-					errorMessage: undefined,
-					isLeaf: false,
-					label: 'fakeLabel',
-					metadata: undefined,
-					nodeStatus: undefined,
-					nodeSubType: undefined,
-					nodeType: undefined
-				}
-			};
-			await notebookUtils.analyzeNotebook(oeContext);
-			should(notebookEditor.document.cells.length).equal(1, 'One cell should exist');
-			should(notebookEditor.document.cells[0].contents.cell_type).equal(CellTypes.Code, 'Cell was created with incorrect type');
-		});
-
-		it('does not create new cell when oeContext does not exist', async function (): Promise<void> {
-			const notebookEditor = await notebookUtils.newNotebook(undefined);
-			sinon.replaceGetter(azdata.nb, 'activeNotebookEditor', () => notebookEditor);
-			sinon.stub(azdata.nb, 'showNotebookDocument').returns(Promise.resolve(notebookEditor));
-			await notebookUtils.analyzeNotebook();
-			should(notebookEditor.document.cells.length).equal(0, 'No cells should exist');
 		});
 	});
 });

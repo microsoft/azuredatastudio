@@ -19,7 +19,6 @@ import * as dashboardHelper from 'sql/workbench/contrib/dashboard/browser/core/d
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ILogService } from 'vs/platform/log/common/log';
-import { find } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
 
 @Component({
@@ -88,7 +87,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 		}
 	}
 
-	ngOnDestroy() {
+	override ngOnDestroy() {
 		this.dispose();
 	}
 
@@ -129,7 +128,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 	}
 
 	private addNewTab(tab: TabConfig): void {
-		const existedTab = find(this.tabs, i => i.id === tab.id);
+		const existedTab = this.tabs.find(i => i.id === tab.id);
 		if (!existedTab) {
 			this.tabs.push(tab);
 			this._cd.detectChanges();
@@ -150,8 +149,8 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 
 	public layout() {
 		if (this._tabs) {
-			const activeTabId = this._panel.getActiveTab;
-			const localtab = this._tabs.find(i => i.id === activeTabId);
+			const selectedTabId = this._panel.getSelectedTab;
+			const localtab = this._tabs.find(i => i.id === selectedTabId);
 			this._cd.detectChanges();
 			localtab.layout();
 		}
@@ -165,7 +164,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 		}
 	}
 
-	public enableEdit(): void {
+	public override enableEdit(): void {
 		if (this._tabs) {
 			this._tabs.forEach(tabContent => {
 				tabContent.enableEdit();

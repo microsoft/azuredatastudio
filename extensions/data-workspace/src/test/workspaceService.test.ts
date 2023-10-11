@@ -7,35 +7,10 @@ import 'mocha';
 import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import * as should from 'should';
-import * as path from 'path';
+import * as constants from '../common/constants';
 import { WorkspaceService } from '../services/workspaceService';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import { createProjectProvider } from './projectProviderRegistry.test';
-
-const DefaultWorkspaceFilePath = '/test/folder/ws.code-workspace';
-
-/**
- * Create a stub for vscode.workspace.workspaceFile
- * @param workspaceFilePath The workspace file to return
- */
-function stubWorkspaceFile(workspaceFilePath: string | undefined): sinon.SinonStub {
-	return sinon.stub(vscode.workspace, 'workspaceFile').value(workspaceFilePath ? vscode.Uri.file(workspaceFilePath) : undefined);
-}
-
-/**
- * Create a stub for vscode.workspace.getConfiguration
- * @param returnValue the configuration value to return
- */
-function stubGetConfigurationValue(getStub?: sinon.SinonStub, updateStub?: sinon.SinonStub): sinon.SinonStub {
-	return sinon.stub(vscode.workspace, 'getConfiguration').returns({
-		get: (configurationName: string) => {
-			return getStub!(configurationName);
-		},
-		update: (section: string, value: any, configurationTarget?: vscode.ConfigurationTarget | boolean, overrideInLanguage?: boolean) => {
-			updateStub!(section, value, configurationTarget);
-		}
-	} as vscode.WorkspaceConfiguration);
-}
 
 /**
  * Create a stub for vscode.extensions.all
@@ -60,32 +35,29 @@ function createMockExtension(id: string, isActive: boolean, projectTypes: string
 	};
 }
 
-suite('WorkspaceService Tests', function (): void {
-	const service = new WorkspaceService();
+suite('WorkspaceService', function (): void {
+	let service = new WorkspaceService();
 
 	this.afterEach(() => {
 		sinon.restore();
 	});
 
-	test('test getProjectsInWorkspace', async () => {
+	test('getProjectsInWorkspace', async () => {
 		// No workspace is loaded
-		stubWorkspaceFile(undefined);
-		let projects = await service.getProjectsInWorkspace();
-		should.strictEqual(projects.length, 0, 'no projects should be returned when no workspace is loaded');
-
-		// from this point on, workspace is loaded
-		stubWorkspaceFile(DefaultWorkspaceFilePath);
+		let projects = await service.getProjectsInWorkspace(undefined, true);
+		should.strictEqual(projects.length, 0, `no projects should be returned when no workspace is loaded, but found ${projects.map(p => p.fsPath).join(', ')}`);
 
 		// No projects are present in the workspace file
-		const getConfigurationStub = stubGetConfigurationValue(sinon.stub().returns([]));
-		projects = await service.getProjectsInWorkspace();
+		const workspaceFoldersStub = sinon.stub(vscode.workspace, 'workspaceFolders').value([]);
+		projects = await service.getProjectsInWorkspace(undefined, true);
 		should.strictEqual(projects.length, 0, 'no projects should be returned when projects are present in the workspace file');
-		getConfigurationStub.restore();
+		workspaceFoldersStub.restore();
 
 		// Projects are present
-		stubGetConfigurationValue(sinon.stub().returns(['abc.sqlproj', 'folder1/abc1.sqlproj', 'folder2/abc2.sqlproj']));
-		projects = await service.getProjectsInWorkspace();
-		should.strictEqual(projects.length, 3, 'there should be 2 projects');
+		sinon.stub(vscode.workspace, 'workspaceFolders').value([{ uri: vscode.Uri.file('') }]);
+		sinon.stub(service, 'getAllProjectsInFolder').resolves([vscode.Uri.file('/test/folder/abc.sqlproj'), vscode.Uri.file('/test/folder/folder1/abc1.sqlproj'), vscode.Uri.file('/test/folder/folder2/abc2.sqlproj')]);
+		projects = await service.getProjectsInWorkspace(undefined, true);
+		should.strictEqual(projects.length, 3, 'there should be 3 projects');
 		const project1 = vscode.Uri.file('/test/folder/abc.sqlproj');
 		const project2 = vscode.Uri.file('/test/folder/folder1/abc1.sqlproj');
 		const project3 = vscode.Uri.file('/test/folder/folder2/abc2.sqlproj');
@@ -94,7 +66,7 @@ suite('WorkspaceService Tests', function (): void {
 		should.strictEqual(projects[2].path, project3.path);
 	});
 
-	test('test getAllProjectTypes', async () => {
+	test('getAllProjectTypes', async () => {
 		// extensions that are already activated
 		const extension1 = createMockExtension('ext1', true, ['csproj']); // with projects contribution
 		const extension2 = createMockExtension('ext2', true, []); // with empty projects contribution
@@ -111,22 +83,84 @@ suite('WorkspaceService Tests', function (): void {
 
 		const provider1 = createProjectProvider([
 			{
+				id: 'tp1',
+				description: '',
 				projectFileExtension: 'testproj',
 				icon: '',
 				displayName: 'test project'
 			}, {
+				id: 'tp2',
+				description: '',
 				projectFileExtension: 'testproj1',
 				icon: '',
 				displayName: 'test project 1'
 			}
-		]);
+		],
+			[
+				{
+					id: 'testAction1',
+					run: async (): Promise<any> => { return Promise.resolve(); }
+				},
+				{
+					id: 'testAction2',
+					run: async (): Promise<any> => { return Promise.resolve(); }
+				}
+			],
+			[
+				{
+					name: 'tableInfo1',
+					columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+					data: [['d1']]
+				},
+				{
+					name: 'tableInfo2',
+					columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+					data: [['d1']]
+				}
+			]);
 		const provider2 = createProjectProvider([
 			{
+				id: 'sp1',
+				description: '',
 				projectFileExtension: 'sqlproj',
 				icon: '',
 				displayName: 'sql project'
 			}
-		]);
+		],
+			[
+				{
+					id: 'Add',
+					run: async (): Promise<any> => { return Promise.resolve(); }
+				},
+				{
+					id: 'Schema Compare',
+					run: async (): Promise<any> => { return Promise.resolve(); }
+				},
+				{
+					id: 'Build',
+					run: async (): Promise<any> => { return Promise.resolve(); }
+				},
+				{
+					id: 'Publish',
+					run: async (): Promise<any> => { return Promise.resolve(); }
+				},
+				{
+					id: 'Target Version',
+					run: async (): Promise<any> => { return Promise.resolve(); }
+				}
+			],
+			[
+				{
+					name: 'Deployments',
+					columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+					data: [['d1']]
+				},
+				{
+					name: 'Builds',
+					columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+					data: [['d1']]
+				}
+			]);
 		sinon.stub(ProjectProviderRegistry, 'providers').value([provider1, provider2]);
 		const consoleErrorStub = sinon.stub(console, 'error');
 		const projectTypes = await service.getAllProjectTypes();
@@ -144,20 +178,52 @@ suite('WorkspaceService Tests', function (): void {
 		should.strictEqual(consoleErrorStub.calledOnce, true, 'Logger.error should be called once');
 	});
 
-	test('test getProjectProvider', async () => {
+	test('getProjectProvider', async () => {
 		const extension1 = createMockExtension('ext1', true, ['csproj']);
 		const extension2 = createMockExtension('ext2', false, ['sqlproj']);
 		const extension3 = createMockExtension('ext3', false, ['dbproj']);
 		stubAllExtensions([extension1, extension2, extension3].map(ext => ext.extension));
-		const getProviderByProjectTypeStub = sinon.stub(ProjectProviderRegistry, 'getProviderByProjectType');
+		const getProviderByProjectTypeStub = sinon.stub(ProjectProviderRegistry, 'getProviderByProjectExtension');
 		getProviderByProjectTypeStub.onFirstCall().returns(undefined);
 		getProviderByProjectTypeStub.onSecondCall().returns(createProjectProvider([
 			{
+				id: 'sp1',
+				description: '',
 				projectFileExtension: 'sqlproj',
 				icon: '',
 				displayName: 'test project'
 			}
-		]));
+		],
+			[{
+				id: 'Add',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Schema Compare',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Build',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Publish',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Target Version',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			}],
+			[{
+				name: 'Deployments',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			},
+			{
+				name: 'Builds',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			}]));
 		let provider = await service.getProjectProvider(vscode.Uri.file('abc.sqlproj'));
 		should.notStrictEqual(provider, undefined, 'Provider should be returned for sqlproj');
 		should.strictEqual(provider!.supportedProjectTypes[0].projectFileExtension, 'sqlproj');
@@ -167,10 +233,21 @@ suite('WorkspaceService Tests', function (): void {
 
 		getProviderByProjectTypeStub.reset();
 		getProviderByProjectTypeStub.returns(createProjectProvider([{
+			id: 'tp2',
+			description: '',
 			projectFileExtension: 'csproj',
 			icon: '',
 			displayName: 'test cs project'
-		}]));
+		}],
+			[{
+				id: 'testAction2',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			}],
+			[{
+				name: 'tableInfo2',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			}]));
 		provider = await service.getProjectProvider(vscode.Uri.file('abc.csproj'));
 		should.notStrictEqual(provider, undefined, 'Provider should be returned for csproj');
 		should.strictEqual(provider!.supportedProjectTypes[0].projectFileExtension, 'csproj');
@@ -179,60 +256,64 @@ suite('WorkspaceService Tests', function (): void {
 		should.strictEqual(extension3.activationStub.notCalled, true, 'the ext3.activate() should not have been called for csproj');
 	});
 
-	test('test addProjectsToWorkspace', async () => {
-		const processPath = (original: string): string => {
-			return original.replace(/\//g, path.sep);
-		};
-		stubWorkspaceFile(DefaultWorkspaceFilePath);
-		const updateConfigurationStub = sinon.stub();
-		const getConfigurationStub = sinon.stub().returns([processPath('folder1/proj2.sqlproj')]);
+	test('addProjectsToWorkspace', async () => {
+		sinon.stub(service, 'getProjectsInWorkspace').resolves([vscode.Uri.file('folder/folder1/proj2.sqlproj')]);
 		const onWorkspaceProjectsChangedStub = sinon.stub();
+		const showInformationMessageStub = sinon.stub(vscode.window, 'showInformationMessage');
 		const onWorkspaceProjectsChangedDisposable = service.onDidWorkspaceProjectsChange(() => {
 			onWorkspaceProjectsChangedStub();
 		});
-		stubGetConfigurationValue(getConfigurationStub, updateConfigurationStub);
 		const asRelativeStub = sinon.stub(vscode.workspace, 'asRelativePath');
 		sinon.stub(vscode.workspace, 'workspaceFolders').value(['.']);
 		asRelativeStub.onFirstCall().returns(`proj1.sqlproj`);
-		asRelativeStub.onSecondCall().returns(processPath('/test/other/proj3.sqlproj'));
+		asRelativeStub.onSecondCall().returns('other/proj3.sqlproj');
 		const updateWorkspaceFoldersStub = sinon.stub(vscode.workspace, 'updateWorkspaceFolders');
 		await service.addProjectsToWorkspace([
-			vscode.Uri.file('/test/folder/proj1.sqlproj'), // within the workspace folder
-			vscode.Uri.file('/test/folder/folder1/proj2.sqlproj'), //already exists
-			vscode.Uri.file('/test/other/proj3.sqlproj') // outside of workspace folder
+			vscode.Uri.file('folder/proj1.sqlproj'), // within the workspace folder
+			vscode.Uri.file('folder/folder1/proj2.sqlproj'), //already exists
+			vscode.Uri.file('other/proj3.sqlproj') // new workspace folder
 		]);
-		should.strictEqual(updateConfigurationStub.calledOnce, true, 'update configuration should have been called once');
 		should.strictEqual(updateWorkspaceFoldersStub.calledOnce, true, 'updateWorkspaceFolders should have been called once');
-		should.strictEqual(updateConfigurationStub.calledWith('projects', sinon.match.array.deepEquals([
-			processPath('folder1/proj2.sqlproj'),
-			processPath('proj1.sqlproj'),
-			processPath('../other/proj3.sqlproj')
-		]), vscode.ConfigurationTarget.Workspace), true, 'updateConfiguration parameters does not match expectation');
-		should.strictEqual(updateWorkspaceFoldersStub.calledWith(1, null, sinon.match((arg) => {
-			return arg.uri.path === '/test/other';
+		should.strictEqual(showInformationMessageStub.calledOnce, true, 'showInformationMessage should be called once');
+		const expectedProjPath = vscode.Uri.file('folder/folder1/proj2.sqlproj').fsPath;
+		should(showInformationMessageStub.calledWith(constants.ProjectAlreadyOpened(expectedProjPath))).be.true(`showInformationMessage not called with expected message '${constants.ProjectAlreadyOpened(expectedProjPath)}' Actual '${showInformationMessageStub.getCall(0).args[0]}'`);
+		should.strictEqual(updateWorkspaceFoldersStub.calledWith(1, undefined, sinon.match((arg) => {
+			return arg.uri.path === vscode.Uri.file('other').path;
 		})), true, 'updateWorkspaceFolder parameters does not match expectation');
 		should.strictEqual(onWorkspaceProjectsChangedStub.calledOnce, true, 'the onDidWorkspaceProjectsChange event should have been fired');
 		onWorkspaceProjectsChangedDisposable.dispose();
 	});
 
-	test('test removeProject', async () => {
-		const processPath = (original: string): string => {
-			return original.replace(/\//g, path.sep);
-		};
-		stubWorkspaceFile(DefaultWorkspaceFilePath);
-		const updateConfigurationStub = sinon.stub();
-		const getConfigurationStub = sinon.stub().returns([processPath('folder1/proj2.sqlproj'), processPath('folder2/proj3.sqlproj')]);
+	test('addProjectsToWorkspace when no workspace open', async () => {
 		const onWorkspaceProjectsChangedStub = sinon.stub();
 		const onWorkspaceProjectsChangedDisposable = service.onDidWorkspaceProjectsChange(() => {
 			onWorkspaceProjectsChangedStub();
 		});
-		stubGetConfigurationValue(getConfigurationStub, updateConfigurationStub);
-		await service.removeProject(vscode.Uri.file('/test/folder/folder1/proj2.sqlproj'));
-		should.strictEqual(updateConfigurationStub.calledWith('projects', sinon.match.array.deepEquals([
-			processPath('folder2/proj3.sqlproj')
-		]), vscode.ConfigurationTarget.Workspace), true, 'updateConfiguration parameters does not match expectation for remove project');
+		const updateWorkspaceFoldersStub = sinon.stub(vscode.workspace, 'updateWorkspaceFolders').returns(true);
+
+		await service.addProjectsToWorkspace([
+			vscode.Uri.file('/test/folder/proj1.sqlproj')
+		]);
+
 		should.strictEqual(onWorkspaceProjectsChangedStub.calledOnce, true, 'the onDidWorkspaceProjectsChange event should have been fired');
+		should.strictEqual(updateWorkspaceFoldersStub.calledOnce, true, 'updateWorkspaceFolders should have been called');
 		onWorkspaceProjectsChangedDisposable.dispose();
 	});
 
+	test('addProjectsToWorkspace when untitled workspace is open', async () => {
+		sinon.stub(service, 'getProjectsInWorkspace').resolves([]);
+		const onWorkspaceProjectsChangedStub = sinon.stub();
+		const onWorkspaceProjectsChangedDisposable = service.onDidWorkspaceProjectsChange(() => {
+			onWorkspaceProjectsChangedStub();
+		});
+		sinon.replaceGetter(vscode.workspace, 'workspaceFolders', () => [{ uri: vscode.Uri.file('folder1'), name: '', index: 0 }]);
+		const updateWorkspaceFoldersStub = sinon.stub(vscode.workspace, 'updateWorkspaceFolders').returns(true);
+		await service.addProjectsToWorkspace([
+			vscode.Uri.file('/test/folder/proj1.sqlproj')
+		]);
+
+		should.strictEqual(onWorkspaceProjectsChangedStub.calledOnce, true, 'the onDidWorkspaceProjectsChange event should have been fired');
+		should.strictEqual(updateWorkspaceFoldersStub.calledOnce, true, 'updateWorkspaceFolders should have been called');
+		onWorkspaceProjectsChangedDisposable.dispose();
+	});
 });

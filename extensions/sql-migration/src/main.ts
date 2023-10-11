@@ -4,48 +4,35 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as azdata from 'azdata';
-import { WizardController } from './wizard/wizardController';
-import { AssessmentResultsDialog } from './dialog/assessmentResults/assessmentResultsDialog';
+import { DashboardWidget } from './dashboard/sqlServerDashboard';
+import * as constants from './constants/strings';
+import { ServiceClient } from './service/serviceClient';
+import { migrationServiceProvider } from './service/provider';
+import { TelemetryReporter } from './telemetry';
+import { SqlOpsDataClient } from 'dataprotocol-client';
 
-class SQLMigration {
-
-	constructor(private readonly context: vscode.ExtensionContext) {
+let widget: DashboardWidget;
+let migrationServiceClient: SqlOpsDataClient | undefined;
+export async function activate(context: vscode.ExtensionContext): Promise<DashboardWidget> {
+	if (!migrationServiceProvider) {
+		await vscode.window.showErrorMessage(constants.serviceProviderInitializationError);
 	}
+	// asynchronously starting the service
+	const outputChannel = vscode.window.createOutputChannel(constants.serviceName);
+	const serviceClient = new ServiceClient(outputChannel);
+	migrationServiceClient = await serviceClient.startService(context).catch((e) => {
+		console.error(e);
+		return undefined;
+	});
 
-	async start(): Promise<void> {
-		await this.registerCommands();
-	}
-
-	async registerCommands(): Promise<void> {
-		const commandDisposables: vscode.Disposable[] = [ // Array of disposables returned by registerCommand
-			vscode.commands.registerCommand('sqlmigration.start', async () => {
-				const connection = await azdata.connection.openConnectionDialog();
-
-				const wizardController = new WizardController(this.context);
-				await wizardController.openWizard(connection);
-			}),
-
-			vscode.commands.registerCommand('sqlmigration.testDialog', async () => {
-				let dialog = new AssessmentResultsDialog('ownerUri', undefined!, 'Assessment Dialog');
-				await dialog.openDialog();
-			})
-		];
-
-		this.context.subscriptions.push(...commandDisposables);
-	}
-
-	stop(): void {
-
-	}
+	widget = new DashboardWidget(context);
+	await widget.register();
+	context.subscriptions.push(TelemetryReporter);
+	return widget;
 }
 
-let sqlMigration: SQLMigration;
-export async function activate(context: vscode.ExtensionContext) {
-	sqlMigration = new SQLMigration(context);
-	await sqlMigration.registerCommands();
-}
-
-export function deactivate(): void {
-	sqlMigration.stop();
+export async function deactivate(): Promise<void> {
+	if (migrationServiceClient) {
+		await migrationServiceClient.stop();
+	}
 }

@@ -9,7 +9,7 @@ import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connect
 import { InsightActionContext } from 'sql/workbench/browser/actions';
 import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { isString } from 'vs/base/common/types';
 
 export class RunInsightQueryAction extends Action {
@@ -24,7 +24,7 @@ export class RunInsightQueryAction extends Action {
 		super(id, label);
 	}
 
-	public run(context: InsightActionContext): Promise<boolean> {
+	public override async run(context: InsightActionContext): Promise<void> {
 		let queryString: string = undefined;
 		let eol: string = this._textResourcePropertiesService.getEOL(undefined);
 		if (context.insight && context.insight.query) {
@@ -34,9 +34,9 @@ export class RunInsightQueryAction extends Action {
 				queryString = context.insight.query.join(eol);
 			}
 		} else {
-			return Promise.resolve(false);
+			return;
 		}
-		return this.instantiationService.invokeFunction(openNewQuery, context.profile, queryString,
-			RunQueryOnConnectionMode.executeQuery).then(() => true, () => false);
+		await this.instantiationService.invokeFunction(openNewQuery, context.profile, queryString,
+			RunQueryOnConnectionMode.executeQuery);
 	}
 }

@@ -77,14 +77,14 @@ describe('buildUrn Method Tests', () => {
 
 	it('Urn should be correct with Server and only Databases folder', async function (): Promise<void> {
 		const leafNode: ExtHostObjectExplorerNodeStub =
-			new ExtHostObjectExplorerNodeStub('MyServer', undefined, 'Server', undefined)
-				.createChild('Databases', undefined, 'Folder');
+			new ExtHostObjectExplorerNodeStub('MyServer', 'MySchema', 'Server', undefined)
+				.createChild('Databases', '', 'Folder');
 		should(await buildUrn(leafNode)).equal('Server');
 	});
 
 	it('Urn should be correct with Server and Database node', async function (): Promise<void> {
 		const leafNode: ExtHostObjectExplorerNodeStub =
-			new ExtHostObjectExplorerNodeStub('Databases', undefined, 'Folder', undefined)
+			new ExtHostObjectExplorerNodeStub('Databases', 'MySchema', 'Folder', undefined)
 				.createChild(dbName, dbSchema, 'Database');
 		should(await buildUrn(leafNode)).equal(
 			`Server/Database[@Name='${escapedDbName}' and @Schema='${escapedDbSchema}']`);
@@ -92,9 +92,9 @@ describe('buildUrn Method Tests', () => {
 
 	it('Urn should be correct with Multiple levels of Nodes', async function (): Promise<void> {
 		const rootNode: ExtHostObjectExplorerNodeStub =
-			new ExtHostObjectExplorerNodeStub('Databases', undefined, 'Folder', undefined)
+			new ExtHostObjectExplorerNodeStub('Databases', 'MySchema', 'Folder', undefined)
 				.createChild(dbName, dbSchema, 'Database')
-				.createChild('Tables', undefined, 'Folder')
+				.createChild('Tables', 'MySchema', 'Folder')
 				.createChild(tableName, tableSchema, 'Table');
 		should(await buildUrn(rootNode)).equal(
 			`Server/Database[@Name='${escapedDbName}' and @Schema='${escapedDbSchema}']/Table[@Name='${escapedTableName}' and @Schema='${escapedTableSchema}']`);
@@ -102,10 +102,10 @@ describe('buildUrn Method Tests', () => {
 
 	it('Urn should be correct with Multiple levels of Nodes without schemas', async function (): Promise<void> {
 		const rootNode: ExtHostObjectExplorerNodeStub =
-			new ExtHostObjectExplorerNodeStub('Databases', undefined, 'Folder', undefined)
-				.createChild(dbName, undefined, 'Database')
-				.createChild('Tables', undefined, 'Folder')
-				.createChild(tableName, undefined, 'Table');
+			new ExtHostObjectExplorerNodeStub('Databases', '', 'Folder', undefined)
+				.createChild(dbName, '', 'Database')
+				.createChild('Tables', '', 'Folder')
+				.createChild(tableName, '', 'Table');
 		should(await buildUrn(rootNode)).equal(
 			`Server/Database[@Name='${escapedDbName}']/Table[@Name='${escapedTableName}']`);
 	});

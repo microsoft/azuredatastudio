@@ -8,6 +8,30 @@
 	width: 100%;
 }
 
+.resource-view .monaco-list .monaco-list-row .resource-type-row {
+	display: flex;
+	height: 100%;
+	width: 100%;
+}
+
+.resource-view .monaco-list .monaco-list-row .monaco-tl-twistie {
+	width: 0px;
+}
+
+.resource-view .monaco-list .monaco-list-row .resource-type-icon {
+	background-repeat: no-repeat;
+	background-size: contain;
+	width: 30px;
+	height: 30px;
+	margin: 5px;
+}
+
+.resource-view .monaco-list .monaco-list-row .resource-type-name {
+	margin: auto;
+	font-size: 13px;
+	width: 100%;
+}
+
 .resource-viewer .actions-container .action-item .action-label {
 	padding-left: 20px;
 	padding-right: 5px;

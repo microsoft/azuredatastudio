@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import type * as azdataType from 'azdata'; // eslint-disable-line no-duplicate-imports
 import * as vscode from 'vscode';
-import * as mssql from '../../mssql';
+import * as mssql from 'mssql';
 import * as os from 'os';
 import * as loc from './localizedConstants';
-import { ApiWrapper } from './common/apiWrapper';
+import * as dataworkspace from 'dataworkspace';
 import { promises as fs } from 'fs';
 
 export interface IPackageInfo {
@@ -32,11 +33,24 @@ export function getPackageInfo(packageJson: any): IPackageInfo {
  * @param msg The error message to map
  */
 export function getTelemetryErrorType(msg: string): string {
-	if (msg.indexOf('Object reference not set to an instance of an object') !== -1) {
+	if (msg && msg.indexOf('Object reference not set to an instance of an object') !== -1) {
 		return 'ObjectReferenceNotSet';
 	}
 	else {
 		return 'Other';
+	}
+}
+
+export function getSchemaCompareEndpointString(endpointType: mssql.SchemaCompareEndpointType): string {
+	switch (endpointType) {
+		case mssql.SchemaCompareEndpointType.Database:
+			return 'Database';
+		case mssql.SchemaCompareEndpointType.Dacpac:
+			return 'Dacpac';
+		case mssql.SchemaCompareEndpointType.Project:
+			return 'Project';
+		default:
+			return `Unknown: ${endpointType}`;
 	}
 }
 
@@ -56,14 +70,20 @@ export function getEndpointName(endpoint: mssql.SchemaCompareEndpointInfo): stri
 		if (!endpoint.databaseName && endpoint.connectionDetails) {
 			endpoint.databaseName = endpoint.connectionDetails['databaseName'];
 		}
+		if (endpoint.connectionName && endpoint.databaseName) {
+			return `${endpoint.connectionName}.${endpoint.databaseName}`;
+		}
 		if (endpoint.serverName && endpoint.databaseName) {
 			return `${endpoint.serverName}.${endpoint.databaseName}`;
 		} else {
 			return ' ';
 		}
 
-	} else {
+	} else if (endpoint.endpointType === mssql.SchemaCompareEndpointType.Dacpac) {
 		return endpoint.packageFilePath;
+
+	} else {
+		return endpoint.projectFilePath;
 	}
 }
 
@@ -85,42 +105,42 @@ function connectionInfoToConnectionProfile(details: azdata.ConnectionInfo): azda
 	};
 }
 
-export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompareEndpointInfo, caller: string, apiWrapper: ApiWrapper): Promise<string | undefined> {
+export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompareEndpointInfo, caller: string): Promise<string | undefined> {
 	let ownerUri = undefined;
 
 	if (endpoint.endpointType === mssql.SchemaCompareEndpointType.Database && endpoint.connectionDetails) {
-		let connectionProfile = await connectionInfoToConnectionProfile(endpoint.connectionDetails);
-		let connection = await apiWrapper.connect(connectionProfile, false, false);
+		let connectionProfile = connectionInfoToConnectionProfile(endpoint.connectionDetails);
+		let connection = await azdata.connection.connect(connectionProfile, false, false);
 
 		if (connection) {
-			ownerUri = await apiWrapper.getUriForConnection(connection.connectionId);
+			ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
 
 			if (!ownerUri) {
-				let connectionList = await apiWrapper.getConnections(true);
+				let connectionList = await azdata.connection.getConnections(true);
 
 				let userConnection;
 				userConnection = connectionList.find(connection =>
-					(endpoint.connectionDetails['authenticationType'] === 'SqlLogin'
-						&& endpoint.connectionDetails['serverName'] === connection.options.server
-						&& endpoint.connectionDetails['userName'] === connection.options.user
-						&& (endpoint.connectionDetails['databaseName'].toLowerCase() === connection.options.database.toLowerCase()
-							|| connection.options.database.toLowerCase() === 'master')));
+				(endpoint.connectionDetails['authenticationType'] === azdata.connection.AuthenticationType.SqlLogin
+					&& endpoint.connectionDetails['serverName'] === connection.options.server
+					&& endpoint.connectionDetails['userName'] === connection.options.user
+					&& (endpoint.connectionDetails['databaseName'].toLowerCase() === connection.options.database.toLowerCase()
+						|| connection.options.database.toLowerCase() === 'master')));
 
 				if (userConnection === undefined) {
 					const getConnectionString = loc.getConnectionString(caller);
 					// need only yes button - since the modal dialog has a default cancel
-					let result = await apiWrapper.showWarningMessage(getConnectionString, { modal: true }, loc.YesButtonText);
+					let result = await vscode.window.showWarningMessage(getConnectionString, { modal: true }, loc.YesButtonText);
 					if (result === loc.YesButtonText) {
-						userConnection = await apiWrapper.openConnectionDialog(undefined, connectionProfile);
+						userConnection = await azdata.connection.openConnectionDialog(undefined, connectionProfile);
 					}
 				}
 
 				if (userConnection !== undefined) {
-					ownerUri = await apiWrapper.getUriForConnection(userConnection.connectionId);
+					ownerUri = await azdata.connection.getUriForConnection(userConnection.connectionId);
 				}
 			}
 			if (!ownerUri && connection.errorMessage) {
-				apiWrapper.showErrorMessage(connection.errorMessage);
+				vscode.window.showErrorMessage(connection.errorMessage);
 			}
 		}
 	}
@@ -141,4 +161,30 @@ export async function exists(path: string): Promise<boolean> {
 	} catch (e) {
 		return false;
 	}
+}
+
+// Try to load the azdata API - but gracefully handle the failure in case we're running
+// in a context where the API doesn't exist (such as VS Code)
+let azdataApi: typeof azdataType | undefined = undefined;
+try {
+	azdataApi = require('azdata');
+	if (!azdataApi?.version) {
+		// webpacking makes the require return an empty object instead of throwing an error so make sure we clear the var
+		azdataApi = undefined;
+	}
+} catch {
+	// no-op
+}
+
+/**
+ * Gets the azdata API if it's available in the context this extension is running in.
+ * @returns The azdata API if it's available
+ */
+export function getAzdataApi(): typeof azdataType | undefined {
+	return azdataApi;
+}
+
+export function getDataWorkspaceExtensionApi(): dataworkspace.IExtension {
+	const extension = vscode.extensions.getExtension(dataworkspace.extension.name)!;
+	return extension.exports;
 }

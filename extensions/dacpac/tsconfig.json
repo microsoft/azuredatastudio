@@ -1,9 +1,10 @@
 {
-	"extends": "../shared.tsconfig.json",
+	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
 		"outDir": "./out",
 		"strict": false,
-		"noUnusedParameters": false
+		"noUnusedParameters": false,
+		"strictNullChecks": false
 	},
 	"include": [
 		"src/**/*"

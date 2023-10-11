@@ -16,16 +16,14 @@ import { IAngularEventingService } from 'sql/platform/angularEventing/browser/an
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as nls from 'vs/nls';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IMenuService } from 'vs/platform/actions/common/actions';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class ServerDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
@@ -52,16 +50,14 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(INotificationService) notificationService: INotificationService,
 		@Inject(IAngularEventingService) angularEventingService: IAngularEventingService,
-		@Inject(IConfigurationService) configurationService: IConfigurationService,
 		@Inject(ILogService) logService: ILogService,
 		@Inject(ICommandService) commandService: ICommandService,
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
 		@Inject(IMenuService) menuService: IMenuService,
-		@Inject(IKeybindingService) keybindingService: IKeybindingService,
-		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IWorkbenchThemeService) themeService: IWorkbenchThemeService
+		@Inject(IWorkbenchThemeService) themeService: IWorkbenchThemeService,
+		@Inject(IInstantiationService) instantiationService: IInstantiationService
 	) {
-		super(dashboardService, el, _cd, notificationService, angularEventingService, configurationService, logService, commandService, contextKeyService, menuService, keybindingService, contextMenuService, themeService);
+		super(dashboardService, el, _cd, notificationService, angularEventingService, logService, commandService, contextKeyService, menuService, themeService, instantiationService);
 
 		// special-case handling for MSSQL data provider
 		const connInfo = this.dashboardService.connectionManagementService.connectionInfo;

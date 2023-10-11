@@ -4,16 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vs/base/common/lifecycle';
-import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellEditModes, ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as types from 'vs/base/common/types';
 import { NotebookFindMatch, NotebookFindDecorations } from 'sql/workbench/contrib/notebook/browser/find/notebookFindDecorations';
 import * as model from 'vs/editor/common/model';
-import { ModelDecorationOptions, DidChangeDecorationsEmitter, createTextBuffer } from 'vs/editor/common/model/textModel';
-import { IModelDecorationsChangedEvent } from 'vs/editor/common/model/textModelEvents';
+import { ModelDecorationOptions, DidChangeDecorationsEmitter, createTextBuffer, TextModel } from 'vs/editor/common/model/textModel';
 import { IntervalNode } from 'vs/editor/common/model/intervalTree';
-import { EDITOR_MODEL_DEFAULTS } from 'vs/editor/common/config/editorOptions';
 import { Range, IRange } from 'vs/editor/common/core/range';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { singleLetterHash, isHighSurrogate } from 'vs/base/common/strings';
@@ -23,8 +21,10 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { NOTEBOOK_COMMAND_SEARCH } from 'sql/workbench/services/notebook/common/notebookContext';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
-import { ActiveEditorContext } from 'vs/workbench/common/editor';
 import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { nb } from 'azdata';
+import { IModelDecorationsChangedEvent } from 'vs/editor/common/textModelEvents';
+import { ActiveEditorContext } from 'vs/workbench/common/contextkeys';
 
 function _normalizeOptions(options: model.IModelDecorationOptions): ModelDecorationOptions {
 	if (options instanceof ModelDecorationOptions) {
@@ -54,7 +54,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 	public findExpression: string;
 
 	//#region Decorations
-	private readonly _onDidChangeDecorations: DidChangeDecorationsEmitter = this._register(new DidChangeDecorationsEmitter());
+	private readonly _onDidChangeDecorations: DidChangeDecorationsEmitter = this._register(new DidChangeDecorationsEmitter(affectedInjectedTextLines => { } /* this.handleBeforeFireDecorationsChangedEvent(affectedInjectedTextLines) */)); // Do we need this event?
 	public readonly onDidChangeDecorations: Event<IModelDecorationsChangedEvent> = this._onDidChangeDecorations.event;
 	private _decorations: { [decorationId: string]: NotebookIntervalNode; };
 	//#endregion
@@ -71,7 +71,8 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 
 		this._decorations = Object.create(null);
 
-		this._buffer = createTextBuffer('', NotebookFindModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
+		const { textBuffer, } = createTextBuffer('', TextModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
+		this._buffer = textBuffer;
 		this._versionId = 1;
 		this.id = '$model' + MODEL_ID;
 	}
@@ -97,17 +98,6 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		this._findDecorations.dispose();
 		this.clearFind();
 	}
-
-	public static DEFAULT_CREATION_OPTIONS: model.ITextModelCreationOptions = {
-		isForSimpleWidget: false,
-		tabSize: EDITOR_MODEL_DEFAULTS.tabSize,
-		indentSize: EDITOR_MODEL_DEFAULTS.indentSize,
-		insertSpaces: EDITOR_MODEL_DEFAULTS.insertSpaces,
-		detectIndentation: false,
-		defaultEOL: model.DefaultEndOfLine.LF,
-		trimAutoWhitespace: EDITOR_MODEL_DEFAULTS.trimAutoWhitespace,
-		largeFileOptimizations: EDITOR_MODEL_DEFAULTS.largeFileOptimizations,
-	};
 
 	public get onFindCountChange(): Event<number> { return this._onFindCountChange.event; }
 
@@ -287,7 +277,8 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 	 */
 	private _validateRangeRelaxedNoAllocations(range: IRange): NotebookRange {
 		if (range instanceof NotebookRange) {
-			this._buffer = createTextBuffer(range.cell.source instanceof Array ? range.cell.source.join('\n') : range.cell.source, NotebookFindModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
+			const { textBuffer, } = createTextBuffer(range.cell.source instanceof Array ? range.cell.source.join('\n') : range.cell.source, TextModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
+			this._buffer = textBuffer;
 		}
 
 		const linesCount = this._buffer.getLineCount();
@@ -516,7 +507,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 
 	public get findMatches(): NotebookFindMatch[] {
 		let findMatches: NotebookFindMatch[] = [];
-		this._findArray.forEach(element => {
+		this._findArray?.forEach(element => {
 			findMatches = findMatches.concat(new NotebookFindMatch(element, null));
 		});
 		return findMatches;
@@ -535,7 +526,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 
 	private searchFn(cell: ICellModel, exp: string, matchCase: boolean = false, wholeWord: boolean = false, maxMatches?: number): NotebookRange[] {
 		let findResults: NotebookRange[] = [];
-		if (cell.cellType === 'markdown' && cell.isEditMode && typeof cell.source !== 'string') {
+		if (cell.cellType === 'markdown' && (cell.showMarkdown || cell.currentMode === CellEditModes.SPLIT) && typeof cell.source !== 'string') {
 			let cellSource = cell.source;
 			for (let j = 0; j < cellSource.length; j++) {
 				let findStartResults = this.search(cellSource[j], exp, matchCase, wholeWord, maxMatches - findResults.length);
@@ -546,7 +537,8 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 				});
 			}
 		}
-		let cellVal = cell.cellType === 'markdown' ? cell.renderedOutputTextContent : cell.source;
+		// if it's markdown cell in Markdown only mode, don't search on renderedOutput.
+		let cellVal = cell.cellType === 'markdown' ? (cell.currentMode === CellEditModes.SPLIT || !cell.showMarkdown ? cell.renderedOutputTextContent : undefined) : cell.source;
 		if (cellVal) {
 			if (typeof cellVal === 'string') {
 				let findStartResults = this.search(cellVal, exp, matchCase, wholeWord, maxMatches);
@@ -557,7 +549,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 
 			} else {
 				for (let j = 0; j < cellVal.length; j++) {
-					let cellValFormatted = cell.cellType === 'markdown' ? this.cleanMarkdownLinks(cellVal[j]) : cellVal[j];
+					let cellValFormatted = cellVal[j];
 					let findStartResults = this.search(cellValFormatted, exp, matchCase, wholeWord, maxMatches - findResults.length);
 					findStartResults.forEach(start => {
 						// lineNumber: j+1 since notebook editors aren't zero indexed.
@@ -566,6 +558,66 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 					});
 				}
 			}
+		}
+		if (cell.cellType === 'code' && cell.outputs.length > 0) {
+			// i = output element index.
+			let i: number = 0;
+			cell.outputs.forEach(output => {
+				let findStartResults: number[] = [];
+				switch (output.output_type) {
+					case 'stream':
+						let cellValFormatted = output as nb.IStreamResult;
+						findStartResults = this.search(cellValFormatted.text.toString(), exp, matchCase, wholeWord, maxMatches - findResults.length);
+						findStartResults?.forEach(start => {
+							let range = new NotebookRange(cell, i + 1, start, i + 1, start + exp.length, false, i);
+							findResults.push(range);
+						});
+						i++;
+						break;
+					case 'error':
+						let error = output as nb.IErrorResult;
+						let errorValue = error.traceback?.length > 0 ? error.traceback.toString() : error.evalue;
+						findStartResults = this.search(errorValue, exp, matchCase, wholeWord, maxMatches - findResults.length);
+						findStartResults.forEach(start => {
+							let range = new NotebookRange(cell, i + 1, start, i + 1, start + exp.length, false, i);
+							findResults.push(range);
+						});
+						i++;
+						break;
+					case 'display_data':
+						let displayValue = output as nb.IDisplayData;
+						findStartResults = this.search(JSON.parse(JSON.stringify(displayValue.data))['text/html'], exp, matchCase, wholeWord, maxMatches - findResults.length);
+						findStartResults.forEach(start => {
+							let range = new NotebookRange(cell, i + 1, start, i + 1, start + exp.length, false, i);
+							findResults.push(range);
+						});
+						i++;
+						break;
+					case 'execute_result':
+						// When result is a table
+						let executeResult = output as nb.IExecuteResult;
+						const result = JSON.parse(JSON.stringify(executeResult.data));
+						const data = result['application/vnd.dataresource+json'].data;
+						if (data.length > 0) {
+							for (let row = 0; row < data.length; row++) {
+								let rowData = data[row];
+								let j: number = 0;
+								for (const key in rowData) {
+									let findStartResults = this.search(rowData[key].toString(), exp, matchCase, wholeWord, maxMatches - findResults.length);
+									if (findStartResults.length) {
+										let range = new NotebookRange(cell, row + 1, j + 1, row + 1, j + 1, false, i);
+										findResults.push(range);
+									}
+									j++;
+								}
+							}
+							i++;
+						}
+						break;
+					default: i++;
+						break;
+				}
+			});
 		}
 		return findResults;
 	}
@@ -606,12 +658,6 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		return findResults;
 	}
 
-	// In markdown links are defined as [Link Text](https://url/of/the/text). when searching for text we shouldn't
-	// look for the values inside the (), below regex replaces that with just the Link Text.
-	cleanMarkdownLinks(cellSrc: string): string {
-		return cellSrc.replace(/(?:__|[*#])|\[(.*?)\]\(.*?\)/gm, '$1');
-	}
-
 	clearFind(): void {
 		this._findArray = new Array<NotebookRange>();
 		this._findIndex = 0;
@@ -650,7 +696,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		}
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		super.dispose();
 		this._findArray = [];
 		this._isDisposed = true;
@@ -693,7 +739,7 @@ export const findCommand = new SearchNotebookCommand({
 	id: NOTEBOOK_COMMAND_SEARCH,
 	precondition: ActiveEditorContext.isEqualTo(NotebookEditor.ID),
 	kbOpts: {
-		primary: KeyMod.CtrlCmd | KeyCode.KEY_F,
+		primary: KeyMod.CtrlCmd | KeyCode.KeyF,
 		weight: KeybindingWeight.EditorContrib
 	}
 });

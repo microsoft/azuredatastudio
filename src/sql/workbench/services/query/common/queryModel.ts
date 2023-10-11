@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { IQueryMessage, ResultSetSubset } from 'sql/workbench/services/query/common/query';
+import { ICellValue, IQueryMessage, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
@@ -15,7 +15,8 @@ import {
 	EditCreateRowResult,
 	EditRevertCellResult,
 	ExecutionPlanOptions,
-	queryeditor
+	queryeditor,
+	executionPlan
 } from 'azdata';
 import { QueryInfo } from 'sql/workbench/services/query/common/queryModelService';
 import { IRange } from 'vs/editor/common/core/range';
@@ -30,8 +31,14 @@ export interface IQueryPlanInfo {
 	planXml: string;
 }
 
+export interface IExecutionPlanInfo {
+	providerId: string;
+	fileUri: string;
+	planGraphs: executionPlan.ExecutionPlanGraph[];
+}
+
 export interface IQueryInfo {
-	range: IRange[];
+	batchRanges: IRange[];
 	messages: IQueryMessage[];
 }
 
@@ -48,6 +55,9 @@ export interface IQueryEvent {
 export interface IQueryModelService {
 	_serviceBrand: undefined;
 
+	onCellSelectionChanged: Event<ICellValue[]>;
+	notifyCellSelectionChanged(selectedValues: ICellValue[]): void;
+
 	getQueryRunner(uri: string): QueryRunner | undefined;
 
 	getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Promise<ResultSetSubset | undefined>;
@@ -56,6 +66,7 @@ export interface IQueryModelService {
 	runQueryString(uri: string, selection: string | undefined): void;
 	cancelQuery(input: QueryRunner | string): void;
 	disposeQuery(uri: string): void;
+	changeConnectionUri(newUri: string, oldUri: string);
 	isRunningQuery(uri: string): boolean;
 
 	getDataService(uri: string): DataService;

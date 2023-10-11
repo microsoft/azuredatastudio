@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
+import { ITree, IRenderer } from 'sql/base/parts/tree/browser/tree';
 import { TaskNode, TaskStatus } from 'sql/workbench/services/tasks/common/tasksNode';
 import * as dom from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
@@ -73,27 +73,27 @@ export class TaskHistoryRenderer implements IRenderer {
 			switch (element.status) {
 				case TaskStatus.SucceededWithWarning:
 				case TaskStatus.Succeeded:
-					dom.addClass(templateData.icon, TaskHistoryRenderer.SUCCESS_CLASS);
+					templateData.icon.classList.add(TaskHistoryRenderer.SUCCESS_CLASS);
 					taskStatus = localize('succeeded', "succeeded");
 					break;
 				case TaskStatus.Failed:
-					dom.addClass(templateData.icon, TaskHistoryRenderer.FAIL_CLASS);
+					templateData.icon.classList.add(TaskHistoryRenderer.FAIL_CLASS);
 					taskStatus = localize('failed', "failed");
 					break;
 				case TaskStatus.InProgress:
-					dom.addClass(templateData.icon, TaskHistoryRenderer.INPROGRESS_CLASS);
+					templateData.icon.classList.add(TaskHistoryRenderer.INPROGRESS_CLASS);
 					taskStatus = localize('inProgress', "in progress");
 					break;
 				case TaskStatus.NotStarted:
-					dom.addClass(templateData.icon, TaskHistoryRenderer.NOTSTARTED_CLASS);
+					templateData.icon.classList.add(TaskHistoryRenderer.NOTSTARTED_CLASS);
 					taskStatus = localize('notStarted', "not started");
 					break;
 				case TaskStatus.Canceled:
-					dom.addClass(templateData.icon, TaskHistoryRenderer.CANCELED_CLASS);
+					templateData.icon.classList.add(TaskHistoryRenderer.CANCELED_CLASS);
 					taskStatus = localize('canceled', "canceled");
 					break;
 				case TaskStatus.Canceling:
-					dom.addClass(templateData.icon, TaskHistoryRenderer.INPROGRESS_CLASS);
+					templateData.icon.classList.add(TaskHistoryRenderer.INPROGRESS_CLASS);
 					taskStatus = localize('canceling', "canceling");
 					break;
 			}
@@ -103,6 +103,7 @@ export class TaskHistoryRenderer implements IRenderer {
 			// Determine the task title and set hover text equal to that
 			templateData.label.textContent = element.taskName + ' ' + taskStatus;
 			templateData.label.title = templateData.label.textContent;
+			templateData.label.setAttribute('role', 'alert');
 
 			let description: string | undefined;
 			// Determine the target name and set hover text equal to that

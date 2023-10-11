@@ -17,6 +17,13 @@
 	background-color: unset;
 }
 
+.hc-light .wizardNavigation-container {
+	border-right-color: #6fc3df;
+	border-right-style: solid;
+	border-right-width: 1px;
+	background-color: unset;
+}
+
 .wizardNavigation-pageNumber {
 	flex-grow: 1;
 	display: flex;
@@ -51,6 +58,14 @@
 	border-color: white;
 }
 
+.hc-light .wizardNavigation-dot {
+	flex-grow: 1;
+	background-color: unset;
+	border-style: solid;
+	border-width: 1px;
+	border-color: black;
+}
+
 .wizardNavigation-connector {
 	width: 3px;
 	display: inline-block;
@@ -59,6 +74,10 @@
 }
 
 .hc-black .wizardNavigation-connector {
+	display: none;
+}
+
+.hc-light .wizardNavigation-connector {
 	display: none;
 }
 
@@ -73,14 +92,31 @@
 	border-style: solid;
 }
 
+.hc-light .wizardNavigation-dot.active {
+	border-color: #6fc3df;
+	background-color: unset;
+	border-style: solid;
+}
+
 .hc-black .wizardNavigation-dot.active:hover,
 .hc-black .wizardNavigation-dot.active.currentPage:hover {
 	border-color: #F38518;
 	border-style: dashed;
 }
 
+.hc-light .wizardNavigation-dot.active:hover,
+.hc-light .wizardNavigation-dot.active.currentPage:hover {
+	border-color: #0F4A85;
+	border-style: dashed;
+}
+
 .wizardNavigation-dot.active.currentPage {
 	border-style: double;
+}
+
+.hc-light .wizardNavigation-dot.active.currentPage {
+	border-style: solid;
+	border-color: #0F4A85;
 }
 
 .hc-black .wizardNavigation-dot.active.currentPage {

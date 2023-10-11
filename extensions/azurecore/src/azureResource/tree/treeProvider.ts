@@ -16,14 +16,14 @@ import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { AzureResourceErrorMessageUtil, equals } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
-
+import { AzureAccount } from 'azurecore';
 
 export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
 	public isSystemInitialized: boolean = false;
 
-	private accounts: azdata.Account[];
-	private _onDidChangeTreeData = new vscode.EventEmitter<TreeNode>();
-	private loadingAccountsPromise: Promise<void>;
+	private accounts: AzureAccount[] = [];
+	private _onDidChangeTreeData = new vscode.EventEmitter<TreeNode | undefined>();
+	private loadingAccountsPromise: Promise<void> | undefined;
 
 	public constructor(private readonly appContext: AppContext) {
 		azdata.accounts.onDidChangeAccounts(async (e: azdata.DidChangeAccountsParams) => {
@@ -43,7 +43,7 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
 		if (element) {
-			return element.getChildren(true);
+			return element.getChildren();
 		}
 
 		if (!this.isSystemInitialized) {
@@ -54,10 +54,14 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 		}
 
 		try {
-			if (this.accounts && this.accounts.length > 0) {
-				return this.accounts.map((account) => new AzureResourceAccountTreeNode(account, this.appContext, this));
+			if (this.accounts) {
+				if (this.accounts.length === 0) {
+					return [new AzureResourceAccountNotSignedInTreeNode()];
+				} else {
+					return this.accounts.map((account) => new AzureResourceAccountTreeNode(account, this.appContext, this));
+				}
 			} else {
-				return [new AzureResourceAccountNotSignedInTreeNode()];
+				return [AzureResourceMessageTreeNode.create(localize('azure.resource.tree.treeProvider.loadingLabel', "Loading ..."), undefined)];
 			}
 		} catch (error) {
 			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), undefined)];
@@ -81,21 +85,20 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 		this.loadingAccountsPromise = undefined;
 	}
 
-	public get onDidChangeTreeData(): vscode.Event<TreeNode> {
+	public get onDidChangeTreeData(): vscode.Event<TreeNode | undefined> {
 		return this._onDidChangeTreeData.event;
 	}
 
-	public notifyNodeChanged(node: TreeNode): void {
+	public notifyNodeChanged(node: TreeNode | undefined): void {
 		this._onDidChangeTreeData.fire(node);
 	}
 
-	public async refresh(node: TreeNode, isClearingCache: boolean): Promise<void> {
+	public async refresh(node: TreeNode | undefined, isClearingCache: boolean): Promise<void> {
 		if (isClearingCache) {
 			if ((node instanceof AzureResourceContainerTreeNodeBase)) {
 				node.clearCache();
 			}
 		}
-
 		this._onDidChangeTreeData.fire(node);
 	}
 

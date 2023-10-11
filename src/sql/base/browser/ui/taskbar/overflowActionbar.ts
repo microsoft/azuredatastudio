@@ -2,12 +2,13 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { IAction, IActionViewItem } from 'vs/base/common/actions';
+import { IAction } from 'vs/base/common/actions';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import {
 	IActionBarOptions, ActionsOrientation,
-	IActionOptions
+	IActionOptions,
+	IActionViewItem
 } from 'vs/base/browser/ui/actionbar/actionbar';
 import * as DOM from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
@@ -218,7 +219,7 @@ export class OverflowActionBar extends ActionBar {
 		this._focusedItem = this._actionsList.childElementCount - 1;
 	}
 
-	protected updateFocusedItem(): void {
+	protected override updateFocusedItem(): void {
 		let actionIndex = 0;
 		for (let i = 0; i < this._actionsList.children.length; i++) {
 			let elem = this._actionsList.children[i];
@@ -254,7 +255,7 @@ export class OverflowActionBar extends ActionBar {
 	 * Push an HTML Element onto the action bar UI in the position specified by options.
 	 * Pushes to the last position if no options are provided.
 	 */
-	public pushElement(element: HTMLElement, options: IActionOptions = {}): void {
+	public override pushElement(element: HTMLElement, options: IActionOptions = {}): void {
 		super.pushElement(element, options);
 		this.resizeToolbar();
 	}
@@ -263,12 +264,12 @@ export class OverflowActionBar extends ActionBar {
 	 * Push an action onto the action bar UI in the position specified by options.
 	 * Pushes to the last position if no options are provided.
 	 */
-	public pushAction(arg: IAction | IAction[], options: IActionOptions = {}): void {
+	public override pushAction(arg: IAction | IAction[], options: IActionOptions = {}): void {
 		super.pushAction(arg, options);
 		this.resizeToolbar();
 	}
 
-	protected focusNext(): void {
+	protected override focusNext(): void {
 		if (typeof this._focusedItem === 'undefined') {
 			this._focusedItem = this._items.length - 1;
 		}
@@ -288,7 +289,7 @@ export class OverflowActionBar extends ActionBar {
 		this.updateFocus();
 	}
 
-	protected focusPrevious(): void {
+	protected override focusPrevious(): void {
 		if (typeof this._focusedItem === 'undefined') {
 			this._focusedItem = 0;
 		}
@@ -313,7 +314,7 @@ export class OverflowActionBar extends ActionBar {
 		this.updateFocus();
 	}
 
-	protected updateFocus(): void {
+	protected override updateFocus(): void {
 		if (typeof this._focusedItem === 'undefined') {
 			this._domNode.focus();
 			return;
@@ -340,7 +341,7 @@ export class OverflowActionBar extends ActionBar {
 		}
 	}
 
-	protected cancel(): void {
+	protected override cancel(): void {
 		super.cancel();
 
 		if (this._overflow) {
@@ -348,9 +349,9 @@ export class OverflowActionBar extends ActionBar {
 		}
 	}
 
-	public run(action: IAction, context?: any): Promise<any> {
+	public override async run(action: IAction, context?: any): Promise<void> {
 		this.hideOverflowDisplay();
-		return this._actionRunner.run(action, context);
+		this._actionRunner.run(action, context);
 	}
 
 	public get actionsList(): HTMLElement {

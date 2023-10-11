@@ -1,0 +1,1022 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/* Styling for the execution plan tab container */
+.eps-container {
+	width: 100%;
+	height: 100%;
+	overflow: scroll;
+	flex-direction: column;
+	display: flex;
+	flex-wrap: nowrap;
+}
+
+/* Styling for the a execution plan container in the tab */
+.eps-container .execution-plan {
+	width: 100%;
+	min-height: 500px;
+	min-width: 470px;
+	display: flex;
+	overflow: hidden;
+	flex: 1;
+}
+
+/* horizontal height resizing sash container that is below a execution plan */
+.eps-container .execution-plan-sash {
+	width: 100%;
+	height: 3px;
+	position: relative;
+}
+
+/*
+The actual sash element constructed by code. Important is used here because the width of the sash is fixed.
+However we always want it to be the width of the container it is resizing.
+*/
+.eps-container .execution-plan-sash>div {
+	width: 100% !important;
+}
+
+/* Container that contains execution plan header, description and graph diagram */
+.eps-container .execution-plan .plan {
+	flex: 1;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+}
+
+/* Container that contains views made by the action-bar actions */
+.eps-container .execution-plan .plan .plan-action-container {
+	display: flex;
+	flex-direction: column;
+	position: absolute;
+	right: 10px;
+}
+
+/* views created by the action-bar actions */
+.eps-container .execution-plan .plan .plan-action-container .child,
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .child {
+	flex: 0 0 25px;
+	margin-left: auto;
+}
+
+/* Search node action view */
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget,
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .search-node-widget {
+	display: flex;
+	flex-direction: row;
+	padding: 5px;
+	height: auto;
+	width: 460px;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget .property-name-label {
+	flex: 0 80px;
+	line-height: 26px
+}
+
+/* input bar styling in search node action view */
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container,
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .search-node-widget .select-container {
+	margin-left: 5px;
+}
+
+/* styling for select element in search node action view */
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container>select,
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .search-node-widget .select-container>select {
+	height: 100%;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget .input {
+	width: 100px;
+}
+
+/* Custom zoom action view */
+.eps-container .execution-plan .plan .plan-action-container .custom-zoom-view {
+	display: flex;
+	flex-direction: row;
+	padding: 5px;
+	height: auto;
+	width: 240px;
+}
+
+/* Find expensive operation view */
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget {
+	display: flex;
+	flex-direction: row;
+	padding: 5px;
+	height: auto;
+	width: auto;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .select-container {
+	margin-left: 5px;
+	display: flex;
+	align-items: center;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .select-container expensive-operation-name-select-box-label {
+	margin-right: 5px;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .select-container>select {
+	height: 100%;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .monaco-button.monaco-text-button {
+	width: auto;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+/* execution plan header that contains the relative query cost, query statement and recommendations */
+.eps-container .execution-plan .plan .header,
+.top-operations-tab .top-operations-container .query-row {
+	padding: 5px;
+	font-weight: bolder;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+/* execution plan header that contains the relative query cost, query statement and recommendations */
+.eps-container .execution-plan .plan .header .query-row,
+.top-operations-tab .top-operations-container .query-row {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 1;
+	line-clamp: 1;
+	-webkit-box-orient: vertical;
+}
+
+/* each link in execution plan recommendations */
+.eps-container .execution-plan .plan .header .recommendations>a {
+	width: fit-content;
+	align-items: left;
+	text-align: left;
+}
+
+/* graph diagram in execution plan */
+.eps-container .execution-plan .plan .diagram {
+	width: 100%;
+	height: 100%;
+	overflow: scroll;
+	position: relative;
+	outline-offset: -3px;
+	outline-width: 3px;
+}
+
+.eps-container .properties {
+	flex: 0 0 500px;
+	flex-direction: row;
+}
+
+.eps-container .properties-sash {
+	position: relative;
+	height: 100%;
+	width: 1px;
+}
+
+/* Properties view in execution plan */
+.eps-container .properties .properties-content {
+	overflow: hidden;
+	width: 500px;
+	height: calc(100% - 2px);
+	display: flex;
+	flex-direction: column;
+	border-left: 3px solid;
+	border-color: var(--separator-border)
+}
+
+/* Title container of the properties view */
+.eps-container .properties .title {
+	line-height: 30px;
+	height: 22px;
+	font-size: 11px;
+	font-weight: bold;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	box-sizing: border-box;
+	margin-bottom: 5px;
+	padding-left: 5px;
+	flex: 0 0 30px;
+}
+
+/* text in title container of properties view */
+.eps-container .properties .title .text {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-size: 11px;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+	flex: 1;
+}
+
+/* action bar in the title container for the properties view. This contains the close icon */
+.eps-container .properties .title .action-bar {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-size: 11px;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+	flex: 0 0 30px;
+	margin-top: 5px;
+}
+
+.eps-container .properties .search-action-bar-container .table-action-bar {
+	flex: auto
+}
+
+.eps-container .properties .search-action-bar-container .table-search {
+	flex: 1;
+	max-width: 300px;
+}
+
+.eps-container .properties .search-action-bar-container .table-search>div,
+.top-operations-tab .top-operations-container .top-operations-header-search-bar>div {
+	background-position-y: center;
+	background-position-x: 3px;
+}
+
+.eps-container .properties .search-action-bar-container .table-search input,
+.top-operations-tab .top-operations-container .top-operations-header-search-bar input {
+	margin-left: 20px;
+	width: calc(100% - 20px);
+}
+
+.eps-container .properties .search-action-bar-container {
+	display: flex;
+}
+
+/* Operation name styling in the properties view. */
+.eps-container .properties .operation-name {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-size: 13px;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+	flex: 0 0 25px;
+	margin-top: 3px;
+	margin-bottom: 5px;
+	margin-left: 5px;
+}
+
+/* Properties table container in properties view */
+.eps-container .properties .table-container {
+	overflow: hidden;
+	flex: 1;
+	flex-grow: 1;
+}
+
+/* Action bar for the execution plan */
+.eps-container .execution-plan .action-bar-container {
+	flex: 0 0 25px;
+	border-left: 1px solid var(--separator-border);
+}
+
+/* styling for the column headers in the properties table */
+.eps-container .properties .table-container .prop-table-header {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-size: 11px;
+	min-width: 10px;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+	font-weight: bold;
+}
+
+.eps-container .properties-header {
+	font-weight: bold;
+	padding: 5px;
+}
+
+.eps-container .properties-toggle {
+	height: 9px;
+	width: 9px;
+	display: inline-block;
+}
+
+.eps-container .properties-toggle .expand {
+	background: url(../images/expand.gif) no-repeat center center;
+}
+
+.eps-container .properties-toggle .collapse {
+	background: url(../images/collapse.gif) no-repeat center center;
+}
+
+/* Stylings necessary for tooltips to show up next to target nodes*/
+.mxTooltip {
+	border-style: solid;
+	border-width: 1px;
+	position: absolute;
+	cursor: default;
+	padding: 4px;
+	z-index: 3;
+}
+
+.eps-container .ep-save-plan-icon,
+.hc-light .eps-container .ep-save-plan-icon {
+	background-image: url(../images/actionIcons/save.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-save-plan-icon,
+.hc-black .eps-container .ep-save-plan-icon {
+	background-image: url(../images/actionIcons/saveDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-open-properties-icon,
+.hc-light .eps-container .ep-open-properties-icon {
+	background-image: url(../images/actionIcons/openProperties.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-open-properties-icon,
+.hc-black .eps-container .ep-open-properties-icon {
+	background-image: url(../images/actionIcons/openPropertiesDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-open-query-icon,
+.hc-light .eps-container .ep-open-query-icon {
+	background-image: url(../images/actionIcons/openQuery.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-open-query-icon,
+.hc-black .eps-container .ep-open-query-icon {
+	background-image: url(../images/actionIcons/openQueryDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-open-plan-file-icon,
+.hc-light .eps-container .ep-open-plan-file-icon {
+	background-image: url(../images/actionIcons/openPlanFile.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-open-plan-file-icon,
+.hc-black .eps-container .ep-open-plan-file-icon {
+	background-image: url(../images/actionIcons/openPlanFileDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+
+.eps-container .ep-search-icon,
+.top-operations-tab .ep-search-icon,
+.hc-light .eps-container .ep-search-icon,
+.hc-light .top-operations-tab .ep-search-icon {
+	background-image: url(../images/actionIcons/search.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-search-icon,
+.hc-black .eps-container .ep-search-icon,
+.vs-dark .top-operations-tab .ep-search-icon,
+.hc-black .top-operations-tab .ep-search-icon {
+	background-image: url(../images/actionIcons/searchDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-filter-icon,
+.top-operations-tab .ep-filter-icon,
+.hc-light .eps-container .ep-filter-icon,
+.hc-light .top-operations-tab .ep-filter-icon {
+	background-image: url(../images/actionIcons/filter.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-filter-icon,
+.hc-black .eps-container .ep-filter-icon,
+.vs-dark .top-operations-tab .ep-filter-icon,
+.hc-black .top-operations-tab .ep-filter-icon {
+	background-image: url(../images/actionIcons/filterDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-sort-alphabetically-icon,
+.hc-light .eps-container .ep-sort-alphabetically-icon {
+	background-image: url(../images/actionIcons/sortAlphabetically.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-sort-alphabetically-icon,
+.hc-black .eps-container .ep-sort-alphabetically-icon {
+	background-image: url(../images/actionIcons/sortAlphabeticallyDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-sort-reverse-alphabetically-icon,
+.hc-light .eps-container .ep-sort-reverse-alphabetically-icon {
+	background-image: url(../images/actionIcons/sortReverseAlphabetically.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-sort-reverse-alphabetically-icon,
+.hc-black .eps-container .ep-sort-reverse-alphabetically-icon {
+	background-image: url(../images/actionIcons/sortReverseAlphabeticallyDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-sort-display-order-icon,
+.hc-light .eps-container .ep-sort-display-order-icon {
+	background-image: url(../images/actionIcons/sortByDisplayOrder.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-sort-display-order-icon,
+.hc-black .eps-container .ep-sort-display-order-icon {
+	background-image: url(../images/actionIcons/sortByDisplayOrderDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-zoom-in-icon,
+.hc-light .eps-container .ep-zoom-in-icon {
+	background-image: url(../images/actionIcons/zoomIn.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-zoom-in-icon,
+.hc-black .eps-container .ep-zoom-in-icon {
+	background-image: url(../images/actionIcons/zoomInDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-zoom-out-icon,
+.hc-light .eps-container .ep-zoom-out-icon {
+	background-image: url(../images/actionIcons/zoomOut.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-zoom-out-icon,
+.hc-black .eps-container .ep-zoom-out-icon {
+	background-image: url(../images/actionIcons/zoomOutDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-custom-zoom-icon,
+.hc-light .eps-container .ep-custom-zoom-icon {
+	background-image: url(../images/actionIcons/customZoom.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-custom-zoom-icon,
+.hc-black .eps-container .ep-custom-zoom-icon {
+	background-image: url(../images/actionIcons/customZoomDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-zoom-to-fit-icon,
+.hc-light .eps-container .ep-zoom-to-fit-icon {
+	background-image: url(../images/actionIcons/zoomToFit.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-zoom-to-fit-icon,
+.hc-black .eps-container .ep-zoom-to-fit-icon {
+	background-image: url(../images/actionIcons/zoomToFitDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-zoom-icon,
+.hc-light .eps-container .ep-zoom-icon {
+	background-image: url(../images/actionIcons/zoom.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-zoom-icon,
+.hc-light .eps-container .ep-zoom-icon {
+	background-image: url(../images/actionIcons/zoomDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-highlight-expensive-operation-icon,
+.hc-light .eps-container .ep-highlight-expensive-operation-icon {
+	background-image: url(../images/actionIcons/highlightExpensiveOperation.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-highlight-expensive-operation-icon,
+.hc-black .eps-container .ep-highlight-expensive-operation-icon {
+	background-image: url(../images/actionIcons/highlightExpensiveOperationDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-enable-tooltip-icon,
+.hc-light .eps-container .ep-enable-tooltip-icon {
+	background-image: url(../images/actionIcons/enableTooltip.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-enable-tooltip-icon,
+.hc-black .eps-container .ep-enable-tooltip-icon {
+	background-image: url(../images/actionIcons/enableTooltipDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-disable-tooltip-icon,
+.hc-light .eps-container .ep-disable-tooltip-icon {
+	background-image: url(../images/actionIcons/disableTooltip.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-disable-tooltip-icon,
+.hc-black .eps-container .ep-disable-tooltip-icon {
+	background-image: url(../images/actionIcons/disableTooltipDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-add-icon,
+.hc-light .eps-container .ep-add-icon {
+	background-image: url(../images/actionIcons/add.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-add-icon,
+.hc-black .eps-container .ep-add-icon {
+	background-image: url(../images/actionIcons/addDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-settings-icon,
+.hc-light .eps-container .ep-settings-icon {
+	background-image: url(../images/actionIcons/settings.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-split-screen-horizontally-icon,
+.hc-light .ep-split-screen-horizontally-icon {
+	background-image: url(../images/actionIcons/splitScreenHorizontally.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .ep-split-screen-horizontally-icon,
+.hc-black .ep-split-screen-horizontally-icon {
+	background-image: url(../images/actionIcons/splitScreenHorizontallyDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-split-screen-vertically-icon,
+.hc-light .eps-container .ep-split-screen-vertically-icon {
+	background-image: url(../images/actionIcons/splitScreenVertically.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-split-screen-vertically-icon,
+.hc-black .eps-container .ep-split-screen-vertically-icon {
+	background-image: url(../images/actionIcons/splitScreenVerticallyDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-reset-zoom-icon,
+.hc-light .eps-container .ep-reset-zoom-icon {
+	background-image: url(../images/actionIcons/resetZoom.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-reset-zoom-icon,
+.hc-black .eps-container .ep-reset-zoom-icon {
+	background-image: url(../images/actionIcons/resetZoomDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+
+.eps-container .ep-plan-compare-icon,
+.hc-light .eps-container .ep-plan-compare-icon {
+	background-image: url(../images/actionIcons/execution-plan-compare.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-plan-compare-icon,
+.hc-black .eps-container .ep-plan-compare-icon {
+	background-image: url(../images/actionIcons/execution-plan-compareDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-properties-different,
+.hc-light .eps-container .ep-properties-different {
+	background-image: url(../images/actionIcons/different.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 16px;
+	height: 16px;
+}
+
+.vs-dark .eps-container .ep-properties-different,
+.hc-black .eps-container .ep-properties-different {
+	background-image: url(../images/actionIcons/differentDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 16px;
+	height: 16px;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .properties .properties-content .table-container .table .monaco-table .ui-widget .slick-viewport .grid-canvas .ui-widget-content.slick-row .slick-cell .grid-cell-value-container.icon.codicon.slick-icon-cell-content.codicon-chevron-left,
+.eps-container .comparison-editor .plan-comparison-container .properties .properties-content .table-container .table .monaco-table .ui-widget .slick-viewport .grid-canvas .ui-widget-content.slick-row .slick-cell .grid-cell-value-container.icon.codicon.slick-icon-cell-content.codicon-chevron-right {
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 16px;
+	height: 16px;
+	margin-left: -28px;
+}
+
+.eps-container .ep-properties-down-arrow,
+.hc-light .eps-container .ep-properties-down-arrow {
+	background-image: url(../images/actionIcons/downArrow.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 16px;
+	height: 16px;
+}
+
+.vs-dark .eps-container .ep-properties-down-arrow,
+.hc-black .eps-container .ep-properties-down-arrow {
+	background-image: url(../images/actionIcons/downArrowDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 16px;
+	height: 16px;
+}
+
+.eps-container .ep-properties-up-arrow,
+.hc-light .eps-container .ep-properties-up-arrow {
+	background-image: url(../images/actionIcons/upArrow.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 16px;
+	height: 16px;
+}
+
+.vs-dark .eps-container .ep-properties-up-arrow,
+.hc-black .eps-container .ep-properties-up-arrow {
+	background-image: url(../images/actionIcons/upArrowDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 16px;
+	height: 16px;
+}
+
+.eps-container .ep-top-operations,
+.hc-light .eps-container .ep-top-operations {
+	background-image: url(../images/actionIcons/topOperations.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+
+.vs-dark .eps-container .ep-top-operations,
+.hc-black .eps-container .ep-top-operations {
+	background-image: url(../images/actionIcons/topOperationsDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+
+.eps-container .comparison-editor {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.eps-container .comparison-editor .editor-toolbar {
+	width: 100%;
+	flex: 0 0 auto;
+	border-bottom: 2px solid;
+	border-color: var(--separator-border);
+}
+
+.eps-container .comparison-editor .plan-comparison-container {
+	width: 100%;
+	height: 100%;
+	flex: 1;
+	display: flex;
+	flex-direction: row;
+}
+
+.eps-container .comparison-editor .plan-comparison-container {
+	width: 100%;
+	height: 100%;
+	flex: 1;
+	display: flex;
+	flex-direction: row;
+}
+
+.eps-container .comparison-editor .plan-comparison-container {
+	width: 100%;
+	height: calc(100% - 25px);
+	flex: 1;
+	display: flex;
+	flex-direction: row;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .split-view-container {
+	flex: 1;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container {
+	flex: 1;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .dropdown-container {
+	flex: 0;
+	padding: 3px;
+	border-bottom: 1px solid var(--separator-border);
+}
+
+/* each link in execution plan recommendations */
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .recommendations>a {
+	width: fit-content;
+	align-items: left;
+	text-align: left;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .sash-container {
+	flex: 0 0 2px;
+	width: 100%;
+	position: relative;
+	background-color: var(--separator-border);
+}
+
+/*
+The actual sash element constructed by code. Important is used here because the width of the sash is fixed.
+However we always want it to be the width of the container it is resizing.
+*/
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .sash-container .horizontal {
+	width: 100% !important;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .sash-container .vertical {
+	height: 100% !important;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .properties {
+	display: flex;
+	flex: 0 0 500px;
+	flex-direction: row;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .placeholder {
+	flex: 1;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	justify-content: center;
+	align-items: center;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .placeholder .infobox-container {
+	width: fit-content;
+	height: fit-content;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-diagram {
+	flex: 1;
+	overflow: scroll;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+}
+
+
+.eps-container .comparison-editor .plan-comparison-container .properties .compare-operation-name {
+	display: flex;
+	flex-direction: row;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .properties .compare-operation-name-text {
+	flex: 1;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-size: 13px;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+	margin-top: 3px;
+	margin-bottom: 5px;
+	margin-left: 5px;
+}
+
+.eps-container .comparison-editor .properties .table-container {
+	overflow: hidden;
+}
+
+.eps-container .comparison-editor .editor-toolbar .action-item .codicon.action-label {
+	padding-left: 20px;
+}
+
+.eps-container .comparison-editor .parent-row-styling {
+	font-weight: bold;
+}
+
+.top-operations-tab {
+	overflow: scroll;
+	display: flex;
+	flex-direction: column;
+}
+
+
+.top-operations-tab .top-operations-container {
+	flex: 1;
+	width: 100%;
+	min-height: 300px;
+	overflow: scroll;
+}
+
+.top-operations-tab .top-operations-container .top-operations-header {
+	display: flex;
+	flex-direction: row;
+}
+
+.top-operations-tab .top-operations-container .top-operations-header .top-operations-header-info {
+	flex: 1;
+}
+
+.top-operations-tab .top-operations-container .top-operations-header .top-operations-header-search-bar {
+	min-width: 300px;
+}
+
+.top-operations-tab .top-operations-container .table-container {
+	flex: 1;
+	height: calc(100% - 50px);
+}
+
+.graph-cell {
+	align-items: center;
+	position: relative;
+	width: fit-content;
+	height: 80px;
+	font-size: 10px;
+	font-family: 'Monaco', 'Menlo', 'Consolas';
+}
+
+.graph-cell-body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 2px 0px;
+	min-width: 70px;
+	outline: none !important;
+}
+
+.graph-cell-icon {
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	width: 30px;
+	height: 30px;
+	align-self: center;
+	position: relative;
+}
+
+.graph-cell-icon .graph-icon-badge {
+	position: absolute;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	width: 12px;
+	height: 12px;
+	bottom: 0;
+	right: -5px;
+}
+
+.graph-cell .graph-cell-row-count {
+	position: absolute;
+	top: 30%;
+	right: calc(50% + 17px);
+	margin-right: 3px;
+	min-width: 20px;
+	text-align: left;
+	outline: none !important;
+}
+
+.graph-cell .graph-icon-badge-expand {
+	width: 12px;
+	height: 12px;
+	background-size: 12px 12px;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+}
+
+.graph-cell-cost {
+	border-radius: 15px;
+	width: fit-content;
+	padding: 1px 8px 0px 8px;
+}

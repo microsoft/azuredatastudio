@@ -21,12 +21,17 @@ import { ILabelService } from 'vs/platform/label/common/label';
 import type { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
 import { IconLabel } from 'vs/base/browser/ui/iconLabel/iconLabel';
 import { basename } from 'vs/base/common/resources';
-import { ThemeIcon } from 'vs/platform/theme/common/themeService';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { ThemeIcon } from 'vs/base/common/themables';
 import { compare } from 'vs/base/common/strings';
 import { URI } from 'vs/base/common/uri';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
-import { Iterable } from 'vs/base/common/iterator';
 import { ResourceFileEdit } from 'vs/editor/browser/services/bulkEditService';
+import { ILanguageConfigurationService } from 'vs/editor/common/languages/languageConfigurationRegistry';
+import { ILanguageService } from 'vs/editor/common/languages/language';
+import { PLAINTEXT_LANGUAGE_ID } from 'vs/editor/common/languages/modesRegistry';
+import { SnippetParser } from 'vs/editor/contrib/snippet/browser/snippetParser';
+import { AriaRole } from 'vs/base/browser/ui/aria/aria';
 
 // --- VIEW MODEL
 
@@ -35,12 +40,32 @@ export interface ICheckable {
 	setChecked(value: boolean): void;
 }
 
-export class CategoryElement {
+export class CategoryElement implements ICheckable {
 
 	constructor(
 		readonly parent: BulkFileOperations,
 		readonly category: BulkCategory
 	) { }
+
+	isChecked(): boolean {
+		const model = this.parent;
+		let checked = true;
+		for (const file of this.category.fileOperations) {
+			for (const edit of file.originalEdits.values()) {
+				checked = checked && model.checked.isChecked(edit);
+			}
+		}
+		return checked;
+	}
+
+	setChecked(value: boolean): void {
+		const model = this.parent;
+		for (const file of this.category.fileOperations) {
+			for (const edit of file.originalEdits.values()) {
+				model.checked.updateChecked(edit, value);
+			}
+		}
+	}
 }
 
 export class FileElement implements ICheckable {
@@ -51,7 +76,7 @@ export class FileElement implements ICheckable {
 	) { }
 
 	isChecked(): boolean {
-		let model = this.parent instanceof CategoryElement ? this.parent.parent : this.parent;
+		const model = this.parent instanceof CategoryElement ? this.parent.parent : this.parent;
 
 		let checked = true;
 
@@ -61,7 +86,7 @@ export class FileElement implements ICheckable {
 		}
 
 		// multiple file edits -> reflect single state
-		for (let edit of this.edit.originalEdits.values()) {
+		for (const edit of this.edit.originalEdits.values()) {
 			if (edit instanceof ResourceFileEdit) {
 				checked = checked && model.checked.isChecked(edit);
 			}
@@ -69,8 +94,8 @@ export class FileElement implements ICheckable {
 
 		// multiple categories and text change -> read all elements
 		if (this.parent instanceof CategoryElement && this.edit.type === BulkFileOperationType.TextEdit) {
-			for (let category of model.categories) {
-				for (let file of category.fileOperations) {
+			for (const category of model.categories) {
+				for (const file of category.fileOperations) {
 					if (file.uri.toString() === this.edit.uri.toString()) {
 						for (const edit of file.originalEdits.values()) {
 							if (edit instanceof ResourceFileEdit) {
@@ -86,15 +111,15 @@ export class FileElement implements ICheckable {
 	}
 
 	setChecked(value: boolean): void {
-		let model = this.parent instanceof CategoryElement ? this.parent.parent : this.parent;
+		const model = this.parent instanceof CategoryElement ? this.parent.parent : this.parent;
 		for (const edit of this.edit.originalEdits.values()) {
 			model.checked.updateChecked(edit, value);
 		}
 
 		// multiple categories and file change -> update all elements
 		if (this.parent instanceof CategoryElement && this.edit.type !== BulkFileOperationType.TextEdit) {
-			for (let category of model.categories) {
-				for (let file of category.fileOperations) {
+			for (const category of model.categories) {
+				for (const file of category.fileOperations) {
 					if (file.uri.toString() === this.edit.uri.toString()) {
 						for (const edit of file.originalEdits.values()) {
 							model.checked.updateChecked(edit, value);
@@ -107,10 +132,10 @@ export class FileElement implements ICheckable {
 
 	isDisabled(): boolean {
 		if (this.parent instanceof CategoryElement && this.edit.type === BulkFileOperationType.TextEdit) {
-			let model = this.parent.parent;
+			const model = this.parent.parent;
 			let checked = true;
-			for (let category of model.categories) {
-				for (let file of category.fileOperations) {
+			for (const category of model.categories) {
+				for (const file of category.fileOperations) {
 					if (file.uri.toString() === this.edit.uri.toString()) {
 						for (const edit of file.originalEdits.values()) {
 							if (edit instanceof ResourceFileEdit) {
@@ -178,6 +203,8 @@ export class BulkEditDataSource implements IAsyncDataSource<BulkFileOperations, 
 	constructor(
 		@ITextModelService private readonly _textModelService: ITextModelService,
 		@IUndoRedoService private readonly _undoRedoService: IUndoRedoService,
+		@ILanguageService private readonly _languageService: ILanguageService,
+		@ILanguageConfigurationService private readonly _languageConfigurationService: ILanguageConfigurationService,
 	) { }
 
 	hasChildren(element: BulkFileOperations | BulkEditElement): boolean {
@@ -201,7 +228,7 @@ export class BulkEditDataSource implements IAsyncDataSource<BulkFileOperations, 
 
 		// category
 		if (element instanceof CategoryElement) {
-			return [...Iterable.map(element.category.fileOperations, op => new FileElement(element, op))];
+			return Array.from(element.category.fileOperations, op => new FileElement(element, op));
 		}
 
 		// file: text edit
@@ -214,7 +241,7 @@ export class BulkEditDataSource implements IAsyncDataSource<BulkFileOperations, 
 				textModel = ref.object.textEditorModel;
 				textModelDisposable = ref;
 			} catch {
-				textModel = new TextModel('', TextModel.DEFAULT_CREATION_OPTIONS, null, null, this._undoRedoService);
+				textModel = new TextModel('', PLAINTEXT_LANGUAGE_ID, TextModel.DEFAULT_CREATION_OPTIONS, null, this._undoRedoService, this._languageService, this._languageConfigurationService);
 				textModelDisposable = textModel;
 			}
 
@@ -222,16 +249,16 @@ export class BulkEditDataSource implements IAsyncDataSource<BulkFileOperations, 
 				const range = Range.lift(edit.textEdit.textEdit.range);
 
 				//prefix-math
-				let startTokens = textModel.getLineTokens(range.startLineNumber);
+				const startTokens = textModel.tokenization.getLineTokens(range.startLineNumber);
 				let prefixLen = 23; // default value for the no tokens/grammar case
-				for (let idx = startTokens.findTokenIndexAtOffset(range.startColumn) - 1; prefixLen < 50 && idx >= 0; idx--) {
+				for (let idx = startTokens.findTokenIndexAtOffset(range.startColumn - 1) - 1; prefixLen < 50 && idx >= 0; idx--) {
 					prefixLen = range.startColumn - startTokens.getStartOffset(idx);
 				}
 
 				//suffix-math
-				let endTokens = textModel.getLineTokens(range.endLineNumber);
+				const endTokens = textModel.tokenization.getLineTokens(range.endLineNumber);
 				let suffixLen = 0;
-				for (let idx = endTokens.findTokenIndexAtOffset(range.endColumn); suffixLen < 50 && idx < endTokens.getCount(); idx++) {
+				for (let idx = endTokens.findTokenIndexAtOffset(range.endColumn - 1); suffixLen < 50 && idx < endTokens.getCount(); idx++) {
 					suffixLen += endTokens.getEndOffset(idx) - endTokens.getStartOffset(idx);
 				}
 
@@ -241,7 +268,7 @@ export class BulkEditDataSource implements IAsyncDataSource<BulkFileOperations, 
 					edit,
 					textModel.getValueInRange(new Range(range.startLineNumber, range.startColumn - prefixLen, range.startLineNumber, range.startColumn)),
 					textModel.getValueInRange(range),
-					edit.textEdit.textEdit.text,
+					!edit.textEdit.textEdit.insertAsSnippet ? edit.textEdit.textEdit.text : SnippetParser.asInsertText(edit.textEdit.textEdit.text),
 					textModel.getValueInRange(new Range(range.endLineNumber, range.endColumn, range.endLineNumber, range.endColumn + suffixLen))
 				);
 			});
@@ -280,7 +307,7 @@ export class BulkEditAccessibilityProvider implements IListAccessibilityProvider
 		return localize('bulkEdit', "Bulk Edit");
 	}
 
-	getRole(_element: BulkEditElement): string {
+	getRole(_element: BulkEditElement): AriaRole {
 		return 'checkbox';
 	}
 
@@ -354,7 +381,7 @@ export class BulkEditAccessibilityProvider implements IListAccessibilityProvider
 
 export class BulkEditIdentityProvider implements IIdentityProvider<BulkEditElement> {
 
-	getId(element: BulkEditElement): { toString(): string; } {
+	getId(element: BulkEditElement): { toString(): string } {
 		if (element instanceof FileElement) {
 			return element.edit.uri + (element.parent instanceof CategoryElement ? JSON.stringify(element.parent.category.metadata) : '');
 		} else if (element instanceof TextEditElement) {
@@ -386,6 +413,8 @@ export class CategoryElementRenderer implements ITreeRenderer<CategoryElement, F
 
 	readonly templateId: string = CategoryElementRenderer.id;
 
+	constructor(@IThemeService private readonly _themeService: IThemeService) { }
+
 	renderTemplate(container: HTMLElement): CategoryElementTemplate {
 		return new CategoryElementTemplate(container);
 	}
@@ -394,24 +423,27 @@ export class CategoryElementRenderer implements ITreeRenderer<CategoryElement, F
 
 		template.icon.style.setProperty('--background-dark', null);
 		template.icon.style.setProperty('--background-light', null);
+		template.icon.style.color = '';
 
 		const { metadata } = node.element.category;
 		if (ThemeIcon.isThemeIcon(metadata.iconPath)) {
 			// css
 			const className = ThemeIcon.asClassName(metadata.iconPath);
 			template.icon.className = className ? `theme-icon ${className}` : '';
+			template.icon.style.color = metadata.iconPath.color ? this._themeService.getColorTheme().getColor(metadata.iconPath.color.id)?.toString() ?? '' : '';
+
 
 		} else if (URI.isUri(metadata.iconPath)) {
 			// background-image
 			template.icon.className = 'uri-icon';
-			template.icon.style.setProperty('--background-dark', `url("${metadata.iconPath.toString(true)}")`);
-			template.icon.style.setProperty('--background-light', `url("${metadata.iconPath.toString(true)}")`);
+			template.icon.style.setProperty('--background-dark', dom.asCSSUrl(metadata.iconPath));
+			template.icon.style.setProperty('--background-light', dom.asCSSUrl(metadata.iconPath));
 
 		} else if (metadata.iconPath) {
 			// background-image
 			template.icon.className = 'uri-icon';
-			template.icon.style.setProperty('--background-dark', `url("${metadata.iconPath.dark.toString(true)}")`);
-			template.icon.style.setProperty('--background-light', `url("${metadata.iconPath.light.toString(true)}")`);
+			template.icon.style.setProperty('--background-dark', dom.asCSSUrl(metadata.iconPath.dark));
+			template.icon.style.setProperty('--background-light', dom.asCSSUrl(metadata.iconPath.light));
 		}
 
 		template.label.setLabel(metadata.label, metadata.description, {
@@ -532,7 +564,7 @@ class TextEditElementTemplate {
 	private readonly _icon: HTMLDivElement;
 	private readonly _label: HighlightedLabel;
 
-	constructor(container: HTMLElement) {
+	constructor(container: HTMLElement, @IThemeService private readonly _themeService: IThemeService) {
 		container.classList.add('textedit');
 
 		this._checkbox = document.createElement('input');
@@ -544,7 +576,7 @@ class TextEditElementTemplate {
 		this._icon = document.createElement('div');
 		container.appendChild(this._icon);
 
-		this._label = new HighlightedLabel(container, false);
+		this._label = new HighlightedLabel(container);
 	}
 
 	dispose(): void {
@@ -573,11 +605,11 @@ class TextEditElementTemplate {
 		value += element.inserting;
 		value += element.suffix;
 
-		let selectHighlight: IHighlight = { start: element.prefix.length, end: element.prefix.length + element.selecting.length, extraClasses: 'remove' };
-		let insertHighlight: IHighlight = { start: selectHighlight.end, end: selectHighlight.end + element.inserting.length, extraClasses: 'insert' };
+		const selectHighlight: IHighlight = { start: element.prefix.length, end: element.prefix.length + element.selecting.length, extraClasses: ['remove'] };
+		const insertHighlight: IHighlight = { start: selectHighlight.end, end: selectHighlight.end + element.inserting.length, extraClasses: ['insert'] };
 
 		let title: string | undefined;
-		let { metadata } = element.edit.textEdit;
+		const { metadata } = element.edit.textEdit;
 		if (metadata && metadata.description) {
 			title = localize('title', "{0} - {1}", metadata.label, metadata.description);
 		} else if (metadata) {
@@ -597,18 +629,20 @@ class TextEditElementTemplate {
 				// css
 				const className = ThemeIcon.asClassName(iconPath);
 				this._icon.className = className ? `theme-icon ${className}` : '';
+				this._icon.style.color = iconPath.color ? this._themeService.getColorTheme().getColor(iconPath.color.id)?.toString() ?? '' : '';
+
 
 			} else if (URI.isUri(iconPath)) {
 				// background-image
 				this._icon.className = 'uri-icon';
-				this._icon.style.setProperty('--background-dark', `url("${iconPath.toString(true)}")`);
-				this._icon.style.setProperty('--background-light', `url("${iconPath.toString(true)}")`);
+				this._icon.style.setProperty('--background-dark', dom.asCSSUrl(iconPath));
+				this._icon.style.setProperty('--background-light', dom.asCSSUrl(iconPath));
 
 			} else {
 				// background-image
 				this._icon.className = 'uri-icon';
-				this._icon.style.setProperty('--background-dark', `url("${iconPath.dark.toString(true)}")`);
-				this._icon.style.setProperty('--background-light', `url("${iconPath.light.toString(true)}")`);
+				this._icon.style.setProperty('--background-dark', dom.asCSSUrl(iconPath.dark));
+				this._icon.style.setProperty('--background-light', dom.asCSSUrl(iconPath.light));
 			}
 		}
 
@@ -623,8 +657,10 @@ export class TextEditElementRenderer implements ITreeRenderer<TextEditElement, F
 
 	readonly templateId: string = TextEditElementRenderer.id;
 
+	constructor(@IThemeService private readonly _themeService: IThemeService) { }
+
 	renderTemplate(container: HTMLElement): TextEditElementTemplate {
-		return new TextEditElementTemplate(container);
+		return new TextEditElementTemplate(container, this._themeService);
 	}
 
 	renderElement({ element }: ITreeNode<TextEditElement, FuzzyScore>, _index: number, template: TextEditElementTemplate): void {

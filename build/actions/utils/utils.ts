@@ -58,13 +58,10 @@ export const daysAgoToHumanReadbleDate = (days: number) =>
 	new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().replace(/\.\d{3}\w$/, '')
 
 export const logRateLimit = async (token: string) => {
-	const usageData = (await new GitHub(token).rateLimit.get()).data.resources
-	;(['core', 'graphql', 'search'] as const).forEach(async (category) => {
+	const usageData = (await new GitHub(token).rateLimit.get()).data.resources;
+	(['core', 'graphql', 'search'] as const).forEach(async (category) => {
 		const usage = 1 - usageData[category].remaining / usageData[category].limit
 		const message = `Usage at ${usage} for ${category}`
-		if (usage > 0) {
-			console.log(message)
-		}
 		if (usage > 0.5) {
 			await logErrorToIssue(message, false, token)
 		}

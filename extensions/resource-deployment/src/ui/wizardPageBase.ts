@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { InitialVariableValues } from '../interfaces';
 import { Validator } from './modelViewUtils';
 import { WizardPageInfo } from './wizardPageInfo';
 
@@ -29,7 +30,7 @@ export abstract class WizardPageBase<T> {
 
 	public async onLeave(_pageInfo?: WizardPageInfo): Promise<void> { }
 
-	public abstract initialize(): void;
+	public abstract initialize(initialVariableValues?: InitialVariableValues): void;
 
 	protected get validators(): Validator[] {
 		return this._validators;

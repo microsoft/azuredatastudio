@@ -9,13 +9,15 @@ import { ConnectionManagementService } from 'sql/workbench/services/connection/b
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import * as TypeMoq from 'typemoq';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { TestTree } from 'sql/workbench/test/treeMock';
+import { ITree } from 'sql/base/parts/tree/browser/tree';
+import { TestTree } from 'sql/workbench/test/browser/parts/tree/treeMock';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { TreeItemCollapsibleState } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import * as assert from 'assert';
+import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
+import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 
 suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
@@ -28,8 +30,6 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 		let instantiationService = new TestInstantiationService();
 		instantiationService.stub(IStorageService, new TestStorageService());
 		let mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict,
-			undefined, //connection store
-			undefined, // connectionstatusmanager
 			undefined, // connectiondialog service
 			instantiationService, // instantiation service
 			undefined, // editor service
@@ -39,8 +39,8 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 		);
 		mockConnectionManagementService.setup(x => x.getConnectionGroups()).returns(x => []);
 		mockConnectionManagementService.setup(x => x.hasRegisteredServers()).returns(() => true);
-		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, new TestThemeService(), undefined, undefined, capabilitiesService, undefined, undefined);
-		mockTree = TypeMoq.Mock.ofType(TestTree);
+		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, new TestThemeService(), undefined, new TestConfigurationService(), capabilitiesService, undefined, undefined, new MockContextKeyService(), undefined, undefined, undefined);
+		mockTree = TypeMoq.Mock.ofType<ITree>(TestTree);
 		(serverTreeView as any)._tree = mockTree.object;
 		mockRefreshTreeMethod = TypeMoq.Mock.ofType(Function);
 		mockRefreshTreeMethod.setup(x => x()).returns(() => Promise.resolve());
@@ -85,8 +85,8 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
 	test('isObjectExplorerConnectionUri', async () => {
 		let connectionUriFalse = serverTreeView.isObjectExplorerConnectionUri('123');
-		assert.equal(false, connectionUriFalse);
-		assert.equal(true, serverTreeView.isObjectExplorerConnectionUri('connection:123'));
+		assert.strictEqual(false, connectionUriFalse);
+		assert.strictEqual(true, serverTreeView.isObjectExplorerConnectionUri('connection:123'));
 	});
 
 	test('setExpandedState', async () => {
@@ -170,8 +170,12 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 		mockTree.verify(x => x.select(TypeMoq.It.isAny()), TypeMoq.Times.never());
 	});
 
-	test('The tree refreshes when new capabilities are registered', () => {
+	test('The tree refreshes when new capabilities are registered', (done) => {
 		capabilitiesService.fireCapabilitiesRegistered(undefined, undefined);
-		mockRefreshTreeMethod.verify(x => x(), TypeMoq.Times.once());
+		// A debounce is added to the handler, we need to wait a bit before checking.
+		setTimeout(() => {
+			mockRefreshTreeMethod.verify(x => x(), TypeMoq.Times.once());
+			done();
+		}, 100);
 	});
 });

@@ -3,18 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { Registry } from 'vs/platform/registry/common/platform';
-import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
+import { EditorPaneDescriptor, IEditorPaneRegistry } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 
 import { ModelViewInput } from 'sql/workbench/browser/modelComponents/modelViewInput';
 import { ModelViewEditor } from 'sql/workbench/browser/modelComponents/modelViewEditor';
+import { EditorExtensions } from 'vs/workbench/common/editor';
 
 // Model View editor registration
-const viewModelEditorDescriptor = EditorDescriptor.create(
+const viewModelEditorDescriptor = EditorPaneDescriptor.create(
 	ModelViewEditor,
 	ModelViewEditor.ID,
 	'ViewModel'
 );
 
-Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(viewModelEditorDescriptor, [new SyncDescriptor(ModelViewInput)]);
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
+	.registerEditorPane(viewModelEditorDescriptor, [new SyncDescriptor(ModelViewInput)]);

@@ -7,13 +7,12 @@
 
 import { nb } from 'azdata';
 import { URI } from 'vs/base/common/uri';
-import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { getErrorMessage } from 'vs/base/common/errors';
 
 import { IClientSession, IClientSessionOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
-import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IExecuteManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 type KernelChangeHandler = (kernel: nb.IKernelChangedArgs) => Promise<void>;
@@ -23,36 +22,29 @@ type KernelChangeHandler = (kernel: nb.IKernelChangedArgs) => Promise<void>;
  */
 export class ClientSession implements IClientSession {
 	//#region private fields with public accessors
-	private _terminatedEmitter = new Emitter<void>();
-	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
-	private _statusChangedEmitter = new Emitter<nb.ISession>();
-	private _iopubMessageEmitter = new Emitter<nb.IMessage>();
-	private _unhandledMessageEmitter = new Emitter<nb.IMessage>();
-	private _propertyChangedEmitter = new Emitter<'path' | 'name' | 'type'>();
 	private _notebookUri: URI;
-	private _type: string;
-	private _name: string;
 	private _isReady: boolean;
 	private _ready: Deferred<void>;
 	private _kernelChangeCompleted: Deferred<void>;
-	private _kernelDisplayName: string;
-	private _errorMessage: string;
-	private _cachedKernelSpec: nb.IKernelSpec;
+	private _errorMessage: string = '';
+	private _cachedKernelSpec: nb.IKernelSpec | undefined;
 	private _kernelChangeHandlers: KernelChangeHandler[] = [];
 	private _defaultKernel: nb.IKernelSpec;
 
 	//#endregion
 
-	private _serverLoadFinished: Promise<void>;
-	private _session: nb.ISession;
-	private isServerStarted: boolean;
-	private notebookManager: INotebookManager;
+	private _serverLoadFinished: Promise<void> = Promise.resolve();
+	private _session: nb.ISession | undefined;
+	private _isServerStarted: boolean = false;
+	private _executeManager: IExecuteManager;
 	private _kernelConfigActions: ((kernelName: string) => Promise<any>)[] = [];
 	private _connectionId: string = '';
 
+	private readonly _kernelNotFoundError = 501;
+
 	constructor(private options: IClientSessionOptions) {
 		this._notebookUri = options.notebookUri;
-		this.notebookManager = options.notebookManager;
+		this._executeManager = options.executeManager;
 		this._isReady = false;
 		this._ready = new Deferred<void>();
 		this._kernelChangeCompleted = new Deferred<void>();
@@ -62,7 +54,6 @@ export class ClientSession implements IClientSession {
 	public async initialize(): Promise<void> {
 		try {
 			this._serverLoadFinished = this.startServer(this.options.kernelSpec);
-			await this._serverLoadFinished;
 			await this.initializeSession();
 			await this.updateCachedKernelSpec();
 		} catch (err) {
@@ -72,50 +63,53 @@ export class ClientSession implements IClientSession {
 		this._isReady = true;
 		this._ready.resolve();
 		if (!this.isInErrorState && this._session && this._session.kernel) {
-			await this.notifyKernelChanged(undefined, this._session.kernel);
+			await this.notifyKernelChanged(this._session.kernel);
 		}
 	}
 
 	private async startServer(kernelSpec: nb.IKernelSpec): Promise<void> {
-		let serverManager = this.notebookManager.serverManager;
+		if (!this._executeManager) {
+			throw new Error(localize('NoExecuteManager', "Server could not start because a provider was not defined for this notebook file type."));
+		}
+		let serverManager = this._executeManager.serverManager;
 		if (serverManager) {
 			await serverManager.startServer(kernelSpec);
 			if (!serverManager.isStarted) {
 				throw new Error(localize('ServerNotStarted', "Server did not start for unknown reason"));
 			}
-			this.isServerStarted = serverManager.isStarted;
+			this._isServerStarted = serverManager.isStarted;
 		} else {
-			this.isServerStarted = true;
+			this._isServerStarted = true;
 		}
 	}
 
 	private async initializeSession(): Promise<void> {
 		await this._serverLoadFinished;
-		if (this.isServerStarted) {
-			if (!this.notebookManager.sessionManager.isReady) {
-				await this.notebookManager.sessionManager.ready;
+		if (this._isServerStarted) {
+			if (!this._executeManager.sessionManager.isReady) {
+				await this._executeManager.sessionManager.ready;
 			}
 			if (this._defaultKernel) {
-				await this.startSessionInstance(this._defaultKernel.name);
+				await this.startSessionInstance(this._defaultKernel);
 			}
 		}
 	}
 
-	private async startSessionInstance(kernelName: string): Promise<void> {
+	private async startSessionInstance(kernelSpec: nb.IKernelSpec): Promise<void> {
 		let session: nb.ISession;
 		try {
 			// TODO #3164 should use URI instead of path for startNew
-			session = await this.notebookManager.sessionManager.startNew({
+			session = await this._executeManager.sessionManager.startNew({
 				path: this.notebookUri.fsPath,
-				kernelName: kernelName
-				// TODO add kernel name if saved in the document
+				kernelName: kernelSpec.name,
+				kernelSpec: kernelSpec
 			});
 			session.defaultKernelLoaded = true;
 		} catch (err) {
 			// TODO move registration
-			if (err && err.response && err.response.status === 501) {
-				this.options.notificationService.warn(localize('kernelRequiresConnection', "Kernel {0} was not found. The default kernel will be used instead.", kernelName));
-				session = await this.notebookManager.sessionManager.startNew({
+			if (err.response?.status === this._kernelNotFoundError || err.errorCode === this._kernelNotFoundError) {
+				this.options.notificationService.warn(localize('kernelRequiresConnection', "Kernel '{0}' was not found. The default kernel will be used instead.", kernelSpec.name));
+				session = await this._executeManager.sessionManager.startNew({
 					path: this.notebookUri.fsPath,
 					kernelName: undefined
 				});
@@ -125,8 +119,7 @@ export class ClientSession implements IClientSession {
 			}
 		}
 		this._session = session;
-		await this.runKernelConfigActions(kernelName);
-		this._statusChangedEmitter.fire(session);
+		await this.runKernelConfigActions(kernelSpec.name);
 	}
 
 	private async runKernelConfigActions(kernelName: string): Promise<void> {
@@ -149,41 +142,16 @@ export class ClientSession implements IClientSession {
 
 
 	//#region IClientSession Properties
-	public get terminated(): Event<void> {
-		return this._terminatedEmitter.event;
-	}
-	public get kernelChanged(): Event<nb.IKernelChangedArgs> {
-		return this._kernelChangedEmitter.event;
-	}
-
 	public onKernelChanging(changeHandler: (kernel: nb.IKernelChangedArgs) => Promise<void>): void {
 		if (changeHandler) {
 			this._kernelChangeHandlers.push(changeHandler);
 		}
 	}
-	public get statusChanged(): Event<nb.ISession> {
-		return this._statusChangedEmitter.event;
-	}
-	public get iopubMessage(): Event<nb.IMessage> {
-		return this._iopubMessageEmitter.event;
-	}
-	public get unhandledMessage(): Event<nb.IMessage> {
-		return this._unhandledMessageEmitter.event;
-	}
-	public get propertyChanged(): Event<'path' | 'name' | 'type'> {
-		return this._propertyChangedEmitter.event;
-	}
-	public get kernel(): nb.IKernel | null {
+	public get kernel(): nb.IKernel | undefined {
 		return this._session ? this._session.kernel : undefined;
 	}
 	public get notebookUri(): URI {
 		return this._notebookUri;
-	}
-	public get name(): string {
-		return this._name;
-	}
-	public get type(): string {
-		return this._type;
 	}
 	public get status(): nb.KernelStatus {
 		if (!this.isReady) {
@@ -200,9 +168,6 @@ export class ClientSession implements IClientSession {
 	public get kernelChangeCompleted(): Promise<void> {
 		return this._kernelChangeCompleted.promise;
 	}
-	public get kernelDisplayName(): string {
-		return this._kernelDisplayName;
-	}
 	public get errorMessage(): string {
 		return this._errorMessage;
 	}
@@ -210,7 +175,7 @@ export class ClientSession implements IClientSession {
 		return !!this._errorMessage;
 	}
 
-	public get cachedKernelSpec(): nb.IKernelSpec {
+	public get cachedKernelSpec(): nb.IKernelSpec | undefined {
 		return this._cachedKernelSpec;
 	}
 	//#endregion
@@ -219,29 +184,31 @@ export class ClientSession implements IClientSession {
 	/**
 	 * Change the current kernel associated with the document.
 	 */
-	async changeKernel(options: nb.IKernelSpec, oldValue?: nb.IKernel): Promise<nb.IKernel> {
+	async changeKernel(options: nb.IKernelSpec, oldValue?: nb.IKernel): Promise<nb.IKernel | undefined> {
 		this._kernelChangeCompleted = new Deferred<void>();
 		this._isReady = false;
 		let oldKernel = oldValue ? oldValue : this.kernel;
 
 		let kernel = await this.doChangeKernel(options);
 		try {
-			await kernel.ready;
+			await kernel?.ready;
 		} catch (error) {
 			// Cleanup some state before re-throwing
-			this._isReady = kernel.isReady;
+			this._isReady = kernel ? kernel.isReady : false;
 			this._kernelChangeCompleted.resolve();
 			throw error;
 		}
-		let newKernel = this._session ? kernel : this._session.kernel;
-		this._isReady = kernel.isReady;
+		let newKernel = this._session ? this._session.kernel : kernel;
+		this._isReady = kernel ? kernel.isReady : false;
 		await this.updateCachedKernelSpec();
 		// Send resolution events to listeners
-		await this.notifyKernelChanged(oldKernel, newKernel);
+		if (newKernel) {
+			await this.notifyKernelChanged(newKernel, oldKernel);
+		}
 		return kernel;
 	}
 
-	private async notifyKernelChanged(oldKernel: nb.IKernel, newKernel: nb.IKernel): Promise<void> {
+	private async notifyKernelChanged(newKernel: nb.IKernel, oldKernel?: nb.IKernel): Promise<void> {
 		let changeArgs: nb.IKernelChangedArgs = {
 			oldValue: oldKernel,
 			newValue: newKernel
@@ -250,7 +217,6 @@ export class ClientSession implements IClientSession {
 		await Promise.all(changePromises);
 		// Wait on connection configuration to complete before resolving full kernel change
 		this._kernelChangeCompleted.resolve();
-		this._kernelChangedEmitter.fire(changeArgs);
 	}
 
 	private async updateCachedKernelSpec(): Promise<void> {
@@ -267,13 +233,13 @@ export class ClientSession implements IClientSession {
 	/**
 	 * Helper method to either call ChangeKernel on current session, or start a new session
 	 */
-	private async doChangeKernel(options: nb.IKernelSpec): Promise<nb.IKernel> {
-		let kernel: nb.IKernel;
+	private async doChangeKernel(options: nb.IKernelSpec): Promise<nb.IKernel | undefined> {
+		let kernel: nb.IKernel | undefined;
 		if (this._session) {
 			kernel = await this._session.changeKernel(options);
 			await this.runKernelConfigActions(kernel.name);
 		} else {
-			kernel = await this.startSessionInstance(options.name).then(() => this.kernel);
+			kernel = await this.startSessionInstance(options).then(() => this.kernel);
 		}
 		return kernel;
 	}
@@ -289,7 +255,7 @@ export class ClientSession implements IClientSession {
 			// TODO is there any case where skipping causes errors? So far it seems like it gets called twice
 			return;
 		}
-		if (connection.id !== '-1' && connection.id !== this._connectionId) {
+		if (connection.id !== '-1' && connection.id !== this._connectionId && this._session) {
 			await this._session.configureConnection(connection);
 			this._connectionId = connection.id;
 		}
@@ -302,60 +268,35 @@ export class ClientSession implements IClientSession {
 	 */
 	public async shutdown(): Promise<void> {
 		// Always try to shut down session
-		if (this._session && this._session.id && this.notebookManager && this.notebookManager.sessionManager) {
-			await this.notebookManager.sessionManager.shutdown(this._session.id);
+		if (this._session && this._session.id && this._executeManager && this._executeManager.sessionManager) {
+			await this._executeManager.sessionManager.shutdown(this._session.id);
 		}
-	}
-
-	/**
-	 * Select a kernel for the session.
-	 */
-	selectKernel(): Promise<void> {
-		throw new Error('Not implemented');
 	}
 
 	/**
 	 * Restart the session.
 	 *
-	 * @returns A promise that resolves with whether the kernel has restarted.
+	 * @returns A promise that resolves when the kernel has restarted.
 	 *
 	 * #### Notes
-	 * If there is a running kernel, present a dialog.
-	 * If there is no kernel, we start a kernel with the last run
-	 * kernel name and resolves with `true`. If no kernel has been started,
-	 * this is a no-op, and resolves with `false`.
+	 * If there is an existing kernel, restart it and resolve.
+	 * If no kernel has been started, this is a no-op, and resolves.
+	 * Reject on error.
 	 */
-	restart(): Promise<boolean> {
-		throw new Error('Not implemented');
-	}
-
-	/**
-	 * Change the session path.
-	 *
-	 * @param path - The new session path.
-	 *
-	 * @returns A promise that resolves when the session has renamed.
-	 *
-	 * #### Notes
-	 * This uses the Jupyter REST API, and the response is validated.
-	 * The promise is fulfilled on a valid response and rejected otherwise.
-	 */
-	setPath(path: string): Promise<void> {
-		throw new Error('Not implemented');
-	}
-
-	/**
-	 * Change the session name.
-	 */
-	setName(name: string): Promise<void> {
-		throw new Error('Not implemented');
-	}
-
-	/**
-	 * Change the session type.
-	 */
-	setType(type: string): Promise<void> {
-		throw new Error('Not implemented');
+	restart(): Promise<void> {
+		if (!this._session?.kernel) {
+			// no-op if no kernel is present
+			return Promise.resolve();
+		}
+		let restartCompleted = new Deferred<void>();
+		this._session?.kernel?.restart().then(() => {
+			this.options.notificationService.info(localize('kernelRestartedSuccessfully', 'Kernel restarted successfully'));
+			restartCompleted.resolve();
+		}, err => {
+			this.options.notificationService.error(localize('kernelRestartFailed', 'Kernel restart failed: {0}', err));
+			restartCompleted.reject(err);
+		});
+		return restartCompleted.promise;
 	}
 	//#endregion
 }

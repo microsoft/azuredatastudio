@@ -8,7 +8,7 @@ import { NavigationBarLayout, PanelComponent } from 'sql/base/browser/ui/panel/p
 import { TabType } from 'sql/base/browser/ui/panel/tab.component';
 import { ContainerBase, ItemDescriptor } from 'sql/workbench/browser/modelComponents/componentBase';
 import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
-import { IUserFriendlyIcon, createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
+import { IconPath, createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { TabbedPanelLayout } from 'azdata';
@@ -18,7 +18,7 @@ export interface TabConfig {
 	title: string;
 	id?: string;
 	group: string;
-	icon?: IUserFriendlyIcon;
+	icon?: IconPath;
 }
 
 interface Tab {
@@ -52,20 +52,17 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(ILogService) private logService: ILogService
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
-	}
-
-	ngOnInit(): void {
-		this.baseInit();
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {
 		this._register(attachTabbedPanelStyler(this._panel, this.themeService));
+		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -86,7 +83,7 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 
 	get tabs(): Tab[] {
 		if (this.items.length > this._itemIndexToProcess) {
-			let currentGroup: string | undefined = this.items.length === 1 ? undefined : this.items[this._itemIndexToProcess - 1].config.group;
+			let currentGroup: string | undefined = this.items.length === 1 ? undefined : this.items[this._itemIndexToProcess - 1]?.config.group;
 			for (let i = this._itemIndexToProcess; i < this.items.length; i++) {
 				const item = this.items[i];
 				if (item.config.group !== currentGroup) {
@@ -112,7 +109,7 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 		return this._tabs;
 	}
 
-	onItemsUpdated(): void {
+	protected override onItemsUpdated(): void {
 		if (this.items.length === 0) {
 			this._itemIndexToProcess = 0;
 			this._tabs = [];
@@ -124,11 +121,11 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 		}
 	}
 
-	onItemLayoutUpdated(item: ItemDescriptor<TabConfig>): void {
+	protected override onItemLayoutUpdated(item: ItemDescriptor<TabConfig>): void {
 		this._panel.updateTab(item.config.id, { title: item.config.title, iconClass: item.config.icon ? createIconCssClass(item.config.icon) : undefined });
 	}
 
-	public doAction(action: string, ...args: any[]): void {
+	public override doAction(action: string, ...args: any[]): void {
 		switch (action) {
 			case ModelViewAction.SelectTab:
 				if (typeof args?.[0] !== 'string') {

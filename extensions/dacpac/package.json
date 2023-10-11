@@ -2,7 +2,7 @@
   "name": "dacpac",
   "displayName": "SQL Server Dacpac",
   "description": "SQL Server Dacpac for Azure Data Studio.",
-  "version": "1.7.0",
+  "version": "1.15.0",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
@@ -11,7 +11,7 @@
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
-  "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
+  "aiKey": "29a207bb14f84905966a8f22524cb730-25407f35-11b6-4d4e-8114-ab9e843cb52f-7380",
   "activationEvents": [
     "onCommand:dacFx.start"
   ],
@@ -20,15 +20,32 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
+  "capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
   "extensionDependencies": [
     "Microsoft.mssql"
   ],
   "contributes": {
+    "configuration": [
+      {
+        "title": "%dacFx.settings%",
+        "properties": {
+          "dacFx.defaultSaveLocation": {
+            "type": "string",
+            "description": "%dacFx.defaultSaveLocation%"
+          }
+        }
+      }
+    ],
     "commands": [
       {
         "command": "dacFx.start",
-        "title": "Data-tier Application wizard",
-        "category": "Data-tier Application"
+        "title": "%dacFx.startTitle%",
+        "category": "%dacFx.category%"
       }
     ],
     "menus": {
@@ -65,24 +82,31 @@
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Folder && nodeLabel == 'Databases' && mssql:engineedition != 11",
           "group": "export"
         }
+      ],
+      "commandPalette": [
+        {
+          "command": "dacFx.start",
+          "when": "mssql:engineedition != 11"
+        }
       ]
     }
   },
   "dependencies": {
+    "@microsoft/ads-extension-telemetry": "^3.0.1",
     "htmlparser2": "^3.10.1",
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
-    "@types/mocha": "^5.2.5",
+    "@microsoft/vscodetestcover": "^1.2.2",
+    "@microsoft/azdata-test": "^3.0.3",
+    "@types/htmlparser2": "^3.10.1",
+    "@types/mocha": "^7.0.2",
     "@types/node": "^12.11.7",
     "@types/sinon": "^9.0.4",
-    "mocha": "^5.2.0",
-    "mocha-junit-reporter": "^1.17.0",
-    "mocha-multi-reporters": "^1.1.7",
+    "mocha": "^7.1.1",
     "should": "^13.2.3",
     "sinon": "^9.0.2",
-    "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.1.0"
+    "typemoq": "^2.1.0"
   },
   "__metadata": {
     "id": "33",

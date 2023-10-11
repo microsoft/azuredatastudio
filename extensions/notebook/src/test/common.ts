@@ -308,6 +308,9 @@ export class TestKernel implements azdata.nb.IKernel {
 	interrupt(): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
+	restart(): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
 }
 //#endregion
 
@@ -321,7 +324,7 @@ class TestComponentBase implements azdata.Component {
 	updateProperty(key: string, value: any): Thenable<void> {
 		throw new Error('Method not implemented');
 	}
-	updateCssStyles(cssStyles: { [key: string]: string; }): Thenable<void> {
+	updateCssStyles(cssStyles: azdata.CssStyles): Thenable<void> {
 		throw new Error('Method not implemented');
 	}
 	onValidityChanged: vscode.Event<boolean> = undefined;
@@ -332,6 +335,7 @@ class TestComponentBase implements azdata.Component {
 	focus(): Thenable<void> {
 		return Promise.resolve();
 	}
+	dispose() { }
 }
 
 export class TestDropdownComponent extends TestComponentBase implements azdata.DropDownComponent {
@@ -347,8 +351,10 @@ class TestDeclarativeTableComponent extends TestComponentBase implements azdata.
 	}
 	onDataChanged: vscode.Event<any> = this.onClick.event;
 	onRowSelected: vscode.Event<any> = this.onClick.event;
+	setFilter: undefined;
 	data: any[][];
 	columns: azdata.DeclarativeTableColumn[];
+	setDataValues: undefined;
 }
 
 class TestButtonComponent extends TestComponentBase implements azdata.ButtonComponent {
@@ -359,10 +365,11 @@ class TestButtonComponent extends TestComponentBase implements azdata.ButtonComp
 }
 
 class TestRadioButtonComponent extends TestComponentBase implements azdata.RadioButtonComponent {
-	constructor(private onClick: vscode.EventEmitter<any>) {
+	constructor(private onClick: vscode.EventEmitter<any>, private onChange: vscode.EventEmitter<boolean>) {
 		super();
 	}
 	onDidClick: vscode.Event<any> = this.onClick.event;
+	onDidChangeCheckedState: vscode.Event<boolean> = this.onChange.event;
 }
 
 class TestTextComponent extends TestComponentBase implements azdata.TextComponent {
@@ -438,7 +445,7 @@ class TestComponentBuilder<T extends azdata.Component, TPropertyBag> implements 
 		return this._component;
 	}
 	withProperties<U>(properties: U): azdata.ComponentBuilder<T, TPropertyBag> {
-		this._component.updateProperties(properties);
+		void this._component.updateProperties(properties);
 		return this;
 	}
 	withValidation(validation: (component: T) => boolean): azdata.ComponentBuilder<T, TPropertyBag> {
@@ -446,7 +453,7 @@ class TestComponentBuilder<T extends azdata.Component, TPropertyBag> implements 
 	}
 
 	withProps(properties: TPropertyBag): azdata.ComponentBuilder<T, TPropertyBag> {
-		this._component.updateProperties(properties);
+		void this._component.updateProperties(properties);
 		return this;
 	}
 }
@@ -460,11 +467,12 @@ class TestLoadingBuilder extends TestComponentBuilder<azdata.LoadingComponent, a
 
 export function createViewContext(): TestContext {
 	let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let onChange: vscode.EventEmitter<boolean> = new vscode.EventEmitter<boolean>();
 
 	let form: azdata.FormContainer = new TestFormContainer();
 	let textBuilder: azdata.ComponentBuilder<azdata.TextComponent, azdata.TextComponentProperties> = new TestComponentBuilder(new TestTextComponent());
 	let buttonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent, azdata.ButtonProperties> = new TestComponentBuilder(new TestButtonComponent(onClick));
-	let radioButtonBuilder: azdata.ComponentBuilder<azdata.RadioButtonComponent, azdata.RadioButtonProperties> = new TestComponentBuilder(new TestRadioButtonComponent(onClick));
+	let radioButtonBuilder: azdata.ComponentBuilder<azdata.RadioButtonComponent, azdata.RadioButtonProperties> = new TestComponentBuilder(new TestRadioButtonComponent(onClick, onChange));
 	let declarativeTableBuilder: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties> = new TestComponentBuilder(new TestDeclarativeTableComponent(onClick));
 	let loadingBuilder: azdata.LoadingComponentBuilder = new TestLoadingBuilder(new TestLoadingComponent());
 	let dropdownBuilder: azdata.ComponentBuilder<azdata.DropDownComponent, azdata.DropDownProperties> = new TestComponentBuilder(new TestDropdownComponent(onClick));
@@ -521,6 +529,7 @@ export function createViewContext(): TestContext {
 		onValidityChanged: undefined!,
 		validate: undefined!,
 		initializeModel: () => { return Promise.resolve(); },
+		dispose() { },
 		modelBuilder: <azdata.ModelBuilder>{
 			radioButton: () => radioButtonBuilder,
 			text: () => textBuilder,

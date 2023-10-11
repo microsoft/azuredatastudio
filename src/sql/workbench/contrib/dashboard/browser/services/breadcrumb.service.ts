@@ -57,12 +57,14 @@ export class BreadcrumbService implements IBreadcrumbService {
 	}
 
 	private getServerBreadcrumb(profile: ConnectionProfile): MenuItem {
-		return profile.connectionName ? { label: profile.connectionName, routerLink: ['server-dashboard'] } : { label: profile.serverName, routerLink: ['server-dashboard'] };
+		return { label: profile.serverName, routerLink: ['server-dashboard'] };
 	}
 
 	private getDbBreadcrumb(profile: ConnectionProfile): MenuItem {
+		let defaultDatabaseName = profile.providerName === 'LOGANALYTICS' ? 'workspace-name' : 'database-name';
+
 		return {
-			label: profile.databaseName ? profile.databaseName : 'database-name',
+			label: profile.databaseName ? profile.databaseName : defaultDatabaseName,
 			routerLink: ['database-dashboard']
 		};
 	}

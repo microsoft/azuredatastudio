@@ -9,11 +9,12 @@ import { ConnectionConfig } from 'sql/platform/connection/common/connectionConfi
 import { fixupConnectionCredentials } from 'sql/platform/connection/common/connectionInfo';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { AuthenticationType, mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IConnectionProfile, ProfileMatcher } from 'sql/platform/connection/common/interfaces';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
+import { isDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
-import { find } from 'vs/base/common/arrays';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
@@ -41,13 +42,14 @@ export class ConnectionStore {
 		@ICapabilitiesService private capabilitiesService: ICapabilitiesService
 	) {
 		try {
-			const configRaw = this.storageService.get(RECENT_CONNECTIONS_STATE_KEY, StorageScope.GLOBAL, '[]');
+			const configRaw = this.storageService.get(RECENT_CONNECTIONS_STATE_KEY, StorageScope.APPLICATION, '[]');
 			this.mru = JSON.parse(configRaw);
 		} catch (e) {
 			this.mru = [];
 		}
 
-		this.storageService.onWillSaveState(() => this.storageService.store(RECENT_CONNECTIONS_STATE_KEY, JSON.stringify(this.mru), StorageScope.GLOBAL));
+		this.storageService.onWillSaveState(() =>
+			this.storageService.store(RECENT_CONNECTIONS_STATE_KEY, JSON.stringify(this.mru), StorageScope.APPLICATION, StorageTarget.MACHINE));
 	}
 
 	/**
@@ -65,6 +67,7 @@ export class ConnectionStore {
 		}
 
 		cred.push(CRED_ITEMTYPE_PREFIX.concat(itemType));
+		// Use basic info for credentials so that passwords can be shared among similar profiles for now.
 		cred.push(CRED_ID_PREFIX.concat(connectionProfileInstance.getConnectionInfoId()));
 		return cred.join(CRED_SEPARATOR);
 	}
@@ -82,13 +85,36 @@ export class ConnectionStore {
 		if (credentialsItem.savePassword && this.isPasswordRequired(credentialsItem) && !credentialsItem.password) {
 			const credentialId = this.formatCredentialId(credentialsItem, CRED_PROFILE_USER);
 			return this.credentialService.readCredential(credentialId)
-				.then(savedCred => {
-					if (savedCred) {
+				.then(async savedCred => {
+					if (savedCred?.password) {
 						credentialsItem.password = savedCred.password;
 						credentialsItem.options['password'] = savedCred.password;
+					} else if (credentialsItem.providerName === mssqlProviderName) {
+						// Special handling for MSSQL provider as "applicationName:azdata" is no longer included
+						// in credential string starting with MAY 2023 release.
+						// We will try to read credential including applicationName and if it is found,
+						// we will update the saved credential with new credential key.
+						// This special case handling should be removed in a future release.
+						let credParts = credentialId.split('|');
+						credParts.splice(3, 0, 'applicationName:azdata');
+						const oldCredentialId = credParts.join('|');
+						const savedMssqlCred = await this.credentialService.readCredential(oldCredentialId);
+						if (savedMssqlCred?.password) {
+							credentialsItem.password = savedMssqlCred.password;
+							credentialsItem.options['password'] = savedMssqlCred.password;
+							// Update credential in credential store.
+							await this.credentialService.deleteCredential(oldCredentialId);
+							await this.credentialService.saveCredential(credentialId, savedMssqlCred.password);
+							savedCred.password = savedMssqlCred.password;
+						}
 					}
 					return { profile: credentialsItem, savedCred: !!savedCred };
 				});
+		} else if (credentialsItem.authenticationType === AuthenticationType.AzureMFA || credentialsItem.authenticationType === AuthenticationType.DSTSAuth && credentialsItem.azureAccount) {
+			return Promise.resolve({ profile: credentialsItem, savedCred: true });
+		} else if (credentialsItem.authenticationType === AuthenticationType.None) {
+			// Kusto supports no authentication
+			return Promise.resolve({ profile: credentialsItem, savedCred: true });
 		} else {
 			// No need to look up the password
 			return Promise.resolve({ profile: credentialsItem, savedCred: credentialsItem.savePassword });
@@ -100,13 +126,16 @@ export class ConnectionStore {
 	 * Password values are stored to a separate credential store if the "savePassword" option is true
 	 *
 	 * @param profile the profile to save
-	 * @param whether the plaintext password should be written to the settings file
+	 * @param forceWritePlaintextPassword whether the plaintext password should be written to the settings file
 	 * @returns a Promise that returns the original profile, for help in chaining calls
 	 */
 	public async saveProfile(profile: IConnectionProfile, forceWritePlaintextPassword?: boolean, matcher?: ProfileMatcher): Promise<IConnectionProfile> {
 		// Add the profile to the saved list, taking care to clear out the password field if necessary
 		const savedProfile = forceWritePlaintextPassword ? profile : this.getProfileWithoutPassword(profile);
 		const savedConnectionProfile = await this.saveProfileToConfig(savedProfile, matcher);
+		if (savedProfile && isDisposable(savedProfile)) {
+			savedProfile.dispose();
+		}
 		profile.groupId = savedConnectionProfile.groupId;
 		profile.id = savedConnectionProfile.id;
 		// Only save if we successfully added the profile
@@ -131,12 +160,25 @@ export class ConnectionStore {
 		return this.connectionConfig.addGroup(profile);
 	}
 
-	private saveProfileToConfig(profile: IConnectionProfile, matcher?: ProfileMatcher): Promise<IConnectionProfile> {
+	private async saveProfileToConfig(profile: IConnectionProfile, matcher?: ProfileMatcher): Promise<IConnectionProfile> {
 		if (profile.saveProfile) {
-			return this.connectionConfig.addConnection(profile, matcher);
+			let result = await this.connectionConfig.addConnection(profile, matcher);
+			return result;
 		} else {
 			return Promise.resolve(profile);
 		}
+	}
+
+	/**
+	 * Checks to see if a connection profile edit is not identical to an existing saved profile.
+	 *
+	 * @param profile the profile group that is being edited.
+	 * @param matcher the profile matching function for the actual connection we want to edit.
+	 * @returns a boolean value indicating if there's an identical profile to the edit.
+	 */
+	public async isDuplicateEdit(profile: IConnectionProfile, matcher?: ProfileMatcher): Promise<boolean> {
+		let result = await this.connectionConfig.isDuplicateEdit(profile, matcher);
+		return result;
 	}
 
 	/**
@@ -148,7 +190,7 @@ export class ConnectionStore {
 	public getRecentlyUsedConnections(providers?: string[]): ConnectionProfile[] {
 		let mru = this.mru.slice();
 		if (providers && providers.length > 0) {
-			mru = mru.filter(c => find(providers, x => x === c.providerName));
+			mru = mru.filter(c => providers.find(x => x === c.providerName));
 		}
 		return this.convertConfigValuesToConnectionProfiles(mru);
 	}
@@ -171,10 +213,8 @@ export class ConnectionStore {
 	}
 
 	public getProfileWithoutPassword(conn: IConnectionProfile): ConnectionProfile {
-		let savedConn = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, conn);
-		savedConn = savedConn.withoutPassword();
-
-		return savedConn;
+		const savedConn = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, conn);
+		return savedConn.withoutPassword();
 	}
 
 	/**
@@ -183,7 +223,6 @@ export class ConnectionStore {
 	 * Password values are stored to a separate credential store if the "savePassword" option is true
 	 *
 	 * @param conn the connection to add
-	 * @param addToMru Whether to add this connection to the MRU
 	 * @returns a Promise that returns when the connection was saved
 	 */
 	public addRecentConnection(conn: IConnectionProfile): Promise<void> {
@@ -210,7 +249,8 @@ export class ConnectionStore {
 
 		// Remove the connection from the list if it already exists
 		list = list.filter(value => {
-			let equal = value && value.getConnectionInfoId() === savedProfile.getConnectionInfoId();
+			let equal = value && value.connectionName === savedProfile.connectionName;
+			equal = equal && value.getConnectionInfoId(false) === savedProfile.getConnectionInfoId(false);
 			if (equal && savedProfile.saveProfile) {
 				equal = value.groupId === savedProfile.groupId ||
 					ConnectionProfileGroup.sameGroupName(value.groupFullName, savedProfile.groupFullName);
@@ -228,7 +268,8 @@ export class ConnectionStore {
 
 		// Remove the connection from the list if it already exists
 		list = list.filter(value => {
-			let equal = value && value.getConnectionInfoId() === savedProfile.getConnectionInfoId();
+			let equal = value && value.connectionName === savedProfile.connectionName;
+			equal = equal && value.getConnectionInfoId(false) === savedProfile.getConnectionInfoId(false);
 			if (equal && savedProfile.saveProfile) {
 				equal = value.groupId === savedProfile.groupId ||
 					ConnectionProfileGroup.sameGroupName(value.groupFullName, savedProfile.groupFullName);
@@ -263,6 +304,8 @@ export class ConnectionStore {
 
 	private doSavePassword(conn: IConnectionProfile): Promise<boolean> {
 		if (conn.password) {
+			// Credentials are currently shared between profiles with the same basic details.
+			// Credentials are currently not cleared upon deletion of a profile.
 			const credentialId = this.formatCredentialId(conn);
 			return this.credentialService.saveCredential(credentialId, conn.password);
 		} else {
@@ -275,7 +318,7 @@ export class ConnectionStore {
 		if (!withoutConnections) {
 			profilesInConfiguration = this.connectionConfig.getConnections(true);
 			if (providers && providers.length > 0) {
-				profilesInConfiguration = profilesInConfiguration.filter(x => find(providers, p => p === x.providerName));
+				profilesInConfiguration = profilesInConfiguration.filter(x => providers.find(p => p === x.providerName));
 			}
 		}
 		const groups = this.connectionConfig.getAllGroups();
@@ -313,7 +356,7 @@ export class ConnectionStore {
 
 	public getGroupFromId(groupId: string): IConnectionProfileGroup | undefined {
 		const groups = this.connectionConfig.getAllGroups();
-		return find(groups, group => group.id === groupId);
+		return groups.find(group => group.id === groupId);
 	}
 
 	private getMaxRecentConnectionsCount(): number {

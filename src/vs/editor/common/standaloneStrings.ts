@@ -29,6 +29,7 @@ export namespace AccessibilityHelpNLS {
 	export const openDocWinLinux = nls.localize("openDocWinLinux", "Press Control+H now to open a browser window with more information related to editor accessibility.");
 	export const outroMsg = nls.localize("outroMsg", "You can dismiss this tooltip and return to the editor by pressing Escape or Shift+Escape.");
 	export const showAccessibilityHelpAction = nls.localize("showAccessibilityHelpAction", "Show Accessibility Help");
+	export const accessibilityHelpTitle = nls.localize('accessibilityHelpTitle', "Accessibility Help");
 }
 
 export namespace InspectTokensNLS {
@@ -62,6 +63,6 @@ export namespace ToggleHighContrastNLS {
 	export const toggleHighContrast = nls.localize('toggleHighContrast', "Toggle High Contrast Theme");
 }
 
-export namespace SimpleServicesNLS {
+export namespace StandaloneServicesNLS {
 	export const bulkEditServiceSummary = nls.localize('bulkEditServiceSummary', "Made {0} edits in {1} files");
 }

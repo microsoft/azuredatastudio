@@ -8,6 +8,6 @@
 	],
 	"dacFx.deployRadioButtonLabel": "将数据层应用程序 .dacpac 文件部署到 SQL Server 的实例 [部署 Dacpac]",
 	"dacFx.extractRadioButtonLabel": "将数据层应用程序从 SQL Server 实例提取到 .dacpac 文件 [提取 Dacpac]",
-	"dacFx.importRadioButtonLabel": "基于 .bacpac 文件创建数据库 [导入 Bacpac]",
+	"dacFx.importRadioButtonLabel": "由 .bacpac 文件创建数据库 [导入 Bacpac]",
 	"dacFx.exportRadioButtonLabel": "将架构和数据从数据库导出到逻辑 .bacpac 文件格式 [导出 Bacpac]"
 }

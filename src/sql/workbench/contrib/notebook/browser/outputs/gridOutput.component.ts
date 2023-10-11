@@ -3,49 +3,60 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { OnInit, Component, Input, Inject, ViewChild, ElementRef } from '@angular/core';
+import { OnInit, Component, Input, Inject, ViewChild, ElementRef, ChangeDetectorRef, forwardRef } from '@angular/core';
 import * as azdata from 'azdata';
 
-import { IGridDataProvider, getResultsString } from 'sql/workbench/services/query/common/gridDataProvider';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IGridDataProvider, copySelectionToClipboard, getTableHeaderString } from 'sql/workbench/services/query/common/gridDataProvider';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IDataResource, MaxTableRowsConfigName, NotebookConfigSectionName, IDataResourceSchema, IDataResourceFields, MAX_ROWS } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
-import QueryRunner, { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
-import { ResultSetSummary, ResultSetSubset, ICellValue, BatchSummary } from 'sql/workbench/services/query/common/query';
+import { IDataResource, rowHasColumnNameKeys } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
+import { getEolString, shouldSkipNewLineAfterTrailingLineBreak, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
+import { ResultSetSummary, ResultSetSubset, ICellValue } from 'sql/workbench/services/query/common/query';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { localize } from 'vs/nls';
 import { IAction } from 'vs/base/common/actions';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IMimeComponent } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRegistry';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellExecutionState, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { MimeModel } from 'sql/workbench/services/notebook/browser/outputs/mimemodel';
 import { GridTableState } from 'sql/workbench/common/editor/query/gridTableState';
 import { GridTableBase } from 'sql/workbench/contrib/query/browser/gridPanel';
-import { getErrorMessage } from 'vs/base/common/errors';
+import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { ISerializationService, SerializeDataParams } from 'sql/platform/serialization/common/serializationService';
-import { SaveResultAction, IGridActionContext } from 'sql/workbench/contrib/query/browser/actions';
+import { IGridActionContext } from 'sql/workbench/contrib/query/browser/actions';
 import { SaveFormat, ResultSerializer, SaveResultsResponse } from 'sql/workbench/services/query/common/resultSerializer';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
-import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
-import { values } from 'vs/base/common/collections';
 import { URI } from 'vs/base/common/uri';
-import { assign } from 'vs/base/common/objects';
-import { escape } from 'sql/base/common/strings';
+import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
+import { equals } from 'vs/base/common/arrays';
+import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { getChartMaxRowCount, notifyMaxRowCountExceeded } from 'sql/workbench/contrib/charts/browser/utils';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
-	template: `<div #output class="notebook-cellTable"></div>`
+	template: `
+	<loading-spinner [loading]="loading"></loading-spinner>
+	<div #output class="notebook-cellTable"></div>`
 })
 export class GridOutputComponent extends AngularDisposable implements IMimeComponent, OnInit {
 	public static readonly SELECTOR: string = 'grid-output';
@@ -57,25 +68,25 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	private _cellOutput: azdata.nb.ICellOutput;
 	private _bundleOptions: MimeModel.IOptions;
 	private _table: DataResourceTable;
-	private _batchId: number;
-	private _id: number;
-	private _queryRunnerUri: string;
-	private _queryRunner: QueryRunner;
-	private _configuredMaxRows: number = MAX_ROWS;
+	private _batchId: number | undefined;
+	private _id: number | undefined;
+	private _layoutCalledOnce: boolean = false;
+	private _incrementalGridRenderingEnabled: boolean;
+	private _isLoading: boolean = false;
 
 	constructor(
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(IThemeService) private readonly themeService: IThemeService,
-		@Inject(IConfigurationService) private configurationService: IConfigurationService,
-		@Inject(IQueryManagementService) private queryManagementService: IQueryManagementService
+		@Inject(IConfigurationService) private configurationService: IConfigurationService
 	) {
 		super();
+		this._incrementalGridRenderingEnabled = this.configurationService.getValue('notebook.enableIncrementalGridRendering');
 	}
 
 	@Input() set bundleOptions(value: MimeModel.IOptions) {
 		this._bundleOptions = value;
 		if (this._initialized) {
-			this.renderGrid();
+			this.renderGrid().catch(onUnexpectedError);
 		}
 	}
 
@@ -88,7 +99,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	@Input() set cellModel(value: ICellModel) {
 		this._cellModel = value;
 		if (this._initialized) {
-			this.renderGrid();
+			this.renderGrid().catch(onUnexpectedError);
 		}
 	}
 
@@ -100,74 +111,58 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		this._cellOutput = value;
 	}
 
-	@Input() set batchId(value: number) {
-		this._batchId = value;
+	get loading(): boolean {
+		return this._isLoading;
 	}
 
-	@Input() set id(value: number) {
-		this._id = value;
+	@Input() set loading(isLoading: boolean) {
+		this._isLoading = isLoading;
+		if (!(this._changeRef['destroyed'])) {
+			this._changeRef.detectChanges();
+		}
 	}
 
-	@Input() set queryRunnerUri(value: string) {
-		this._queryRunnerUri = value;
-	}
-
-	ngOnInit() {
-		let config = this.configurationService.getValue(NotebookConfigSectionName);
-		if (config) {
-			let maxRows = config[MaxTableRowsConfigName] ? config[MaxTableRowsConfigName] : undefined;
-			if (maxRows && maxRows > 0) {
-				this._configuredMaxRows = maxRows;
+	async ngOnInit() {
+		if (this.cellModel) {
+			let outputId: QueryResultId = this.cellModel.getOutputId(this._cellOutput);
+			if (outputId) {
+				this._batchId = outputId.batchId;
+				this._id = outputId.id;
+			}
+			this._register(this.cellModel.onTableUpdated(e => {
+				if (e.resultSet.batchId === this._batchId && e.resultSet.id === this._id) {
+					this.updateResult(e.resultSet, e.rows);
+				}
+			}));
+			if (this._cellModel.executionState === CellExecutionState.Running || !this._incrementalGridRenderingEnabled) {
+				await this.renderGrid();
+			} else {
+				this.loading = true;
+				// setTimeout adds the renderGrid call to a queue that gets called after all current tasks get executed -
+				// this allows the rest of the notebook to render first before rendering grids incrementally.
+				setTimeout(async () => {
+					await this.renderGrid();
+					this.loading = false;
+				});
 			}
 		}
-		// When a saved notebook is opened, there is no query runner
-		this._queryRunner = this.queryManagementService.getRunner(this._queryRunnerUri);
-		this.renderGrid();
 	}
 
-	renderGrid(): void {
+
+	async renderGrid(): Promise<void> {
 		if (!this._bundleOptions || !this._cellModel || !this.mimeType) {
 			return;
 		}
 		if (!this._table) {
 			let source = <IDataResource><any>this._bundleOptions.data[this.mimeType];
+			reorderGridData(source);
 			let state = new GridTableState(0, 0);
-			this._table = this.instantiationService.createInstance(DataResourceTable, this._batchId, this._id, this._queryRunner, source, this.cellModel, this.cellOutput, state);
+			this._table = this.instantiationService.createInstance(DataResourceTable, source, this.cellModel, this.cellOutput, state);
 			let outputElement = <HTMLElement>this.output.nativeElement;
 			outputElement.appendChild(this._table.element);
-			this._register(attachTableStyler(this._table, this.themeService));
-			this._table.onDidInsert();
+			await this._table.onDidInsert();
 			this.layout();
-			if (this._queryRunner) {
-				this._register(this._queryRunner.onResultSetUpdate(resultSet => { this.updateResultSet(resultSet); }));
-				this._register(this._queryRunner.onBatchEnd(batch => { this.convertData(batch); }));
-			}
 			this._initialized = true;
-		}
-	}
-
-	updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]): void {
-		let resultsToUpdate: ResultSetSummary[];
-		if (!Array.isArray(resultSet)) {
-			resultsToUpdate = [resultSet];
-		} else {
-			resultsToUpdate = resultSet?.splice(0);
-		}
-		for (let set of resultsToUpdate) {
-			if (this._batchId === set.batchId && this._id === set.id) {
-				set.rowCount = set.rowCount > this._configuredMaxRows ? this._configuredMaxRows : set.rowCount;
-				this._table.updateResult(set);
-				this.layout();
-			}
-		}
-	}
-
-	convertData(batch: BatchSummary): void {
-		for (let set of batch.resultSetSummaries) {
-			if (set.batchId === this._batchId && set.id === this._id) {
-				set.rowCount = set.rowCount > this._configuredMaxRows ? this._configuredMaxRows : set.rowCount;
-				this._cellModel.addGridDataConversionPromise(this._table.convertData(set));
-			}
 		}
 	}
 
@@ -177,6 +172,52 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			this._table.layout(maxSize);
 		}
 	}
+
+	updateResult(resultSet: ResultSetSummary, rows: ICellValue[][]): void {
+		this._table.updateResultSet(resultSet, rows);
+		if (!this._layoutCalledOnce) {
+			this.layout();
+			this._layoutCalledOnce = true;
+		}
+	}
+}
+
+function reorderGridData(source: IDataResource): void {
+	// Get Column Names list from the data resource schema
+	const columnNames: string[] = source.schema.fields.map(field => field.name);
+	// Check to see if data source is ordered properly based on schema
+	// Papermill executed notebooks with KQL for instance will organize the
+	// row data in alphabetical order as a result the outputted grid will be
+	// unordered and not based on the data resource schema
+	if (source.data.length > 0) {
+		let rowKeys = Object.keys(source.data[0]);
+		if (!equals(columnNames, rowKeys)) {
+			// Older SQL notebooks use indices as keys instead of the column name.
+			// Indicies indicate the row is ordered properly
+			// We must check the data to know if it is in index form
+			let notIndexOrderKeys = false;
+			for (let index = 0; index < rowKeys.length - 1; index++) {
+				// Index form (all numbers, start at 0 and increase by 1)
+				let value = Number(rowKeys[index]);
+				if (isNaN(value) || value !== index) {
+					// break if key is not a number or in index form
+					notIndexOrderKeys = true;
+					break;
+				}
+			}
+			// Only reorder data that is not in index form
+			if (notIndexOrderKeys) {
+				source.data.forEach((row, index) => {
+					// Order each row based on the schema
+					let reorderedData = {};
+					for (let key of columnNames) {
+						reorderedData[key] = row[key];
+					}
+					source.data[index] = reorderedData;
+				});
+			}
+		}
+	}
 }
 
 class DataResourceTable extends GridTableBase<any> {
@@ -184,28 +225,32 @@ class DataResourceTable extends GridTableBase<any> {
 	private _gridDataProvider: DataResourceDataProvider;
 	private _chart: ChartView;
 	private _chartContainer: HTMLElement;
-	private _batchId: number;
-	private _id: number;
-	private _queryRunner: QueryRunner;
 
-	constructor(batchId: number,
-		id: number,
-		queryRunner: QueryRunner,
+	constructor(
 		source: IDataResource,
 		private cellModel: ICellModel,
 		private cellOutput: azdata.nb.ICellOutput,
 		state: GridTableState,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IInstantiationService protected instantiationService: IInstantiationService,
+		@IInstantiationService instantiationService: IInstantiationService,
 		@IEditorService editorService: IEditorService,
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@IQueryModelService queryModelService: IQueryModelService,
+		@IContextViewService contextViewService: IContextViewService,
+		@INotificationService notificationService: INotificationService,
+		@IExecutionPlanService executionPlanService: IExecutionPlanService,
+		@IAccessibilityService accessibilityService: IAccessibilityService,
+		@IQuickInputService quickInputService: IQuickInputService,
+		@IComponentContextService componentContextService: IComponentContextService,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@ILogService logService: ILogService
 	) {
-		super(state, createResultSet(source), { actionOrientation: ActionsOrientation.HORIZONTAL }, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
-		this._batchId = batchId;
-		this._id = id;
-		this._queryRunner = queryRunner;
-		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, this._batchId, this._id, this._queryRunner, source, this.resultSet, this.cellModel);
+		super(state, createResultSet(source), {
+			actionOrientation: ActionsOrientation.HORIZONTAL,
+			inMemoryDataProcessing: true
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService, componentContextService, contextKeyService, logService);
+		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel);
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 
 		if (!this.cellOutput.metadata) {
@@ -217,6 +262,7 @@ class DataResourceTable extends GridTableBase<any> {
 		this._chart.onOptionsChange(options => {
 			this.setChartOptions(options);
 		});
+		this.providerId = cellModel.notebookModel.context?.providerName;
 	}
 
 	public get gridDataProvider(): IGridDataProvider {
@@ -227,27 +273,25 @@ class DataResourceTable extends GridTableBase<any> {
 		return this.cellOutput.metadata.azdata_chartOptions !== undefined;
 	}
 
-	protected getCurrentActions(): IAction[] {
-		return this.getContextActions();
+	protected override getActionBarItems(): IAction[] {
+		const items = super.getActionBarItems();
+		items.push(this.instantiationService.createInstance(NotebookChartAction, this));
+		return items;
 	}
 
 	protected getContextActions(): IAction[] {
 		return [
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
 			this.instantiationService.createInstance(NotebookChartAction, this)
 		];
 	}
 
-	public get maximumSize(): number {
+	public override get maximumSize(): number {
 		// Overriding action bar size calculation for now.
 		// When we add this back in, we should update this calculation
 		return Math.max(this.maxSize, /* ACTIONBAR_HEIGHT + BOTTOM_PADDING */ 0);
 	}
 
-	public layout(size?: number): void {
+	public override layout(size?: number): void {
 		super.layout(size);
 
 		if (!this._chartContainer) {
@@ -280,11 +324,14 @@ class DataResourceTable extends GridTableBase<any> {
 	}
 
 	public updateChartData(rowCount: number, columnCount: number, gridDataProvider: IGridDataProvider): void {
-		gridDataProvider.getRowData(0, rowCount).then(result => {
-			let range = new Slick.Range(0, 0, rowCount - 1, columnCount - 1);
-			let columns = gridDataProvider.getColumnHeaders(range);
-			this._chart.setData(result.rows, columns);
-		});
+		if (this.chartDisplayed) {
+			const actualRowCount = Math.min(getChartMaxRowCount(this.configurationService), rowCount);
+			gridDataProvider.getRowData(0, actualRowCount).then(result => {
+				let range = new Slick.Range(0, 0, actualRowCount - 1, columnCount - 1);
+				let columns = gridDataProvider.getColumnHeaders(range);
+				this._chart.setData(result.rows, columns);
+			});
+		}
 	}
 
 	private setChartOptions(options: IInsightOptions | undefined) {
@@ -292,28 +339,18 @@ class DataResourceTable extends GridTableBase<any> {
 		this.cellModel.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
 	}
 
-	public convertData(set: ResultSetSummary): Promise<void> {
-		return this._gridDataProvider.convertAllData(set);
-	}
-
-	public updateResult(resultSet: ResultSetSummary): void {
+	public updateResultSet(resultSet: ResultSetSummary, rows: ICellValue[][]): void {
+		this._gridDataProvider.updateResultSet(resultSet, rows);
 		super.updateResult(resultSet);
-		this._gridDataProvider.updateResultSet(resultSet);
+		this.updateChartData(resultSet?.rowCount, resultSet?.columnInfo?.length, this._gridDataProvider);
 	}
 }
 
 export class DataResourceDataProvider implements IGridDataProvider {
 	private _rows: ICellValue[][];
 	private _documentUri: string;
-	private _queryRunner: QueryRunner;
-	private _batchId: number;
-	private _id: number;
 	private _resultSet: ResultSetSummary;
-	private _data: any;
 	constructor(
-		batchId: number,
-		id: number,
-		queryRunner: QueryRunner,
 		source: IDataResource,
 		resultSet: ResultSetSummary,
 		private cellModel: ICellModel,
@@ -325,110 +362,69 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 	) {
 		this._documentUri = this.cellModel.notebookModel.notebookUri.toString();
-		this._queryRunner = queryRunner;
-		this._batchId = batchId;
-		this._id = id;
 		this._resultSet = resultSet;
-		this.initializeData();
 		this.transformSource(source);
 	}
 
-	private initializeData(): void {
-		// Set up data resource
-		let columnsResources: IDataResourceSchema[] = [];
-		this._resultSet.columnInfo.forEach(column => {
-			columnsResources.push({ name: escape(column.columnName) });
-		});
-		let columnsFields: IDataResourceFields = { fields: columnsResources };
-		let dataResource = {
-			schema: columnsFields,
-			data: []
-		};
-		// Set up html table string
-		let htmlTable: string[] = new Array(3);
-		htmlTable[0] = '<table>';
-		let columnHeaders = '<tr>';
-		for (let column of this._resultSet.columnInfo) {
-			columnHeaders += `<th>${escape(column.columnName)}</th>`;
-		}
-		columnHeaders += '</tr>';
-		htmlTable[1] = columnHeaders;
-		htmlTable[2] = '</table>';
-
-		this._data = {
-			'application/vnd.dataresource+json': dataResource,
-			'text/html': htmlTable
-		};
-	}
-
 	private transformSource(source: IDataResource): void {
-		this._rows = source.data.map(row => {
-			let rowData: azdata.DbCellValue[] = [];
-			Object.keys(row).forEach((val, index) => {
-				let displayValue = String(values(row)[index]);
-				// Since the columns[0] represents the row number, start at 1
-				rowData.push({
-					displayValue: displayValue,
-					isNull: false,
-					invariantCultureDisplayValue: displayValue
-				});
+		if (source.data.length > 0) {
+			let columns = source.schema.fields;
+			// Rows are either indexed by column name or ordinal number, so check for one column name to see if it uses that format
+			let useColumnNameKey = rowHasColumnNameKeys(source.data[0], source.schema.fields.map(field => field.name));
+			this._rows = source.data.map(row => {
+				let rowData: azdata.DbCellValue[] = [];
+				for (let index = 0; index < Object.keys(row).length; index++) {
+					let key = useColumnNameKey ? columns[index].name : index;
+					let displayValue = String(row[key]);
+					// Since the columns[0] represents the row number, start at 1
+					rowData.push({
+						displayValue: displayValue,
+						isNull: false,
+						invariantCultureDisplayValue: displayValue
+					});
+				}
+				return rowData;
 			});
-			return rowData;
-		});
-	}
-
-	public updateResultSet(resultSet: ResultSetSummary): void {
-		this._resultSet = resultSet;
-	}
-
-	public async convertAllData(result: ResultSetSummary): Promise<void> {
-		// Querying 100 rows at a time. Querying large amount of rows will be slow and
-		// affect table rendering since each time the user scrolls, getRowData is called.
-		let numRows = 100;
-		for (let i = 0; i < result.rowCount; i += 100) {
-			if (i + 100 > result.rowCount) {
-				numRows += result.rowCount - i;
-			}
-			let rows = await this._queryRunner.getQueryRows(i, numRows, this._batchId, this._id);
-			this.convertData(rows);
+		} else {
+			this._rows = [];
 		}
-		this.cellModel.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
 	}
 
-	private convertData(rows: ResultSetSubset): void {
-		let dataResourceRows = this.convertRowsToDataResource(rows);
-		let htmlStringArr = this.convertRowsToHtml(rows);
-		this._data['application/vnd.dataresource+json'].data = this._data['application/vnd.dataresource+json'].data.concat(dataResourceRows);
-		this._data['text/html'].splice(this._data['text/html'].length - 1, 0, ...htmlStringArr);
-		this.cellModel.updateOutputData(this._batchId, this._id, this._data);
+	public updateResultSet(resultSet: ResultSetSummary, rows: ICellValue[][]): void {
+		this._resultSet = resultSet;
+		this._rows = this._rows.concat(rows);
 	}
 
 	getRowData(rowStart: number, numberOfRows: number): Thenable<ResultSetSubset> {
-		if (this._queryRunner) {
-			return this._queryRunner.getQueryRows(rowStart, numberOfRows, this._batchId, this._id);
-		} else {
-			let rowEnd = rowStart + numberOfRows;
-			if (rowEnd > this._rows.length) {
-				rowEnd = this._rows.length;
-			}
-			let resultSubset: ResultSetSubset = {
-				rowCount: rowEnd - rowStart,
-				rows: this._rows.slice(rowStart, rowEnd)
-			};
-			return Promise.resolve(resultSubset);
+		let rowEnd = rowStart + numberOfRows;
+		if (rowEnd > this._rows.length) {
+			rowEnd = this._rows.length;
+		}
+		let resultSubset: ResultSetSubset = {
+			rowCount: rowEnd - rowStart,
+			rows: this._rows.slice(rowStart, rowEnd)
+		};
+		return Promise.resolve(resultSubset);
+	}
+
+	async copyResults(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
+		return this.copyResultsAsync(selection, includeHeaders, tableView);
+	}
+
+	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
+		try {
+			await copySelectionToClipboard(this._clipboardService, this._notificationService, this._configurationService, this, selection, includeHeaders, tableView);
+		} catch (error) {
+			this._notificationService.error(localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
 		}
 	}
 
-	async copyResults(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
-		return this.copyResultsAsync(selection, includeHeaders);
-	}
-
-	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
+	async copyHeaders(selection: Slick.Range[]): Promise<void> {
 		try {
-			let results = await getResultsString(this, selection, includeHeaders);
-			this._clipboardService.writeText(results);
+			const results = getTableHeaderString(this, selection);
+			await this._clipboardService.writeText(results);
 		} catch (error) {
-			this._notificationService.error(localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
+			this._notificationService.error(localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
 		}
 	}
 
@@ -440,6 +436,9 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 	shouldRemoveNewLines(): boolean {
 		return shouldRemoveNewLines(this._configurationService);
+	}
+	shouldSkipNewLineAfterTrailingLineBreak(): boolean {
+		return shouldSkipNewLineAfterTrailingLineBreak(this._configurationService);
 	}
 
 	getColumnHeaders(range: Slick.Range): string[] {
@@ -454,20 +453,15 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	serializeResults(format: SaveFormat, selection: Slick.Range[]): Thenable<void> {
-		if (this._queryRunner) {
-			selection = selection ? selection : [new Slick.Range(0, 0, this._resultSet.rowCount - 1, this._resultSet.columnInfo.length - 1)];
-			return this._queryRunner.serializeResults(this._batchId, this._id, format, selection);
-		} else {
-			let serializer = this._instantiationService.createInstance(ResultSerializer);
-			return serializer.handleSerialization(this._documentUri, format, (filePath) => this.doSerialize(serializer, filePath, format, selection));
-		}
+		let serializer = this._instantiationService.createInstance(ResultSerializer);
+		return serializer.handleSerialization(this._documentUri, format, (filePath) => this.doSerialize(serializer, filePath, format, selection));
 	}
 
 	private doSerialize(serializer: ResultSerializer, filePath: URI, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse | undefined> {
 		if (!this.canSerialize) {
 			return Promise.resolve(undefined);
 		}
-		// TODO implement selection support
+
 		let columns = this._resultSet.columnInfo;
 		let rowLength = this._rows.length;
 		let minRow = 0;
@@ -489,35 +483,46 @@ export class DataResourceDataProvider implements IGridDataProvider {
 			if (endIndex > maxRow) {
 				endIndex = maxRow;
 			}
-			let result: ICellValue[][] = [];
-			if (includeHeaders) {
-				result.push(columns.map(col => {
-					let headerData: azdata.DbCellValue;
-					headerData = {
-						displayValue: col.columnName,
-						isNull: false,
-						invariantCultureDisplayValue: col.columnName
-					};
-					return headerData;
-				}));
-			}
-			result = result.concat(this._rows.slice(index, endIndex).map(row => {
+
+			return [].concat(this._rows.slice(index, endIndex).map(row => {
 				if (this.isSelected(singleSelection)) {
 					return row.slice(singleSelection.fromCell, singleSelection.toCell + 1);
 				} else {
 					return row;
 				}
 			}));
-			return result;
 		};
 
-		let serializeRequestParams: SerializeDataParams = <SerializeDataParams>assign(serializer.getBasicSaveParameters(format), <Partial<SerializeDataParams>>{
+		// This code path uses the serialization service which uses a different request parameter
+		// interface than the query execution service's saveResults handlers. Here, we take the
+		// format-specific request params (eg, includeHeaders for CSV) and merge the format-agnostic
+		// request params for the serialization request (eg, saveFormat, filePath).
+		let provider = this.cellModel.notebookModel.context?.providerName;
+		if (!provider) {
+			// If no connection currently exists, then pick the first connection provider for the current kernel.
+			// If there's still no provider, then fallback to the default MSSQL one.
+			let connProviders = this.cellModel.notebookModel.getApplicableConnectionProviderIds(this.cellModel.notebookModel.selectedKernelDisplayName);
+			if (connProviders?.length > 0) {
+				provider = connProviders[0];
+			}
+		}
+		if (!provider || !this._serializationService.isProviderRegistered(provider)) {
+			// Serializing notebook query results to file is agnostic of database engine since the data is already available in the notebook.
+			// If the provider doesn't have its own serializer we can let the mssql provider handle it.
+			provider = mssqlProviderName;
+		}
+		let formatSpecificParams = serializer.getBasicSaveParameters(format);
+		let formatAgnosticParams = <Partial<SerializeDataParams>>{
+			serializationProviderId: provider,
 			saveFormat: format,
-			columns: columns,
 			filePath: filePath.fsPath,
-			getRowRange: (rowStart, includeHeaders, numberOfRows) => getRows(rowStart, includeHeaders, numberOfRows),
-			rowCount: rowLength
-		});
+			columns: columns,
+			rowCount: rowLength,
+			getRowRange: (rowStart: number, includeHeaders: boolean, numberOfRows?: number) =>
+				getRows(rowStart, includeHeaders, numberOfRows),
+		};
+		let serializeRequestParams = <SerializeDataParams>Object.assign(formatSpecificParams, formatAgnosticParams);
+
 		return this._serializationService.serializeResults(serializeRequestParams);
 	}
 
@@ -526,29 +531,6 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	 */
 	private isSelected(selection: Slick.Range): boolean {
 		return (selection && !((selection.fromCell === selection.toCell) && (selection.fromRow === selection.toRow)));
-	}
-
-	private convertRowsToDataResource(subset: ResultSetSubset): any[] {
-		return subset.rows.map(row => {
-			let rowObject: { [key: string]: any; } = {};
-			row.forEach((val, index) => {
-				rowObject[index] = val.displayValue;
-			});
-			return rowObject;
-		});
-	}
-
-	private convertRowsToHtml(subset: ResultSetSubset): string[] {
-		let htmlStringArr = [];
-		for (const row of subset.rows) {
-			let rowData = '<tr>';
-			for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
-				rowData += `<td>${escape(row[columnIndex].displayValue)}</td>`;
-			}
-			rowData += '</tr>';
-			htmlStringArr.push(rowData);
-		}
-		return htmlStringArr;
 	}
 }
 
@@ -625,7 +607,11 @@ export class NotebookChartAction extends ToggleableAction {
 	public static SHOWTABLE_LABEL = localize('notebook.showTable', "Show table");
 	public static SHOWTABLE_ICON = 'table';
 
-	constructor(private resourceTable: DataResourceTable) {
+	constructor(private resourceTable: DataResourceTable,
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IStorageService private readonly storageService: IStorageService,
+		@INotificationService private readonly notificationService: INotificationService,
+		@IAdsTelemetryService private readonly adsTelemetryService: IAdsTelemetryService) {
 		super(NotebookChartAction.ID, {
 			toggleOnLabel: NotebookChartAction.SHOWTABLE_LABEL,
 			toggleOnClass: NotebookChartAction.SHOWTABLE_ICON,
@@ -635,14 +621,21 @@ export class NotebookChartAction extends ToggleableAction {
 		});
 	}
 
-	public async run(context: IGridActionContext): Promise<boolean> {
+	public override async run(context: IGridActionContext): Promise<void> {
 		this.resourceTable.toggleChartVisibility();
 		this.toggle(!this.state.isOn);
 		if (this.state.isOn) {
-			let rowCount = context.table.getData().getLength();
-			let columnCount = context.table.columns.length;
-			this.resourceTable.updateChartData(rowCount, columnCount, context.gridDataProvider);
+			const rowCount = context.table.getData().getLength();
+			const columnCount = context.table.columns.length;
+			const maxRowCount = getChartMaxRowCount(this.configurationService);
+			const maxRowCountExceeded = rowCount > maxRowCount;
+			if (maxRowCountExceeded) {
+				notifyMaxRowCountExceeded(this.storageService, this.notificationService, this.configurationService);
+			}
+			this.adsTelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.ShowChart).withAdditionalProperties(
+				{ [TelemetryKeys.TelemetryPropertyName.ChartMaxRowCountExceeded]: maxRowCountExceeded }
+			).send();
+			this.resourceTable.updateChartData(Math.min(rowCount, maxRowCount), columnCount, context.gridDataProvider);
 		}
-		return true;
 	}
 }

@@ -5,8 +5,8 @@
 
 
 import * as DOM from 'vs/base/browser/dom';
-import * as tree from 'vs/base/parts/tree/browser/tree';
-import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
+import * as tree from 'sql/base/parts/tree/browser/tree';
+import * as TreeDefaults from 'sql/base/parts/tree/browser/treeDefaults';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -27,11 +27,11 @@ export class JobStepsViewModel {
 
 export class JobStepsViewController extends TreeDefaults.DefaultController {
 
-	protected onLeftClick(tree: tree.ITree, element: JobStepsViewRow, event: IMouseEvent, origin: string = 'mouse'): boolean {
+	protected override onLeftClick(tree: tree.ITree, element: JobStepsViewRow, event: IMouseEvent, origin: string = 'mouse'): boolean {
 		return true;
 	}
 
-	public onContextMenu(tree: tree.ITree, element: JobStepsViewRow, event: tree.ContextMenuEvent): boolean {
+	public override onContextMenu(tree: tree.ITree, element: JobStepsViewRow, event: tree.ContextMenuEvent): boolean {
 		return true;
 	}
 

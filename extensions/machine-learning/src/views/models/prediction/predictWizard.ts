@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { ModelViewBase, ModelSourceType } from '../modelViewBase';
+import { ModelViewBase, ModelSourceType, ModelActionType } from '../modelViewBase';
 import { ApiWrapper } from '../../../common/apiWrapper';
 import { ModelSourcesComponent } from '../modelSourcesComponent';
 import { LocalModelsComponent } from '../localModelsComponent';
@@ -31,9 +31,11 @@ export class PredictWizard extends ModelViewBase {
 	constructor(
 		apiWrapper: ApiWrapper,
 		root: string,
-		parent?: ModelViewBase) {
+		parent?: ModelViewBase,
+		private _selectedModels?: ImportedModel[] | undefined) {
 		super(apiWrapper, root);
 		this._parentView = parent;
+		this.modelActionType = ModelActionType.Predict;
 	}
 
 	/**
@@ -43,7 +45,7 @@ export class PredictWizard extends ModelViewBase {
 		this.modelSourceType = ModelSourceType.RegisteredModels;
 		this.modelSourcePage = new ModelSourcePage(this._apiWrapper, this, [ModelSourceType.RegisteredModels, ModelSourceType.Local, ModelSourceType.Azure]);
 		this.columnsSelectionPage = new ColumnsSelectionPage(this._apiWrapper, this);
-		this.modelBrowsePage = new ModelBrowsePage(this._apiWrapper, this, false);
+		this.modelBrowsePage = new ModelBrowsePage(this._apiWrapper, this, false, this._selectedModels);
 		this.wizardView = new WizardView(this._apiWrapper);
 
 		let wizard = this.wizardView.createWizard(constants.makePredictionTitle,
@@ -82,6 +84,9 @@ export class PredictWizard extends ModelViewBase {
 		});
 
 		await wizard.open();
+		if (this._selectedModels) {
+			await wizard.setCurrentPage(wizard.pages.length - 1);
+		}
 	}
 
 	private onLoading(): void {

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 25.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#F6F6F6;}
+	.st1{fill:#424242;}
+	.st2{fill:#F0EFF1;}
+</style>
+<path id="outline" class="st0" d="M15,13.4c1-1.9,1-4.2,1-4.4l0-0.7l-0.5-0.2L15,7.9V0H0v14h1c0.9,1.2,2.3,2,4,2
+	c1.5,0,2.8-0.6,3.7-1.6c0.6,0.7,1.4,1.3,2.6,1.6l0.2,0.1l0.2-0.1c1.3-0.3,2.2-1.1,2.9-2H15V13.4z"/>
+<path id="iconBg" class="st1" d="M5,9H4v3h3v-1H5V9z M15,9L15,9l-4,4l-1.9-1.9l0.7-0.7l1.1,1.1l3.1-3.1L11.5,7L8.3,8.8
+	C7.6,7.7,6.4,7,5,7c-2.2,0-4,1.8-4,4s1.8,4,4,4c1.7,0,3.1-1,3.7-2.5c0.5,1.1,1.3,2.1,2.8,2.5C15.1,14.1,15,9,15,9z M5,14
+	c-1.7,0-3-1.3-3-3s1.3-3,3-3s3,1.3,3,3S6.7,14,5,14z M2,7L2,7L2,7c0.9-0.6,1.9-1,3-1H2V4h3v2c1.1,0,2.1,0.4,3,1h1v0.3L11.2,6H10V4h3
+	v2h-1.2L14,7.3V1H1v7C1.3,7.6,1.6,7.3,2,7z M6,4h3v2H6V4z"/>
+<path id="iconFg" class="st2" d="M10,4v2h1.2l0.3-0.2L11.8,6H13V4H10z M8.6,7.5l0.2-0.1L9,7.3V7H8C8.2,7.2,8.4,7.3,8.6,7.5z M6,6h3
+	V4H6V6z M2,6h3V4H2V6z"/>
+</svg>

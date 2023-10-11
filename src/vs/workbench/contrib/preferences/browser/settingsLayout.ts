@@ -3,24 +3,45 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { isWindows } from 'vs/base/common/platform';
 import { localize } from 'vs/nls';
-import { ISetting } from 'vs/workbench/services/preferences/common/preferences';
-
-export interface ITOCEntry {
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { IProductService } from 'vs/platform/product/common/productService';
+import { getExperimentalExtensionToggleData } from 'vs/workbench/contrib/preferences/common/preferences';
+import { IWorkbenchAssignmentService } from 'vs/workbench/services/assignment/common/assignmentService';
+export interface ITOCEntry<T> {
 	id: string;
 	label: string;
-
-	children?: ITOCEntry[];
-	settings?: Array<string | ISetting>;
+	order?: number;
+	children?: ITOCEntry<T>[];
+	settings?: Array<T>;
 }
 
-export const commonlyUsedData: ITOCEntry = {
-	id: 'commonlyUsed',
-	label: localize('commonlyUsed', "Commonly Used"),
-	settings: ['files.autoSave', 'editor.fontSize', 'editor.fontFamily', 'editor.tabSize', 'editor.renderWhitespace', 'editor.cursorStyle', 'editor.multiCursorModifier', 'editor.insertSpaces', 'editor.wordWrap', 'files.exclude', 'files.associations']
-};
+const defaultCommonlyUsedSettings: string[] = [
+	'files.autoSave',
+	'editor.fontSize',
+	'editor.fontFamily',
+	'editor.tabSize',
+	'editor.renderWhitespace',
+	'editor.cursorStyle',
+	'editor.multiCursorModifier',
+	'editor.insertSpaces',
+	'editor.wordWrap',
+	'files.exclude',
+	'files.associations',
+	'workbench.editor.enablePreview'
+];
 
-export const tocData: ITOCEntry = {
+export async function getCommonlyUsedData(workbenchAssignmentService: IWorkbenchAssignmentService, environmentService: IEnvironmentService, productService: IProductService): Promise<ITOCEntry<string>> {
+	const toggleData = await getExperimentalExtensionToggleData(workbenchAssignmentService, environmentService, productService);
+	return {
+		id: 'commonlyUsed',
+		label: localize('commonlyUsed', "Commonly Used"),
+		settings: toggleData ? toggleData.commonlyUsed : defaultCommonlyUsedSettings
+	};
+}
+
+export const tocData: ITOCEntry<string> = {
 	id: 'root',
 	label: 'root',
 	children: [
@@ -125,6 +146,11 @@ export const tocData: ITOCEntry = {
 			label: localize('features', "Features"),
 			children: [
 				{
+					id: 'features/accessibility',
+					label: localize('accessibility', "Accessibility"),
+					settings: ['accessibility.*']
+				},
+				{
 					id: 'features/explorer',
 					label: localize('fileExplorer', "Explorer"),
 					settings: ['explorer.*', 'outline.*']
@@ -133,16 +159,20 @@ export const tocData: ITOCEntry = {
 					id: 'features/search',
 					label: localize('search', "Search"),
 					settings: ['search.*']
-				}
-				,
+				},
 				{
 					id: 'features/debug',
 					label: localize('debug', "Debug"),
 					settings: ['debug.*', 'launch']
 				},
 				{
+					id: 'features/testing',
+					label: localize('testing', "Testing"),
+					settings: ['testing.*']
+				},
+				{
 					id: 'features/scm',
-					label: localize('scm', "SCM"),
+					label: localize('scm', "Source Control"),
 					settings: ['scm.*']
 				},
 				{
@@ -188,7 +218,22 @@ export const tocData: ITOCEntry = {
 				{
 					id: 'features/notebook',
 					label: localize('notebook', 'Notebook'),
-					settings: ['notebook.*']
+					settings: ['notebook.*', 'interactiveWindow.*']
+				},
+				{
+					id: 'features/audioCues',
+					label: localize('audioCues', 'Audio Cues'),
+					settings: ['audioCues.*']
+				},
+				{
+					id: 'features/mergeEditor',
+					label: localize('mergeEditor', 'Merge Editor'),
+					settings: ['mergeEditor.*']
+				},
+				{
+					id: 'features/chat',
+					label: localize('interactiveSession', 'Interactive Session'),
+					settings: ['chat.*', 'interactiveEditor.*']
 				}
 			]
 		},
@@ -219,7 +264,29 @@ export const tocData: ITOCEntry = {
 				{
 					id: 'application/settingsSync',
 					label: localize('settingsSync', "Settings Sync"),
-					settings: ['settingsSync.*', 'sync.*']
+					settings: ['settingsSync.*']
+				},
+				{
+					id: 'application/experimental',
+					label: localize('experimental', "Experimental"),
+					settings: ['application.experimental.*']
+				},
+				{
+					id: 'application/other',
+					label: localize('other', "Other"),
+					settings: ['application.*']
+				}
+			]
+		},
+		{
+			id: 'security',
+			label: localize('security', "Security"),
+			settings: isWindows ? ['security.*'] : undefined,
+			children: [
+				{
+					id: 'security/workspace',
+					label: localize('workspace', "Workspace"),
+					settings: ['security.workspace.*']
 				}
 			]
 		}

@@ -5,16 +5,11 @@
 
 import 'mocha';
 import * as azdata from 'azdata';
-import { getBdcServer, TestServerProfile, getAzureServer, getStandaloneServer } from './testConfig';
+import { TestServerProfile, getAzureServer, getStandaloneServer } from './testConfig';
 import { connectToServer, createDB, DefaultConnectTimeoutInMs, asyncTimeout, tryDeleteDB } from './utils';
 import * as assert from 'assert';
 
 suite('Object Explorer integration suite', () => {
-	test.skip('BDC instance node label test', async function () {
-		const expectedNodeLabel = ['Databases', 'Security', 'Server Objects'];
-		const server = await getBdcServer();
-		await verifyOeNode(server, DefaultConnectTimeoutInMs, expectedNodeLabel);
-	});
 	test('Standalone instance node label test', async function () {
 		if (process.platform === 'win32') {
 			const expectedNodeLabel = ['Databases', 'Security', 'Server Objects'];
@@ -26,18 +21,6 @@ suite('Object Explorer integration suite', () => {
 		const expectedNodeLabel = ['Databases', 'Security'];
 		const server = await getAzureServer();
 		await verifyOeNode(server, DefaultConnectTimeoutInMs, expectedNodeLabel);
-	});
-	test.skip('BDC instance context menu test', async function () {
-		const server = await getBdcServer();
-		let expectedActions: string[];
-		// Properties comes from the admin-tool-ext-win extension which is for Windows only, so the item won't show up on non-Win32 platforms
-		if (process.platform === 'win32') {
-			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Disconnect', 'Delete Connection', 'Refresh', 'Data-tier Application wizard', 'Launch Profiler', 'Properties'];
-		}
-		else {
-			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Disconnect', 'Delete Connection', 'Refresh', 'Data-tier Application wizard', 'Launch Profiler'];
-		}
-		return await verifyContextMenu(server, expectedActions);
 	});
 	test('Azure SQL DB context menu test  @UNSTABLE@', async function () {
 		const server = await getAzureServer();
