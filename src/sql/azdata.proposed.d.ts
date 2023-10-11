@@ -508,6 +508,13 @@ declare module 'azdata' {
 		 * @returns The new password that is returned from the operation or undefined if unsuccessful.
 		 */
 		export function openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined>;
+
+		/**
+		 * Gets the non default options of the connection profile.
+		 * @param profile The connection profile to get the options for.
+		 * @returns The string key containing the non default options (if any) for the profile.
+		 */
+		export function getNonDefaultOptions(profile: IConnectionProfile): Thenable<string>;
 	}
 
 	/**
@@ -990,11 +997,11 @@ declare module 'azdata' {
 		 */
 		export interface TableInfo {
 			/**
-			 * Used as the table designer editor's tab header text.
+			 * Used as the table designer editor's tab header text (as well as the base value of the tooltip).
 			 */
 			title: string;
 			/**
-			 * Used as the table designer editor's tab header hover text.
+			 * Used as the table designer editor's tab header name text.
 			 */
 			tooltip: string;
 			/**
@@ -1014,6 +1021,10 @@ declare module 'azdata' {
 			 * table icon.
 			 */
 			tableIcon?: TableIcon;
+			/**
+			 * Additional information for tooltip on hover displaying the full information of the connection.
+			 */
+			additionalInfo?: string;
 		}
 
 		/**

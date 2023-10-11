@@ -6594,9 +6594,6 @@ Error Message: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/query/common/queryManagement" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="queryManagement.noQueryRunnerForUri">
-      <source xml:lang="en">Could not find Query Runner for uri: {0}</source>
-    </trans-unit>
     <trans-unit id="queryManagement.uriAlreadyHasQueryRunner">
       <source xml:lang="en">Uri: {0} unexpectedly already has a query runner.</source>
     </trans-unit>
