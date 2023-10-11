@@ -510,6 +510,28 @@ declare module 'azdata' {
 		export function openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined>;
 	}
 
+	/**
+	 * Summary that identifies a unique database connection.
+	 */
+	export interface ConnectionSummary {
+		/**
+		 * server name
+		 */
+		serverName: string;
+		/**
+		 * database name
+		 */
+		databaseName?: string | undefined;
+		/**
+		 * user name
+		 */
+		userName: string;
+		/**
+		 * server process id
+		 */
+		SPID?: number;
+	}
+
 	/*
 	 * Add optional per-OS default value.
 	 */
