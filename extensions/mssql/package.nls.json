@@ -190,6 +190,7 @@
 	"title.newDatabaseRole": "New Database Role (Preview)",
 	"title.newApplicationRole": "New Application Role (Preview)",
 	"title.newLogin": "New Login (Preview)",
+	"title.newUser": "New User (Preview)",
 	"title.newServerRole": "New Server Role (Preview)",
 	"title.objectProperties": "Properties (Preview)",
 	"title.dropObject": "Drop (Preview)",
