@@ -355,6 +355,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
+	getNonDefaultOptions(profile: IConnectionProfile): string {
+		return undefined!;
+	}
+
 	openCustomErrorDialog(options: azdata.window.IErrorDialogOptions): Promise<string | undefined> {
 		return undefined;
 	}
