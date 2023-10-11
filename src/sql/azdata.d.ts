@@ -1222,10 +1222,6 @@ declare module 'azdata' {
 		textIdentifier?: string | undefined;
 		encoding?: string | undefined;
 		formatted?: boolean | undefined;
-		freezeHeaderRow?: boolean | undefined;
-		boldHeaderRow?: boolean | undefined;
-		autoFilterHeaderRow?: boolean | undefined;
-		autoSizeColumns?: boolean | undefined;
 	}
 
 	export interface SaveResultRequestResult {
