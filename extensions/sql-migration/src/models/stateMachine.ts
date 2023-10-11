@@ -153,7 +153,6 @@ export interface SavedInfo {
 	serviceSubscription: azurecore.azureResource.AzureResourceSubscription | null;
 	serviceResourceGroup: azurecore.azureResource.AzureResourceResourceGroup | null;
 	serverAssessment: ServerAssessment | null;
-	xEventsFilesFolderPath: string | null;
 	skuRecommendation: SkuRecommendationSavedInfo | null;
 }
 
@@ -1097,7 +1096,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					});
 
 					// skip databases that don't have tables selected
-					if (selectedTables === 0 && !targetDatabaseInfo?.enableSchemaMigration) {
+					if (selectedTables === 0) {
 						continue;
 					}
 
@@ -1119,15 +1118,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						// when connecting to a target Azure SQL DB, use true/false
 						encryptConnection: true,
 						trustServerCertificate: false,
-					};
-
-					// Schema + data configuration
-					requestBody.properties.sqlSchemaMigrationConfiguration = {
-						enableSchemaMigration: targetDatabaseInfo?.enableSchemaMigration ?? false
-					};
-
-					requestBody.properties.sqlDataMigrationConfiguration = {
-						enableDataMigration: selectedTables > 0
 					};
 
 					// send an empty array when 'all' tables are selected for migration
@@ -1188,8 +1178,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				response.databaseMigration.properties.sourceDatabaseName = this._databasesForMigration[i];
 				response.databaseMigration.properties.backupConfiguration = requestBody.properties.backupConfiguration!;
 				response.databaseMigration.properties.offlineConfiguration = requestBody.properties.offlineConfiguration!;
-				response.databaseMigration.properties.sqlSchemaMigrationConfiguration = requestBody.properties.sqlSchemaMigrationConfiguration!;
-				response.databaseMigration.properties.sqlDataMigrationConfiguration = requestBody.properties.sqlDataMigrationConfiguration!;
 
 				let wizardEntryPoint = WizardEntryPoint.Default;
 				if (this.resumeAssessment) {
@@ -1269,7 +1257,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			targetDatabaseNames: [],
 			sqlMigrationService: undefined,
 			serverAssessment: null,
-			xEventsFilesFolderPath: null,
 			skuRecommendation: null,
 			serviceResourceGroup: null,
 			serviceSubscription: null,
@@ -1301,7 +1288,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				saveInfo.migrationTargetType = this._targetType;
 				saveInfo.databaseList = this._databasesForMigration;
 				saveInfo.serverAssessment = this._assessmentResults;
-				saveInfo.xEventsFilesFolderPath = this._xEventsFilesFolderPath;
 
 				if (this._skuRecommendationPerformanceDataSource) {
 					const skuRecommendation: SkuRecommendationSavedInfo = {
@@ -1318,7 +1304,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			case Page.DatabaseSelector:
 				saveInfo.databaseAssessment = this._databasesForAssessment;
-				saveInfo.xEventsFilesFolderPath = this._xEventsFilesFolderPath;
 				await this.extensionContext.globalState.update(`${this.mementoString}.${serverName}`, saveInfo);
 		}
 	}
@@ -1365,12 +1350,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			this._sqlMigrationServiceSubscription = this.savedInfo.serviceSubscription || undefined!;
 			this._sqlMigrationServiceResourceGroup = this.savedInfo.serviceResourceGroup || undefined!;
 
-			this._assessedDatabaseList = this.savedInfo.databaseAssessment ?? [];
-			this._databasesForAssessment = this.savedInfo.databaseAssessment ?? [];
-			this._xEventsFilesFolderPath = this.savedInfo.xEventsFilesFolderPath ?? '';
 			const savedAssessmentResults = this.savedInfo.serverAssessment;
 			if (savedAssessmentResults) {
 				this._assessmentResults = savedAssessmentResults;
+				this._assessedDatabaseList = this.savedInfo.databaseAssessment;
 			}
 
 			const savedSkuRecommendation = this.savedInfo.skuRecommendation;
