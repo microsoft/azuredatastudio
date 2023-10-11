@@ -18,11 +18,12 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _databaseSelectorTable!: azdata.TableComponent;
 	private _xEventsGroup!: azdata.GroupContainer;
 	private _xEventsFolderPickerInput!: azdata.InputBoxComponent;
-	private _xEventsFilesFolderPath!: string;
+	private _xEventsFilesFolderPath: string = '';
 	private _dbNames!: string[];
 	private _dbCount!: azdata.TextComponent;
 	private _databaseTableValues!: any[];
 	private _disposables: vscode.Disposable[] = [];
+	private _enableNavigationValidation: boolean = true;
 
 	private readonly TABLE_WIDTH = 650;
 
@@ -57,6 +58,12 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
 			}
+
+			if (!this._enableNavigationValidation) {
+				this._enableNavigationValidation = true;
+				return true;
+			}
+
 			if (this.selectedDbs().length === 0) {
 				this.wizard.message = {
 					text: constants.SELECT_DATABASE_TO_CONTINUE,
@@ -66,6 +73,14 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			}
 			return true;
 		});
+
+		if (this.migrationStateModel.resumeAssessment) {
+			// if start a new session, it won't trigger navigation validator until clicking 'Next'.
+			// It works as expected if no target or databases are selected, it should show errors and block to next page.
+			// However, if resume the previously saved session, wizard.setCurrentPage will trigger wizard navigation validator without clicking 'Next'.
+			// At this moment, all components are not initialized yet. Therefore, _databaseSelectorTable is undefined, so selectedDbs().length is always 0.
+			this._enableNavigationValidation = false;
+		}
 
 		this._xEventsFilesFolderPath = this.migrationStateModel._xEventsFilesFolderPath;
 	}
