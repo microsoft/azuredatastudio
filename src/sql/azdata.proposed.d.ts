@@ -2536,22 +2536,22 @@ declare module 'azdata' {
 
 	export interface SaveResultsRequestParams {
 		/**
-		 * Freeze header row when saving as Excel.
+		 * Whether to freeze the header row when saving as Excel.
 		 */
 		freezeHeaderRow?: boolean | undefined;
 
 		/**
-		 * Bold header row when saving as Excel.
+		 * Whether to bold the header row when saving as Excel.
 		 */
 		boldHeaderRow?: boolean | undefined;
 
 		/**
-		 * Enable auto filter on header row when saving as Excel.
+		 * Whether to enable auto filter on the header row when saving as Excel.
 		 */
 		autoFilterHeaderRow?: boolean | undefined;
 
 		/**
-		 * Auto size columns when saving as Excel.
+		 * Whether to auto size columns when saving as Excel.
 		 */
 		autoSizeColumns?: boolean | undefined;
 	}

@@ -260,12 +260,12 @@ const queryEditorConfiguration: IConfigurationNode = {
 		},
 		'queryEditor.results.saveAsExcel.freezeHeaderRow': {
 			'type': 'boolean',
-			'description': localize('queryEditor.results.saveAsExcel.freezeHeaderRow', "When true, freeze header row when saving results as an Excel file"),
+			'description': localize('queryEditor.results.saveAsExcel.freezeHeaderRow', "When true, freeze the header row when saving results as an Excel file"),
 			'default': false
 		},
 		'queryEditor.results.saveAsExcel.autoFilterHeaderRow': {
 			'type': 'boolean',
-			'description': localize('queryEditor.results.saveAsExcel.autoFilterHeaderRow', "When true, enable auto filtering on header row when saving results as an Excel file"),
+			'description': localize('queryEditor.results.saveAsExcel.autoFilterHeaderRow', "When true, enable auto filtering on the header row when saving results as an Excel file"),
 			'default': false
 		},
 		'queryEditor.results.saveAsExcel.autoSizeColumns': {
@@ -275,7 +275,7 @@ const queryEditorConfiguration: IConfigurationNode = {
 		},
 		'queryEditor.results.saveAsExcel.boldHeaderRow': {
 			'type': 'boolean',
-			'description': localize('queryEditor.results.saveAsExcel.boldHeaderRow', "When true, make header row bold when saving results as an Excel file"),
+			'description': localize('queryEditor.results.saveAsExcel.boldHeaderRow', "When true, make the header row bold when saving results as an Excel file"),
 			'default': false
 		},
 		'queryEditor.results.saveAsCsv.encoding': {
