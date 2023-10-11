@@ -153,6 +153,7 @@ export interface SavedInfo {
 	serviceSubscription: azurecore.azureResource.AzureResourceSubscription | null;
 	serviceResourceGroup: azurecore.azureResource.AzureResourceResourceGroup | null;
 	serverAssessment: ServerAssessment | null;
+	xEventsFilesFolderPath: string | null;
 	skuRecommendation: SkuRecommendationSavedInfo | null;
 }
 
@@ -1257,6 +1258,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			targetDatabaseNames: [],
 			sqlMigrationService: undefined,
 			serverAssessment: null,
+			xEventsFilesFolderPath: null,
 			skuRecommendation: null,
 			serviceResourceGroup: null,
 			serviceSubscription: null,
@@ -1288,6 +1290,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				saveInfo.migrationTargetType = this._targetType;
 				saveInfo.databaseList = this._databasesForMigration;
 				saveInfo.serverAssessment = this._assessmentResults;
+				saveInfo.xEventsFilesFolderPath = this._xEventsFilesFolderPath;
 
 				if (this._skuRecommendationPerformanceDataSource) {
 					const skuRecommendation: SkuRecommendationSavedInfo = {
@@ -1304,6 +1307,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			case Page.DatabaseSelector:
 				saveInfo.databaseAssessment = this._databasesForAssessment;
+				saveInfo.xEventsFilesFolderPath = this._xEventsFilesFolderPath;
 				await this.extensionContext.globalState.update(`${this.mementoString}.${serverName}`, saveInfo);
 		}
 	}
@@ -1350,6 +1354,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			this._sqlMigrationServiceSubscription = this.savedInfo.serviceSubscription || undefined!;
 			this._sqlMigrationServiceResourceGroup = this.savedInfo.serviceResourceGroup || undefined!;
 
+			this._assessedDatabaseList = this.savedInfo.databaseAssessment ?? [];
+			this._databasesForAssessment = this.savedInfo.databaseAssessment ?? [];
+			this._xEventsFilesFolderPath = this.savedInfo.xEventsFilesFolderPath ?? '';
 			const savedAssessmentResults = this.savedInfo.serverAssessment;
 			if (savedAssessmentResults) {
 				this._assessmentResults = savedAssessmentResults;
