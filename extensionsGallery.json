@@ -1352,14 +1352,14 @@
 					},
 					"versions": [
 						{
-							"version": "2023.6.0",
-							"lastUpdated": "6/6/2023",
+							"version": "2023.8.0",
+							"lastUpdated": "10/11/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2023.6.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2023.8.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1385,7 +1385,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": "^1.67.0"
+									"value": "^1.79.2"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
