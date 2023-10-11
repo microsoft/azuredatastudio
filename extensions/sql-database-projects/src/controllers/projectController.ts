@@ -183,7 +183,9 @@ export class ProjectsController {
 			throw new Error(constants.invalidTargetPlatform(creationParams.targetPlatform, Array.from(constants.targetPlatformToVersion.keys())));
 		}
 
-		const targetPlatform = creationParams.targetPlatform ? constants.targetPlatformToVersion.get(creationParams.targetPlatform)! : constants.defaultDSP;
+		let targetPlatform = creationParams.targetPlatform ? constants.targetPlatformToVersion.get(creationParams.targetPlatform)! : constants.defaultDSP;
+
+		targetPlatform = constants.MicrosoftDatatoolsSchemaSqlSql + targetPlatform + constants.databaseSchemaProvider;
 
 		let newProjFileName = creationParams.newProjName;
 
@@ -197,14 +199,18 @@ export class ProjectsController {
 			throw new Error(constants.projectAlreadyExists(newProjFileName, path.parse(newProjFilePath).dir));
 		}
 
+		let result: azdataType.ResultStatus | mssqlVscode.ResultStatus;
+
 		const sqlProjectsService = await utils.getSqlProjectsService();
 		if (utils.getAzdataApi()) {
 			const projectStyle = creationParams.sdkStyle ? mssql.ProjectType.SdkStyle : mssql.ProjectType.LegacyStyle;
-			await (sqlProjectsService as mssql.ISqlProjectsService).createProject(newProjFilePath, projectStyle, targetPlatform);
+			result = await (sqlProjectsService as mssql.ISqlProjectsService).createProject(newProjFilePath, projectStyle, targetPlatform);
 		} else {
 			const projectStyle = creationParams.sdkStyle ? mssqlVscode.ProjectType.SdkStyle : mssqlVscode.ProjectType.LegacyStyle;
-			await (sqlProjectsService as mssqlVscode.ISqlProjectsService).createProject(newProjFilePath, projectStyle, targetPlatform);
+			result = await (sqlProjectsService as mssqlVscode.ISqlProjectsService).createProject(newProjFilePath, projectStyle, targetPlatform);
 		}
+
+		utils.throwIfFailed(result);
 
 		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);
 
