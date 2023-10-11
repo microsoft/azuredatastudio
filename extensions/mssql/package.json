@@ -156,6 +156,7 @@
       },
       {
         "command": "mssql.clearPooledConnections",
+        "category": "MSSQL",
         "title": "%mssql.connection.clearPooledConnections%"
       }
     ],
