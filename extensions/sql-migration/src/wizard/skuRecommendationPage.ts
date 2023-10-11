@@ -654,10 +654,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	public async refreshCardText(showLoadingIcon: boolean = true): Promise<void> {
 		this._rbgLoader.loading = showLoadingIcon && true;
-		if (!this._rbg.selectedCardId) {
-			this._rbg.selectedCardId = MigrationTargetType.SQLMI;
-		}
-
 		switch (this._rbg.selectedCardId) {
 			case MigrationTargetType.SQLMI:
 				this.migrationStateModel._databasesForMigration = this.migrationStateModel._miDbs;
