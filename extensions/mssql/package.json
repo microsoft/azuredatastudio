@@ -118,6 +118,24 @@
         "title": "%title.detachDatabase%"
       },
       {
+        "command": "mssql.enableGroupBySchema",
+        "category": "MSSQL",
+        "title": "%mssql.objectExplorer.enableGroupBySchema%",
+        "icon": {
+          "dark": "resources/dark/groupBySchemaEnabled_inverse.svg",
+          "light": "resources/light/groupBySchemaEnabled.svg"
+        }
+      },
+      {
+        "command": "mssql.disableGroupBySchema",
+        "category": "MSSQL",
+        "title": "%mssql.objectExplorer.disableGroupBySchema%",
+        "icon": {
+          "dark": "resources/dark/groupBySchemaDisabled_inverse.svg",
+          "light": "resources/light/groupBySchemaDisabled.svg"
+        }
+      },
+      {
         "command": "mssql.enableGroupBySchemaTitle",
         "category": "MSSQL",
         "title": "%mssql.objectExplorer.enableGroupBySchemaTitle%",
@@ -679,11 +697,11 @@
           "group": "z_objectManagement"
         },
         {
-          "command": "mssql.enableGroupBySchemaTitle",
+          "command": "mssql.enableGroupBySchema",
           "when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && !config.mssql.objectExplorer.groupBySchema"
         },
         {
-          "command": "mssql.disableGroupBySchemaTitle",
+          "command": "mssql.disableGroupBySchema",
           "when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && config.mssql.objectExplorer.groupBySchema"
         }
       ],
