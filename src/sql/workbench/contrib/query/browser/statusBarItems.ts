@@ -8,7 +8,6 @@ import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorI
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ICellValue } from 'sql/workbench/services/query/common/query';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { IntervalTimer } from 'vs/base/common/async';
 import { Event } from 'vs/base/common/event';
@@ -334,63 +333,5 @@ export class QueryResultSelectionSummaryStatusBarContribution extends Disposable
 			command: tooltipText ? ShowTooltipCommand : undefined
 		});
 		this.show();
-	}
-}
-
-// Connection status bar showing the current global connection
-export class QuerySPIDContribution extends Disposable implements IWorkbenchContribution {
-
-	private static readonly ID = 'status.query.spid';
-
-	private statusItem: IStatusbarEntryAccessor;
-	private disposable = this._register(new DisposableStore());
-	private readonly name = localize('status.query.spid', "Query SPID");
-
-	constructor(
-		@IStatusbarService private readonly statusbarService: IStatusbarService,
-		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
-		@IEditorService private readonly editorService: IEditorService,
-		@IQueryModelService private readonly queryModelService: IQueryModelService
-	) {
-		super();
-		this.statusItem = this._register(
-			this.statusbarService.addEntry({
-				name: this.name,
-				text: '',
-				ariaLabel: ''
-			},
-				QuerySPIDContribution.ID,
-				StatusbarAlignment.RIGHT, 100)
-		);
-
-		this.hide();
-
-		this._register(this.connectionManagementService.onConnect(() => this._updateStatus()));
-		this._register(this.connectionManagementService.onConnectionChanged(() => this._updateStatus()));
-		this._register(this.connectionManagementService.onDisconnect(() => this._updateStatus()));
-		this._register(this.editorService.onDidActiveEditorChange(() => this._updateStatus()));
-	}
-
-	private hide() {
-		this.statusbarService.updateEntryVisibility(QuerySPIDContribution.ID, false);
-	}
-
-	private show() {
-		this.statusbarService.updateEntryVisibility(QuerySPIDContribution.ID, true);
-	}
-
-	// Update the SPID status shown in the bar
-	private async _updateStatus(): Promise<void> {
-		this.hide();
-		const activeInput = this.editorService.activeEditor;
-		if (activeInput && activeInput instanceof QueryEditorInput && activeInput.uri && activeInput.state.connected) {
-			await this._setConnectionText(activeInput);
-			this.show();
-		}
-	}
-
-	// Set connection info to connection status bar
-	private async _setConnectionText(editorInput: QueryEditorInput): Promise<void> {
-
 	}
 }

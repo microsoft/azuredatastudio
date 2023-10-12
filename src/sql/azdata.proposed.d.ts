@@ -536,7 +536,7 @@ declare module 'azdata' {
 		/**
 		 * server process id
 		 */
-		SPID?: number;
+		spid?: number;
 	}
 
 	/*

@@ -62,4 +62,9 @@ export interface ConnectionManagementInfo {
 	 * Owner uri assigned to the connection
 	 */
 	ownerUri: string;
+
+	/**
+	 * SPID assigned to the connection
+	 */
+	spid?: number;
 }
