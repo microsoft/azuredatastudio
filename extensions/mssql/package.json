@@ -543,6 +543,14 @@
         {
           "command": "mssql.attachDatabase",
           "when": "false"
+        },
+        {
+          "command": "mssql.enableGroupBySchema",
+          "when": "false"
+        },
+        {
+          "command": "mssql.disableGroupBySchema",
+          "when": "false"
         }
       ],
       "objectExplorer/item/context": [
