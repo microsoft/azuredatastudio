@@ -221,6 +221,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public _databasesForMigration: string[] = [];
 	public _databaseInfosForMigration: SourceDatabaseInfo[] = [];
+	public _databaseInfosForMigrationMap: Map<string, SourceDatabaseInfo | undefined> = new Map();
 	public _didUpdateDatabasesForMigration: boolean = false;
 	public _didDatabaseMappingChange: boolean = false;
 	public _vmDbs: string[] = [];
@@ -1097,7 +1098,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					});
 
 					// skip databases that don't have tables selected
-					if (selectedTables === 0) {
+					if (selectedTables === 0 && !targetDatabaseInfo?.enableSchemaMigration) {
 						continue;
 					}
 
@@ -1119,6 +1120,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						// when connecting to a target Azure SQL DB, use true/false
 						encryptConnection: true,
 						trustServerCertificate: false,
+					};
+
+					// Schema + data configuration
+					requestBody.properties.sqlSchemaMigrationConfiguration = {
+						enableSchemaMigration: targetDatabaseInfo?.enableSchemaMigration ?? false
+					};
+
+					requestBody.properties.sqlDataMigrationConfiguration = {
+						enableDataMigration: selectedTables > 0
 					};
 
 					// send an empty array when 'all' tables are selected for migration
@@ -1179,6 +1189,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				response.databaseMigration.properties.sourceDatabaseName = this._databasesForMigration[i];
 				response.databaseMigration.properties.backupConfiguration = requestBody.properties.backupConfiguration!;
 				response.databaseMigration.properties.offlineConfiguration = requestBody.properties.offlineConfiguration!;
+				response.databaseMigration.properties.sqlSchemaMigrationConfiguration = requestBody.properties.sqlSchemaMigrationConfiguration!;
+				response.databaseMigration.properties.sqlDataMigrationConfiguration = requestBody.properties.sqlDataMigrationConfiguration!;
 
 				let wizardEntryPoint = WizardEntryPoint.Default;
 				if (this.resumeAssessment) {

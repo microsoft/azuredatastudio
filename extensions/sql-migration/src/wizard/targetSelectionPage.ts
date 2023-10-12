@@ -1169,6 +1169,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					utils.selectDefaultDropdownValue(
 						targetDatabaseDropDown,
 						targetDatabaseName);
+				} else {
+					this._getPotentialTargetDatabaseMappingForSource(sourceDatabase, targetDatabases, targetDatabaseDropDown);
 				}
 
 				return [
@@ -1178,6 +1180,16 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}) || [];
 
 		await this._azureResourceTable.setDataValues(data);
+	}
+
+	private _getPotentialTargetDatabaseMappingForSource(sourceDatabase: string, targetDatabases: TargetDatabaseInfo[], targetDatabaseDropDown: azdata.DropDownComponent): void {
+		const sourceDatabaseInfo = this.migrationStateModel._databaseInfosForMigrationMap.get(sourceDatabase);
+		// if target database name and collation are same to the source database, it might be the most one mapping for the source database.
+		const foundTargetDatabase = targetDatabases?.find(targetDb => targetDb.databaseName === sourceDatabaseInfo?.databaseName && targetDb.databaseCollation === sourceDatabaseInfo.databaseCollation) ?? undefined;
+		if (foundTargetDatabase) {
+			this.migrationStateModel._sourceTargetMapping.set(sourceDatabase, foundTargetDatabase);
+			utils.selectDefaultDropdownValue(targetDatabaseDropDown, foundTargetDatabase?.databaseName);
+		}
 	}
 
 	private _getTargetDatabaseDropdownValues(

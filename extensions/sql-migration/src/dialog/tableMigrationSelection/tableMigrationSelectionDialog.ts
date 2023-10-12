@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../../constants/strings';
+import * as styles from '../../constants/styles';
 import { AzureSqlDatabaseServer } from '../../api/azure';
 import { collectSourceDatabaseTableInfo, collectTargetDatabaseTableInfo, TableInfo } from '../../api/sqlUtils';
 import { MigrationStateModel } from '../../models/stateMachine';
@@ -19,6 +20,8 @@ export class TableMigrationSelectionDialog {
 	private _dialog: azdata.window.Dialog | undefined;
 	private _headingText!: azdata.TextComponent;
 	private _refreshButton!: azdata.ButtonComponent;
+	private _schemaMigrationCheckBox!: azdata.CheckBoxComponent;
+	private _schemaMigrationInfoBox!: azdata.InfoBoxComponent;
 	private _filterInputBox!: azdata.InputBoxComponent;
 	private _tableSelectionTable!: azdata.TableComponent;
 	private _missingTargetTablesTable!: azdata.TableComponent;
@@ -28,6 +31,7 @@ export class TableMigrationSelectionDialog {
 	private _model: MigrationStateModel;
 	private _sourceDatabaseName: string;
 	private _tableSelectionMap!: Map<string, TableInfo>;
+	private _missingTableSelectionMap!: Map<string, TableInfo>;
 	private _targetTableMap!: Map<string, TableInfo>;
 	private _onSaveCallback: () => Promise<void>;
 	private _missingTableCount: number = 0;
@@ -55,6 +59,7 @@ export class TableMigrationSelectionDialog {
 
 			const targetDatabaseInfo = this._model._sourceTargetMapping.get(this._sourceDatabaseName);
 			if (targetDatabaseInfo) {
+				targetDatabaseInfo.enableSchemaMigration = false;
 				const sourceTableList: TableInfo[] = await collectSourceDatabaseTableInfo(
 					this._sourceDatabaseName);
 
@@ -76,27 +81,67 @@ export class TableMigrationSelectionDialog {
 					}));
 
 				this._tableSelectionMap = new Map();
+				this._missingTableSelectionMap = new Map();
 				sourceTableList.forEach(table => {
 					// If the source table doesn't exist in the target, set isSelected to false.
 					// Otherwise, set it to true as default.
 					var isSelected = false;
-					var sourceTable = targetDatabaseInfo.sourceTables.get(table.tableName);
+					var sourceTable = this._targetTableMap.get(table.tableName);
 					if (sourceTable === null || sourceTable === undefined) {
-						sourceTable = this._targetTableMap.get(table.tableName);
-						isSelected = sourceTable === null || sourceTable === undefined ? false : true;
+						isSelected = false;
+						const tableInfo: TableInfo = {
+							databaseName: table.databaseName,
+							rowCount: table.rowCount,
+							selectedForMigration: isSelected,
+							tableName: table.tableName,
+						};
+						this._missingTableSelectionMap.set(table.tableName, tableInfo);
 					} else {
-						isSelected = sourceTable.selectedForMigration;
+						var savedSourceTable = targetDatabaseInfo.sourceTables.get(table.tableName);
+						isSelected = savedSourceTable === null || savedSourceTable === undefined ? true : savedSourceTable.selectedForMigration;
+						const tableInfo: TableInfo = {
+							databaseName: table.databaseName,
+							rowCount: table.rowCount,
+							selectedForMigration: isSelected,
+							tableName: table.tableName,
+						};
+						this._tableSelectionMap.set(table.tableName, tableInfo);
 					}
-
-					const tableInfo: TableInfo = {
-						databaseName: table.databaseName,
-						rowCount: table.rowCount,
-						selectedForMigration: isSelected,
-						tableName: table.tableName,
-					};
-					this._tableSelectionMap.set(table.tableName, tableInfo);
 				});
+
+				this._missingTableCount = this._missingTableSelectionMap.size;
+				if (this._tableSelectionMap.size === 0) {
+					// Full schema missing on the target
+					await this._schemaMigrationInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
+						text: constants.FULL_SCHEMA_MISSING_ON_TARGET,
+						style: "warning",
+						width: '600px',
+						CSSStyles: { ...styles.BODY_CSS, 'margin': '5px 0 0 0' },
+						isClickable: true
+					});
+				} else if (this._missingTableSelectionMap.size > 0) {
+					// Partial schema found on the target
+					await this._schemaMigrationInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
+						text: constants.PARTIAL_SCHEMA_ON_TARGET,
+						style: "warning",
+						width: '600px',
+						CSSStyles: { ...styles.BODY_CSS, 'margin': '5px 0 0 0' },
+						isClickable: true
+					});
+				} else {
+					// Full schema found on the target
+					this._schemaMigrationCheckBox.checked = false;
+					this._schemaMigrationCheckBox.enabled = false;
+					await this._schemaMigrationInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
+						text: constants.FULL_SCHEMA_ON_TARGET,
+						style: "information",
+						width: '600px',
+						CSSStyles: { ...styles.BODY_CSS, 'margin': '5px 0 0 0' },
+						isClickable: false
+					});
+				}
 			}
+
 			this._dialog!.message = { text: '', level: azdata.window.MessageLevel.Information };
 		} catch (error) {
 			this._dialog!.message = {
@@ -112,43 +157,144 @@ export class TableMigrationSelectionDialog {
 		}
 	}
 
+	private async _createMigrationContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
+		// Schema migration components
+		const schemaMigrationHeader = view.modelBuilder.text()
+			.withProps({
+				value: constants.SCHEMA_MIGRATION_HEADER,
+				requiredIndicator: true,
+				CSSStyles: { ...styles.SECTION_HEADER_CSS, 'margin-top': '4px' }
+			}).component();
+
+		this._schemaMigrationCheckBox = view.modelBuilder.checkBox()
+			.withProps({
+				checked: false,
+				label: constants.SCHEMA_MIGRATION_CHECKBOX_INFO,
+			}).component();
+
+		this._schemaMigrationInfoBox = view.modelBuilder.infoBox()
+			.withProps({
+				text: '',
+				style: "information",
+				width: '40px',
+				CSSStyles: { ...styles.BODY_CSS, 'margin': '5px 0 0 0' },
+			}).component();
+
+		this._disposables.push(
+			this._schemaMigrationCheckBox.onChanged(
+				async checked => {
+					const targetDatabaseInfo = this._model._sourceTargetMapping.get(this._sourceDatabaseName);
+					if (targetDatabaseInfo) {
+						targetDatabaseInfo.enableSchemaMigration = checked;
+						const missingData: any[][] = [];
+						const selectedItems: number[] = [];
+						let tableRow = 0;
+						this._missingTableSelectionMap.forEach(sourceTable => {
+							sourceTable.selectedForMigration = checked;
+							const tableRowCount = sourceTable?.rowCount ?? 0;
+							const tableStatus = tableRowCount > 0
+								? constants.TARGET_TABLE_NOT_EMPTY
+								: '--';
+							missingData.push([
+								sourceTable.selectedForMigration,
+								sourceTable.tableName,
+								tableStatus
+							]);
+							if (sourceTable.selectedForMigration) {
+								selectedItems.push(tableRow);
+							}
+							tableRow++;
+						});
+
+						await this._missingTargetTablesTable.updateProperty('data', missingData);
+						this._missingTargetTablesTable.selectedRows = selectedItems;
+						this._updateRowSelection();
+					}
+				}
+			)
+		)
+
+		// Data migration component
+		const dataMigrationHeader = view.modelBuilder.text()
+			.withProps({
+				description: constants.DATA_MIGRATION_INFO,
+				value: constants.DATA_MIGRATION_HEADER,
+				requiredIndicator: true,
+				CSSStyles: { ...styles.SECTION_HEADER_CSS, 'margin-top': '4px' }
+			}).component();
+
+		this._tabs = view.modelBuilder.tabbedPanel()
+			.withTabs([])
+			.component();
+
+		await this._createSelectableTablesTab(view);
+		await this._createMissingTablesTab(view);
+
+		this._tabs.updateTabs([this._selectableTablesTab]);
+
+		this._disposables.push(
+			view.onClosed(e =>
+				this._disposables.forEach(
+					d => { try { d.dispose(); } catch { } })));
+
+		return view.modelBuilder
+			.flexContainer()
+			.withLayout({ flexFlow: 'column' })
+			.withItems([schemaMigrationHeader, this._schemaMigrationCheckBox, this._schemaMigrationInfoBox, dataMigrationHeader, this._tabs])
+			.component();
+	}
+
 	private async _loadControls(): Promise<void> {
 		const data: any[][] = [];
 		const missingData: any[][] = [];
 		const filterText = this._filterInputBox.value ?? '';
 		const selectedItems: number[] = [];
+		const missingSelectedItems: number[] = [];
 		let tableRow = 0;
-		this._missingTableCount = 0;
+		let missingTableRow = 0;
+
 		this._tableSelectionMap.forEach(sourceTable => {
 			const tableName = sourceTable.tableName.toLocaleLowerCase();
 			const searchText = filterText.toLocaleLowerCase();
 			if (filterText?.length === 0 || tableName.indexOf(searchText) > -1) {
 				const targetTable = this._targetTableMap.get(sourceTable.tableName);
-				if (targetTable) {
-					const targetTableRowCount = targetTable?.rowCount ?? 0;
-					const tableStatus = targetTableRowCount > 0
-						? constants.TARGET_TABLE_NOT_EMPTY
-						: '--';
+				const targetTableRowCount = targetTable?.rowCount ?? 0;
+				const tableStatus = targetTableRowCount > 0
+					? constants.TARGET_TABLE_NOT_EMPTY
+					: '--';
 
-					data.push([
-						sourceTable.selectedForMigration,
-						sourceTable.tableName,
-						tableStatus]);
+				data.push([
+					sourceTable.selectedForMigration,
+					sourceTable.tableName,
+					tableStatus]);
 
-					if (sourceTable.selectedForMigration) {
-						selectedItems.push(tableRow);
-					}
-
-					tableRow++;
-				} else {
-					this._missingTableCount++;
-					missingData.push([sourceTable.tableName]);
+				if (sourceTable.selectedForMigration) {
+					selectedItems.push(tableRow);
 				}
+
+				tableRow++;
 			}
 		});
+
+		this._missingTableSelectionMap.forEach(sourceTable => {
+			const tableRowCount = sourceTable?.rowCount ?? 0;
+			const tableStatus = tableRowCount > 0
+				? constants.TARGET_TABLE_NOT_EMPTY
+				: '--';
+			missingData.push([
+				sourceTable.selectedForMigration,
+				sourceTable.tableName,
+				tableStatus]);
+			if (sourceTable.selectedForMigration) {
+				missingSelectedItems.push(missingTableRow);
+			}
+			missingTableRow++;
+		});
+
 		await this._tableSelectionTable.updateProperty('data', data);
 		this._tableSelectionTable.selectedRows = selectedItems;
 		await this._missingTargetTablesTable.updateProperty('data', missingData);
+		this._missingTargetTablesTable.selectedRows = missingSelectedItems;
 
 		this._updateRowSelection();
 		if (this._missingTableCount > 0 && this._tabs.items.length === 1) {
@@ -157,28 +303,27 @@ export class TableMigrationSelectionDialog {
 	}
 
 	private async _initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
-		const tab = azdata.window.createTab('');
-		tab.registerContent(async (view) => {
-
-			this._tabs = view.modelBuilder.tabbedPanel()
-				.withTabs([])
-				.component();
-
-			await this._createSelectableTablesTab(view);
-			await this._createMissingTablesTab(view);
-
-			this._tabs.updateTabs([this._selectableTablesTab]);
-
+		dialog.registerContent(async (view: azdata.ModelView) => {
+			dialog.okButton.label = constants.TABLE_SELECTION_UPDATE_BUTTON;
+			dialog.okButton.position = 'left';
 			this._disposables.push(
-				view.onClosed(e =>
-					this._disposables.forEach(
-						d => { try { d.dispose(); } catch { } })));
+				dialog.okButton.onClick(
+					async () => this._save()));
 
-			await view.initializeModel(this._tabs);
+			dialog.cancelButton.label = constants.TABLE_SELECTION_CANCEL_BUTTON;
+			dialog.cancelButton.position = 'left';
+			this._disposables.push(
+				dialog.cancelButton.onClick(
+					async () => this._isOpen = false));
+			const flexContainer = view.modelBuilder
+				.flexContainer()
+				.withItems([
+					await this._createMigrationContainer(view)])
+				.withProps({ CSSStyles: { 'padding': '20px' } })
+				.component();
+			await view.initializeModel(flexContainer);
 			await this._loadData();
 		});
-
-		dialog.content = [tab];
 	}
 
 	public async openDialog(dialogTitle: string) {
@@ -188,18 +333,6 @@ export class TableMigrationSelectionDialog {
 				dialogTitle,
 				DialogName,
 				600, undefined, undefined, false);
-
-			this._dialog.okButton.label = constants.TABLE_SELECTION_UPDATE_BUTTON;
-			this._dialog.okButton.position = 'left';
-			this._disposables.push(
-				this._dialog.okButton.onClick(
-					async () => this._save()));
-
-			this._dialog.cancelButton.label = constants.TABLE_SELECTION_CANCEL_BUTTON;
-			this._dialog.cancelButton.position = 'left';
-			this._disposables.push(
-				this._dialog.cancelButton.onClick(
-					async () => this._isOpen = false));
 
 			const promise = this._initializeDialog(this._dialog);
 			azdata.window.openDialog(this._dialog);
@@ -273,7 +406,7 @@ export class TableMigrationSelectionDialog {
 		this._selectableTablesTab = {
 			content: flex,
 			id: 'tableSelectionTab',
-			title: constants.SELECT_TABLES_FOR_MIGRATION,
+			title: constants.AVAILABLE_TABLE_COUNT_ON_TARGET(0),
 		};
 	}
 
@@ -340,26 +473,6 @@ export class TableMigrationSelectionDialog {
 		this._disposables.push(
 			table.onRowSelected(
 				async e => {
-					// collect table list selected for migration
-					const selectedRows = this._tableSelectionTable.selectedRows ?? [];
-					selectedRows.forEach(rowIndex => {
-						// get selected source table name
-						const rowData = this._tableSelectionTable.data[rowIndex];
-						const sourceTableName = rowData.length > 1
-							? rowData[1] as string
-							: '';
-						// get source table info
-						const sourceTableInfo = this._tableSelectionMap.get(sourceTableName);
-						if (sourceTableInfo) {
-							// see if source table exists on target database
-							const targetTableInfo = this._targetTableMap.get(sourceTableName);
-							// keep source table selected
-							sourceTableInfo.selectedForMigration = targetTableInfo !== undefined;
-							// update table selection map with new selectedForMigration value
-							this._tableSelectionMap.set(sourceTableName, sourceTableInfo);
-						}
-					});
-
 					this._updateRowSelection();
 				}));
 
@@ -375,16 +488,41 @@ export class TableMigrationSelectionDialog {
 				height: '600px',
 				display: 'flex',
 				forceFitColumns: azdata.ColumnSizingMode.ForceFit,
-				columns: [{
-					name: constants.MISSING_TABLE_NAME_COLUMN,
-					value: 'tableName',
-					type: azdata.ColumnType.text,
-					cssClass: cssClass,
-					headerCssClass: cssClass,
-				}],
+				columns: [
+					<azdata.CheckboxColumn>{
+						value: '',
+						width: 10,
+						type: azdata.ColumnType.checkBox,
+						action: azdata.ActionOnCellCheckboxCheck.selectRow,
+						resizable: false,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+					{
+						name: constants.TABLE_SELECTION_TABLENAME_COLUMN,
+						value: 'tableName',
+						type: azdata.ColumnType.text,
+						width: 285,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+					{
+						name: constants.TABLE_SELECTION_HASROWS_COLUMN,
+						value: 'hasRows',
+						type: azdata.ColumnType.text,
+						width: 255,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					}]
 			})
 			.withValidation(() => true)
 			.component();
+
+		this._disposables.push(
+			table.onRowSelected(
+				async e => {
+					this._updateRowSelection();
+				}));
 
 		return table;
 	}
@@ -393,40 +531,66 @@ export class TableMigrationSelectionDialog {
 		this._headingText.value = this._refreshLoader.loading
 			? constants.DATABASE_LOADING_TABLES
 			: this._tableSelectionTable.data?.length > 0
-				? constants.TABLE_SELECTED_COUNT(
+				? constants.TABLE_SELECTION_COUNT_TO_TARGET(
 					this._tableSelectionTable.selectedRows?.length ?? 0,
 					this._tableSelectionTable.data?.length ?? 0)
 				: constants.DATABASE_MISSING_TABLES;
 
+		this._selectableTablesTab.title = constants.AVAILABLE_TABLE_COUNT_ON_TARGET(this._tableSelectionMap?.size ?? 0);
 		this._missingTablesTab.title = constants.MISSING_TARGET_TABLES_COUNT(this._missingTableCount);
 	}
 
 	private async _save(): Promise<void> {
 		const targetDatabaseInfo = this._model._sourceTargetMapping.get(this._sourceDatabaseName);
 		if (targetDatabaseInfo) {
-			// collect table list selected for migration
+			// Reset selectedForMigration as false
+			this._tableSelectionMap.forEach(sourceTable => {
+				sourceTable.selectedForMigration = false;
+				targetDatabaseInfo.sourceTables.set(sourceTable.tableName, sourceTable);
+			})
+
+			// Set selectedForMigration from selectedRows
 			const selectedRows = this._tableSelectionTable.selectedRows ?? [];
-			const selectedTables = new Map<String, TableInfo>();
 			selectedRows.forEach(rowIndex => {
-				const tableRow = this._tableSelectionTable.data[rowIndex];
-				const tableName = tableRow.length > 1
-					? tableRow[1] as string
+				// get selected source table name
+				const rowData = this._tableSelectionTable.data[rowIndex];
+				const sourceTableName = rowData.length > 1
+					? rowData[1] as string
 					: '';
-				const tableInfo = this._tableSelectionMap.get(tableName);
-				if (tableInfo) {
-					selectedTables.set(tableName, tableInfo);
+				// get source table info
+				const sourceTableInfo = this._tableSelectionMap.get(sourceTableName);
+				if (sourceTableInfo) {
+					// keep source table selected
+					sourceTableInfo.selectedForMigration = true;
+					// update table selection map with new selectedForMigration value
+					targetDatabaseInfo.sourceTables.set(sourceTableInfo.tableName, sourceTableInfo);
 				}
 			});
 
-			// copy table map selection status from grid
-			this._tableSelectionMap.forEach(tableInfo => {
-				const selectedTableInfo = selectedTables.get(tableInfo.tableName);
-				tableInfo.selectedForMigration = selectedTableInfo?.selectedForMigration === true;
-				this._tableSelectionMap.set(tableInfo.tableName, tableInfo);
+			// Reset selectedForMigration as false
+			this._missingTableSelectionMap.forEach(sourceTable => {
+				sourceTable.selectedForMigration = false;
+				targetDatabaseInfo.sourceTables.set(sourceTable.tableName, sourceTable);
+			})
+
+			//Set selectedForMigration from selectedRows
+			const selectedRowsFromMissingTable = this._missingTargetTablesTable.selectedRows ?? [];
+			selectedRowsFromMissingTable.forEach(rowIndex => {
+				// get selected source table name
+				const rowData = this._missingTargetTablesTable.data[rowIndex];
+				const sourceTableName = rowData.length > 1
+					? rowData[1] as string
+					: '';
+				// get source table info
+				const sourceTableInfo = this._missingTableSelectionMap.get(sourceTableName);
+				if (sourceTableInfo) {
+					// keep source table selected
+					sourceTableInfo.selectedForMigration = true;
+					// update table selection map with new selectedForMigration value
+					targetDatabaseInfo.sourceTables.set(sourceTableInfo.tableName, sourceTableInfo);
+				}
 			});
 
-			// save table selection changes to migration source target map
-			targetDatabaseInfo.sourceTables = this._tableSelectionMap;
 			this._model._sourceTargetMapping.set(this._sourceDatabaseName, targetDatabaseInfo);
 		}
 		await this._onSaveCallback();
