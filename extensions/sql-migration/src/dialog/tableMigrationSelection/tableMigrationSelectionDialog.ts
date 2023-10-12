@@ -642,6 +642,12 @@ export class TableMigrationSelectionDialog {
 			.withValidation(() => true)
 			.component();
 
+		this._disposables.push(
+			table.onRowSelected(
+				async e => {
+					this._updateRowSelection();
+				}));
+
 		return table;
 	}
 
