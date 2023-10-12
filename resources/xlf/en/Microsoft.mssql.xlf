@@ -1223,6 +1223,9 @@
     <trans-unit id="title.changeNotebookConnection">
       <source xml:lang="en">Change SQL Notebook Connection</source>
     </trans-unit>
+    <trans-unit id="mssql.connection.clearPooledConnections">
+      <source xml:lang="en">Clear Pooled Connections</source>
+    </trans-unit>
     <trans-unit id="mssql.connectionOptions.commandTimeout.displayName">
       <source xml:lang="en">Command timeout</source>
     </trans-unit>
@@ -1359,7 +1362,7 @@
       <source xml:lang="en">Enabled</source>
     </trans-unit>
     <trans-unit id="mssql.enableConnectionPooling">
-      <source xml:lang="en">Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed. To clear pooled connections, run the command: &apos;SQL Server: Clear Pooled Connections&apos;</source>
+      <source xml:lang="en">Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed. To clear pooled connections, run the command: &apos;MSSQL: Clear Pooled Connections&apos;</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.description">
       <source xml:lang="en">Enables or disables Always Encrypted for the connection</source>
@@ -1555,9 +1558,6 @@
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.authType.categoryValues.sqlLogin">
       <source xml:lang="en">SQL Login</source>
-    </trans-unit>
-    <trans-unit id="mssql.connection.clearPooledConnections">
-      <source xml:lang="en">SQL Server: Clear Pooled Connections</source>
     </trans-unit>
     <trans-unit id="mssql.objectExplorer.disableGroupBySchemaTitle">
       <source xml:lang="en">SQL Server: Disable Group By Schema</source>

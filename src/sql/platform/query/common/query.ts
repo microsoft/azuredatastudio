@@ -14,6 +14,10 @@ export interface IQueryEditorConfiguration {
 		};
 		readonly saveAsExcel: {
 			readonly includeHeaders: boolean;
+			readonly freezeHeaderRow: boolean;
+			readonly boldHeaderRow: boolean;
+			readonly autoFilterHeaderRow: boolean;
+			readonly autoSizeColumns: boolean;
 		};
 		readonly saveAsMarkdown: {
 			readonly encoding: string;

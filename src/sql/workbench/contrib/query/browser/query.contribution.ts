@@ -258,6 +258,26 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.saveAsExcel.includeHeaders', "When true, column headers are included when saving results as an Excel file"),
 			'default': true
 		},
+		'queryEditor.results.saveAsExcel.freezeHeaderRow': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.saveAsExcel.freezeHeaderRow', "When true, freeze the header row when saving results as an Excel file"),
+			'default': false
+		},
+		'queryEditor.results.saveAsExcel.autoFilterHeaderRow': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.saveAsExcel.autoFilterHeaderRow', "When true, enable auto filtering on the header row when saving results as an Excel file"),
+			'default': false
+		},
+		'queryEditor.results.saveAsExcel.autoSizeColumns': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.saveAsExcel.autoSizeColumns', "When true, attempt to automatically size columns when saving results as an Excel file"),
+			'default': false
+		},
+		'queryEditor.results.saveAsExcel.boldHeaderRow': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.saveAsExcel.boldHeaderRow', "When true, make the header row bold when saving results as an Excel file"),
+			'default': false
+		},
 		'queryEditor.results.saveAsCsv.encoding': {
 			'type': 'string',
 			'description': localize('queryEditor.results.saveAsCsv.encoding', "File encoding used when saving results as CSV"),
