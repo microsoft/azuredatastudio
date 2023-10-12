@@ -705,6 +705,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				isEnabled = false;
 			}
 		}
+		else if (table === this.filestreamFilegroupsTable && this.filestreamFilegroupsTable.selectedRows !== undefined && this.filestreamFilegroupsTable.selectedRows.length === 1) {
+			// Disable remove button when server filestream access level is disabled.
+			if (this.viewInfo.serverFilestreamAccessLevel === null || this.viewInfo.serverFilestreamAccessLevel === 0) {
+				isEnabled = false;
+			}
+		}
 		return isEnabled;
 	}
 
@@ -869,7 +875,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		this.filestreamFilegroupNameContainer = await this.getFilegroupNameGroup(this.filestreamFilegroupsTable, FileGroupType.FileStreamDataFileGroup);
 		const addButtonComponent: DialogButton = {
 			buttonAriaLabel: localizedConstants.AddFilegroupText,
-			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.filestreamFilegroupsTable)
+			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.filestreamFilegroupsTable),
+			enabled: this.viewInfo.serverFilestreamAccessLevel !== null && this.viewInfo.serverFilestreamAccessLevel !== 0
 		};
 		const removeButtonComponent: DialogButton = {
 			buttonAriaLabel: localizedConstants.RemoveButton,
@@ -1166,8 +1173,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				data.push([
 					fileGroup.name,
 					filesCount,
-					{ checked: fileGroup.isReadOnly, enabled: filesCount > 0 },
-					fileGroup.isDefault
+					{ checked: fileGroup.isReadOnly, enabled: filesCount > 0 && this.viewInfo.serverFilestreamAccessLevel !== null && this.viewInfo.serverFilestreamAccessLevel !== 0 },
+					{ checked: fileGroup.isDefault, enabled: this.viewInfo.serverFilestreamAccessLevel !== null && this.viewInfo.serverFilestreamAccessLevel !== 0 },
 				]);
 			} else if (fileGroup.type === FileGroupType.MemoryOptimizedDataFileGroup && fileGroup.type === filegroupType) {
 				data.push([
