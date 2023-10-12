@@ -54,6 +54,8 @@ import { LabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntr
 import { DASHBOARD_BORDER, TOOLBAR_OVERFLOW_SHADOW } from 'sql/workbench/common/theme';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
+import { IRelaxedExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 const homeTabGroupId = 'home';
@@ -71,6 +73,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	protected panelActions: Action[];
 	private _tabsDispose: Array<IDisposable> = [];
 	private _tabSettingConfigs: Array<TabSettingConfig> = [];
+	private _ownerExtensions: Readonly<IRelaxedExtensionDescription>[] = [];
 
 	@ViewChildren(TabChild) private _tabs: QueryList<DashboardTab>;
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
@@ -130,7 +133,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
 		@Inject(IMenuService) private menuService: IMenuService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IInstantiationService) private instantiationService: IInstantiationService
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(IExtensionService) private extensionService: IExtensionService
 	) {
 		super();
 		this._tabName = DashboardPage.tabName.bindTo(contextKeyService);
@@ -171,6 +175,14 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 		this._register(this.themeService.onDidColorThemeChange((event: IColorTheme) => {
 			this.updateTheme(event);
+		}));
+
+		this._register(this.extensionService.onDidChangeExtensionsStatus(e => {
+			e.forEach(extension => {
+				if (this._ownerExtensions.findIndex(i => i.id === extension.value) > -1) {
+					this._cd.detectChanges();
+				}
+			});
 		}));
 	}
 
@@ -416,17 +428,22 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this.dashboardService.writeSettings([this.context, 'tabs'].join('.'), writeableConfig, target);
 	}
 
-	private loadNewTabs(dashboardTabs: IDashboardTab[], openLastTab: boolean = false) {
+	private async loadNewTabs(dashboardTabs: IDashboardTab[], openLastTab: boolean = false) {
 		if (dashboardTabs && dashboardTabs.length > 0) {
-			const selectedTabs = dashboardTabs.map(v => this.initTabComponents(v)).map(v => {
+			const tabs = dashboardTabs.map(v => this.initTabComponents(v));
+
+			const selectedTabs = [];
+
+			for (let i = 0; i < tabs.length; i++) {
+				const v = tabs[i];
 				const config = v as TabConfig;
 				config.context = this.context;
 				config.editable = false;
 				config.canClose = false;
 				config.actions = [];
-				this.addNewTab(config);
-				return config;
-			});
+				await this.addNewTab(config);
+				selectedTabs.push(config);
+			}
 
 			if (openLastTab) {
 				// put this immediately on the stack so that is ran *after* the tab is rendered
@@ -495,7 +512,38 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		return tab.container ? Object.keys(tab.container)[0] : '';
 	}
 
-	private addNewTab(tab: TabConfig): void {
+	private async addNewTab(tab: TabConfig): Promise<void> {
+		const owningExtension = this.extensionService.extensions.find(extension => {
+			if (extension?.contributes !== undefined && extension.contributes['dashboard.tabs']) {
+				for (let i = 0; i < extension.contributes['dashboard.tabs'].length; i++) {
+					const eTab = extension.contributes['dashboard.tabs'][i];
+					if (eTab.id === tab.id) {
+						return true;
+					}
+				}
+			}
+			return false;
+		});
+
+		this._ownerExtensions.push(owningExtension);
+
+		// if (owningExtension) {
+		// 	// wait for the extension to be activated
+		// 	await new Promise<void>((resolve, reject) => {
+		// 		if (this.extensionService.getExtensionsStatus()[owningExtension.id]?.activationTimes?.activateResolvedTime !== undefined) {
+		// 			resolve();
+		// 		}
+		// 		const disposable = this.extensionService.onDidChangeExtensionsStatus(e => {
+		// 			e.forEach(extension => {
+		// 				if (extension.value === owningExtension.id) {
+		// 					disposable.dispose();
+		// 					resolve();
+		// 				}
+		// 			})
+		// 		});
+		// 	});
+		// }
+
 		const existedTab = this.tabs.find(i => i.id === tab.id);
 		if (!existedTab) {
 			if (!tab.iconClass && tab.type !== 'group-header') {
