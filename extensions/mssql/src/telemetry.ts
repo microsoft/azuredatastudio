@@ -90,10 +90,6 @@ export enum TelemetryViews {
 export enum TelemetryActions {
 	GroupBySchemaEnabled = 'objectExplorerGroupBySchemaEnabled',
 	GroupBySchemaDisabled = 'objectExplorerGroupBySchemaDisabled',
-	EnableGroupBySchemaContextMenu = 'objectExplorerEnableGroupBySchemaContextMenu',
-	DisableGroupBySchemaContextMenu = 'objectExplorerDisableGroupBySchemaContextMenu',
-	EnableGroupByServerViewTitleAction = 'objectExplorerEnableGroupByServerViewTitleAction',
-	DisableGroupByServerViewTitleAction = 'objectExplorerDisableGroupByServerViewTitleAction',
 	EnableFeatureAsyncParallelProcessing = 'enableFeatureAsyncParallelProcessing',
 	EnableFeatureSqlAuthenticationProvider = 'enableFeatureSqlAuthenticationProvider',
 	EnableFeatureConnectionPooling = 'enableFeatureConnectionPooling',
