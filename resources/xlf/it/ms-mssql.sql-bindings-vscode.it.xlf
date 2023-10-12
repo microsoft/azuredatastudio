@@ -1,0 +1,297 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/ms-mssql.sql-bindings-vscode/dist/common/constants" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="enterPasswordPrompt">
+        <source xml:lang="en">(Optional) Enter connection password to save in local.settings.json</source>
+        <target state="translated">(Facoltativo) Immettere la password di connessione da salvare in local.settings.json</target>
+      </trans-unit>
+      <trans-unit id="azureFunctionsProjectMustBeOpened">
+        <source xml:lang="en">A C# Azure Functions project must be present in order to create a new Azure Function with SQL binding.</source>
+        <target state="translated">Per creare una nuova funzione di Azure con associazione SQL, deve essere presente un progetto di Funzioni di Azure C#.</target>
+      </trans-unit>
+      <trans-unit id="addPackage">
+        <source xml:lang="en">Add Package</source>
+        <target state="translated">Aggiungi pacchetto</target>
+      </trans-unit>
+      <trans-unit id="addSqlBinding">
+        <source xml:lang="en">Adding SQL Binding to function "{0}"...</source>
+        <target state="translated">Aggiunta dell'associazione SQL alla funzione "{0}"...</target>
+      </trans-unit>
+      <trans-unit id="dotnetResult">
+        <source xml:lang="en">Adding SQL nuget package:
+{0}</source>
+        <target state="translated">Aggiunta del pacchetto NuGet SQL:
+{0}</target>
+      </trans-unit>
+      <trans-unit id="failedToGetConnectionString">
+        <source xml:lang="en">An error occurred generating the connection string for the selected connection</source>
+        <target state="translated">Errore durante la generazione della stringa di connessione per la connessione selezionata</target>
+      </trans-unit>
+      <trans-unit id="azureFunctionsExtensionNotInstalled">
+        <source xml:lang="en">Azure Functions extension must be installed in order to use this feature.</source>
+        <target state="translated">L'estensione Funzioni di Azure deve essere installata per poter usare questa funzione.</target>
+      </trans-unit>
+      <trans-unit id="browseEllipsis">
+        <source xml:lang="en">Browse...</source>
+        <target state="translated">Sfoglia...</target>
+      </trans-unit>
+      <trans-unit id="closeButton">
+        <source xml:lang="en">Close</source>
+        <target state="translated">Chiudi</target>
+      </trans-unit>
+      <trans-unit id="connectionStringSetting">
+        <source xml:lang="en">Connection string setting name</source>
+        <target state="translated">Nome dell'impostazione della stringa di connessione</target>
+      </trans-unit>
+      <trans-unit id="connectionStringSettingPlaceholder">
+        <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
+        <target state="translated">Impostazione della stringa di connessione specificata in "local.settings.jsin"</target>
+      </trans-unit>
+      <trans-unit id="createProject">
+        <source xml:lang="en">Create Azure Function Project</source>
+        <target state="translated">Creare un progetto di funzione di Azure</target>
+      </trans-unit>
+      <trans-unit id="createNewLocalAppSetting">
+        <source xml:lang="en">Create new local app setting</source>
+        <target state="translated">Creare nuova impostazione dell'app locale</target>
+      </trans-unit>
+      <trans-unit id="doNotInstall">
+        <source xml:lang="en">Do not install</source>
+        <target state="translated">Non installare</target>
+      </trans-unit>
+      <trans-unit id="includePassword">
+        <source xml:lang="en">Do you want to include the password from this connection in your local.settings.json file?</source>
+        <target state="translated">Includere la password di questa connessione nel file local.settings.json?</target>
+      </trans-unit>
+      <trans-unit id="enterTableName">
+        <source xml:lang="en">Enter SQL table to query</source>
+        <target state="translated">Immettere la tabella SQL per eseguire una query</target>
+      </trans-unit>
+      <trans-unit id="enterTableNameToUpsert">
+        <source xml:lang="en">Enter SQL table to upsert into</source>
+        <target state="translated">Immettere la tabella SQL in cui eseguire l'upsert</target>
+      </trans-unit>
+      <trans-unit id="enterViewName">
+        <source xml:lang="en">Enter SQL view to query</source>
+        <target state="translated">Immettere la visualizzazione SQL per eseguire una query</target>
+      </trans-unit>
+      <trans-unit id="userConnectionString">
+        <source xml:lang="en">Enter connection string</source>
+        <target state="translated">Immettere la stringa di connessione</target>
+      </trans-unit>
+      <trans-unit id="enterConnectionString">
+        <source xml:lang="en">Enter connection string</source>
+        <target state="translated">Immettere la stringa di connessione</target>
+      </trans-unit>
+      <trans-unit id="enterConnectionStringSettingName">
+        <source xml:lang="en">Enter connection string setting name</source>
+        <target state="translated">Immettere il nome dell'impostazione della stringa di connessione</target>
+      </trans-unit>
+      <trans-unit id="errorNewAzureFunction">
+        <source xml:lang="en">Error creating new Azure Function: {0}</source>
+        <target state="translated">Errore durante la creazione della nuova funzione di Azure: {0}</target>
+      </trans-unit>
+      <trans-unit id="failedToParse">
+        <source xml:lang="en">Failed to parse "{0}": {1}.</source>
+        <target state="translated">Non è stato possibile analizzare "{0}": {1}.</target>
+      </trans-unit>
+      <trans-unit id="unableToSetConnectionString">
+        <source xml:lang="en">Failed to set connection string app setting</source>
+        <target state="translated">Impossibile impostare la stringa di connessione dell'app</target>
+      </trans-unit>
+      <trans-unit id="failedToSetSetting">
+        <source xml:lang="en">Failed to set connection string app setting: {0}</source>
+        <target state="translated">Impossibile impostare la stringa di connessione dell'app: {0}</target>
+      </trans-unit>
+      <trans-unit id="tableListProgressTitle">
+        <source xml:lang="en">Fetching tables for selected database...</source>
+        <target state="translated">Recupero delle tabelle per il database selezionato in corso...</target>
+      </trans-unit>
+      <trans-unit id="viewListProgressTitle">
+        <source xml:lang="en">Fetching views for selected database...</source>
+        <target state="translated">Recupero delle visualizzazioni per il database selezionato in corso...</target>
+      </trans-unit>
+      <trans-unit id="functionNameTitle">
+        <source xml:lang="en">Function Name</source>
+        <target state="translated">Nome funzione</target>
+      </trans-unit>
+      <trans-unit id="userPasswordLater">
+        <source xml:lang="en">In order to user the SQL connection string later you will need to manually enter the password in your local.settings.json file.</source>
+        <target state="translated">Per usare la stringa di connessione SQL in seguito, è necessario immettere manualmente la password nel file local.settings.json.</target>
+      </trans-unit>
+      <trans-unit id="input">
+        <source xml:lang="en">Input</source>
+        <target state="translated">Input</target>
+      </trans-unit>
+      <trans-unit id="install">
+        <source xml:lang="en">Install</source>
+        <target state="translated">Installa</target>
+      </trans-unit>
+      <trans-unit id="learnMore">
+        <source xml:lang="en">Learn more</source>
+        <target state="translated">Altre informazioni</target>
+      </trans-unit>
+      <trans-unit id="SettingAlreadyExists">
+        <source xml:lang="en">Local app setting '{0}' already exists. Overwrite?</source>
+        <target state="translated">L'impostazione dell'app locale '{0}' esiste già. Sovrascrivere?</target>
+      </trans-unit>
+      <trans-unit id="moreInformation">
+        <source xml:lang="en">More Information</source>
+        <target state="translated">Altre informazioni</target>
+      </trans-unit>
+      <trans-unit id="nameMustNotBeEmpty">
+        <source xml:lang="en">Name must not be empty</source>
+        <target state="translated">Il nome non deve essere vuoto</target>
+      </trans-unit>
+      <trans-unit id="hasSpecialCharacters">
+        <source xml:lang="en">Name must not include special characters</source>
+        <target state="translated">Il nome non deve includere caratteri speciali</target>
+      </trans-unit>
+      <trans-unit id="noString">
+        <source xml:lang="en">No</source>
+        <target state="translated">No</target>
+      </trans-unit>
+      <trans-unit id="noAzureFunctionsInFile">
+        <source xml:lang="en">No Azure functions in the current active file</source>
+        <target state="translated">Nessuna funzione di Azure nel file attivo corrente</target>
+      </trans-unit>
+      <trans-unit id="noAzureFunctionsProjectsInWorkspace">
+        <source xml:lang="en">No Azure functions projects found in the workspace</source>
+        <target state="translated">Non sono stati trovati progetti di funzioni di Azure nell'area di lavoro</target>
+      </trans-unit>
+      <trans-unit id="openFile">
+        <source xml:lang="en">Open File</source>
+        <target state="translated">Apri file</target>
+      </trans-unit>
+      <trans-unit id="output">
+        <source xml:lang="en">Output</source>
+        <target state="translated">Output</target>
+      </trans-unit>
+      <trans-unit id="inputDescription">
+        <source xml:lang="en">Retrieves data from a database</source>
+        <target state="translated">Recupera i dati da un database</target>
+      </trans-unit>
+      <trans-unit id="sqlObjectToQuery">
+        <source xml:lang="en">SQL object to query</source>
+        <target state="translated">Oggetto SQL su cui eseguire la query</target>
+      </trans-unit>
+      <trans-unit id="sqlTableToUpsert">
+        <source xml:lang="en">SQL table to upsert into</source>
+        <target state="translated">Tabella SQL in cui eseguire l'operazione di upsert</target>
+      </trans-unit>
+      <trans-unit id="save">
+        <source xml:lang="en">Save</source>
+        <target state="translated">Salva</target>
+      </trans-unit>
+      <trans-unit id="outputDescription">
+        <source xml:lang="en">Save data to a database</source>
+        <target state="translated">Salva dati in un database</target>
+      </trans-unit>
+      <trans-unit id="selectButton">
+        <source xml:lang="en">Select</source>
+        <target state="translated">Seleziona</target>
+      </trans-unit>
+      <trans-unit id="selectDatabase">
+        <source xml:lang="en">Select Database</source>
+        <target state="translated">Seleziona database</target>
+      </trans-unit>
+      <trans-unit id="selectConnectionString">
+        <source xml:lang="en">Select SQL connection string method</source>
+        <target state="translated">Selezionare il metodo della stringa di connessione SQL</target>
+      </trans-unit>
+      <trans-unit id="selectSetting">
+        <source xml:lang="en">Select SQL connection string setting from local.settings.json</source>
+        <target state="translated">Selezionare l'impostazione della stringa di connessione SQL da local.settings.json</target>
+      </trans-unit>
+      <trans-unit id="connectionProfile">
+        <source xml:lang="en">Select a connection profile</source>
+        <target state="translated">Selezionare una connessione</target>
+      </trans-unit>
+      <trans-unit id="selectAzureFunction">
+        <source xml:lang="en">Select an Azure function in the current file to add SQL binding to</source>
+        <target state="translated">Selezionare una funzione di Azure nel file corrente in cui aggiungere l'associazione SQL</target>
+      </trans-unit>
+      <trans-unit id="selectAzureFunctionProjFolder">
+        <source xml:lang="en">Select folder for the Azure Function project</source>
+        <target state="translated">Selezionare la cartella per il progetto funzione di Azure</target>
+      </trans-unit>
+      <trans-unit id="selectSqlTableOrViewPrompt">
+        <source xml:lang="en">Select object type to insert or upsert into</source>
+        <target state="translated">Selezionare il tipo di oggetto in cui inserire o eseguire l'upsert</target>
+      </trans-unit>
+      <trans-unit id="selectTable">
+        <source xml:lang="en">Select table to use</source>
+        <target state="translated">Selezionare la tabella da usare</target>
+      </trans-unit>
+      <trans-unit id="selectProject">
+        <source xml:lang="en">Select the Azure Function project for the SQL Binding</source>
+        <target state="translated">Selezionare il progetto di funzione di Azure per l'associazione SQL</target>
+      </trans-unit>
+      <trans-unit id="selectBindingType">
+        <source xml:lang="en">Select type of binding</source>
+        <target state="translated">Seleziona tipo di associazione</target>
+      </trans-unit>
+      <trans-unit id="selectBindingTypeToSpecifiedFunction">
+        <source xml:lang="en">Select type of binding for the function '{0}'</source>
+        <target state="translated">Selezionare il tipo di associazione per la funzione '{0}'</target>
+      </trans-unit>
+      <trans-unit id="selectView">
+        <source xml:lang="en">Select view to use</source>
+        <target state="translated">Selezionare la visualizzazione da usare</target>
+      </trans-unit>
+      <trans-unit id="table">
+        <source xml:lang="en">Table</source>
+        <target state="translated">Tabella</target>
+      </trans-unit>
+      <trans-unit id="azureFunctionsExtensionNotFound">
+        <source xml:lang="en">The Azure Functions extension is required to create a new Azure Function with SQL binding but is not installed, install it now?</source>
+        <target state="translated">L'estensione Funzioni di Azure è richiesta per la creazione di una nuova funzione di Azure con l'associazione SQL, ma non è installata. Installarla ora?</target>
+      </trans-unit>
+      <trans-unit id="saveChangesInFile">
+        <source xml:lang="en">There are unsaved changes in the current file. Save now?</source>
+        <target state="translated">Nel file corrente sono presenti modifiche non salvate. Salvare ora?</target>
+      </trans-unit>
+      <trans-unit id="timeoutAzureFunctionFileError">
+        <source xml:lang="en">Timed out waiting for Azure Function file to be created</source>
+        <target state="translated">Timeout durante l'attesa della creazione del file di funzioni di Azure</target>
+      </trans-unit>
+      <trans-unit id="timeoutExtensionError">
+        <source xml:lang="en">Timed out waiting for extension to install</source>
+        <target state="translated">Timeout durante l'attesa dell'installazione dell'estensione</target>
+      </trans-unit>
+      <trans-unit id="valueMustNotBeEmpty">
+        <source xml:lang="en">Value must not be empty</source>
+        <target state="translated">Il valore non deve essere vuoto</target>
+      </trans-unit>
+      <trans-unit id="view">
+        <source xml:lang="en">View</source>
+        <target state="translated">Visualizzare</target>
+      </trans-unit>
+      <trans-unit id="yesString">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Sì</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/ms-mssql.sql-bindings-vscode/package" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="sqlBindings.addSqlBinding">
+        <source xml:lang="en">Add SQL Binding (preview)</source>
+        <target state="translated">Aggiungi binding SQL (anteprima)</target>
+      </trans-unit>
+      <trans-unit id="sqlBindings.createAzureFunction">
+        <source xml:lang="en">Create Azure Function with SQL binding (preview)</source>
+        <target state="translated">Creare una funzione di Azure con l'associazione SQL (anteprima)</target>
+      </trans-unit>
+      <trans-unit id="description">
+        <source xml:lang="en">Enables users to develop and publish Azure Functions with Azure SQL bindings</source>
+        <target state="translated">Consente agli utenti di sviluppare e pubblicare Funzioni di Azure con associazioni Azure SQL</target>
+      </trans-unit>
+      <trans-unit id="displayName">
+        <source xml:lang="en">SQL Bindings</source>
+        <target state="translated">Associazioni SQL</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

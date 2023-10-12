@@ -168,6 +168,10 @@
     <trans-unit id="azuredatastudio.installTooltip">
       <source xml:lang="en">Install this extension</source>
     </trans-unit>
+    <trans-unit id="azuredatastudio.themeUpdatedNotification">
+      <source xml:lang="en">Azure Data Studio now ships with a new default theme '{0}'. If you prefer, you can switch back to the old theme or try one of the many other color themes available.</source>
+      <note>{0} is the name of the new default theme</note>
+    </trans-unit>
     <trans-unit id="connectionDialogBrowseTree.context">
       <source xml:lang="en">The connection dialog's browse tree context menu</source>
     </trans-unit>
@@ -225,6 +229,10 @@
     </trans-unit>
     <trans-unit id="newQuery">
       <source xml:lang="en">New Query</source>
+    </trans-unit>
+    <trans-unit id="newThemeNotification">
+      <source xml:lang="en">Azure Data Studio now ships with a new default theme '{0}'. Do you want to give it a try?</source>
+      <note>{0} is the name of the new default theme</note>
     </trans-unit>
     <trans-unit id="notebook.cellTitle">
       <source xml:lang="en">The notebook cell title menu</source>
@@ -936,11 +944,18 @@ Default Skipped Commands:
     <trans-unit id="profiler.sessionStopped">
       <source xml:lang="en">XEvent Profiler Session stopped unexpectedly on the server {0}.</source>
     </trans-unit>
+    <trans-unit id="profilerInput.connDetails">
+      <source xml:lang="en">Connection Details: </source>
+    </trans-unit>
     <trans-unit id="profilerInput.notConnected">
       <source xml:lang="en">Not connected</source>
     </trans-unit>
     <trans-unit id="profilerInput.profiler">
       <source xml:lang="en">Profiler</source>
+    </trans-unit>
+    <trans-unit id="profilerInput.sessionName">
+      <source xml:lang="en">: Session Name: {0}
+</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/editor/resourceViewer/resourceViewerInput" source-language="en" datatype="plaintext"><body>
@@ -1694,10 +1709,10 @@ Default Skipped Commands:
       <source xml:lang="en">Collapse All Connections</source>
     </trans-unit>
     <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
-      <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
+      <source xml:lang="en">Microsoft Entra ID - Universal with MFA support</source>
     </trans-unit>
     <trans-unit id="sql.defaultAuthenticationType.AzureMFAAndUser">
-      <source xml:lang="en">Azure Active Directory - Password</source>
+      <source xml:lang="en">Microsoft Entra ID - Password</source>
     </trans-unit>
     <trans-unit id="sql.defaultAuthenticationType.Integrated">
       <source xml:lang="en">Windows Authentication</source>
@@ -2478,8 +2493,8 @@ Default Skipped Commands:
     <trans-unit id="disposeEditFailure">
       <source xml:lang="en">Dispose Edit Failed With Error: </source>
     </trans-unit>
-    <trans-unit id="editData.closeSql">
-      <source xml:lang="en">Close SQL Pane</source>
+    <trans-unit id="editData.hideSql">
+      <source xml:lang="en">Hide SQL Pane</source>
     </trans-unit>
     <trans-unit id="editData.run">
       <source xml:lang="en">Run</source>
@@ -4574,6 +4589,9 @@ Error: {1}</source>
     <trans-unit id="queryEditor.chart.defaultChartType">
       <source xml:lang="en">The default chart type to use when opening Chart Viewer from a Query Results</source>
     </trans-unit>
+    <trans-unit id="queryEditor.githubCopilotContextualizationEnabled">
+      <source xml:lang="en">(Preview) Enable contextualization of queries for GitHub Copilot. This setting helps GitHub Copilot to return improved suggestions, if the Copilot extension is installed and providers have implemented contextualization.</source>
+    </trans-unit>
     <trans-unit id="queryEditor.inMemoryDataProcessingThreshold">
       <source xml:lang="en">Controls the max number of rows allowed to do filtering and sorting in memory. If the number is exceeded, sorting and filtering will be disabled. Warning: Increasing this may impact performance.</source>
     </trans-unit>
@@ -5273,20 +5291,8 @@ Error: {1}</source>
     <trans-unit id="welcomePage.install">
       <source xml:lang="en">Install</source>
     </trans-unit>
-    <trans-unit id="welcomePage.installExtensionPack">
-      <source xml:lang="en">Install additional support for {0}</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.installKeymap">
-      <source xml:lang="en">Install {0} keymap</source>
-    </trans-unit>
     <trans-unit id="welcomePage.installed">
       <source xml:lang="en">Installed</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.installedExtensionPack">
-      <source xml:lang="en">{0} support is already installed</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.installedKeymap">
-      <source xml:lang="en">{0} keymap is already installed</source>
     </trans-unit>
     <trans-unit id="welcomePage.installingExtensionPack">
       <source xml:lang="en">Installing additional support for {0}...</source>
@@ -5527,7 +5533,7 @@ Error Message: {1}</source>
       <source xml:lang="en">Azure subscription</source>
     </trans-unit>
     <trans-unit id="backupRestoreUrlBrowserDialog.tenant">
-      <source xml:lang="en">Azure AD Tenant</source>
+      <source xml:lang="en">Microsoft Entra Tenant</source>
     </trans-unit>
     <trans-unit id="fileBrowser.discard">
       <source xml:lang="en">Discard</source>
@@ -5730,7 +5736,7 @@ Error Message: {1}</source>
       <source xml:lang="en">Account</source>
     </trans-unit>
     <trans-unit id="connection.azureTenantDropdownLabel">
-      <source xml:lang="en">Azure AD tenant</source>
+      <source xml:lang="en">Microsoft Entra tenant</source>
     </trans-unit>
     <trans-unit id="connectionName">
       <source xml:lang="en">Name (optional)</source>
@@ -5923,8 +5929,8 @@ Error Message: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/fileBrowser/browser/fileBrowserDialog" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="fileBrowser.discard">
-      <source xml:lang="en">Discard</source>
+    <trans-unit id="fileBrowser.back">
+      <source xml:lang="en">Back</source>
     </trans-unit>
     <trans-unit id="fileBrowser.ok">
       <source xml:lang="en">OK</source>
@@ -6338,6 +6344,11 @@ Error Message: {1}</source>
       <source xml:lang="en">Show All Connections</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/dragAndDropController" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="objectExplorer.dragAndDropController.existingIdenticalProfile">
+      <source xml:lang="en">Cannot drag profile into group: A profile with identical options already exists in the group.</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog" source-language="en" datatype="plaintext"><body>
     <trans-unit id="filterDialog.errorDateRange">
       <source xml:lang="en">Start date cannot be greater than end date.</source>
@@ -6590,9 +6601,6 @@ Error Message: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/query/common/queryManagement" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="queryManagement.noQueryRunnerForUri">
-      <source xml:lang="en">Could not find Query Runner for uri: {0}</source>
-    </trans-unit>
     <trans-unit id="queryManagement.uriAlreadyHasQueryRunner">
       <source xml:lang="en">Uri: {0} unexpectedly already has a query runner.</source>
     </trans-unit>
@@ -6649,6 +6657,9 @@ Error Message: {1}</source>
     </trans-unit>
     <trans-unit id="openFile">
       <source xml:lang="en">Open file</source>
+    </trans-unit>
+    <trans-unit id="openFileLocation">
+      <source xml:lang="en">Open file location</source>
     </trans-unit>
     <trans-unit id="resultsSerializer.saveAsFileExtensionCSVTitle">
       <source xml:lang="en">CSV (Comma delimited)</source>

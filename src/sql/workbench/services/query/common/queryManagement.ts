@@ -69,7 +69,7 @@ export interface IQueryManagementService {
 	changeConnectionUri(newUri: string, oldUri: string): Promise<void>;
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult>;
 	setQueryExecutionOptions(uri: string, options: azdata.QueryExecutionOptions): Promise<void>;
-	copyResults(params: azdata.CopyResultsRequestParams): Promise<void>;
+	copyResults(params: azdata.CopyResultsRequestParams): Promise<azdata.CopyResultsRequestResult>;
 
 	// Callbacks
 	onQueryComplete(result: azdata.QueryExecuteCompleteNotificationResult): void;
@@ -108,7 +108,7 @@ export interface IQueryRequestHandler {
 	disposeQuery(ownerUri: string): Promise<void>;
 	connectionUriChanged(newUri: string, oldUri: string): Promise<void>;
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult>;
-	copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<void>;
+	copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<azdata.CopyResultsRequestResult>;
 	setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Promise<void>;
 
 	// Edit Data actions
@@ -339,16 +339,16 @@ export class QueryManagementService implements IQueryManagementService {
 		let item = this._queryRunners.get(oldUri);
 		if (!item) {
 			this._logService.error(`No query runner found for old URI : '${oldUri}'`);
-			throw new Error(nls.localize('queryManagement.noQueryRunnerForUri', 'Could not find Query Runner for uri: {0}', oldUri));
-		}
-		if (this._queryRunners.get(newUri)) {
+		} else if (this._queryRunners.get(newUri)) {
 			this._logService.error(`New URI : '${newUri}' already has a query runner.`);
 			throw new Error(nls.localize('queryManagement.uriAlreadyHasQueryRunner', 'Uri: {0} unexpectedly already has a query runner.', newUri));
+		} else {
+			this._queryRunners.set(newUri, item);
+			this._queryRunners.delete(oldUri);
 		}
-		this._queryRunners.set(newUri, item);
-		this._queryRunners.delete(oldUri);
-		return this._runAction(newUri, (runner) => {
-			return runner.connectionUriChanged(newUri, oldUri);
+
+		return this._runAction(newUri, (handler) => {
+			return handler.connectionUriChanged(newUri, oldUri);
 		});
 	}
 
@@ -364,7 +364,7 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<void> {
+	public copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<azdata.CopyResultsRequestResult> {
 		return this._runAction(requestParams.ownerUri, (runner) => {
 			return runner.copyResults(requestParams);
 		});

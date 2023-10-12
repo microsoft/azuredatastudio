@@ -480,6 +480,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				profile.userName = accounts?.find(a => a.key.accountId === profile.azureAccount)?.displayInfo.displayName
 					?? profile.userName;
 			}
+			// This is used to specify whether a connection is server level or database level
+			if (profile.databaseName !== 'master' || !profile.databaseName) {
+				profile.options.originalDatabase = profile.databaseName
+			}
 		}
 		return profile;
 	}
@@ -722,6 +726,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
 		let result = await dialog.open(profile);
 		return result;
+	}
+
+	public getNonDefaultOptions(profile: interfaces.IConnectionProfile): string {
+		let convProfile = new ConnectionProfile(this._capabilitiesService, profile);
+		let nonDefOptions = convProfile.getNonDefaultOptionsString();
+		return nonDefOptions.replace('(', '[').replace(')', ']');
 	}
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {

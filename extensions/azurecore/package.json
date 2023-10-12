@@ -5,6 +5,7 @@
   "version": "0.1.0",
   "publisher": "Microsoft",
   "preview": true,
+  "aiKey": "29a207bb14f84905966a8f22524cb730-25407f35-11b6-4d4e-8114-ab9e843cb52f-7380",
   "engines": {
     "vscode": "^1.30.1",
     "azdata": "*"
@@ -122,8 +123,11 @@
             "items": {
               "type": "object",
               "description": "%config.providerSettingsTitle%",
-              "required": ["name", "settings"],
-              "properties":{
+              "required": [
+                "name",
+                "settings"
+              ],
+              "properties": {
                 "name": {
                   "type": "string",
                   "default": "Azure Public",
@@ -132,11 +136,16 @@
                 "settings": {
                   "type": "object",
                   "description": "%config.providerSettingsDescription%",
-                  "required": ["metadata"],
+                  "required": [
+                    "metadata"
+                  ],
                   "properties": {
                     "metadata": {
                       "type": "object",
-                      "required": ["displayName", "id"],
+                      "required": [
+                        "displayName",
+                        "id"
+                      ],
                       "properties": {
                         "displayName": {
                           "type": "string",
@@ -150,7 +159,16 @@
                         },
                         "endpoints": {
                           "type": "object",
-                          "required": ["host", "clientId", "scopes", "sqlResource", "microsoftResource", "armResource", "graphResource", "azureStorageResource"],
+                          "required": [
+                            "host",
+                            "clientId",
+                            "scopes",
+                            "sqlResource",
+                            "microsoftResource",
+                            "armResource",
+                            "graphResource",
+                            "azureStorageResource"
+                          ],
                           "properties": {
                             "type": "object",
                             "host": {
@@ -502,13 +520,15 @@
     "hasAzureResourceProviders": true
   },
   "dependencies": {
-    "@azure/arm-resourcegraph": "^4.0.0",
+    "@azure/arm-resourcegraph": "^4.2.1",
     "@azure/arm-subscriptions": "^3.0.0",
-    "@azure/msal-common": "^11.0.0",
-    "@azure/msal-node": "^1.16.0",
+    "@azure/msal-common": "^13.3.0",
+    "@azure/msal-node": "^1.18.3",
+    "@azure/ms-rest-js": "^2.2.0",
     "@azure/storage-blob": "^12.13.0",
-    "axios": "^0.27.2",
+    "axios": "^1.5.0",
     "lockfile": "1.0.4",
+    "@microsoft/ads-extension-telemetry": "^3.0.1",
     "node-fetch": "^2.6.7",
     "qs": "^6.9.1",
     "universalify": "^0.1.2",
@@ -516,8 +536,8 @@
     "ws": "^7.4.6"
   },
   "devDependencies": {
-    "@microsoft/azdata-test": "^3.0.1",
-    "@microsoft/vscodetestcover": "^1.2.1",
+    "@microsoft/vscodetestcover": "^1.2.2",
+    "@microsoft/azdata-test": "^3.0.3",
     "@types/keytar": "4.4.0",
     "@types/lockfile": "^1.0.2",
     "@types/mocha": "^7.0.2",

@@ -15,6 +15,8 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ThemeIcon } from 'vs/base/common/themables';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { Link } from 'vs/platform/opener/browser/link';
 
 export interface IInfoBoxStyles {
 	informationBackground: string | undefined;
@@ -59,7 +61,8 @@ export class InfoBox extends Disposable {
 		private readonly _styles: IInfoBoxStyles,
 		options: InfoBoxOptions | undefined,
 		@IOpenerService private _openerService: IOpenerService,
-		@ILogService private _logService: ILogService
+		@ILogService private _logService: ILogService,
+		@IInstantiationService private instantiationService: IInstantiationService,
 	) {
 		super();
 		this._infoBoxElement = document.createElement('div');
@@ -155,11 +158,11 @@ export class InfoBox extends Disposable {
 			 * If the url is empty, electron displays the link as visited.
 			 * TODO: Investigate why it happens and fix the issue iin electron/vsbase.
 			 */
-			const linkElement = DOM.$('a', {
+			const linkElement = this._register(this.instantiationService.createInstance(Link,
+				this._textElement, {
+				label: link.text,
 				href: link.url === '' ? ' ' : link.url
-			});
-
-			linkElement.innerText = link.text;
+			}, undefined)).el;
 
 			if (link.accessibilityInformation) {
 				linkElement.setAttribute('aria-label', link.accessibilityInformation.label);

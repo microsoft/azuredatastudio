@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { GroupIdentifier, IRevertOptions, ISaveOptions, EditorInputCapabilities, IUntypedEditorInput } from 'vs/workbench/common/editor';
+import { GroupIdentifier, IRevertOptions, ISaveOptions, EditorInputCapabilities, IUntypedEditorInput, Verbosity } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
@@ -20,6 +20,7 @@ import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/text
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
 
 const MAX_SIZE = 13;
 
@@ -149,7 +150,8 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IInstantiationService protected readonly instantiationService: IInstantiationService
+		@IInstantiationService protected readonly instantiationService: IInstantiationService,
+		@IServerContextualizationService private readonly serverContextualizationService: IServerContextualizationService
 	) {
 		super();
 
@@ -243,11 +245,16 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 				title = this._description + ' ';
 			}
 			if (profile) {
-				title += `${profile.serverName}`;
-				if (profile.databaseName) {
-					title += `.${profile.databaseName}`;
+				if (profile.connectionName) {
+					title += `${profile.connectionName}`;
 				}
-				title += ` (${profile.userName || profile.authenticationType})`;
+				else {
+					title += `${profile.serverName}`;
+					if (profile.databaseName) {
+						title += `.${profile.databaseName}`;
+					}
+					title += ` (${profile.userName || profile.authenticationType})`;
+				}
 			} else {
 				title += localize('disconnected', "disconnected");
 			}
@@ -262,8 +269,35 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	// Called to get the tooltip of the tab
-	public override getTitle(): string {
-		return this.getName(true);
+	public override getTitle(verbosity?: Verbosity): string {
+		let profile = this.connectionManagementService.getConnectionProfile(this.uri);
+		let fullTitle = '';
+		if (profile) {
+			let additionalOptions = this.connectionManagementService.getNonDefaultOptions(profile);
+			if (this._description && this._description !== '') {
+				fullTitle = this._description + ' ';
+			}
+			fullTitle += `${profile.serverName}`;
+			if (profile.databaseName) {
+				fullTitle += `.${profile.databaseName}`;
+			}
+			fullTitle += ` (${profile.userName || profile.authenticationType})`;
+
+			fullTitle += additionalOptions;
+		}
+		else {
+			fullTitle = this.getName(true);
+		}
+		switch (verbosity) {
+			case Verbosity.LONG:
+				// Used by tabsTitleControl as the tooltip hover.
+				return fullTitle;
+			default:
+			case Verbosity.SHORT:
+			case Verbosity.MEDIUM:
+				// Used for header title by tabsTitleControl.
+				return this.getName(true);
+		}
 	}
 
 	// State update funtions
@@ -319,6 +353,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			}
 		}
 		this._onDidChangeLabel.fire();
+
+		// Intentionally not awaiting, so that contextualization can happen in the background
+		void this.serverContextualizationService?.contextualizeUriForCopilot(this.uri);
 	}
 
 	public onDisconnect(): void {

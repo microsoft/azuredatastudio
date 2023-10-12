@@ -9,7 +9,7 @@ steps:
 
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '3.x'
+      versionSpec: '3.11.x'
       addToPath: true
 
   - task: AzureKeyVault@1
@@ -41,11 +41,22 @@ steps:
       exec { git config --global https.postBuffer 524288000 }
     displayName: Prepare tooling
 
+  - task: CodeQL3000Init@0
+    displayName: CodeQL Initialize
+    condition: eq(variables['Codeql.enabled'], 'True')
+
   - powershell: |
       git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
       git fetch distro
       git merge $(node -p "require('./package.json').distro")
     displayName: Merge distro
+
+  - powershell: |
+      git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+      git fetch distro
+      git merge ab87de2203e5a9d8377a74725dc6e2258de6da79
+    condition: eq(variables['VSCODE_QUALITY'], 'agc')
+    displayName: Merge AGC endpoints
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
@@ -135,6 +146,19 @@ steps:
     displayName: Install SAW Extensions
     condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'), ne(variables['VSCODE_ARCH'], 'arm64'))
 
+  - powershell: |
+      # Install AGC specific extensions
+      $ErrorActionPreference = "Stop"
+      $tempFilePath = (New-TemporaryFile).FullName
+      $zipFilePath = $tempFilePath + ".zip"
+      $extensionUri = "$(agc-extensions-uri)"
+      $adsExtensionPath = "$(agent.builddirectory)\azuredatastudio-win32-x64\resources\app\extensions"
+      Invoke-WebRequest -Uri $extensionUri -OutFile $tempFilePath
+      Move-Item $tempFilePath $zipFilePath
+      Expand-Archive $zipFilePath -DestinationPath $adsExtensionPath
+    displayName: Install AGC Extensions
+    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'agc'), ne(variables['VSCODE_ARCH'], 'arm64'))
+
   # - powershell: | @anthonydresser unit tests timeout never existing the node process
   #     . build/azure-pipelines/win32/exec.ps1
   #     $ErrorActionPreference = "Stop"
@@ -189,6 +213,7 @@ steps:
         Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll
         MicrosoftSqlToolsCredentials.dll
         MicrosoftSqlToolsServiceLayer.dll
+        MicrosoftSqlToolsSqlCore.dll
         Newtonsoft.Json.dll,SqlSerializationService.dll
         SqlToolsResourceProviderService.dll
         Microsoft.SqlServer.*.dll
@@ -342,6 +367,10 @@ steps:
       failTaskOnFailedTests: true
     continueOnError: true
     condition: and(succeededOrFailed(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
+
+  - task: CodeQL3000Finalize@0
+    displayName: CodeQL Finalize
+    condition: eq(variables['Codeql.enabled'], 'True')
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Detection'

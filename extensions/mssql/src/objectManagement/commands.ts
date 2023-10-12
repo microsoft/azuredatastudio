@@ -24,7 +24,8 @@ import { ApplicationRoleDialog } from './ui/applicationRoleDialog';
 import { DatabaseDialog } from './ui/databaseDialog';
 import { ServerPropertiesDialog } from './ui/serverPropertiesDialog';
 import { DetachDatabaseDialog } from './ui/detachDatabaseDialog';
-import { DeleteDatabaseDialog } from './ui/deleteDatabaseDialog';
+import { DropDatabaseDialog } from './ui/dropDatabaseDialog';
+import { AttachDatabaseDialog } from './ui/attachDatabaseDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
@@ -38,8 +39,8 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.objectProperties', async (context: azdata.ObjectExplorerContext) => {
 		await handleObjectPropertiesDialogCommand(context, service);
 	}));
-	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.deleteObject', async (context: azdata.ObjectExplorerContext) => {
-		await handleDeleteObjectCommand(context, service);
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.dropObject', async (context: azdata.ObjectExplorerContext) => {
+		await handleDropObjectCommand(context, service);
 	}));
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.renameObject', async (context: azdata.ObjectExplorerContext) => {
 		await handleRenameObjectCommand(context, service);
@@ -47,8 +48,11 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.detachDatabase', async (context: azdata.ObjectExplorerContext) => {
 		await handleDetachDatabase(context, service);
 	}));
-	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.deleteDatabase', async (context: azdata.ObjectExplorerContext) => {
-		await handleDeleteDatabase(context, service);
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.attachDatabase', async (context: azdata.ObjectExplorerContext) => {
+		await handleAttachDatabase(context, service);
+	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.dropDatabase', async (context: azdata.ObjectExplorerContext) => {
+		await handleDropDatabase(context, service);
 	}));
 }
 
@@ -65,40 +69,52 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 	if (!connectionUri) {
 		return;
 	}
+
 	let objectType: ObjectManagement.NodeType;
-	switch (context.nodeInfo!.objectType) {
-		case FolderType.ApplicationRoles:
-			objectType = ObjectManagement.NodeType.ApplicationRole;
-			break;
-		case FolderType.DatabaseRoles:
-			objectType = ObjectManagement.NodeType.DatabaseRole;
-			break;
-		case FolderType.ServerLevelLogins:
-			objectType = ObjectManagement.NodeType.ServerLevelLogin;
-			break;
-		case FolderType.ServerLevelServerRoles:
-			objectType = ObjectManagement.NodeType.ServerLevelServerRole;
-			break;
-		case FolderType.Users:
-			objectType = ObjectManagement.NodeType.User;
-			break;
-		case FolderType.Databases:
-			objectType = ObjectManagement.NodeType.Database;
-			break;
-	}
-	// Fall back to node type in case the user right clicked on an object instead of a folder
-	if (!objectType) {
-		switch (context.nodeInfo!.nodeType) {
-			case ObjectManagement.NodeType.ApplicationRole:
-			case ObjectManagement.NodeType.DatabaseRole:
-			case ObjectManagement.NodeType.ServerLevelLogin:
-			case ObjectManagement.NodeType.ServerLevelServerRole:
-			case ObjectManagement.NodeType.User:
-			case ObjectManagement.NodeType.Database:
-				objectType = context.nodeInfo!.nodeType as ObjectManagement.NodeType;
+	if (context.nodeInfo) {
+		switch (context.nodeInfo.objectType) {
+			case FolderType.ApplicationRoles:
+				objectType = ObjectManagement.NodeType.ApplicationRole;
 				break;
-			default:
-				throw new Error(objectManagementLoc.NoDialogFoundError(context.nodeInfo!.nodeType, context.nodeInfo!.objectType));
+			case FolderType.DatabaseRoles:
+				objectType = ObjectManagement.NodeType.DatabaseRole;
+				break;
+			case FolderType.ServerLevelLogins:
+				objectType = ObjectManagement.NodeType.ServerLevelLogin;
+				break;
+			case FolderType.ServerLevelServerRoles:
+				objectType = ObjectManagement.NodeType.ServerLevelServerRole;
+				break;
+			case FolderType.Users:
+				objectType = ObjectManagement.NodeType.User;
+				break;
+			case FolderType.Databases:
+				objectType = ObjectManagement.NodeType.Database;
+				break;
+		}
+
+		// Fall back to node type in case the user right clicked on an object instead of a folder
+		if (!objectType) {
+			switch (context.nodeInfo.nodeType) {
+				case ObjectManagement.NodeType.ApplicationRole:
+				case ObjectManagement.NodeType.DatabaseRole:
+				case ObjectManagement.NodeType.ServerLevelLogin:
+				case ObjectManagement.NodeType.ServerLevelServerRole:
+				case ObjectManagement.NodeType.User:
+				case ObjectManagement.NodeType.Database:
+					objectType = context.nodeInfo.nodeType as ObjectManagement.NodeType;
+					break;
+				default:
+					throw new Error(objectManagementLoc.NoDialogFoundError(context.nodeInfo.nodeType, context.nodeInfo.objectType));
+			}
+		}
+	} else {
+		// Node info will be missing for top level connection items like servers and databases, so make a best guess here based on connection info.
+		// If we don't have a database name, then we have to assume it's a server node, which isn't valid for the New Object command.
+		if (context.connectionProfile?.databaseName?.length > 0) {
+			objectType = ObjectManagement.NodeType.Database;
+		} else {
+			throw new Error(objectManagementLoc.NotSupportedError(ObjectManagement.NodeType.Server));
 		}
 	}
 
@@ -107,18 +123,24 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
 			isNewObject: true,
-			database: context.connectionProfile!.databaseName!,
+			database: context.connectionProfile?.databaseName,
 			objectType: objectType,
 			objectName: '',
 			parentUrn: parentUrn,
 			objectExplorerContext: context
 		};
 		const dialog = getDialog(service, options);
+		const startTime = Date.now();
 		await dialog.open();
+		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenNewObjectDialog, {
+			objectType: objectType
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
 	}
 	catch (err) {
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenNewObjectDialog, err).withAdditionalProperties({
-			objectType: context.nodeInfo!.nodeType
+			objectType: objectType
 		}).send();
 		console.error(err);
 		await vscode.window.showErrorMessage(objectManagementLoc.OpenNewObjectDialogError(objectManagementLoc.getNodeTypeDisplayName(objectType), getErrorMessage(err)));
@@ -130,49 +152,53 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 	if (!connectionUri) {
 		return;
 	}
+	const object = await getObjectInfoForContext(context);
 	try {
-		const parentUrn = context.isConnectionNode ? undefined : await getParentUrn(context);
-		const objectType = context.nodeInfo ? context.nodeInfo.nodeType as ObjectManagement.NodeType : (context.connectionProfile.databaseName === '' ? ObjectManagement.NodeType.Server : ObjectManagement.NodeType.Database);
-		const objectName = context.nodeInfo ? context.nodeInfo.label : (!context.connectionProfile.databaseName ? context.connectionProfile.serverName : context.connectionProfile.databaseName);
-		const objectUrn = context.nodeInfo ? context.nodeInfo!.metadata!.urn : (context.connectionProfile.databaseName === '' ? 'Server' : `Server/Database[@Name='${escapeSingleQuotes(context.connectionProfile.databaseName)}']`);
-
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
 			isNewObject: false,
-			database: context.connectionProfile!.databaseName!,
-			objectType: objectType,
-			objectName: objectName,
-			parentUrn: parentUrn,
-			objectUrn: objectUrn,
+			database: context.connectionProfile?.databaseName,
+			objectType: object.type,
+			objectName: object.name,
+			parentUrn: object.parentUrn,
+			objectUrn: object.urn,
 			objectExplorerContext: context
 		};
 		const dialog = getDialog(service, options);
+		const startTime = Date.now();
 		await dialog.open();
+		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenPropertiesDialog, {
+			objectType: object.type
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
 	}
 	catch (err) {
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenPropertiesDialog, err).withAdditionalProperties({
-			objectType: context.nodeInfo!.nodeType
+			objectType: object.type
 		}).send();
 		console.error(err);
-		await vscode.window.showErrorMessage(objectManagementLoc.OpenObjectPropertiesDialogError(objectManagementLoc.getNodeTypeDisplayName(context.nodeInfo!.nodeType), context.nodeInfo!.label, getErrorMessage(err)));
+		await vscode.window.showErrorMessage(objectManagementLoc.OpenObjectPropertiesDialogError(objectManagementLoc.getNodeTypeDisplayName(object.type), object.name, getErrorMessage(err)));
 	}
 }
 
-async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+async function handleDropObjectCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
 	const connectionUri = await getConnectionUri(context);
 	if (!connectionUri) {
 		return;
 	}
+
+	const object = await getObjectInfoForContext(context);
 	let additionalConfirmationMessage: string | undefined = undefined;
-	switch (context.nodeInfo!.nodeType) {
+	switch (object.type) {
 		case ObjectManagement.NodeType.ServerLevelLogin:
-			additionalConfirmationMessage = objectManagementLoc.DeleteLoginConfirmationText;
+			additionalConfirmationMessage = objectManagementLoc.DropLoginConfirmationText;
 			break;
 		default:
 			break;
 	}
-	const nodeTypeDisplayName = objectManagementLoc.getNodeTypeDisplayName(context.nodeInfo!.nodeType);
-	let confirmMessage = objectManagementLoc.DeleteObjectConfirmationText(nodeTypeDisplayName, context.nodeInfo!.label);
+	const nodeTypeDisplayName = objectManagementLoc.getNodeTypeDisplayName(object.type);
+	let confirmMessage = objectManagementLoc.DropObjectConfirmationText(nodeTypeDisplayName, object.name);
 	if (additionalConfirmationMessage) {
 		confirmMessage = `${additionalConfirmationMessage} ${confirmMessage}`;
 	}
@@ -181,23 +207,23 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 		return;
 	}
 	azdata.tasks.startBackgroundOperation({
-		displayName: objectManagementLoc.DeleteObjectOperationDisplayName(nodeTypeDisplayName, context.nodeInfo!.label),
+		displayName: objectManagementLoc.DropObjectOperationDisplayName(nodeTypeDisplayName, object.name),
 		description: '',
 		isCancelable: false,
 		operation: async (operation) => {
 			try {
 				const startTime = Date.now();
-				await service.drop(connectionUri, context.nodeInfo.nodeType as ObjectManagement.NodeType, context.nodeInfo!.metadata!.urn);
-				TelemetryReporter.sendTelemetryEvent(TelemetryActions.DeleteObject, {
-					objectType: context.nodeInfo!.nodeType
+				await service.drop(connectionUri, object.type, object.urn);
+				TelemetryReporter.sendTelemetryEvent(TelemetryActions.DropObject, {
+					objectType: object.type
 				}, {
 					elapsedTimeMs: Date.now() - startTime
 				});
 			}
 			catch (err) {
-				operation.updateStatus(azdata.TaskStatus.Failed, objectManagementLoc.DeleteObjectError(nodeTypeDisplayName, context.nodeInfo!.label, getErrorMessage(err)));
-				TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.DeleteObject, err).withAdditionalProperties({
-					objectType: context.nodeInfo!.nodeType
+				operation.updateStatus(azdata.TaskStatus.Failed, objectManagementLoc.DropObjectError(nodeTypeDisplayName, object.name, getErrorMessage(err)));
+				TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.DropObject, err).withAdditionalProperties({
+					objectType: object.type
 				}).send();
 				console.error(err);
 				return;
@@ -213,11 +239,12 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 	if (!connectionUri) {
 		return;
 	}
-	const nodeTypeDisplayName = objectManagementLoc.getNodeTypeDisplayName(context.nodeInfo!.nodeType);
-	const originalName = context.nodeInfo!.metadata!.name;
+
+	const object = await getObjectInfoForContext(context);
+	const nodeTypeDisplayName = objectManagementLoc.getNodeTypeDisplayName(object.type);
 	const newName = await vscode.window.showInputBox({
 		title: objectManagementLoc.RenameObjectDialogTitle,
-		value: originalName,
+		value: object.name,
 		validateInput: (value: string): string | undefined => {
 			if (!value) {
 				return objectManagementLoc.NameCannotBeEmptyError;
@@ -229,28 +256,28 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 	});
 
 	// return if no change was made or the dialog was canceled.
-	if (newName === originalName || !newName) {
+	if (newName === object.name || !newName) {
 		return;
 	}
 
 	azdata.tasks.startBackgroundOperation({
-		displayName: objectManagementLoc.RenameObjectOperationDisplayName(nodeTypeDisplayName, originalName, newName),
+		displayName: objectManagementLoc.RenameObjectOperationDisplayName(nodeTypeDisplayName, object.name, newName),
 		description: '',
 		isCancelable: false,
 		operation: async (operation) => {
 			try {
 				const startTime = Date.now();
-				await service.rename(connectionUri, context.nodeInfo.nodeType as ObjectManagement.NodeType, context.nodeInfo!.metadata!.urn, newName);
+				await service.rename(connectionUri, object.type, object.urn, newName);
 				TelemetryReporter.sendTelemetryEvent(TelemetryActions.RenameObject, {
-					objectType: context.nodeInfo!.nodeType
+					objectType: object.type
 				}, {
 					elapsedTimeMs: Date.now() - startTime
 				});
 			}
 			catch (err) {
-				operation.updateStatus(azdata.TaskStatus.Failed, objectManagementLoc.RenameObjectError(nodeTypeDisplayName, originalName, newName, getErrorMessage(err)));
+				operation.updateStatus(azdata.TaskStatus.Failed, objectManagementLoc.RenameObjectError(nodeTypeDisplayName, object.name, newName, getErrorMessage(err)));
 				TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.RenameObject, err).withAdditionalProperties({
-					objectType: context.nodeInfo!.nodeType
+					objectType: object.type
 				}).send();
 				console.error(err);
 				return;
@@ -266,31 +293,40 @@ async function handleDetachDatabase(context: azdata.ObjectExplorerContext, servi
 	if (!connectionUri) {
 		return;
 	}
+	const object = await getObjectInfoForContext(context);
 	try {
-		const parentUrn = await getParentUrn(context);
+		if (object.type !== ObjectManagement.NodeType.Database) {
+			throw new Error(objectManagementLoc.NotSupportedError(ObjectManagement.NodeType.Database));
+		}
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
 			isNewObject: false,
-			database: context.connectionProfile!.databaseName!,
-			objectType: context.nodeInfo.nodeType as ObjectManagement.NodeType,
-			objectName: context.nodeInfo.label,
-			parentUrn: parentUrn,
-			objectUrn: context.nodeInfo!.metadata!.urn,
+			database: object.name,
+			objectType: object.type,
+			objectName: object.name,
+			parentUrn: object.parentUrn,
+			objectUrn: object.urn,
 			objectExplorerContext: context
 		};
 		const dialog = new DetachDatabaseDialog(service, options);
+		const startTime = Date.now();
 		await dialog.open();
+		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenDetachDatabaseDialog, {
+			objectType: object.type
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
 	}
 	catch (err) {
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenDetachDatabaseDialog, err).withAdditionalProperties({
-			objectType: context.nodeInfo!.nodeType
+			objectType: object.type
 		}).send();
 		console.error(err);
 		await vscode.window.showErrorMessage(objectManagementLoc.OpenDetachDatabaseDialogError(getErrorMessage(err)));
 	}
 }
 
-async function handleDeleteDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+async function handleAttachDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
 	const connectionUri = await getConnectionUri(context);
 	if (!connectionUri) {
 		return;
@@ -299,23 +335,66 @@ async function handleDeleteDatabase(context: azdata.ObjectExplorerContext, servi
 		const parentUrn = await getParentUrn(context);
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
-			isNewObject: false,
+			isNewObject: true,
 			database: context.connectionProfile!.databaseName!,
-			objectType: context.nodeInfo.nodeType as ObjectManagement.NodeType,
-			objectName: context.nodeInfo.label,
+			objectType: ObjectManagement.NodeType.Database,
+			objectName: '',
 			parentUrn: parentUrn,
-			objectUrn: context.nodeInfo!.metadata!.urn,
 			objectExplorerContext: context
 		};
-		const dialog = new DeleteDatabaseDialog(service, options);
+		const dialog = new AttachDatabaseDialog(service, options);
+		const startTime = Date.now();
 		await dialog.open();
+		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenAttachDatabaseDialog, {
+			objectType: ObjectManagement.NodeType.Database
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
 	}
 	catch (err) {
-		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenDeleteDatabaseDialog, err).withAdditionalProperties({
+		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenAttachDatabaseDialog, err).withAdditionalProperties({
 			objectType: context.nodeInfo!.nodeType
 		}).send();
 		console.error(err);
-		await vscode.window.showErrorMessage(objectManagementLoc.OpenDeleteDatabaseDialogError(getErrorMessage(err)));
+		await vscode.window.showErrorMessage(objectManagementLoc.OpenAttachDatabaseDialogError(getErrorMessage(err)));
+	}
+}
+
+async function handleDropDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+	const connectionUri = await getConnectionUri(context);
+	if (!connectionUri) {
+		return;
+	}
+	const object = await getObjectInfoForContext(context);
+	try {
+		if (object.type !== ObjectManagement.NodeType.Database) {
+			throw new Error(objectManagementLoc.NotSupportedError(ObjectManagement.NodeType.Database));
+		}
+		const options: ObjectManagementDialogOptions = {
+			connectionUri: connectionUri,
+			isNewObject: false,
+			database: object.name,
+			objectType: object.type,
+			objectName: object.name,
+			parentUrn: object.parentUrn,
+			objectUrn: object.urn,
+			objectExplorerContext: context
+		};
+		const dialog = new DropDatabaseDialog(service, options);
+		const startTime = Date.now();
+		await dialog.open();
+		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenDropDatabaseDialog, {
+			objectType: object.type
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
+	}
+	catch (err) {
+		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenDropDatabaseDialog, err).withAdditionalProperties({
+			objectType: object.type
+		}).send();
+		console.error(err);
+		await vscode.window.showErrorMessage(objectManagementLoc.OpenDropDatabaseDialogError(getErrorMessage(err)));
 	}
 }
 
@@ -348,12 +427,52 @@ async function getConnectionUri(context: azdata.ObjectExplorerContext): Promise<
 	return connectionUri;
 }
 
-async function getParentUrn(context: azdata.ObjectExplorerContext): Promise<string> {
-	let node = undefined;
-	let currentNodePath = context.nodeInfo!.parentNodePath;
-	do {
-		node = await azdata.objectexplorer.getNode(context.connectionProfile!.id, currentNodePath);
-		currentNodePath = node?.parentNodePath;
-	} while (node && currentNodePath && !node.metadata?.urn);
-	return node?.metadata?.urn;
+async function getParentUrn(context: azdata.ObjectExplorerContext): Promise<string | undefined> {
+	let parentUrn: string = undefined;
+	if (context.nodeInfo) {
+		let node = undefined;
+		let currentNodePath = context.nodeInfo.parentNodePath;
+		do {
+			node = await azdata.objectexplorer.getNode(context.connectionProfile!.id, currentNodePath);
+			currentNodePath = node?.parentNodePath;
+		} while (node && currentNodePath && !node.metadata?.urn);
+		parentUrn = node?.metadata?.urn;
+	}
+	return parentUrn;
+}
+
+interface ObjectInfo {
+	parentUrn: string;
+	name: string;
+	type: ObjectManagement.NodeType;
+	urn: string;
+}
+
+async function getObjectInfoForContext(context: azdata.ObjectExplorerContext): Promise<ObjectInfo> {
+	let nodeType: ObjectManagement.NodeType;
+	let objectName: string;
+	let objectUrn: string;
+	if (context.nodeInfo) {
+		nodeType = context.nodeInfo.nodeType as ObjectManagement.NodeType;
+		objectName = context.nodeInfo.metadata?.name;
+		objectUrn = context.nodeInfo.metadata?.urn;
+	} else {
+		// Node info will be missing for top level connection items like servers and databases, so make a best guess here based on connection info.
+		if (context.connectionProfile?.databaseName?.length > 0) {
+			nodeType = ObjectManagement.NodeType.Database;
+			objectName = context.connectionProfile.databaseName;
+			objectUrn = `Server/Database[@Name='${escapeSingleQuotes(objectName)}']`;
+		} else {
+			nodeType = ObjectManagement.NodeType.Server;
+			objectName = context.connectionProfile.serverName;
+			objectUrn = 'Server';
+		}
+	}
+	let parentUrn = await getParentUrn(context);
+	return {
+		parentUrn: parentUrn,
+		name: objectName,
+		type: nodeType,
+		urn: objectUrn
+	}
 }

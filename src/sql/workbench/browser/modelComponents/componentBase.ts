@@ -81,6 +81,11 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 		return this._el.nativeElement;
 	}
 
+	public override dispose(): void {
+		super.dispose();
+		this.getHtml().remove();
+	}
+
 	public setDataProvider(handle: number, componentId: string, context: any): void {
 	}
 
@@ -293,9 +298,16 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ContainerProp
 		this._validations.push(() => {
 			this.logService.debug(`Running container validation on component ${this.descriptor.id} to check validity of all child items`);
 			return this.items.every(item => {
-				const valid = this.modelStore.getComponent(item.descriptor.id)?.valid;
+				const component = this.modelStore.getComponent(item.descriptor.id);
+				if (component === undefined) {
+					this.logService.warn(`Child item ${item.descriptor.id} of type ${item.descriptor.type} is undefined`);
+				} else if (component.valid === undefined) {
+					this.logService.warn(`The validity of child item ${item.descriptor.id} of type ${item.descriptor.type} undefined`);
+				}
+				// if the component is not found or the `valid` property is not set, we should treat it as valid.
+				const valid = component?.valid ?? true;
 				this.logService.debug(`Child item ${item.descriptor.id} validity is ${valid}`);
-				return valid || false;
+				return valid;
 			});
 		});
 	}

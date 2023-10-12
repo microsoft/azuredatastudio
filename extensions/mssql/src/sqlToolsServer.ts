@@ -13,7 +13,7 @@ import * as azurecore from 'azurecore';
 import { getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableConnectionPoolingConfig, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, logDebug, TracingLevel } from './utils';
 import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature } from './features';
+import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature/*, ServerContextualizationServiceFeature*/ } from './features'; // LEWISSANCHEZ TODO: Put back ServerContextualizationServiceFeature once ready.
 import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import { SchemaCompareService } from './schemaCompare/schemaCompareService';
@@ -31,6 +31,8 @@ import { AzureBlobService } from './azureBlob/azureBlobService';
 import { ErrorDiagnosticsProvider } from './errorDiagnostics/errorDiagnosticsProvider';
 import { SqlProjectsService } from './sqlProjects/sqlProjectsService';
 import { ObjectManagementService } from './objectManagement/objectManagementService';
+import { QueryStoreService } from './queryStore/queryStoreService';
+import { ConnectionService } from './connection/connectionService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -236,6 +238,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 			AgentServicesFeature,
 			SerializationFeature,
 			SqlAssessmentServicesFeature,
+			ConnectionService.asFeature(context),
 			SchemaCompareService.asFeature(context),
 			LanguageExtensionService.asFeature(context),
 			DacFxService.asFeature(context),
@@ -247,8 +250,10 @@ function getClientOptions(context: AppContext): ClientOptions {
 			SqlCredentialService.asFeature(context),
 			TableDesignerFeature,
 			ExecutionPlanServiceFeature,
+			// ServerContextualizationServiceFeature, // LEWISSANCHEZ TODO: Put this provider back once STS changes are complete
 			ErrorDiagnosticsProvider.asFeature(context),
-			ObjectManagementService.asFeature(context)
+			ObjectManagementService.asFeature(context),
+			QueryStoreService.asFeature(context)
 		],
 		outputChannel: outputChannel,
 		// Automatically reveal the output channel only in dev mode, so that the users are not impacted and issues can still be caught during development.

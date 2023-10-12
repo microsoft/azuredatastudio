@@ -17,7 +17,7 @@ import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBac
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getSourceConnectionUri, getTrustServerCertificateValue, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel } from './loginMigrationModel';
-import { TdeMigrationDbResult, TdeMigrationModel } from './tdeModels';
+import { TdeMigrationDbResult, TdeMigrationModel, TdeValidationResult } from './tdeModels';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
 const localize = nls.loadMessageBundle();
 
@@ -153,6 +153,7 @@ export interface SavedInfo {
 	serviceSubscription: azurecore.azureResource.AzureResourceSubscription | null;
 	serviceResourceGroup: azurecore.azureResource.AzureResourceResourceGroup | null;
 	serverAssessment: ServerAssessment | null;
+	xEventsFilesFolderPath: string | null;
 	skuRecommendation: SkuRecommendationSavedInfo | null;
 }
 
@@ -1000,6 +1001,55 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return opResult;
 	}
 
+	public async getTdeValidationTitles(): Promise<OperationResult<string[]>> {
+		const opResult: OperationResult<string[]> = {
+			success: false,
+			result: [],
+			errors: []
+		};
+
+		try {
+			opResult.result = await this.migrationService.getTdeValidationTitles() ?? [];
+		} catch (e) {
+			console.error(e);
+		}
+
+		return opResult;
+	}
+
+	public async runTdeValidation(networkSharePath: string): Promise<OperationResult<TdeValidationResult[]>> {
+		const opResult: OperationResult<TdeValidationResult[]> = {
+			success: false,
+			result: [],
+			errors: []
+		};
+
+		const connectionString = await getSourceConnectionString();
+
+		try {
+			let tdeValidationResult = await this.migrationService.runTdeValidation(
+				connectionString,
+				networkSharePath);
+
+			if (tdeValidationResult !== undefined) {
+				opResult.result = tdeValidationResult?.map((e) => {
+					return {
+						validationTitle: e.validationTitle,
+						validationDescription: e.validationDescription,
+						validationTroubleshootingTips: e.validationTroubleshootingTips,
+						validationErrorMessage: e.validationErrorMessage,
+						validationStatus: e.validationStatus,
+						validationStatusString: e.validationStatusString
+					};
+				});
+			}
+		} catch (e) {
+			console.error(e);
+		}
+
+		return opResult;
+	}
+
 	public async startMigration() {
 		const currentConnection = await getSourceConnectionProfile();
 		const isOfflineMigration = this._databaseBackup.migrationMode === MigrationMode.OFFLINE;
@@ -1208,6 +1258,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			targetDatabaseNames: [],
 			sqlMigrationService: undefined,
 			serverAssessment: null,
+			xEventsFilesFolderPath: null,
 			skuRecommendation: null,
 			serviceResourceGroup: null,
 			serviceSubscription: null,
@@ -1239,6 +1290,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				saveInfo.migrationTargetType = this._targetType;
 				saveInfo.databaseList = this._databasesForMigration;
 				saveInfo.serverAssessment = this._assessmentResults;
+				saveInfo.xEventsFilesFolderPath = this._xEventsFilesFolderPath;
 
 				if (this._skuRecommendationPerformanceDataSource) {
 					const skuRecommendation: SkuRecommendationSavedInfo = {
@@ -1255,6 +1307,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			case Page.DatabaseSelector:
 				saveInfo.databaseAssessment = this._databasesForAssessment;
+				saveInfo.xEventsFilesFolderPath = this._xEventsFilesFolderPath;
 				await this.extensionContext.globalState.update(`${this.mementoString}.${serverName}`, saveInfo);
 		}
 	}
@@ -1301,6 +1354,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			this._sqlMigrationServiceSubscription = this.savedInfo.serviceSubscription || undefined!;
 			this._sqlMigrationServiceResourceGroup = this.savedInfo.serviceResourceGroup || undefined!;
 
+			this._assessedDatabaseList = this.savedInfo.databaseAssessment ?? [];
+			this._databasesForAssessment = this.savedInfo.databaseAssessment ?? [];
+			this._xEventsFilesFolderPath = this.savedInfo.xEventsFilesFolderPath ?? '';
 			const savedAssessmentResults = this.savedInfo.serverAssessment;
 			if (savedAssessmentResults) {
 				this._assessmentResults = savedAssessmentResults;

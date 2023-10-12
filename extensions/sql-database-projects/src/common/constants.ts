@@ -190,12 +190,10 @@ export const SqlServerName = 'SQL server';
 export const AzureSqlServerName = 'Azure SQL server';
 export const SqlServerDockerImageName = 'Microsoft SQL Server';
 export const SqlServerDocker2022ImageName = 'Microsoft SQL Server 2022';
-export const AzureSqlDbFullDockerImageName = 'Azure SQL Database emulator Full';
-export const AzureSqlDbLiteDockerImageName = 'Azure SQL Database emulator Lite';
+export const AzureSqlDbFullDockerImageName = 'Azure SQL Database emulator';
 export const AzureSqlLogicalServerName = 'Azure SQL logical server';
 export const selectPublishOption = localize('selectPublishOption', "Select where to publish the project to");
 export const defaultQuickPickItem = localize('defaultQuickPickItem', "Default - image defined as default in the container registry");
-export function dockerImagesPlaceHolder(name: string) { return localize('dockerImagesPlaceHolder', 'Use {0} on local arm64/Apple Silicon', name); }
 export function publishToExistingServer(name: string) { return localize('publishToExistingServer', "Publish to an existing {0}", name); }
 export function publishToDockerContainer(name: string) { return localize('publishToDockerContainer', "Publish to new {0} local development container", name); }
 export function publishToDockerContainerPreview(name: string) { return localize('publishToDockerContainerPreview', "Publish to new {0} local development container (Preview)", name); }
@@ -234,13 +232,10 @@ export const dockerImageDefaultTag = 'latest';
 export const eulaAgreementTemplate = localize({ key: 'eulaAgreementTemplate', comment: ['The placeholders are contents of the line and should not be translated.'] }, "I accept the {0}.");
 export function eulaAgreementText(name: string) { return localize({ key: 'eulaAgreementText', comment: ['The placeholders are contents of the line and should not be translated.'] }, "I accept the {0}.", name); }
 export const eulaAgreementTitle = localize('eulaAgreementTitle', "Microsoft SQL Server License Agreement");
-export const edgeEulaAgreementTitle = localize('edgeEulaAgreementTitle', "Microsoft Azure SQL Edge License Agreement");
 export const sqlServerEulaLink = 'https://aka.ms/mcr/osslegalnotice';
-export const sqlServerEdgeEulaLink = 'https://aka.ms/mcr/osslegalnotice';
 export const connectionNamePrefix = 'SQLDbProject';
 export const sqlServerDockerRegistry = 'mcr.microsoft.com';
 export const sqlServerDockerRepository = 'mssql/server';
-export const azureSqlEdgeDockerRepository = 'azure-sql-edge';
 export const commandsFolderName = 'commands';
 export const mssqlFolderName = '.mssql';
 export const dockerFileName = 'Dockerfile';
@@ -620,6 +615,7 @@ export function differentDbDifferentServerExampleUsage(server: string, db: strin
 
 //#region Target platforms
 export const targetPlatformToVersion: Map<string, string> = new Map<string, string>([
+	// Note: the values here must match values from Microsoft.Data.Tools.Schema.SchemaModel.SqlPlatformNames
 	[SqlTargetPlatform.sqlServer2012, '110'],
 	[SqlTargetPlatform.sqlServer2014, '120'],
 	[SqlTargetPlatform.sqlServer2016, '130'],
@@ -627,7 +623,9 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 	[SqlTargetPlatform.sqlServer2019, '150'],
 	[SqlTargetPlatform.sqlServer2022, '160'],
 	[SqlTargetPlatform.sqlAzure, 'AzureV12'],
-	[SqlTargetPlatform.sqlDW, 'Dw']
+	[SqlTargetPlatform.sqlDW, 'Dw'],
+	[SqlTargetPlatform.sqlDwServerless, 'Serverless'],
+	[SqlTargetPlatform.sqlDwUnified, 'DwUnified']
 ]);
 
 export const onPremServerVersionToTargetPlatform: Map<number, SqlTargetPlatform> = new Map<number, SqlTargetPlatform>([

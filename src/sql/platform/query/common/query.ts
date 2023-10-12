@@ -14,6 +14,10 @@ export interface IQueryEditorConfiguration {
 		};
 		readonly saveAsExcel: {
 			readonly includeHeaders: boolean;
+			readonly freezeHeaderRow: boolean;
+			readonly boldHeaderRow: boolean;
+			readonly autoFilterHeaderRow: boolean;
+			readonly autoSizeColumns: boolean;
 		};
 		readonly saveAsMarkdown: {
 			readonly encoding: string;
@@ -46,6 +50,7 @@ export interface IQueryEditorConfiguration {
 	readonly tabColorMode: 'off' | 'border' | 'fill';
 	readonly showConnectionInfoInTitle: boolean;
 	readonly promptToSaveGeneratedFiles: boolean;
+	readonly githubCopilotContextualizationEnabled: boolean;
 }
 
 export interface IResultGridConfiguration {

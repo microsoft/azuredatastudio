@@ -95,4 +95,11 @@ export const experimentalCustomizationDescription = localize('notebook.editorOpt
 export const download = localize('azuredatastudio.download', 'Download');
 export const downloadTooltip = localize('azuredatastudio.downloadTooltip', "Download this extension from an external source");
 export const installTooltip = localize('azuredatastudio.installTooltip', "Install this extension");
+export function getThemeUpdatedNotification(label: string): string {
+	return localize({ key: 'azuredatastudio.themeUpdatedNotification', comment: ['{0} is the name of the new default theme'] }, "Azure Data Studio now ships with a new default theme '{0}'. If you prefer, you can switch back to the old theme or try one of the many other color themes available.", label);
+}
+export function getNewThemeNotification(label: string): string {
+	return localize({ key: 'newThemeNotification', comment: ['{0} is the name of the new default theme'] }, "Azure Data Studio now ships with a new default theme '{0}'. Do you want to give it a try?", label);
+}
+
 //#endregion
