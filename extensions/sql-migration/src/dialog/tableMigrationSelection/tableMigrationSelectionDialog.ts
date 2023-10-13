@@ -128,8 +128,8 @@ export class TableMigrationSelectionDialog {
 				this._unavailableTableCount = this._unavailableTablesMap.size;
 				if (this._unavailableTableCount === sourceTableList.length) {
 					// All of source tables are empty. No table is not available to select for data migration.
-					// Check if unavailable tables exist in target. If not, it is available for schema migration.
-					this._schemaMigrationCheckBox.enabled = Array.from(this._unavailableTablesMap.values()).find(t => this._targetTableMap.get(t.tableName) !== undefined) !== undefined;
+					// Check if anyone of unavailable tables exist in target. If not, it is available for schema migration.
+					this._schemaMigrationCheckBox.enabled = Array.from(this._unavailableTablesMap.values()).find(t => this._targetTableMap.get(t.tableName) !== undefined) === undefined;
 					await this._schemaMigrationInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
 						text: constants.ALL_SOURCE_TABLES_EMPTY,
 						style: "information",
@@ -182,6 +182,26 @@ export class TableMigrationSelectionDialog {
 			await updateControlDisplay(this._missingTablesSelectionTable, true, 'flex');
 			await updateControlDisplay(this._unavailableSourceTablesTable, true, 'flex');
 			await this._loadControls();
+			this._updateTabs();
+
+		}
+	}
+
+	private _updateTabs(): void {
+		// Update tabs only once to avoid 'Update' button disabled.
+		this._availableTablesTab.title = constants.AVAILABLE_TABLE_COUNT_ON_TARGET(this._availableTableCount);
+		this._missingTablesTab.title = constants.MISSING_TARGET_TABLES_COUNT(this._missingTableCount);
+		this._unavailableTablesTab.title = constants.UNAVAILABLE_SOURCE_TABLES_COUNT(this._unavailableTableCount);
+		if (this._tabs.items.length === 1) {
+			if (this._missingTableCount > 0 && this._unavailableTableCount > 0) {
+				this._tabs.updateTabs([this._availableTablesTab, this._missingTablesTab, this._unavailableTablesTab]);
+			} else if (this._missingTableCount > 0) {
+				this._tabs.updateTabs([this._availableTablesTab, this._missingTablesTab]);
+			} else if (this._unavailableTableCount > 0) {
+				this._tabs.updateTabs([this._availableTablesTab, this._unavailableTablesTab]);
+			} else {
+				this._tabs.updateTabs([this._availableTablesTab]);
+			}
 		}
 	}
 
@@ -339,15 +359,6 @@ export class TableMigrationSelectionDialog {
 		await this._unavailableSourceTablesTable.updateProperty('data', unavailableData);
 
 		this._updateRowSelection();
-		if (this._tabs.items.length === 1) {
-			if (this._missingTableCount > 0 && this._unavailableTableCount > 0) {
-				this._tabs.updateTabs([this._availableTablesTab, this._missingTablesTab, this._unavailableTablesTab]);
-			} else if (this._missingTableCount > 0) {
-				this._tabs.updateTabs([this._availableTablesTab, this._missingTablesTab]);
-			} else if (this._unavailableTableCount > 0) {
-				this._tabs.updateTabs([this._availableTablesTab, this._unavailableTablesTab]);
-			}
-		}
 	}
 
 	private async _initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
@@ -639,10 +650,6 @@ export class TableMigrationSelectionDialog {
 					this._availableTablesSelectionTable.selectedRows?.length ?? 0,
 					this._availableTablesSelectionTable.data?.length ?? 0)
 				: constants.DATABASE_MISSING_TABLES;
-
-		this._availableTablesTab.title = constants.AVAILABLE_TABLE_COUNT_ON_TARGET(this._availableTableCount);
-		this._missingTablesTab.title = constants.MISSING_TARGET_TABLES_COUNT(this._missingTableCount);
-		this._unavailableTablesTab.title = constants.UNAVAILABLE_SOURCE_TABLES_COUNT(this._unavailableTableCount);
 	}
 
 	private async _save(): Promise<void> {
