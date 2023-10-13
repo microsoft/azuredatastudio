@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
-  "version": "1.23.0",
-  "distro": "05f08ef15e584dd5d5b5e3d03d447265869d2b0d",
+  "version": "1.47.0",
+  "distro": "f6944345114782577c5c2580e899f338dfc48ba1",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -85,6 +85,9 @@
     "@vscode/sqlite3": "5.1.6-vscode",
     "@vscode/sudo-prompt": "9.3.1",
     "@vscode/vscode-languagedetection": "1.0.21",
+    "@vscode/windows-mutex": "^0.4.4",
+    "@vscode/windows-process-tree": "^0.5.0",
+    "@vscode/windows-registry": "^1.1.0",
     "angular2-grid": "2.0.6",
     "ansi_up": "^5.1.0",
     "applicationinsights": "1.4.2",
@@ -98,9 +101,6 @@
     "http-proxy-agent": "^5.0.0",
     "https-proxy-agent": "^5.0.0",
     "jquery": "3.5.0",
-    "@vscode/windows-mutex": "^0.4.4",
-    "@vscode/windows-process-tree": "^0.5.0",
-    "@vscode/windows-registry": "^1.1.0",
     "jschardet": "3.0.0",
     "kerberos": "^2.0.1",
     "keytar": "7.9.0",
@@ -139,9 +139,9 @@
   "devDependencies": {
     "7zip": "0.0.6",
     "@playwright/test": "^1.34.3",
-    "@types/applicationinsights": "0.20.0",
     "@swc/cli": "0.1.62",
     "@swc/core": "1.3.62",
+    "@types/applicationinsights": "0.20.0",
     "@types/cookie": "^0.3.3",
     "@types/cssnano": "^4.0.0",
     "@types/debug": "4.1.5",
