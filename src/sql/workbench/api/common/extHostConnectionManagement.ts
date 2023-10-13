@@ -78,6 +78,10 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		return this._proxy.$openChangePasswordDialog(profile);
 	}
 
+	$getNonDefaultOptions(profile: azdata.IConnectionProfile): Thenable<string> {
+		return this._proxy.$getNonDefaultOptions(profile);
+	}
+
 	public $listDatabases(connectionId: string): Thenable<string[]> {
 		return this._proxy.$listDatabases(connectionId);
 	}

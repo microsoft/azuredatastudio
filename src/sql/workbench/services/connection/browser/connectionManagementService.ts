@@ -728,6 +728,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return result;
 	}
 
+	public getNonDefaultOptions(profile: interfaces.IConnectionProfile): string {
+		let convProfile = new ConnectionProfile(this._capabilitiesService, profile);
+		let nonDefOptions = convProfile.getNonDefaultOptionsString();
+		return nonDefOptions.replace('(', '[').replace(')', ']');
+	}
+
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {
 		let connectionManagementInfo = this._connectionStatusManager.findConnection(uri);
 		if (!connectionManagementInfo) {
