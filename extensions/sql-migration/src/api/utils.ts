@@ -1169,3 +1169,9 @@ export async function clearDropDown(dropDown: DropDownComponent): Promise<void> 
 	await dropDown.updateProperty('value', undefined);
 	await dropDown.updateProperty('values', []);
 }
+
+export async function clearDropDownWithLoading(dropDown: DropDownComponent): Promise<void> {
+	dropDown.loading = true;
+	await dropDown.updateProperty('value', undefined);
+	await dropDown.updateProperty('values', []);
+}

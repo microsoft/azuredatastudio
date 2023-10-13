@@ -9,7 +9,7 @@ steps:
 
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '3.x'
+      versionSpec: '3.11.x'
       addToPath: true
 
   - task: AzureKeyVault@1
@@ -50,13 +50,6 @@ steps:
       git fetch distro
       git merge $(node -p "require('./package.json').distro")
     displayName: Merge distro
-
-  - powershell: |
-      git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
-      git fetch distro
-      git merge ab87de2203e5a9d8377a74725dc6e2258de6da79
-    condition: eq(variables['VSCODE_QUALITY'], 'agc')
-    displayName: Merge AGC endpoints
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1

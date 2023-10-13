@@ -153,6 +153,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 			}
 			await displayReloadAds();
 		}
+		// Prompt to reload ADS as we send the proxy URL to STS to instantiate Http Client instances.
+		if (e.affectsConfiguration(Constants.configHttpProxy) || e.affectsConfiguration(Constants.configHttpProxyStrictSSL)) {
+			await displayReloadAds();
+		}
 	}));
 
 	registerTableDesignerCommands(appContext);
