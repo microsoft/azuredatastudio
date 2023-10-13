@@ -126,10 +126,11 @@ export class TableMigrationSelectionDialog {
 				this._availableTableCount = this._availableTablesSelectionMap.size;
 				this._missingTableCount = this._missingTablesSelectionMap.size;
 				this._unavailableTableCount = this._unavailableTablesMap.size;
+				const hasMissingUnavailableTables = Array.from(this._unavailableTablesMap.values()).find(t => this._targetTableMap.get(t.tableName) === undefined) !== undefined;
 				if (this._unavailableTableCount === sourceTableList.length) {
 					// All of source tables are empty. No table is not available to select for data migration.
 					// Check if anyone of unavailable tables exist in target. If not, it is available for schema migration.
-					this._schemaMigrationCheckBox.enabled = Array.from(this._unavailableTablesMap.values()).find(t => this._targetTableMap.get(t.tableName) !== undefined) === undefined;
+					this._schemaMigrationCheckBox.enabled = hasMissingUnavailableTables;
 					await this._schemaMigrationInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
 						text: constants.ALL_SOURCE_TABLES_EMPTY,
 						style: "information",
@@ -146,7 +147,7 @@ export class TableMigrationSelectionDialog {
 						CSSStyles: { ...styles.BODY_CSS, 'margin': '5px 0 0 0' },
 						isClickable: true
 					});
-				} else if (this._missingTablesSelectionMap.size > 0) {
+				} else if (this._missingTablesSelectionMap.size > 0 || hasMissingUnavailableTables) {
 					// Partial schema found on the target
 					await this._schemaMigrationInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
 						text: constants.PARTIAL_SCHEMA_ON_TARGET,

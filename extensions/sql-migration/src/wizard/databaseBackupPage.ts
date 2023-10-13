@@ -1855,7 +1855,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							? this._hasSchemaMigraitonBlockerIssues(sourceDatabaseName) ? IconPathHelper.warning : IconPathHelper.completedMigration
 							: IconPathHelper.cancel,
 						title: targetDatabaseInfo?.enableSchemaMigration
-							? this._hasSchemaMigraitonBlockerIssues(sourceDatabaseName) ? "Assessment results" : ""
+							? this._hasSchemaMigraitonBlockerIssues(sourceDatabaseName)
+								? "Assessment results"
+								: hasSelectedTables ? "" : 'Schema only'
 							: targetDatabaseInfo?.hasMissingTables ? "Not selected" : "Not needed",
 					},
 					<azdata.HyperlinkColumnCellValue>{				// table selection

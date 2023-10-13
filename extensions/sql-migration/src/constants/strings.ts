@@ -713,7 +713,7 @@ export function MISSING_TARGET_TABLES_COUNT(missingCount: number): string {
 	return localize('sql.migration.table.missing.count', "Missing on target ({0})", formatNumber(missingCount));
 }
 export function UNAVAILABLE_SOURCE_TABLES_COUNT(unavailableCount: number): string {
-	return localize('sql.migration.table.unavailable.count', "Unavailable for migration ({0})", formatNumber(unavailableCount));
+	return localize('sql.migration.table.unavailable.count', "Unavailable for data migration ({0})", formatNumber(unavailableCount));
 }
 export const MISSING_TABLES_HEADING = localize('sql.migration.missing.tables.heading', 'All of tables below are missing on target. To migrate the data in these tables select the migrate schema option above.');
 export const UNAVAILABLE_SOURCE_TABLES_HEADING = localize('sql.migration.unavailable.source.tables.heading', 'All of tables below are empty. No table is available to select for data migration. But if they do not exist on target, schema migration is available.');
