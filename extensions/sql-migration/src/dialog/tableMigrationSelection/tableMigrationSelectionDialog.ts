@@ -43,6 +43,7 @@ export class TableMigrationSelectionDialog {
 	private _missingTablesTab!: Tab;
 	private _unavailableTablesTab!: Tab;
 	private _tabs!: azdata.TabbedPanelComponent;
+	private _hasMissingTables: boolean = false;
 
 	constructor(
 		model: MigrationStateModel,
@@ -127,6 +128,7 @@ export class TableMigrationSelectionDialog {
 				this._missingTableCount = this._missingTablesSelectionMap.size;
 				this._unavailableTableCount = this._unavailableTablesMap.size;
 				const hasMissingUnavailableTables = Array.from(this._unavailableTablesMap.values()).find(t => this._targetTableMap.get(t.tableName) === undefined) !== undefined;
+				this._hasMissingTables = this._missingTableCount > 0 || hasMissingUnavailableTables;
 				if (this._unavailableTableCount === sourceTableList.length) {
 					// All of source tables are empty. No table is not available to select for data migration.
 					// Check if anyone of unavailable tables exist in target. If not, it is available for schema migration.
@@ -708,7 +710,7 @@ export class TableMigrationSelectionDialog {
 				targetDatabaseInfo.sourceTables.set(sourceTable.tableName, sourceTable);
 			})
 
-			targetDatabaseInfo.hasMissingTables = this._missingTableCount > 0;
+			targetDatabaseInfo.hasMissingTables = this._hasMissingTables;
 			this._model._sourceTargetMapping.set(this._sourceDatabaseName, targetDatabaseInfo);
 		}
 		await this._onSaveCallback();

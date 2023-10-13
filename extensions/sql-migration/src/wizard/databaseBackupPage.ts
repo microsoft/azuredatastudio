@@ -1876,10 +1876,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	private _hasSchemaMigraitonBlockerIssues(sourceDatabaseName: string): boolean {
-		var assessmentResults = this.migrationStateModel._assessmentResults?.databaseAssessments.find(r => r.name === sourceDatabaseName)?.issues.filter(i => i.appliesToMigrationTargetPlatform === MigrationTargetType.SQLDB) ?? [];
-		if (assessmentResults !== null && assessmentResults !== undefined) {
-			return assessmentResults.find(i => constants.SchemaMigrationFailedRulesLookup[i.ruleId] !== undefined) !== undefined;
-		}
-		return false;
+		var assessmentResults = this.migrationStateModel._assessmentResults?.databaseAssessments?.find(r => r.name === sourceDatabaseName)?.issues?.filter(i => i.appliesToMigrationTargetPlatform === MigrationTargetType.SQLDB) ?? [];
+		return assessmentResults?.find(i => constants.SchemaMigrationFailedRulesLookup[i.ruleId] !== undefined) !== undefined;
 	}
 }
