@@ -1,7 +1,7 @@
 const glob = require('glob');
 const path = require('path');
 
-require('ts-node').register({ experimentalResolver: true, transpileOnly: true });
+require('ts-node').register({ experimentalResolver: true, transpileOnly: true, compilerOptions: { module: 'commonjs' } });
 
 // Re-export all .ts files as rules
 const rules = {};
