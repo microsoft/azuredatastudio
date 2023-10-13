@@ -56,7 +56,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
-		super(wizard, azdata.window.createWizardPage(constants.ASSESSMENT_RESULTS_AND_RECOMMENDATIONS_PAGE_TITLE), migrationStateModel);
+		super(wizard, azdata.window.createWizardPage(constants.ASSESSMENT_SUMMARY_AND_RECOMMENDATIONS_PAGE_TITLE), migrationStateModel);
 	}
 
 	protected async registerContent(view: azdata.ModelView) {
@@ -174,7 +174,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	// Creates the Assessment summary container.
 	private createTargetSummaryComponent(view: azdata.ModelView): FlexContainer {
 		const chooseYourTargetText = this._view.modelBuilder.text().withProps({
-			value: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
+			value: constants.ASSESSMENT_SUMMARY_AND_SKU_RECOMMENDATION_FOR_TARGETS_LABEL,
 			CSSStyles: {
 				...styles.SECTION_HEADER_CSS,
 				'margin-bottom': '5px'

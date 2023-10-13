@@ -140,7 +140,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 
 		const assessmentResultPreText = view.modelBuilder.text().withProps({
 			value: constants.ASSESSMENT_RESULTS_SUMMARY_LABEL_CAPS,
-			description: constants.ASSESSMENT_RESULTS_SUMMARY_LABEL_CAPS, //TODO - add description later
+			description: constants.ASSESSMENT_RESULTS_SUMMARY_LABEL_DESCRIPTION,
 			CSSStyles: {
 				...styles.TOOLBAR_CSS,
 				'margin-left': '55px'
@@ -331,7 +331,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 
 		const recommendedConfigurationLabel = view.modelBuilder.text().withProps({
 			value: constants.RECOMMENDED_CONFIGURATION_SUMMARY_LABEL_CAPS,
-			description: constants.RECOMMENDED_CONFIGURATION_SUMMARY_LABEL_CAPS, // TODO - need to add description later
+			description: constants.RECOMMENDED_CONFIGURATION_SUMMARY_LABEL_DESCRIPTION,
 			height: 18,
 			CSSStyles: {
 				...styles.TOOLBAR_CSS,
