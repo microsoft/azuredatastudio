@@ -693,6 +693,8 @@ export const SELECT_BLOB_CONTAINER = localize('sql.migration.blob.container.sele
 
 
 export const MISSING_TABLE_NAME_COLUMN = localize('sql.migration.missing.table.name.column', "Table name");
+export const UNAVAILABLE_TABLE_NAME_COLUMN = localize('sql.migration.unavailable.table.name.column', "Table name");
+export const NOT_EXIST_IN_TARGET_TABLE_NAME_COLUMN = localize('sql.migration.not.exist.in.target.table.name.column', "Not exist on target");
 export function SELECT_DATABASE_TABLES_TITLE(targetDatabaseName: string): string {
 	return localize('sql.migration.table.select.label', "Select tables for {0}", targetDatabaseName);
 }
@@ -710,8 +712,13 @@ export function AVAILABLE_TABLE_COUNT_ON_TARGET(rowCount: number): string {
 export function MISSING_TARGET_TABLES_COUNT(missingCount: number): string {
 	return localize('sql.migration.table.missing.count', "Missing on target ({0})", formatNumber(missingCount));
 }
+export function UNAVAILABLE_SOURCE_TABLES_COUNT(unavailableCount: number): string {
+	return localize('sql.migration.table.unavailable.count', "Unavailable for migration ({0})", formatNumber(unavailableCount));
+}
+export const MISSING_TABLES_HEADING = localize('sql.migration.missing.tables.heading', 'All of tables below are missing on target. To migrate the data in these tables select the migrate schema option above.');
+export const UNAVAILABLE_SOURCE_TABLES_HEADING = localize('sql.migration.unavailable.source.tables.heading', 'All of tables below are empty. No table is available to select for data migration. But if they do not exist on target, schema migration is available.');
 export const SELECT_TABLES_FOR_MIGRATION = localize('sql.migration.select.migration.tables', "Select tables for migration");
-export const DATABASE_MISSING_TABLES = localize('sql.migration.database.missing.tables', "0 tables on source database found in target database. To migrate the data in the tables select the migrate schema option above.");
+export const DATABASE_MISSING_TABLES = localize('sql.migration.database.missing.tables', "0 tables on source database found on target database. To migrate the data in the tables select the migrate schema option above.");
 export const DATABASE_LOADING_TABLES = localize('sql.migration.database.loading.tables', "Loading tables list...");
 export const TABLE_SELECTION_FILTER = localize('sql.migration.table.selection.filter', "Filter tables");
 export const TABLE_SELECTION_UPDATE_BUTTON = localize('sql.migration.table.selection.update.button', "Update");
@@ -938,6 +945,7 @@ export function VALIDATE_IR_SQLDB_VALIDATION_RESULT_ERROR(sourceDatabaseName: st
 export const FULL_SCHEMA_MISSING_ON_TARGET = localize('sql.migration.schema.full.missing', "No schema was found on target. This option must be selected to migrate this database.");
 export const PARTIAL_SCHEMA_ON_TARGET = localize('sql.migration.schema.partial.missing', "Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected.");
 export const FULL_SCHEMA_ON_TARGET = localize('sql.migration.schema.no.missing', "Schema was found on target. Schema migration is not required.");
+export const ALL_SOURCE_TABLES_EMPTY = localize('sql.migration.all.source.tables.empty', "All of source tables are empty. No table is available to select for data migration. But they are available for schema migration if they do not exist in target.");
 export const SCHEMA_MIGRATION_INFO = localize('sql.migration.schema.migration.info', "Select this option to migrate missing tables on your Azure SQL target");
 export const DATA_MIGRATION_INFO = localize('sql.migration.data.migration.info', "Select tables to migrate data to your Azure SQL target");
 export const SCHEMA_MIGRATION_HEADER = localize('sql.migration.schema.migration.header', "Schema migration");

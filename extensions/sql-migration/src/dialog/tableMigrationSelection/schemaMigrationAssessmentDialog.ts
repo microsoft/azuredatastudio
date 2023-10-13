@@ -96,7 +96,7 @@ export class SchemaMigrationAssessmentDialog {
 			this._dialog = azdata.window.createModelViewDialog(
 				dialogTitle,
 				DialogName,
-				600, undefined, undefined, false);
+				'830px', undefined, undefined, false);
 
 			const promise = this._initializeDialog(this._dialog);
 			azdata.window.openDialog(this._dialog);
@@ -107,7 +107,8 @@ export class SchemaMigrationAssessmentDialog {
 	private async _loadData(): Promise<void> {
 		this._activeIssues = this._model._assessmentResults?.databaseAssessments
 			.find(r => r.name === this._sourceDatabaseName)?.issues
-			.filter(i => i.appliesToMigrationTargetPlatform === MigrationTargetType.SQLDB && constants.SchemaMigrationFailedRulesLookup[i.ruleId] !== undefined) ?? [];
+			.filter(i => i.appliesToMigrationTargetPlatform === MigrationTargetType.SQLDB && constants.SchemaMigrationFailedRulesLookup[i.ruleId] !== undefined)
+			.sort((i1, i2) => this.stringCompare(i1.ruleId, i2.ruleId, -1)) ?? [];
 		this._dbName.value = this._sourceDatabaseName;
 		this._recommendationTitle.value = constants.ISSUES_COUNT(this._activeIssues?.length);
 		this._recommendation.value = constants.ISSUES_DETAILS;
@@ -544,5 +545,14 @@ export class SchemaMigrationAssessmentDialog {
 				(object) => [{ value: object.objectType }, { value: object.name }]));
 
 		this._impactedObjectsTable.selectedRow = this._impactedObjects?.length > 0 ? 0 : -1;
+	}
+
+	private stringCompare(string1: string | undefined, string2: string | undefined, sortDir: number): number {
+		if (!string1) {
+			return sortDir;
+		} else if (!string2) {
+			return -sortDir;
+		}
+		return string1.localeCompare(string2) * -sortDir;
 	}
 }

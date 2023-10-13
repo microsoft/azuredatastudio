@@ -1856,7 +1856,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							: IconPathHelper.cancel,
 						title: targetDatabaseInfo?.enableSchemaMigration
 							? this._hasSchemaMigraitonBlockerIssues(sourceDatabaseName) ? "Assessment results" : ""
-							: "",
+							: targetDatabaseInfo?.hasMissingTables ? "Not selected" : "Not needed",
 					},
 					<azdata.HyperlinkColumnCellValue>{				// table selection
 						icon: hasSelectedTables
