@@ -4634,6 +4634,18 @@ Error: {1}</source>
     <trans-unit id="queryEditor.results.saveAsCsv.textIdentifier">
       <source xml:lang="en">Character used for enclosing text fields when saving results as CSV</source>
     </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsExcel.autoFilterHeaderRow">
+      <source xml:lang="en">When true, enable auto filtering on the header row when saving results as an Excel file</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsExcel.autoSizeColumns">
+      <source xml:lang="en">When true, attempt to automatically size columns when saving results as an Excel file</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsExcel.boldHeaderRow">
+      <source xml:lang="en">When true, make the header row bold when saving results as an Excel file</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsExcel.freezeHeaderRow">
+      <source xml:lang="en">When true, freeze the header row when saving results as an Excel file</source>
+    </trans-unit>
     <trans-unit id="queryEditor.results.saveAsExcel.includeHeaders">
       <source xml:lang="en">When true, column headers are included when saving results as an Excel file</source>
     </trans-unit>
