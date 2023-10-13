@@ -36,6 +36,21 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newDatabase', async (context: azdata.ObjectExplorerContext) => {
 		await handleNewObjectDialogCommand(context, service);
 	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newDatabaseRole', async (context: azdata.ObjectExplorerContext) => {
+		await handleNewObjectDialogCommand(context, service);
+	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newApplicationRole', async (context: azdata.ObjectExplorerContext) => {
+		await handleNewObjectDialogCommand(context, service);
+	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newLogin', async (context: azdata.ObjectExplorerContext) => {
+		await handleNewObjectDialogCommand(context, service);
+	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newUser', async (context: azdata.ObjectExplorerContext) => {
+		await handleNewObjectDialogCommand(context, service);
+	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newServerRole', async (context: azdata.ObjectExplorerContext) => {
+		await handleNewObjectDialogCommand(context, service);
+	}));
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.objectProperties', async (context: azdata.ObjectExplorerContext) => {
 		await handleObjectPropertiesDialogCommand(context, service);
 	}));
