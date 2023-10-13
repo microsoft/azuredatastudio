@@ -55,7 +55,6 @@ import { DASHBOARD_BORDER, TOOLBAR_OVERFLOW_SHADOW } from 'sql/workbench/common/
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { IRelaxedExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
@@ -74,7 +73,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	protected panelActions: Action[];
 	private _tabsDispose: Array<IDisposable> = [];
 	private _tabSettingConfigs: Array<TabSettingConfig> = [];
-	private _ownerExtensions: Readonly<IRelaxedExtensionDescription>[] = [];
 
 	@ViewChildren(TabChild) private _tabs: QueryList<DashboardTab>;
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
@@ -302,7 +300,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	private async createTabs(homeWidgets: WidgetConfig[]) {
-
 		this.progressService.withProgress({
 			location: ProgressLocation.Notification,
 			title: nls.localize("dashboard.loading", "Loading dashboard"),
@@ -345,7 +342,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				this.loadNewTabs(e, true);
 			}));
 		});
-
 	}
 
 	/**
@@ -434,9 +430,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	private async loadNewTabs(dashboardTabs: IDashboardTab[], openLastTab: boolean = false) {
 		if (dashboardTabs && dashboardTabs.length > 0) {
 			const tabs = dashboardTabs.map(v => this.initTabComponents(v));
-
 			const selectedTabs = [];
-
 			for (let i = 0; i < tabs.length; i++) {
 				const v = tabs[i];
 				const config = v as TabConfig;
@@ -516,47 +510,67 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	private async addNewTab(tab: TabConfig): Promise<void> {
-		const owningExtension = this.extensionService.extensions.find(extension => {
-			if (extension?.contributes !== undefined && extension.contributes['dashboard.tabs']) {
-				for (let i = 0; i < extension.contributes['dashboard.tabs'].length; i++) {
-					const eTab = extension.contributes['dashboard.tabs'][i];
-					if (eTab.id === tab.id) {
-						console.log('found extension', extension.id, 'for tab', tab.id)
+
+		try {
+			// Finding the owning extension for the tab
+			const owningExtension = this.extensionService.extensions.find(extension => {
+				if (extension?.contributes !== undefined && extension.contributes['dashboard.tabs']) {
+					const tabIndex = extension.contributes['dashboard.tabs'].findIndex(eTab => eTab.id === tab.id);
+					if (tabIndex !== -1) {
 						return true;
 					}
 				}
-			}
-			return false;
-		});
-
-		if (owningExtension) {
-			this._ownerExtensions.push(owningExtension);
-		}
-
-		if (owningExtension) {
-			// wait for the extension to be activated
-			await new Promise<void>((resolve, reject) => {
-				if (this.extensionService.getExtensionsStatus()[owningExtension.id]?.activationTimes?.activateResolvedTime !== undefined) {
-					resolve();
-				}
-				const disposable = this.extensionService.onDidChangeExtensionsStatus(e => {
-					e.forEach(extension => {
-						if (extension.value === owningExtension.id) {
-							disposable.dispose();
-							resolve();
-						}
-					})
-				});
+				return false;
 			});
-		}
 
-		const existedTab = this.tabs.find(i => i.id === tab.id);
-		if (!existedTab) {
-			if (!tab.iconClass && tab.type !== 'group-header') {
-				tab.iconClass = 'default-tab-icon';
+			// If the tab is contributed by an extension, we'll wait for the extension to be activated before adding the tab.
+			// Not doing so causes issues with the tab UI not being rendered correctly.
+			if (owningExtension) {
+				// wait for the extension to be activated
+				await new Promise<void>((resolve, reject) => {
+					// If the extension is already activated, we can resolve immediately
+					if (this.extensionService.getExtensionsStatus()[owningExtension.id]?.activationTimes?.activateResolvedTime !== undefined) {
+						resolve();
+					}
+
+					// Otherwise, we'll wait for the extension to be activated
+					const disposable = this.extensionService.onDidChangeExtensionsStatus(e => {
+						e.forEach(extension => {
+							if (extension.value === owningExtension.id) {
+								disposable.dispose();
+								resolve();
+							}
+						})
+					});
+
+					/**
+					 * If the extension doesn't activate within 60 seconds, we'll reject the promise.
+					 * While this seems like a long time, it is possible for some extensions to take a
+					 * while to activate, especially if it has to download a big service file.
+					 */
+					setTimeout(() => {
+						disposable.dispose();
+						reject();
+					}, 60000);
+				});
 			}
-			this.tabs.push(tab);
-			this._cd.detectChanges();
+
+			const existedTab = this.tabs.find(i => i.id === tab.id);
+			if (!existedTab) {
+				if (!tab.iconClass && tab.type !== 'group-header') {
+					tab.iconClass = 'default-tab-icon';
+				}
+				this.tabs.push(tab);
+				this._cd.detectChanges();
+			}
+
+		} catch (error) {
+			// If we fail to load a tab, we'll just log the error and continue
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: nls.localize('dashboard.tabLoadingError', "Error loading tab {0}", tab.title)
+			});
+			this.logService.error(error);
 		}
 	}
 
