@@ -557,7 +557,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				this.tabs.push(tab);
 				this._cd.detectChanges();
 			} else {
-				this.logService.error(`Cannot add tab with ${tab.title}. Tab with id ${tab.id} already exists`);
+				this.logService.error(`Cannot add tab '${tab.title}'. Tab with id ${tab.id} already exists`);
 			}
 
 		} catch (error) {
