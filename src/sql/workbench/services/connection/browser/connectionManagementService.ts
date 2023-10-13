@@ -1296,7 +1296,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				this._connectionStatusManager.updateDatabaseName(info);
 			}
 			connection.serverInfo = info.serverInfo;
-			connection.spid = info.connectionSummary.spid;
+			connection.spid = info.spid;
 			connection.extensionTimer.stop();
 
 			connection.connectHandler(true);

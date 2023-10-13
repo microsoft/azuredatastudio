@@ -517,26 +517,11 @@ declare module 'azdata' {
 		export function getNonDefaultOptions(profile: IConnectionProfile): Thenable<string>;
 	}
 
-	/**
-	 * Summary that identifies a unique database connection.
-	 */
-	export interface ConnectionSummary {
+	export interface ConnectionInfoSummary {
 		/**
-		 * server name
+		 * Server Process ID returned from service host, if connection was successful.
 		 */
-		serverName: string;
-		/**
-		 * database name
-		 */
-		databaseName?: string | undefined;
-		/**
-		 * user name
-		 */
-		userName: string;
-		/**
-		 * server process id
-		 */
-		spid?: number;
+		spid?: number | undefined;
 	}
 
 	/*
