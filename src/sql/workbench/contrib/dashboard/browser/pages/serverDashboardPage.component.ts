@@ -25,6 +25,7 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
+import { IProgressService } from 'vs/platform/progress/common/progress';
 
 export class ServerDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
@@ -57,9 +58,10 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 		@Inject(IMenuService) menuService: IMenuService,
 		@Inject(IWorkbenchThemeService) themeService: IWorkbenchThemeService,
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
-		@Inject(IExtensionService) extensionService: IExtensionService
+		@Inject(IExtensionService) extensionService: IExtensionService,
+		@Inject(IProgressService) progressService: IProgressService
 	) {
-		super(dashboardService, el, _cd, notificationService, angularEventingService, logService, commandService, contextKeyService, menuService, themeService, instantiationService, extensionService);
+		super(dashboardService, el, _cd, notificationService, angularEventingService, logService, commandService, contextKeyService, menuService, themeService, instantiationService, extensionService, progressService);
 
 		// special-case handling for MSSQL data provider
 		const connInfo = this.dashboardService.connectionManagementService.connectionInfo;
