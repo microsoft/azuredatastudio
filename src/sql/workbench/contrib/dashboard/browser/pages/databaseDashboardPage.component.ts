@@ -23,7 +23,6 @@ import { IMenuService } from 'vs/platform/actions/common/actions';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { IProgressService } from 'vs/platform/progress/common/progress';
 
 export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
@@ -56,9 +55,8 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 		@Inject(IWorkbenchThemeService) themeService: IWorkbenchThemeService,
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(IExtensionService) extensionService: IExtensionService,
-		@Inject(IProgressService) progressService: IProgressService
 	) {
-		super(dashboardService, el, _cd, notificationService, angularEventingService, logService, commandService, contextKeyService, menuService, themeService, instantiationService, extensionService, progressService);
+		super(dashboardService, el, _cd, notificationService, angularEventingService, logService, commandService, contextKeyService, menuService, themeService, instantiationService, extensionService);
 		this._register(dashboardService.onUpdatePage(() => {
 			this.refresh(true);
 			this._cd.detectChanges();

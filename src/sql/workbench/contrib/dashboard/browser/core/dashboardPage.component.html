@@ -10,7 +10,7 @@
 	</div>
 	<div [style.height]="getContentAreaHeight()" [style.overflow]="containerOverflowStyle">
 		<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize"
-			[identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions" [type]="tab.type"
+			[identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions" [type]="tab.type" [loading]="tab.loading"
 			[iconClass]="tab.iconClass">
 			<ng-template>
 				<dashboard-home-container *ngIf="tab.id === 'homeTab'; else not_home" [properties]="propertiesWidget" [tab]="tab">

@@ -32,6 +32,7 @@ export class TabComponent implements OnDestroy {
 	private _selected = false;
 	@Input() public identifier!: string;
 	@Input() public type: TabType = 'tab';
+	@Input() public loading: boolean = false;
 	@Input() private visibilityType: 'if' | 'visibility' = 'if';
 	private rendered = false;
 	private destroyed: boolean = false;

@@ -55,7 +55,6 @@ import { DASHBOARD_BORDER, TOOLBAR_OVERFLOW_SHADOW } from 'sql/workbench/common/
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 const homeTabGroupId = 'home';
@@ -134,7 +133,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IExtensionService) private extensionService: IExtensionService,
-		@Inject(IProgressService) private progressService: IProgressService
 	) {
 		super();
 		this._tabName = DashboardPage.tabName.bindTo(contextKeyService);
@@ -300,48 +298,42 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	private async createTabs(homeWidgets: WidgetConfig[]) {
-		this.progressService.withProgress({
-			location: ProgressLocation.Notification,
-			title: nls.localize("dashboard.loading", "Loading dashboard"),
-			cancellable: false
-		}, async (progress) => {
-			// Clear all tabs
-			this.tabs = [];
-			this._tabSettingConfigs = [];
-			this._tabsDispose.forEach(i => i.dispose());
-			this._tabsDispose = [];
+		// Clear all tabs
+		this.tabs = [];
+		this._tabSettingConfigs = [];
+		this._tabsDispose.forEach(i => i.dispose());
+		this._tabsDispose = [];
 
-			let allTabs = dashboardHelper.filterConfigs(dashboardRegistry.tabs, this);
+		let allTabs = dashboardHelper.filterConfigs(dashboardRegistry.tabs, this);
 
-			// Before separating tabs into pinned / shown, ensure that the home tab is always set up as expected
-			allTabs = this.setAndRemoveHomeTab(allTabs, homeWidgets);
+		// Before separating tabs into pinned / shown, ensure that the home tab is always set up as expected
+		allTabs = this.setAndRemoveHomeTab(allTabs, homeWidgets);
 
-			await this.loadNewTabs(allTabs.filter((tab) => tab.group === homeTabGroupId));
+		await this.loadNewTabs(allTabs.filter((tab) => tab.group === homeTabGroupId));
 
-			// Load tab setting configs
-			this._tabSettingConfigs = this.dashboardService.getSettings<Array<TabSettingConfig>>([this.context, 'tabs'].join('.'));
+		// Load tab setting configs
+		this._tabSettingConfigs = this.dashboardService.getSettings<Array<TabSettingConfig>>([this.context, 'tabs'].join('.'));
 
-			await this.addCustomTabGroups(allTabs);
-			await this.addExtensionsTabGroup(allTabs);
+		await this.addCustomTabGroups(allTabs);
+		await this.addExtensionsTabGroup(allTabs);
 
-			this.panelActions = [];
+		this.panelActions = [];
 
-			this._cd.detectChanges();
+		this._cd.detectChanges();
 
-			this._tabsDispose.push(this.dashboardService.onPinUnpinTab(e => {
-				const tabConfig = this._tabSettingConfigs.find(i => i.tabId === e.tabId);
-				if (tabConfig) {
-					tabConfig.isPinned = e.isPinned;
-				} else {
-					this._tabSettingConfigs.push(e);
-				}
-				this.rewriteConfig();
-			}));
+		this._tabsDispose.push(this.dashboardService.onPinUnpinTab(e => {
+			const tabConfig = this._tabSettingConfigs.find(i => i.tabId === e.tabId);
+			if (tabConfig) {
+				tabConfig.isPinned = e.isPinned;
+			} else {
+				this._tabSettingConfigs.push(e);
+			}
+			this.rewriteConfig();
+		}));
 
-			this._tabsDispose.push(this.dashboardService.onAddNewTabs(e => {
-				this.loadNewTabs(e, true);
-			}));
-		});
+		this._tabsDispose.push(this.dashboardService.onAddNewTabs(e => {
+			this.loadNewTabs(e, true);
+		}));
 	}
 
 	/**
@@ -510,7 +502,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	private async addNewTab(tab: TabConfig): Promise<void> {
-
 		try {
 			// Finding the owning extension for the tab
 			const owningExtension = this.extensionService.extensions.find(extension => {
@@ -523,14 +514,23 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				return false;
 			});
 
+			tab.loading = true;
+
 			// If the tab is contributed by an extension, we'll wait for the extension to be activated before adding the tab.
 			// Not doing so causes issues with the tab UI not being rendered correctly.
 			if (owningExtension) {
 				// wait for the extension to be activated
-				await new Promise<void>((resolve, reject) => {
+				new Promise<void>((resolve) => {
+
+					const resolveTab = () => {
+						tab.loading = false;
+						this._cd.detectChanges();
+						resolve();
+					}
 					// If the extension is already activated, we can resolve immediately
 					if (this.extensionService.getExtensionsStatus()[owningExtension.id]?.activationTimes?.activateResolvedTime !== undefined) {
-						resolve();
+						tab.loading = false;
+						resolveTab();
 					}
 
 					// Otherwise, we'll wait for the extension to be activated
@@ -538,21 +538,13 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 						e.forEach(extension => {
 							if (extension.value === owningExtension.id) {
 								disposable.dispose();
-								resolve();
+								resolveTab();
 							}
 						})
 					});
-
-					/**
-					 * If the extension doesn't activate within 60 seconds, we'll reject the promise.
-					 * While this seems like a long time, it is possible for some extensions to take a
-					 * while to activate, especially if it has to download a big service file.
-					 */
-					setTimeout(() => {
-						disposable.dispose();
-						reject();
-					}, 60000);
 				});
+			} else {
+				tab.loading = false;
 			}
 
 			const existedTab = this.tabs.find(i => i.id === tab.id);
@@ -562,6 +554,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				}
 				this.tabs.push(tab);
 				this._cd.detectChanges();
+			} else {
+				this.logService.error(`Cannot add tab with ${tab.title}. Tab with id ${tab.id} already exists`);
 			}
 
 		} catch (error) {
