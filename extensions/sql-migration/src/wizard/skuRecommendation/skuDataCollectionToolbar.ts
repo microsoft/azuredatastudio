@@ -30,8 +30,6 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 	private _importPerformanceDataButton!: azdata.ButtonComponent;
 	private _recommendationParametersButton!: azdata.ButtonComponent;
 
-	private _performanceDataSource!: PerformanceDataSourceOptions;
-
 	private _defaultPathForStartDataCollection!: string;
 
 	private _disposables: vscode.Disposable[] = [];
@@ -132,11 +130,11 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 					fs.mkdirSync(this._defaultPathForStartDataCollection);
 				}
 
-				this._performanceDataSource = PerformanceDataSourceOptions.CollectData;
+				this.migrationStateModel._skuRecommendationPerformanceDataSource = PerformanceDataSourceOptions.CollectData;
 				this.migrationStateModel._skuRecommendationPerformanceLocation = this._defaultPathForStartDataCollection;
 
 				// Start data collection at default path.
-				await this.executeStartDataCollection();
+				await this.executeDataCollection();
 
 			}
 			// 'Choose a path' option is selected.
@@ -153,11 +151,11 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 
 				// if a folder path is selected.
 				if (chosenFolder && chosenFolder.length > 0 && chosenFolder[0]) {
-					this._performanceDataSource = PerformanceDataSourceOptions.CollectData;
+					this.migrationStateModel._skuRecommendationPerformanceDataSource = PerformanceDataSourceOptions.CollectData;
 					this.migrationStateModel._skuRecommendationPerformanceLocation = chosenFolder[0].fsPath;
 
 					// Start data collection at folder path selected.
-					await this.executeStartDataCollection();
+					await this.executeDataCollection();
 				}
 			}
 		}));
@@ -181,16 +179,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 			}).component();
 		restartPerformanceCollectionButton.enabled = false;
 		this._disposables.push(restartPerformanceCollectionButton.onDidClick(async () => {
-			this._stopPerformanceCollectionButton.enabled = true;
-			this._restartPerformanceCollectionButton.enabled = false;
-
-			await this.migrationStateModel.startPerfDataCollection(
-				this.migrationStateModel._skuRecommendationPerformanceLocation,
-				this.migrationStateModel._performanceDataQueryIntervalInSeconds,
-				this.migrationStateModel._staticDataQueryIntervalInSeconds,
-				this.migrationStateModel._numberOfPerformanceDataQueryIterations,
-				this.skuRecommendationPage);
-			await this.skuRecommendationPage.refreshSkuRecommendationComponents();
+			await this.executeDataCollection();
 		}));
 
 		return restartPerformanceCollectionButton;
@@ -209,14 +198,9 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 					...styles.TOOLBAR_CSS
 				}
 			}).component();
-		stopPerformanceCollectionButton.enabled = false;
+
 		this._disposables.push(stopPerformanceCollectionButton.onDidClick(async () => {
-			this._stopPerformanceCollectionButton.enabled = false;
-
-			await this._startPerformanceCollectionButton.updateCssStyles({ 'display': 'none' });
-			await this._restartPerformanceCollectionButton.updateCssStyles({ 'display': 'inline' });
-
-			this._restartPerformanceCollectionButton.enabled = true;
+			await this._setToolbarState();
 
 			await this.migrationStateModel.stopPerfDataCollection();
 			await this.skuRecommendationPage.refreshAzureRecommendation();
@@ -240,9 +224,6 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 
 		this._disposables.push(
 			importPerformanceDataButton.onDidClick(async (e) => {
-				this._stopPerformanceCollectionButton.enabled = false;
-				this._startPerformanceCollectionButton.enabled = true;
-
 				const importPerformanceDataDialog = new ImportPerformanceDataDialog(this.skuRecommendationPage, this.wizard, this.migrationStateModel);
 				await importPerformanceDataDialog.openDialog();
 			})
@@ -271,12 +252,8 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		return recommendationParametersButton;
 	}
 
-	private async executeStartDataCollection() {
-		this._stopPerformanceCollectionButton.enabled = true;
-		this._startPerformanceCollectionButton.enabled = false;
-		this._importPerformanceDataButton.enabled = false;
-
-		this.migrationStateModel._skuRecommendationPerformanceDataSource = this._performanceDataSource;
+	private async executeDataCollection() {
+		await this._setToolbarState();
 
 		await this.migrationStateModel.startPerfDataCollection(
 			this.migrationStateModel._skuRecommendationPerformanceLocation,
@@ -286,6 +263,40 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 			this.skuRecommendationPage);
 
 		await this.skuRecommendationPage.refreshSkuRecommendationComponents();
+	}
+
+	public async _setToolbarState(): Promise<void> {
+		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
+			case PerformanceDataSourceOptions.CollectData: {
+				this._importPerformanceDataButton.enabled = false;
+
+				if (this.migrationStateModel.performanceCollectionInProgress()) {
+					if (utils.hasRecommendations(this.migrationStateModel)) {
+						await this._startPerformanceCollectionButton.updateCssStyles({ 'display': 'none' });
+						await this._restartPerformanceCollectionButton.updateCssStyles({ 'display': 'inline' });
+
+						this._stopPerformanceCollectionButton.enabled = true;
+						this._restartPerformanceCollectionButton.enabled = false;
+					}
+					else {
+						await this._startPerformanceCollectionButton.updateCssStyles({ 'display': 'inline' });
+						await this._restartPerformanceCollectionButton.updateCssStyles({ 'display': 'none' });
+
+						this._stopPerformanceCollectionButton.enabled = true;
+						this._startPerformanceCollectionButton.enabled = false;
+					}
+				}
+				else if (this.migrationStateModel.performanceCollectionStopped()) {
+					await this._startPerformanceCollectionButton.updateCssStyles({ 'display': 'none' });
+					await this._restartPerformanceCollectionButton.updateCssStyles({ 'display': 'inline' });
+
+					this._stopPerformanceCollectionButton.enabled = false;
+					this._restartPerformanceCollectionButton.enabled = true;
+				}
+
+			}
+		}
+		this._restartPerformanceCollectionButton.enabled = true;
 	}
 
 	public dispose(): void {

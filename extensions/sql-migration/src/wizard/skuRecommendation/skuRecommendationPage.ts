@@ -591,6 +591,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			return true;
 		});
 		await this.constructDetails();
+		await this._skuDataCollectionToolbar._setToolbarState();
 		this.wizard.nextButton.enabled = this.migrationStateModel._assessmentResults !== undefined;
 	}
 
