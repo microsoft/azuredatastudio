@@ -461,11 +461,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS, 'margin': '0' }
 			}).component();
 
+
 		this._skuDataCollectionTimerText = _view.modelBuilder.text()
 			.withProps({
 				value: '',
 				CSSStyles: {
-					...styles.LABEL_CSS,
+					...styles.BODY_CSS,
 					'margin': 0,
 				}
 			}).component();
@@ -514,7 +515,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						this._skuDataCollectionTimerText.value = constants.AZURE_RECOMMENDATION_STATUS_AUTO_REFRESH_TIMER(Math.ceil(skuRecAutoRefreshTimeInMins - elapsedTimeInMins));
 					} else {
 						// Timer is only for first refresh.
-						this._skuDataCollectionTimerText.value = '';
+						this._skuDataCollectionTimerText.value = constants.AZURE_RECOMMENDATION_STATUS_MANUAL_REFRESH_TIMER;
 					}
 
 					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'flex' });

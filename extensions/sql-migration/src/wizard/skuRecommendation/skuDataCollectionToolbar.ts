@@ -196,10 +196,9 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 			}).component();
 
 		this._disposables.push(stopPerformanceCollectionButton.onDidClick(async () => {
-			await this._setToolbarState();
-
 			await this.migrationStateModel.stopPerfDataCollection();
 			await this.skuRecommendationPage.refreshAzureRecommendation();
+			await this._setToolbarState();
 		}));
 		return stopPerformanceCollectionButton;
 	}
@@ -249,8 +248,6 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 	}
 
 	private async executeDataCollection() {
-		await this._setToolbarState();
-
 		await this.migrationStateModel.startPerfDataCollection(
 			this.migrationStateModel._skuRecommendationPerformanceLocation,
 			this.migrationStateModel._performanceDataQueryIntervalInSeconds,
@@ -259,6 +256,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 			this.skuRecommendationPage);
 
 		await this.skuRecommendationPage.refreshSkuRecommendationComponents();
+		await this._setToolbarState();
 	}
 
 	public async _setToolbarState(): Promise<void> {
@@ -268,32 +266,19 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
 			case PerformanceDataSourceOptions.CollectData: {
 				if (this.migrationStateModel.performanceCollectionInProgress()) {
-					if (utils.hasRecommendations(this.migrationStateModel)) {
-						this._refreshButtonSelectionDropdown.values = [refreshAssessmentOption, refreshSKUOption];
-						this._importPerformanceDataButton.enabled = false;
-
-						await this._startPerformanceCollectionButton.updateCssStyles({ 'display': 'none' });
-						await this._restartPerformanceCollectionButton.updateCssStyles({ 'display': 'inline' });
-
-						this._stopPerformanceCollectionButton.enabled = true;
-						this._restartPerformanceCollectionButton.enabled = false;
-					}
-					else {
-						await this._startPerformanceCollectionButton.updateCssStyles({ 'display': 'inline' });
-						await this._restartPerformanceCollectionButton.updateCssStyles({ 'display': 'none' });
-
-						this._stopPerformanceCollectionButton.enabled = true;
-						this._startPerformanceCollectionButton.enabled = false;
-					}
+					this._refreshButtonSelectionDropdown.values = [refreshAssessmentOption, refreshSKUOption];
+					this._importPerformanceDataButton.enabled = false;
+					this._stopPerformanceCollectionButton.enabled = true;
+					this._restartPerformanceCollectionButton.enabled = false;
+					this._startPerformanceCollectionButton.enabled = false;
 				}
 				else if (this.migrationStateModel.performanceCollectionStopped()) {
 					this._refreshButtonSelectionDropdown.values = [refreshAssessmentOption, refreshSKUOption];
 					this._importPerformanceDataButton.enabled = false;
+					this._stopPerformanceCollectionButton.enabled = false;
 
 					await this._startPerformanceCollectionButton.updateCssStyles({ 'display': 'none' });
 					await this._restartPerformanceCollectionButton.updateCssStyles({ 'display': 'inline' });
-
-					this._stopPerformanceCollectionButton.enabled = false;
 					this._restartPerformanceCollectionButton.enabled = true;
 				}
 			}
@@ -304,7 +289,6 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 				break;
 			}
 		}
-		this._restartPerformanceCollectionButton.enabled = true;
 	}
 
 	public dispose(): void {
