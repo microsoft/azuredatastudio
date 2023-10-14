@@ -43,6 +43,8 @@ export class SkuEditParametersDialog {
 								d => { try { d.dispose(); } catch { } })));
 
 					await view.initializeModel(flex);
+					await this._scaleFactorInput.focus();
+
 					resolve();
 				} catch (ex) {
 					reject(ex);
