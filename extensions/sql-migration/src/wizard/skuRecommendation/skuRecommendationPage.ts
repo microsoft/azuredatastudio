@@ -500,8 +500,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
 			case PerformanceDataSourceOptions.CollectData: {
 				if (this.migrationStateModel.performanceCollectionInProgress()) {
-					this._skuDataCollectionToolbar.refreshButtonSelectionDropdown.values = [constants.REFRESH_ASSESSMENT_LABEL, constants.REFRESH_SKU_LABEL];
-
 					await this._skuDataCollectionStatusIcon.updateProperties({
 						iconPath: IconPathHelper.inProgressMigration
 					});
@@ -523,8 +521,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				}
 
 				else if (this.migrationStateModel.performanceCollectionStopped()) {
-					this._skuDataCollectionToolbar.refreshButtonSelectionDropdown.values = [constants.REFRESH_ASSESSMENT_LABEL, constants.REFRESH_SKU_LABEL];
-
 					await this._skuDataCollectionStatusIcon.updateProperties({
 						iconPath: IconPathHelper.stop
 					});
@@ -536,7 +532,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 			case PerformanceDataSourceOptions.OpenExisting: {
 				if (utils.hasRecommendations(this.migrationStateModel)) {
-					this._skuDataCollectionToolbar.refreshButtonSelectionDropdown.values = [constants.REFRESH_ASSESSMENT_LABEL, constants.REFRESH_SKU_LABEL];
 				}
 				break;
 			}

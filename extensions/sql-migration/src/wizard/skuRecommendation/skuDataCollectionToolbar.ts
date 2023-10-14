@@ -39,10 +39,6 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		this._defaultPathForStartDataCollection = utils.getUserHome() + "\\AppData\\Roaming\\azuredatastudio\\logs";
 	}
 
-	public get refreshButtonSelectionDropdown() {
-		return this._refreshButtonSelectionDropdown;
-	}
-
 	public createToolbar(view: azdata.ModelView): azdata.ToolbarContainer {
 		const toolbar = view.modelBuilder.toolbarContainer();
 
@@ -266,12 +262,16 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 	}
 
 	public async _setToolbarState(): Promise<void> {
+		const refreshAssessmentOption = constants.REFRESH_ASSESSMENT_LABEL;
+		const refreshSKUOption = constants.REFRESH_SKU_LABEL;
+
 		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
 			case PerformanceDataSourceOptions.CollectData: {
-				this._importPerformanceDataButton.enabled = false;
-
 				if (this.migrationStateModel.performanceCollectionInProgress()) {
 					if (utils.hasRecommendations(this.migrationStateModel)) {
+						this._refreshButtonSelectionDropdown.values = [refreshAssessmentOption, refreshSKUOption];
+						this._importPerformanceDataButton.enabled = false;
+
 						await this._startPerformanceCollectionButton.updateCssStyles({ 'display': 'none' });
 						await this._restartPerformanceCollectionButton.updateCssStyles({ 'display': 'inline' });
 
@@ -287,13 +287,21 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 					}
 				}
 				else if (this.migrationStateModel.performanceCollectionStopped()) {
+					this._refreshButtonSelectionDropdown.values = [refreshAssessmentOption, refreshSKUOption];
+					this._importPerformanceDataButton.enabled = false;
+
 					await this._startPerformanceCollectionButton.updateCssStyles({ 'display': 'none' });
 					await this._restartPerformanceCollectionButton.updateCssStyles({ 'display': 'inline' });
 
 					this._stopPerformanceCollectionButton.enabled = false;
 					this._restartPerformanceCollectionButton.enabled = true;
 				}
-
+			}
+			case PerformanceDataSourceOptions.OpenExisting: {
+				if (utils.hasRecommendations(this.migrationStateModel)) {
+					this._refreshButtonSelectionDropdown.values = [refreshAssessmentOption, refreshSKUOption];
+				}
+				break;
 			}
 		}
 		this._restartPerformanceCollectionButton.enabled = true;
