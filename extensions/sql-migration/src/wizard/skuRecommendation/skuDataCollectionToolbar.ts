@@ -42,7 +42,6 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 	public createToolbar(view: azdata.ModelView): azdata.ToolbarContainer {
 		const toolbar = view.modelBuilder.toolbarContainer();
 
-		this._refreshButtonSelectionDropdown = this.createRefreshButtonSelectionDropDown(view);
 		this._startPerformanceCollectionButton = this.createStartPerformanceCollectionButton(view);
 		this._restartPerformanceCollectionButton = this.createRestartPerformanceCollectionButton(view);
 		this._stopPerformanceCollectionButton = this.createStopPerformanceCollectionButton(view);
@@ -50,7 +49,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		this._recommendationParametersButton = this.createRecommendationParametersButton(view);
 
 		toolbar.addToolbarItems([
-			<azdata.ToolbarComponent>{ component: this._refreshButtonSelectionDropdown, toolbarSeparatorAfter: true },
+			<azdata.ToolbarComponent>{ component: this.createRefreshButtonSelectionDropDown(view), toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this._startPerformanceCollectionButton, toolbarSeparatorAfter: false },
 			<azdata.ToolbarComponent>{ component: this._restartPerformanceCollectionButton, toolbarSeparatorAfter: false },
 			<azdata.ToolbarComponent>{ component: this._stopPerformanceCollectionButton, toolbarSeparatorAfter: false },
@@ -64,11 +63,30 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		return toolbar.component();
 	}
 
-	private createRefreshButtonSelectionDropDown(view: azdata.ModelView): azdata.DropDownComponent {
+	private createRefreshButtonSelectionDropDown(view: azdata.ModelView): azdata.FlexContainer {
+		const container = view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'display': 'flex',
+				'flex-direction': 'row',
+			}
+		}).component();
+
 		const refreshAssessmentOption = constants.REFRESH_ASSESSMENT_LABEL;
 		const refreshSKUOption = constants.REFRESH_SKU_LABEL;
 
-		const refreshButtonSelectionDropdown = view.modelBuilder.dropDown().withProps({
+		const refreshDropdownImage = view.modelBuilder.image().withProps({
+			iconPath: IconPathHelper.refresh,
+			iconHeight: 16,
+			iconWidth: 16,
+			height: 16,
+			CSSStyles: {
+				'width': '16px',
+				'padding': '8px',
+				'margin': '4px',
+			},
+		}).component();
+
+		this._refreshButtonSelectionDropdown = view.modelBuilder.dropDown().withProps({
 			ariaLabel: constants.AZURE_SQL_TARGET,
 			placeholder: constants.REFRESH,
 			values: [refreshAssessmentOption],
@@ -80,18 +98,19 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 			},
 		}).component();
 
-		this._disposables.push(refreshButtonSelectionDropdown.onValueChanged(async (value) => {
+		this._disposables.push(this._refreshButtonSelectionDropdown.onValueChanged(async (value) => {
 			if (value === refreshAssessmentOption) {
-				refreshButtonSelectionDropdown.value = constants.REFRESH;
+				this._refreshButtonSelectionDropdown.value = constants.REFRESH;
 				await this.skuRecommendationPage.refreshAssessment();
 			}
 			else if (value === refreshSKUOption) {
-				refreshButtonSelectionDropdown.value = constants.REFRESH;
+				this._refreshButtonSelectionDropdown.value = constants.REFRESH;
 				await this.skuRecommendationPage.refreshAzureRecommendation();
 			}
 		}));
 
-		return refreshButtonSelectionDropdown;
+		container.addItems([refreshDropdownImage, this._refreshButtonSelectionDropdown]);
+		return container;
 	}
 
 	private createStartPerformanceCollectionButton(view: azdata.ModelView): azdata.ButtonComponent {
