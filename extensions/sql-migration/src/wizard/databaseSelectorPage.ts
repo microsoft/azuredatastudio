@@ -74,10 +74,10 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			return true;
 		});
 
-		if (this.migrationStateModel.resumeAssessment) {
+		if (this.migrationStateModel.resumeAssessment || this.migrationStateModel.restartMigration) {
 			// if start a new session, it won't trigger navigation validator until clicking 'Next'.
 			// It works as expected if no target or databases are selected, it should show errors and block to next page.
-			// However, if resume the previously saved session, wizard.setCurrentPage will trigger wizard navigation validator without clicking 'Next'.
+			// However, if resume the previously saved session or restart migration, wizard.setCurrentPage will trigger wizard navigation validator without clicking 'Next'.
 			// At this moment, all components are not initialized yet. Therefore, _databaseSelectorTable is undefined, so selectedDbs().length is always 0.
 			this._enableNavigationValidation = false;
 		}
