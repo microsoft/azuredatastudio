@@ -84,6 +84,7 @@ export enum FileStorageType {
 }
 
 export enum Page {
+	ImportAssessment,
 	DatabaseSelector,
 	SKURecommendation,
 	TargetSelection,

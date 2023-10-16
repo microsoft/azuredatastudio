@@ -64,11 +64,13 @@ export class DashboardTab extends TabBase<DashboardTab> {
 	}
 
 	public async create(
+		context: vscode.ExtensionContext,
 		view: azdata.ModelView,
 		openMigrationsFcn: (status: AdsMigrationStatus) => Promise<void>,
 		serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>,
 		statusBar: DashboardStatusBar): Promise<DashboardTab> {
 
+		this.context = context;
 		this.view = view;
 		this.openMigrationsFcn = openMigrationsFcn;
 		this.serviceContextChangedEvent = serviceContextChangedEvent;
@@ -143,6 +145,7 @@ export class DashboardTab extends TabBase<DashboardTab> {
 		toolbar.addToolbarItems([
 			<azdata.ToolbarComponent>{ component: this.createNewMigrationButton() },
 			<azdata.ToolbarComponent>{ component: this.createNewLoginMigrationButton() },
+			<azdata.ToolbarComponent>{ component: this.createImportMigrationButton() },
 			<azdata.ToolbarComponent>{ component: this.createNewSupportRequestButton() },
 			<azdata.ToolbarComponent>{ component: this.createFeedbackButton() },
 		]);

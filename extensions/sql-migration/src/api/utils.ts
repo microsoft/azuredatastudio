@@ -1243,3 +1243,20 @@ export async function clearDropDownWithLoading(dropDown: DropDownComponent): Pro
 	await dropDown.updateProperty('value', undefined);
 	await dropDown.updateProperty('values', []);
 }
+
+export async function promptUserForFile(filters: { [name: string]: string[] }): Promise<string> {
+	const options: vscode.OpenDialogOptions = {
+		defaultUri: vscode.Uri.file(getUserHome()!),
+		canSelectFiles: true,
+		canSelectFolders: false,
+		canSelectMany: false,
+		filters: filters,
+	};
+
+	const fileUris = await vscode.window.showOpenDialog(options);
+	if (fileUris && fileUris.length > 0 && fileUris[0]) {
+		return fileUris[0].fsPath;
+	}
+
+	return '';
+}
