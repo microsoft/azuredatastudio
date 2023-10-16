@@ -12,16 +12,17 @@ import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { Checkbox, ICheckboxOptions } from 'sql/base/browser/ui/checkbox/checkbox';
-import { attachCheckboxStyler } from 'sql/platform/theme/common/styler';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { isNumber } from 'vs/base/common/types';
 import { convertSize } from 'sql/base/browser/dom';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
+import { defaultCheckboxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 @Component({
 	selector: 'modelview-checkbox',
 	template: `
-		<div #input width="100%" [style.display]="display"></div>
+		<div #input width="100%" [ngStyle]="CSSStyles"></div>
 	`
 })
 export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProperties> implements IComponent, OnDestroy, AfterViewInit {
@@ -32,19 +33,15 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(ILogService) logService: ILogService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
-		super(changeRef, el);
-	}
-
-	ngOnInit(): void {
-		this.baseInit();
-
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
 			let inputOptions: ICheckboxOptions = {
+				...defaultCheckboxStyles,
 				label: ''
 			};
 
@@ -59,12 +56,12 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 					args: e
 				});
 			}));
-			this._register(attachCheckboxStyler(this._input, this.themeService));
 			this._validations.push(() => !this.required || this.checked);
 		}
+		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -75,7 +72,7 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._input.checked = this.checked;
 		this._input.label = this.label;
@@ -96,7 +93,7 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 		if (this.required) {
 			this._input.required = this.required;
 		}
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	// CSS-bound properties
@@ -125,7 +122,13 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 		this.setPropertyFromUI<boolean>((props, value) => props.required = value, newValue);
 	}
 
-	public focus(): void {
+	public override focus(): void {
 		this._input.focus();
+	}
+
+	public override get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'display': this.display
+		});
 	}
 }

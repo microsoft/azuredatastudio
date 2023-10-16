@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import * as constants from '../../common/constants';
 import { AzureWorkspaceResource, IDataComponent } from '../interfaces';
@@ -35,31 +35,39 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 	 */
 	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: ModelViewBase) {
 		super(apiWrapper, parent.root, parent);
-		this._accounts = this._modelBuilder.dropDown().withProperties({
+		this._accounts = this._modelBuilder.dropDown().withProps({
 			width: componentWidth
 		}).component();
-		this._subscriptions = this._modelBuilder.dropDown().withProperties({
+		this._subscriptions = this._modelBuilder.dropDown().withProps({
 			width: componentWidth
 		}).component();
-		this._groups = this._modelBuilder.dropDown().withProperties({
+		this._groups = this._modelBuilder.dropDown().withProps({
 			width: componentWidth
 		}).component();
-		this._workspaces = this._modelBuilder.dropDown().withProperties({
+		this._workspaces = this._modelBuilder.dropDown().withProps({
 			width: componentWidth
 		}).component();
 
-		this._accounts.onValueChanged(async () => {
-			await this.onAccountSelected();
+		this._accounts.onValueChanged(async (newValue) => {
+			if (newValue.selected !== (<azdata.CategoryValue>this._accounts.value)?.name) {
+				await this.onAccountSelected();
+			}
 		});
 
-		this._subscriptions.onValueChanged(async () => {
-			await this.onSubscriptionSelected();
+		this._subscriptions.onValueChanged(async (newValue) => {
+			if (newValue.selected !== (<azdata.CategoryValue>this._subscriptions.value)?.name) {
+				await this.onSubscriptionSelected();
+			}
 		});
-		this._groups.onValueChanged(async () => {
-			await this.onGroupSelected();
+		this._groups.onValueChanged(async (newValue) => {
+			if (newValue.selected !== (<azdata.CategoryValue>this._groups.value)?.name) {
+				await this.onGroupSelected();
+			}
 		});
-		this._workspaces.onValueChanged(async () => {
-			await this.onWorkspaceSelectedChanged();
+		this._workspaces.onValueChanged(async (newValue) => {
+			if (newValue.selected !== (<azdata.CategoryValue>this._workspaces.value)?.name) {
+				this.onWorkspaceSelectedChanged();
+			}
 		});
 
 		this._form = this._modelBuilder.formContainer().withFormItems([{
@@ -74,44 +82,29 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 		}, {
 			title: constants.azureModelWorkspace,
 			component: this._workspaces
-		}]).component();
+		}], {
+			titleFontSize: '13px',
+			horizontal: true,
+		}).component();
+		this._form.setLayout({
+			padding: '0'
+		});
 	}
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
-		if (this._accounts && this._subscriptions && this._groups && this._workspaces) {
+		if (this._form) {
 			formBuilder.addFormItems([{
-				title: constants.azureAccount,
-				component: this._accounts
-			}, {
-				title: constants.azureSubscription,
-				component: this._subscriptions
-			}, {
-				title: constants.azureGroup,
-				component: this._groups
-			}, {
-				title: constants.azureModelWorkspace,
-				component: this._workspaces
+				title: '',
+				component: this._form
 			}]);
 		}
 	}
 
 	public removeComponents(formBuilder: azdata.FormBuilder) {
-		if (this._accounts && this._subscriptions && this._groups && this._workspaces) {
+		if (this._form) {
 			formBuilder.removeFormItem({
-				title: constants.azureAccount,
-				component: this._accounts
-			});
-			formBuilder.removeFormItem({
-				title: constants.azureSubscription,
-				component: this._subscriptions
-			});
-			formBuilder.removeFormItem({
-				title: constants.azureGroup,
-				component: this._groups
-			});
-			formBuilder.removeFormItem({
-				title: constants.azureModelWorkspace,
-				component: this._workspaces
+				title: '',
+				component: this._form
 			});
 		}
 	}
@@ -151,6 +144,10 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 		await this.onAccountSelected();
 	}
 
+	public get accountIsValid(): boolean {
+		return this._azureAccounts !== undefined && this._azureAccounts.length > 0 && this._azureSubscriptions !== undefined && this._azureSubscriptions.length > 0;
+	}
+
 	/**
 	 * refreshes the view
 	 */
@@ -185,6 +182,7 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 	}
 
 	private async onGroupSelected(): Promise<void> {
+		let currentWorkspace = this._workspaces.value;
 		this._azureWorkspaces = await this.listWorkspaces(this.account, this.subscription, this.group);
 		if (this._azureWorkspaces && this._azureWorkspaces.length > 0) {
 			let values = this._azureWorkspaces.map(s => { return { displayName: s.name || '', name: s.id || '' }; });
@@ -194,7 +192,9 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 			this._workspaces.values = [];
 			this._workspaces.value = undefined;
 		}
-		this.onWorkspaceSelectedChanged();
+		if (currentWorkspace !== this._workspaces.value) {
+			this.onWorkspaceSelectedChanged();
+		}
 	}
 
 	private onWorkspaceSelectedChanged(): void {

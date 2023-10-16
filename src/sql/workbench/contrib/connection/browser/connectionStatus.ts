@@ -9,7 +9,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
-import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment } from 'vs/workbench/services/statusbar/common/statusbar';
+import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment } from 'vs/workbench/services/statusbar/browser/statusbar';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { localize } from 'vs/nls';
 
@@ -19,6 +19,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 	private static readonly ID = 'status.connection.status';
 
 	private statusItem: IStatusbarEntryAccessor;
+	private readonly name = localize('status.connection.status', "Connection Status");
 
 	constructor(
 		@IStatusbarService private readonly statusbarService: IStatusbarService,
@@ -29,11 +30,11 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		super();
 		this.statusItem = this._register(
 			this.statusbarService.addEntry({
+				name: this.name,
 				text: '',
 				ariaLabel: ''
 			},
 				ConnectionStatusbarItem.ID,
-				localize('status.connection.status', "Connection Status"),
 				StatusbarAlignment.RIGHT, 100)
 		);
 
@@ -76,8 +77,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 			}
 		}
 
-		let tooltip: string =
-			'Server: ' + connectionProfile.serverName + '\r\n' +
+		let tooltip = 'Server: ' + connectionProfile.serverName + '\r\n' +
 			'Database: ' + (connectionProfile.databaseName ? connectionProfile.databaseName : '<default>') + '\r\n';
 
 		if (connectionProfile.userName && connectionProfile.userName !== '') {
@@ -85,7 +85,9 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		}
 
 		this.statusItem.update({
-			text, ariaLabel: text, tooltip
+			name: this.name,
+			text: text,
+			ariaLabel: text, tooltip
 		});
 	}
 }

@@ -7,20 +7,20 @@ import * as azdata from 'azdata';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import {
 	ExtHostAccountManagementShape,
-	MainThreadAccountManagementShape,
-	SqlMainContext,
+	MainThreadAccountManagementShape
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { AzureResource } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Event, Emitter } from 'vs/base/common/event';
-import { firstIndex } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+
+type ProviderAndAccount = { provider: azdata.AccountProvider, account: azdata.Account };
 
 export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 	private _handlePool: number = 0;
 	private _proxy: MainThreadAccountManagementShape;
 	private _providers: { [handle: number]: AccountProviderWithMetadata } = {};
-	private _accounts: { [handle: number]: azdata.Account[] } = {};
 	private readonly _onDidChangeAccounts = new Emitter<azdata.DidChangeAccountsParams>();
 
 	constructor(mainContext: IMainContext) {
@@ -30,23 +30,23 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	// - MAIN THREAD AVAILABLE METHODS /////////////////////////////////////
-	public $clear(handle: number, accountKey: azdata.AccountKey): Thenable<void> {
+	public override $clear(handle: number, accountKey: azdata.AccountKey): Thenable<void> {
 		return this._withProvider(handle, (provider: azdata.AccountProvider) => provider.clear(accountKey));
 	}
 
-	public $initialize(handle: number, restoredAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
+	public override $initialize(handle: number, restoredAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
 		return this._withProvider(handle, (provider: azdata.AccountProvider) => provider.initialize(restoredAccounts));
 	}
 
-	public $prompt(handle: number): Thenable<azdata.Account | azdata.PromptFailedResult> {
+	public override $prompt(handle: number): Thenable<azdata.Account | azdata.PromptFailedResult> {
 		return this._withProvider(handle, (provider: azdata.AccountProvider) => provider.prompt());
 	}
 
-	public $refresh(handle: number, account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> {
+	public override $refresh(handle: number, account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> {
 		return this._withProvider(handle, (provider: azdata.AccountProvider) => provider.refresh(account));
 	}
 
-	public $autoOAuthCancelled(handle: number): Thenable<void> {
+	public override $autoOAuthCancelled(handle: number): Thenable<void> {
 		return this._withProvider(handle, (provider: azdata.AccountProvider) => provider.autoOAuthCancelled());
 	}
 
@@ -63,14 +63,17 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		this._proxy.$accountUpdated(updatedAccount);
 	}
 
-	public $getAllAccounts(): Thenable<azdata.Account[]> {
+	public async $getAllAccounts(): Promise<azdata.Account[]> {
+		let providersAndAccounts = await this.getAllProvidersAndAccounts();
+		return providersAndAccounts.map(providerAndAccount => providerAndAccount.account);
+	}
+
+	private async getAllProvidersAndAccounts(): Promise<ProviderAndAccount[]> {
 		if (Object.keys(this._providers).length === 0) {
 			throw new Error('No account providers registered.');
 		}
 
-		this._accounts = {};
-
-		const resultAccounts: azdata.Account[] = [];
+		const resultProviderAndAccounts: ProviderAndAccount[] = [];
 
 		const promises: Thenable<void>[] = [];
 
@@ -80,55 +83,46 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 			const provider = this._providers[providerHandle];
 			promises.push(this._proxy.$getAccountsForProvider(provider.metadata.id).then(
 				(accounts) => {
-					this._accounts[providerHandle] = accounts;
-					resultAccounts.push(...accounts);
+					resultProviderAndAccounts.push(...accounts.map(account => { return { provider: provider.provider, account }; }));
 				}
 			));
 		}
 
-		return Promise.all(promises).then(() => resultAccounts);
+		await Promise.all(promises);
+		return resultProviderAndAccounts;
 	}
 
-	public $getSecurityToken(account: azdata.Account, resource: azdata.AzureResource = AzureResource.ResourceManagement): Thenable<{}> {
-		return this.$getAllAccounts().then(() => {
-			for (const handle in this._accounts) {
-				const providerHandle = parseInt(handle);
-				if (firstIndex(this._accounts[handle], (acct) => acct.key.accountId === account.key.accountId) !== -1) {
-					return this._withProvider(providerHandle, (provider: azdata.AccountProvider) => provider.getSecurityToken(account, resource));
-				}
-			}
-
-			throw new Error(`Account ${account.key.accountId} not found.`);
-		});
+	public override async $getSecurityToken(account: azdata.Account, resource: azdata.AzureResource = AzureResource.ResourceManagement): Promise<{}> {
+		let providerAndAccounts = await this.getAllProvidersAndAccounts();
+		const providerAndAccount = providerAndAccounts.find(providerAndAccount => providerAndAccount.account.key.accountId === account.key.accountId);
+		if (providerAndAccount) {
+			return providerAndAccount.provider.getSecurityToken(account, resource);
+		}
+		throw new Error(`Account ${account.key.accountId} not found.`);
 	}
 
-	public $getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource = AzureResource.ResourceManagement): Thenable<{ token: string }> {
-		return this.$getAllAccounts().then(() => {
-			for (const handle in this._accounts) {
-				const providerHandle = parseInt(handle);
-				if (firstIndex(this._accounts[handle], (acct) => acct.key.accountId === account.key.accountId) !== -1) {
-					return this._withProvider(providerHandle, (provider: azdata.AccountProvider) => provider.getAccountSecurityToken(account, tenant, resource));
-				}
-			}
-
-			throw new Error(`Account ${account.key.accountId} not found.`);
-		});
+	public override async $getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource = AzureResource.ResourceManagement): Promise<azdata.accounts.AccountSecurityToken> {
+		let providerAndAccounts = await this.getAllProvidersAndAccounts();
+		const providerAndAccount = providerAndAccounts.find(providerAndAccount => providerAndAccount.account.key.accountId === account.key.accountId);
+		if (providerAndAccount) {
+			return await providerAndAccount.provider.getAccountSecurityToken(account, tenant, resource);
+		}
+		throw Error(`Account ${account.key.accountId} not found.`);
 	}
-
 
 	public get onDidChangeAccounts(): Event<azdata.DidChangeAccountsParams> {
 		return this._onDidChangeAccounts.event;
 	}
 
-	public $accountsChanged(handle: number, accounts: azdata.Account[]): Thenable<void> {
-		return Promise.resolve(this._onDidChangeAccounts.fire({ accounts: accounts }));
+	public override async $accountsChanged(handle: number, accounts: azdata.Account[]): Promise<void> {
+		return this._onDidChangeAccounts.fire({ accounts: accounts });
 	}
 
 	public $registerAccountProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Disposable {
 		let self = this;
 
 		// Look for any account providers that have the same provider ID
-		let matchingProviderIndex = firstIndex(values(this._providers), (provider: AccountProviderWithMetadata) => {
+		let matchingProviderIndex = values(this._providers).findIndex((provider: AccountProviderWithMetadata) => {
 			return provider.metadata.id === providerMetadata.id;
 		});
 		if (matchingProviderIndex >= 0) {

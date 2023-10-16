@@ -3,13 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SqlMainContext, MainThreadObjectExplorerShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { MainThreadObjectExplorerShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IObjectExplorerService, NodeInfoWithConnection } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadObjectExplorer)
 export class MainThreadObjectExplorer extends Disposable implements MainThreadObjectExplorerShape {

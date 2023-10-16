@@ -36,9 +36,21 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.DeclarativeTableComponent {
 		this._table = modelBuilder.declarativeTable()
-			.withProperties<azdata.DeclarativeTableProperties>(
+			.withProps(
 				{
 					columns: [
+						{ // Action
+							displayName: '',
+							valueType: azdata.DeclarativeDataType.component,
+							isReadOnly: true,
+							width: 50,
+							headerCssStyles: {
+								...constants.cssStyles.tableHeader
+							},
+							rowCssStyles: {
+								...constants.cssStyles.tableRow
+							},
+						},
 						{ // Name
 							displayName: constants.modelName,
 							ariaLabel: constants.modelName,
@@ -90,18 +102,6 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 							rowCssStyles: {
 								...constants.cssStyles.tableRow
 							},
-						},
-						{ // Action
-							displayName: '',
-							valueType: azdata.DeclarativeDataType.component,
-							isReadOnly: true,
-							width: 50,
-							headerCssStyles: {
-								...constants.cssStyles.tableHeader
-							},
-							rowCssStyles: {
-								...constants.cssStyles.tableRow
-							},
 						}
 					],
 					data: [],
@@ -121,17 +121,31 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 	 */
 	public async loadData(workspaceResource?: AzureWorkspaceResource | undefined): Promise<void> {
 
-		if (this._table && workspaceResource) {
-			this._models = await this.listAzureModels(workspaceResource);
-			let tableData: any[][] = [];
+		if (this._table) {
+			if (workspaceResource) {
+				this._models = await this.listAzureModels(workspaceResource);
+				let tableData: any[][] = [];
 
-			if (this._models) {
-				tableData = tableData.concat(this._models.map(model => this.createTableRow(model)));
+				if (this._models) {
+					tableData = tableData.concat(this._models.map(model => this.createTableRow(model)));
+				}
+
+				if (this.isTableEmpty) {
+					this._table.dataValues = [];
+					this._table.data = [];
+				} else {
+					this._table.data = tableData;
+				}
+			} else {
+				this._table.dataValues = [];
+				this._table.data = [];
 			}
-
-			this._table.data = tableData;
 		}
 		this._onModelSelectionChanged.fire();
+	}
+
+	public get isTableEmpty(): boolean {
+		return !this._models || this._models.length === 0;
 	}
 
 	private createTableRow(model: WorkspaceModel): any[] {
@@ -147,9 +161,7 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 				this._onModelSelectionChanged.fire();
 			};
 			if (this._multiSelect) {
-				const checkbox = this._modelBuilder.checkBox().withProperties({
-					name: 'amlModel',
-					value: model.id,
+				const checkbox = this._modelBuilder.checkBox().withProps({
 					width: 15,
 					height: 15,
 					checked: false
@@ -159,7 +171,7 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 				});
 				selectModelButton = checkbox;
 			} else {
-				const radioButton = this._modelBuilder.radioButton().withProperties({
+				const radioButton = this._modelBuilder.radioButton().withProps({
 					name: 'amlModel',
 					value: model.id,
 					width: 15,
@@ -172,7 +184,7 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 				selectModelButton = radioButton;
 			}
 
-			return [model.name, model.createdTime, model.framework, model.frameworkVersion, selectModelButton];
+			return [selectModelButton, model.name, model.createdTime, model.framework, model.frameworkVersion];
 		}
 
 		return [];

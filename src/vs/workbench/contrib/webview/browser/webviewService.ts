@@ -3,48 +3,75 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
+import { Emitter } from 'vs/base/common/event';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IWebviewService, WebviewContentOptions, WebviewOverlay, WebviewElement, WebviewIcons, WebviewOptions, WebviewExtensionDescription } from 'vs/workbench/contrib/webview/browser/webview';
-import { IFrameWebview } from 'vs/workbench/contrib/webview/browser/webviewElement';
 import { WebviewThemeDataProvider } from 'vs/workbench/contrib/webview/browser/themeing';
-import { DynamicWebviewEditorOverlay } from './dynamicWebviewEditorOverlay';
-import { WebviewIconManager } from './webviewIconManager';
+import { IOverlayWebview, IWebview, IWebviewElement, IWebviewService, WebviewInitInfo } from 'vs/workbench/contrib/webview/browser/webview';
+import { WebviewElement } from 'vs/workbench/contrib/webview/browser/webviewElement';
+import { OverlayWebview } from './overlayWebview';
 
-export class WebviewService implements IWebviewService {
+export class WebviewService extends Disposable implements IWebviewService {
 	declare readonly _serviceBrand: undefined;
 
-	private readonly _webviewThemeDataProvider: WebviewThemeDataProvider;
-	private readonly _iconManager: WebviewIconManager;
+	protected readonly _webviewThemeDataProvider: WebviewThemeDataProvider;
 
 	constructor(
-		@IInstantiationService private readonly _instantiationService: IInstantiationService,
+		@IInstantiationService protected readonly _instantiationService: IInstantiationService,
 	) {
+		super();
 		this._webviewThemeDataProvider = this._instantiationService.createInstance(WebviewThemeDataProvider);
-		this._iconManager = this._instantiationService.createInstance(WebviewIconManager);
 	}
 
-	createWebviewElement(
-		id: string,
-		options: WebviewOptions,
-		contentOptions: WebviewContentOptions,
-		extension: WebviewExtensionDescription | undefined,
-	): WebviewElement {
-		return this._instantiationService.createInstance(IFrameWebview, id, options, contentOptions, extension, this._webviewThemeDataProvider);
+	private _activeWebview?: IWebview;
+
+	public get activeWebview() { return this._activeWebview; }
+
+	private _updateActiveWebview(value: IWebview | undefined) {
+		if (value !== this._activeWebview) {
+			this._activeWebview = value;
+			this._onDidChangeActiveWebview.fire(value);
+		}
 	}
 
-	createWebviewOverlay(
-		id: string,
-		options: WebviewOptions,
-		contentOptions: WebviewContentOptions,
-		extension: WebviewExtensionDescription | undefined,
-	): WebviewOverlay {
-		return this._instantiationService.createInstance(DynamicWebviewEditorOverlay, id, options, contentOptions, extension);
+	private _webviews = new Set<IWebview>();
+
+	public get webviews(): Iterable<IWebview> {
+		return this._webviews.values();
 	}
 
-	setIcons(id: string, iconPath: WebviewIcons | undefined): void {
-		this._iconManager.setIcons(id, iconPath);
+	private readonly _onDidChangeActiveWebview = this._register(new Emitter<IWebview | undefined>());
+	public readonly onDidChangeActiveWebview = this._onDidChangeActiveWebview.event;
+
+	createWebviewElement(initInfo: WebviewInitInfo): IWebviewElement {
+		const webview = this._instantiationService.createInstance(WebviewElement, initInfo, this._webviewThemeDataProvider);
+		this.registerNewWebview(webview);
+		return webview;
+	}
+
+	createWebviewOverlay(initInfo: WebviewInitInfo): IOverlayWebview {
+		const webview = this._instantiationService.createInstance(OverlayWebview, initInfo);
+		this.registerNewWebview(webview);
+		return webview;
+	}
+
+	protected registerNewWebview(webview: IWebview) {
+		this._webviews.add(webview);
+
+		webview.onDidFocus(() => {
+			this._updateActiveWebview(webview);
+		});
+
+		const onBlur = () => {
+			if (this._activeWebview === webview) {
+				this._updateActiveWebview(undefined);
+			}
+		};
+
+		webview.onDidBlur(onBlur);
+		webview.onDidDispose(() => {
+			onBlur();
+			this._webviews.delete(webview);
+		});
 	}
 }
-
-registerSingleton(IWebviewService, WebviewService, true);

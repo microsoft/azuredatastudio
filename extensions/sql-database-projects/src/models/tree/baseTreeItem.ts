@@ -5,56 +5,28 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { DatabaseProjectItemType } from '../../common/constants';
 
 /**
  * Base class for an item that appears in the ADS project tree
  */
 export abstract class BaseProjectTreeItem {
-	uri: vscode.Uri;
-	parent?: BaseProjectTreeItem;
-
-	constructor(uri: vscode.Uri, parent?: BaseProjectTreeItem) {
-		this.uri = uri;
-		this.parent = parent;
-	}
+	/**
+	 * Constructor
+	 * @param relativeProjectUri Project-relative URI that's compatible with the project tree
+	 * @param projectFileUri Full URI to the .sqlproj of this project
+	 */
+	constructor(public relativeProjectUri: vscode.Uri, public projectFileUri: vscode.Uri) { }
 
 	abstract get children(): BaseProjectTreeItem[];
 
 	abstract get treeItem(): vscode.TreeItem;
 
+	abstract get type(): DatabaseProjectItemType;
+
+	public entryKey?: string;
+
 	public get friendlyName(): string {
-		return path.parse(this.uri.path).base;
-	}
-
-	public get root() {
-		let node: BaseProjectTreeItem = this;
-
-		while (node.parent !== undefined) {
-			node = node.parent;
-		}
-
-		return node;
+		return path.parse(this.relativeProjectUri.path).base;
 	}
 }
-
-/**
- * Leaf tree item that just displays text for messaging purposes
- */
-export class MessageTreeItem extends BaseProjectTreeItem {
-	private message: string;
-
-	constructor(message: string, parent?: BaseProjectTreeItem) {
-		super(vscode.Uri.file(path.join(parent?.uri.path ?? 'Message', message)), parent);
-		this.message = message;
-	}
-
-	public get children(): BaseProjectTreeItem[] {
-		return [];
-	}
-
-	public get treeItem(): vscode.TreeItem {
-		return new vscode.TreeItem(this.message, vscode.TreeItemCollapsibleState.None);
-	}
-}
-
-export const SpacerTreeItem = new MessageTreeItem('');

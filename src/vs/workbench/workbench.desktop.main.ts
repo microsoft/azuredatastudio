@@ -10,154 +10,193 @@
 // ###                                                                 ###
 // #######################################################################
 
+//#region --- workbench common
 
-//#region --- workbench common & sandbox
-
-import 'vs/workbench/workbench.sandbox.main';
-
-//#endregion
-
-
-//#region --- workbench actions
-
-import 'vs/workbench/electron-browser/actions/developerActions';
+import 'vs/workbench/workbench.common.main';
 
 //#endregion
 
 
 //#region --- workbench (desktop main)
 
-import 'vs/workbench/electron-browser/desktop.main';
+import 'vs/workbench/electron-sandbox/desktop.main';
+import 'vs/workbench/electron-sandbox/desktop.contribution';
+
+//#endregion
+
+
+//#region --- workbench parts
+
+import 'vs/workbench/electron-sandbox/parts/dialogs/dialog.contribution';
 
 //#endregion
 
 
 //#region --- workbench services
 
-import 'vs/workbench/services/integrity/node/integrityService';
-import 'vs/workbench/services/textMate/electron-browser/textMateService';
-import 'vs/workbench/services/search/node/searchService';
-import 'vs/workbench/services/output/electron-browser/outputChannelModelService';
-import 'vs/workbench/services/textfile/electron-browser/nativeTextFileService';
-import 'vs/workbench/services/dialogs/electron-browser/dialogService';
-import 'vs/workbench/services/keybinding/electron-browser/nativeKeymapService';
-import 'vs/workbench/services/extensions/electron-browser/extensionService';
-import 'vs/workbench/services/extensionManagement/electron-browser/extensionManagementServerService';
-import 'vs/workbench/services/extensionManagement/electron-browser/extensionTipsService';
-import 'vs/workbench/services/remote/electron-browser/remoteAgentServiceImpl';
-import 'vs/workbench/services/telemetry/electron-browser/telemetryService';
-import 'vs/workbench/services/configurationResolver/electron-browser/configurationResolverService';
-import 'vs/workbench/services/extensionManagement/node/extensionManagementService';
-import 'vs/workbench/services/accessibility/electron-browser/accessibilityService';
-import 'vs/workbench/services/backup/node/backupFileService';
-import 'vs/workbench/services/workspaces/electron-browser/workspaceEditingService';
-import 'vs/workbench/services/userDataSync/electron-browser/userDataSyncMachinesService';
-import 'vs/workbench/services/userDataSync/electron-browser/userDataSyncService';
-import 'vs/workbench/services/userDataSync/electron-browser/userDataSyncAccountService';
-import 'vs/workbench/services/userDataSync/electron-browser/userDataSyncStoreManagementService';
-import 'vs/workbench/services/userDataSync/electron-browser/userDataAutoSyncService';
-import 'vs/workbench/services/sharedProcess/electron-browser/sharedProcessService';
-import 'vs/workbench/services/localizations/electron-browser/localizationsService';
-import 'vs/workbench/services/path/electron-browser/pathService';
-import 'vs/workbench/services/experiment/electron-browser/experimentService';
+import 'vs/workbench/services/textfile/electron-sandbox/nativeTextFileService';
+import 'vs/workbench/services/dialogs/electron-sandbox/fileDialogService';
+import 'vs/workbench/services/workspaces/electron-sandbox/workspacesService';
+import 'vs/workbench/services/menubar/electron-sandbox/menubarService';
+import 'vs/workbench/services/issue/electron-sandbox/issueMainService';
+import 'vs/workbench/services/issue/electron-sandbox/issueService';
+import 'vs/workbench/services/update/electron-sandbox/updateService';
+import 'vs/workbench/services/url/electron-sandbox/urlService';
+import 'vs/workbench/services/lifecycle/electron-sandbox/lifecycleService';
+import 'vs/workbench/services/title/electron-sandbox/titleService';
+import 'vs/workbench/services/host/electron-sandbox/nativeHostService';
+import 'vs/workbench/services/request/electron-sandbox/requestService';
+import 'vs/workbench/services/clipboard/electron-sandbox/clipboardService';
+import 'vs/workbench/services/contextmenu/electron-sandbox/contextmenuService';
+import 'vs/workbench/services/workspaces/electron-sandbox/workspaceEditingService';
+import 'vs/workbench/services/configurationResolver/electron-sandbox/configurationResolverService';
+import 'vs/workbench/services/accessibility/electron-sandbox/accessibilityService';
+import 'vs/workbench/services/keybinding/electron-sandbox/nativeKeyboardLayout';
+import 'vs/workbench/services/path/electron-sandbox/pathService';
+import 'vs/workbench/services/themes/electron-sandbox/nativeHostColorSchemeService';
+import 'vs/workbench/services/extensionManagement/electron-sandbox/extensionManagementService';
+import 'vs/workbench/services/extensionManagement/electron-sandbox/extensionUrlTrustService';
+import 'vs/workbench/services/credentials/electron-sandbox/credentialsService';
+import 'vs/workbench/services/encryption/electron-sandbox/encryptionService';
+import 'vs/workbench/services/localization/electron-sandbox/languagePackService';
+import 'vs/workbench/services/telemetry/electron-sandbox/telemetryService';
+import 'vs/workbench/services/extensions/electron-sandbox/extensionHostStarter';
+import 'vs/platform/extensionResourceLoader/common/extensionResourceLoaderService';
+import 'vs/workbench/services/localization/electron-sandbox/localeService';
+import 'vs/workbench/services/extensions/electron-sandbox/extensionsScannerService';
+import 'vs/workbench/services/extensionManagement/electron-sandbox/extensionManagementServerService';
+import 'vs/workbench/services/extensionManagement/electron-sandbox/extensionTipsService';
+import 'vs/workbench/services/userDataSync/electron-sandbox/userDataSyncMachinesService';
+import 'vs/workbench/services/userDataSync/electron-sandbox/userDataSyncService';
+import 'vs/workbench/services/userDataSync/electron-sandbox/userDataSyncAccountService';
+import 'vs/workbench/services/userDataSync/electron-sandbox/userDataSyncStoreManagementService';
+import 'vs/workbench/services/userDataSync/electron-sandbox/userDataAutoSyncService';
+import 'vs/workbench/services/timer/electron-sandbox/timerService';
+import 'vs/workbench/services/environment/electron-sandbox/shellEnvironmentService';
+import 'vs/workbench/services/integrity/electron-sandbox/integrityService';
+import 'vs/workbench/services/workingCopy/electron-sandbox/workingCopyBackupService';
+import 'vs/workbench/services/checksum/electron-sandbox/checksumService';
+import 'vs/platform/remote/electron-sandbox/sharedProcessTunnelService';
+import 'vs/workbench/services/tunnel/electron-sandbox/tunnelService';
+import 'vs/platform/diagnostics/electron-sandbox/diagnosticsService';
+import 'vs/platform/profiling/electron-sandbox/profilingService';
+import 'vs/platform/telemetry/electron-sandbox/customEndpointTelemetryService';
+import 'vs/platform/remoteTunnel/electron-sandbox/remoteTunnelService';
+import 'vs/workbench/services/files/electron-sandbox/elevatedFileService';
+import 'vs/workbench/services/search/electron-sandbox/searchService';
+import 'vs/workbench/services/workingCopy/electron-sandbox/workingCopyHistoryService';
+import 'vs/workbench/services/userDataSync/browser/userDataSyncEnablementService';
+import 'vs/workbench/services/extensions/electron-sandbox/nativeExtensionService';
+import 'vs/platform/userDataProfile/electron-sandbox/userDataProfileStorageService';
 
-import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
-import { ICredentialsService } from 'vs/platform/credentials/common/credentials';
-import { KeytarCredentialsService } from 'vs/platform/credentials/node/credentialsService';
-import { ITunnelService } from 'vs/platform/remote/common/tunnel';
-import { TunnelService } from 'vs/platform/remote/node/tunnelService';
-import { ITimerService } from 'vs/workbench/services/timer/browser/timerService';
-import { TimerService } from 'vs/workbench/services/timer/electron-browser/timerService';
+import { InstantiationType, registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { IUserDataInitializationService, UserDataInitializationService } from 'vs/workbench/services/userData/browser/userDataInit';
+import { IExtensionsProfileScannerService } from 'vs/platform/extensionManagement/common/extensionsProfileScannerService';
+import { ExtensionsProfileScannerService } from 'vs/platform/extensionManagement/electron-sandbox/extensionsProfileScannerService';
+import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 
-registerSingleton(ICredentialsService, KeytarCredentialsService, true);
-registerSingleton(ITunnelService, TunnelService);
-registerSingleton(ITimerService, TimerService);
-registerSingleton(IUserDataInitializationService, UserDataInitializationService);
+registerSingleton(IUserDataInitializationService, new SyncDescriptor(UserDataInitializationService, [[]], true));
+registerSingleton(IExtensionsProfileScannerService, ExtensionsProfileScannerService, InstantiationType.Delayed);
+
 
 //#endregion
 
-// {{SQL CARBON EDIT}} - SQL-specific services
-import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';
-import { SqlOAuthService } from 'sql/platform/oAuth/electron-browser/sqlOAuthServiceImpl';
-import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboard/common/clipboardService';
-import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/electron-browser/clipboardService';
-import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
-import { QueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryServiceImpl';
-
-registerSingleton(ISqlOAuthService, SqlOAuthService);
-registerSingleton(sqlIClipboardService, sqlClipboardService);
-registerSingleton(IQueryHistoryService, QueryHistoryService);
-// {{SQL CARBON EDIT}} - End
 
 //#region --- workbench contributions
 
 // Logs
-import 'vs/workbench/contrib/logs/electron-browser/logs.contribution';
+import 'vs/workbench/contrib/logs/electron-sandbox/logs.contribution';
 
-// Tags
-import 'vs/workbench/contrib/tags/electron-browser/workspaceTagsService';
-import 'vs/workbench/contrib/tags/electron-browser/tags.contribution';
+// Localizations
+import 'vs/workbench/contrib/localization/electron-sandbox/localization.contribution';
 
-// Rapid Render Splash
-import 'vs/workbench/contrib/splash/electron-browser/partsSplash.contribution';
-
-// Debug
-// import 'vs/workbench/contrib/debug/node/debugHelperService'; {{SQL CARBON EDIT}}
-
-// Webview
-import 'vs/workbench/contrib/webview/electron-browser/webview.contribution';
-
-// Notebook
-import 'vs/workbench/contrib/notebook/electron-browser/notebook.contribution';
-
-// Extensions Management
-import 'vs/workbench/contrib/extensions/electron-browser/extensions.contribution';
-
-// Terminal
-import 'vs/workbench/contrib/terminal/electron-browser/terminal.contribution';
-
-// Remote
-import 'vs/workbench/contrib/remote/electron-browser/remote.contribution';
+// Explorer
+import 'vs/workbench/contrib/files/electron-sandbox/fileActions.contribution';
 
 // CodeEditor Contributions
-import 'vs/workbench/contrib/codeEditor/electron-browser/codeEditor.contribution';
+import 'vs/workbench/contrib/codeEditor/electron-sandbox/codeEditor.contribution';
 
-// External Terminal
-import 'vs/workbench/contrib/externalTerminal/node/externalTerminal.contribution';
+// Debug
+import 'vs/workbench/contrib/debug/electron-sandbox/extensionHostDebugService';
 
-// Performance
-import 'vs/workbench/contrib/performance/electron-browser/performance.contribution';
-
-// CLI
-import 'vs/workbench/contrib/cli/node/cli.contribution';
-
-// Themes Support
-import 'vs/workbench/contrib/themes/test/electron-browser/themes.test.contribution';
+// Extensions Management
+import 'vs/workbench/contrib/extensions/electron-sandbox/extensions.contribution';
 
 // Issues
-import 'vs/workbench/contrib/issue/electron-browser/issue.contribution';
+import 'vs/workbench/contrib/issue/electron-sandbox/issue.contribution';
 
-// Tasks
-import 'vs/workbench/contrib/tasks/electron-browser/taskService';
-
-// User Data Sync
-import 'vs/workbench/contrib/userDataSync/electron-browser/userDataSync.contribution';
+// Remote
+import 'vs/workbench/contrib/remote/electron-sandbox/remote.contribution';
 
 // Configuration Exporter
-import 'vs/workbench/contrib/configExporter/electron-browser/configurationExportHelper.contribution';
+import 'vs/workbench/contrib/configExporter/electron-sandbox/configurationExportHelper.contribution';
+
+// Terminal
+import 'vs/workbench/contrib/terminal/electron-sandbox/terminal.contribution';
+
+// Themes Support
+import 'vs/workbench/contrib/themes/browser/themes.test.contribution';
+
+// User Data Sync
+import 'vs/workbench/contrib/userDataSync/electron-sandbox/userDataSync.contribution';
+
+// Tags
+import 'vs/workbench/contrib/tags/electron-sandbox/workspaceTagsService';
+import 'vs/workbench/contrib/tags/electron-sandbox/tags.contribution';
+
+// Performance
+import 'vs/workbench/contrib/performance/electron-sandbox/performance.contribution';
+
+// Tasks
+import 'vs/workbench/contrib/tasks/electron-sandbox/taskService';
+
+// External terminal
+import 'vs/workbench/contrib/externalTerminal/electron-sandbox/externalTerminal.contribution';
+
+// Webview
+import 'vs/workbench/contrib/webview/electron-sandbox/webview.contribution';
+
+// Splash
+import 'vs/workbench/contrib/splash/electron-sandbox/splash.contribution';
+
+// Local History
+import 'vs/workbench/contrib/localHistory/electron-sandbox/localHistory.contribution';
+
+// Merge Editor
+import 'vs/workbench/contrib/mergeEditor/electron-sandbox/mergeEditor.contribution';
+
+// Remote Tunnel
+import 'vs/workbench/contrib/remoteTunnel/electron-sandbox/remoteTunnel.contribution';
+
+// {{SQL CARBON EDIT}} - SQL added contributions
+// Telemetry Opt Out
+import 'sql/workbench/contrib/telemetry/electron-sandbox/telemetryOptOut.contribution';
 
 //#endregion
 
-// {{SQL CARBON EDIT}}
-// release notes
-import 'sql/workbench/update/electron-browser/releaseNotes.contribution';
+export { main } from 'vs/workbench/electron-sandbox/desktop.main';
 
-// query history
-import 'sql/workbench/contrib/queryHistory/electron-browser/queryHistory.contribution';
+// {{SQL CARBON EDIT}} - SQL-specific services
+import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';
+import { SqlOAuthService } from 'sql/platform/oAuth/electron-sandbox/sqlOAuthServiceImpl';
+import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/electron-sandbox/clipboardService';
+import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobService';
+import { AzureBlobService } from 'sql/workbench/services/azureBlob/browser/azureBlobService';
+import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
+import { AzureAccountService } from 'sql/workbench/services/azureAccount/browser/azureAccountService';
+
+registerSingleton(ISqlOAuthService, SqlOAuthService, InstantiationType.Delayed);
+registerSingleton(sqlIClipboardService, sqlClipboardService, InstantiationType.Delayed);
+registerSingleton(IAzureBlobService, AzureBlobService, InstantiationType.Delayed);
+registerSingleton(IAzureAccountService, AzureAccountService, InstantiationType.Delayed);
+// {{SQL CARBON EDIT}} - End
+
+// {{SQL CARBON EDIT}}
+// getting started
 
 // CLI
-import 'sql/workbench/contrib/commandLine/electron-browser/commandLine.contribution';
+import 'sql/workbench/contrib/commandLine/electron-sandbox/commandLine.contribution';
 
 //getting started
-import 'sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted.contribution';
+import 'sql/workbench/contrib/welcome/electron-sandbox/gettingStarted.contribution';

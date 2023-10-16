@@ -13,17 +13,14 @@ import { AppContext } from '../../common/appContext';
 import { JupyterController } from '../../jupyter/jupyterController';
 import { LocalPipPackageManageProvider } from '../../jupyter/localPipPackageManageProvider';
 import { MockExtensionContext } from '../common/stubs';
-import { NotebookUtils } from '../../common/notebookUtils';
 
 describe('Jupyter Controller', function () {
 	let mockExtensionContext: vscode.ExtensionContext = new MockExtensionContext();
 	let appContext = new AppContext(mockExtensionContext);
 	let controller: JupyterController;
 	let connection: azdata.connection.ConnectionProfile = new azdata.connection.ConnectionProfile();
-	let showErrorMessageSpy: sinon.SinonSpy;
 
 	this.beforeEach(() => {
-		showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 		sinon.stub(azdata.connection, 'getCurrentConnection').returns(Promise.resolve(connection));
 		sinon.stub(azdata.tasks, 'registerTask');
 		sinon.stub(vscode.commands, 'registerCommand');
@@ -63,37 +60,25 @@ describe('Jupyter Controller', function () {
 		should(defaultConnection).deepEqual(connection, 'getDefaultConnection() did not return expected result');
 	});
 
-	it('should show error message for doManagePackages before activation', async () => {
-		await controller.doManagePackages();
-		should(showErrorMessageSpy.calledOnce).be.true('showErrorMessage should be called');
+	it('Returns expected values from notebook provider', async () => {
+		await controller.activate();
+		should(controller.executeProvider.providerId).equal('jupyter', 'Notebook provider should be jupyter');
+		await should(controller.executeProvider.getExecuteManager(undefined)).be.rejected();
+		should(controller.executeProvider.executeManagerCount).equal(0);
+		controller.executeProvider.handleNotebookClosed(undefined);
 	});
 
-	it('should not show error message for doManagePackages after activation', async () => {
+	it('Returns execute manager for real notebook editor', async () => {
 		await controller.activate();
-		await controller.doManagePackages();
-		should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not be called');
-	});
-
-	it('Returns expected values from notebook provider', async () =>  {
-		await controller.activate();
-		should(controller.notebookProvider.standardKernels).deepEqual([], 'Notebook provider standard kernels should return empty array');
-		should(controller.notebookProvider.providerId).equal('jupyter', 'Notebook provider should be jupyter');
-		should(controller.notebookProvider.getNotebookManager(undefined)).be.rejected();
-		should(controller.notebookProvider.notebookManagerCount).equal(0);
-		controller.notebookProvider.handleNotebookClosed(undefined);
-	});
-
-	it('Returns notebook manager for real notebook editor', async () =>  {
-		await controller.activate();
-		let notebookUtils = new NotebookUtils();
-		const notebookEditor = await notebookUtils.newNotebook(undefined);
-		let notebookManager = await controller.notebookProvider.getNotebookManager(notebookEditor.document.uri);
-		should(controller.notebookProvider.notebookManagerCount).equal(1);
+		await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
+		const notebookEditor = azdata.nb.activeNotebookEditor;
+		let notebookManager = await controller.executeProvider.getExecuteManager(notebookEditor.document.uri);
+		should(controller.executeProvider.executeManagerCount).equal(1);
 
 		// Session manager should not be immediately ready
 		should(notebookManager.sessionManager.isReady).equal(false);
 		// Session manager should not immediately have specs
 		should(notebookManager.sessionManager.specs).equal(undefined);
-		controller.notebookProvider.handleNotebookClosed(notebookEditor.document.uri);
+		controller.executeProvider.handleNotebookClosed(notebookEditor.document.uri);
 	});
 });

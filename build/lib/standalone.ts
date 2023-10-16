@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as ts from 'typescript';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tss from './treeshaking';
@@ -11,7 +10,7 @@ import * as tss from './treeshaking';
 const REPO_ROOT = path.join(__dirname, '../../');
 const SRC_DIR = path.join(REPO_ROOT, 'src');
 
-let dirCache: { [dir: string]: boolean; } = {};
+const dirCache: { [dir: string]: boolean } = {};
 
 function writeFile(filePath: string, contents: Buffer | string): void {
 	function ensureDirs(dirPath: string): void {
@@ -31,6 +30,8 @@ function writeFile(filePath: string, contents: Buffer | string): void {
 }
 
 export function extractEditor(options: tss.ITreeShakingOptions & { destRoot: string }): void {
+	const ts = require('typescript') as typeof import('typescript');
+
 	const tsConfig = JSON.parse(fs.readFileSync(path.join(options.sourcesRoot, 'tsconfig.monaco.json')).toString());
 	let compilerOptions: { [key: string]: any };
 	if (tsConfig.extends) {
@@ -55,13 +56,20 @@ export function extractEditor(options: tss.ITreeShakingOptions & { destRoot: str
 	// Take the extra included .d.ts files from `tsconfig.monaco.json`
 	options.typings = (<string[]>tsConfig.include).filter(includedFile => /\.d\.ts$/.test(includedFile));
 
-	let result = tss.shake(options);
-	for (let fileName in result) {
+	// Add extra .d.ts files from `node_modules/@types/`
+	if (Array.isArray(options.compilerOptions?.types)) {
+		options.compilerOptions.types.forEach((type: string) => {
+			options.typings.push(`../node_modules/@types/${type}/index.d.ts`);
+		});
+	}
+
+	const result = tss.shake(options);
+	for (const fileName in result) {
 		if (result.hasOwnProperty(fileName)) {
 			writeFile(path.join(options.destRoot, fileName), result[fileName]);
 		}
 	}
-	let copied: { [fileName: string]: boolean; } = {};
+	const copied: { [fileName: string]: boolean } = {};
 	const copyFile = (fileName: string) => {
 		if (copied[fileName]) {
 			return;
@@ -74,7 +82,7 @@ export function extractEditor(options: tss.ITreeShakingOptions & { destRoot: str
 	const writeOutputFile = (fileName: string, contents: string | Buffer) => {
 		writeFile(path.join(options.destRoot, fileName), contents);
 	};
-	for (let fileName in result) {
+	for (const fileName in result) {
 		if (result.hasOwnProperty(fileName)) {
 			const fileContents = result[fileName];
 			const info = ts.preProcessFile(fileContents);
@@ -107,13 +115,12 @@ export function extractEditor(options: tss.ITreeShakingOptions & { destRoot: str
 	writeOutputFile('tsconfig.json', JSON.stringify(tsConfig, null, '\t'));
 
 	[
-		'vs/css.build.js',
-		'vs/css.d.ts',
-		'vs/css.js',
+		'vs/css.build.ts',
+		'vs/css.ts',
 		'vs/loader.js',
-		'vs/nls.build.js',
-		'vs/nls.d.ts',
-		'vs/nls.js',
+		'vs/loader.d.ts',
+		'vs/nls.build.ts',
+		'vs/nls.ts',
 		'vs/nls.mock.ts',
 	].forEach(copyFile);
 }
@@ -123,16 +130,18 @@ export interface IOptions2 {
 	outFolder: string;
 	outResourcesFolder: string;
 	ignores: string[];
-	renames: { [filename: string]: string; };
+	renames: { [filename: string]: string };
 }
 
 export function createESMSourcesAndResources2(options: IOptions2): void {
+	const ts = require('typescript') as typeof import('typescript');
+
 	const SRC_FOLDER = path.join(REPO_ROOT, options.srcFolder);
 	const OUT_FOLDER = path.join(REPO_ROOT, options.outFolder);
 	const OUT_RESOURCES_FOLDER = path.join(REPO_ROOT, options.outResourcesFolder);
 
 	const getDestAbsoluteFilePath = (file: string): string => {
-		let dest = options.renames[file.replace(/\\/g, '/')] || file;
+		const dest = options.renames[file.replace(/\\/g, '/')] || file;
 		if (dest === 'tsconfig.json') {
 			return path.join(OUT_FOLDER, `tsconfig.json`);
 		}
@@ -203,7 +212,7 @@ export function createESMSourcesAndResources2(options: IOptions2): void {
 				);
 			}
 
-			fileContents = fileContents.replace(/import ([a-zA-z0-9]+) = require\(('[^']+')\);/g, function (_, m1, m2) {
+			fileContents = fileContents.replace(/import ([a-zA-Z0-9]+) = require\(('[^']+')\);/g, function (_, m1, m2) {
 				return `import * as ${m1} from ${m2};`;
 			});
 
@@ -219,7 +228,7 @@ export function createESMSourcesAndResources2(options: IOptions2): void {
 		if (dir.charAt(dir.length - 1) !== '/' || dir.charAt(dir.length - 1) !== '\\') {
 			dir += '/';
 		}
-		let result: string[] = [];
+		const result: string[] = [];
 		_walkDirRecursive(dir, result, dir.length);
 		return result;
 	}
@@ -243,7 +252,7 @@ export function createESMSourcesAndResources2(options: IOptions2): void {
 		writeFile(absoluteFilePath, contents);
 
 		function toggleComments(fileContents: string): string {
-			let lines = fileContents.split(/\r\n|\r|\n/);
+			const lines = fileContents.split(/\r\n|\r|\n/);
 			let mode = 0;
 			for (let i = 0; i < lines.length; i++) {
 				const line = lines[i];
@@ -292,7 +301,7 @@ function transportCSS(module: string, enqueue: (module: string) => void, write: 
 
 	const filename = path.join(SRC_DIR, module);
 	const fileContents = fs.readFileSync(filename).toString();
-	const inlineResources = 'base64'; // see https://github.com/Microsoft/monaco-editor/issues/148
+	const inlineResources = 'base64'; // see https://github.com/microsoft/monaco-editor/issues/148
 
 	const newContents = _rewriteOrInlineUrls(fileContents, inlineResources === 'base64');
 	write(module, newContents);
@@ -315,14 +324,14 @@ function transportCSS(module: string, enqueue: (module: string) => void, write: 
 
 			if (!forceBase64 && /\.svg$/.test(url)) {
 				// .svg => url encode as explained at https://codepen.io/tigt/post/optimizing-svgs-in-data-uris
-				let newText = fileContents.toString()
+				const newText = fileContents.toString()
 					.replace(/"/g, '\'')
 					.replace(/</g, '%3C')
 					.replace(/>/g, '%3E')
 					.replace(/&/g, '%26')
 					.replace(/#/g, '%23')
 					.replace(/\s+/g, ' ');
-				let encodedData = ',' + newText;
+				const encodedData = ',' + newText;
 				if (encodedData.length < DATA.length) {
 					DATA = encodedData;
 				}

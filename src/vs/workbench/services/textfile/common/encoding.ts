@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Readable, ReadableStream, newWriteableStream } from 'vs/base/common/stream';
+import { Readable, ReadableStream, newWriteableStream, listenStream } from 'vs/base/common/stream';
 import { VSBuffer, VSBufferReadable, VSBufferReadableStream } from 'vs/base/common/buffer';
 
 export const UTF8 = 'utf8';
@@ -27,6 +27,7 @@ const AUTO_ENCODING_GUESS_MIN_BYTES = 512 * 8; 		// with auto guessing we want a
 const AUTO_ENCODING_GUESS_MAX_BYTES = 512 * 128; 	// set an upper limit for the number of bytes we pass on to jschardet
 
 export interface IDecodeStreamOptions {
+	acceptTextOnly: boolean;
 	guessEncoding: boolean;
 	minBytesRequiredForDetection?: number;
 
@@ -36,6 +37,25 @@ export interface IDecodeStreamOptions {
 export interface IDecodeStreamResult {
 	stream: ReadableStream<string>;
 	detected: IDetectedEncodingResult;
+}
+
+export const enum DecodeStreamErrorKind {
+
+	/**
+	 * Error indicating that the stream is binary even
+	 * though `acceptTextOnly` was specified.
+	 */
+	STREAM_IS_BINARY = 1
+}
+
+export class DecodeStreamError extends Error {
+
+	constructor(
+		message: string,
+		readonly decodeStreamErrorKind: DecodeStreamErrorKind
+	) {
+		super(message);
+	}
 }
 
 export interface IDecoderStream {
@@ -58,7 +78,7 @@ class DecoderStream implements IDecoderStream {
 	static async create(encoding: string): Promise<DecoderStream> {
 		let decoder: IDecoderStream | undefined = undefined;
 		if (encoding !== UTF8) {
-			const iconv = await import('iconv-lite-umd');
+			const iconv = await import('@vscode/iconv-lite-umd');
 			decoder = iconv.getDecoder(toNodeEncoding(encoding));
 		} else {
 			const utf8TextDecoder = new TextDecoder();
@@ -112,6 +132,12 @@ export function toDecodeStream(source: VSBufferReadableStream, options: IDecodeS
 					bytesRead: bytesBuffered
 				}, options.guessEncoding);
 
+				// throw early if the source seems binary and
+				// we are instructed to only accept text
+				if (detected.seemsBinary && options.acceptTextOnly) {
+					throw new DecodeStreamError('Stream is binary but only text is accepted for decoding', DecodeStreamErrorKind.STREAM_IS_BINARY);
+				}
+
 				// ensure to respect overwrite of encoding
 				detected.encoding = await options.overwriteEncoding(detected.encoding);
 
@@ -129,59 +155,61 @@ export function toDecodeStream(source: VSBufferReadableStream, options: IDecodeS
 					detected
 				});
 			} catch (error) {
+
+				// Stop handling anything from the source and target
+				sourceListener?.dispose();
+				target.destroy();
+
 				reject(error);
 			}
 		};
 
-		// Stream error: forward to target
-		source.on('error', error => target.error(error));
+		const sourceListener = listenStream(source, {
+			onData: async chunk => {
 
-		// Stream data
-		source.on('data', async chunk => {
-
-			// if the decoder is ready, we just write directly
-			if (decoder) {
-				target.write(decoder.write(chunk.buffer));
-			}
-
-			// otherwise we need to buffer the data until the stream is ready
-			else {
-				bufferedChunks.push(chunk);
-				bytesBuffered += chunk.byteLength;
-
-				// buffered enough data for encoding detection, create stream
-				if (bytesBuffered >= minBytesRequiredForDetection) {
-
-					// pause stream here until the decoder is ready
-					source.pause();
-
-					await createDecoder();
-
-					// resume stream now that decoder is ready but
-					// outside of this stack to reduce recursion
-					setTimeout(() => source.resume());
+				// if the decoder is ready, we just write directly
+				if (decoder) {
+					target.write(decoder.write(chunk.buffer));
 				}
+
+				// otherwise we need to buffer the data until the stream is ready
+				else {
+					bufferedChunks.push(chunk);
+					bytesBuffered += chunk.byteLength;
+
+					// buffered enough data for encoding detection, create stream
+					if (bytesBuffered >= minBytesRequiredForDetection) {
+
+						// pause stream here until the decoder is ready
+						source.pause();
+
+						await createDecoder();
+
+						// resume stream now that decoder is ready but
+						// outside of this stack to reduce recursion
+						setTimeout(() => source.resume());
+					}
+				}
+			},
+			onError: error => target.error(error), // simply forward to target
+			onEnd: async () => {
+
+				// we were still waiting for data to do the encoding
+				// detection. thus, wrap up starting the stream even
+				// without all the data to get things going
+				if (!decoder) {
+					await createDecoder();
+				}
+
+				// end the target with the remainders of the decoder
+				target.end(decoder?.end());
 			}
-		});
-
-		// Stream end
-		source.on('end', async () => {
-
-			// we were still waiting for data to do the encoding
-			// detection. thus, wrap up starting the stream even
-			// without all the data to get things going
-			if (!decoder) {
-				await createDecoder();
-			}
-
-			// end the target with the remainders of the decoder
-			target.end(decoder?.end());
 		});
 	});
 }
 
 export async function toEncodeReadable(readable: Readable<string>, encoding: string, options?: { addBOM?: boolean }): Promise<VSBufferReadable> {
-	const iconv = await import('iconv-lite-umd');
+	const iconv = await import('@vscode/iconv-lite-umd');
 	const encoder = iconv.getEncoder(toNodeEncoding(encoding), options);
 
 	let bytesWritten = false;
@@ -230,7 +258,7 @@ export async function toEncodeReadable(readable: Readable<string>, encoding: str
 }
 
 export async function encodingExists(encoding: string): Promise<boolean> {
-	const iconv = await import('iconv-lite-umd');
+	const iconv = await import('@vscode/iconv-lite-umd');
 
 	return iconv.encodingExists(toNodeEncoding(encoding));
 }
@@ -357,13 +385,14 @@ export function toCanonicalName(enc: string): string {
 			return 'x-mac-roman';
 		case 'utf8bom':
 			return 'utf8';
-		default:
+		default: {
 			const m = enc.match(/windows(\d+)/);
 			if (m) {
 				return 'windows-' + m[1];
 			}
 
 			return enc;
+		}
 	}
 }
 

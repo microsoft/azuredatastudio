@@ -14,11 +14,12 @@ import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-radioButton',
 	template: `
-		<div #input class="modelview-radiobutton-container">
+		<div #input [ngStyle]="CSSStyles" class="modelview-radiobutton-container">
 
 		</div>
 	`
@@ -31,13 +32,9 @@ export default class RadioButtonComponent extends ComponentBase<azdata.RadioButt
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
-		super(changeRef, el);
-	}
-
-	ngOnInit(): void {
-		this.baseInit();
-
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService) {
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {
@@ -54,10 +51,19 @@ export default class RadioButtonComponent extends ComponentBase<azdata.RadioButt
 					args: e
 				});
 			}));
+
+			this._register(this._input.onDidChangeCheckedState(e => {
+				this.checked = e;
+				this.fireEvent({
+					eventType: ComponentEventType.onDidChange,
+					args: e
+				});
+			}));
 		}
+		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -68,7 +74,7 @@ export default class RadioButtonComponent extends ComponentBase<azdata.RadioButt
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._input.name = this.name;
 		this._input.value = this.value;
@@ -115,7 +121,7 @@ export default class RadioButtonComponent extends ComponentBase<azdata.RadioButt
 		this.setPropertyFromUI<string>((properties, label) => { properties.name = label; }, newValue);
 	}
 
-	public focus(): void {
+	public override focus(): void {
 		this._input.focus();
 	}
 

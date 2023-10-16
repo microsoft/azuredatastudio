@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { IConfig, ServerProvider } from 'service-downloader';
+import { IConfig } from '@microsoft/ads-service-downloader';
 import { SqlOpsDataClient, SqlOpsFeature, ClientOptions } from 'dataprotocol-client';
 import { ServerCapabilities, ClientCapabilities, RPCMessageType, ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
@@ -63,9 +63,10 @@ class FireWallFeature extends SqlOpsFeature<any> {
 function asCreateFirewallRuleParams(account: azdata.Account, params: azdata.FirewallRuleInfo): CreateFirewallRuleParams {
 	return {
 		account: account,
+		firewallRuleName: params.firewallRuleName,
 		serverName: params.serverName,
-		startIpAddress: params.startIpAddress,
-		endIpAddress: params.endIpAddress,
+		startIpAddress: params.startIpAddress || '',
+		endIpAddress: params.endIpAddress || '',
 		securityTokenMappings: params.securityTokenMappings
 	};
 }
@@ -76,27 +77,25 @@ export class AzureResourceProvider {
 
 	constructor(private logPath: string, baseConfig: IConfig) {
 		if (baseConfig) {
-			this._config = JSON.parse(JSON.stringify(baseConfig));
+			this._config = JSON.parse(JSON.stringify(baseConfig)) as IConfig;
 			this._config.executableFiles = ['SqlToolsResourceProviderService.exe', 'SqlToolsResourceProviderService'];
 		}
 	}
 
-	public start() {
-		let serverdownloader = new ServerProvider(this._config);
+	public async start(): Promise<void> {
 		let clientOptions: ClientOptions = {
 			providerId: Constants.providerId,
 			features: [FireWallFeature]
 		};
-		return serverdownloader.getOrDownloadServer().then(e => {
-			let serverOptions = this.generateServerOptions(e);
-			this._client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
-			this._client.start();
-		});
+		const serverPath = await Utils.getOrDownloadServer(this._config);
+		let serverOptions = this.generateServerOptions(serverPath);
+		this._client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
+		this._client.start();
 	}
 
-	public dispose() {
+	public async dispose(): Promise<void> {
 		if (this._client) {
-			this._client.stop();
+			await this._client.stop();
 		}
 	}
 

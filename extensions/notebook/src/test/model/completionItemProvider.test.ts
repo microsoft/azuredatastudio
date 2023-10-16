@@ -9,19 +9,19 @@ import * as vscode from 'vscode';
 import * as TypeMoq from 'typemoq';
 
 import { NotebookCompletionItemProvider } from '../../intellisense/completionItemProvider';
-import { JupyterNotebookProvider } from '../../jupyter/jupyterNotebookProvider';
 import { NotebookUtils } from '../../common/notebookUtils';
-import { JupyterNotebookManager } from '../../jupyter/jupyterNotebookManager';
+import { JupyterExecuteManager } from '../../jupyter/jupyterExecuteManager';
 import { JupyterSessionManager, JupyterSession } from '../../jupyter/jupyterSessionManager';
 import { LocalJupyterServerManager } from '../../jupyter/jupyterServerManager';
 import { TestKernel } from '../common';
 import { sleep } from '../common/testUtils';
+import { JupyterExecuteProvider } from '../../jupyter/jupyterExecuteProvider';
 
 describe('Completion Item Provider', function () {
 	let completionItemProvider: NotebookCompletionItemProvider;
-	let notebookProviderMock: TypeMoq.IMock<JupyterNotebookProvider>;
+	let executeProviderMock: TypeMoq.IMock<JupyterExecuteProvider>;
 	let notebookUtils: NotebookUtils;
-	let notebookManager: JupyterNotebookManager;
+	let notebookManager: JupyterExecuteManager;
 	let mockSessionManager: TypeMoq.IMock<JupyterSessionManager>;
 	let mockServerManager: TypeMoq.IMock<LocalJupyterServerManager>;
 	let mockJupyterSession: TypeMoq.IMock<JupyterSession>;
@@ -45,10 +45,10 @@ describe('Completion Item Provider', function () {
 		mockSessionManager = TypeMoq.Mock.ofType<JupyterSessionManager>();
 		mockJupyterSession = TypeMoq.Mock.ofType<JupyterSession>();
 		kernel = new TestKernel(true, true);
-		notebookManager = new JupyterNotebookManager(mockServerManager.object, mockSessionManager.object);
-		notebookProviderMock = TypeMoq.Mock.ofType<JupyterNotebookProvider>();
-		notebookProviderMock.setup(n => n.getNotebookManager(TypeMoq.It.isAny())).returns(() => Promise.resolve(notebookManager));
-		completionItemProvider = new NotebookCompletionItemProvider(notebookProviderMock.object);
+		notebookManager = new JupyterExecuteManager(mockServerManager.object, mockSessionManager.object);
+		executeProviderMock = TypeMoq.Mock.ofType<JupyterExecuteProvider>();
+		executeProviderMock.setup(n => n.getExecuteManager(TypeMoq.It.isAny())).returns(() => Promise.resolve(notebookManager));
+		completionItemProvider = new NotebookCompletionItemProvider(executeProviderMock.object);
 	});
 
 	it('should not return items when undefined passed in for every parameter', async () => {
@@ -63,7 +63,8 @@ describe('Completion Item Provider', function () {
 	});
 
 	it('should not provide items when session does not exist in notebook provider', async () => {
-		let notebook = await notebookUtils.newNotebook();
+		await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
+		const notebook = azdata.nb.activeNotebookEditor;
 		await notebookUtils.addCell('code');
 		let document = await tryFindTextDocument(notebook);
 		should(document).not.equal(undefined, 'Could not find text document that matched cell uri path');
@@ -75,7 +76,8 @@ describe('Completion Item Provider', function () {
 	it('should not provide items when session list throws exception', async () => {
 		mockSessionManager.setup(m => m.listRunning()).throws(new Error('Test Error'));
 
-		let notebook = await notebookUtils.newNotebook();
+		await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
+		const notebook = azdata.nb.activeNotebookEditor;
 		await notebookUtils.addCell('code');
 		let document = await tryFindTextDocument(notebook);
 
@@ -86,7 +88,8 @@ describe('Completion Item Provider', function () {
 	it('should not provide items when kernel does not exist in notebook provider', async () => {
 		mockSessionManager.setup(m => m.listRunning()).returns(() => [mockJupyterSession.object]);
 
-		let notebook = await notebookUtils.newNotebook();
+		await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
+		const notebook = azdata.nb.activeNotebookEditor;
 		await notebookUtils.addCell('code');
 		let document = await tryFindTextDocument(notebook);
 
@@ -102,7 +105,8 @@ describe('Completion Item Provider', function () {
 		mockSessionManager.setup(m => m.listRunning()).returns(() => [mockJupyterSession.object]);
 		mockJupyterSession.setup(s => s.path).returns(() => notebook.document.uri.path);
 
-		let notebook = await notebookUtils.newNotebook();
+		await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
+		const notebook = azdata.nb.activeNotebookEditor;
 		await notebookUtils.addCell('code');
 		let document = await tryFindTextDocument(notebook);
 
@@ -145,7 +149,8 @@ describe('Completion Item Provider', function () {
 		mockJupyterSession.setup(s => s.kernel).returns(() => kernel);
 		mockSessionManager.setup(m => m.listRunning()).returns(() => [mockJupyterSession.object]);
 
-		let notebook = await notebookUtils.newNotebook();
+		await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
+		const notebook = azdata.nb.activeNotebookEditor;
 		await notebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
 			editBuilder.insertCell({
 				cell_type: 'code',
@@ -182,7 +187,8 @@ describe('Completion Item Provider', function () {
 		mockJupyterSession.setup(s => s.kernel).returns(() => kernel);
 		mockSessionManager.setup(m => m.listRunning()).returns(() => [mockJupyterSession.object]);
 
-		let notebook = await notebookUtils.newNotebook();
+		await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
+		const notebook = azdata.nb.activeNotebookEditor;
 		if (source) {
 			await notebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
 				editBuilder.insertCell({

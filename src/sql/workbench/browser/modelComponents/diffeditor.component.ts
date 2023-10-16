@@ -10,10 +10,8 @@ import {
 import * as azdata from 'azdata';
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
+import { TextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 import { URI } from 'vs/base/common/uri';
-import { IModeService } from 'vs/editor/common/services/modeService';
-import { IModelService } from 'vs/editor/common/services/modelService';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { TextDiffEditor } from 'vs/workbench/browser/parts/editor/textDiffEditor';
@@ -27,10 +25,15 @@ import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IModelService } from 'vs/editor/common/services/model';
+import { ILanguageService } from 'vs/editor/common/languages/language';
 
 @Component({
 	template: `
-	<div *ngIf="_title">
+	<div [ngStyle]="CSSStyles" *ngIf="_title">
 		<div class="modelview-diff-editor-title modelview-diff-editor-title-background">
 			{{_title}}
 		</div>
@@ -55,18 +58,20 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
-		@Inject(IModeService) private _modeService: IModeService,
-		@Inject(ITextModelService) private _textModelService: ITextModelService
+		@Inject(ILanguageService) private _modeService: ILanguageService,
+		@Inject(ITextModelService) private _textModelService: ITextModelService,
+		@Inject(ILogService) logService: ILogService,
+		@Inject(IEditorService) private _editorService: IEditorService,
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
+	ngAfterViewInit(): void {
 		this._createEditor();
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
 			this.layout();
 		}));
+		this.baseInit();
 	}
 
 	private _createEditor(): void {
@@ -84,14 +89,14 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 		let textModelContentProvider = this._textModelService.registerTextModelContentProvider('sqlDiffEditor', {
 			provideTextContent: (resource: URI): Promise<ITextModel> => {
 				let modelContent = '';
-				let languageSelection = this._modeService.create('plaintext');
+				let languageSelection = this._modeService.createById('plaintext');
 				return Promise.resolve(this._modelService.createModel(modelContent, languageSelection, resource));
 			}
 		});
 
-		let editorinput1 = this._instantiationService.createInstance(ResourceEditorInput, uri1, 'source', undefined, undefined);
-		let editorinput2 = this._instantiationService.createInstance(ResourceEditorInput, uri2, 'target', undefined, undefined);
-		this._editorInput = new DiffEditorInput('DiffEditor', undefined, editorinput1, editorinput2, true);
+		let editorinput1 = this._instantiationService.createInstance(TextResourceEditorInput, uri1, 'source', undefined, undefined, undefined);
+		let editorinput2 = this._instantiationService.createInstance(TextResourceEditorInput, uri2, 'target', undefined, undefined, undefined);
+		this._editorInput = new DiffEditorInput('DiffEditor', undefined, editorinput1, editorinput2, true, this._editorService);
 		this._editor.setInput(this._editorInput, undefined, undefined, cancellationTokenSource.token);
 
 
@@ -99,7 +104,7 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 			this._editorModel = model as TextDiffEditorModel;
 			this.updateModel();
 			this.layout();
-			this.validate();
+			this.validate().catch(onUnexpectedError);
 		});
 
 		this._register(this._editor);
@@ -113,13 +118,13 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 		return uri;
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
 	/// IComponent implementation
 
-	public layout(): void {
+	public override layout(): void {
 		let width: number = convertSizeToNumber(this.width);
 		let height: number = convertSizeToNumber(this.height);
 		if (this._isAutoResizable) {
@@ -148,9 +153,10 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 	private updateLanguageMode() {
 		if (this._editorModel && this._editor) {
 			this._languageMode = this.languageMode;
-			let languageSelection = this._modeService.create(this._languageMode);
-			this._modelService.setMode(this._editorModel.originalModel.textEditorModel, languageSelection);
-			this._modelService.setMode(this._editorModel.modifiedModel.textEditorModel, languageSelection);
+			// {{SQL CARBON TODO}} - set mode?
+			// let languageSelection = this._modeService.createById(this._languageMode);
+			// this._modelService.setMode(this._editorModel.originalModel.textEditorModel, languageSelection);
+			// this._modelService.setMode(this._editorModel.modifiedModel.textEditorModel, languageSelection);
 		}
 	}
 
@@ -159,7 +165,7 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 		// TODO allow configuring the look and feel
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		if (this.contentLeft !== this._renderedContentLeft || this.contentRight !== this._renderedContentRight) {
 			this.updateModel();
@@ -171,7 +177,7 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 		this._minimumHeight = this.minimumHeight;
 		this._title = this.title;
 		this.layout();
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	// CSS-bound properties

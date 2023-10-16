@@ -8,8 +8,8 @@
 		"no-console": 0,
 		"no-cond-assign": 0,
 		"no-unused-vars": 1,
-		"no-extra-semi": "warn",
-		"semi": "warn"
+		"no-extra-semi": "off",
+		"semi": "off"
 	},
 	"extends": "eslint:recommended",
 	"parserOptions": {

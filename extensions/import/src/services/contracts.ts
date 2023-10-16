@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { RequestType, NotificationType } from 'vscode-languageclient';
+import * as telemetry from '@microsoft/ads-extension-telemetry';
 
 export interface IMessage {
 	jsonrpc: string;
@@ -24,17 +25,9 @@ export namespace TelemetryNotification {
 export class TelemetryParams {
 	public params: {
 		eventName: string;
-		properties: ITelemetryEventProperties;
-		measures: ITelemetryEventMeasures;
+		properties: telemetry.TelemetryEventProperties;
+		measures: telemetry.TelemetryEventMeasures;
 	};
-}
-
-export interface ITelemetryEventProperties {
-	[key: string]: string;
-}
-
-export interface ITelemetryEventMeasures {
-	[key: string]: number;
 }
 
 /**
@@ -49,6 +42,38 @@ export interface ColumnInfo {
 	name: string;
 	sqlType: string;
 	isNullable: boolean;
+}
+
+
+/**
+ * LearnTransformationRequest
+ * Send this request to learn a transformation and preview it
+ */
+const learnTransformationRequestName = 'flatfile/learnTransformation';
+
+export interface LearnTransformationParams {
+	columnNames: string[];
+	transformationExamples: string[];
+	transformationExampleRowIndices: number[];
+}
+
+export interface LearnTransformationResponse {
+	transformationPreview: string[];
+}
+
+
+/**
+* SaveTransformationRequest
+* Send this request to save a transformation to be applied on insertion into database
+*/
+const saveTransformationRequestName = 'flatfile/saveTransformation';
+
+export interface SaveTransformationParams {
+	derivedColumnName: string;
+}
+
+export interface SaveTransformationResponse {
+	numTransformations: number;
 }
 
 
@@ -78,6 +103,11 @@ const insertDataRequestName = 'flatfile/insertData';
 export interface InsertDataParams {
 	connectionString: string;
 	batchSize: number;
+	/**
+	 * For azure MFA connections we need to send the account token to establish a connection
+	 * from flatFile service without doing Oauth.
+	 */
+	azureAccessToken: string | undefined;
 }
 
 export interface InsertDataResponse {
@@ -134,6 +164,14 @@ export namespace ChangeColumnSettingsRequest {
 	export const type = new RequestType<ChangeColumnSettingsParams, ChangeColumnSettingsResponse, void, void>(changeColumnSettingsRequestName);
 }
 
+export namespace LearnTransformationRequest {
+	export const type = new RequestType<LearnTransformationParams, LearnTransformationResponse, void, void>(learnTransformationRequestName);
+}
+
+export namespace SaveTransformationRequest {
+	export const type = new RequestType<SaveTransformationParams, SaveTransformationResponse, void, void>(saveTransformationRequestName);
+}
+
 
 export interface FlatFileProvider {
 	providerId?: string;
@@ -142,4 +180,6 @@ export interface FlatFileProvider {
 	sendInsertDataRequest(params: InsertDataParams): Thenable<InsertDataResponse>;
 	sendGetColumnInfoRequest(params: GetColumnInfoParams): Thenable<GetColumnInfoResponse>;
 	sendChangeColumnSettingsRequest(params: ChangeColumnSettingsParams): Thenable<ChangeColumnSettingsResponse>;
+	sendLearnTransformationRequest(params: LearnTransformationParams): Thenable<LearnTransformationResponse>;
+	sendSaveTransformationRequest(params: SaveTransformationParams): Thenable<SaveTransformationResponse>;
 }

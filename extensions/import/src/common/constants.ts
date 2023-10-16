@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -11,7 +12,9 @@ export const providerId = 'FlatFileImport';
 export const configLogDebugInfo = 'logDebugInfo';
 export const sqlConfigSectionName = 'sql';
 export const mssqlProvider = 'MSSQL';
+export const packageName = 'Microsoft.import';
 
+// allow-any-unicode-next-line
 export const summaryErrorSymbol = '✗ ';
 
 export const supportedProviders = [mssqlProvider];
@@ -27,6 +30,7 @@ export const crashButtonText = localize('import.serviceCrashButton', "Give Feedb
 export const serviceCrashMessageText = localize('serviceCrashMessage', "service component could not start");
 export const serverDropDownTitleText = localize('flatFileImport.serverDropdownTitle', "Server the database is in");
 export const databaseDropdownTitleText = localize('flatFileImport.databaseDropdownTitle', "Database the table is created in");
+export const invalidFileLocationError = localize('flatFile.InvalidFileLocation', "Invalid file location. Please try a different input file");
 export const browseFilesText = localize('flatFileImport.browseFiles', "Browse");
 export const openFileText = localize('flatFileImport.openFile', "Open");
 export const fileTextboxTitleText = localize('flatFileImport.fileTextboxTitle', "Location of the file to be imported");
@@ -57,6 +61,23 @@ export const page2NameText = localize('flatFileImport.page2Name', "Preview Data"
 export const page3NameText = localize('flatFileImport.page3Name', "Modify Columns");
 export const page4NameText = localize('flatFileImport.page4Name', "Summary");
 export const importNewFileText = localize('flatFileImport.importNewFile', "Import new file");
-
+export const createDerivedColumn = localize('flatFileImport.createDerivedColumn', "Create derived column");
+export const specifyDerivedColNameTitle = localize('flatFileImport.specifyDerivedColNameTitle', "Column Name");
+export const specifyTransformation = localize('flatFileImport.specifyTransformation', "Specify Transformation");
+export const previewTransformation = localize('flatFileImport.previewTransformation', "Preview Transformation");
+export const columnTableTitle = localize('flatFileImport.columnTableTitle', "Column");
+export const headerIntructionText = localize('flatFileImport.headerIntructionText', "Welcome to the Derived Column Tool! To get started, please follow the steps below:");
+export const deriverColumnInstruction1 = localize('flatFileImport.deriverColumnInstruction1', "Select the columns of data on the left required to derive your new column");
+export const deriverColumnInstruction2 = localize('flatFileImport.deriverColumnInstruction2', "Select a row and specify an example transformation that you would like applied to the rest of the column");
+export const deriverColumnInstruction3 = localize('flatFileImport.deriverColumnInstruction3', "Click \"Preview Transformation\" to preview the transformation");
+export const deriverColumnInstruction4 = localize('flatFileImport.deriverColumnInstruction4', "Refine your transformation until you have the desired column");
+export const deriverColumnInstruction5 = localize('flatFileImport.deriverColumnInstruction5', "Specify the new derived column\'s name and click \"Done\"");
+export const selectAllColumns = localize('flatFileImport.selectAllColumns', "Select all columns");
+export function specifyTransformationForRow(rowIndex: number): string {
+	return localize('flatFileImport.specifyTransformationForRow', "Specify transformation for row {0}", rowIndex);
+}
+export function selectColumn(colName: string): string {
+	return localize('flatFileImport.selectColumn', "Select column {0}", colName);
+}
 // SQL Queries
 export const selectSchemaQuery = `SELECT name FROM sys.schemas`;

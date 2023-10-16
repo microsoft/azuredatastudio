@@ -9,16 +9,16 @@ import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { EditorAction, registerEditorAction, ServicesAccessor } from 'vs/editor/browser/editorExtensions';
 import { Range } from 'vs/editor/common/core/range';
 import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
-import { ITextModel } from 'vs/editor/common/model';
-import { IEditorWorkerService } from 'vs/editor/common/services/editorWorkerService';
+import { ITextModel, shouldSynchronizeModel } from 'vs/editor/common/model';
+import { IEditorWorkerService } from 'vs/editor/common/services/editorWorker';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
-import { formatDocumentRangesWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
+import { formatDocumentRangesWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/browser/format';
 import * as nls from 'vs/nls';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Progress } from 'vs/platform/progress/common/progress';
 import { getOriginalResource } from 'vs/workbench/contrib/scm/browser/dirtydiffDecorator';
-import { ISCMService } from 'vs/workbench/contrib/scm/common/scm';
+import { IQuickDiffService } from 'vs/workbench/contrib/scm/common/quickDiff';
 
 registerEditorAction(class FormatModifiedAction extends EditorAction {
 
@@ -49,14 +49,14 @@ registerEditorAction(class FormatModifiedAction extends EditorAction {
 });
 
 
-export async function getModifiedRanges(accessor: ServicesAccessor, modified: ITextModel): Promise<Range[] | undefined> {
-	const scmService = accessor.get(ISCMService);
+export async function getModifiedRanges(accessor: ServicesAccessor, modified: ITextModel): Promise<Range[] | undefined | null> {
+	const quickDiffService = accessor.get(IQuickDiffService);
 	const workerService = accessor.get(IEditorWorkerService);
 	const modelService = accessor.get(ITextModelService);
 
-	const original = await getOriginalResource(scmService, modified.uri);
+	const original = await getOriginalResource(quickDiffService, modified.uri, modified.getLanguageId(), shouldSynchronizeModel(modified));
 	if (!original) {
-		return undefined;
+		return null; // let undefined signify no changes, null represents no source control (there's probably a better way, but I can't think of one rn)
 	}
 
 	const ranges: Range[] = [];
@@ -65,11 +65,11 @@ export async function getModifiedRanges(accessor: ServicesAccessor, modified: IT
 		if (!workerService.canComputeDirtyDiff(original, modified.uri)) {
 			return undefined;
 		}
-		const changes = await workerService.computeDirtyDiff(original, modified.uri, true);
+		const changes = await workerService.computeDirtyDiff(original, modified.uri, false);
 		if (!isNonEmptyArray(changes)) {
 			return undefined;
 		}
-		for (let change of changes) {
+		for (const change of changes) {
 			ranges.push(modified.validateRange(new Range(
 				change.modifiedStartLineNumber, 1,
 				change.modifiedEndLineNumber || change.modifiedStartLineNumber /*endLineNumber is 0 when things got deleted*/, Number.MAX_SAFE_INTEGER)

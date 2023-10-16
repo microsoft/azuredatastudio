@@ -7,7 +7,7 @@ import 'vs/css!./code';
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange, forwardRef, ChangeDetectorRef } from '@angular/core';
 
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
-import { ICellModel, CellExecutionState } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, CellExecutionState, CellEditModes } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { RunCellAction, CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
@@ -17,12 +17,10 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModel } from 'vs/editor/common/model';
 import * as DOM from 'vs/base/browser/dom';
-import { IModeService } from 'vs/editor/common/services/modeService';
-import { IModelService } from 'vs/editor/common/services/modelService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
-import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookService, OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
@@ -35,6 +33,14 @@ import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { localize } from 'vs/nls';
+import { IQuickInputService, QuickPickInput } from 'vs/platform/quickinput/common/quickInput';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { getIconClasses } from 'vs/editor/common/services/getIconClasses';
+import { URI } from 'vs/base/common/uri';
+import { ILanguagePickInput } from 'vs/workbench/contrib/notebook/browser/controller/editActions';
+import { ILanguageService } from 'vs/editor/common/languages/language';
+import { IModelService } from 'vs/editor/common/services/model';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -47,6 +53,7 @@ const DEFAULT_OR_LOCAL_CONTEXT_ID = '-1';
 export class CodeComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
+	@ViewChild('cellLanguage', { read: ElementRef }) private languageElement: ElementRef;
 
 	public get cellModel(): ICellModel {
 		return this._cellModel;
@@ -56,7 +63,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._cellModel = value;
 		if (this.toolbarElement && value && value.cellType === CellTypes.Markdown) {
 			let nativeToolbar = <HTMLElement>this.toolbarElement.nativeElement;
-			DOM.addClass(nativeToolbar, MARKDOWN_CLASS);
+			nativeToolbar.classList.add(MARKDOWN_CLASS);
 		}
 	}
 
@@ -90,18 +97,18 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	private _editor: QueryTextEditor;
 	private _editorInput: UntitledTextEditorInput;
 	private _editorModel: ITextModel;
-	private _model: NotebookModel;
 	private _activeCellId: string;
 	private _layoutEmitter = new Emitter<void>();
-
 	constructor(
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
-		@Inject(IModeService) private _modeService: IModeService,
+		@Inject(ILanguageService) private _languageService: ILanguageService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
-		@Inject(ILogService) private readonly logService: ILogService
+		@Inject(ILogService) private readonly logService: ILogService,
+		@Inject(IQuickInputService) private _quickInputService: IQuickInputService,
+		@Inject(INotebookService) private _notebookService: INotebookService,
 	) {
 		super();
 		this._register(Event.debounce(this._layoutEmitter.event, (l, e) => e, 250, /*leading=*/false)
@@ -132,16 +139,24 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		}
 	}
 
-	public getEditor(): QueryTextEditor {
-		return this._editor;
+	public refreshCell(): void {
+		this.updateModel();
 	}
 
-	public hasEditor(): boolean {
-		return true;
+	public override getEditor(): QueryTextEditor {
+		return this._editor;
 	}
 
 	public cellGuid(): string {
 		return this.cellModel.cellGuid;
+	}
+
+	get cellLanguageTitle(): string {
+		return localize('selectCellLanguage', "Select Cell Language Mode");
+	}
+
+	get parametersText(): string {
+		return localize('parametersText', "Parameters");
 	}
 
 	private updateConnectionState(shouldConnect: boolean) {
@@ -151,7 +166,15 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			if (!shouldConnect && connectionService && connectionService.isConnected(cellUri)) {
 				connectionService.disconnect(cellUri).catch(e => this.logService.error(e));
 			} else if (shouldConnect && this._model.context && this._model.context.id !== DEFAULT_OR_LOCAL_CONTEXT_ID) {
-				connectionService.connect(this._model.context, cellUri).catch(e => this.logService.error(e));
+				// Don't connect immediately in case the user is switching cells quickly (such as holding down the arrow key to navigate through cells)
+				// Instead wait a small bit and then check if the cell is still active, and if it is at that point then connect so we aren't thrashing
+				// connections
+				setTimeout(() => {
+					if (this.isActive()) {
+						connectionService.connect(this._model.context, cellUri).catch(e => this.logService.error(e));
+					}
+				}, 250);
+
 			}
 		}
 	}
@@ -227,7 +250,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._register(this._editorInput);
 		this._register(this._editorModel.onDidChangeContent(e => {
 			this.cellModel.modelContentChangedEvent = e;
-
 			let originalSourceLength = this.cellModel.source.length;
 			this.cellModel.source = this._editorModel.getValue();
 			if (this._cellModel.isCollapsed && originalSourceLength !== this.cellModel.source.length) {
@@ -237,6 +259,8 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 
 			this.onContentChanged.emit();
 			this.checkForLanguageMagics();
+			// When content is updated we have to also update the horizontal scrollbar
+			this.horizontalScrollbar();
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('editor.wordWrap') || e.affectsConfiguration('editor.fontSize')) {
@@ -244,20 +268,34 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			}
 		}));
 		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire(), this));
+		// Handles mouse wheel and scrollbar events
+		this._register(Event.debounce(this.model.onScroll.event, (l, e) => e, 250, /*leading=*/false)
+			(() => this.horizontalScrollbar()));
 		this._register(this.cellModel.onExecutionStateChange(event => {
 			if (event === CellExecutionState.Running && !this.cellModel.stdInVisible) {
 				this.setFocusAndScroll();
 			}
 		}));
+		this._register(this.cellModel.onLanguageChanged(language => {
+			let nativeElement = <HTMLElement>this.languageElement.nativeElement;
+			nativeElement.innerText = this.cellModel.displayLanguage;
+			nativeElement.ariaLabel = this.cellModel.displayLanguage;
+			this.updateLanguageMode();
+			this._changeRef.detectChanges();
+		}));
 		this._register(this.cellModel.onCollapseStateChanged(isCollapsed => {
 			this.onCellCollapse(isCollapsed);
 		}));
-		this._register(this.cellModel.onCellPreviewModeChanged((e) => {
-			if (!e && this._cellModel.cellSourceChanged) {
+		this._register(this.cellModel.onCurrentEditModeChanged((e) => {
+			let preview = e !== CellEditModes.MARKDOWN;
+			if (!preview && this._cellModel.cellSourceChanged) {
 				this.updateModel();
 				this._cellModel.cellSourceChanged = false;
 			}
 			this._layoutEmitter.fire();
+		}));
+		this._register(this.cellModel.onCellEditModeChanged((isEditMode) => {
+			this.onCellEditModeChanged(isEditMode);
 		}));
 
 		this.layout();
@@ -272,6 +310,55 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			DOM.getContentWidth(this.codeElement.nativeElement),
 			DOM.getContentHeight(this.codeElement.nativeElement)));
 		this._editor.setHeightToScrollHeight(false, this._cellModel.isCollapsed);
+		this.horizontalScrollbar();
+		// Move cursor to the last known location
+		if (this.cellModel.markdownCursorPosition) {
+			this._editor.getControl().setPosition(this.cellModel.markdownCursorPosition);
+		}
+	}
+
+	/**
+	 * Horizontal Scrollbar function will ensure we only calculate and trigger this if word wrap is off and it is a markdown cell
+	 * This will adjust the horizontal scrollbar to either a fixed position at the bottom of the viewport (visible area)
+	 * or it will set it to the bottom of the markdown editor if it is in the viewport (visible area)
+	 */
+	public horizontalScrollbar(): void {
+		let showScrollbar: boolean = this._editor.shouldAddHorizontalScrollbar;
+		let horizontalScrollbar: HTMLElement = this.codeElement.nativeElement.querySelector('div.scrollbar.horizontal');
+		if (this._configurationService.getValue('editor.wordWrap') === 'off' && this.cellModel.cellType !== CellTypes.Code && this.cellModel.source.length > 0 && showScrollbar) {
+			// Get markdown split view horizontal scrollbar
+			let viewport: HTMLElement = document.querySelector('.scrollable');
+			let markdownEditor: HTMLElement = this.codeElement.nativeElement.closest('.show-markdown .editor');
+
+			//Get values based on current context of the editor and ADS window
+			let markdownEditorBottom = Math.floor(markdownEditor.getBoundingClientRect().bottom);
+			let viewportBottom = Math.floor(viewport.getBoundingClientRect().bottom);
+			let viewportHeight = DOM.getTotalHeight(viewport);
+			let viewportTop = Math.floor(document.querySelector('.scrollable').getBoundingClientRect().top);
+
+			// Have to offset the height based on the contents viewport and the additional scrollbars that are present in markdown editor and notebook
+			let horizontalTop = Math.floor(Math.abs(viewportTop + viewportHeight) - Math.abs(2 * horizontalScrollbar.scrollHeight));
+
+			// Set opacity for both fixed and absolute
+			horizontalScrollbar.style.opacity = '1';
+
+			// If the bottom of the editor is in the viewport, then set the horizontal scrollbar to the bottom of the editor space
+			if (markdownEditorBottom < viewportBottom) {
+				horizontalScrollbar.style.position = 'absolute';
+				horizontalScrollbar.style.left = '0px';
+				horizontalScrollbar.style.top = '';
+				horizontalScrollbar.style.bottom = '0px';
+				// If the bottom of the editor is not in the viewport, then set the horizontal scrollbar to the bottom of the viewport
+			} else {
+				horizontalScrollbar.style.position = 'fixed';
+				horizontalScrollbar.style.left = '';
+				horizontalScrollbar.style.top = horizontalTop + 'px';
+				horizontalScrollbar.style.bottom = '';
+			}
+		} else {
+			// If horizontal scrollbar is not needed then set do not show it
+			horizontalScrollbar.style.opacity = '0';
+		}
 	}
 
 	protected initActionBar() {
@@ -310,8 +397,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 						this.cellModel.setOverrideLanguage(magic.language);
 						this.updateLanguageMode();
 					}
-				} else {
-					this.cellModel.setOverrideLanguage(undefined);
 				}
 			}
 		} catch (err) {
@@ -321,8 +406,9 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 
 	private updateLanguageMode(): void {
 		if (this._editorModel && this._editor) {
-			let modeValue = this._modeService.create(this.cellModel.language);
-			this._modelService.setMode(this._editorModel, modeValue);
+			// let modeValue = this._languageService.createById(this.cellModel.language);
+			// {{SQL CARBON TODO}} - do we still need this
+			// this._modelService.setMode(this._editorModel, modeValue);
 		}
 	}
 
@@ -362,5 +448,90 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			editorWidget.setHiddenAreas([]);
 		}
 		this._editor.setHeightToScrollHeight(false, isCollapsed);
+	}
+
+	private onCellEditModeChanged(isEditMode: boolean): void {
+		if (this.cellModel.id === this._activeCellId || this._activeCellId === '') {
+			if (isEditMode) {
+				this._editor.getControl().focus();
+			} else {
+				(document.activeElement as HTMLElement).blur();
+			}
+		}
+	}
+
+	public onCellLanguageClick(): void {
+		this._notebookService.getSupportedLanguagesForProvider(this._model.providerId, this._model.selectedKernelDisplayName)
+			.then(languages => this.pickCellLanguage(languages))
+			.then(selection => {
+				if (selection?.languageId) {
+					this._cellModel.setOverrideLanguage(selection.languageId);
+				}
+			})
+			.catch(err => onUnexpectedError(err));
+	}
+
+	public onCellLanguageFocus(): void {
+		this._model.updateActiveCell(this._cellModel);
+	}
+
+	private pickCellLanguage(languages: string[]): Promise<ILanguagePickInput | undefined> {
+		if (languages.length === 0) {
+			languages = [this._cellModel.language];
+		}
+
+		const topItems: ILanguagePickInput[] = [];
+		const mainItems: ILanguagePickInput[] = [];
+		languages.forEach(lang => {
+			let description: string;
+			if (lang === this._cellModel.language) {
+				description = localize('cellLanguageDescription', "({0}) - Current Language", lang);
+			} else {
+				description = localize('cellLanguageDescriptionConfigured', "({0})", lang);
+			}
+
+			const languageName = this._languageService.getLanguageName(lang) ?? lang;
+			const item = <ILanguagePickInput>{
+				label: languageName,
+				iconClasses: getIconClasses(this._modelService, this._languageService, this.getFakeResource(languageName, this._languageService)),
+				description,
+				languageId: lang
+			};
+			if (lang === this._cellModel.language) {
+				topItems.push(item);
+			} else {
+				mainItems.push(item);
+			}
+		});
+
+		mainItems.sort((a, b) => {
+			return a.description.localeCompare(b.description);
+		});
+
+		const picks: QuickPickInput[] = [
+			...topItems,
+			{ type: 'separator' },
+			...mainItems
+		];
+		return this._quickInputService.pick(picks, { placeHolder: this.cellLanguageTitle, canPickMany: false }) as Promise<ILanguagePickInput | undefined>;
+	}
+
+	/**
+	 * Copied from coreActions.ts
+	 */
+	private getFakeResource(lang: string, languageService: ILanguageService): URI | undefined {
+		let fakeResource: URI | undefined;
+
+		const extensions = languageService.getExtensions(lang);
+		if (extensions?.length) {
+			fakeResource = URI.file(extensions[0]);
+		} else {
+			const filenames = languageService.getFilenames(lang);
+			if (filenames?.length) {
+				fakeResource = URI.file(filenames[0]);
+			}
+		}
+
+		return fakeResource;
 	}
 }

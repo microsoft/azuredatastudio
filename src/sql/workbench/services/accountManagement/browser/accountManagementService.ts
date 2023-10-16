@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { Memento } from 'vs/workbench/common/memento';
 
 import AccountStore from 'sql/platform/accounts/common/accountStore';
@@ -20,12 +20,15 @@ import { Deferred } from 'sql/base/common/promise';
 import { localize } from 'vs/nls';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
-import { firstIndex } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
-import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { INotificationService, Severity, INotification } from 'vs/platform/notification/common/notification';
 import { Action } from 'vs/base/common/actions';
+import { DisposableStore } from 'vs/base/common/lifecycle';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { TelemetryAction, TelemetryError, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
+import { Iterable } from 'vs/base/common/iterator';
+import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -38,6 +41,8 @@ export class AccountManagementService implements IAccountManagementService {
 	private _accountDialogController?: AccountDialogController;
 	private _autoOAuthDialogController?: AutoOAuthDialogController;
 	private _mementoContext?: Memento;
+	public providerMap = new Map<string, azdata.AccountProviderMetadata>();
+	protected readonly disposables = new DisposableStore();
 
 	// EVENT EMITTERS //////////////////////////////////////////////////////
 	private _addAccountProviderEmitter: Emitter<AccountProviderAddedEventParams>;
@@ -51,20 +56,18 @@ export class AccountManagementService implements IAccountManagementService {
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
-		private _mementoObj: object,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IStorageService private _storageService: IStorageService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IOpenerService private _openerService: IOpenerService,
 		@ILogService private readonly _logService: ILogService,
-		@INotificationService private readonly _notificationService: INotificationService
+		@INotificationService private readonly _notificationService: INotificationService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
+		@IQuickInputService private _quickInputService: IQuickInputService
 	) {
-		// Create the account store
-		if (!this._mementoObj) {
-			this._mementoContext = new Memento(AccountManagementService.ACCOUNT_MEMENTO, this._storageService);
-			this._mementoObj = this._mementoContext.getMemento(StorageScope.GLOBAL);
-		}
-		this._accountStore = this._instantiationService.createInstance(AccountStore, this._mementoObj);
+		this._mementoContext = new Memento(AccountManagementService.ACCOUNT_MEMENTO, this._storageService);
+		const mementoObj = this._mementoContext.getMemento(StorageScope.APPLICATION, StorageTarget.MACHINE);
+		this._accountStore = this._instantiationService.createInstance(AccountStore, mementoObj);
 
 		// Setup the event emitters
 		this._addAccountProviderEmitter = new Emitter<AccountProviderAddedEventParams>();
@@ -114,6 +117,34 @@ export class AccountManagementService implements IAccountManagementService {
 
 	}
 
+	public async promptProvider(): Promise<string | undefined> {
+		const vals = Iterable.consume(this.providerMap.values())[0];
+
+		let pickedValue: string | undefined;
+		if (vals.length === 0) {
+			this._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
+		}
+		if (vals.length > 1) {
+			const buttons: IQuickPickItem[] = vals.map(v => {
+				return { label: v.displayName } as IQuickPickItem;
+			});
+
+			const picked = await this._quickInputService.pick(buttons, { canPickMany: false });
+
+			pickedValue = picked?.label;
+		} else {
+			pickedValue = vals[0].displayName;
+		}
+
+		const v = vals.filter(v => v.displayName === pickedValue)?.[0];
+
+		if (!v) {
+			this._notificationService.error(localize('accountDialog.didNotPickAuthProvider', "You didn't select any authentication provider. Please try again."));
+			return undefined;
+		}
+		return v.id;
+	}
+
 	/**
 	 * Asks the requested provider to prompt for an account
 	 * @param providerId ID of the provider to ask to prompt for an account
@@ -121,7 +152,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 */
 	public addAccount(providerId: string): Promise<void> {
 		const closeAction: Action = new Action('closeAddingAccount', localize('accountManagementService.close', "Close"), undefined, true);
-
+		const genericAccountErrorMessage = localize('addAccountFailedGenericMessage', 'Adding account failed, check Azure Accounts log for more info.')
 		const loginNotification: INotification = {
 			severity: Severity.Info,
 			message: localize('loggingIn', "Adding account..."),
@@ -136,12 +167,29 @@ export class AccountManagementService implements IAccountManagementService {
 		return this.doWithProvider(providerId, async (provider) => {
 			const notificationHandler = this._notificationService.notify(loginNotification);
 			try {
-				let account = await provider.provider.prompt();
-				if (this.isCanceledResult(account)) {
-					return;
+				let accountResult = await provider.provider.prompt();
+				if (!this.isAccountResult(accountResult)) {
+					if (accountResult.canceled === true) {
+						return;
+					} else {
+						this._telemetryService.createErrorEvent(TelemetryView.LinkedAccounts, TelemetryError.AddAzureAccountError, accountResult.errorCode,
+							this.getErrorType(accountResult.errorMessage))
+							.send();
+						if (accountResult.errorCode && accountResult.errorMessage) {
+							throw new Error(localize('addAccountFailedCodeMessage', `{0} \nError Message: {1}`, accountResult.errorCode, accountResult.errorMessage));
+						} else {
+							throw new Error(accountResult.errorMessage ?? genericAccountErrorMessage);
+						}
+					}
 				}
-
-				let result = await this._accountStore.addOrUpdate(account);
+				let result = await this._accountStore.addOrUpdate(accountResult);
+				if (!result) {
+					this._logService.error('Adding account failed, no result received.');
+					this._telemetryService.createErrorEvent(TelemetryView.LinkedAccounts, TelemetryError.AddAzureAccountErrorNoResult, '-1',
+						this.getErrorType())
+						.send();
+					throw new Error(genericAccountErrorMessage);
+				}
 				if (result.accountAdded) {
 					// Add the account to the list
 					provider.accounts.push(result.changedAccount);
@@ -149,7 +197,8 @@ export class AccountManagementService implements IAccountManagementService {
 				if (result.accountModified) {
 					this.spliceModifiedAccount(provider, result.changedAccount);
 				}
-
+				this._telemetryService.createActionEvent(TelemetryView.LinkedAccounts, TelemetryAction.AddAzureAccount)
+					.send();
 				this.fireAccountListUpdate(provider, result.accountAdded);
 			} finally {
 				notificationHandler.close();
@@ -157,8 +206,30 @@ export class AccountManagementService implements IAccountManagementService {
 		});
 	}
 
-	private isCanceledResult(result: azdata.Account | azdata.PromptFailedResult): result is azdata.PromptFailedResult {
-		return (<azdata.PromptFailedResult>result).canceled;
+	/**
+	 * Adds an account to the account store without prompting the user
+	 * @param account account to add
+	 */
+	public addAccountWithoutPrompt(account: azdata.Account): Promise<void> {
+		return this.doWithProvider(account.key.providerId, async (provider) => {
+			let result = await this._accountStore.addOrUpdate(account);
+			if (!result) {
+				this._logService.error('adding account failed');
+			}
+			if (result.accountAdded) {
+				// Add the account to the list
+				provider.accounts.push(result.changedAccount);
+			}
+			if (result.accountModified) {
+				this.spliceModifiedAccount(provider, result.changedAccount);
+			}
+
+			this.fireAccountListUpdate(provider, result.accountAdded);
+		});
+	}
+
+	private isAccountResult(result: azdata.Account | azdata.PromptFailedResult): result is azdata.Account {
+		return typeof (<azdata.Account>result).displayInfo === 'object';
 	}
 
 	/**
@@ -167,25 +238,48 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @return Promise to return an account
 	 */
 	public refreshAccount(account: azdata.Account): Promise<azdata.Account> {
-		let self = this;
-
+		const genericAccountErrorMessage = localize('refreshAccountFailedGenericMessage', 'Refreshing account failed, check Azure Accounts log for more info.')
 		return this.doWithProvider(account.key.providerId, async (provider) => {
 			let refreshedAccount = await provider.provider.refresh(account);
-			if (self.isCanceledResult(refreshedAccount)) {
-				// Pattern here is to throw if this fails. Handled upstream.
-				throw new Error(localize('refreshFailed', "Refresh account was canceled by the user"));
+			if (!this.isAccountResult(refreshedAccount)) {
+				if (refreshedAccount.canceled) {
+					// Pattern here is to throw if this fails. Handled upstream.
+					throw new Error(localize('refreshCanceled', "Refresh account was canceled by the user"));
+				} else {
+					this._telemetryService.createErrorEvent(TelemetryView.LinkedAccounts, TelemetryError.RefreshAzureAccountError, refreshedAccount.errorCode,
+						this.getErrorType(refreshedAccount.errorMessage))
+						.send();
+					if (refreshedAccount.errorCode && refreshedAccount.errorMessage) {
+						throw new Error(localize('refreshFailed', `{0} \nError Message: {1}`, refreshedAccount.errorCode, refreshedAccount.errorMessage));
+					} else {
+						throw new Error(refreshedAccount.errorMessage ?? genericAccountErrorMessage);
+					}
+				}
 			} else {
 				account = refreshedAccount;
 			}
 
-			let result = await self._accountStore.addOrUpdate(account);
+			let result = await this._accountStore.addOrUpdate(account);
+			if (!result) {
+				this._logService.error('Refreshing account failed, no result received.');
+				this._telemetryService.createErrorEvent(TelemetryView.LinkedAccounts, TelemetryError.RefreshAzureAccountErrorNoResult, '-1',
+					this.getErrorType())
+					.send();
+				throw new Error(genericAccountErrorMessage);
+			}
 			if (result.accountAdded) {
+				// Double check that there isn't a matching account
+				let indexToRemove = this.findAccountIndex(provider.accounts, result.changedAccount);
+				if (indexToRemove >= 0) {
+					this._accountStore.remove(provider.accounts[indexToRemove].key);
+					provider.accounts.splice(indexToRemove, 1);
+				}
 				// Add the account to the list
 				provider.accounts.push(result.changedAccount!);
 			}
 			if (result.accountModified) {
-				// Find the updated account and splice the updated on in
-				let indexToRemove: number = firstIndex(provider.accounts, account => {
+				// Find the updated account and splice the updated one in
+				let indexToRemove: number = provider.accounts.findIndex(account => {
 					return account.key.accountId === result.changedAccount!.key.accountId;
 				});
 				if (indexToRemove >= 0) {
@@ -193,9 +287,25 @@ export class AccountManagementService implements IAccountManagementService {
 				}
 			}
 
-			self.fireAccountListUpdate(provider, result.accountAdded);
+			this._telemetryService.createActionEvent(TelemetryView.LinkedAccounts, TelemetryAction.RefreshAzureAccount)
+				.send();
+			this.fireAccountListUpdate(provider, result.accountAdded);
 			return result.changedAccount!;
 		});
+	}
+
+	private getErrorType(errorMessage?: string | undefined): string {
+		let errorType: string = 'Unknown';
+		if (errorMessage) {
+			if (errorMessage.toLocaleLowerCase().includes('token')) {
+				errorType = 'AccessToken';
+			} else if (errorMessage.toLocaleLowerCase().includes('timeout')) {
+				errorType = 'Timeout';
+			} else if (errorMessage.toLocaleLowerCase().includes('cache')) {
+				errorType = 'TokenCache'
+			}
+		}
+		return errorType;
 	}
 
 	/**
@@ -215,7 +325,8 @@ export class AccountManagementService implements IAccountManagementService {
 		let self = this;
 
 		// 1) Get the accounts from the store
-		// 2) Update our local cache of accounts
+		// 2) Filter the accounts based on the auth library
+		// 3) Update our local cache of accounts
 		return this.doWithProvider(providerId, provider => {
 			return self._accountStore.getAccountsByProvider(provider.metadata.id)
 				.then(accounts => {
@@ -226,7 +337,7 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	/**
-	 * Retrieves all the accounts registered with ADS.
+	 * Retrieves all the accounts registered with ADS based on auth library in use.
 	 */
 	public getAccounts(): Promise<azdata.Account[]> {
 		return this._accountStore.getAllAccounts();
@@ -251,9 +362,9 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @param resource The resource to get the security token for
 	 * @return Promise to return the security token
 	 */
-	public getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<{ token: string } | undefined> {
-		return this.doWithProvider(account.key.providerId, provider => {
-			return Promise.resolve(provider.provider.getAccountSecurityToken(account, tenant, resource));
+	public getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<azdata.accounts.AccountSecurityToken | undefined> {
+		return this.doWithProvider(account.key.providerId, async provider => {
+			return await provider.provider.getAccountSecurityToken(account, tenant, resource);
 		});
 	}
 
@@ -270,18 +381,19 @@ export class AccountManagementService implements IAccountManagementService {
 		// Step 3) Update the account cache and fire an event
 		return this.doWithProvider(accountKey.providerId, async provider => {
 			const result = await this._accountStore.remove(accountKey);
+			let indexToRemove: number = provider.accounts.findIndex(account => {
+				return account.key.accountId === accountKey.accountId;
+			});
 			await provider.provider.clear(accountKey);
 			if (!result) {
 				return result;
 			}
 
-			let indexToRemove: number = firstIndex(provider.accounts, account => {
-				return account.key.accountId === accountKey.accountId;
-			});
-
 			if (indexToRemove >= 0) {
 				provider.accounts.splice(indexToRemove, 1);
 				this.fireAccountListUpdate(provider, false);
+			} else {
+				this._logService.error(`Error when removing an account: ${accountKey.accountId} could not find account in provider list.`);
 			}
 			return result;
 		});
@@ -346,7 +458,7 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	/**
-	 * End auto OAuth Devide code closes add account dialog
+	 * End auto OAuth Device code closes add account dialog
 	 */
 	public endAutoOAuthDeviceCode(): void {
 		this.autoOAuthDialogController.closeAutoOAuthDialog();
@@ -367,12 +479,13 @@ export class AccountManagementService implements IAccountManagementService {
 	/**
 	 * Copy the user code to the clipboard and open a browser to the verification URI
 	 */
-	public copyUserCodeAndOpenBrowser(userCode: string, uri: string): void {
-		this._clipboardService.writeText(userCode).catch(err => onUnexpectedError(err));
-		this._openerService.open(URI.parse(uri)).catch(err => onUnexpectedError(err));
+	public async copyUserCodeAndOpenBrowser(userCode: string, uri: string): Promise<boolean> {
+		await this._clipboardService.writeText(userCode);
+		return await this._openerService.open(URI.parse(uri));
 	}
 
 	private async _registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Promise<void> {
+		this.providerMap.set(providerMetadata.id, providerMetadata);
 		this._providers[providerMetadata.id] = {
 			metadata: providerMetadata,
 			provider: provider,
@@ -382,8 +495,8 @@ export class AccountManagementService implements IAccountManagementService {
 		const accounts = await this._accountStore.getAccountsByProvider(providerMetadata.id);
 		const updatedAccounts = await provider.initialize(accounts);
 
-		// Don't add the accounts that are about to get deleted to the cache.
-		this._providers[providerMetadata.id].accounts = updatedAccounts.filter(s => s.delete === false);
+		// Don't add the accounts that are explicitly marked to be deleted to the cache.
+		this._providers[providerMetadata.id].accounts = updatedAccounts.filter(s => !s.delete);
 
 		const writePromises = updatedAccounts.map(async (account) => {
 			if (account.delete === true) {
@@ -422,6 +535,9 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	public unregisterProvider(providerMetadata: azdata.AccountProviderMetadata): void {
+		this.providerMap.delete(providerMetadata.id);
+		const p = this._providers[providerMetadata.id];
+		this.fireAccountListUpdate(p, false);
 		// Delete this account provider
 		delete this._providers[providerMetadata.id];
 
@@ -473,12 +589,27 @@ export class AccountManagementService implements IAccountManagementService {
 
 	private spliceModifiedAccount(provider: AccountProviderWithMetadata, modifiedAccount: azdata.Account) {
 		// Find the updated account and splice the updated one in
-		let indexToRemove: number = firstIndex(provider.accounts, account => {
+		let indexToRemove: number = provider.accounts.findIndex(account => {
 			return account.key.accountId === modifiedAccount.key.accountId;
 		});
 		if (indexToRemove >= 0) {
 			provider.accounts.splice(indexToRemove, 1, modifiedAccount);
 		}
+	}
+
+	public findAccountIndex(accounts: azdata.Account[], accountToFind: azdata.Account): number {
+		let indexToRemove: number = accounts.findIndex(account => {
+			// corner case handling for personal accounts
+			if (account.key.accountId.includes('#') || accountToFind.key.accountId.includes('#')) {
+				return account.displayInfo.email === accountToFind.displayInfo.email;
+			}
+			// MSAL account added
+			if (accountToFind.key.accountId.includes('.')) {
+				return account.key.accountId === accountToFind!.key.accountId.split('.')[0];
+			}
+			return account.key.accountId === accountToFind!.key.accountId;
+		});
+		return indexToRemove;
 	}
 }
 

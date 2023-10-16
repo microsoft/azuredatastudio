@@ -23,19 +23,18 @@ export class CancelAction extends Action {
 	) {
 		super(id, label);
 	}
-	public run(element: TaskNode): Promise<boolean> {
-		if (element instanceof TaskNode && element.providerName) {
-			this._taskService.cancelTask(element.providerName, element.id).then((result) => {
+	public override async run(element: TaskNode): Promise<void> {
+		if (element instanceof TaskNode) {
+			try {
+				const result = await this._taskService.cancelTask(element.providerName, element.id);
 				if (!result) {
-					let error = localize('errorMsgFromCancelTask', "The task is failed to cancel.");
+					let error = localize('errorMsgFromCancelTask', "The task failed to cancel.");
 					this.showError(error);
 				}
-			}, error => {
+			} catch (error) {
 				this.showError(error);
-				return Promise.resolve(true);
-			});
+			}
 		}
-		return Promise.resolve(true);
 	}
 
 	private showError(errorMessage: string) {
@@ -57,12 +56,11 @@ export class ScriptAction extends Action {
 		super(id, label);
 	}
 
-	public async run(element: TaskNode): Promise<boolean> {
+	public override async run(element: TaskNode): Promise<void> {
 		if (element instanceof TaskNode) {
-			if (element.script && element.script !== '') {
-				this._queryEditorService.newSqlEditor({ initalContent: element.script });
+			if (element.script) {
+				await this._queryEditorService.newSqlEditor({ initialContent: element.script });
 			}
 		}
-		return true;
 	}
 }

@@ -3,92 +3,46 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { Codicon } from 'vs/base/common/codicons';
 import { Color } from 'vs/base/common/color';
-import { IDisposable, toDisposable, Disposable } from 'vs/base/common/lifecycle';
+import { Emitter, Event } from 'vs/base/common/event';
+import { Disposable, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import * as platform from 'vs/platform/registry/common/platform';
 import { ColorIdentifier } from 'vs/platform/theme/common/colorRegistry';
-import { Event, Emitter } from 'vs/base/common/event';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { IconContribution, IconDefinition } from 'vs/platform/theme/common/iconRegistry';
+import { ColorScheme } from 'vs/platform/theme/common/theme';
 
 export const IThemeService = createDecorator<IThemeService>('themeService');
-
-export interface ThemeColor {
-	id: string;
-}
 
 export function themeColorFromId(id: ColorIdentifier) {
 	return { id };
 }
 
-// theme icon
-export interface ThemeIcon {
-	readonly id: string;
-}
+export const FileThemeIcon = Codicon.file;
+export const FolderThemeIcon = Codicon.folder;
 
-export namespace ThemeIcon {
-	export function isThemeIcon(obj: any): obj is ThemeIcon {
-		return obj && typeof obj === 'object' && typeof (<ThemeIcon>obj).id === 'string';
-	}
-
-	const _regexFromString = /^\$\(([a-z.]+\/)?([a-z-~]+)\)$/i;
-
-	export function fromString(str: string): ThemeIcon | undefined {
-		const match = _regexFromString.exec(str);
-		if (!match) {
-			return undefined;
-		}
-		let [, owner, name] = match;
-		if (!owner) {
-			owner = `codicon/`;
-		}
-		return { id: owner + name };
-	}
-
-	const _regexAsClassName = /^(codicon\/)?([a-z-]+)(~[a-z]+)?$/i;
-
-	export function asClassName(icon: ThemeIcon): string | undefined {
-		// todo@martin,joh -> this should go into the ThemeService
-		const match = _regexAsClassName.exec(icon.id);
-		if (!match) {
-			return undefined;
-		}
-		let [, , name, modifier] = match;
-		let className = `codicon codicon-${name}`;
-		if (modifier) {
-			className += ` ${modifier.substr(1)}`;
-		}
-		return className;
-	}
-}
-
-export const FileThemeIcon = { id: 'file' };
-export const FolderThemeIcon = { id: 'folder' };
-
-// base themes
-export const DARK: ThemeType = 'dark';
-export const LIGHT: ThemeType = 'light';
-export const HIGH_CONTRAST: ThemeType = 'hc';
-export type ThemeType = 'light' | 'dark' | 'hc';
-
-export function getThemeTypeSelector(type: ThemeType): string {
+export function getThemeTypeSelector(type: ColorScheme): string {
 	switch (type) {
-		case DARK: return 'vs-dark';
-		case HIGH_CONTRAST: return 'hc-black';
+		case ColorScheme.DARK: return 'vs-dark';
+		case ColorScheme.HIGH_CONTRAST_DARK: return 'hc-black';
+		case ColorScheme.HIGH_CONTRAST_LIGHT: return 'hc-light';
 		default: return 'vs';
 	}
 }
 
 export interface ITokenStyle {
-	readonly foreground?: number;
-	readonly bold?: boolean;
-	readonly underline?: boolean;
-	readonly italic?: boolean;
+	readonly foreground: number | undefined;
+	readonly bold: boolean | undefined;
+	readonly underline: boolean | undefined;
+	readonly strikethrough: boolean | undefined;
+	readonly italic: boolean | undefined;
 }
 
 export interface IColorTheme {
 
-	readonly type: ThemeType;
+	readonly type: ColorScheme;
 
 	readonly label: string;
 
@@ -128,6 +82,16 @@ export interface IFileIconTheme {
 	readonly hidesExplorerArrows: boolean;
 }
 
+export interface IProductIconTheme {
+	/**
+	 * Resolves the definition for the given icon as defined by the theme.
+	 *
+	 * @param iconContribution The icon
+	 */
+	getIcon(iconContribution: IconContribution): IconDefinition | undefined;
+}
+
+
 export interface ICssStyleCollector {
 	addRule(rule: string): void;
 }
@@ -146,6 +110,10 @@ export interface IThemeService {
 	getFileIconTheme(): IFileIconTheme;
 
 	readonly onDidFileIconThemeChange: Event<IFileIconTheme>;
+
+	getProductIconTheme(): IProductIconTheme;
+
+	readonly onDidProductIconThemeChange: Event<IProductIconTheme>;
 
 }
 
@@ -193,7 +161,7 @@ class ThemingRegistry implements IThemingRegistry {
 	}
 }
 
-let themingRegistry = new ThemingRegistry();
+const themingRegistry = new ThemingRegistry();
 platform.Registry.add(Extensions.ThemingContribution, themingRegistry);
 
 export function registerThemingParticipant(participant: IThemingParticipant): IDisposable {
@@ -223,7 +191,7 @@ export class Themable extends Disposable {
 		this.updateStyles();
 	}
 
-	protected updateStyles(): void {
+	updateStyles(): void {
 		// Subclasses to override
 	}
 
@@ -236,4 +204,30 @@ export class Themable extends Disposable {
 
 		return color ? color.toString() : null;
 	}
+}
+
+export interface IPartsSplash {
+	zoomLevel: number | undefined;
+	baseTheme: string;
+	colorInfo: {
+		background: string;
+		foreground: string | undefined;
+		editorBackground: string | undefined;
+		titleBarBackground: string | undefined;
+		activityBarBackground: string | undefined;
+		sideBarBackground: string | undefined;
+		statusBarBackground: string | undefined;
+		statusBarNoFolderBackground: string | undefined;
+		windowBorder: string | undefined;
+	};
+	layoutInfo: {
+		sideBarSide: string;
+		editorPartMinWidth: number;
+		titleBarHeight: number;
+		activityBarWidth: number;
+		sideBarWidth: number;
+		statusBarHeight: number;
+		windowBorder: boolean;
+		windowBorderRadius: string | undefined;
+	} | undefined;
 }

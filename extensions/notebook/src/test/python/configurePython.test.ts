@@ -13,6 +13,7 @@ import { PickPackagesPage } from '../../dialog/configurePython/pickPackagesPage'
 import { python3DisplayName, allKernelsName } from '../../common/constants';
 import { TestContext, createViewContext, TestButton } from '../common';
 import { EventEmitter } from 'vscode';
+import { PythonPathLookup } from '../../dialog/pythonPathLookup';
 
 describe('Configure Python Wizard', function () {
 	let testWizard: ConfigurePythonWizard;
@@ -69,16 +70,21 @@ describe('Configure Python Wizard', function () {
 		should(wizard.wizard.message).be.undefined();
 
 		await wizard.close();
+		await should(wizard.setupComplete).be.resolved();
 	});
 
 	it('Configure Path Page test', async () => {
 		let testPythonLocation = '/not/a/real/path';
-		let model = <ConfigurePythonModel>{
-			useExistingPython: true,
-			pythonPathsPromise: Promise.resolve([{
+		let mockPathLookup = TypeMoq.Mock.ofType(PythonPathLookup);
+		mockPathLookup.setup(p => p.getSuggestions()).returns(() =>
+			Promise.resolve([{
 				installDir: testPythonLocation,
 				version: '4000'
 			}])
+		);
+		let model = <ConfigurePythonModel>{
+			useExistingPython: true,
+			pythonPathLookup: mockPathLookup.object
 		};
 
 		let page = azdata.window.createWizardPage('Page 1');

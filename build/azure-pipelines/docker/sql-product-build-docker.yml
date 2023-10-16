@@ -1,7 +1,7 @@
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: "12.13.0"
+      versionSpec: "16.x"
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
@@ -22,8 +22,10 @@ steps:
       password $(github-distro-mixin-password)
       EOF
 
-      git config user.email "andresse@microsoft.com"
+      git config user.email "sqltools@service.microsoft.com"
       git config user.name "AzureDataStudio"
+      git config --global http.postBuffer 524288000
+      git config --global https.postBuffer 524288000
     displayName: Prepare tooling
 
   - script: |
@@ -34,6 +36,7 @@ steps:
     displayName: Merge distro
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+    displayName: Restore Cache - Node Modules
     inputs:
       keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
       targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
@@ -48,6 +51,7 @@ steps:
     condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
+    displayName: Save Cache - Node Modules
     inputs:
       keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
       targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
@@ -62,7 +66,7 @@ steps:
 
   - script: |
       set -e
-      node build/azure-pipelines/mixin
+      node build/azure-pipelines/sql-mixin
     displayName: Mix in quality
 
   - task: DownloadBuildArtifacts@0
@@ -77,7 +81,7 @@ steps:
       set -e
       for f in $(Build.SourcesDirectory)/.build/drop/linux/server/*.tar.gz
       do
-        tar -C $(agent.builddirectory) -zxvf $f
+        tar -C $(Build.SourcesDirectory)/../ -zxvf $f
         rm $f
       done
     displayName: Unzip artifacts

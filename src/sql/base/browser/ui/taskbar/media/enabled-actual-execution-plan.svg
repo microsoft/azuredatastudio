@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <g id="a495911c-0e61-40bb-bcd5-88ae526d2834" data-name="Icons">
+    <path d="M5,5H0V0H5ZM1,4H4V1H1Z"/>
+    <path d="M16,5H11V0h5ZM12,4h3V1H12Z"/>
+    <path d="M7.975.525l.75.75-.684.692H11V3.033H8.041l.684.692-.75.75L6,2.5Z"/>
+    <path d="M5,16H0V11H5ZM1,15H4V12H1Z"/>
+    <path d="M4.475,7.975l-.75.75-.692-.684V11H1.967V8.041l-.692.684-.75-.75L2.5,6Z"/>
+  </g>
+</svg>

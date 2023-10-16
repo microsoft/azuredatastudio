@@ -5,3 +5,6 @@ out/**
 extension.webpack.config.js
 extension-browser.webpack.config.js
 yarn.lock
+build/**
+schemas/devContainer.codespaces.schema.json
+schemas/devContainer.vscode.schema.json

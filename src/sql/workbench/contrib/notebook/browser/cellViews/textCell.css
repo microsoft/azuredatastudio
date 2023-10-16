@@ -7,8 +7,12 @@ text-cell-component {
 	display: block;
 }
 text-cell-component .notebook-text {
-	display: flex;
+	display: inline-block;
 	outline: none;
+	min-height: 50px;
+}
+text-cell-component .notebook-text.show-preview.show-markdown{
+	display: flex;
 }
 text-cell-component code-component {
 	flex-direction: column;
@@ -18,8 +22,12 @@ text-cell-component .notebook-preview {
 	padding-left: 8px;
 	padding-right: 8px;
 	user-select: none;
-	width: 100%;
 	outline: none;
+	padding-top: 14px;
+}
+text-cell-component .notebook-preview > *:first-child {
+	margin-top: 0;
+	padding-top: 0;
 }
 text-cell-component .show-markdown.show-preview code-component {
 	width: 50%
@@ -29,7 +37,7 @@ text-cell-component .show-markdown .notebook-preview {
 	border-left-width: 1px;
 	border-style: solid;
 	border-top-width: 0;
-	width: 50%
+	width: 50%;
 }
 .notebook-preview.actionselect {
 	user-select: text;
@@ -41,13 +49,6 @@ text-cell-component code-component .monaco-editor .inputarea.ime-input {
 	background-color: transparent;
 }
 
-.vs .notebook-preview .rangeHighlight {
-	background-color: rgba(255, 255, 0, 0.2)
-}
-
-.vs-dark .notebook-preview .rangeHighlight {
-	background-color: rgba(255, 255, 0, 0.2)
-}
 
 text-cell-component table {
 	border-collapse: collapse;
@@ -68,7 +69,6 @@ text-cell-component thead {
 text-cell-component td,
 text-cell-component th,
 text-cell-component tr {
-	text-align: left;
 	vertical-align: middle;
 	padding: 0.5em 0.5em;
 	line-height: normal;

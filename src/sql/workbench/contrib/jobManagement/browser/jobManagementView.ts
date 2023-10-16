@@ -9,7 +9,6 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/contrib/jobManagement/browser/agentView.component';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { IAction, Action } from 'vs/base/common/actions';
-import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -18,6 +17,7 @@ import { JobsRefreshAction, IJobActionInfo } from 'sql/workbench/contrib/jobMana
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
+import { ResolvedKeybinding } from 'vs/base/common/keybindings';
 
 export abstract class JobManagementView extends TabChild implements AfterContentChecked {
 	protected isVisible: boolean = false;

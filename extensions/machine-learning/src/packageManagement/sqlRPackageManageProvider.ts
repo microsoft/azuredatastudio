@@ -60,8 +60,9 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 
 	/**
 	 * Execute a script to install or uninstall a r package inside current SQL Server connection
-	 * @param packageDetails Packages to install or uninstall
 	 * @param scriptMode can be 'install' or 'uninstall'
+	 * @param packageDetails Packages to install or uninstall
+	 * @param databaseName
 	 */
 	protected async executeScripts(scriptMode: ScriptMode, packageDetails: nbExtensionApis.IPackageDetails, databaseName: string): Promise<void> {
 		let connection = await this.getCurrentConnection();
@@ -69,8 +70,8 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 		let connectionParts: string[] = [];
 
 		if (connection) {
-			connectionParts.push(utils.getKeyValueString('driver', constants.supportedODBCDriver));
-			let server = connection.serverName.replace('\\', '\\\\');
+			connectionParts.push(utils.getKeyValueString('driver', `"${constants.supportedODBCDriver}"`));
+			let server = connection.serverName.replace(/\\/g, '\\\\');
 			if (databaseName) {
 				connectionParts.push(utils.getKeyValueString('database', `"${databaseName}"`));
 			}

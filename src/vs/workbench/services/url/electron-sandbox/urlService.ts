@@ -5,14 +5,15 @@
 
 import { IURLService, IURLHandler, IOpenURLOptions } from 'vs/platform/url/common/url';
 import { URI, UriComponents } from 'vs/base/common/uri';
-import { IMainProcessService } from 'vs/platform/ipc/electron-sandbox/mainProcessService';
+import { IMainProcessService } from 'vs/platform/ipc/common/mainProcessService';
 import { URLHandlerChannel } from 'vs/platform/url/common/urlIpc';
 import { IOpenerService, IOpener, matchesScheme } from 'vs/platform/opener/common/opener';
 import { IProductService } from 'vs/platform/product/common/productService';
-import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
-import { createChannelSender } from 'vs/base/parts/ipc/common/ipc';
-import { IElectronService } from 'vs/platform/electron/electron-sandbox/electron';
+import { InstantiationType, registerSingleton } from 'vs/platform/instantiation/common/extensions';
+import { ProxyChannel } from 'vs/base/parts/ipc/common/ipc';
+import { INativeHostService } from 'vs/platform/native/common/native';
 import { NativeURLService } from 'vs/platform/url/common/urlService';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export interface IRelayOpenURLOptions extends IOpenURLOptions {
 	openToSide?: boolean;
@@ -26,31 +27,32 @@ export class RelayURLService extends NativeURLService implements IURLHandler, IO
 	constructor(
 		@IMainProcessService mainProcessService: IMainProcessService,
 		@IOpenerService openerService: IOpenerService,
-		@IElectronService private readonly electronService: IElectronService,
-		@IProductService private readonly productService: IProductService
+		@INativeHostService private readonly nativeHostService: INativeHostService,
+		@IProductService productService: IProductService,
+		@ILogService private readonly logService: ILogService
 	) {
-		super();
+		super(productService);
 
-		this.urlService = createChannelSender(mainProcessService.getChannel('url'));
+		this.urlService = ProxyChannel.toService<IURLService>(mainProcessService.getChannel('url'));
 
 		mainProcessService.registerChannel('urlHandler', new URLHandlerChannel(this));
 		openerService.registerOpener(this);
 	}
 
-	create(options?: Partial<UriComponents>): URI {
+	override create(options?: Partial<UriComponents>): URI {
 		const uri = super.create(options);
 
 		let query = uri.query;
 		if (!query) {
-			query = `windowId=${encodeURIComponent(this.electronService.windowId)}`;
+			query = `windowId=${encodeURIComponent(this.nativeHostService.windowId)}`;
 		} else {
-			query += `&windowId=${encodeURIComponent(this.electronService.windowId)}`;
+			query += `&windowId=${encodeURIComponent(this.nativeHostService.windowId)}`;
 		}
 
 		return uri.with({ query });
 	}
 
-	async open(resource: URI | string, options?: IRelayOpenURLOptions): Promise<boolean> {
+	override async open(resource: URI | string, options?: IRelayOpenURLOptions): Promise<boolean> {
 
 		if (!matchesScheme(resource, this.productService.urlProtocol)) {
 			return false;
@@ -66,11 +68,15 @@ export class RelayURLService extends NativeURLService implements IURLHandler, IO
 		const result = await super.open(uri, options);
 
 		if (result) {
-			await this.electronService.focusWindow({ force: true /* Application may not be active */ });
+			this.logService.trace('URLService#handleURL(): handled', uri.toString(true));
+
+			await this.nativeHostService.focusWindow({ force: true /* Application may not be active */ });
+		} else {
+			this.logService.trace('URLService#handleURL(): not handled', uri.toString(true));
 		}
 
 		return result;
 	}
 }
 
-registerSingleton(IURLService, RelayURLService);
+registerSingleton(IURLService, RelayURLService, InstantiationType.Eager);

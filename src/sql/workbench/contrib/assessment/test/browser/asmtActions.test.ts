@@ -24,13 +24,14 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { OpenerServiceStub } from 'sql/platform/opener/common/openerServiceStub';
+import { OpenerServiceStub } from 'sql/workbench/contrib/opener/common/openerServiceStub';
 import { SqlAssessmentTargetType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestFileService, TestEnvironmentService, TestFileDialogService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { URI } from 'vs/base/common/uri';
 import { IFileService } from 'vs/platform/files/common/files';
+import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 /**
  * Class to test Assessment Management Actions
  */
@@ -120,7 +121,7 @@ suite('Assessment Actions', () => {
 		let connectionManagementService = TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService);
 		connectionManagementService.setup(c => c.listDatabases(TypeMoq.It.isAny())).returns(() => Promise.resolve(dbListResult));
 		connectionManagementService.setup(c => c.getConnectionUriFromId(TypeMoq.It.isAny())).returns(() => '');
-		connectionManagementService.setup(c => c.getConnection(TypeMoq.It.isAny())).returns(() => connectionProfile.object);
+		connectionManagementService.setup(c => c.getConnectionProfile(TypeMoq.It.isAny())).returns(() => connectionProfile.object);
 		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.isAny())).returns(() => Promise.resolve(''));
 
 		return connectionManagementService;
@@ -133,12 +134,16 @@ suite('Assessment Actions', () => {
 
 		const connectionManagementService = createConnectionManagementService(dbListResult);
 
-		const action = new AsmtServerSelectItemsAction(connectionManagementService.object, new NullLogService(), mockAssessmentService.object, new NullAdsTelemetryService());
-		assert.equal(action.id, AsmtServerSelectItemsAction.ID, 'Get Server Rules id action mismatch');
-		assert.equal(action.label, AsmtServerSelectItemsAction.LABEL, 'Get Server Rules label action mismatch');
+		const action = new AsmtServerSelectItemsAction(
+			connectionManagementService.object,
+			new TestCapabilitiesService(),
+			new NullLogService(),
+			mockAssessmentService.object,
+			new NullAdsTelemetryService());
+		assert.strictEqual(action.id, AsmtServerSelectItemsAction.ID, 'Get Server Rules id action mismatch');
+		assert.strictEqual(action.label, AsmtServerSelectItemsAction.LABEL, 'Get Server Rules label action mismatch');
 
-		let result = await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
-		assert.ok(result, 'Get Server Rules action should succeed');
+		await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
 		mockAsmtViewComponent.verify(s => s.showProgress(AssessmentType.AvailableRules), TypeMoq.Times.once());
 		mockAssessmentService.verify(s => s.getAssessmentItems(TypeMoq.It.isAny(), AssessmentTargetType.Server), TypeMoq.Times.once());
 		mockAsmtViewComponent.verify(s => s.showInitialResults(TypeMoq.It.isAny(), AssessmentType.AvailableRules), TypeMoq.Times.once());
@@ -157,12 +162,16 @@ suite('Assessment Actions', () => {
 
 		const connectionManagementService = createConnectionManagementService(dbListResult);
 
-		const action = new AsmtServerInvokeItemsAction(connectionManagementService.object, new NullLogService(), mockAssessmentService.object, new NullAdsTelemetryService());
-		assert.equal(action.id, AsmtServerInvokeItemsAction.ID, 'Invoke Server Assessment id action mismatch');
-		assert.equal(action.label, AsmtServerInvokeItemsAction.LABEL, 'Invoke Server Assessment label action mismatch');
+		const action = new AsmtServerInvokeItemsAction(
+			connectionManagementService.object,
+			new TestCapabilitiesService(),
+			new NullLogService(),
+			mockAssessmentService.object,
+			new NullAdsTelemetryService());
+		assert.strictEqual(action.id, AsmtServerInvokeItemsAction.ID, 'Invoke Server Assessment id action mismatch');
+		assert.strictEqual(action.label, AsmtServerInvokeItemsAction.LABEL, 'Invoke Server Assessment label action mismatch');
 
-		let result = await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
-		assert.ok(result, 'Invoke Server Assessment action should succeed');
+		await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
 		mockAsmtViewComponent.verify(s => s.showProgress(AssessmentType.InvokeAssessment), TypeMoq.Times.once());
 		mockAssessmentService.verify(s => s.assessmentInvoke(TypeMoq.It.isAny(), AssessmentTargetType.Server), TypeMoq.Times.once());
 		mockAsmtViewComponent.verify(s => s.showInitialResults(TypeMoq.It.isAny(), AssessmentType.InvokeAssessment), TypeMoq.Times.once());
@@ -175,10 +184,9 @@ suite('Assessment Actions', () => {
 
 	test('Get Assessment Items Database Action', async () => {
 		const action = new AsmtDatabaseSelectItemsAction('databaseName', mockAssessmentService.object, new NullAdsTelemetryService());
-		assert.equal(action.id, AsmtDatabaseSelectItemsAction.ID, 'Get Database Rules id action mismatch');
+		assert.strictEqual(action.id, AsmtDatabaseSelectItemsAction.ID, 'Get Database Rules id action mismatch');
 
-		let result = await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
-		assert.ok(result, 'Get Assessment Database action should succeed');
+		await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
 		mockAsmtViewComponent.verify(s => s.showProgress(AssessmentType.AvailableRules), TypeMoq.Times.once());
 		mockAsmtViewComponent.verify(s => s.showInitialResults(TypeMoq.It.isAny(), AssessmentType.AvailableRules), TypeMoq.Times.once());
 		mockAsmtViewComponent.verify(s => s.stopProgress(AssessmentType.AvailableRules), TypeMoq.Times.once());
@@ -188,10 +196,9 @@ suite('Assessment Actions', () => {
 
 	test('Invoke Database Assessment Action', async () => {
 		const action = new AsmtDatabaseInvokeItemsAction('databaseName', mockAssessmentService.object, new NullAdsTelemetryService());
-		assert.equal(action.id, AsmtDatabaseInvokeItemsAction.ID, 'Invoke Database Assessment id action mismatch');
+		assert.strictEqual(action.id, AsmtDatabaseInvokeItemsAction.ID, 'Invoke Database Assessment id action mismatch');
 
-		let result = await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
-		assert.ok(result, 'Invoke Database Assessment action should succeed');
+		await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
 		mockAsmtViewComponent.verify(s => s.showProgress(AssessmentType.InvokeAssessment), TypeMoq.Times.once());
 		mockAsmtViewComponent.verify(s => s.showInitialResults(TypeMoq.It.isAny(), AssessmentType.InvokeAssessment), TypeMoq.Times.once());
 		mockAsmtViewComponent.verify(s => s.stopProgress(AssessmentType.InvokeAssessment), TypeMoq.Times.once());
@@ -201,11 +208,10 @@ suite('Assessment Actions', () => {
 
 	test('Generate Script Action', async () => {
 		const action = new AsmtExportAsScriptAction(mockAssessmentService.object, new NullAdsTelemetryService());
-		assert.equal(action.id, AsmtExportAsScriptAction.ID, 'Generate Assessment script id action mismatch');
-		assert.equal(action.label, AsmtExportAsScriptAction.LABEL, 'Generate Assessment script label action mismatch');
+		assert.strictEqual(action.id, AsmtExportAsScriptAction.ID, 'Generate Assessment script id action mismatch');
+		assert.strictEqual(action.label, AsmtExportAsScriptAction.LABEL, 'Generate Assessment script label action mismatch');
 
-		let result = await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
-		assert.ok(result, 'Generate Script action should succeed');
+		await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
 		mockAssessmentService.verify(s => s.generateAssessmentScript(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
@@ -214,11 +220,10 @@ suite('Assessment Actions', () => {
 		openerService.setup(s => s.open(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 
 		const action = new AsmtSamplesLinkAction(openerService.object, new NullAdsTelemetryService());
-		assert.equal(action.id, AsmtSamplesLinkAction.ID, 'Samples Link id action mismatch');
-		assert.equal(action.label, AsmtSamplesLinkAction.LABEL, 'Samples Link label action mismatch');
+		assert.strictEqual(action.id, AsmtSamplesLinkAction.ID, 'Samples Link id action mismatch');
+		assert.strictEqual(action.label, AsmtSamplesLinkAction.LABEL, 'Samples Link label action mismatch');
 
-		let result = await action.run();
-		assert.ok(result, 'Samples Link action should succeed');
+		await action.run();
 		openerService.verify(s => s.open(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
@@ -227,7 +232,7 @@ suite('Assessment Actions', () => {
 		openerService.setup(s => s.open(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 
 		const fileUri = URI.file('/user/home');
-		const fileDialogService = new TestFileDialogService();
+		const fileDialogService = new TestFileDialogService(undefined);
 		fileDialogService.setPickFileToSave(fileUri);
 
 		const notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
@@ -244,7 +249,10 @@ suite('Assessment Actions', () => {
 				mtime: Date.now(),
 				name: '',
 				resource: fileUri,
-				size: 42
+				size: 42,
+				readonly: false,
+				children: [],
+				locked: false
 			});
 		});
 
@@ -256,11 +264,10 @@ suite('Assessment Actions', () => {
 			new NullAdsTelemetryService(),
 			notificationService.object,
 			fileDialogService);
-		assert.equal(action.id, AsmtGenerateHTMLReportAction.ID, 'Generate HTML Report id action mismatch');
-		assert.equal(action.label, AsmtGenerateHTMLReportAction.LABEL, 'Generate HTML Report label action mismatch');
+		assert.strictEqual(action.id, AsmtGenerateHTMLReportAction.ID, 'Generate HTML Report id action mismatch');
+		assert.strictEqual(action.label, AsmtGenerateHTMLReportAction.LABEL, 'Generate HTML Report label action mismatch');
 
-		let result = await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
-		assert.ok(result, 'Generate HTML Report action should succeed');
+		await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
 		notificationService.verify(s => s.prompt(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 });

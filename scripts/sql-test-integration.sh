@@ -13,13 +13,6 @@ else
 	LINUX_NO_SANDBOX="--no-sandbox" # Electron 6 introduces a chrome-sandbox that requires root to run. This can fail. Disable sandbox via --no-sandbox.
 fi
 
-# Default to only running stable tests if test grep isn't set
-if [[ "$ADS_TEST_GREP" == "" ]]; then
-	echo Running stable tests only
-	export ADS_TEST_GREP=@UNSTABLE@
-	export ADS_TEST_INVERT_GREP=1
-fi
-
 # Figure out which Electron to use for running tests
 if [ -z "$INTEGRATION_TEST_ELECTRON_PATH" ]
 then
@@ -50,7 +43,6 @@ fi
 --extensionDevelopmentPath=$ROOT/extensions/admin-tool-ext-win \
 --extensionDevelopmentPath=$ROOT/extensions/agent \
 --extensionDevelopmentPath=$ROOT/extensions/azurecore \
---extensionDevelopmentPath=$ROOT/extensions/big-data-cluster \
 --extensionDevelopmentPath=$ROOT/extensions/cms \
 --extensionDevelopmentPath=$ROOT/extensions/dacpac \
 --extensionDevelopmentPath=$ROOT/extensions/import \

@@ -3,10 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { CancellationToken, CancellationTokenSource } from 'vs/base/common/cancellation';
-import { toDisposable, DisposableStore, Disposable } from 'vs/base/common/lifecycle';
 import { IAction } from 'vs/base/common/actions';
+import { DeferredPromise } from 'vs/base/common/async';
+import { CancellationToken, CancellationTokenSource } from 'vs/base/common/cancellation';
+import { Disposable, DisposableStore, toDisposable } from 'vs/base/common/lifecycle';
+import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { NotificationPriority } from 'vs/platform/notification/common/notification';
 
 export const IProgressService = createDecorator<IProgressService>('progressService');
 
@@ -18,7 +20,7 @@ export interface IProgressService {
 	readonly _serviceBrand: undefined;
 
 	withProgress<R>(
-		options: IProgressOptions | IProgressNotificationOptions | IProgressWindowOptions | IProgressCompositeOptions,
+		options: IProgressOptions | IProgressDialogOptions | IProgressNotificationOptions | IProgressWindowOptions | IProgressCompositeOptions,
 		task: (progress: IProgress<IProgressStep>) => Promise<R>,
 		onDidCancel?: (choice?: number) => void
 	): Promise<R>;
@@ -51,7 +53,7 @@ export const enum ProgressLocation {
 export interface IProgressOptions {
 	readonly location: ProgressLocation | string;
 	readonly title?: string;
-	readonly source?: string;
+	readonly source?: string | { label: string; id: string };
 	readonly total?: number;
 	readonly cancellable?: boolean;
 	readonly buttons?: string[];
@@ -59,15 +61,23 @@ export interface IProgressOptions {
 
 export interface IProgressNotificationOptions extends IProgressOptions {
 	readonly location: ProgressLocation.Notification;
-	readonly primaryActions?: ReadonlyArray<IAction>;
-	readonly secondaryActions?: ReadonlyArray<IAction>;
+	readonly primaryActions?: readonly IAction[];
+	readonly secondaryActions?: readonly IAction[];
 	readonly delay?: number;
-	readonly silent?: boolean;
+	readonly priority?: NotificationPriority;
+	readonly type?: 'syncing' | 'loading';
+}
+
+export interface IProgressDialogOptions extends IProgressOptions {
+	readonly delay?: number;
+	readonly detail?: string;
+	readonly sticky?: boolean;
 }
 
 export interface IProgressWindowOptions extends IProgressOptions {
 	readonly location: ProgressLocation.Window;
 	readonly command?: string;
+	readonly type?: 'syncing' | 'loading';
 }
 
 export interface IProgressCompositeOptions extends IProgressOptions {
@@ -87,7 +97,7 @@ export interface IProgressRunner {
 	done(): void;
 }
 
-export const emptyProgressRunner: IProgressRunner = Object.freeze({
+export const emptyProgressRunner = Object.freeze<IProgressRunner>({
 	total() { },
 	worked() { },
 	done() { }
@@ -99,7 +109,7 @@ export interface IProgress<T> {
 
 export class Progress<T> implements IProgress<T> {
 
-	static readonly None: IProgress<unknown> = Object.freeze({ report() { } });
+	static readonly None = Object.freeze<IProgress<unknown>>({ report() { } });
 
 	private _value?: T;
 	get value(): T | undefined { return this._value; }
@@ -121,6 +131,41 @@ export interface IOperation {
 	isCurrent: () => boolean;
 	token: CancellationToken;
 	stop(): void;
+}
+
+/**
+ * RAII-style progress instance that allows imperative reporting and hides
+ * once `dispose()` is called.
+ */
+export class UnmanagedProgress extends Disposable {
+	private readonly deferred = new DeferredPromise<void>();
+	private reporter?: IProgress<IProgressStep>;
+	private lastStep?: IProgressStep;
+
+	constructor(
+		options: IProgressOptions | IProgressDialogOptions | IProgressNotificationOptions | IProgressWindowOptions | IProgressCompositeOptions,
+		@IProgressService progressService: IProgressService,
+	) {
+		super();
+		progressService.withProgress(options, reporter => {
+			this.reporter = reporter;
+			if (this.lastStep) {
+				reporter.report(this.lastStep);
+			}
+
+			return this.deferred.p;
+		});
+
+		this._register(toDisposable(() => this.deferred.complete()));
+	}
+
+	report(step: IProgressStep) {
+		if (this.reporter) {
+			this.reporter.report(step);
+		} else {
+			this.lastStep = step;
+		}
+	}
 }
 
 export class LongRunningOperation extends Disposable {

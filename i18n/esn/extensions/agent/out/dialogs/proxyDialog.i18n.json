@@ -20,8 +20,8 @@
 	"createProxy.ReplicationMerge": "Fusión de replicación",
 	"createProxy.ReplicationQueueReader": "Lector de cola de replicación",
 	"createProxy.SSASQueryLabel": "Consulta de SQL Server Analysis Services",
-	"createProxy.SSASCommandLabel": "Comando de servicios de análisis de SQL Server",
-	"createProxy.SSISPackage": "Paquete de servicios de integración de SQL Server",
+	"createProxy.SSASCommandLabel": "Comando de SQL Server Analysis Services",
+	"createProxy.SSISPackage": "Paquete de SQL Server Integration Services",
 	"createProxy.PowerShell": "PowerShell",
-	"createProxy.subSystemHeading": "Activar en los subsistemas siguientes"
+	"createProxy.subSystemHeading": "Activo en los subsistemas siguientes"
 }

@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/browser/insightRegistry';
-import { IInsightOptions, DataDirection, DataType, LegendPosition, ChartType, InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IInsightOptions, DataDirection, DataType, LegendPosition, ChartType, InsightType } from 'sql/workbench/contrib/charts/browser/interfaces';
 import { values } from 'vs/base/common/collections';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
@@ -148,6 +148,7 @@ export const ChartOptions: IChartOptions = {
 		}
 	],
 	[ChartType.Line]: [
+		dataDirectionOption,
 		dataTypeInput,
 		columnsAsLabelsInput,
 		labelFirstColumnInput,

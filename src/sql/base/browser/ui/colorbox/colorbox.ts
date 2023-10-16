@@ -3,79 +3,66 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./media/colorbox';
-
-import { Color } from 'vs/base/common/color';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Widget } from 'vs/base/browser/ui/widget';
+import * as DOM from 'vs/base/browser/dom';
+import { generateUuid } from 'vs/base/common/uuid';
 
 export interface ColorboxOptions {
 	name: string;
 	class?: string[];
-	label?: string;
-}
-
-export interface ColorboxStyle {
-	backgroundColor?: Color;
+	color: string;
 }
 
 export class Colorbox extends Widget {
-	readonly domNode: HTMLInputElement;
-	private backgroundColor?: Color;
+	readonly radioButton: HTMLInputElement;
+	readonly colorElement: HTMLDivElement;
+	private labelNode: HTMLLabelElement;
 
-	private _onSelect = new Emitter<void>();
+	private _onSelect = this._register(new Emitter<void>());
 	public readonly onSelect: Event<void> = this._onSelect.event;
-
-	private _checked: boolean;
 
 	constructor(container: HTMLElement, opts: ColorboxOptions) {
 		super();
+		const colorboxContainer = DOM.$('.colorbox-container');
+		this.colorElement = DOM.$('.color-element');
+		const radiobuttonContainer = DOM.$('.color-selector-container');
+		this.colorElement.style.background = opts.color;
+		this.radioButton = DOM.$('input');
+		this.radioButton.type = 'radio';
+		this.radioButton.name = opts.name;
+		this.radioButton.id = generateUuid();
 
-		this.domNode = document.createElement('input');
-		this.domNode.type = 'radio';
-		this.domNode.name = opts.name;
-		this._checked = false;
-
-		this.domNode.classList.add('colorbox');
+		this.radioButton.classList.add('colorbox-radio');
 		if (opts.class) {
-			this.domNode.classList.add(...opts.class);
+			this.radioButton.classList.add(...opts.class);
 		}
-		if (opts.label) {
-			this.domNode.setAttribute('aria-label', opts.label);
-		}
+		this.radioButton.setAttribute('aria-label', opts.color);
+		this.labelNode = DOM.$('label.colorbox-label');
+		this.labelNode.setAttribute('for', this.radioButton.id);
+		this.labelNode.innerText = opts.color;
 
-		container.appendChild(this.domNode);
+		radiobuttonContainer.appendChild(this.radioButton);
+		radiobuttonContainer.appendChild(this.labelNode);
+		colorboxContainer.appendChild(this.colorElement);
+		colorboxContainer.appendChild(radiobuttonContainer);
+		container.appendChild(colorboxContainer);
 
-		this.onfocus(this.domNode, () => {
+		this.onfocus(this.radioButton, () => {
 			this._onSelect.fire();
 		});
 
 	}
 
-	public style(styles: ColorboxStyle): void {
-		if (styles.backgroundColor) {
-			this.backgroundColor = styles.backgroundColor;
-		}
-		this.updateStyle();
-	}
-
-	private updateStyle(): void {
-		this.domNode.style.background = this.backgroundColor ? this.backgroundColor.toString() : this.domNode.style.background;
-	}
-
 	public get checked(): boolean {
-		return this._checked;
+		return this.radioButton.checked;
 	}
 
 	public set checked(checked: boolean) {
-		this._checked = checked;
-		if (this._checked) {
-			this.domNode.classList.add('checked');
-		} else {
-			this.domNode.classList.remove('checked');
-		}
+		this.radioButton.checked = checked;
 	}
 
 	public focus() {
-		this.domNode.focus();
+		this.radioButton.focus();
 	}
 }

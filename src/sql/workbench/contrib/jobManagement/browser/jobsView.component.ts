@@ -21,7 +21,7 @@ import { IJobManagementService } from 'sql/workbench/services/jobManagement/comm
 import { JobManagementView, JobActionContext } from 'sql/workbench/contrib/jobManagement/browser/jobManagementView';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -29,12 +29,14 @@ import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardServi
 import { escape } from 'sql/base/common/strings';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { tableBackground, cellBackground, cellBorderColor } from 'sql/platform/theme/common/colors';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
-import { find } from 'vs/base/common/arrays';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultTableFilterStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -80,12 +82,12 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 
 	private _jobCacheObject: JobCacheObject;
 	private rowDetail: RowDetailView<IItem>;
-	private filterPlugin: any;
-	private dataView: any;
+	private filterPlugin: HeaderFilter<IItem>;
+	private dataView: Slick.Data.DataView<IItem>;
 	public _isCloud: boolean;
-	private filterStylingMap: { [columnName: string]: [any]; } = {};
+	private filterStylingMap: { [columnName: string]: IItem[]; } = {};
 	private filterStack = ['start'];
-	private filterValueMap: { [columnName: string]: string[]; } = {};
+	private filterValueMap: { [columnName: string]: { filterValues: string[], filteredItems: IItem[] } } = {};
 	private sortingStylingMap: { [columnName: string]: any; } = {};
 
 	public jobs: azdata.AgentJobInfo[];
@@ -93,7 +95,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	private jobSteps: { [jobId: string]: azdata.AgentJobStepInfo[]; } = Object.create(null);
 	private jobAlerts: { [jobId: string]: azdata.AgentAlertInfo[]; } = Object.create(null);
 	private jobSchedules: { [jobId: string]: azdata.AgentJobScheduleInfo[]; } = Object.create(null);
-	public contextAction = NewJobAction;
+	public override contextAction = NewJobAction;
 
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
 
@@ -108,7 +110,11 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService,
-		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
+		@Inject(IAdsTelemetryService) private _telemetryService: IAdsTelemetryService,
+		@Inject(IContextViewService) private _contextViewService: IContextViewService,
+		@Inject(IAccessibilityService) private _accessibilityService: IAccessibilityService,
+		@Inject(IQuickInputService) private _quickInputService: IQuickInputService,
+		@Inject(IComponentContextService) private _componentContextService: IComponentContextService
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
@@ -128,10 +134,10 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._agentViewComponent;
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
-		this._telemetryService.publicLog(TelemetryKeys.JobsView);
+		this._telemetryService.sendViewEvent(TelemetryView.AgentJobs);
 	}
 
-	ngOnDestroy() {
+	override ngOnDestroy() {
 	}
 
 	public layout() {
@@ -158,7 +164,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			column.rerenderOnResize = true;
 			return column;
 		});
-		let options = <Slick.GridOptions<any>>{
+		let options = <Slick.GridOptions<IItem>>{
 			syncColumnCellResize: true,
 			enableColumnReorder: false,
 			rowHeight: ROW_HEIGHT,
@@ -182,13 +188,12 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		});
 		this.rowDetail = rowDetail;
 		columns.unshift(this.rowDetail.getColumnDefinition());
-		let filterPlugin = new HeaderFilter<{ inlineFilters: false }>();
-		this._register(attachButtonStyler(filterPlugin, this._themeService));
+		let filterPlugin = new HeaderFilter<IItem>(defaultTableFilterStyles, this._contextViewService);
 		this.filterPlugin = filterPlugin;
 		jQuery(this._gridEl.nativeElement).empty();
 		jQuery(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
-		this._table = new Table(this._gridEl.nativeElement, { columns }, options);
+		this._table = new Table(this._gridEl.nativeElement, this._accessibilityService, this._quickInputService, defaultTableStyles, { columns }, options);
 		this._table.grid.setData(this.dataView, true);
 		this._table.grid.onClick.subscribe((e, args) => {
 			let job = self.getJob(args);
@@ -196,6 +201,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			self._agentViewComponent.agentJobInfo = job;
 			self._agentViewComponent.showHistory = true;
 		});
+		this._register(this._componentContextService.registerTable(this._table));
 		this._register(this._table.onContextMenu(e => {
 			self.openContextMenu(e);
 		}));
@@ -255,6 +261,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			this._table.grid.resetActiveCell();
 			let filterValues = args.column.filterValues;
 			if (filterValues) {
+				let currentFilteredItems = this.dataView.getFilteredItems();
 				if (filterValues.length === 0) {
 					// if an associated styling exists with the current filters
 					if (this.filterStylingMap[args.column.name]) {
@@ -271,9 +278,8 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 							delete this.filterValueMap[args.column.name];
 						}
 						// apply the previous filter styling
-						let currentItems = this.dataView.getFilteredItems();
-						let styledItems = this.filterValueMap[this.filterStack[this.filterStack.length - 1]][1];
-						if (styledItems === currentItems) {
+						let previousFilteredItems = this.filterValueMap[this.filterStack[this.filterStack.length - 1]].filteredItems;
+						if (previousFilteredItems === currentFilteredItems) {
 							let lastColStyle = this.filterStylingMap[this.filterStack[this.filterStack.length - 1]];
 							for (let i = 0; i < lastColStyle.length; i++) {
 								this._table.grid.setCellCssStyles(lastColStyle[i][0], lastColStyle[i][1]);
@@ -281,14 +287,13 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 						} else {
 							// style it all over again
 							let seenJobs = 0;
-							for (let i = 0; i < currentItems.length; i++) {
+							for (let i = 0; i < currentFilteredItems.length; i++) {
 								this._table.grid.removeCellCssStyles('error-row' + i.toString());
 								let item = this.dataView.getFilteredItems()[i];
 								if (item.lastRunOutcome === 'Failed') {
 									this.addToStyleHash(seenJobs, false, this.filterStylingMap, args.column.name);
 									if (this.filterStack.indexOf(args.column.name) < 0) {
 										this.filterStack.push(args.column.name);
-										this.filterValueMap[args.column.name] = [filterValues];
 									}
 									// one expansion for the row and one for
 									// the error detail
@@ -298,7 +303,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 								seenJobs++;
 							}
 							this.dataView.refresh();
-							this.filterValueMap[args.column.name].push(this.dataView.getFilteredItems());
 							this._table.grid.resetActiveCell();
 						}
 						if (this.filterStack.length === 0) {
@@ -311,14 +315,13 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 						this._table.grid.removeCellCssStyles('error-row' + i.toString());
 						let item = this.dataView.getItemByIdx(i);
 						// current filter
-						if (find(filterValues, x => x === item[args.column.field])) {
+						if (filterValues.find(x => x === item[args.column.field])) {
 							// check all previous filters
-							if (this.checkPreviousFilters(item)) {
+							if (this.isItemFiltered(item)) {
 								if (item.lastRunOutcome === 'Failed') {
 									this.addToStyleHash(seenJobs, false, this.filterStylingMap, args.column.name);
 									if (this.filterStack.indexOf(args.column.name) < 0) {
 										this.filterStack.push(args.column.name);
-										this.filterValueMap[args.column.name] = [filterValues];
 									}
 									// one expansion for the row and one for
 									// the error detail
@@ -330,11 +333,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 						}
 					}
 					this.dataView.refresh();
-					if (this.filterValueMap[args.column.name]) {
-						this.filterValueMap[args.column.name].push(this.dataView.getFilteredItems());
-					} else {
-						this.filterValueMap[args.column.name] = this.dataView.getFilteredItems();
-					}
+					this.filterValueMap[args.column.name] = { filterValues: filterValues, filteredItems: this.dataView.getFilteredItems() };
 
 					this._table.grid.resetActiveCell();
 				}
@@ -390,7 +389,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 
 		// cache the dataview for future use
 		this._jobCacheObject.dataView = this.dataView;
-		this.filterValueMap['start'] = [[], this.dataView.getItems()];
+		this.filterValueMap['start'] = { filterValues: [], filteredItems: this.dataView.getItems() };
 		this.loadJobHistories().catch(onUnexpectedError);
 	}
 
@@ -560,10 +559,13 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		return [failing, nonFailing];
 	}
 
-	private checkPreviousFilters(item): boolean {
+	/**
+	 * Returns true if the item matches all filters currently applied
+	 */
+	private isItemFiltered(item: IItem): boolean {
 		for (let column in this.filterValueMap) {
-			if (column !== 'start' && this.filterValueMap[column][0].length > 0) {
-				if (!find(this.filterValueMap[column][0], x => x === item[JobManagementUtilities.convertColNameToField(column)])) {
+			if (column !== 'start' && this.filterValueMap[column]) {
+				if (!this.filterValueMap[column].filterValues.includes(item[JobManagementUtilities.convertColNameToField(column)])) {
 					return false;
 				}
 			}
@@ -705,9 +707,9 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			let filterValues = col.filterValues;
 			if (filterValues && filterValues.length > 0) {
 				if (item._parent) {
-					value = value && find(filterValues, x => x === item._parent[col.field]);
+					value = value && filterValues.find(x => x === item._parent[col.field]);
 				} else {
-					value = value && find(filterValues, x => x === item[col.field]);
+					value = value && filterValues.find(x => x === item[col.field]);
 				}
 			}
 		}
@@ -863,7 +865,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		});
 	}
 
-	protected getTableActions(targetObject: JobActionContext): IAction[] {
+	protected override getTableActions(targetObject: JobActionContext): IAction[] {
 		const editAction = this._instantiationService.createInstance(EditJobAction);
 		const runJobAction = this._instantiationService.createInstance(RunJobAction);
 		if (!targetObject.canEdit) {
@@ -910,7 +912,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		return result;
 	}
 
-	protected getCurrentTableObject(rowIndex: number): JobActionContext {
+	protected override getCurrentTableObject(rowIndex: number): JobActionContext {
 		let data = this._table.grid.getData() as Slick.DataProvider<IItem>;
 		if (!data || rowIndex >= data.getLength()) {
 			return undefined;

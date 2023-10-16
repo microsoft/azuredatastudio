@@ -5,7 +5,11 @@
 
 import * as vscode from 'vscode';
 
-export const confirm = 'confirm';
+export const enum QuestionTypes {
+	input = 'input',
+	password = 'password',
+	confirm = 'confirm'
+}
 
 // Question interface to clarify how to use the prompt feature
 // based on Bower Question format: https://github.com/bower/bower/blob/89069784bb46bfd6639b4a75e98a0d7399a8c2cb/packages/bower-logger/README.md

@@ -21,11 +21,14 @@ export function createContext(): TestContext {
 			subscriptions: [],
 			workspaceState: {
 				get: () => { return Promise.resolve(); },
-				update: () => { return Promise.resolve(); }
+				update: () => { return Promise.resolve(); },
+				keys: () => []
 			},
 			globalState: {
-				get: () => { return Promise.resolve(); },
-				update: () => { return Promise.resolve(); }
+				setKeysForSync: (): void => { },
+				get: (): any | undefined => { return Promise.resolve(); },
+				update: (): Thenable<void> => { return Promise.resolve(); },
+				keys: () => []
 			},
 			extensionPath: extensionPath,
 			asAbsolutePath: () => { return ''; },
@@ -37,7 +40,9 @@ export function createContext(): TestContext {
 			extensionMode: undefined as any,
 			globalStorageUri: undefined,
 			logUri: undefined,
-			storageUri: undefined
+			storageUri: undefined,
+			secrets: undefined,
+			extension: undefined
 		},
 		viewContext: viewContext
 	};
@@ -77,7 +82,8 @@ export function createViewContext(): ViewTestContext {
 		onValidityChanged: undefined!,
 		valid: true,
 		validate: undefined!,
-		focus: () => Promise.resolve()
+		focus: () => Promise.resolve(),
+		dispose() { }
 	};
 	let button: azdata.ButtonComponent = Object.assign({}, componentBase, {
 		onDidClick: onClick.event
@@ -88,6 +94,7 @@ export function createViewContext(): ViewTestContext {
 			label: '',
 			checked: false,
 			onDidClick: onClick.event,
+			onDidChangeCheckedState: onValueChanged.event
 		});
 		return button;
 	};
@@ -116,15 +123,13 @@ export function createViewContext(): ViewTestContext {
 	let buttonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent, azdata.ButtonProperties> = {
 		component: () => button,
 		withProperties: (properties: any) => {
-			if ((properties as any).label === '•••') {
-				button.label = '•••';
+			if ((properties as any).title === loc.selectFile) {
 				button.onDidClick = fileButtonOnClick.event;
 			}
 			return buttonBuilder;
 		},
 		withProps: (properties) => {
-			if ((properties as any).label === '•••') {
-				button.label = '•••';
+			if ((properties as any).title === loc.selectFile) {
 				button.onDidClick = fileButtonOnClick.event;
 			}
 			return buttonBuilder;
@@ -136,8 +141,8 @@ export function createViewContext(): ViewTestContext {
 		let button = radioButton();
 		let builder: azdata.ComponentBuilder<azdata.RadioButtonComponent, azdata.RadioButtonProperties> = {
 			component: () => button,
-			withProps: () => undefined,
-			withProperties: (properties) => {
+			withProperties: () => undefined,
+			withProps: (properties) => {
 				switch ((properties as any).label) {
 					case loc.newDatabase:
 						button.label = loc.newDatabase;
@@ -195,6 +200,8 @@ export function createViewContext(): ViewTestContext {
 		data: [] as any[][],
 		columns: [] as string[],
 		onRowSelected: onClick.event,
+		appendData: (_data: any[][]) => undefined,
+		setActiveCell: (_row: number, _column: number) => undefined
 	});
 
 	let loadingComponent: () => azdata.LoadingComponent = () => Object.assign({}, componentBase, {
@@ -277,13 +284,15 @@ export function createViewContext(): ViewTestContext {
 		onValidityChanged: undefined!,
 		validate: undefined!,
 		initializeModel: () => { return Promise.resolve(); },
+		dispose() { },
 		modelBuilder: {
+			listView: undefined!,
 			radioCardGroup: undefined!,
+			chart: undefined!,
 			navContainer: undefined!,
 			divContainer: () => divBuilder,
 			flexContainer: () => flexBuilder,
 			splitViewContainer: undefined!,
-			dom: undefined!,
 			card: () => undefined!,
 			inputBox: () => inputBoxBuilder,
 			checkBox: () => checkBoxBuilder!,
@@ -309,7 +318,10 @@ export function createViewContext(): ViewTestContext {
 			hyperlink: () => undefined!,
 			tabbedPanel: undefined!,
 			separator: undefined!,
-			propertiesContainer: undefined!
+			propertiesContainer: undefined!,
+			infoBox: undefined!,
+			slider: undefined!,
+			executionPlan: undefined!,
 		}
 	};
 	return {

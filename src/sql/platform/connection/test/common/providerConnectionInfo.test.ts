@@ -9,7 +9,6 @@ import * as azdata from 'azdata';
 import * as assert from 'assert';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-import { assign } from 'vs/base/common/objects';
 
 suite('SQL ProviderConnectionInfo tests', () => {
 	let msSQLCapabilities: any;
@@ -25,7 +24,9 @@ suite('SQL ProviderConnectionInfo tests', () => {
 		savePassword: true,
 		groupFullName: 'g2/g2-2',
 		groupId: undefined,
+		serverCapabilities: undefined,
 		getOptionsKey: undefined!,
+		getOptionKeyIdNames: undefined!,
 		matches: undefined!,
 		providerName: mssqlProviderName,
 		options: undefined!,
@@ -34,7 +35,6 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	};
 
 	setup(() => {
-		let capabilities: azdata.DataProtocolServerCapabilities[] = [];
 		let connectionProvider: azdata.ConnectionOption[] = [
 			{
 				name: 'connectionName',
@@ -117,6 +117,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 				defaultValue: undefined!,
 				isIdentity: false,
 				isRequired: false,
+				showOnConnectionDialog: true,
 				specialValueType: undefined!,
 				valueType: ServiceOptionType.string
 			}
@@ -125,70 +126,70 @@ suite('SQL ProviderConnectionInfo tests', () => {
 			providerId: mssqlProviderName,
 			displayName: 'MSSQL',
 			connectionOptions: connectionProvider,
+			useFullOptions: true
 		};
-		capabilities.push(msSQLCapabilities);
 		capabilitiesService = new TestCapabilitiesService();
 		capabilitiesService.capabilities[mssqlProviderName] = { connection: msSQLCapabilities };
 	});
 
 	test('constructor should accept undefined parameters', () => {
 		let conn = new ProviderConnectionInfo(undefined!, undefined!);
-		assert.equal(conn.serverName, undefined);
+		assert.strictEqual(conn.serverName, undefined);
 	});
 
 	test('set properties should set the values correctly', () => {
 		let conn = new ProviderConnectionInfo(capabilitiesService, mssqlProviderName);
-		assert.equal(conn.serverName, undefined);
+		assert.strictEqual(conn.serverName, undefined);
 		conn.connectionName = connectionProfile.connectionName!;
 		conn.serverName = connectionProfile.serverName;
 		conn.databaseName = connectionProfile.databaseName!;
 		conn.authenticationType = connectionProfile.authenticationType;
 		conn.password = connectionProfile.password;
 		conn.userName = connectionProfile.userName;
-		assert.equal(conn.connectionName, connectionProfile.connectionName);
-		assert.equal(conn.serverName, connectionProfile.serverName);
-		assert.equal(conn.databaseName, connectionProfile.databaseName);
-		assert.equal(conn.authenticationType, connectionProfile.authenticationType);
-		assert.equal(conn.password, connectionProfile.password);
-		assert.equal(conn.userName, connectionProfile.userName);
+		assert.strictEqual(conn.connectionName, connectionProfile.connectionName);
+		assert.strictEqual(conn.serverName, connectionProfile.serverName);
+		assert.strictEqual(conn.databaseName, connectionProfile.databaseName);
+		assert.strictEqual(conn.authenticationType, connectionProfile.authenticationType);
+		assert.strictEqual(conn.password, connectionProfile.password);
+		assert.strictEqual(conn.userName, connectionProfile.userName);
 	});
 
 	test('set properties should store the values in the options', () => {
 		let conn = new ProviderConnectionInfo(capabilitiesService, mssqlProviderName);
-		assert.equal(conn.serverName, undefined);
+		assert.strictEqual(conn.serverName, undefined);
 		conn.serverName = connectionProfile.serverName;
 		conn.databaseName = connectionProfile.databaseName!;
 		conn.authenticationType = connectionProfile.authenticationType;
 		conn.password = connectionProfile.password;
 		conn.userName = connectionProfile.userName;
-		assert.equal(conn.getOptionValue('serverName'), connectionProfile.serverName);
-		assert.equal(conn.getOptionValue('databaseName'), connectionProfile.databaseName);
-		assert.equal(conn.getOptionValue('authenticationType'), connectionProfile.authenticationType);
-		assert.equal(conn.getOptionValue('password'), connectionProfile.password);
-		assert.equal(conn.getOptionValue('userName'), connectionProfile.userName);
+		assert.strictEqual(conn.getOptionValue('serverName'), connectionProfile.serverName);
+		assert.strictEqual(conn.getOptionValue('databaseName'), connectionProfile.databaseName);
+		assert.strictEqual(conn.getOptionValue('authenticationType'), connectionProfile.authenticationType);
+		assert.strictEqual(conn.getOptionValue('password'), connectionProfile.password);
+		assert.strictEqual(conn.getOptionValue('userName'), connectionProfile.userName);
 	});
 
 	test('constructor should initialize the options given a valid model', () => {
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
 
-		assert.equal(conn.connectionName, connectionProfile.connectionName);
-		assert.equal(conn.serverName, connectionProfile.serverName);
-		assert.equal(conn.databaseName, connectionProfile.databaseName);
-		assert.equal(conn.authenticationType, connectionProfile.authenticationType);
-		assert.equal(conn.password, connectionProfile.password);
-		assert.equal(conn.userName, connectionProfile.userName);
+		assert.strictEqual(conn.connectionName, connectionProfile.connectionName);
+		assert.strictEqual(conn.serverName, connectionProfile.serverName);
+		assert.strictEqual(conn.databaseName, connectionProfile.databaseName);
+		assert.strictEqual(conn.authenticationType, connectionProfile.authenticationType);
+		assert.strictEqual(conn.password, connectionProfile.password);
+		assert.strictEqual(conn.userName, connectionProfile.userName);
 	});
 
 	test('clone should create a new instance that equals the old one', () => {
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
 
 		let conn2 = conn.clone();
-		assert.equal(conn.connectionName, conn2.connectionName);
-		assert.equal(conn.serverName, conn2.serverName);
-		assert.equal(conn.databaseName, conn2.databaseName);
-		assert.equal(conn.authenticationType, conn2.authenticationType);
-		assert.equal(conn.password, conn2.password);
-		assert.equal(conn.userName, conn2.userName);
+		assert.strictEqual(conn.connectionName, conn2.connectionName);
+		assert.strictEqual(conn.serverName, conn2.serverName);
+		assert.strictEqual(conn.databaseName, conn2.databaseName);
+		assert.strictEqual(conn.authenticationType, conn2.authenticationType);
+		assert.strictEqual(conn.password, conn2.password);
+		assert.strictEqual(conn.userName, conn2.userName);
 	});
 
 	test('Changing the cloned object should not change the original one', () => {
@@ -196,53 +197,108 @@ suite('SQL ProviderConnectionInfo tests', () => {
 
 		let conn2 = conn.clone();
 		conn2.serverName = conn.serverName + '1';
-		assert.notEqual(conn.serverName, conn2.serverName);
+		assert.notStrictEqual(conn.serverName, conn2.serverName);
 	});
 
 	test('constructor should initialize the options given a valid model with options', () => {
 		let options: { [key: string]: string } = {};
-		options['encrypt'] = 'test value';
-		let conn2 = assign({}, connectionProfile, { options: options });
+		options['encrypt'] = 'true';
+		let conn2 = Object.assign({}, connectionProfile, { options: options });
 		let conn = new ProviderConnectionInfo(capabilitiesService, conn2);
 
-		assert.equal(conn.connectionName, conn2.connectionName);
-		assert.equal(conn.serverName, conn2.serverName);
-		assert.equal(conn.databaseName, conn2.databaseName);
-		assert.equal(conn.authenticationType, conn2.authenticationType);
-		assert.equal(conn.password, conn2.password);
-		assert.equal(conn.userName, conn2.userName);
-		assert.equal(conn.options['encrypt'], 'test value');
+		assert.strictEqual(conn.connectionName, conn2.connectionName);
+		assert.strictEqual(conn.serverName, conn2.serverName);
+		assert.strictEqual(conn.databaseName, conn2.databaseName);
+		assert.strictEqual(conn.authenticationType, conn2.authenticationType);
+		assert.strictEqual(conn.password, conn2.password);
+		assert.strictEqual(conn.userName, conn2.userName);
+		assert.strictEqual(conn.options['encrypt'], 'true');
+	});
+
+	test('constructor should initialize the options with encrypt strict', () => {
+		let options: { [key: string]: string } = {};
+		options['encrypt'] = 'strict';
+		let conn2 = Object.assign({}, connectionProfile, { options: options });
+		let conn = new ProviderConnectionInfo(capabilitiesService, conn2);
+
+		assert.strictEqual(conn.connectionName, conn2.connectionName);
+		assert.strictEqual(conn.serverName, conn2.serverName);
+		assert.strictEqual(conn.databaseName, conn2.databaseName);
+		assert.strictEqual(conn.authenticationType, conn2.authenticationType);
+		assert.strictEqual(conn.password, conn2.password);
+		assert.strictEqual(conn.userName, conn2.userName);
+		assert.strictEqual(conn.options['encrypt'], 'strict');
 	});
 
 	test('getOptionsKey should create a valid unique id', () => {
+		// Test the new option key format
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
+		let expectedId = 'providerName:MSSQL|authenticationType:|connectionName:name|databaseName:database|serverName:new server|userName:user';
+		let id = conn.getOptionsKey();
+		assert.strictEqual(id, expectedId);
+
+		// Test for original options key (used for retrieving passwords and as a fallback for unsupported providers)
+		// **IMPORTANT** The original format option key should NEVER change without thorough review and consideration of side effects. This version of the key controls
+		//				 things like how passwords are saved, which means if its changed then serious side effects will occur.
+		expectedId = 'providerName:MSSQL|authenticationType:|databaseName:database|serverName:new server|userName:user';
+		id = conn.getOptionsKey(true);
+		assert.strictEqual(id, expectedId);
+	});
+
+	test('getOptionsKey should return original formatted ID if useFullOptions is not supported', () => {
+		// Test the new option key format
+		let originalCapabilitiesConnection = capabilitiesService.capabilities[mssqlProviderName].connection;
+		originalCapabilitiesConnection.useFullOptions = false;
+		let newCapabilitiesService = new TestCapabilitiesService();
+		newCapabilitiesService.capabilities[mssqlProviderName] = { connection: originalCapabilitiesConnection }
+		let conn = new ProviderConnectionInfo(newCapabilitiesService, connectionProfile);
 		let expectedId = 'providerName:MSSQL|authenticationType:|databaseName:database|serverName:new server|userName:user';
 		let id = conn.getOptionsKey();
-		assert.equal(id, expectedId);
+		assert.strictEqual(id, expectedId);
+
+		// Should be the same when getOriginalOptions is true.
+		id = conn.getOptionsKey(true);
+		assert.strictEqual(id, expectedId);
+	});
+
+	test('getOptionsKey should create different keys based on optional options', () => {
+		const conn1 = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
+		let id1 = conn1.getOptionsKey();
+
+		connectionProfile.options = {
+			'encrypt': true
+		};
+		const conn2 = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
+		const id2 = conn2.getOptionsKey();
+
+		assert.notEqual(id1, id2);
+	});
+
+	test('getOptionsKey should have the same key if original options is used', () => {
+		const conn1 = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
+		let id1 = conn1.getOptionsKey(true);
+
+		connectionProfile.options = {
+			'encrypt': true
+		};
+		const conn2 = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
+		const id2 = conn2.getOptionsKey(true);
+
+		assert.strictEqual(id1, id2);
 	});
 
 	test('getOptionsKey should create different id for different server names', () => {
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
-		let conn2 = new ProviderConnectionInfo(capabilitiesService, assign({}, connectionProfile, { serverName: connectionProfile.serverName + '1' }));
+		let conn2 = new ProviderConnectionInfo(capabilitiesService, Object.assign({}, connectionProfile, { serverName: connectionProfile.serverName + '1' }));
 
-		assert.notEqual(conn.getOptionsKey(), conn2.getOptionsKey());
-	});
-
-	test('titleParts should return server, database and auth type as first items', () => {
-		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
-		let titleParts = conn.titleParts;
-		assert.equal(titleParts.length, 4);
-		assert.equal(titleParts[0], connectionProfile.serverName);
-		assert.equal(titleParts[1], connectionProfile.databaseName);
-		assert.equal(titleParts[2], connectionProfile.authenticationType);
-		assert.equal(titleParts[3], connectionProfile.userName);
+		assert.notStrictEqual(conn.getOptionsKey(), conn2.getOptionsKey());
 	});
 
 	test('getProviderFromOptionsKey should return the provider name from the options key successfully', () => {
 		let optionsKey = `providerName:${mssqlProviderName}|authenticationType:|databaseName:database|serverName:new server|userName:user`;
 		let actual = ProviderConnectionInfo.getProviderFromOptionsKey(optionsKey);
 
-		assert.equal(mssqlProviderName, actual);
+		assert.strictEqual(mssqlProviderName, actual);
 	});
 
 	test('getProviderFromOptionsKey should return empty string give null', () => {
@@ -250,7 +306,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 		let expectedProviderId: string = '';
 		let actual = ProviderConnectionInfo.getProviderFromOptionsKey(optionsKey);
 
-		assert.equal(expectedProviderId, actual);
+		assert.strictEqual(expectedProviderId, actual);
 	});
 
 	test('getProviderFromOptionsKey should return empty string give key without provider name', () => {
@@ -258,6 +314,6 @@ suite('SQL ProviderConnectionInfo tests', () => {
 		let expectedProviderId: string = '';
 		let actual = ProviderConnectionInfo.getProviderFromOptionsKey(optionsKey);
 
-		assert.equal(expectedProviderId, actual);
+		assert.strictEqual(expectedProviderId, actual);
 	});
 });

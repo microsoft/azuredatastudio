@@ -98,7 +98,8 @@ asmtview-component .asmtview-grid .slick-cell.error-row {
 	margin-left: 5px;
 }
 
-.vs asmtview-component .action-label.codicon.exportAsScriptIcon {
+.vs asmtview-component .action-label.codicon.exportAsScriptIcon,
+.hc-light asmtview-component .action-label.codicon.exportAsScriptIcon {
 	background-image: url("newquery.svg");
 }
 
@@ -107,7 +108,8 @@ asmtview-component .asmtview-grid .slick-cell.error-row {
 	background-image: url("newquery_inverse.svg");
 }
 
-.vs asmtview-component .action-label.codicon.asmt-learnmore {
+.vs asmtview-component .action-label.codicon.asmt-learnmore,
+.hc-light asmtview-component .action-label.codicon.asmt-learnmore {
 	background-image: url("configuredashboard.svg");
 }
 

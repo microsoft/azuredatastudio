@@ -41,6 +41,15 @@ export interface IMonarchLanguage {
 	 * attach this to every token class (by default '.' + name)
 	 */
 	tokenPostfix?: string;
+	/**
+	 * include line feeds (in the form of a \n character) at the end of lines
+	 * Defaults to false
+	 */
+	includeLF?: boolean;
+	/**
+	 * Other keys that can be referred to by the tokenizer.
+	 */
+	[key: string]: any;
 }
 
 /**
@@ -118,10 +127,7 @@ export interface IExpandedMonarchLanguageAction {
 	log?: string;
 }
 
-export type IMonarchLanguageAction = IShortMonarchLanguageAction
-	| IExpandedMonarchLanguageAction
-	| IShortMonarchLanguageAction[]
-	| IExpandedMonarchLanguageAction[];
+export type IMonarchLanguageAction = IShortMonarchLanguageAction | IExpandedMonarchLanguageAction | (IShortMonarchLanguageAction | IExpandedMonarchLanguageAction)[];
 
 /**
  * This interface can be shortened as an array, ie. ['{','}','delimiter.curly']

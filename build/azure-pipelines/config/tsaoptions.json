@@ -1,0 +1,24 @@
+{
+	"codebaseName": "Azure Data Studio",
+	"ppe": false,
+	"notificationAliases": [
+		"kvhdir@microsoft.com",
+		"sakshis@microsoft.com"
+	],
+	"codebaseAdmins": [
+		"REDMOND\\karlb",
+		"REDMOND\\chgagnon",
+		"REDMOND\\kisantia",
+		"REDMOND\\sakshis"
+	],
+	"instanceUrl": "https://msdata.visualstudio.com",
+	"projectName": "Database Systems",
+	"areaPath": "Database Systems\\SQL Tools\\Azure Data Studio",
+	"notifyAlways": true,
+	"template": "TFSDEVDIV",
+	"tools": [
+			"BinSkim",
+			"CredScan",
+			"CodeQL"
+	]
+}

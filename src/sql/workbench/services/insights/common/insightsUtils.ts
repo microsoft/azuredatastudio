@@ -12,6 +12,7 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 
+/* eslint-disable */
 /**
  * Resolves the given file path using the VS ConfigurationResolver service, replacing macros such as
  * ${workspaceRoot} with their expected values and then testing each path to see if it exists. It will
@@ -34,10 +35,11 @@ export async function resolveQueryFilePath(services: ServicesAccessor, filePath?
 	let workspaceFolders: IWorkspaceFolder[] = workspaceContextService.getWorkspace().folders;
 	// Resolve the path using each folder in our workspace, or undefined if there aren't any
 	// (so that non-folder vars such as environment vars still resolve)
-	const isRemote = fileService.canHandleResource(URI.from({ scheme: Schemas.vscodeRemote }));
-	let resolvedFileUris = (workspaceFolders.length > 0 ? workspaceFolders : [undefined])
-		.map(f => {
-			const uri = URI.file(configurationResolverService.resolve(f, filePath));
+	const isRemote = await fileService.canHandleResource(URI.from({ scheme: Schemas.vscodeRemote }));
+	let resolvedFileUriPromises = (workspaceFolders.length > 0 ? workspaceFolders : [undefined])
+		.map(async f => {
+			const resolvedUri = await configurationResolverService.resolveAsync(f, filePath);
+			const uri = URI.file(resolvedUri);
 			if (f) {
 				return uri.with({ scheme: f.uri.scheme }); // ensure we maintain the correct scheme
 			} else if (isRemote) {
@@ -46,6 +48,7 @@ export async function resolveQueryFilePath(services: ServicesAccessor, filePath?
 				return uri;
 			}
 		});
+	const resolvedFileUris = await Promise.all(resolvedFileUriPromises);
 
 	// Just need a single query file so use the first we find that exists
 	for (const uri of resolvedFileUris) {
@@ -54,5 +57,6 @@ export async function resolveQueryFilePath(services: ServicesAccessor, filePath?
 		}
 	}
 
-	throw Error(localize('insightsDidNotFindResolvedFile', "Could not find query file at any of the following paths :\n {0}", resolvedFileUris.join('\n')));
+	throw Error(localize('insightsDidNotFindResolvedFile', "Could not find query file at any of the following paths :\n {0}", resolvedFileUris.map(uri => uri.fsPath).join('\n')));
 }
+/* eslint-enable */

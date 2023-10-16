@@ -36,12 +36,6 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 	public async getChildren(): Promise<TreeNode[]> {
 		try {
 			let nodes: CmsResourceTreeNodeBase[] = [];
-			if (!this.ownerUri) {
-				// Set back password to get ownerUri
-				if (this.connection.options.authenticationType === 'SqlLogin' && this.connection.options.savePassword === true) {
-					this.connection.options.password = await this.appContext.cmsUtils.getPassword(this.connection.options.user);
-				}
-			}
 			return this.appContext.cmsUtils.createCmsServer(this.connection, this.name, this.description).then(async (result) => {
 				// update the owner uri and the connection
 				this._ownerUri = result.ownerUri;
@@ -108,6 +102,7 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 			errorMessage: undefined,
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
+			parentNodePath: this.parent?.generateNodePath() ?? '',
 			nodeStatus: undefined,
 			nodeType: CmsResourceItemType.cmsNodeContainer,
 			nodeSubType: undefined,

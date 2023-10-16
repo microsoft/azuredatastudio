@@ -11,10 +11,10 @@ import { Scrollable, ScrollbarVisibility, INewScrollDimensions, ScrollEvent } fr
 import { getOrDefault } from 'vs/base/common/objects';
 import * as DOM from 'vs/base/browser/dom';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { domEvent } from 'vs/base/browser/event';
 import { Event } from 'vs/base/common/event';
 import { Range, IRange } from 'vs/base/common/range';
 import { clamp } from 'vs/base/common/numbers';
+import { DomEmitter } from 'vs/base/browser/event';
 
 export interface IScrollableViewOptions {
 	useShadows?: boolean;
@@ -36,7 +36,7 @@ export interface IView {
 	readonly element: HTMLElement;
 	readonly minimumSize: number;
 	readonly maximumSize: number;
-	onDidInsert?(): void;
+	onDidInsert?(): Promise<void>;
 	onDidRemove?(): void;
 }
 
@@ -74,8 +74,12 @@ export class ScrollableView extends Disposable {
 		super();
 
 		this.additionalScrollHeight = typeof options.additionalScrollHeight === 'undefined' ? 0 : options.additionalScrollHeight;
+		this.scrollable = new Scrollable({
+			forceIntegerValues: true,
+			smoothScrollDuration: getOrDefault(options, o => o.smoothScrolling, false) ? 125 : 0,
+			scheduleAtNextAnimationFrame: cb => DOM.scheduleAtNextAnimationFrame(cb)
+		});
 
-		this.scrollable = new Scrollable(getOrDefault(options, o => o.smoothScrolling, false) ? 125 : 0, cb => DOM.scheduleAtNextAnimationFrame(cb));
 		this.scrollableElement = this._register(new SmoothScrollableElement(this.viewContainer, {
 			alwaysConsumeMouseWheel: true,
 			horizontal: ScrollbarVisibility.Hidden,
@@ -89,8 +93,8 @@ export class ScrollableView extends Disposable {
 
 		// Prevent the monaco-scrollable-element from scrolling
 		// https://github.com/Microsoft/vscode/issues/44181
-		this._register(domEvent(this.scrollableElement.getDomNode(), 'scroll')
-			(e => (e.target as HTMLElement).scrollTop = 0));
+		this._register(new DomEmitter(this.scrollableElement.getDomNode(), 'scroll')).event
+			(e => (e.target as HTMLElement).scrollTop = 0);
 	}
 
 	elementTop(index: number): number {
@@ -164,7 +168,7 @@ export class ScrollableView extends Disposable {
 		for (const item of this.items) {
 			if (item.domNode) {
 				DOM.clearNode(item.domNode);
-				DOM.removeNode(item.domNode);
+				item.domNode.remove();
 				item.domNode = undefined;
 			}
 			dispose(item.disposables);
@@ -276,10 +280,10 @@ export class ScrollableView extends Disposable {
 		this.updateItemInDOM(item, index, false);
 
 		item.onDidRemoveDisposable?.dispose();
-		item.onDidInsertDisposable = DOM.scheduleAtNextAnimationFrame(() => {
+		item.onDidInsertDisposable = DOM.scheduleAtNextAnimationFrame(async () => {
 			// we don't trust the items to be performant so don't interrupt our operations
 			if (item.view.onDidInsert) {
-				item.view.onDidInsert();
+				await item.view.onDidInsert();
 			}
 			item.view.layout(item.size, this.width);
 		});

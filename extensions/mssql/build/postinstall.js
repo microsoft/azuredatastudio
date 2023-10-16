@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 (async () => {
-	const serviceDownloader = require('service-downloader').ServiceDownloadProvider;
-	const platform = require('service-downloader/out/platform').PlatformInformation;
+	const serviceDownloader = require('@microsoft/ads-service-downloader').ServiceDownloadProvider;
+	const platform = require('@microsoft/ads-service-downloader/out/platform');
 	const path = require('path');
 	const fs = require('fs').promises;
 	const rimraf = require('rimraf');
@@ -15,7 +15,6 @@
 	async function installService() {
 		const absoluteConfigPath = require.resolve('../config.json');
 		const config = require(absoluteConfigPath);
-		const runtime = (await platform.getCurrent()).runtimeId;
 		// fix path since it won't be correct
 		config.installDirectory = path.join(path.dirname(absoluteConfigPath), config.installDirectory);
 		let installer = new serviceDownloader(config);
@@ -24,6 +23,8 @@
 			readline.clearLine(process.stdout, 0);
 			process.stdout.write(`${event}${values && values.length > 0 ? ` - ${values.join(' ')}` : ''}`);
 		});
+		let runtime = (await platform.PlatformInformation.getCurrent()).runtimeId;
+		console.log(`Installing SQL tools service, target runtime: ${runtime}.`);
 		let serviceInstallFolder = installer.getInstallDirectory(runtime);
 		await new Promise((rs, rj) => rimraf(serviceInstallFolder, (e) => e ? rj(e) : rs()));
 		await installer.installService(runtime);

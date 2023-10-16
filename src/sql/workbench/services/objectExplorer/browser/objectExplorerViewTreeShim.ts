@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -14,6 +15,7 @@ import { hash } from 'vs/base/common/hash';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';  //TODO: Needed?
 import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { localize } from 'vs/nls';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
@@ -25,7 +27,7 @@ export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
 export interface IOEShimService {
 	_serviceBrand: undefined;
 	getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]>;
-	disconnectNode(viewId: string, node: ITreeItem): Promise<boolean>;
+	disconnectNode(node: ITreeItem): Promise<boolean>;
 	providerExists(providerId: string): boolean;
 	isNodeConnected(viewId: string, node: ITreeItem): boolean;
 	getNodeInfoForTreeItem(treeItem: ITreeItem): azdata.NodeInfo | undefined;
@@ -34,20 +36,20 @@ export interface IOEShimService {
 export class OEShimService extends Disposable implements IOEShimService {
 	_serviceBrand: undefined;
 
-	private sessionMap = new Map<number, string>();
 	private nodeHandleMap = new Map<number, string>();
 	private nodeInfoMap = new Map<ITreeItem, azdata.NodeInfo>();
 
 	constructor(
 		@IObjectExplorerService private oe: IObjectExplorerService,
 		@IConnectionManagementService private cm: IConnectionManagementService,
-		@ICapabilitiesService private capabilities: ICapabilitiesService
+		@ICapabilitiesService private capabilities: ICapabilitiesService,
 	) {
 		super();
 	}
 
 	private async createSession(viewId: string, providerId: string, node: ITreeItem): Promise<string> {
-		let connProfile = new ConnectionProfile(this.capabilities, node.payload);
+		let payload = await this.cm.fixProfile(node.payload);
+		let connProfile = new ConnectionProfile(this.capabilities, payload);
 		connProfile.saveProfile = false;
 		if (this.cm.providerRegistered(providerId)) {
 			connProfile = await this.connectOrPrompt(connProfile);
@@ -85,7 +87,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 	private async connectOrPrompt(connProfile: ConnectionProfile): Promise<ConnectionProfile> {
 		connProfile = await new Promise(async (resolve, reject) => {
-			let result = await this.cm.connect(connProfile, undefined, { showConnectionDialogOnError: true, showFirewallRuleOnError: true, saveTheConnection: false, showDashboard: false, params: undefined }, {
+			let result = await this.cm.connect(connProfile, undefined, { showConnectionDialogOnError: true, showFirewallRuleOnError: true, saveTheConnection: false, showDashboard: false }, {
 				onConnectSuccess: async (e, profile) => {
 					let existingConnection = this.cm.findExistingConnection(profile);
 					connProfile = new ConnectionProfile(this.capabilities, existingConnection);
@@ -107,39 +109,27 @@ export class OEShimService extends Disposable implements IOEShimService {
 		return connProfile;
 	}
 
-	public async disconnectNode(viewId: string, node: ITreeItem): Promise<boolean> {
-		// we assume only nodes with payloads can be connected
-		// check to make sure we have an existing connection
-		let key = generateSessionMapKey(viewId, node);
-		let session = this.sessionMap.get(key);
-		if (session) {
-			let closed = (await this.oe.closeSession(node.childProvider!, this.oe.getSession(session)!))!.success;
-			if (closed) {
-				this.sessionMap.delete(key);
-			}
+	public async disconnectNode(node: ITreeItem): Promise<boolean> {
+		if (node.sessionId !== undefined) {
+			const closed = (await this.oe.closeSession(node.childProvider!, this.oe.getSession(node.sessionId)!))!.success;
 			return closed;
 		}
-		return Promise.resolve(false);
-	}
-
-	private async getOrCreateSession(viewId: string, node: ITreeItem): Promise<string> {
-		// verify the map is correct
-		let key = generateSessionMapKey(viewId, node);
-		if (!this.sessionMap.has(key)) {
-			this.sessionMap.set(key, await this.createSession(viewId, node.childProvider!, node));
-		}
-		return this.sessionMap.get(key)!;
+		return false;
 	}
 
 	public async getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]> {
 		if (node.payload) {
-			const sessionId = await this.getOrCreateSession(viewId, node);
+			node.payload = await this.cm.fixProfile(node.payload);
+
+			if (node.sessionId === undefined) {
+				node.sessionId = await this.createSession(viewId, node.childProvider!, node);
+			}
 			const requestHandle = this.nodeHandleMap.get(generateNodeMapKey(viewId, node)) || node.handle;
-			const treeNode = new TreeNode(undefined!, undefined!, undefined!, requestHandle, undefined!); // hack since this entire system is a hack anyways
+			const treeNode = new TreeNode(undefined!, undefined!, undefined!, undefined!, requestHandle, undefined!, undefined!); // hack since this entire system is a hack anyways
 			treeNode.connection = new ConnectionProfile(this.capabilities, node.payload);
 			const childrenNodes = await this.oe.refreshTreeNode({
 				success: true,
-				sessionId,
+				sessionId: node.sessionId!,
 				rootNode: undefined!, // hack since this entire system is a hack anyways
 				errorMessage: undefined
 			}, treeNode);
@@ -178,7 +168,9 @@ export class OEShimService extends Disposable implements IOEShimService {
 		}
 		const nodeInfo: azdata.NodeInfo = {
 			nodePath: nodePath,
+			parentNodePath: node.parentNodePath,
 			nodeType: node.nodeTypeId,
+			objectType: node.objectType,
 			nodeSubType: node.nodeSubType,
 			nodeStatus: node.nodeStatus,
 			label: node.label,
@@ -201,7 +193,8 @@ export class OEShimService extends Disposable implements IOEShimService {
 			payload: node.payload || (databaseChanged ? updatedPayload : parentNode.payload),
 			contextValue: node.nodeTypeId,
 			sqlIcon: icon,
-			nodeInfo: nodeInfo
+			nodeInfo: nodeInfo,
+			sessionId: parentNode.sessionId
 		};
 		this.nodeHandleMap.set(generateNodeMapKey(viewId, newTreeItem), nodePath);
 		this.nodeInfoMap.set(newTreeItem, nodeInfo);
@@ -213,7 +206,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 	}
 
 	public isNodeConnected(viewId: string, node: ITreeItem): boolean {
-		return this.sessionMap.has(generateSessionMapKey(viewId, node));
+		return node.sessionId !== undefined;
 	}
 
 	public getNodeInfoForTreeItem(treeItem: ITreeItem): azdata.NodeInfo | undefined {
@@ -222,10 +215,10 @@ export class OEShimService extends Disposable implements IOEShimService {
 		}
 		return undefined;
 	}
-}
 
-function generateSessionMapKey(viewId: string, node: ITreeItem): number {
-	return hash([viewId, node.childProvider, node.payload]);
+	public getDefaultAuthenticationType(configurationService: IConfigurationService): string {
+		return WorkbenchUtils.getSqlConfigValue<string>(configurationService, 'defaultAuthenticationType');
+	}
 }
 
 function generateNodeMapKey(viewId: string, node: ITreeItem): number {

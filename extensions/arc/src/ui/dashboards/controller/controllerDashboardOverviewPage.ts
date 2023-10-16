@@ -7,8 +7,8 @@ import { ResourceType } from 'arc';
 import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
-import { getConnectionModeDisplayText, getResourceTypeIcon, resourceTypeToDisplayName } from '../../../common/utils';
-import { cssStyles, Endpoints, IconPathHelper, controllerTroubleshootDocsUrl, iconSize } from '../../../constants';
+import { getResourceTypeIcon, resourceTypeToDisplayName } from '../../../common/utils';
+import { cssStyles, IconPathHelper, controllerTroubleshootDocsUrl, iconSize } from '../../../constants';
 import * as loc from '../../../localizedConstants';
 import { ControllerModel } from '../../../models/controllerModel';
 import { DashboardPage } from '../../components/dashboardPage';
@@ -30,19 +30,18 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		resourceGroupName: '-',
 		location: '-',
 		subscriptionId: '-',
-		controllerEndpoint: '-',
 		connectionMode: '-',
 		instanceNamespace: '-',
+		status: '-'
 	};
 
-	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel) {
-		super(modelView);
+	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel) {
+		super(modelView, dashboard);
 
 		this._azurecoreApi = vscode.extensions.getExtension(azurecore.extension.name)?.exports;
 
 		this.disposables.push(
-			this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleRegistrationsUpdated())),
-			this._controllerModel.onEndpointsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdated())));
+			this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleRegistrationsUpdated())));
 	}
 
 	public get title(): string {
@@ -58,7 +57,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 	}
 
 	protected async refresh(): Promise<void> {
-		await this._controllerModel.refresh();
+		await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
 	}
 
 	public get container(): azdata.Component {
@@ -67,8 +66,8 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		this._propertiesLoadingComponent = this.modelView.modelBuilder.loadingComponent().component();
 
 		this._arcResourcesLoadingComponent = this.modelView.modelBuilder.loadingComponent().component();
-		this._arcResourcesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
-			data: [],
+		this._arcResourcesTable = this.modelView.modelBuilder.declarativeTable().withProps({
+			dataValues: [],
 			columns: [
 				{
 					displayName: '',
@@ -107,7 +106,6 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 		// Update loaded components with data
 		this.handleRegistrationsUpdated();
-		this.handleEndpointsUpdated();
 
 		// Assign the loading component after it has data
 		this._propertiesLoadingComponent.component = this._propertiesContainer;
@@ -126,7 +124,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 		// Resources
 		const arcResourcesTitle = this.modelView.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ value: loc.arcResources })
+			.withProps({ value: loc.arcResources })
 			.component();
 
 		contentContainer.addItem(arcResourcesTitle, {
@@ -140,18 +138,22 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 	public get toolbarContainer(): azdata.ToolbarContainer {
 
-		const newInstance = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const newInstance = this.modelView.modelBuilder.button().withProps({
 			label: loc.newInstance,
 			iconPath: IconPathHelper.add
 		}).component();
 
 		this.disposables.push(
 			newInstance.onDidClick(async () => {
-				await vscode.commands.executeCommand('azdata.resource.deploy', 'arc.sql', ['arc.sql', 'arc.postgres']);
+				const node = this._controllerModel.treeDataProvider.getControllerNode(this._controllerModel);
+				await vscode.commands.executeCommand('azdata.resource.deploy',
+					'arc-sql', // Default option
+					['arc-sql', 'arc-postgres'], // Type filter
+					{ 'CONTROLLER_NAME': node?.label });
 			}));
 
 		// Refresh
-		const refreshButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const refreshButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.refresh,
 			iconPath: IconPathHelper.refresh
 		}).component();
@@ -168,7 +170,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 				}
 			}));
 
-		this._openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this._openInAzurePortalButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.openInAzurePortal,
 			iconPath: IconPathHelper.openInTab,
 			enabled: !!this._controllerModel.controllerConfig
@@ -179,13 +181,13 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 				const config = this._controllerModel.controllerConfig;
 				if (config) {
 					await vscode.env.openExternal(vscode.Uri.parse(
-						`https://portal.azure.com/#resource/subscriptions/${config.spec.settings.azure.subscription}/resourceGroups/${config.spec.settings.azure.resourceGroup}/providers/Microsoft.AzureData/${ResourceType.dataControllers}/${config.metadata.name}`));
+						`https://portal.azure.com/#resource/subscriptions/${config.spec.settings.azure.subscription}/resourceGroups/${config.spec.settings.azure.resourceGroup}/providers/Microsoft.AzureArcData/${ResourceType.dataControllers}/${config.metadata.name}`));
 				} else {
 					vscode.window.showErrorMessage(loc.couldNotFindControllerRegistration);
 				}
 			}));
 
-		const troubleshootButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const troubleshootButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.troubleshoot,
 			iconPath: IconPathHelper.wrench
 		}).component();
@@ -215,16 +217,17 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		this.controllerProperties.resourceGroupName = config?.spec.settings.azure.resourceGroup || this.controllerProperties.resourceGroupName;
 		this.controllerProperties.location = this._azurecoreApi.getRegionDisplayName(config?.spec.settings.azure.location) || this.controllerProperties.location;
 		this.controllerProperties.subscriptionId = config?.spec.settings.azure.subscription || this.controllerProperties.subscriptionId;
-		this.controllerProperties.connectionMode = getConnectionModeDisplayText(config?.spec.settings.azure.connectionMode) || this.controllerProperties.connectionMode;
+		this.controllerProperties.connectionMode = config?.spec.settings.azure.connectionMode.toLowerCase() || this.controllerProperties.connectionMode.toLowerCase();
 		this.controllerProperties.instanceNamespace = config?.metadata.namespace || this.controllerProperties.instanceNamespace;
+		this.controllerProperties.status = config?.status.state || this.controllerProperties.status;
 		this.refreshDisplayedProperties();
 
-		this._arcResourcesTable.data = this._controllerModel.registrations
+		let registrations: (string | azdata.ImageComponent | azdata.HyperlinkComponent)[][] = this._controllerModel.registrations
 			.filter(r => r.instanceType !== ResourceType.dataControllers)
 			.map(r => {
 				const iconPath = getResourceTypeIcon(r.instanceType ?? '');
 				const imageComponent = this.modelView.modelBuilder.image()
-					.withProperties<azdata.ImageComponentProperties>({
+					.withProps({
 						width: iconSize,
 						height: iconSize,
 						iconPath: iconPath,
@@ -233,7 +236,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 					}).component();
 
 				const nameComponent = this.modelView.modelBuilder.hyperlink()
-					.withProperties<azdata.HyperlinkComponentProperties>({
+					.withProps({
 						label: r.instanceName || '',
 						url: ''
 					}).component();
@@ -244,13 +247,14 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 				return [imageComponent, nameComponent, resourceTypeToDisplayName(r.instanceType), r.state];
 			});
-		this._arcResourcesLoadingComponent.loading = !this._controllerModel.registrationsLastUpdated;
-	}
 
-	private handleEndpointsUpdated(): void {
-		const controllerEndpoint = this._controllerModel.getEndpoint(Endpoints.controller);
-		this.controllerProperties.controllerEndpoint = controllerEndpoint?.endpoint || this.controllerProperties.controllerEndpoint;
-		this.refreshDisplayedProperties();
+		let registrationsData = registrations.map(r => {
+			return r.map((value): azdata.DeclarativeTableCellValue => {
+				return { value: value };
+			});
+		});
+		this._arcResourcesTable.setDataValues(registrationsData);
+		this._arcResourcesLoadingComponent.loading = !this._controllerModel.registrationsLastUpdated;
 	}
 
 	private refreshDisplayedProperties(): void {
@@ -276,16 +280,16 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 				value: loc.dataControllersType
 			},
 			{
-				displayName: loc.controllerEndpoint,
-				value: this.controllerProperties.controllerEndpoint
-			},
-			{
 				displayName: loc.connectionMode,
 				value: this.controllerProperties.connectionMode
 			},
 			{
 				displayName: loc.namespace,
 				value: this.controllerProperties.instanceNamespace
+			},
+			{
+				displayName: loc.status,
+				value: this.controllerProperties.status
 			}
 		];
 

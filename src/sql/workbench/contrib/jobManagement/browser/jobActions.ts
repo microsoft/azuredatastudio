@@ -16,11 +16,11 @@ import { AlertsViewComponent } from 'sql/workbench/contrib/jobManagement/browser
 import { OperatorsViewComponent } from 'sql/workbench/contrib/jobManagement/browser/operatorsView.component';
 import { ProxiesViewComponent } from 'sql/workbench/contrib/jobManagement/browser/proxiesView.component';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { TelemetryView, TelemetryAction } from 'sql/platform/telemetry/common/telemetryKeys';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { JobManagementView } from 'sql/workbench/contrib/jobManagement/browser/jobManagementView';
 import { NotebooksViewComponent } from 'sql/workbench/contrib/jobManagement/browser/notebooksView.component';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export const successLabel: string = nls.localize('jobaction.successLabel', "Success");
 export const errorLabel: string = nls.localize('jobaction.faillabel', "Error");
@@ -47,17 +47,8 @@ export class JobsRefreshAction extends Action {
 		super(JobsRefreshAction.ID, JobsRefreshAction.LABEL, 'refreshIcon');
 	}
 
-	public run(context: IJobActionInfo): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			if (context) {
-				if (context.component) {
-					context.component.refreshJobs();
-				}
-				resolve(true);
-			} else {
-				reject(false);
-			}
-		});
+	public override async run(context?: IJobActionInfo): Promise<void> {
+		context?.component?.refreshJobs();
 	}
 }
 
@@ -70,16 +61,9 @@ export class NewJobAction extends Action {
 		super(NewJobAction.ID, NewJobAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: IJobActionInfo): Promise<boolean> {
-		let component = context.component as JobsViewComponent;
-		return new Promise<boolean>(async (resolve, reject) => {
-			try {
-				await component.openCreateJobDialog();
-				resolve(true);
-			} catch (e) {
-				reject(e);
-			}
-		});
+	public override async run(context: IJobActionInfo): Promise<void> {
+		const component = context.component as JobsViewComponent;
+		await component.openCreateJobDialog();
 	}
 }
 
@@ -92,29 +76,24 @@ export class RunJobAction extends Action {
 		@IErrorMessageService private errorMessageService: IErrorMessageService,
 		@IJobManagementService private jobManagementService: IJobManagementService,
 		@IInstantiationService private instantationService: IInstantiationService,
-		@ITelemetryService private telemetryService: ITelemetryService
+		@IAdsTelemetryService private telemetryService: IAdsTelemetryService
 	) {
 		super(RunJobAction.ID, RunJobAction.LABEL, 'start');
 	}
 
-	public run(context: IJobActionInfo): Promise<boolean> {
+	public override async run(context: IJobActionInfo): Promise<void> {
 		let jobName = context.targetObject.job.name;
 		let ownerUri = context.ownerUri;
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
-		this.telemetryService.publicLog(TelemetryKeys.RunAgentJob);
-		return new Promise<boolean>((resolve, reject) => {
-			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Run).then(async (result) => {
-				if (result.success) {
-					let startMsg = nls.localize('jobSuccessfullyStarted', ": The job was successfully started.");
-					this.notificationService.info(jobName + startMsg);
-					await refreshAction.run(context);
-					resolve(true);
-				} else {
-					this.errorMessageService.showDialog(Severity.Error, errorLabel, result.errorMessage);
-					resolve(false);
-				}
-			});
-		});
+		this.telemetryService.sendActionEvent(TelemetryView.Agent, TelemetryAction.RunAgentJob);
+		const result = await this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Run);
+		if (result.success) {
+			let startMsg = nls.localize('jobSuccessfullyStarted', ": The job was successfully started.");
+			this.notificationService.info(jobName + startMsg);
+			await refreshAction.run(context);
+		} else {
+			this.errorMessageService.showDialog(Severity.Error, errorLabel, result.errorMessage);
+		}
 	}
 }
 
@@ -127,29 +106,24 @@ export class StopJobAction extends Action {
 		@IErrorMessageService private errorMessageService: IErrorMessageService,
 		@IJobManagementService private jobManagementService: IJobManagementService,
 		@IInstantiationService private instantationService: IInstantiationService,
-		@ITelemetryService private telemetryService: ITelemetryService
+		@IAdsTelemetryService private telemetryService: IAdsTelemetryService
 	) {
 		super(StopJobAction.ID, StopJobAction.LABEL, 'stop');
 	}
 
-	public run(context: IJobActionInfo): Promise<boolean> {
+	public override async run(context: IJobActionInfo): Promise<void> {
 		let jobName = context.targetObject.name;
 		let ownerUri = context.ownerUri;
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
-		this.telemetryService.publicLog(TelemetryKeys.StopAgentJob);
-		return new Promise<boolean>((resolve, reject) => {
-			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Stop).then(async (result) => {
-				if (result.success) {
-					await refreshAction.run(context);
-					let stopMsg = nls.localize('jobSuccessfullyStopped', ": The job was successfully stopped.");
-					this.notificationService.info(jobName + stopMsg);
-					resolve(true);
-				} else {
-					this.errorMessageService.showDialog(Severity.Error, 'Error', result.errorMessage);
-					resolve(false);
-				}
-			});
-		});
+		this.telemetryService.sendActionEvent(TelemetryView.Agent, TelemetryAction.StopAgentJob);
+		const result = await this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Stop);
+		if (result.success) {
+			await refreshAction.run(context);
+			let stopMsg = nls.localize('jobSuccessfullyStopped', ": The job was successfully stopped.");
+			this.notificationService.info(jobName + stopMsg);
+		} else {
+			this.errorMessageService.showDialog(Severity.Error, 'Error', result.errorMessage);
+		}
 	}
 }
 
@@ -163,12 +137,11 @@ export class EditJobAction extends Action {
 		super(EditJobAction.ID, EditJobAction.LABEL, 'edit');
 	}
 
-	public run(actionInfo: IJobActionInfo): Promise<boolean> {
-		this._commandService.executeCommand(
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
+		await this._commandService.executeCommand(
 			'agent.openJobDialog',
 			actionInfo.ownerUri,
 			actionInfo.targetObject.job);
-		return Promise.resolve(true);
 	}
 }
 
@@ -180,9 +153,8 @@ export class OpenMaterializedNotebookAction extends Action {
 		super(OpenMaterializedNotebookAction.ID, OpenMaterializedNotebookAction.LABEL, 'openNotebook');
 	}
 
-	public run(context: any): Promise<boolean> {
+	public override async run(context: any): Promise<void> {
 		context.component.openNotebook(context.history);
-		return Promise.resolve(true);
 	}
 }
 
@@ -194,29 +166,28 @@ export class DeleteJobAction extends Action {
 		@INotificationService private _notificationService: INotificationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IJobManagementService private _jobService: IJobManagementService,
-		@ITelemetryService private _telemetryService: ITelemetryService
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		super(DeleteJobAction.ID, DeleteJobAction.LABEL);
 	}
 
-	public run(actionInfo: IJobActionInfo): Promise<boolean> {
-		let self = this;
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		let job = actionInfo.targetObject.job as azdata.AgentJobInfo;
-		self._notificationService.prompt(
+		this._notificationService.prompt(
 			Severity.Info,
 			nls.localize('jobaction.deleteJobConfirm', "Are you sure you'd like to delete the job '{0}'?", job.name),
 			[{
 				label: DeleteJobAction.LABEL,
 				run: () => {
-					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentJob);
-					self._jobService.deleteJob(actionInfo.ownerUri, actionInfo.targetObject.job).then(result => {
+					this._telemetryService.sendActionEvent(TelemetryView.Agent, TelemetryAction.DeleteAgentJob);
+					this._jobService.deleteJob(actionInfo.ownerUri, actionInfo.targetObject.job).then(result => {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteJob", "Could not delete job '{0}'.\nError: {1}",
 								job.name, result.errorMessage ? result.errorMessage : 'Unknown error');
-							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
+							this._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
 						} else {
 							let successMessage = nls.localize('jobaction.deletedJob', "The job was successfully deleted");
-							self._notificationService.info(successMessage);
+							this._notificationService.info(successMessage);
 						}
 					});
 				}
@@ -225,7 +196,6 @@ export class DeleteJobAction extends Action {
 				run: () => { }
 			}]
 		);
-		return Promise.resolve(true);
 	}
 }
 
@@ -241,13 +211,11 @@ export class NewStepAction extends Action {
 		super(NewStepAction.ID, NewStepAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: JobHistoryComponent): Promise<boolean> {
+	public override async run(context: JobHistoryComponent): Promise<void> {
 		let ownerUri = context.ownerUri;
 		let server = context.serverName;
 		let jobInfo = context.agentJobInfo;
-		return new Promise<boolean>((resolve, reject) => {
-			resolve(this._commandService.executeCommand('agent.openNewStepDialog', ownerUri, server, jobInfo, null));
-		});
+		await this._commandService.executeCommand('agent.openNewStepDialog', ownerUri, server, jobInfo, undefined);
 	}
 }
 
@@ -260,31 +228,30 @@ export class DeleteStepAction extends Action {
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IJobManagementService private _jobService: IJobManagementService,
 		@IInstantiationService private instantationService: IInstantiationService,
-		@ITelemetryService private _telemetryService: ITelemetryService
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		super(DeleteStepAction.ID, DeleteStepAction.LABEL);
 	}
 
-	public run(actionInfo: IJobActionInfo): Promise<boolean> {
-		let self = this;
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		let step = actionInfo.targetObject as azdata.AgentJobStepInfo;
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
-		self._notificationService.prompt(
+		this._notificationService.prompt(
 			Severity.Info,
 			nls.localize('jobaction.deleteStepConfirm', "Are you sure you'd like to delete the step '{0}'?", step.stepName),
 			[{
 				label: DeleteStepAction.LABEL,
 				run: () => {
-					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentJobStep);
-					self._jobService.deleteJobStep(actionInfo.ownerUri, actionInfo.targetObject).then(async (result) => {
+					this._telemetryService.sendActionEvent(TelemetryView.Agent, TelemetryAction.DeleteAgentJobStep);
+					this._jobService.deleteJobStep(actionInfo.ownerUri, actionInfo.targetObject).then(async (result) => {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize('jobaction.failedToDeleteStep', "Could not delete step '{0}'.\nError: {1}",
 								step.stepName, result.errorMessage ? result.errorMessage : 'Unknown error');
-							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
+							this._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
 							await refreshAction.run(actionInfo);
 						} else {
 							let successMessage = nls.localize('jobaction.deletedStep', "The job step was successfully deleted");
-							self._notificationService.info(successMessage);
+							this._notificationService.info(successMessage);
 						}
 					});
 				}
@@ -293,7 +260,6 @@ export class DeleteStepAction extends Action {
 				run: () => { }
 			}]
 		);
-		return Promise.resolve(true);
 	}
 }
 
@@ -308,16 +274,9 @@ export class NewAlertAction extends Action {
 		super(NewAlertAction.ID, NewAlertAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: IJobActionInfo): Promise<boolean> {
+	public override async run(context: IJobActionInfo): Promise<void> {
 		let component = context.component as AlertsViewComponent;
-		return new Promise<boolean>((resolve, reject) => {
-			try {
-				component.openCreateAlertDialog();
-				resolve(true);
-			} catch (e) {
-				reject(e);
-			}
-		});
+		await component.openCreateAlertDialog();
 	}
 }
 
@@ -331,13 +290,12 @@ export class EditAlertAction extends Action {
 		super(EditAlertAction.ID, EditAlertAction.LABEL);
 	}
 
-	public run(actionInfo: IJobActionInfo): Promise<boolean> {
-		this._commandService.executeCommand(
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
+		await this._commandService.executeCommand(
 			'agent.openAlertDialog',
 			actionInfo.ownerUri,
 			actionInfo.targetObject.jobInfo,
 			actionInfo.targetObject.alertInfo);
-		return Promise.resolve(true);
 	}
 }
 
@@ -350,38 +308,35 @@ export class DeleteAlertAction extends Action {
 		@INotificationService private _notificationService: INotificationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IJobManagementService private _jobService: IJobManagementService,
-		@ITelemetryService private _telemetryService: ITelemetryService
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		super(DeleteAlertAction.ID, DeleteAlertAction.LABEL);
 	}
 
-	public run(actionInfo: IJobActionInfo): Promise<boolean> {
-		let self = this;
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		let alert = actionInfo.targetObject.alertInfo as azdata.AgentAlertInfo;
-		self._notificationService.prompt(
+		this._notificationService.prompt(
 			Severity.Info,
 			nls.localize('jobaction.deleteAlertConfirm', "Are you sure you'd like to delete the alert '{0}'?", alert.name),
 			[{
 				label: DeleteAlertAction.LABEL,
-				run: () => {
-					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentAlert);
-					self._jobService.deleteAlert(actionInfo.ownerUri, alert).then(result => {
-						if (!result || !result.success) {
-							let errorMessage = nls.localize("jobaction.failedToDeleteAlert", "Could not delete alert '{0}'.\nError: {1}",
-								alert.name, result.errorMessage ? result.errorMessage : 'Unknown error');
-							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
-						} else {
-							let successMessage = nls.localize('jobaction.deletedAlert', "The alert was successfully deleted");
-							self._notificationService.info(successMessage);
-						}
-					});
+				run: async () => {
+					this._telemetryService.sendActionEvent(TelemetryView.Agent, TelemetryAction.DeleteAgentAlert);
+					const result = await this._jobService.deleteAlert(actionInfo.ownerUri, alert);
+					if (!result || !result.success) {
+						let errorMessage = nls.localize("jobaction.failedToDeleteAlert", "Could not delete alert '{0}'.\nError: {1}",
+							alert.name, result.errorMessage ? result.errorMessage : 'Unknown error');
+						this._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
+					} else {
+						let successMessage = nls.localize('jobaction.deletedAlert', "The alert was successfully deleted");
+						this._notificationService.info(successMessage);
+					}
 				}
 			}, {
 				label: DeleteAlertAction.CancelLabel,
 				run: () => { }
 			}]
 		);
-		return Promise.resolve(true);
 	}
 }
 
@@ -396,16 +351,9 @@ export class NewOperatorAction extends Action {
 		super(NewOperatorAction.ID, NewOperatorAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: IJobActionInfo): Promise<boolean> {
+	public override async run(context: IJobActionInfo): Promise<void> {
 		let component = context.component as OperatorsViewComponent;
-		return new Promise<boolean>((resolve, reject) => {
-			try {
-				component.openCreateOperatorDialog();
-				resolve(true);
-			} catch (e) {
-				reject(e);
-			}
-		});
+		await component.openCreateOperatorDialog();
 	}
 }
 
@@ -419,12 +367,11 @@ export class EditOperatorAction extends Action {
 		super(EditOperatorAction.ID, EditOperatorAction.LABEL);
 	}
 
-	public run(actionInfo: IJobActionInfo): Promise<boolean> {
-		this._commandService.executeCommand(
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
+		await this._commandService.executeCommand(
 			'agent.openOperatorDialog',
 			actionInfo.ownerUri,
 			actionInfo.targetObject);
-		return Promise.resolve(true);
 	}
 }
 
@@ -436,38 +383,35 @@ export class DeleteOperatorAction extends Action {
 		@INotificationService private _notificationService: INotificationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IJobManagementService private _jobService: IJobManagementService,
-		@ITelemetryService private _telemetryService: ITelemetryService
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		super(DeleteOperatorAction.ID, DeleteOperatorAction.LABEL);
 	}
 
-	public run(actionInfo: IJobActionInfo): Promise<boolean> {
-		const self = this;
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		let operator = actionInfo.targetObject as azdata.AgentOperatorInfo;
-		self._notificationService.prompt(
+		this._notificationService.prompt(
 			Severity.Info,
 			nls.localize('jobaction.deleteOperatorConfirm', "Are you sure you'd like to delete the operator '{0}'?", operator.name),
 			[{
 				label: DeleteOperatorAction.LABEL,
-				run: () => {
-					self._telemetryService.publicLog(TelemetryKeys.DeleteAgentOperator);
-					self._jobService.deleteOperator(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
-						if (!result || !result.success) {
-							let errorMessage = nls.localize("jobaction.failedToDeleteOperator", "Could not delete operator '{0}'.\nError: {1}",
-								operator.name, result.errorMessage ? result.errorMessage : 'Unknown error');
-							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
-						} else {
-							let successMessage = nls.localize('joaction.deletedOperator', "The operator was deleted successfully");
-							self._notificationService.info(successMessage);
-						}
-					});
+				run: async () => {
+					this._telemetryService.sendActionEvent(TelemetryView.Agent, TelemetryAction.DeleteAgentOperator);
+					const result = await this._jobService.deleteOperator(actionInfo.ownerUri, actionInfo.targetObject);
+					if (!result || !result.success) {
+						let errorMessage = nls.localize("jobaction.failedToDeleteOperator", "Could not delete operator '{0}'.\nError: {1}",
+							operator.name, result.errorMessage ? result.errorMessage : 'Unknown error');
+						this._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
+					} else {
+						let successMessage = nls.localize('joaction.deletedOperator', "The operator was deleted successfully");
+						this._notificationService.info(successMessage);
+					}
 				}
 			}, {
 				label: DeleteAlertAction.CancelLabel,
 				run: () => { }
 			}]
 		);
-		return Promise.resolve(true);
 	}
 }
 
@@ -483,16 +427,9 @@ export class NewProxyAction extends Action {
 		super(NewProxyAction.ID, NewProxyAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: IJobActionInfo): Promise<boolean> {
-		let component = context.component as ProxiesViewComponent;
-		return new Promise<boolean>((resolve, reject) => {
-			try {
-				component.openCreateProxyDialog();
-				resolve(true);
-			} catch (e) {
-				reject(e);
-			}
-		});
+	public override async run(context: IJobActionInfo): Promise<void> {
+		const component = context.component as ProxiesViewComponent;
+		component.openCreateProxyDialog();
 	}
 }
 
@@ -507,19 +444,15 @@ export class EditProxyAction extends Action {
 		super(EditProxyAction.ID, EditProxyAction.LABEL);
 	}
 
-	public run(actionInfo: IJobActionInfo): Promise<boolean> {
-		return Promise.resolve(this._jobManagementService.getCredentials(actionInfo.ownerUri).then((result) => {
-			if (result && result.credentials) {
-				this._commandService.executeCommand(
-					'agent.openProxyDialog',
-					actionInfo.ownerUri,
-					actionInfo.targetObject,
-					result.credentials);
-				return true;
-			} else {
-				return false;
-			}
-		}));
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
+		const result = await this._jobManagementService.getCredentials(actionInfo.ownerUri);
+		if (result && result.credentials) {
+			await this._commandService.executeCommand(
+				'agent.openProxyDialog',
+				actionInfo.ownerUri,
+				actionInfo.targetObject,
+				result.credentials);
+		}
 	}
 }
 
@@ -531,38 +464,35 @@ export class DeleteProxyAction extends Action {
 		@INotificationService private _notificationService: INotificationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IJobManagementService private _jobService: IJobManagementService,
-		@ITelemetryService private _telemetryService: ITelemetryService
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		super(DeleteProxyAction.ID, DeleteProxyAction.LABEL);
 	}
 
-	public run(actionInfo: IJobActionInfo): Promise<boolean> {
-		let self = this;
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		let proxy = actionInfo.targetObject as azdata.AgentProxyInfo;
-		self._notificationService.prompt(
+		this._notificationService.prompt(
 			Severity.Info,
 			nls.localize('jobaction.deleteProxyConfirm', "Are you sure you'd like to delete the proxy '{0}'?", proxy.accountName),
 			[{
 				label: DeleteProxyAction.LABEL,
-				run: () => {
-					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentProxy);
-					self._jobService.deleteProxy(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
-						if (!result || !result.success) {
-							let errorMessage = nls.localize("jobaction.failedToDeleteProxy", "Could not delete proxy '{0}'.\nError: {1}",
-								proxy.accountName, result.errorMessage ? result.errorMessage : 'Unknown error');
-							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
-						} else {
-							let successMessage = nls.localize('jobaction.deletedProxy', "The proxy was deleted successfully");
-							self._notificationService.info(successMessage);
-						}
-					});
+				run: async () => {
+					this._telemetryService.sendActionEvent(TelemetryView.Agent, TelemetryAction.DeleteAgentProxy);
+					const result = await this._jobService.deleteProxy(actionInfo.ownerUri, actionInfo.targetObject);
+					if (!result || !result.success) {
+						let errorMessage = nls.localize("jobaction.failedToDeleteProxy", "Could not delete proxy '{0}'.\nError: {1}",
+							proxy.accountName, result.errorMessage ? result.errorMessage : 'Unknown error');
+						this._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
+					} else {
+						let successMessage = nls.localize('jobaction.deletedProxy', "The proxy was deleted successfully");
+						this._notificationService.info(successMessage);
+					}
 				}
 			}, {
 				label: DeleteAlertAction.CancelLabel,
 				run: () => { }
 			}]
 		);
-		return Promise.resolve(true);
 	}
 }
 
@@ -577,10 +507,9 @@ export class NewNotebookJobAction extends Action {
 		super(NewNotebookJobAction.ID, NewNotebookJobAction.LABEL, 'newStepIcon');
 	}
 
-	public async run(context: IJobActionInfo): Promise<boolean> {
+	public override async run(context: IJobActionInfo): Promise<void> {
 		let component = context.component as NotebooksViewComponent;
 		await component.openCreateNotebookDialog();
-		return true;
 	}
 }
 
@@ -594,12 +523,11 @@ export class EditNotebookJobAction extends Action {
 		super(EditNotebookJobAction.ID, EditNotebookJobAction.LABEL, 'edit');
 	}
 
-	public run(actionInfo: IJobActionInfo): Promise<boolean> {
-		this._commandService.executeCommand(
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
+		await this._commandService.executeCommand(
 			'agent.openNotebookDialog',
 			actionInfo.ownerUri,
 			actionInfo.targetObject.job);
-		return Promise.resolve(true);
 	}
 }
 
@@ -611,9 +539,8 @@ export class OpenTemplateNotebookAction extends Action {
 		super(OpenTemplateNotebookAction.ID, OpenTemplateNotebookAction.LABEL, 'opennotebook');
 	}
 
-	public run(actionInfo: any): Promise<boolean> {
+	public override async run(actionInfo: any): Promise<void> {
 		actionInfo.component.openTemplateNotebook();
-		return Promise.resolve(true);
 	}
 }
 
@@ -626,40 +553,37 @@ export class DeleteNotebookAction extends Action {
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IJobManagementService private _jobService: IJobManagementService,
 		@IInstantiationService private instantationService: IInstantiationService,
-		@ITelemetryService private _telemetryService: ITelemetryService
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		super(DeleteNotebookAction.ID, DeleteNotebookAction.LABEL);
 	}
 
-	public run(actionInfo: IJobActionInfo): Promise<boolean> {
-		let self = this;
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		let notebook = actionInfo.targetObject.job as azdata.AgentNotebookInfo;
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
-		self._notificationService.prompt(
+		this._notificationService.prompt(
 			Severity.Info,
 			nls.localize('jobaction.deleteNotebookConfirm', "Are you sure you'd like to delete the notebook '{0}'?", notebook.name),
 			[{
 				label: DeleteNotebookAction.LABEL,
-				run: () => {
-					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentJob);
-					self._jobService.deleteNotebook(actionInfo.ownerUri, actionInfo.targetObject.job).then(async (result) => {
-						if (!result || !result.success) {
-							await refreshAction.run(actionInfo);
-							let errorMessage = nls.localize("jobaction.failedToDeleteNotebook", "Could not delete notebook '{0}'.\nError: {1}",
-								notebook.name, result.errorMessage ? result.errorMessage : 'Unknown error');
-							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
-						} else {
-							let successMessage = nls.localize('jobaction.deletedNotebook', "The notebook was successfully deleted");
-							self._notificationService.info(successMessage);
-						}
-					});
+				run: async () => {
+					this._telemetryService.sendActionEvent(TelemetryView.Agent, TelemetryAction.DeleteAgentJob);
+					const result = await this._jobService.deleteNotebook(actionInfo.ownerUri, actionInfo.targetObject.job);
+					if (!result || !result.success) {
+						await refreshAction.run(actionInfo);
+						let errorMessage = nls.localize("jobaction.failedToDeleteNotebook", "Could not delete notebook '{0}'.\nError: {1}",
+							notebook.name, result.errorMessage ? result.errorMessage : 'Unknown error');
+						this._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
+					} else {
+						let successMessage = nls.localize('jobaction.deletedNotebook', "The notebook was successfully deleted");
+						this._notificationService.info(successMessage);
+					}
 				}
 			}, {
 				label: DeleteAlertAction.CancelLabel,
 				run: () => { }
 			}]
 		);
-		return Promise.resolve(true);
 	}
 
 }
@@ -672,9 +596,8 @@ export class PinNotebookMaterializedAction extends Action {
 		super(PinNotebookMaterializedAction.ID, PinNotebookMaterializedAction.LABEL);
 	}
 
-	public run(actionInfo: any): Promise<boolean> {
+	public override async run(actionInfo: any): Promise<void> {
 		actionInfo.component.toggleNotebookPin(actionInfo.history, true);
-		return Promise.resolve(true);
 	}
 }
 
@@ -686,9 +609,8 @@ export class DeleteMaterializedNotebookAction extends Action {
 		super(DeleteMaterializedNotebookAction.ID, DeleteMaterializedNotebookAction.LABEL);
 	}
 
-	public run(actionInfo: any): Promise<boolean> {
+	public override async run(actionInfo: any): Promise<void> {
 		actionInfo.component.deleteMaterializedNotebook(actionInfo.history);
-		return Promise.resolve(true);
 	}
 }
 
@@ -700,9 +622,8 @@ export class UnpinNotebookMaterializedAction extends Action {
 		super(UnpinNotebookMaterializedAction.ID, UnpinNotebookMaterializedAction.LABEL);
 	}
 
-	public run(actionInfo: any): Promise<boolean> {
+	public override async run(actionInfo: any): Promise<void> {
 		actionInfo.component.toggleNotebookPin(actionInfo.history, false);
-		return Promise.resolve(true);
 	}
 }
 
@@ -714,9 +635,8 @@ export class RenameNotebookMaterializedAction extends Action {
 		super(RenameNotebookMaterializedAction.ID, RenameNotebookMaterializedAction.LABEL);
 	}
 
-	public run(actionInfo: any): Promise<boolean> {
+	public override async run(actionInfo: any): Promise<void> {
 		actionInfo.component.renameNotebook(actionInfo.history);
-		return Promise.resolve(true);
 	}
 }
 
@@ -728,8 +648,7 @@ export class OpenLatestRunMaterializedNotebook extends Action {
 		super(OpenLatestRunMaterializedNotebook.ID, OpenLatestRunMaterializedNotebook.LABEL);
 	}
 
-	public run(actionInfo: IJobActionInfo): Promise<boolean> {
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		actionInfo.component.openLastNRun(actionInfo.targetObject.job, 0, 1);
-		return Promise.resolve(true);
 	}
 }

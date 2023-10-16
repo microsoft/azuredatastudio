@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Event } from 'vs/base/common/event';
-import { IListRenderer, IListDragOverReaction, IListDragAndDrop, ListDragOverEffect } from 'vs/base/browser/ui/list/list';
 import { IDragAndDropData } from 'vs/base/browser/dnd';
+import { IListDragAndDrop, IListDragOverReaction, IListRenderer, ListDragOverEffect } from 'vs/base/browser/ui/list/list';
+import { Event } from 'vs/base/common/event';
 
 export const enum TreeVisibility {
 
@@ -78,6 +78,28 @@ export interface ITreeElement<T> {
 	readonly collapsed?: boolean;
 }
 
+export enum ObjectTreeElementCollapseState {
+	Expanded,
+	Collapsed,
+
+	/**
+	 * If the element is already in the tree, preserve its current state. Else, expand it.
+	 */
+	PreserveOrExpanded,
+
+	/**
+	 * If the element is already in the tree, preserve its current state. Else, collapse it.
+	 */
+	PreserveOrCollapsed,
+}
+
+export interface IObjectTreeElement<T> {
+	readonly element: T;
+	readonly children?: Iterable<IObjectTreeElement<T>>;
+	readonly collapsible?: boolean;
+	readonly collapsed?: boolean | ObjectTreeElementCollapseState;
+}
+
 export interface ITreeNode<T, TFilterData = void> {
 	readonly element: T;
 	readonly children: ITreeNode<T, TFilterData>[];
@@ -129,31 +151,32 @@ export interface ITreeModel<T, TFilterData, TRef> {
 }
 
 export interface ITreeRenderer<T, TFilterData = void, TTemplateData = void> extends IListRenderer<ITreeNode<T, TFilterData>, TTemplateData> {
-	renderTwistie?(element: T, twistieElement: HTMLElement): void;
+	renderTwistie?(element: T, twistieElement: HTMLElement): boolean;
 	onDidChangeTwistieState?: Event<T>;
 }
 
 export interface ITreeEvent<T> {
-	elements: T[];
-	browserEvent?: UIEvent;
+	readonly elements: readonly T[];
+	readonly browserEvent?: UIEvent;
 }
 
 export enum TreeMouseEventTarget {
 	Unknown,
 	Twistie,
-	Element
+	Element,
+	Filter
 }
 
 export interface ITreeMouseEvent<T> {
-	browserEvent: MouseEvent;
-	element: T | null;
-	target: TreeMouseEventTarget;
+	readonly browserEvent: MouseEvent;
+	readonly element: T | null;
+	readonly target: TreeMouseEventTarget;
 }
 
 export interface ITreeContextMenuEvent<T> {
-	browserEvent: UIEvent;
-	element: T | null;
-	anchor: HTMLElement | { x: number; y: number; };
+	readonly browserEvent: UIEvent;
+	readonly element: T | null;
+	readonly anchor: HTMLElement | { readonly x: number; readonly y: number };
 }
 
 export interface ITreeNavigator<T> {

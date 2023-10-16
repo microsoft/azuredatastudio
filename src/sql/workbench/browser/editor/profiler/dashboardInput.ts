@@ -3,15 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorInput } from 'vs/workbench/common/editor';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
-import { IModelService } from 'vs/editor/common/services/modelService';
-import { IModeService } from 'vs/editor/common/services/modeService';
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { IModelService } from 'vs/editor/common/services/model';
+import { ILanguageService } from 'vs/editor/common/languages/language';
 
 export class DashboardInput extends EditorInput {
 
@@ -35,7 +35,7 @@ export class DashboardInput extends EditorInput {
 	constructor(
 		_connectionProfile: IConnectionProfile,
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
-		@IModeService modeService: IModeService,
+		@ILanguageService languageService: ILanguageService,
 		@IModelService model: IModelService
 	) {
 		super();
@@ -47,7 +47,7 @@ export class DashboardInput extends EditorInput {
 		// vscode has a comment that Mode's will eventually be removed (not sure the state of this comment)
 		// so this might be able to be undone when that happens
 		if (!model.getModel(this.resource)) {
-			model.createModel('', modeService.create('dashboard'), this.resource);
+			model.createModel('', languageService.createById('dashboard'), this.resource);
 		}
 		this._initializedPromise = _connectionService.connectIfNotConnected(_connectionProfile, 'dashboard').then(
 			u => {
@@ -68,7 +68,7 @@ export class DashboardInput extends EditorInput {
 		this._uniqueSelector = uniqueSelector;
 	}
 
-	public getTypeId(): string {
+	override get typeId(): string {
 		return DashboardInput.ID;
 	}
 
@@ -79,15 +79,15 @@ export class DashboardInput extends EditorInput {
 		});
 	}
 
-	public getName(): string {
+	public override getName(): string {
 		if (!this.connectionProfile) {
 			return '';
 		}
 
-		let name = this.connectionProfile.connectionName ? this.connectionProfile.connectionName : this.connectionProfile.serverName;
-		if (this.connectionProfile.databaseName
+		let name = this.connectionProfile.connectionName ? this.connectionProfile.connectionName : this.connectionProfile.serverName
+		if (!this.connectionProfile.connectionName && this.connectionProfile.databaseName
 			&& !this.isMasterMssql()) {
-			// Only add DB name if this is a non-default, non-master connection
+			// Only add DB name if this is a non-default, non-master connection and if there is no user set profile name.
 			name = name + ':' + this.connectionProfile.databaseName;
 		}
 		return name;
@@ -102,7 +102,7 @@ export class DashboardInput extends EditorInput {
 		return this._uri;
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		this._disposeContainer();
 		if (this._onConnectionChanged) {
 			this._onConnectionChanged.dispose();
@@ -147,7 +147,7 @@ export class DashboardInput extends EditorInput {
 		return this._uniqueSelector;
 	}
 
-	public matches(otherinput: any): boolean {
+	public override matches(otherinput: any): boolean {
 		return otherinput instanceof DashboardInput
 			&& DashboardInput.profileMatches(this.connectionProfile, otherinput.connectionProfile);
 	}

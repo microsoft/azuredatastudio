@@ -32,6 +32,6 @@ export class ConnectionDialog extends Dialog {
 	async connect(): Promise<void> {
 		await this.code.waitAndClick(ConnectionDialog.CONNECT_BUTTON_SELECTOR);
 
-		return this.waitForDialogGone();
+		await this.waitForDialogGone();
 	}
 }

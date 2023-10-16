@@ -3,13 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { IDisposable } from 'vs/base/common/lifecycle';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
+import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 
 import {
-	SqlExtHostContext,
-	SqlMainContext,
 	ExtHostTasksShape,
 	MainThreadTasksShape
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
@@ -18,25 +14,25 @@ import { IConnectionProfile } from 'azdata';
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TaskRegistry } from 'sql/workbench/services/tasks/browser/tasksRegistry';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadTasks)
-export class MainThreadTasks implements MainThreadTasksShape {
+export class MainThreadTasks extends Disposable implements MainThreadTasksShape {
 
 	private readonly _disposables = new Map<string, IDisposable>();
-	private readonly _generateCommandsDocumentationRegistration: IDisposable;
 	private readonly _proxy: ExtHostTasksShape;
 
 	constructor(
 		extHostContext: IExtHostContext
 	) {
-		this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostTasks);
+		super();
+		this._proxy = <ExtHostTasksShape><unknown>extHostContext.getProxy(SqlExtHostContext.ExtHostTasks);
 	}
 
-	dispose() {
+	override dispose() {
 		this._disposables.forEach(value => value.dispose());
 		this._disposables.clear();
-
-		this._generateCommandsDocumentationRegistration.dispose();
 	}
 
 	$registerTask(id: string): Promise<any> {

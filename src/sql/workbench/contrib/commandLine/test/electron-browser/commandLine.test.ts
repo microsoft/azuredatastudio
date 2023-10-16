@@ -8,9 +8,8 @@ import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { CommandLineWorkbenchContribution, SqlArgs } from 'sql/workbench/contrib/commandLine/electron-browser/commandLine';
+import { CommandLineWorkbenchContribution } from 'sql/workbench/contrib/commandLine/electron-sandbox/commandLine';
 import * as Constants from 'sql/platform/connection/common/constants';
-import { ParsedArgs } from 'vs/platform/environment/node/argv';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -31,15 +30,29 @@ import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
+import { FileQueryEditorInput } from 'sql/workbench/browser/editor/query/fileQueryEditorInput';
 import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
+import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 
-class TestParsedArgs implements ParsedArgs, SqlArgs {
+class TestParsedArgs implements NativeParsedArgs {
 	[arg: string]: any;
 	_: string[];
-	database?: string;
+
+	// Start: SQL Args
+	aad?: boolean;
+	applicationName?: string;
+	authenticationType?: string;
 	command?: string;
+	connectionProperties?: string;
+	database?: string;
+	integrated?: boolean;
+	provider?: string;
+	server?: string;
+	showDashboard?: boolean;
+	user?: string;
+	// End: SQL Args
+
 	debugBrkPluginHost?: string;
 	debugBrkSearch?: string;
 	debugId?: string;
@@ -67,7 +80,7 @@ class TestParsedArgs implements ParsedArgs, SqlArgs {
 	'install-source'?: string;
 	'list-extensions'?: boolean;
 	locale?: string;
-	log?: string;
+	log?: string[];
 	logExtensionHostCommunication?: boolean;
 	'max-memory'?: string;
 	'new-window'?: boolean;
@@ -77,7 +90,6 @@ class TestParsedArgs implements ParsedArgs, SqlArgs {
 	'prof-startup'?: boolean;
 	'prof-startup-prefix'?: string;
 	'reuse-window'?: boolean;
-	server?: string;
 	'show-versions'?: boolean;
 	'skip-add-to-recently-opened'?: boolean;
 	'skip-getting-started'?: boolean;
@@ -87,14 +99,12 @@ class TestParsedArgs implements ParsedArgs, SqlArgs {
 	'uninstall-extension'?: string[];
 	'unity-launch'?: boolean; // Always open a new window, except if opening the first window or opening a file or folder as part of the launch.
 	'upload-logs'?: string;
-	user?: string;
 	'user-data-dir'?: string;
 	_urls?: string[];
 	verbose?: boolean;
 	version?: boolean;
 	wait?: boolean;
 	waitMarkerFilePath?: string;
-	authenticationType?: string;
 }
 suite('commandLineService tests', () => {
 
@@ -139,7 +149,7 @@ suite('commandLineService tests', () => {
 		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
 			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 
-		connectionManagementService.setup((c) => c.showConnectionDialog())
+		connectionManagementService.setup((c) => c.showConnectionDialog(undefined, TypeMoq.It.isAny()))
 			.returns(() => new Promise<void>((resolve, reject) => { resolve(); }))
 			.verifiable();
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => false);
@@ -150,7 +160,7 @@ suite('commandLineService tests', () => {
 		let contribution = getCommandLineContribution(connectionManagementService.object, configurationService.object);
 		return contribution.processCommandLine(new TestParsedArgs()).then(() => {
 			connectionManagementService.verifyAll();
-		}, error => { assert.fail(error, null, 'processCommandLine rejected ' + error); });
+		}, error => { assert.fail('processCommandLine rejected ' + error); });
 	});
 
 	test('processCommandLine does nothing if no server name and command name is provided and the configuration \'workbench.showConnectDialogOnStartup\' is set to false, even if registered servers exist', async () => {
@@ -183,7 +193,7 @@ suite('commandLineService tests', () => {
 			await contribution.processCommandLine(new TestParsedArgs());
 			connectionManagementService.verifyAll();
 		} catch (error) {
-			assert.fail(error, null, 'processCommandLine rejected ' + error);
+			assert.fail('processCommandLine rejected ' + error);
 		}
 	});
 
@@ -195,13 +205,15 @@ suite('commandLineService tests', () => {
 		args.server = 'myserver';
 		args.database = 'mydatabase';
 		args.user = 'myuser';
-		args.authenticationType = Constants.sqlLogin;
+		args.authenticationType = Constants.AuthenticationType.SqlLogin;
+		args.applicationName = 'myapplication';
 
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
 		connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
 		let originalProfile: IConnectionProfile = undefined;
-		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.sqlLogin), 'connection', true))
+		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(
+			p => p.serverName === 'myserver' && p.authenticationType === Constants.AuthenticationType.SqlLogin && p.options['applicationName'] === 'myapplication-azdata'), 'connection', true))
 			.returns((conn) => {
 				originalProfile = conn;
 				return Promise.resolve('unused');
@@ -212,6 +224,67 @@ suite('commandLineService tests', () => {
 		const logService = new NullLogService();
 		let contribution = getCommandLineContribution(connectionManagementService.object, configurationService.object, capabilitiesService, undefined, undefined, logService);
 		await contribution.processCommandLine(args);
+		assert.equal(originalProfile.options['applicationName'], 'myapplication-azdata', 'Application Name not received as expected.');
+		connectionManagementService.verifyAll();
+	});
+
+	test('processCommandLine shows dashboard when requested', async () => {
+		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
+			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
+
+		const args: TestParsedArgs = new TestParsedArgs();
+		args.server = 'myserver';
+		args.database = 'mydatabase';
+		args.user = 'myuser';
+		args.showDashboard = true;
+		args.authenticationType = Constants.AuthenticationType.SqlLogin;
+
+		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
+		connectionManagementService.setup(c => c.showDashboard(TypeMoq.It.isAny())).verifiable(TypeMoq.Times.atMostOnce());
+		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
+		connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
+		let originalProfile: IConnectionProfile = undefined;
+		connectionManagementService.setup(c => c.getConnectionProfileById(TypeMoq.It.isAnyString())).returns(() => originalProfile);
+		const configurationService = getConfigurationServiceMock(true);
+		const logService = new NullLogService();
+		let contribution = getCommandLineContribution(connectionManagementService.object, configurationService.object, capabilitiesService, undefined, undefined, logService);
+		await contribution.processCommandLine(args);
+		connectionManagementService.verifyAll();
+	});
+
+	test('processCommandLine loads advanced options in args', async () => {
+		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
+			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
+
+		const args: TestParsedArgs = new TestParsedArgs();
+		args.server = 'myserver';
+		args.database = 'mydatabase';
+		args.user = 'myuser';
+		args.authenticationType = Constants.AuthenticationType.SqlLogin;
+		args.applicationName = 'myapplication';
+		// Pass advanced connection properties
+		args.connectionProperties = `{"trustServerCertificate":"true"}`;
+
+		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
+		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
+		connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
+		let originalProfile: IConnectionProfile = undefined;
+		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(
+			p => p.serverName === 'myserver'
+				&& p.authenticationType === Constants.AuthenticationType.SqlLogin
+				&& p.options['applicationName'] === 'myapplication-azdata'), 'connection', true))
+			.returns((conn) => {
+				originalProfile = conn;
+				return Promise.resolve('unused');
+			})
+			.verifiable(TypeMoq.Times.once());
+		connectionManagementService.setup(c => c.getConnectionProfileById(TypeMoq.It.isAnyString())).returns(() => originalProfile);
+		const configurationService = getConfigurationServiceMock(true);
+		const logService = new NullLogService();
+		let contribution = getCommandLineContribution(connectionManagementService.object, configurationService.object, capabilitiesService, undefined, undefined, logService);
+		await contribution.processCommandLine(args);
+		assert.equal(originalProfile.options['applicationName'], 'myapplication-azdata', 'Application Name not received as expected.');
+		assert.equal(originalProfile.options['trustServerCertificate'], 'true', 'Advanced option not received as expected.');
 		connectionManagementService.verifyAll();
 	});
 
@@ -243,7 +316,6 @@ suite('commandLineService tests', () => {
 
 
 	test('processCommandLine invokes a command with a profile parameter when a server is passed', async () => {
-
 		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
 			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 
@@ -275,7 +347,7 @@ suite('commandLineService tests', () => {
 		connectionManagementService.verifyAll();
 		commandService.verifyAll();
 		assert(!isUndefinedOrNull(actualProfile));
-		assert.equal(actualProfile.connectionProfile.serverName, args.server);
+		assert.strictEqual(actualProfile.connectionProfile.serverName, args.server);
 
 	});
 
@@ -308,7 +380,7 @@ suite('commandLineService tests', () => {
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
 		let originalProfile: IConnectionProfile = undefined;
-		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.integrated), 'connection', true))
+		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.AuthenticationType.Integrated), 'connection', true))
 			.returns((conn) => {
 				originalProfile = conn;
 				return Promise.resolve('unused');
@@ -333,7 +405,7 @@ suite('commandLineService tests', () => {
 			groupFullName: 'testGroup',
 			serverName: 'myserver',
 			databaseName: 'mydatabase',
-			authenticationType: Constants.integrated,
+			authenticationType: Constants.AuthenticationType.Integrated,
 			password: undefined,
 			userName: '',
 			groupId: undefined,
@@ -351,7 +423,7 @@ suite('commandLineService tests', () => {
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
 		let originalProfile: IConnectionProfile = undefined;
 		connectionManagementService.setup(c => c.connectIfNotConnected(
-			TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.integrated && p.connectionName === 'Test' && p.id === 'testID'), 'connection', true))
+			TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.AuthenticationType.Integrated && p.connectionName === 'Test' && p.id === 'testID'), 'connection', true))
 			.returns((conn) => {
 				originalProfile = conn;
 				return Promise.resolve('unused');
@@ -373,19 +445,20 @@ suite('commandLineService tests', () => {
 		args.server = 'myserver';
 		args.database = 'mydatabase';
 		args.user = 'myuser';
-		args.authenticationType = Constants.sqlLogin;
+		args.authenticationType = Constants.AuthenticationType.SqlLogin;
 		args._ = ['c:\\dir\\file.sql'];
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
 		connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
 		let originalProfile: IConnectionProfile = undefined;
-		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.sqlLogin), 'connection', true))
+		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.AuthenticationType.SqlLogin), 'connection', true))
 			.returns((conn) => {
 				originalProfile = conn;
 				return Promise.resolve('unused');
 			}).verifiable(TypeMoq.Times.once());
 		connectionManagementService.setup(c => c.getConnectionProfileById(TypeMoq.It.isAnyString())).returns(() => originalProfile);
 		connectionManagementService.setup(c => c.onDisconnect).returns(() => Event.None);
+		connectionManagementService.setup(c => c.onConnectionChanged).returns(() => Event.None);
 		connectionManagementService.setup(c => c.ensureDefaultLanguageFlavor(TypeMoq.It.isAny()));
 		const configurationService = getConfigurationServiceMock(true);
 		const querymodelService = TypeMoq.Mock.ofType<IQueryModelService>(TestQueryModelService, TypeMoq.MockBehavior.Strict);
@@ -393,13 +466,13 @@ suite('commandLineService tests', () => {
 		querymodelService.setup(c => c.onRunQueryComplete).returns(() => Event.None);
 		let uri = URI.file(args._[0]);
 		const workbenchinstantiationService = workbenchInstantiationService();
-		const editorInput = workbenchinstantiationService.createInstance(FileEditorInput, uri, undefined, undefined, undefined);
-		const queryInput = new FileQueryEditorInput(undefined, editorInput, undefined, connectionManagementService.object, querymodelService.object, configurationService.object);
+		const editorInput = workbenchinstantiationService.createInstance(FileEditorInput, uri, undefined, undefined, undefined, undefined, undefined, undefined);
+		const queryInput = new FileQueryEditorInput(undefined, editorInput, undefined, connectionManagementService.object, querymodelService.object, configurationService.object, workbenchinstantiationService, undefined);
 		queryInput.state.connected = true;
 		const editorService: TypeMoq.Mock<IEditorService> = TypeMoq.Mock.ofType<IEditorService>(TestEditorService, TypeMoq.MockBehavior.Strict);
 		editorService.setup(e => e.editors).returns(() => [queryInput]);
 		connectionManagementService.setup(c =>
-			c.connect(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.sqlLogin),
+			c.connect(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.AuthenticationType.SqlLogin),
 				uri.toString(),
 				TypeMoq.It.is<IConnectionCompletionOptions>(i => i.params.input === queryInput && i.params.connectionType === ConnectionType.editor))
 		).verifiable(TypeMoq.Times.once());
@@ -432,7 +505,7 @@ suite('commandLineService tests', () => {
 			let result = await contribution.handleURL(uri);
 
 			// Then I expect connection management service to have been called
-			assert.equal(result, false, 'Expected URL to be ignored');
+			assert.strictEqual(result, false, 'Expected URL to be ignored');
 		});
 
 		test('handleUrl opens a new connection if a server name is passed', async () => {
@@ -446,7 +519,7 @@ suite('commandLineService tests', () => {
 			connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
 			connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
 			let originalProfile: IConnectionProfile = undefined;
-			connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.sqlLogin), 'connection', true))
+			connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.AuthenticationType.SqlLogin), 'connection', true))
 				.returns((conn) => {
 					originalProfile = conn;
 					return Promise.resolve('unused');
@@ -462,7 +535,7 @@ suite('commandLineService tests', () => {
 			let result = await contribution.handleURL(uri);
 
 			// Then I expect connection management service to have been called
-			assert.equal(result, true, 'Expected URL to be handled');
+			assert.strictEqual(result, true, 'Expected URL to be handled');
 			connectionManagementService.verifyAll();
 		});
 
@@ -477,7 +550,7 @@ suite('commandLineService tests', () => {
 			connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
 			connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
 			let originalProfile: IConnectionProfile = undefined;
-			connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.sqlLogin), 'connection', true))
+			connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.AuthenticationType.SqlLogin), 'connection', true))
 				.returns((conn) => {
 					originalProfile = conn;
 					return Promise.resolve('unused');
@@ -494,7 +567,7 @@ suite('commandLineService tests', () => {
 			let result = await contribution.handleURL(uri);
 
 			// Then I expect no connection, but the URL should still be handled
-			assert.equal(result, true, 'Expected URL to be handled');
+			assert.strictEqual(result, true, 'Expected URL to be handled');
 			connectionManagementService.verifyAll();
 		});
 
@@ -521,7 +594,7 @@ suite('commandLineService tests', () => {
 			let result = await contribution.handleURL(uri);
 
 			// Then command service should not have been called, and instead connection should be handled
-			assert.equal(result, true);
+			assert.strictEqual(result, true);
 			commandService.verifyAll();
 			notificationService.verifyAll();
 		});
@@ -537,7 +610,7 @@ suite('commandLineService tests', () => {
 			connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 			connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
 			connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
-			connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.sqlLogin), 'connection', true))
+			connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.AuthenticationType.SqlLogin), 'connection', true))
 				.returns((conn) => {
 					return Promise.resolve('unused');
 				})
@@ -558,12 +631,10 @@ suite('commandLineService tests', () => {
 			let result = await contribution.handleURL(uri);
 
 			// Then command service should not have been called, and instead connection should be handled
-			assert.equal(result, true);
+			assert.strictEqual(result, true);
 			commandService.verifyAll();
 			notificationService.verifyAll();
 			connectionManagementService.verifyAll();
 		});
-
-
 	});
 });

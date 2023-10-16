@@ -1,0 +1,297 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/ms-mssql.sql-bindings-vscode/dist/common/constants" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="enterPasswordPrompt">
+        <source xml:lang="en">(Optional) Enter connection password to save in local.settings.json</source>
+        <target state="translated">(선택 사항) local.settings.json에 저장할 연결 암호 입력</target>
+      </trans-unit>
+      <trans-unit id="azureFunctionsProjectMustBeOpened">
+        <source xml:lang="en">A C# Azure Functions project must be present in order to create a new Azure Function with SQL binding.</source>
+        <target state="translated">SQL 바인딩을 사용하여 새 Azure 함수를 만들려면 C# Azure Functions 프로젝트가 있어야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="addPackage">
+        <source xml:lang="en">Add Package</source>
+        <target state="translated">패키지 추가</target>
+      </trans-unit>
+      <trans-unit id="addSqlBinding">
+        <source xml:lang="en">Adding SQL Binding to function "{0}"...</source>
+        <target state="translated">함수 "{0}"에 SQL 바인딩을 추가하는 중...</target>
+      </trans-unit>
+      <trans-unit id="dotnetResult">
+        <source xml:lang="en">Adding SQL nuget package:
+{0}</source>
+        <target state="translated">SQL 너겟 패키지 추가:
+{0}</target>
+      </trans-unit>
+      <trans-unit id="failedToGetConnectionString">
+        <source xml:lang="en">An error occurred generating the connection string for the selected connection</source>
+        <target state="translated">선택한 연결에 대한 연결 문자열을 생성하는 동안 오류가 발생했습니다.</target>
+      </trans-unit>
+      <trans-unit id="azureFunctionsExtensionNotInstalled">
+        <source xml:lang="en">Azure Functions extension must be installed in order to use this feature.</source>
+        <target state="translated">이 기능을 사용하려면 Azure Functions 확장을 설치해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="browseEllipsis">
+        <source xml:lang="en">Browse...</source>
+        <target state="translated">찾아보기...</target>
+      </trans-unit>
+      <trans-unit id="closeButton">
+        <source xml:lang="en">Close</source>
+        <target state="translated">닫기</target>
+      </trans-unit>
+      <trans-unit id="connectionStringSetting">
+        <source xml:lang="en">Connection string setting name</source>
+        <target state="translated">연결 문자열 설정 이름</target>
+      </trans-unit>
+      <trans-unit id="connectionStringSettingPlaceholder">
+        <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
+        <target state="translated">"local.settings.json"에 지정된 연결 문자열 설정</target>
+      </trans-unit>
+      <trans-unit id="createProject">
+        <source xml:lang="en">Create Azure Function Project</source>
+        <target state="translated">Azure 함수 프로젝트 만들기</target>
+      </trans-unit>
+      <trans-unit id="createNewLocalAppSetting">
+        <source xml:lang="en">Create new local app setting</source>
+        <target state="translated">새 로컬 앱 설정 만들기</target>
+      </trans-unit>
+      <trans-unit id="doNotInstall">
+        <source xml:lang="en">Do not install</source>
+        <target state="translated">설치하지 마세요</target>
+      </trans-unit>
+      <trans-unit id="includePassword">
+        <source xml:lang="en">Do you want to include the password from this connection in your local.settings.json file?</source>
+        <target state="translated">이 연결의 암호를 local.settings.json 파일에 포함하시겠어요?</target>
+      </trans-unit>
+      <trans-unit id="enterTableName">
+        <source xml:lang="en">Enter SQL table to query</source>
+        <target state="translated">쿼리할 SQL 테이블 입력</target>
+      </trans-unit>
+      <trans-unit id="enterTableNameToUpsert">
+        <source xml:lang="en">Enter SQL table to upsert into</source>
+        <target state="translated">Upsert할 SQL 테이블 입력</target>
+      </trans-unit>
+      <trans-unit id="enterViewName">
+        <source xml:lang="en">Enter SQL view to query</source>
+        <target state="translated">쿼리할 SQL 보기 입력</target>
+      </trans-unit>
+      <trans-unit id="userConnectionString">
+        <source xml:lang="en">Enter connection string</source>
+        <target state="translated">연결 문자열 입력</target>
+      </trans-unit>
+      <trans-unit id="enterConnectionString">
+        <source xml:lang="en">Enter connection string</source>
+        <target state="translated">연결 문자열 입력</target>
+      </trans-unit>
+      <trans-unit id="enterConnectionStringSettingName">
+        <source xml:lang="en">Enter connection string setting name</source>
+        <target state="translated">연결 문자열 설정 이름 입력</target>
+      </trans-unit>
+      <trans-unit id="errorNewAzureFunction">
+        <source xml:lang="en">Error creating new Azure Function: {0}</source>
+        <target state="translated">새 Azure 함수를 만드는 동안 오류가 발생했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="failedToParse">
+        <source xml:lang="en">Failed to parse "{0}": {1}.</source>
+        <target state="translated">{0}을(를) 구문 분석하지 못했습니다. {1}.</target>
+      </trans-unit>
+      <trans-unit id="unableToSetConnectionString">
+        <source xml:lang="en">Failed to set connection string app setting</source>
+        <target state="translated">연결 문자열 앱 설정을 설정하지 못했습니다.</target>
+      </trans-unit>
+      <trans-unit id="failedToSetSetting">
+        <source xml:lang="en">Failed to set connection string app setting: {0}</source>
+        <target state="translated">연결 문자열 앱 설정을 설정하지 못했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="tableListProgressTitle">
+        <source xml:lang="en">Fetching tables for selected database...</source>
+        <target state="translated">선택한 데이터베이스의 테이블을 가져오는 중...</target>
+      </trans-unit>
+      <trans-unit id="viewListProgressTitle">
+        <source xml:lang="en">Fetching views for selected database...</source>
+        <target state="translated">선택한 데이터베이스의 뷰를 가져오는 중...</target>
+      </trans-unit>
+      <trans-unit id="functionNameTitle">
+        <source xml:lang="en">Function Name</source>
+        <target state="translated">기능 이름</target>
+      </trans-unit>
+      <trans-unit id="userPasswordLater">
+        <source xml:lang="en">In order to user the SQL connection string later you will need to manually enter the password in your local.settings.json file.</source>
+        <target state="translated">나중에 SQL 연결 문자열을 사용하려면 local.settings.json 파일에 암호를 수동으로 입력해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="input">
+        <source xml:lang="en">Input</source>
+        <target state="translated">입력</target>
+      </trans-unit>
+      <trans-unit id="install">
+        <source xml:lang="en">Install</source>
+        <target state="translated">설치</target>
+      </trans-unit>
+      <trans-unit id="learnMore">
+        <source xml:lang="en">Learn more</source>
+        <target state="translated">자세히 알아보기</target>
+      </trans-unit>
+      <trans-unit id="SettingAlreadyExists">
+        <source xml:lang="en">Local app setting '{0}' already exists. Overwrite?</source>
+        <target state="translated">로컬 앱 설정 '{0}'이(가) 이미 존재합니다. 덮어쓰시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="moreInformation">
+        <source xml:lang="en">More Information</source>
+        <target state="translated">자세한 정보</target>
+      </trans-unit>
+      <trans-unit id="nameMustNotBeEmpty">
+        <source xml:lang="en">Name must not be empty</source>
+        <target state="translated">이름은 비워 둘 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="hasSpecialCharacters">
+        <source xml:lang="en">Name must not include special characters</source>
+        <target state="translated">이름에는 특수 문자가 포함되지 않아야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="noString">
+        <source xml:lang="en">No</source>
+        <target state="translated">아니요</target>
+      </trans-unit>
+      <trans-unit id="noAzureFunctionsInFile">
+        <source xml:lang="en">No Azure functions in the current active file</source>
+        <target state="translated">현재 활성 파일에 Azure 함수가 없음</target>
+      </trans-unit>
+      <trans-unit id="noAzureFunctionsProjectsInWorkspace">
+        <source xml:lang="en">No Azure functions projects found in the workspace</source>
+        <target state="translated">작업 영역에서 Azure 함수 프로젝트를 찾을 수 없음</target>
+      </trans-unit>
+      <trans-unit id="openFile">
+        <source xml:lang="en">Open File</source>
+        <target state="translated">파일 열기</target>
+      </trans-unit>
+      <trans-unit id="output">
+        <source xml:lang="en">Output</source>
+        <target state="translated">출력</target>
+      </trans-unit>
+      <trans-unit id="inputDescription">
+        <source xml:lang="en">Retrieves data from a database</source>
+        <target state="translated">데이터베이스에서 데이터 검색</target>
+      </trans-unit>
+      <trans-unit id="sqlObjectToQuery">
+        <source xml:lang="en">SQL object to query</source>
+        <target state="translated">쿼리할 SQL 개체</target>
+      </trans-unit>
+      <trans-unit id="sqlTableToUpsert">
+        <source xml:lang="en">SQL table to upsert into</source>
+        <target state="translated">upsert할 SQL 테이블</target>
+      </trans-unit>
+      <trans-unit id="save">
+        <source xml:lang="en">Save</source>
+        <target state="translated">저장</target>
+      </trans-unit>
+      <trans-unit id="outputDescription">
+        <source xml:lang="en">Save data to a database</source>
+        <target state="translated">데이터를 데이터베이스에 저장</target>
+      </trans-unit>
+      <trans-unit id="selectButton">
+        <source xml:lang="en">Select</source>
+        <target state="translated">선택</target>
+      </trans-unit>
+      <trans-unit id="selectDatabase">
+        <source xml:lang="en">Select Database</source>
+        <target state="translated">데이터베이스 선택</target>
+      </trans-unit>
+      <trans-unit id="selectConnectionString">
+        <source xml:lang="en">Select SQL connection string method</source>
+        <target state="translated">SQL 연결 문자열 메서드 선택</target>
+      </trans-unit>
+      <trans-unit id="selectSetting">
+        <source xml:lang="en">Select SQL connection string setting from local.settings.json</source>
+        <target state="translated">local.settings.js에서 SQL 연결 문자열 설정 선택</target>
+      </trans-unit>
+      <trans-unit id="connectionProfile">
+        <source xml:lang="en">Select a connection profile</source>
+        <target state="translated">연결 프로필 선택</target>
+      </trans-unit>
+      <trans-unit id="selectAzureFunction">
+        <source xml:lang="en">Select an Azure function in the current file to add SQL binding to</source>
+        <target state="translated">현재 파일에서 SQL 바인딩을 추가할 Azure 함수 선택</target>
+      </trans-unit>
+      <trans-unit id="selectAzureFunctionProjFolder">
+        <source xml:lang="en">Select folder for the Azure Function project</source>
+        <target state="translated">Azure 함수 프로젝트에 대한 폴더 선택</target>
+      </trans-unit>
+      <trans-unit id="selectSqlTableOrViewPrompt">
+        <source xml:lang="en">Select object type to insert or upsert into</source>
+        <target state="translated">삽입하거나 upsert할 개체 유형 선택</target>
+      </trans-unit>
+      <trans-unit id="selectTable">
+        <source xml:lang="en">Select table to use</source>
+        <target state="translated">사용할 테이블 선택</target>
+      </trans-unit>
+      <trans-unit id="selectProject">
+        <source xml:lang="en">Select the Azure Function project for the SQL Binding</source>
+        <target state="translated">SQL 바인딩에 대한 Azure 함수 프로젝트 선택</target>
+      </trans-unit>
+      <trans-unit id="selectBindingType">
+        <source xml:lang="en">Select type of binding</source>
+        <target state="translated">바인딩 유형 선택</target>
+      </trans-unit>
+      <trans-unit id="selectBindingTypeToSpecifiedFunction">
+        <source xml:lang="en">Select type of binding for the function '{0}'</source>
+        <target state="translated">함수 '{0}'에 대한 바인딩 유형 선택</target>
+      </trans-unit>
+      <trans-unit id="selectView">
+        <source xml:lang="en">Select view to use</source>
+        <target state="translated">사용할 보기 선택</target>
+      </trans-unit>
+      <trans-unit id="table">
+        <source xml:lang="en">Table</source>
+        <target state="translated">테이블</target>
+      </trans-unit>
+      <trans-unit id="azureFunctionsExtensionNotFound">
+        <source xml:lang="en">The Azure Functions extension is required to create a new Azure Function with SQL binding but is not installed, install it now?</source>
+        <target state="translated">SQL 바인딩을 사용하여 새 Azure 함수를 만드는 데 Azure Functions 확장이 필요하나 현재 설치되어 있지 않습니다. 지금 설치할까요?</target>
+      </trans-unit>
+      <trans-unit id="saveChangesInFile">
+        <source xml:lang="en">There are unsaved changes in the current file. Save now?</source>
+        <target state="translated">현재 파일에 저장되지 않은 변경 사항이 있습니다. 지금 저장하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="timeoutAzureFunctionFileError">
+        <source xml:lang="en">Timed out waiting for Azure Function file to be created</source>
+        <target state="translated">Azure 함수 파일이 만들지길 기다리는 동안 시간이 초과되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="timeoutExtensionError">
+        <source xml:lang="en">Timed out waiting for extension to install</source>
+        <target state="translated">확장이 설치되길 기다리는 동안 시간이 초과되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="valueMustNotBeEmpty">
+        <source xml:lang="en">Value must not be empty</source>
+        <target state="translated">값은 비워 둘 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="view">
+        <source xml:lang="en">View</source>
+        <target state="translated">보기</target>
+      </trans-unit>
+      <trans-unit id="yesString">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">예</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/ms-mssql.sql-bindings-vscode/package" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="sqlBindings.addSqlBinding">
+        <source xml:lang="en">Add SQL Binding (preview)</source>
+        <target state="translated">SQL 바인딩 추가(미리 보기)</target>
+      </trans-unit>
+      <trans-unit id="sqlBindings.createAzureFunction">
+        <source xml:lang="en">Create Azure Function with SQL binding (preview)</source>
+        <target state="translated">SQL 바인딩을 사용하여 Azure 함수 만들기(미리 보기)</target>
+      </trans-unit>
+      <trans-unit id="description">
+        <source xml:lang="en">Enables users to develop and publish Azure Functions with Azure SQL bindings</source>
+        <target state="translated">사용자가 Azure SQL 바인딩을 사용하여 Azure Functions를 개발하고 게시할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="displayName">
+        <source xml:lang="en">SQL Bindings</source>
+        <target state="translated">SQL 바인딩</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

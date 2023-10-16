@@ -3,12 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IAction, IActionRunner, ActionRunner, IActionViewItem } from 'vs/base/common/actions';
+import 'vs/css!./media/actionBar';
+import { IAction, IActionRunner, ActionRunner } from 'vs/base/common/actions';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import {
 	IActionBarOptions, ActionsOrientation,
-	IActionOptions
+	IActionOptions,
+	IActionViewItem
 } from 'vs/base/browser/ui/actionbar/actionbar';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
@@ -37,6 +39,9 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 	protected _focusedItem?: number;
 	protected _focusTracker: DOM.IFocusTracker;
 
+	// Trigger Key Tracking
+	private _triggerKeyDown: boolean = false;
+
 	// Elements
 	protected _domNode: HTMLElement;
 	protected _actionsList: HTMLElement;
@@ -62,7 +67,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		this._domNode.className = 'monaco-action-bar';
 
 		if (options.animated !== false) {
-			DOM.addClass(this._domNode, 'animated');
+			this._domNode.classList.add('animated');
 		}
 
 		let isVertical = this._options.orientation === ActionsOrientation.VERTICAL;
@@ -81,7 +86,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			} else if (event.equals(KeyCode.Escape)) {
 				this.cancel();
 			} else if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
-				// Nothing, just staying out of the else branch
+				this._triggerKeyDown = true;
 			} else {
 				eventHandled = false;
 			}
@@ -103,7 +108,10 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 
 			// Run action on Enter/Space
 			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
-				this.doTrigger(event);
+				if (this._triggerKeyDown) {
+					this.doTrigger(event);
+					this._triggerKeyDown = false;
+				}
 				event.preventDefault();
 				event.stopPropagation();
 			}
@@ -219,7 +227,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			let item: IActionViewItem | undefined = undefined;
 
 			if (this._options.actionViewItemProvider) {
-				item = this._options.actionViewItemProvider(action);
+				item = this._options.actionViewItemProvider(action, {});
 			}
 
 			if (!item) {
@@ -230,6 +238,13 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			item.setActionContext(this.context);
 			//this.addEmitter(item);
 			item.render(actionItemElement);
+
+			// VSCode toolbar now will only receive one tab stop, by default all items are not focusable.
+			// Adding the following change to make sure the ADS toolbars are keyboard focusable to match the previous behavior as a temporary solution.
+			// TODO: https://github.com/microsoft/azuredatastudio/issues/16016
+			if (item instanceof BaseActionViewItem) {
+				item.setFocusable(true);
+			}
 
 			if (index === null || index < 0 || index >= this._actionsList.children.length) {
 				this._actionsList.appendChild(actionItemElement);
@@ -359,11 +374,11 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		//this.emit('cancel');
 	}
 
-	public run(action: IAction, context?: any): Promise<any> {
-		return this._actionRunner.run(action, context);
+	public override async run(action: IAction, context?: any): Promise<void> {
+		this._actionRunner.run(action, context);
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		lifecycle.dispose(this._items);
 		this._items = [];
 

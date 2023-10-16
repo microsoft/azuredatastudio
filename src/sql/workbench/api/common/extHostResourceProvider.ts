@@ -9,10 +9,9 @@ import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import {
 	ExtHostResourceProviderShape,
 	MainThreadResourceProviderShape,
-	SqlMainContext,
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { values } from 'vs/base/common/collections';
-import { firstIndex } from 'vs/base/common/arrays';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 	private _handlePool: number = 0;
@@ -26,10 +25,10 @@ export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	// - MAIN THREAD AVAILABLE METHODS /////////////////////////////////////
-	public $createFirewallRule(handle: number, account: azdata.Account, firewallRuleInfo: azdata.FirewallRuleInfo): Thenable<azdata.CreateFirewallRuleResponse> {
+	public override $createFirewallRule(handle: number, account: azdata.Account, firewallRuleInfo: azdata.FirewallRuleInfo): Thenable<azdata.CreateFirewallRuleResponse> {
 		return this._withProvider(handle, (provider: azdata.ResourceProvider) => provider.createFirewallRule(account, firewallRuleInfo));
 	}
-	public $handleFirewallRule(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.HandleFirewallRuleResponse> {
+	public override $handleFirewallRule(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.HandleFirewallRuleResponse> {
 		return this._withProvider(handle, (provider: azdata.ResourceProvider) => provider.handleFirewallRule(errorCode, errorMessage, connectionTypeId));
 	}
 
@@ -38,7 +37,7 @@ export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 		let self = this;
 
 		// Look for any account providers that have the same provider ID
-		let matchingProviderIndex = firstIndex(values(this._providers), (provider: ResourceProviderWithMetadata) => {
+		let matchingProviderIndex = values(this._providers).findIndex((provider: ResourceProviderWithMetadata) => {
 			return provider.metadata.id === providerMetadata.id;
 		});
 		if (matchingProviderIndex >= 0) {

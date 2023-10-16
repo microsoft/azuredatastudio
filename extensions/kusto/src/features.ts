@@ -3,15 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as nls from 'vscode-nls';
 import { SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import { ClientCapabilities, StaticFeature, RPCMessageType, ServerCapabilities } from 'vscode-languageclient';
 import { Disposable, window } from 'vscode';
-import { Telemetry } from './telemetry';
+import { TelemetryReporter } from './telemetry';
 import * as contracts from './contracts';
 import * as azdata from 'azdata';
 import * as Utils from './utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
-import { localize } from './localize';
+
+const localize = nls.loadMessageBundle();
 
 export class TelemetryFeature implements StaticFeature {
 
@@ -23,7 +25,7 @@ export class TelemetryFeature implements StaticFeature {
 
 	initialize(): void {
 		this._client.onNotification(contracts.TelemetryNotification.type, e => {
-			Telemetry.sendTelemetryEvent(e.params.eventName, e.params.properties, e.params.measures);
+			TelemetryReporter.sendTelemetryEvent(e.params.eventName, e.params.properties, e.params.measures);
 		});
 	}
 }
@@ -57,13 +59,19 @@ export class AccountFeature implements StaticFeature {
 			return undefined;
 		}
 
-		const tenant = account.properties.tenants.find((t: { [key: string]: string }) => request.authority.includes(t.id));
 		const unauthorizedMessage = localize('kusto.insufficientlyPrivelagedAzureAccount', "The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.", account.key.accountId);
-		if (!tenant) {
-			window.showErrorMessage(unauthorizedMessage);
-			return undefined;
+
+		let tenantId: string = '';
+		if (request.provider !== 'dstsAuth') {
+			const tenant = account.properties.tenants.find((t: { [key: string]: string }) => request.authority.includes(t.id));
+			if (!tenant) {
+				window.showErrorMessage(unauthorizedMessage);
+				return undefined;
+			}
+			tenantId = tenant.id;
 		}
-		const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.Sql);
+
+		const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenantId, azdata.AzureResource.Sql);
 
 		if (!securityToken?.token) {
 			window.showErrorMessage(unauthorizedMessage);

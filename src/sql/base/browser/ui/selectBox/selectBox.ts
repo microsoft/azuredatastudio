@@ -6,7 +6,6 @@
 import 'vs/css!./media/selectBox';
 
 import { SelectBox as vsSelectBox, ISelectBoxStyles as vsISelectBoxStyles, ISelectBoxOptions, ISelectOptionItem, ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
-import { Color } from 'vs/base/common/color';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import * as dom from 'vs/base/browser/dom';
 import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
@@ -16,6 +15,8 @@ import { renderFormattedText, renderText, FormattedTextRenderOptions } from 'vs/
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { SelectBoxList } from 'vs/base/browser/ui/selectBox/selectBoxCustom';
+import { Event, Emitter } from 'vs/base/common/event';
+import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
 
 const $ = dom.$;
 
@@ -25,78 +26,62 @@ export interface SelectOptionItemSQL extends ISelectOptionItem {
 }
 
 export interface ISelectBoxStyles extends vsISelectBoxStyles {
-	disabledSelectBackground?: Color;
-	disabledSelectForeground?: Color;
-	inputValidationInfoBorder?: Color;
-	inputValidationInfoBackground?: Color;
-	inputinputValidationInfoForeground?: Color;
-	inputValidationWarningBorder?: Color;
-	inputValidationWarningBackground?: Color;
-	inputValidationWarningForeground?: Color;
-	inputValidationErrorBorder?: Color;
-	inputValidationErrorBackground?: Color;
-	inputValidationErrorForeground?: Color;
+	inputValidationInfoBorder: string | undefined;
+	inputValidationInfoBackground: string | undefined;
+	inputValidationWarningBorder: string | undefined;
+	inputValidationWarningBackground: string | undefined;
+	inputValidationErrorBorder: string | undefined;
+	inputValidationErrorBackground: string | undefined;
 }
 
-export class SelectBox extends vsSelectBox {
+export class SelectBox extends vsSelectBox implements AdsWidget {
 	private _optionsDictionary: Map<string, number>;
 	private _dialogOptions: SelectOptionItemSQL[];
 	private _selectedOption: string;
 	private _selectBoxOptions?: ISelectBoxOptions;
-	private enabledSelectBackground?: Color;
-	private enabledSelectForeground?: Color;
-	private enabledSelectBorder?: Color;
-	private disabledSelectBackground?: Color;
-	private disabledSelectForeground?: Color;
-	private disabledSelectBorder?: Color;
 	private contextViewProvider: IContextViewProvider;
 	private message?: IMessage;
-
-	private inputValidationInfoBorder?: Color;
-	private inputValidationInfoBackground?: Color;
-	private inputValidationInfoForeground?: Color;
-	private inputValidationWarningBorder?: Color;
-	private inputValidationWarningBackground?: Color;
-	private inputValidationWarningForeground?: Color;
-	private inputValidationErrorBorder?: Color;
-	private inputValidationErrorBackground?: Color;
-	private inputValidationErrorForeground?: Color;
+	private _onDidSelect: Emitter<ISelectData>;
+	private _onDidFocus: Emitter<void>;
 
 	private element?: HTMLElement;
 
-	constructor(options: SelectOptionItemSQL[] | string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
+	constructor(options: SelectOptionItemSQL[] | string[], selectedOption: string, private readonly _styles: ISelectBoxStyles, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions, id?: string) {
 		let optionItems: SelectOptionItemSQL[] = SelectBox.createOptions(options);
-		super(optionItems, 0, contextViewProvider, undefined, selectBoxOptions);
+		super(optionItems, 0, contextViewProvider, _styles, selectBoxOptions);
 
+		this._onDidSelect = this._register(new Emitter<ISelectData>());
+		this._onDidFocus = this._register(new Emitter<void>());
 		this._optionsDictionary = new Map<string, number>();
 		this.populateOptionsDictionary(optionItems);
 		this._dialogOptions = optionItems;
 		const option = this._optionsDictionary.get(selectedOption);
-		if (option) {
+		if (option !== undefined) {
 			super.select(option);
 		}
 
 		this._selectedOption = selectedOption;
-		this._register(this.onDidSelect(newSelect => {
+		this._register(super.onDidSelect(newSelect => {
 			this.onSelect(newSelect);
+			this._onDidSelect.fire(newSelect);
 		}));
 
-		this.enabledSelectBackground = this.selectBackground;
-		this.enabledSelectForeground = this.selectForeground;
-		this.enabledSelectBorder = this.selectBorder;
-		this.disabledSelectBackground = Color.transparent;
-		this.disabledSelectForeground = undefined;
-		this.disabledSelectBorder = undefined;
 		this.contextViewProvider = contextViewProvider;
 		if (container) {
 			this.element = dom.append(container, $('.monaco-selectbox.idle'));
 		}
 
+		if (id !== undefined) {
+			this.selectElement.id = id;
+		}
 		this._selectBoxOptions = selectBoxOptions;
 		let focusTracker = dom.trackFocus(this.selectElement);
 		this._register(focusTracker);
 		this._register(focusTracker.onDidBlur(() => this._hideMessage()));
-		this._register(focusTracker.onDidFocus(() => this._showMessage()));
+		this._register(focusTracker.onDidFocus(() => {
+			this._showMessage();
+			this._onDidFocus.fire();
+		}));
 		// Stop propagation - we've handled the event already and letting it bubble up causes issues with parent
 		// controls handling it (such as dialog pages)
 		this.onkeydown(this.selectElement, (e: IKeyboardEvent) => {
@@ -119,6 +104,18 @@ export class SelectBox extends vsSelectBox {
 				}
 			});
 		}
+	}
+
+	public override get onDidSelect(): Event<ISelectData> {
+		// We override the onDidSelect event here because the base onDidSelect event isn't fired when
+		// selecting an element via select - which means that we'll miss out on a selection made that way.
+		// So we expose our own event that's fired either when the base onDidSelect is called or when we
+		// manually select an item
+		return this._onDidSelect.event;
+	}
+
+	public get onDidFocus(): Event<void> {
+		return this._onDidFocus.event;
 	}
 
 	public onSelect(newInput: ISelectData) {
@@ -153,46 +150,34 @@ export class SelectBox extends vsSelectBox {
 		this._dialogOptions = options;
 	}
 
-	public style(styles: ISelectBoxStyles): void {
-		super.style(styles);
-		this.enabledSelectBackground = this.selectBackground;
-		this.enabledSelectForeground = this.selectForeground;
-		this.enabledSelectBorder = this.selectBorder;
-		this.disabledSelectBackground = styles.disabledSelectBackground;
-		this.disabledSelectForeground = styles.disabledSelectForeground;
-		this.inputValidationInfoBorder = styles.inputValidationInfoBorder;
-		this.inputValidationInfoBackground = styles.inputValidationInfoBackground;
-		this.inputValidationInfoForeground = styles.inputinputValidationInfoForeground;
-		this.inputValidationWarningBorder = styles.inputValidationWarningBorder;
-		this.inputValidationWarningBackground = styles.inputValidationWarningBackground;
-		this.inputValidationWarningForeground = styles.inputValidationWarningForeground;
-		this.inputValidationErrorBorder = styles.inputValidationErrorBorder;
-		this.inputValidationErrorBackground = styles.inputValidationErrorBackground;
-		this.inputValidationErrorForeground = styles.inputValidationErrorForeground;
-		this.applyStyles();
-	}
-
-	public selectWithOptionName(optionName?: string): void {
+	public selectWithOptionName(optionName?: string, selectFirstByDefault: boolean = true, forceSelectionEvent: boolean = false): void {
 		let option: number | undefined;
-		if (optionName) {
+		if (optionName !== undefined) {
 			option = this._optionsDictionary.get(optionName);
 		}
-		if (option) {
-			this.select(option);
-		} else {
-			this.select(0);
+		if (option !== undefined) {
+			this.select(option, forceSelectionEvent);
+		} else if (selectFirstByDefault) {
+			this.select(0, forceSelectionEvent);
 		}
 	}
 
-	public select(index: number): void {
+	public override select(index: number, forceSelectionEvent: boolean = false): void {
 		super.select(index);
+		let selectedOptionIndex = this._optionsDictionary.get(this._selectedOption);
+		if (!forceSelectionEvent && selectedOptionIndex === index) { // Not generating an event if the same value is selected.
+			return;
+		}
 		if (this._dialogOptions !== undefined) {
 			this._selectedOption = this._dialogOptions[index]?.value;
 		}
+		this._onDidSelect.fire({
+			selected: this._selectedOption,
+			index: index
+		});
 	}
 
-
-	public setOptions(options: string[] | SelectOptionItemSQL[] | ISelectOptionItem[], selected?: number): void {
+	public override setOptions(options: string[] | SelectOptionItemSQL[] | ISelectOptionItem[], selected?: number): void {
 		let selectOptions: SelectOptionItemSQL[] = SelectBox.createOptions(options);
 		this.populateOptionsDictionary(selectOptions);
 		super.setOptions(selectOptions, selected);
@@ -212,18 +197,18 @@ export class SelectBox extends vsSelectBox {
 
 	public enable(): void {
 		this.selectElement.disabled = false;
-		this.selectBackground = this.enabledSelectBackground;
-		this.selectForeground = this.enabledSelectForeground;
-		this.selectBorder = this.enabledSelectBorder;
-		this.applyStyles();
 	}
 
 	public disable(): void {
 		this.selectElement.disabled = true;
-		this.selectBackground = this.disabledSelectBackground;
-		this.selectForeground = this.disabledSelectForeground;
-		this.selectBorder = this.disabledSelectBorder;
-		this.applyStyles();
+	}
+
+	public getAriaLabel(): string {
+		return this.selectElem.ariaLabel;
+	}
+
+	public get id(): string {
+		return this.selectElem.id;
 	}
 
 	public hasFocus(): boolean {
@@ -234,11 +219,11 @@ export class SelectBox extends vsSelectBox {
 		this.message = message;
 
 		if (this.element) {
-			dom.removeClass(this.element, 'idle');
-			dom.removeClass(this.element, 'info');
-			dom.removeClass(this.element, 'warning');
-			dom.removeClass(this.element, 'error');
-			dom.addClass(this.element, this.classForType(message.type));
+			this.element.classList.remove('idle');
+			this.element.classList.remove('info');
+			this.element.classList.remove('warning');
+			this.element.classList.remove('error');
+			this.element.classList.add(this.classForType(message.type));
 		}
 
 		// ARIA Support
@@ -279,10 +264,10 @@ export class SelectBox extends vsSelectBox {
 					let spanElement: HTMLElement = (message.formatContent
 						? renderFormattedText(message.content, renderOptions)
 						: renderText(message.content, renderOptions)) as any;
-					dom.addClass(spanElement, this.classForType(message.type));
+					spanElement.classList.add(this.classForType(message.type));
 
 					const styles = this.stylesForType(message.type);
-					spanElement.style.backgroundColor = styles.background ? styles.background.toString() : '';
+					spanElement.style.backgroundColor = styles.background ? styles.background : '';
 					spanElement.style.border = styles.border ? `1px solid ${styles.border}` : '';
 
 					dom.append(div, spanElement);
@@ -296,14 +281,14 @@ export class SelectBox extends vsSelectBox {
 
 	public hideMessage(): void {
 		if (this.element) {
-			dom.removeClass(this.element, 'info');
-			dom.removeClass(this.element, 'warning');
-			dom.removeClass(this.element, 'error');
-			dom.addClass(this.element, 'idle');
+			this.element.classList.remove('info');
+			this.element.classList.remove('warning');
+			this.element.classList.remove('error');
+			this.element.classList.add('idle');
 		}
 
 		this._hideMessage();
-		this.applyStyles();
+		//this.applyStyles();
 
 		this.message = undefined;
 	}
@@ -322,15 +307,15 @@ export class SelectBox extends vsSelectBox {
 		}
 	}
 
-	private stylesForType(type: MessageType | undefined): { border: Color | undefined; background: Color | undefined; foreground: Color | undefined } {
+	private stylesForType(type: MessageType | undefined): { border: string | undefined; background: string | undefined; } {
 		switch (type) {
-			case MessageType.INFO: return { border: this.inputValidationInfoBorder, background: this.inputValidationInfoBackground, foreground: this.inputValidationInfoForeground };
-			case MessageType.WARNING: return { border: this.inputValidationWarningBorder, background: this.inputValidationWarningBackground, foreground: this.inputValidationWarningForeground };
-			default: return { border: this.inputValidationErrorBorder, background: this.inputValidationErrorBackground, foreground: this.inputValidationErrorForeground };
+			case MessageType.INFO: return { border: this._styles.inputValidationInfoBorder, background: this._styles.inputValidationInfoBackground };
+			case MessageType.WARNING: return { border: this._styles.inputValidationWarningBorder, background: this._styles.inputValidationWarningBackground };
+			default: return { border: this._styles.inputValidationErrorBorder, background: this._styles.inputValidationErrorBackground };
 		}
 	}
 
-	public render(container: HTMLElement): void {
+	public override render(container: HTMLElement): void {
 		let selectOptions: ISelectBoxOptionsWithLabel = this._selectBoxOptions as ISelectBoxOptionsWithLabel;
 
 		if (selectOptions && selectOptions.labelText && selectOptions.labelText !== undefined) {
@@ -350,6 +335,7 @@ export class SelectBox extends vsSelectBox {
 
 			super.render(selectContainer);
 			this.selectElement.classList.add('action-item-label');
+			this.selectElement.id = selectOptions.id;
 		}
 		else {
 			super.render(container);
@@ -364,4 +350,5 @@ export class SelectBox extends vsSelectBox {
 export interface ISelectBoxOptionsWithLabel extends ISelectBoxOptions {
 	labelText?: string;
 	labelOnTop?: boolean;
+	id?: string;
 }

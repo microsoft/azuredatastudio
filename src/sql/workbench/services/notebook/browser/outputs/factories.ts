@@ -3,7 +3,8 @@
 | Distributed under the terms of the Modified BSD License.
 |----------------------------------------------------------------------------*/
 
-import * as widgets from 'sql/workbench/contrib/notebook/browser/outputs/widgets';
+import * as widgets from 'sql/workbench/services/notebook/browser/outputs/widgets';
+import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { IRenderMime } from './renderMimeInterfaces';
 
 /**
@@ -21,7 +22,7 @@ export const htmlRendererFactory: IRenderMime.IRendererFactory = {
  */
 export const imageRendererFactory: IRenderMime.IRendererFactory = {
 	safe: true,
-	mimeTypes: ['image/bmp', 'image/png', 'image/jpeg', 'image/gif'],
+	mimeTypes: ImageMimeTypes,
 	defaultRank: 90,
 	createRenderer: options => new widgets.RenderedImage(options)
 };

@@ -9,9 +9,9 @@ export interface IActivity {
 	id: string;
 	name: string;
 	keybindingId?: string;
-	cssClass?: string;
+	classNames?: string[];
 	iconUrl?: URI;
 }
 
 export const GLOBAL_ACTIVITY_ID = 'workbench.action.globalActivity';
-export const ACCOUNTS_ACTIIVTY_ID = 'workbench.action.accountsActivity';
+export const ACCOUNTS_ACTIVITY_ID = 'workbench.action.accountsActivity';

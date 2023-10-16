@@ -3,78 +3,104 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { nb, ServerInfo } from 'azdata';
+import { nb } from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
-import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
+import { CellTypes, CellType, NotebookChangeType, TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes, ICaretPosition, ICellEdit, CellEditType } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
-import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { generateUuid } from 'vs/base/common/uuid';
-import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
-import { firstIndex, find } from 'vs/base/common/arrays';
-import { HideInputTag } from 'sql/platform/notebooks/common/outputRegistry';
-import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
+import { HideInputTag, ParametersTag, InjectedParametersTag } from 'sql/platform/notebooks/common/outputRegistry';
+import { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable } from 'vs/base/common/lifecycle';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
+import { IPosition } from 'vs/editor/common/core/position';
+import { CellOutputEdit, CellOutputDataEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
+import { ILogService } from 'vs/platform/log/common/log';
+import { ILanguageService } from 'vs/editor/common/languages/language';
+import { ICellMetadata } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { alert } from 'vs/base/browser/ui/aria/aria';
+import { CELL_URI_PATH_PREFIX } from 'sql/workbench/common/constants';
+import { IModelContentChangedEvent } from 'vs/editor/common/textModelEvents';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
+const validBase64OctetStreamRegex = /data:(?:(application\/octet-stream|image\/png));base64,(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})/;
+export interface QueryResultId {
+	batchId: number;
+	id: number;
+}
 
 export class CellModel extends Disposable implements ICellModel {
 	public id: string;
+	public cellLabel: string;
 
 	private _cellType: nb.CellType;
 	private _source: string | string[];
 	private _language: string;
+	private _savedConnectionName: string | undefined;
 	private _cellGuid: string;
 	private _future: FutureInternal;
 	private _outputs: nb.ICellOutput[] = [];
+	private _outputsIdMap: Map<nb.ICellOutput, QueryResultId> = new Map<nb.ICellOutput, QueryResultId>();
 	private _renderedOutputTextContent: string[] = [];
 	private _isEditMode: boolean;
 	private _onOutputsChanged = new Emitter<IOutputChangedEvent>();
-	private _onCellModeChanged = new Emitter<boolean>();
+	private _onTableUpdated = new Emitter<ITableUpdatedEvent>();
+	private _onCellEditModeChanged = new Emitter<boolean>();
 	private _onExecutionStateChanged = new Emitter<CellExecutionState>();
+	private _onCurrentEditModeChanged = new Emitter<CellEditModes>();
 	private _isTrusted: boolean;
 	private _active: boolean;
 	private _hover: boolean;
 	private _executionCount: number | undefined;
 	private _cellUri: URI;
-	private _connectionManagementService: IConnectionManagementService;
 	private _stdInHandler: nb.MessageHandler<nb.IStdinMessage>;
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
-	private _metadata: { language?: string; tags?: string[]; cellGuid?: string; };
+	private _metadata: ICellMetadata;
 	private _isCollapsed: boolean;
+	private _onLanguageChanged = new Emitter<string>();
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
-	private _onCellPreviewChanged = new Emitter<boolean>();
-	private _onCellMarkdownChanged = new Emitter<boolean>();
 	private _isCommandExecutionSettingEnabled: boolean = false;
 	private _showPreview: boolean = true;
 	private _showMarkdown: boolean = false;
 	private _cellSourceChanged: boolean = false;
-	private _gridDataConversionComplete: Promise<void>[] = [];
-	private _defaultToWYSIWYG: boolean;
+	private _defaultTextEditMode: string;
+	private _isParameter: boolean;
+	private _onParameterStateChanged = new Emitter<boolean>();
+	private _isInjectedParameter: boolean;
+	private _previousChartState: IInsightOptions[] = [];
+	private _outputCounter = 0; // When re-executing the same cell, ensure that we apply chart options in the same order
+	private _attachments: nb.ICellAttachments | undefined;
+	private _preventNextChartCache: boolean = false;
+	private _lastEditMode: string | undefined;
+	public richTextCursorPosition: ICaretPosition | undefined;
+	public markdownCursorPosition: IPosition | undefined;
+	public cellPreviewUpdated = new Emitter<void>();
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
-		@optional(INotebookService) private _notebookService?: INotebookService,
-		@optional(ICommandService) private _commandService?: ICommandService,
-		@optional(IConfigurationService) private _configurationService?: IConfigurationService
+		@INotebookService private _notebookService?: INotebookService,
+		@ICommandService private _commandService?: ICommandService,
+		@IConfigurationService private _configurationService?: IConfigurationService,
+		@ILogService private _logService?: ILogService,
+		@ILanguageService private _languageService?: ILanguageService
 	) {
 		super();
 		this.id = `${modelId++}`;
@@ -86,7 +112,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this._source = '';
 		}
 
-		this._isEditMode = this._cellType !== CellTypes.Markdown;
+		this._isEditMode = false;
 		this._stdInVisible = false;
 		if (_options && _options.isTrusted) {
 			this._isTrusted = true;
@@ -95,12 +121,21 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 		// if the fromJson() method was already called and _cellGuid was previously set, don't generate another UUID unnecessarily
 		this._cellGuid = this._cellGuid || generateUuid();
+		if (this._cellType === 'code') {
+			this.cellLabel = localize('codeCellLabel', "Code Cell {0}", this.id);
+		} else {
+			this.cellLabel = localize('mdCellLabel', "Markdown Cell {0}", this.id);
+		}
 		this.createUri();
 		this.populatePropertiesFromSettings();
 	}
 
 	public equals(other: ICellModel) {
 		return other !== undefined && other.id === this.id;
+	}
+
+	public get onLanguageChanged(): Event<string> {
+		return this._onLanguageChanged.event;
 	}
 
 	public get onCollapseStateChanged(): Event<boolean> {
@@ -111,8 +146,56 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._onOutputsChanged.event;
 	}
 
-	public get onCellModeChanged(): Event<boolean> {
-		return this._onCellModeChanged.event;
+	public get onTableUpdated(): Event<ITableUpdatedEvent> {
+		return this._onTableUpdated.event;
+	}
+
+	public get onCellEditModeChanged(): Event<boolean> {
+		return this._onCellEditModeChanged.event;
+	}
+
+	public set metadata(data: any) {
+		this._metadata = data;
+		this.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
+	}
+
+	public get metadata(): any {
+		return this._metadata;
+	}
+
+	public get attachments(): nb.ICellAttachments | undefined {
+		return this._attachments;
+	}
+
+	public set attachments(attachments: nb.ICellAttachments | undefined) {
+		this._attachments = attachments ?? {};
+	}
+
+	addAttachment(mimeType: string, base64Encoding: string, name: string): string {
+		// base64Encoded value looks like: data:application/octet-stream;base64,<base64Value>
+		// get the <base64Value> from the string
+		let index = base64Encoding.indexOf('base64,');
+		if (this.isValidBase64OctetStream(base64Encoding)) {
+			base64Encoding = base64Encoding.substring(index + 7);
+			let attachment: nb.ICellAttachment = {};
+			attachment[mimeType] = base64Encoding;
+			if (!this._attachments) {
+				this._attachments = {};
+			}
+			// Check if name already exists and get a unique name
+			if (this._attachments[name] && this._attachments[name][mimeType] !== attachment[mimeType]) {
+				name = this.getUniqueAttachmentName(name.substring(0, name.lastIndexOf('.')), name.substring(name.lastIndexOf('.') + 1));
+			}
+			if (!this._attachments[name]) {
+				this._attachments[name] = attachment;
+				this.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
+			}
+		}
+		return name;
+	}
+
+	private isValidBase64OctetStream(base64Image: string): boolean {
+		return base64Image && validBase64OctetStreamRegex.test(base64Image);
 	}
 
 	public get isEditMode(): boolean {
@@ -136,7 +219,7 @@ export class CellModel extends Disposable implements ICellModel {
 
 		let tagIndex = -1;
 		if (this._metadata.tags) {
-			tagIndex = firstIndex(this._metadata.tags, tag => tag === HideInputTag);
+			tagIndex = this._metadata.tags.findIndex(tag => tag === HideInputTag);
 		}
 
 		if (this._isCollapsed) {
@@ -159,12 +242,21 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public set isEditMode(isEditMode: boolean) {
-		this._isEditMode = isEditMode;
-		if (this._isEditMode) {
-			this.showMarkdown = !this._defaultToWYSIWYG;
+		if (this._isEditMode !== isEditMode) {
+			this._isEditMode = isEditMode;
+			if (this._isEditMode) {
+				const newEditMode = this._lastEditMode ?? this._defaultTextEditMode;
+				this.showPreview = newEditMode !== TextCellEditModes.Markdown;
+				this.showMarkdown = newEditMode !== TextCellEditModes.RichText;
+			} else {
+				// when not in edit mode, default the values since they are only valid when editing.
+				// And to return the correct currentMode value.
+				this._showMarkdown = false;
+				this._showPreview = true;
+			}
+			this._onCellEditModeChanged.fire(this._isEditMode);
+			// Note: this does not require a notebook update as it does not change overall state
 		}
-		this._onCellModeChanged.fire(this._isEditMode);
-		// Note: this does not require a notebook update as it does not change overall state
 	}
 
 	public get trustedMode(): boolean {
@@ -197,7 +289,10 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public set hover(value: boolean) {
 		this._hover = value;
-		this.fireExecutionStateChanged();
+		// The Run button is always visible while the cell is active, so we only need to emit this event for inactive cells
+		if (!this.active) {
+			this.fireExecutionStateChanged();
+		}
 	}
 
 	public get executionCount(): number | undefined {
@@ -230,6 +325,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this._cellType = type;
 			// Regardless, get rid of outputs; this matches Jupyter behavior
 			this._outputs = [];
+			this._outputsIdMap.clear();
 		}
 	}
 
@@ -238,6 +334,8 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public set source(newSource: string | string[]) {
+		this.updateAttachmentsFromSource(Array.isArray(newSource) ? newSource.join() : newSource);
+		newSource = this.attachImageFromSource(newSource);
 		newSource = this.getMultilineSource(newSource);
 		if (this._source !== newSource) {
 			this._source = newSource;
@@ -245,6 +343,53 @@ export class CellModel extends Disposable implements ICellModel {
 			this.cellSourceChanged = true;
 		}
 		this._modelContentChangedEvent = undefined;
+		this._preventNextChartCache = true;
+	}
+
+	private attachImageFromSource(newSource: string | string[]): string | string[] {
+		if (!Array.isArray(newSource) && this.isValidBase64OctetStream(newSource)) {
+			let results;
+			// only replace the base64 value if it's from markdown [](base64value) not html tags <img src="base64value">
+			let validImageTag = /<img\s+[^>]*src="([^"]*)"[^>]*>/;
+			let imageResults;
+			// Note: Currently this will not process any markdown image attachments that are below an HTML img element.
+			// This is acceptable for now given the low risk of this happening and an easy workaround being to just changing the img element to a markdown embedded image instead
+			while ((results = validBase64OctetStreamRegex.exec(newSource)) !== null && ((imageResults = validImageTag.exec(newSource)) !== null && this.isValidBase64OctetStream(imageResults[1]) && results[0] !== imageResults[1])) {
+				let imageName = this.addAttachment(results[1], results[0], 'image.png');
+				newSource = newSource.replace(validBase64OctetStreamRegex, `attachment:${imageName}`);
+			}
+			return newSource;
+		}
+		return newSource;
+	}
+
+	public updateAttachmentsFromSource(source: string, attachments?: nb.ICellAttachments): void {
+		const originalAttachments = attachments ? attachments : this._attachments;
+		this._attachments = {};
+		// Find existing attachments in the form ![...](attachment:...) so that we can make sure we keep those attachments
+		const attachmentRegex = /!\[.*?\]\(attachment:(.*?)\)/g;
+		let match;
+		while (match = attachmentRegex.exec(source)) { // eslint-disable-line no-cond-assign
+			this._attachments[match[1]] = originalAttachments[match[1]];
+		}
+	}
+
+	/**
+	 * Gets unique attachment name to add to cell metadata
+	 * @param imgName a string defining name of the image.
+	 * @param imgExtension extension of the image
+	 * Returns the unique name
+	 */
+	private getUniqueAttachmentName(imgName?: string, imgExtension?: string): string {
+		let nextVal = 0;
+		// Note: this will go forever if it's coded wrong, or you have infinite images in a notebook!
+		while (true) {
+			let imageName = imgName ? `${imgName}${nextVal}.${imgExtension ?? 'png'}` : `image${nextVal}.png`;
+			if (!this._attachments || !this._attachments[imageName]) {
+				return imageName;
+			}
+			nextVal++;
+		}
 	}
 
 	public get modelContentChangedEvent(): IModelContentChangedEvent {
@@ -265,16 +410,41 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._options.notebook.language;
 	}
 
+	public get displayLanguage(): string {
+		let result: string;
+		if (this._cellType === CellTypes.Markdown) {
+			result = 'Markdown';
+		} else if (this._languageService) {
+			let language = this._languageService.getLanguageName(this.language);
+			result = language ?? this.language;
+		} else {
+			result = this.language;
+		}
+		return result;
+	}
+
+	public get savedConnectionName(): string | undefined {
+		return this._savedConnectionName;
+	}
+
 	public get cellGuid(): string {
 		return this._cellGuid;
 	}
 
 	public setOverrideLanguage(newLanguage: string) {
-		this._language = newLanguage;
+		if (newLanguage !== this._language) {
+			this._language = newLanguage;
+			this._onLanguageChanged.fire(newLanguage);
+			this.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
+		}
 	}
 
 	public get onExecutionStateChange(): Event<CellExecutionState> {
 		return this._onExecutionStateChanged.event;
+	}
+
+	public get onCurrentEditModeChanged(): Event<CellEditModes> {
+		return this._onCurrentEditModeChanged.event;
 	}
 
 	private fireExecutionStateChanged(): void {
@@ -310,7 +480,7 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public set showPreview(val: boolean) {
 		this._showPreview = val;
-		this._onCellPreviewChanged.fire(this._showPreview);
+		this.doModeUpdates();
 	}
 
 	public get showMarkdown(): boolean {
@@ -319,11 +489,18 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public set showMarkdown(val: boolean) {
 		this._showMarkdown = val;
-		this._onCellMarkdownChanged.fire(this._showMarkdown);
+		this.doModeUpdates();
 	}
 
-	public get defaultToWYSIWYG(): boolean {
-		return this._defaultToWYSIWYG;
+	private doModeUpdates() {
+		if (this._isEditMode) {
+			this._lastEditMode = this._showPreview && this._showMarkdown ? TextCellEditModes.SplitView : (this._showMarkdown ? TextCellEditModes.Markdown : TextCellEditModes.RichText);
+		}
+		this._onCurrentEditModeChanged.fire(this.currentMode);
+	}
+
+	public get defaultTextEditMode(): string {
+		return this._defaultTextEditMode;
 	}
 
 	public get cellSourceChanged(): boolean {
@@ -333,12 +510,86 @@ export class CellModel extends Disposable implements ICellModel {
 		this._cellSourceChanged = val;
 	}
 
-	public get onCellPreviewModeChanged(): Event<boolean> {
-		return this._onCellPreviewChanged.event;
+	public get onCellPreviewUpdated(): Event<void> {
+		return this.cellPreviewUpdated.event;
 	}
 
-	public get onCellMarkdownModeChanged(): Event<boolean> {
-		return this._onCellMarkdownChanged.event;
+	public get onParameterStateChanged(): Event<boolean> {
+		return this._onParameterStateChanged.event;
+	}
+
+	public get isParameter() {
+		return this._isParameter;
+	}
+
+	public set isParameter(value: boolean) {
+		if (this.cellType !== CellTypes.Code) {
+			return;
+		}
+
+		/**
+		 * The value will not be updated if there is already a parameter cell in the Notebook.
+		**/
+		value = this.notebookModel?.cells?.find(cell => cell.isParameter) ? false : value;
+
+		let stateChanged = this._isParameter !== value;
+		this._isParameter = value;
+
+		let tagIndex = -1;
+		if (this._metadata.tags) {
+			tagIndex = this._metadata.tags.findIndex(tag => tag === ParametersTag);
+		}
+
+		if (this._isParameter) {
+			if (tagIndex === -1) {
+				if (!this._metadata.tags) {
+					this._metadata.tags = [];
+				}
+				this._metadata.tags.push(ParametersTag);
+			}
+		} else {
+			if (tagIndex > -1) {
+				this._metadata.tags.splice(tagIndex, 1);
+			}
+		}
+
+		if (stateChanged) {
+			this._onParameterStateChanged.fire(this._isParameter);
+			this.sendChangeToNotebook(NotebookChangeType.CellInputVisibilityChanged);
+		}
+	}
+
+	/**
+	Injected Parameters will be used for future scenarios
+	when we need to hide this cell for Parameterization
+	*/
+	public get isInjectedParameter() {
+		return this._isInjectedParameter;
+	}
+
+	public set isInjectedParameter(value: boolean) {
+		if (this.cellType !== CellTypes.Code) {
+			return;
+		}
+		this._isInjectedParameter = value;
+
+		let tagIndex = -1;
+		if (this._metadata.tags) {
+			tagIndex = this._metadata.tags.findIndex(tag => tag === InjectedParametersTag);
+		}
+
+		if (this._isInjectedParameter) {
+			if (tagIndex === -1) {
+				if (!this._metadata.tags) {
+					this._metadata.tags = [];
+				}
+				this._metadata.tags.push(InjectedParametersTag);
+			}
+		} else {
+			if (tagIndex > -1) {
+				this._metadata.tags.splice(tagIndex, 1);
+			}
+		}
 	}
 
 	private notifyExecutionComplete(): void {
@@ -360,26 +611,28 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public async runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean> {
+		let kernel: nb.IKernel | undefined;
 		try {
-			// Clear grid data conversion promises from previous execution results
-			this._gridDataConversionComplete = [];
+			// Allow screen reader to announce when cell execution is started
+			alert(localize('cellExecutionStarted', "Cell execution started"));
 			if (!this.active && this !== this.notebookModel.activeCell) {
 				this.notebookModel.updateActiveCell(this);
 				this.active = true;
 			}
 
-			if (connectionManagementService) {
-				this._connectionManagementService = connectionManagementService;
-			}
 			if (this.cellType !== CellTypes.Code) {
 				// TODO should change hidden state to false if we add support
 				// for this property
 				return false;
 			}
-			let kernel = await this.getOrStartKernel(notificationService);
+			kernel = await this.getOrStartKernel(notificationService);
 			if (!kernel) {
 				return false;
 			}
+			this._outputCounter = 0;
+			// Hide IntelliSense suggestions list when running cell to match SSMS behavior
+			this._commandService.executeCommand('hideSuggestWidget');
+			this.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.RunCell, { cell_language: kernel.name, azdata_cell_guid: this._cellGuid });
 			// If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
 			// This matches the same behavior as JupyterLab
 			if (this.future && this.future.inProgress) {
@@ -407,10 +660,13 @@ export class CellModel extends Disposable implements ICellModel {
 					if (tryMatchCellMagic(this.source[0]) !== ads_execute_command || !this._isCommandExecutionSettingEnabled) {
 						const future = kernel.requestExecute({
 							code: content,
-							stop_on_error: true
+							stop_on_error: true,
+							language: this.language
 						}, false);
 						this.setFuture(future as FutureInternal);
 						this.fireExecutionStateChanged();
+						this.notebookModel.onCellChange(this, NotebookChangeType.CellExecutionStarted);
+						this._notebookService?.notifyCellExecutionStarted();
 						// For now, await future completion. Later we should just track and handle cancellation based on model notifications
 						let result: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg><any>await future.done;
 						if (result && result.content) {
@@ -427,9 +683,11 @@ export class CellModel extends Disposable implements ICellModel {
 							try {
 								// Need to reset outputs here (kernels do this on their own)
 								this._outputs = [];
+								this._outputsIdMap.clear();
 								let commandExecuted = this._commandService?.executeCommand(result.commandId, result.args);
 								// This will ensure that the run button turns into a stop button
 								this.fireExecutionStateChanged();
+								this._notebookService?.notifyCellExecutionStarted();
 								await commandExecuted;
 								// For save files, if we output a message after saving the file, the file becomes dirty again.
 								// Special casing this to avoid this particular issue.
@@ -451,12 +709,17 @@ export class CellModel extends Disposable implements ICellModel {
 			} else {
 				message = getErrorMessage(error);
 			}
+			this.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.CellExecutionFailed, { kernel: kernel, reason: error.message === 'Canceled' ? 'Canceled' : 'Other' });
 			this.sendNotification(notificationService, Severity.Error, message);
 			// TODO track error state for the cell
 		} finally {
 			this.disposeFuture();
 			this.fireExecutionStateChanged();
+			// Serialize cell output once the cell is done executing
+			this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
 			this.notifyExecutionComplete();
+			// Allow screen reader to announce when a cell is done running
+			alert(localize('cellExecutionComplete', "Cell execution is complete"));
 		}
 
 		return true;
@@ -476,14 +739,12 @@ export class CellModel extends Disposable implements ICellModel {
 			await clientSession.kernelChangeCompleted;
 		}
 		if (!clientSession.kernel) {
-			let defaultKernel = model && model.defaultKernel && model.defaultKernel.name;
+			let defaultKernel = model && model.defaultKernel;
 			if (!defaultKernel) {
 				this.sendNotification(notificationService, Severity.Error, localize('noDefaultKernel', "No kernel is available for this notebook"));
 				return undefined;
 			}
-			await clientSession.changeKernel({
-				name: defaultKernel
-			});
+			await clientSession.changeKernel(defaultKernel);
 		}
 		return clientSession.kernel;
 	}
@@ -511,18 +772,31 @@ export class CellModel extends Disposable implements ICellModel {
 		if (this._future) {
 			this._future.dispose();
 		}
-		this.clearOutputs();
+		this.clearOutputs(true);
 		this._future = future;
 		future.setReplyHandler({ handle: (msg) => this.handleReply(msg) });
 		future.setIOPubHandler({ handle: (msg) => this.handleIOPub(msg) });
-		future.setStdInHandler({ handle: (msg) => this.handleSdtIn(msg) });
+		future.setStdInHandler({ handle: (msg) => this.handleStdIn(msg) });
 	}
-
-	public clearOutputs(): void {
+	/**
+	 * Clear outputs can be done as part of the "Clear Outputs" action on a cell or as part of running a cell
+	 * @param runCellPending If a cell has been run
+	 */
+	public clearOutputs(runCellPending = false): void {
+		if (runCellPending) {
+			this.cacheChartStateIfExists();
+		} else {
+			this.clearPreviousChartState();
+		}
 		this._outputs = [];
+		this._outputsIdMap.clear();
 		this.fireOutputsChanged();
 
 		this.executionCount = undefined;
+	}
+
+	public get previousChartState(): any[] {
+		return this._previousChartState;
 	}
 
 	private fireOutputsChanged(shouldScroll: boolean = false): void {
@@ -531,9 +805,7 @@ export class CellModel extends Disposable implements ICellModel {
 			shouldScroll: !!shouldScroll
 		};
 		this._onOutputsChanged.fire(outputEvent);
-		if (this.outputs.length !== 0) {
-			this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
-		} else {
+		if (this.outputs.length === 0) {
 			this.sendChangeToNotebook(NotebookChangeType.CellOutputCleared);
 		}
 	}
@@ -548,23 +820,8 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._outputs;
 	}
 
-	public updateOutputData(batchId: number, id: number, data: any) {
-		for (let i = 0; i < this._outputs.length; i++) {
-			if (this._outputs[i].output_type === 'execute_result'
-				&& (<nb.IExecuteResult>this._outputs[i]).batchId === batchId
-				&& (<nb.IExecuteResult>this._outputs[i]).id === id) {
-				(<nb.IExecuteResult>this._outputs[i]).data = data;
-				break;
-			}
-		}
-	}
-
-	public get gridDataConversionComplete(): Promise<void> {
-		return Promise.all(this._gridDataConversionComplete).then();
-	}
-
-	public addGridDataConversionPromise(complete: Promise<void>): void {
-		this._gridDataConversionComplete.push(complete);
+	public getOutputId(output: nb.ICellOutput): QueryResultId | undefined {
+		return this._outputsIdMap.get(output);
 	}
 
 	public get renderedOutputTextContent(): string[] {
@@ -587,9 +844,62 @@ export class CellModel extends Disposable implements ICellModel {
 	private handleIOPub(msg: nb.IIOPubMessage): void {
 		let msgType = msg.header.msg_type;
 		let output: nb.ICellOutput;
+		let added = false;
 		switch (msgType) {
 			case 'execute_result':
+				output = msg.content as nb.ICellOutput;
+				output.output_type = msgType;
+				// Check if the table already exists
+				for (let i = 0; i < this._outputs.length; i++) {
+					if (this._outputs[i].output_type === 'execute_result') {
+						let currentOutputId: QueryResultId = this._outputsIdMap.get(this._outputs[i]);
+						if (currentOutputId.batchId === (<QueryResultId>msg.metadata).batchId
+							&& currentOutputId.id === (<QueryResultId>msg.metadata).id) {
+							// If it does, update output with data resource and html table
+							(<nb.IExecuteResult>this._outputs[i]).data = (<nb.IExecuteResult>output).data;
+							added = true;
+							break;
+						}
+					}
+				}
+				if (!added) {
+					if (this._previousChartState[this._outputCounter]) {
+						if (!output.metadata) {
+							output.metadata = {};
+						}
+						output.metadata.azdata_chartOptions = this._previousChartState[this._outputCounter];
+					}
+					this._outputsIdMap.set(output, { batchId: (<QueryResultId>msg.metadata).batchId, id: (<QueryResultId>msg.metadata).id });
+					this._outputCounter++;
+				}
+				break;
+			case 'execute_result_update':
+				let update = msg.content as nb.IExecuteResultUpdate;
+				// Send update to gridOutput component
+				this._onTableUpdated.fire({
+					resultSet: update.resultSet,
+					rows: update.data
+				});
+				break;
 			case 'display_data':
+				output = msg.content as nb.ICellOutput;
+				output.output_type = msgType;
+				// Display message outputs before grid outputs
+				if (this._outputs.length > 0) {
+					for (let i = 0; i < this._outputs.length; i++) {
+						if (this._outputs[i].output_type === 'execute_result') {
+							// Deletes transient node in the serialized JSON
+							// "Optional transient data introduced in 5.1. Information not to be persisted to a notebook or other documents."
+							// (https://jupyter-client.readthedocs.io/en/stable/messaging.html)
+							delete output['transient'];
+							this._outputs.splice(i, 0, output);
+							this.fireOutputsChanged();
+							added = true;
+							break;
+						}
+					}
+				}
+				break;
 			case 'stream':
 			case 'error':
 				output = msg.content as nb.ICellOutput;
@@ -620,61 +930,14 @@ export class CellModel extends Disposable implements ICellModel {
 		//     targets.push(model.length - 1);
 		//     this._displayIdMap.set(displayId, targets);
 		// }
-		if (output) {
+		if (output && !added) {
 			// deletes transient node in the serialized JSON
 			delete output['transient'];
-			// display message outputs before grid outputs
-			if (output.output_type === 'display_data' && this._outputs.length > 0) {
-				let added = false;
-				for (let i = 0; i < this._outputs.length; i++) {
-					if (this._outputs[i].output_type === 'execute_result') {
-						this._outputs.splice(i, 0, this.rewriteOutputUrls(output));
-						added = true;
-						break;
-					}
-				}
-				if (!added) {
-					this._outputs.push(this.rewriteOutputUrls(output));
-				}
-			} else {
-				this._outputs.push(this.rewriteOutputUrls(output));
-			}
+			this._outputs.push(output);
 			// Only scroll on 1st output being added
 			let shouldScroll = this._outputs.length === 1;
 			this.fireOutputsChanged(shouldScroll);
 		}
-	}
-
-	private rewriteOutputUrls(output: nb.ICellOutput): nb.ICellOutput {
-		const driverLog = '/gateway/default/yarn/container';
-		const yarnUi = '/gateway/default/yarn/proxy';
-		const defaultPort = ':30433';
-		// Only rewrite if this is coming back during execution, not when loading from disk.
-		// A good approximation is that the model has a future (needed for execution)
-		if (this.future) {
-			try {
-				let result = output as nb.IDisplayResult;
-				if (result && result.data && result.data['text/html']) {
-					let model = this._options.notebook as NotebookModel;
-					if (model.context) {
-						let gatewayEndpointInfo = this.getGatewayEndpoint(model.context);
-						if (gatewayEndpointInfo) {
-							let hostAndIp = notebookUtils.getHostAndPortFromEndpoint(gatewayEndpointInfo.endpoint);
-							let host = hostAndIp.host ? hostAndIp.host : model.context.serverName;
-							let port = hostAndIp.port ? ':' + hostAndIp.port : defaultPort;
-							let html = result.data['text/html'];
-							// BDC Spark UI Link
-							html = notebookUtils.rewriteUrlUsingRegex(/(https?:\/\/sparkhead.*\/proxy)(.*)/g, html, host, port, yarnUi);
-							// Driver link
-							html = notebookUtils.rewriteUrlUsingRegex(/(https?:\/\/storage.*\/containerlogs)(.*)/g, html, host, port, driverLog);
-							(<nb.IDisplayResult>output).data['text/html'] = html;
-						}
-					}
-				}
-			}
-			catch (e) { }
-		}
-		return output;
 	}
 
 	public setStdInHandler(handler: nb.MessageHandler<nb.IStdinMessage>): void {
@@ -686,7 +949,7 @@ export class CellModel extends Disposable implements ICellModel {
 	 * components. If one is registered the cell will call and wait on it, if not
 	 * it will immediately return to unblock error handling
 	 */
-	private handleSdtIn(msg: nb.IStdinMessage): void | Thenable<void> {
+	private handleStdIn(msg: nb.IStdinMessage): void | Thenable<void> {
 		let handler = async () => {
 			if (!this._stdInHandler) {
 				// No-op
@@ -701,6 +964,9 @@ export class CellModel extends Disposable implements ICellModel {
 				}
 			}
 		};
+
+		this.sendChangeToNotebook(NotebookChangeType.CellAwaitingInput);
+
 		return handler();
 	}
 
@@ -717,6 +983,11 @@ export class CellModel extends Disposable implements ICellModel {
 			cellJson.metadata.tags = metadata.tags;
 			cellJson.outputs = this._outputs;
 			cellJson.execution_count = this.executionCount ? this.executionCount : null;
+			if (this._configurationService?.getValue('notebook.saveConnectionName')) {
+				metadata.connection_name = this._savedConnectionName;
+			}
+		} else if (this._cellType === CellTypes.Markdown && this._attachments) {
+			cellJson.attachments = this._attachments;
 		}
 		return cellJson as nb.ICellContents;
 	}
@@ -729,15 +1000,19 @@ export class CellModel extends Disposable implements ICellModel {
 		this.executionCount = cell.execution_count;
 		this._source = this.getMultilineSource(cell.source);
 		this._metadata = cell.metadata || {};
-
-		if (this._metadata.tags && this._metadata.tags.some(x => x === HideInputTag) && this._cellType === CellTypes.Code) {
-			this._isCollapsed = true;
+		if (this._metadata.tags && this._cellType === CellTypes.Code) {
+			this._isCollapsed = this._metadata.tags.some(x => x === HideInputTag);
+			this._isParameter = this._metadata.tags.some(x => x === ParametersTag);
+			this._isInjectedParameter = this._metadata.tags.some(x => x === InjectedParametersTag);
 		} else {
 			this._isCollapsed = false;
+			this._isParameter = false;
+			this._isInjectedParameter = false;
 		}
-
+		this._attachments = cell.attachments;
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
-		this.setLanguageFromContents(cell);
+		this.setLanguageFromContents(cell.cell_type, cell.metadata);
+		this._savedConnectionName = this._metadata.connection_name;
 		if (cell.outputs) {
 			for (let output of cell.outputs) {
 				// For now, we're assuming it's OK to save these as-is with no modification
@@ -746,13 +1021,60 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 	}
 
-	private setLanguageFromContents(cell: nb.ICellContents): void {
-		if (cell.cell_type === CellTypes.Markdown) {
-			this._language = 'markdown';
-		} else if (cell.metadata && cell.metadata.language) {
-			this._language = cell.metadata.language;
+	public get currentMode(): CellEditModes {
+		if (this._cellType === CellTypes.Code) {
+			return CellEditModes.CODE;
 		}
-		// else skip, we set default language anyhow
+		if (this._showMarkdown && this._showPreview) {
+			return CellEditModes.SPLIT;
+		} else if (this._showMarkdown && !this._showPreview) {
+			return CellEditModes.MARKDOWN;
+		}
+		// defaulting to WYSIWYG
+		return CellEditModes.WYSIWYG;
+	}
+
+	public processEdits(edits: ICellEdit[]): void {
+		for (const edit of edits) {
+			switch (edit.type) {
+				case CellEditType.Output:
+					const outputEdit = edit as CellOutputEdit;
+					if (outputEdit.append) {
+						this._outputs.push(...outputEdit.outputs);
+					} else {
+						this._outputs = outputEdit.outputs;
+					}
+
+					break;
+				case CellEditType.OutputData:
+					const outputDataEdit = edit as CellOutputDataEdit;
+					const outputIndex = this._outputs.findIndex(o => outputDataEdit.outputId === o.id);
+					if (outputIndex > -1) {
+						const output = this._outputs[outputIndex] as nb.IExecuteResult;
+						// TODO: Append overwrites existing mime types currently
+						const newData = (edit as CellOutputDataEdit).append ?
+							Object.assign(output.data, outputDataEdit.data) :
+							outputDataEdit.data;
+						output.data = newData;
+						// We create a new object so that angular detects that the content has changed
+						this._outputs[outputIndex] = Object.assign({}, output);
+					} else {
+						this._logService.warn(`Unable to find output with ID ${outputDataEdit.outputId} when processing ReplaceOutputData`);
+					}
+					break;
+			}
+		}
+		this.fireOutputsChanged(false);
+	}
+
+	private setLanguageFromContents(cellType: string, metadata: ICellMetadata): void {
+		if (cellType === CellTypes.Markdown) {
+			this._language = 'markdown';
+		} else if (metadata?.language) {
+			this._language = metadata.language;
+		} else {
+			this._language = this._options?.notebook?.language;
+		}
 	}
 
 	private addOutput(output: nb.ICellOutput) {
@@ -772,27 +1094,10 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	private createUri(): void {
-		let uri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${this.id}` });
+		let uri = URI.from({ scheme: Schemas.untitled, path: `${CELL_URI_PATH_PREFIX}${this.id}` });
 		// Use this to set the internal (immutable) and public (shared with extension) uri properties
 		this.cellUri = uri;
 	}
-
-	// Get Knox endpoint from IConnectionProfile
-	// TODO: this will be refactored out into the notebooks extension as a contribution point
-	private getGatewayEndpoint(activeConnection: IConnectionProfile): notebookUtils.IEndpoint {
-		let endpoint;
-		if (this._connectionManagementService && activeConnection && activeConnection.providerName.toLowerCase() === notebookConstants.SQL_CONNECTION_PROVIDER.toLowerCase()) {
-			let serverInfo: ServerInfo = this._connectionManagementService.getServerInfo(activeConnection.id);
-			if (serverInfo) {
-				let endpoints: notebookUtils.IEndpoint[] = notebookUtils.getClusterEndpoints(serverInfo);
-				if (endpoints && endpoints.length > 0) {
-					endpoint = find(endpoints, ep => ep.serviceName.toLowerCase() === notebookUtils.hadoopEndpointNameGateway);
-				}
-			}
-		}
-		return endpoint;
-	}
-
 
 	private getMultilineSource(source: string | string[]): string | string[] {
 		if (source === undefined) {
@@ -855,20 +1160,47 @@ export class CellModel extends Disposable implements ICellModel {
 
 	private populatePropertiesFromSettings() {
 		if (this._configurationService) {
-			const enableWYSIWYGByDefaultKey = 'notebook.setRichTextViewByDefault';
-			this._defaultToWYSIWYG = this._configurationService.getValue(enableWYSIWYGByDefaultKey);
-			if (!this._defaultToWYSIWYG) {
-				this.showMarkdown = true;
-			}
+			const defaultTextModeKey = 'notebook.defaultTextEditMode';
+			this._defaultTextEditMode = this._configurationService.getValue(defaultTextModeKey);
+
 			const allowADSCommandsKey = 'notebook.allowAzureDataStudioCommands';
 			this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
 			this._register(this._configurationService.onDidChangeConfiguration(e => {
 				if (e.affectsConfiguration(allowADSCommandsKey)) {
 					this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
-				} else if (e.affectsConfiguration(enableWYSIWYGByDefaultKey)) {
-					this._defaultToWYSIWYG = this._configurationService.getValue(enableWYSIWYGByDefaultKey);
+				} else if (e.affectsConfiguration(defaultTextModeKey)) {
+					this._defaultTextEditMode = this._configurationService.getValue(defaultTextModeKey);
 				}
 			}));
 		}
 	}
+
+	/**
+	 * Cache start state for any existing charts.
+	 * This ensures that data can be passed to the grid output component when a cell is re-executed
+	 */
+	private cacheChartStateIfExists(): void {
+		this.clearPreviousChartState();
+		// If a cell's source was changed, don't cache chart state
+		if (!this._preventNextChartCache) {
+			this._outputs?.forEach(o => {
+				if (dataResourceDataExists(o)) {
+					if (o.metadata?.azdata_chartOptions) {
+						this._previousChartState.push(o.metadata.azdata_chartOptions);
+					} else {
+						this._previousChartState.push(undefined);
+					}
+				}
+			});
+		}
+		this._preventNextChartCache = false;
+	}
+
+	private clearPreviousChartState(): void {
+		this._previousChartState = [];
+	}
+}
+
+function dataResourceDataExists(metadata: nb.ICellOutput): boolean {
+	return metadata['data']?.['application/vnd.dataresource+json'];
 }

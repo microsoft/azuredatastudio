@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
+import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ServerTreeRenderer } from 'sql/workbench/services/objectExplorer/browser/serverTreeRenderer';
 import { ServerTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/serverTreeDataSource';
 import { ServerTreeController } from 'sql/workbench/services/objectExplorer/browser/serverTreeController';
 import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/browser/serverTreeActionProvider';
-import { DefaultFilter, DefaultAccessibilityProvider, DefaultController } from 'vs/base/parts/tree/browser/treeDefaults';
-import { IController } from 'vs/base/parts/tree/browser/tree';
+import { DefaultFilter, DefaultAccessibilityProvider, DefaultController } from 'sql/base/parts/tree/browser/treeDefaults';
+import { IController } from 'sql/base/parts/tree/browser/tree';
 import { ServerTreeDragAndDrop, RecentConnectionsDragAndDrop } from 'sql/workbench/services/objectExplorer/browser/dragAndDropController';
 import { RecentConnectionDataSource } from 'sql/workbench/services/objectExplorer/browser/recentConnectionDataSource';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
@@ -33,7 +33,7 @@ export class TreeCreationUtils {
 	public static createConnectionTree(treeContainer: HTMLElement, instantiationService: IInstantiationService, configurationService: IConfigurationService, ariaLabel: string, useController?: IController): Tree | AsyncServerTree {
 		if (useAsyncServerTree(configurationService)) {
 			const dataSource = instantiationService.createInstance(AsyncRecentConnectionTreeDataSource);
-			const connectionProfileGroupRender = instantiationService.createInstance(ConnectionProfileGroupRenderer);
+			const connectionProfileGroupRender = instantiationService.createInstance(ConnectionProfileGroupRenderer, { showColor: true });
 			const connectionProfileRenderer = instantiationService.createInstance(ConnectionProfileRenderer, true);
 			const treeNodeRenderer = instantiationService.createInstance(TreeNodeRenderer);
 			const dnd = instantiationService.createInstance(AsyncRecentConnectionsDragAndDrop);
@@ -88,7 +88,7 @@ export class TreeCreationUtils {
 
 		if (useAsyncServerTree(configurationService)) {
 			const dataSource = instantiationService.createInstance(AsyncServerTreeDataSource);
-			const connectionProfileGroupRender = instantiationService.createInstance(ConnectionProfileGroupRenderer);
+			const connectionProfileGroupRender = instantiationService.createInstance(ConnectionProfileGroupRenderer, { showColor: true });
 			const connectionProfileRenderer = instantiationService.createInstance(ConnectionProfileRenderer, false);
 			const treeNodeRenderer = instantiationService.createInstance(TreeNodeRenderer);
 			const dnd = instantiationService.createInstance(AsyncServerTreeDragAndDrop);
@@ -99,7 +99,6 @@ export class TreeCreationUtils {
 				accessibilityProvider: new ServerTreeAccessibilityProvider(nls.localize('serversAriaLabel', "Servers")),
 				keyboardNavigationLabelProvider: instantiationService.createInstance(ServerTreeKeyboardNavigationLabelProvider),
 				openOnSingleClick: true,
-				openOnFocus: true,
 				dnd: dnd,
 				identityProvider: identityProvider
 			};
@@ -134,7 +133,8 @@ export class TreeCreationUtils {
 					indentPixels: 10,
 					twistiePixels: 20,
 					ariaLabel: nls.localize('treeCreation.regTreeAriaLabel', "Servers"),
-					horizontalScrollMode: horizontalScrollMode ? ScrollbarVisibility.Auto : ScrollbarVisibility.Hidden
+					horizontalScrollMode: horizontalScrollMode ? ScrollbarVisibility.Auto : ScrollbarVisibility.Hidden,
+					showLoading: true
 				});
 		}
 
@@ -142,5 +142,5 @@ export class TreeCreationUtils {
 }
 
 function useAsyncServerTree(configurationService: IConfigurationService): boolean {
-	return configurationService.getValue<boolean>('workbench.enablePreviewFeatures') && configurationService.getValue<boolean>('serverTree.useAsyncServerTree');
+	return configurationService.getValue<boolean>('serverTree.useAsyncServerTree');
 }

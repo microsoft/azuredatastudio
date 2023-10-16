@@ -2,16 +2,16 @@
   "name": "schema-compare",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "1.6.0",
+  "version": "1.22.0",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
     "vscode": "^1.25.0",
-    "azdata": ">=1.13.0"
+    "azdata": ">=1.44.0"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
-  "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
+  "aiKey": "29a207bb14f84905966a8f22524cb730-25407f35-11b6-4d4e-8114-ab9e843cb52f-7380",
   "activationEvents": [
     "onCommand:schemaCompare.start"
   ],
@@ -23,6 +23,12 @@
   "extensionDependencies": [
     "Microsoft.mssql"
   ],
+  "capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
   "contributes": {
     "commands": [
       {
@@ -32,6 +38,14 @@
           "light": "./images/light_icon.svg",
           "dark": "./images/dark_icon.svg"
         }
+      },
+      {
+        "command": "schemaCompare.runComparison",
+        "title": "%schemaCompare.runComparison%"
+      },
+      {
+        "command": "schemaCompare.openInScmp",
+        "title": "%schemaCompare.openInScmp%"
       }
     ],
     "languages": [
@@ -72,22 +86,44 @@
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
           "group": "export"
         }
+      ],
+      "commandPalette": [
+        {
+          "command": "schemaCompare.start",
+          "when": "mssql:engineedition != 11"
+        },
+        {
+          "command": "schemaCompare.runComparison",
+          "when": "false"
+        },
+        {
+          "command": "schemaCompare.openInScmp",
+          "when": "false"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "schemaCompare.openInScmp",
+          "when": "resourceExtname == .scmp",
+          "group": "navigation"
+        }
       ]
     }
   },
   "dependencies": {
-    "ads-extension-telemetry": "^1.0.0",
+    "@microsoft/ads-extension-telemetry": "^3.0.1",
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
-    "@types/mocha": "^5.2.5",
+    "@microsoft/vscodetestcover": "^1.2.2",
+    "@microsoft/azdata-test": "^3.0.3",
+    "@types/mocha": "^7.0.2",
     "@types/node": "^12.11.7",
-    "mocha": "^5.2.0",
-    "mocha-junit-reporter": "^1.17.0",
-    "mocha-multi-reporters": "^1.1.7",
+    "@types/sinon": "^9.0.4",
+    "mocha": "^7.1.1",
     "should": "^13.2.1",
-    "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.1.0"
+    "sinon": "^9.0.2",
+    "typemoq": "^2.1.0"
   },
   "__metadata": {
     "id": "37",

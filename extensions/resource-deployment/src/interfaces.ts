@@ -4,8 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { IOptionsSourceProvider } from 'resource-deployment';
 import * as vscode from 'vscode';
-import { OptionsSourceType } from './helpers/optionSources';
+import { ValidationInfo } from './ui/validation/validations';
 
 export const NoteBookEnvironmentVariablePrefix = 'AZDATA_NB_VAR_';
 
@@ -14,18 +15,46 @@ export interface ResourceType {
 	displayName: string;
 	description: string;
 	platforms: string[] | '*';
-	icon: { light: string; dark: string };
+	icon: { light: string; dark: string } | string;
 	options: ResourceTypeOption[];
 	providers: DeploymentProvider[];
-	agreement?: AgreementInfo;
+	agreements?: AgreementInfo[];
 	displayIndex?: number;
-	okButtonText?: string;
+	okButtonText?: OkButtonTextValue[];
+	helpTexts: HelpText[];
+	getOkButtonText(selectedOptions: { option: string, value: string }[]): string | undefined;
 	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
+	getAgreementInfo(selectedOptions: { option: string, value: string }[]): AgreementInfo | undefined;
+	getHelpText(selectedOption: { option: string, value: string }[]): HelpText | undefined;
+	tags?: string[];
+}
+
+export interface ResourceSubType {
+	/**
+	 * The name of the Resource Type this subtype is extending
+	 */
+	resourceName: string;
+	/**
+	 * The option name should have a matching name in ResourceType.options
+	 */
+	options: ResourceTypeOption[];
+	tags?: string[];
+	provider: DeploymentProvider;
+	okButtonText?: OkButtonTextValue;
+	agreement?: AgreementInfo;
+	helpText?: HelpText;
+}
+
+export interface HelpText {
+	template: string;
+	links?: azdata.LinkArea[];
+	when?: string;
 }
 
 export interface AgreementInfo {
 	template: string;
-	links: azdata.LinkArea[];
+	links?: azdata.LinkArea[];
+	when?: string;
 }
 
 export interface ResourceTypeOption {
@@ -39,12 +68,13 @@ export interface ResourceTypeOptionValue {
 	displayName: string;
 }
 
-export interface DialogDeploymentProvider extends DeploymentProviderBase {
-	dialog: DialogInfo;
+export interface OkButtonTextValue {
+	value: string;
+	when: string;
 }
 
-export interface BdcWizardDeploymentProvider extends DeploymentProviderBase {
-	bdcWizard: BdcWizardInfo;
+export interface DialogDeploymentProvider extends DeploymentProviderBase {
+	dialog: DialogInfo;
 }
 
 export interface NotebookWizardDeploymentProvider extends DeploymentProviderBase {
@@ -71,12 +101,12 @@ export interface AzureSQLVMDeploymentProvider extends DeploymentProviderBase {
 	azureSQLVMWizard: AzureSQLVMWizardInfo;
 }
 
-export function instanceOfDialogDeploymentProvider(obj: any): obj is DialogDeploymentProvider {
-	return obj && 'dialog' in obj;
+export interface AzureSQLDBDeploymentProvider extends DeploymentProviderBase {
+	azureSQLDBWizard: AzureSQLDBWizardInfo;
 }
 
-export function instanceOfWizardDeploymentProvider(obj: any): obj is BdcWizardDeploymentProvider {
-	return obj && 'bdcWizard' in obj;
+export function instanceOfDialogDeploymentProvider(obj: any): obj is DialogDeploymentProvider {
+	return obj && 'dialog' in obj;
 }
 
 export function instanceOfNotebookWizardDeploymentProvider(obj: any): obj is NotebookWizardDeploymentProvider {
@@ -103,17 +133,18 @@ export function instanceOfAzureSQLVMDeploymentProvider(obj: any): obj is AzureSQ
 	return obj && 'azureSQLVMWizard' in obj;
 }
 
+export function instanceOfAzureSQLDBDeploymentProvider(obj: any): obj is AzureSQLDBDeploymentProvider {
+	return obj && 'azureSQLDBWizard' in obj;
+}
+
 export interface DeploymentProviderBase {
+	name: string;
 	requiredTools: ToolRequirementInfo[];
 	when: string;
 }
 
-export type DeploymentProvider = DialogDeploymentProvider | BdcWizardDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider | AzureSQLVMDeploymentProvider;
+export type DeploymentProvider = DialogDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider | AzureSQLVMDeploymentProvider | AzureSQLDBDeploymentProvider;
 
-export interface BdcWizardInfo {
-	notebook: string | NotebookPathInfo;
-	type: BdcDeploymentType;
-}
 /**
  * An object that configures Script and Done buttons of the wizard.
  */
@@ -140,7 +171,6 @@ export interface NotebookWizardInfo extends WizardInfoBase {
 }
 
 export interface WizardInfoBase extends FieldInfoBase {
-	type?: DeploymentType;
 	/**
 	 * 	done button attributes.
 	 */
@@ -181,6 +211,10 @@ export interface AzureSQLVMWizardInfo {
 	notebook: string | NotebookPathInfo;
 }
 
+export interface AzureSQLDBWizardInfo {
+	notebook: string | NotebookPathInfo;
+}
+
 export type DialogInfo = NotebookBasedDialogInfo | CommandBasedDialogInfo;
 
 export function instanceOfNotebookBasedDialogInfo(obj: any): obj is NotebookBasedDialogInfo {
@@ -189,6 +223,14 @@ export function instanceOfNotebookBasedDialogInfo(obj: any): obj is NotebookBase
 
 export function instanceOfCommandBasedDialogInfo(obj: any): obj is CommandBasedDialogInfo {
 	return obj && 'command' in obj;
+}
+
+export function instanceOfDynamicEnablementInfo(obj: any): obj is DynamicEnablementInfo {
+	return (<DynamicEnablementInfo>obj)?.target !== undefined && (<DynamicEnablementInfo>obj)?.value !== undefined;
+}
+
+export function instanceOfDynamicOptionsInfo(obj: any): obj is DynamicOptionsInfo {
+	return (<DynamicOptionsInfo>obj)?.target !== undefined && (<DynamicOptionsInfo>obj)?.alternates !== undefined;
 }
 
 export interface DialogInfoBase {
@@ -219,11 +261,11 @@ export type ComponentCSSStyles = {
 };
 
 export interface IOptionsSource {
-	readonly type: OptionsSourceType,
-	readonly variableNames: { [index: string]: string; },
-	getOptions(): Promise<string[] | azdata.CategoryValue[]>,
-	getVariableValue(variableName: string, input: string): Promise<string>;
-	getIsPassword(variableName: string): boolean;
+	provider?: IOptionsSourceProvider
+	loadingText?: string,
+	loadingCompletedText?: string,
+	readonly variableNames?: { [index: string]: string; };
+	readonly providerId: string;
 }
 
 
@@ -232,6 +274,27 @@ export interface OptionsInfo {
 	source?: IOptionsSource,
 	defaultValue: string,
 	optionsType?: OptionsType
+}
+
+export interface DynamicEnablementInfo {
+	target: string,
+	value: string
+}
+
+export interface DynamicOptionsInfo {
+	target: string,
+	alternates: DynamicOptionsAlternates[]
+}
+
+export interface DynamicOptionsAlternates {
+	selection: string
+	alternateValues: string[] | azdata.CategoryValue[],
+	defaultValue: string
+}
+
+export interface ValueProviderInfo {
+	providerId: string,
+	triggerFields: string[]
 }
 
 export interface FieldInfoBase {
@@ -267,9 +330,6 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	defaultValue?: string;
 	confirmationRequired?: boolean;
 	confirmationLabel?: string;
-	textValidationRequired?: boolean;
-	textValidationRegex?: string;
-	textValidationDescription?: string;
 	min?: number;
 	max?: number;
 	required?: boolean;
@@ -281,17 +341,17 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	fontWeight?: FontWeight;
 	links?: azdata.LinkArea[];
 	editable?: boolean; // for editable drop-down,
-	enabled?: boolean;
+	enabled?: boolean | DynamicEnablementInfo;
+	dynamicOptions?: DynamicOptionsInfo;
 	isEvaluated?: boolean;
-	valueLookup?: string; // for fetching dropdown options
-	validationLookup?: string // for fetching text field validations
+	validations?: ValidationInfo[];
+	valueProvider?: ValueProviderInfo;
 }
 
 export interface KubeClusterContextFieldInfo extends FieldInfo {
 	configFileVariableName?: string;
 }
 export interface AzureAccountFieldInfo extends AzureLocationsFieldInfo {
-	displaySubscriptionVariableName?: string;
 	subscriptionVariableName?: string;
 	resourceGroupVariableName?: string;
 	allowNewResourceGroup?: boolean;
@@ -301,7 +361,6 @@ export interface AzureAccountFieldInfo extends AzureLocationsFieldInfo {
 
 export interface AzureLocationsFieldInfo extends FieldInfo {
 	locationVariableName?: string;
-	displayLocationVariableName?: string;
 	locations?: string[]
 }
 
@@ -389,7 +448,6 @@ export enum ToolType {
 	AzCli,
 	KubeCtl,
 	Docker,
-	Azdata
 }
 
 export const enum ToolStatus {
@@ -421,19 +479,9 @@ export interface ITool {
 	finishInitialization(): Promise<void>;
 	install(): Promise<void>;
 	isSameOrNewerThan(version: string): boolean;
-	isEulaAccepted(): boolean;
+	isEulaAccepted(): Promise<boolean>;
 	promptForEula(): Promise<boolean>;
 }
-
-export const enum BdcDeploymentType {
-	NewAKS = 'new-aks',
-	ExistingAKS = 'existing-aks',
-	ExistingKubeAdm = 'existing-kubeadm',
-	ExistingARO = 'existing-aro',
-	ExistingOpenShift = 'existing-openshift'
-}
-
-export type DeploymentType = BdcDeploymentType;
 
 export interface Command {
 	command: string;
@@ -443,3 +491,8 @@ export interface Command {
 	additionalEnvironmentVariables?: NodeJS.ProcessEnv;
 	ignoreError?: boolean;
 }
+
+/**
+ * Map of the set of variables and the values to assign to them upon initialization - overriding the base default.
+ */
+export type InitialVariableValues = { [key: string]: string | boolean };

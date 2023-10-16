@@ -7,8 +7,8 @@ import 'vs/css!./media/jobStepsView';
 import * as nls from 'vs/nls';
 import * as dom from 'vs/base/browser/dom';
 import { OnInit, Component, Inject, forwardRef, ElementRef, ViewChild, AfterContentChecked } from '@angular/core';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
+import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
+import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
@@ -23,9 +23,9 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 import { IJobManagementService } from 'sql/workbench/services/jobManagement/common/interfaces';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export const JOBSTEPSVIEW_SELECTOR: string = 'jobstepsview-component';
 
@@ -53,12 +53,12 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) dashboardService: IDashboardService,
-		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
+		@Inject(IAdsTelemetryService) private _telemetryService: IAdsTelemetryService
 	) {
 		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService, undefined);
 	}
 
-	ngAfterContentChecked() {
+	override ngAfterContentChecked() {
 		jQuery('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
 		this.layout();
 		this._tree.onDidScroll(() => {
@@ -111,7 +111,7 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 			this._treeDataSource.data = data;
 			await this._tree.refresh();
 		});
-		this._telemetryService.publicLog(TelemetryKeys.JobStepsView);
+		this._telemetryService.sendViewEvent(TelemetryView.AgentJobSteps);
 	}
 
 	public onFirstVisible() {

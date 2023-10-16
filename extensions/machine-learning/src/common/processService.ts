@@ -17,10 +17,6 @@ export class ProcessService {
 			const scriptExecution = childProcess.spawn(exeFilePath, args);
 			let timer: NodeJS.Timeout;
 			let output: string = '';
-			scripts.forEach(script => {
-				scriptExecution.stdin.write(`${script}\n`);
-			});
-			scriptExecution.stdin.end();
 
 			// Add listeners to print stdout and stderr if an output channel was provided
 
@@ -55,6 +51,11 @@ export class ProcessService {
 					console.log(error);
 				}
 			}, this.timeout);
+
+			scripts.forEach(script => {
+				scriptExecution.stdin.write(`${script}\n`);
+			});
+			scriptExecution.stdin.end();
 		});
 	}
 

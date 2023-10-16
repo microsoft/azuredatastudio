@@ -1,0 +1,11 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<loading-spinner class="editorLoader" [loading]="isLoading" [loadingMessage]="loadingMessage" [loadingCompletedMessage]="loadingCompletedMessage"></loading-spinner>
+<!-- Notebook View -->
+<notebook-component *ngIf="viewMode === ViewMode.Notebook" [_views]="views" [_model]="model"></notebook-component>
+<!-- Dashboard View -->
+<notebook-view-component *ngIf="viewMode === ViewMode.Views" [views]="views" [notebookMetadata]="views.metadata" [activeView]="activeView" [model]="model"></notebook-view-component>

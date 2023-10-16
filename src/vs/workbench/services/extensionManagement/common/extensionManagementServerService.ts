@@ -4,20 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-import { IExtensionManagementServer, IExtensionManagementServerService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
+import { ExtensionInstallLocation, IExtensionManagementServer, IExtensionManagementServerService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
-import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
+import { Schemas } from 'vs/base/common/network';
 import { IChannel } from 'vs/base/parts/ipc/common/ipc';
-import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
+import { InstantiationType, registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { isWeb } from 'vs/base/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { WebExtensionManagementService } from 'vs/workbench/services/extensionManagement/common/webExtensionManagementService';
 import { IExtension } from 'vs/platform/extensions/common/extensions';
-import { WebRemoteExtensionManagementService } from 'vs/workbench/services/extensionManagement/common/remoteExtensionManagementService';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { IProductService } from 'vs/platform/product/common/productService';
+import { RemoteExtensionManagementService } from 'vs/workbench/services/extensionManagement/common/remoteExtensionManagementService';
 
 export class ExtensionManagementServerService implements IExtensionManagementServerService {
 
@@ -30,18 +27,15 @@ export class ExtensionManagementServerService implements IExtensionManagementSer
 	constructor(
 		@IRemoteAgentService remoteAgentService: IRemoteAgentService,
 		@ILabelService labelService: ILabelService,
-		@IExtensionGalleryService galleryService: IExtensionGalleryService,
-		@IProductService productService: IProductService,
-		@IConfigurationService configurationService: IConfigurationService,
 		@IInstantiationService instantiationService: IInstantiationService,
 	) {
 		const remoteAgentConnection = remoteAgentService.getConnection();
 		if (remoteAgentConnection) {
-			const extensionManagementService = new WebRemoteExtensionManagementService(remoteAgentConnection.getChannel<IChannel>('extensions'), galleryService, configurationService, productService);
+			const extensionManagementService = instantiationService.createInstance(RemoteExtensionManagementService, remoteAgentConnection.getChannel<IChannel>('extensions'));
 			this.remoteExtensionManagementServer = {
 				id: 'remote',
 				extensionManagementService,
-				get label() { return labelService.getHostLabel(REMOTE_HOST_SCHEME, remoteAgentConnection!.remoteAuthority) || localize('remote', "Remote"); }
+				get label() { return labelService.getHostLabel(Schemas.vscodeRemote, remoteAgentConnection!.remoteAuthority) || localize('remote', "Remote"); },
 			};
 		}
 		if (isWeb) {
@@ -49,13 +43,13 @@ export class ExtensionManagementServerService implements IExtensionManagementSer
 			this.webExtensionManagementServer = {
 				id: 'web',
 				extensionManagementService,
-				label: localize('web', "Web")
+				label: localize('browser', "Browser"),
 			};
 		}
 	}
 
 	getExtensionManagementServer(extension: IExtension): IExtensionManagementServer {
-		if (extension.location.scheme === REMOTE_HOST_SCHEME) {
+		if (extension.location.scheme === Schemas.vscodeRemote) {
 			return this.remoteExtensionManagementServer!;
 		}
 		if (this.webExtensionManagementServer) {
@@ -63,6 +57,11 @@ export class ExtensionManagementServerService implements IExtensionManagementSer
 		}
 		throw new Error(`Invalid Extension ${extension.location}`);
 	}
+
+	getExtensionInstallLocation(extension: IExtension): ExtensionInstallLocation | null {
+		const server = this.getExtensionManagementServer(extension);
+		return server === this.remoteExtensionManagementServer ? ExtensionInstallLocation.Remote : ExtensionInstallLocation.Web;
+	}
 }
 
-registerSingleton(IExtensionManagementServerService, ExtensionManagementServerService);
+registerSingleton(IExtensionManagementServerService, ExtensionManagementServerService, InstantiationType.Delayed);

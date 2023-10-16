@@ -7,13 +7,13 @@ import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectio
 import * as azdata from 'azdata';
 import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
 import * as interfaces from 'sql/platform/connection/common/interfaces';
-import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { generateUuid } from 'vs/base/common/uuid';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { isString } from 'vs/base/common/types';
+import { isString, isUndefinedOrNull } from 'vs/base/common/types';
 import { deepClone } from 'vs/base/common/objects';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { URI } from 'vs/base/common/uri';
+import { adjustForMssqlAppName } from 'sql/platform/connection/common/utils';
 
 export interface IconPath {
 	light: URI;
@@ -39,33 +39,63 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public isDisconnecting: boolean = false;
 
+	// title from ProviderConnectionInfo cannot be changed, in order to show different dynamic options appended, we must override the title with our own.
+	private _title?: string;
+
 	public constructor(
 		capabilitiesService: ICapabilitiesService,
-		model: string | azdata.IConnectionProfile | undefined) {
+		model: string | azdata.IConnectionProfile | azdata.connection.ConnectionProfile | undefined) {
 		super(capabilitiesService, model);
 		if (model && !isString(model)) {
 			this.groupId = model.groupId;
 			this.groupFullName = model.groupFullName;
 			this.savePassword = model.savePassword;
 			this.saveProfile = model.saveProfile;
-			this._id = model.id;
 			this.azureTenantId = model.azureTenantId;
-			this.azureAccount = model.azureAccount;
-			this.azureResourceId = model.azureResourceId;
-			this.azurePortalEndpoint = model.azurePortalEndpoint;
-			if (this.capabilitiesService && model.providerName) {
-				let capabilities = this.capabilitiesService.getCapabilities(model.providerName);
+
+			// Special case setting properties to support both IConnectionProfile and azdata.connection.ConnectionProfile
+			// It's not great that we have multiple definitions in azdata, but we can't break that right now so just
+			// support both at least for the time being
+			const isIConnectionProfile = 'id' in model;
+			this._id = isIConnectionProfile ? model.id : model.connectionId;
+			// TODO: @chgagnon - Should we add these properties to azdata.connection.ConnectionProfile?
+			this.azureAccount = isIConnectionProfile ? model.azureAccount : '';
+			this.azureResourceId = isIConnectionProfile ? model.azureResourceId : '';
+			this.azurePortalEndpoint = isIConnectionProfile ? model.azurePortalEndpoint : '';
+			if (this.capabilitiesService && this.providerName) {
+				let capabilities = this.capabilitiesService.getCapabilities(this.providerName);
 				if (capabilities && capabilities.connection && capabilities.connection.connectionOptions) {
 					const options = capabilities.connection.connectionOptions;
+					// MSSQL Provider doesn't treat appName as special type anymore.
 					let appNameOption = options.find(option => option.specialValueType === interfaces.ConnectionOptionSpecialType.appName);
 					if (appNameOption) {
 						let appNameKey = appNameOption.name;
 						this.options[appNameKey] = Constants.applicationName;
+					} else if (this.providerName === Constants.mssqlProviderName || this.providerName === Constants.mssqlCmsProviderName) {
+						// Update AppName here for MSSQL and MSSQL-CMS provider to be able to match connection URI with STS.
+						appNameOption = options.find(option => option.name === Constants.mssqlApplicationNameOption);
+						if (appNameOption) {
+							this.options[Constants.mssqlApplicationNameOption] = adjustForMssqlAppName(model.options[Constants.mssqlApplicationNameOption]);
+						}
 					}
+					// Set values for advanced options received in model.
+					Object.keys(model.options).forEach(a => {
+						let option = options.find(opt => opt.name === a);
+						if (option !== undefined && option.defaultValue?.toString().toLocaleLowerCase() !== model.options[a]?.toString().toLocaleLowerCase()) {
+							this.options[option.name] = model.options[a];
+						}
+					});
 				}
 				if (model.options.registeredServerDescription) {
 					this.registeredServerDescription = model.options.registeredServerDescription;
 				}
+				const expiry = model.options.expiresOn;
+				if (typeof expiry === 'number' && !Number.isNaN(expiry)) {
+					this.options.expiresOn = model.options.expiresOn;
+				}
+			}
+			if (model.options?.originalDatabase) {
+				this.originalDatabase = model.options.originalDatabase;
 			}
 		} else {
 			//Default for a new connection
@@ -79,29 +109,13 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		this.options['databaseDisplayName'] = this.databaseName;
 	}
 
-	public static matchesProfile(a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile): boolean {
-		return a && b
-			&& a.providerName === b.providerName
-			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.serverName, b.serverName)
-			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.databaseName, b.databaseName)
-			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.userName, b.userName)
-			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.options['databaseDisplayName'], b.options['databaseDisplayName'])
-			&& a.authenticationType === b.authenticationType
-			&& a.groupId === b.groupId;
+	public static matchesProfile(a: interfaces.IConnectionProfile | undefined, b: interfaces.IConnectionProfile | undefined): boolean {
+		return a && b && a.getOptionsKey() === b.getOptionsKey();
 	}
 
 	public matches(other: interfaces.IConnectionProfile): boolean {
 		return ConnectionProfile.matchesProfile(this, other);
 
-	}
-
-	private static nullCheckEqualsIgnoreCase(a?: string, b?: string) {
-		if (a && !b || b && !a) {
-			return false;
-		} else {
-			let bothNull: boolean = !a && !b;
-			return bothNull ? bothNull : equalsIgnoreCase(a!, b!);
-		}
 	}
 
 	public generateNewId() {
@@ -155,6 +169,19 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		this.options['azureResourceId'] = value;
 	}
 
+	/**
+	 * Database of server specified before connection.
+	 * Some providers will modify the database field of the connection once a connection is made
+	 * so that it reflects the actual database that was connected to.
+	 */
+	public get originalDatabase() {
+		return this.options['originalDatabase'];
+	}
+
+	public set originalDatabase(value: string | undefined) {
+		this.options['originalDatabase'] = value;
+	}
+
 	public get registeredServerDescription(): string {
 		return this.options['registeredServerDescription'];
 	}
@@ -175,7 +202,22 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		return (this._groupName === ConnectionProfile.RootGroupName);
 	}
 
-	public clone(): ConnectionProfile {
+	public override get title(): string {
+		if (this._title) {
+			return this._title;
+		}
+		return this.getOriginalTitle();
+	}
+
+	public getOriginalTitle(): string {
+		return super.title;
+	}
+
+	public override set title(value: string) {
+		this._title = value;
+	}
+
+	public override clone(): ConnectionProfile {
 		let instance = new ConnectionProfile(this.capabilitiesService, this);
 		return instance;
 	}
@@ -189,6 +231,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	public cloneWithDatabase(databaseName: string): ConnectionProfile {
 		let instance = this.cloneWithNewId();
 		instance.databaseName = databaseName;
+		instance.originalDatabase = databaseName;
 		return instance;
 	}
 
@@ -202,24 +245,39 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	/**
 	 * Returns a key derived the connections options (providerName, authenticationType, serverName, databaseName, userName, groupid)
+	 * and all the other properties (except empty ones) if useFullOptions is enabled for the provider.
 	 * This key uniquely identifies a connection in a group
-	 * Example: "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
+	 * Example (original format): "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
+	 * Example (new format): "providerName:MSSQL|databaseName:database|serverName:server3|userName:user|groupId:testid"
+	 * @param getOriginalOptions will return the original URI format regardless if useFullOptions was set or not. (used for retrieving passwords)
 	 */
-	public getOptionsKey(): string {
-		let id = super.getOptionsKey();
+	public override getOptionsKey(getOriginalOptions?: boolean): string {
+		let id = super.getOptionsKey(getOriginalOptions);
 		let databaseDisplayName: string = this.options['databaseDisplayName'];
 		if (databaseDisplayName) {
 			id += ProviderConnectionInfo.idSeparator + 'databaseDisplayName' + ProviderConnectionInfo.nameValueSeparator + databaseDisplayName;
 		}
 
-		return id + ProviderConnectionInfo.idSeparator + 'group' + ProviderConnectionInfo.nameValueSeparator + this.groupId;
+		let groupProp = 'group'
+		if (!getOriginalOptions && this.serverCapabilities && this.serverCapabilities.useFullOptions) {
+			groupProp = 'groupId'
+		}
+
+		return id + ProviderConnectionInfo.idSeparator + groupProp + ProviderConnectionInfo.nameValueSeparator + this.groupId;
 	}
 
 	/**
-	 * Returns the unique id for the connection that doesn't include the group name
+	 * Returns the unique id for the connection that doesn't include the group name.
+	 * Used primarily for retrieving shared passwords among different connections in default state.
+	 * @param getOriginalOptions will return the original URI format regardless if useFullOptions was set or not. (used for retrieving passwords)
 	 */
-	public getConnectionInfoId(): string {
-		return super.getOptionsKey();
+	public getConnectionInfoId(getOriginalOptions = true): string {
+		let id = super.getOptionsKey(getOriginalOptions);
+		let databaseDisplayName: string = this.options['databaseDisplayName'];
+		if (databaseDisplayName && !getOriginalOptions && this.serverCapabilities?.useFullOptions) {
+			id += ProviderConnectionInfo.idSeparator + 'databaseDisplayName' + ProviderConnectionInfo.nameValueSeparator + databaseDisplayName;
+		}
+		return id;
 	}
 
 	public toIConnectionProfile(): interfaces.IConnectionProfile {
@@ -228,7 +286,9 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			serverName: this.serverName,
 			databaseName: this.databaseName,
 			authenticationType: this.authenticationType,
+			serverCapabilities: this.serverCapabilities,
 			getOptionsKey: this.getOptionsKey,
+			getOptionKeyIdNames: this.getOptionKeyIdNames,
 			matches: this.matches,
 			groupId: this.groupId,
 			groupFullName: this.groupFullName,
@@ -298,7 +358,13 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			id: connectionInfo.id
 		};
 
-		profile.options = connectionInfo.options;
+		Object.keys(connectionInfo.options).forEach(element => {
+			// Allow empty strings to ensure "user": "" is populated if empty << Required by SSMS 19.2
+			// Do not change this design until SSMS 19 goes out of support.
+			if (!isUndefinedOrNull(connectionInfo.options[element])) {
+				profile.options[element] = connectionInfo.options[element];
+			}
+		});
 
 		return profile;
 	}

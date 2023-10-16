@@ -8,5 +8,5 @@
 	],
 	"alertErrorMessage": "Erro: {0}",
 	"alertWarningMessage": "Aviso: {0}",
-	"alertInfoMessage": "Info: {0}"
+	"alertInfoMessage": "Informações: {0}"
 }

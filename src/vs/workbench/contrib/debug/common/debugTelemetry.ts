@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDebugModel, IDebugSession, AdapterEndEvent, IBreakpoint } from 'vs/workbench/contrib/debug/common/debug';
+import { IDebugModel, IDebugSession, AdapterEndEvent } from 'vs/workbench/contrib/debug/common/debug';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Debugger } from 'vs/workbench/contrib/debug/common/debugger';
 
@@ -14,10 +14,11 @@ export class DebugTelemetry {
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 	) { }
 
-	logDebugSessionStart(dbgr: Debugger, launchJsonExists: boolean): Promise<void> {
+	logDebugSessionStart(dbgr: Debugger, launchJsonExists: boolean) {
 		const extension = dbgr.getMainExtensionDescriptor();
 		/* __GDPR__
 			"debugSessionStart" : {
+				"owner": "connor4312",
 				"type": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 				"breakpointCount": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
 				"exceptionBreakpoints": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
@@ -27,7 +28,7 @@ export class DebugTelemetry {
 				"launchJsonExists": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true }
 			}
 		*/
-		return this.telemetryService.publicLog('debugSessionStart', {
+		this.telemetryService.publicLog('debugSessionStart', {
 			type: dbgr.type,
 			breakpointCount: this.model.getBreakpoints().length,
 			exceptionBreakpoints: this.model.getExceptionBreakpoints(),
@@ -38,12 +39,13 @@ export class DebugTelemetry {
 		});
 	}
 
-	logDebugSessionStop(session: IDebugSession, adapterExitEvent: AdapterEndEvent): Promise<any> {
+	logDebugSessionStop(session: IDebugSession, adapterExitEvent: AdapterEndEvent) {
 
 		const breakpoints = this.model.getBreakpoints();
 
 		/* __GDPR__
 			"debugSessionStop" : {
+				"owner": "connor4312",
 				"type" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 				"success": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
 				"sessionLengthInSeconds": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
@@ -51,30 +53,12 @@ export class DebugTelemetry {
 				"watchExpressionsCount": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true }
 			}
 		*/
-		return this.telemetryService.publicLog('debugSessionStop', {
+		this.telemetryService.publicLog('debugSessionStop', {
 			type: session && session.configuration.type,
 			success: adapterExitEvent.emittedStopped || breakpoints.length === 0,
 			sessionLengthInSeconds: adapterExitEvent.sessionLengthInSeconds,
 			breakpointCount: breakpoints.length,
 			watchExpressionsCount: this.model.getWatchExpressions().length
-		});
-	}
-
-	logDebugAddBreakpoint(breakpoint: IBreakpoint, context: string): Promise<any> {
-		/* __GDPR__
-			"debugAddBreakpoint" : {
-				"context": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-				"hasCondition": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
-				"hasHitCondition": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
-				"hasLogMessage": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true }
-			}
-		*/
-
-		return this.telemetryService.publicLog('debugAddBreakpoint', {
-			context: context,
-			hasCondition: !!breakpoint.condition,
-			hasHitCondition: !!breakpoint.hitCondition,
-			hasLogMessage: !!breakpoint.logMessage
 		});
 	}
 }

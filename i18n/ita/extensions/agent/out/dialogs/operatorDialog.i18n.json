@@ -22,10 +22,10 @@
 	"createOperator.PagerSaturdayCheckBox": "Sabato",
 	"createOperator.PagerSundayCheckBox": "Domenica",
 	"createOperator.workdayBegin": "Inizio della giornata lavorativa",
-	"createOperator.workdayEnd": "Fine giornata lavorativa",
+	"createOperator.workdayEnd": "Fine della giornata lavorativa",
 	"createOperator.PagerDutySchedule": "Pianificazione cercapersone per operatore in servizio",
 	"createOperator.AlertListHeading": "Elenco avvisi",
-	"createOperator.AlertNameColumnLabel": "Nome avviso",
-	"createOperator.AlertEmailColumnLabel": "E-mail",
+	"createOperator.AlertNameColumnLabel": "Nome dell'avviso",
+	"createOperator.AlertEmailColumnLabel": "Posta elettronica",
 	"createOperator.AlertPagerColumnLabel": "Cercapersone"
 }

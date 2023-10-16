@@ -6,14 +6,16 @@ import 'vs/css!./notebook';
 
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
-import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground } from 'vs/platform/theme/common/colorRegistry';
-import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
-import { cellBorder, notebookToolbarIcon, notebookToolbarLines, buttonMenuArrow, dropdownArrow, markdownEditorBackground, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder, notebookToolbarSelectBackground, splitBorder } from 'sql/platform/theme/common/colorRegistry';
+import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, foreground } from 'vs/platform/theme/common/colorRegistry';
+import { cellBorder, notebookToolbarIcon, notebookToolbarLines, buttonMenuArrow, dropdownArrow, markdownEditorBackground, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder, notebookToolbarSelectBackground, splitBorder, notebookCellTagBackground, notebookCellTagForeground, notebookFindMatchHighlight, notebookFindRangeHighlight } from 'sql/platform/theme/common/colorRegistry';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import { getZoomLevel } from 'vs/base/browser/browser';
 import * as types from 'vs/base/common/types';
+import { cellStatusBarItemHover } from 'vs/workbench/contrib/notebook/browser/notebookEditorWidget';
+import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/core/editorColorRegistry';
+import { ColorScheme } from 'vs/platform/theme/common/theme';
 
 export function registerNotebookThemes(overrideEditorThemeSetting: boolean, configurationService: IConfigurationService): IDisposable {
 	return registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
@@ -48,7 +50,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				}
 			} // else do nothing as current theme's line highlight will work
 
-			if (theme.defines(editorLineHighlightBorder) && theme.type !== 'hc') {
+			if (theme.defines(editorLineHighlightBorder) && theme.type !== ColorScheme.HIGH_CONTRAST_DARK) {
 				// We need to clear out the border because we do not want to show it for notebooks
 				// Override values only for the children of code-component so regular editors aren't affected
 				collector.addRule(`code-component .monaco-editor .view-overlays .current-line { border: 0px; }`);
@@ -70,11 +72,13 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		const hcOutline = theme.getColor(contrastBorder);
 		if (outline) {
 			collector.addRule(`
-				.hc-black .notebookEditor .notebook-cell:not(.active) code-component {
+				.hc-black .notebookEditor .notebook-cell:not(.active) code-component,
+				.hc-light .notebookEditor .notebook-cell:not(.active) code-component {
 					border-color: ${hcOutline};
 					border-width: 0px 0px 1px 0px;
 				}
-				.hc-black .notebookEditor .notebook-cell:not(.active) {
+				.hc-black .notebookEditor .notebook-cell:not(.active),
+				.hc-light .notebookEditor .notebook-cell:not(.active) {
 					outline-color: ${hcOutline};
 					outline-width: 1px;
 					outline-style: solid;
@@ -150,8 +154,8 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		//Notebook toolbar masked icons
 		const notebookToolbarIconColor = theme.getColor(notebookToolbarIcon);
 		if (notebookToolbarIconColor) {
-			collector.addRule(`.notebookEditor .notebook-button.masked-icon:before { background-color: ${notebookToolbarIconColor};}`);
-			collector.addRule(`.notebookEditor .notebook-button.masked-pseudo:before { background-color: ${notebookToolbarIconColor};}`);
+			collector.addRule(`.masked-icon:before { background-color: ${notebookToolbarIconColor};}`);
+			collector.addRule(`.masked-pseudo:before { background-color: ${notebookToolbarIconColor};}`);
 		}
 		const notebookToolbarLinesColor = theme.getColor(notebookToolbarLines);
 		if (notebookToolbarLinesColor) {
@@ -164,7 +168,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		}
 		const buttonMenuArrowColor = theme.getColor(buttonMenuArrow);
 		if (buttonMenuArrowColor) {
-			collector.addRule(`.notebookEditor .notebook-button.masked-pseudo-after:after { background-color: ${buttonMenuArrowColor};}`);
+			collector.addRule(`.notebookEditor .masked-pseudo-after:after { background-color: ${buttonMenuArrowColor};}`);
 		}
 
 		// Active cell border, cell toolbar border, cell toolbar icons, view toggle active button bottom border
@@ -179,6 +183,16 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		const notebookToolbarSelectBackgroundColor = theme.getColor(notebookToolbarSelectBackground);
 		if (notebookToolbarSelectBackgroundColor) {
 			collector.addRule(`.notebookEditor .notebook-cell.active cell-toolbar-component { background-color: ${notebookToolbarSelectBackgroundColor};}`);
+		}
+
+		// Cell language button
+		const textColor = theme.getColor(foreground);
+		if (textColor) {
+			collector.addRule(`code-component .cellLanguage { color: ${textColor}; }`);
+		}
+		const cellStatusBarHoverBg = theme.getColor(cellStatusBarItemHover);
+		if (cellStatusBarHoverBg) {
+			collector.addRule(`code-component .cellLanguage:hover { background-color: ${cellStatusBarHoverBg}; }`);
 		}
 
 		// Markdown editor toolbar
@@ -236,6 +250,21 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		const codeEditorToolbarBorderColor = theme.getColor(codeEditorToolbarBorder);
 		if (codeEditorToolbarBorderColor) {
 			collector.addRule(`.notebook-cell.active code-cell-component code-component .toolbar { border-right-color: ${codeEditorToolbarBorderColor}!important;}`);
+		}
+		const notebookCellTagBackgroundColor = theme.getColor(notebookCellTagBackground);
+		const notebookCellTagForegroundColor = theme.getColor(notebookCellTagForeground);
+		if (notebookCellTagBackgroundColor && notebookCellTagForegroundColor) {
+			collector.addRule(`code-component .parameter span { background-color: ${notebookCellTagBackgroundColor}; color: ${notebookCellTagForegroundColor};}`);
+		}
+
+		// Notebook Find colors
+		const notebookFindMatchHighlightColor = theme.getColor(notebookFindMatchHighlight);
+		const notebookFindRangeHighlightColor = theme.getColor(notebookFindRangeHighlight);
+		if (notebookFindMatchHighlightColor) {
+			collector.addRule(`.notebook-preview .rangeHighlight { background-color: ${notebookFindMatchHighlightColor};}`);
+		}
+		if (notebookFindRangeHighlightColor) {
+			collector.addRule(`mark .rangeSpecificHighlight { background-color: ${notebookFindRangeHighlightColor}!important;}`);
 		}
 	});
 }

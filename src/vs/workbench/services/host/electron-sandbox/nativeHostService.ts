@@ -5,44 +5,64 @@
 
 import { Event } from 'vs/base/common/event';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
-import { IElectronService } from 'vs/platform/electron/electron-sandbox/electron';
-import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
-import { ILabelService } from 'vs/platform/label/common/label';
+import { INativeHostService } from 'vs/platform/native/common/native';
+import { InstantiationType, registerSingleton } from 'vs/platform/instantiation/common/extensions';
+import { ILabelService, Verbosity } from 'vs/platform/label/common/label';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
-import { IWindowOpenable, IOpenWindowOptions, isFolderToOpen, isWorkspaceToOpen, IOpenEmptyWindowOptions } from 'vs/platform/windows/common/windows';
+import { IWindowOpenable, IOpenWindowOptions, isFolderToOpen, isWorkspaceToOpen, IOpenEmptyWindowOptions } from 'vs/platform/window/common/window';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { NativeHostService } from 'vs/platform/native/electron-sandbox/nativeHostService';
+import { INativeWorkbenchEnvironmentService } from 'vs/workbench/services/environment/electron-sandbox/environmentService';
+import { IMainProcessService } from 'vs/platform/ipc/common/mainProcessService';
 
-export class NativeHostService extends Disposable implements IHostService {
+class WorkbenchNativeHostService extends NativeHostService {
+
+	constructor(
+		@INativeWorkbenchEnvironmentService environmentService: INativeWorkbenchEnvironmentService,
+		@IMainProcessService mainProcessService: IMainProcessService
+	) {
+		super(environmentService.window.id, mainProcessService);
+	}
+}
+
+class WorkbenchHostService extends Disposable implements IHostService {
 
 	declare readonly _serviceBrand: undefined;
 
 	constructor(
-		@IElectronService private readonly electronService: IElectronService,
+		@INativeHostService private readonly nativeHostService: INativeHostService,
 		@ILabelService private readonly labelService: ILabelService,
 		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService
 	) {
 		super();
 	}
 
+	//#region Focus
+
 	get onDidChangeFocus(): Event<boolean> { return this._onDidChangeFocus; }
 	private _onDidChangeFocus: Event<boolean> = Event.latch(Event.any(
-		Event.map(Event.filter(this.electronService.onWindowFocus, id => id === this.electronService.windowId), () => this.hasFocus),
-		Event.map(Event.filter(this.electronService.onWindowBlur, id => id === this.electronService.windowId), () => this.hasFocus)
-	));
+		Event.map(Event.filter(this.nativeHostService.onDidFocusWindow, id => id === this.nativeHostService.windowId), () => this.hasFocus),
+		Event.map(Event.filter(this.nativeHostService.onDidBlurWindow, id => id === this.nativeHostService.windowId), () => this.hasFocus)
+	), undefined, this._store);
 
 	get hasFocus(): boolean {
 		return document.hasFocus();
 	}
 
 	async hadLastFocus(): Promise<boolean> {
-		const activeWindowId = await this.electronService.getActiveWindowId();
+		const activeWindowId = await this.nativeHostService.getActiveWindowId();
 
 		if (typeof activeWindowId === 'undefined') {
 			return false;
 		}
 
-		return activeWindowId === this.electronService.windowId;
+		return activeWindowId === this.nativeHostService.windowId;
 	}
+
+	//#endregion
+
+
+	//#region Window
 
 	openWindow(options?: IOpenEmptyWindowOptions): Promise<void>;
 	openWindow(toOpen: IWindowOpenable[], options?: IOpenWindowOptions): Promise<void>;
@@ -55,44 +75,68 @@ export class NativeHostService extends Disposable implements IHostService {
 	}
 
 	private doOpenWindow(toOpen: IWindowOpenable[], options?: IOpenWindowOptions): Promise<void> {
-		if (!!this.environmentService.configuration.remoteAuthority) {
+		const remoteAuthority = this.environmentService.remoteAuthority;
+		if (!!remoteAuthority) {
 			toOpen.forEach(openable => openable.label = openable.label || this.getRecentLabel(openable));
+
+			if (options?.remoteAuthority === undefined) {
+				// set the remoteAuthority of the window the request came from.
+				// It will be used when the input is neither file nor vscode-remote.
+				options = options ? { ...options, remoteAuthority } : { remoteAuthority };
+			}
 		}
 
-		return this.electronService.openWindow(toOpen, options);
+		return this.nativeHostService.openWindow(toOpen, options);
 	}
 
 	private getRecentLabel(openable: IWindowOpenable): string {
 		if (isFolderToOpen(openable)) {
-			return this.labelService.getWorkspaceLabel(openable.folderUri, { verbose: true });
+			return this.labelService.getWorkspaceLabel(openable.folderUri, { verbose: Verbosity.LONG });
 		}
 
 		if (isWorkspaceToOpen(openable)) {
-			return this.labelService.getWorkspaceLabel({ id: '', configPath: openable.workspaceUri }, { verbose: true });
+			return this.labelService.getWorkspaceLabel({ id: '', configPath: openable.workspaceUri }, { verbose: Verbosity.LONG });
 		}
 
 		return this.labelService.getUriLabel(openable.fileUri);
 	}
 
 	private doOpenEmptyWindow(options?: IOpenEmptyWindowOptions): Promise<void> {
-		return this.electronService.openWindow(options);
+		const remoteAuthority = this.environmentService.remoteAuthority;
+		if (!!remoteAuthority && options?.remoteAuthority === undefined) {
+			// set the remoteAuthority of the window the request came from
+			options = options ? { ...options, remoteAuthority } : { remoteAuthority };
+		}
+		return this.nativeHostService.openWindow(options);
 	}
 
 	toggleFullScreen(): Promise<void> {
-		return this.electronService.toggleFullScreen();
+		return this.nativeHostService.toggleFullScreen();
 	}
 
+	//#endregion
+
+
+	//#region Lifecycle
+
 	focus(options?: { force: boolean }): Promise<void> {
-		return this.electronService.focusWindow(options);
+		return this.nativeHostService.focusWindow(options);
 	}
 
 	restart(): Promise<void> {
-		return this.electronService.relaunch();
+		return this.nativeHostService.relaunch();
 	}
 
-	reload(): Promise<void> {
-		return this.electronService.reload();
+	reload(options?: { disableExtensions?: boolean }): Promise<void> {
+		return this.nativeHostService.reload(options);
 	}
+
+	close(): Promise<void> {
+		return this.nativeHostService.closeWindow();
+	}
+
+	//#endregion
 }
 
-registerSingleton(IHostService, NativeHostService, true);
+registerSingleton(IHostService, WorkbenchHostService, InstantiationType.Delayed);
+registerSingleton(INativeHostService, WorkbenchNativeHostService, InstantiationType.Delayed);

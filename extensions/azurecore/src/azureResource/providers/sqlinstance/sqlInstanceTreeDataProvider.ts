@@ -3,38 +3,34 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionNodeType, TreeItem, Account } from 'azdata';
-import { TreeItemCollapsibleState, ExtensionContext, workspace } from 'vscode';
+import { ExtensionNodeType, TreeItem, connection } from 'azdata';
+import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { AzureResourceItemType } from '../../constants';
+import { AzureResourceItemType, AzureResourcePrefixes, mssqlProvider } from '../../constants';
 import { generateGuid } from '../../utils';
-import { IAzureResourceService } from '../../interfaces';
+import { GraphData, SqlInstanceGraphData } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
-import { azureResource } from 'azureResource';
+import { AzureAccount, azureResource } from 'azurecore';
 
-export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
+export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, SqlInstanceGraphData> {
 	private static readonly containerId = 'azure.resource.providers.sqlInstanceContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.sqlInstanceContainerLabel', "Azure SQL DB managed instance");
+	private static readonly containerLabel = localize('azure.resource.providers.sqlInstanceContainerLabel', "SQL managed instances");
 
 	public constructor(
-		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
+		databaseServerService: azureResource.IAzureResourceService,
 		private _extensionContext: ExtensionContext
 	) {
 		super(databaseServerService);
 	}
 
-
-	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: Account): TreeItem {
+	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `sqlInstance_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
-			label: databaseServer.name,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_instance_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/sql_instance.svg')
-			},
-			collapsibleState: workspace.getConfiguration('connection').get<boolean>('dialog.browse') ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
+			id: `${AzureResourcePrefixes.sqlInstance}${account.key.accountId}${databaseServer.tenant}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
+			label: this.browseConnectionMode ? `${databaseServer.name} (${SqlInstanceTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
+			iconPath: this._extensionContext.asAbsolutePath('resources/sqlManagedInstance.svg'),
+			collapsibleState: this.browseConnectionMode ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServer,
 			payload: {
 				id: generateGuid(),
@@ -43,11 +39,11 @@ export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<az
 				databaseName: databaseServer.defaultDatabaseName,
 				userName: databaseServer.loginName,
 				password: '',
-				authenticationType: 'SqlLogin',
+				authenticationType: connection.AuthenticationType.SqlLogin,
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: 'MSSQL',
+				providerName: mssqlProvider,
 				saveProfile: false,
 				options: {},
 				azureAccount: account.key.accountId,
@@ -55,26 +51,18 @@ export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<az
 				azureResourceId: databaseServer.id,
 				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
-			childProvider: 'MSSQL',
+			childProvider: mssqlProvider,
 			type: ExtensionNodeType.Server
 		};
 	}
 
-	protected createContainerNode(): azureResource.IAzureResourceNode {
+	public async getRootChild(): Promise<TreeItem> {
 		return {
-			account: undefined,
-			subscription: undefined,
-			tenantId: undefined,
-			treeItem: {
-				id: SqlInstanceTreeDataProvider.containerId,
-				label: SqlInstanceTreeDataProvider.containerLabel,
-				iconPath: {
-					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-				},
-				collapsibleState: TreeItemCollapsibleState.Collapsed,
-				contextValue: AzureResourceItemType.databaseServerContainer
-			}
+			id: SqlInstanceTreeDataProvider.containerId,
+			label: SqlInstanceTreeDataProvider.containerLabel,
+			iconPath: this._extensionContext.asAbsolutePath('resources/sqlManagedInstance.svg'),
+			collapsibleState: TreeItemCollapsibleState.Collapsed,
+			contextValue: AzureResourceItemType.databaseServerContainer
 		};
 	}
 }

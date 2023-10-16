@@ -1,0 +1,9 @@
+src/**
+out/**
+tsconfig.json
+images/ADSMigration.gif
+tsconfig.json
+extension.webpack.config.js
+.gitignore
+*.vsix
+yarn.lock

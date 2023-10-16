@@ -30,9 +30,9 @@ export abstract class AgentDialog<T extends IAgentDialogData> {
 		return this.model.dialogMode;
 	}
 
-	protected abstract async updateModel(): Promise<void>;
+	protected abstract updateModel(): Promise<void>;
 
-	protected abstract async initializeDialog(dialog: azdata.window.Dialog): Promise<void>;
+	protected abstract initializeDialog(dialog: azdata.window.Dialog): Promise<void>;
 
 	public async openDialog(dialogName?: string) {
 		if (!this._isOpen) {
@@ -40,7 +40,7 @@ export abstract class AgentDialog<T extends IAgentDialogData> {
 			let event = dialogName ? dialogName : null;
 			this.dialog = azdata.window.createModelViewDialog(this.title, event);
 
-			await this.model.initialize();
+			this.model.initialize();
 
 			await this.initializeDialog(this.dialog);
 

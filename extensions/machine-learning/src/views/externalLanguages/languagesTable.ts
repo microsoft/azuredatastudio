@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as constants from '../../common/constants';
-import * as mssql from '../../../../mssql';
+import * as mssql from 'mssql';
 import { LanguageViewBase } from './languageViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 
@@ -19,7 +19,7 @@ export class LanguagesTable extends LanguageViewBase {
 	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: LanguageViewBase) {
 		super(apiWrapper, parent.root, parent);
 		this._table = _modelBuilder.declarativeTable()
-			.withProperties<azdata.DeclarativeTableProperties>(
+			.withProps(
 				{
 					columns: [
 						{ // Name
@@ -100,7 +100,7 @@ export class LanguagesTable extends LanguageViewBase {
 		let languages: mssql.ExternalLanguage[] | undefined;
 
 		languages = await this.listLanguages();
-		let tableData: any[][] = [];
+		let tableData: azdata.DeclarativeTableCellValue[][] = [];
 
 		if (languages) {
 
@@ -113,12 +113,12 @@ export class LanguagesTable extends LanguageViewBase {
 			});
 		}
 
-		this._table.data = tableData;
+		this._table.dataValues = tableData;
 	}
 
-	private createTableRow(language: mssql.ExternalLanguage, content: mssql.ExternalLanguageContent): any[] {
+	private createTableRow(language: mssql.ExternalLanguage, content: mssql.ExternalLanguageContent): azdata.DeclarativeTableCellValue[] {
 		if (this._modelBuilder) {
-			let dropLanguageButton = this._modelBuilder.button().withProperties({
+			let dropLanguageButton = this._modelBuilder.button().withProps({
 				label: '',
 				title: constants.deleteTitle,
 				iconPath: {
@@ -136,7 +136,7 @@ export class LanguagesTable extends LanguageViewBase {
 				});
 			});
 
-			let editLanguageButton = this._modelBuilder.button().withProperties({
+			let editLanguageButton = this._modelBuilder.button().withProps({
 				label: '',
 				title: constants.editTitle,
 				iconPath: {
@@ -153,7 +153,7 @@ export class LanguagesTable extends LanguageViewBase {
 					newLang: false
 				});
 			});
-			return [language.name, content.platform, language.createdDate, dropLanguageButton, editLanguageButton];
+			return [{ value: language.name }, { value: content.platform || '' }, { value: language.createdDate || '' }, { value: dropLanguageButton }, { value: editLanguageButton }];
 		}
 
 		return [];

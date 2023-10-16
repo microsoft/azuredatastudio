@@ -17,6 +17,9 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IComponentDescriptor, IComponent, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
+import { ILogService } from 'vs/platform/log/common/log';
+import { registerThemingParticipant, IColorTheme, IThemeService, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import * as colorRegistry from 'vs/platform/theme/common/colorRegistry';
 
 class DivItem {
 	constructor(public descriptor: IComponentDescriptor, public config: azdata.DivItemLayout) { }
@@ -24,7 +27,7 @@ class DivItem {
 
 @Component({
 	template: `
-		<div #divContainer *ngIf="items" class="divContainer" [ngStyle]="CSSStyles" [style.height]="height" [style.width]="width" [style.display]="display" (keyup)="onKey($event)" [attr.role]="ariaRole" [attr.aria-selected]="ariaSelected">
+		<div #divContainer *ngIf="items" [ngClass] = "{'divContainer': true, 'clickable-divContainer': clickable}" [ngStyle]="CSSStyles" [style.height]="height" [style.width]="width" [style.display]="display" (keydown)="onKey($event)" [attr.role]="ariaRole" [attr.aria-selected]="ariaSelected" [attr.aria-live]="ariaLive" [attr.aria-label]="ariaLabel">
 			<div *ngFor="let item of items" [style.order]="getItemOrder(item)" [ngStyle]="getItemStyles(item)">
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
@@ -45,22 +48,32 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout, az
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(forwardRef(() => Renderer2)) private renderer: Renderer2
+		@Inject(forwardRef(() => Renderer2)) private renderer: Renderer2,
+		@Inject(ILogService) logService: ILogService,
+		@Inject(IThemeService) themeService: IThemeService,
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 		this._overflowY = '';	// default
+
+		registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+			const editorHoverBackground = theme.getColor(colorRegistry.editorHoverBackground).toString();
+			if (editorHoverBackground) {
+				collector.addRule(`
+					.clickable-divContainer:hover {
+						background-color: ${editorHoverBackground};
+					}
+					`);
+			}
+		});
 	}
 
-	ngAfterViewInit() {
+	ngAfterViewInit(): void {
 		this.viewInitialized = true;
 		this.updateClickListener();
-	}
-
-	ngOnInit(): void {
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -73,7 +86,7 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout, az
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		if (this.overflowY !== this._overflowY) {
 			this.updateOverflowY();
@@ -116,11 +129,11 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout, az
 	}
 
 	// CSS-bound properties
-	public get height(): string {
+	public override get height(): string {
 		return this._height;
 	}
 
-	public get width(): string {
+	public override get width(): string {
 		return this._width;
 	}
 
@@ -154,7 +167,7 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout, az
 	public getItemOrder(item: DivItem): number {
 		return item.config ? item.config.order : 0;
 	}
-	public getItemStyles(item: DivItem): { [key: string]: string } {
+	public getItemStyles(item: DivItem): azdata.CssStyles {
 		return item.config && item.config.CSSStyles ? item.config.CSSStyles : {};
 	}
 
@@ -171,3 +184,5 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout, az
 		}
 	}
 }
+
+

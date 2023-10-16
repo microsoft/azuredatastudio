@@ -7,14 +7,14 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
-import * as mssql from '../../mssql';
+import * as sqldbproj from 'sqldbproj';
+import * as mssql from 'mssql';
 import * as loc from './localizedConstants';
 import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
 import { TelemetryReporter, TelemetryViews } from './telemetry';
-import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri, getRootPath } from './utils';
+import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri, getRootPath, getSchemaCompareEndpointString, getDataWorkspaceExtensionApi } from './utils';
 import { SchemaCompareDialog } from './dialogs/schemaCompareDialog';
 import { isNullOrUndefined } from 'util';
-import { ApiWrapper } from './common/apiWrapper';
 
 // Do not localize this, this is used to decide the icon for the editor.
 // TODO : In future icon should be decided based on language id (scmp) and not resource name
@@ -51,8 +51,8 @@ export class SchemaCompareMainWindow {
 	private SchemaCompareActionMap: Map<Number, string>;
 	private operationId: string;
 	protected comparisonResult: mssql.SchemaCompareResult;
-	private sourceNameComponent: azdata.TableComponent;
-	private targetNameComponent: azdata.TableComponent;
+	private sourceNameComponent: azdata.InputBoxComponent;
+	private targetNameComponent: azdata.InputBoxComponent;
 	private deploymentOptions: mssql.DeploymentOptions;
 	private schemaCompareOptionDialog: SchemaCompareOptionsDialog;
 	private tablelistenersToDispose: vscode.Disposable[] = [];
@@ -69,7 +69,11 @@ export class SchemaCompareMainWindow {
 	public sourceEndpointInfo: mssql.SchemaCompareEndpointInfo;
 	public targetEndpointInfo: mssql.SchemaCompareEndpointInfo;
 
-	constructor(private apiWrapper: ApiWrapper, private schemaCompareService?: mssql.ISchemaCompareService, private extensionContext?: vscode.ExtensionContext) {
+	public promise;
+
+	public schemaCompareDialog: SchemaCompareDialog;
+
+	constructor(private schemaCompareService?: mssql.ISchemaCompareService, private extensionContext?: vscode.ExtensionContext, private view?: azdata.ModelView) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Delete] = loc.deleteAction;
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Change] = loc.changeAction;
@@ -78,108 +82,176 @@ export class SchemaCompareMainWindow {
 		this.editor = azdata.workspace.createModelViewEditor(loc.SchemaCompareLabel, { retainContextWhenHidden: true, supportsSave: true, resourceName: schemaCompareResourceName }, 'SchemaCompareEditor');
 	}
 
-	// schema compare can get started with three contexts for the source:
+	// schema compare can get started with four contexts for the source:
 	// 1. undefined
 	// 2. connection profile
 	// 3. dacpac
-	public async start(context: any): Promise<void> {
-		// if schema compare was launched from a db, set that as the source
-		let profile = context ? <azdata.IConnectionProfile>context.connectionProfile : undefined;
-		let sourceDacpac = context as string;
+	// 4. project
+	public async start(sourceContext: any, targetContext: mssql.SchemaCompareEndpointInfo = undefined, comparisonResult: mssql.SchemaCompareResult = undefined): Promise<void> {
+		let source: mssql.SchemaCompareEndpointInfo;
+		let target: mssql.SchemaCompareEndpointInfo;
+
+		const targetIsSetAsProject: boolean = targetContext && targetContext.endpointType === mssql.SchemaCompareEndpointType.Project;
+
+		// if schema compare was launched from a db or a connection profile, set that as the source
+		let profile: azdata.IConnectionProfile;
+
+		if (targetIsSetAsProject) {
+			profile = sourceContext;
+			target = targetContext;
+		} else {
+			profile = sourceContext ? <azdata.IConnectionProfile>sourceContext.connectionProfile : undefined;
+		}
+
+		let sourceDacpac = undefined;
+		let sourceProject = undefined;
+
+		if (!profile && sourceContext as string && (sourceContext as string).endsWith('.dacpac')) {
+			sourceDacpac = sourceContext as string;
+		} else if (!profile) {
+			sourceProject = sourceContext as string;
+		}
+
 		if (profile) {
-			let ownerUri = await this.apiWrapper.getUriForConnection((profile.id));
-			this.sourceEndpointInfo = {
+			let ownerUri = await azdata.connection.getUriForConnection((profile.id));
+			let usr = profile.userName;
+			if (!usr) {
+				usr = loc.defaultText;
+			}
+
+			source = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
-				serverDisplayName: `${profile.serverName} ${profile.userName}`,
+				serverDisplayName: `${profile.serverName} (${usr})`,
 				serverName: profile.serverName,
 				databaseName: profile.databaseName,
 				ownerUri: ownerUri,
 				packageFilePath: '',
-				connectionDetails: undefined
+				connectionDetails: undefined,
+				connectionName: profile.connectionName,
+				projectFilePath: '',
+				targetScripts: [],
+				dataSchemaProvider: '',
+				extractTarget: mssql.ExtractTarget.schemaObjectType
 			};
 		} else if (sourceDacpac) {
-			this.sourceEndpointInfo = {
+			source = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
 				serverDisplayName: '',
 				serverName: '',
 				databaseName: '',
 				ownerUri: '',
 				packageFilePath: sourceDacpac,
-				connectionDetails: undefined
+				connectionDetails: undefined,
+				projectFilePath: '',
+				targetScripts: [],
+				dataSchemaProvider: '',
+				extractTarget: mssql.ExtractTarget.schemaObjectType
+			};
+		} else if (sourceProject) {
+			source = {
+				endpointType: mssql.SchemaCompareEndpointType.Project,
+				packageFilePath: '',
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: '',
+				connectionDetails: undefined,
+				projectFilePath: sourceProject,
+				targetScripts: [],
+				dataSchemaProvider: undefined,
+				extractTarget: mssql.ExtractTarget.schemaObjectType
 			};
 		}
+
+		await this.launch(source, target, false, comparisonResult);
+	}
+
+	/**
+	 * Primary functional entrypoint for opening the schema comparison window, and optionally running it.
+	 * @param source
+	 * @param target
+	 * @param runComparison whether to immediately run the schema comparison.  Requires both source and target to be specified.  Cannot be true when comparisonResult is set.
+	 * @param comparisonResult a pre-computed schema comparison result to display.  Cannot be set when runComparison is true.
+	 */
+	public async launch(source: mssql.SchemaCompareEndpointInfo | undefined, target: mssql.SchemaCompareEndpointInfo | undefined, runComparison: boolean = false, comparisonResult: mssql.SchemaCompareResult | undefined): Promise<void> {
+		if (runComparison && comparisonResult) {
+			throw new Error('Cannot both pass a comparison result and request a new comparison be run.');
+		}
+
+		this.sourceEndpointInfo = source;
+		this.targetEndpointInfo = target;
 
 		await this.GetDefaultDeploymentOptions();
 		await Promise.all([
 			this.registerContent(),
 			this.editor.openEditor()
 		]);
+
+		if (comparisonResult) {
+			await this.execute(comparisonResult);
+		} else if (runComparison) {
+			if (!source || !target) {
+				throw new Error('source and target must both be set when runComparison is true.');
+			}
+
+			await this.startCompare();
+		}
 	}
 
 	private async registerContent(): Promise<void> {
 		return new Promise<void>((resolve) => {
-			this.editor.registerContent(async view => {
-				this.differencesTable = view.modelBuilder.table().withProperties({
+			this.editor.registerContent(async (view) => {
+				if (isNullOrUndefined(this.view)) {
+					this.view = view;
+				}
+
+				this.differencesTable = this.view.modelBuilder.table().withProps({
 					data: [],
-					title: loc.differencesTableTitle
+					title: loc.differencesTableTitle,
+					columns: []
 				}).component();
 
-				this.diffEditor = view.modelBuilder.diffeditor().withProperties({
+				this.diffEditor = this.view.modelBuilder.diffeditor().withProperties({
 					contentLeft: os.EOL,
 					contentRight: os.EOL,
 					height: 500,
 					title: loc.diffEditorTitle
 				}).component();
 
-				this.splitView = view.modelBuilder.splitViewContainer().component();
+				this.splitView = this.view.modelBuilder.splitViewContainer().component();
 
-				let sourceTargetLabels = view.modelBuilder.flexContainer()
-					.withProperties({
-						alignItems: 'stretch',
-						horizontal: true
-					}).component();
+				let sourceTargetLabels = this.view.modelBuilder.flexContainer().component();
 
-				this.sourceTargetFlexLayout = view.modelBuilder.flexContainer()
-					.withProperties({
-						alignItems: 'stretch',
-						horizontal: true
-					}).component();
+				this.sourceTargetFlexLayout = this.view.modelBuilder.flexContainer().component();
 
-				this.createSwitchButton(view);
-				this.createCompareButton(view);
-				this.createCancelButton(view);
-				this.createGenerateScriptButton(view);
-				this.createApplyButton(view);
-				this.createOptionsButton(view);
-				this.createOpenScmpButton(view);
-				this.createSaveScmpButton(view);
-				this.createSourceAndTargetButtons(view);
+				this.createSwitchButton();
+				this.createCompareButton();
+				this.createCancelButton();
+				this.createGenerateScriptButton();
+				this.createApplyButton();
+				this.createOptionsButton();
+				this.createOpenScmpButton();
+				this.createSaveScmpButton();
+				this.createSourceAndTargetButtons();
 
 				this.sourceName = getEndpointName(this.sourceEndpointInfo);
-				this.targetName = ' ';
-				this.sourceNameComponent = view.modelBuilder.table().withProperties({
-					columns: [
-						{
-							value: this.sourceName,
-							headerCssClass: 'no-borders',
-							toolTip: this.sourceName
-						},
-					]
+				this.targetName = getEndpointName(this.targetEndpointInfo);
+
+				this.sourceNameComponent = this.view.modelBuilder.inputBox().withProps({
+					value: this.sourceName,
+					title: this.sourceName,
+					enabled: false
 				}).component();
 
-				this.targetNameComponent = view.modelBuilder.table().withProperties({
-					columns: [
-						{
-							value: this.targetName,
-							headerCssClass: 'no-borders',
-							toolTip: this.targetName
-						},
-					]
+				this.targetNameComponent = this.view.modelBuilder.inputBox().withProps({
+					value: this.targetName,
+					title: this.targetName,
+					enabled: false
 				}).component();
 
 				this.resetButtons(ResetButtonState.noSourceTarget);
 
-				let toolBar = view.modelBuilder.toolbarContainer();
+				let toolBar = this.view.modelBuilder.toolbarContainer();
 				toolBar.addToolbarItems([{
 					component: this.compareButton
 				}, {
@@ -200,42 +272,43 @@ export class SchemaCompareMainWindow {
 					component: this.saveScmpButton
 				}]);
 
-				let sourceLabel = view.modelBuilder.text().withProperties({
+				let sourceLabel = this.view.modelBuilder.text().withProps({
 					value: loc.sourceTitle,
 					CSSStyles: { 'margin-bottom': '0px' }
 				}).component();
 
-				let targetLabel = view.modelBuilder.text().withProperties({
+				let targetLabel = this.view.modelBuilder.text().withProps({
 					value: loc.targetTitle,
 					CSSStyles: { 'margin-bottom': '0px' }
 				}).component();
 
-				let arrowLabel = view.modelBuilder.text().withProperties({
+				let arrowLabel = this.view.modelBuilder.text().withProps({
+					// allow-any-unicode-next-line
 					value: '➔'
 				}).component();
 
 				sourceTargetLabels.addItem(sourceLabel, { CSSStyles: { 'width': '55%', 'margin-left': '15px', 'font-size': 'larger', 'font-weight': 'bold' } });
 				sourceTargetLabels.addItem(targetLabel, { CSSStyles: { 'width': '45%', 'font-size': 'larger', 'font-weight': 'bold' } });
-				this.sourceTargetFlexLayout.addItem(this.sourceNameComponent, { CSSStyles: { 'width': '40%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px' } });
+				this.sourceTargetFlexLayout.addItem(this.sourceNameComponent, { CSSStyles: { 'width': '40%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px', 'margin-right': '10px' } });
 				this.sourceTargetFlexLayout.addItem(this.selectSourceButton, { CSSStyles: { 'margin-top': '10px' } });
 				this.sourceTargetFlexLayout.addItem(arrowLabel, { CSSStyles: { 'width': '10%', 'font-size': 'larger', 'text-align-last': 'center' } });
-				this.sourceTargetFlexLayout.addItem(this.targetNameComponent, { CSSStyles: { 'width': '40%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px' } });
+				this.sourceTargetFlexLayout.addItem(this.targetNameComponent, { CSSStyles: { 'width': '40%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px', 'margin-right': '10px' } });
 				this.sourceTargetFlexLayout.addItem(this.selectTargetButton, { CSSStyles: { 'margin-top': '10px' } });
 
-				this.loader = view.modelBuilder.loadingComponent().component();
-				this.waitText = view.modelBuilder.text().withProperties({
+				this.loader = this.view.modelBuilder.loadingComponent().component();
+				this.waitText = this.view.modelBuilder.text().withProps({
 					value: loc.waitText
 				}).component();
 
-				this.startText = view.modelBuilder.text().withProperties({
+				this.startText = this.view.modelBuilder.text().withProps({
 					value: loc.startText
 				}).component();
 
-				this.noDifferencesLabel = view.modelBuilder.text().withProperties({
+				this.noDifferencesLabel = this.view.modelBuilder.text().withProps({
 					value: loc.noDifferencesText
 				}).component();
 
-				this.flexModel = view.modelBuilder.flexContainer().component();
+				this.flexModel = this.view.modelBuilder.flexContainer().component();
 				this.flexModel.addItem(toolBar.component(), { flex: 'none' });
 				this.flexModel.addItem(sourceTargetLabels, { flex: 'none' });
 				this.flexModel.addItem(this.sourceTargetFlexLayout, { flex: 'none' });
@@ -246,7 +319,7 @@ export class SchemaCompareMainWindow {
 					height: '100%'
 				});
 
-				await view.initializeModel(this.flexModel);
+				await this.view.initializeModel(this.flexModel);
 				resolve();
 			});
 		});
@@ -257,21 +330,14 @@ export class SchemaCompareMainWindow {
 		this.sourceName = getEndpointName(this.sourceEndpointInfo);
 		this.targetName = getEndpointName(this.targetEndpointInfo);
 
-		this.sourceNameComponent.updateProperty('columns', [
-			{
-				value: this.sourceName,
-				headerCssClass: 'no-borders',
-				toolTip: this.sourceName
-			},
-		]);
-		this.targetNameComponent.updateProperty('columns', [
-			{
-				value: this.targetName,
-				headerCssClass: 'no-borders',
-				toolTip: this.targetName
-			},
-		]);
-
+		this.sourceNameComponent.updateProperties({
+			value: this.sourceName,
+			title: this.sourceName
+		});
+		this.targetNameComponent.updateProperties({
+			value: this.targetName,
+			title: this.targetName
+		});
 		if (!this.sourceName || !this.targetName || this.sourceName === ' ' || this.targetName === ' ') {
 			this.resetButtons(ResetButtonState.noSourceTarget);
 		} else {
@@ -284,27 +350,57 @@ export class SchemaCompareMainWindow {
 		this.deploymentOptions = deploymentOptions;
 	}
 
-	public async execute(): Promise<void> {
-		TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonStarted');
-		const service = await this.getService();
-		if (!this.operationId) {
-			// create once per page
-			this.operationId = generateGuid();
-		}
-		this.comparisonResult = await service.schemaCompare(this.operationId, this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions);
-		if (!this.comparisonResult || !this.comparisonResult.success) {
-			TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonFailed', undefined, getTelemetryErrorType(this.comparisonResult.errorMessage))
-				.withAdditionalProperties({
-					operationId: this.comparisonResult.operationId
-				}).send();
-			this.apiWrapper.showErrorMessage(loc.compareErrorMessage(this.comparisonResult.errorMessage));
+	private async populateProjectScripts(endpointInfo: mssql.SchemaCompareEndpointInfo): Promise<void> {
+		if (endpointInfo.endpointType !== mssql.SchemaCompareEndpointType.Project) {
 			return;
 		}
-		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonFinished')
-			.withAdditionalProperties({
-				'endTime': Date.now().toString(),
-				'operationId': this.comparisonResult.operationId
-			}).send();
+
+		const databaseProjectsExtension = vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId);
+
+		if (databaseProjectsExtension) {
+			endpointInfo.targetScripts = await (await databaseProjectsExtension.activate() as sqldbproj.IExtension).getProjectScriptFiles(endpointInfo.projectFilePath);
+		}
+	}
+
+	public async execute(comparisonResult: mssql.SchemaCompareCompletionResult = undefined) {
+		const service = await this.getService();
+
+		if (comparisonResult) {
+			this.operationId = comparisonResult.operationId;
+			this.comparisonResult = comparisonResult;
+			this.flexModel.removeItem(this.startText);
+		} else {
+			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonStarted');
+
+			if (!this.operationId) {
+				// create once per page
+				this.operationId = generateGuid();
+			}
+
+			await Promise.all([this.populateProjectScripts(this.sourceEndpointInfo), this.populateProjectScripts(this.targetEndpointInfo)]);
+
+			this.comparisonResult = await service.schemaCompare(this.operationId, this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions);
+
+			if (!this.comparisonResult || !this.comparisonResult.success) {
+				TelemetryReporter.createErrorEvent2(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonFailed', undefined, undefined, getTelemetryErrorType(this.comparisonResult?.errorMessage))
+					.withAdditionalProperties({
+						operationId: this.comparisonResult.operationId
+					}).send();
+
+				vscode.window.showErrorMessage(loc.compareErrorMessage(this.comparisonResult?.errorMessage));
+
+				// reset state so a new comparison can be made
+				this.resetWindow();
+
+				return;
+			}
+
+			TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonFinished')
+				.withAdditionalProperties({
+					'endTime': Date.now().toString(),
+					'operationId': this.comparisonResult.operationId
+				}).send();
+		}
 
 		let data = this.getAllDifferences(this.comparisonResult.differences);
 
@@ -321,12 +417,13 @@ export class SchemaCompareMainWindow {
 					cssClass: 'align-with-header',
 					width: 90
 				},
+				<azdata.CheckboxColumn>
 				{
 					value: loc.include,
 					cssClass: 'align-with-header',
 					width: 60,
 					type: azdata.ColumnType.checkBox,
-					options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction }
+					action: azdata.ActionOnCellCheckboxCheck.customAction
 				},
 				{
 					value: loc.action,
@@ -343,19 +440,19 @@ export class SchemaCompareMainWindow {
 			width: '98%'
 		});
 
-		this.splitView.addItem(this.differencesTable);
-		this.splitView.addItem(this.diffEditor);
-		this.splitView.setLayout({
-			orientation: 'vertical',
-			splitViewHeight: 800
-		});
-
 		this.flexModel.removeItem(this.loader);
 		this.flexModel.removeItem(this.waitText);
 		this.resetButtons(ResetButtonState.afterCompareComplete);
 
 		if (this.comparisonResult.differences.length > 0) {
 			this.flexModel.addItem(this.splitView);
+
+			this.splitView.addItem(this.differencesTable);
+			this.splitView.addItem(this.diffEditor);
+			this.splitView.setLayout({
+				orientation: 'vertical',
+				splitViewSize: undefined // setting this to undefined will default the splitview size to use the model view container's size
+			});
 
 			// create a map of the differences to row numbers
 			for (let i = 0; i < data.length; ++i) {
@@ -365,9 +462,15 @@ export class SchemaCompareMainWindow {
 			// only enable generate script button if the target is a db
 			if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
 				this.generateScriptButton.enabled = true;
-				this.applyButton.enabled = true;
 			} else {
 				this.generateScriptButton.title = loc.generateScriptDisabled;
+			}
+
+			// only enable apply button if the target is a db or a project
+			if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database ||
+				this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
+				this.applyButton.enabled = true;
+			} else {
 				this.applyButton.title = loc.applyDisabled;
 			}
 		} else {
@@ -377,8 +480,8 @@ export class SchemaCompareMainWindow {
 		// explicitly exclude things that were excluded in previous compare
 		const thingsToExclude = this.sourceTargetSwitched ? this.originalTargetExcludes : this.originalSourceExcludes;
 		if (thingsToExclude) {
-			thingsToExclude.forEach(item => {
-				service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, item, false, azdata.TaskExecutionMode.execute);
+			thingsToExclude.forEach(async (item) => {
+				await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, item, false, azdata.TaskExecutionMode.execute);
 			});
 
 			// disable apply and generate script buttons if no changes are included
@@ -405,69 +508,76 @@ export class SchemaCompareMainWindow {
 		this.tablelistenersToDispose.push(this.differencesTable.onCellAction(async (rowState) => {
 			let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 			if (checkboxState) {
-				// show an info notification the first time when trying to exclude to notify the user that it may take some time to calculate affected dependencies
-				if (this.showIncludeExcludeWaitingMessage) {
-					this.showIncludeExcludeWaitingMessage = false;
-					vscode.window.showInformationMessage(loc.includeExcludeInfoMessage);
-				}
-
-				let diff = this.comparisonResult.differences[checkboxState.row];
-				const result = await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, checkboxState.checked, azdata.TaskExecutionMode.execute);
-				let checkboxesToChange = [];
-				if (result.success) {
-					this.saveExcludeState(checkboxState);
-
-					// dependencies could have been included or excluded as a result, so save their exclude states
-					result.affectedDependencies.forEach(difference => {
-						// find the row of the difference and set its checkbox
-						const diffEntryKey = this.createDiffEntryKey(difference);
-						if (this.diffEntryRowMap.has(diffEntryKey)) {
-							const row = this.diffEntryRowMap.get(diffEntryKey);
-							checkboxesToChange.push({ row: row, column: 2, columnName: 'Include', checked: difference.included });
-							const dependencyCheckBoxState: azdata.ICheckboxCellActionEventArgs = {
-								checked: difference.included,
-								row: row,
-								column: 2,
-								columnName: undefined
-							};
-							this.saveExcludeState(dependencyCheckBoxState);
-						}
-					});
-				} else {
-					// failed because of dependencies
-					if (result.blockingDependencies) {
-						// show the first dependent that caused this to fail in the warning message
-						const diffEntryName = this.createName(diff.sourceValue ? diff.sourceValue : diff.targetValue);
-						const firstDependentName = this.createName(result.blockingDependencies[0].sourceValue ? result.blockingDependencies[0].sourceValue : result.blockingDependencies[0].targetValue);
-						let cannotExcludeMessage: string;
-						let cannotIncludeMessage: string;
-						if (firstDependentName) {
-							cannotExcludeMessage = loc.cannotExcludeMessageDependent(diffEntryName, firstDependentName);
-							cannotIncludeMessage = loc.cannotIncludeMessageDependent(diffEntryName, firstDependentName);
-						} else {
-							cannotExcludeMessage = loc.cannotExcludeMessage(diffEntryName);
-							cannotIncludeMessage = loc.cannotIncludeMessage(diffEntryName);
-						}
-						vscode.window.showWarningMessage(checkboxState.checked ? cannotIncludeMessage : cannotExcludeMessage);
-					} else {
-						vscode.window.showWarningMessage(result.errorMessage);
-					}
-
-					// set checkbox back to previous state
-					checkboxesToChange.push({ row: checkboxState.row, column: checkboxState.column, columnName: 'Include', checked: !checkboxState.checked });
-				}
-
-				if (checkboxesToChange.length > 0) {
-					this.differencesTable.updateCells = checkboxesToChange;
-				}
+				await this.applyIncludeExclude(checkboxState);
 			}
 		}));
+	}
+
+	public async applyIncludeExclude(checkboxState: azdata.ICheckboxCellActionEventArgs): Promise<void> {
+		const service = await this.getService();
+		// show an info notification the first time when trying to exclude to notify the user that it may take some time to calculate affected dependencies
+		if (this.showIncludeExcludeWaitingMessage) {
+			this.showIncludeExcludeWaitingMessage = false;
+			vscode.window.showInformationMessage(loc.includeExcludeInfoMessage);
+		}
+
+		let diff = this.comparisonResult.differences[checkboxState.row];
+		const result = await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, checkboxState.checked, azdata.TaskExecutionMode.execute);
+		let checkboxesToChange = [];
+		if (result.success) {
+			this.saveExcludeState(checkboxState);
+
+			// dependencies could have been included or excluded as a result, so save their exclude states
+			result.affectedDependencies.forEach(difference => {
+				// find the row of the difference and set its checkbox
+				const diffEntryKey = this.createDiffEntryKey(difference);
+				if (this.diffEntryRowMap.has(diffEntryKey)) {
+					const row = this.diffEntryRowMap.get(diffEntryKey);
+					checkboxesToChange.push({ row: row, column: 2, columnName: 'Include', checked: difference.included });
+					const dependencyCheckBoxState: azdata.ICheckboxCellActionEventArgs = {
+						checked: difference.included,
+						row: row,
+						column: 2,
+						columnName: undefined
+					};
+					this.saveExcludeState(dependencyCheckBoxState);
+				}
+			});
+		} else {
+			// failed because of dependencies
+			if (result.blockingDependencies) {
+				// show the first dependent that caused this to fail in the warning message
+				const diffEntryName = this.createName(diff.sourceValue ? diff.sourceValue : diff.targetValue);
+				const firstDependentName = this.createName(result.blockingDependencies[0].sourceValue ? result.blockingDependencies[0].sourceValue : result.blockingDependencies[0].targetValue);
+				let cannotExcludeMessage: string;
+				let cannotIncludeMessage: string;
+				if (firstDependentName) {
+					cannotExcludeMessage = loc.cannotExcludeMessageDependent(diffEntryName, firstDependentName);
+					cannotIncludeMessage = loc.cannotIncludeMessageDependent(diffEntryName, firstDependentName);
+				} else {
+					cannotExcludeMessage = loc.cannotExcludeMessage(diffEntryName);
+					cannotIncludeMessage = loc.cannotIncludeMessage(diffEntryName);
+				}
+				vscode.window.showWarningMessage(checkboxState.checked ? cannotIncludeMessage : cannotExcludeMessage);
+			} else {
+				vscode.window.showWarningMessage(result.errorMessage);
+			}
+
+			// set checkbox back to previous state
+			checkboxesToChange.push({ row: checkboxState.row, column: checkboxState.column, columnName: 'Include', checked: !checkboxState.checked });
+		}
+
+		if (checkboxesToChange.length > 0) {
+			this.differencesTable.updateCells = checkboxesToChange;
+		}
 	}
 
 	// save state based on source name if present otherwise target name (parity with SSDT)
 	private saveExcludeState(rowState: azdata.ICheckboxCellActionEventArgs) {
 		if (rowState) {
-			this.differencesTable.data[rowState.row][2] = rowState.checked;
+			if (this.differencesTable.data[rowState.row]?.length > 2) {
+				this.differencesTable.data[rowState.row][2] = rowState.checked;
+			}
 			let diff = this.comparisonResult.differences[rowState.row];
 			let key = (diff.sourceValue && diff.sourceValue.length > 0) ? this.createName(diff.sourceValue) : this.createName(diff.targetValue);
 			if (key) {
@@ -594,7 +704,7 @@ export class SchemaCompareMainWindow {
 		return script;
 	}
 
-	public startCompare(): void {
+	public async startCompare(): Promise<void> {
 		this.flexModel.removeItem(this.splitView);
 		this.flexModel.removeItem(this.noDifferencesLabel);
 		this.flexModel.removeItem(this.startText);
@@ -612,11 +722,12 @@ export class SchemaCompareMainWindow {
 			this.tablelistenersToDispose.forEach(x => x.dispose());
 		}
 		this.resetButtons(ResetButtonState.comparing);
-		this.execute();
+		this.promise = this.execute();
+		await this.promise;
 	}
 
-	private createCompareButton(view: azdata.ModelView): void {
-		this.compareButton = view.modelBuilder.button().withProperties({
+	private createCompareButton(): void {
+		this.compareButton = this.view.modelBuilder.button().withProps({
 			label: loc.compare,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'compare.svg'),
@@ -625,13 +736,13 @@ export class SchemaCompareMainWindow {
 			title: loc.compare
 		}).component();
 
-		this.compareButton.onDidClick(async (click) => {
-			this.startCompare();
+		this.compareButton.onDidClick(async (_click) => {
+			await this.startCompare();
 		});
 	}
 
-	private createCancelButton(view: azdata.ModelView): void {
-		this.cancelCompareButton = view.modelBuilder.button().withProperties({
+	private createCancelButton(): void {
+		this.cancelCompareButton = this.view.modelBuilder.button().withProps({
 			label: loc.stop,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'stop.svg'),
@@ -640,12 +751,23 @@ export class SchemaCompareMainWindow {
 			title: loc.stop
 		}).component();
 
-		this.cancelCompareButton.onDidClick(async (click) => {
+		this.cancelCompareButton.onDidClick(async (_click) => {
 			await this.cancelCompare();
 		});
 	}
 
-	private async cancelCompare() {
+	/**
+	 * Resets state of buttons and text to initial state before a comparison is started/completed
+	 */
+	public resetWindow(): void {
+		// clean the pane
+		this.flexModel.removeItem(this.loader);
+		this.flexModel.removeItem(this.waitText);
+		this.flexModel.addItem(this.startText, { CSSStyles: { 'margin': 'auto' } });
+		this.resetButtons(ResetButtonState.beforeCompareStart);
+	}
+
+	public async cancelCompare(): Promise<void> {
 
 		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareCancelStarted')
 			.withAdditionalProperties({
@@ -653,11 +775,7 @@ export class SchemaCompareMainWindow {
 				'operationId': this.operationId
 			}).send();
 
-		// clean the pane
-		this.flexModel.removeItem(this.loader);
-		this.flexModel.removeItem(this.waitText);
-		this.flexModel.addItem(this.startText, { CSSStyles: { 'margin': 'auto' } });
-		this.resetButtons(ResetButtonState.beforeCompareStart);
+		this.resetWindow();
 
 		// cancel compare
 		if (this.operationId) {
@@ -665,7 +783,7 @@ export class SchemaCompareMainWindow {
 			const result = await service.schemaCompareCancel(this.operationId);
 
 			if (!result || !result.success) {
-				TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareCancelFailed', undefined, getTelemetryErrorType(result.errorMessage))
+				TelemetryReporter.createErrorEvent2(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareCancelFailed', undefined, undefined, getTelemetryErrorType(result.errorMessage))
 					.withAdditionalProperties({
 						'operationId': this.operationId
 					}).send();
@@ -679,8 +797,8 @@ export class SchemaCompareMainWindow {
 		}
 	}
 
-	private createGenerateScriptButton(view: azdata.ModelView): void {
-		this.generateScriptButton = view.modelBuilder.button().withProperties({
+	private createGenerateScriptButton(): void {
+		this.generateScriptButton = this.view.modelBuilder.button().withProps({
 			label: loc.generateScript,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'generate-script.svg'),
@@ -688,31 +806,35 @@ export class SchemaCompareMainWindow {
 			},
 		}).component();
 
-		this.generateScriptButton.onDidClick(async (click) => {
-			TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareGenerateScriptStarted')
-				.withAdditionalProperties({
-					'startTime': Date.now().toString(),
-					'operationId': this.comparisonResult.operationId
-				}).send();
-			const service = await this.getService();
-			const result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.script);
-			if (!result || !result.success) {
-				TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareGenerateScriptFailed', undefined, getTelemetryErrorType(result.errorMessage))
-					.withAdditionalProperties({
-						'operationId': this.comparisonResult.operationId
-					}).send();
-				vscode.window.showErrorMessage(loc.generateScriptErrorMessage(result.errorMessage));
-			}
-			TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareGenerateScriptEnded')
-				.withAdditionalProperties({
-					'endTime': Date.now().toString(),
-					'operationId': this.comparisonResult.operationId
-				}).send();
+		this.generateScriptButton.onDidClick(async (_click) => {
+			await this.generateScript();
 		});
 	}
 
-	private createOptionsButton(view: azdata.ModelView) {
-		this.optionsButton = view.modelBuilder.button().withProperties({
+	public async generateScript(): Promise<void> {
+		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareGenerateScriptStarted')
+			.withAdditionalProperties({
+				'startTime': Date.now().toString(),
+				'operationId': this.comparisonResult.operationId
+			}).send();
+		const service = await this.getService();
+		const result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.script);
+		if (!result || !result.success) {
+			TelemetryReporter.createErrorEvent2(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareGenerateScriptFailed', undefined, undefined, getTelemetryErrorType(result.errorMessage))
+				.withAdditionalProperties({
+					'operationId': this.comparisonResult.operationId
+				}).send();
+			vscode.window.showErrorMessage(loc.generateScriptErrorMessage(result.errorMessage));
+		}
+		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareGenerateScriptEnded')
+			.withAdditionalProperties({
+				'endTime': Date.now().toString(),
+				'operationId': this.comparisonResult.operationId
+			}).send();
+	}
+
+	private createOptionsButton() {
+		this.optionsButton = this.view.modelBuilder.button().withProps({
 			label: loc.options,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'options.svg'),
@@ -721,7 +843,7 @@ export class SchemaCompareMainWindow {
 			title: loc.options
 		}).component();
 
-		this.optionsButton.onDidClick(async (click) => {
+		this.optionsButton.onDidClick(async (_click) => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOptionsOpened');
 			// create fresh every time
 			this.schemaCompareOptionDialog = new SchemaCompareOptionsDialog(this.deploymentOptions, this);
@@ -729,9 +851,9 @@ export class SchemaCompareMainWindow {
 		});
 	}
 
-	private createApplyButton(view: azdata.ModelView) {
+	private createApplyButton() {
 
-		this.applyButton = view.modelBuilder.button().withProperties({
+		this.applyButton = this.view.modelBuilder.button().withProps({
 			label: loc.apply,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'start.svg'),
@@ -739,43 +861,72 @@ export class SchemaCompareMainWindow {
 			},
 		}).component();
 
+		this.applyButton.onDidClick(async (_click) => {
+			await this.publishChanges();
+		});
+	}
+
+	public async publishChanges(): Promise<void> {
 		// need only yes button - since the modal dialog has a default cancel
 		const yesString = loc.YesButtonText;
-		this.applyButton.onDidClick(async (click) => {
+		await vscode.window.showWarningMessage(loc.applyConfirmation, { modal: true }, yesString).then(async (result) => {
+			if (result === yesString) {
+				TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyStarted')
+					.withAdditionalProperties({
+						'startTime': Date.now().toString(),
+						'operationId': this.comparisonResult.operationId,
+						'targetType': getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)
+					}).send();
 
-			vscode.window.showWarningMessage(loc.applyConfirmation, { modal: true }, yesString).then(async (result) => {
-				if (result === yesString) {
-					TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyStarted')
-						.withAdditionalProperties({
-							'startTime': Date.now().toString(),
-							'operationId': this.comparisonResult.operationId
-						}).send();
+				// disable apply and generate script buttons because the results are no longer valid after applying the changes
+				this.setButtonsForRecompare();
 
-					// disable apply and generate script buttons because the results are no longer valid after applying the changes
-					this.setButtonsForRecompare();
+				const service: mssql.ISchemaCompareService = await this.getService();
+				let result: azdata.ResultStatus | undefined = undefined;
 
-					const service = await this.getService();
-					const result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
-					if (!result || !result.success) {
-						TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyFailed', undefined, getTelemetryErrorType(result.errorMessage))
-							.withAdditionalProperties({
-								'operationId': this.comparisonResult.operationId
-							}).send();
-						vscode.window.showErrorMessage(loc.applyErrorMessage(result.errorMessage));
-
-						// reenable generate script and apply buttons if apply failed
-						this.generateScriptButton.enabled = true;
-						this.generateScriptButton.title = loc.generateScriptEnabledMessage;
-						this.applyButton.enabled = true;
-						this.applyButton.title = loc.applyEnabledMessage;
-					}
-					TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyEnded')
-						.withAdditionalProperties({
-							'endTime': Date.now().toString(),
-							'operationId': this.comparisonResult.operationId
-						}).send();
+				switch (this.targetEndpointInfo.endpointType) {
+					case mssql.SchemaCompareEndpointType.Database:
+						result = await service.schemaComparePublishDatabaseChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
+						break;
+					case mssql.SchemaCompareEndpointType.Project:
+						result = await vscode.commands.executeCommand(loc.sqlDatabaseProjectsPublishChanges, this.comparisonResult.operationId, this.targetEndpointInfo.projectFilePath, this.targetEndpointInfo.extractTarget);
+						if (!result.success) {
+							void vscode.window.showErrorMessage(loc.applyError);
+						}
+						break;
+					case mssql.SchemaCompareEndpointType.Dacpac: // Dacpac is an invalid publish target
+					default:
+						throw new Error(`Unsupported SchemaCompareEndpointType: ${getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)}`);
 				}
-			});
+
+				if (!result || !result.success || result.errorMessage) {
+					TelemetryReporter.createErrorEvent2(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyFailed', undefined, undefined, getTelemetryErrorType(result?.errorMessage))
+						.withAdditionalProperties({
+							'operationId': this.comparisonResult.operationId,
+							'targetType': getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)
+						}).send();
+					vscode.window.showErrorMessage(loc.applyErrorMessage(result?.errorMessage));
+
+					// reenable generate script and apply buttons if apply failed
+					this.generateScriptButton.enabled = true;
+					this.generateScriptButton.title = loc.generateScriptEnabledMessage;
+					this.applyButton.enabled = true;
+					this.applyButton.title = loc.applyEnabledMessage;
+				} else if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
+					const workspaceApi = getDataWorkspaceExtensionApi();
+					workspaceApi.showProjectsView();
+					workspaceApi.refreshProjectsTree();
+
+					void vscode.window.showInformationMessage(loc.applySuccess);
+				}
+
+				TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyEnded')
+					.withAdditionalProperties({
+						'endTime': Date.now().toString(),
+						'operationId': this.comparisonResult.operationId,
+						'targetType': getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)
+					}).send();
+			}
 		});
 	}
 
@@ -837,8 +988,8 @@ export class SchemaCompareMainWindow {
 		this.flexModel.addItem(this.startText, { CSSStyles: { 'margin': 'auto' } });
 	}
 
-	private createSwitchButton(view: azdata.ModelView): void {
-		this.switchButton = view.modelBuilder.button().withProperties({
+	private createSwitchButton(): void {
+		this.switchButton = this.view.modelBuilder.button().withProps({
 			label: loc.switchDirection,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'switch-directions.svg'),
@@ -847,30 +998,20 @@ export class SchemaCompareMainWindow {
 			title: loc.switchDirectionDescription
 		}).component();
 
-		this.switchButton.onDidClick(async (click) => {
+		this.switchButton.onDidClick(async (_click) => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSwitch');
 			// switch source and target
 			[this.sourceEndpointInfo, this.targetEndpointInfo] = [this.targetEndpointInfo, this.sourceEndpointInfo];
 			[this.sourceName, this.targetName] = [this.targetName, this.sourceName];
 
 			this.sourceNameComponent.updateProperties({
-				columns: [
-					{
-						value: this.sourceName,
-						headerCssClass: 'no-borders',
-						toolTip: this.sourceName
-					},
-				]
+				value: this.sourceName,
+				title: this.sourceName
 			});
 
 			this.targetNameComponent.updateProperties({
-				columns: [
-					{
-						value: this.targetName,
-						headerCssClass: 'no-borders',
-						toolTip: this.targetName
-					},
-				]
+				value: this.targetName,
+				title: this.targetName
 			});
 
 			// remember that source target have been toggled
@@ -878,39 +1019,43 @@ export class SchemaCompareMainWindow {
 
 			// only compare if both source and target are set
 			if (this.sourceEndpointInfo && this.targetEndpointInfo) {
-				this.startCompare();
+				await this.startCompare();
 			}
 		});
 	}
 
-	private createSourceAndTargetButtons(view: azdata.ModelView): void {
-		this.selectSourceButton = view.modelBuilder.button().withProperties({
+	private createSourceAndTargetButtons(): void {
+		this.selectSourceButton = this.view.modelBuilder.button().withProps({
 			label: '•••',
 			title: loc.selectSource,
-			ariaLabel: loc.selectSource
+			ariaLabel: loc.selectSource,
+			secondary: true
 		}).component();
 
-		this.selectSourceButton.onDidClick(() => {
+		this.selectSourceButton.onDidClick(async (_click) => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSelectSource');
-			let dialog = new SchemaCompareDialog(this);
-			dialog.openDialog();
+			this.schemaCompareDialog = new SchemaCompareDialog(this, undefined, this.extensionContext);
+			this.promise = this.schemaCompareDialog.openDialog();
+			await this.promise;
 		});
 
-		this.selectTargetButton = view.modelBuilder.button().withProperties({
+		this.selectTargetButton = this.view.modelBuilder.button().withProps({
 			label: '•••',
 			title: loc.selectTarget,
-			ariaLabel: loc.selectTarget
+			ariaLabel: loc.selectTarget,
+			secondary: true
 		}).component();
 
-		this.selectTargetButton.onDidClick(() => {
+		this.selectTargetButton.onDidClick(async (_click) => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSelectTarget');
-			let dialog = new SchemaCompareDialog(this);
-			dialog.openDialog();
+			this.schemaCompareDialog = new SchemaCompareDialog(this, undefined, this.extensionContext);
+			this.promise = await this.schemaCompareDialog.openDialog();
+			await this.promise;
 		});
 	}
 
-	private createOpenScmpButton(view: azdata.ModelView) {
-		this.openScmpButton = view.modelBuilder.button().withProperties({
+	private createOpenScmpButton() {
+		this.openScmpButton = this.view.modelBuilder.button().withProps({
 			label: loc.openScmp,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'open-scmp.svg'),
@@ -919,65 +1064,96 @@ export class SchemaCompareMainWindow {
 			title: loc.openScmpDescription
 		}).component();
 
-		this.openScmpButton.onDidClick(async (click) => {
-			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOpenScmpStarted');
-			const rootPath = getRootPath();
-			let fileUris = await vscode.window.showOpenDialog(
-				{
-					canSelectFiles: true,
-					canSelectFolders: false,
-					canSelectMany: false,
-					defaultUri: vscode.Uri.file(rootPath),
-					openLabel: loc.open,
-					filters: {
-						'scmp Files': ['scmp'],
-					}
-				}
-			);
-
-			if (!fileUris || fileUris.length === 0) {
-				return;
-			}
-
-			let fileUri = fileUris[0];
-			const service = await this.getService();
-			let startTime = Date.now();
-			const result = await service.schemaCompareOpenScmp(fileUri.fsPath);
-			if (!result || !result.success) {
-				TelemetryReporter.sendErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOpenScmpFailed', undefined, getTelemetryErrorType(result.errorMessage));
-				vscode.window.showErrorMessage(loc.openScmpErrorMessage(result.errorMessage));
-				return;
-			}
-
-			this.sourceEndpointInfo = await this.constructEndpointInfo(result.sourceEndpointInfo, loc.sourceTitle, this.apiWrapper);
-			this.targetEndpointInfo = await this.constructEndpointInfo(result.targetEndpointInfo, loc.targetTitle, this.apiWrapper);
-
-			this.updateSourceAndTarget();
-			this.setDeploymentOptions(result.deploymentOptions);
-			this.scmpSourceExcludes = result.excludedSourceElements;
-			this.scmpTargetExcludes = result.excludedTargetElements;
-			this.sourceTargetSwitched = result.originalTargetName !== this.targetEndpointInfo.databaseName;
-
-			// clear out any old results
-			this.resetForNewCompare();
-
-			TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOpenScmpEnded')
-				.withAdditionalProperties({
-					elapsedTime: (Date.now() - startTime).toString()
-				}).send();
+		this.openScmpButton.onDidClick(async (_click) => {
+			await this.openScmp();
 		});
 	}
 
-	private async constructEndpointInfo(endpoint: mssql.SchemaCompareEndpointInfo, caller: string, apiWrapper: ApiWrapper): Promise<mssql.SchemaCompareEndpointInfo> {
+	public async openScmp(): Promise<void> {
+		TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOpenScmpStarted');
+		const rootPath = getRootPath();
+		let fileUris = await vscode.window.showOpenDialog(
+			{
+				canSelectFiles: true,
+				canSelectFolders: false,
+				canSelectMany: false,
+				defaultUri: vscode.Uri.file(rootPath),
+				openLabel: loc.open,
+				filters: {
+					'scmp Files': ['scmp'],
+				}
+			}
+		);
+
+		if (!fileUris || fileUris.length === 0) {
+			return;
+		}
+
+		let fileUri = fileUris[0];
+		this.openScmpFile(fileUri, true);
+	}
+
+	/**
+	 * Primary functional entrypoint for opening the schema comparison window with the scmp file Uri provided.
+	 * @param fileUri .scmp file URI to open Schema Compare extension with
+	 * @param callFromWithinSC is the call from openScmp? False by default, since it is one of the direct entry points.
+	 */
+	public async openScmpFile(fileUri: vscode.Uri, callFromWithinSC: boolean = false): Promise<void> {
+		if (!callFromWithinSC) {
+			//Instantiate and open schema compare window if called from "Open in Schema Compare"
+			await this.launch(undefined, undefined, false, undefined);
+		}
+		const service = await this.getService();
+		let startTime = Date.now();
+		const result = await service.schemaCompareOpenScmp(fileUri.fsPath);
+		if (!result || !result.success) {
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOpenScmpFailed', undefined, undefined, getTelemetryErrorType(result.errorMessage));
+			vscode.window.showErrorMessage(loc.openScmpErrorMessage(result.errorMessage));
+			return;
+		}
+
+		this.sourceEndpointInfo = await this.constructEndpointInfo(result.sourceEndpointInfo, loc.sourceTitle);
+		this.targetEndpointInfo = await this.constructEndpointInfo(result.targetEndpointInfo, loc.targetTitle);
+
+		this.updateSourceAndTarget();
+		this.setDeploymentOptions(result.deploymentOptions);
+		this.scmpSourceExcludes = result.excludedSourceElements;
+		this.scmpTargetExcludes = result.excludedTargetElements;
+		this.sourceTargetSwitched = result.originalTargetName !== this.targetEndpointInfo.databaseName;
+
+		// clear out any old results
+		this.resetForNewCompare();
+
+		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOpenScmpEnded')
+			.withAdditionalProperties({
+				elapsedTime: (Date.now() - startTime).toString()
+			}).send();
+	}
+
+	private async constructEndpointInfo(endpoint: mssql.SchemaCompareEndpointInfo, caller: string): Promise<mssql.SchemaCompareEndpointInfo> {
 		let ownerUri;
 		let endpointInfo;
 		if (endpoint && endpoint.endpointType === mssql.SchemaCompareEndpointType.Database) {
 			// only set endpoint info if able to connect to the database
-			ownerUri = await verifyConnectionAndGetOwnerUri(endpoint, caller, apiWrapper);
+			ownerUri = await verifyConnectionAndGetOwnerUri(endpoint, caller);
 		}
 		if (ownerUri) {
 			endpointInfo = endpoint;
 			endpointInfo.ownerUri = ownerUri;
+		} else if (endpoint.endpointType === mssql.SchemaCompareEndpointType.Project) {
+			endpointInfo = {
+				endpointType: endpoint.endpointType,
+				packageFilePath: '',
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: '',
+				connectionDetails: undefined,
+				projectFilePath: endpoint.projectFilePath,
+				targetScripts: [],
+				dataSchemaProvider: endpoint.dataSchemaProvider,
+				extractTarget: endpoint.extractTarget
+			};
 		} else {
 			// need to do this instead of just setting it to the endpoint because some fields are null which will cause an error when sending the compare request
 			endpointInfo = {
@@ -993,8 +1169,8 @@ export class SchemaCompareMainWindow {
 		return endpointInfo;
 	}
 
-	private createSaveScmpButton(view: azdata.ModelView): void {
-		this.saveScmpButton = view.modelBuilder.button().withProperties({
+	private createSaveScmpButton(): void {
+		this.saveScmpButton = this.view.modelBuilder.button().withProps({
 			label: loc.saveScmp,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'save-scmp.svg'),
@@ -1004,43 +1180,47 @@ export class SchemaCompareMainWindow {
 			enabled: false
 		}).component();
 
-		this.saveScmpButton.onDidClick(async (click) => {
-			const rootPath = getRootPath();
-			const filePath = await vscode.window.showSaveDialog(
-				{
-					defaultUri: vscode.Uri.file(rootPath),
-					saveLabel: loc.save,
-					filters: {
-						'scmp Files': ['scmp'],
-					}
-				}
-			);
-
-			if (!filePath) {
-				return;
-			}
-
-			// convert include/exclude maps to arrays of object ids
-			let sourceExcludes: mssql.SchemaCompareObjectId[] = this.convertExcludesToObjectIds(this.originalSourceExcludes);
-			let targetExcludes: mssql.SchemaCompareObjectId[] = this.convertExcludesToObjectIds(this.originalTargetExcludes);
-
-			let startTime = Date.now();
-			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSaveScmp');
-			const service = await this.getService();
-			const result = await service.schemaCompareSaveScmp(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions, filePath.fsPath, sourceExcludes, targetExcludes);
-			if (!result || !result.success) {
-				TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSaveScmpFailed', undefined, getTelemetryErrorType(result.errorMessage))
-					.withAdditionalProperties({
-						operationId: this.comparisonResult.operationId
-					}).send();
-				vscode.window.showErrorMessage(loc.saveScmpErrorMessage(result.errorMessage));
-			}
-			TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSaveScmpEnded')
-				.withAdditionalProperties({
-					elapsedTime: (Date.now() - startTime).toString(),
-					operationId: this.comparisonResult.operationId
-				});
+		this.saveScmpButton.onDidClick(async (_click) => {
+			await this.saveScmp();
 		});
+	}
+
+	public async saveScmp(): Promise<void> {
+		const rootPath = getRootPath();
+		const filePath = await vscode.window.showSaveDialog(
+			{
+				defaultUri: vscode.Uri.file(rootPath),
+				saveLabel: loc.save,
+				filters: {
+					'scmp Files': ['scmp'],
+				}
+			}
+		);
+
+		if (!filePath) {
+			return;
+		}
+
+		// convert include/exclude maps to arrays of object ids
+		let sourceExcludes: mssql.SchemaCompareObjectId[] = this.convertExcludesToObjectIds(this.originalSourceExcludes);
+		let targetExcludes: mssql.SchemaCompareObjectId[] = this.convertExcludesToObjectIds(this.originalTargetExcludes);
+
+		let startTime = Date.now();
+		TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSaveScmp');
+		const service = await this.getService();
+		const result = await service.schemaCompareSaveScmp(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions, filePath.fsPath, sourceExcludes, targetExcludes);
+		if (!result || !result.success) {
+			TelemetryReporter.createErrorEvent2(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSaveScmpFailed', undefined, undefined, getTelemetryErrorType(result.errorMessage))
+				.withAdditionalProperties({
+					operationId: this.comparisonResult.operationId
+				}).send();
+			vscode.window.showErrorMessage(loc.saveScmpErrorMessage(result.errorMessage));
+		}
+		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSaveScmpEnded')
+			.withAdditionalProperties({
+				elapsedTime: (Date.now() - startTime).toString(),
+				operationId: this.comparisonResult.operationId
+			});
 	}
 
 	/**
@@ -1059,18 +1239,22 @@ export class SchemaCompareMainWindow {
 	}
 
 	private setButtonStatesForNoChanges(enableButtons: boolean): void {
-		// generate script and apply can only be enabled if the target is a database
-		if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
+		// generate script and apply can only be enabled if the target is a database or project
+		if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database ||
+			this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
 			this.applyButton.enabled = enableButtons;
-			this.generateScriptButton.enabled = enableButtons;
 			this.applyButton.title = enableButtons ? loc.applyEnabledMessage : loc.applyNoChangesMessage;
+		}
+
+		if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
+			this.generateScriptButton.enabled = enableButtons;
 			this.generateScriptButton.title = enableButtons ? loc.generateScriptEnabledMessage : loc.generateScriptNoChangesMessage;
 		}
 	}
 
 	private async getService(): Promise<mssql.ISchemaCompareService> {
-		if (isNullOrUndefined(this.schemaCompareService)) {
-			this.schemaCompareService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
+		if (this.schemaCompareService === null || this.schemaCompareService === undefined) {
+			this.schemaCompareService = (await vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
 		}
 		return this.schemaCompareService;
 	}

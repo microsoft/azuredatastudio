@@ -17,7 +17,7 @@ export class RefreshTreeNode extends TreeNode {
 		super(loc.refreshToEnterCredentials, vscode.TreeItemCollapsibleState.None, '');
 	}
 
-	public command: vscode.Command = {
+	public override command: vscode.Command = {
 		command: refreshActionId,
 		title: loc.refreshToEnterCredentials,
 		arguments: [this._parent]

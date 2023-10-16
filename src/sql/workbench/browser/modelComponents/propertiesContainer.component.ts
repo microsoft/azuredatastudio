@@ -14,7 +14,8 @@ import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBa
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { PropertiesContainer, PropertyItem } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
-import { PROPERTIES_CONTAINER_PROPERTY_NAME, PROPERTIES_CONTAINER_PROPERTY_VALUE } from 'vs/workbench/common/theme';
+import { ILogService } from 'vs/platform/log/common/log';
+import { PROPERTIES_CONTAINER_PROPERTY_NAME, PROPERTIES_CONTAINER_PROPERTY_VALUE } from 'sql/workbench/common/theme';
 
 @Component({
 	selector: `modelview-properties-container`,
@@ -30,11 +31,12 @@ export default class PropertiesContainerComponent extends ComponentBase<azdata.P
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
-	ngOnInit(): void {
+	ngAfterViewInit(): void {
 		this.baseInit();
 	}
 
@@ -42,9 +44,10 @@ export default class PropertiesContainerComponent extends ComponentBase<azdata.P
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._propertiesContainer.propertyItems = this.propertyItems;
+		this._propertiesContainer.showToggleButton = this.showToggleButton;
 	}
 
 	public get propertyItems(): PropertyItem[] {
@@ -54,6 +57,10 @@ export default class PropertiesContainerComponent extends ComponentBase<azdata.P
 	public set propertyItems(newValue: azdata.PropertiesContainerItem[]) {
 		this.setPropertyFromUI<azdata.PropertiesContainerItem[]>((props, value) => props.propertyItems = value, newValue);
 		this._propertiesContainer.propertyItems = newValue;
+	}
+
+	public get showToggleButton(): boolean {
+		return this.getPropertyOrDefault<boolean>((props) => props.showToggleButton, false);
 	}
 }
 

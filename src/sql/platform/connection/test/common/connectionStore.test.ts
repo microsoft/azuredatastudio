@@ -13,12 +13,11 @@ import { IConnectionProfile, ConnectionOptionSpecialType, ServiceOptionType } fr
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { TestCredentialsService } from 'sql/platform/credentials/test/common/testCredentialsService';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
-import { deepClone, deepFreeze, assign } from 'vs/base/common/objects';
+import { deepClone, deepFreeze } from 'vs/base/common/objects';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { AuthenticationType, mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { InMemoryStorageService } from 'vs/platform/storage/common/storage';
-import { find } from 'vs/base/common/arrays';
 import { generateUuid } from 'vs/base/common/uuid';
 
 suite('ConnectionStore', () => {
@@ -26,13 +25,15 @@ suite('ConnectionStore', () => {
 		connectionName: 'new name',
 		serverName: 'namedServer',
 		databaseName: 'bcd',
-		authenticationType: 'SqlLogin',
-		userName: 'cde',
+		authenticationType: AuthenticationType.SqlLogin,
+		userName: 'cde', // [SuppressMessage("Microsoft.Security", "CS001:SecretInline", Justification="Mock value, never actually used to connect")]
 		password: generateUuid(),
 		savePassword: true,
 		groupId: '',
 		groupFullName: '',
+		serverCapabilities: undefined,
 		getOptionsKey: undefined!,
+		getOptionKeyIdNames: undefined!,
 		matches: () => false,
 		providerName: mssqlProviderName,
 		options: {},
@@ -155,19 +156,19 @@ suite('ConnectionStore', () => {
 		const connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
 		for (let i = 0; i < numCreds; i++) {
-			const cred = assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
+			const cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
 			const connectionProfile = new ConnectionProfile(capabilitiesService, cred);
 			await connectionStore.addRecentConnection(connectionProfile);
 			const current = connectionStore.getRecentlyUsedConnections();
 			if (i >= maxRecent) {
-				assert.equal(current.length, maxRecent, `expect only top ${maxRecent} creds to be saved`);
+				assert.strictEqual(current.length, maxRecent, `expect only top ${maxRecent} creds to be saved`);
 			} else {
-				assert.equal(current.length, i + 1, `expect all credentials to be saved ${current.length}|${i + 1} `);
+				assert.strictEqual(current.length, i + 1, `expect all credentials to be saved ${current.length}|${i + 1} `);
 			}
-			assert.equal(current[0].serverName, cred.serverName, 'Expect most recently saved item to be first in list');
+			assert.strictEqual(current[0].serverName, cred.serverName, 'Expect most recently saved item to be first in list');
 			assert.ok(!current[0].password);
 		}
-		assert.equal(credentialsService.credentials.size, numCreds);
+		assert.strictEqual(credentialsService.credentials.size, numCreds);
 	});
 
 	test('getRecentlyUsedConnections should return connection for given provider', () => {
@@ -191,14 +192,14 @@ suite('ConnectionStore', () => {
 		// Then expect the only 1 instance of that connection to be listed in the MRU
 		const connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
-		const cred = assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + 1 });
+		const cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + 1 });
 		const connectionProfile = new ConnectionProfile(capabilitiesService, cred);
 		await connectionStore.addRecentConnection(defaultNamedConnectionProfile);
 		await connectionStore.addRecentConnection(connectionProfile);
 		await connectionStore.addRecentConnection(connectionProfile);
 		const current = connectionStore.getRecentlyUsedConnections();
-		assert.equal(current.length, 2, 'expect 2 unique credentials to have been added');
-		assert.equal(current[0].serverName, cred.serverName, 'Expect most recently saved item to be first in list');
+		assert.strictEqual(current.length, 2, 'expect 2 unique credentials to have been added');
+		assert.strictEqual(current[0].serverName, cred.serverName, 'Expect most recently saved item to be first in list');
 		assert.ok(!current[0].password);
 	});
 
@@ -213,13 +214,13 @@ suite('ConnectionStore', () => {
 		// Given we save 1 connection with password and multiple other connections without
 		const connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
-		const integratedCred = assign({}, defaultNamedProfile, {
+		const integratedCred = Object.assign({}, defaultNamedProfile, {
 			serverName: defaultNamedProfile.serverName + 'Integrated',
-			authenticationType: 'Integrated',
+			authenticationType: AuthenticationType.Integrated,
 			userName: '',
 			password: ''
 		});
-		const noPwdCred = assign({}, defaultNamedProfile, {
+		const noPwdCred = Object.assign({}, defaultNamedProfile, {
 			serverName: defaultNamedProfile.serverName + 'NoPwd',
 			password: ''
 		});
@@ -232,7 +233,7 @@ suite('ConnectionStore', () => {
 
 		let current = connectionStore.getRecentlyUsedConnections();
 		// Then verify that since its password based we save the password
-		assert.equal(credentialsService.credentials.size, 1);
+		assert.strictEqual(credentialsService.credentials.size, 1);
 		assert.strictEqual(recentCredential!.password, defaultNamedProfile.password);
 		assert.ok(recentCredential!.credentialId.indexOf('Profile') > -1, 'Expect credential to be marked as an Profile cred');
 		assert.ok(!current[0].password);
@@ -241,24 +242,24 @@ suite('ConnectionStore', () => {
 		await connectionStore.addRecentConnection(integratedCredConnectionProfile);
 		current = connectionStore.getRecentlyUsedConnections();
 		// then expect not to have credential store called, but MRU count upped to 2
-		assert.equal(credentialsService.credentials.size, 1);
-		assert.equal(current.length, 2);
+		assert.strictEqual(credentialsService.credentials.size, 1);
+		assert.strictEqual(current.length, 2);
 		// When add connection without password
 		const noPwdCredConnectionProfile = new ConnectionProfile(capabilitiesService, noPwdCred);
 		await connectionStore.addRecentConnection(noPwdCredConnectionProfile);
 		current = connectionStore.getRecentlyUsedConnections();
 		// then expect not to have credential store called, but MRU count upped to 3
-		assert.equal(current.length, 3);
-		assert.equal(credentialsService.credentials.size, 1);
+		assert.strictEqual(current.length, 3);
+		assert.strictEqual(credentialsService.credentials.size, 1);
 	});
 
 	test('fixupConnectionCredentials should fix blank connection profile', () => {
 		let blankConnectionProfile = new ConnectionProfile(capabilitiesService, '');
 		let resultProfile = fixupConnectionCredentials(blankConnectionProfile);
-		assert.equal(resultProfile.serverName, '');
-		assert.equal(resultProfile.databaseName, '');
-		assert.equal(resultProfile.userName, '');
-		assert.equal(resultProfile.password, '');
+		assert.strictEqual(resultProfile.serverName, '');
+		assert.strictEqual(resultProfile.databaseName, '');
+		assert.strictEqual(resultProfile.userName, '');
+		assert.strictEqual(resultProfile.password, '');
 	});
 
 	test('can clear connections list', async () => {
@@ -271,10 +272,10 @@ suite('ConnectionStore', () => {
 
 		await connectionStore.addRecentConnection(defaultNamedProfile);
 		let result = connectionStore.getRecentlyUsedConnections();
-		assert.equal(result.length, 1);
+		assert.strictEqual(result.length, 1);
 		connectionStore.clearRecentlyUsed();
 		result = connectionStore.getRecentlyUsedConnections();
-		assert.equal(result.length, 0);
+		assert.strictEqual(result.length, 0);
 		// Then test is complete
 	});
 
@@ -323,7 +324,7 @@ suite('ConnectionStore', () => {
 
 		const connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
-		const connectionProfile: IConnectionProfile = assign({}, defaultNamedProfile, { providerName: providerName });
+		const connectionProfile: IConnectionProfile = Object.assign({}, defaultNamedProfile, { providerName: providerName });
 
 		assert.ok(!connectionStore.isPasswordRequired(connectionProfile));
 	});
@@ -334,14 +335,14 @@ suite('ConnectionStore', () => {
 		const credentialsService = new TestCredentialsService();
 
 		const password: string = 'asdf!@#$';
-		const connectionProfile: IConnectionProfile = assign({}, defaultNamedProfile, { password });
+		const connectionProfile: IConnectionProfile = Object.assign({}, defaultNamedProfile, { password });
 
 		const connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
 
 		const profile = await connectionStore.saveProfile(connectionProfile);
 		// add connection should be called with a profile without password
-		assert.equal(profile.password, password, 'The returned profile should still keep the password');
+		assert.strictEqual(profile.password, password, 'The returned profile should still keep the password');
 		assert.ok(!!profile.groupId, 'Group id should be set in the profile');
 	});
 
@@ -353,7 +354,7 @@ suite('ConnectionStore', () => {
 		const connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
 		const group = connectionStore.getGroupFromId('invalidId');
-		assert.equal(group, undefined, 'Returned group was not undefined when there was no group with the given ID');
+		assert.strictEqual(group, undefined, 'Returned group was not undefined when there was no group with the given ID');
 	});
 
 	test('getGroupFromId returns the group that has the given ID', () => {
@@ -387,11 +388,11 @@ suite('ConnectionStore', () => {
 
 		// If I look up the parent group using its ID, then I get back the correct group
 		let actualGroup = connectionStore.getGroupFromId(parentGroupId)!;
-		assert.equal(actualGroup.id, parentGroupId, 'Did not get the parent group when looking it up with its ID');
+		assert.strictEqual(actualGroup.id, parentGroupId, 'Did not get the parent group when looking it up with its ID');
 
 		// If I look up the child group using its ID, then I get back the correct group
 		actualGroup = connectionStore.getGroupFromId(childGroupId)!;
-		assert.equal(actualGroup.id, childGroupId, 'Did not get the child group when looking it up with its ID');
+		assert.strictEqual(actualGroup.id, childGroupId, 'Did not get the child group when looking it up with its ID');
 	});
 
 	test('getProfileWithoutPassword can return the profile without credentials in the password property or options dictionary', () => {
@@ -404,12 +405,12 @@ suite('ConnectionStore', () => {
 		const profile = deepClone(defaultNamedProfile);
 		profile.options['password'] = profile.password;
 		profile.id = 'testId';
-		let expectedProfile = assign({}, profile);
+		let expectedProfile = Object.assign({}, profile);
 		expectedProfile.password = '';
 		expectedProfile.options['password'] = '';
 		expectedProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, expectedProfile).toIConnectionProfile();
 		let profileWithoutCredentials = connectionStore.getProfileWithoutPassword(profile);
-		assert.deepEqual(profileWithoutCredentials.toIConnectionProfile(), expectedProfile);
+		assert.deepStrictEqual(profileWithoutCredentials.toIConnectionProfile(), expectedProfile);
 	});
 
 	test('addPassword gets the password from the credentials service', async () => {
@@ -417,7 +418,7 @@ suite('ConnectionStore', () => {
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
 
-		const profile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, assign({}, defaultNamedProfile, { password: undefined }));
+		const profile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, Object.assign({}, defaultNamedProfile, { password: undefined }));
 
 		const credId = `Microsoft.SqlTools|itemtype:Profile|id:${profile.getConnectionInfoId()}`;
 		const password: string = 'asdf!@#$';
@@ -429,7 +430,7 @@ suite('ConnectionStore', () => {
 
 		const passwordProfile = (await connectionStore.addSavedPassword(profile)).profile;
 
-		assert.equal(passwordProfile.password, password);
+		assert.strictEqual(passwordProfile.password, password);
 	});
 
 	test('getConnectionProfileGroups', async () => {
@@ -464,7 +465,7 @@ suite('ConnectionStore', () => {
 		const connectionGroups = connectionStore.getConnectionProfileGroups();
 
 		for (const group of connectionGroups) {
-			const foundGroup = find(groups, g => g.id === group.id);
+			const foundGroup = groups.find(g => g.id === group.id);
 			assert.ok(foundGroup);
 		}
 	});
@@ -478,19 +479,19 @@ suite('ConnectionStore', () => {
 			credentialsService, capabilitiesService);
 
 		for (let i = 0; i < 5; i++) {
-			const cred = assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
+			const cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
 			const connectionProfile = new ConnectionProfile(capabilitiesService, cred);
 			await connectionStore.addRecentConnection(connectionProfile);
 			const current = connectionStore.getRecentlyUsedConnections();
-			assert.equal(current.length, i + 1);
+			assert.strictEqual(current.length, i + 1);
 		}
 
 		for (let i = 0; i < 5; i++) {
-			const cred = assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
+			const cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
 			const connectionProfile = new ConnectionProfile(capabilitiesService, cred);
 			connectionStore.removeRecentConnection(connectionProfile);
 			const current = connectionStore.getRecentlyUsedConnections();
-			assert.equal(current.length, 4 - i);
+			assert.strictEqual(current.length, 4 - i);
 		}
 	});
 
@@ -534,6 +535,6 @@ suite('ConnectionStore', () => {
 
 		const connections = connectionStore.getRecentlyUsedConnections();
 
-		assert.equal(connections[0].groupFullName, parentGroupName);
+		assert.strictEqual(connections[0].groupFullName, parentGroupName);
 	});
 });

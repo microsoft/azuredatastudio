@@ -5,13 +5,16 @@
 
 import * as azdata from 'azdata';
 import * as constants from '../constants';
-import { WizardPageBase } from '../../wizardPageBase';
-import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
 import { apiService } from '../../../services/apiService';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import * as vscode from 'vscode';
+import * as localizedConstants from '../../../localizedConstants';
+import { BasePage } from './basePage';
+import { DeployAzureSQLVMWizardModel } from '../deployAzureSQLVMWizardModel';
 
-export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
+const supportedRegions = ['eastus', 'eastus2', 'westus', 'centralus', 'northcentralus', 'southcentralus', 'northeurope', 'westeurope', 'eastasia', 'southeastasia', 'japaneast', 'japanwest', 'australiaeast', 'australiasoutheast', 'australiacentral', 'brazilsouth', 'southindia', 'centralindia', 'westindia', 'canadacentral', 'canadaeast', 'westus2', 'westcentralus', 'uksouth', 'ukwest', 'koreacentral', 'koreasouth', 'francecentral', 'southafricanorth', 'uaenorth', 'switzerlandnorth', 'germanywestcentral', 'norwayeast'];
+
+export class AzureSettingsPage extends BasePage {
 	// <- means depends on
 	//dropdown for azure accounts
 	private _azureAccountsDropdown!: azdata.DropDownComponent;
@@ -33,17 +36,17 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private _accountsMap!: Map<string, azdata.Account>;
 	private _subscriptionsMap!: Map<string, azureResource.AzureResourceSubscription>;
-	constructor(wizard: DeployAzureSQLVMWizard) {
+	constructor(private _model: DeployAzureSQLVMWizardModel) {
 		super(
 			constants.AzureSettingsPageTitle,
 			'',
-			wizard
+			_model.wizard
 		);
 		this._accountsMap = new Map();
 		this._subscriptionsMap = new Map();
 	}
 
-	public async initialize() {
+	public override async initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
 
 			await Promise.all([
@@ -58,19 +61,19 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 				.withFormItems(
 					[
 						{
-							component: this.wizard.createFormRowComponent(view, constants.AzureAccountDropdownLabel, '', this._azureAccountsDropdown, true)
+							component: this._model.createFormRowComponent(view, constants.AzureAccountDropdownLabel, '', this._azureAccountsDropdown, true)
 						},
 						{
 							component: this.buttonFlexContainer
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.AzureAccountSubscriptionDropdownLabel, '', this._azureSubscriptionsDropdown, true)
+							component: this._model.createFormRowComponent(view, constants.AzureAccountSubscriptionDropdownLabel, '', this._azureSubscriptionsDropdown, true)
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.AzureAccountResourceGroupDropdownLabel, '', this._resourceGroupDropdown, true)
+							component: this._model.createFormRowComponent(view, constants.AzureAccountResourceGroupDropdownLabel, '', this._resourceGroupDropdown, true)
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.AzureAccountRegionDropdownLabel, '', this._azureRegionsDropdown, true)
+							component: this._model.createFormRowComponent(view, constants.AzureAccountRegionDropdownLabel, '', this._azureRegionsDropdown, true)
 						}
 					],
 					{
@@ -83,34 +86,39 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 		});
 	}
 
-	public async onEnter(): Promise<void> {
-		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+	public override async onEnter(): Promise<void> {
+		this._model.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
 	}
 
-	public async onLeave(): Promise<void> {
-		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+	public override async onLeave(): Promise<void> {
+		this._model.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
 	}
 
 	private async createAzureAccountsDropdown(view: azdata.ModelView) {
 
-		this._azureAccountsDropdown = view.modelBuilder.dropDown().withProperties({}).component();
+		this._azureAccountsDropdown = view.modelBuilder.dropDown().withProps({}).component();
 
 		this._azureAccountsDropdown.onValueChanged(async (value) => {
-			this.wizard.model.azureAccount = this._accountsMap.get(value.selected)!;
+			if (!this._azureAccountsDropdown.value) {
+				return;
+			}
+			this._model.azureAccount = this._accountsMap.get(value.selected)!;
 			this.populateAzureSubscriptionsDropdown();
 		});
 
-		this.signInButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: 'Sign In',
-			width: '100px'
+		this.signInButton = view.modelBuilder.button().withProps({
+			label: localizedConstants.signIn,
+			width: '100px',
+			secondary: true
 		}).component();
-		this.refreshButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: 'Refresh',
-			width: '100px'
+		this.refreshButton = view.modelBuilder.button().withProps({
+			label: localizedConstants.refresh,
+			width: '100px',
+			secondary: true
 		}).component();
 
 		this.signInButton.onDidClick(async (event) => {
@@ -131,13 +139,13 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 		let accounts = await azdata.accounts.getAllAccounts();
 
 		if (accounts.length === 0) {
-			this.wizard.showErrorMessage('Sign in to an Azure account first');
+			this._model.wizard.showErrorMessage('Sign in to an Azure account first');
 			return;
 		} else {
-			this.wizard.showErrorMessage('');
+			this._model.wizard.showErrorMessage('');
 		}
 
-		this.wizard.addDropdownValues(
+		this._model.addDropdownValues(
 			this._azureAccountsDropdown,
 			accounts.map((account): azdata.CategoryValue => {
 				let accountCategoryValue = {
@@ -149,23 +157,25 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 			}),
 		);
 
-		this.wizard.model.azureAccount = accounts[0];
+		this._model.azureAccount = accounts[0];
 		this._azureAccountsDropdown.loading = false;
 
 		await this.populateAzureSubscriptionsDropdown();
 	}
 
 	private async createAzureSubscriptionsDropdown(view: azdata.ModelView) {
-		this._azureSubscriptionsDropdown = view.modelBuilder.dropDown().withProperties({}).component();
+		this._azureSubscriptionsDropdown = view.modelBuilder.dropDown().withProps({}).component();
 
-		this._azureSubscriptionsDropdown.onValueChanged(async (value) => {
-
+		this._azureSubscriptionsDropdown.onValueChanged(async value => {
+			if (!this._azureSubscriptionsDropdown.value) {
+				return;
+			}
 			let currentSubscriptionValue = this._azureSubscriptionsDropdown.value as azdata.CategoryValue;
-			this.wizard.model.azureSubscription = currentSubscriptionValue.name;
-			this.wizard.model.azureSubscriptionDisplayName = currentSubscriptionValue.displayName;
+			this._model.azureSubscription = currentSubscriptionValue.name;
+			this._model.azureSubscriptionDisplayName = currentSubscriptionValue.displayName;
 
-			this.wizard.model.securityToken = await azdata.accounts.getAccountSecurityToken(
-				this.wizard.model.azureAccount,
+			this._model.securityToken = await azdata.accounts.getAccountSecurityToken(
+				this._model.azureAccount,
 				this._subscriptionsMap.get(currentSubscriptionValue.name)?.tenant!,
 				azdata.AzureResource.ResourceManagement
 			);
@@ -177,7 +187,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async populateAzureSubscriptionsDropdown() {
 		this._azureSubscriptionsDropdown.loading = true;
-		let subService = await apiService.azurecoreApi;
+		let subService = apiService.azurecoreApi;
 		let currentAccountDropdownValue = (this._azureAccountsDropdown.value as azdata.CategoryValue);
 		if (currentAccountDropdownValue === undefined) {
 			this._azureSubscriptionsDropdown.loading = false;
@@ -198,7 +208,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 		}
 		subscriptions.sort((a: any, b: any) => a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()));
 
-		this.wizard.addDropdownValues(
+		this._model.addDropdownValues(
 			this._azureSubscriptionsDropdown,
 			subscriptions.map((subscription: any): azdata.CategoryValue => {
 				let subscriptionCategoryValue = {
@@ -210,11 +220,11 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 			})
 		);
 
-		this.wizard.model.azureSubscription = (this._azureSubscriptionsDropdown.value as azdata.CategoryValue).name;
-		this.wizard.model.azureSubscriptionDisplayName = (this._azureSubscriptionsDropdown.value as azdata.CategoryValue).displayName;
+		this._model.azureSubscription = (this._azureSubscriptionsDropdown.value as azdata.CategoryValue).name;
+		this._model.azureSubscriptionDisplayName = (this._azureSubscriptionsDropdown.value as azdata.CategoryValue).displayName;
 
-		this.wizard.model.securityToken = await azdata.accounts.getAccountSecurityToken(
-			this.wizard.model.azureAccount,
+		this._model.securityToken = await azdata.accounts.getAccountSecurityToken(
+			this._model.azureAccount,
 			this._subscriptionsMap.get((this._azureSubscriptionsDropdown.value as azdata.CategoryValue).name)?.tenant!,
 			azdata.AzureResource.ResourceManagement
 		);
@@ -224,17 +234,17 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 	}
 
 	private async createResourceDropdown(view: azdata.ModelView) {
-		this._resourceGroupDropdown = view.modelBuilder.dropDown().withProperties({
+		this._resourceGroupDropdown = view.modelBuilder.dropDown().withProps({
 			required: true
 		}).component();
 		this._resourceGroupDropdown.onValueChanged(async (value) => {
-			this.wizard.model.azureResouceGroup = value.selected;
+			this._model.azureResouceGroup = value.selected;
 		});
 	}
 
 	private async populateResourceGroupDropdown() {
 		this._resourceGroupDropdown.loading = true;
-		let subService = await apiService.azurecoreApi;
+		let subService = apiService.azurecoreApi;
 		let currentSubscriptionValue = this._azureSubscriptionsDropdown.value as azdata.CategoryValue;
 		if (currentSubscriptionValue === undefined || currentSubscriptionValue.displayName === '') {
 
@@ -245,7 +255,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 			return;
 		}
 		let currentSubscription = this._subscriptionsMap.get(currentSubscriptionValue.name);
-		let resourceGroups = (await subService.getResourceGroups(this.wizard.model.azureAccount, currentSubscription, true)).resourceGroups;
+		let resourceGroups = (await subService.getResourceGroups(this._model.azureAccount, currentSubscription, true)).resourceGroups;
 		if (resourceGroups === undefined || resourceGroups.length === 0) {
 			this._resourceGroupDropdown.loading = false;
 			this._resourceGroupDropdown.updateProperties({
@@ -263,32 +273,33 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 				};
 			})
 		});
-		this.wizard.model.azureResouceGroup = (this._resourceGroupDropdown.value as azdata.CategoryValue).name;
+		this._model.azureResouceGroup = (this._resourceGroupDropdown.value as azdata.CategoryValue).name;
 		this._resourceGroupDropdown.loading = false;
 	}
 
 	private async createAzureRegionsDropdown(view: azdata.ModelView) {
-		this._azureRegionsDropdown = view.modelBuilder.dropDown().withProperties({
+		this._azureRegionsDropdown = view.modelBuilder.dropDown().withProps({
 			required: true
 		}).component();
 
-		this._azureRegionsDropdown.onValueChanged((value) => {
-			this.wizard.model.azureRegion = (this._azureRegionsDropdown.value as azdata.CategoryValue).name;
+		this._azureRegionsDropdown.onValueChanged(value => {
+			if (!this._azureRegionsDropdown.value) {
+				return;
+			}
+			this._model.azureRegion = (this._azureRegionsDropdown.value as azdata.CategoryValue).name;
 		});
 	}
 
 	private async populateAzureRegionsDropdown() {
 		this._azureRegionsDropdown.loading = true;
 
-		let supportedRegions = 'eastus, eastus2, westus, centralus, northcentralus, southcentralus, northeurope, westeurope, eastasia, southeastasia, japaneast, japanwest, australiaeast, australiasoutheast, australiacentral, brazilsouth, southindia, centralindia, westindia, canadacentral, canadaeast, westus2, westcentralus, uksouth, ukwest, koreacentral, koreasouth, francecentral, southafricanorth, uaenorth, switzerlandnorth, germanywestcentral, norwayeast';
-		let supportedRegionsArray = supportedRegions.split(', ');
-		let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/locations?api-version=2020-01-01`;
-		const response = await this.wizard.getRequest(url, false);
+		let url = `https://management.azure.com/subscriptions/${this._model.azureSubscription}/locations?api-version=2020-01-01`;
+		const response = await this._model.getRequest(url, false);
 		response.data.value = response.data.value.sort((a: any, b: any) => (a.displayName > b.displayName) ? 1 : -1);
-		this.wizard.addDropdownValues(
+		this._model.addDropdownValues(
 			this._azureRegionsDropdown,
 			response.data.value.filter((value: any) => {
-				return supportedRegionsArray.includes(value.name);
+				return supportedRegions.includes(value.name);
 			}).map((value: any) => {
 				return {
 					displayName: value.displayName,
@@ -296,7 +307,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 				};
 			})
 		);
-		this.wizard.model.azureRegion = (this._azureRegionsDropdown.value as azdata.CategoryValue).name;
+		this._model.azureRegion = (this._azureRegionsDropdown.value as azdata.CategoryValue).name;
 		this._azureRegionsDropdown.loading = false;
 	}
 }

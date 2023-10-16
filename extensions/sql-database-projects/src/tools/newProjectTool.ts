@@ -5,24 +5,17 @@
 
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
+import * as os from 'os';
 import * as constants from '../common/constants';
-
-/**
- * Sets workspace setting on the default save location to the user's home directory
- */
-export async function initializeSaveLocationSetting() {
-	if (!projectSaveLocationSettingExists()) {
-		await config().update(constants.projectSaveLocationKey, os.homedir(), true);
-	}
-}
+import * as utils from '../common/utils';
 
 /**
  * Returns the default location to save a new database project
  */
-export function defaultProjectSaveLocation(): vscode.Uri {
-	return projectSaveLocationSettingIsValid() ? vscode.Uri.file(projectSaveLocationSetting()) : vscode.Uri.file(os.homedir());
+export function defaultProjectSaveLocation(): vscode.Uri | undefined {
+	const workspaceApi = utils.getDataWorkspaceExtensionApi();
+	return workspaceApi.defaultProjectSaveLocation;
 }
 
 /**
@@ -39,66 +32,19 @@ export function defaultProjectNameNewProj(): string {
  *
  * @param dbName the database name to base the default project name off of
  */
-export function defaultProjectNameFromDb(dbName: string): string {
+export function defaultProjectNameFromDb(dbName: string | undefined): string {
+	if (!dbName) {
+		return '';
+	}
+
 	const projectNameStarter = constants.defaultProjectNameStarter + dbName;
-	const projectPath: string = path.join(defaultProjectSaveLocation().fsPath, projectNameStarter);
+	const defaultLocation = defaultProjectSaveLocation() ?? vscode.Uri.file(os.homedir());
+	const projectPath: string = path.join(defaultLocation.fsPath, projectNameStarter);
 	if (!fs.existsSync(projectPath)) {
 		return projectNameStarter;
 	}
 
 	return defaultProjectName(projectNameStarter, 2);
-}
-
-/**
- * Prompts user to update workspace settings
- */
-export async function updateSaveLocationSetting(): Promise<void> {
-	const showPrompt: boolean = config()[constants.showUpdatePromptKey];
-	if (showPrompt) {
-		const openSettingsMessage = projectSaveLocationSettingIsValid() ?
-			constants.newDefaultProjectSaveLocation : constants.invalidDefaultProjectSaveLocation;
-		const result = await vscode.window.showInformationMessage(openSettingsMessage, constants.openWorkspaceSettings,
-			constants.doNotPromptAgain);
-
-		if (result === constants.openWorkspaceSettings || result === constants.doNotPromptAgain) {
-			// if user either opens settings or clicks "don't ask again", do not prompt for save location again
-			await config().update(constants.showUpdatePromptKey, false, true);
-
-			if (result === constants.openWorkspaceSettings) {
-				await vscode.commands.executeCommand('workbench.action.openGlobalSettings'); //open settings
-			}
-		}
-	}
-}
-
-/**
- * Get workspace configurations for this extension
- */
-function config(): vscode.WorkspaceConfiguration {
-	return vscode.workspace.getConfiguration(constants.dbProjectConfigurationKey);
-}
-
-/**
- * Returns the workspace setting on the default location to save new database projects
- */
-function projectSaveLocationSetting(): string {
-	return config()[constants.projectSaveLocationKey];
-}
-
-/**
- * Returns if the default save location for new database projects workspace setting exists and is
- * a valid path
- */
-function projectSaveLocationSettingIsValid(): boolean {
-	return projectSaveLocationSettingExists() && fs.existsSync(projectSaveLocationSetting());
-}
-
-/**
- * Returns if a value for the default save location for new database projects exists
- */
-function projectSaveLocationSettingExists(): boolean {
-	return projectSaveLocationSetting() !== undefined && projectSaveLocationSetting() !== null
-		&& projectSaveLocationSetting().trim() !== '';
 }
 
 /**
@@ -112,7 +58,8 @@ function projectSaveLocationSettingExists(): boolean {
 function defaultProjectName(nameStarter: string, counter: number): string {
 	while (counter < Number.MAX_SAFE_INTEGER) {
 		const name: string = nameStarter + counter;
-		const projectPath: string = path.join(defaultProjectSaveLocation().fsPath, name);
+		const defaultLocation = defaultProjectSaveLocation() ?? vscode.Uri.file(os.homedir());
+		const projectPath: string = path.join(defaultLocation.fsPath, name);
 		if (!fs.existsSync(projectPath)) {
 			return name;
 		}

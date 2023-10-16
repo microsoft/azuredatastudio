@@ -1,7 +1,7 @@
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: "12.13.0"
+   versionSpec: "16.x"
 
 - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
   inputs:
@@ -41,7 +41,7 @@ steps:
   inputs:
     azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
     KeyVaultName: SqlToolsSecretStore
-    SecretsFilter: 'ads-integration-test-azure-server,ads-integration-test-azure-server-password,ads-integration-test-azure-server-username,ads-integration-test-bdc-server,ads-integration-test-bdc-server-password,ads-integration-test-bdc-server-username,ads-integration-test-standalone-server,ads-integration-test-standalone-server-password,ads-integration-test-standalone-server-username,ads-integration-test-standalone-server-2019,ads-integration-test-standalone-server-password-2019,ads-integration-test-standalone-server-username-2019'
+    SecretsFilter: 'ads-integration-test-azure-server,ads-integration-test-azure-server-password,ads-integration-test-azure-server-username,ads-integration-test-standalone-server,ads-integration-test-standalone-server-password,ads-integration-test-standalone-server-username,ads-integration-test-standalone-server-2019,ads-integration-test-standalone-server-password-2019,ads-integration-test-standalone-server-username-2019'
 
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
@@ -51,36 +51,9 @@ steps:
     $AppNameShort = $AppProductJson.nameShort
     exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; $env:INTEGRATION_TEST_CLI_PATH = "$AppRoot\bin\$AppNameShort"; .\scripts\sql-test-integration.bat }
   continueOnError: false
-  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+  condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['RUN_INTEGRATION_TESTS'], 'false')))
   displayName: Run stable tests
   env:
-    BDC_BACKEND_USERNAME: $(ads-integration-test-bdc-server-username)
-    BDC_BACKEND_PWD: $(ads-integration-test-bdc-server-password)
-    BDC_BACKEND_HOSTNAME: $(ads-integration-test-bdc-server)
-    STANDALONE_SQL_USERNAME: $(ads-integration-test-standalone-server-username)
-    STANDALONE_SQL_PWD: $(ads-integration-test-standalone-server-password)
-    STANDALONE_SQL: $(ads-integration-test-standalone-server)
-    AZURE_SQL_USERNAME: $(ads-integration-test-azure-server-username)
-    AZURE_SQL_PWD: $(ads-integration-test-azure-server-password)
-    AZURE_SQL: $(ads-integration-test-azure-server)
-    STANDALONE_SQL_USERNAME_2019: $(ads-integration-test-standalone-server-username-2019)
-    STANDALONE_SQL_PWD_2019: $(ads-integration-test-standalone-server-password-2019)
-    STANDALONE_SQL_2019: $(ads-integration-test-standalone-server-2019)
-
-- powershell: |
-    . build/azure-pipelines/win32/exec.ps1
-    $ErrorActionPreference = "Stop"
-    $AppRoot = "$(Agent.TempDirectory)\azuredatastudio-win32-x64"
-    $AppProductJson = Get-Content -Raw -Path "$AppRoot\resources\app\product.json" | ConvertFrom-Json
-    $AppNameShort = $AppProductJson.nameShort
-    exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; .\scripts\sql-test-integration-unstable.bat }
-  continueOnError: true
-  condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
-  displayName: Run unstable integration tests
-  env:
-    BDC_BACKEND_USERNAME: $(ads-integration-test-bdc-server-username)
-    BDC_BACKEND_PWD: $(ads-integration-test-bdc-server-password)
-    BDC_BACKEND_HOSTNAME: $(ads-integration-test-bdc-server)
     STANDALONE_SQL_USERNAME: $(ads-integration-test-standalone-server-username)
     STANDALONE_SQL_PWD: $(ads-integration-test-standalone-server-password)
     STANDALONE_SQL: $(ads-integration-test-standalone-server)
@@ -99,4 +72,4 @@ steps:
     mergeTestResults: true
     failTaskOnFailedTests: true
   continueOnError: true
-  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+  condition: and(succeededOrFailed(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['RUN_INTEGRATION_TESTS'], 'false')))

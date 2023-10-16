@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 
@@ -42,7 +41,7 @@ export class OEAction extends ExecuteCommandAction {
 		super(id, label, commandService);
 	}
 
-	public async run(actionContext: any): Promise<boolean> {
+	public override async run(actionContext: any): Promise<void> {
 		const treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 
 		let profile: IConnectionProfile | undefined = undefined;
@@ -61,9 +60,7 @@ export class OEAction extends ExecuteCommandAction {
 		if (profile) {
 			return super.run(profile).then(() => {
 				treeSelectionHandler.onTreeActionStateChange(false);
-				return true;
 			});
 		}
-		return false;
 	}
 }

@@ -126,7 +126,7 @@ export const nodeTypeToUrnNameMapping: { [oeNodeType: string]: SmoMapping } = {
  * Builds the URN string for a given ObjectExplorerNode in the form understood by SsmsMin
  * @param node The node to get the URN of
  */
-export async function buildUrn(node: azdata.objectexplorer.ObjectExplorerNode): Promise<string> {
+export async function buildUrn(node?: azdata.objectexplorer.ObjectExplorerNode): Promise<string> {
 	let urnNodes: string[] = [];
 	while (node) {
 		// Server is special since it's a connection node - always add it as the root

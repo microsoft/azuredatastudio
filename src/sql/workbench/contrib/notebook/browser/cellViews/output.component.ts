@@ -6,12 +6,12 @@ import 'vs/css!./code';
 import 'vs/css!./media/output';
 
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, SimpleChange, AfterViewInit, forwardRef, ChangeDetectorRef, ComponentRef, ComponentFactoryResolver } from '@angular/core';
+import * as Mark from 'mark.js';
 import { Event } from 'vs/base/common/event';
 import { nb } from 'azdata';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import * as outputProcessor from 'sql/workbench/contrib/notebook/browser/models/outputProcessor';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
-import * as DOM from 'vs/base/browser/dom';
 import { ComponentHostDirective } from 'sql/base/browser/componentHost.directive';
 import { Extensions, IMimeComponent, IMimeComponentRegistry } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRegistry';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
@@ -20,11 +20,14 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { localize } from 'vs/nls';
 import * as types from 'vs/base/common/types';
 import { getErrorMessage } from 'vs/base/common/errors';
-import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
+import { CellView, findHighlightClass, findRangeSpecificClass } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
+import { INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 export const OUTPUT_SELECTOR: string = 'output-component';
 const USER_SELECT_CLASS = 'actionselect';
-
+const GRID_CLASS = '[class="grid-canvas"]';
 const componentRegistry = <IMimeComponentRegistry>Registry.as(Extensions.MimeComponentContribution);
 
 @Component({
@@ -32,7 +35,7 @@ const componentRegistry = <IMimeComponentRegistry>Registry.as(Extensions.MimeCom
 	templateUrl: decodeURI(require.toUrl('./output.component.html'))
 })
 export class OutputComponent extends CellView implements OnInit, AfterViewInit {
-	@ViewChild('output', { read: ElementRef }) private outputElement: ElementRef;
+	@ViewChild('output', { read: ElementRef }) protected override output: ElementRef;
 	@ViewChild(ComponentHostDirective) componentHost: ComponentHostDirective;
 	@Input() cellOutput: nb.ICellOutput;
 	@Input() cellModel: ICellModel;
@@ -41,16 +44,14 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	private _initialized: boolean = false;
 	private _activeCellId: string;
 	private _componentInstance: IMimeComponent;
-	private _batchId?: number;
-	private _id?: number;
-	private _queryRunnerUri?: string;
 	public errorText: string;
 
 	constructor(
 		@Inject(IThemeService) private _themeService: IThemeService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _ref: ElementRef,
-		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver
+		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
+		@Inject(INotebookService) override notebookService: INotebookService
 	) {
 		super();
 	}
@@ -58,7 +59,6 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	ngOnInit() {
 		this._register(this._themeService.onDidColorThemeChange(event => this.updateTheme(event)));
 		this.loadComponent();
-		this.layout();
 		this._initialized = true;
 		this._register(Event.debounce(this.cellModel.notebookModel.layoutChanged, (l, e) => e, 50, /*leading=*/false)
 			(() => this.layout()));
@@ -82,14 +82,14 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 			return;
 		}
 		if (userSelect) {
-			DOM.addClass(this.nativeOutputElement, USER_SELECT_CLASS);
+			this.nativeOutputElement.classList.add(USER_SELECT_CLASS);
 		} else {
-			DOM.removeClass(this.nativeOutputElement, USER_SELECT_CLASS);
+			this.nativeOutputElement.classList.remove(USER_SELECT_CLASS);
 		}
 	}
 
 	private get nativeOutputElement() {
-		return this.outputElement ? this.outputElement.nativeElement : undefined;
+		return this.output ? this.output.nativeElement : undefined;
 	}
 
 	public layout(): void {
@@ -103,18 +103,6 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 			this.loadComponent();
 		}
 		return this._componentInstance;
-	}
-
-	@Input() set batchId(value: number) {
-		this._batchId = value;
-	}
-
-	@Input() set id(value: number) {
-		this._id = value;
-	}
-
-	@Input() set queryRunnerUri(value: string) {
-		this._queryRunnerUri = value;
 	}
 
 	get trustedMode(): boolean {
@@ -165,9 +153,11 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 		);
 		this.errorText = undefined;
 		if (!mimeType) {
-			this.errorText = localize('noMimeTypeFound', "No {0}renderer could be found for output. It has the following MIME types: {1}",
-				options.trusted ? '' : localize('safe', "safe "),
-				Object.keys(options.data).join(', '));
+			const mimeTypesWithoutRenderer = Object.keys(options.data);
+			this.errorText = options.trusted ?
+				localize('noMimeTypeFound', "No renderer could be found for output. It has the following MIME types: {0}", mimeTypesWithoutRenderer.join(', ')) :
+				localize('noSafeMimeTypeFound', "No safe renderer could be found for output. It has the following MIME types: {0}", mimeTypesWithoutRenderer.join(', '));
+			this.cellModel?.notebookModel?.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.MIMETypeRendererNotFound, { mime_types: mimeTypesWithoutRenderer });
 			return;
 		}
 		let selector = componentRegistry.getCtorFromMimeType(mimeType);
@@ -189,11 +179,6 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 			this._componentInstance.cellModel = this.cellModel;
 			this._componentInstance.cellOutput = this.cellOutput;
 			this._componentInstance.bundleOptions = options;
-			if (this._queryRunnerUri) {
-				this._componentInstance.batchId = this._batchId;
-				this._componentInstance.id = this._id;
-				this._componentInstance.queryRunnerUri = this._queryRunnerUri;
-			}
 			this._changeref.detectChanges();
 			let el = <HTMLElement>componentRef.location.nativeElement;
 
@@ -209,4 +194,117 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	public cellGuid(): string {
 		return this.cellModel.cellGuid;
 	}
+
+	override isCellOutput = true;
+
+	getCellModel(): ICellModel {
+		return this.cellModel;
+	}
+
+	protected override addDecoration(range?: NotebookRange): void {
+		range = range ?? this.highlightRange;
+		if (this.output && this.output.nativeElement) {
+			this.highlightAllMatches();
+			if (range) {
+				let elements = this.getHtmlElements();
+				if (elements.length === 1 && elements[0].nodeName === 'MIME-OUTPUT') {
+					let markCurrent = new Mark(elements[0]);
+					markCurrent.markRanges([{
+						start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
+						length: range.endColumn - range.startColumn
+					}], {
+						className: findRangeSpecificClass,
+						each: function (node, range) {
+							// node is the marked DOM element
+							node.scrollIntoView({ block: 'center' });
+						}
+					});
+				} else if (elements?.length >= range.startLineNumber) {
+					let elementContainingText = elements[range.startLineNumber - 1];
+					let markCurrent = new Mark(elementContainingText); // to highlight the current item of them all.
+					if (elementContainingText.children.length > 0) {
+						markCurrent = new Mark(elementContainingText.children[range.startColumn]);
+						markCurrent?.mark(this.searchTerm, {
+							className: findRangeSpecificClass,
+							each: function (node) {
+								// node is the marked DOM element
+								node.scrollIntoView({ block: 'center' });
+							}
+						});
+					}
+				}
+			}
+		}
+	}
+
+	protected override highlightAllMatches(): void {
+		if (this.output && this.output.nativeElement) {
+			let markAllOccurances = new Mark(this.output.nativeElement); // to highlight all occurances in the element.
+			if (!this._model) {
+				this._model = this.getCellModel().notebookModel;
+			}
+			let editor = this.notebookService.findNotebookEditor(this._model?.notebookUri);
+			if (editor) {
+				let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
+				if (findModel?.findMatches?.length > 0) {
+					this.searchTerm = findModel.findExpression;
+					markAllOccurances.mark(this.searchTerm, {
+						className: findHighlightClass,
+						separateWordSearch: true,
+					});
+					// if there are grids
+					let grids = document.querySelectorAll<HTMLElement>(GRID_CLASS);
+					grids?.forEach(g => {
+						markAllOccurances = new Mark(g);
+						markAllOccurances.mark(this.searchTerm, {
+							className: findHighlightClass
+						});
+					});
+				}
+			}
+		}
+	}
+
+	protected override removeDecoration(range?: NotebookRange): void {
+		if (this.output && this.output.nativeElement) {
+			if (range) {
+				let elements = this.getHtmlElements();
+				let elementContainingText = elements[range.startLineNumber - 1];
+				if (elements.length === 1 && elements[0].nodeName === 'MIME-OUTPUT') {
+					elementContainingText = elements[0];
+				}
+				let markCurrent = new Mark(elementContainingText);
+				markCurrent.unmark({ acrossElements: true, className: findRangeSpecificClass });
+			} else {
+				let markAllOccurances = new Mark(this.output.nativeElement);
+				markAllOccurances.unmark({ acrossElements: true, className: findHighlightClass });
+				markAllOccurances.unmark({ acrossElements: true, className: findRangeSpecificClass });
+				this.highlightRange = undefined;
+				// if there is a grid
+				let grids = document.querySelectorAll<HTMLElement>(GRID_CLASS);
+				grids?.forEach(g => {
+					markAllOccurances = new Mark(g);
+					markAllOccurances.unmark({ acrossElements: true, className: findHighlightClass });
+					markAllOccurances.unmark({ acrossElements: true, className: findRangeSpecificClass });
+				});
+			}
+		}
+	}
+
+	protected override getHtmlElements(): any[] {
+		let children = [];
+		let slickGrids = this.output.nativeElement.querySelectorAll(GRID_CLASS);
+		if (slickGrids.length > 0) {
+			slickGrids.forEach(grid => {
+				children.push(...grid.children);
+			});
+		} else {
+			// if the decoration range belongs to code cell output and output is a stream of data
+			// it's in <mime-output> tag of the output.
+			let outputMessages = this.output.nativeElement.querySelectorAll('mime-output');
+			children.push(...outputMessages);
+		}
+		return children;
+	}
+
 }

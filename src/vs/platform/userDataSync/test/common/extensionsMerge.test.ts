@@ -4,647 +4,1369 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { ISyncExtension } from 'vs/platform/userDataSync/common/userDataSync';
 import { merge } from 'vs/platform/userDataSync/common/extensionsMerge';
+import { ILocalSyncExtension, ISyncExtension } from 'vs/platform/userDataSync/common/userDataSync';
 
 suite('ExtensionsMerge', () => {
 
 	test('merge returns local extension if remote does not exist', () => {
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aLocalSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aLocalSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
 
-		const actual = merge(localExtensions, null, null, [], []);
+		const actual = merge(localExtensions, null, null, [], [], []);
 
-		assert.deepEqual(actual.added, []);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, localExtensions);
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, localExtensions);
 	});
 
 	test('merge returns local extension if remote does not exist with ignored extensions', () => {
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aLocalSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aLocalSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
-		const expected: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const expected = [
+			localExtensions[1],
+			localExtensions[2],
 		];
 
-		const actual = merge(localExtensions, null, null, [], ['a']);
+		const actual = merge(localExtensions, null, null, [], ['a'], []);
 
-		assert.deepEqual(actual.added, []);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, expected);
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, expected);
 	});
 
 	test('merge returns local extension if remote does not exist with ignored extensions (ignore case)', () => {
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aLocalSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aLocalSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
-		const expected: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const expected = [
+			localExtensions[1],
+			localExtensions[2],
 		];
 
-		const actual = merge(localExtensions, null, null, [], ['A']);
+		const actual = merge(localExtensions, null, null, [], ['A'], []);
 
-		assert.deepEqual(actual.added, []);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, expected);
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, expected);
 	});
 
 	test('merge returns local extension if remote does not exist with skipped extensions', () => {
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aLocalSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aLocalSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
-		const skippedExtension: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
+		const skippedExtension = [
+			anSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
 		];
-		const expected: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
-		];
+		const expected = [...localExtensions];
 
-		const actual = merge(localExtensions, null, null, skippedExtension, []);
+		const actual = merge(localExtensions, null, null, skippedExtension, [], []);
 
-		assert.deepEqual(actual.added, []);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, expected);
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, expected);
 	});
 
 	test('merge returns local extension if remote does not exist with skipped and ignored extensions', () => {
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aLocalSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aLocalSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
-		const skippedExtension: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
+		const skippedExtension = [
+			anSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
 		];
-		const expected: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
-		];
+		const expected = [localExtensions[1], localExtensions[2]];
 
-		const actual = merge(localExtensions, null, null, skippedExtension, ['a']);
+		const actual = merge(localExtensions, null, null, skippedExtension, ['a'], []);
 
-		assert.deepEqual(actual.added, []);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, expected);
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, expected);
 	});
 
 	test('merge local and remote extensions when there is no base', () => {
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aLocalSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const remoteExtensions = [
+			anSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
-		const expected: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const expected = [
+			anExpectedSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anExpectedSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
+			anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			anExpectedSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, null, [], []);
+		const actual = merge(localExtensions, remoteExtensions, null, [], [], []);
 
-		assert.deepEqual(actual.added, [{ identifier: { id: 'b', uuid: 'b' }, installed: true }, { identifier: { id: 'c', uuid: 'c' }, installed: true }]);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, expected);
+		assert.deepStrictEqual(actual.local.added, [
+			anExpectedSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anExpectedSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
+		]);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, expected);
 	});
 
 	test('merge local and remote extensions when there is no base and with ignored extensions', () => {
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aLocalSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const remoteExtensions = [
+			anSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
-		const expected: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const expected = [
+			anExpectedSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anExpectedSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
+			anExpectedSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, null, [], ['a']);
+		const actual = merge(localExtensions, remoteExtensions, null, [], ['a'], []);
 
-		assert.deepEqual(actual.added, [{ identifier: { id: 'b', uuid: 'b' }, installed: true }, { identifier: { id: 'c', uuid: 'c' }, installed: true }]);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, expected);
+		assert.deepStrictEqual(actual.local.added, [
+			anExpectedSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anExpectedSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
+		]);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, expected);
 	});
 
 	test('merge local and remote extensions when remote is moved forwarded', () => {
-		const baseExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const baseExtensions = [
+			anSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			anSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aLocalSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const remoteExtensions = [
+			anSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], []);
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], [], []);
 
-		assert.deepEqual(actual.added, [{ identifier: { id: 'b', uuid: 'b' }, installed: true }, { identifier: { id: 'c', uuid: 'c' }, installed: true }]);
-		assert.deepEqual(actual.removed, [{ id: 'a', uuid: 'a' }, { id: 'd', uuid: 'd' }]);
-		assert.deepEqual(actual.updated, []);
-		assert.equal(actual.remote, null);
+		assert.deepStrictEqual(actual.local.added, [
+			anExpectedSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anExpectedSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
+		]);
+		assert.deepStrictEqual(actual.local.removed, [{ id: 'a', uuid: 'a' }, { id: 'd', uuid: 'd' }]);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.strictEqual(actual.remote, null);
 	});
 
 	test('merge local and remote extensions when remote is moved forwarded with disabled extension', () => {
-		const baseExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aLocalSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, disabled: true, installed: true },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aRemoteSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' }, disabled: true }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], []);
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], [], []);
 
-		assert.deepEqual(actual.added, [{ identifier: { id: 'b', uuid: 'b' }, installed: true }, { identifier: { id: 'c', uuid: 'c' }, installed: true }]);
-		assert.deepEqual(actual.removed, [{ id: 'a', uuid: 'a' }]);
-		assert.deepEqual(actual.updated, [{ identifier: { id: 'd', uuid: 'd' }, disabled: true, installed: true }]);
-		assert.equal(actual.remote, null);
+		assert.deepStrictEqual(actual.local.added, [
+			anExpectedSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anExpectedSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
+		]);
+		assert.deepStrictEqual(actual.local.removed, [{ id: 'a', uuid: 'a' }]);
+		assert.deepStrictEqual(actual.local.updated, [anExpectedSyncExtension({ identifier: { id: 'd', uuid: 'd' }, disabled: true })]);
+		assert.strictEqual(actual.remote, null);
 	});
 
 	test('merge local and remote extensions when remote moved forwarded with ignored extensions', () => {
-		const baseExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aLocalSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aRemoteSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], ['a']);
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], ['a'], []);
 
-		assert.deepEqual(actual.added, [{ identifier: { id: 'b', uuid: 'b' }, installed: true }, { identifier: { id: 'c', uuid: 'c' }, installed: true }]);
-		assert.deepEqual(actual.removed, [{ id: 'd', uuid: 'd' }]);
-		assert.deepEqual(actual.updated, []);
-		assert.equal(actual.remote, null);
+		assert.deepStrictEqual(actual.local.added, [
+			anExpectedSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anExpectedSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
+		]);
+		assert.deepStrictEqual(actual.local.removed, [{ id: 'd', uuid: 'd' }]);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.strictEqual(actual.remote, null);
 	});
 
 	test('merge local and remote extensions when remote is moved forwarded with skipped extensions', () => {
-		const baseExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const skippedExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
+		const skippedExtensions = [
+			anSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aRemoteSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, baseExtensions, skippedExtensions, []);
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, skippedExtensions, [], []);
 
-		assert.deepEqual(actual.added, [{ identifier: { id: 'b', uuid: 'b' }, installed: true }, { identifier: { id: 'c', uuid: 'c' }, installed: true }]);
-		assert.deepEqual(actual.removed, [{ id: 'd', uuid: 'd' }]);
-		assert.deepEqual(actual.updated, []);
-		assert.equal(actual.remote, null);
+		assert.deepStrictEqual(actual.local.added, [
+			anExpectedSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anExpectedSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
+		]);
+		assert.deepStrictEqual(actual.local.removed, [{ id: 'd', uuid: 'd' }]);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.strictEqual(actual.remote, null);
 	});
 
 	test('merge local and remote extensions when remote is moved forwarded with skipped and ignored extensions', () => {
-		const baseExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const skippedExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
+		const skippedExtensions = [
+			anSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aRemoteSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, baseExtensions, skippedExtensions, ['b']);
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, skippedExtensions, ['b'], []);
 
-		assert.deepEqual(actual.added, [{ identifier: { id: 'c', uuid: 'c' }, installed: true }]);
-		assert.deepEqual(actual.removed, [{ id: 'd', uuid: 'd' }]);
-		assert.deepEqual(actual.updated, []);
-		assert.equal(actual.remote, null);
+		assert.deepStrictEqual(actual.local.added, [anExpectedSyncExtension({ identifier: { id: 'c', uuid: 'c' } })]);
+		assert.deepStrictEqual(actual.local.removed, [{ id: 'd', uuid: 'd' }]);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.strictEqual(actual.remote, null);
 	});
 
 	test('merge local and remote extensions when local is moved forwarded', () => {
-		const baseExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aLocalSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
+		];
+		const expected = [
+			anExpectedSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anExpectedSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], []);
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], [], []);
 
-		assert.deepEqual(actual.added, []);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, localExtensions);
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, expected);
 	});
 
 	test('merge local and remote extensions when local is moved forwarded with disabled extensions', () => {
-		const baseExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, disabled: true, installed: true },
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, disabled: true }),
+			aLocalSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aLocalSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
+		];
+		const expected = [
+			anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, disabled: true }),
+			anExpectedSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anExpectedSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], []);
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], [], []);
 
-		assert.deepEqual(actual.added, []);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, localExtensions);
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, expected);
 	});
 
 	test('merge local and remote extensions when local is moved forwarded with ignored settings', () => {
-		const baseExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aLocalSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], ['b']);
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], ['b'], []);
 
-		assert.deepEqual(actual.added, []);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, [
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, [
+			anExpectedSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		]);
 	});
 
 	test('merge local and remote extensions when local is moved forwarded with skipped extensions', () => {
-		const baseExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const skippedExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const skippedExtensions = [
+			anSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aLocalSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const expected: ISyncExtension[] = [
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const expected = [
+			anExpectedSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
+			anExpectedSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anExpectedSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, baseExtensions, skippedExtensions, []);
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, skippedExtensions, [], []);
 
-		assert.deepEqual(actual.added, []);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, expected);
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, expected);
 	});
 
 	test('merge local and remote extensions when local is moved forwarded with skipped and ignored extensions', () => {
-		const baseExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const skippedExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const skippedExtensions = [
+			anSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aLocalSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const expected: ISyncExtension[] = [
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
+		const expected = [
+			anExpectedSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
+			anExpectedSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, baseExtensions, skippedExtensions, ['c']);
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, skippedExtensions, ['c'], []);
 
-		assert.deepEqual(actual.added, []);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, expected);
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, expected);
 	});
 
 	test('merge local and remote extensions when both moved forwarded', () => {
-		const baseExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aLocalSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aLocalSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'e', uuid: 'e' }, installed: true },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
+			aRemoteSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aRemoteSyncExtension({ identifier: { id: 'e', uuid: 'e' } }),
 		];
-		const expected: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'e', uuid: 'e' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const expected = [
+			anExpectedSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anExpectedSyncExtension({ identifier: { id: 'e', uuid: 'e' } }),
+			anExpectedSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], []);
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], [], []);
 
-		assert.deepEqual(actual.added, [{ identifier: { id: 'e', uuid: 'e' }, installed: true }]);
-		assert.deepEqual(actual.removed, [{ id: 'a', uuid: 'a' }]);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, expected);
+		assert.deepStrictEqual(actual.local.added, [anExpectedSyncExtension({ identifier: { id: 'e', uuid: 'e' } })]);
+		assert.deepStrictEqual(actual.local.removed, [{ id: 'a', uuid: 'a' }]);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, expected);
 	});
 
 	test('merge local and remote extensions when both moved forwarded with ignored extensions', () => {
-		const baseExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aLocalSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aLocalSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'e', uuid: 'e' }, installed: true },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
+			aRemoteSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aRemoteSyncExtension({ identifier: { id: 'e', uuid: 'e' } }),
 		];
-		const expected: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'e', uuid: 'e' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const expected = [
+			anExpectedSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anExpectedSyncExtension({ identifier: { id: 'e', uuid: 'e' } }),
+			anExpectedSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], ['a', 'e']);
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], ['a', 'e'], []);
 
-		assert.deepEqual(actual.added, []);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, expected);
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, expected);
 	});
 
 	test('merge local and remote extensions when both moved forwarded with skipped extensions', () => {
-		const baseExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const skippedExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
+		const skippedExtensions = [
+			anSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
 		];
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aLocalSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'e', uuid: 'e' }, installed: true },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
+			aRemoteSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aRemoteSyncExtension({ identifier: { id: 'e', uuid: 'e' } }),
 		];
-		const expected: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'e', uuid: 'e' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const expected = [
+			anExpectedSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anExpectedSyncExtension({ identifier: { id: 'e', uuid: 'e' } }),
+			anExpectedSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, baseExtensions, skippedExtensions, []);
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, skippedExtensions, [], []);
 
-		assert.deepEqual(actual.added, [{ identifier: { id: 'e', uuid: 'e' }, installed: true }]);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, expected);
+		assert.deepStrictEqual(actual.local.added, [anExpectedSyncExtension({ identifier: { id: 'e', uuid: 'e' } })]);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, expected);
 	});
 
 	test('merge local and remote extensions when both moved forwarded with skipped and ignoredextensions', () => {
-		const baseExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const skippedExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
+		const skippedExtensions = [
+			anSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
 		];
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aLocalSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'e', uuid: 'e' }, installed: true },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
+			aRemoteSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aRemoteSyncExtension({ identifier: { id: 'e', uuid: 'e' } }),
 		];
-		const expected: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'e', uuid: 'e' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const expected = [
+			anExpectedSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anExpectedSyncExtension({ identifier: { id: 'e', uuid: 'e' } }),
+			anExpectedSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, baseExtensions, skippedExtensions, ['e']);
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, skippedExtensions, ['e'], []);
 
-		assert.deepEqual(actual.added, []);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, expected);
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, expected);
 	});
 
 	test('merge when remote extension has no uuid and different extension id case', () => {
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aLocalSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			aLocalSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'A' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'A' } }),
+			aRemoteSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
 		];
-		const expected: ISyncExtension[] = [
-			{ identifier: { id: 'A', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'd', uuid: 'd' }, installed: true },
-			{ identifier: { id: 'b', uuid: 'b' }, installed: true },
-			{ identifier: { id: 'c', uuid: 'c' }, installed: true },
+		const expected = [
+			anExpectedSyncExtension({ identifier: { id: 'A', uuid: 'a' } }),
+			anExpectedSyncExtension({ identifier: { id: 'd', uuid: 'd' } }),
+			anExpectedSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anExpectedSyncExtension({ identifier: { id: 'c', uuid: 'c' } }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, null, [], []);
+		const actual = merge(localExtensions, remoteExtensions, null, [], [], []);
 
-		assert.deepEqual(actual.added, [{ identifier: { id: 'd', uuid: 'd' }, installed: true }]);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, expected);
+		assert.deepStrictEqual(actual.local.added, [anExpectedSyncExtension({ identifier: { id: 'd', uuid: 'd' } })]);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, expected);
 	});
 
 	test('merge when remote extension is not an installed extension', () => {
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
-			{ identifier: { id: 'b', uuid: 'b' } },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+			aRemoteSyncExtension({ identifier: { id: 'b', uuid: 'b' }, installed: false }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, null, [], []);
+		const actual = merge(localExtensions, remoteExtensions, null, [], [], []);
 
-		assert.deepEqual(actual.added, []);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, null);
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote, null);
 	});
 
 	test('merge when remote extension is not an installed extension but is an installed extension locally', () => {
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' } },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, installed: false }),
+		];
+		const expected = [
+			anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, null, [], []);
+		const actual = merge(localExtensions, remoteExtensions, null, [], [], []);
 
-		assert.deepEqual(actual.added, []);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, localExtensions);
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, expected);
 	});
 
 	test('merge when an extension is not an installed extension remotely and does not exist locally', () => {
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' } },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, installed: false }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' } },
-			{ identifier: { id: 'b', uuid: 'b' } },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, installed: false }),
+			aRemoteSyncExtension({ identifier: { id: 'b', uuid: 'b' }, installed: false }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, remoteExtensions, [], []);
+		const actual = merge(localExtensions, remoteExtensions, remoteExtensions, [], [], []);
 
-		assert.deepEqual(actual.added, []);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, null);
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote, null);
 	});
 
 	test('merge when an extension is an installed extension remotely but not locally and updated locally', () => {
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, disabled: true },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, disabled: true }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
 		];
-		const expected: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true, disabled: true },
+		const expected = [
+			anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, disabled: true }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, remoteExtensions, [], []);
+		const actual = merge(localExtensions, remoteExtensions, remoteExtensions, [], [], []);
 
-		assert.deepEqual(actual.added, []);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, expected);
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, expected);
 	});
 
 	test('merge when an extension is an installed extension remotely but not locally and updated remotely', () => {
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' } },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' }, installed: true, disabled: true },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, disabled: true }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, localExtensions, [], []);
+		const actual = merge(localExtensions, remoteExtensions, localExtensions, [], [], []);
 
-		assert.deepEqual(actual.added, []);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, remoteExtensions);
-		assert.deepEqual(actual.remote, null);
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, [
+			anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, disabled: true }),
+		]);
+		assert.deepStrictEqual(actual.remote, null);
 	});
 
 	test('merge not installed extensions', () => {
-		const localExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'a', uuid: 'a' } },
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, installed: false }),
 		];
-		const remoteExtensions: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' } },
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'b', uuid: 'b' }, installed: false }),
 		];
 		const expected: ISyncExtension[] = [
-			{ identifier: { id: 'b', uuid: 'b' } },
-			{ identifier: { id: 'a', uuid: 'a' } },
+			anExpectedBuiltinSyncExtension({ identifier: { id: 'b', uuid: 'b' } }),
+			anExpectedBuiltinSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
 		];
 
-		const actual = merge(localExtensions, remoteExtensions, null, [], []);
+		const actual = merge(localExtensions, remoteExtensions, null, [], [], []);
 
-		assert.deepEqual(actual.added, []);
-		assert.deepEqual(actual.removed, []);
-		assert.deepEqual(actual.updated, []);
-		assert.deepEqual(actual.remote, expected);
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, expected);
 	});
+
+	test('merge: remote extension with prerelease is added', () => {
+		const localExtensions: ILocalSyncExtension[] = [];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, null, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true })]);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: local extension with prerelease is added', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true }),
+		];
+		const remoteExtensions: ILocalSyncExtension[] = [];
+
+		const actual = merge(localExtensions, remoteExtensions, null, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true })]);
+	});
+
+	test('merge: remote extension with prerelease is added when local extension without prerelease is added', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, null, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true })]);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: remote extension without prerelease is added when local extension with prerelease is added', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, null, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' } })]);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: remote extension is changed to prerelease', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, localExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true })]);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: remote extension is changed to release', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, localExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' } })]);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: local extension is changed to prerelease', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, remoteExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true })]);
+	});
+
+	test('merge: local extension is changed to release', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, remoteExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, [aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } })]);
+	});
+
+	test('merge: local extension not an installed extension - remote preRelease property is taken precedence when there are no updates', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, installed: false }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, remoteExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: local extension not an installed extension - remote preRelease property is taken precedence when there are updates locally', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, installed: false, disabled: true }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, remoteExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true, disabled: true })]);
+	});
+
+	test('merge: local extension not an installed extension - remote preRelease property is taken precedence when there are updates remotely', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, installed: false }),
+		];
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true, disabled: true }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, preRelease: true, disabled: true })]);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: local extension not an installed extension - remote version is taken precedence when there are no updates', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, installed: false }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '1.1.0' }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, remoteExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: local extension not an installed extension - remote version is taken precedence when there are updates locally', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, installed: false, disabled: true }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '1.1.0' }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, remoteExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '1.1.0', disabled: true })]);
+	});
+
+	test('merge: local extension not an installed extension - remote version property is taken precedence when there are updates remotely', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, installed: false }),
+		];
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '1.1.0' }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '1.1.0', disabled: true }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '1.1.0', disabled: true })]);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: base has builtin extension, local does not have extension, remote has extension installed', () => {
+		const localExtensions: ILocalSyncExtension[] = [];
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '1.1.0', installed: false }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '1.1.0' }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '1.1.0' })]);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: base has installed extension, local has installed extension, remote has extension builtin', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, installed: false }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, [{ id: 'a', uuid: 'a' }]);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: base has installed extension, local has builtin extension, remote does not has extension', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, installed: false }),
+		];
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+		const remoteExtensions: ILocalSyncExtension[] = [];
+
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, [anExpectedBuiltinSyncExtension({ identifier: { id: 'a', uuid: 'a' } })]);
+	});
+
+	test('merge: base has builtin extension, local has installed extension, remote has builtin extension with updated state', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, installed: false }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, installed: false, state: { 'a': 1 } }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], [], [{ id: 'a', uuid: 'a' }]);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, state: { 'a': 1 } })]);
+		assert.deepStrictEqual(actual.remote?.all, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, state: { 'a': 1 } })]);
+	});
+
+	test('merge: base has installed extension, last time synced as builtin extension, local has installed extension, remote has builtin extension with updated state', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, installed: false, state: { 'a': 1 } }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], [], [{ id: 'a', uuid: 'a' }]);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, state: { 'a': 1 } })]);
+		assert.deepStrictEqual(actual.remote?.all, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, state: { 'a': 1 } })]);
+	});
+
+	test('merge: base has builtin extension, local does not have extension, remote has builtin extension', () => {
+		const localExtensions: ILocalSyncExtension[] = [];
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '1.1.0', installed: false }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '1.1.0', installed: false }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: base has installed extension, last synced as builtin, local does not have extension, remote has installed extension', () => {
+		const localExtensions: ILocalSyncExtension[] = [];
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '1.1.0' }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '1.1.0' }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], [], [{ id: 'a', uuid: 'a' }]);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: base has builtin extension, last synced as builtin, local does not have extension, remote has installed extension', () => {
+		const localExtensions: ILocalSyncExtension[] = [];
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '1.1.0', installed: false }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '1.1.0' }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], [], [{ id: 'a', uuid: 'a' }]);
+
+		assert.deepStrictEqual(actual.local.added, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '1.1.0' })]);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: remote extension with pinned is added', () => {
+		const localExtensions: ILocalSyncExtension[] = [];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, null, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true })]);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: local extension with pinned is added', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true }),
+		];
+		const remoteExtensions: ILocalSyncExtension[] = [];
+
+		const actual = merge(localExtensions, remoteExtensions, null, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true })]);
+	});
+
+	test('merge: remote extension with pinned is added when local extension without pinned is added', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, null, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true })]);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: remote extension without pinned is added when local extension with pinned is added', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, null, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' } })]);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: remote extension is changed to pinned', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, localExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true })]);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: remote extension is changed to unpinned', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, localExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' } })]);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: local extension is changed to pinned', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, remoteExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true })]);
+	});
+
+	test('merge: local extension is changed to unpinned', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, remoteExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, [aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } })]);
+	});
+
+	test('merge: local extension not an installed extension - remote pinned property is taken precedence when there are no updates', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, installed: false }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, remoteExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: local extension not an installed extension - remote pinned property is taken precedence when there are updates locally', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, installed: false, disabled: true }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, remoteExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true, disabled: true })]);
+	});
+
+	test('merge: local extension not an installed extension - remote pinned property is taken precedence when there are updates remotely', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, installed: false }),
+		];
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true, disabled: true }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true, disabled: true })]);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: local extension is changed to pinned and version changed', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '0.0.1', pinned: true }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, remoteExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '0.0.1', pinned: true })]);
+	});
+
+	test('merge: local extension is changed to unpinned and version changed', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '0.0.1', pinned: true }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, remoteExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote?.all, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' } })]);
+	});
+
+	test('merge: remote extension is changed to pinned and version changed', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '0.0.1', pinned: true }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, localExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '0.0.1', pinned: true })]);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: local extension is changed to pinned and version changed and remote extension is channged to pinned with different version', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '0.0.1', pinned: true }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '0.0.2', pinned: true }),
+		];
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '0.0.2', pinned: true })]);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: remote extension is changed to unpinned and version changed', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '0.0.1', pinned: true }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' } }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, localExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, [anExpectedSyncExtension({ identifier: { id: 'a', uuid: 'a' } })]);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	test('merge: local extension is changed to unpinned and version changed and remote extension is channged to unpinned with different version', () => {
+		const localExtensions = [
+			aLocalSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '0.0.1' }),
+		];
+		const remoteExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, version: '0.0.2' }),
+		];
+		const baseExtensions = [
+			aRemoteSyncExtension({ identifier: { id: 'a', uuid: 'a' }, pinned: true }),
+		];
+
+		const actual = merge(localExtensions, remoteExtensions, baseExtensions, [], [], []);
+
+		assert.deepStrictEqual(actual.local.added, []);
+		assert.deepStrictEqual(actual.local.removed, []);
+		assert.deepStrictEqual(actual.local.updated, []);
+		assert.deepStrictEqual(actual.remote, null);
+	});
+
+	function anExpectedSyncExtension(extension: Partial<ISyncExtension>): ISyncExtension {
+		return {
+			identifier: { id: 'a', uuid: 'a' },
+			version: '1.0.0',
+			pinned: false,
+			preRelease: false,
+			installed: true,
+			...extension
+		};
+	}
+
+	function anExpectedBuiltinSyncExtension(extension: Partial<ISyncExtension>): ISyncExtension {
+		return {
+			identifier: { id: 'a', uuid: 'a' },
+			version: '1.0.0',
+			pinned: false,
+			preRelease: false,
+			...extension
+		};
+	}
+
+	function aLocalSyncExtension(extension: Partial<ILocalSyncExtension>): ILocalSyncExtension {
+		return {
+			identifier: { id: 'a', uuid: 'a' },
+			version: '1.0.0',
+			pinned: false,
+			preRelease: false,
+			installed: true,
+			...extension
+		};
+	}
+
+	function aRemoteSyncExtension(extension: Partial<ILocalSyncExtension>): ILocalSyncExtension {
+		return {
+			identifier: { id: 'a', uuid: 'a' },
+			version: '1.0.0',
+			pinned: false,
+			preRelease: false,
+			installed: true,
+			...extension
+		};
+	}
+
+	function anSyncExtension(extension: Partial<ISyncExtension>): ISyncExtension {
+		return {
+			identifier: { id: 'a', uuid: 'a' },
+			version: '1.0.0',
+			installed: true,
+			...extension
+		};
+	}
 
 });

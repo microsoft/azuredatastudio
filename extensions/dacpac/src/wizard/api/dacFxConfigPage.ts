@@ -4,14 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
-import * as os from 'os';
 import * as path from 'path';
 import * as loc from '../../localizedConstants';
 import { DataTierApplicationWizard, Operation } from '../dataTierApplicationWizard';
 import { DacFxDataModel } from './models';
 import { BasePage } from './basePage';
 import { sanitizeStringForFilename, isValidBasename, isValidBasenameErrorMessage } from './utils';
+import { defaultSaveLocation } from '../common/fileLocationHelper';
 
 export abstract class DacFxConfigPage extends BasePage {
 	protected serverDropdown: azdata.DropDownComponent;
@@ -34,15 +33,20 @@ export abstract class DacFxConfigPage extends BasePage {
 
 	protected async createServerDropdown(isTargetServer: boolean): Promise<azdata.FormComponent> {
 		const serverDropDownTitle = isTargetServer ? loc.targetServer : loc.sourceServer;
-		this.serverDropdown = this.view.modelBuilder.dropDown().withProperties({
+		this.serverDropdown = this.view.modelBuilder.dropDown().withProps({
 			required: true,
 			ariaLabel: serverDropDownTitle
 		}).component();
 
 		// Handle server changes
 		this.serverDropdown.onValueChanged(async () => {
-			this.model.server = (this.serverDropdown.value as ConnectionDropdownValue).connection;
-			this.model.serverName = (this.serverDropdown.value as ConnectionDropdownValue).displayName;
+			const serverDropdownValue = this.serverDropdown.value as ConnectionDropdownValue;
+			if (!serverDropdownValue) {
+				return;
+			}
+
+			this.model.server = serverDropdownValue.connection;
+			this.model.serverName = serverDropdownValue.displayName;
 			if (this.databaseDropdown) {
 				await this.populateDatabaseDropdown();
 			} else {
@@ -75,7 +79,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	protected async createDatabaseTextBox(title: string): Promise<azdata.FormComponent> {
 		this.databaseTextBox = this.view.modelBuilder.inputBox()
 			.withValidation(component => !this.databaseNameExists(component.value))
-			.withProperties({
+			.withProps({
 				required: true,
 				validationErrorMessage: loc.databaseNameExistsErrorMessage
 			}).component();
@@ -93,25 +97,29 @@ export abstract class DacFxConfigPage extends BasePage {
 
 	protected async createDatabaseDropdown(): Promise<azdata.FormComponent> {
 		const databaseDropdownTitle = loc.sourceDatabase;
-		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+		this.databaseDropdown = this.view.modelBuilder.dropDown().withProps({
 			required: true,
 			ariaLabel: databaseDropdownTitle
 		}).component();
 
 		// Handle database changes
-		this.databaseDropdown.onValueChanged(async () => {
-			this.model.database = <string>this.databaseDropdown.value;
+		this.databaseDropdown.onValueChanged(() => {
+			const databaseDropdownValue: string = this.databaseDropdown.value as string;
+			if (!databaseDropdownValue) {
+				return;
+			}
+
+			this.model.database = databaseDropdownValue;
 			this.fileTextBox.value = this.generateFilePathFromDatabaseAndTimestamp();
 			this.model.filePath = this.fileTextBox.value;
 		});
 
-		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).withProperties({
-			required: true
-		}).component();
+		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).component();
 
 		return {
 			component: this.databaseLoader,
-			title: databaseDropdownTitle
+			title: databaseDropdownTitle,
+			required: true
 		};
 	}
 
@@ -158,7 +166,7 @@ export abstract class DacFxConfigPage extends BasePage {
 		this.fileTextBox = this.view.modelBuilder.inputBox().withValidation(
 			component => isValidBasename(component.value)
 		)
-			.withProperties({
+			.withProps({
 				required: true,
 				ariaLive: 'polite'
 			}).component();
@@ -172,10 +180,10 @@ export abstract class DacFxConfigPage extends BasePage {
 		});
 
 		this.fileTextBox.ariaLabel = loc.fileLocation;
-		this.fileButton = this.view.modelBuilder.button().withProperties({
-			label: '•••',
+		this.fileButton = this.view.modelBuilder.button().withProps({
 			title: loc.selectFile,
-			ariaLabel: loc.selectFile
+			ariaLabel: loc.selectFile,
+			iconPath: path.join(this.instance.extensionContextExtensionPath, 'images', 'folder.svg'),
 		}).component();
 	}
 
@@ -192,8 +200,8 @@ export abstract class DacFxConfigPage extends BasePage {
 		// use previous file location if there was one
 		if (this.fileTextBox.value && path.dirname(this.fileTextBox.value)) {
 			return path.dirname(this.fileTextBox.value);
-		} else { // otherwise use the folder open in the Explorer or the home directory
-			return vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : os.homedir();
+		} else { // otherwise use the default save location setting or the home directory
+			return defaultSaveLocation();
 		}
 	}
 

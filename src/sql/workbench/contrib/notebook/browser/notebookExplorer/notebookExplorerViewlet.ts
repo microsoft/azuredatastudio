@@ -6,7 +6,7 @@
 import { localize } from 'vs/nls';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IAction } from 'vs/base/common/actions';
-import { append, $, addClass, toggleClass, Dimension, IFocusTracker, getTotalHeight } from 'vs/base/browser/dom';
+import { $, Dimension, IFocusTracker, getTotalHeight, prepend } from 'vs/base/browser/dom';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -21,43 +21,30 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { ShowViewletAction, Viewlet } from 'vs/workbench/browser/viewlet';
-import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
-import { ViewPaneContainer, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { ViewPane } from 'vs/workbench/browser/parts/views/viewPane';
+import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { NotebookSearchWidget, INotebookExplorerSearchOptions } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchWidget';
-import * as Constants from 'sql/workbench/contrib/notebook/common/constants';
-import { IChangeEvent } from 'vs/workbench/contrib/search/common/searchModel';
+import * as Constants from 'sql/workbench/common/constants';
+import { IChangeEvent } from 'vs/workbench/contrib/search/browser/searchModel';
 import { Delayer } from 'vs/base/common/async';
 import { ITextQuery, IPatternInfo } from 'vs/workbench/services/search/common/search';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
-import { QueryBuilder, ITextQueryBuilderOptions } from 'vs/workbench/contrib/search/common/queryBuilder';
 import { IFileService } from 'vs/platform/files/common/files';
 import { getOutOfWorkspaceEditorResources } from 'vs/workbench/contrib/search/common/search';
 import { NotebookSearchView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearch';
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
-import { isString } from 'vs/base/common/types';
 import { TreeViewPane } from 'vs/workbench/browser/parts/views/treeView';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { ITextQueryBuilderOptions, QueryBuilder } from 'vs/workbench/services/search/common/queryBuilder';
+import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
+import { Codicon } from 'vs/base/common/codicons';
+import { defaultInputBoxStyles, defaultToggleStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export const VIEWLET_ID = 'workbench.view.notebooks';
-
-// Viewlet Action
-export class OpenNotebookExplorerViewletAction extends ShowViewletAction {
-	public static ID = VIEWLET_ID;
-	public static LABEL = localize('showNotebookExplorer', "Show Notebooks");
-
-	constructor(
-		id: string,
-		label: string,
-		@IViewletService viewletService: IViewletService,
-		@IEditorGroupsService editorGroupService: IEditorGroupsService,
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService
-	) {
-		super(id, label, VIEWLET_ID, viewletService, editorGroupService, layoutService);
-	}
-}
 
 export class NotebookExplorerViewletViewsContribution implements IWorkbenchContribution {
 
@@ -85,26 +72,9 @@ export class NotebookExplorerViewletViewsContribution implements IWorkbenchContr
 	}
 }
 
-export class NotebookExplorerViewlet extends Viewlet {
-	constructor(
-		@ITelemetryService telemetryService: ITelemetryService,
-		@IStorageService protected storageService: IStorageService,
-		@IInstantiationService protected instantiationService: IInstantiationService,
-		@IThemeService themeService: IThemeService,
-		@IContextMenuService protected contextMenuService: IContextMenuService,
-		@IExtensionService protected extensionService: IExtensionService,
-		@IWorkspaceContextService protected contextService: IWorkspaceContextService,
-		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
-		@IConfigurationService protected configurationService: IConfigurationService
-	) {
-		super(VIEWLET_ID, instantiationService.createInstance(NotebookExplorerViewPaneContainer), telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService, layoutService, configurationService);
-	}
-}
-
 export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 	private root: HTMLElement;
 	private static readonly MAX_TEXT_RESULTS = 10000;
-	private notebookSourcesBox: HTMLElement;
 	private searchWidgetsContainerElement!: HTMLElement;
 	searchWidget!: NotebookSearchWidget;
 	private inputBoxFocused: IContextKey<boolean>;
@@ -126,7 +96,8 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		@IMenuService private menuService: IMenuService,
 		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
-		@IFileService private readonly fileService: IFileService
+		@IFileService private readonly fileService: IFileService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		super(VIEWLET_ID, { mergeViewWithContainerWhenSingleView: true }, instantiationService, configurationService, layoutService, contextMenuService, telemetryService, extensionService, themeService, storageService, contextService, viewDescriptorService);
 		this.inputBoxFocused = Constants.InputBoxFocusedKey.bindTo(this.contextKeyService);
@@ -134,16 +105,13 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		this.queryBuilder = this.instantiationService.createInstance(QueryBuilder);
 	}
 
-	create(parent: HTMLElement): void {
-		addClass(parent, 'notebookExplorer-viewlet');
+	override create(parent: HTMLElement): void {
 		this.root = parent;
+		super.create(parent);
+		parent.classList.add('notebookExplorer-viewlet');
 
-		this.searchWidgetsContainerElement = append(this.root, $('.header'));
+		this.searchWidgetsContainerElement = prepend(parent, $('.header'));
 		this.createSearchWidget(this.searchWidgetsContainerElement);
-
-		this.notebookSourcesBox = append(this.root, $('.notebookSources'));
-
-		return super.create(this.notebookSourcesBox);
 	}
 
 	private createSearchWidget(container: HTMLElement): void {
@@ -155,7 +123,9 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 			isWholeWords: false,
 			searchHistory: [],
 			replaceHistory: [],
-			preserveCase: false
+			preserveCase: false,
+			inputBoxStyles: defaultInputBoxStyles,
+			toggleStyles: defaultToggleStyles
 		}));
 
 
@@ -186,7 +156,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		return false;
 	}
 
-	triggerQueryChange(_options?: { preserveFocus?: boolean, triggeredOnType?: boolean, delay?: number }) {
+	triggerQueryChange(_options?: { preserveFocus?: boolean; triggeredOnType?: boolean; delay?: number }) {
 		const options = { preserveFocus: true, triggeredOnType: false, delay: 0, ..._options };
 
 		if (!this.pauseSearching) {
@@ -260,25 +230,59 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 			onQueryValidationError(err);
 			return;
 		}
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.SearchStarted)
+			.withAdditionalProperties({ triggeredOnType: triggeredOnType })
+			.send();
 
 		this.validateQuery(query).then(() => {
 			if (this.views.length > 1) {
 				let filesToIncludeFiltered: string = '';
-				this.views.forEach(async (v) => {
+				// search book results first and then notebooks
+				const pinnedNotebookIndex = this.views.findIndex(view => view.id === 'pinnedBooksView');
+				const viewPanes = this.views;
+				viewPanes.push(viewPanes.splice(pinnedNotebookIndex, 1)[0]);
+				viewPanes.forEach(async (v) => {
 					if (v instanceof TreeViewPane) {
 						const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(v.id));
 						if (treeView.dataProvider) {
 							let items = await treeView?.dataProvider.getChildren(treeView?.root);
 							items?.forEach(root => {
-								if (root.contextValue !== 'pinnedNotebook') {
-									this.updateViewletsState();
-									let rootFolder = URI.file(isString(root.tooltip) ? root.tooltip : root.tooltip.value);
+								this.updateViewletsState();
+								if (root.contextValue === 'providedBook' || root.contextValue === 'savedBook') {
+									const rootFolder = URI.file(root.resourceUri.path);
 									let folderToSearch = { folder: rootFolder };
+									if (root.tooltip.toString().includes('content')) {
+										let pattern = {};
+										pattern['content/**'] = true;
+										folderToSearch['includePattern'] = pattern;
+									}
 									query.folderQueries.push(folderToSearch);
 									filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
-									this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
+								} else {
+									let pattern = {};
+									const rootFolder = URI.file(path.dirname(root.resourceUri.path));
+									const baseName = path.join('**', path.basename(root.resourceUri.path)).replace(/\\/g, '/');
+									let isOpenedInBooksView = false;
+									pattern[baseName] = true;
+									query.folderQueries.forEach((folder) => {
+										//check for books
+										if ((folder.includePattern === undefined || folder.includePattern['content/**']) && !isOpenedInBooksView) {
+											//verify if pinned notebook is not opened in Books Viewlet
+											const relativePath = path.relative(folder.folder.fsPath, rootFolder.fsPath);
+											isOpenedInBooksView = !relativePath.startsWith('..') || !relativePath.startsWith('.');
+										}
+									});
+									if (!isOpenedInBooksView) {
+										const folderToSearch = { folder: rootFolder, includePattern: pattern };
+										query.folderQueries.push(folderToSearch);
+										filesToIncludeFiltered = filesToIncludeFiltered + rootFolder + ',';
+									}
 								}
 							});
+
+							if (query.folderQueries.length > 0) {
+								this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
+							}
 						}
 					}
 				});
@@ -376,22 +380,17 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		}));
 	}
 
-
-	public updateStyles(): void {
-		super.updateStyles();
-	}
-
-	focus(): void {
+	override focus(): void {
 		super.focus();
 		this.searchWidget.focus(undefined, this.searchConfig.seedOnFocus);
 	}
 
-	layout(dimension: Dimension): void {
-		toggleClass(this.root, 'narrow', dimension.width <= 300);
+	override layout(dimension: Dimension): void {
+		this.root.classList.toggle('narrow', dimension.width <= 300);
 		super.layout(new Dimension(dimension.width, dimension.height - getTotalHeight(this.searchWidgetsContainerElement)));
 	}
 
-	getOptimalWidth(): number {
+	override getOptimalWidth(): number {
 		return 400;
 	}
 
@@ -407,18 +406,25 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		return actions;
 	}
 
-	protected createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
-		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewPane;
+	protected override createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
+		// {{SQL CARBON TODO}} - don't cast to never
+		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, <never>options) as ViewPane;
 		this._register(viewletPanel);
 		return viewletPanel;
 	}
 }
 
+export const NotebooksViewIcon = registerIcon('ads-notebooks', Codicon.notebook, localize('ads-notebook', 'Icon represent a notebook.'));
 export const NOTEBOOK_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
-	name: localize('notebookExplorer.name', "Notebooks"),
+	title: localize('notebookExplorer.name', "Notebooks"),
 	ctorDescriptor: new SyncDescriptor(NotebookExplorerViewPaneContainer),
-	icon: 'book',
+	openCommandActionDescriptor: {
+		id: VIEWLET_ID,
+		keybindings: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyB },
+		order: 0
+	},
+	icon: NotebooksViewIcon,
 	order: 6,
 	storageId: `${VIEWLET_ID}.state`
 }, ViewContainerLocation.Sidebar);

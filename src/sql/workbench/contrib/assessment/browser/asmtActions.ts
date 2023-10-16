@@ -22,6 +22,8 @@ import * as path from 'vs/base/common/path';
 import { HTMLReportBuilder } from 'sql/workbench/contrib/assessment/common/htmlReportGenerator';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 export interface SqlAssessmentResultInfo {
 	result: SqlAssessmentResult;
@@ -54,19 +56,20 @@ abstract class AsmtServerAction extends Action {
 		label: string,
 		private asmtType: AssessmentType,
 		@IConnectionManagementService private _connectionManagement: IConnectionManagementService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@ILogService protected _logService: ILogService,
 		@IAdsTelemetryService protected _telemetryService: IAdsTelemetryService
 	) {
 		super(id, label, TARGET_ICON_CLASS[AssessmentTargetType.Server]);
 	}
 
-	public async run(context: IAsmtActionInfo): Promise<boolean> {
+	public override async run(context: IAsmtActionInfo): Promise<void> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, this.id);
 		if (context && context.component && !context.component.isBusy) {
 			context.component.showProgress(this.asmtType);
 			let serverResults = this.getServerItems(context.ownerUri);
 			let connectionUri: string = this._connectionManagement.getConnectionUriFromId(context.connectionId);
-			let connection = this._connectionManagement.getConnection(connectionUri);
+			let connection = this._connectionManagement.getConnectionProfile(connectionUri);
 			let databaseListResult = this._connectionManagement.listDatabases(connectionUri);
 			context.component.showInitialResults(await serverResults, this.asmtType);
 			let dbList = await databaseListResult;
@@ -76,7 +79,8 @@ abstract class AsmtServerAction extends Action {
 						break;
 					}
 					let dbName = dbList.databaseNames[nDbName];
-					let newUri = await this._connectionManagement.connectIfNotConnected(connection.cloneWithDatabase(dbName).clone());
+					const profile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, connection);
+					let newUri = await this._connectionManagement.connectIfNotConnected(profile.cloneWithDatabase(dbName).clone());
 
 					this._logService.info(`Database ${dbName} assessment started`);
 					let dbResult = await this.getDatabaseItems(newUri);
@@ -87,11 +91,7 @@ abstract class AsmtServerAction extends Action {
 			}
 
 			context.component.stopProgress(this.asmtType);
-
-			return true;
 		}
-
-		return false;
 	}
 
 	abstract getServerItems(ownerUri: string): Thenable<SqlAssessmentResult>;
@@ -105,6 +105,7 @@ export class AsmtServerSelectItemsAction extends AsmtServerAction {
 
 	constructor(
 		@IConnectionManagementService _connectionManagement: IConnectionManagementService,
+		@ICapabilitiesService _capabilitiesService: ICapabilitiesService,
 		@ILogService _logService: ILogService,
 		@IAssessmentService private _assessmentService: IAssessmentService,
 		@IAdsTelemetryService _telemetryService: IAdsTelemetryService
@@ -112,6 +113,7 @@ export class AsmtServerSelectItemsAction extends AsmtServerAction {
 		super(AsmtServerSelectItemsAction.ID, AsmtServerSelectItemsAction.LABEL,
 			AssessmentType.AvailableRules,
 			_connectionManagement,
+			_capabilitiesService,
 			_logService, _telemetryService);
 	}
 
@@ -137,16 +139,14 @@ export class AsmtDatabaseSelectItemsAction extends Action {
 			TARGET_ICON_CLASS[AssessmentTargetType.Database]);
 	}
 
-	public async run(context: IAsmtActionInfo): Promise<boolean> {
+	public override async run(context: IAsmtActionInfo): Promise<void> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, this.id);
 		if (context && context.component && !context.component.isBusy) {
 			context.component.showProgress(AssessmentType.AvailableRules);
 			let dbAsmtResults = await this._assessmentService.getAssessmentItems(context.ownerUri, AssessmentTargetType.Database);
 			context.component.showInitialResults(dbAsmtResults, AssessmentType.AvailableRules);
 			context.component.stopProgress(AssessmentType.AvailableRules);
-			return true;
 		}
-		return false;
 	}
 }
 
@@ -156,11 +156,12 @@ export class AsmtServerInvokeItemsAction extends AsmtServerAction {
 
 	constructor(
 		@IConnectionManagementService _connectionManagement: IConnectionManagementService,
+		@ICapabilitiesService _capabilitiesService: ICapabilitiesService,
 		@ILogService _logService: ILogService,
 		@IAssessmentService private _assessmentService: IAssessmentService,
 		@IAdsTelemetryService _telemetryService: IAdsTelemetryService
 	) {
-		super(AsmtServerInvokeItemsAction.ID, AsmtServerInvokeItemsAction.LABEL, AssessmentType.InvokeAssessment, _connectionManagement, _logService, _telemetryService);
+		super(AsmtServerInvokeItemsAction.ID, AsmtServerInvokeItemsAction.LABEL, AssessmentType.InvokeAssessment, _connectionManagement, _capabilitiesService, _logService, _telemetryService);
 	}
 	getServerItems(ownerUri: string): Thenable<SqlAssessmentResult> {
 		this._logService.info(`Requesting server items`);
@@ -185,16 +186,14 @@ export class AsmtDatabaseInvokeItemsAction extends Action {
 			TARGET_ICON_CLASS[AssessmentTargetType.Database]);
 	}
 
-	public async run(context: IAsmtActionInfo): Promise<boolean> {
+	public override async run(context: IAsmtActionInfo): Promise<void> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, this.id);
 		if (context && context.component && !context.component.isBusy) {
 			context.component.showProgress(AssessmentType.InvokeAssessment);
 			let dbAsmtResults = await this._assessmentService.assessmentInvoke(context.ownerUri, AssessmentTargetType.Database);
 			context.component.showInitialResults(dbAsmtResults, AssessmentType.InvokeAssessment);
 			context.component.stopProgress(AssessmentType.InvokeAssessment);
-			return true;
 		}
-		return false;
 	}
 }
 
@@ -209,14 +208,12 @@ export class AsmtExportAsScriptAction extends Action {
 		super(AsmtExportAsScriptAction.ID, AsmtExportAsScriptAction.LABEL, 'exportAsScriptIcon');
 	}
 
-	public async run(context: IAsmtActionInfo): Promise<boolean> {
+	public override async run(context: IAsmtActionInfo): Promise<void> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtExportAsScriptAction.ID);
 		const items = context?.component?.recentResult?.result.items;
 		if (items) {
 			await this._assessmentService.generateAssessmentScript(context.ownerUri, items);
-			return true;
 		}
-		return false;
 	}
 }
 
@@ -234,9 +231,9 @@ export class AsmtSamplesLinkAction extends Action {
 		super(AsmtSamplesLinkAction.ID, AsmtSamplesLinkAction.LABEL, AsmtSamplesLinkAction.ICON);
 	}
 
-	public async run(): Promise<boolean> {
+	public override async run(): Promise<void> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtSamplesLinkAction.ID);
-		return this._openerService.open(URI.parse(AsmtSamplesLinkAction.configHelpUri));
+		await this._openerService.open(URI.parse(AsmtSamplesLinkAction.configHelpUri));
 	}
 }
 
@@ -262,12 +259,12 @@ export class AsmtGenerateHTMLReportAction extends Action {
 		return URI.file(filePath);
 	}
 
-	public async run(context: IAsmtActionInfo): Promise<boolean> {
+	public override async run(context: IAsmtActionInfo): Promise<void> {
 		context.component.showProgress(AssessmentType.ReportGeneration);
 		const choosenPath = await this._fileDialogService.pickFileToSave(this.suggestReportFile(context.component.recentResult.dateUpdated));
 		context.component.stopProgress(AssessmentType.ReportGeneration);
 		if (!choosenPath) {
-			return false;
+			return;
 		}
 
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtGenerateHTMLReportAction.ID);
@@ -291,7 +288,6 @@ export class AsmtGenerateHTMLReportAction extends Action {
 					run: () => { }
 				}]);
 		}
-		return true;
 	}
 }
 

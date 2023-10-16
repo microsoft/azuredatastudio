@@ -2,8 +2,6 @@
 
 Welcome to Microsoft Azure Arc Extension for Azure Data Studio!
 
-**This extension is only applicable to customers in the Azure Arc data services public preview.**
-
 ## Overview
 
 This extension adds the following features to Azure Data Studio.
@@ -12,7 +10,7 @@ This extension adds the following features to Azure Data Studio.
 
 A gui-based experience to deploy an Azure Arc data controller as well as resources on an existing Azure Arc data controller. Current list of supported resources:
 * SQL Managed Instance
-* PostgreSQL server groups
+* PostgreSQL server
 
 ### Management Dashboards
 
@@ -44,7 +42,7 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Privacy Statement
 
-The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement) describes the privacy statement of this software.
+To learn more about our Privacy Statement visit [this link](https://go.microsoft.com/fwlink/?LinkID=824704).
 
 ## License
 

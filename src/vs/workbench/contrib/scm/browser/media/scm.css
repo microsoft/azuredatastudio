@@ -8,8 +8,18 @@
 	position: relative;
 }
 
+.scm-overflow-widgets-container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 0;
+	height: 0;
+	overflow: visible;
+	z-index: 5000;
+}
+
 .scm-view .monaco-tl-contents > div {
-	margin-right: 12px;
+	padding-right: 12px;
 	overflow: hidden;
 }
 
@@ -39,6 +49,7 @@
 	flex: 1;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	min-width: 50px;
 }
 
 .scm-view .scm-provider > .label > .name {
@@ -54,6 +65,10 @@
 .scm-view .scm-provider > .actions {
 	overflow: hidden;
 	justify-content: flex-end;
+}
+
+.scm-view .monaco-editor .selected-text {
+	border-radius: 0;
 }
 
 /**
@@ -72,16 +87,11 @@
 	display: flex;
 	align-items: center;
 	overflow: hidden;
-	min-width: 16px; /* for flex */
-	height: 100%;
-	margin: 0;
-	background-repeat: no-repeat;
-	background-position: center;
 }
 
 .scm-view .scm-provider > .actions > .monaco-toolbar > .monaco-action-bar > .actions-container  > .action-item > .action-label > .codicon {
 	font-size: 12px;
-	margin-right: 2px;
+	justify-content: center;
 }
 
 .scm-view .scm-provider > .actions > .monaco-toolbar > .monaco-action-bar > .actions-container > .action-item:last-of-type {
@@ -90,6 +100,10 @@
 
 .scm-view .scm-provider > .body {
 	flex-grow: 1;
+}
+
+.scm-view .scm-provider > .status > .monaco-action-bar > .actions-container {
+	border-color: var(--vscode-sideBar-border);
 }
 
 .scm-view .monaco-list-row {
@@ -123,11 +137,7 @@
 }
 
 .scm-view .monaco-list-row .resource > .name > .monaco-icon-label::after {
-	padding-right: 3px;
-}
-
-.scm-view .monaco-list-row .resource > .name.strike-through > .monaco-icon-label > .monaco-icon-label-container > .monaco-icon-name-container > .label-name {
-	text-decoration: line-through;
+	margin-right: 3px;
 }
 
 .scm-view .monaco-list-row .resource > .decoration-icon {
@@ -136,6 +146,11 @@
 	background-repeat: no-repeat;
 	background-position: 50% 50%;
 	margin-right: 8px;
+}
+
+.scm-view .monaco-list-row .resource > .decoration-icon.codicon {
+	margin-right: 0;
+	margin-top: 3px;
 }
 
 .scm-view .monaco-list .monaco-list-row .resource > .name > .monaco-icon-label > .actions {
@@ -158,27 +173,39 @@
 	display: block;
 }
 
+.scm-view .monaco-list .monaco-list-row.force-no-hover,
+.scm-view .monaco-list .monaco-list-row:hover.force-no-hover,
+.scm-view .monaco-list .monaco-list-row.focused.force-no-hover,
+.scm-view .monaco-list .monaco-list-row.selected.force-no-hover {
+	background: transparent !important;
+}
+
+.scm-view .monaco-list .monaco-list-row.cursor-default {
+	cursor: default;
+}
+
 .scm-view.show-actions .scm-provider > .actions,
 .scm-view.show-actions > .monaco-list .monaco-list-row .resource-group > .actions,
 .scm-view.show-actions > .monaco-list .monaco-list-row .resource > .name > .monaco-icon-label > .actions {
 	display: block;
 }
 
-.scm-view .monaco-list-row .resource > .name > .monaco-icon-label > .actions .action-label,
-.scm-view .monaco-list-row .resource-group > .actions .action-label {
-	width: 16px;
-	height: 100%;
-	background-position: 50% 50%;
-	background-repeat: no-repeat;
-}
-
-.scm-view .monaco-list-row .resource > .name > .monaco-icon-label > .actions .action-label.codicon {
-	line-height: 22px;
+.scm-view .monaco-list-row .actions .action-label {
+	padding: 2px;
 }
 
 .scm-view .scm-input {
 	height: 100%;
-	margin-left: 9px;
+	padding-left: 11px;
+	border-radius: 2px;
+}
+
+.scm-view .scm-editor-container .monaco-editor {
+	border-radius: 2px;
+}
+
+.scm-view .scm-editor-container .monaco-editor .focused .selected-text {
+	background-color: var(--vscode-editor-selectionBackground);
 }
 
 .scm-view .scm-editor {
@@ -190,15 +217,110 @@
 	justify-content: center;
 }
 
+.scm-view .button-container {
+	display: flex;
+	height: 100%;
+	padding-left: 11px;
+	align-items: center;
+}
+
+.scm-view .button-container .codicon.codicon-cloud-upload,
+.scm-view .button-container .codicon.codicon-sync {
+	margin: 0 4px 0 0;
+}
+
+.scm-view .button-container .codicon.codicon-arrow-up,
+.scm-view .button-container .codicon.codicon-arrow-down {
+	font-size: small !important;
+	margin: 0 4px 0 0;
+}
+
+.scm-view .button-container > .monaco-button-dropdown {
+	flex-grow: 1;
+	overflow: hidden;
+}
+
+.scm-view .button-container > .monaco-button-dropdown > .monaco-dropdown-button {
+	display:flex;
+	align-items: center;
+	padding: 0 4px;
+}
+
+
+.scm-view .button-container > .monaco-button-dropdown > .monaco-button.monaco-text-button {
+	min-width: 0;
+}
+
+.scm-view .button-container > .monaco-button-dropdown > .monaco-button.monaco-text-button > span:not(.codicon) {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 .scm-view .scm-editor.hidden {
 	display: none;
+}
+
+.monaco-workbench .part.panel .scm-view .scm-editor-container {
+	outline: 1px solid var(--vscode-panelInput-border);
 }
 
 .scm-view .scm-editor-container {
 	position: relative;
 	box-sizing: border-box;
-	padding: 1px;
+	background-color: var(--vscode-input-background);
+	border: 1px solid var(--vscode-input-border, transparent);
+	border-radius: 2px;
+}
+
+.scm-view .scm-editor-container.synthetic-focus,
+.monaco-workbench .part.panel .scm-view .scm-editor-container.synthetic-focus {
+	outline: 1px solid var(--vscode-focusBorder);
 	outline-offset: -1px;
+}
+
+.scm-view .scm-editor-container.validation-info {
+	outline: 1px solid var(--vscode-inputValidation-infoBorder) !important;
+	outline-offset: -1px;
+}
+
+.scm-view .scm-editor-container.validation-warning {
+	outline: 1px solid var(--vscode-inputValidation-warningBorder) !important;
+	outline-offset: -1px;
+}
+
+.scm-view .scm-editor-container.validation-error {
+	outline: 1px solid var(--vscode-inputValidation-errorBorder) !important;
+	outline-offset: -1px;
+}
+
+.scm-editor-validation-container {
+	display: flex;
+	box-sizing: border-box;
+	border-width: 1px;
+	border-style: solid;
+	border-top: none;
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	padding: 2px;
+}
+
+.scm-editor-validation-container.validation-info {
+	background-color: var(--vscode-inputValidation-infoBackground);
+	border-color: var(--vscode-inputValidation-infoBorder);
+	color: var(--vscode-inputValidation-infoForeground);
+}
+
+.scm-editor-validation-container.validation-warning {
+	background-color: var(--vscode-inputValidation-warningBackground);
+	border-color: var(--vscode-inputValidation-warningBorder);
+	color: var(--vscode-inputValidation-warningForeground);
+}
+
+.scm-editor-validation-container.validation-error {
+	background-color: var(--vscode-inputValidation-errorBackground);
+	border-color: var(--vscode-inputValidation-errorBorder);
+	color: var(--vscode-inputValidation-errorForeground);
 }
 
 .scm-editor-validation {
@@ -206,21 +328,42 @@
 	font-size: 0.9em;
 	padding: 1px 3px;
 	display: block;
-	border-width: 1px;
-	border-style: solid;
-	border-top: none;
+	border-style: none;
+	flex: auto;
+}
+
+.scm-editor-validation p {
+	margin: 0;
+	padding: 0;
+}
+
+.scm-editor-validation a {
+	color: var(--vscode-textLink-foreground);
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.scm-editor-validation a:active,
+.scm-editor-validation a:hover {
+	color: var(--vscode-textLink-activeForeground);
+}
+
+.scm-editor-validation-actions {
+	align-self: start;
+	margin-top: 1px;
 }
 
 .scm-view .scm-editor-placeholder {
 	position: absolute;
 	pointer-events: none;
 	z-index: 1;
-	padding: 2px 4px 3px 4px;
+	padding: 2px 6px;
 	box-sizing: border-box;
 	width: 100%;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+	color: var(--vscode-input-placeholderForeground);
 }
 
 .scm-view .scm-editor-placeholder.hidden {
@@ -229,8 +372,16 @@
 
 .scm-view .scm-editor-container .monaco-editor-background,
 .scm-view .scm-editor-container .monaco-editor,
-.scm-view .scm-editor-container .mtk1 {
+.scm-view .scm-editor-container .monaco-editor .margin,
+.monaco-workbench .part.basepanel > .content .scm-view .scm-editor-container .monaco-editor,
+.monaco-workbench .part.basepanel > .content .scm-view .scm-editor-container .monaco-editor .margin,
+.monaco-workbench .part.basepanel > .content .scm-view .scm-editor-container .monaco-editor .monaco-editor-background {
 	color: inherit;
+	background-color: var(--vscode-input-background);
+}
+
+.scm-view .scm-editor-container .mtk1 {
+	color: var(--vscode-input-foreground);
 }
 
 /* Repositories */

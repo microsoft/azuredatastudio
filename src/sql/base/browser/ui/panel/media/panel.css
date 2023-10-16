@@ -44,6 +44,7 @@ panel {
 	white-space: nowrap;
 	flex: 1;
 	height: 100%;
+	overflow: auto;
 }
 
 .tabbedPanel .tabList .tab {
@@ -55,10 +56,9 @@ panel {
 
 .tabbedPanel.horizontal > .title .tabList .tab .tabLabel {
 	font-size: 12px;
-	max-width: 100px;
 }
 
-.tabbedPanel.vertical >.title .tabList .tab .tabLabel {
+.tabbedPanel.vertical > .title .tabList .tab .tabLabel {
 	font-size: 13px;
 	padding-bottom: 0px;
 	max-width: 200px;
@@ -68,6 +68,24 @@ panel {
 	font-size: 13px;
 	padding-bottom: 4px;
 	font-weight: 600;
+}
+
+.tabbedPanel .tabList .tab-header:hover:not(.selected) {
+	background-color: #dcdcdc;
+	outline: none;
+}
+.vs-dark .tabbedPanel .tabList .tab-header:hover:not(.selected) {
+	background-color: #2a2d2e;
+	outline: none;
+}
+.hc-black .tabbedPanel .tabList .tab-header:hover:not(.selected) {
+	background-color: initial;
+	outline: 1px dashed #f38518;
+	outline-offset: -3px;
+}
+.hc-light .tabbedPanel .tabList .tab-header:hover:not(.selected) {
+	background-color: #dcdcdc;
+	outline: none;
 }
 
 .tabbedPanel.horizontal > .title .tabList .tab .tabLabel,
@@ -83,6 +101,7 @@ panel {
 	padding-left: 5px;
 	padding-right: 5px;
 	min-width: 65px;
+	flex: 0 0 auto;
 }
 
 .tabbedPanel.horizontal > .title .tabList .tab-header {
@@ -120,7 +139,7 @@ panel {
 	flex: 0 0 auto;
 }
 
-.tab > .tabLabel.active {
+.tab > .tabLabel.selected {
 	border-bottom: 1px solid;
 }
 
@@ -201,7 +220,8 @@ panel {
 	cursor: pointer;
 }
 
-.vs .tabbedPanel .tab-action.collapse {
+.vs .tabbedPanel .tab-action.collapse,
+.hc-light .tabbedPanel .tab-action.collapse {
 	background-image: url("collapse.svg");
 }
 
@@ -210,7 +230,8 @@ panel {
 	background-image: url("collapse_inverse.svg");
 }
 
-.vs .tabbedPanel .tab-action.expand {
+.vs .tabbedPanel .tab-action.expand,
+.hc-light .tabbedPanel .tab-action.expand {
 	background-image: url("expand.svg");
 }
 

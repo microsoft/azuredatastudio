@@ -12,9 +12,10 @@ import { PostgresModel } from '../../../models/postgresModel';
 
 export class PostgresConnectionStringsPage extends DashboardPage {
 	private keyValueContainer?: KeyValueContainer;
+	private connectionStringsLoading!: azdata.LoadingComponent;
 
-	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
-		super(modelView);
+	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _postgresModel: PostgresModel) {
+		super(modelView, dashboard);
 
 		this.disposables.push(this._postgresModel.onConfigUpdated(
 			() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())));
@@ -37,19 +38,19 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 		const content = this.modelView.modelBuilder.divContainer().component();
 		root.addItem(content, { CSSStyles: { 'margin': '20px' } });
 
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.connectionStrings,
 			CSSStyles: { ...cssStyles.title }
 		}).component());
 
-		const info = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const info = this.modelView.modelBuilder.text().withProps({
 			value: loc.selectConnectionString,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const link = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+		const link = this.modelView.modelBuilder.hyperlink().withProps({
 			label: loc.learnAboutPostgresClients,
-			url: 'https://docs.microsoft.com/azure/postgresql/concepts-connection-libraries',
+			url: 'https://docs.microsoft.com/azure/azure-arc/data/get-connection-endpoints-and-connection-strings-postgres-hyperscale',
 		}).component();
 
 		const infoAndLink = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
@@ -59,7 +60,14 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 
 		this.keyValueContainer = new KeyValueContainer(this.modelView.modelBuilder, this.getConnectionStrings());
 		this.disposables.push(this.keyValueContainer);
-		content.addItem(this.keyValueContainer.container);
+
+		this.connectionStringsLoading = this.modelView.modelBuilder.loadingComponent()
+			.withItem(this.keyValueContainer.container)
+			.withProps({
+				loading: !this._postgresModel.configLastUpdated
+			}).component();
+
+		content.addItem(this.connectionStringsLoading, { CSSStyles: cssStyles.text });
 		this.initialized = true;
 		return root;
 	}
@@ -75,19 +83,19 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 		}
 
 		return [
-			new InputKeyValue(this.modelView.modelBuilder, 'ADO.NET', `Server=${endpoint.ip};Database=postgres;Port=${endpoint.port};User Id=postgres;Password={your_password_here};Ssl Mode=Require;`),
-			new InputKeyValue(this.modelView.modelBuilder, 'C++ (libpq)', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password={your_password_here} sslmode=require`),
-			new InputKeyValue(this.modelView.modelBuilder, 'JDBC', `jdbc:postgresql://${endpoint.ip}:${endpoint.port}/postgres?user=postgres&password={your_password_here}&sslmode=require`),
-			new InputKeyValue(this.modelView.modelBuilder, 'Node.js', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password={your_password_here} sslmode=require`),
-			new InputKeyValue(this.modelView.modelBuilder, 'PHP', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password={your_password_here} sslmode=require`),
-			new InputKeyValue(this.modelView.modelBuilder, 'psql', `psql "host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password={your_password_here} sslmode=require"`),
-			new InputKeyValue(this.modelView.modelBuilder, 'Python', `dbname='postgres' user='postgres' host='${endpoint.ip}' password='{your_password_here}' port='${endpoint.port}' sslmode='true'`),
-			new InputKeyValue(this.modelView.modelBuilder, 'Ruby', `host=${endpoint.ip}; dbname=postgres user=postgres password={your_password_here} port=${endpoint.port} sslmode=require`),
-			new InputKeyValue(this.modelView.modelBuilder, 'Web App', `Database=postgres; Data Source=${endpoint.ip}; User Id=postgres; Password={your_password_here}`)
+			new InputKeyValue(this.modelView.modelBuilder, 'ADO.NET', `Server=${endpoint.ip};Database=postgres;Port=${endpoint.port};User Id={your_username_here};Password={your_password_here};Ssl Mode=Require;`),
+			new InputKeyValue(this.modelView.modelBuilder, 'C++ (libpq)', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user={your_username_here} password={your_password_here} sslmode=require`),
+			new InputKeyValue(this.modelView.modelBuilder, 'JDBC', `jdbc:postgresql://${endpoint.ip}:${endpoint.port}/postgres?user={your_username_here}&password={your_password_here}&sslmode=require`),
+			new InputKeyValue(this.modelView.modelBuilder, 'Node.js', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user={your_username_here} password={your_password_here} sslmode=require`),
+			new InputKeyValue(this.modelView.modelBuilder, 'PHP', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user={your_username_here} password={your_password_here} sslmode=require`),
+			new InputKeyValue(this.modelView.modelBuilder, 'psql', `psql "host=${endpoint.ip} port=${endpoint.port} dbname=postgres user={your_username_here} password={your_password_here} sslmode=require"`),
+			new InputKeyValue(this.modelView.modelBuilder, 'Python', `dbname='postgres' user='{your_username_here}' host='${endpoint.ip}' password='{your_password_here}' port='${endpoint.port}' sslmode='true'`),
+			new InputKeyValue(this.modelView.modelBuilder, 'Ruby', `host=${endpoint.ip}; dbname=postgres user={your_username_here} password={your_password_here} port=${endpoint.port} sslmode=require`)
 		];
 	}
 
 	private handleServiceUpdated() {
 		this.keyValueContainer?.refresh(this.getConnectionStrings());
+		this.connectionStringsLoading.loading = false;
 	}
 }

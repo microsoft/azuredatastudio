@@ -60,6 +60,8 @@ suite('Dashboard Properties Widget Tests', () => {
 			serverEdition: undefined,
 			azureVersion: undefined,
 			osVersion: undefined,
+			cpuCount: undefined,
+			physicalMemoryInMb: undefined,
 			options: {},
 		};
 
@@ -94,20 +96,20 @@ suite('Dashboard Properties Widget Tests', () => {
 		dashboardService.setup(x => x.connectionManagementService).returns(() => singleConnectionService.object);
 
 		const testLogService = new class extends NullLogService {
-			error() {
+			override error() {
 				assert.fail('Called console Error unexpectedly');
 			}
 		};
 
 		let testComponent = new PropertiesWidgetComponent(dashboardService.object, new TestChangeDetectorRef(), undefined, widgetConfig, testLogService);
 
-		return new Promise(resolve => {
+		return new Promise<void>(resolve => {
 			// because config parsing is done async we need to put our asserts on the thread stack
 			setImmediate(() => {
 				const propertyItems: PropertyItem[] = (testComponent as any).parseProperties(databaseInfo);
-				assert.equal(propertyItems.length, 1);
-				assert.equal(propertyItems[0].displayName, 'Test');
-				assert.equal(propertyItems[0].value, 'Test Property');
+				assert.strictEqual(propertyItems.length, 1);
+				assert.strictEqual(propertyItems[0].displayName, 'Test');
+				assert.strictEqual(propertyItems[0].value, 'Test Property');
 				resolve();
 			});
 		});

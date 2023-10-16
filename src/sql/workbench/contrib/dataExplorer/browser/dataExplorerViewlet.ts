@@ -5,8 +5,7 @@
 
 import { localize } from 'vs/nls';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { IAction } from 'vs/base/common/actions';
-import { append, $, addClass, toggleClass, Dimension } from 'vs/base/browser/dom';
+import { Dimension } from 'vs/base/browser/dom';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -20,31 +19,15 @@ import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry,
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { ShowViewletAction, Viewlet } from 'vs/workbench/browser/viewlet';
-import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
-import { ViewPaneContainer, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { ViewPane } from 'vs/workbench/browser/parts/views/viewPane';
+import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
+import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
+import { Codicon } from 'vs/base/common/codicons';
 
 export const VIEWLET_ID = 'workbench.view.connections';
-
-// Viewlet Action
-export class OpenDataExplorerViewletAction extends ShowViewletAction {
-	public static ID = VIEWLET_ID;
-	public static LABEL = localize('showDataExplorer', "Show Connections");
-
-	constructor(
-		id: string,
-		label: string,
-		@IViewletService viewletService: IViewletService,
-		@IEditorGroupsService editorGroupService: IEditorGroupsService,
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService
-	) {
-		super(id, label, VIEWLET_ID, viewletService, editorGroupService, layoutService);
-	}
-}
+export const ConnectionsViewIcon = registerIcon('ads-connections', Codicon.serverEnvironment, localize('ads-connections', 'Icon represent a server.'));
 
 export class DataExplorerViewletViewsContribution implements IWorkbenchContribution {
 
@@ -70,26 +53,8 @@ export class DataExplorerViewletViewsContribution implements IWorkbenchContribut
 	}
 }
 
-export class DataExplorerViewlet extends Viewlet {
-	constructor(
-		@ITelemetryService telemetryService: ITelemetryService,
-		@IStorageService protected storageService: IStorageService,
-		@IInstantiationService protected instantiationService: IInstantiationService,
-		@IThemeService themeService: IThemeService,
-		@IContextMenuService protected contextMenuService: IContextMenuService,
-		@IExtensionService protected extensionService: IExtensionService,
-		@IWorkspaceContextService protected contextService: IWorkspaceContextService,
-		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
-		@IConfigurationService protected configurationService: IConfigurationService
-	) {
-		super(VIEWLET_ID, instantiationService.createInstance(DataExplorerViewPaneContainer), telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService, layoutService, configurationService);
-	}
-}
-
 export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 	private root?: HTMLElement;
-
-	private dataSourcesBox?: HTMLElement;
 
 	constructor(
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
@@ -101,52 +66,32 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IExtensionService extensionService: IExtensionService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IMenuService private menuService: IMenuService,
-		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService
 	) {
 		super(VIEWLET_ID, { mergeViewWithContainerWhenSingleView: true }, instantiationService, configurationService, layoutService, contextMenuService, telemetryService, extensionService, themeService, storageService, contextService, viewDescriptorService);
 	}
 
-	create(parent: HTMLElement): void {
-		addClass(parent, 'dataExplorer-viewlet');
+	override create(parent: HTMLElement): void {
 		this.root = parent;
 
-		this.dataSourcesBox = append(this.root, $('.dataSources'));
-
-		return super.create(this.dataSourcesBox);
+		super.create(parent);
+		parent.classList.add('dataExplorer-viewlet');
 	}
 
-	public updateStyles(): void {
-		super.updateStyles();
+	override focus(): void {
 	}
 
-	focus(): void {
-	}
-
-	layout(dimension: Dimension): void {
-		toggleClass(this.root!, 'narrow', dimension.width <= 300);
+	override layout(dimension: Dimension): void {
+		this.root!.classList.toggle('narrow', dimension.width <= 300);
 		super.layout(new Dimension(dimension.width, dimension.height));
 	}
 
-	getOptimalWidth(): number {
+	override getOptimalWidth(): number {
 		return 400;
 	}
 
-	getSecondaryActions(): IAction[] {
-		let menu = this.menuService.createMenu(MenuId.DataExplorerAction, this.contextKeyService);
-		let actions: IAction[] = [];
-		menu.getActions({}).forEach(group => {
-			if (group[0] === 'secondary') {
-				actions.push(...group[1]);
-			}
-		});
-		menu.dispose();
-		return actions;
-	}
-
-	protected createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
-		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewPane;
+	protected override createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
+		let viewletPanel = (<any>this.instantiationService).createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewPane;
 		this._register(viewletPanel);
 		return viewletPanel;
 	}
@@ -154,9 +99,15 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 
 export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
-	name: localize('dataexplorer.name', "Connections"),
+	title: localize('dataexplorer.name', "Connections"),
 	ctorDescriptor: new SyncDescriptor(DataExplorerViewPaneContainer),
-	icon: 'dataExplorer',
+	openCommandActionDescriptor: {
+		id: VIEWLET_ID,
+		mnemonicTitle: localize('showDataExplorer', "Show Connections"),
+		keybindings: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyD },
+		order: 0
+	},
+	icon: ConnectionsViewIcon,
 	order: 0,
 	storageId: `${VIEWLET_ID}.state`
-}, ViewContainerLocation.Sidebar, true);
+}, ViewContainerLocation.Sidebar, { isDefault: true });

@@ -24,6 +24,10 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { AlertsCacheObject } from 'sql/workbench/services/jobManagement/common/jobManagementService';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export const VIEW_SELECTOR: string = 'jobalertsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -65,7 +69,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 	@ViewChild('jobalertsgrid') _gridEl: ElementRef;
 
 	public alerts: azdata.AgentAlertInfo[];
-	public contextAction = NewAlertAction;
+	public override contextAction = NewAlertAction;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
@@ -76,7 +80,10 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
-		@Inject(IDashboardService) _dashboardService: IDashboardService) {
+		@Inject(IDashboardService) _dashboardService: IDashboardService,
+		@Inject(IAccessibilityService) private _accessibilityService: IAccessibilityService,
+		@Inject(IQuickInputService) private _quickInputService: IQuickInputService,
+		@Inject(IComponentContextService) private _componentContextService: IComponentContextService) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		this._didTabChange = false;
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
@@ -97,7 +104,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		this._parentComponent = this._agentViewComponent;
 	}
 
-	ngOnDestroy() {
+	override ngOnDestroy() {
 		this._didTabChange = true;
 	}
 
@@ -143,7 +150,8 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		jQuery(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
 
-		this._table = new Table(this._gridEl.nativeElement, { columns }, this.options);
+		this._table = new Table(this._gridEl.nativeElement, this._accessibilityService, this._quickInputService, defaultTableStyles, { columns }, this.options);
+		this._register(this._componentContextService.registerTable(this._table));
 		this._table.grid.setData(this.dataView, true);
 		this._register(this._table.onContextMenu(e => {
 			self.openContextMenu(e);
@@ -196,14 +204,14 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		this._table.resizeCanvas();
 	}
 
-	protected getTableActions(): IAction[] {
+	protected override getTableActions(): IAction[] {
 		return [
 			this._instantiationService.createInstance(EditAlertAction),
 			this._instantiationService.createInstance(DeleteAlertAction)
 		];
 	}
 
-	protected getCurrentTableObject(rowIndex: number): any {
+	protected override getCurrentTableObject(rowIndex: number): any {
 		let targetObject = {
 			alertInfo: this.alerts && this.alerts.length >= rowIndex ? this.alerts[rowIndex] : undefined
 		};

@@ -3,8 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
+import type * as azdataType from 'azdata';
+import * as vscodeMssql from 'vscode-mssql';
 import { DataSource } from './dataSources';
+import { DataSourceJson } from './dataSourceJson';
 import * as constants from '../../common/constants';
 
 /**
@@ -44,11 +46,11 @@ export class SqlConnectionDataSource extends DataSource {
 
 	public get authType(): string {
 		if (this.azureMFA) {
-			return constants.azureMfaAuth;
+			return vscodeMssql.AuthenticationType.AzureMFA;
 		} else if (this.integratedSecurity) {
-			return constants.integratedAuth;
+			return vscodeMssql.AuthenticationType.Integrated;
 		} else {
-			return constants.sqlAuth;
+			return 'SqlAuth';
 		}
 	}
 
@@ -61,13 +63,26 @@ export class SqlConnectionDataSource extends DataSource {
 		return this.getSetting(constants.passwordSetting);
 	}
 
+	public get encrypt(): string {
+		return this.getSetting(constants.encryptSetting);
+	}
+
+	public get trustServerCertificate(): string {
+		return this.getSetting(constants.trustServerCertificateSetting);
+	}
+
+	public get hostnameInCertificate(): string {
+		return this.getSetting(constants.hostnameInCertificateSetting);
+	}
+
 	constructor(name: string, connectionString: string) {
 		super(name);
 
 		// TODO: do we have a common construct for connection strings?
 		this.connectionString = connectionString;
 
-		for (const component of this.connectionString.split(';')) {
+		const components = this.connectionString.split(';').filter(c => c !== '');
+		for (const component of components) {
 			const split = component.split('=');
 
 			if (split.length !== 2) {
@@ -86,8 +101,8 @@ export class SqlConnectionDataSource extends DataSource {
 		return new SqlConnectionDataSource(json.name, (json.data as unknown as SqlConnectionDataSourceJson).connectionString);
 	}
 
-	public getConnectionProfile(): azdata.IConnectionProfile {
-		const connProfile: azdata.IConnectionProfile = {
+	public getConnectionProfile(): azdataType.IConnectionProfile {
+		const connProfile: azdataType.IConnectionProfile = {
 			serverName: this.server,
 			databaseName: this.database,
 			connectionName: this.name,
@@ -98,7 +113,11 @@ export class SqlConnectionDataSource extends DataSource {
 			providerName: 'MSSQL',
 			saveProfile: true,
 			id: this.name + '-dataSource',
-			options: []
+			options: {
+				'encrypt': this.encrypt,
+				'trustServerCertificate': this.trustServerCertificate,
+				'hostnameInCertificate': this.hostnameInCertificate
+			}
 		};
 
 		return connProfile;

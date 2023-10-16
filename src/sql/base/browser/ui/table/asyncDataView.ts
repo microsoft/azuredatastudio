@@ -3,8 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
+import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
+import { Emitter, Event } from 'vs/base/common/event';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface IObservableCollection<T> {
 	getLength(): number;
@@ -78,7 +80,7 @@ class DataWindow<T> {
 	}
 }
 
-export class VirtualizedCollection<T extends Slick.SlickData> implements IObservableCollection<T> {
+export class VirtualizedCollection<T extends Slick.SlickData> extends Disposable implements IObservableCollection<T> {
 	private _bufferWindowBefore: DataWindow<T>;
 	private _window: DataWindow<T>;
 	private _bufferWindowAfter: DataWindow<T>;
@@ -92,21 +94,16 @@ export class VirtualizedCollection<T extends Slick.SlickData> implements IObserv
 		private length: number,
 		loadFn: (offset: number, count: number) => Thenable<T[]>
 	) {
+		super();
 		let loadCompleteCallback = (start: number, end: number) => {
 			if (this.collectionChangedCallback) {
 				this.collectionChangedCallback(start, end - start);
 			}
 		};
 
-		this._bufferWindowBefore = new DataWindow(loadFn, placeHolderGenerator, loadCompleteCallback);
-		this._window = new DataWindow(loadFn, placeHolderGenerator, loadCompleteCallback);
-		this._bufferWindowAfter = new DataWindow(loadFn, placeHolderGenerator, loadCompleteCallback);
-	}
-
-	dispose() {
-		this._bufferWindowAfter.dispose();
-		this._bufferWindowBefore.dispose();
-		this._window.dispose();
+		this._bufferWindowBefore = this._register(new DataWindow(loadFn, placeHolderGenerator, loadCompleteCallback));
+		this._window = this._register(new DataWindow(loadFn, placeHolderGenerator, loadCompleteCallback));
+		this._bufferWindowAfter = this._register(new DataWindow(loadFn, placeHolderGenerator, loadCompleteCallback));
 	}
 
 	public setCollectionChangedCallback(callback: (startIndex: number, count: number) => void): void {
@@ -199,9 +196,38 @@ export class VirtualizedCollection<T extends Slick.SlickData> implements IObserv
 	}
 }
 
-export class AsyncDataProvider<T extends Slick.SlickData> implements IDisposableDataProvider<T> {
+export class AsyncDataProvider<T extends Slick.SlickData> extends Disposable implements IDisposableDataProvider<T> {
 
-	constructor(public dataRows: IObservableCollection<T>) { }
+	private _onFilterStateChange = this._register(new Emitter<void>());
+	get onFilterStateChange(): Event<void> { return this._onFilterStateChange.event; }
+
+	private _onSortComplete = this._register(new Emitter<Slick.OnSortEventArgs<T>>());
+	get onSortComplete(): Event<Slick.OnSortEventArgs<T>> { return this._onSortComplete.event; }
+
+	constructor(public dataRows: IObservableCollection<T>) {
+		super();
+		this._register(dataRows);
+	}
+
+	public get isDataInMemory(): boolean {
+		return false;
+	}
+
+	getRangeAsync(startIndex: number, length: number): Promise<T[]> {
+		throw new Error('Method not implemented.');
+	}
+
+	getColumnValues(column: Slick.Column<T>): Promise<string[]> {
+		throw new Error('Method not implemented.');
+	}
+
+	sort(options: Slick.OnSortEventArgs<T>): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	filter(columns?: Slick.Column<T>[]): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
 
 	public getLength(): number {
 		return this.dataRows.getLength();
@@ -221,10 +247,6 @@ export class AsyncDataProvider<T extends Slick.SlickData> implements IDisposable
 
 	public get length(): number {
 		return this.dataRows.getLength();
-	}
-
-	dispose() {
-		this.dataRows.dispose();
 	}
 
 	getItems(): T[] {

@@ -14,12 +14,13 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { WebviewContentOptions, IWebviewService, WebviewElement } from 'vs/workbench/contrib/webview/browser/webview';
+import { WebviewContentOptions, IWebviewService, IWebviewElement } from 'vs/workbench/contrib/webview/browser/webview';
 import { generateUuid } from 'vs/base/common/uuid';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { ComponentEventType, IModelStore, IComponentDescriptor, IComponent } from 'sql/platform/dashboard/browser/interfaces';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
 
 function reviveWebviewOptions(options: vscode.WebviewOptions): vscode.WebviewOptions {
 	return {
@@ -42,7 +43,7 @@ export default class WebViewComponent extends ComponentBase<WebViewProperties> i
 
 	private static readonly standardSupportedLinkSchemes = ['http', 'https', 'mailto'];
 
-	private _webview: WebviewElement;
+	private _webview: IWebviewElement;
 	private _renderedHtml: string;
 	private _extensionLocationUri: URI;
 	private _ready: Promise<void>;
@@ -57,25 +58,30 @@ export default class WebViewComponent extends ComponentBase<WebViewProperties> i
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IOpenerService) private readonly _openerService: IOpenerService,
 		@Inject(IWorkspaceContextService) private readonly _contextService: IWorkspaceContextService,
-		@Inject(IWebviewService) private readonly webviewService: IWebviewService
+		@Inject(IWebviewService) private readonly webviewService: IWebviewService,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
+	ngAfterViewInit(): void {
 		this._createWebview();
 		this._register(addDisposableListener(window, EventType.RESIZE, e => {
 			this.layout();
 		}));
+		this.baseInit();
 	}
 
 	private _createWebview(): void {
-		this._webview = this.webviewService.createWebviewElement(this.id,
-			{},
-			{
-				allowScripts: true
-			}, undefined);
+		this._webview = this.webviewService.createWebviewElement({
+			providedViewType: this.id,
+			title: this.id,
+			contentOptions: {
+				allowScripts: true,
+			},
+			options: {},
+			extension: undefined
+		});
 
 		this._webview.mountTo(this._el.nativeElement);
 
@@ -103,7 +109,7 @@ export default class WebViewComponent extends ComponentBase<WebViewProperties> i
 		}).catch(onUnexpectedError);
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -112,7 +118,7 @@ export default class WebViewComponent extends ComponentBase<WebViewProperties> i
 	private setHtml(): void {
 		if (this._webview && this.html) {
 			this._renderedHtml = this.html;
-			this._webview.html = this._renderedHtml;
+			this._webview.setHtml(this._renderedHtml);
 		}
 	}
 
@@ -126,8 +132,10 @@ export default class WebViewComponent extends ComponentBase<WebViewProperties> i
 		if (!link) {
 			return;
 		}
-		if (WebViewComponent.standardSupportedLinkSchemes.indexOf(link.scheme) >= 0 || this.enableCommandUris && link.scheme === 'command') {
+		if (WebViewComponent.standardSupportedLinkSchemes.indexOf(link.scheme) >= 0) {
 			this._openerService.open(link);
+		} else if (this.enableCommandUris && link.scheme === 'command') {
+			this._openerService.open(link, { allowCommands: true });
 		}
 	}
 
@@ -141,7 +149,7 @@ export default class WebViewComponent extends ComponentBase<WebViewProperties> i
 
 	/// IComponent implementation
 
-	public layout(): void {
+	public override layout(): void {
 		if (this._ready) {
 			this._ready.then(() => {
 				let element = <HTMLElement>this._el.nativeElement;
@@ -155,7 +163,7 @@ export default class WebViewComponent extends ComponentBase<WebViewProperties> i
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		if (this._ready) {
 			this._ready.then(() => {
 				super.setProperties(properties);

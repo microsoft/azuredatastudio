@@ -1,0 +1,20 @@
+{
+	"name": "sql-database-projects-vscode",
+	"publisher": "ms-mssql",
+	"extensionDependencies": [
+		"ms-mssql.mssql",
+		"ms-mssql.data-workspace-vscode"
+	],
+	"contributes": {
+		"configuration": [
+			{
+				"properties": {
+					"sqlDatabaseProjects.enablePreviewFeatures": {
+						"type": "boolean",
+						"description": "%sqlDatabaseProjects.enablePreviewFeatures%"
+					}
+				}
+			}
+		]
+	}
+}

@@ -68,7 +68,7 @@ function createContext(): TestContext {
 			packageJSON: '',
 			extensionKind: vscode.ExtensionKind.UI,
 			exports: extensionApi,
-			activate: () => {return Promise.resolve();},
+			activate: () => { return Promise.resolve(); },
 			extensionUri: vscode.Uri.parse('')
 		},
 		apiWrapper: TypeMoq.Mock.ofType(ApiWrapper),
@@ -78,24 +78,29 @@ function createContext(): TestContext {
 		context: {
 			subscriptions: [],
 			workspaceState: {
-				get: () => {return undefined;},
-				update: () => {return Promise.resolve();}
+				get: () => { return undefined; },
+				update: () => { return Promise.resolve(); },
+				keys: () => []
 			},
 			globalState: {
-				get:  () => {return Promise.resolve();},
-				update: () => {return Promise.resolve();}
+				setKeysForSync: (): void => { },
+				get: (): any | undefined => { return Promise.resolve(); },
+				update: (): Thenable<void> => { return Promise.resolve(); },
+				keys: () => []
 			},
 			extensionPath: extensionPath,
-			asAbsolutePath: () => {return '';},
+			asAbsolutePath: () => { return ''; },
 			storagePath: '',
 			globalStoragePath: '',
 			logPath: '',
 			extensionUri: vscode.Uri.parse(''),
-			environmentVariableCollection: { } as any,
+			environmentVariableCollection: {} as any,
 			extensionMode: undefined as any,
 			globalStorageUri: vscode.Uri.parse('test://'),
 			logUri: vscode.Uri.parse('test://'),
-			storageUri: undefined
+			storageUri: undefined,
+			secrets: undefined as any,
+			extension: undefined as any
 		},
 		outputChannel: {
 			name: '',
@@ -104,7 +109,8 @@ function createContext(): TestContext {
 			clear: () => { },
 			show: () => { },
 			hide: () => { },
-			dispose: () => { }
+			dispose: () => { },
+			replace: () => { }
 		},
 		extension: {
 			id: '',
@@ -117,10 +123,10 @@ function createContext(): TestContext {
 			extensionUri: vscode.Uri.parse('')
 		},
 		workspaceConfig: {
-			get: () => {return 'value';},
-			has: () => {return true;},
-			inspect: () => {return undefined;},
-			update: () => {return Promise.reject();},
+			get: () => { return 'value'; },
+			has: () => { return true; },
+			inspect: () => { return undefined; },
+			update: () => { return Promise.reject(); },
 		}
 	};
 }
@@ -150,6 +156,6 @@ describe('Main Controller', () => {
 		let controller = createController(testContext);
 		await controller.activate();
 
-		should.notEqual(controller.config.requiredSqlPythonPackages.find(x => x.name ==='sqlmlutils'), undefined);
+		should.notEqual(controller.config.requiredSqlPythonPackages.find(x => x.name === 'sqlmlutils'), undefined);
 	});
 });

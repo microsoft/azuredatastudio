@@ -10,8 +10,8 @@
 	"flatFileImport.importStatus": "匯入狀態",
 	"flatFileImport.serverName": "伺服器名稱",
 	"flatFileImport.databaseName": "資料庫名稱",
-	"flatFileImport.tableName": "表格名稱",
-	"flatFileImport.tableSchema": "表格結構描述",
+	"flatFileImport.tableName": "資料表名稱",
+	"flatFileImport.tableSchema": "資料表結構描述",
 	"flatFileImport.fileImport": "要匯入的檔案",
 	"flatFileImport.success.norows": "✔ 您已成功將資料插入表中。"
 }

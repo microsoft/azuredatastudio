@@ -19,7 +19,6 @@ import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/q
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 
 import { IAction } from 'vs/base/common/actions';
-import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -30,6 +29,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
+import { ResolvedKeybinding } from 'vs/base/common/keybindings';
 
 
 export abstract class GridParentComponent extends Disposable {
@@ -138,6 +138,9 @@ export abstract class GridParentComponent extends Disposable {
 					break;
 				case GridContentEvents.SaveAsJSON:
 					self.sendSaveRequest(SaveFormat.JSON);
+					break;
+				case GridContentEvents.SaveAsMarkdown:
+					self.sendSaveRequest(SaveFormat.MARKDOWN);
 					break;
 				case GridContentEvents.SaveAsExcel:
 					self.sendSaveRequest(SaveFormat.EXCEL);
@@ -313,6 +316,9 @@ export abstract class GridParentComponent extends Disposable {
 			'SaveAsJSON': () => {
 				this.sendSaveRequest(SaveFormat.JSON);
 			},
+			'SaveAsMarkdown': () => {
+				this.sendSaveRequest(SaveFormat.MARKDOWN);
+			},
 			'SaveAsExcel': () => {
 				this.sendSaveRequest(SaveFormat.EXCEL);
 			},
@@ -340,6 +346,9 @@ export abstract class GridParentComponent extends Disposable {
 				break;
 			case 'savejson':
 				this.dataService.sendSaveRequest({ batchIndex: event.batchId, resultSetNumber: event.resultId, format: SaveFormat.JSON, selection: event.selection });
+				break;
+			case 'saveMarkdown':
+				this.dataService.sendSaveRequest({ batchIndex: event.batchId, resultSetNumber: event.resultId, format: SaveFormat.MARKDOWN, selection: event.selection });
 				break;
 			case 'saveexcel':
 				this.dataService.sendSaveRequest({ batchIndex: event.batchId, resultSetNumber: event.resultId, format: SaveFormat.EXCEL, selection: event.selection });

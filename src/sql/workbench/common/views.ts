@@ -29,12 +29,16 @@ export interface ITreeItem extends vsITreeItem {
 	payload?: IConnectionProfile; // its possible we will want this to be more generic
 	sqlIcon?: string;
 	type?: NodeType;
-	nodeInfo?: NodeInfo
+	nodeInfo?: NodeInfo;
+	/**
+	 * The Object Explorer session id that the tree item belongs to.
+	 */
+	sessionId?: string;
 }
 
 export interface ITreeView extends vsITreeView {
 	collapse(element: ITreeItem): boolean
-	readonly onDidChangeSelection: Event<ITreeItem[]>;
+	readonly onDidChangeSelection: Event<readonly ITreeItem[]>;
 }
 
 export type TreeViewItemHandleArg = {

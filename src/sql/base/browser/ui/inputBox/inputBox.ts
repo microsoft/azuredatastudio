@@ -3,43 +3,41 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { InputBox as vsInputBox, IInputOptions, IInputBoxStyles as vsIInputBoxStyles, IMessage } from 'vs/base/browser/ui/inputbox/inputBox';
+import { InputBox as vsInputBox, IInputOptions as vsIInputBoxOptions, IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
-import { Color } from 'vs/base/common/color';
 import { Event, Emitter } from 'vs/base/common/event';
+import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
 
 export interface OnLoseFocusParams {
 	value: string;
 	hasChanged: boolean;
 }
 
-export interface IInputBoxStyles extends vsIInputBoxStyles {
-	disabledInputBackground?: Color;
-	disabledInputForeground?: Color;
+export interface IInputOptions extends vsIInputBoxOptions {
+	/**
+	 * Whether calls to validate require the force parameter to be set to true
+	 * to run the base VS Input Box validation logic. See validate() override
+	 * for more info.
+	 */
+	requireForceValidations?: boolean;
+	required?: boolean;
+	ariaDescription?: string;
 }
 
-export class InputBox extends vsInputBox {
-	private enabledInputBackground?: Color;
-	private enabledInputForeground?: Color;
-	private enabledInputBorder?: Color;
-	private disabledInputBackground?: Color;
-	private disabledInputForeground?: Color;
-	private disabledInputBorder?: Color;
-
+export class InputBox extends vsInputBox implements AdsWidget {
 	private _lastLoseFocusValue: string;
 
 	private _onLoseFocus = this._register(new Emitter<OnLoseFocusParams>());
 	public onLoseFocus: Event<OnLoseFocusParams> = this._onLoseFocus.event;
 
+	private _onInputFocus = this._register(new Emitter<void>());
+	public onInputFocus: Event<void> = this._onInputFocus.event;
+
 	private _isTextAreaInput = false;
 	private _hideErrors = false;
 
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, options?: IInputOptions) {
-		super(container, contextViewProvider, options);
-		this.enabledInputBackground = this.inputBackground;
-		this.enabledInputForeground = this.inputForeground;
-		this.enabledInputBorder = this.inputBorder;
-		this.disabledInputBackground = Color.transparent;
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, private _sqlOptions?: IInputOptions, id?: string) {
+		super(container, contextViewProvider, _sqlOptions);
 
 		this._lastLoseFocusValue = this.value;
 		let self = this;
@@ -48,26 +46,28 @@ export class InputBox extends vsInputBox {
 			self._lastLoseFocusValue = self.value;
 		});
 
-		if (options && options.type === 'textarea') {
+		this.onfocus(this.inputElement, () => {
+			self._onInputFocus.fire();
+		});
+
+		if (_sqlOptions && _sqlOptions.type === 'textarea') {
 			this._isTextAreaInput = true;
 		}
-	}
+		this.required = !!this._sqlOptions?.required;
 
-	public style(styles: IInputBoxStyles): void {
-		super.style(styles);
-		this.enabledInputBackground = this.inputBackground;
-		this.enabledInputForeground = this.inputForeground;
-		this.enabledInputBorder = this.inputBorder;
-		this.disabledInputBackground = styles.disabledInputBackground;
-		this.disabledInputForeground = styles.disabledInputForeground;
+		if (this._sqlOptions.ariaDescription) {
+			this.inputElement.setAttribute('aria-description', this._sqlOptions.ariaDescription);
+		}
+
+		if (id !== undefined) {
+			this.inputElement.id = id;
+		}
 		this.updateInputEnabledDisabledColors();
-		this.applyStyles();
 	}
 
-	public enable(): void {
+	public override enable(): void {
 		super.enable();
 		this.updateInputEnabledDisabledColors();
-		this.applyStyles();
 	}
 
 	public set rows(value: number) {
@@ -78,21 +78,30 @@ export class InputBox extends vsInputBox {
 		this.inputElement.setAttribute('cols', value.toString());
 	}
 
-	public layout(): void {
+	public override layout(): void {
 		if (!this._isTextAreaInput) {
 			super.layout();
 		}
 	}
 
-	public disable(): void {
+	public override disable(): void {
 		super.disable();
 		this.updateInputEnabledDisabledColors();
-		this.applyStyles();
 	}
 
 	public setHeight(value: string) {
 		if (this._isTextAreaInput) {
 			this.inputElement.style.height = value;
+			this.inputElement.style.whiteSpace = 'normal';
+		}
+	}
+
+	public setMaxLength(value: number | undefined) {
+		if (value === undefined) {
+			this.inputElement.removeAttribute('maxLength');
+		}
+		else {
+			this.inputElement.maxLength = value;
 		}
 	}
 
@@ -102,6 +111,14 @@ export class InputBox extends vsInputBox {
 
 	public isEnabled(): boolean {
 		return !this.inputElement.hasAttribute('disabled');
+	}
+
+	public get required(): boolean {
+		return this.inputElement.required;
+	}
+
+	public set required(v: boolean) {
+		this.inputElement.required = v;
 	}
 
 	public get hideErrors(): boolean {
@@ -115,16 +132,53 @@ export class InputBox extends vsInputBox {
 		}
 	}
 
-	public showMessage(message: IMessage, force?: boolean): void {
+	public override showMessage(message: IMessage, force?: boolean): void {
 		if (!this.hideErrors) {
 			super.showMessage(message, force);
 		}
 	}
 
 	private updateInputEnabledDisabledColors(): void {
-		let enabled = this.isEnabled();
-		this.inputBackground = enabled ? this.enabledInputBackground : this.disabledInputBackground;
-		this.inputForeground = enabled ? this.enabledInputForeground : this.disabledInputForeground;
-		this.inputBorder = enabled ? this.enabledInputBorder : this.disabledInputBorder;
+		const enabled = this.isEnabled();
+		const background = enabled ? this._sqlOptions.inputBoxStyles.inputBackground : this._sqlOptions.inputBoxStyles.disabledInputBackground
+		const foreground = enabled ? this._sqlOptions.inputBoxStyles.inputForeground : this._sqlOptions.inputBoxStyles.disabledInputForeground;
+		const border = enabled ? this._sqlOptions.inputBoxStyles.inputBorder : this._sqlOptions.inputBoxStyles.disabledInputBorder;
+		this.element.style.backgroundColor = background;
+		this.element.style.color = foreground;
+		this.input.style.color = foreground;
+		this.element.style.border = `1px solid ${border}`;
+	}
+
+	public override validate(force?: boolean): MessageType | undefined {
+		// We override the validate call here because in some situations we could end up with an "invalid" alert
+		// being announced incorrectly. For example the InputBox component has its own async validation - and so
+		// if a change was made to the text then the base VS InputBox would call validate immediately - before
+		// the async validation was able to trigger and complete and so the state could still be invalid at that
+		// point
+		// So instead we allow users of the input box to control whether to let the base input box do its validation
+		// as normal or whether to require manually calling validate with force === true in order to run the validation
+		// logic.
+		if (force || this._sqlOptions?.requireForceValidations !== true) {
+			return super.validate();
+		}
+		return undefined;
+	}
+
+	public override set width(width: number) {
+		super.width = width;
+		this.element.style.width = 'fit-content';
+	}
+
+	public override get value() {
+		return super.value;
+	}
+
+	public override set value(newValue: string) {
+		this._lastLoseFocusValue = newValue;
+		super.value = newValue;
+	}
+
+	public get id(): string {
+		return this.input.id;
 	}
 }

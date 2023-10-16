@@ -13,7 +13,9 @@ const path = require('path');
 
 const externals = {
 	'node-fetch': 'commonjs node-fetch',
-	'adm-zip': 'commonjs adm-zip'
+	'adm-zip': 'commonjs adm-zip',
+	'applicationinsights-native-metrics': 'commonjs applicationinsights-native-metrics',
+	'@opentelemetry/tracing': 'commonjs @opentelemetry/tracing'
 };
 
 // conditionally add ws if we are going to be running in a node environment

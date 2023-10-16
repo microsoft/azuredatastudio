@@ -4,13 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as dom from 'vs/base/browser/dom';
-import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
-import { LIGHT, IThemeService } from 'vs/platform/theme/common/themeService';
+import { ITree, IRenderer } from 'sql/base/parts/tree/browser/tree';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { TreeViewDataProvider } from './treeViewDataProvider';
 import { URI } from 'vs/base/common/uri';
+import { ColorScheme } from 'vs/platform/theme/common/theme';
 
 export enum TreeCheckboxState {
 	Intermediate = 0,
@@ -24,7 +25,7 @@ export class TreeDataTemplate extends Disposable {
 	icon: HTMLElement;
 	private _checkbox: HTMLInputElement;
 	model: ITreeComponentItem;
-	private _onChange = new Emitter<boolean>();
+	private _onChange = this._register(new Emitter<boolean>());
 
 	public readonly onChange: Event<boolean> = this._onChange.event;
 
@@ -46,6 +47,14 @@ export class TreeDataTemplate extends Disposable {
 		}
 	}
 
+	public override dispose(): void {
+		super.dispose();
+		this._checkbox.remove();
+		this.root.remove();
+		this.label.remove();
+		this.icon.remove();
+	}
+
 	public set checkboxState(value: TreeCheckboxState) {
 		if (this.checkboxState !== value) {
 			switch (value) {
@@ -64,6 +73,13 @@ export class TreeDataTemplate extends Disposable {
 					break;
 			}
 		}
+	}
+
+	/**
+	 * Sets the `aria-label` of the checkbox element associated with the tree node.
+	 */
+	public set checkboxLabel(value: string) {
+		this._checkbox.setAttribute('aria-label', value);
 	}
 
 	public set enableCheckbox(value: boolean) {
@@ -138,12 +154,12 @@ export class TreeComponentRenderer extends Disposable implements IRenderer {
 	 * Render a element, given an object bag returned by the template
 	 */
 	public renderElement(tree: ITree, element: ITreeComponentItem, templateId: string, templateData: TreeDataTemplate): void {
-		const icon = this.themeService.getColorTheme().type === LIGHT ? element.icon : element.iconDark;
-		const iconUri = icon ? URI.revive(icon) : null;
-		templateData.icon.style.backgroundImage = iconUri ? `url('${iconUri.toString(true)}')` : '';
+		const icon = this.themeService.getColorTheme().type === ColorScheme.LIGHT ? element.icon : element.iconDark;
+		const iconUri = icon ? URI.revive(icon) : undefined;
+		templateData.icon.style.backgroundImage = dom.asCSSUrl(iconUri);
 		templateData.icon.style.backgroundRepeat = 'no-repeat';
 		templateData.icon.style.backgroundPosition = 'center';
-		dom.toggleClass(templateData.icon, 'model-view-tree-node-item-icon', !!icon);
+		templateData.icon.classList.toggle('model-view-tree-node-item-icon', !!icon);
 		if (element) {
 			element.onCheckedChanged = (checked: boolean) => {
 				this._dataProvider.onNodeCheckedChanged(element.handle, checked);
@@ -159,8 +175,13 @@ export class TreeComponentRenderer extends Disposable implements IRenderer {
 		let label = treeNode.label;
 		templateData.label.textContent = label.label;
 		templateData.root.title = label.label;
-		templateData.checkboxState = this.getCheckboxState(treeNode);
-		templateData.enableCheckbox = treeNode.enabled;
+
+		if (templateData.checkbox) {
+			// Set the properties of the node's checkbox, if it is present
+			templateData.checkboxState = this.getCheckboxState(treeNode);
+			templateData.enableCheckbox = treeNode.enabled;
+			templateData.checkboxLabel = label.label;
+		}
 	}
 
 	private getCheckboxState(treeNode: ITreeComponentItem): TreeCheckboxState {

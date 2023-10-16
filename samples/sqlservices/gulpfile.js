@@ -5,10 +5,5 @@
 
 "use strict";
 
-// NOTE: These are es6 gulpfiles
-
 // Basic build tasks
 require('./tasks/buildtasks');
-
-// VSIX generation tasks
-require('./tasks/packagetasks');

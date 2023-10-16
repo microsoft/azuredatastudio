@@ -13,19 +13,22 @@ export const extensionOutputChannelName = 'Notebooks';
 export const notebookCommandNew = 'notebook.command.new';
 
 // JUPYTER CONFIG //////////////////////////////////////////////////////////
-export const pythonBundleVersion = '0.0.1';
-export const pythonVersion = '3.6.6';
+export const pythonVersion = '3.8.10';
 export const pythonPathConfigKey = 'pythonPath';
 export const existingPythonConfigKey = 'useExistingPython';
+export const dontPromptPythonUpdate = 'dontPromptPythonUpdate';
+export const jupyterServerShutdownTimeoutConfigKey = 'jupyterServerShutdownTimeout';
 export const notebookConfigKey = 'notebook';
 export const trustedBooksConfigKey = 'trustedBooks';
 export const pinnedBooksConfigKey = 'pinnedNotebooks';
 export const maxBookSearchDepth = 'maxBookSearchDepth';
 export const remoteBookDownloadTimeout = 'remoteBookDownloadTimeout';
 export const collapseBookItems = 'collapseBookItems';
+export const allowRoot = 'allowRoot';
 
 export const winPlatform = 'win32';
 export const macPlatform = 'darwin';
+export const linuxPlatform = 'linux';
 
 export const jupyterNotebookProviderId = 'jupyter';
 export const jupyterConfigRootFolder = 'jupyter_config';
@@ -33,17 +36,14 @@ export const jupyterNewNotebookTask = 'jupyter.task.newNotebook';
 export const jupyterOpenNotebookTask = 'jupyter.task.openNotebook';
 export const jupyterNewNotebookCommand = 'jupyter.cmd.newNotebook';
 export const jupyterReinstallDependenciesCommand = 'jupyter.reinstallDependencies';
-export const jupyterAnalyzeCommand = 'jupyter.cmd.analyzeNotebook';
 export const jupyterManagePackages = 'jupyter.cmd.managePackages';
 export const jupyterConfigurePython = 'jupyter.cmd.configurePython';
 export const localhostName = 'localhost';
 export const localhostTitle = localize('managePackages.localhost', "localhost");
 export const PackageNotFoundError = localize('managePackages.packageNotFound', "Could not find the specified package");
 
+export const ipykernelDisplayName = 'Python 3 (ipykernel)';
 export const python3DisplayName = 'Python 3';
-export const pysparkDisplayName = 'PySpark';
-export const sparkScalaDisplayName = 'Spark | Scala';
-export const sparkRDisplayName = 'Spark | R';
 export const powershellDisplayName = 'PowerShell';
 export const allKernelsName = 'All Kernels';
 
@@ -76,8 +76,10 @@ export enum NavigationProviders {
 export const unsavedBooksContextKey = 'unsavedBooks';
 export const showPinnedBooksContextKey = 'showPinnedbooks';
 
-export const pythonWindowsInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2110625';
-export const pythonMacInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2128152';
-export const pythonLinuxInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2110524';
+export const pythonWindowsInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2163338';
+export const pythonMacInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2163337';
+export const pythonLinuxInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2163336';
 
-export const notebookLanguages = ['notebook', 'ipynb'];
+// The version of the notebook file format that we support
+export const NBFORMAT = 4;
+export const NBFORMAT_MINOR = 2;

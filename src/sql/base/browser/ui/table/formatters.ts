@@ -11,12 +11,54 @@ export interface DBCellValue {
 	isNull: boolean;
 }
 
+/**
+ * Info for executing a command. @see azdata.ExecuteCommandInfo
+ */
+export interface ExecuteCommandInfo {
+	id: string;
+	displayText?: string;
+	args?: string[]
+}
+
+/**
+ * The info for a DataGrid Text Cell.
+ */
+export interface TextCellValue {
+	text: string;
+	ariaLabel: string;
+}
+
+/**
+ * The info for a DataGrid Hyperlink Cell.
+ */
+export interface HyperlinkCellValue {
+	displayText: string;
+	linkOrCommand: string | ExecuteCommandInfo;
+}
+
+export interface CssIconCellValue {
+	iconCssClass: string,
+	title: string
+}
+
+
 export namespace DBCellValue {
 	export function isDBCellValue(object: any): boolean {
 		return (object !== undefined && object.displayValue !== undefined && object.isNull !== undefined);
 	}
 }
 
+/**
+ * Checks whether the specified object is a HyperlinkCellValue object or not
+ * @param obj The object to test
+ */
+export function isHyperlinkCellValue(obj: any | undefined): obj is HyperlinkCellValue {
+	return !!(<HyperlinkCellValue>obj)?.linkOrCommand;
+}
+
+export function isCssIconCellValue(obj: any | undefined): obj is CssIconCellValue {
+	return !!(<CssIconCellValue>obj)?.iconCssClass;
+}
 
 /**
  * Format xml field into a hyperlink and performs HTML entity encoding
@@ -24,33 +66,39 @@ export namespace DBCellValue {
 export function hyperLinkFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
 	let cellClasses = 'grid-cell-value-container';
 	let valueToDisplay: string = '';
-
+	let isHyperlink: boolean = false;
 	if (DBCellValue.isDBCellValue(value)) {
 		valueToDisplay = 'NULL';
 		if (!value.isNull) {
-			cellClasses += ' xmlLink';
-			valueToDisplay = escape(value.displayValue);
-			return `<a class="${cellClasses}" href="#" >${valueToDisplay}</a>`;
+			valueToDisplay = getCellDisplayValue(value.displayValue);
+			isHyperlink = true;
 		} else {
 			cellClasses += ' missing-value';
 		}
+	} else if (isHyperlinkCellValue(value)) {
+		valueToDisplay = getCellDisplayValue(value.displayText);
+		isHyperlink = true;
 	}
-	return `<span title="${valueToDisplay}" class="${cellClasses}">${valueToDisplay}</span>`;
+
+	if (isHyperlink) {
+		return `<a class="${cellClasses}" title="${valueToDisplay}">${valueToDisplay}</a>`;
+	} else {
+		return `<span title="${valueToDisplay}" class="${cellClasses}">${valueToDisplay}</span>`;
+	}
 }
 
 /**
  * Format all text to replace all new lines with spaces and performs HTML entity encoding
  */
-export function textFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
+export function textFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined, addClasses?: string): string | { text: string, addClasses: string } {
 	let cellClasses = 'grid-cell-value-container';
 	let valueToDisplay = '';
 	let titleValue = '';
-
+	let cellStyle = '';
 	if (DBCellValue.isDBCellValue(value)) {
 		valueToDisplay = 'NULL';
 		if (!value.isNull) {
-			valueToDisplay = value.displayValue.replace(/(\r\n|\n|\r)/g, ' ');
-			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+			valueToDisplay = getCellDisplayValue(value.displayValue)
 			titleValue = valueToDisplay;
 		} else {
 			cellClasses += ' missing-value';
@@ -58,14 +106,49 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 	} else if (typeof value === 'string' || (value && value.text)) {
 		if (value.text) {
 			valueToDisplay = value.text;
+			if (value.style) {
+				cellStyle = value.style;
+			}
 		} else {
 			valueToDisplay = value;
 		}
-		valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+		valueToDisplay = getCellDisplayValue(valueToDisplay);
+		titleValue = valueToDisplay;
+	}
+	else if (value && value.title) {
+		if (value.title) {
+			valueToDisplay = value.title;
+
+			if (value.style) {
+				cellStyle = value.style;
+			}
+		}
+		valueToDisplay = getCellDisplayValue(valueToDisplay);
 		titleValue = valueToDisplay;
 	}
 
-	return `<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
+	const formattedValue = `<span title="${titleValue}" style="${cellStyle}" class="${cellClasses}">${valueToDisplay}</span>`;
+
+	if (addClasses) {
+		return { text: formattedValue, addClasses: addClasses };
+	}
+
+	return formattedValue;
+}
+
+export function getCellDisplayValue(cellValue: string): string {
+	let valueToDisplay = cellValue.length > 250 ? cellValue.slice(0, 250) + '...' : cellValue;
+	// allow-any-unicode-next-line
+	valueToDisplay = valueToDisplay.replace(/(\r\n|\n|\r)/g, '↵');
+	return escape(valueToDisplay);
+}
+
+
+export function iconCssFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string | { text: string, addClasses: string } {
+	if (isCssIconCellValue(value)) {
+		return `<div role="image" title="${escape(value.title ?? '')}" aria-label="${escape(value.title ?? '')}" class="grid-cell-value-container icon codicon slick-icon-cell-content ${value.iconCssClass}"></div>`;
+	}
+	return textFormatter(row, cell, value, columnDef, dataContext);
 }
 
 export function imageFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
@@ -73,30 +156,65 @@ export function imageFormatter(row: number | undefined, cell: any | undefined, v
 }
 
 /**
- * Provide slick grid cell with encoded ariaLabel and plain text.
- * text will be escaped by the textFormatter and ariaLabel will be consumed by slickgrid directly.
+ * Extracts the specified field into the expected object to be handled by SlickGrid and/or formatters as needed.
  */
-export function slickGridDataItemColumnValueExtractor(value: any, columnDef: any): { text: string; ariaLabel: string; } {
-	let displayValue = value[columnDef.field];
-	return {
-		text: displayValue,
-		ariaLabel: displayValue ? escape(displayValue) : displayValue
-	};
+export function slickGridDataItemColumnValueExtractor(value: any, columnDef: any): TextCellValue | HyperlinkCellValue {
+	let fieldValue = value[columnDef.field];
+	if (columnDef.type === 'hyperlink') {
+		return <HyperlinkCellValue>{
+			displayText: fieldValue.displayText,
+			linkOrCommand: fieldValue.linkOrCommand
+		};
+	} else {
+		return <TextCellValue>{
+			text: fieldValue,
+			ariaLabel: fieldValue ? escape(fieldValue) : fieldValue
+		};
+	}
 }
 
 /**
  * Alternate function to provide slick grid cell with ariaLabel and plain text
  * In this case, for no display value ariaLabel will be set to specific string "no data available" for accessibily support for screen readers
- * Set 'no data' lable only if cell is present and has no value (so that checkbox and other custom plugins do not get 'no data' label)
+ * Set 'no data' label only if cell is present and has no value (so that checkbox and other custom plugins do not get 'no data' label)
  */
-export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: any): { text: string; ariaLabel: string; } {
+export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: any): { text: string; ariaLabel: string; } | CssIconCellValue {
 	let displayValue = value[columnDef.field];
 	if (typeof displayValue === 'number') {
 		displayValue = displayValue.toString();
 	}
+	if (displayValue instanceof Array) {
+		displayValue = displayValue.toString();
+	}
+
+	if (isCssIconCellValue(displayValue)) {
+		return displayValue;
+	}
+
 	return {
 		text: displayValue,
 		ariaLabel: displayValue ? escape(displayValue) : ((displayValue !== undefined) ? localize("tableCell.NoDataAvailable", "no data available") : displayValue)
+	};
+}
+
+/**
+ * Creates a formatter for the first column of the treegrid. The created formatter will wrap the output of the provided formatter with a level based indentation and a chevron icon for tree grid parents that indicates their expand/collapse state.
+ */
+export function createTreeGridExpandableColumnFormatter<T>(formattingFunction: Slick.Formatter<T>): Slick.Formatter<T> {
+	return (row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string => {
+		const spacer = `<span style='display:inline-block;height:1px;width:${(15 * (dataContext['level'] - 1))}px'></span>`;
+
+		const innerCellContent = formattingFunction(row, cell, value, columnDef, dataContext);
+
+		if (dataContext['isParent']) {
+			if (dataContext.expanded) {
+				return `<div>${spacer}<span class='codicon codicon-chevron-down toggle' style='font-weight:bold;'></span>&nbsp; ${innerCellContent}</div>`;
+			} else {
+				return `<div>${spacer}<span class='codicon codicon-chevron-right toggle' style='font-weight:bold;'></span>&nbsp; ${innerCellContent}</div>`;
+			}
+		} else {
+			return `${spacer}${innerCellContent}`;
+		}
 	};
 }
 

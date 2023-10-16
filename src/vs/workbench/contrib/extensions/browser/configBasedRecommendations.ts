@@ -4,11 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IExtensionTipsService, IConfigBasedExtensionTip } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { ExtensionRecommendations, ExtensionRecommendation, PromptedExtensionRecommendations } from 'vs/workbench/contrib/extensions/browser/extensionRecommendations';
+import { ExtensionRecommendations, ExtensionRecommendation } from 'vs/workbench/contrib/extensions/browser/extensionRecommendations';
 import { localize } from 'vs/nls';
-import { ExtensionRecommendationReason } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
+import { ExtensionRecommendationReason } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
 import { IWorkspaceContextService, IWorkspaceFoldersChangeEvent } from 'vs/platform/workspace/common/workspace';
 import { Emitter } from 'vs/base/common/event';
+
+type ConfigBasedExtensionRecommendation = ExtensionRecommendation & { whenNotInstalled: string[] | undefined };
 
 export class ConfigBasedRecommendations extends ExtensionRecommendations {
 
@@ -18,20 +20,19 @@ export class ConfigBasedRecommendations extends ExtensionRecommendations {
 	private _onDidChangeRecommendations = this._register(new Emitter<void>());
 	readonly onDidChangeRecommendations = this._onDidChangeRecommendations.event;
 
-	private _otherRecommendations: ExtensionRecommendation[] = [];
-	get otherRecommendations(): ReadonlyArray<ExtensionRecommendation> { return this._otherRecommendations; }
+	private _otherRecommendations: ConfigBasedExtensionRecommendation[] = [];
+	get otherRecommendations(): ReadonlyArray<ConfigBasedExtensionRecommendation> { return this._otherRecommendations; }
 
-	private _importantRecommendations: ExtensionRecommendation[] = [];
-	get importantRecommendations(): ReadonlyArray<ExtensionRecommendation> { return this._importantRecommendations; }
+	private _importantRecommendations: ConfigBasedExtensionRecommendation[] = [];
+	get importantRecommendations(): ReadonlyArray<ConfigBasedExtensionRecommendation> { return this._importantRecommendations; }
 
-	get recommendations(): ReadonlyArray<ExtensionRecommendation> { return [...this.importantRecommendations, ...this.otherRecommendations]; }
+	get recommendations(): ReadonlyArray<ConfigBasedExtensionRecommendation> { return [...this.importantRecommendations, ...this.otherRecommendations]; }
 
 	constructor(
-		promptedExtensionRecommendations: PromptedExtensionRecommendations,
 		@IExtensionTipsService private readonly extensionTipsService: IExtensionTipsService,
 		@IWorkspaceContextService private readonly workspaceContextService: IWorkspaceContextService,
 	) {
-		super(promptedExtensionRecommendations);
+		super();
 	}
 
 	protected async doActivate(): Promise<void> {
@@ -70,14 +71,14 @@ export class ConfigBasedRecommendations extends ExtensionRecommendations {
 		}
 	}
 
-	private toExtensionRecommendation(tip: IConfigBasedExtensionTip): ExtensionRecommendation {
+	private toExtensionRecommendation(tip: IConfigBasedExtensionTip): ConfigBasedExtensionRecommendation {
 		return {
 			extensionId: tip.extensionId,
-			source: 'config',
 			reason: {
 				reasonId: ExtensionRecommendationReason.WorkspaceConfig,
 				reasonText: localize('exeBasedRecommendation', "This extension is recommended because of the current workspace configuration")
-			}
+			},
+			whenNotInstalled: tip.whenNotInstalled
 		};
 	}
 

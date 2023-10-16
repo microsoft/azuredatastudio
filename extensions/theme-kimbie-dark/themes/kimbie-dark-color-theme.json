@@ -10,7 +10,7 @@
 		"list.highlightForeground": "#e3b583",
 		"list.activeSelectionBackground": "#7c5021",
 		"list.hoverBackground": "#7c502166",
-		"list.focusBackground": "#7c5021AA",
+		"quickInputList.focusBackground": "#7c5021AA",
 		"list.inactiveSelectionBackground": "#645342",
 		"pickerGroup.foreground": "#e3b583",
 		"pickerGroup.border": "#e3b583",
@@ -23,13 +23,16 @@
 		"editorGroupHeader.tabsBackground": "#131510",
 		"editorLineNumber.activeForeground": "#adadad",
 		"tab.inactiveBackground": "#131510",
+		"tab.lastPinnedBorder": "#51412c",
 		"titleBar.activeBackground": "#423523",
 		"statusBar.background": "#423523",
 		"statusBar.debuggingBackground": "#423523",
 		"statusBar.noFolderBackground": "#423523",
 		"statusBarItem.remoteBackground": "#6e583b",
+		"ports.iconRunningProcessForeground": "#369432",
 		"activityBar.background": "#221a0f",
 		"activityBar.foreground": "#d3af86",
+		"activityBarItem.profilesBackground": "#47351d",
 		"sideBar.background": "#362712",
 		"menu.background": "#362712",
 		"menu.foreground": "#CCCCCC",
@@ -58,7 +61,11 @@
 			}
 		},
 		{
-			"scope": ["meta.embedded", "source.groovy.embedded"],
+			"scope": [
+				"meta.embedded",
+				"source.groovy.embedded",
+				"string meta.image.inline.markdown"
+			],
 			"settings": {
 				"foreground": "#d3af86"
 			}
@@ -74,7 +81,8 @@
 			"name": "Comments",
 			"scope": [
 				"comment",
-				"punctuation.definition.comment"
+				"punctuation.definition.comment",
+				"string.quoted.docstring"
 			],
 			"settings": {
 				"foreground": "#a57a4c"
@@ -294,6 +302,12 @@
 			}
 		},
 		{
+			"scope": "markup.strikethrough",
+			"settings": {
+				"fontStyle": "strikethrough"
+			}
+		},
+		{
 			"name": "Code",
 			"scope": "markup.inline.raw",
 			"settings": {
@@ -389,7 +403,7 @@
 		},
 		{
 			"name": "Invalid",
-			"scope": "invalid.illegal",
+			"scope": "invalid",
 			"settings": {
 				"foreground": "#dc3958"
 			}

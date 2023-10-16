@@ -21,11 +21,12 @@ export interface IAccountManagementService {
 	getAccountProviderMetadata(): Promise<azdata.AccountProviderMetadata[]>;
 	getAccountsForProvider(providerId: string): Promise<azdata.Account[]>;
 	getAccounts(): Promise<azdata.Account[]>;
+	promptProvider(): Promise<string | undefined>;
 	/**
 	 * @deprecated
 	 */
 	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<{ [key: string]: { token: string } } | undefined>;
-	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<{ token: string } | undefined>;
+	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<azdata.accounts.AccountSecurityToken | undefined>;
 	removeAccount(accountKey: azdata.AccountKey): Promise<boolean>;
 	removeAccounts(): Promise<boolean>;
 	refreshAccount(account: azdata.Account): Promise<azdata.Account>;
@@ -35,7 +36,7 @@ export interface IAccountManagementService {
 	beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Promise<void>;
 	endAutoOAuthDeviceCode(): void;
 	cancelAutoOAuthDeviceCode(providerId: string): void;
-	copyUserCodeAndOpenBrowser(userCode: string, uri: string): void;
+	copyUserCodeAndOpenBrowser(userCode: string, uri: string): Promise<boolean>;
 
 	// SERVICE MANAGEMENT METHODS /////////////////////////////////////////
 	registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): void;
@@ -45,14 +46,6 @@ export interface IAccountManagementService {
 	readonly addAccountProviderEvent: Event<AccountProviderAddedEventParams>;
 	readonly removeAccountProviderEvent: Event<azdata.AccountProviderMetadata>;
 	readonly updateAccountListEvent: Event<UpdateAccountListEventParams>;
-}
-
-// Enum matching the AzureResource enum from azdata.d.ts
-export enum AzureResource {
-	ResourceManagement = 0,
-	Sql = 1,
-	OssRdbms = 2,
-	AzureKeyVault = 3
 }
 
 export interface IAccountStore {

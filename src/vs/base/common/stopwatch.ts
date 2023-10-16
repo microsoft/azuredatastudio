@@ -27,6 +27,11 @@ export class StopWatch {
 		this._stopTime = this._now();
 	}
 
+	public reset(): void {
+		this._startTime = this._now();
+		this._stopTime = -1;
+	}
+
 	public elapsed(): number {
 		if (this._stopTime !== -1) {
 			return this._stopTime - this._startTime;
@@ -35,6 +40,6 @@ export class StopWatch {
 	}
 
 	private _now(): number {
-		return this._highResolution ? globals.performance.now() : new Date().getTime();
+		return this._highResolution ? globals.performance.now() : Date.now();
 	}
 }

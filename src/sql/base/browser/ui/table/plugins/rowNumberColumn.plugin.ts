@@ -3,16 +3,28 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
+import { mixin } from 'vs/base/common/objects';
+
 export interface IRowNumberColumnOptions {
-	numberOfRows: number;
 	cssClass?: string;
+	/**
+	 * Controls the cell selection behavior. If the value is true or not specified, the entire row will be selected when a cell is clicked,
+	 * and when the header is clicked, the entire table will be selected. If the value is false, the auto selection will not happen.
+	 */
+	autoCellSelection?: boolean;
 }
+
+const defaultOptions: IRowNumberColumnOptions = {
+	autoCellSelection: true
+};
 
 export class RowNumberColumn<T> implements Slick.Plugin<T> {
 	private handler = new Slick.EventHandler();
 	private grid!: Slick.Grid<T>;
 
-	constructor(private options: IRowNumberColumnOptions) {
+	constructor(private options?: IRowNumberColumnOptions) {
+		this.options = mixin(this.options, defaultOptions, false);
 	}
 
 	public init(grid: Slick.Grid<T>) {
@@ -27,7 +39,7 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 	}
 
 	private handleClick(e: MouseEvent, args: Slick.OnClickEventArgs<T>): void {
-		if (this.grid.getColumns()[args.cell].id === 'rowNumber') {
+		if (this.grid.getColumns()[args.cell].id === 'rowNumber' && this.options.autoCellSelection) {
 			this.grid.setActiveCell(args.row, 1);
 			if (this.grid.getSelectionModel()) {
 				this.grid.setSelectedRows([args.row]);
@@ -36,8 +48,8 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 	}
 
 	private handleHeaderClick(e: MouseEvent, args: Slick.OnHeaderClickEventArgs<T>): void {
-		if (args.column.id === 'rowNumber') {
-			this.grid.setActiveCell(0, 1);
+		if (args.column.id === 'rowNumber' && this.options.autoCellSelection) {
+			this.grid.setActiveCell(this.grid.getViewport()?.top ?? 0, 1);
 			let selectionModel = this.grid.getSelectionModel();
 			if (selectionModel) {
 				selectionModel.setSelectedRanges([new Slick.Range(0, 0, this.grid.getDataLength() - 1, this.grid.getColumns().length - 1)]);
@@ -45,7 +57,7 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 		}
 	}
 
-	public getColumnDefinition(): Slick.Column<T> {
+	public getColumnDefinition(): FilterableColumn<T> {
 		// that smallest we can make it is 22 due to padding and margins in the cells
 		return {
 			id: 'rowNumber',
@@ -56,6 +68,7 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 			cssClass: this.options.cssClass,
 			focusable: false,
 			selectable: false,
+			filterable: false,
 			formatter: r => this.formatter(r)
 		};
 	}

@@ -7,9 +7,8 @@ import { IInsight } from './interfaces';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { $ } from 'vs/base/browser/dom';
 import { mixin } from 'vs/base/common/objects';
-import { IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/browser/interfaces';
 import * as nls from 'vs/nls';
-import { startsWith } from 'vs/base/common/strings';
 import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 
 export interface IConfig extends IInsightOptions {
@@ -71,7 +70,7 @@ export class ImageInsight implements IInsight {
 
 	private static _hexToBase64(hexVal: string) {
 
-		if (startsWith(hexVal, '0x')) {
+		if (hexVal.startsWith('0x')) {
 			hexVal = hexVal.slice(2);
 		}
 		// should be able to be replaced with new Buffer(hexVal, 'hex').toString('base64')

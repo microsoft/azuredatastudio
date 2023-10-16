@@ -28,10 +28,10 @@ export class ModelsDetailsTableComponent extends ModelViewBase implements IDataC
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		this._table = modelBuilder.declarativeTable()
-			.withProperties<azdata.DeclarativeTableProperties>(
+			.withProps(
 				{
 					columns: [
-						{ // Name
+						{ // File Name
 							displayName: constants.modelFileName,
 							ariaLabel: constants.modelFileName,
 							valueType: azdata.DeclarativeDataType.string,
@@ -57,7 +57,7 @@ export class ModelsDetailsTableComponent extends ModelViewBase implements IDataC
 								...constants.cssStyles.tableRow
 							},
 						},
-						{ // Created
+						{ // Description
 							displayName: constants.modelDescription,
 							ariaLabel: constants.modelDescription,
 							valueType: azdata.DeclarativeDataType.component,
@@ -111,7 +111,6 @@ export class ModelsDetailsTableComponent extends ModelViewBase implements IDataC
 
 	/**
 	 * Load data in the component
-	 * @param workspaceResource Azure workspace
 	 */
 	public async loadData(): Promise<void> {
 
@@ -121,17 +120,20 @@ export class ModelsDetailsTableComponent extends ModelViewBase implements IDataC
 			let tableData: any[][] = [];
 			tableData = tableData.concat(models.map(model => this.createTableRow(model)));
 			this._table.data = tableData;
+			if (tableData.length === 0) {
+				this._table.dataValues = tableData;
+			}
 		}
 	}
 
 	private createTableRow(model: ModelViewData | undefined): any[] {
 		if (this._modelBuilder && model && model.modelDetails) {
-			const nameComponent = this._modelBuilder.inputBox().withProperties({
+			const nameComponent = this._modelBuilder.inputBox().withProps({
 				value: model.modelDetails.modelName,
 				width: this.componentMaxLength - 100,
 				required: true
 			}).component();
-			const descriptionComponent = this._modelBuilder.inputBox().withProperties({
+			const descriptionComponent = this._modelBuilder.inputBox().withProps({
 				value: model.modelDetails.description,
 				width: this.componentMaxLength
 			}).component();
@@ -145,7 +147,7 @@ export class ModelsDetailsTableComponent extends ModelViewBase implements IDataC
 					model.modelDetails.modelName = nameComponent.value || '';
 				}
 			});
-			let deleteButton = this._modelBuilder.button().withProperties({
+			let deleteButton = this._modelBuilder.button().withProps({
 				label: '',
 				title: constants.deleteTitle,
 				width: 15,

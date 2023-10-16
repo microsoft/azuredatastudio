@@ -20,6 +20,12 @@ declare module 'arc' {
 	}
 
 	export type MiaaResourceInfo = ResourceInfo & {
+		userName?: string,
+		encrypt?: string,
+		trustServerCertificate?: boolean
+	};
+
+	export type PGResourceInfo = ResourceInfo & {
 		userName?: string
 	};
 
@@ -31,11 +37,15 @@ declare module 'arc' {
 
 	export type ControllerInfo = {
 		id: string,
-		url: string,
+		kubeConfigFilePath: string,
+		kubeClusterContext: string,
+		namespace: string,
 		name: string,
-		username: string,
-		rememberPassword: boolean,
-		resources: ResourceInfo[]
+		resources: ResourceInfo[],
+		resourceGroup: string,
+		connectionMode: string,
+		location: string,
+		customLocation: string
 	};
 
 	export interface DataController {
@@ -44,7 +54,5 @@ declare module 'arc' {
 	}
 	export interface IExtension {
 		getRegisteredDataControllers(): Promise<DataController[]>;
-		getControllerPassword(controllerInfo: ControllerInfo): Promise<string>;
-		reacquireControllerPassword(controllerInfo: ControllerInfo, password: string, retryCount?: number): Promise<string>;
 	}
 }

@@ -7,7 +7,7 @@ import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 
-import { EditorOptions, EditorInput, IEditorControl, IEditorPane, IEditorOpenContext } from 'vs/workbench/common/editor';
+import { IEditorControl, IEditorPane, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -20,7 +20,7 @@ import { EditDataInput } from 'sql/workbench/browser/editData/editDataInput';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
-import { IAction, IActionViewItem } from 'vs/base/common/actions';
+import { IAction } from 'vs/base/common/actions';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { IEditorDescriptorService } from 'sql/workbench/services/queryEditor/browser/editorDescriptorService';
 import {
@@ -35,8 +35,13 @@ import { EditDataResultsEditor } from 'sql/workbench/contrib/editData/browser/ed
 import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { DisposableStore } from 'vs/base/common/lifecycle';
+import { ICodeEditorViewState } from 'vs/editor/common/editorCommon';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
@@ -70,6 +75,7 @@ export class EditDataEditor extends EditorPane {
 	private _queryEditorVisible: IContextKey<boolean>;
 	private hideQueryResultsView = false;
 
+	private readonly _disposables = new DisposableStore();
 	constructor(
 		@ITelemetryService _telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
@@ -78,7 +84,8 @@ export class EditDataEditor extends EditorPane {
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IStorageService storageService: IStorageService
+		@IStorageService storageService: IStorageService,
+		@IEditorGroupsService editorGroupsService: IEditorGroupsService
 	) {
 		super(EditDataEditor.ID, _telemetryService, themeService, storageService);
 
@@ -86,16 +93,26 @@ export class EditDataEditor extends EditorPane {
 			this._queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
 		}
 
-		if (_editorService) {
-			_editorService.overrideOpenEditor({
-				open: (editor, options, group) => {
-					if (this.isVisible() && (editor !== this.input || group !== this.group)) {
-						this.saveEditorViewState();
-					}
-					return {};
-				}
-			});
+		if (editorGroupsService) {
+			// Add all the initial groups to be listened to
+			editorGroupsService.whenReady.then(() => editorGroupsService.groups.forEach(group => {
+				this.registerGroupListener(group);
+			}));
+
+			// Additional groups added should also be listened to
+			this._register(editorGroupsService.onDidAddGroup((group) => this.registerGroupListener(group)));
+
+			this._register(this._disposables);
 		}
+	}
+
+	private registerGroupListener(group: IEditorGroup): void {
+		const listener = group.onWillOpenEditor(e => {
+			if (this.isVisible() && (e.editor !== this.input || group !== this.group)) {
+				this.saveEditorViewState();
+			}
+		});
+		this._disposables.add(listener);
 	}
 
 	// PUBLIC METHODS ////////////////////////////////////////////////////////////
@@ -113,7 +130,7 @@ export class EditDataEditor extends EditorPane {
 	 * Called to indicate to the editor that the input should be cleared and resources associated with the
 	 * input should be freed.
 	 */
-	public clearInput(): void {
+	public override clearInput(): void {
 		if (this._resultsEditor) {
 			this._resultsEditor.clearInput();
 		}
@@ -134,7 +151,7 @@ export class EditDataEditor extends EditorPane {
 		this._createTaskbar(parent);
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		this._disposeEditors();
 		super.dispose();
 	}
@@ -142,13 +159,13 @@ export class EditDataEditor extends EditorPane {
 	/**
 	 * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
 	 */
-	public focus(): void {
+	public override focus(): void {
 		if (this._sqlEditor) {
 			this._sqlEditor.focus();
 		}
 	}
 
-	public getControl(): IEditorControl {
+	public override getControl(): IEditorControl {
 		if (this._sqlEditor) {
 			return this._sqlEditor.getControl();
 		}
@@ -196,7 +213,7 @@ export class EditDataEditor extends EditorPane {
 	/**
 	 * Sets this editor and the sub-editors to visible.
 	 */
-	public setEditorVisible(visible: boolean, group: IEditorGroup): void {
+	protected override setEditorVisible(visible: boolean, group: IEditorGroup): void {
 		if (this._resultsEditor) {
 			this._resultsEditor.setVisible(visible, group);
 		}
@@ -213,7 +230,7 @@ export class EditDataEditor extends EditorPane {
 	/**
 	 * Sets the input data for this editor.
 	 */
-	public setInput(newInput: EditDataInput, options?: EditorOptions, context?: IEditorOpenContext): Promise<void> {
+	public override setInput(newInput: EditDataInput, options?: IEditorOptions, context?: IEditorOpenContext): Promise<void> {
 		let oldInput = <EditDataInput>this.input;
 		if (!newInput.setup) {
 			this._initialized = false;
@@ -301,7 +318,7 @@ export class EditDataEditor extends EditorPane {
 	}
 
 
-	updateStyles() {
+	override updateStyles() {
 		if (this._resultsEditorContainer) {
 			this._resultsEditorContainer.style.borderTopColor = this.getColor(PANEL_BORDER);
 		}
@@ -355,7 +372,7 @@ export class EditDataEditor extends EditorPane {
 		let actionID = ChangeMaxRowsAction.ID;
 		if (action.id === actionID) {
 			if (!this._changeMaxRowsActionItem) {
-				this._changeMaxRowsActionItem = this._instantiationService.createInstance(ChangeMaxRowsActionItem, this);
+				this._changeMaxRowsActionItem = this._instantiationService.createInstance(ChangeMaxRowsActionItem, this, action);
 			}
 			return this._changeMaxRowsActionItem;
 		}
@@ -491,7 +508,7 @@ export class EditDataEditor extends EditorPane {
 	/**
 	 * Sets input for the results editor after it has been created.
 	 */
-	private _onResultsEditorCreated(resultsEditor: EditDataResultsEditor, resultsInput: EditDataResultsInput, options: EditorOptions): Promise<void> {
+	private _onResultsEditorCreated(resultsEditor: EditDataResultsEditor, resultsInput: EditDataResultsInput, options: IEditorOptions): Promise<void> {
 		this._resultsEditor = resultsEditor;
 		return this._resultsEditor.setInput(resultsInput, options, undefined);
 	}
@@ -499,7 +516,7 @@ export class EditDataEditor extends EditorPane {
 	/**
 	 * Sets input for the SQL editor after it has been created.
 	 */
-	private _onSqlEditorCreated(sqlEditor: TextResourceEditor, sqlInput: UntitledTextEditorInput, options: EditorOptions): Thenable<void> {
+	private _onSqlEditorCreated(sqlEditor: TextResourceEditor, sqlInput: UntitledTextEditorInput, options: IEditorOptions): Thenable<void> {
 		this._sqlEditor = sqlEditor;
 		return this._sqlEditor.setInput(sqlInput, options, undefined, CancellationToken.None);
 	}
@@ -519,7 +536,7 @@ export class EditDataEditor extends EditorPane {
 	 * - Opened for the first time
 	 * - Opened with a new EditDataInput
 	 */
-	private _setNewInput(newInput: EditDataInput, options?: EditorOptions): Promise<any> {
+	private _setNewInput(newInput: EditDataInput, options?: IEditorOptions): Promise<any> {
 
 		// Promises that will ensure proper ordering of editor creation logic
 		let createEditors: () => Promise<any>;
@@ -567,7 +584,7 @@ export class EditDataEditor extends EditorPane {
 					newInput.results.onRestoreViewStateEmitter.fire();
 				}
 				if (newInput.savedViewState) {
-					this._sqlEditor.getControl().restoreViewState(newInput.savedViewState);
+					this._sqlEditor.getControl().restoreViewState(<ICodeEditorViewState>newInput.savedViewState);
 				}
 			});
 	}
@@ -605,7 +622,7 @@ export class EditDataEditor extends EditorPane {
 	 * Handles setting input for this editor. If this new input does not match the old input (e.g. a new file
 	 * has been opened with the same editor, or we are opening the editor for the first time).
 	 */
-	private _updateInput(oldInput: EditDataInput, newInput: EditDataInput, options?: EditorOptions): Promise<void> {
+	private _updateInput(oldInput: EditDataInput, newInput: EditDataInput, options?: IEditorOptions): Promise<void> {
 		if (this._sqlEditor) {
 			this._sqlEditor.clearInput();
 		}
