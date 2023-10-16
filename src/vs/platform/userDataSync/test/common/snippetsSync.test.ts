@@ -146,7 +146,7 @@ const globalSnippet = `{
 	// }
 }`;
 
-suite.skip('SnippetsSync', () => {
+suite.skip('SnippetsSync', () => { // {{SQL CARBON EDIT}} - Suite passes when test suite is run individually, but fails when run with other tests
 
 	const disposableStore = new DisposableStore();
 	const server = new UserDataSyncTestServer();

@@ -20,7 +20,7 @@ class TestEnvironmentVariableService extends EnvironmentVariableService {
 	notifyCollectionUpdates(): void { this._notifyCollectionUpdates(); }
 }
 
-suite.skip('EnvironmentVariable - EnvironmentVariableService', () => {
+suite.skip('EnvironmentVariable - EnvironmentVariableService', () => { // {{SQL CARBON EDIT}} Skipping suite
 	let instantiationService: TestInstantiationService;
 	let environmentVariableService: TestEnvironmentVariableService;
 	let storageService: TestStorageService;
@@ -73,7 +73,7 @@ suite.skip('EnvironmentVariable - EnvironmentVariableService', () => {
 		]);
 	});
 
-	suite.skip('mergedCollection', () => {
+	suite.skip('mergedCollection', () => { // {{SQL CARBON EDIT}} Skipping suite
 		test('should overwrite any other variable with the first extension that replaces', () => {
 			const collection1 = new Map<string, IEnvironmentVariableMutator>();
 			const collection2 = new Map<string, IEnvironmentVariableMutator>();

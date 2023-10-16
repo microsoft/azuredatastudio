@@ -22,7 +22,7 @@ import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { runWithFakedTimers } from 'vs/base/test/common/timeTravelScheduler';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
-suite.skip('Sticky Scroll Tests', () => {
+suite.skip('Sticky Scroll Tests', () => { // {{SQL CARBON EDIT}} - Suite passes when test suite is run individually, but fails when run with other tests
 
 	const serviceCollection = new ServiceCollection(
 		[ILanguageFeaturesService, new LanguageFeaturesService()],

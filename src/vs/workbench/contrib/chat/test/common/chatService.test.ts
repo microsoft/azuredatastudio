@@ -58,7 +58,7 @@ class SimpleTestProvider extends Disposable implements IChatProvider {
 	}
 }
 
-suite.skip('Chat', () => {
+suite.skip('Chat', () => { // {{SQL CARBON EDIT}} - Suite passes when test suite is run individually, but fails when run with other tests
 	const testDisposables = new DisposableStore();
 
 	let storageService: IStorageService;

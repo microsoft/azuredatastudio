@@ -40,7 +40,7 @@ class ViewDescriptorSequence {
 	}
 }
 
-suite.skip('ViewContainerModel', () => {
+suite.skip('ViewContainerModel', () => { // {{SQL CARBON EDIT}} - Suite passes when test suite is run individually, but fails when run with other tests
 
 	let container: ViewContainer;
 	let disposableStore: DisposableStore;

@@ -24,7 +24,7 @@ const viewContainerIdPrefix = 'testViewContainer';
 const sidebarContainer = ViewContainersRegistry.registerViewContainer({ id: `${viewContainerIdPrefix}-${generateUuid()}`, title: 'test', ctorDescriptor: new SyncDescriptor(<any>{}) }, ViewContainerLocation.Sidebar);
 const panelContainer = ViewContainersRegistry.registerViewContainer({ id: `${viewContainerIdPrefix}-${generateUuid()}`, title: 'test', ctorDescriptor: new SyncDescriptor(<any>{}) }, ViewContainerLocation.Panel);
 
-suite.skip('ViewDescriptorService', () => {
+suite.skip('ViewDescriptorService', () => { // {{SQL CARBON EDIT}} - Suite passes when test suite is run individually, but fails when run with other tests
 
 	const disposables = new DisposableStore();
 	let instantiationService: TestInstantiationService;

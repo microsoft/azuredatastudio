@@ -175,7 +175,7 @@ class TestSynchroniser extends AbstractSynchroniser {
 	async resolveContent(uri: URI): Promise<string | null> { return null; }
 }
 
-suite.skip('TestSynchronizer - Auto Sync', () => {
+suite.skip('TestSynchronizer - Auto Sync', () => { // {{SQL CARBON EDIT}} - Suite passes when test suite is run individually, but fails when run with other tests
 
 	const disposableStore = new DisposableStore();
 	const server = new UserDataSyncTestServer();
@@ -482,7 +482,7 @@ suite.skip('TestSynchronizer - Auto Sync', () => {
 	}));
 });
 
-suite.skip('TestSynchronizer - Manual Sync', () => {
+suite.skip('TestSynchronizer - Manual Sync', () => { // {{SQL CARBON EDIT}} - Suite passes when test suite is run individually, but fails when run with other tests
 
 	const disposableStore = new DisposableStore();
 	const server = new UserDataSyncTestServer();
@@ -1061,7 +1061,7 @@ suite.skip('TestSynchronizer - Manual Sync', () => {
 
 });
 
-suite.skip('TestSynchronizer - Last Sync Data', () => {
+suite.skip('TestSynchronizer - Last Sync Data', () => { // {{SQL CARBON EDIT}} - Suite passes when test suite is run individually, but fails when run with other tests
 	const disposableStore = new DisposableStore();
 	const server = new UserDataSyncTestServer();
 	let client: UserDataSyncClient;

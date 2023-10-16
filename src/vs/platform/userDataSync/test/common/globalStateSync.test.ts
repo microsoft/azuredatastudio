@@ -17,7 +17,7 @@ import { IUserDataProfileStorageService } from 'vs/platform/userDataProfile/comm
 import { UserDataSyncClient, UserDataSyncTestServer } from 'vs/platform/userDataSync/test/common/userDataSyncClient';
 
 
-suite.skip('GlobalStateSync', () => {
+suite.skip('GlobalStateSync', () => { // {{SQL CARBON EDIT}} - Suite passes when run individually, but fails when run with other tests
 
 	const disposableStore = new DisposableStore();
 	const server = new UserDataSyncTestServer();

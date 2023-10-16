@@ -108,7 +108,7 @@ const cSnippet = `{
 	}
 }`;
 
-suite.skip('SnippetsMerge', () => {
+suite.skip('SnippetsMerge', () => { // {{SQL CARBON EDIT}} - Suite passes when test suite is run individually, but fails when run with other tests
 
 	test('merge when local and remote are same with one snippet', async () => {
 		const local = { 'html.json': htmlSnippet1 };

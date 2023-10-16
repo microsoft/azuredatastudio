@@ -13,7 +13,7 @@ import { getTasksContentFromSyncContent, TasksSynchroniser } from 'vs/platform/u
 import { Change, IUserDataSyncStoreService, MergeState, SyncResource, SyncStatus } from 'vs/platform/userDataSync/common/userDataSync';
 import { UserDataSyncClient, UserDataSyncTestServer } from 'vs/platform/userDataSync/test/common/userDataSyncClient';
 
-suite.skip('TasksSync', () => {
+suite.skip('TasksSync', () => { // {{SQL CARBON EDIT}} - Suite passes when test suite is run individually, but fails when run with other tests
 
 	const disposableStore = new DisposableStore();
 	const server = new UserDataSyncTestServer();

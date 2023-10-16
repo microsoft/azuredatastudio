@@ -29,7 +29,7 @@ import { IChatResponseViewModel } from 'vs/workbench/contrib/chat/common/chatVie
 import { IAccessibleViewService } from 'vs/workbench/contrib/accessibility/browser/accessibleView';
 import { AccessibilityVerbositySettingId } from 'vs/workbench/contrib/accessibility/browser/accessibilityConfiguration';
 
-suite.skip('InteractiveChatController', function () {
+suite.skip('InteractiveChatController', function () { // {{SQL CARBON EDIT}} - Suite passes when test suite is run individually, but fails when run with other tests
 
 	class TestController extends InlineChatController {
 
