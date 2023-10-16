@@ -5435,10 +5435,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/package.title.attachDatabase" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Attach (Preview)]]></Val>
+          <Val><![CDATA[Attach Database (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Adjuntar (versión preliminar)]]></Val>
+            <Val><![CDATA[Adjuntar base de datos (versión preliminar)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Attach (Preview)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5471,10 +5474,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/package.title.detachDatabase" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Detach (Preview)]]></Val>
+          <Val><![CDATA[Detach Database (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Desasociar (versión preliminar)]]></Val>
+            <Val><![CDATA[Desasociar base de datos (versión preliminar)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Detach (Preview)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5483,6 +5489,15 @@
           <Val><![CDATA[Drop (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Quitar (versión preliminar)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/package.title.newApplicationRole" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[New Application Role (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nuevo rol de aplicación (versión preliminar)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5496,15 +5511,30 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/package.title.newObject" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.mssql/package.title.newDatabaseRole" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[New (Preview)]]></Val>
+          <Val><![CDATA[New Database Role (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nuevo (versión preliminar)]]></Val>
+            <Val><![CDATA[Nuevo rol de base de datos (versión preliminar)]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[New]]></Val>
-          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/package.title.newLogin" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[New Login (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nuevo inicio de sesión (versión preliminar)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/package.title.newServerRole" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[New Server Role (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nuevo rol de servidor (versión preliminar)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5513,6 +5543,15 @@
           <Val><![CDATA[New Table]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Nueva tabla]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/package.title.newUser" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[New User (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nuevo usuario (versión preliminar)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

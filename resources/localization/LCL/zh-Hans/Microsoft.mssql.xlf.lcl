@@ -5435,10 +5435,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/package.title.attachDatabase" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Attach (Preview)]]></Val>
+          <Val><![CDATA[Attach Database (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[附加(预览)]]></Val>
+            <Val><![CDATA[附加数据库(预览版)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Attach (Preview)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5471,10 +5474,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/package.title.detachDatabase" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Detach (Preview)]]></Val>
+          <Val><![CDATA[Detach Database (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[拆离 (预览)]]></Val>
+            <Val><![CDATA[拆离数据库(预览版)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Detach (Preview)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5483,6 +5489,15 @@
           <Val><![CDATA[Drop (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[删除(预览版)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/package.title.newApplicationRole" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[New Application Role (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[新应用程序角色(预览版)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5496,15 +5511,30 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.mssql/package.title.newObject" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.mssql/package.title.newDatabaseRole" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[New (Preview)]]></Val>
+          <Val><![CDATA[New Database Role (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[新建 (预览)]]></Val>
+            <Val><![CDATA[新数据库角色(预览版)]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[New]]></Val>
-          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/package.title.newLogin" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[New Login (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[新登录(预览版)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/package.title.newServerRole" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[New Server Role (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[新服务器角色(预览版)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5513,6 +5543,15 @@
           <Val><![CDATA[New Table]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[新建表]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/package.title.newUser" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[New User (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[新用户(预览版)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
