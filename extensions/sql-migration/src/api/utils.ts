@@ -1237,3 +1237,20 @@ export function hasRecommendations(model: MigrationStateModel): boolean {
 		? true
 		: false;
 }
+
+export async function promptUserForFile(filters: { [name: string]: string[] }): Promise<string> {
+	const options: vscode.OpenDialogOptions = {
+		defaultUri: vscode.Uri.file(getUserHome()!),
+		canSelectFiles: true,
+		canSelectFolders: false,
+		canSelectMany: false,
+		filters: filters,
+	};
+
+	const fileUris = await vscode.window.showOpenDialog(options);
+	if (fileUris && fileUris.length > 0 && fileUris[0]) {
+		return fileUris[0].fsPath;
+	}
+
+	return '';
+}
