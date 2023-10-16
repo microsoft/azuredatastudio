@@ -116,14 +116,18 @@ export abstract class AzureAuth implements vscode.Disposable {
 					canceled: false
 				};
 			}
+			// Initial login will always fetch token for ARM resource
 			const token: Token = {
-				token: result.response.accessToken,
 				key: result.response.account.homeAccountId,
+				token: result.response.accessToken,
 				tokenType: result.response.tokenType,
-				expiresOn: result.response.expiresOn!.getTime() / 1000
+				expiresOn: result.response.expiresOn!.getTime() / 1000,
+				tenantId: result.response.tenantId,
+				resource: 0
 			};
 			const tokenClaims = <TokenClaims>result.response.idTokenClaims;
 			const account = await this.hydrateAccount(token, tokenClaims);
+			await this.msalCacheProvider.writeTokenToLocalCache(token);
 			loginComplete?.resolve();
 			return account;
 		} catch (ex) {

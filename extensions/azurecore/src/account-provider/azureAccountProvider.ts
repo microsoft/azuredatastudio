@@ -22,6 +22,7 @@ import * as Constants from '../constants';
 import { MsalCachePluginProvider } from './utils/msalCachePlugin';
 import { getTenantIgnoreList } from '../utils';
 import { TenantIgnoredError } from '../utils/TenantIgnoredError';
+import { multiple_matching_tokens_error } from '../constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -174,6 +175,9 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 					Logger.error(`MSAL: getToken call failed: ${authResult}`);
 					// Throw error with MSAL-specific code/message, else throw generic error message
 					if (this.isProviderError(authResult)) {
+						if (authResult.errorCode?.includes(multiple_matching_tokens_error)) {
+							authResult.errorMessage = authResult.errorMessage?.concat(` To resolve this error, please clear token cache, and refresh account credentials.`);
+						}
 						throw new Error(localize('msalTokenError', `{0} occurred when acquiring token. \n{1}`, authResult.errorCode, authResult.errorMessage));
 					} else {
 						throw new Error(localize('genericTokenError', 'Failed to get token'));
@@ -211,7 +215,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	private isValidToken(accessToken: Token | undefined): boolean {
 		const currentTime = new Date().getTime() / 1000;
 		return (accessToken !== undefined && accessToken.expiresOn !== undefined
-			&& Number(accessToken.expiresOn) - currentTime > 2 * 60); // threshold = 2 mins
+			&& Number(accessToken.expiresOn) - currentTime > 5 * 60); // threshold = 5 mins (matches the threshold used in MSAL dotnet)
 	}
 
 	private async _getSecurityToken(account: AzureAccount, resource: azdata.AzureResource): Promise<MultiTenantTokenResponse | undefined> {
