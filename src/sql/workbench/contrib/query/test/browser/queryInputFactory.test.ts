@@ -9,7 +9,7 @@ import { ITestInstantiationService, TestEditorService } from 'vs/workbench/test/
 import { URI } from 'vs/base/common/uri';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
-import { workbenchInstantiationService } from 'sql/workbench/test/workbenchTestServices';
+import { workbenchInstantiationService } from 'sql/workbench/test/browser/workbenchTestServices';
 import { QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/browser/queryEditorFactory';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
@@ -18,7 +18,7 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService, IConnectionCompletionOptions, IConnectionCallbacks, IConnectionResult } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
+import { UntitledQueryEditorInput } from 'sql/workbench/browser/editor/query/untitledQueryEditorInput';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { isThenable } from 'vs/base/common/async';
@@ -187,7 +187,7 @@ suite('Query Input Factory', () => {
 		const newsqlEditorStub = sinon.stub(queryeditorservice, 'newSqlEditor').callsFake(() => {
 			const untitledInput = instantiationService.createInstance(UntitledTextEditorInput, untitledService.create());
 			const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, untitledInput.resource.toString());
-			let queryInput = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, queryResultsInput, undefined);
+			let queryInput = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, queryResultsInput);
 			return Promise.resolve(queryInput);
 		});
 		const input = instantiationService.createInstance(UntitledTextEditorInput, untitledService.create());
@@ -319,7 +319,7 @@ suite('Query Input Factory', () => {
 		const newsqlEditorStub = sinon.stub(queryeditorservice, 'newSqlEditor').callsFake(() => {
 			const untitledInput = instantiationService.createInstance(UntitledTextEditorInput, untitledService.create());
 			const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, untitledInput.resource.toString());
-			let queryInput = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, queryResultsInput, undefined);
+			let queryInput = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, queryResultsInput);
 			return Promise.resolve(queryInput);
 		});
 		const response = queryEditorLanguageAssociation.convertInput(input);
@@ -349,7 +349,7 @@ class MockEditorService extends TestEditorService {
 			const accessor = workbenchinstantiationService.createInstance(ServiceAccessor);
 			const service = accessor.untitledTextEditorService;
 			const untitledInput = instantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: URI.file('/test/file') }));
-			this.__activeEditor = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, undefined, undefined);
+			this.__activeEditor = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, undefined);
 		}
 	}
 }

@@ -7,7 +7,6 @@ import 'vs/css!./media/infoBox';
 import * as azdata from 'azdata';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { alert, status } from 'vs/base/browser/ui/aria/aria';
-import { Color } from 'vs/base/common/color';
 import * as DOM from 'vs/base/browser/dom';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Codicon } from 'vs/base/common/codicons';
@@ -16,12 +15,14 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ThemeIcon } from 'vs/base/common/themables';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { Link } from 'vs/platform/opener/browser/link';
 
 export interface IInfoBoxStyles {
-	informationBackground?: Color;
-	warningBackground?: Color;
-	errorBackground?: Color;
-	successBackground?: Color;
+	informationBackground: string | undefined;
+	warningBackground: string | undefined;
+	errorBackground: string | undefined;
+	successBackground: string | undefined;
 }
 
 export type InfoBoxStyle = 'information' | 'warning' | 'error' | 'success';
@@ -43,7 +44,6 @@ export class InfoBox extends Disposable {
 	private _text = '';
 	private _links: azdata.LinkArea[] = [];
 	private _infoBoxStyle: InfoBoxStyle = 'information';
-	private _styles: IInfoBoxStyles;
 	private _announceText: boolean = false;
 	private _isClickable: boolean = false;
 	private _clickableButtonAriaLabel: string;
@@ -58,9 +58,11 @@ export class InfoBox extends Disposable {
 
 	constructor(
 		container: HTMLElement,
+		private readonly _styles: IInfoBoxStyles,
 		options: InfoBoxOptions | undefined,
 		@IOpenerService private _openerService: IOpenerService,
-		@ILogService private _logService: ILogService
+		@ILogService private _logService: ILogService,
+		@IInstantiationService private instantiationService: IInstantiationService,
 	) {
 		super();
 		this._infoBoxElement = document.createElement('div');
@@ -84,11 +86,6 @@ export class InfoBox extends Disposable {
 			this.clickableButtonAriaLabel = options.clickableButtonAriaLabel;
 		}
 		this.updateClickableState();
-	}
-
-	public style(styles: IInfoBoxStyles): void {
-		this._styles = styles;
-		this.updateStyle();
 	}
 
 	public get announceText(): boolean {
@@ -161,11 +158,11 @@ export class InfoBox extends Disposable {
 			 * If the url is empty, electron displays the link as visited.
 			 * TODO: Investigate why it happens and fix the issue iin electron/vsbase.
 			 */
-			const linkElement = DOM.$('a', {
+			const linkElement = this._register(this.instantiationService.createInstance(Link,
+				this._textElement, {
+				label: link.text,
 				href: link.url === '' ? ' ' : link.url
-			});
-
-			linkElement.innerText = link.text;
+			}, undefined)).el;
 
 			if (link.accessibilityInformation) {
 				linkElement.setAttribute('aria-label', link.accessibilityInformation.label);
@@ -265,24 +262,22 @@ export class InfoBox extends Disposable {
 	}
 
 	private updateStyle(): void {
-		if (this._styles) {
-			let backgroundColor: Color;
-			switch (this.infoBoxStyle) {
-				case 'error':
-					backgroundColor = this._styles.errorBackground;
-					break;
-				case 'warning':
-					backgroundColor = this._styles.warningBackground;
-					break;
-				case 'success':
-					backgroundColor = this._styles.successBackground;
-					break;
-				default:
-					backgroundColor = this._styles.informationBackground;
-					break;
-			}
-			this._infoBoxElement.style.backgroundColor = backgroundColor.toString();
+		let backgroundColor: string | undefined;
+		switch (this.infoBoxStyle) {
+			case 'error':
+				backgroundColor = this._styles.errorBackground;
+				break;
+			case 'warning':
+				backgroundColor = this._styles.warningBackground;
+				break;
+			case 'success':
+				backgroundColor = this._styles.successBackground;
+				break;
+			default:
+				backgroundColor = this._styles.informationBackground;
+				break;
 		}
+		this._infoBoxElement.style.backgroundColor = backgroundColor;
 	}
 
 	private updateClickableState(): void {

@@ -181,7 +181,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 			{
 				identityProvider: new IdentityProvider(),
 				horizontalScrolling: false,
-				setRowLineHeight: false,
+				setRowLineHeight: true,
 				transformOptimization: false,
 				accessibilityProvider: new ListAccessibilityProvider()
 			}) as WorkbenchAsyncDataTree<TreeModel, TreeElement>);
@@ -312,7 +312,7 @@ class ConnectionDialogTreeProviderElement {
 
 class ListDelegate implements IListVirtualDelegate<TreeElement> {
 	getHeight(): number {
-		return 22;
+		return 23;
 	}
 
 	getTemplateId(element: TreeElement): string {
@@ -553,12 +553,7 @@ class SavedConnectionNode {
 	}
 
 	getChildren() {
-		let input = TreeUpdateUtils.getTreeInput(this.connectionManagementService);
-		let newInput = [input];
-		if (input instanceof ConnectionProfileGroup) {
-			newInput = TreeUpdateUtils.alterTreeChildrenTitles([input], this.connectionManagementService);
-		}
-		return this.dataSource.getChildren(newInput[0]);
+		return this.dataSource.getChildren(TreeUpdateUtils.getTreeInput(this.connectionManagementService));
 	}
 }
 

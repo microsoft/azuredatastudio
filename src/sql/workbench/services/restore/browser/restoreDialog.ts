@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/restoreDialog';
 
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Event, Emitter } from 'vs/base/common/event';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { Widget } from 'vs/base/browser/ui/widget';
@@ -30,7 +29,6 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
-import { attachTableStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/workbench/services/restore/browser/restoreViewModel';
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
@@ -45,13 +43,14 @@ import { fileFiltersSet } from 'sql/workbench/services/restore/common/constants'
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
-import { MediaDeviceType } from 'sql/workbench/contrib/backup/common/constants';
+import { MediaDeviceType } from 'sql/workbench/common/backup/constants';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
-import { defaultCheckboxStyles, defaultEditableDropdownStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { defaultCheckboxStyles, defaultEditableDropdownStyles, defaultSelectBoxStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { convertJQueryKeyDownEvent } from 'sql/base/browser/dom';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -269,17 +268,17 @@ export class RestoreDialog extends Modal {
 				...defaultEditableDropdownStyles
 			}
 		));
-		this._databaseDropdown.onValueChange(s => {
+		this._register(this._databaseDropdown.onValueChange(s => {
 			this.databaseSelected(s);
-		});
+		}));
 
-		this._databaseDropdown.onBlur(() => {
+		this._register(this._databaseDropdown.onBlur(() => {
 			this.databaseSelected(this._databaseDropdown!.value);
-		});
+		}));
 
-		this._databaseDropdown.onFocus(() => {
+		this._register(this._databaseDropdown.onFocus(() => {
 			this._onDatabaseListFocused.fire();
-		});
+		}));
 
 		this._databaseDropdown.value = this.viewModel.targetDatabaseName!;
 
@@ -319,7 +318,7 @@ export class RestoreDialog extends Modal {
 		this._restorePlanTableContainer = DOM.append(restorePlanElement, DOM.$('.dialog-input-section.restore-list'));
 		DOM.hide(this._restorePlanTableContainer);
 		this._restorePlanData = new TableDataView<Slick.SlickData>();
-		this._restorePlanTable = this._register(new Table<Slick.SlickData>(this._restorePlanTableContainer, this._accessibilityService, this._quickInputService,
+		this._restorePlanTable = this._register(new Table<Slick.SlickData>(this._restorePlanTableContainer, this._accessibilityService, this._quickInputService, defaultTableStyles,
 			{ dataProvider: this._restorePlanData, columns: this._restorePlanColumn }, { enableColumnReorder: false }));
 		this._restorePlanTable.setTableTitle(localize('restorePlan', "Restore plan"));
 		this._restorePlanTable.setSelectionModel(new RowSelectionModel({ selectActiveRow: false }));
@@ -371,7 +370,7 @@ export class RestoreDialog extends Modal {
 			field: 'restoreAs'
 		}];
 		this._fileListData = new TableDataView<FileListElement>();
-		this._fileListTable = this._register(new Table<FileListElement>(this._fileListTableContainer, this._accessibilityService, this._quickInputService,
+		this._fileListTable = this._register(new Table<FileListElement>(this._fileListTableContainer, this._accessibilityService, this._quickInputService, defaultTableStyles,
 			{ dataProvider: this._fileListData, columns }, { enableColumnReorder: false }));
 		this._fileListTable.setSelectionModel(new RowSelectionModel());
 		this._register(this._componentContextService.registerTable(this._fileListTable));
@@ -403,7 +402,7 @@ export class RestoreDialog extends Modal {
 
 		const restorePanel = DOM.$('.restore-panel');
 		container.appendChild(restorePanel);
-		this._panel = new TabbedPanel(restorePanel);
+		this._panel = this._register(new TabbedPanel(restorePanel));
 		attachTabbedPanelStyler(this._panel, this._themeService);
 		this._generalTab = {
 			identifier: 'general',
@@ -451,8 +450,8 @@ export class RestoreDialog extends Modal {
 			}
 		}));
 
-		this._restorePlanTable.grid.onKeyDown.subscribe(e => {
-			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
+		this._restorePlanTable.grid.onKeyDown.subscribe((e: DOMEvent) => {
+			const event = convertJQueryKeyDownEvent(e);
 			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				this._destinationRestoreToInputBox!.isEnabled() ? this._destinationRestoreToInputBox!.focus() : this._databaseDropdown!.focus();
 				e.stopImmediatePropagation();
@@ -462,8 +461,8 @@ export class RestoreDialog extends Modal {
 			}
 		});
 
-		this._fileListTable.grid.onKeyDown.subscribe(e => {
-			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
+		this._fileListTable.grid.onKeyDown.subscribe((e: DOMEvent) => {
+			const event = convertJQueryKeyDownEvent(e);
 			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				if ((<InputBox>this._optionsMap[this._relocatedLogFileFolderOption]).isEnabled()) {
 					(<InputBox>this._optionsMap[this._relocatedLogFileFolderOption]).focus();
@@ -520,7 +519,6 @@ export class RestoreDialog extends Modal {
 				break;
 			case ServiceOptionType.category:
 				propertyWidget = this.createSelectBoxHelper(container, option.description, option.categoryValues.map(c => c.displayName), DialogHelper.getCategoryDisplayName(option.categoryValues, option.defaultValue)!);
-				this._register(attachSelectBoxStyler(propertyWidget, this._themeService));
 				this._register(propertyWidget.onDidSelect(selectedDatabase => {
 					this.onCatagoryOptionChanged(optionName);
 				}));
@@ -567,7 +565,7 @@ export class RestoreDialog extends Modal {
 		const inputContainer = DOM.append(container, DOM.$('.dialog-input-section'));
 		DOM.append(inputContainer, DOM.$('.dialog-label')).innerText = label;
 		const inputCellContainer = DOM.append(inputContainer, DOM.$('.dialog-input'));
-		const selectBox = this._register(new SelectBox(options, selectedOption, this._contextViewService, inputCellContainer, { ariaLabel: label }));
+		const selectBox = this._register(new SelectBox(options, selectedOption, defaultSelectBoxStyles, this._contextViewService, inputCellContainer, { ariaLabel: label }));
 		selectBox.render(inputCellContainer);
 		return selectBox;
 	}
@@ -662,16 +660,11 @@ export class RestoreDialog extends Modal {
 	}
 
 	private registerListeners(): void {
-		// Theme styler
-		this._register(attachSelectBoxStyler(this._restoreFromSelectBox!, this._themeService));
-		this._register(attachSelectBoxStyler(this._sourceDatabaseSelectBox!, this._themeService));
 		this._register(this._browseFileButton!);
 		this._register(this._browseUrlButton!);
 		this._register(this._scriptButton!);
 		this._register(this._restoreButton!);
 		this._register(this._closeButton!);
-		this._register(attachTableStyler(this._fileListTable!, this._themeService));
-		this._register(attachTableStyler(this._restorePlanTable!, this._themeService));
 
 		this._register(this._targetDatabaseInputBox.onDidChange(dbName => {
 			if (!this.viewModel.databases?.includes(dbName)) {
@@ -732,16 +725,18 @@ export class RestoreDialog extends Modal {
 			.then(url => this._urlInputBox!.value = url);
 	}
 
-	private onFileBrowsed(filepath: string): void {
-		const oldFilePath = this._filePathInputBox!.value;
-		if (strings.isFalsyOrWhitespace(this._filePathInputBox!.value)) {
-			this._filePathInputBox!.value = filepath;
-		} else {
-			this._filePathInputBox!.value = this._filePathInputBox!.value + ', ' + filepath;
-		}
+	private onFileBrowsed(filepath?: string): void {
+		if (filepath) {
+			const oldFilePath = this._filePathInputBox!.value;
+			if (strings.isFalsyOrWhitespace(this._filePathInputBox!.value)) {
+				this._filePathInputBox!.value = filepath;
+			} else {
+				this._filePathInputBox!.value = this._filePathInputBox!.value + ', ' + filepath;
+			}
 
-		if (oldFilePath !== this._filePathInputBox!.value) {
-			this.onFilePathChanged(this._filePathInputBox!.value);
+			if (oldFilePath !== this._filePathInputBox!.value) {
+				this.onFilePathChanged(this._filePathInputBox!.value);
+			}
 		}
 	}
 

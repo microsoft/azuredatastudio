@@ -128,7 +128,10 @@ export class TreeSelectionHandler {
 		}
 		const selectedNode = selection[0];
 		if (selectedNode instanceof ConnectionProfile && !capabilitiesService.getCapabilities(selectedNode.providerName)) {
-			connectionManagementService.handleUnsupportedProvider(selectedNode.providerName).catch(onUnexpectedError);
+			// Async tree handles unsupported providers through the connection management service
+			if (!(tree instanceof AsyncServerTree)) {
+				connectionManagementService.handleUnsupportedProvider(selectedNode.providerName).catch(onUnexpectedError);
+			}
 			return;
 		}
 

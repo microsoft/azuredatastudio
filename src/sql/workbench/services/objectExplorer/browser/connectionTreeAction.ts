@@ -390,7 +390,7 @@ export class DeleteConnectionAction extends Action {
 
 export class FilterChildrenAction extends Action {
 	public static ID = 'objectExplorer.filterChildren';
-	public static LABEL = localize('objectExplorer.filterChildren', "Filter (Preview)");
+	public static LABEL = localize('objectExplorer.filterChildren', "Filter");
 
 	constructor(
 		id: string,

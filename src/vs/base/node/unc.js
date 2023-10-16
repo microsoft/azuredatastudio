@@ -114,7 +114,15 @@
 				return;
 			}
 
-			process.enableUNCAccessChecks = false;
+			process.restrictUNCAccess = false;
+		}
+
+		function isUNCAccessRestrictionsDisabled() {
+			if (process.platform !== 'win32') {
+				return true;
+			}
+
+			return process.restrictUNCAccess === false;
 		}
 
 		function isUNCAccessRestrictionsDisabled() {

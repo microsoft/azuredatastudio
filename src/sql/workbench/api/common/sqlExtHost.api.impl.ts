@@ -42,6 +42,7 @@ import { ExtHostAzureBlob } from 'sql/workbench/api/common/extHostAzureBlob';
 import { ExtHostAzureAccount } from 'sql/workbench/api/common/extHostAzureAccount';
 import { IExtHostExtensionService } from 'vs/workbench/api/common/extHostExtensionService';
 import { AuthenticationType } from 'sql/platform/connection/common/constants';
+import { ExtHostWindow } from 'sql/workbench/api/common/extHostWindow';
 
 export interface IAzdataExtensionApiFactory {
 	(extension: IExtensionDescription): typeof azdata;
@@ -102,6 +103,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol));
 	const extHostExtensionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostExtensionManagement, new ExtHostExtensionManagement(rpcProtocol));
 	const extHostWorkspace = rpcProtocol.set(SqlExtHostContext.ExtHostWorkspace, new ExtHostWorkspace(rpcProtocol));
+	const extHostWindow = rpcProtocol.set(SqlExtHostContext.ExtHostWindow, new ExtHostWindow(rpcProtocol));
 	return {
 		azdata: function (extension: IExtensionDescription): typeof azdata {
 			// namespace: connection
@@ -141,8 +143,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				openChangePasswordDialog(profile: azdata.IConnectionProfile): Thenable<string | undefined> {
 					return extHostConnectionManagement.$openChangePasswordDialog(profile);
 				},
-				getEditorConnectionProfileTitle(profile: azdata.IConnectionProfile, getOptionsOnly?: boolean, includeGroupName?: boolean): Thenable<string> {
-					return extHostConnectionManagement.$getEditorConnectionProfileTitle(profile, getOptionsOnly, includeGroupName);
+				getNonDefaultOptions(profile: azdata.IConnectionProfile): Thenable<string> {
+					return extHostConnectionManagement.$getNonDefaultOptions(profile);
 				},
 				listDatabases(connectionId: string): Thenable<string[]> {
 					return extHostConnectionManagement.$listDatabases(connectionId);
@@ -409,6 +411,10 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				return extHostDataProvider.$registerExecutionPlanProvider(provider);
 			};
 
+			let registerServerContextualizationProvider = (provider: azdata.contextualization.ServerContextualizationProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerServerContextualizationProvider(provider);
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof azdata.dataprotocol = {
 				registerBackupProvider,
@@ -431,6 +437,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				registerDataGridProvider,
 				registerTableDesignerProvider,
 				registerExecutionPlanProvider: registerExecutionPlanProvider,
+				registerServerContextualizationProvider: registerServerContextualizationProvider,
 				onDidChangeLanguageFlavor(listener: (e: azdata.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
@@ -483,6 +490,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				MessageLevel: sqlExtHostTypes.MessageLevel,
 				openCustomErrorDialog(options: sqlExtHostTypes.IErrorDialogOptions): Thenable<string | undefined> {
 					return extHostModelViewDialog.openCustomErrorDialog(options);
+				},
+				openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[], showFoldersOnly?: boolean): Thenable<string | undefined> {
+					return extHostWindow.$openServerFileBrowserDialog(connectionUri, targetPath, fileFilters, showFoldersOnly);
 				}
 			};
 
@@ -687,7 +697,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				designers: designers,
 				executionPlan: executionPlan,
 				diagnostics: diagnostics,
-				env
+				env,
+				ProfilingSessionType: sqlExtHostTypes.ProfilingSessionType
 			};
 		}
 	};

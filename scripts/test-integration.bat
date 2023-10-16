@@ -73,20 +73,29 @@ set ALL_PLATFORMS_API_TESTS_EXTRA_ARGS=--disable-telemetry --skip-welcome --skip
 call "%INTEGRATION_TEST_ELECTRON_PATH%" %~dp0\..\extensions\azurecore\test-fixtures --extensionDevelopmentPath=%~dp0\..\extensions\azurecore --extensionTestsPath=%~dp0\..\extensions\azurecore\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-@REM {{SQL CARBON TODO}} - reenable
-@REM echo.
-@REM echo ### Git tests
-@REM for /f "delims=" %%i in ('node -p "require('fs').realpathSync.native(require('os').tmpdir())"') do set TEMPDIR=%%i
-@REM set GITWORKSPACE=%TEMPDIR%\git-%RANDOM%
-@REM mkdir %GITWORKSPACE%
-@REM call "%INTEGRATION_TEST_ELECTRON_PATH%" %GITWORKSPACE% --extensionDevelopmentPath=%~dp0\..\extensions\git --extensionTestsPath=%~dp0\..\extensions\git\out\test %API_TESTS_EXTRA_ARGS%
-@REM if %errorlevel% neq 0 exit /b %errorlevel%
+echo.
+echo ### Git tests
+for /f "delims=" %%i in ('node -p "require('fs').realpathSync.native(require('os').tmpdir())"') do set TEMPDIR=%%i
+set GITWORKSPACE=%TEMPDIR%\git-%RANDOM%
+mkdir %GITWORKSPACE%
+call "%INTEGRATION_TEST_ELECTRON_PATH%" %GITWORKSPACE% --extensionDevelopmentPath=%~dp0\..\extensions\git --extensionTestsPath=%~dp0\..\extensions\git\out\test %API_TESTS_EXTRA_ARGS%
+if %errorlevel% neq 0 exit /b %errorlevel%
 
-:: {{SQL CARBON EDIT}} Disable VS Code tests for extensions we don't have
+:: {{SQL CARBON EDIT}} - START - Disable VS Code tests for extensions we don't have
+:: echo.
+:: echo ### Ipynb tests
 :: set IPYNBWORKSPACE=%TEMPDIR%\ipynb-%RANDOM%
 :: mkdir %IPYNBWORKSPACE%
 :: call "%INTEGRATION_TEST_ELECTRON_PATH%" %IPYNBWORKSPACE% --extensionDevelopmentPath=%~dp0\..\extensions\ipynb --extensionTestsPath=%~dp0\..\extensions\ipynb\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 :: if %errorlevel% neq 0 exit /b %errorlevel%
+
+:: echo.
+:: echo ### Notebook Output tests
+:: set NBOUTWORKSPACE=%TEMPDIR%\nbout-%RANDOM%
+:: mkdir %NBOUTWORKSPACE%
+:: call "%INTEGRATION_TEST_ELECTRON_PATH%" %NBOUTWORKSPACE% --extensionDevelopmentPath=%~dp0\..\extensions\notebook-renderers --extensionTestsPath=%~dp0\..\extensions\notebook-renderers\out\test %API_TESTS_EXTRA_ARGS%
+:: if %errorlevel% neq 0 exit /b %errorlevel%
+:: {{SQL CARBON EDIT}} - END - Disable VS Code tests for extensions we don't have
 
 
 :: Tests standalone (CommonJS)

@@ -383,13 +383,11 @@ export interface IConnectionManagementService {
 	openChangePasswordDialog(profile: IConnectionProfile): Promise<string | undefined>;
 
 	/**
-	 * Gets the formatted title of the connection profile for display.
-	 * @param profile The connection profile we want to get the full display info for.
-	 * @param getOptionsOnly Provide if you only want to get the differing advanced options (for some titles).
-	 * @param includeGroupName Provide if you want to include the groupName as well (in areas that do not display the groupName).
-	 * @returns The title formatted with server info in front, with non default options at the end.
+	 * Launches the password change dialog.
+	 * @param profile The connection profile to retrieve the non default connection options from
+	 * @returns a string key containing the options that aren't default values.
 	 */
-	getEditorConnectionProfileTitle(profile: IConnectionProfile, getOptionsOnly?: boolean, includeGroupName?: boolean): string;
+	getNonDefaultOptions(profile: IConnectionProfile): string;
 }
 
 export enum RunQueryOnConnectionMode {

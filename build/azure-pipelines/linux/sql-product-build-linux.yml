@@ -4,7 +4,7 @@ parameters:
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: "16.x"
+      versionSpec: "18.15.0"
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
@@ -25,6 +25,8 @@ steps:
   - script: |
       set -e
       tar -xzf $(Pipeline.Workspace)/compilation.tar.gz
+      # delete tar.gz after it's been extracted to clear up the space
+      rm $(Pipeline.Workspace)/compilation.tar.gz
     displayName: Extract compilation output
 
   - script: |
@@ -37,6 +39,8 @@ steps:
 
       git config user.email "sqltools@service.microsoft.com"
       git config user.name "AzureDataStudio"
+      git config --global http.postBuffer 524288000
+      git config --global https.postBuffer 524288000
     displayName: Prepare tooling
 
   - script: |
@@ -182,15 +186,27 @@ steps:
   # {{SQL CARBON TODO}} - end disable extension unit tests while investigating post merge (6/26/2023)
 
   - script: |
+        set -e
+        yarn gulp vscode-linux-x64-prepare-deb
+    displayName: Prepare deb package
+    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
+
+  - script: |
       set -e
       yarn gulp vscode-linux-x64-build-deb
-    displayName: Build Deb
+    displayName: Build deb package
+    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
+
+  - script: |
+        set -e
+        yarn gulp vscode-linux-x64-prepare-rpm
+    displayName: Prepare rpm package
     condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
       set -e
       yarn gulp vscode-linux-x64-build-rpm
-    displayName: Build Rpm
+    displayName: Build rpm package
     condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - task: UseDotNet@2

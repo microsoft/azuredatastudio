@@ -12,6 +12,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IModelService } from 'vs/editor/common/services/model';
 import { ILanguageService } from 'vs/editor/common/languages/language';
+import { Verbosity } from 'vs/workbench/common/editor';
 
 export class DashboardInput extends EditorInput {
 
@@ -85,15 +86,33 @@ export class DashboardInput extends EditorInput {
 		}
 
 		let name = this.connectionProfile.connectionName ? this.connectionProfile.connectionName : this.connectionProfile.serverName
-
 		if (!this.connectionProfile.connectionName && this.connectionProfile.databaseName
 			&& !this.isMasterMssql()) {
-			// Only add DB name if this is a non-default, non-master connection
+			// Only add DB name if this is a non-default, non-master connection and if there is no user set profile name.
 			name = name + ':' + this.connectionProfile.databaseName;
 		}
-		// Append any differing options if needed.
-		name += this._connectionService.getEditorConnectionProfileTitle(this.connectionProfile, true, true)
 		return name;
+	}
+
+	public override getTitle(verbosity?: Verbosity): string {
+		let baseName = this.connectionProfile.serverName;
+		if (this.connectionProfile.databaseName && !this.isMasterMssql()) {
+			// Only add DB name if this is a non-default, non-master connection and if there is no user set profile name.
+			baseName = baseName + ':' + this.connectionProfile.databaseName;
+		}
+		let advancedOptions = this._connectionService.getNonDefaultOptions(this.connectionProfile);
+		let fullTitle = baseName + advancedOptions;
+
+		switch (verbosity) {
+			case Verbosity.LONG:
+				// Used by tabsTitleControl as the tooltip hover.
+				return fullTitle;
+			default:
+			case Verbosity.SHORT:
+			case Verbosity.MEDIUM:
+				// Used for header title by tabsTitleControl.
+				return this.getName();
+		}
 	}
 
 	private isMasterMssql(): boolean {

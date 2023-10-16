@@ -14,6 +14,10 @@ export interface IQueryEditorConfiguration {
 		};
 		readonly saveAsExcel: {
 			readonly includeHeaders: boolean;
+			readonly freezeHeaderRow: boolean;
+			readonly boldHeaderRow: boolean;
+			readonly autoFilterHeaderRow: boolean;
+			readonly autoSizeColumns: boolean;
 		};
 		readonly saveAsMarkdown: {
 			readonly encoding: string;
@@ -27,10 +31,12 @@ export interface IQueryEditorConfiguration {
 		readonly streaming: boolean;
 		readonly copyIncludeHeaders: boolean;
 		readonly copyRemoveNewLine: boolean;
+		readonly skipNewLineAfterTrailingLineBreak: boolean;
 		readonly optimizedTable: boolean;
 		readonly inMemoryDataProcessingThreshold: number;
 		readonly openAfterSave: boolean;
 		readonly showActionBar: boolean;
+		readonly showCopyCompletedNotification: boolean;
 		readonly preferProvidersCopyHandler: boolean;
 		readonly promptForLargeRowSelection: boolean;
 	},
@@ -44,6 +50,7 @@ export interface IQueryEditorConfiguration {
 	readonly tabColorMode: 'off' | 'border' | 'fill';
 	readonly showConnectionInfoInTitle: boolean;
 	readonly promptToSaveGeneratedFiles: boolean;
+	readonly githubCopilotContextualizationEnabled: boolean;
 }
 
 export interface IResultGridConfiguration {

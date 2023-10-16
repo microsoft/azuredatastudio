@@ -13,6 +13,8 @@ import { toAction } from 'vs/base/common/actions';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { CancellationToken, CancellationTokenSource } from 'vs/base/common/cancellation';
 import { GridRange } from 'sql/base/common/gridRange';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 export interface IGridDataProvider {
 
@@ -46,6 +48,8 @@ export interface IGridDataProvider {
 
 	shouldRemoveNewLines(): boolean;
 
+	shouldSkipNewLineAfterTrailingLineBreak(): boolean;
+
 	getColumnHeaders(range: Slick.Range): string[] | undefined;
 
 	readonly canSerialize: boolean;
@@ -53,9 +57,10 @@ export interface IGridDataProvider {
 	serializeResults(format: SaveFormat, selection: Slick.Range[]): Thenable<void>;
 }
 
-export async function executeCopyWithNotification(notificationService: INotificationService, selections: Slick.Range[], copyHandler: (notification: INotificationHandle, rowCount: number) => Promise<void>, cancellationTokenSource?: CancellationTokenSource): Promise<void> {
+export async function executeCopyWithNotification(notificationService: INotificationService, configurationService: IConfigurationService, selections: Slick.Range[], copyHandler: (notification: INotificationHandle, rowCount: number) => Promise<void>, cancellationTokenSource?: CancellationTokenSource): Promise<void> {
 	const rowRanges = GridRange.getUniqueRows(GridRange.fromSlickRanges(selections));
 	const rowCount = rowRanges.map(range => range.end - range.start + 1).reduce((p, c) => p + c);
+	const showCopyCompleteNotifications = configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.showCopyCompletedNotification;
 	const notificationHandle = notificationService.notify({
 		message: nls.localize('gridDataProvider.copying', "Copying..."),
 		severity: Severity.Info,
@@ -78,15 +83,30 @@ export async function executeCopyWithNotification(notificationService: INotifica
 		await copyHandler(notificationHandle, rowCount);
 		if (cancellationTokenSource === undefined || !cancellationTokenSource.token.isCancellationRequested) {
 			notificationHandle.progress.done();
-			notificationHandle.updateActions({
-				primary: [
-					toAction({
-						id: 'closeCopyResultsNotification',
-						label: nls.localize('gridDataProvider.closeNotification', "Close"),
-						run: () => { notificationHandle.close(); }
-					})]
-			});
-			notificationHandle.updateMessage(nls.localize('gridDataProvider.copyResultsCompleted', "Selected data has been copied to the clipboard. Row count: {0}.", rowCount));
+			if (showCopyCompleteNotifications) {
+				notificationHandle.updateActions({
+					primary: [
+						toAction({
+							id: 'closeCopyResultsNotification',
+							label: nls.localize('gridDataProvider.closeNotification', 'Close'),
+							run: () => { notificationHandle.close(); }
+						}),
+						toAction({
+							id: 'disableCopyNotification',
+							label: nls.localize('gridDataProvider.disableCopyNotification', `Don't show again`),
+							run: () => {
+								updateConfigTurnOffCopyNotifications(configurationService);
+								notificationService.info(nls.localize('gridDataProvider.turnOnCopyNotificationsMessage',
+									'Copy completed notifications are now disabled. To re-enable, modify the setting: queryEditor.results.showCopyCompletedNotification'))
+							}
+						})]
+				});
+				notificationHandle.updateMessage(nls.localize('gridDataProvider.copyResultsCompleted', "Selected data has been copied to the clipboard. Row count: {0}.", rowCount));
+				// Auto-close notification after 3 seconds.
+				setTimeout(() => notificationHandle.close(), 3000);
+			} else {
+				notificationHandle.close();
+			}
 		}
 	}
 	catch (err) {
@@ -95,12 +115,14 @@ export async function executeCopyWithNotification(notificationService: INotifica
 	}
 }
 
-export async function copySelectionToClipboard(clipboardService: IClipboardService, notificationService: INotificationService, provider: IGridDataProvider, selections: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
+export async function copySelectionToClipboard(clipboardService: IClipboardService, notificationService: INotificationService, configurationService: IConfigurationService,
+	provider: IGridDataProvider, selections: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
 	const cancellationTokenSource = new CancellationTokenSource()
-	await executeCopyWithNotification(notificationService, selections, async (notificationHandle, rowCount) => {
+	await executeCopyWithNotification(notificationService, configurationService, selections, async (notificationHandle, rowCount) => {
 		const eol = provider.getEolString();
 		const valueSeparator = '\t';
 		const shouldRemoveNewLines = provider.shouldRemoveNewLines();
+		const shouldSkipNewLineAfterTrailingLineBreak = provider.shouldSkipNewLineAfterTrailingLineBreak();
 
 		// Merge the selections to get the unique columns and unique rows.
 		const gridRanges = GridRange.fromSlickRanges(selections);
@@ -154,7 +176,9 @@ export async function copySelectionToClipboard(clipboardService: IClipboardServi
 			});
 		}
 		if (!cancellationTokenSource.token.isCancellationRequested) {
-			resultString += rowValues.join(eol);
+			resultString += rowValues.reduce(
+				(prevVal, currVal, idx) => prevVal + (idx > 0 && (!prevVal?.endsWith(eol) || !shouldSkipNewLineAfterTrailingLineBreak) ? eol : '') + currVal,
+			);
 			await clipboardService.writeText(resultString);
 		}
 	}, cancellationTokenSource);
@@ -208,4 +232,11 @@ function removeNewLines(inputString: string): string {
 
 	let outputString: string = inputString.replace(/(\r\n|\n|\r)/gm, ' ');
 	return outputString;
+}
+
+/**
+ * Disables data copy configuration setting.
+ */
+function updateConfigTurnOffCopyNotifications(configurationService: IConfigurationService) {
+	configurationService.updateValue('queryEditor.results.showCopyCompletedNotification', false);
 }

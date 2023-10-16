@@ -47,6 +47,11 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 	constructor(private readonly objectManagementService: mssql.IObjectManagementService, private readonly options: FindObjectDialogOptions) {
 		super(options.title, 'FindObjectDialog');
 		this.dialogObject.okButton.label = localizedConstants.SelectText;
+		this.dialogObject.okButton.enabled = false;
+
+		// Relabel Cancel button to Back, since clicking cancel on an inner dialog makes it seem like it would close the whole dialog overall
+		this.dialogObject.cancelButton.label = localizedConstants.BackButtonLabel;
+
 		this.result = {
 			selectedObjects: []
 		};
@@ -54,7 +59,6 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 	}
 
 	protected override async initialize(): Promise<void> {
-		this.dialogObject.okButton.enabled = false;
 		this.objectTypesTable = this.createTableList<ObjectTypeInfo>(localizedConstants.ObjectTypesText,
 			[localizedConstants.ObjectTypeText],
 			this.options.objectTypes,
@@ -65,7 +69,10 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 			}, (item1, item2) => {
 				return item1.name === item2.name;
 			});
-		this.searchTextInputBox = this.createInputBox(localizedConstants.SearchTextLabel, async () => { });
+		this.searchTextInputBox = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.SearchTextLabel,
+			inputType: 'text'
+		});
 		const searchTextRow = this.createLabelInputContainer(localizedConstants.SearchTextLabel, this.searchTextInputBox);
 		this.findButton = this.createButton(localizedConstants.FindText, localizedConstants.FindText, async () => {
 			await this.onFindObjectButtonClick();

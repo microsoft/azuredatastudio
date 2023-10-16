@@ -16,7 +16,6 @@
   ],
   "scripts": {
     "compile": "gulp compile-extension:mssql-client",
-    "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json",
     "postinstall": "node ./build/postinstall.js"
   },
   "capabilities": {
@@ -32,10 +31,6 @@
       }
     ],
     "commands": [
-      {
-        "command": "objectExplorer.scriptAsAlter",
-        "title": "Script as Alter"
-      },
       {
         "command": "mssql.exportSqlAsNotebook",
         "title": "%mssql.exportSqlAsNotebook%"
@@ -79,9 +74,39 @@
         "title": "%title.changeNotebookConnection%"
       },
       {
-        "command": "mssql.newObject",
+        "command": "mssql.newDatabase",
         "category": "MSSQL",
-        "title": "%title.newObject%",
+        "title": "%title.newDatabase%",
+        "icon": "$(add)"
+      },
+      {
+        "command": "mssql.newDatabaseRole",
+        "category": "MSSQL",
+        "title": "%title.newDatabaseRole%",
+        "icon": "$(add)"
+      },
+      {
+        "command": "mssql.newLogin",
+        "category": "MSSQL",
+        "title": "%title.newLogin%",
+        "icon": "$(add)"
+      },
+      {
+        "command": "mssql.newUser",
+        "category": "MSSQL",
+        "title": "%title.newUser%",
+        "icon": "$(add)"
+      },
+      {
+        "command": "mssql.newApplicationRole",
+        "category": "MSSQL",
+        "title": "%title.newApplicationRole%",
+        "icon": "$(add)"
+      },
+      {
+        "command": "mssql.newServerRole",
+        "category": "MSSQL",
+        "title": "%title.newServerRole%",
         "icon": "$(add)"
       },
       {
@@ -91,15 +116,61 @@
         "icon": "$(edit)"
       },
       {
-        "command": "mssql.deleteObject",
+        "command": "mssql.dropDatabase",
         "category": "MSSQL",
-        "title": "%title.deleteObject%",
+        "title": "%title.dropObject%",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "mssql.dropObject",
+        "category": "MSSQL",
+        "title": "%title.dropObject%",
         "icon": "$(trash)"
       },
       {
         "command": "mssql.renameObject",
         "category": "MSSQL",
         "title": "%title.renameObject%"
+      },
+      {
+        "command": "mssql.newDatabaseRole",
+        "category": "MSSQL",
+        "title": "%title.newDatabaseRole%",
+        "icon": "$(add)"
+      },
+      {
+        "command": "mssql.newLogin",
+        "category": "MSSQL",
+        "title": "%title.newLogin%",
+        "icon": "$(add)"
+      },
+      {
+        "command": "mssql.newUser",
+        "category": "MSSQL",
+        "title": "%title.newUser%",
+        "icon": "$(add)"
+      },
+      {
+        "command": "mssql.newApplicationRole",
+        "category": "MSSQL",
+        "title": "%title.newApplicationRole%",
+        "icon": "$(add)"
+      },
+      {
+        "command": "mssql.newServerRole",
+        "category": "MSSQL",
+        "title": "%title.newServerRole%",
+        "icon": "$(add)"
+      },
+      {
+        "command": "mssql.detachDatabase",
+        "category": "MSSQL",
+        "title": "%title.detachDatabase%"
+      },
+      {
+        "command": "mssql.attachDatabase",
+        "category": "MSSQL",
+        "title": "%title.attachDatabase%"
       },
       {
         "command": "mssql.enableGroupBySchema",
@@ -136,6 +207,11 @@
           "dark": "resources/dark/groupBySchemaDisabled_inverse.svg",
           "light": "resources/light/groupBySchemaDisabled.svg"
         }
+      },
+      {
+        "command": "mssql.clearPooledConnections",
+        "category": "MSSQL",
+        "title": "%mssql.connection.clearPooledConnections%"
       }
     ],
     "outputChannels": [
@@ -157,14 +233,16 @@
           "description": "%mssql.query.displayBitAsNumber%"
         },
         "mssql.query.maxXmlCharsToStore": {
-          "type": "number",
+          "type": "integer",
           "default": 2097152,
-          "description": "%mssql.query.maxXmlCharsToStore%"
+          "description": "%mssql.query.maxXmlCharsToStore%",
+          "maximum": 2147483647
         },
         "mssql.query.maxCharsToStore": {
-          "type": "number",
+          "type": "integer",
           "default": 65535,
-          "description": "%mssql.query.maxCharsToStore%"
+          "description": "%mssql.query.maxCharsToStore%",
+          "maximum": 2147483647
         },
         "mssql.format.alignColumnDefinitionsInColumns": {
           "type": "boolean",
@@ -295,19 +373,22 @@
           ]
         },
         "mssql.query.rowCount": {
-          "type": "number",
+          "type": "integer",
           "default": 0,
-          "description": "%mssql.query.setRowCount%"
+          "description": "%mssql.query.setRowCount%",
+          "maximum": 2147483647
         },
         "mssql.query.textSize": {
-          "type": "number",
+          "type": "integer",
           "default": 2147483647,
-          "description": "%mssql.query.textSize%"
+          "description": "%mssql.query.textSize%",
+          "maximum": 2147483647
         },
         "mssql.query.executionTimeout": {
-          "type": "number",
+          "type": "integer",
           "default": 0,
-          "description": "%mssql.query.executionTimeout%"
+          "description": "%mssql.query.executionTimeout%",
+          "maximum": 2147483647
         },
         "mssql.query.noCount": {
           "type": "boolean",
@@ -363,14 +444,16 @@
           "description": "%mssql.query.deadlockPriority%"
         },
         "mssql.query.lockTimeout": {
-          "type": "number",
+          "type": "integer",
           "default": -1,
-          "description": "%mssql.query.lockTimeout%"
+          "description": "%mssql.query.lockTimeout%",
+          "maximum": 2147483647
         },
         "mssql.query.queryGovernorCostLimit": {
-          "type": "number",
+          "type": "integer",
           "default": -1,
-          "description": "%mssql.query.queryGovernorCostLimit%"
+          "description": "%mssql.query.queryGovernorCostLimit%",
+          "maximum": 2147483647
         },
         "mssql.query.ansiDefaults": {
           "type": "boolean",
@@ -432,6 +515,11 @@
           "description": "%mssql.enableSqlAuthenticationProvider%",
           "default": true
         },
+        "mssql.enableConnectionPooling": {
+          "type": "boolean",
+          "description": "%mssql.enableConnectionPooling%",
+          "default": true
+        },
         "mssql.tableDesigner.preloadDatabaseModel": {
           "type": "boolean",
           "default": false,
@@ -448,10 +536,11 @@
           "description": "%mssql.objectExplorer.groupBySchema%"
         },
         "mssql.objectExplorer.expandTimeout": {
-          "type": "number",
+          "type": "integer",
           "default": 45,
           "minimum": 1,
-          "description": "%mssql.objectExplorer.expandTimeout%"
+          "description": "%mssql.objectExplorer.expandTimeout%",
+          "maximum": 2147483647
         }
       }
     },
@@ -478,7 +567,27 @@
           "when": "false"
         },
         {
-          "command": "mssql.newObject",
+          "command": "mssql.newDatabase",
+          "when": "false"
+        },
+        {
+          "command": "mssql.newDatabaseRole",
+          "when": "false"
+        },
+        {
+          "command": "mssql.newLogin",
+          "when": "false"
+        },
+        {
+          "command": "mssql.newUser",
+          "when": "false"
+        },
+        {
+          "command": "mssql.newApplicationRole",
+          "when": "false"
+        },
+        {
+          "command": "mssql.newServerRole",
           "when": "false"
         },
         {
@@ -486,20 +595,27 @@
           "when": "false"
         },
         {
-          "command": "mssql.deleteObject",
+          "command": "mssql.dropDatabase",
+          "when": "false"
+        },
+        {
+          "command": "mssql.dropObject",
           "when": "false"
         },
         {
           "command": "mssql.renameObject",
           "when": "false"
+        },
+        {
+          "command": "mssql.detachDatabase",
+          "when": "false"
+        },
+        {
+          "command": "mssql.attachDatabase",
+          "when": "false"
         }
       ],
       "objectExplorer/item/context": [
-        {
-          "command": "objectExplorer.scriptAsAlter",
-          "when": "nodeType == Table",
-          "group": "0_query@5"
-        },
         {
           "command": "mssql.designTable",
           "when": "connectionProvider == MSSQL && nodeType == Table && nodeSubType != LedgerDropped",
@@ -512,39 +628,110 @@
           "group": "0_query@1"
         },
         {
-          "command": "mssql.newObject",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles|Databases)$/ && config.workbench.enablePreviewFeatures",
-          "group": "0_query@1"
+          "command": "mssql.newDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@0"
         },
         {
-          "command": "mssql.objectProperties",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
-          "group": "0_query@1",
-          "isDefault": true
+          "command": "mssql.newDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@0"
         },
         {
-          "command": "mssql.objectProperties",
-          "when": "connectionProvider == MSSQL && serverInfo && !isCloud && nodeType && nodeType =~ /^(Database|Server)$/ && mssql:engineedition != 11 && isDevelopment",
-          "group": "0_query@1"
+          "command": "mssql.newDatabaseRole",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == DatabaseRoles && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@0"
         },
         {
-          "command": "mssql.deleteObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole|Database)$/ && config.workbench.enablePreviewFeatures",
-          "group": "0_query@2"
+          "command": "mssql.newDatabaseRole",
+          "when": "connectionProvider == MSSQL && nodeType == DatabaseRole && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@0"
+        },
+        {
+          "command": "mssql.newApplicationRole",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ApplicationRoles && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@0"
+        },
+        {
+          "command": "mssql.newApplicationRole",
+          "when": "connectionProvider == MSSQL && nodeType == ApplicationRole && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@0"
+        },
+        {
+          "command": "mssql.newServerRole",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ServerLevelServerRoles && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@0"
+        },
+        {
+          "command": "mssql.newServerRole",
+          "when": "connectionProvider == MSSQL && nodeType == ServerLevelServerRole && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@0"
+        },
+        {
+          "command": "mssql.newLogin",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == ServerLevelLogins && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@0"
+        },
+        {
+          "command": "mssql.newLogin",
+          "when": "connectionProvider == MSSQL && nodeType == ServerLevelLogin && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@0"
+        },
+        {
+          "command": "mssql.newUser",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Users && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@0"
+        },
+        {
+          "command": "mssql.newUser",
+          "when": "connectionProvider == MSSQL && nodeType == User && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@0"
         },
         {
           "command": "mssql.renameObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|Table|View|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
-          "group": "0_query@3"
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|Table|View|ServerLevelServerRole|ApplicationRole|DatabaseRole|Database)$/ && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@1"
         },
         {
           "command": "mssql.renameObject",
           "when": "connectionProvider == MSSQL && nodeType == Column && config.workbench.enablePreviewFeatures && nodePath =~ /^.*\\/Tables\\/.*\\/Columns\\/.*$/",
-          "group": "0_query@3"
+          "group": "1_objectManagement@1"
+        },
+        {
+          "command": "mssql.detachDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@2"
+        },
+        {
+          "command": "mssql.attachDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && !isCloud && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@2"
+        },
+        {
+          "command": "mssql.dropDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@3"
+        },
+        {
+          "command": "mssql.dropObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@3"
         },
         {
           "command": "mssql.enableGroupBySchema",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && !config.mssql.objectExplorer.groupBySchema"
+          "when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && !config.mssql.objectExplorer.groupBySchema",
+          "group": "z_objectexplorer@0"
+        },
+        {
+          "command": "mssql.objectProperties",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
+          "group": "z_objectexplorer@3",
+          "isDefault": true
+        },
+        {
+          "command": "mssql.objectProperties",
+          "when": "connectionProvider == MSSQL && serverInfo && !isCloud && nodeType =~ /^(Database|Server)$/ && mssql:engineedition != 11 && config.workbench.enablePreviewFeatures",
+          "group": "z_objectexplorer@3"
         },
         {
           "command": "mssql.disableGroupBySchema",
@@ -561,8 +748,8 @@
           "group": "inline@0"
         },
         {
-          "command": "mssql.newObject",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles)$/ && config.workbench.enablePreviewFeatures",
+          "command": "mssql.newDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && config.workbench.enablePreviewFeatures",
           "group": "inline@0"
         },
         {
@@ -571,8 +758,13 @@
           "group": "inline@2"
         },
         {
-          "command": "mssql.deleteObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole|Database)$/ && config.workbench.enablePreviewFeatures",
+          "command": "mssql.dropDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "inline@3"
+        },
+        {
+          "command": "mssql.dropObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/)  && config.workbench.enablePreviewFeatures",
           "group": "inline@3"
         }
       ],
@@ -588,29 +780,39 @@
           "group": "connection@1"
         },
         {
-          "command": "mssql.newObject",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles|Databases)$/ && config.workbench.enablePreviewFeatures",
-          "group": "connection@1"
+          "command": "mssql.newDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@0"
         },
         {
-          "command": "mssql.objectProperties",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
-          "group": "connection@1"
-        },
-        {
-          "command": "mssql.deleteObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole|Database)$/ && config.workbench.enablePreviewFeatures",
-          "group": "connection@2"
+          "command": "mssql.newDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Database  && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@0"
         },
         {
           "command": "mssql.renameObject",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|Table|View|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
-          "group": "connection@3"
+          "group": "1_objectManagement@1"
         },
         {
           "command": "mssql.renameObject",
           "when": "connectionProvider == MSSQL && nodeType == Column && config.workbench.enablePreviewFeatures && nodePath =~ /^.*\\/Tables\\/.*\\/Columns\\/.*$/",
-          "group": "connection@3"
+          "group": "1_objectManagement@1"
+        },
+        {
+          "command": "mssql.dropDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@3"
+        },
+        {
+          "command": "mssql.dropObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@3"
+        },
+        {
+          "command": "mssql.objectProperties",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
+          "group": "z_objectManagement"
         },
         {
           "command": "mssql.enableGroupBySchema",
@@ -1474,15 +1676,15 @@
   "dependencies": {
     "@microsoft/ads-extension-telemetry": "^3.0.1",
     "@microsoft/ads-service-downloader": "^1.2.1",
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.3.5",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.3.8",
     "find-remove": "1.2.1",
     "vscode-languageclient": "5.2.1",
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
     "@types/mocha": "^7.0.2",
-    "@microsoft/vscodetestcover": "^1.2.1",
-    "@microsoft/azdata-test": "^3.0.1",
+    "@microsoft/vscodetestcover": "^1.2.2",
+    "@microsoft/azdata-test": "^3.0.3",
     "mocha": "^7.1.1",
     "should": "^13.2.3",
     "typemoq": "^2.1.0"

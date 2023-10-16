@@ -1,7 +1,7 @@
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: "16.x"
+    versionSpec: "18.15.0"
 
 - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
   inputs:
@@ -23,6 +23,8 @@ steps:
 
     git config user.email "sqltools@service.microsoft.com"
     git config user.name "AzureDataStudio"
+    git config --global http.postBuffer 524288000
+    git config --global https.postBuffer 524288000
   displayName: Prepare tooling
 
 - script: |

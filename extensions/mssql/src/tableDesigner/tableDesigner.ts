@@ -26,25 +26,20 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			if (!connectionString) {
 				throw new Error(FailedToGetConnectionStringError);
 			}
-			let titleString = `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`;
-			// append distinguishing options to end to let users know exact connection.
-			let distinguishingOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true);
-			if (distinguishingOptions !== '') {
-				distinguishingOptions = distinguishingOptions.replace('(', '[').replace(')', ']');
-				titleString += `${distinguishingOptions}`;
-			}
 			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
 			const telemetryInfo = await getTelemetryInfo(context, tableIcon);
+			let nonDefaultOptions = await azdata.connection.getNonDefaultOptions(context.connectionProfile);
 			await azdata.designers.openTableDesigner(sqlProviderName, {
 				title: NewTableText,
-				tooltip: titleString,
+				tooltip: context.connectionProfile!.connectionName ? `${context.connectionProfile!.connectionName} - ${NewTableText}` : `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`,
 				server: context.connectionProfile!.serverName,
 				database: context.connectionProfile!.databaseName,
 				isNewTable: true,
 				id: generateUuid(),
 				connectionString: connectionString,
 				accessToken: context.connectionProfile!.options.azureAccountToken as string,
-				tableIcon: tableIcon
+				tableIcon: tableIcon,
+				additionalInfo: `${context.connectionProfile!.serverName + ' - ' + context.connectionProfile!.databaseName}${nonDefaultOptions}`
 			}, telemetryInfo, context);
 		} catch (error) {
 			console.error(error);
@@ -55,6 +50,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.designTable', async (context: azdata.ObjectExplorerContext) => {
 		try {
 			void showPreloadDbModelSettingPrompt(appContext);
+			const connName = context.connectionProfile!.connectionName;
 			const server = context.connectionProfile!.serverName;
 			const database = context.connectionProfile!.databaseName;
 			const schema = context.nodeInfo!.metadata!.schema;
@@ -63,18 +59,12 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			if (!connectionString) {
 				throw new Error(FailedToGetConnectionStringError);
 			}
-			let titleString = `${server} - ${database} - ${schema}.${name}`;
-			// append distinguishing options to end to let users know exact connection.
-			let distinguishingOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true);
-			if (distinguishingOptions !== '') {
-				distinguishingOptions = distinguishingOptions.replace('(', '[').replace(')', ']');
-				titleString += `${distinguishingOptions}`;
-			}
 			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
 			const telemetryInfo = await getTelemetryInfo(context, tableIcon);
+			let nonDefaultOptions = await azdata.connection.getNonDefaultOptions(context.connectionProfile);
 			await azdata.designers.openTableDesigner(sqlProviderName, {
 				title: `${schema}.${name}`,
-				tooltip: titleString,
+				tooltip: connName ? `${connName} - ${schema}.${name}` : `${server} - ${database} - ${schema}.${name}`,
 				server: server,
 				database: database,
 				isNewTable: false,
@@ -83,7 +73,8 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				id: `${sqlProviderName}|${server}|${database}|${schema}|${name}`,
 				connectionString: connectionString,
 				accessToken: context.connectionProfile!.options.azureAccountToken as string,
-				tableIcon: tableIcon
+				tableIcon: tableIcon,
+				additionalInfo: `${server + ' - ' + database}${nonDefaultOptions}`
 			}, telemetryInfo, context);
 		} catch (error) {
 			console.error(error);

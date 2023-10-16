@@ -180,7 +180,9 @@ export enum ModelComponentTypes {
 	Separator,
 	PropertiesContainer,
 	InfoBox,
-	Slider
+	Slider,
+	ExecutionPlan,
+	Chart
 }
 
 export enum ModelViewAction {
@@ -216,6 +218,11 @@ export enum StepCompletionAction {
 	QuitWithFailure = 2,
 	GoToNextStep = 3,
 	GoToStep = 4
+}
+
+export enum ProfilingSessionType {
+	RemoteSession = 0,
+	LocalFile = 1
 }
 
 export interface CheckBoxInfo {
@@ -415,7 +422,8 @@ export enum DataProviderType {
 	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
 	DataGridProvider = 'DataGridProvider',
 	TableDesignerProvider = 'TableDesignerProvider',
-	ExecutionPlanProvider = 'ExecutionPlanProvider'
+	ExecutionPlanProvider = 'ExecutionPlanProvider',
+	ServerContextualizationProvider = 'ServerContextualizationProvider'
 }
 
 export enum DeclarativeDataType {
@@ -468,7 +476,7 @@ export enum AzureResource {
 	Sql = 1,
 	OssRdbms = 2,
 	AzureKeyVault = 3,
-	Graph = 4,
+	// 4 (formerly Azure Graph) is no longer used.
 	MicrosoftResourceManagement = 5,
 	AzureDevOps = 6,
 	MsGraph = 7,
@@ -498,8 +506,10 @@ export enum NodeFilterOperator {
 	NotBetween = 7,
 	Contains = 8,
 	NotContains = 9,
-	IsNull = 10,
-	IsNotNull = 11
+	StartsWith = 10,
+	NotStartsWith = 11,
+	EndsWith = 12,
+	NotEndsWith = 13
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {

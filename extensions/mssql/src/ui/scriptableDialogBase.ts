@@ -15,6 +15,10 @@ export interface ScriptableDialogOptions {
 	 * The width of the dialog, defaults to narrow if not set
 	 */
 	width?: azdata.window.DialogWidth;
+	/**
+	 * The object explorer context in which this dialog was opened.
+	 */
+	objectExplorerContext?: azdata.ObjectExplorerContext;
 }
 
 /**
@@ -59,13 +63,16 @@ export abstract class ScriptableDialogBase<OptionsType extends ScriptableDialogO
 	protected abstract get isDirty(): boolean;
 
 	protected override onFormFieldChange(): void {
-		this._scriptButton.enabled = this.isDirty;
+		this.updateScriptButtonState();
 		this.dialogObject.okButton.enabled = this.isDirty;
 	}
 
 	protected override async initialize(): Promise<void> {
 		await this.initializeData();
 		await this.initializeUI();
+		this.disposables.push(this.modelView.onValidityChanged(() => {
+			this.updateScriptButtonState();
+		}));
 	}
 
 	protected override updateLoadingStatus(isLoading: boolean, loadingText?: string, loadingCompletedText?: string): void {
@@ -90,7 +97,27 @@ export abstract class ScriptableDialogBase<OptionsType extends ScriptableDialogO
 			const script = await this.generateScript();
 			if (script) {
 				message = localizedConstants.ScriptGeneratedText;
-				await azdata.queryeditor.openQueryDocument({ content: script }, providerId);
+				let doc = await azdata.queryeditor.openQueryDocument({ content: script }, providerId);
+				if (this.options.objectExplorerContext?.connectionProfile) {
+					let profile = this.options.objectExplorerContext?.connectionProfile;
+					let convertedProfile: azdata.connection.ConnectionProfile = {
+						providerId: profile.providerName,
+						connectionId: profile.id,
+						connectionName: profile.connectionName,
+						serverName: profile.serverName,
+						databaseName: profile.databaseName,
+						userName: profile.userName,
+						password: profile.password,
+						authenticationType: profile.authenticationType,
+						savePassword: profile.savePassword,
+						groupFullName: profile.groupFullName,
+						groupId: profile.groupId,
+						saveProfile: profile.savePassword,
+						azureTenantId: profile.azureTenantId,
+						options: profile.options
+					};
+					await doc.connect(convertedProfile);
+				}
 			} else {
 				message = localizedConstants.NoActionScriptedMessage;
 			}
@@ -106,5 +133,9 @@ export abstract class ScriptableDialogBase<OptionsType extends ScriptableDialogO
 		} finally {
 			this.updateLoadingStatus(false, localizedConstants.GeneratingScriptText, localizedConstants.GeneratingScriptCompletedText);
 		}
+	}
+
+	private updateScriptButtonState(): void {
+		this._scriptButton.enabled = this.isDirty && this.modelView.valid;
 	}
 }

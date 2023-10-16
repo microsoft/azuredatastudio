@@ -4,25 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
-import { ProviderSettings } from './interfaces';
+import { ProviderSettings, SettingIds } from './interfaces';
 import { AzureResource } from 'azdata';
+import { updateCustomCloudProviderSettings } from '../utils';
 
 const localize = nls.loadMessageBundle();
-
-const enum SettingIds {
-	marm = 'marm',
-	graph = 'graph',
-	msgraph = 'msgraph',
-	arm = 'arm',
-	sql = 'sql',
-	ossrdbms = 'ossrdbms',
-	vault = 'vault',
-	ado = 'ado',
-	ala = 'ala',
-	storage = 'storage',
-	kusto = 'kusto',
-	powerbi = 'powerbi'
-}
 
 const publicAzureSettings: ProviderSettings = {
 	configKey: 'enablePublicCloud',
@@ -36,11 +22,6 @@ const publicAzureSettings: ProviderSettings = {
 				id: SettingIds.marm,
 				endpoint: 'https://management.core.windows.net/',
 				azureResourceId: AzureResource.MicrosoftResourceManagement
-			},
-			graphResource: {
-				id: SettingIds.graph,
-				endpoint: 'https://graph.windows.net/',
-				azureResourceId: AzureResource.Graph
 			},
 			msGraphResource: {
 				id: SettingIds.msgraph,
@@ -117,11 +98,6 @@ const usGovAzureSettings: ProviderSettings = {
 				endpoint: 'https://management.core.usgovcloudapi.net/',
 				azureResourceId: AzureResource.MicrosoftResourceManagement
 			},
-			graphResource: {
-				id: SettingIds.graph,
-				endpoint: 'https://graph.windows.net/',
-				azureResourceId: AzureResource.Graph
-			},
 			msGraphResource: {
 				id: SettingIds.msgraph,
 				endpoint: 'https://graph.microsoft.us/',
@@ -191,11 +167,6 @@ const chinaAzureSettings: ProviderSettings = {
 				endpoint: 'https://management.core.chinacloudapi.cn/',
 				azureResourceId: AzureResource.MicrosoftResourceManagement
 			},
-			graphResource: {
-				id: SettingIds.graph,
-				endpoint: 'https://graph.chinacloudapi.cn',
-				azureResourceId: AzureResource.Graph
-			},
 			msGraphResource: {
 				id: SettingIds.msgraph,
 				endpoint: 'https://microsoftgraph.chinacloudapi.cn',
@@ -246,5 +217,7 @@ const chinaAzureSettings: ProviderSettings = {
 		}
 	}
 };
-const allSettings = [publicAzureSettings, usGovAzureSettings, chinaAzureSettings];
+
+let allSettings = [publicAzureSettings, usGovAzureSettings, chinaAzureSettings];
+allSettings = updateCustomCloudProviderSettings(allSettings);
 export default allSettings;

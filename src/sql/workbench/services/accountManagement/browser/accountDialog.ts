@@ -47,7 +47,6 @@ import { Iterable } from 'vs/base/common/iterator';
 import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 import { Tenant, TenantListDelegate, TenantListRenderer } from 'sql/workbench/services/accountManagement/browser/tenantListRenderer';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
-import { ADAL_AUTH_LIBRARY, AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManagement/utils';
 import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export const VIEWLET_ID = 'workbench.view.accountpanel';
@@ -341,6 +340,7 @@ export class AccountDialog extends Modal {
 			AddAccountAction,
 			newProvider.addedProvider.id
 		);
+		this._register(addAccountAction);
 		addAccountAction.addAccountErrorEvent(msg => this._onAddAccountErrorEmitter.fire(msg));
 
 		let providerView = new AccountPanel(
@@ -389,14 +389,9 @@ export class AccountDialog extends Modal {
 		this._splitView!.layout(DOM.getContentHeight(this._container!));
 
 		// Set the initial items of the list
-		const authLibrary: AuthLibrary = getAuthLibrary(this._configurationService);
-		let updatedAccounts: azdata.Account[];
-		if (authLibrary) {
-			updatedAccounts = filterAccounts(newProvider.initialAccounts, authLibrary);
-		}
-		providerView.updateAccounts(updatedAccounts);
+		providerView.updateAccounts(newProvider.initialAccounts);
 
-		if ((updatedAccounts.length > 0 && this._splitViewContainer!.hidden) || this._providerViewsMap.size > 1) {
+		if ((newProvider.initialAccounts.length > 0 && this._splitViewContainer!.hidden) || this._providerViewsMap.size > 1) {
 			this.showSplitView();
 		}
 
@@ -440,12 +435,7 @@ export class AccountDialog extends Modal {
 		if (!providerMapping || !providerMapping.view) {
 			return;
 		}
-		const authLibrary: AuthLibrary = getAuthLibrary(this._configurationService);
-		let updatedAccounts: azdata.Account[];
-		if (authLibrary) {
-			updatedAccounts = filterAccounts(args.accountList, authLibrary);
-		}
-		providerMapping.view.updateAccounts(updatedAccounts);
+		providerMapping.view.updateAccounts(args.accountList);
 
 		if ((args.accountList.length > 0 && this._splitViewContainer!.hidden) || this._providerViewsMap.size > 1) {
 			this.showSplitView();
@@ -458,51 +448,57 @@ export class AccountDialog extends Modal {
 		this.layout();
 	}
 
-	private registerActions(viewId: string) {
+	private registerActions(providerId: string) {
 		const that = this;
 		registerAction2(class extends Action2 {
 			constructor() {
 				super({
-					id: `workbench.actions.accountDialog.${viewId}.addAccount`,
+					id: `workbench.actions.accountDialog.${providerId}.addAccount`,
 					title: { value: localize('accountDialog.addConnection', "Add an account"), original: 'Add an account' },
 					f1: true,
 					icon: { id: Codicon.add.id },
 					menu: {
 						id: MenuId.ViewTitle,
 						group: 'navigation',
-						when: ContextKeyEqualsExpr.create('view', viewId),
+						when: ContextKeyEqualsExpr.create('view', providerId),
 						order: 1
 					}
 				});
 			}
 
 			async run() {
-				await that.runAddAccountAction();
+				await that.runAddAccountAction(providerId);
 			}
 		});
 	}
 
-	private async runAddAccountAction() {
+	private async runAddAccountAction(providerId?: string) {
 		this.logService.debug(`Adding account - providers ${JSON.stringify(Iterable.consume(this._providerViewsMap.keys()))}`);
 		const vals = Iterable.consume(this._providerViewsMap.values())[0];
 		let pickedValue: string | undefined;
-		if (vals.length === 0) {
-			this._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
-			return;
-		}
-		if (vals.length > 1) {
-			const buttons: IQuickPickItem[] = vals.map(v => {
-				return { label: v.view.title } as IQuickPickItem;
-			});
-
-			const picked = await this._quickInputService.pick(buttons, { canPickMany: false });
-
-			pickedValue = picked?.label;
+		let v: IProviderViewUiComponent | undefined;
+		if (providerId) {
+			pickedValue = providerId;
+			v = vals.filter(v => v.view.id === pickedValue)?.[0];
 		} else {
-			pickedValue = vals[0].view.title;
-		}
+			let pickedValue: string | undefined;
+			if (vals.length === 0) {
+				this._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
+				return;
+			}
+			if (vals.length > 1) {
+				const buttons: IQuickPickItem[] = vals.map(v => {
+					return { label: v.view.title } as IQuickPickItem;
+				});
 
-		const v = vals.filter(v => v.view.title === pickedValue)?.[0];
+				const picked = await this._quickInputService.pick(buttons, { canPickMany: false });
+
+				pickedValue = picked?.label;
+			} else {
+				pickedValue = vals[0].view.title;
+			}
+			v = vals.filter(v => v.view.title === pickedValue)?.[0];
+		}
 
 		if (!v) {
 			this._notificationService.error(localize('accountDialog.didNotPickAuthProvider', "You didn't select any authentication provider. Please try again."));
@@ -511,19 +507,4 @@ export class AccountDialog extends Modal {
 
 		v.addAccountAction.run();
 	}
-}
-
-// Filter accounts based on currently selected Auth Library:
-// if the account key is present, filter based on current auth library
-// if there is no account key (pre-MSAL account), then it is an ADAL account and
-// should be displayed as long as ADAL is the currently selected auth library
-export function filterAccounts(accounts: azdata.Account[], authLibrary: AuthLibrary): azdata.Account[] {
-	let filteredAccounts = accounts.filter(account => {
-		if (account.key.authLibrary) {
-			return account.key.authLibrary === authLibrary;
-		} else {
-			return authLibrary === ADAL_AUTH_LIBRARY;
-		}
-	});
-	return filteredAccounts;
 }

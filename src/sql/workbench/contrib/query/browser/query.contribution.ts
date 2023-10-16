@@ -27,9 +27,9 @@ import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle
 import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, QueryStatusStatusBarContributions, QueryResultSelectionSummaryStatusBarContribution } from 'sql/workbench/contrib/query/browser/statusBarItems';
 import { SqlFlavorStatusbarItem, ChangeFlavorAction } from 'sql/workbench/contrib/query/browser/flavorStatus';
 import { EditorExtensions, IEditorFactoryRegistry } from 'vs/workbench/common/editor';
-import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
+import { FileQueryEditorInput } from 'sql/workbench/browser/editor/query/fileQueryEditorInput';
 import { FileQueryEditorSerializer, QueryEditorLanguageAssociation, UntitledQueryEditorSerializer } from 'sql/workbench/contrib/query/browser/queryEditorFactory';
-import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
+import { UntitledQueryEditorInput } from 'sql/workbench/browser/editor/query/untitledQueryEditorInput';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/contrib/query/browser/queryActions';
 import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
@@ -71,7 +71,7 @@ new NewQueryTask().registerTask();
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	group: '0_query',
-	order: 1,
+	order: 0,
 	command: {
 		id: OE_NEW_QUERY_ACTION_ID,
 		title: localize('newQuery', "New Query")
@@ -82,7 +82,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 // New Query
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: '0_query',
-	order: 1,
+	order: 0,
 	command: {
 		id: DE_NEW_QUERY_COMMAND_ID,
 		title: localize('newQuery', "New Query")
@@ -258,6 +258,26 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.saveAsExcel.includeHeaders', "When true, column headers are included when saving results as an Excel file"),
 			'default': true
 		},
+		'queryEditor.results.saveAsExcel.freezeHeaderRow': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.saveAsExcel.freezeHeaderRow', "When true, freeze the header row when saving results as an Excel file"),
+			'default': false
+		},
+		'queryEditor.results.saveAsExcel.autoFilterHeaderRow': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.saveAsExcel.autoFilterHeaderRow', "When true, enable auto filtering on the header row when saving results as an Excel file"),
+			'default': false
+		},
+		'queryEditor.results.saveAsExcel.autoSizeColumns': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.saveAsExcel.autoSizeColumns', "When true, attempt to automatically size columns when saving results as an Excel file"),
+			'default': false
+		},
+		'queryEditor.results.saveAsExcel.boldHeaderRow': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.saveAsExcel.boldHeaderRow', "When true, make the header row bold when saving results as an Excel file"),
+			'default': false
+		},
 		'queryEditor.results.saveAsCsv.encoding': {
 			'type': 'string',
 			'description': localize('queryEditor.results.saveAsCsv.encoding', "File encoding used when saving results as CSV"),
@@ -302,6 +322,16 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'type': 'boolean',
 			'description': localize('queryEditor.results.copyRemoveNewLine', "Configuration options for copying multi-line results from the Results View"),
 			'default': true
+		},
+		'queryEditor.results.showCopyCompletedNotification': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.showCopyCompletedNotification', "Whether to show notifications when a results grid copy operation is completed."),
+			'default': true
+		},
+		'queryEditor.results.skipNewLineAfterTrailingLineBreak': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.skipNewLineAfterTrailingLineBreak', "Whether to skip adding a line break between rows when copying results if the previous row already has a trailing line break. The default value is false."),
+			'default': false
 		},
 		'queryEditor.results.preferProvidersCopyHandler': {
 			'type': 'boolean',
@@ -364,6 +394,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'type': 'boolean',
 			'default': false,
 			'description': localize('queryEditor.promptToSaveGeneratedFiles', "Prompt to save generated SQL files")
+		},
+		'queryEditor.githubCopilotContextualizationEnabled': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('queryEditor.githubCopilotContextualizationEnabled', "(Preview) Enable contextualization of queries for GitHub Copilot. This setting helps GitHub Copilot to return improved suggestions, if the Copilot extension is installed and providers have implemented contextualization.")
 		}
 	}
 };

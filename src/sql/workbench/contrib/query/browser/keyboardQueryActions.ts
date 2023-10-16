@@ -169,7 +169,7 @@ export class CopyQueryWithResultsKeyboardAction extends Action2 {
 		if (queryRunner && queryRunner.batchSets.length > 0) {
 			for (let i = 0; i < queryRunner.batchSets[0].resultSetSummaries.length; i++) {
 				let resultSummary = queryRunner.batchSets[0].resultSetSummaries[i];
-				let result = await queryRunner.getQueryRows(0, resultSummary.rowCount, resultSummary.batchId, resultSummary.id);
+				let result = await queryRunner.getQueryRowsPaged(0, resultSummary.rowCount, resultSummary.batchId, resultSummary.id);
 				let tableHeaders = resultSummary.columnInfo.map((col, i) => (col.columnName));
 				let htmlTableHeaders = `<thead><tr style="background-color:DarkGray">${resultSummary.columnInfo.map((col, i) => (`<th style="border:1.0pt solid black;padding:3pt;font-size:9pt;font-weight: bold;">${escape(col.columnName)}</th>`)).join('')}</tr></thead>`;
 				let copyString = '\n';

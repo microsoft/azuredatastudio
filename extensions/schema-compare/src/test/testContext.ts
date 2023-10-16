@@ -81,7 +81,8 @@ export function createViewContext(): ViewTestContext {
 		onValidityChanged: undefined!,
 		valid: true,
 		validate: undefined!,
-		focus: () => Promise.resolve()
+		focus: () => Promise.resolve(),
+		dispose() { }
 	};
 
 	let container = {
@@ -325,9 +326,11 @@ export function createViewContext(): ViewTestContext {
 		onValidityChanged: undefined!,
 		validate: undefined!,
 		initializeModel: () => { return Promise.resolve(); },
+		dispose() { },
 		modelBuilder: {
 			listView: undefined!,
 			radioCardGroup: undefined!,
+			chart: undefined!,
 			navContainer: undefined!,
 			divContainer: () => divBuilder,
 			flexContainer: () => flexBuilder,
@@ -359,7 +362,8 @@ export function createViewContext(): ViewTestContext {
 			separator: undefined!,
 			propertiesContainer: undefined!,
 			infoBox: undefined!,
-			slider: undefined!
+			slider: undefined!,
+			executionPlan: undefined!,
 		}
 	};
 	return {

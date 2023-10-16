@@ -70,12 +70,17 @@ class ConnectionProfileGroupTemplate extends Disposable {
 			matches: createMatches(filterData)
 		});
 
-		const actionProvider = this._objectExplorerService.getServerTreeView().treeActionProvider;
-		const tree = this._objectExplorerService.getServerTreeView().tree;
-		const actions = actionProvider.getActions(tree, element, true);
-		this._actionBar.context = this._objectExplorerService.getServerTreeView().getActionContext(element);
-		this._actionBar.clear();
-		this._actionBar.pushAction(actions, { icon: true, label: false });
+		let serverTreeView = this._objectExplorerService.getServerTreeView();
+		if (serverTreeView) {
+			const actionProvider = serverTreeView.treeActionProvider;
+			const tree = serverTreeView.tree;
+			const actions = actionProvider.getActions(tree, element, true);
+			this._actionBar.context = serverTreeView.getActionContext(element);
+			this._actionBar.clear();
+			this._actionBar.pushAction(actions, { icon: true, label: false });
+		} else {
+			console.log('Server Tree view not loaded, action bar will not be populated.');
+		}
 	}
 }
 
@@ -105,7 +110,6 @@ class ConnectionProfileTemplate extends Disposable {
 	private _labelContainer: HTMLElement;
 	private _label: ResourceLabel;
 	private _actionBar: ActionBar;
-	private _serverGroupColorContainer: HTMLElement;
 
 	/**
 	 * _isCompact is used to render connections tiles with and without the action buttons.
@@ -122,7 +126,6 @@ class ConnectionProfileTemplate extends Disposable {
 		super();
 		container.parentElement!.classList.add('connection-profile');
 		this._root = dom.append(container, dom.$('.connection-profile-container'));
-		this._serverGroupColorContainer = dom.append(this._root, dom.$('.server-group-color'));
 		this._icon = dom.append(this._root, dom.$('div.icon'));
 		this._connectionStatusBadge = dom.append(this._icon, dom.$('div.connection-status-badge'));
 		this._labelContainer = dom.append(this._root, dom.$('div.label'));
@@ -133,16 +136,6 @@ class ConnectionProfileTemplate extends Disposable {
 	}
 
 	set(element: ConnectionProfile, filterData: FuzzyScore) {
-
-		const colorGroup = element.parent;
-		if (colorGroup.isRoot) {
-			this._serverGroupColorContainer.style.display = 'none';
-		} else {
-			this._serverGroupColorContainer.style.display = 'block';
-			const backgroundColor = colorGroup.color ?? DefaultServerGroupColor;
-			this._serverGroupColorContainer.style.background = backgroundColor;
-		}
-
 		if (!this._isCompact) {
 			if (this._connectionManagementService.isConnected(undefined, element)) {
 				this._connectionStatusBadge.classList.remove('disconnected');
@@ -161,19 +154,24 @@ class ConnectionProfileTemplate extends Disposable {
 		this._label.element.setLabel(labelText, '', {
 			matches: createMatches(filterData)
 		});
-		this._root.title = labelText;
-		const actionProvider = this._objectExplorerService.getServerTreeView().treeActionProvider;
-		if (!this._isCompact) {
-			const tree = this._objectExplorerService.getServerTreeView().tree;
-			const actions = actionProvider.getActions(tree, element, true);
-			this._actionBar.context = this._objectExplorerService.getServerTreeView().getActionContext(element);
-			this._actionBar.clear();
-			this._actionBar.pushAction(actions, { icon: true, label: false });
+		this._root.title = treeNode?.filters?.length > 0 ? getLabelWithFilteredSuffix(element.serverInfo) : element.serverInfo;
+		let serverTreeView = this._objectExplorerService.getServerTreeView();
+		if (serverTreeView) {
+			const actionProvider = serverTreeView.treeActionProvider;
+			if (!this._isCompact) {
+				const tree = serverTreeView.tree;
+				const actions = actionProvider.getActions(tree, element, true);
+				this._actionBar.context = serverTreeView.getActionContext(element);
+				this._actionBar.clear();
+				this._actionBar.pushAction(actions, { icon: true, label: false });
+			} else {
+				const actions = actionProvider.getRecentConnectionActions(element);
+				this._actionBar.context = undefined;
+				this._actionBar.clear();
+				this._actionBar.pushAction(actions, { icon: true, label: false });
+			}
 		} else {
-			const actions = actionProvider.getRecentConnectionActions(element);
-			this._actionBar.context = undefined;
-			this._actionBar.clear();
-			this._actionBar.pushAction(actions, { icon: true, label: false });
+			console.log('Server Tree view not loaded, action bar will not be populated.');
 		}
 	}
 }
@@ -259,12 +257,17 @@ class TreeNodeTemplate extends Disposable {
 			matches: createMatches(filterData)
 		});
 		this._root.title = labelText;
-		const tree = this._objectExplorerService.getServerTreeView().tree;
-		const actionProvider = this._objectExplorerService.getServerTreeView().treeActionProvider;
-		const actions = actionProvider.getActions(tree, element, true);
-		this._actionBar.context = this._objectExplorerService.getServerTreeView().getActionContext(element);
-		this._actionBar.clear();
-		this._actionBar.pushAction(actions, { icon: true, label: false });
+		let serverTreeView = this._objectExplorerService.getServerTreeView();
+		if (serverTreeView) {
+			const tree = serverTreeView.tree;
+			const actionProvider = serverTreeView.treeActionProvider;
+			const actions = actionProvider.getActions(tree, element, true);
+			this._actionBar.context = serverTreeView.getActionContext(element);
+			this._actionBar.clear();
+			this._actionBar.pushAction(actions, { icon: true, label: false });
+		} else {
+			console.log('Server Tree view not loaded, action bar will not be populated.');
+		}
 	}
 }
 

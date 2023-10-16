@@ -8,7 +8,7 @@ import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
 import { CellValueGetter, TableDataView, TableFilterFunc, TableSortFunc } from 'sql/base/browser/ui/table/tableDataView';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { Event, Emitter } from 'vs/base/common/event';
-import { DisposableStore } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface HybridDataProviderOptions {
 	inMemoryDataProcessing: boolean;
@@ -19,16 +19,15 @@ export interface HybridDataProviderOptions {
  * Used to abstract the underlying data provider, based on the options, if we are allowing in-memory data processing and the threshold is not reached the
  * a TableDataView will be used to provide in memory data source, otherwise it will be using the async data provider.
  */
-export class HybridDataProvider<T extends Slick.SlickData> implements IDisposableDataProvider<T> {
+export class HybridDataProvider<T extends Slick.SlickData> extends Disposable implements IDisposableDataProvider<T> {
 	private _asyncDataProvider: AsyncDataProvider<T>;
 	private _tableDataProvider: TableDataView<T>;
 	private _dataCached: boolean = false;
-	private _disposableStore = new DisposableStore();
 
-	private _onFilterStateChange = new Emitter<void>();
+	private _onFilterStateChange = this._register(new Emitter<void>());
 	get onFilterStateChange(): Event<void> { return this._onFilterStateChange.event; }
 
-	private _onSortComplete = new Emitter<Slick.OnSortEventArgs<T>>();
+	private _onSortComplete = this._register(new Emitter<Slick.OnSortEventArgs<T>>());
 	get onSortComplete(): Event<Slick.OnSortEventArgs<T>> { return this._onSortComplete.event; }
 
 	constructor(dataRows: IObservableCollection<T>,
@@ -37,22 +36,23 @@ export class HybridDataProvider<T extends Slick.SlickData> implements IDisposabl
 		sortFn: TableSortFunc<T>,
 		valueGetter: CellValueGetter,
 		private readonly _options: HybridDataProviderOptions) {
+		super();
 		this._asyncDataProvider = new AsyncDataProvider<T>(dataRows);
 		this._tableDataProvider = new TableDataView<T>(undefined, undefined, sortFn, filterFn, valueGetter);
-		this._disposableStore.add(this._asyncDataProvider.onFilterStateChange(() => {
+		this._register(this._asyncDataProvider.onFilterStateChange(() => {
 			this._onFilterStateChange.fire();
 		}));
-		this._disposableStore.add(this._asyncDataProvider.onSortComplete((args) => {
+		this._register(this._asyncDataProvider.onSortComplete((args) => {
 			this._onSortComplete.fire(args);
 		}));
-		this._disposableStore.add(this._tableDataProvider.onFilterStateChange(() => {
+		this._register(this._tableDataProvider.onFilterStateChange(() => {
 			this._onFilterStateChange.fire();
 		}));
-		this._disposableStore.add(this._tableDataProvider.onSortComplete((args) => {
+		this._register(this._tableDataProvider.onSortComplete((args) => {
 			this._onSortComplete.fire(args);
 		}));
-		this._disposableStore.add(this._asyncDataProvider);
-		this._disposableStore.add(this._tableDataProvider);
+		this._register(this._asyncDataProvider);
+		this._register(this._tableDataProvider);
 	}
 
 	public get isDataInMemory(): boolean {
@@ -74,10 +74,6 @@ export class HybridDataProvider<T extends Slick.SlickData> implements IDisposabl
 
 	public set dataRows(value: IObservableCollection<T>) {
 		this._asyncDataProvider.dataRows = value;
-	}
-
-	public dispose(): void {
-		this._disposableStore.dispose();
 	}
 
 	public getLength(): number {

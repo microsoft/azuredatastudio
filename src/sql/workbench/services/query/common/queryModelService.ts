@@ -21,6 +21,8 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import Severity from 'vs/base/common/severity';
 import EditQueryRunner from 'sql/workbench/services/editData/common/editQueryRunner';
 import { IRange } from 'vs/editor/common/core/range';
+import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 
 const selectionSnippetMaxLen = 100;
 
@@ -80,8 +82,10 @@ export class QueryModelService implements IQueryModelService {
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
+		@IQueryManagementService protected queryManagementService: IQueryManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@INotificationService private _notificationService: INotificationService,
+		@IClipboardService private _clipboardService: IClipboardService,
 		@ILogService private _logService: ILogService
 	) {
 		this._queryInfoMap = new Map<string, QueryInfo>();
@@ -150,7 +154,7 @@ export class QueryModelService implements IQueryModelService {
 	 */
 	public getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Promise<ResultSetSubset | undefined> {
 		if (this._queryInfoMap.has(uri)) {
-			return this._getQueryInfo(uri)!.queryRunner!.getQueryRows(rowStart, numberOfRows, batchId, resultId).then(results => {
+			return this._getQueryInfo(uri)!.queryRunner!.getQueryRowsPaged(rowStart, numberOfRows, batchId, resultId).then(results => {
 				return results;
 			});
 		} else {
@@ -170,7 +174,11 @@ export class QueryModelService implements IQueryModelService {
 
 	public async copyResults(uri: string, selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<void> {
 		if (this._queryInfoMap.has(uri)) {
-			return this._queryInfoMap.get(uri)!.queryRunner!.copyResults(selection, batchId, resultId, includeHeaders);
+			const results = await this._queryInfoMap.get(uri)!.queryRunner!.copyResults(selection, batchId, resultId, includeHeaders);
+			let clipboardData: ClipboardData = {
+				text: results.results
+			};
+			this._clipboardService.write(clipboardData);
 		}
 	}
 
@@ -431,21 +439,17 @@ export class QueryModelService implements IQueryModelService {
 	}
 
 	public async changeConnectionUri(newUri: string, oldUri: string): Promise<void> {
-		// Get existing query runner
-		let queryRunner = this.internalGetQueryRunner(oldUri);
-		if (!queryRunner) {
-			// Nothing to do if we don't have a query runner currently (no connection)
-			return;
-		}
-		else if (this._queryInfoMap.has(newUri)) {
+		if (this._queryInfoMap.has(newUri)) {
 			this._logService.error(`New URI '${newUri}' already has query info associated with it.`);
 			throw new Error(nls.localize('queryModelService.uriAlreadyHasQuery', '{0} already has an existing query', newUri));
 		}
+		await this.queryManagementService.changeConnectionUri(newUri, oldUri);
 
-		await queryRunner.changeConnectionUri(newUri, oldUri);
-
-		// remove the old key and set new key with same query info as old uri. (Info existence is checked in internalGetQueryRunner)
+		// remove the old key and set new key with same query info as old uri.
 		let info = this._queryInfoMap.get(oldUri);
+		if (!info) {
+			return;
+		}
 		info.uri = newUri;
 		this._queryInfoMap.set(newUri, info);
 		this._queryInfoMap.delete(oldUri);

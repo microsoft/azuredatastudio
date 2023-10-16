@@ -59,6 +59,11 @@ const CORE_TYPES = [
 	'URL',
 	'URLSearchParams',
 	'ReadonlyArray',
+	'Event',
+	'EventTarget',
+	'BroadcastChannel',
+	'performance',
+	'Blob'
 ];
 
 // Types that are defined in a common layer but are known to be only
@@ -197,10 +202,19 @@ const RULES: IRule[] = [
 
 	// Electron (sandbox)
 	{
-		target: '**/{vs,sql}/**/electron-sandbox/**',
+		target: '**/{vs,sql}/**/electron-sandbox/**/!(commandLine.ts)', // {{SQL CARBON EDIT}} commandLine currently uses querystring, so skip that one for now
 		allowedTypes: CORE_TYPES,
 		disallowedDefinitions: [
 			'@types/node'	// no node.js
+		]
+	},
+
+	// {{SQL CARBON TODO}} chgagnon investigate the use of querystring
+	{
+		target: '**/{vs,sql}/**/electron-sandbox/commandLine.ts',
+		allowedTypes: [
+			...CORE_TYPES,
+			'@types/node'
 		]
 	},
 

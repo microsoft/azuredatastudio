@@ -10,7 +10,7 @@ import * as lockFile from 'lockfile';
 import * as path from 'path';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { AccountsClearTokenCacheCommand, AuthLibrary, LocalCacheSuffix, LockFileSuffix } from '../../constants';
+import { AccountsClearTokenCacheCommand, LocalCacheSuffix, LockFileSuffix } from '../../constants';
 import { Logger } from '../../utils/Logger';
 import { FileEncryptionHelper } from './fileEncryptionHelper';
 import { CacheEncryptionKeys } from 'azurecore';
@@ -34,7 +34,7 @@ export class MsalCachePluginProvider {
 		private readonly _credentialService: azdata.CredentialProvider,
 		private readonly _onEncryptionKeysUpdated: vscode.EventEmitter<CacheEncryptionKeys>
 	) {
-		this._fileEncryptionHelper = new FileEncryptionHelper(AuthLibrary.MSAL, this._credentialService, this._serviceName, this._onEncryptionKeysUpdated);
+		this._fileEncryptionHelper = new FileEncryptionHelper(this._credentialService, this._serviceName, this._onEncryptionKeysUpdated);
 		this._msalCacheConfiguration = {
 			name: 'MSAL',
 			cacheFilePath: path.join(msalFilePath, this._serviceName),
@@ -62,6 +62,10 @@ export class MsalCachePluginProvider {
 		return this._fileEncryptionHelper.getEncryptionKeys();
 	}
 
+	public async clearCacheEncryptionKeys(): Promise<void> {
+		await this._fileEncryptionHelper.clearEncryptionKeys();
+	}
+
 	public getCachePlugin(): ICachePlugin {
 		const beforeCacheAccess = async (cacheContext: TokenCacheContext): Promise<void> => {
 			try {
@@ -71,7 +75,7 @@ export class MsalCachePluginProvider {
 				// Handle deserialization error in cache file in case file gets corrupted.
 				// Clearing cache here will ensure account is marked stale so re-authentication can be triggered.
 				Logger.verbose(`MsalCachePlugin: Error occurred when trying to read cache file, file will be deleted: ${e.message}`);
-				await fsPromises.unlink(this._msalCacheConfiguration.cacheFilePath);
+				await this.unlinkCache(this._msalCacheConfiguration);
 			}
 		}
 
@@ -173,17 +177,11 @@ export class MsalCachePluginProvider {
 	}
 
 	/**
-	 * Deletes Msal access token cache file
+	 * Deletes both cache files.
 	 */
-	public async unlinkMsalCache(): Promise<void> {
-		await fsPromises.unlink(this._msalCacheConfiguration.cacheFilePath);
-	}
-
-	/**
-	 * Deletes local access token cache file.
-	 */
-	public async unlinkLocalCache(): Promise<void> {
-		await fsPromises.unlink(this._localCacheConfiguration.cacheFilePath);
+	public async unlinkCacheFiles(): Promise<void> {
+		await this.unlinkCache(this._msalCacheConfiguration);
+		await this.unlinkCache(this._localCacheConfiguration);
 	}
 
 	//#region Private helper methods
@@ -221,13 +219,12 @@ export class MsalCachePluginProvider {
 			else {
 				Logger.error(`MsalCachePlugin: Failed to read from cache file: ${e}`);
 				Logger.verbose(`MsalCachePlugin: Error occurred when trying to read cache file ${currentConfig.name}, file will be deleted: ${e.message}`);
-				await fsPromises.unlink(currentConfig.cacheFilePath);
-
+				await this.unlinkCache(currentConfig);
 				// Ensure both configurations are not same.
 				if (currentConfig.name !== alternateConfig.name) {
 					// Delete alternate cache file as well.
 					alternateConfig.lockTaken = await this.waitAndLock(alternateConfig.lockFilePath, alternateConfig.lockTaken);
-					await fsPromises.unlink(alternateConfig.cacheFilePath);
+					await this.unlinkCache(alternateConfig);
 					lockFile.unlockSync(alternateConfig.lockFilePath);
 					alternateConfig.lockTaken = false;
 					Logger.verbose(`MsalCachePlugin: Cache file for ${alternateConfig.name} cache also deleted.`);
@@ -271,6 +268,17 @@ export class MsalCachePluginProvider {
 			}
 		}
 		return lockTaken;
+	}
+
+	/**
+	 * Deletes access token cache file for specified config
+	 */
+	private async unlinkCache(config: CacheConfiguration): Promise<void> {
+		try {
+			await fsPromises.unlink(config.cacheFilePath);
+		} catch (e) {
+			Logger.info(`An error occurred when clearing ${config.name} Cache, safely ignored: ${e}`);
+		}
 	}
 	//#endregion
 }

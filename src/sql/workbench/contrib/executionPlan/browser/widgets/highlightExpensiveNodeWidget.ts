@@ -10,7 +10,6 @@ import { localize } from 'vs/nls';
 import * as errors from 'vs/base/common/errors';
 import { Codicon } from 'vs/base/common/codicons';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Action } from 'vs/base/common/actions';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -23,6 +22,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { ThemeIcon } from 'vs/base/common/themables';
 import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const SELECT_EXPENSE_METRIC_TITLE = localize('executionPlanSelectExpenseMetricTitle', 'Select expense metric');
 
@@ -86,11 +86,10 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		this.container.appendChild(this._expenseMetricSelectBoxContainer);
 
 		const selectBoxOptions = this.getSelectBoxOptionsFromExecutionPlanDiagram();
-		this.expenseMetricSelectBox = this._register(new SelectBox(selectBoxOptions, COST_STRING, this.contextViewService, this._expenseMetricSelectBoxContainer));
+		this.expenseMetricSelectBox = this._register(new SelectBox(selectBoxOptions, COST_STRING, defaultSelectBoxStyles, this.contextViewService, this._expenseMetricSelectBoxContainer));
 		this.expenseMetricSelectBox.setAriaLabel(SELECT_EXPENSE_METRIC_TITLE);
 
 		this.expenseMetricSelectBox.render(this._expenseMetricSelectBoxContainer);
-		this._register(attachSelectBoxStyler(this.expenseMetricSelectBox, this.themeService));
 
 		this._expenseMetricSelectBoxContainer.style.width = '200px';
 		this._expenseMetricSelectBoxContainer.style.marginRight = '5px';

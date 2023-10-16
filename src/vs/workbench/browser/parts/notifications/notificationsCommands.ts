@@ -61,23 +61,33 @@ export interface INotificationsToastController {
 	hide(): void;
 }
 
-export function registerNotificationCommands(center: INotificationsCenterController, toasts: INotificationsToastController, model: NotificationsModel): void {
+export function getNotificationFromContext(listService: IListService, context?: unknown): INotificationViewItem | undefined {
+	if (isNotificationViewItem(context)) {
+		return context;
+	}
 
-	function getNotificationFromContext(listService: IListService, context?: unknown): INotificationViewItem | undefined {
-		if (isNotificationViewItem(context)) {
-			return context;
-		}
-
-		const list = listService.lastFocusedList;
-		if (list instanceof WorkbenchList) {
-			const focusedElement = list.getFocusedElements()[0];
-			if (isNotificationViewItem(focusedElement)) {
-				return focusedElement;
+	const list = listService.lastFocusedList;
+	if (list instanceof WorkbenchList) {
+		let element = list.getFocusedElements()[0];
+		if (!isNotificationViewItem(element)) {
+			if (list.isDOMFocused()) {
+				// the notification list might have received focus
+				// via keyboard and might not have a focussed element.
+				// in that case just return the first element
+				// https://github.com/microsoft/vscode/issues/191705
+				element = list.element(0);
 			}
 		}
 
-		return undefined;
+		if (isNotificationViewItem(element)) {
+			return element;
+		}
 	}
+
+	return undefined;
+}
+
+export function registerNotificationCommands(center: INotificationsCenterController, toasts: INotificationsToastController, model: NotificationsModel): void {
 
 	// Show Notifications Cneter
 	CommandsRegistry.registerCommand(SHOW_NOTIFICATIONS_CENTER, () => {
@@ -104,7 +114,7 @@ export function registerNotificationCommands(center: INotificationsCenterControl
 	});
 
 	// Toggle Notifications Center
-	CommandsRegistry.registerCommand(TOGGLE_NOTIFICATIONS_CENTER, accessor => {
+	CommandsRegistry.registerCommand(TOGGLE_NOTIFICATIONS_CENTER, () => {
 		if (center.isVisible) {
 			center.hide();
 		} else {

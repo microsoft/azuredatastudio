@@ -1,7 +1,7 @@
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: "16.x"
+    versionSpec: "18.15.0"
 
 - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
   inputs:
@@ -23,6 +23,12 @@ steps:
 
     git config user.email "sqltools@service.microsoft.com"
     git config user.name "AzureDataStudio"
+
+    # Configure post buffer size to allow larger chunks to download faster to avoid network failures when performing `git fetch` or `pull`.
+    # http.postBuffer: Maximum size in bytes of the buffer used by smart HTTP transports when POSTing data to the remote system.
+    # https://git-scm.com/docs/git-config#Documentation/git-config.txt-httppostBuffer
+    git config --global http.postBuffer 524288000
+    git config --global https.postBuffer 524288000
   displayName: Prepare tooling
 
 - script: |
@@ -80,7 +86,8 @@ steps:
 # Run these separately to avoid OOM errors on pipeline machines
 - script: |
     set -e
-    yarn npm-run-all -lp core-ci extensions-ci
+    yarn npm-run-all -lp core-ci
+    yarn npm-run-all -lp extensions-ci
     yarn npm-run-all -lp hygiene eslint valid-layers-check
   displayName: Compile & Hygiene
 

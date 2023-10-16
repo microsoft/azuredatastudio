@@ -12,7 +12,6 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { BaseActionContext, ManageActionContext } from 'sql/workbench/browser/actions';
 import { getFlavor, ObjectListViewProperty } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
@@ -36,6 +35,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const ShowActionsText: string = nls.localize('dashboard.explorer.actions', "Show Actions");
 const LabelColoumnActions: string = nls.localize('dashboard.explorer.actionsColumn', "Actions");
@@ -78,7 +78,7 @@ export class ExplorerTable extends Disposable {
 		this._view = new TableDataView<Slick.SlickData>(undefined, undefined, undefined, (data: Slick.SlickData[]): Slick.SlickData[] => {
 			return explorerFilter.filter(this._filterStr, data);
 		});
-		this._table = new Table<Slick.SlickData>(parentElement, accessibilityService, quickInputService, { dataProvider: this._view }, { forceFitColumns: true });
+		this._table = new Table<Slick.SlickData>(parentElement, accessibilityService, quickInputService, defaultTableStyles, { dataProvider: this._view }, { forceFitColumns: true });
 		this._table.setSelectionModel(new RowSelectionModel());
 		this._actionsColumn = new ButtonColumn<Slick.SlickData>({
 			id: 'actions',
@@ -102,7 +102,6 @@ export class ExplorerTable extends Disposable {
 				this.handleDoubleClick(this._view.getItem(e.cell.row));
 			}
 		}));
-		this._register(attachTableStyler(this._table, themeService));
 		this._register(this._view);
 		this._register(this._view.onRowCountChange(() => {
 			this._table.updateRowCount();

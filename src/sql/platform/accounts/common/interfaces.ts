@@ -21,6 +21,7 @@ export interface IAccountManagementService {
 	getAccountProviderMetadata(): Promise<azdata.AccountProviderMetadata[]>;
 	getAccountsForProvider(providerId: string): Promise<azdata.Account[]>;
 	getAccounts(): Promise<azdata.Account[]>;
+	promptProvider(): Promise<string | undefined>;
 	/**
 	 * @deprecated
 	 */
@@ -35,7 +36,7 @@ export interface IAccountManagementService {
 	beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Promise<void>;
 	endAutoOAuthDeviceCode(): void;
 	cancelAutoOAuthDeviceCode(providerId: string): void;
-	copyUserCodeAndOpenBrowser(userCode: string, uri: string): Promise<void>;
+	copyUserCodeAndOpenBrowser(userCode: string, uri: string): Promise<boolean>;
 
 	// SERVICE MANAGEMENT METHODS /////////////////////////////////////////
 	registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): void;

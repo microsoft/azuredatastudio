@@ -26,7 +26,7 @@ const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentCo
 export abstract class ViewBase extends AngularDisposable implements IModelView {
 	protected readonly modelStore: IModelStore;
 	protected rootDescriptor: IComponentDescriptor;
-	protected _onDestroy = new Emitter<void>();
+	protected _onDestroy = this._register(new Emitter<void>());
 	public readonly onDestroy = this._onDestroy.event;
 	constructor(protected changeRef: ChangeDetectorRef, protected logService: ILogService) {
 		super();
@@ -37,7 +37,7 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	abstract id: string;
 	abstract connection: azdata.connection.Connection;
 	abstract serverInfo: azdata.ServerInfo;
-	private _onEventEmitter = new Emitter<IModelViewEventArgs>();
+	private _onEventEmitter = this._register(new Emitter<IModelViewEventArgs>());
 
 	initializeModel(rootComponent: IComponentShape, validationCallback: (componentId: string) => Thenable<boolean>): void {
 		let descriptor = this.defineComponent(rootComponent);

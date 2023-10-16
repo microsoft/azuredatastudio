@@ -18,6 +18,7 @@ import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/u
 import { EncodingMode } from 'vs/workbench/services/textfile/common/textfiles';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IEditorModel, IEditorOptions } from 'vs/platform/editor/common/editor';
+import { Verbosity } from 'vs/workbench/common/editor';
 
 /**
  * Input for the EditDataEditor.
@@ -44,7 +45,6 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		private _sql: UntitledTextEditorInput,
 		private _queryString: string,
 		private _results: EditDataResultsInput,
-		private _initialConnectionUri: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@INotificationService private notificationService: INotificationService
@@ -206,9 +206,6 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	public override dispose(): void {
 		// Dispose our edit session then disconnect our input
 		this._queryModelService.disposeEdit(this.uri).then(() => {
-			if (this._initialConnectionUri) {
-				this._connectionManagementService.disconnect(this._initialConnectionUri);
-			}
 			return this._connectionManagementService.disconnectEditor(this, true);
 		});
 		this._queryModelService.disposeQuery(this.uri);
@@ -227,7 +224,46 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	}
 
 	public getEncoding(): string | undefined { return this._sql.getEncoding(); }
-	public override getName(): string { return this._sql.getName(); }
+	public override getName(): string {
+		let profile = this._connectionManagementService.getConnectionProfile(this.uri);
+		let title = this._sql.getName();
+		if (profile) {
+			if (profile.connectionName) {
+				title += ` - ${profile.connectionName}`;
+			}
+			else {
+				title += ` - ${profile.serverName}`;
+				if (profile.databaseName) {
+					title += `.${profile.databaseName}`;
+				}
+				title += ` (${profile.userName || profile.authenticationType})`;
+			}
+		}
+		return title;
+	}
+	public override getTitle(verbosity?: Verbosity): string {
+		let fullTitle = this._sql.getName();
+		let profile = this._connectionManagementService.getConnectionProfile(this.uri);
+		if (profile) {
+			fullTitle += ` - ${profile.serverName}`;
+			if (profile.databaseName) {
+				fullTitle += `.${profile.databaseName}`;
+			}
+			fullTitle += ` (${profile.userName || profile.authenticationType})`;
+			let nonDefaultOptions = this._connectionManagementService.getNonDefaultOptions(profile);
+			fullTitle += nonDefaultOptions;
+		}
+		switch (verbosity) {
+			case Verbosity.LONG:
+				// Used by tabsTitleControl as the tooltip hover.
+				return fullTitle;
+			default:
+			case Verbosity.SHORT:
+			case Verbosity.MEDIUM:
+				// Used for header title by tabsTitleControl.
+				return this.getName();
+		}
+	}
 	public get hasAssociatedFilePath(): boolean { return this._sql.model.hasAssociatedFilePath; }
 
 	public setEncoding(encoding: string, mode: EncodingMode /* ignored, we only have Encode */): void {

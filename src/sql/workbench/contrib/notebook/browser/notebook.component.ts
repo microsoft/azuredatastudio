@@ -13,7 +13,6 @@ import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { attachSelectBoxStyler } from 'sql/platform/theme/common/vsstyler';
 import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IAction, Action, SubmenuAction } from 'vs/base/common/actions';
 import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
@@ -60,6 +59,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { debounce } from 'vs/base/common/decorators';
 import { ToggleAddCellDropdownAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
 import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 const PRIORITY = 105;
@@ -508,13 +508,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let kernelContainer = document.createElement('li');
 		let kernelDropdown = this.instantiationService.createInstance(KernelsDropdown, kernelContainer, this.contextViewService, this.modelReady);
 		kernelDropdown.render(kernelContainer);
-		attachSelectBoxStyler(kernelDropdown, this.themeService);
 
 		let attachToContainer = document.createElement('li');
 		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
 			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService, this._configurationService);
 		attachToDropdown.render(attachToContainer);
-		attachSelectBoxStyler(attachToDropdown, this.themeService);
 
 		let spacerElement = document.createElement('li');
 		spacerElement.style.marginLeft = 'auto';
@@ -554,7 +552,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			undefined,
 			'codicon masked-pseudo masked-pseudo-after add-new dropdown-arrow',
 			localize('addCell', "Cell"),
-			undefined
+			() => AnchorAlignment.LEFT
 		);
 		dropdownMenuActionViewItem.render(buttonDropdownContainer);
 		dropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
@@ -575,7 +573,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				undefined,
 				'codicon notebook-button masked-pseudo masked-pseudo-after icon-dashboard-view dropdown-arrow',
 				localize('editor', "Editor"),
-				undefined
+				() => AnchorAlignment.LEFT
 			);
 			viewsDropdownMenuActionViewItem.render(viewsDropdownContainer);
 			viewsDropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);

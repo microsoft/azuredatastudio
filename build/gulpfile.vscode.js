@@ -33,7 +33,6 @@ const createAsar = require('./lib/asar').createAsar;
 const minimist = require('minimist');
 const { compileBuildTask } = require('./gulpfile.compile');
 const { compileExtensionsBuildTask, compileLocalizationExtensionsBuildTask } = require('./gulpfile.extensions');  // {{SQL CARBON EDIT}} Must handle localization code.
-const { getSettingsSearchBuildId, shouldSetupSettingsSearch } = require('./azure-pipelines/upload-configuration');
 const { promisify } = require('util');
 const glob = promisify(require('glob'));
 const rcedit = promisify(require('rcedit'));
@@ -74,6 +73,7 @@ const vscodeResources = [
 	'out-build/vs/workbench/contrib/terminal/browser/media/*.sh',
 	'out-build/vs/workbench/contrib/terminal/browser/media/*.zsh',
 	'out-build/vs/workbench/contrib/webview/browser/pre/*.js',
+	'out-build/vs/workbench/services/voiceRecognition/electron-sandbox/voiceTranscriptionWorklet.js',
 	'out-build/vs/**/markdown.css',
 	'out-build/vs/workbench/contrib/tasks/**/*.json',
 	'out-build/vs/platform/files/**/*.exe',
@@ -155,33 +155,33 @@ gulp.task(optimizeVSCodeTask);
 
 // List of ADS extension XLF files that we want to put into the English resource folder.
 const extensionsFilter = filter([
-	'**/admin-tool-ext-win.xlf',
-	'**/agent.xlf',
-	'**/arc.xlf',
-	'**/asde-deployment.xlf',
-	'**/azcli.xlf',
-	'**/azurecore.xlf',
-	'**/azuremonitor.xlf',
-	'**/cms.xlf',
-	'**/dacpac.xlf',
-	'**/datavirtualization.xlf',
-	'**/git.xlf',
-	'**/data-workspace.xlf',
-	'**/import.xlf',
-	'**/kusto.xlf',
-	'**/machine-learning.xlf',
-	'**/mssql.xlf',
-	'**/notebook.xlf',
-	'**/profiler.xlf',
-	'**/query-history.xlf',
-	'**/resource-deployment.xlf',
-	'**/schema-compare.xlf',
-	'**/server-report.xlf',
-	'**/sql-assessment.xlf',
-	'**/sql-bindings.xlf',
-	'**/sql-database-projects.xlf',
-	'**/sql-migration.xlf',
-	'**/xml-language-features.xlf'
+	'**/Microsoft.admin-tool-ext-win.xlf',
+	'**/Microsoft.agent.xlf',
+	'**/Microsoft.arc.xlf',
+	'**/Microsoft.asde-deployment.xlf',
+	'**/Microsoft.azcli.xlf',
+	'**/Microsoft.azurecore.xlf',
+	'**/Microsoft.azuremonitor.xlf',
+	'**/Microsoft.cms.xlf',
+	'**/Microsoft.dacpac.xlf',
+	'**/Microsoft.data-workspace.xlf',
+	'**/Microsoft.datavirtualization.xlf',
+	'**/Microsoft.import.xlf',
+	'**/Microsoft.kusto.xlf',
+	'**/Microsoft.machine-learning.xlf',
+	'**/Microsoft.mssql.xlf',
+	'**/Microsoft.notebook.xlf',
+	'**/Microsoft.profiler.xlf',
+	'**/Microsoft.query-history.xlf',
+	'**/Microsoft.query-store.xlf',
+	'**/Microsoft.resource-deployment.xlf',
+	'**/Microsoft.schema-compare.xlf',
+	'**/Microsoft.server-report.xlf',
+	'**/Microsoft.sql-assessment.xlf',
+	'**/Microsoft.sql-database-projects.xlf',
+	'**/Microsoft.sql-migration.xlf',
+	'**/ms-mssql.sql-bindings-vscode.xlf',
+	'**/vscode.git.xlf',
 ]);
 
 // Copy ADS extension XLFs into English resource folder.
@@ -213,6 +213,16 @@ const core = task.define('core-ci', task.series(
 	)
 ));
 gulp.task(core);
+
+const corePr = task.define('core-ci-pr', task.series(
+	gulp.task('compile-build-pr'),
+	task.parallel(
+		gulp.task('minify-vscode'),
+		// gulp.task('minify-vscode-reh'), // {{SQL CARBON EDIT}} - turn off web/remote build
+		// gulp.task('minify-vscode-reh-web'),
+	)
+));
+gulp.task(corePr);
 
 /**
  * Compute checksums for some files.
@@ -308,10 +318,6 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		const date = new Date().toISOString();
 		const productJsonUpdate = { commit, date, checksums, version };
 
-		if (shouldSetupSettingsSearch()) {
-			productJsonUpdate.settingsSearchBuildId = getSettingsSearchBuildId(packageJson);
-		}
-
 		const productJsonStream = gulp.src(['product.json'], { base: '.' })
 			.pipe(json(productJsonUpdate));
 
@@ -332,6 +338,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		const deps = gulp.src(dependenciesSrc, { base: '.', dot: true })
 			.pipe(filter(['**', `!**/${config.version}/**`, '!**/bin/darwin-arm64-87/**', '!**/package-lock.json', '!**/yarn.lock', '!**/*.js.map']))
 			.pipe(util.cleanNodeModules(path.join(__dirname, '.moduleignore')))
+			.pipe(util.cleanNodeModules(path.join(__dirname, `.moduleignore.${process.platform}`)))
 			.pipe(jsFilter)
 			.pipe(util.rewriteSourceMappingURL(sourceMappingURLBase))
 			.pipe(jsFilter.restore)
@@ -460,7 +467,6 @@ function patchWin32DependenciesTask(destinationFolderName) {
 
 const fileLengthFilter = filter([
 	'**',
-	'!extensions/import/*.docx',
 	'!extensions/admin-tool-ext-win/license/**'
 ], { restore: true });
 
@@ -579,12 +585,12 @@ const vscodeTranslationsExport = task.define(
 		compileLocalizationExtensionsBuildTask, // {{SQL CARBON EDIT}} now include all extensions in ADS, not just a subset. (replaces 'compileExtensionsBuildTask' here).
 		function () {
 			const pathToMetadata = './out-vscode/nls.metadata.json';
-			const pathToRehWebMetadata = './out-vscode-reh-web/nls.metadata.json';
+			//const pathToRehWebMetadata = './out-vscode-reh-web/nls.metadata.json'; // Disabling as web build is no longer done.
 			const pathToExtensions = '.build/extensions/*';
 			const pathToSetup = 'build/win32/i18n/messages.en.isl';
 
 			return es.merge(
-				gulp.src([pathToMetadata, pathToRehWebMetadata]).pipe(merge({
+				gulp.src([pathToMetadata]).pipe(merge({ // [pathToMetadata, pathToRehWebMetadata] (use when web build is enabled).
 					fileName: 'nls.metadata.json',
 					jsonSpace: '',
 					concatArrays: true

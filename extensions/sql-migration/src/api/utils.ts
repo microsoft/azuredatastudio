@@ -304,10 +304,6 @@ export function decorate(decorator: (fn: Function, key: string) => Function): Fu
 	};
 }
 
-export function getSessionIdHeader(sessionId: string): { [key: string]: string } {
-	return { 'SqlMigrationSessionId': sessionId };
-}
-
 export function getMigrationStatusWithErrors(migration: azure.DatabaseMigration): string {
 	const properties = migration.properties;
 	const migrationStatus = getMigrationStatus(migration) ?? '';
@@ -953,7 +949,7 @@ export async function isAdmin(): Promise<boolean> {
 		if (isWindows()) {
 			isAdmin = (await import('native-is-elevated'))();
 		} else {
-			isAdmin = process.getuid() === 0;
+			isAdmin = process.getuid?.() === 0;
 		}
 	} catch (e) {
 		//Ignore error and return false;
@@ -1170,6 +1166,12 @@ export function createRegistrationInstructions(view: ModelView, testConnectionBu
 }
 
 export async function clearDropDown(dropDown: DropDownComponent): Promise<void> {
+	await dropDown.updateProperty('value', undefined);
+	await dropDown.updateProperty('values', []);
+}
+
+export async function clearDropDownWithLoading(dropDown: DropDownComponent): Promise<void> {
+	dropDown.loading = true;
 	await dropDown.updateProperty('value', undefined);
 	await dropDown.updateProperty('values', []);
 }

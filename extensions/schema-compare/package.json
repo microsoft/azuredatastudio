@@ -2,7 +2,7 @@
   "name": "schema-compare",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "1.19.0",
+  "version": "1.22.0",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
@@ -115,8 +115,8 @@
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
-    "@microsoft/azdata-test": "^3.0.1",
-    "@microsoft/vscodetestcover": "^1.2.1",
+    "@microsoft/vscodetestcover": "^1.2.2",
+    "@microsoft/azdata-test": "^3.0.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^12.11.7",
     "@types/sinon": "^9.0.4",

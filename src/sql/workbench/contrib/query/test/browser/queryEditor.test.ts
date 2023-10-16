@@ -20,7 +20,7 @@ import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
+import { UntitledQueryEditorInput } from 'sql/workbench/browser/editor/query/untitledQueryEditorInput';
 import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
 import { Event } from 'vs/base/common/event';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
@@ -311,11 +311,11 @@ suite('SQL QueryEditor Tests', () => {
 				'',
 				fileInput,
 				undefined,
-				undefined,
 				connectionManagementService.object,
 				queryModelService.object,
 				configurationService.object,
 				testinstantiationService,
+				undefined,
 				undefined,
 				undefined
 			);

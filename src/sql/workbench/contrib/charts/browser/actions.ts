@@ -12,7 +12,7 @@ import { Action } from 'vs/base/common/actions';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IInsightOptions } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IInsightOptions } from 'sql/workbench/contrib/charts/browser/interfaces';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IFileDialogService, FileFilter } from 'vs/platform/dialogs/common/dialogs';

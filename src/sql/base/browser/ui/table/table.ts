@@ -48,31 +48,32 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	private _classChangeTimeout: any;
 
-	private _onContextMenu = new Emitter<ITableMouseEvent>();
+	private _onContextMenu = this._register(new Emitter<ITableMouseEvent>());
 	public readonly onContextMenu: Event<ITableMouseEvent> = this._onContextMenu.event;
 
-	private _onClick = new Emitter<ITableMouseEvent>();
+	private _onClick = this._register(new Emitter<ITableMouseEvent>());
 	public readonly onClick: Event<ITableMouseEvent> = this._onClick.event;
 
-	private _onDoubleClick = new Emitter<ITableMouseEvent>();
+	private _onDoubleClick = this._register(new Emitter<ITableMouseEvent>());
 	public readonly onDoubleClick: Event<ITableMouseEvent> = this._onDoubleClick.event;
 
-	private _onHeaderClick = new Emitter<ITableMouseEvent>();
+	private _onHeaderClick = this._register(new Emitter<ITableMouseEvent>());
 	public readonly onHeaderClick: Event<ITableMouseEvent> = this._onHeaderClick.event;
 
-	private _onColumnResize = new Emitter<void>();
+	private _onColumnResize = this._register(new Emitter<void>());
 	public readonly onColumnResize = this._onColumnResize.event;
 
-	private _onKeyDown = new Emitter<ITableKeyboardEvent>();
+	private _onKeyDown = this._register(new Emitter<ITableKeyboardEvent>());
 	public readonly onKeyDown = this._onKeyDown.event;
 
-	private _onBlur = new Emitter<void>();
+	private _onBlur = this._register(new Emitter<void>());
 	public readonly onBlur = this._onBlur.event;
 
 	constructor(
 		parent: HTMLElement,
 		accessibilityProvider: IAccessibilityProvider,
 		private _quickInputProvider: IQuickInputProvider,
+		styles: ITableStyles,
 		configuration?: ITableConfiguration<T>,
 		options?: Slick.GridOptions<T>) {
 		super();
@@ -142,6 +143,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this.mapMouseEvent(this._grid.onHeaderClick, this._onHeaderClick);
 		this.mapMouseEvent(this._grid.onDblClick, this._onDoubleClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
+		this.style(styles);
 	}
 
 	public async resizeActiveColumn(): Promise<void> {
