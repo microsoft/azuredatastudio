@@ -4329,30 +4329,30 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.4",
-							"lastUpdated": "10/10/2023",
+							"version": "0.1.5",
+							"lastUpdated": "10/17/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/23283.1/azuredatastudio-oracle-0.1.4.vsix"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/23289.1/azuredatastudio-oracle-0.1.5.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/23283.1/icon.png"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/23289.1/icon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/23283.1/README.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/23289.1/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/23283.1/CHANGELOG.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/23289.1/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/23283.1/package.json"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/23289.1/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
