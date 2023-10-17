@@ -329,6 +329,10 @@ export class Sash extends Disposable {
 	 * The start of a vertical sash is its top-most position.
 	 */
 	set orthogonalStartSash(sash: Sash | undefined) {
+		if (this._orthogonalStartSash === sash) {
+			return;
+		}
+
 		this.orthogonalStartDragHandleDisposables.clear();
 		this.orthogonalStartSashDisposables.clear();
 
@@ -363,6 +367,10 @@ export class Sash extends Disposable {
 	 */
 
 	set orthogonalEndSash(sash: Sash | undefined) {
+		if (this._orthogonalEndSash === sash) {
+			return;
+		}
+
 		this.orthogonalEndDragHandleDisposables.clear();
 		this.orthogonalEndSashDisposables.clear();
 
