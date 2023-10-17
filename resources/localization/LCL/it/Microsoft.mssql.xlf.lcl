@@ -5475,8 +5475,8 @@
       <Item ItemId=";extensions/Microsoft.mssql/package.title.detachDatabase" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Detach Database (Preview)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Scollega (anteprima)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Scollega database (anteprima)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Detach (Preview)]]></Val>
@@ -5496,6 +5496,9 @@
       <Item ItemId=";extensions/Microsoft.mssql/package.title.newApplicationRole" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Application Role (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nuovo ruolo applicazione (anteprima)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5511,18 +5514,27 @@
       <Item ItemId=";extensions/Microsoft.mssql/package.title.newDatabaseRole" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Database Role (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nuovo ruolo del database (anteprima)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/package.title.newLogin" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Login (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nuovo account di accesso (anteprima)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/package.title.newServerRole" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Server Role (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nuovo ruolo server (anteprima)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5538,6 +5550,9 @@
       <Item ItemId=";extensions/Microsoft.mssql/package.title.newUser" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New User (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nuovo utente (anteprima)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
