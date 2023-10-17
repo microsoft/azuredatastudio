@@ -19,12 +19,12 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES } from 'sql/workbench/common/constants';
 
-const BackupFeatureName = 'backup';
-const backupIsPreviewFeature = localize('backup.isPreviewFeature', "You must enable preview features in order to use backup");
-const backupNotSupportedOutOfDBContext = localize('backup.commandNotSupportedForServer', "Backup command is not supported outside of a database context. Please select a database and try again.");
-const backupNotSupportedForAzure = localize('backup.commandNotSupported', "Backup command is not supported for Azure SQL databases.");
+export const BackupFeatureName = 'backup';
+export const backupIsPreviewFeature = localize('backup.isPreviewFeature', "You must enable preview features in order to use backup");
+export const backupNotSupportedOutOfDBContext = localize('backup.commandNotSupportedForServer', "Backup command is not supported outside of a database context. Please select a database and try again.");
+export const backupNotSupportedForAzure = localize('backup.commandNotSupported', "Backup command is not supported for Azure SQL databases.");
 
-function showBackup(accessor: ServicesAccessor, connection: IConnectionProfile): Promise<void> {
+export function showBackup(accessor: ServicesAccessor, connection: IConnectionProfile): Promise<void> {
 	const backupUiService = accessor.get(IBackupUiService);
 	return backupUiService.showBackup(connection).then();
 }
