@@ -48,7 +48,7 @@ export function packageSingleExtensionStream(name: string): NodeJS.ReadWriteStre
 		});
 
 	const builtExtension = extenalExtensionDescriptions.map(extension => {
-		return ext.fromLocal(extension.path, false)
+		return ext.fromLocal(extension.path, false, true)
 			.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
 	});
 

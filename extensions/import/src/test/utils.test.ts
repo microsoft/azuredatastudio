@@ -151,7 +151,7 @@ export class TestExtensionContext implements vscode.ExtensionContext {
 	globalState: ExtensionGlobalMemento;
 	extensionUri: vscode.Uri;
 	extensionPath: string;
-	environmentVariableCollection: vscode.EnvironmentVariableCollection;
+	environmentVariableCollection: vscode.GlobalEnvironmentVariableCollection;
 	asAbsolutePath(relativePath: string): string {
 		throw new Error('Method not implemented.');
 	}

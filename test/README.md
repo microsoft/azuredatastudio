@@ -70,10 +70,10 @@ Mocking Events can be done by setting up the mocked property to return the the e
 ``` typescript
 // create test event emitter
 const onDidChangeSelectionEventEmitter = new vscode.EventEmitter<IConnectionCredentialsQuickPickItem[]>();
-// setup the mock property to return the test event 
+// setup the mock property to return the test event
 quickPickMock.setup(q => q.onDidChangeSelection).returns(() => onDidChangeSelectionEventEmitter.event);
 
-// register the function that is being tested 
+// register the function that is being tested
 const promptPromise = connectionUI.promptForConnection();
 // Trigger onDidChangeSelection event to simulate user selecting item
 onDidChangeSelectionEventEmitter.fire([item]);
