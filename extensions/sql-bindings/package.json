@@ -80,5 +80,8 @@
     "@microsoft/vscodetestcover": "^1.2.2",
     "mocha": "^7.1.1",
     "@microsoft/azdata-test": "^3.0.3"
+  },
+  "resolutions": {
+    "@babel/traverse": "^7.23.2"
   }
 }

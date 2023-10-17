@@ -113,5 +113,8 @@
     "id": "84",
     "publisherDisplayName": "Microsoft",
     "publisherId": "Microsoft"
+  },
+  "resolutions": {
+    "@babel/traverse": "^7.23.2"
   }
 }

@@ -115,5 +115,8 @@
     "@microsoft/azdata-test": "^3.0.3",
     "should": "^13.2.1",
     "typemoq": "^2.1.0"
+  },
+  "resolutions": {
+    "@babel/traverse": "^7.23.2"
   }
 }

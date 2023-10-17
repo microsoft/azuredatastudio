@@ -1688,5 +1688,8 @@
     "mocha": "^7.1.1",
     "should": "^13.2.3",
     "typemoq": "^2.1.0"
+  },
+  "resolutions": {
+    "@babel/traverse": "^7.23.2"
   }
 }

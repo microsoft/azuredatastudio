@@ -45,6 +45,7 @@
     "@microsoft/azdata-test": "^3.0.3"
   },
   "resolutions": {
-    "jsonwebtoken": "9.0.0"
+    "jsonwebtoken": "9.0.0",
+    "@babel/traverse": "^7.23.2"
   }
 }
