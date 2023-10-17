@@ -71,7 +71,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 		let backupTypeDropdown = this.createDropdown('Backup type', newValue => {
 			return Promise.resolve();
-		}, [], '', true);
+		}, [], '');
 		components.push(backupTypeDropdown);
 
 		let copyBackupCheckbox = this.createCheckbox('Copy-only backup', checked => {
@@ -90,38 +90,40 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	private initializeCompressionSection(): azdata.GroupContainer {
-		let components: azdata.Component[] = [];
+		let backupCompressionDropdown = this.createDropdown('Set backup compression', newValue => {
+			return Promise.resolve();
+		}, [], '');
 
-		return this.createGroup('Compression', components);
+		return this.createGroup(loc.BackupCompressionLabel, [backupCompressionDropdown]);
 	}
 
 	private initializeEncryptionSection(): azdata.GroupContainer {
 		let components: azdata.Component[] = [];
 
-		return this.createGroup('Encryption', components);
+		return this.createGroup(loc.BackupEncryptionLabel, components);
 	}
 
 	private initializeMediaSection(): azdata.GroupContainer {
 		let components: azdata.Component[] = [];
 
-		return this.createGroup('Media', components);
+		return this.createGroup(loc.BackupMediaLabel, components);
 	}
 
 	private initializeTransactionSection(): azdata.GroupContainer {
 		let components: azdata.Component[] = [];
 
-		return this.createGroup('Transaction', components);
+		return this.createGroup(loc.BackupTransactionLogLabel, components);
 	}
 
 	private initializeReliabilitySection(): azdata.GroupContainer {
 		let components: azdata.Component[] = [];
 
-		return this.createGroup('Reliability', components);
+		return this.createGroup(loc.BackupReliabilityLabel, components);
 	}
 
 	private initializeExpirationSection(): azdata.GroupContainer {
 		let components: azdata.Component[] = [];
 
-		return this.createGroup('Expiration', components);
+		return this.createGroup(loc.BackupExpirationLabel, components);
 	}
 }

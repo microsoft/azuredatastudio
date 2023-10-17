@@ -239,6 +239,13 @@ export const DropDatabaseOptions = localize('objectManagement.dropDatabaseOption
 export const CloseConnections = localize('objectManagement.closeConnections', "Close existing connections");
 export const DeleteBackupHistory = localize('objectManagement.deleteBackupHistory', "Delete backup and restore history information for database");
 export const DatabaseDetailsLabel = localize('objectManagement.databaseDetails', "Database Details");
+export const BackupCompressionLabel = localize('objectManagement.backupCompression', "Compression");
+export const BackupEncryptionLabel = localize('objectManagement.backupEncryption', "Encryption");
+export const BackupMediaLabel = localize('objectManagement.backupMedia', "Media");
+export const BackupTransactionLogLabel = localize('objectManagement.backupTransactionLog', "Transaction Log");
+export const BackupReliabilityLabel = localize('objectManagement.backupReliability', "Reliability");
+export const BackupExpirationLabel = localize('objectManagement.backupExpiration', "Expiration");
+
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");
