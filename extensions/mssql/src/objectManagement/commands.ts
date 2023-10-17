@@ -26,6 +26,7 @@ import { ServerPropertiesDialog } from './ui/serverPropertiesDialog';
 import { DetachDatabaseDialog } from './ui/detachDatabaseDialog';
 import { DropDatabaseDialog } from './ui/dropDatabaseDialog';
 import { AttachDatabaseDialog } from './ui/attachDatabaseDialog';
+import { BackupDatabaseDialog } from './ui/backupDatabaseDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
@@ -398,9 +399,9 @@ async function handleBackupDatabase(context: azdata.ObjectExplorerContext, servi
 			objectUrn: object.urn,
 			objectExplorerContext: context
 		};
-		// const dialog = new BackupDatabaseDialog(service, options);
+		const dialog = new BackupDatabaseDialog(service, options);
 		const startTime = Date.now();
-		// await dialog.open();
+		await dialog.open();
 		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenBackupDatabaseDialog, {
 			objectType: object.type
 		}, {

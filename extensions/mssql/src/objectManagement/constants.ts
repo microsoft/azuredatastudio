@@ -37,6 +37,7 @@ export const ViewDatabaseSettingsPropertiesDocUrl = 'https://learn.microsoft.com
 export const ViewAdvancedServerPropertiesDocUrl = 'https://learn.microsoft.com/sql/database-engine/configure-windows/server-properties-advanced-page';
 export const DetachDatabaseDocUrl = 'https://go.microsoft.com/fwlink/?linkid=2240322';
 export const AttachDatabaseDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/attach-a-database#to-attach-a-database';
+export const BackupDatabaseDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/backup-transact-sql';
 export const DatabaseGeneralPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-general-page';
 export const DatabaseOptionsPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-options-page'
 export const DropDatabaseDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/drop-database-transact-sql';
