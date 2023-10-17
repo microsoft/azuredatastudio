@@ -8,6 +8,7 @@ import { NewQueryTask } from 'sql/workbench/contrib/query/browser/queryActions';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 import { generateDashboardWidgetSchema, generateDashboardTabSchema } from './dashboardPageContribution';
+import { BackupAction } from 'sql/workbench/contrib/backup/browser/backupActions';
 
 export const databaseDashboardPropertiesSchema: IJSONSchema = {
 	description: nls.localize('dashboardDatabaseProperties', "Enable or disable the properties widget"),
@@ -100,7 +101,7 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 				'tasks-widget': [
 					NewQueryTask.ID,
 					NewNotebookTask.ID,
-					{ name: 'backup', when: 'connectionProvider == \'MSSQL\' && !mssql:iscloud && mssql:engineedition != 11 || connectionProvider == \'PGSQL\'' },
+					{ name: BackupAction.ID, when: 'connectionProvider == \'PGSQL\'' },
 					{ name: 'restore', when: 'connectionProvider == \'MSSQL\' && !mssql:iscloud && mssql:engineedition != 11 || connectionProvider == \'PGSQL\'' }
 				]
 			}
