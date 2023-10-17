@@ -371,6 +371,7 @@ export class QueryManagementService implements IQueryManagementService {
 	}
 
 	public onQueryComplete(result: azdata.QueryExecuteCompleteNotificationResult): void {
+		//TODO - Need to notify and update the SPID toolbar once we receive the information about SPID.
 		this._notify(result.ownerUri, (runner: QueryRunner) => {
 			runner.handleQueryComplete(result.batchSummaries.map(s => ({ ...s, range: selectionDataToRange(s.selection) })));
 		});

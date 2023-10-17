@@ -99,7 +99,8 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 			this.SPIDStatusItem.update({
 				name: this.SPIDname,
 				text: text,
-				ariaLabel: text, tooltip
+				ariaLabel: text,
+				tooltip
 			});
 		}
 	}
@@ -125,7 +126,8 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		this.statusItem.update({
 			name: this.name,
 			text: text,
-			ariaLabel: text, tooltip
+			ariaLabel: text,
+			tooltip
 		});
 	}
 }
