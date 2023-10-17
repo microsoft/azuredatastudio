@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
@@ -20,7 +21,8 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		return BackupDatabaseDocUrl;
 	}
 
-	protected override initializeUI(): Promise<void> {
-		throw new Error('Method not implemented.');
+	protected override async initializeUI(): Promise<void> {
+		let components: azdata.Component[] = [];
+		this.formContainer.addItems(components);
 	}
 }
