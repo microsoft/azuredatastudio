@@ -13,7 +13,6 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as ConnectionUtils from 'sql/platform/connection/common/utils';
 import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { BackupDialog } from 'sql/workbench/contrib/backup/browser/backupDialog';
 import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
 import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
 import { IBackupUiService } from 'sql/workbench/contrib/backup/common/backupUiService';
@@ -21,7 +20,7 @@ import { localize } from 'vs/nls';
 
 export class BackupUiService implements IBackupUiService {
 	public _serviceBrand: undefined;
-	private _backupDialogs: { [providerName: string]: BackupDialog | OptionsDialog } = {};
+	private _backupDialogs: { [providerName: string]: OptionsDialog } = {};
 	private _currentProvider?: string;
 	private _optionValues: { [optionName: string]: any } = {};
 	private _connectionUri?: string;
@@ -72,7 +71,7 @@ export class BackupUiService implements IBackupUiService {
 				backupDialog.onOk(() => this.handleOptionDialogClosed());
 			}
 			else {
-				backupDialog = this._instantiationService.createInstance(BackupDialog);
+				throw new Error('Backup dialog options not provided.');
 			}
 			backupDialog.render();
 			this._backupDialogs[this._currentProvider] = backupDialog;
@@ -95,7 +94,7 @@ export class BackupUiService implements IBackupUiService {
 		if (backupOptions) {
 			(backupDialog as OptionsDialog).open(backupOptions, this._optionValues);
 		} else {
-			(backupDialog as BackupDialog).open(connection);
+			throw new Error('Backup dialog options not provided.');
 		}
 
 		// Create connection if needed
