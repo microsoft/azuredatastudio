@@ -719,7 +719,7 @@
         {
           "command": "mssql.backupDatabase",
           "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && mssql:engineedition != 11 && config.workbench.enablePreviewFeatures",
-          "group": "1_objectManagement@4"
+          "group": "1_objectManagement@3"
         },
         {
           "command": "mssql.dropDatabase",
