@@ -87,28 +87,28 @@ jobs:
           node-version: 18.15
 
       # {{SQL CARBON TODO}} Update node modules caching to work with our cache keys
-      # - name: Compute node modules cache key
-      #   id: nodeModulesCacheKey
-      #   run: echo "value=$(node build/azure-pipelines/common/computeNodeModulesCacheKey.js)" >> $GITHUB_OUTPUT
-      # - name: Cache node modules
-      #   id: cacheNodeModules
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: "**/node_modules"
-      #     key: ${{ runner.os }}-cacheNodeModulesLinux-${{ steps.nodeModulesCacheKey.outputs.value }}
-      # - name: Get yarn cache directory path
-      #   id: yarnCacheDirPath
-      #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-      #   run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-      # - name: Cache yarn directory
-      #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ${{ steps.yarnCacheDirPath.outputs.dir }}
-      #     key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
-      #     restore-keys: ${{ runner.os }}-yarnCacheDir-
+      - name: Compute node modules cache key
+        id: nodeModulesCacheKey
+        run: echo "value=$(node build/azure-pipelines/common/computeNodeModulesCacheKey.js)" >> $GITHUB_OUTPUT
+      - name: Cache node modules
+        id: cacheNodeModules
+        uses: actions/cache@v3
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-cacheNodeModulesLinux-${{ steps.nodeModulesCacheKey.outputs.value }}
+      - name: Get yarn cache directory path
+        id: yarnCacheDirPath
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+      - name: Cache yarn directory
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarnCacheDirPath.outputs.dir }}
+          key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-yarnCacheDir-
       - name: Execute yarn
-        # if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }} {{SQL CARBON TODO}} Update node modules caching to work with our cache keys
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }} {{SQL CARBON TODO}} Update node modules caching to work with our cache keys
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
           ELECTRON_SKIP_BINARY_DOWNLOAD: 1
@@ -152,7 +152,7 @@ jobs:
 
   #     - uses: actions/setup-node@v3
   #       with:
-  #         node-version: .15
+  #         node-version: 18.15
 
   #     - name: Compute node modules cache key
   #       id: nodeModulesCacheKey
