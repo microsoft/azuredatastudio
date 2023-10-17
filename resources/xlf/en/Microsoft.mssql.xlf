@@ -1202,11 +1202,11 @@
     <trans-unit id="json.schemas.desc">
       <source xml:lang="en">Associate schemas to JSON files in the current project</source>
     </trans-unit>
-    <trans-unit id="title.attachDatabase">
-      <source xml:lang="en">Attach (Preview)</source>
-    </trans-unit>
     <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
       <source xml:lang="en">Attach DB filename</source>
+    </trans-unit>
+    <trans-unit id="title.attachDatabase">
+      <source xml:lang="en">Attach Database (Preview)</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
       <source xml:lang="en">Attestation URL</source>
@@ -1275,7 +1275,7 @@
       <source xml:lang="en">Design</source>
     </trans-unit>
     <trans-unit id="title.detachDatabase">
-      <source xml:lang="en">Detach (Preview)</source>
+      <source xml:lang="en">Detach Database (Preview)</source>
     </trans-unit>
     <trans-unit id="mssql.objectExplorer.disableGroupBySchema">
       <source xml:lang="en">Disable Group By Schema</source>
@@ -1490,14 +1490,26 @@
     <trans-unit id="mssql.connectionOptions.serverName.description">
       <source xml:lang="en">Name of the SQL Server instance</source>
     </trans-unit>
-    <trans-unit id="title.newObject">
-      <source xml:lang="en">New (Preview)</source>
+    <trans-unit id="title.newApplicationRole">
+      <source xml:lang="en">New Application Role (Preview)</source>
     </trans-unit>
     <trans-unit id="title.newDatabase">
       <source xml:lang="en">New Database (Preview)</source>
     </trans-unit>
+    <trans-unit id="title.newDatabaseRole">
+      <source xml:lang="en">New Database Role (Preview)</source>
+    </trans-unit>
+    <trans-unit id="title.newLogin">
+      <source xml:lang="en">New Login (Preview)</source>
+    </trans-unit>
+    <trans-unit id="title.newServerRole">
+      <source xml:lang="en">New Server Role (Preview)</source>
+    </trans-unit>
     <trans-unit id="title.newTable">
       <source xml:lang="en">New Table</source>
+    </trans-unit>
+    <trans-unit id="title.newUser">
+      <source xml:lang="en">New User (Preview)</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None">
       <source xml:lang="en">None</source>

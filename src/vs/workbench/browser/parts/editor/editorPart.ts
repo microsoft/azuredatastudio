@@ -554,7 +554,14 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 	}
 
 	private getSplitSizingStyle(): Sizing {
-		return this._partOptions.splitSizing === 'split' ? Sizing.Split : Sizing.Distribute;
+		switch (this._partOptions.splitSizing) {
+			case 'distribute':
+				return Sizing.Distribute;
+			case 'split':
+				return Sizing.Split;
+			default:
+				return Sizing.Auto;
+		}
 	}
 
 	private doCreateGroupView(from?: IEditorGroupView | ISerializedEditorGroupModel | null): IEditorGroupView {
@@ -713,8 +720,9 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 		this.gridWidget.removeView(groupView, this.getSplitSizingStyle());
 		groupView.dispose();
 
-		// Restore focus if we had it previously (we run this after gridWidget.removeView() is called
-		// because removing a view can mean to reparent it and thus focus would be removed otherwise)
+		// Restore focus if we had it previously after completing the grid
+		// operation. That operation might cause reparenting of grid views
+		// which moves focus to the <body> element otherwise.
 		if (restoreFocus) {
 			this._activeGroup.focus();
 		}
@@ -747,8 +755,9 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 		// Move through grid widget API
 		this.gridWidget.moveView(sourceView, this.getSplitSizingStyle(), targetView, this.toGridViewDirection(direction));
 
-		// Restore focus if we had it previously (we run this after gridWidget.removeView() is called
-		// because removing a view can mean to reparent it and thus focus would be removed otherwise)
+		// Restore focus if we had it previously after completing the grid
+		// operation. That operation might cause reparenting of grid views
+		// which moves focus to the <body> element otherwise.
 		if (restoreFocus) {
 			sourceView.focus();
 		}
