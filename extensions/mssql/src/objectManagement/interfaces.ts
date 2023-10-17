@@ -631,6 +631,13 @@ export const enum FileGroupType {
 	MemoryOptimizedDataFileGroup = 3
 }
 
+export const enum FileStreamEffectiveLevel {
+	Disabled = 0,
+	TSqlAccess,
+	TSqlLocalFileSystemAccess,
+	TSqlFullFileSystemAccess
+}
+
 export interface DatabaseFile {
 	id: number;
 	name: string;

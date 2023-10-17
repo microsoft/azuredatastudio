@@ -9,7 +9,7 @@ import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultM
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl, DatabaseFileGroupsPropertiesDocUrl, QueryStorePropertiesDocUrl } from '../constants';
-import { Database, DatabaseFile, DatabaseScopedConfigurationsInfo, DatabaseViewInfo, FileGrowthType, FileGroup, FileGroupType } from '../interfaces';
+import { Database, DatabaseFile, DatabaseScopedConfigurationsInfo, DatabaseViewInfo, FileGrowthType, FileGroup, FileGroupType, FileStreamEffectiveLevel } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
 import { DatabaseFileDialog } from './databaseFileDialog';
@@ -707,7 +707,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 		else if (table === this.filestreamFilegroupsTable && this.filestreamFilegroupsTable.selectedRows !== undefined && this.filestreamFilegroupsTable.selectedRows.length === 1) {
 			// Disable remove button when server filestream access level is disabled.
-			if (this.viewInfo.serverFilestreamAccessLevel === null || this.viewInfo.serverFilestreamAccessLevel === 0) {
+			if (this.viewInfo.serverFilestreamAccessLevel === null || this.viewInfo.serverFilestreamAccessLevel === FileStreamEffectiveLevel.Disabled) {
 				isEnabled = false;
 			}
 		}
@@ -876,7 +876,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		const addButtonComponent: DialogButton = {
 			buttonAriaLabel: localizedConstants.AddFilegroupText,
 			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.filestreamFilegroupsTable),
-			enabled: this.viewInfo.serverFilestreamAccessLevel !== null && this.viewInfo.serverFilestreamAccessLevel !== 0
+			enabled: this.serverFilestreamAccessLevel
 		};
 		const removeButtonComponent: DialogButton = {
 			buttonAriaLabel: localizedConstants.RemoveButton,
@@ -1173,8 +1173,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				data.push([
 					fileGroup.name,
 					filesCount,
-					{ checked: fileGroup.isReadOnly, enabled: filesCount > 0 && this.viewInfo.serverFilestreamAccessLevel !== null && this.viewInfo.serverFilestreamAccessLevel !== 0 },
-					{ checked: fileGroup.isDefault, enabled: this.viewInfo.serverFilestreamAccessLevel !== null && this.viewInfo.serverFilestreamAccessLevel !== 0 },
+					{ checked: fileGroup.isReadOnly, enabled: filesCount > 0 && this.serverFilestreamAccessLevel },
+					{ checked: fileGroup.isDefault, enabled: this.serverFilestreamAccessLevel },
 				]);
 			} else if (fileGroup.type === FileGroupType.MemoryOptimizedDataFileGroup && fileGroup.type === filegroupType) {
 				data.push([
@@ -1185,6 +1185,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		});
 
 		return data;
+	}
+
+	/**
+	 * Gets the server filestream access level
+	 * @returns true if the server filestream access level is not null and not disabled
+	 */
+	private get serverFilestreamAccessLevel(): boolean {
+		return this.viewInfo.serverFilestreamAccessLevel !== null && this.viewInfo.serverFilestreamAccessLevel !== FileStreamEffectiveLevel.Disabled;
 	}
 	//#endregion
 
