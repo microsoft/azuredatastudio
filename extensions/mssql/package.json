@@ -173,6 +173,11 @@
         "title": "%title.attachDatabase%"
       },
       {
+        "command": "mssql.backupDatabase",
+        "category": "MSSQL",
+        "title": "%title.backupDatabase%"
+      },
+      {
         "command": "mssql.enableGroupBySchema",
         "category": "MSSQL",
         "title": "%mssql.objectExplorer.enableGroupBySchema%",
@@ -613,6 +618,10 @@
         {
           "command": "mssql.attachDatabase",
           "when": "false"
+        },
+        {
+          "command": "mssql.backupDatabase",
+          "when": "false"
         }
       ],
       "objectExplorer/item/context": [
@@ -708,14 +717,19 @@
           "group": "1_objectManagement@2"
         },
         {
+          "command": "mssql.backupDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@4"
+        },
+        {
           "command": "mssql.dropDatabase",
           "when": "connectionProvider == MSSQL && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
-          "group": "1_objectManagement@3"
+          "group": "1_objectManagement@4"
         },
         {
           "command": "mssql.dropObject",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
-          "group": "1_objectManagement@3"
+          "group": "1_objectManagement@4"
         },
         {
           "command": "mssql.enableGroupBySchema",

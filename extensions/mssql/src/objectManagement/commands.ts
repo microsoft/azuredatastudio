@@ -66,6 +66,9 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.attachDatabase', async (context: azdata.ObjectExplorerContext) => {
 		await handleAttachDatabase(context, service);
 	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.backupDatabase', async (context: azdata.ObjectExplorerContext) => {
+		await handleBackupDatabase(context, service);
+	}));
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.dropDatabase', async (context: azdata.ObjectExplorerContext) => {
 		await handleDropDatabase(context, service);
 	}));
@@ -372,6 +375,44 @@ async function handleAttachDatabase(context: azdata.ObjectExplorerContext, servi
 		}).send();
 		console.error(err);
 		await vscode.window.showErrorMessage(objectManagementLoc.OpenAttachDatabaseDialogError(getErrorMessage(err)));
+	}
+}
+
+async function handleBackupDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+	const connectionUri = await getConnectionUri(context);
+	if (!connectionUri) {
+		return;
+	}
+	const object = await getObjectInfoForContext(context);
+	try {
+		if (object.type !== ObjectManagement.NodeType.Database) {
+			throw new Error(objectManagementLoc.NotSupportedError(ObjectManagement.NodeType.Database));
+		}
+		const options: ObjectManagementDialogOptions = {
+			connectionUri: connectionUri,
+			isNewObject: false,
+			database: object.name,
+			objectType: object.type,
+			objectName: object.name,
+			parentUrn: object.parentUrn,
+			objectUrn: object.urn,
+			objectExplorerContext: context
+		};
+		// const dialog = new BackupDatabaseDialog(service, options);
+		const startTime = Date.now();
+		// await dialog.open();
+		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenBackupDatabaseDialog, {
+			objectType: object.type
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
+	}
+	catch (err) {
+		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenBackupDatabaseDialog, err).withAdditionalProperties({
+			objectType: object.type
+		}).send();
+		console.error(err);
+		await vscode.window.showErrorMessage(objectManagementLoc.OpenBackupDatabaseDialogError(getErrorMessage(err)));
 	}
 }
 

@@ -110,6 +110,13 @@ export function OpenDetachDatabaseDialogError(error: string): string {
 	}, "An error occurred while opening the detach database dialog. {0}", error);
 }
 
+export function OpenBackupDatabaseDialogError(error: string): string {
+	return localize({
+		key: 'objectManagement.openBackupDatabaseDialogError',
+		comment: ['{0}: error message.']
+	}, "An error occurred while opening the backup database dialog. {0}", error);
+}
+
 export function DetachDatabaseOperationDisplayName(objectName: string): string {
 	return localize({
 		key: 'objectManagement.detachDatabaseOperationName',
