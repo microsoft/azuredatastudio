@@ -231,6 +231,8 @@ export const DatabaseFilesFilterLabel = localize('objectManagement.databaseFiles
 export const DatabaseName = localize('objectManagement.databaseName', "DB Name");
 export const AttachAsText = localize('objectManagement.attachAsText', "Attach As");
 export const AttachButtonLabel = localize('objectManagement.attachButtonLabel', "Attach");
+export const BackupDatabaseDialogTitle = (dbName: string) => localize('objectManagement.backupDatabaseDialogTitle', "Backup Database - {0} (Preview)", dbName);
+export const BackupButtonLabel = localize('objectManagement.backupButtonLabel', "Backup");
 export const DropDatabaseDialogTitle = (dbName: string) => localize('objectManagement.dropDatabaseDialogTitle', "Drop Database - {0} (Preview)", dbName);
 export const DropButtonLabel = localize('objectManagement.dropButtonLabel', "Drop");
 export const DropDatabaseOptions = localize('objectManagement.dropDatabaseOptions', "Drop Database Options");

@@ -13,8 +13,8 @@ import * as loc from '../localizedConstants';
 export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options, loc.DropDatabaseDialogTitle(options.database), 'BackupDatabase');
-		this.dialogObject.okButton.label = loc.DropButtonLabel;
+		super(objectManagementService, options, loc.BackupDatabaseDialogTitle(options.database), 'BackupDatabase');
+		this.dialogObject.okButton.label = loc.BackupButtonLabel;
 	}
 
 	protected override get helpUrl(): string {
