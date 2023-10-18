@@ -487,7 +487,7 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	queryStoreCaptureModeOptions?: string[];
 	sizeBasedCleanupModeOptions?: string[];
 	staleThresholdOptions?: string[];
-	serverFilestreamAccessLevel?: number;
+	serverFilestreamAccessLevel?: FileStreamEffectiveLevel;
 }
 
 export interface QueryStoreOptions {
