@@ -11,9 +11,12 @@ import { BackupDatabaseDocUrl } from '../constants';
 import * as loc from '../localizedConstants';
 import { DefaultInputWidth } from '../../ui/dialogBase';
 
+const DialogWidth = '750px';
+
 export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
+		options.width = DialogWidth;
 		super(objectManagementService, options, loc.BackupDatabaseDialogTitle(options.database), 'BackupDatabase');
 		this.dialogObject.okButton.label = loc.BackupButtonLabel;
 	}
@@ -23,18 +26,26 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	protected override async initializeUI(): Promise<void> {
-		let generalSection = this.initializeGeneralSection();
-		let mediaOptionsSection = this.initializeMediaOptionsSection();
-		let backupOptionsSection = this.initializeBackupOptionsSection();
+		let generalTab = this.initializeGeneralTab();
+		let mediaOptionsTab = this.initializeMediaOptionsTab();
+		let backupOptionsTab = this.initializeBackupOptionsTab();
 
-		this.formContainer.addItems([
-			generalSection,
-			mediaOptionsSection,
-			backupOptionsSection
-		]);
+		const tabGroup = { title: '', tabs: [generalTab, mediaOptionsTab, backupOptionsTab] };
+		const tabbedPannel = this.modelView.modelBuilder.tabbedPanel()
+			.withTabs([tabGroup])
+			.withLayout({
+				orientation: azdata.TabOrientation.Vertical
+			})
+			.withProps({
+				CSSStyles: {
+					'margin': '-10px 0px 0px -10px'
+				}
+			}).component();
+
+		this.formContainer.addItem(tabbedPannel);
 	}
 
-	private initializeGeneralSection(): azdata.GroupContainer {
+	private initializeGeneralTab(): azdata.Tab {
 		let components: azdata.Component[] = [];
 
 		let inputBox = this.createInputBox(newValue => {
@@ -79,18 +90,21 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 		// TODO: Add backup files table
 
-		return this.createGroup(loc.GeneralSectionHeader, components, false);
+		let group = this.createGroup(loc.GeneralSectionHeader, components, false);
+		return this.createTab('generalId', loc.GeneralSectionHeader, group);
 	}
 
-	private initializeMediaOptionsSection(): azdata.GroupContainer {
+	private initializeMediaOptionsTab(): azdata.Tab {
 		let components: azdata.Component[] = [];
 
-		return this.createGroup(loc.BackupMediaOptionsLabel, components, true, true);
+		let group = this.createGroup('', components, true, true);
+		return this.createTab('mediaOptionsId', loc.BackupMediaOptionsLabel, group);
 	}
 
-	private initializeBackupOptionsSection(): azdata.GroupContainer {
+	private initializeBackupOptionsTab(): azdata.Tab {
 		let components: azdata.Component[] = [];
 
-		return this.createGroup(loc.BackupOptionsLabel, components, true, true);
+		let group = this.createGroup('', components, true, true);
+		return this.createTab('backupOptionsId', loc.BackupOptionsLabel, group);
 	}
 }
