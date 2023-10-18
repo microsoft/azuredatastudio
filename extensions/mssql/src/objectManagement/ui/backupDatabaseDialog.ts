@@ -47,7 +47,6 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	private initializeGeneralTab(): azdata.Tab {
 		let components: azdata.Component[] = [];
-
 		let inputBox = this.createInputBox(newValue => {
 			return Promise.resolve();
 		}, {
@@ -90,7 +89,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 		// TODO: Add backup files table
 
-		let group = this.createGroup(loc.GeneralSectionHeader, components, false);
+		let group = this.createGroup('', components, false);
 		return this.createTab('generalId', loc.GeneralSectionHeader, group);
 	}
 
