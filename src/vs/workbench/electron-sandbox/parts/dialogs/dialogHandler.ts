@@ -77,19 +77,35 @@ export class NativeDialogHandler extends AbstractDialogHandler {
 		const osProps = await this.nativeHostService.getOSProperties();
 
 		const detailString = (useAgo: boolean): string => {
+			// {{SQL CARBON EDIT}} - BEGIN - Removing Electron Build ID from detail string
+			/*
 			return localize({ key: 'aboutDetail', comment: ['Electron, Chromium, Node.js and V8 are product names that need no translation'] },
 				"Version: {0}\nCommit: {1}\nDate: {2}\nElectron: {3}\nElectronBuildId: {4}\nChromium: {5}\nNode.js: {6}\nV8: {7}\nOS: {8}",
 				version,
 				this.productService.commit || 'Unknown',
 				this.productService.date ? `${this.productService.date}${useAgo ? ' (' + fromNow(new Date(this.productService.date), true) + ')' : ''}` : 'Unknown',
 				process.versions['electron'],
-				process.versions['microsoft-build'],
+				process.versions['microsoft-build'], // {{SQL CARBON EDIT}} Removing Electron Build ID from detail string
 				process.versions['chrome'],
 				process.versions['node'],
 				process.versions['v8'],
 				`${osProps.type} ${osProps.arch} ${osProps.release}${isLinuxSnap ? ' snap' : ''}`,
 				this.productService.vscodeVersion  // {{SQL CARBON EDIT}} - add vscode version
 			);
+			*/
+			return localize({ key: 'aboutDetail', comment: ['Electron, Chromium, Node.js and V8 are product names that need no translation'] },
+				"Version: {0}\nCommit: {1}\nDate: {2}\nElectron: {3}\nChromium: {4}\nNode.js: {5}\nV8: {6}\nOS: {7}",
+				version,
+				this.productService.commit || 'Unknown',
+				this.productService.date ? `${this.productService.date}${useAgo ? ' (' + fromNow(new Date(this.productService.date), true) + ')' : ''}` : 'Unknown',
+				process.versions['electron'],
+				process.versions['chrome'],
+				process.versions['node'],
+				process.versions['v8'],
+				`${osProps.type} ${osProps.arch} ${osProps.release}${isLinuxSnap ? ' snap' : ''}`,
+				this.productService.vscodeVersion  // {{SQL CARBON EDIT}} - add vscode version
+			);
+			// {{SQL CARBON EDIT}} - END - New localized string doesn't include Electron Build ID since it shows up as undefined
 		};
 
 		const detail = detailString(true);
