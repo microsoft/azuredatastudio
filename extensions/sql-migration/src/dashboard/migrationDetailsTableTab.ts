@@ -253,6 +253,15 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		this._sourceDatabaseInfoField = await this.createInfoField(loc.SOURCE_DATABASE, '');
 		this._sourceDetailsInfoField = await this.createInfoField(loc.SOURCE_SERVER, '');
 		this._migrationStatusInfoField = await this.createInfoField(loc.MIGRATION_STATUS, '', false, ' ');
+		this._schemaMigrationStatusInfoField = await this.createInfoField(loc.SCHEMA_MIGRATION_STATUS, '', false, ' ');
+		this._objectsCollectionCountInfoField = await this.createInfoField(loc.OBJECTS_COLLECTED, '', false, ' ');
+		this._objectsCollectionStartedInfoField = await this.createInfoField(loc.COLLECTION_STARTED, '');
+		this._objectsCollectionEndedInfoField = await this.createInfoField(loc.COLLECTION_ENDED, '');
+		this._scriptGenerationProgressInfoField = await this.createInfoField(loc.SCRIPT_GENERATION, '', false, ' ');
+		this._scriptGenerationStartedInfoField = await this.createInfoField(loc.SCRIPTING_STARTED, '');
+		this._scriptGenerationEndedInfoField = await this.createInfoField(loc.SCRIPTING_ENDED, '');
+		this._succeededScriptCountInfoField = await this.createInfoField(loc.SCRIPTED_OBJECTS_COUNT, '');
+		this._failedScriptCountInfoField = await this.createInfoField(loc.SCRIPTING_ERROR_COUNT, '');
 
 		// right side
 		this._targetDatabaseInfoField = await this.createInfoField(loc.TARGET_DATABASE_NAME, '');
@@ -380,12 +389,36 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		this._updateInfoFieldValue(this._sourceDetailsInfoField, sqlServerName ?? EmptySettingValue);
 		this._updateInfoFieldValue(this._migrationStatusInfoField, getMigrationStatusString(migration) ?? EmptySettingValue);
 		this._migrationStatusInfoField.icon!.iconPath = getMigrationStatusImage(migration);
+		this._updateInfoFieldValue(this._schemaMigrationStatusInfoField, getSchemaMigrationStatusString(migration) ?? EmptySettingValue);
+		this._schemaMigrationStatusInfoField.icon!.iconPath = getSchemaMigrationStatusImage(migration);
+		this._updateInfoFieldValue(this._objectsCollectionCountInfoField, objectCollection?.totalCountOfObjectsCollected?.toString() ?? EmptySettingValue);
+		this._objectsCollectionCountInfoField.icon!.iconPath = getObjectsCollectionStatusImage(migration);
+		this._updateInfoFieldValue(this._objectsCollectionStartedInfoField, this._convertToLocalDateTime(objectCollection?.startedOn));
+		this._updateInfoFieldValue(this._objectsCollectionEndedInfoField, this._convertToLocalDateTime(objectCollection?.endedOn));
+		this._updateInfoFieldValue(this._scriptGenerationProgressInfoField, scriptGeneration?.progressInPercentage === undefined ? EmptySettingValue : scriptGeneration?.progressInPercentage + "%");
+		this._scriptGenerationProgressInfoField.icon!.iconPath = getScriptGenerationStatusImage(migration);
+		this._updateInfoFieldValue(this._scriptGenerationStartedInfoField, this._convertToLocalDateTime(scriptGeneration?.startedOn));
+		this._updateInfoFieldValue(this._scriptGenerationEndedInfoField, this._convertToLocalDateTime(scriptGeneration?.endedOn));
+		this._updateInfoFieldValue(this._succeededScriptCountInfoField, scriptGeneration?.scriptedObjectsCount?.toString() ?? EmptySettingValue);
+		this._updateInfoFieldValue(this._failedScriptCountInfoField, scriptGeneration?.scriptedObjectsFailedCount?.toString() ?? EmptySettingValue);
 
 		// Right side
 		this._updateInfoFieldValue(this._targetDatabaseInfoField, targetDatabaseName ?? EmptySettingValue);
 		this._updateInfoFieldValue(this._targetServerInfoField, targetServerName ?? EmptySettingValue);
 		this._updateInfoFieldValue(this._targetVersionInfoField, targetServerVersion ?? EmptySettingValue);
-		this._updateInfoFieldValue(this._serverObjectsInfoField, totalCount.toLocaleString() ?? EmptySettingValue);
+		if (migration.properties.sqlSchemaMigrationConfiguration.enableSchemaMigration && migration.properties.sqlDataMigrationConfiguration.enableDataMigration) {
+			this._updateInfoFieldValue(this._migrationType, loc.SCHEMA_AND_DATA);
+		} else if (migration.properties.sqlSchemaMigrationConfiguration.enableSchemaMigration) {
+			this._updateInfoFieldValue(this._migrationType, loc.SCHEMA_ONLY);
+		} else if (migration.properties.sqlDataMigrationConfiguration.enableDataMigration) {
+			this._updateInfoFieldValue(this._migrationType, loc.DATA_ONLY);
+		}
+		this._updateInfoFieldValue(this._scriptDeploymentProgressInfoField, scriptDeployment?.progressInPercentage === undefined ? EmptySettingValue : scriptDeployment?.progressInPercentage + "%");
+		this._scriptDeploymentProgressInfoField.icon!.iconPath = getScriptDeploymentStatusImage(migration);
+		this._updateInfoFieldValue(this._scriptDeploymentStartedField, this._convertToLocalDateTime(scriptDeployment?.startedOn));
+		this._updateInfoFieldValue(this._scriptDeploymentEndedInfoField, this._convertToLocalDateTime(scriptDeployment?.endedOn));
+		this._updateInfoFieldValue(this._succeededDeploymentCountInfoField, scriptDeployment?.succeededDeploymentCount?.toString() ?? EmptySettingValue);
+		this._updateInfoFieldValue(this._failedDeploymentCountInfoField, scriptDeployment?.failedDeploymentCount?.toString() ?? EmptySettingValue);
 
 		this.cutoverButton.enabled = canCutoverMigration(migration);
 		this.cancelButton.enabled = canCancelMigration(migration);
