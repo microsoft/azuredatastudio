@@ -71,9 +71,10 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let recoveryModelInput = this.createLabelInputContainer('Recovery model', inputBox);
 		components.push(recoveryModelInput);
 
+		let backupTypes = ['Full', 'Differential', 'Transaction Log'];
 		let backupTypeDropdown = this.createDropdown('Backup type', newValue => {
 			return Promise.resolve();
-		}, [], '');
+		}, backupTypes, backupTypes[0]);
 		let backupContainer = this.createLabelInputContainer('Backup type', backupTypeDropdown);
 		components.push(backupContainer);
 
