@@ -82,10 +82,12 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		});
 		components.push(copyBackupCheckbox);
 
-		let saveBackupCheckbox = this.createCheckbox('Save backup to URL', checked => {
+		let backupDestinations = ['Disk', 'URL'];
+		let backupDestDropdown = this.createDropdown('Back up to', checked => {
 			return Promise.resolve();
-		}, false, false);
-		components.push(saveBackupCheckbox);
+		}, backupDestinations, backupDestinations[0]);
+		let backupDestContainer = this.createLabelInputContainer('Back up to', backupDestDropdown);
+		components.push(backupDestContainer);
 
 		// TODO: Add backup files table
 
