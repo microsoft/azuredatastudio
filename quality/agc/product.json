@@ -1,0 +1,7 @@
+{
+	"quality": "agc",
+	"urlProtocol": "azuredatastudio",
+	"builtInExtensions": [
+		"Microsoft.sql-migration"
+	]
+}
