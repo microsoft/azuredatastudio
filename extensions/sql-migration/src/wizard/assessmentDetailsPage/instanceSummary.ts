@@ -95,8 +95,8 @@ export class InstanceSummary {
 	public async populateInstanceSummaryContainerAsync(): Promise<void> {
 		this._previousMiTdeMigrationConfig = this.migrationStateModel.tdeMigrationConfig;
 		await this.refreshTdeViewAsync();
-		this._assessedDatabases.value = constants.ASSESSED_DBS_LABEL + ": " + this.migrationStateModel._databasesForAssessment?.length;
-		this._totalFindingLabels.value = constants.TOTAL_FINDINGS_LABEL + ": " + this.migrationStateModel._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType).length;
+		this._assessedDatabases.value = constants.ASSESSED_DBS_LABEL(this.migrationStateModel._databasesForAssessment?.length);
+		this._totalFindingLabels.value = constants.TOTAL_FINDINGS_LABEL(this.migrationStateModel._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType).length);
 
 		const dbAssessments = this.migrationStateModel._assessmentResults.databaseAssessments;
 		const readyDbsCount = dbAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType).length === 0).length;
@@ -221,6 +221,8 @@ export class InstanceSummary {
 
 	// maths formula to calculate width of bar component and create comparison among diff values.
 	private setWidth(value: number, maxValue: number): number {
+		if (maxValue === 0)
+			return 0;
 		const width = (Math.sqrt(value) / Math.sqrt(maxValue)) * 75;
 		return width;
 	}
