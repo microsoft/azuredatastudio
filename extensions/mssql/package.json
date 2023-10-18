@@ -615,11 +615,11 @@
           "when": "false"
         },
         {
-          "command": "mssql.enableGroupBySchema",
+          "command": "mssql.enableGroupBySchemaTitle",
           "when": "false"
         },
         {
-          "command": "mssql.disableGroupBySchema",
+          "command": "mssql.disableGroupBySchemaTitle",
           "when": "false"
         }
       ],
