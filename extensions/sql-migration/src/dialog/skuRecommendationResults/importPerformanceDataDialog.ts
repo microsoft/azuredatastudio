@@ -257,7 +257,7 @@ export class ImportPerformanceDataDialog {
 
 			const skuRecommendationError = this.migrationStateModel._skuRecommendationResults?.recommendationError;
 			if (skuRecommendationError) {
-				errors.push(`message: ${skuRecommendationError.message}`);
+				errors.push(constants.SKU_RECOMMENDATION_ERROR_MESSAGE(skuRecommendationError));
 			}
 		} catch (e) {
 			console.log(e);

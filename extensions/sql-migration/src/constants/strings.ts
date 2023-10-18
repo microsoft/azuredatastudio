@@ -8,7 +8,7 @@ import { EOL } from 'os';
 import { MigrationSourceAuthenticationType } from '../models/stateMachine';
 import { BackupTypeCodes, formatNumber, InternalManagedDatabaseRestoreDetailsBackupSetStatusCodes, InternalManagedDatabaseRestoreDetailsStatusCodes, ParallelCopyTypeCodes, PipelineStatusCodes } from './helper';
 import { ValidationError } from '../api/azure';
-import { AzureManagedDiskType } from '../service/contracts';
+import { AzureManagedDiskType, ErrorModel } from '../service/contracts';
 const localize = nls.loadMessageBundle();
 
 export const serviceName = 'Sql Migration Service';
@@ -150,6 +150,22 @@ export const SKU_RECOMMENDATION_ASSESSMENT_UNEXPECTED_ERROR = (serverName: strin
 		error.message,
 		error.stack,
 		EOL);
+};
+export const SKU_RECOMMENDATION_ERROR_MESSAGE = (error: Error): string => {
+	return localize(
+		'sql.migration.wizard.sku.error.message',
+		"message: {0}", error.message);
+};
+export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_WITH_STACK = (error: Error): string => {
+	return localize(
+		'sql.migration.wizard.sku.assessment.error.with.stack',
+		"message: {0}{1}stack: {2}", error.message, EOL, error.stack);
+};
+export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_WITH_INFO = (error: ErrorModel): string => {
+	return localize(
+		'sql.migration.wizard.sku.assessment.error.with.info',
+		"message: {0}{1}errorSummary: {2}{3}possibleCauses: {4}}{5}guidance: {6}{7}errorId: {8}",
+		error.message, EOL, error.errorSummary, EOL, error.possibleCauses, EOL, error.guidance, EOL, error.errorId);
 };
 export const PERF_DATA_COLLECTION_ERROR = (serverName: string, errors: string[]): string => {
 	return localize('sql.migration.wizard.perfCollection.error', "Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:\n\n{1}", serverName, errors.join('\n'));

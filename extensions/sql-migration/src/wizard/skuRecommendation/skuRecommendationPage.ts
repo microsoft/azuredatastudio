@@ -224,11 +224,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				await this.migrationStateModel.getDatabaseAssessments([MigrationTargetType.SQLMI, MigrationTargetType.SQLDB]);
 				const assessmentError = this.migrationStateModel._assessmentResults?.assessmentError;
 				if (assessmentError) {
-					errors.push(`message: ${assessmentError.message}${EOL}stack: ${assessmentError.stack}`);
+					errors.push(constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR_WITH_STACK(assessmentError));
 				}
 				if (this.migrationStateModel?._assessmentResults?.errors?.length! > 0) {
 					errors.push(...this.migrationStateModel._assessmentResults?.errors?.map(
-						e => `message: ${e.message}${EOL}errorSummary: ${e.errorSummary}${EOL}possibleCauses: ${e.possibleCauses}${EOL}guidance: ${e.guidance}${EOL}errorId: ${e.errorId}`)!);
+						e => constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR_WITH_INFO(e))!);
 				}
 			} catch (e) {
 				errors.push(constants.SKU_RECOMMENDATION_ASSESSMENT_UNEXPECTED_ERROR(this._serverName, e));
