@@ -1,5 +1,22 @@
 # Change Log
 
+## September 2023 (Hotfix 1)
+
+Azure Data Studio 1.46.1 is the latest general availability (GA) release.
+
+- Release number: 1.46.1
+- Release date: October 3, 2023
+
+### Bug fixes in 1.46.1
+
+| New Item | Details |
+| --- | --- |
+| Security | Update to Electron v22.3.25 with patch for [CVE-2023-5217](https://github.com/advisories/GHSA-qqvq-6xgj-jw8g) |
+
+For details about the issue addressed in the September 2023 hotfix release, visit the [September 2023 Hotfix Release on GitHub](https://github.com/microsoft/azuredatastudio/milestone/106?closed=1).
+
+For a list of the current known issues, visit the [issues list on GitHub](https://github.com/microsoft/azuredatastudio/issues?q=is%3Aissue).
+
 ## September 2023 
 
 Azure Data Studio 1.46.0 is the latest general availability (GA) release.

@@ -951,7 +951,7 @@ export async function isAdmin(): Promise<boolean> {
 		if (isWindows()) {
 			isAdmin = (await import('native-is-elevated'))();
 		} else {
-			isAdmin = process.getuid() === 0;
+			isAdmin = process.getuid?.() === 0;
 		}
 	} catch (e) {
 		//Ignore error and return false;
@@ -1236,4 +1236,10 @@ export function hasRecommendations(model: MigrationStateModel): boolean {
 		&& !model._skuRecommendationResults?.recommendationError
 		? true
 		: false;
+}
+
+export async function clearDropDownWithLoading(dropDown: DropDownComponent): Promise<void> {
+	dropDown.loading = true;
+	await dropDown.updateProperty('value', undefined);
+	await dropDown.updateProperty('values', []);
 }

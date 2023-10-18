@@ -1,7 +1,7 @@
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: "16.x"
+      versionSpec: "18.15.0"
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
@@ -9,7 +9,7 @@ steps:
 
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '3.x'
+      versionSpec: '3.11.x'
       addToPath: true
 
   - task: AzureKeyVault@1
@@ -50,13 +50,6 @@ steps:
       git fetch distro
       git merge $(node -p "require('./package.json').distro")
     displayName: Merge distro
-
-  - powershell: |
-      git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
-      git fetch distro
-      git cherry-pick 51ef46d56b81ae967f3ae185661996540bf2b642
-    condition: eq(variables['VSCODE_QUALITY'], 'agc')
-    displayName: Merge AGC endpoints
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1

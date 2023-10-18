@@ -1,7 +1,7 @@
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: "16.x"
+    versionSpec: "18.15.0"
 
 - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
   inputs:
@@ -86,7 +86,8 @@ steps:
 # Run these separately to avoid OOM errors on pipeline machines
 - script: |
     set -e
-    yarn npm-run-all -lp core-ci extensions-ci
+    yarn npm-run-all -lp core-ci
+    yarn npm-run-all -lp extensions-ci
     yarn npm-run-all -lp hygiene eslint valid-layers-check
   displayName: Compile & Hygiene
 
