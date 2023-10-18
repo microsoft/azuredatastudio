@@ -24,21 +24,13 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	protected override async initializeUI(): Promise<void> {
 		let generalSection = this.initializeGeneralSection();
-		let compressionSection = this.initializeCompressionSection();
-		let encryptionSection = this.initializeEncryptionSection();
-		let mediaSection = this.initializeMediaSection();
-		let transactionSection = this.initializeTransactionSection();
-		let reliabilitySection = this.initializeReliabilitySection();
-		let expirationSection = this.initializeExpirationSection();
+		let mediaOptionsSection = this.initializeMediaOptionsSection();
+		let backupOptionsSection = this.initializeBackupOptionsSection();
 
 		this.formContainer.addItems([
 			generalSection,
-			compressionSection,
-			encryptionSection,
-			mediaSection,
-			transactionSection,
-			reliabilitySection,
-			expirationSection
+			mediaOptionsSection,
+			backupOptionsSection
 		]);
 	}
 
@@ -72,7 +64,8 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let backupTypeDropdown = this.createDropdown('Backup type', newValue => {
 			return Promise.resolve();
 		}, [], '');
-		components.push(backupTypeDropdown);
+		let backupContainer = this.createLabelInputContainer('Backup type', backupTypeDropdown);
+		components.push(backupContainer);
 
 		let copyBackupCheckbox = this.createCheckbox('Copy-only backup', checked => {
 			return Promise.resolve();
@@ -86,44 +79,18 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 		// TODO: Add backup files table
 
-		return this.createGroup(loc.GeneralSectionHeader, components);
+		return this.createGroup(loc.GeneralSectionHeader, components, false);
 	}
 
-	private initializeCompressionSection(): azdata.GroupContainer {
-		let backupCompressionDropdown = this.createDropdown('Set backup compression', newValue => {
-			return Promise.resolve();
-		}, [], '');
-
-		return this.createGroup(loc.BackupCompressionLabel, [backupCompressionDropdown]);
-	}
-
-	private initializeEncryptionSection(): azdata.GroupContainer {
+	private initializeMediaOptionsSection(): azdata.GroupContainer {
 		let components: azdata.Component[] = [];
 
-		return this.createGroup(loc.BackupEncryptionLabel, components);
+		return this.createGroup(loc.BackupMediaOptionsLabel, components, true, true);
 	}
 
-	private initializeMediaSection(): azdata.GroupContainer {
+	private initializeBackupOptionsSection(): azdata.GroupContainer {
 		let components: azdata.Component[] = [];
 
-		return this.createGroup(loc.BackupMediaLabel, components);
-	}
-
-	private initializeTransactionSection(): azdata.GroupContainer {
-		let components: azdata.Component[] = [];
-
-		return this.createGroup(loc.BackupTransactionLogLabel, components);
-	}
-
-	private initializeReliabilitySection(): azdata.GroupContainer {
-		let components: azdata.Component[] = [];
-
-		return this.createGroup(loc.BackupReliabilityLabel, components);
-	}
-
-	private initializeExpirationSection(): azdata.GroupContainer {
-		let components: azdata.Component[] = [];
-
-		return this.createGroup(loc.BackupExpirationLabel, components);
+		return this.createGroup(loc.BackupOptionsLabel, components, true, true);
 	}
 }
