@@ -624,11 +624,15 @@
           "when": "false"
         },
         {
-          "command": "mssql.enableGroupBySchema",
+          "command": "mssql.backupDatabase",
           "when": "false"
         },
         {
-          "command": "mssql.disableGroupBySchema",
+          "command": "mssql.enableGroupBySchemaTitle",
+          "when": "false"
+        },
+        {
+          "command": "mssql.disableGroupBySchemaTitle",
           "when": "false"
         }
       ],
