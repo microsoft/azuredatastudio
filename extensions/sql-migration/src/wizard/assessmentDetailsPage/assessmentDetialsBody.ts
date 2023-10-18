@@ -24,7 +24,7 @@ export class AssessmentDetailsBody {
 	private _databaseSummary = new DatabaseSummary();
 	private _issueSummary = new IssueSummary();
 	private _warningsOrIssuesListSection!: azdata.ListViewComponent;
-	private _findingsSummaryList!: azdata.ListViewComponent;
+	public _findingsSummaryList!: azdata.ListViewComponent;
 	private _disposables: vscode.Disposable[] = [];
 	private _activeIssues!: SqlMigrationAssessmentResultItem[];
 

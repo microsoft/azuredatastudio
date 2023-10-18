@@ -21,10 +21,29 @@ export class AssessmentDetailsHeader {
 	private _view!: azdata.ModelView;
 	private _valueContainers: azdata.TextComponent[] = [];
 	private _targetSelectionDropdown!: azdata.DropDownComponent;
+	private _targetTypeContainer!: azdata.FlexContainer;
+	private _noTargetSelectedText!: azdata.TextComponent;
+	private _headerCardsContainer!: azdata.FlexContainer;
 
 	// public getter for target type selection drop down.
 	public get targetTypeDropdown() {
 		return this._targetSelectionDropdown;
+	}
+
+	// public getter for target type container.
+	public get targetTypeContainer() {
+		return this._targetTypeContainer;
+	}
+
+
+	// public getter for noTargetSelectedText.
+	public get noTargetSelectedText() {
+		return this._noTargetSelectedText;
+	}
+
+	//public getter for headerCardsContainer.
+	public get headerCardsContainer() {
+		return this._headerCardsContainer;
 	}
 
 	// function that creates the component for header section of assessment details page.
@@ -38,9 +57,17 @@ export class AssessmentDetailsHeader {
 			}
 		}).component();
 
-		const targetTypeContainer = this.createTargetTypeContainer();
+		this._targetTypeContainer = this.createTargetTypeContainer();
 
-		const headerCardsContainer = view.modelBuilder.flexContainer().withLayout({
+		this._noTargetSelectedText = this._view.modelBuilder.text().withProps({
+			value: "Select Target Platform Type",
+			CSSStyles: {
+				...styles.BODY_CSS,
+				'margin': '0px'
+			}
+		}).component();
+
+		this._headerCardsContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 		}).component();
 
@@ -57,9 +84,9 @@ export class AssessmentDetailsHeader {
 			}];
 
 		// create individual card component for each property in above list
-		headerCardsContainer.addItems(assessmentHeaderLabels.map(l => this.createCard(l)));
+		this._headerCardsContainer.addItems(assessmentHeaderLabels.map(l => this.createCard(l)));
 
-		headerContainer.addItems([targetTypeContainer, headerCardsContainer]);
+		headerContainer.addItems([this._targetTypeContainer, this._noTargetSelectedText, this._headerCardsContainer]);
 
 		return headerContainer;
 	}
@@ -140,10 +167,10 @@ export class AssessmentDetailsHeader {
 
 		this._targetSelectionDropdown = this._view.modelBuilder.dropDown().withProps({
 			ariaLabel: constants.AZURE_SQL_TARGET,
-			value: constants.SUMMARY_SQLDB_TYPE,
-			values: [constants.SUMMARY_SQLDB_TYPE, constants.SUMMARY_VM_TYPE, constants.SUMMARY_MI_TYPE],
+			placeholder: constants.SELECT_TARGET_LABEL,
+			values: [constants.SUMMARY_SQLDB_TYPE, constants.SUMMARY_MI_TYPE, constants.SUMMARY_VM_TYPE],
 			width: 250,
-			editable: false,
+			editable: true,
 			CSSStyles: {
 				'margin-top': '-0.2em',
 				'margin-left': '10px'

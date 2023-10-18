@@ -21,6 +21,8 @@ import { IssueCategory } from '../../constants/helper';
 // Class where assessment details page is defined
 export class AssessmentDetailsPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
+	private _headerSection!: azdata.Component;
+	private _bodySection!: azdata.Component;
 	private _header;
 	private _body;
 	private _disposables: vscode.Disposable[] = [];
@@ -48,14 +50,15 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 			value: constants.ASSESSMENT_RESULTS_PAGE_HEADER
 		}).component();
 
-		const headerSection = this._header.createAssessmentDetailsHeader(this._view);
+		this._headerSection = this._header.createAssessmentDetailsHeader(this._view);
 
-		const bodySection = await this._body.createAssessmentDetailsBodyAsync(this._view);
+		this._bodySection = await this._body.createAssessmentDetailsBodyAsync(this._view);
 
 		// defines the functionality to execute when target platform for the page is changed.
 		this._disposables.push(this._header.targetTypeDropdown.onValueChanged(async (value) => {
 			if (value) {
-				const selectedTargetType = this.getTargetTypeBasedOnSelection(value.selected);
+				const selectedTargetType = this.getTargetTypeBasedOnSelection(value);
+				await this.shouldNoTargetSelectionDisplayAsync(false);
 				this.executeChange(selectedTargetType);
 				await this._header.populateAssessmentDetailsHeader(this.migrationStateModel);
 				await this._body.populateAssessmentBodyAsync();
@@ -88,10 +91,10 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 					component: pageHeading
 				},
 				{
-					component: headerSection
+					component: this._headerSection
 				},
 				{
-					component: bodySection
+					component: this._bodySection
 				}
 			]).withProps({
 				CSSStyles: { 'padding-top': '0' }
@@ -121,10 +124,14 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 		});
 		// displaying save assessment button when enter on assessment page
 		this.wizard.customButtons[2].hidden = false;
-		this.migrationStateModel._targetType = MigrationTargetType.SQLDB;
-		this.executeChange(this.migrationStateModel._targetType);
-		await this._header.populateAssessmentDetailsHeader(this.migrationStateModel);
-		await this._body.populateAssessmentBodyAsync();
+		if (this.migrationStateModel._targetType === undefined) {
+			await this.shouldNoTargetSelectionDisplayAsync(true);
+		}
+		else {
+			this.executeChange(this.migrationStateModel._targetType);
+			await this._header.populateAssessmentDetailsHeader(this.migrationStateModel);
+			await this._body.populateAssessmentBodyAsync();
+		}
 		this.wizard.nextButton.enabled = this.migrationStateModel._assessmentResults !== undefined;
 	}
 
@@ -216,5 +223,19 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 			}
 		}
 		else { this.wizard.message = { text: '' }; }
+	}
+
+	//function to control display of no target selection text
+	private async shouldNoTargetSelectionDisplayAsync(visible: boolean) {
+		if (visible) {
+			await utils.updateControlDisplay(this._bodySection, false);
+			await utils.updateControlDisplay(this._header.headerCardsContainer, false);
+			await utils.updateControlDisplay(this._header.noTargetSelectedText, true, 'flex');
+		}
+		else {
+			await utils.updateControlDisplay(this._header.noTargetSelectedText, false);
+			await utils.updateControlDisplay(this._bodySection, true, 'flex');
+			await utils.updateControlDisplay(this._header.headerCardsContainer, true, 'flex');
+		}
 	}
 }
