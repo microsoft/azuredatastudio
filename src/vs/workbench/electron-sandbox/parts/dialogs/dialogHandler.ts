@@ -12,6 +12,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { INativeHostService } from 'vs/platform/native/common/native';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { process } from 'vs/base/parts/sandbox/electron-sandbox/globals';
+import { aboutDetail } from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}} Imports about detail localized string for ADS about dialog
 
 export class NativeDialogHandler extends AbstractDialogHandler {
 
@@ -93,8 +94,7 @@ export class NativeDialogHandler extends AbstractDialogHandler {
 				this.productService.vscodeVersion  // {{SQL CARBON EDIT}} - add vscode version
 			);
 			*/
-			return localize({ key: 'aboutDetail', comment: ['Electron, Chromium, Node.js and V8 are product names that need no translation'] },
-				"Version: {0}\nCommit: {1}\nDate: {2}\nElectron: {3}\nChromium: {4}\nNode.js: {5}\nV8: {6}\nOS: {7}",
+			return aboutDetail(
 				version,
 				this.productService.commit || 'Unknown',
 				this.productService.date ? `${this.productService.date}${useAgo ? ' (' + fromNow(new Date(this.productService.date), true) + ')' : ''}` : 'Unknown',
