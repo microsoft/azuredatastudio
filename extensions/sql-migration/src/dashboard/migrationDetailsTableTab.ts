@@ -256,7 +256,7 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		this._schemaMigrationStatusInfoField = await this.createInfoField(loc.SCHEMA_MIGRATION_STATUS, '', false, ' ');
 		this._objectsCollectionCountInfoField = await this.createInfoField(loc.OBJECTS_COLLECTED, '', false, ' ');
 		this._objectsCollectionStartedInfoField = await this.createInfoField(loc.COLLECTION_STARTED, '');
-		this._objectsCollectionEndedInfoField = await this.createInfoField(loc.COLLECTION_STARTED, '');
+		this._objectsCollectionEndedInfoField = await this.createInfoField(loc.COLLECTION_ENDED, '');
 		this._scriptGenerationProgressInfoField = await this.createInfoField(loc.SCRIPT_GENERATION, '', false, ' ');
 		this._scriptGenerationStartedInfoField = await this.createInfoField(loc.SCRIPTING_STARTED, '');
 		this._scriptGenerationEndedInfoField = await this.createInfoField(loc.SCRIPTING_ENDED, '');
@@ -393,12 +393,12 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		this._schemaMigrationStatusInfoField.icon!.iconPath = getSchemaMigrationStatusImage(migration);
 		this._updateInfoFieldValue(this._objectsCollectionCountInfoField, objectCollection?.totalCountOfObjectsCollected?.toString() ?? EmptySettingValue);
 		this._objectsCollectionCountInfoField.icon!.iconPath = getObjectsCollectionStatusImage(migration);
-		this._updateInfoFieldValue(this._objectsCollectionStartedInfoField, objectCollection?.startedOn ?? EmptySettingValue);
-		this._updateInfoFieldValue(this._objectsCollectionEndedInfoField, objectCollection?.endedOn ?? EmptySettingValue);
+		this._updateInfoFieldValue(this._objectsCollectionStartedInfoField, this._convertToLocalDateTime(objectCollection?.startedOn));
+		this._updateInfoFieldValue(this._objectsCollectionEndedInfoField, this._convertToLocalDateTime(objectCollection?.endedOn));
 		this._updateInfoFieldValue(this._scriptGenerationProgressInfoField, scriptGeneration?.progressInPercentage === undefined ? EmptySettingValue : scriptGeneration?.progressInPercentage + "%");
 		this._scriptGenerationProgressInfoField.icon!.iconPath = getScriptGenerationStatusImage(migration);
-		this._updateInfoFieldValue(this._scriptGenerationStartedInfoField, scriptGeneration?.startedOn ?? EmptySettingValue);
-		this._updateInfoFieldValue(this._scriptGenerationEndedInfoField, scriptGeneration?.endedOn ?? EmptySettingValue);
+		this._updateInfoFieldValue(this._scriptGenerationStartedInfoField, this._convertToLocalDateTime(scriptGeneration?.startedOn));
+		this._updateInfoFieldValue(this._scriptGenerationEndedInfoField, this._convertToLocalDateTime(scriptGeneration?.endedOn));
 		this._updateInfoFieldValue(this._succeededScriptCountInfoField, scriptGeneration?.scriptedObjectsCount?.toString() ?? EmptySettingValue);
 		this._updateInfoFieldValue(this._failedScriptCountInfoField, scriptGeneration?.scriptedObjectsFailedCount?.toString() ?? EmptySettingValue);
 
@@ -415,8 +415,8 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		}
 		this._updateInfoFieldValue(this._scriptDeploymentProgressInfoField, scriptDeployment?.progressInPercentage === undefined ? EmptySettingValue : scriptDeployment?.progressInPercentage + "%");
 		this._scriptDeploymentProgressInfoField.icon!.iconPath = getScriptDeploymentStatusImage(migration);
-		this._updateInfoFieldValue(this._scriptDeploymentStartedField, scriptDeployment?.startedOn ?? EmptySettingValue);
-		this._updateInfoFieldValue(this._scriptDeploymentEndedInfoField, scriptDeployment?.endedOn ?? EmptySettingValue);
+		this._updateInfoFieldValue(this._scriptDeploymentStartedField, this._convertToLocalDateTime(scriptDeployment?.startedOn));
+		this._updateInfoFieldValue(this._scriptDeploymentEndedInfoField, this._convertToLocalDateTime(scriptDeployment?.endedOn));
 		this._updateInfoFieldValue(this._succeededDeploymentCountInfoField, scriptDeployment?.succeededDeploymentCount?.toString() ?? EmptySettingValue);
 		this._updateInfoFieldValue(this._failedDeploymentCountInfoField, scriptDeployment?.failedDeploymentCount?.toString() ?? EmptySettingValue);
 
@@ -425,6 +425,15 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		this.deleteButton.enabled = canDeleteMigration(migration);
 		this.retryButton.enabled = canRetryMigration(migration);
 		this.restartButton.enabled = canRestartMigrationWizard(migration);
+	}
+
+	private _convertToLocalDateTime(utcDataTime: string | undefined): string {
+		if (utcDataTime) {
+			var localDateTime = new Date(utcDataTime);
+			return localDateTime.toLocaleString();
+		} else {
+			return EmptySettingValue;
+		}
 	}
 
 	private async _populateTableData(hashSet: loc.LookupTable<number> = {}): Promise<void> {
