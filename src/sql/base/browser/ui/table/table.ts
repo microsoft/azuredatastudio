@@ -23,6 +23,7 @@ import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { IAccessibilityProvider } from 'sql/base/browser/ui/accessibility/accessibilityProvider';
 import { IQuickInputProvider } from 'sql/base/browser/ui/quickInput/quickInputProvider';
 import { localize } from 'vs/nls';
+import { IThemable } from 'sql/platform/theme/common/vsstyler';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
@@ -32,7 +33,7 @@ function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	};
 }
 
-export class Table<T extends Slick.SlickData> extends Widget implements IDisposable {
+export class Table<T extends Slick.SlickData> extends Widget implements IDisposable, IThemable {
 	protected styleElement: HTMLStyleElement;
 	protected idPrefix: string;
 

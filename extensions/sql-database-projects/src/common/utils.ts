@@ -838,3 +838,9 @@ export async function ensureFileExists(absoluteFilePath: string, contents?: stri
 		}
 	}
 }
+
+export function throwIfFailed(result: azdataType.ResultStatus | vscodeMssql.ResultStatus): void {
+	if (!result.success) {
+		throw new Error(constants.errorPrefix(result.errorMessage));
+	}
+}

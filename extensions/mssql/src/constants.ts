@@ -33,6 +33,8 @@ export const configObjectExplorerGroupBySchemaFlagName = 'mssql.objectExplorer.g
 export const configAsyncParallelProcessingName = 'mssql.parallelMessageProcessing';
 export const configEnableSqlAuthenticationProviderName = 'mssql.enableSqlAuthenticationProvider';
 export const configEnableConnectionPoolingName = 'mssql.enableConnectionPooling';
+export const configHttpProxy = 'http.proxy';
+export const configHttpProxyStrictSSL = 'http.proxyStrictSSL';
 
 // COMMANDNAMES //////////////////////////////////////////////////////////
 export const cmdObjectExplorerEnableGroupBySchemaCommand = 'mssql.enableGroupBySchema';

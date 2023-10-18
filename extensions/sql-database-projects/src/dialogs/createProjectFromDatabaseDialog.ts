@@ -110,13 +110,19 @@ export class CreateProjectFromDatabaseDialog {
 
 			const connectionRow = this.createConnectionRow(view);
 			const databaseRow = this.createDatabaseRow(view);
-			const sourceDatabaseFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			sourceDatabaseFormSection.addItems([connectionRow, databaseRow]);
+			const sourceDatabaseFormSection = view.modelBuilder.groupContainer().withLayout({
+				header: constants.sourceDatabase,
+				collapsible: false,
+				collapsed: false
+			}).withItems([connectionRow, databaseRow]).component();
 
 			const projectNameRow = this.createProjectNameRow(view);
 			const projectLocationRow = this.createProjectLocationRow(view);
-			const targetProjectFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			targetProjectFormSection.addItems([projectNameRow, projectLocationRow]);
+			const targetProjectFormSection = view.modelBuilder.groupContainer().withLayout({
+				header: constants.targetProject,
+				collapsible: false,
+				collapsed: false
+			}).withItems([projectNameRow, projectLocationRow]).component();
 
 			const folderStructureRow = this.createFolderStructureRow(view);
 
@@ -140,10 +146,16 @@ export class CreateProjectFromDatabaseDialog {
 				.withItems([this.sdkStyleCheckbox, sdkLearnMore], { CSSStyles: { flex: '0 0 auto', 'margin-right': '10px' } })
 				.component();
 
+			const settingsFormSection = view.modelBuilder.groupContainer().withLayout({
+				header: constants.createProjectSettings,
+				collapsible: false,
+				collapsed: false
+			}).withItems([folderStructureRow, this.includePermissionsCheckbox, sdkFormComponentGroup]).component();
+
 			this.formBuilder = <azdataType.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
 					{
-						title: constants.sourceDatabase,
+						title: '',
 						components: [
 							{
 								component: sourceDatabaseFormSection,
@@ -151,7 +163,7 @@ export class CreateProjectFromDatabaseDialog {
 						]
 					},
 					{
-						title: constants.targetProject,
+						title: '',
 						components: [
 							{
 								component: targetProjectFormSection,
@@ -159,16 +171,10 @@ export class CreateProjectFromDatabaseDialog {
 						]
 					},
 					{
-						title: constants.createProjectSettings,
+						title: '',
 						components: [
 							{
-								component: folderStructureRow,
-							},
-							{
-								component: this.includePermissionsCheckbox
-							},
-							{
-								component: sdkFormComponentGroup
+								component: settingsFormSection
 							}
 						]
 					}

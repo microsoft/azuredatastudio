@@ -12,7 +12,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IViewDescriptorService, IViewsService } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
-import { ISearchWorkbenchService, Match, FileMatch, SearchModel, IChangeEvent, searchMatchComparer, RenderableMatch, FolderMatch, SearchResult } from 'vs/workbench/contrib/search/browser/searchModel';
+import { ISearchViewModelWorkbenchService, Match, FileMatch, SearchModel, IChangeEvent, searchMatchComparer, RenderableMatch, FolderMatch, SearchResult } from 'vs/workbench/contrib/search/browser/searchModel';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IReplaceService } from 'vs/workbench/contrib/search/browser/replace';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
@@ -75,7 +75,7 @@ export class NotebookSearchView extends SearchView {
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IWorkspaceContextService contextService: IWorkspaceContextService,
-		@ISearchWorkbenchService searchWorkbenchService: ISearchWorkbenchService,
+		@ISearchViewModelWorkbenchService searchViewModelWorkbenchService: ISearchViewModelWorkbenchService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IReplaceService replaceService: IReplaceService,
 		@ITextFileService textFileService: ITextFileService,
@@ -97,7 +97,7 @@ export class NotebookSearchView extends SearchView {
 
 		super(options, fileService, editorService, codeEditorService, progressService,
 			notificationService, dialogService, commandService, contextViewService, instantiationService,
-			viewDescriptorService, configurationService, contextService, searchWorkbenchService, contextKeyService,
+			viewDescriptorService, configurationService, contextService, searchViewModelWorkbenchService, contextKeyService,
 			replaceService, textFileService, preferencesService, themeService, searchHistoryService, contextMenuService,
 			menuService, accessibilityService, keybindingService, storageService, openerService, telemetryService,
 			notebookService, logService);
@@ -389,7 +389,7 @@ export class NotebookSearchView extends SearchView {
 			}
 		}, 100);
 
-		return this.viewModel.search(query)
+		return this.viewModel.search(query).asyncResults
 			.then(onComplete, onError);
 	}
 

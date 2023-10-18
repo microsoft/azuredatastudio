@@ -22,6 +22,9 @@ const parallelMessageProcessingConfig = 'parallelMessageProcessing';
 const enableSqlAuthenticationProviderConfig = 'enableSqlAuthenticationProvider';
 const enableConnectionPoolingConfig = 'enableConnectionPooling';
 const tableDesignerPreloadConfig = 'tableDesigner.preloadDatabaseModel';
+const httpConfig = 'http';
+const configProxy = 'proxy';
+const configProxyStrictSSL = 'proxyStrictSSL';
 
 /**
  *
@@ -85,6 +88,19 @@ export function getConfigLogRetentionSeconds(): number | undefined {
 	}
 }
 
+export function getHttpProxyUrl(): string | undefined {
+	let config = getConfiguration(httpConfig);
+	if (config) {
+		return config[configProxy];
+	} return undefined;
+}
+
+export function getHttpProxyStrictSSL(): boolean {
+	let config = getConfiguration(httpConfig);
+	if (config) {
+		return config.get<boolean>(configProxyStrictSSL, true); // true by default
+	} return true; // true by default.
+}
 /**
  * The tracing level defined in the package.json
  */
@@ -202,6 +218,15 @@ export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileNa
 	}
 	// Always enable autoflush so that log entries are written immediately to disk, otherwise we can end up with partial logs
 	launchArgs.push('--autoflush-log');
+
+	let httpProxy = getHttpProxyUrl();
+	if (httpProxy) {
+		launchArgs.push('--http-proxy-url');
+		launchArgs.push(httpProxy);
+		if (getHttpProxyStrictSSL()) {
+			launchArgs.push('--http-proxy-strict-ssl')
+		}
+	}
 	return launchArgs;
 }
 
