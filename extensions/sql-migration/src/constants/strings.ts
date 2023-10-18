@@ -1347,16 +1347,16 @@ export const InternalManagedDatabaseRestoreDetailsStatusLookup: LookupTable<stri
 };
 
 export const SchemaMigrationStatusLookup: LookupTable<string | undefined> = {
-	[MigrationState.CollectionCompleted]: localize('sql.migration.status.collectioncompleted', 'Objects collection completed'),
+	[MigrationState.CollectionCompleted]: localize('sql.migration.status.collectioncompleted', 'Collection completed'),
 	[MigrationState.PrefetchObjects]: localize('sql.migration.status.prefetchobjects', 'Prefetch objects'),
 	[MigrationState.GetDependency]: localize('sql.migration.status.getdependency', 'Get dependency'),
 	[MigrationState.ScriptObjects]: localize('sql.migration.status.scriptobjects', 'Scripting objects'),
 	[MigrationState.ScriptViewIndexes]: localize('sql.migration.status.scriptindexes', 'Scripting indexes'),
 	[MigrationState.ScriptOwnership]: localize('sql.migration.status.scriptownership', 'Scripting ownerships'),
 	[MigrationState.GeneratingScript]: localize('sql.migration.status.generatingscript', 'Generating script'),
-	[MigrationState.GeneratingScriptCompleted]: localize('sql.migration.status.generatingcompleted', 'Script generation completed'),
-	[MigrationState.DeployingSchema]: localize('sql.migration.status.deployingschema', 'Deploying script'),
-	[MigrationState.DeploymentCompleted]: localize('sql.migration.status.deploymentcompleted', 'Deployment completed'),
+	[MigrationState.GeneratingScriptCompleted]: localize('sql.migration.status.generatingcompleted', 'Generating script completed'),
+	[MigrationState.DeployingSchema]: localize('sql.migration.status.deploying.schema', 'Deploying schema'),
+	[MigrationState.DeploymentCompleted]: localize('sql.migration.status.deployment.completed', 'Deployment completed'),
 	[MigrationState.Completed]: localize('sql.migration.status.completed', 'Completed'),
 	[MigrationState.CompletedWithError]: localize('sql.migration.status.completedwitherrors', 'Completed with errors'),
 	default: undefined
