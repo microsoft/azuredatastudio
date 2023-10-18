@@ -111,7 +111,7 @@ export function DB_READINESS_SECTION_TITLE(dbName: string) {
 	return localize('sql.migration.db.readiness.section.title', "Database {0} migration readiness", dbName);
 }
 export function NON_READINESS_DESCRIPTION(issueCount: number) {
-	return localize('sql.migration.non.readiness.description', "The database is not ready to migrate due to {0} blocking issue.", issueCount);
+	return localize('sql.migration.non.readiness.description', "The database is not ready to migrate due to {0} blocking issue(s).", issueCount);
 }
 export function WARNING_READINESS_DESCRIPTION(warnings: number) {
 	return localize('sql.migration.non.readiness.description', "The database is ready to migrate with {0} warnings.", warnings);
@@ -226,7 +226,7 @@ export const IMPORT_PERFORMANCE_DATA_DIALOG_DESCRIPTION = localize('sql.migratio
 export const IMPORT_PERFORMANCE_DATA_DIALOG_HELPER_MESSAGE = localize('sql.migration.sku.import.performance.data.dialog.helper.message', "Select a folder on your local drive");
 export const IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FILE = localize('sql.migration.sku.import.performance.data.dialog.open.file', "Select a file");
 // allow-any-unicode-next-line
-export const AZURE_RECOMMENDATION_CARD_NOT_ENABLED = localize('sql.migration.sku.card.azureRecommendation.notEnabled', "Azure recommendation is not available. Click “Start data collection” button above to get started.");
+export const AZURE_RECOMMENDATION_CARD_NOT_ENABLED = localize('sql.migration.sku.card.azureRecommendation.notEnabled', "Azure recommendation is not available. Click 'Start data collection' button above to get started.");
 export const AZURE_RECOMMENDATION_CARD_IN_PROGRESS = localize('sql.migration.sku.card.azureRecommendation.inProgress', "Azure recommendation will be displayed once data collection is complete.");
 export const AZURE_RECOMMENDATION_STATUS_NOT_ENABLED = localize('sql.migration.sku.azureRecommendation.status.notEnabled', "Azure recommendation collects and analyzes performance data and then recommends an appropriate sized target in Azure for your workload.");
 export const AZURE_RECOMMENDATION_STATUS_IN_PROGRESS = localize('sql.migration.sku.azureRecommendation.status.inProgress', "Data collection is in progress. Time before next SKU recommendation update: ");

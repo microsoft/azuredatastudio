@@ -253,8 +253,6 @@ export class ImportPerformanceDataDialog {
 		const serverName = (await getSourceConnectionProfile()).serverName;
 		const errors: string[] = [];
 		try {
-			// TODO - ADD the card loading.
-			// await this.skuRecommendationPage.startCardLoading();
 			await this.migrationStateModel.getSkuRecommendations();
 
 			const skuRecommendationError = this.migrationStateModel._skuRecommendationResults?.recommendationError;
