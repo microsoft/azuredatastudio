@@ -69,7 +69,6 @@
 		"Microsoft.sql-assessment",
 		"Microsoft.datavirtualization",
 		"Microsoft.sql-database-projects",
-		"Microsoft.sql-migration",
 		"Microsoft.machine-learning",
 		"Redgate.sql-prompt",
 		"Redgate.sql-search",
@@ -109,5 +108,7 @@
 		"version": "0.0.76",
 		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"
 	},
-	"builtInExtensions": [ ]
+	"builtInExtensions": [
+		"Microsoft.sql-migration"
+	]
 }
