@@ -31,6 +31,7 @@ import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CancellationToken } from 'vs/base/common/cancellation';
+import { QueryEvent } from 'sql/workbench/services/query/common/queryModelService';
 
 /*
 * Query Runner class which handles running a query, reports the results to the content manager,
@@ -82,7 +83,7 @@ export default class QueryRunner extends Disposable {
 	private readonly _onVisualize = this._register(new Emitter<ResultSetSummary>());
 	public readonly onVisualize = this._onVisualize.event;
 
-	private readonly _onSpidAvailable = this._register(new Emitter<number>());
+	private readonly _onSpidAvailable = this._register(new Emitter<QueryEvent>());
 	public readonly onSpidAvailable = this._onSpidAvailable.event;
 
 	private _queryStartTime?: Date;
@@ -283,7 +284,11 @@ export default class QueryRunner extends Disposable {
 	 * Handle a QueryComplete from the service layer
 	 */
 	public handleSpid(spid: number): void {
-		this._onSpidAvailable.fire(spid);
+		let spidEvent: QueryEvent = {
+			type: this.uri,
+			data: spid,
+		}
+		this._onSpidAvailable.fire(spidEvent);
 	}
 
 	/**

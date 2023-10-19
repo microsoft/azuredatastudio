@@ -7,7 +7,7 @@ import { IQueryModelService, IQueryEvent } from 'sql/workbench/services/query/co
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import * as azdata from 'azdata';
 import { Event } from 'vs/base/common/event';
-import { QueryInfo } from 'sql/workbench/services/query/common/queryModelService';
+import { QueryEvent, QueryInfo } from 'sql/workbench/services/query/common/queryModelService';
 import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { IRange } from 'vs/editor/common/core/range';
 import { ICellValue } from 'sql/workbench/services/query/common/query';
@@ -120,4 +120,5 @@ export class TestQueryModelService implements IQueryModelService {
 		throw new Error('Method not implemented.');
 	}
 	onEditSessionReady: Event<azdata.EditSessionReadyParams>;
+	onSpidAvailable: Event<QueryEvent>;
 }

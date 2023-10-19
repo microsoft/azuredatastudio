@@ -12,6 +12,7 @@ import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment } from 'vs/workbench/services/statusbar/browser/statusbar';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { localize } from 'vs/nls';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
 // Connection status bar showing the current global connection
 export class ConnectionStatusbarItem extends Disposable implements IWorkbenchContribution {
@@ -30,6 +31,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService,
+		@IQueryModelService private queryModelService: IQueryModelService,
 	) {
 		super();
 		this.statusItem = this._register(
@@ -59,6 +61,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		this._register(this.connectionManagementService.onDisconnect(() => { this._updateSPIDStatus(); this._updateStatus(); }));
 		this._register(this.editorService.onDidActiveEditorChange(() => { this._updateSPIDStatus(); this._updateStatus(); }));
 		this._register(this.objectExplorerService.onSelectionOrFocusChange(() => { this._updateSPIDStatus(); this._updateStatus(); }));
+		this._register(this.queryModelService.onSpidAvailable(e => this._refreshSPIDStatus(e.type, e.data)));
 	}
 
 	private hide() {
@@ -97,6 +100,27 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 			if (info && info.spid) {
 				let text = '(' + info.spid + ')'
 				let tooltip = 'SPID: ' + info.spid;
+				this.SPIDStatusItem.update({
+					name: this.SPIDname,
+					text: text,
+					ariaLabel: text,
+					tooltip
+				});
+			}
+		}
+	}
+
+	private _refreshSPIDStatus(uri: string, spid: any): void {
+		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+		if (activeConnection) {
+			let currUri = this.connectionManagementService.getConnectionUriFromId(activeConnection.id);
+			if (this.editorService.activeEditor) {
+				// USE ACTIVE EDITOR INFO AS THE SPID WILL BE DIFFERENT FOR EDITOR CONNECTION.
+				currUri = this.editorService.activeEditor.resource.toString();
+			}
+			if (currUri === uri) {
+				let text = '(' + spid + ')'
+				let tooltip = 'SPID: ' + spid;
 				this.SPIDStatusItem.update({
 					name: this.SPIDname,
 					text: text,

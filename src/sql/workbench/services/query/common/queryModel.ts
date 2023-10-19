@@ -18,7 +18,7 @@ import {
 	queryeditor,
 	executionPlan
 } from 'azdata';
-import { QueryInfo } from 'sql/workbench/services/query/common/queryModelService';
+import { QueryEvent, QueryInfo } from 'sql/workbench/services/query/common/queryModelService';
 import { IRange } from 'vs/editor/common/core/range';
 
 export const SERVICE_ID = 'queryModelService';
@@ -82,6 +82,7 @@ export interface IQueryModelService {
 	onRunQueryUpdate: Event<string>;
 	onRunQueryComplete: Event<string>;
 	onQueryEvent: Event<IQueryEvent>;
+	onSpidAvailable: Event<QueryEvent>;
 
 	// Edit Data Functions
 	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit?: number, queryString?: string): void;

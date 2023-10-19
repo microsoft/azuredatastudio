@@ -391,13 +391,9 @@ export class QueryModelService implements IQueryModelService {
 			this._onQueryEvent.fire(event);
 		});
 
-		// queryRunner.onSpidAvailable(e => {
-		// 	let result: QueryEvent = {
-		// 		type: queryRunner.uri,
-		// 		data: e
-		// 	}
-		// 	this._onSpidAvailableEmitter.fire(result);
-		// });
+		queryRunner.onSpidAvailable(e => {
+			this._onSpidAvailableEmitter.fire(e);
+		});
 
 		info.queryRunner = queryRunner;
 		info.dataService = this._instantiationService.createInstance(DataService, queryRunner.uri);
