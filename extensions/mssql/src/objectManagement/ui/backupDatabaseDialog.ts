@@ -102,10 +102,27 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let overwriteGroup = this.createGroup(loc.BackupOverwriteMediaLabel, [], false);
 
 		// Reliability
-		let reliabilityGroup = this.createGroup(loc.BackupReliabilityLabel, [], false);
+		let verifyCheckbox = this.createCheckbox('Verify backup when finished', checked => {
+			return Promise.resolve();
+		});
+		let checksumCheckbox = this.createCheckbox('Perform checksum before writing to media', checked => {
+			return Promise.resolve();
+		});
+		let continueCheckbox = this.createCheckbox('Continue on error', checked => {
+			return Promise.resolve();
+		});
+
+		let reliabilityGroup = this.createGroup(loc.BackupReliabilityLabel, [verifyCheckbox, checksumCheckbox, continueCheckbox], false);
 
 		// Transaction log
-		let transactionGroup = this.createGroup(loc.BackupTransactionLogLabel, [], false);
+		// Only should be enabled if backup type is Transaction Log
+		let truncateButton = this.createRadioButton('Truncate the transaction log', 'BackupTransactionLog', false, checked => {
+			return Promise.resolve();
+		}, false);
+		let backupTailButton = this.createRadioButton('Back up the tail of the log, and leave the database in the restoring state', 'BackupTransactionLog', false, checked => {
+			return Promise.resolve();
+		}, false);
+		let transactionGroup = this.createGroup(loc.BackupTransactionLogLabel, [truncateButton, backupTailButton], false);
 
 		// Compression
 		let compressionValues = ['Use the default server setting', 'Compress backup', 'Do not compress backup'];
