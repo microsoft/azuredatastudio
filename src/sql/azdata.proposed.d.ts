@@ -524,13 +524,6 @@ declare module 'azdata' {
 		spid?: number | undefined;
 	}
 
-	export interface QueryExecuteCompleteNotificationResult {
-		/**
-		 * Server Process ID returned from service host, if query connect + execute was successful.
-		 */
-		spid?: number | undefined;
-	}
-
 	/*
 	 * Add optional per-OS default value.
 	 */

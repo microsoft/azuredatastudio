@@ -73,7 +73,10 @@ export class SqlNotebookController implements vscode.Disposable {
 	}
 
 	private handleQueryComplete(result: azdata.QueryExecuteCompleteNotificationResult): void {
-		if (this._queryCompleteHandler && this._queryCompleteHandler.ownerUri === result.ownerUri) { // Check if handler is undefined separately in case the result URI is also undefined
+		let separator = " - SPID : ";
+		let stringArray = result.ownerUri.split(separator);
+		let uri = stringArray[0];
+		if (this._queryCompleteHandler && this._queryCompleteHandler.ownerUri === uri) { // Check if handler is undefined separately in case the result URI is also undefined
 			this._queryCompleteHandler.handler(result.batchSummaries);
 		}
 	}

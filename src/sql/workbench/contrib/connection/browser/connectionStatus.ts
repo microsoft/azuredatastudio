@@ -94,14 +94,16 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 					info = newInfo;
 				}
 			}
-			let text = '(' + info.spid + ')'
-			let tooltip = 'SPID: ' + info.spid;
-			this.SPIDStatusItem.update({
-				name: this.SPIDname,
-				text: text,
-				ariaLabel: text,
-				tooltip
-			});
+			if (info.spid) {
+				let text = '(' + info.spid + ')'
+				let tooltip = 'SPID: ' + info.spid;
+				this.SPIDStatusItem.update({
+					name: this.SPIDname,
+					text: text,
+					ariaLabel: text,
+					tooltip
+				});
+			}
 		}
 	}
 

@@ -70,6 +70,7 @@ export class QueryModelService implements IQueryModelService {
 	private _onRunQueryComplete: Emitter<string>;
 	private _onQueryEvent: Emitter<IQueryEvent>;
 	private _onEditSessionReady: Emitter<azdata.EditSessionReadyParams>;
+	private _onSpidAvailableEmitter: Emitter<QueryEvent>;
 	private _onCellSelectionChangedEmitter = new Emitter<ICellValue[]>();
 
 	// EVENTS /////////////////////////////////////////////////////////////
@@ -79,6 +80,7 @@ export class QueryModelService implements IQueryModelService {
 	public get onQueryEvent(): Event<IQueryEvent> { return this._onQueryEvent.event; }
 	public get onEditSessionReady(): Event<azdata.EditSessionReadyParams> { return this._onEditSessionReady.event; }
 	public get onCellSelectionChanged(): Event<ICellValue[]> { return this._onCellSelectionChangedEmitter.event; }
+	public get onSpidAvailable(): Event<QueryEvent> { return this._onSpidAvailableEmitter.event; }
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
@@ -94,6 +96,7 @@ export class QueryModelService implements IQueryModelService {
 		this._onRunQueryComplete = new Emitter<string>();
 		this._onQueryEvent = new Emitter<IQueryEvent>();
 		this._onEditSessionReady = new Emitter<azdata.EditSessionReadyParams>();
+		this._onSpidAvailableEmitter = new Emitter<QueryEvent>();
 	}
 
 	// IQUERYMODEL /////////////////////////////////////////////////////////
@@ -387,6 +390,14 @@ export class QueryModelService implements IQueryModelService {
 			};
 			this._onQueryEvent.fire(event);
 		});
+
+		// queryRunner.onSpidAvailable(e => {
+		// 	let result: QueryEvent = {
+		// 		type: queryRunner.uri,
+		// 		data: e
+		// 	}
+		// 	this._onSpidAvailableEmitter.fire(result);
+		// });
 
 		info.queryRunner = queryRunner;
 		info.dataService = this._instantiationService.createInstance(DataService, queryRunner.uri);
