@@ -11,12 +11,12 @@ import { BackupDatabaseDocUrl } from '../constants';
 import * as loc from '../localizedConstants';
 import { DefaultInputWidth } from '../../ui/dialogBase';
 
-const DialogWidth = '750px';
+// const DialogWidth = '750px';
 
 export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		options.width = DialogWidth;
+		// options.width = DialogWidth;
 		super(objectManagementService, options, loc.BackupDatabaseDialogTitle(options.database), 'BackupDatabase');
 		this.dialogObject.okButton.label = loc.BackupButtonLabel;
 	}
@@ -26,26 +26,28 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	protected override async initializeUI(): Promise<void> {
-		let generalTab = this.initializeGeneralTab();
-		let mediaOptionsTab = this.initializeMediaOptionsTab();
-		let backupOptionsTab = this.initializeBackupOptionsTab();
+		let generalSection = this.initializeGeneralSection();
+		let optionsSection = this.initializeOptionsSection();
 
-		const tabGroup = { title: '', tabs: [generalTab, mediaOptionsTab, backupOptionsTab] };
-		const tabbedPannel = this.modelView.modelBuilder.tabbedPanel()
-			.withTabs([tabGroup])
-			.withLayout({
-				orientation: azdata.TabOrientation.Vertical
-			})
-			.withProps({
-				CSSStyles: {
-					'margin': '-10px 0px 0px -10px'
-				}
-			}).component();
+		this.formContainer.addItems([generalSection, optionsSection]);
 
-		this.formContainer.addItem(tabbedPannel);
+		// let backupOptionsTab = this.initializeBackupOptionsTab();
+
+		// const tabGroup = { title: '', tabs: [generalTab, mediaOptionsTab, backupOptionsTab] };
+		// const tabbedPannel = this.modelView.modelBuilder.tabbedPanel()
+		// 	.withTabs([tabGroup])
+		// 	.withLayout({
+		// 		orientation: azdata.TabOrientation.Vertical
+		// 	})
+		// 	.withProps({
+		// 		CSSStyles: {
+		// 			'margin': '-10px 0px 0px -10px'
+		// 		}
+		// 	}).component();
+		// this.formContainer.addItem(tabbedPannel);
 	}
 
-	private initializeGeneralTab(): azdata.Tab {
+	private initializeGeneralSection(): azdata.GroupContainer {
 		let components: azdata.Component[] = [];
 		let inputBox = this.createInputBox(newValue => {
 			return Promise.resolve();
@@ -92,28 +94,19 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 		// TODO: Add backup files table
 
-		let group = this.createGroup('', components, false);
-		return this.createTab('generalId', loc.GeneralSectionHeader, group);
+		return this.createGroup(loc.GeneralSectionHeader, components, false);
 	}
 
-	private initializeMediaOptionsTab(): azdata.Tab {
+	private initializeOptionsSection(): azdata.GroupContainer {
 		// let components: azdata.Component[] = [];
 
 		let overwriteGroup = this.createGroup('Overwrite media', [], false);
 		let reliabilityGroup = this.createGroup('Reliability', [], false);
 		let transactionGroup = this.createGroup('Transaction log', [], false);
 
-		let parentGroup = this.createGroup('', [overwriteGroup, reliabilityGroup, transactionGroup], false);
-		return this.createTab('mediaOptionsId', loc.BackupMediaOptionsLabel, parentGroup);
-	}
+		let compressionGroup = this.createGroup('Compression', [], false);
+		let encryptionGroup = this.createGroup('Encryption', [], false);
 
-	private initializeBackupOptionsTab(): azdata.Tab {
-		// let components: azdata.Component[] = [];
-
-		let overwriteGroup = this.createGroup('Compression', [], false);
-		let reliabilityGroup = this.createGroup('Encryption', [], false);
-
-		let parentGroup = this.createGroup('', [overwriteGroup, reliabilityGroup], false);
-		return this.createTab('backupOptionsId', loc.BackupOptionsLabel, parentGroup);
+		return this.createGroup(loc.OptionsSectionHeader, [overwriteGroup, reliabilityGroup, transactionGroup, compressionGroup, encryptionGroup], true, true);
 	}
 }
