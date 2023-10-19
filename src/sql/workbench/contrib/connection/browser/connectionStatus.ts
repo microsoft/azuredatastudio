@@ -118,7 +118,11 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 				// USE ACTIVE EDITOR INFO AS THE SPID WILL BE DIFFERENT FOR EDITOR CONNECTION.
 				currUri = this.editorService.activeEditor.resource.toString();
 			}
+			let info = this.connectionManagementService.getConnectionInfo(currUri);
 			if (currUri === uri) {
+				if (info) {
+					info.spid = spid;
+				}
 				let text = '(' + spid + ')'
 				let tooltip = 'SPID: ' + spid;
 				this.SPIDStatusItem.update({
