@@ -116,7 +116,8 @@ export function WARNING_READINESS_DESCRIPTION(warnings: number) {
 	return localize('sql.migration.non.readiness.description', "The database is ready to migrate with {0} warnings.", warnings);
 }
 export const READINESS_DESCRIPTION = localize('sql.migration.readiness.description', "The database is ready to migrate.");
-export const SELECT_TARGET_LABEL = localize('sql.migration.select.target.label', 'Select target type');
+export const SELECT_TARGET_LABEL = localize('sql.migration.no.target.selected.label', 'Select target type');
+export const NO_TARGET_SELECTED_LABEL = localize('sql.migration.select.target.label', 'No Target selected. Select Target to view the Assessment Summary.');
 export const FINDINGS_LABEL = localize('sql.migration.findings.label', "Findings");
 export const ENCRYPTION_LABEL = localize('sql.migration.encryption.label', "Encryption");
 export const ENCRYPTION_DESCRIPTION = localize('sql.migration.encryption.description', "This database is encrypted using Transparent data encryption (TDE). You need to migrate certificates before you can migrate this database.");

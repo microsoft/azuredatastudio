@@ -230,10 +230,10 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 		if (visible) {
 			await utils.updateControlDisplay(this._bodySection, false);
 			await utils.updateControlDisplay(this._header.headerCardsContainer, false);
-			await utils.updateControlDisplay(this._header.noTargetSelectedText, true, 'flex');
+			await utils.updateControlDisplay(this._header.noTargetSelectedContainer, true, 'flex');
 		}
 		else {
-			await utils.updateControlDisplay(this._header.noTargetSelectedText, false);
+			await utils.updateControlDisplay(this._header.noTargetSelectedContainer, false);
 			await utils.updateControlDisplay(this._bodySection, true, 'flex');
 			await utils.updateControlDisplay(this._header.headerCardsContainer, true, 'flex');
 		}

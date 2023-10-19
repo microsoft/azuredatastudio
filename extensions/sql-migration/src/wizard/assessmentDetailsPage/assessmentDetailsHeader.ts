@@ -10,6 +10,7 @@ import { MigrationStateModel } from '../../models/stateMachine';
 import { MigrationTargetType } from '../../api/utils';
 import * as utils from '../../api/utils';
 import { IssueCategory } from '../../constants/helper';
+import { IconPathHelper } from '../../constants/iconPathHelper';
 
 interface IActionMetadata {
 	title?: string,
@@ -22,7 +23,7 @@ export class AssessmentDetailsHeader {
 	private _valueContainers: azdata.TextComponent[] = [];
 	private _targetSelectionDropdown!: azdata.DropDownComponent;
 	private _targetTypeContainer!: azdata.FlexContainer;
-	private _noTargetSelectedText!: azdata.TextComponent;
+	private _noTargetSelectedContainer!: azdata.FlexContainer;
 	private _headerCardsContainer!: azdata.FlexContainer;
 
 	// public getter for target type selection drop down.
@@ -36,9 +37,9 @@ export class AssessmentDetailsHeader {
 	}
 
 
-	// public getter for noTargetSelectedText.
-	public get noTargetSelectedText() {
-		return this._noTargetSelectedText;
+	// public getter for noTargetSelectedContainer.
+	public get noTargetSelectedContainer() {
+		return this._noTargetSelectedContainer;
 	}
 
 	//public getter for headerCardsContainer.
@@ -59,13 +60,7 @@ export class AssessmentDetailsHeader {
 
 		this._targetTypeContainer = this.createTargetTypeContainer();
 
-		this._noTargetSelectedText = this._view.modelBuilder.text().withProps({
-			value: "Select Target Platform Type",
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'margin': '0px'
-			}
-		}).component();
+		this._noTargetSelectedContainer = this.createTargetSelectedContainer();
 
 		this._headerCardsContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
@@ -86,9 +81,48 @@ export class AssessmentDetailsHeader {
 		// create individual card component for each property in above list
 		this._headerCardsContainer.addItems(assessmentHeaderLabels.map(l => this.createCard(l)));
 
-		headerContainer.addItems([this._targetTypeContainer, this._noTargetSelectedText, this._headerCardsContainer]);
+		headerContainer.addItems([this._targetTypeContainer, this._noTargetSelectedContainer, this._headerCardsContainer]);
 
 		return headerContainer;
+	}
+
+	// function creating ui for no target selected container.
+	private createTargetSelectedContainer(): azdata.FlexContainer {
+		const container = this._view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column',
+		}).withProps({
+			CSSStyles: {
+				'margin-left': '50px',
+				'margin-top': '50px'
+			}
+		}).component();
+
+		const emptyStateImage = this._view.modelBuilder.image().withProps({
+			iconPath: IconPathHelper.emptyState,
+			iconHeight: 200,
+			iconWidth: 200,
+			width: 200,
+			height: 200,
+			CSSStyles: {
+				'opacity': '50%',
+				'margin': '3% auto',
+				'filter': 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))'
+			}
+		}).component();
+
+		const noTargetSelectedText = this._view.modelBuilder.text().withProps({
+			value: constants.NO_TARGET_SELECTED_LABEL,
+			width: 210,
+			height: 34,
+			CSSStyles: {
+				...styles.NOTE_CSS,
+				'margin': 'auto',
+				'text-align': 'center'
+			}
+		}).component();
+
+		container.addItems([emptyStateImage, noTargetSelectedText]);
+		return container;
 	}
 
 	// function defining ui for card component in ui section.
