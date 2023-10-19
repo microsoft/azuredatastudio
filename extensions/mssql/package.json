@@ -212,6 +212,11 @@
         "command": "mssql.clearPooledConnections",
         "category": "MSSQL",
         "title": "%mssql.connection.clearPooledConnections%"
+      },
+      {
+        "command": "mssql.restoreDatabase",
+        "category": "MSSQL",
+        "title": "%title.restoreDatabase%"
       }
     ],
     "outputChannels": [
@@ -621,6 +626,10 @@
         {
           "command": "mssql.disableGroupBySchemaTitle",
           "when": "false"
+        },
+        {
+          "command": "mssql.restoreDatabase",
+          "when": "false"
         }
       ],
       "objectExplorer/item/context": [
@@ -774,6 +783,11 @@
           "command": "mssql.dropObject",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/)  && config.workbench.enablePreviewFeatures",
           "group": "inline@3"
+        },
+        {
+          "command": "mssql.restoreDatabase",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "backupRestore@1"
         }
       ],
       "dataExplorer/context": [

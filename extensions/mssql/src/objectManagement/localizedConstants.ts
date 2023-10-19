@@ -133,6 +133,12 @@ export function OpenAttachDatabaseDialogError(error: string): string {
 
 export const AttachDatabaseOperationDisplayName = localize('objectManagement.attachDatabaseOperationName', "Attach database");
 
+export function OpenRestoreDatabaseDialogError(error: string): string {
+	return localize({
+		key: 'objectManagement.openRestoreDatabaseDialogError',
+		comment: ['{0}: error message.']
+	}, "An error occurred while opening the restore database dialog. {0}", error);
+}
 export function OpenObjectPropertiesDialogError(objectType: string, objectName: string, error: string): string {
 	return localize({
 		key: 'objectManagement.openObjectPropertiesDialogError',
@@ -206,6 +212,7 @@ export const EditionText = localize('objectManagement.editionLabel', "Edition");
 export const MaxSizeText = localize('objectManagement.maxSizeLabel', "Max Size");
 export const AzurePricingLinkText = localize('objectManagement.azurePricingLink', "Azure SQL Database pricing calculator");
 export const DetachDatabaseDialogTitle = (dbName: string) => localize('objectManagement.detachDatabaseDialogTitle', "Detach Database - {0} (Preview)", dbName);
+export const RestoreDatabaseDialogTitle = (dbName: string) => localize('objectManagement.restoreDatabaseDialogTitle', "Restore Database - {0} (Preview)", dbName);
 export const DetachDropConnections = localize('objectManagement.detachDropConnections', "Drop connnections");
 export const DetachUpdateStatistics = localize('objectManagement.detachUpdateStatistics', "Update statistics");
 export const DatabaseFilesLabel = localize('objectManagement.databaseFiles', "Database Files");
