@@ -124,6 +124,7 @@
     "vscode-oniguruma": "1.7.0",
     "vscode-regexpp": "^3.1.0",
     "vscode-textmate": "9.0.0",
+    "xml2js": "^0.6.2",
     "xterm": "5.3.0-beta.61",
     "xterm-addon-canvas": "0.5.0-beta.22",
     "xterm-addon-image": "0.6.0-beta.14",
@@ -166,6 +167,7 @@
     "@types/wicg-file-system-access": "^2020.9.6",
     "@types/windows-foreground-love": "^0.3.0",
     "@types/winreg": "^1.2.30",
+    "@types/xml2js": "^0.4.12",
     "@types/yauzl": "^2.9.1",
     "@types/yazl": "^2.4.2",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
@@ -259,7 +261,6 @@
     "webpack": "^5.42.0",
     "webpack-cli": "^5.0.1",
     "webpack-stream": "^7.0.0",
-    "xml2js": "^0.5.0",
     "yaserver": "^0.2.0"
   },
   "repository": {
