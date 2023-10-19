@@ -94,7 +94,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 					info = newInfo;
 				}
 			}
-			if (info.spid) {
+			if (info && info.spid) {
 				let text = '(' + info.spid + ')'
 				let tooltip = 'SPID: ' + info.spid;
 				this.SPIDStatusItem.update({

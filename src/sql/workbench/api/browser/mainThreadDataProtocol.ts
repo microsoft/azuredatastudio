@@ -595,10 +595,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 
 	// Query Management handlers
 	public $onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void {
-		let separator = " - SPID : ";
-		let stringArray = result.ownerUri.split(separator);
-		let uri = stringArray[0];
-		perf.mark(`sql/query/${uri}/main_$onQueryComplete`);
+		perf.mark(`sql/query/${result.ownerUri}/main_$onQueryComplete`);
 		this._queryManagementService.onQueryComplete(result);
 	}
 	public $onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {

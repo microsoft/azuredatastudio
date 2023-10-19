@@ -357,15 +357,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	override $onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void {
-		let separator = " - SPID : ";
-		let stringArray = result.ownerUri.split(separator);
-		let uri = stringArray[0];
-		let spid = stringArray[1];
 		if (this.uriTransformer) {
-			uri = this._getTransformedUri(uri, this.uriTransformer.transformOutgoing);
-			result.ownerUri = uri + separator + spid;
+			result.ownerUri = this._getTransformedUri(result.ownerUri, this.uriTransformer.transformOutgoing);
 		}
-		this._perfProxy.$mark(`sql/query/${uri}/ext_$onQueryComplete`);
+		this._perfProxy.$mark(`sql/query/${result.ownerUri}/ext_$onQueryComplete`);
 		// clear messages to maintain the order of things
 		if (this.messageRunner.isScheduled()) {
 			this.messageRunner.cancel();
