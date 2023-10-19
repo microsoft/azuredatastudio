@@ -78,7 +78,7 @@ export class TestQueryProvider implements azdata.QueryProvider {
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult> {
 		throw new Error('Method not implemented.');
 	}
-	copyResults(requestParams: azdata.CopyResultsRequestParams): Thenable<void> {
+	copyResults(requestParams: azdata.CopyResultsRequestParams): Thenable<azdata.CopyResultsRequestResult> {
 		throw new Error('Method not implemented.');
 	}
 	setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void> {
@@ -151,7 +151,7 @@ export class TestExtensionContext implements vscode.ExtensionContext {
 	globalState: ExtensionGlobalMemento;
 	extensionUri: vscode.Uri;
 	extensionPath: string;
-	environmentVariableCollection: vscode.EnvironmentVariableCollection;
+	environmentVariableCollection: vscode.GlobalEnvironmentVariableCollection;
 	asAbsolutePath(relativePath: string): string {
 		throw new Error('Method not implemented.');
 	}

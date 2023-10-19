@@ -23,11 +23,6 @@ const publicAzureSettings: ProviderSettings = {
 				endpoint: 'https://management.core.windows.net/',
 				azureResourceId: AzureResource.MicrosoftResourceManagement
 			},
-			graphResource: {
-				id: SettingIds.graph,
-				endpoint: 'https://graph.windows.net/',
-				azureResourceId: AzureResource.Graph
-			},
 			msGraphResource: {
 				id: SettingIds.msgraph,
 				endpoint: 'https://graph.microsoft.com/',
@@ -103,11 +98,6 @@ const usGovAzureSettings: ProviderSettings = {
 				endpoint: 'https://management.core.usgovcloudapi.net/',
 				azureResourceId: AzureResource.MicrosoftResourceManagement
 			},
-			graphResource: {
-				id: SettingIds.graph,
-				endpoint: 'https://graph.windows.net/',
-				azureResourceId: AzureResource.Graph
-			},
 			msGraphResource: {
 				id: SettingIds.msgraph,
 				endpoint: 'https://graph.microsoft.us/',
@@ -176,11 +166,6 @@ const chinaAzureSettings: ProviderSettings = {
 				id: SettingIds.marm,
 				endpoint: 'https://management.core.chinacloudapi.cn/',
 				azureResourceId: AzureResource.MicrosoftResourceManagement
-			},
-			graphResource: {
-				id: SettingIds.graph,
-				endpoint: 'https://graph.chinacloudapi.cn',
-				azureResourceId: AzureResource.Graph
 			},
 			msGraphResource: {
 				id: SettingIds.msgraph,

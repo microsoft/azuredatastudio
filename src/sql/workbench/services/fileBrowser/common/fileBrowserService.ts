@@ -46,11 +46,11 @@ export class FileBrowserService implements IFileBrowserService {
 		return this._onPathValidate.event;
 	}
 
-	public openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Promise<boolean> {
+	public openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean, showFoldersOnly?: boolean): Promise<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
 			const provider = this.getProvider(ownerUri);
 			if (provider) {
-				provider.openFileBrowser(ownerUri, expandPath, fileFilters, changeFilter).then(result => {
+				provider.openFileBrowser(ownerUri, expandPath, fileFilters, changeFilter, showFoldersOnly).then(result => {
 					resolve(result);
 				}, error => {
 					reject(error);

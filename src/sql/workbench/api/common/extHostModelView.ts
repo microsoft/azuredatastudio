@@ -290,6 +290,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
+	chart<TChartType extends azdata.ChartType, TData extends azdata.ChartData<TChartType>, TOptions extends azdata.ChartOptions<TChartType>>(): azdata.ComponentBuilder<azdata.ChartComponent<TChartType, TData, TOptions>, azdata.ChartComponentProperties<TChartType, TData, TOptions>> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.ChartComponent<TChartType, TData, TOptions>, azdata.ChartComponentProperties<TChartType, TData, TOptions>> = this.getComponentBuilder(new ChartComponentWrapper<TChartType, TData, TOptions>(this._proxy, this._handle, id, this.logService), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	getComponentBuilder<T extends azdata.Component, TPropertyBag extends azdata.ComponentProperties>(component: ComponentWrapper, id: string): ComponentBuilderImpl<T, TPropertyBag> {
 		let componentBuilder: ComponentBuilderImpl<T, TPropertyBag> = new ComponentBuilderImpl<T, TPropertyBag>(component);
 		this._componentBuilders.set(id, componentBuilder);
@@ -2270,6 +2277,44 @@ class GroupContainerComponentWrapper extends ComponentWrapper implements azdata.
 	}
 	public set collapsed(v: boolean) {
 		this.setProperty('collapsed', v);
+	}
+}
+
+class ChartComponentWrapper<TChartType extends azdata.ChartType, TData extends azdata.ChartData<TChartType>, TOptions extends azdata.ChartOptions<TChartType>> extends ComponentWrapper implements azdata.ChartComponent<TChartType, TData, TOptions> {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.Chart, id, logService);
+		this.properties = {};
+
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+	}
+
+	public set chartType(v: TChartType) {
+		this.setProperty('chartType', v);
+	}
+
+	public get chartType(): TChartType {
+		return this.properties['chartType'];
+	}
+
+	public set data(v: TData) {
+		this.setProperty('data', v);
+	}
+
+	public get data(): TData {
+		return this.properties['data'];
+	}
+
+	public set options(v: TOptions) {
+		this.setProperty('options', v);
+	}
+
+	public get options(): TOptions {
+		return this.properties['options'];
+	}
+
+	public get onDidClick(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
 	}
 }
 

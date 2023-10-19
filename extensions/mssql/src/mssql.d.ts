@@ -56,7 +56,7 @@ declare module 'mssql' {
 		getChildren(refreshChildren: boolean): ITreeNode[] | Thenable<ITreeNode[]>;
 	}
 
-	//#region --- schema compare
+	//#region --- Schema Compare
 	export interface SchemaCompareResult extends azdata.ResultStatus {
 		operationId: string;
 		areEqual: boolean;
@@ -203,7 +203,7 @@ declare module 'mssql' {
 
 	//#endregion
 
-	//#region --- dacfx
+	//#region --- DacFx
 	export const enum ExtractTarget {
 		dacpac = 0,
 		file = 1,
@@ -294,7 +294,7 @@ declare module 'mssql' {
 
 	//#endregion
 
-	//#region --- Sql Projects
+	//#region --- SQL Projects
 
 	/**
 	 * Interface for working with .sqlproj files
@@ -621,7 +621,6 @@ declare module 'mssql' {
 		moveNoneItem(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus>;
 	}
 
-
 	//#region Results
 
 	export interface GetDatabaseReferencesResult extends azdata.ResultStatus {
@@ -847,6 +846,8 @@ declare module 'mssql' {
 	}
 	//#endregion
 
+	//#region --- Blob storage
+
 	export interface CreateSasResponse {
 		sharedAccessSignature: string;
 	}
@@ -864,7 +865,9 @@ declare module 'mssql' {
 		createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Promise<CreateSasResponse>;
 	}
 
-	// Object Management - Begin.
+	//#endregion
+
+	//#region --- Object Management
 	export namespace ObjectManagement {
 
 		/**
@@ -977,23 +980,294 @@ declare module 'mssql' {
 		/**
 		 * Detach a database.
 		 * @param connectionUri The URI of the server connection.
-		 * @param objectUrn SMO Urn of the database to be detached. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
+		 * @param database The target database.
 		 * @param dropConnections Whether to drop active connections to this database.
 		 * @param updateStatistics Whether to update the optimization statistics related to this database.
 		 * @param generateScript Whether to generate a TSQL script for the operation instead of detaching the database.
 		 * @returns A string value representing the generated TSQL query if generateScript was set to true, and an empty string otherwise.
 		 */
-		detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Thenable<string>;
+		detachDatabase(connectionUri: string, database: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Thenable<string>;
+		/**
+		 * Attach one or more databases.
+		 * @param connectionUri The URI of the server connection.
+		 * @param databases The name, owner, and file paths for each database that will be attached.
+		 * @param generateScript Whether to generate a TSQL script for the operation instead of detaching the database.
+		 * @returns A string value representing the generated TSQL query if generateScript was set to true, and an empty string otherwise.
+		 */
+		attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Thenable<string>;
 		/**
 		 * Drop a database.
 		 * @param connectionUri The URI of the server connection.
-		 * @param objectUrn SMO Urn of the database to be detached. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
+		 * @param database The target database.
 		 * @param dropConnections Whether to drop active connections to this database.
 		 * @param deleteBackupHistory Whether to delete backup and restore history information for this database.
 		 * @param generateScript Whether to generate a TSQL script for the operation instead of detaching the database.
 		 * @returns A string value representing the generated TSQL query if generateScript was set to true, and an empty string otherwise.
 		 */
-		dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string>;
+		dropDatabase(connectionUri: string, database: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string>;
+		/**
+		 * Gets the file path for the default database file folder for a SQL Server instance.
+		 * @param connectionUri The URI of the connection for the specific server.
+		 * @returns The file path to the data folder.
+		 */
+		getDataFolder(connectionUri: string): Thenable<string>;
+		/**
+		 * Retrieves other database files associated with a specified primary file, such as Data, Log, and FileStream files.
+		 * @param connectionUri The URI of the connection for the specific server.
+		 * @param primaryFilePath The file path for the primary database file on the target server.
+		 * @returns An array of file path strings for each of the associated files.
+		 */
+		getAssociatedFiles(connectionUri: string, primaryFilePath: string): Thenable<string[]>;
+		/**
+		 * Clears all query store data from the database
+		 * @param connectionUri The URI of the server connection.
+		 * @param database The target database.
+		 */
+		purgeQueryStoreData(connectionUri: string, database: string): Thenable<void>;
 	}
-	// Object Management - End.
+
+	export interface DatabaseFileData {
+		databaseName: string;
+		databaseFilePaths: string[];
+		owner: string;
+	}
+	//#endregion
+
+	//#region --- Query Store
+
+	export interface IQueryStoreService {
+		/**
+		 * Gets the query for a Regressed Queries report
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param timeIntervalRecent Time interval during which to look for performance regressions for the report
+		 * @param timeIntervalHistory Time interval during which to establish baseline performance for the report
+		 * @param minExecutionCount Minimum number of executions for a query to be included
+		 * @param selectedMetric Metric to summarize
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
+		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
+		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
+		 * @param minNumberOfQueryPlans Minimum number of query plans for a query to included in the report
+		 */
+		getRegressedQueriesSummary(connectionOwnerUri: string, timeIntervalRecent: TimeInterval, timeIntervalHistory: TimeInterval, minExecutionCount: number, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the query for a detailed Regressed Queries report
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param timeIntervalRecent Time interval during which to look for performance regressions for the report
+		 * @param timeIntervalHistory Time interval during which to establish baseline performance for the report
+		 * @param minExecutionCount Minimum number of executions for a query to be included
+		 * @param selectedMetric Metric to summarize
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
+		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
+		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
+		 * @param minNumberOfQueryPlans Minimum number of query plans for a query to included in the report
+		 */
+		getRegressedQueriesDetailedSummary(connectionOwnerUri: string, timeIntervalRecent: TimeInterval, timeIntervalHistory: TimeInterval, minExecutionCount: number, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the query for a Tracked Queries report
+		 * @param querySearchText Search text for a query
+		 */
+		getTrackedQueriesReport(querySearchText: string): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the query for a High Variation Queries report
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param timeInterval Time interval for the report
+		 * @param orderByColumnId Name of the column to order results by
+		 * @param descending Direction of the result ordering
+		 * @param selectedMetric Metric to summarize
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
+		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
+		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
+		 * @param minNumberOfQueryPlans Minimum number of query plans for a query to included in the report
+		 */
+		getHighVariationQueriesSummary(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the query for a detailed High Variation Queries report
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param timeInterval Time interval for the report
+		 * @param orderByColumnId Name of the column to order results by
+		 * @param descending Direction of the result ordering
+		 * @param selectedMetric Metric to summarize
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
+		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
+		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
+		 * @param minNumberOfQueryPlans Minimum number of query plans for a query to included in the report
+		 */
+		getHighVariationQueriesDetailedSummary(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the query for a Top Resource Consumers report
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param timeInterval Time interval for the report
+		 * @param orderByColumnId Name of the column to order results by
+		 * @param descending Direction of the result ordering
+		 * @param selectedMetric Metric to summarize
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
+		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
+		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
+		 * @param minNumberOfQueryPlans Minimum number of query plans for a query to included in the report
+		 */
+		getTopResourceConsumersSummary(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the query for a detailed Top Resource Consumers report
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param timeInterval Time interval for the report
+		 * @param orderByColumnId Name of the column to order results by
+		 * @param descending Direction of the result ordering
+		 * @param selectedMetric Metric to summarize
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
+		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
+		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
+		 * @param minNumberOfQueryPlans Minimum number of query plans for a query to included in the report
+		 */
+		getTopResourceConsumersDetailedSummary(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the query for a Plan Summary chart view
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param queryId Query ID to view a summary of plans for
+		 * @param timeIntervalMode Mode of the time interval search
+		 * @param timeInterval Time interval for the report
+		 * @param selectedMetric Metric to summarize
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
+		 */
+		getPlanSummaryChartView(connectionOwnerUri: string, queryId: number, timeIntervalMode: PlanTimeIntervalMode, timeInterval: TimeInterval, selectedMetric: Metric, selectedStatistic: Statistic): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the query for a Plan Summary grid view
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param orderByColumnId Name of the column to order results by
+		 * @param descending Direction of the result ordering
+		 * @param queryId Query ID to view a summary of plans for
+		 * @param timeIntervalMode Mode of the time interval search
+		 * @param timeInterval Time interval for the report
+		 * @param selectedMetric Metric to summarize
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
+		 */
+		getPlanSummaryGridView(connectionOwnerUri: string, orderByColumnId: string, descending: boolean, queryId: number, timeIntervalMode: PlanTimeIntervalMode, timeInterval: TimeInterval, selectedMetric: Metric, selectedStatistic: Statistic): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the query to view a forced plan
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param queryId Query ID to view the plan for
+		 * @param planId Plan ID to view
+		 */
+		getForcedPlan(connectionOwnerUri: string, queryId: number, planId: number): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the query for a Forced Plan Queries report
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param timeInterval Time interval for the report
+		 * @param orderByColumnId Name of the column to order results by
+		 * @param descending Direction of the result ordering
+		 * @param selectedMetric Metric to summarize
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
+		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
+		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
+		 * @param minNumberOfQueryPlans Minimum number of query plans for a query to included in the report
+		 */
+		getForcedPlanQueriesReport(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the query for an Overall Resource Consumption report
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param specifiedTimeInterval Time interval for the report
+		 * @param specifiedBucketInterval Bucket interval for the report
+		 * @param selectedMetric Metric to summarize
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
+		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
+		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
+		 * @param minNumberOfQueryPlans Minimum number of query plans for a query to included in the report
+		 */
+		getOverallResourceConsumptionReport(connectionOwnerUri: string, specifiedTimeInterval: TimeInterval, specifiedBucketInterval: BucketInterval, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
+	}
+
+	//#region Results
+
+	/**
+	 * Result containing a finalized query for a report
+	 */
+	export interface QueryStoreQueryResult extends azdata.ResultStatus {
+		/**
+		 * Finalized query for a report
+		 */
+		query: string;
+	}
+
+	//#endregion
+
+	//#region Types
+
+	export const enum BucketInterval { // values from SSMS: $\Sql\ssms\core\QueryStoreModel\Common\BucketInterval.cs
+		Minute = 0,
+		Hour = 1,
+		Day = 2,
+		Week = 3,
+		Month = 4,
+		Automatic = 5
+	}
+
+	export const enum PlanTimeIntervalMode { // values from SSMS: $\Sql\ssms\core\QueryStoreModel\PlanSummary\PlanSummaryConfiguration.cs
+		SpecifiedRange = 0,
+		AllHistory = 1
+	}
+
+	export const enum Metric { // values from SSMS: $\Sql\ssms\core\QueryStoreModel\Common\Metric.cs
+		CPUTime = 0,
+		Duration = 1,
+		LogicalWrites = 2,
+		LogicalReads = 3,
+		MemoryConsumption = 4,
+		PhysicalReads = 5,
+		ExecutionCount = 6,
+		ClrTime = 7,
+		Dop = 8,
+		RowCount = 9,
+		LogMemoryUsed = 10,
+		TempDbMemoryUsed = 11,
+		WaitTime = 12
+	}
+
+	export const enum Statistic { // values from SSMS: $\Sql\ssms\core\QueryStoreModel\Common\Statistic.cs
+		Avg = 0,
+		Min = 1,
+		Max = 2,
+		Stdev = 3,
+		Last = 4,
+		Total = 5,
+		Variation = 6
+	}
+
+	export const enum TimeIntervalOptions // values from SSMS: $\Sql\ssms\core\QueryStoreModel\Common\TimeInterval.cs
+	{
+		Last5Minutes = 0,
+		Last15Minutes = 1,
+		Last30Minutes = 2,
+		LastHour = 3,
+		Last12Hours = 4,
+		LastDay = 5,
+		Last2Days = 6,
+		LastWeek = 7,
+		Last2Weeks = 8,
+		LastMonth = 9,
+		Last3Months = 10,
+		Last6Months = 11,
+		LastYear = 12,
+		AllTime = 13,
+		Custom = 14
+	}
+
+	export interface TimeInterval {
+		startDateTimeInUtc?: string,
+		endDateTimeInUtc?: string,
+		timeIntervalOptions?: TimeIntervalOptions
+	}
+
+	//#endregion
+
+	//#endregion
 }

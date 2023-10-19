@@ -8,6 +8,7 @@ import { EOL } from 'os';
 import { MigrationSourceAuthenticationType } from '../models/stateMachine';
 import { BackupTypeCodes, formatNumber, InternalManagedDatabaseRestoreDetailsBackupSetStatusCodes, InternalManagedDatabaseRestoreDetailsStatusCodes, ParallelCopyTypeCodes, PipelineStatusCodes } from './helper';
 import { ValidationError } from '../api/azure';
+import { AzureManagedDiskType, ErrorModel } from '../service/contracts';
 const localize = nls.loadMessageBundle();
 
 export const serviceName = 'Sql Migration Service';
@@ -85,6 +86,7 @@ export const XEVENTS_ASSESSMENT_OPEN_FOLDER = localize('sql.migration.database.a
 export const ASSESSMENT_RESULTS_PAGE_TITLE = localize('sql.migration.assessment.results.title', "Target Platform & Assessment Results");
 export const ASSESSMENT_RESULTS_SUMMARY_LABEL_CAPS = localize('sql.migration.assessment.results.summary.label.caps', "ASSESSMENT RESULTS");
 export const ASSESSMENT_RESULTS_PAGE_HEADER = localize('sql.migration.assessment.results.header', "Choose Target platform, view assessment results and select database(s) for migration.");
+export const ASSESSMENT_RESULTS_SUMMARY_LABEL_DESCRIPTION = localize('sql.migration.assessment.results.summary.label.description', "Assessment results shows the migration readiness of the database(s)");
 export const DATABASES_ASSESSED_LABEL = localize('sql.migration.database.assessed.label', "Database(s) assessed");
 export const MIGRATION_TIME_LABEL = localize('sql.migration.migration.time.label', "Ready for migration");
 export const ASSESSMENT_FINDINGS_LABEL = localize('sql.migration.assessment.findings.label', "Assessment findings");
@@ -93,24 +95,24 @@ export const SUMMARY_TITLE = localize('sql.migration.summary.title', "Summary");
 export const DETAILS_TITLE = localize('sql.migration.details.title', "Details");
 export const ASSESSMENT_SUMMARY_TITLE = localize('sql.migration.assessment.summary.title', "Assessment summary");
 export const READINESS_SECTION_TITLE = localize('sql.migration.readiness.section.title', "Migration readiness of assessed databases in the Server instance");
-export const TOTAL_FINDINGS_LABEL = localize('sql.migration.total.findings.label', "Total findings");
+export function TOTAL_FINDINGS_LABEL(findingsCount: number) { return localize('sql.migration.total.findings.label', "Total findings:{0}", findingsCount) }
 export const ISSUES_LABEL = localize('sql.migration.issues.label', "Blocking issues");
 export const INSTANCE_FINDING_SUMMARY = localize('sql.migration.instance.finding.summary', "Server instance assessment findings summary");
 export const SEVERITY_FINDINGS_LABEL = localize('sql.migration.severity.findings.label', "Findings by severity");
-export const ASSESSED_DBS_LABEL = localize('sql.migration.assessed.dbs.label', "Assessed databases");
+export function ASSESSED_DBS_LABEL(databasesCount: number) { return localize('sql.migration.assessed.dbs.label', "Assessed databases:{0}", databasesCount) }
 export const NOT_READY = localize('sql.migration.not.ready', "Not ready");
 export const READY = localize('sql.migration.ready', "Ready");
 export const NEEDS_REVIEW = localize('sql.migration.needs.review', "Needs review");
 export const READY_WARN = localize('sql.migration.ready.warn', "Ready with warnings");
 export const BLOCKERS = localize('sql.migration.ready', "Blockers");
 export const DATABASE_ISSUES_SUMMARY = localize('sql.migration.database.issues.summary', "Database assessment issues summary");
-export const TOTAL_ISSUES_LABEL = localize('sql.migration.total.issues.label', "Total issues found");
+export function TOTAL_ISSUES_LABEL(issuesCount: number) { return localize('sql.migration.total.issues.label', "Total issues found:{0}", issuesCount) }
 export const SEVERITY_ISSUES_LABEL = localize('sql.migration.severity.issues.label', "Issues by severity");
 export function DB_READINESS_SECTION_TITLE(dbName: string) {
 	return localize('sql.migration.db.readiness.section.title', "Database {0} migration readiness", dbName);
 }
 export function NON_READINESS_DESCRIPTION(issueCount: number) {
-	return localize('sql.migration.non.readiness.description', "The database is not ready to migrate due to {0} blocking issue.", issueCount);
+	return localize('sql.migration.non.readiness.description', "The database is not ready to migrate due to {0} blocking issue(s).", issueCount);
 }
 export function WARNING_READINESS_DESCRIPTION(warnings: number) {
 	return localize('sql.migration.non.readiness.description', "The database is ready to migrate with {0} warnings.", warnings);
@@ -123,7 +125,7 @@ export const ENCRYPTION_LABEL = localize('sql.migration.encryption.label', "Encr
 export const ENCRYPTION_DESCRIPTION = localize('sql.migration.encryption.description', "This database is encrypted using Transparent data encryption (TDE). You need to migrate certificates before you can migrate this database.");
 
 // Assessment results and recommendations
-export const ASSESSMENT_RESULTS_AND_RECOMMENDATIONS_PAGE_TITLE = localize('sql.migration.assessment.results.and.recommendations.title', "Assessment results and recommendations");
+export const ASSESSMENT_SUMMARY_AND_RECOMMENDATIONS_PAGE_TITLE = localize('sql.migration.assessment.summary.and.recommendations.title', "Assessment Summary and SKU recommendations");
 export const ASSESSMENT_BLOCKING_ISSUE_TITLE = localize('sql.migration.assessments.blocking.issue', 'This is a blocking issue that will prevent the database migration from succeeding.');
 export const ASSESSMENT_IN_PROGRESS = localize('sql.migration.assessment.in.progress', "Assessment in progress");
 export function ASSESSMENT_IN_PROGRESS_CONTENT(dbName: string) {
@@ -150,15 +152,34 @@ export const SKU_RECOMMENDATION_ASSESSMENT_UNEXPECTED_ERROR = (serverName: strin
 		error.stack,
 		EOL);
 };
+export const SKU_RECOMMENDATION_ERROR_MESSAGE = (error: Error): string => {
+	return localize(
+		'sql.migration.wizard.sku.error.message',
+		"message: {0}", error.message);
+};
+export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_WITH_STACK = (error: Error): string => {
+	return localize(
+		'sql.migration.wizard.sku.assessment.error.with.stack',
+		"message: {0}{1}stack: {2}", error.message, EOL, error.stack);
+};
+export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_WITH_INFO = (error: ErrorModel): string => {
+	return localize(
+		'sql.migration.wizard.sku.assessment.error.with.info',
+		"message: {0}{1}errorSummary: {2}{3}possibleCauses: {4}}{5}guidance: {6}{7}errorId: {8}",
+		error.message, EOL, error.errorSummary, EOL, error.possibleCauses, EOL, error.guidance, EOL, error.errorId);
+};
 export const PERF_DATA_COLLECTION_ERROR = (serverName: string, errors: string[]): string => {
 	return localize('sql.migration.wizard.perfCollection.error', "Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:\n\n{1}", serverName, errors.join('\n'));
 };
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_BYPASS = localize('sql.migration.wizard.sku.assessment.error.bypass', 'Check this option to skip assessment and continue the migration.');
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_DETAIL = localize('sql.migration.wizard.sku.assessment.error.detail', '[There are no assessment results to validate readiness of your database migration. By checking this box, you acknowledge you want to proceed migrating your database to the desired Azure SQL target.]',);
+export const AZURE_SQL_MI_DB_COUNT_THRESHOLD_EXCEEDS_ERROR = (selectedDbCount: number): string => {
+	return localize('sql.migration.select.azure.mi.db.count.threshold.exceeds.error', 'Error: Azure SQL Managed Instance supports maximum {0} user databases per instance. Select {0} or less database(s) to proceed further.', selectedDbCount);
+};
+export const AZURE_SQL_MI_DB_COUNT_UNDER_THRESHOLD = localize('sql.migration.select.azure.mi.db.count.under.threshold', 'To proceed, press Select button');
 export const REFRESH_ASSESSMENT_LABEL = localize('sql.migration.refresh.assessment.label', "Refresh assessment");
-export const REFRESH_SKU_LABEL = localize('sql.migration.refresh.sku.label', "Refresh SKU");
-export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose your Azure SQL target");
-export const SKU_RECOMMENDATION_CHOOSE_A_TARGET_HELP = localize('sql.migration.wizard.sku.choose_a_target.help', "Not sure which Azure SQL target is right for you? Learn more");
+export const REFRESH_SKU_LABEL = localize('sql.migration.refresh.sku.label', "Refresh SKU recommendation");
+export const ASSESSMENT_SUMMARY_AND_SKU_RECOMMENDATION_FOR_TARGETS_LABEL = localize('sql.migration.wizard.assessment.summary.and.sku.for.targets.label', "View Assessment summary and SKU recommendations for Azure SQL Targets");
 
 export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure SQL Managed Instance (PaaS)");
 export const SKU_RECOMMENDATION_SQLDB_CARD_TEXT = localize('sql.migration.sku.sqldb.card.title', "Azure SQL Database (PaaS)");
@@ -211,6 +232,7 @@ export function RECOMMENDATIONS_TITLE(targetType: string): string {
 }
 export const RECOMMENDED_CONFIGURATION = localize('sql.migration.sku.recommendedConfiguration', "Recommended configuration");
 export const RECOMMENDED_CONFIGURATION_SUMMARY_LABEL_CAPS = localize('sql.migration.sku.recommended.configuration.summary.label.caps', "RECOMMENDED CONFIGURATION");
+export const RECOMMENDED_CONFIGURATION_SUMMARY_LABEL_DESCRIPTION = localize('sql.migration.recommended.configuration.summary.label.description', "Get the right-sized SKU recommendations for Azure SQL Targets.");
 export const GET_AZURE_RECOMMENDATION = localize('sql.migration.sku.get.recommendation', "Get Azure recommendation");
 export const REFINE_AZURE_RECOMMENDATION = localize('sql.migration.sku.refine.recommendation', "Refine Azure recommendation");
 export const REFRESH_AZURE_RECOMMENDATION = localize('sql.migration.sku.refresh.recommendation', "Refresh recommendation");
@@ -222,16 +244,16 @@ export const IMPORT_PERFORMANCE_DATA_DIALOG_DESCRIPTION = localize('sql.migratio
 export const IMPORT_PERFORMANCE_DATA_DIALOG_HELPER_MESSAGE = localize('sql.migration.sku.import.performance.data.dialog.helper.message', "Select a folder on your local drive");
 export const IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FILE = localize('sql.migration.sku.import.performance.data.dialog.open.file', "Select a file");
 // allow-any-unicode-next-line
-export const AZURE_RECOMMENDATION_CARD_NOT_ENABLED = localize('sql.migration.sku.card.azureRecommendation.notEnabled', "Azure recommendation is not available. Click “Start data collection” button above to get started.");
+export const AZURE_RECOMMENDATION_CARD_NOT_ENABLED = localize('sql.migration.sku.card.azureRecommendation.notEnabled', "Azure recommendation is not available. Click 'Start data collection' button above to get started.");
 export const AZURE_RECOMMENDATION_CARD_IN_PROGRESS = localize('sql.migration.sku.card.azureRecommendation.inProgress', "Azure recommendation will be displayed once data collection is complete.");
 export const AZURE_RECOMMENDATION_STATUS_NOT_ENABLED = localize('sql.migration.sku.azureRecommendation.status.notEnabled', "Azure recommendation collects and analyzes performance data and then recommends an appropriate sized target in Azure for your workload.");
-export const AZURE_RECOMMENDATION_STATUS_IN_PROGRESS = localize('sql.migration.sku.azureRecommendation.status.inProgress', "Data collection is in progress. Time before next SKU recommendation update: ");
-export const AZURE_RECOMMENDATION_STATUS_REFINING = localize('sql.migration.sku.azureRecommendation.status.refining', "Data collection still in progress. Press the 'Refresh recommendation' button for updated recommendations.");
+export const AZURE_RECOMMENDATION_STATUS_IN_PROGRESS = localize('sql.migration.sku.azureRecommendation.status.inProgress', "Data collection is in progress. ");
+export const AZURE_RECOMMENDATION_STATUS_REFINING = localize('sql.migration.sku.azureRecommendation.status.refining', "Data collection still in progress. ");
 export const AZURE_RECOMMENDATION_STATUS_STOPPED = localize('sql.migration.sku.azureRecommendation.status.stopped', "Data collection for Azure recommendations has been stopped.");
 export function AZURE_RECOMMENDATION_STATUS_AUTO_REFRESH_TIMER(mins: number): string {
-	return localize('sql.migration.sku.azureRecommendation.status.autoRefreshTimer', "{0} minute(s).", mins.toFixed(0));
+	return localize('sql.migration.sku.azureRecommendation.status.autoRefreshTimer', "Time before next SKU recommendation update: {0} minute(s).", mins.toFixed(0));
 }
-export const AZURE_RECOMMENDATION_STATUS_MANUAL_REFRESH_TIMER = localize('sql.migration.sku.azureRecommendation.status.manualRefreshTimer', "Check back periodically for updated recommendations by pressing the 'Refresh recommendation' button.");
+export const AZURE_RECOMMENDATION_STATUS_MANUAL_REFRESH_TIMER = localize('sql.migration.sku.azureRecommendation.status.manualRefreshTimer', "Click on 'Refresh SKU' for updated recommendations.");
 export const AZURE_RECOMMENDATION_STATUS_DATA_IMPORTED = localize('sql.migration.sku.azureRecommendation.status.imported', "Azure recommendation has been applied using the provided data. Import or collect additional data to refine the recommendation.");
 export const AZURE_RECOMMENDATION_TOOLTIP_NOT_STARTED = localize('sql.migration.sku.azureRecommendation.tooltip.notStarted', "Click the button below to import or collect database performance data.");
 export const AZURE_RECOMMENDATION_TOOLTIP_IN_PROGRESS = localize('sql.migration.sku.azureRecommendation.tooltip.inProgress', "Running the performance collection for a longer period of time helps ensure a more accurate recommendation.");
@@ -298,8 +320,11 @@ export const SOURCE_PROPERTIES = localize('sql.migration.sku.sourceProperties', 
 export const SQL_TEMPDB = localize('sql.migration.sku.sql.temp', "SQL tempdb");
 export const SQL_DATA_FILES = localize('sql.migration.sku.sql.dataDisk', "SQL data files");
 export const SQL_LOG_FILES = localize('sql.migration.sku.sql.logDisk', "SQL log files");
-export function STORAGE_CONFIGURATION(size: string, count: number): string {
-	return localize('sql.migration.sku.azureConfiguration.storage', "{0} x {1}", size, count);
+export function STORAGE_CONFIGURATION(count: number, diskConfiguration: string): string {
+	return localize('sql.migration.sku.azureConfiguration.storage', "{0} x {1} ", count, diskConfiguration);
+}
+export function DISK_CONFIGURATION(type: string, maxSizeInGib: number, maxIOPS: number, maxThroughputInMbps: number): string {
+	return localize('sql.migration.sku.azureConfiguration.disk', "{0} {1}GB ({2} IOPS, {3} MB/s)", type, maxSizeInGib, maxIOPS, maxThroughputInMbps);
 }
 export const RECOMMENDED_TARGET_STORAGE_CONFIGURATION = localize('sql.migration.sku.targetStorageConfiguration', "Recommendation target storage configuration");
 export const RECOMMENDED_TARGET_STORAGE_CONFIGURATION_INFO = localize('sql.migration.sku.targetStorageConfiguration.info', "Below is the target storage configuration required to meet your storage performance needs.");
@@ -310,6 +335,8 @@ export function STORAGE_GB(storage: number): string {
 export const RECOMMENDED_STORAGE_CONFIGURATION = localize('sql.migration.sku.targetStorageConfiguration.recommendedStorageConfiguration', "Recommended storage configuration");
 export const EPHEMERAL_TEMPDB = localize('sql.migration.sku.targetStorageConfiguration.ephemeralTempdb', "Place tempdb on the local ephemeral SSD (default D:\\) drive");
 export const LOCAL_SSD = localize('sql.migration.sku.targetStorageConfiguration.local.SSD', "Local SSD");
+export const UNKNOWN_DISK_TYPE = localize('sql.migration.sku.targetStorageConfiguration.disktype.unknown', 'Unknown disk type');
+
 export const CACHING = localize('sql.migration.sku.targetStorageConfiguration.caching', "Host caching");
 export const CACHING_NA = localize('sql.migration.sku.targetStorageConfiguration.caching.na', "Not applicable");
 export const CACHING_NONE = localize('sql.migration.sku.targetStorageConfiguration.caching.none', "None");
@@ -407,7 +434,7 @@ export function LOGIN_MIGRATIONS_GET_LOGINS_ERROR(message: string): string {
 	return localize('sql.migration.wizard.target.login.error', "Error getting login information: {0}", message);
 }
 export const SELECT_LOGIN_TO_CONTINUE = localize('sql.migration.select.database.to.continue', "Please select 1 or more logins for migration");
-export const ENTER_AAD_DOMAIN_NAME = localize('sql.login.migration.enter.AAD.domain.name.to.continue', "Azure Active Directory (AAD) Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).");
+export const ENTER_AAD_DOMAIN_NAME = localize('sql.login.migration.enter.AAD.domain.name.to.continue', "Microsoft Entra ID Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).");
 export const LOGIN_MIGRATE_BUTTON_TEXT = localize('sql.migration.start.login.migration.button', "Migrate");
 export function LOGIN_MIGRATIONS_GET_CONNECTION_STRING(dataSource: string, id: string, pass: string): string {
 	return localize('sql.login.migration.get.connection.string', "data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;", dataSource, id, pass);
@@ -435,7 +462,7 @@ export const LOGINS_NOT_FOUND = localize('sql.login.migration.logins.not.found',
 export const LOGIN_MIGRATION_STATUS_SUCCEEDED = localize('sql.login.migration.status.succeeded', "Succeeded");
 export const LOGIN_MIGRATION_STATUS_FAILED = localize('sql.login.migration.status.failed', "Failed");
 export const LOGIN_MIGRATION_STATUS_IN_PROGRESS = localize('sql.login.migration.status.in.progress', "In progress");
-export const LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_LABEL = localize('sql.login.migration.aad.domain.name.input.box.label', "Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)");
+export const LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_LABEL = localize('sql.login.migration.aad.domain.name.input.box.label', "Microsoft Entra ID Domain Name (only required to migrate Windows Authenication Logins)");
 export const LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_PLACEHOLDER = localize('sql.login.migration.aad.domain.name.input.box.placeholder', "Enter AAD Domain Name");
 export function LOGIN_MIGRATIONS_LOGIN_STATUS_DETAILS_TITLE(loginName: string): string {
 	return localize('sql.login.migration.login.status.details.title', "Migration status details for {0}", loginName);
@@ -556,7 +583,7 @@ export const INVALID_ACCOUNT_ERROR = localize('sql.migration.invalid.account.err
 export function accountLinkedMessage(count: number): string {
 	return count === 1 ? localize('sql.migration.wizard.account.count.single.message', '{0} account linked', count) : localize('sql.migration.wizard.account.count.multiple.message', '{0} accounts linked', count);
 }
-export const AZURE_TENANT = localize('sql.migration.azure.tenant', "Azure AD tenant");
+export const AZURE_TENANT = localize('sql.migration.azure.tenant', "Microsoft Entra tenant");
 export function MI_NOT_READY_ERROR(miName: string, state: string): string {
 	return localize('sql.migration.mi.not.ready', "The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.", miName, state);
 }
@@ -589,7 +616,7 @@ export function ACCOUNT_CREDENTIALS_REFRESH(accountName: string): string {
 		"{0} (requires credentials refresh)",
 		accountName);
 }
-export const SELECT_SERVICE_PLACEHOLDER = localize('sql.migration.select.service.select.migration.target', "Select a target server.");
+export const SELECT_SERVICE_PLACEHOLDER = localize('sql.migration.select.service.select.migration.target', "Select a target server");
 
 // database backup page
 export const DATA_SOURCE_CONFIGURATION_PAGE_TITLE = localize('sql.migration.data.source.configuration.page.title', "Data source configuration");
@@ -854,6 +881,7 @@ export const VALIDATION_STATE_FAILED = localize('sql.migration.validation.state.
 export const VALIDATE_IR_DONE_BUTTON = localize('sql.migration.validate.ir.done.button', "Done");
 export const VALIDATE_IR_HEADING = localize('sql.migration.validate.ir.heading', "We are validating the following:");
 export const VALIDATE_IR_START_VALIDATION = localize('sql.migration.validate.ir.start.validation', "Start validation");
+export const VALIDATE_IR_UNSUCCESSFUL_REVALIDATION = localize('sql.migration.validate.ir.unsuccessful.revalidation', "Revalidate unsuccessful steps");
 export const VALIDATE_IR_STOP_VALIDATION = localize('sql.migration.validate.ir.stop.validation', "Stop validation");
 export const VALIDATE_IR_COPY_RESULTS = localize('sql.migration.validate.ir.copy.results', "Copy validation results");
 export const VALIDATE_IR_RESULTS_HEADING = localize('sql.migration.validate.ir.results.heading', "Validation step details");
@@ -1276,6 +1304,14 @@ export const ParallelCopyType: LookupTable<string | undefined> = {
 	[ParallelCopyTypeCodes.DynamicRange]: localize('sql.migration.parallel.copy.type.dynamic', 'Dynamic range'),
 };
 
+export const DiskTypeLookup: LookupTable<string | undefined> = {
+	[AzureManagedDiskType.StandardHDD]: localize('sql.migration.sku.targetStorageConfiguration.disktype.standardHdd', 'Standard HDD'),
+	[AzureManagedDiskType.StandardSSD]: localize('sql.migration.sku.targetStorageConfiguration.disktype.StandardSsd', 'Standard SSD'),
+	[AzureManagedDiskType.PremiumSSD]: localize('sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsd', 'Premium SSD'),
+	[AzureManagedDiskType.UltraSSD]: localize('sql.migration.sku.targetStorageConfiguration.disktype.UltraSsd', 'Ultra SSD'),
+	[AzureManagedDiskType.PremiumSSDV2]: localize('sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsdV2', 'Premium SSD v2'),
+};
+
 export const BackupTypeLookup: LookupTable<string | undefined> = {
 	[BackupTypeCodes.Unknown]: localize('sql.migration.restore.backuptype.unknown', 'Unknown'),
 	[BackupTypeCodes.Database]: localize('sql.migration.restore.backuptype.database', 'Database'),
@@ -1568,8 +1604,19 @@ export const TDE_WIZARD_MSG_MANUAL = localize('sql.migration.tde.msg.manual', "Y
 export const TDE_WIZARD_MSG_TDE = localize('sql.migration.tde.msg.tde', "You have given Azure Data Studio access to migrate the encryption certificates and database.");
 export const TDE_WIZARD_MSG_EMPTY = localize('sql.migration.tde.msg.empty', "No encrypted database selected.");
 
+export const TDE_VALIDATION_GROUP_TITLE = localize('sql.migration.tde.validation.group.title', "Certificate validations");
+export const TDE_VALIDATION_TITLE = localize('sql.migration.tde.validation.title', "Validation");
+export const TDE_VALIDATION_REQUIREMENTS_MESSAGE = localize('sql.migration.tde.validation.requirements.message', "In order for certificate migration to succeed, you must meet all of the requirements listed below.\n\nClick \"Run validation\" to check that requirements are met.");
+export const TDE_VALIDATION_STATUS_PENDING = localize('sql.migration.tde.validation.status.pending', "Pending");
+export const TDE_VALIDATION_STATUS_RUNNING = localize('sql.migration.tde.validation.running', "Running");
+export const TDE_VALIDATION_STATUS_SUCCEEDED = localize('sql.migration.tde.validation.status.succeeded', "Succeeded");
+export const TDE_VALIDATION_STATUS_RUN_VALIDATION = localize('sql.migration.tde.validation.run.validation', "Run validation");
+export const TDE_VALIDATION_DESCRIPTION = localize('sql.migration.tde.validation.description', "Description");
+export const TDE_VALIDATION_ERROR = localize('sql.migration.tde.validation.error', "Error");
+export const TDE_VALIDATION_TROUBLESHOOTING_TIPS = localize('sql.migration.tde.validation.troubleshooting.tips', "Troubleshooting tips");
+
 export function TDE_MIGRATION_ERROR(message: string): string {
-	return localize('sql.migration.starting.migration.error', "An error occurred while starting the certificate migration: '{0}'", message);
+	return localize('sql.migration.starting.migration.error', "The following error has occurred while starting the certificate migration: '{0}'", message);
 }
 
 export function TDE_MIGRATION_ERROR_DB(name: string, message: string): string {

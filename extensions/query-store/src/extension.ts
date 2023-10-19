@@ -4,13 +4,23 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { TopResourceConsumingQueries } from './reports/topResourceConsumingQueries';
-import { OverallResourceConsumption } from './reports/overallResourceConsumption';
+import { QueryStoreDashboard } from './reports/queryStoreDashboard';
+import { IconPathHelper } from './common/iconHelper';
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	// TODO: get db name
-	context.subscriptions.push(vscode.commands.registerCommand('queryStore.topResourceConsumingQueriesOpen', async () => { await new TopResourceConsumingQueries(context, 'WideWorldImporters').open() }));
-	context.subscriptions.push(vscode.commands.registerCommand('queryStore.overallResourceConsumptionOpen', async () => { await new OverallResourceConsumption(context, 'WideWorldImporters').open() }));
+	// TODO: add OE entry point with condition for command to only be visible for db's with Query Store enabled (or consider always showing and having a way to enable when dashboard is opened?)
+	// TODO: remove entry point from command palette - keeping for now to speed up testing so a connection doesn't need to be made to launch the dashboard
+	context.subscriptions.push(vscode.commands.registerCommand('queryStore.openQueryStoreDashboard', async (targetTab?: string) => {
+		IconPathHelper.setExtensionContext(context);
+
+		const dashboard = new QueryStoreDashboard('AdventureWorks')
+		await dashboard.open();
+
+		if (targetTab) {
+			dashboard.selectTab(targetTab);
+		}
+	}));
 }
 
 export function deactivate(): void {

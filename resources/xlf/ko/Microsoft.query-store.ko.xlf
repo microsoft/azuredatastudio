@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/Microsoft.query-store/dist/common/constants" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="aggregationSizeLabel">
+        <source xml:lang="en">Aggregation Size</source>
+        <target state="translated">집계 크기</target>
+      </trans-unit>
+      <trans-unit id="allLabel">
+        <source xml:lang="en">All</source>
+        <target state="translated">모두</target>
+      </trans-unit>
+      <trans-unit id="applyButtonText">
+        <source xml:lang="en">Apply</source>
+        <target state="translated">적용</target>
+      </trans-unit>
+      <trans-unit id="automaticLabel">
+        <source xml:lang="en">Automatic</source>
+        <target state="translated">자동</target>
+      </trans-unit>
+      <trans-unit id="avgLabel">
+        <source xml:lang="en">Avg</source>
+        <target state="translated">평균</target>
+      </trans-unit>
+      <trans-unit id="basedOnLabel">
+        <source xml:lang="en">Based on:</source>
+        <target state="translated">기준:</target>
+      </trans-unit>
+      <trans-unit id="CLRTimeLabel">
+        <source xml:lang="en">CLR Time (ms)</source>
+        <target state="translated">CLR 시간(밀리초)</target>
+      </trans-unit>
+      <trans-unit id="cpuTime">
+        <source xml:lang="en">CPU Time</source>
+        <target state="translated">CPU 시간</target>
+      </trans-unit>
+      <trans-unit id="CPUTimeLabel">
+        <source xml:lang="en">CPU Time (ms)</source>
+        <target state="translated">CPU 시간(밀리초)</target>
+      </trans-unit>
+      <trans-unit id="cancelButtonText">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
+      </trans-unit>
+      <trans-unit id="topConsumersRadioButtonsLabel">
+        <source xml:lang="en">Check for top consumers of:</source>
+        <target state="translated">상위 소비자 확인 대상:</target>
+      </trans-unit>
+      <trans-unit id="configure">
+        <source xml:lang="en">Configure</source>
+        <target state="translated">구성</target>
+      </trans-unit>
+      <trans-unit id="criteria">
+        <source xml:lang="en">Criteria</source>
+        <target state="translated">기준</target>
+      </trans-unit>
+      <trans-unit id="customLabel">
+        <source xml:lang="en">Custom</source>
+        <target state="translated">사용자 지정</target>
+      </trans-unit>
+      <trans-unit id="++CODE++9cb725c039170871de7978892c2fdf0f763f58359bd66bd0b1a06b0bdf3f6b38">
+        <source xml:lang="en">DOP</source>
+        <target state="translated">DOP</target>
+      </trans-unit>
+      <trans-unit id="dayLabel">
+        <source xml:lang="en">Day</source>
+        <target state="translated">일</target>
+      </trans-unit>
+      <trans-unit id="duration">
+        <source xml:lang="en">Duration</source>
+        <target state="translated">기간</target>
+      </trans-unit>
+      <trans-unit id="durationLabel">
+        <source xml:lang="en">Duration (ms)</source>
+        <target state="translated">기간(밀리초)</target>
+      </trans-unit>
+      <trans-unit id="executionCountLabel">
+        <source xml:lang="en">Execution Count</source>
+        <target state="translated">실행 수</target>
+      </trans-unit>
+      <trans-unit id="executionCount">
+        <source xml:lang="en">Execution Count</source>
+        <target state="translated">실행 수</target>
+      </trans-unit>
+      <trans-unit id="filterLabel">
+        <source xml:lang="en">Filters</source>
+        <target state="translated">필터</target>
+      </trans-unit>
+      <trans-unit id="fromLabel">
+        <source xml:lang="en">From</source>
+        <target state="translated">시작</target>
+      </trans-unit>
+      <trans-unit id="hourLabel">
+        <source xml:lang="en">Hour</source>
+        <target state="translated">시간</target>
+      </trans-unit>
+      <trans-unit id="last12HoursLabel">
+        <source xml:lang="en">Last 12 hours</source>
+        <target state="translated">지난 12시간</target>
+      </trans-unit>
+      <trans-unit id="last15MinsLabel">
+        <source xml:lang="en">Last 15 minutes</source>
+        <target state="translated">지난 15분</target>
+      </trans-unit>
+      <trans-unit id="last2DaysLabel">
+        <source xml:lang="en">Last 2 days</source>
+        <target state="translated">지난 2일</target>
+      </trans-unit>
+      <trans-unit id="last2WeeksLabel">
+        <source xml:lang="en">Last 2 weeks</source>
+        <target state="translated">지난 2주</target>
+      </trans-unit>
+      <trans-unit id="last3MonthsLabel">
+        <source xml:lang="en">Last 3 months</source>
+        <target state="translated">지난 3개월</target>
+      </trans-unit>
+      <trans-unit id="last30MinsLabel">
+        <source xml:lang="en">Last 30 minutes</source>
+        <target state="translated">지난 30분</target>
+      </trans-unit>
+      <trans-unit id="last5MinsLabel">
+        <source xml:lang="en">Last 5 minutes</source>
+        <target state="translated">지난 5분</target>
+      </trans-unit>
+      <trans-unit id="last6MonthsLabel">
+        <source xml:lang="en">Last 6 months</source>
+        <target state="translated">지난 6개월</target>
+      </trans-unit>
+      <trans-unit id="lastDayLabel">
+        <source xml:lang="en">Last day</source>
+        <target state="translated">어제</target>
+      </trans-unit>
+      <trans-unit id="lastHourLabel">
+        <source xml:lang="en">Last hour</source>
+        <target state="translated">지난 1시간</target>
+      </trans-unit>
+      <trans-unit id="lastMonthLabel">
+        <source xml:lang="en">Last month</source>
+        <target state="translated">지난 1개월</target>
+      </trans-unit>
+      <trans-unit id="lastWeekLabel">
+        <source xml:lang="en">Last week</source>
+        <target state="translated">지난 1주</target>
+      </trans-unit>
+      <trans-unit id="lastYearLabel">
+        <source xml:lang="en">Last year</source>
+        <target state="translated">지난 1년</target>
+      </trans-unit>
+      <trans-unit id="localLabel">
+        <source xml:lang="en">Local</source>
+        <target state="translated">로컬</target>
+      </trans-unit>
+      <trans-unit id="logMemoryUsedLabel">
+        <source xml:lang="en">Log Memory Used (KB)</source>
+        <target state="translated">사용한 로그 메모리(KB)</target>
+      </trans-unit>
+      <trans-unit id="logicalReads">
+        <source xml:lang="en">Logical Reads</source>
+        <target state="translated">논리적 읽기</target>
+      </trans-unit>
+      <trans-unit id="logicalReadsLabel">
+        <source xml:lang="en">Logical Reads (KB)</source>
+        <target state="translated">논리적 읽기(KB)</target>
+      </trans-unit>
+      <trans-unit id="logicalWritesLabel">
+        <source xml:lang="en">Logical Writes (KB)</source>
+        <target state="translated">논리적 쓰기(KB)</target>
+      </trans-unit>
+      <trans-unit id="maxLabel">
+        <source xml:lang="en">Max</source>
+        <target state="translated">최대</target>
+      </trans-unit>
+      <trans-unit id="memoryConsumptionLabel">
+        <source xml:lang="en">Memory Consumption (KB)</source>
+        <target state="translated">메모리 사용량(KB)</target>
+      </trans-unit>
+      <trans-unit id="minLabel">
+        <source xml:lang="en">Min</source>
+        <target state="translated">최소</target>
+      </trans-unit>
+      <trans-unit id="filterMinPlanLabel">
+        <source xml:lang="en">Min number of plans</source>
+        <target state="translated">최소 계획 수</target>
+      </trans-unit>
+      <trans-unit id="minuteLabel">
+        <source xml:lang="en">Minute</source>
+        <target state="translated">분</target>
+      </trans-unit>
+      <trans-unit id="okButtonText">
+        <source xml:lang="en">Ok</source>
+        <target state="translated">확인</target>
+      </trans-unit>
+      <trans-unit id="openInNewTab">
+        <source xml:lang="en">Open In New Tab</source>
+        <target state="translated">새 탭에서 열기</target>
+      </trans-unit>
+      <trans-unit id="overallResourceConsumption">
+        <source xml:lang="en">Overall Resource Consumption</source>
+        <target state="translated">전체 리소스 소비량</target>
+      </trans-unit>
+      <trans-unit id="overallResourceConsumptionToolbarLabel">
+        <source xml:lang="en">Overall resource consumption for database {0}</source>
+        <target state="translated">데이터베이스 {0}에 대한 전체 리소스 사용량</target>
+      </trans-unit>
+      <trans-unit id="physicalReadsLabel">
+        <source xml:lang="en">Physical Reads (KB)</source>
+        <target state="translated">물리적 읽기(KB)</target>
+      </trans-unit>
+      <trans-unit id="planSummary">
+        <source xml:lang="en">Plan Summary for query {0}</source>
+        <target state="translated">쿼리 {0}에 대한 계획 요약</target>
+      </trans-unit>
+      <trans-unit id="plan">
+        <source xml:lang="en">Plan {0}</source>
+        <target state="translated">계획 {0}</target>
+      </trans-unit>
+      <trans-unit id="queries">
+        <source xml:lang="en">Queries</source>
+        <target state="translated">쿼리</target>
+      </trans-unit>
+      <trans-unit id="queryStoreDashboardTitle">
+        <source xml:lang="en">Query Store - {0}</source>
+        <target state="translated">쿼리 저장소 - {0}</target>
+      </trans-unit>
+      <trans-unit id="resourceConsumptionCriteriaTitle">
+        <source xml:lang="en">Resource Consumption Criteria</source>
+        <target state="translated">리소스 사용량 기준</target>
+      </trans-unit>
+      <trans-unit id="returnLabel">
+        <source xml:lang="en">Return</source>
+        <target state="translated">반환</target>
+      </trans-unit>
+      <trans-unit id="rowCountLabel">
+        <source xml:lang="en">Row Count</source>
+        <target state="translated">행 개수</target>
+      </trans-unit>
+      <trans-unit id="showChartTitle">
+        <source xml:lang="en">Show Chart for</source>
+        <target state="translated">다음에 대한 차트 표시</target>
+      </trans-unit>
+      <trans-unit id="stdDevLabel">
+        <source xml:lang="en">Std Dev</source>
+        <target state="translated">표준 개발</target>
+      </trans-unit>
+      <trans-unit id="tempDBMermoryUsedLabel">
+        <source xml:lang="en">Temp DB Memory Used (KB)</source>
+        <target state="translated">사용된 임시 DB 메모리(KB)</target>
+      </trans-unit>
+      <trans-unit id="timeFormatLabel">
+        <source xml:lang="en">Time Format</source>
+        <target state="translated">시간 형식</target>
+      </trans-unit>
+      <trans-unit id="timeIntervalLabel">
+        <source xml:lang="en">Time Interval</source>
+        <target state="translated">시간 간격</target>
+      </trans-unit>
+      <trans-unit id="timeSettingsLabel">
+        <source xml:lang="en">Time Settings</source>
+        <target state="translated">시간 설정</target>
+      </trans-unit>
+      <trans-unit id="toLabel">
+        <source xml:lang="en">To</source>
+        <target state="translated">끝</target>
+      </trans-unit>
+      <trans-unit id="topLabel">
+        <source xml:lang="en">Top</source>
+        <target state="translated">상위</target>
+      </trans-unit>
+      <trans-unit id="topResourceConsumingQueriesToolbarLabel">
+        <source xml:lang="en">Top 25 resource consumers for database {0}</source>
+        <target state="translated">데이터베이스 {0}에 대한 상위 25개 리소스 소비자</target>
+      </trans-unit>
+      <trans-unit id="topResourceConsumingQueries">
+        <source xml:lang="en">Top Resource Consuming Queries</source>
+        <target state="translated">리소스를 가장 많이 사용하는 쿼리</target>
+      </trans-unit>
+      <trans-unit id="totalLabel">
+        <source xml:lang="en">Total</source>
+        <target state="translated">합계</target>
+      </trans-unit>
+      <trans-unit id="++CODE++17bc05152f339d6dc2fb2844595760e9009662c4315fa1ac0d61c7e47dfbdbb3">
+        <source xml:lang="en">UTC</source>
+        <target state="translated">UTC</target>
+      </trans-unit>
+      <trans-unit id="waitTimeLabel">
+        <source xml:lang="en">Wait Time (ms)</source>
+        <target state="translated">대기 시간(밀리초)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.query-store/package" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="queryStore.openQueryStoreDashboard">
+        <source xml:lang="en">Query Store</source>
+        <target state="translated">쿼리 저장소</target>
+      </trans-unit>
+      <trans-unit id="queryStore.category">
+        <source xml:lang="en">Query Store</source>
+        <target state="translated">쿼리 저장소</target>
+      </trans-unit>
+      <trans-unit id="queryStore.displayName">
+        <source xml:lang="en">Query Store</source>
+        <target state="translated">쿼리 저장소</target>
+      </trans-unit>
+      <trans-unit id="queryStore.description">
+        <source xml:lang="en">Query Store extension for Azure Data Studio.</source>
+        <target state="translated">Azure Data Studio에 대한 쿼리 저장소 확장.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

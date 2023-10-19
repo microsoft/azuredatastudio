@@ -10,18 +10,12 @@ import * as constants from './constants';
 
 import { AzureRegion, azureResource } from 'azurecore';
 import { AppContext } from './appContext';
-import { HttpClient } from './account-provider/auths/httpClient';
-import { parse } from 'url';
-import { getProxyAgentOptions } from './proxy';
-import { HttpsProxyAgentOptions } from 'https-proxy-agent';
 import { ProviderSettings, ProviderSettingsJson, SettingIds } from './account-provider/interfaces';
 import { AzureResource } from 'azdata';
 import { Logger } from './utils/Logger';
+import { TelemetryAction, TelemetryReporter, TelemetryViews } from './telemetry';
 
 const localize = nls.loadMessageBundle();
-const configProxy = 'proxy';
-const configProxyStrictSSL = 'proxyStrictSSL';
-const configProxyAuthorization = 'proxyAuthorization';
 
 /**
  * Converts a region value (@see AzureRegion) into the localized Display Name
@@ -144,10 +138,6 @@ export function getResourceTypeDisplayName(type: string): string {
 	return type;
 }
 
-function getHttpConfiguration(): vscode.WorkspaceConfiguration {
-	return vscode.workspace.getConfiguration(constants.httpConfigSectionName);
-}
-
 /**
  * Gets tenants to be ignored.
  * @returns Tenants configured in ignore list
@@ -172,6 +162,7 @@ export function updateCustomCloudProviderSettings(defaultSettings: ProviderSetti
 		const impactProvider = changeEvent.affectsConfiguration(constants.CustomProviderSettingsSection);
 		if (impactProvider === true) {
 			await displayReloadAds(constants.CustomProviderSettingsSection);
+			TelemetryReporter.sendTelemetryEvent(TelemetryAction.ReloadAdsCustomEndpoints);
 		}
 	});
 	if (providerSettingsJson && providerSettingsJson.length > 0) {
@@ -183,10 +174,12 @@ export function updateCustomCloudProviderSettings(defaultSettings: ProviderSetti
 				Logger.info(`Custom provider settings loaded for ${cloudProvider.settings.metadata.displayName}`);
 			}
 			void vscode.window.showInformationMessage(localize('providerSettings.success', 'Successfully loaded custom endpoints from settings'));
+			TelemetryReporter.sendTelemetryEvent(TelemetryAction.LoadCustomEndpointsSuccess);
 
 		} catch (error) {
 			void vscode.window.showErrorMessage(localize('providerSettings.error', 'Could not load endpoints from settings, please check the logs for more details.'));
 			console.error(error.message);
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.AzureCore, TelemetryAction.LoadCustomEndpointsError, error);
 			throw Error(error.message);
 		}
 	}
@@ -212,11 +205,6 @@ function buildCustomCloudProviderSettings(customProvider: ProviderSettingsJson):
 					id: SettingIds.arm,
 					endpoint: customProvider.settings.metadata.endpoints.armResource,
 					azureResourceId: AzureResource.ResourceManagement
-				},
-				graphResource: {
-					id: SettingIds.graph,
-					endpoint: customProvider.settings.metadata.endpoints.graphResource,
-					azureResourceId: AzureResource.Graph
 				},
 				azureStorageResource: {
 					id: SettingIds.storage,
@@ -298,24 +286,10 @@ export function getResourceTypeIcon(appContext: AppContext, type: string): strin
 	return '';
 }
 
-
-export function getProxyEnabledHttpClient(): HttpClient {
-	const proxy = <string>getHttpConfiguration().get(configProxy);
-	const strictSSL = getHttpConfiguration().get(configProxyStrictSSL, true);
-	const authorization = getHttpConfiguration().get(configProxyAuthorization);
-
-	const url = parse(proxy);
-	let agentOptions = getProxyAgentOptions(url, proxy, strictSSL);
-
-	if (authorization && url.protocol === 'https:') {
-		let httpsAgentOptions = agentOptions as HttpsProxyAgentOptions;
-		httpsAgentOptions!.headers = Object.assign(httpsAgentOptions!.headers || {}, {
-			'Proxy-Authorization': authorization
-		});
-		agentOptions = httpsAgentOptions;
-	}
-
-	return new HttpClient(proxy, agentOptions);
+export interface IPackageInfo {
+	name: string;
+	version: string;
+	aiKey: string;
 }
 
 /**

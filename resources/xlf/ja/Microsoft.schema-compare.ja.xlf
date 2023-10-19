@@ -1,0 +1,407 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/Microsoft.schema-compare/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="schemaCompareDialog.differentSourceMessage">
+        <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
+        <target state="translated">別のソース スキーマが選択されました。比較を表示して比較しますか?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentTargetMessage">
+        <source xml:lang="en">A different target schema has been selected. Compare to see the comparison?</source>
+        <target state="translated">別のターゲット スキーマが選択されました。比較を表示して比較しますか?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.actionColumn">
+        <source xml:lang="en">Action</source>
+        <target state="translated">アクション</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.addAction">
+        <source xml:lang="en">Add</source>
+        <target state="translated">追加</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.updateButton">
+        <source xml:lang="en">Apply</source>
+        <target state="translated">適用</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyButtonEnabledTitle">
+        <source xml:lang="en">Apply changes to target</source>
+        <target state="translated">ターゲットに変更を適用する</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyButtonDisabledTitle">
+        <source xml:lang="en">Apply is enabled when the target is a database or database project</source>
+        <target state="translated">ターゲットがデータベースまたはデータベース プロジェクトの場合、[適用] は有効化されます。</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.ApplyConfirmation">
+        <source xml:lang="en">Are you sure you want to update the target?</source>
+        <target state="translated">ターゲットを更新しますか?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">キャンセル</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cancelErrorMessage">
+        <source xml:lang="en">Cancel schema compare failed: '{0}'</source>
+        <target state="translated">スキーマ比較を取り消すことができませんでした: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotExcludeMessage">
+        <source xml:lang="en">Cannot exclude {0}. Included dependents exist</source>
+        <target state="translated">{0} を除外することはできません。対象の依存関係が存在します</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotExcludeMessageWithDependent">
+        <source xml:lang="en">Cannot exclude {0}. Included dependents exist, such as {1}</source>
+        <target state="translated">{0} を除外することはできません。対象の依存関係が存在します ({1} など)</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotIncludeMessage">
+        <source xml:lang="en">Cannot include {0}. Excluded dependents exist</source>
+        <target state="translated">{0} を含めることはできません。対象外の依存関係が存在します</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotIncludeMessageWithDependent">
+        <source xml:lang="en">Cannot include {0}. Excluded dependents exist, such as {1}</source>
+        <target state="translated">{0} を含めることはできません。対象外の依存関係が存在します ({1} など)</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.changeAction">
+        <source xml:lang="en">Change</source>
+        <target state="translated">変更</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.compareButton">
+        <source xml:lang="en">Compare</source>
+        <target state="translated">比較</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.CompareDetailsTitle">
+        <source xml:lang="en">Compare Details</source>
+        <target state="translated">詳細の比較</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.differencesTableTitle">
+        <source xml:lang="en">Comparison between Source and Target</source>
+        <target state="translated">ソースとターゲットの比較</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.dacpacRadioButtonLabel">
+        <source xml:lang="en">Data-tier Application File (.dacpac)</source>
+        <target state="translated">データ層アプリケーション ファイル (.dacpac)</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.databaseDropdownTitle">
+        <source xml:lang="en">Database</source>
+        <target state="translated">データベース</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.databaseButtonLabel">
+        <source xml:lang="en">Database</source>
+        <target state="translated">データベース</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.projectButtonLabel">
+        <source xml:lang="en">Database Project</source>
+        <target state="translated">データベース プロジェクト</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.deleteAction">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">削除</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentSourceTargetMessage">
+        <source xml:lang="en">Different source and target schemas have been selected. Compare to see the comparison?</source>
+        <target state="translated">異なるソース スキーマとターゲット スキーマが選択されています。比較を表示して比較しますか?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.GetConnectionString">
+        <source xml:lang="en">Do you want to connect to {0}?</source>
+        <target state="translated">{0} に接続しますか?</target>
+      </trans-unit>
+      <trans-unit id="file">
+        <source xml:lang="en">File</source>
+        <target state="translated">ファイル</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
+        <source xml:lang="en">File</source>
+        <target state="translated">ファイル</target>
+      </trans-unit>
+      <trans-unit id="flat">
+        <source xml:lang="en">Flat</source>
+        <target state="translated">フラット</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.structureDropdownLabel">
+        <source xml:lang="en">Folder Structure</source>
+        <target state="translated">フォルダー構造</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.GeneralOptionsLabel">
+        <source xml:lang="en">General Options</source>
+        <target state="translated">全般オプション</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptButton">
+        <source xml:lang="en">Generate script</source>
+        <target state="translated">スクリプトの生成</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptErrorMessage">
+        <source xml:lang="en">Generate script failed: '{0}'</source>
+        <target state="translated">スクリプトを生成できませんでした: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptButtonDisabledTitle">
+        <source xml:lang="en">Generate script is enabled when the target is a database</source>
+        <target state="translated">ターゲットがデータベースの場合にスクリプトの生成が有効になります</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptEnabledButton">
+        <source xml:lang="en">Generate script to deploy changes to target</source>
+        <target state="translated">ターゲットに変更をデプロイするスクリプトを生成します</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.includeColumnName">
+        <source xml:lang="en">Include</source>
+        <target state="translated">包含</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ObjectTypesOptionsLabel">
+        <source xml:lang="en">Include Object Types</source>
+        <target state="translated">オブジェクトの種類を含める</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.waitText">
+        <source xml:lang="en">Initializing Comparison. This might take a moment.</source>
+        <target state="translated">比較を初期化します。しばらく時間がかかる場合があります。</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openScmpButtonTitle">
+        <source xml:lang="en">Load source, target, and options saved in an .scmp file</source>
+        <target state="translated">.scmp ファイルに保存されたソース、ターゲット、およびオプションを読み込みます</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.No">
+        <source xml:lang="en">No</source>
+        <target state="translated">いいえ</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyNoChanges">
+        <source xml:lang="en">No changes to apply</source>
+        <target state="translated">適用する変更はありません</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptNoChanges">
+        <source xml:lang="en">No changes to script</source>
+        <target state="translated">スクリプトに変更はありません</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.noDifferences">
+        <source xml:lang="en">No schema differences were found.</source>
+        <target state="translated">スキーマの違いは見つかりませんでした。</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">OK</target>
+      </trans-unit>
+      <trans-unit id="objectType">
+        <source xml:lang="en">Object Type</source>
+        <target state="translated">オブジェクト型</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openFile">
+        <source xml:lang="en">Open</source>
+        <target state="translated">開く</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openScmpButton">
+        <source xml:lang="en">Open .scmp file</source>
+        <target state="translated">.scmp ファイルを開く</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openScmpErrorMessage">
+        <source xml:lang="en">Open scmp failed: '{0}'</source>
+        <target state="translated">scmp を開くことができませんでした: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.optionsButton">
+        <source xml:lang="en">Options</source>
+        <target state="translated">オプション​​</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareOptions.RecompareMessage">
+        <source xml:lang="en">Options have changed. Recompare to see the comparison?</source>
+        <target state="translated">オプションが変更されました。比較を表示して再比較しますか?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.includeExcludeInfoMessage">
+        <source xml:lang="en">Please note that include/exclude operations can take a moment to calculate affected dependencies</source>
+        <target state="translated">対象の依存関係を計算するために、包含/除外操作に少し時間がかかる場合があることにご注意ください</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.RecompareToRefresh">
+        <source xml:lang="en">Press Compare to refresh the comparison.</source>
+        <target state="translated">比較を更新するには、[比較] を押します。</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applySuccess">
+        <source xml:lang="en">Project was successfully updated</source>
+        <target state="translated">プロジェクトが正常に更新されました</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompareOptionsDialog.Reset">
+        <source xml:lang="en">Reset</source>
+        <target state="translated">リセット</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveFile">
+        <source xml:lang="en">Save</source>
+        <target state="translated">保存</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveScmpButton">
+        <source xml:lang="en">Save .scmp file</source>
+        <target state="translated">.scmp ファイルを保存</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveScmpErrorMessage">
+        <source xml:lang="en">Save scmp failed: '{0}'</source>
+        <target state="translated">scmp を保存できませんでした: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveScmpButtonTitle">
+        <source xml:lang="en">Save source and target, options, and excluded elements</source>
+        <target state="translated">ソース、ターゲット、オプション、および除外された要素を保存します</target>
+      </trans-unit>
+      <trans-unit id="schema">
+        <source xml:lang="en">Schema</source>
+        <target state="translated">スキーマ</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.dialogTitle">
+        <source xml:lang="en">Schema Compare</source>
+        <target state="translated">Schema Compare</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.updateErrorMessage">
+        <source xml:lang="en">Schema Compare Apply failed '{0}'</source>
+        <target state="translated">Schema Compare を適用できませんでした '{0}'</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.SchemaCompareOptionsDialogLabel">
+        <source xml:lang="en">Schema Compare Options</source>
+        <target state="translated">Schema Compare のオプション</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.compareErrorMessage">
+        <source xml:lang="en">Schema Compare failed: {0}</source>
+        <target state="translated">Schema Compare に失敗しました: {0}</target>
+      </trans-unit>
+      <trans-unit id="schemaObjectType">
+        <source xml:lang="en">Schema/Object Type</source>
+        <target state="translated">スキーマ/オブジェクト型</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.sourceButtonTitle">
+        <source xml:lang="en">Select Source</source>
+        <target state="translated">ソースの選択</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.targetButtonTitle">
+        <source xml:lang="en">Select Target</source>
+        <target state="translated">ターゲットの選択</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectConnection">
+        <source xml:lang="en">Select connection</source>
+        <target state="translated">接続の選択</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectSourceFile">
+        <source xml:lang="en">Select source file</source>
+        <target state="translated">ソース ファイルの選択</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectTargetFile">
+        <source xml:lang="en">Select target file</source>
+        <target state="translated">ターゲット ファイルの選択</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.serverDropdownTitle">
+        <source xml:lang="en">Server</source>
+        <target state="translated">サーバー</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.SourceTitle">
+        <source xml:lang="en">Source</source>
+        <target state="translated">ソース</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceDatabaseDropdown">
+        <source xml:lang="en">Source Database</source>
+        <target state="translated">ソース データベース</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.sourceNameColumn">
+        <source xml:lang="en">Source Name</source>
+        <target state="translated">ソース名</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceServerDropdown">
+        <source xml:lang="en">Source Server</source>
+        <target state="translated">ソース サーバー</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceTextBox">
+        <source xml:lang="en">Source file</source>
+        <target state="translated">ソース ファイル</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cancelCompareButton">
+        <source xml:lang="en">Stop</source>
+        <target state="translated">停止</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.switchDirectionButton">
+        <source xml:lang="en">Switch direction</source>
+        <target state="translated">方向の切り替え</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.switchButtonTitle">
+        <source xml:lang="en">Switch source and target</source>
+        <target state="translated">ソースとターゲットの切り替え</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.TargetTitle">
+        <source xml:lang="en">Target</source>
+        <target state="translated">ターゲット</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetDatabaseDropdown">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">ターゲット データベース</target>
+      </trans-unit>
+      <trans-unit id="targetStructure">
+        <source xml:lang="en">Target Folder Structure</source>
+        <target state="translated">ターゲット フォルダー 構造</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.targetNameColumn">
+        <source xml:lang="en">Target Name</source>
+        <target state="translated">ターゲット名</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetServerDropdown">
+        <source xml:lang="en">Target Server</source>
+        <target state="translated">ターゲット サーバー</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetTextBox">
+        <source xml:lang="en">Target file</source>
+        <target state="translated">ターゲット ファイル</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.dspErrorSource">
+        <source xml:lang="en">The source .sqlproj file does not specify a database schema component</source>
+        <target state="translated">ソース .sqlproj ファイルでデータベース スキーマ コンポーネントを指定していません</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.noProjectExtensionApply">
+        <source xml:lang="en">The sql-database-projects extension is required to apply changes to a project</source>
+        <target state="translated">プロジェクトに変更を適用するには、sql-database-projects 拡張機能が必要です</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.noProjectExtension">
+        <source xml:lang="en">The sql-database-projects extension is required to perform schema comparison with database projects</source>
+        <target state="translated">複数のデータベース プロジェクトについてのスキーマ比較を実行するには、sql-database-projects 拡張機能が必要です</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.dspErrorTarget">
+        <source xml:lang="en">The target .sqlproj file does not specify a database schema component</source>
+        <target state="translated">ターゲットの .sqlproj ファイルは、データベース スキーマ コンポーネントを指定していません</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyError">
+        <source xml:lang="en">There was an error updating the project</source>
+        <target state="translated">プロジェクトの更新中にエラーが発生しました</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.startText">
+        <source xml:lang="en">To compare two schemas, first select a source schema and target schema, then press Compare.</source>
+        <target state="translated">2 つのスキーマを比較するには、最初にソース スキーマとターゲット スキーマを選択し、[比較] を押します。</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.typeColumn">
+        <source xml:lang="en">Type</source>
+        <target state="translated">種類</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.radioButtonsLabel">
+        <source xml:lang="en">Type</source>
+        <target state="translated">種類</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.Yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">はい</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.defaultUser">
+        <source xml:lang="en">default</source>
+        <target state="translated">既定</target>
+      </trans-unit>
+      <trans-unit id="OptionNotFoundWarningMessage">
+        <source xml:lang="en">label: {0} does not exist in the options value name lookup</source>
+        <target state="translated">ラベル: {0} はオプション値の名前参照に存在しません</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.schema-compare/package" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="schemaCompare.openInScmp">
+        <source xml:lang="en">Open in Schema Compare</source>
+        <target state="translated">Schema Compare で開く</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.runComparison">
+        <source xml:lang="en">Run Schema Comparison</source>
+        <target state="translated">スキーマ比較の実行</target>
+      </trans-unit>
+      <trans-unit id="displayName">
+        <source xml:lang="en">SQL Server Schema Compare</source>
+        <target state="translated">SQL Server Schema Compare</target>
+      </trans-unit>
+      <trans-unit id="description">
+        <source xml:lang="en">SQL Server Schema Compare for Azure Data Studio supports comparing the schemas of databases and dacpacs.</source>
+        <target state="translated">Azure Data Studio 用 SQL Server Schema Compare では、データベースと dacpac のスキーマを比較できます。</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.start">
+        <source xml:lang="en">Schema Compare</source>
+        <target state="translated">Schema Compare</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

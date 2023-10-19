@@ -311,6 +311,7 @@ export class CreateSqlMigrationServiceDialog {
 		}));
 
 		this.migrationServiceNameText = this._view.modelBuilder.inputBox().withProps({
+			ariaLabel: constants.NAME,
 			CSSStyles: {
 				'margin-top': '-1em'
 			}

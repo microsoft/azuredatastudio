@@ -27,7 +27,7 @@ export class ManagePackagesDialog {
 	 * Opens a dialog to manage packages used by notebooks.
 	 */
 	public showDialog(): void {
-		this.dialog = azdata.window.createModelViewDialog(localize('managePackages.dialogName', "Manage Packages"));
+		this.dialog = azdata.window.createModelViewDialog(localize('managePackages.dialogName', "Manage Notebook Packages"));
 
 		this.installedPkgTab = new InstalledPackagesTab(this, this.jupyterInstallation);
 		this.addNewPkgTab = new AddNewPackageTab(this, this.jupyterInstallation);

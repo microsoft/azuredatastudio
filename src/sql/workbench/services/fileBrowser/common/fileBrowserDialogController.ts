@@ -16,5 +16,6 @@ export interface IFileBrowserDialogController {
 		fileFilters: { label: string, filters: string[] }[],
 		fileValidationServiceType: string,
 		isWide: boolean,
-		handleOnOk: (path: string | undefined) => void): void;
+		handleOnOk: (path: string | undefined) => void,
+		showFoldersOnly?: boolean): void;
 }

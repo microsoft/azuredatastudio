@@ -363,15 +363,17 @@ export class ConnectionConfig {
 	 */
 	public canChangeConnectionConfig(profile: ConnectionProfile, newGroupID: string): boolean {
 		let profiles = this.getIConnectionProfileStores(true);
-		let existingProfile = profiles.find(p =>
-			p.providerName === profile.providerName &&
-			this.checkIfAuthenticationOptionsMatch(p, profile) &&
-			p.options.databaseName === profile.options.databaseName &&
-			p.options.serverName === profile.options.serverName &&
-			p.options.userName === profile.options.userName &&
-			p.options.connectionName === profile.options.connectionName &&
-			p.groupId === newGroupID &&
-			this.checkIfNonDefaultOptionsMatch(p, profile));
+		let existingProfile = profiles.find(p => {
+			let authenticationCheck = this.checkIfAuthenticationOptionsMatch(p, profile);
+			let nonDefaultCheck = this.checkIfNonDefaultOptionsMatch(p, profile);
+			let basicOptionCheck = p.providerName === profile.providerName &&
+				p.options.database === profile.options.database &&
+				p.options.server === profile.options.server &&
+				p.options.user === profile.options.user &&
+				p.options.connectionName === profile.options.connectionName &&
+				p.groupId === newGroupID;
+			return authenticationCheck && nonDefaultCheck && basicOptionCheck;
+		});
 		return existingProfile === undefined;
 	}
 

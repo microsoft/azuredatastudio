@@ -193,7 +193,7 @@ export class AssessmentDetailsHeader {
 		const targetTypeContainer = this._view.modelBuilder.flexContainer().component();
 
 		const selectLabel = this._view.modelBuilder.text().withProps({
-			value: constants.SELECT_TARGET_LABEL + ":",
+			value: constants.SELECT_TARGET_LABEL,
 			CSSStyles: {
 				...styles.LABEL_CSS
 			},

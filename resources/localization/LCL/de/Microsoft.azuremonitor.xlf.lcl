@@ -273,10 +273,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.azuremonitor/package.azuremonitor.connectionProperties.authType.categoryValues.azureMFA" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Active Directory - Universal with MFA support]]></Val>
+          <Val><![CDATA[Microsoft Entra ID - Universal with MFA support]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Active Directory: universell mit MFA-Unterstützung]]></Val>
+            <Val><![CDATA[Microsoft Entra ID – Universell mit MFA-Unterstützung]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Active Directory - Universal with MFA support]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

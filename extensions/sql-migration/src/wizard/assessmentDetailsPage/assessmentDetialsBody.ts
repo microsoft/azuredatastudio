@@ -28,8 +28,9 @@ export class AssessmentDetailsBody {
 	private _disposables: vscode.Disposable[] = [];
 	private _activeIssues!: SqlMigrationAssessmentResultItem[];
 
-	constructor(public migrationStateModel: MigrationStateModel) {
-		this._treeComponent = new TreeComponent();
+	constructor(public migrationStateModel: MigrationStateModel,
+		public wizard: azdata.window.Wizard) {
+		this._treeComponent = new TreeComponent(wizard);
 		this._instanceSummary = new InstanceSummary(migrationStateModel);
 	}
 

@@ -26,12 +26,15 @@ export const SqlAssessmentService = 'sqlAssessmentService';
 export const NotebookConvertService = 'notebookConvertService';
 export const AzureBlobService = 'azureBlobService';
 export const ObjectManagementService = 'objectManagementService';
+export const QueryStoreService = 'queryStoreService';
 
 // CONFIGURATION VALUES //////////////////////////////////////////////////////////
 export const configObjectExplorerGroupBySchemaFlagName = 'mssql.objectExplorer.groupBySchema';
 export const configAsyncParallelProcessingName = 'mssql.parallelMessageProcessing';
 export const configEnableSqlAuthenticationProviderName = 'mssql.enableSqlAuthenticationProvider';
 export const configEnableConnectionPoolingName = 'mssql.enableConnectionPooling';
+export const configHttpProxy = 'http.proxy';
+export const configHttpProxyStrictSSL = 'http.proxyStrictSSL';
 
 // COMMANDNAMES //////////////////////////////////////////////////////////
 export const cmdObjectExplorerEnableGroupBySchemaCommand = 'mssql.enableGroupBySchema';

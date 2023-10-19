@@ -322,6 +322,7 @@ declare module 'sqldbproj' {
 		sqlAzure = 'Azure SQL Database',
 		sqlDW = 'Azure Synapse SQL Pool',
 		sqlEdge = 'Azure SQL Edge',
+		sqlDwServerless = 'Azure Synapse Serverless SQL Pool',
 		sqlDwUnified = 'Synapse Data Warehouse in Microsoft Fabric'
 	}
 

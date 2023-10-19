@@ -23,7 +23,7 @@ Needs Logs:
 # actions for Needs Logs - Azure label
 Needs Logs - Azure:
   comment: |
-    We need more info to debug your Azure Active Directory issue. If you could attach your logs to the issue (ensure no private data is in them), it would help us fix the issue much faster.
+    We need more info to debug your Microsoft Entra ID issue. If you could attach your logs to the issue (ensure no private data is in them), it would help us fix the issue much faster.
 
     - In the settings menu, find the setting titled `Azure: Logging Level` and select the `Verbose` option
     - Restart Azure Data Studio

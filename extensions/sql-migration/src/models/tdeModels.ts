@@ -41,6 +41,15 @@ export interface TdeMigrationDbResult {
 	message: string;
 }
 
+export interface TdeValidationResult {
+	validationTitle: string;
+	validationDescription: string;
+	validationTroubleshootingTips: string;
+	validationErrorMessage: string;
+	validationStatus: number;
+	validationStatusString: string;
+}
+
 export class TdeMigrationModel {
 
 	// Settings for which the user has clicked the apply button
@@ -52,6 +61,9 @@ export class TdeMigrationModel {
 	private _pendingConfigDialogSetting: ConfigDialogSetting;
 	private _pendingExportCertUserConsent: boolean;
 	private _pendingNetworkPath: string;
+
+	// Last network path for which all validations succeeded
+	private _lastValidatedNetworkPath: string;
 
 	private _configurationCompleted: boolean;
 	private _shownBefore: boolean;
@@ -75,6 +87,7 @@ export class TdeMigrationModel {
 		this._appliedExportCertUserConsent = false;
 		this._pendingExportCertUserConsent = false;
 		this._tdeMigrationCompleted = false;
+		this._lastValidatedNetworkPath = '';
 
 		this._tdeMigrationCompleted = this._tdeMigrationCompleted;
 	}
@@ -176,7 +189,12 @@ export class TdeMigrationModel {
 		}
 
 		if (this._pendingConfigDialogSetting === ConfigDialogSetting.ExportCertificates) {
-			return this._pendingExportCertUserConsent;
+			if (this._pendingNetworkPath !== this._lastValidatedNetworkPath) {
+				return false;
+			}
+
+			return this._pendingNetworkPath.length > 0 &&
+				this._pendingExportCertUserConsent;
 		}
 
 		return true;
@@ -212,5 +230,13 @@ export class TdeMigrationModel {
 
 	public setPendingExportCertUserConsent(pendingExportCertUserConsent: boolean) {
 		this._pendingExportCertUserConsent = pendingExportCertUserConsent;
+	}
+
+	public setLastValidatedNetworkPath(validatedNetworkPath: string) {
+		this._lastValidatedNetworkPath = validatedNetworkPath;
+	}
+
+	public getLastValidatedNetworkPath() {
+		return this._lastValidatedNetworkPath;
 	}
 }

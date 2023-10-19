@@ -15,7 +15,7 @@ import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStri
 import { DeploymentOptions } from 'mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
-import { getAgreementDisplayText, getConnectionName, getDockerBaseImages, getPublishServerName } from './utils';
+import { getAgreementDisplayText, getConnectionName, getDockerBaseImage, getPublishServerName } from './utils';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { Deferred } from '../common/promise';
 import { PublishOptionsDialog } from './publishOptionsDialog';
@@ -46,7 +46,6 @@ export class PublishDatabaseDialog {
 	private connectionRow: azdataType.FlexContainer | undefined;
 	private databaseRow: azdataType.FlexContainer | undefined;
 	private localDbSection: azdataType.FlexContainer | undefined;
-	private baseDockerImageDropDown: azdataType.DropDownComponent | undefined;
 	private imageTagDropDown: azdataType.DropDownComponent | undefined;
 	private serverAdminPasswordTextBox: azdataType.InputBoxComponent | undefined;
 	private serverConfigAdminPasswordTextBox: azdataType.InputBoxComponent | undefined;
@@ -250,11 +249,10 @@ export class PublishDatabaseDialog {
 			utils.getAzdataApi()!.window.closeDialog(this.dialog);
 			await this.publish!(this.project, settings);
 		} else {
-			let dockerBaseImage = this.getBaseDockerImageName();
-			const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
-			const imageInfo = baseImages.find(x => x.name === dockerBaseImage);
+			const imageInfo = getDockerBaseImage(this.project.getProjectTargetVersion());
 			const imageName = imageInfo?.name;
 			const imageTag = this.imageTagDropDown?.value;
+			let dockerBaseImage = imageName;
 
 			// Add the image tag if it's not the latest
 			if (imageTag && imageTag !== constants.dockerImageDefaultTag) {
@@ -338,10 +336,6 @@ export class PublishDatabaseDialog {
 		if (this.targetDatabaseTextBox) {
 			this.targetDatabaseTextBox!.value = value;
 		}
-	}
-
-	public getBaseDockerImageName(): string {
-		return (<azdataType.CategoryValue>this.baseDockerImageDropDown?.value)?.name ?? '';
 	}
 
 	public getDefaultDatabaseName(): string {
@@ -528,18 +522,7 @@ export class PublishDatabaseDialog {
 		});
 		const serverConfirmPasswordRow = this.createFormRow(view, constants.confirmServerPassword(name), this.serverConfigAdminPasswordTextBox);
 
-		const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
-		const baseImagesValues: azdataType.CategoryValue[] = baseImages.map(x => { return { name: x.name, displayName: x.displayName }; });
-
-		this.baseDockerImageDropDown = view.modelBuilder.dropDown().withProps({
-			values: baseImagesValues,
-			ariaLabel: constants.baseDockerImage(name),
-			width: cssStyles.publishDialogTextboxWidth,
-			enabled: true,
-			required: true
-		}).component();
-
-		const imageInfo = baseImages.find(x => x.displayName === (<azdataType.CategoryValue>this.baseDockerImageDropDown?.value)?.displayName);
+		const imageInfo = getDockerBaseImage(this.project.getProjectTargetVersion());
 		const imageTags = await uiUtils.getImageTags(imageInfo!, this.project.getProjectTargetVersion(), true);
 
 		this.imageTagDropDown = view.modelBuilder.dropDown().withProps({
@@ -557,8 +540,7 @@ export class PublishDatabaseDialog {
 			this.tryEnableGenerateScriptAndPublishButtons();
 		});
 
-		const agreementInfo = baseImages[0].agreementInfo;
-		const baseImageDropDownRow = this.createFormRow(view, constants.baseDockerImage(name), this.baseDockerImageDropDown);
+		const agreementInfo = imageInfo.agreementInfo;
 		const imageTagDropDownRow = this.createFormRow(view, constants.imageTag, this.imageTagDropDown);
 
 		this.eulaCheckBox = view.modelBuilder.checkBox().withProps({
@@ -572,31 +554,21 @@ export class PublishDatabaseDialog {
 		const eulaRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		this.localDbSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-		this.localDbSection.addItems([serverPortRow, serverPasswordRow, serverConfirmPasswordRow, baseImageDropDownRow, imageTagDropDownRow, eulaRow]);
-		this.baseDockerImageDropDown.onValueChanged(async () => {
-			if (this.eulaCheckBox) {
-				this.eulaCheckBox.checked = false;
-			}
-			const baseImage = getDockerBaseImages(this.project.getProjectTargetVersion()).find(x => x.name === (<azdataType.CategoryValue>this.baseDockerImageDropDown?.value).name);
-			if (baseImage?.agreementInfo.link) {
-				const text = view.modelBuilder.text().withProps({
-					value: constants.eulaAgreementTemplate,
-					links: [baseImage.agreementInfo.link],
-					requiredIndicator: true
-				}).component();
+		this.localDbSection.addItems([serverPortRow, serverPasswordRow, serverConfirmPasswordRow, imageTagDropDownRow, eulaRow]);
 
-				if (eulaRow && this.eulaCheckBox) {
-					eulaRow?.clearItems();
-					eulaRow?.addItems([this.eulaCheckBox, text], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } });
-				}
-			}
+		this.eulaCheckBox.checked = false;
+		if (imageInfo?.agreementInfo.link) {
+			const text = view.modelBuilder.text().withProps({
+				value: constants.eulaAgreementTemplate,
+				links: [imageInfo.agreementInfo.link],
+				requiredIndicator: true
+			}).component();
 
-			// update image tag dropdown with the image tags for the selected base image
-			const imageInfo = baseImages.find(x => x.displayName === baseImage?.displayName);
-			const imageTags = await uiUtils.getImageTags(imageInfo!, this.project.getProjectTargetVersion(), true);
-			this.imageTagDropDown!.values = imageTags;
-			this.imageTagDropDown!.value = imageTags[0];
-		});
+			if (eulaRow && this.eulaCheckBox) {
+				eulaRow?.clearItems();
+				eulaRow?.addItems([this.eulaCheckBox, text], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } });
+			}
+		}
 		return this.localDbSection;
 	}
 

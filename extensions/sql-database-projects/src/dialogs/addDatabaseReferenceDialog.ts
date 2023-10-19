@@ -53,6 +53,9 @@ export class AddDatabaseReferenceDialog {
 	private systemDbRefRadioButtonsComponent: azdataType.FormComponent | undefined;
 	private systemDbRefType: SystemDbReferenceType = SystemDbReferenceType.ArtifactReference;
 	public currentReferencedDatabaseType: ReferencedDatabaseType | undefined;
+	private databaseNameTextboxLabel: azdataType.TextComponent | undefined;
+	private serverNameTextboxLabel: azdataType.TextComponent | undefined;
+	private serverVariableTextboxLabel: azdataType.TextComponent | undefined;
 
 	private toDispose: vscode.Disposable[] = [];
 	private initDialogComplete: Deferred = new Deferred();
@@ -413,7 +416,8 @@ export class AddDatabaseReferenceDialog {
 
 	private async createProjectDropdown(): Promise<azdataType.FormComponent> {
 		this.projectDropdown = this.view!.modelBuilder.dropDown().withProps({
-			ariaLabel: constants.databaseProject
+			ariaLabel: constants.databaseProject,
+			required: true
 		}).component();
 
 		this.projectDropdown.onValueChanged(() => {
@@ -436,7 +440,8 @@ export class AddDatabaseReferenceDialog {
 	private createSystemDatabaseDropdown(): azdataType.FormComponent {
 		this.systemDatabaseDropdown = this.view!.modelBuilder.dropDown().withProps({
 			values: getSystemDbOptions(this.project),
-			ariaLabel: constants.databaseNameLabel
+			ariaLabel: constants.databaseNameLabel,
+			required: true
 		}).component();
 
 		this.systemDatabaseDropdown.onValueChanged(() => {
@@ -453,7 +458,8 @@ export class AddDatabaseReferenceDialog {
 		this.dacpacTextbox = this.view!.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.dacpacText,
 			placeHolder: constants.selectDacpac,
-			width: '400px'
+			width: '400px',
+			required: true
 		}).component();
 
 		this.dacpacTextbox.onTextChanged(() => {
@@ -553,6 +559,16 @@ export class AddDatabaseReferenceDialog {
 			this.serverNameTextbox!.enabled = false;
 			this.serverVariableTextbox!.enabled = false;
 
+			// update required property of the the textbox
+			this.databaseNameTextbox!.required = false;
+			this.serverNameTextbox!.required = false;
+			this.serverVariableTextbox!.required = false;
+
+			// update required indicator
+			this.databaseNameTextboxLabel!.requiredIndicator = false;
+			this.serverNameTextboxLabel!.requiredIndicator = false;
+			this.serverVariableTextboxLabel!.requiredIndicator = false;
+
 			// clear values in disabled fields
 			this.databaseNameTextbox!.value = '';
 			this.databaseVariableTextbox!.value = '';
@@ -563,6 +579,16 @@ export class AddDatabaseReferenceDialog {
 			this.databaseVariableTextbox!.enabled = !isSystemDb; // database variable is only enabled for non-system database references
 			this.serverNameTextbox!.enabled = false;
 			this.serverVariableTextbox!.enabled = false;
+
+			// update required property of the the textbox
+			this.databaseNameTextbox!.required = true;
+			this.serverNameTextbox!.required = false;
+			this.serverVariableTextbox!.required = false;
+
+			// update required indicator
+			this.databaseNameTextboxLabel!.requiredIndicator = true;
+			this.serverNameTextboxLabel!.requiredIndicator = false;
+			this.serverVariableTextboxLabel!.requiredIndicator = false;
 
 			// clear values in disabled fields
 			this.databaseVariableTextbox!.value = isSystemDb ? '' : this.databaseVariableTextbox!.value;
@@ -576,6 +602,16 @@ export class AddDatabaseReferenceDialog {
 			this.databaseVariableTextbox!.enabled = true;
 			this.serverNameTextbox!.enabled = true;
 			this.serverVariableTextbox!.enabled = true;
+
+			// update required property of the the textbox
+			this.databaseNameTextbox!.required = true;
+			this.serverNameTextbox!.required = true;
+			this.serverVariableTextbox!.required = true;
+
+			// update required indicator
+			this.databaseNameTextboxLabel!.requiredIndicator = true;
+			this.serverNameTextboxLabel!.requiredIndicator = true;
+			this.serverVariableTextboxLabel!.requiredIndicator = true;
 
 			// add default values in enabled fields
 			this.setDefaultDatabaseValues();
@@ -617,20 +653,23 @@ export class AddDatabaseReferenceDialog {
 
 	private createVariableSection(): azdataType.FormComponent {
 		// database name row
+		this.databaseNameTextboxLabel = this.createLabel(constants.databaseName, true);
 		this.databaseNameTextbox = this.createInputBox(constants.databaseName, true, true);
-		const databaseNameRow = this.view!.modelBuilder.flexContainer().withItems([this.createLabel(constants.databaseName, true), this.databaseNameTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const databaseNameRow = this.view!.modelBuilder.flexContainer().withItems([this.databaseNameTextboxLabel, this.databaseNameTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		// database variable row
 		this.databaseVariableTextbox = this.createInputBox(constants.databaseVariable, false, false);
 		const databaseVariableRow = this.view!.modelBuilder.flexContainer().withItems([this.createLabel(constants.databaseVariable), this.databaseVariableTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		// server name row
-		this.serverNameTextbox = this.createInputBox(constants.serverName, false, true);
-		const serverNameRow = this.view!.modelBuilder.flexContainer().withItems([this.createLabel(constants.serverName, true), this.serverNameTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		this.serverNameTextboxLabel = this.createLabel(constants.serverName, false);
+		this.serverNameTextbox = this.createInputBox(constants.serverName, false, false);
+		const serverNameRow = this.view!.modelBuilder.flexContainer().withItems([this.serverNameTextboxLabel, this.serverNameTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		// server variable row
-		this.serverVariableTextbox = this.createInputBox(constants.serverVariable, false, true);
-		const serverVariableRow = this.view!.modelBuilder.flexContainer().withItems([this.createLabel(constants.serverVariable, true), this.serverVariableTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		this.serverVariableTextboxLabel = this.createLabel(constants.serverVariable, false);
+		this.serverVariableTextbox = this.createInputBox(constants.serverVariable, false, false);
+		const serverVariableRow = this.view!.modelBuilder.flexContainer().withItems([this.serverVariableTextboxLabel, this.serverVariableTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		const variableSection = this.view!.modelBuilder.flexContainer().withItems([databaseNameRow, databaseVariableRow, serverNameRow, serverVariableRow]).withLayout({ flexFlow: 'column' }).withProps({ CSSStyles: { 'margin-bottom': '25px' } }).component();
 		this.setDefaultDatabaseValues();

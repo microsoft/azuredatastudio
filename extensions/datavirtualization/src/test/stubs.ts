@@ -58,7 +58,7 @@ export class MockExtensionContext implements vscode.ExtensionContext {
 	secrets: vscode.SecretStorage;
 	extension: vscode.Extension<any>;
 	extensionUri: vscode.Uri;
-	environmentVariableCollection: vscode.EnvironmentVariableCollection;
+	environmentVariableCollection: vscode.GlobalEnvironmentVariableCollection;
 	storageUri: vscode.Uri;
 	globalStorageUri: vscode.Uri;
 	globalStoragePath: string;
@@ -595,6 +595,9 @@ export class MockModelBuilder implements azdata.ModelBuilder {
 		throw new Error('Method not implemented.');
 	}
 	listView(): azdata.ComponentBuilder<azdata.ListViewComponent, azdata.ListViewComponentProperties> {
+		throw new Error('Method not implemented.');
+	}
+	chart<TChartType extends azdata.ChartType, TData extends azdata.ChartData<TChartType>, TOptions extends azdata.ChartOptions<TChartType>>(): azdata.ComponentBuilder<azdata.ChartComponent<TChartType, TData, TOptions>, azdata.ChartComponentProperties<TChartType, TData, TOptions>> {
 		throw new Error('Method not implemented.');
 	}
 	slider(): azdata.ComponentBuilder<azdata.SliderComponent, azdata.SliderComponentProperties> {

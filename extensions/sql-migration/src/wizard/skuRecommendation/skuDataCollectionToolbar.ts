@@ -30,8 +30,6 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 	private _importPerformanceDataButton!: azdata.ButtonComponent;
 	private _recommendationParametersButton!: azdata.ButtonComponent;
 
-	private _performanceDataSource!: PerformanceDataSourceOptions;
-
 	private _defaultPathForStartDataCollection!: string;
 
 	private _disposables: vscode.Disposable[] = [];
@@ -41,14 +39,9 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		this._defaultPathForStartDataCollection = utils.getUserHome() + "\\AppData\\Roaming\\azuredatastudio\\logs";
 	}
 
-	public get refreshButtonSelectionDropdown() {
-		return this._refreshButtonSelectionDropdown;
-	}
-
 	public createToolbar(view: azdata.ModelView): azdata.ToolbarContainer {
 		const toolbar = view.modelBuilder.toolbarContainer();
 
-		this._refreshButtonSelectionDropdown = this.createRefreshButtonSelectionDropDown(view);
 		this._startPerformanceCollectionButton = this.createStartPerformanceCollectionButton(view);
 		this._restartPerformanceCollectionButton = this.createRestartPerformanceCollectionButton(view);
 		this._stopPerformanceCollectionButton = this.createStopPerformanceCollectionButton(view);
@@ -56,7 +49,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		this._recommendationParametersButton = this.createRecommendationParametersButton(view);
 
 		toolbar.addToolbarItems([
-			<azdata.ToolbarComponent>{ component: this._refreshButtonSelectionDropdown, toolbarSeparatorAfter: true },
+			<azdata.ToolbarComponent>{ component: this.createRefreshButtonSelectionDropDown(view), toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this._startPerformanceCollectionButton, toolbarSeparatorAfter: false },
 			<azdata.ToolbarComponent>{ component: this._restartPerformanceCollectionButton, toolbarSeparatorAfter: false },
 			<azdata.ToolbarComponent>{ component: this._stopPerformanceCollectionButton, toolbarSeparatorAfter: false },
@@ -70,11 +63,30 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		return toolbar.component();
 	}
 
-	private createRefreshButtonSelectionDropDown(view: azdata.ModelView): azdata.DropDownComponent {
+	private createRefreshButtonSelectionDropDown(view: azdata.ModelView): azdata.FlexContainer {
+		const container = view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'display': 'flex',
+				'flex-direction': 'row',
+			}
+		}).component();
+
 		const refreshAssessmentOption = constants.REFRESH_ASSESSMENT_LABEL;
 		const refreshSKUOption = constants.REFRESH_SKU_LABEL;
 
-		const refreshButtonSelectionDropdown = view.modelBuilder.dropDown().withProps({
+		const refreshDropdownImage = view.modelBuilder.image().withProps({
+			iconPath: IconPathHelper.refresh,
+			iconHeight: 16,
+			iconWidth: 16,
+			height: 16,
+			CSSStyles: {
+				'width': '16px',
+				'padding': '8px',
+				'margin': '4px',
+			},
+		}).component();
+
+		this._refreshButtonSelectionDropdown = view.modelBuilder.dropDown().withProps({
 			ariaLabel: constants.AZURE_SQL_TARGET,
 			placeholder: constants.REFRESH,
 			values: [refreshAssessmentOption],
@@ -86,18 +98,19 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 			},
 		}).component();
 
-		this._disposables.push(refreshButtonSelectionDropdown.onValueChanged(async (value) => {
+		this._disposables.push(this._refreshButtonSelectionDropdown.onValueChanged(async (value) => {
 			if (value === refreshAssessmentOption) {
-				refreshButtonSelectionDropdown.value = constants.REFRESH;
+				this._refreshButtonSelectionDropdown.value = constants.REFRESH;
 				await this.skuRecommendationPage.refreshAssessment();
 			}
 			else if (value === refreshSKUOption) {
-				refreshButtonSelectionDropdown.value = constants.REFRESH;
+				this._refreshButtonSelectionDropdown.value = constants.REFRESH;
 				await this.skuRecommendationPage.refreshAzureRecommendation();
 			}
 		}));
 
-		return refreshButtonSelectionDropdown;
+		container.addItems([refreshDropdownImage, this._refreshButtonSelectionDropdown]);
+		return container;
 	}
 
 	private createStartPerformanceCollectionButton(view: azdata.ModelView): azdata.ButtonComponent {
@@ -132,11 +145,11 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 					fs.mkdirSync(this._defaultPathForStartDataCollection);
 				}
 
-				this._performanceDataSource = PerformanceDataSourceOptions.CollectData;
+				this.migrationStateModel._skuRecommendationPerformanceDataSource = PerformanceDataSourceOptions.CollectData;
 				this.migrationStateModel._skuRecommendationPerformanceLocation = this._defaultPathForStartDataCollection;
 
 				// Start data collection at default path.
-				await this.executeStartDataCollection();
+				await this.executeDataCollection();
 
 			}
 			// 'Choose a path' option is selected.
@@ -153,11 +166,11 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 
 				// if a folder path is selected.
 				if (chosenFolder && chosenFolder.length > 0 && chosenFolder[0]) {
-					this._performanceDataSource = PerformanceDataSourceOptions.CollectData;
+					this.migrationStateModel._skuRecommendationPerformanceDataSource = PerformanceDataSourceOptions.CollectData;
 					this.migrationStateModel._skuRecommendationPerformanceLocation = chosenFolder[0].fsPath;
 
 					// Start data collection at folder path selected.
-					await this.executeStartDataCollection();
+					await this.executeDataCollection();
 				}
 			}
 		}));
@@ -181,16 +194,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 			}).component();
 		restartPerformanceCollectionButton.enabled = false;
 		this._disposables.push(restartPerformanceCollectionButton.onDidClick(async () => {
-			this._stopPerformanceCollectionButton.enabled = true;
-			this._restartPerformanceCollectionButton.enabled = false;
-
-			await this.migrationStateModel.startPerfDataCollection(
-				this.migrationStateModel._skuRecommendationPerformanceLocation,
-				this.migrationStateModel._performanceDataQueryIntervalInSeconds,
-				this.migrationStateModel._staticDataQueryIntervalInSeconds,
-				this.migrationStateModel._numberOfPerformanceDataQueryIterations,
-				this.skuRecommendationPage);
-			await this.skuRecommendationPage.refreshSkuRecommendationComponents();
+			await this.executeDataCollection();
 		}));
 
 		return restartPerformanceCollectionButton;
@@ -209,17 +213,11 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 					...styles.TOOLBAR_CSS
 				}
 			}).component();
-		stopPerformanceCollectionButton.enabled = false;
+
 		this._disposables.push(stopPerformanceCollectionButton.onDidClick(async () => {
-			this._stopPerformanceCollectionButton.enabled = false;
-
-			await this._startPerformanceCollectionButton.updateCssStyles({ 'display': 'none' });
-			await this._restartPerformanceCollectionButton.updateCssStyles({ 'display': 'inline' });
-
-			this._restartPerformanceCollectionButton.enabled = true;
-
 			await this.migrationStateModel.stopPerfDataCollection();
 			await this.skuRecommendationPage.refreshAzureRecommendation();
+			await this._setToolbarState();
 		}));
 		return stopPerformanceCollectionButton;
 	}
@@ -240,9 +238,6 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 
 		this._disposables.push(
 			importPerformanceDataButton.onDidClick(async (e) => {
-				this._stopPerformanceCollectionButton.enabled = false;
-				this._startPerformanceCollectionButton.enabled = true;
-
 				const importPerformanceDataDialog = new ImportPerformanceDataDialog(this.skuRecommendationPage, this.wizard, this.migrationStateModel);
 				await importPerformanceDataDialog.openDialog();
 			})
@@ -271,13 +266,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		return recommendationParametersButton;
 	}
 
-	private async executeStartDataCollection() {
-		this._stopPerformanceCollectionButton.enabled = true;
-		this._startPerformanceCollectionButton.enabled = false;
-		this._importPerformanceDataButton.enabled = false;
-
-		this.migrationStateModel._skuRecommendationPerformanceDataSource = this._performanceDataSource;
-
+	private async executeDataCollection() {
 		await this.migrationStateModel.startPerfDataCollection(
 			this.migrationStateModel._skuRecommendationPerformanceLocation,
 			this.migrationStateModel._performanceDataQueryIntervalInSeconds,
@@ -286,6 +275,39 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 			this.skuRecommendationPage);
 
 		await this.skuRecommendationPage.refreshSkuRecommendationComponents();
+		await this._setToolbarState();
+	}
+
+	public async _setToolbarState(): Promise<void> {
+		const refreshAssessmentOption = constants.REFRESH_ASSESSMENT_LABEL;
+		const refreshSKUOption = constants.REFRESH_SKU_LABEL;
+
+		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
+			case PerformanceDataSourceOptions.CollectData: {
+				if (this.migrationStateModel.performanceCollectionInProgress()) {
+					this._refreshButtonSelectionDropdown.values = [refreshAssessmentOption, refreshSKUOption];
+					this._importPerformanceDataButton.enabled = false;
+					this._stopPerformanceCollectionButton.enabled = true;
+					this._restartPerformanceCollectionButton.enabled = false;
+					this._startPerformanceCollectionButton.enabled = false;
+				}
+				else if (this.migrationStateModel.performanceCollectionStopped()) {
+					this._refreshButtonSelectionDropdown.values = [refreshAssessmentOption, refreshSKUOption];
+					this._importPerformanceDataButton.enabled = false;
+					this._stopPerformanceCollectionButton.enabled = false;
+
+					await this._startPerformanceCollectionButton.updateCssStyles({ 'display': 'none' });
+					await this._restartPerformanceCollectionButton.updateCssStyles({ 'display': 'inline' });
+					this._restartPerformanceCollectionButton.enabled = true;
+				}
+			}
+			case PerformanceDataSourceOptions.OpenExisting: {
+				if (utils.hasRecommendations(this.migrationStateModel)) {
+					this._refreshButtonSelectionDropdown.values = [refreshAssessmentOption, refreshSKUOption];
+				}
+				break;
+			}
+		}
 	}
 
 	public dispose(): void {

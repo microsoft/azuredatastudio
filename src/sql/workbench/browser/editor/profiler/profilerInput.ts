@@ -7,6 +7,7 @@ import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTemplate, ProfilerFilter } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ProfilerState } from 'sql/workbench/common/editor/profiler/profilerState';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
@@ -17,8 +18,10 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as types from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
+import * as path from 'vs/base/common/path';
 import { FilterData } from 'sql/workbench/services/profiler/browser/profilerFilter';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
+import { Verbosity } from 'vs/workbench/common/editor';
 
 export interface ColumnDefinition extends Slick.Column<Slick.SlickData> {
 	name: string;
@@ -26,6 +29,7 @@ export interface ColumnDefinition extends Slick.Column<Slick.SlickData> {
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {
 
+	private static PROFILERNAME: string = nls.localize('profilerInput.profiler', "Profiler");
 	public static ID: string = 'workbench.editorinputs.profilerinputs';
 	public static SCHEMA: string = 'profiler';
 	private _data: TableDataView<Slick.SlickData>;
@@ -41,11 +45,14 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	private _onColumnsChanged = new Emitter<Slick.Column<Slick.SlickData>[]>();
 	public onColumnsChanged: Event<Slick.Column<Slick.SlickData>[]> = this._onColumnsChanged.event;
 
+	private _initializerSetup: boolean = true;
+
 	private _filter: ProfilerFilter = { clauses: [] };
 
 	constructor(
 		public connection: IConnectionProfile | undefined,
 		public fileURI: URI | undefined,
+		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@INotificationService private _notificationService: INotificationService
 	) {
@@ -112,6 +119,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	public setSessionName(name: string) {
 		if (!this.state.isRunning || !this.state.isPaused) {
 			this._sessionName = name;
+			this._onDidChangeLabel.fire();
 		}
 	}
 
@@ -124,12 +132,46 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public override getName(): string {
-		let name: string = nls.localize('profilerInput.profiler', "Profiler");
+		let name: string = ProfilerInput.PROFILERNAME;
 		if (!this.connection) {
+			if (this.isFileSession) {
+				name += ': ' + path.basename(this.fileURI.fsPath);
+			}
 			return name;
 		}
-		name += ': ' + this.connection.serverName.substring(0, 20);
+		if (this.connection.connectionName) {
+			name += ': ' + this.connection.connectionName.substring(0, 20);
+		}
+		else {
+			name += ': ' + this.connection.serverName.substring(0, 20);
+		}
 		return name;
+	}
+
+	public override getTitle(verbosity?: Verbosity): string {
+		let fullTitle = ProfilerInput.PROFILERNAME;
+		if (this.connection) {
+			if (this.sessionName) {
+				fullTitle += nls.localize('profilerInput.sessionName', ': Session Name: {0}\n', this.sessionName);
+			}
+			let baseName = this.connection.serverName + ':' + this.connection.databaseName;
+			let advancedOptions = this._connectionService.getNonDefaultOptions(this.connection);
+			fullTitle = fullTitle + nls.localize('profilerInput.connDetails', 'Connection Details: ') + baseName + advancedOptions;
+		}
+		else if (this.isFileSession) {
+			fullTitle += ': ' + path.basename(this.fileURI.fsPath);
+		}
+
+		switch (verbosity) {
+			case Verbosity.LONG:
+				// Used by tabsTitleControl as the tooltip hover.
+				return fullTitle;
+			default:
+			case Verbosity.SHORT:
+			case Verbosity.MEDIUM:
+				// Used for header title by tabsTitleControl.
+				return this.getName();
+		}
 	}
 
 	public getResource(): URI {
@@ -160,6 +202,14 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 
 	public get isFileSession(): boolean {
 		return !!this.fileURI;
+	}
+
+	public get isSetupPhase(): boolean {
+		return this._initializerSetup;
+	}
+
+	public setInitializerPhase(isSetupPhase: boolean) {
+		this._initializerSetup = isSetupPhase;
 	}
 
 	public setConnectionState(isConnected: boolean): void {

@@ -56,7 +56,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
-		super(wizard, azdata.window.createWizardPage(constants.ASSESSMENT_RESULTS_AND_RECOMMENDATIONS_PAGE_TITLE), migrationStateModel);
+		super(wizard, azdata.window.createWizardPage(constants.ASSESSMENT_SUMMARY_AND_RECOMMENDATIONS_PAGE_TITLE), migrationStateModel);
 	}
 
 	protected async registerContent(view: azdata.ModelView) {
@@ -174,7 +174,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	// Creates the Assessment summary container.
 	private createTargetSummaryComponent(view: azdata.ModelView): FlexContainer {
 		const chooseYourTargetText = this._view.modelBuilder.text().withProps({
-			value: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
+			value: constants.ASSESSMENT_SUMMARY_AND_SKU_RECOMMENDATION_FOR_TARGETS_LABEL,
 			CSSStyles: {
 				...styles.SECTION_HEADER_CSS,
 				'margin-bottom': '5px'
@@ -224,11 +224,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				await this.migrationStateModel.getDatabaseAssessments([MigrationTargetType.SQLMI, MigrationTargetType.SQLDB]);
 				const assessmentError = this.migrationStateModel._assessmentResults?.assessmentError;
 				if (assessmentError) {
-					errors.push(`message: ${assessmentError.message}${EOL}stack: ${assessmentError.stack}`);
+					errors.push(constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR_WITH_STACK(assessmentError));
 				}
 				if (this.migrationStateModel?._assessmentResults?.errors?.length! > 0) {
 					errors.push(...this.migrationStateModel._assessmentResults?.errors?.map(
-						e => `message: ${e.message}${EOL}errorSummary: ${e.errorSummary}${EOL}possibleCauses: ${e.possibleCauses}${EOL}guidance: ${e.guidance}${EOL}errorId: ${e.errorId}`)!);
+						e => constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR_WITH_INFO(e))!);
 				}
 			} catch (e) {
 				errors.push(constants.SKU_RECOMMENDATION_ASSESSMENT_UNEXPECTED_ERROR(this._serverName, e));
@@ -296,7 +296,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		await this._setAssessmentState(false, this.migrationStateModel._runAssessments);
 	}
 
-	// creating the assessmentInProgress. Shown when the assessment is being calculate.
 	private createAssessmentProgress(): azdata.FlexContainer {
 		this._assessmentLoader = this._view.modelBuilder.loadingComponent()
 			.component();
@@ -461,11 +460,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS, 'margin': '0' }
 			}).component();
 
+
 		this._skuDataCollectionTimerText = _view.modelBuilder.text()
 			.withProps({
 				value: '',
 				CSSStyles: {
-					...styles.LABEL_CSS,
+					...styles.BODY_CSS,
 					'margin': 0,
 				}
 			}).component();
@@ -500,8 +500,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
 			case PerformanceDataSourceOptions.CollectData: {
 				if (this.migrationStateModel.performanceCollectionInProgress()) {
-					this._skuDataCollectionToolbar.refreshButtonSelectionDropdown.values = [constants.REFRESH_ASSESSMENT_LABEL, constants.REFRESH_SKU_LABEL];
-
 					await this._skuDataCollectionStatusIcon.updateProperties({
 						iconPath: IconPathHelper.inProgressMigration
 					});
@@ -516,15 +514,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						this._skuDataCollectionTimerText.value = constants.AZURE_RECOMMENDATION_STATUS_AUTO_REFRESH_TIMER(Math.ceil(skuRecAutoRefreshTimeInMins - elapsedTimeInMins));
 					} else {
 						// Timer is only for first refresh.
-						this._skuDataCollectionTimerText.value = '';
+						this._skuDataCollectionTimerText.value = constants.AZURE_RECOMMENDATION_STATUS_MANUAL_REFRESH_TIMER;
 					}
 
 					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'flex' });
 				}
 
 				else if (this.migrationStateModel.performanceCollectionStopped()) {
-					this._skuDataCollectionToolbar.refreshButtonSelectionDropdown.values = [constants.REFRESH_ASSESSMENT_LABEL, constants.REFRESH_SKU_LABEL];
-
 					await this._skuDataCollectionStatusIcon.updateProperties({
 						iconPath: IconPathHelper.stop
 					});
@@ -536,7 +532,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 			case PerformanceDataSourceOptions.OpenExisting: {
 				if (utils.hasRecommendations(this.migrationStateModel)) {
-					this._skuDataCollectionToolbar.refreshButtonSelectionDropdown.values = [constants.REFRESH_ASSESSMENT_LABEL, constants.REFRESH_SKU_LABEL];
 				}
 				break;
 			}
@@ -591,6 +586,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			return true;
 		});
 		await this.constructDetails();
+		await this._skuDataCollectionToolbar._setToolbarState();
 		this.wizard.nextButton.enabled = this.migrationStateModel._assessmentResults !== undefined;
 	}
 

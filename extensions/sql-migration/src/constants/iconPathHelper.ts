@@ -42,6 +42,7 @@ export class IconPathHelper {
 	public static emptyTable: IconPath;
 	public static addAzureAccount: IconPath;
 	public static retry: IconPath;
+	public static redo: IconPath;
 	public static edit: IconPath;
 	public static restartDataCollection: IconPath;
 	public static stop: IconPath;
@@ -183,6 +184,10 @@ export class IconPathHelper {
 		IconPathHelper.retry = {
 			light: context.asAbsolutePath('images/retry.svg'),
 			dark: context.asAbsolutePath('images/retry.svg')
+		};
+		IconPathHelper.redo = {
+			light: context.asAbsolutePath('images/redo.svg'),
+			dark: context.asAbsolutePath('images/redo.svg')
 		};
 		IconPathHelper.edit = {
 			light: context.asAbsolutePath('images/edit.svg'),

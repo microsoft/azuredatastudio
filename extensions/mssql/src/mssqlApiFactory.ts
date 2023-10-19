@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AppContext } from './appContext';
-import { IExtension, ICmsService, IDacFxService, ISqlProjectsService, ISchemaCompareService, ILanguageExtensionService, ISqlAssessmentService, IAzureBlobService } from 'mssql';
+import { IExtension, ICmsService, IDacFxService, ISqlProjectsService, ISchemaCompareService, ILanguageExtensionService, ISqlAssessmentService, IAzureBlobService, IQueryStoreService } from 'mssql';
 import * as constants from './constants';
 import { SqlToolsServer } from './sqlToolsServer';
 
@@ -33,6 +33,9 @@ export function createMssqlApi(context: AppContext, sqlToolsServer: SqlToolsServ
 		},
 		get azureBlob() {
 			return context.getService<IAzureBlobService>(constants.AzureBlobService);
+		},
+		get queryStore() {
+			return context.getService<IQueryStoreService>(constants.QueryStoreService);
 		}
 	};
 }

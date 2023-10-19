@@ -951,7 +951,7 @@ export async function isAdmin(): Promise<boolean> {
 		if (isWindows()) {
 			isAdmin = (await import('native-is-elevated'))();
 		} else {
-			isAdmin = process.getuid() === 0;
+			isAdmin = process.getuid?.() === 0;
 		}
 	} catch (e) {
 		//Ignore error and return false;
@@ -1192,21 +1192,7 @@ export async function getRecommendedConfiguration(targetType: MigrationTargetTyp
 					recommendation.targetSku.virtualMachineSize!.sizeName,
 					recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
 
-				const dataDisk = constants.STORAGE_CONFIGURATION(
-					recommendation.targetSku.dataDiskSizes![0].size,
-					recommendation.targetSku.dataDiskSizes!.length);
-				const storageDisk = constants.STORAGE_CONFIGURATION(
-					recommendation.targetSku.logDiskSizes![0].size,
-					recommendation.targetSku.logDiskSizes!.length);
-				const tempDb = recommendation.targetSku.tempDbDiskSizes!.length > 0
-					? constants.STORAGE_CONFIGURATION(
-						recommendation.targetSku.logDiskSizes![0].size,
-						recommendation.targetSku.logDiskSizes!.length)
-					: constants.LOCAL_SSD;
-				const vmConfigurationPreview =
-					constants.VM_CONFIGURATION_PREVIEW(dataDisk, storageDisk, tempDb);
-
-				return [vmConfiguration, vmConfigurationPreview];
+				return [vmConfiguration];
 			}
 		case MigrationTargetType.SQLDB:
 			const recommendations = model._skuEnableElastic
@@ -1250,4 +1236,10 @@ export function hasRecommendations(model: MigrationStateModel): boolean {
 		&& !model._skuRecommendationResults?.recommendationError
 		? true
 		: false;
+}
+
+export async function clearDropDownWithLoading(dropDown: DropDownComponent): Promise<void> {
+	dropDown.loading = true;
+	await dropDown.updateProperty('value', undefined);
+	await dropDown.updateProperty('values', []);
 }

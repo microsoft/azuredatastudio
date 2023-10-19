@@ -53,7 +53,7 @@
 	"cms.connectionOptions.authType.description": "Specifies the method of authenticating with SQL Server",
 	"cms.connectionOptions.authType.categoryValues.sqlLogin": "SQL Login",
 	"cms.connectionOptions.authType.categoryValues.integrated": "Windows Authentication",
-	"cms.connectionOptions.authType.categoryValues.azureMFA": "Azure Active Directory - Universal with MFA support",
+	"cms.connectionOptions.authType.categoryValues.azureMFA": "Microsoft Entra ID - Universal with MFA support",
 	"cms.connectionOptions.userName.displayName": "User name",
 	"cms.connectionOptions.userName.description": "Indicates the user ID to be used when connecting to the data source",
 	"cms.connectionOptions.password.displayName": "Password",

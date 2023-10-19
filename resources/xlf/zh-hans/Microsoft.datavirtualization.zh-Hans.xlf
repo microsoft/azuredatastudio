@@ -1,0 +1,587 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/Microsoft.datavirtualization/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="externalTable.databaseNameTitle">
+        <source xml:lang="en">Database Name</source>
+        <target state="translated">数据库名称</target>
+      </trans-unit>
+      <trans-unit id="externalTable.externalSchemaTitle">
+        <source xml:lang="en">External Schema</source>
+        <target state="translated">外部架构</target>
+      </trans-unit>
+      <trans-unit id="externalTable.externalTableTitle">
+        <source xml:lang="en">External Table</source>
+        <target state="translated">外部表</target>
+      </trans-unit>
+      <trans-unit id="externalTable.hostnameTitle">
+        <source xml:lang="en">Hostname</source>
+        <target state="translated">主机名</target>
+      </trans-unit>
+      <trans-unit id="msgMissingNodeContext">
+        <source xml:lang="en">Node Command called without any node passed</source>
+        <target state="translated">调用了节点命令但未传递任何节点</target>
+      </trans-unit>
+      <trans-unit id="sqlServerTypeName">
+        <source xml:lang="en">SQL Server</source>
+        <target state="translated">SQL Server</target>
+      </trans-unit>
+      <trans-unit id="externalTable.serverNameTitle">
+        <source xml:lang="en">Server Name</source>
+        <target state="translated">服务器名称</target>
+      </trans-unit>
+      <trans-unit id="externalTable.serviceNameTitle">
+        <source xml:lang="en">Service name / SID</source>
+        <target state="translated">服务名称/SID:</target>
+      </trans-unit>
+      <trans-unit id="externalTable.sourceSchemaTitle">
+        <source xml:lang="en">Source Schema</source>
+        <target state="translated">源架构</target>
+      </trans-unit>
+      <trans-unit id="externalTable.sourceTableTitle">
+        <source xml:lang="en">Source Table</source>
+        <target state="translated">源表</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/services/serviceClient" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="downloadingServiceSize">
+        <source xml:lang="en">({0} KB)</source>
+        <target state="translated">({0} KB)</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceComplete">
+        <source xml:lang="en">Done downloading {0}</source>
+        <target state="translated">{0}下载完毕</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceStatus">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">正在下载 {0}</target>
+      </trans-unit>
+      <trans-unit id="downloadingService">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">正在下载 {0}</target>
+      </trans-unit>
+      <trans-unit id="serviceStartFailed">
+        <source xml:lang="en">Failed to start {0}: {1}</source>
+        <target state="translated">未能启动 {0}: {1}</target>
+      </trans-unit>
+      <trans-unit id="serviceInstalled">
+        <source xml:lang="en">Installed {0}</source>
+        <target state="translated">已安装{0}</target>
+      </trans-unit>
+      <trans-unit id="installingService">
+        <source xml:lang="en">Installing {0}</source>
+        <target state="translated">正在安装 {0}</target>
+      </trans-unit>
+      <trans-unit id="installingServiceDetailed">
+        <source xml:lang="en">Installing {0} to {1}</source>
+        <target state="translated">正在将 {0} 安装到 {1}</target>
+      </trans-unit>
+      <trans-unit id="serviceStarting">
+        <source xml:lang="en">Starting {0}...</source>
+        <target state="translated">正在启动 {0}...</target>
+      </trans-unit>
+      <trans-unit id="serviceStarted">
+        <source xml:lang="en">{0} started</source>
+        <target state="translated">{0} 已启动</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/services/telemetry" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="serviceCrashButton">
+        <source xml:lang="en">View Known Issues</source>
+        <target state="translated">查看已知问题</target>
+      </trans-unit>
+      <trans-unit id="serviceCrashMessage">
+        <source xml:lang="en">service component could not start</source>
+        <target state="translated">服务组件无法启动</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/utils" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="executeCommandProcessExited">
+        <source xml:lang="en">Process exited with code {0}</source>
+        <target state="translated">已退出进程，代码为 {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/tableFromFile/pages/fileConfigPage" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="tableFromFileImport.databaseDropdownTitle">
+        <source xml:lang="en">Database the external table will be created in</source>
+        <target state="translated">将在其中创建外部表的数据库</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.destConnTitle">
+        <source xml:lang="en">Destination Server</source>
+        <target state="translated">目标服务器</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.dataSourceDropdown">
+        <source xml:lang="en">External data source for new external table</source>
+        <target state="translated">新外部表的外部数据源</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.tableTextboxTitle">
+        <source xml:lang="en">Name for new external table </source>
+        <target state="translated">新外部表的名称 </target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.fileFormatTextboxTitle">
+        <source xml:lang="en">Name for new table's external file format</source>
+        <target state="translated">新表的外部文件格式的名称</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.noSchemas">
+        <source xml:lang="en">No user schemas were found in the specified database.</source>
+        <target state="translated">在指定的数据库中找不到用户架构。</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.noDataSources">
+        <source xml:lang="en">No valid external data sources were found in the specified database.</source>
+        <target state="translated">在指定的数据库中找不到有效的外部数据源。</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.refreshButtonTitle">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">刷新</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.schemaTextboxTitle">
+        <source xml:lang="en">Schema for new external table</source>
+        <target state="translated">新外部表的名称 </target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.fileTextboxTitle">
+        <source xml:lang="en">Source File</source>
+        <target state="translated">源文件</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.folderTextboxTitle">
+        <source xml:lang="en">Source Folder</source>
+        <target state="translated">源文件夹</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.fileFormatExists">
+        <source xml:lang="en">The specified external file format name already exists.</source>
+        <target state="translated">指定的外部文件格式名称已存在。</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.tableExists">
+        <source xml:lang="en">The specified table name already exists under the specified schema.</source>
+        <target state="translated">指定的表名在指定的架构下已存在。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/tableFromFile/pages/modifyColumnsPage" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="tableFromFileImport.allowNulls">
+        <source xml:lang="en">Allow Nulls</source>
+        <target state="translated">允许 Null</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.columnName">
+        <source xml:lang="en">Column Name</source>
+        <target state="translated">列名</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.dataType">
+        <source xml:lang="en">Data Type</source>
+        <target state="translated">数据类型</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/tableFromFile/pages/prosePreviewPage" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="tableFromFileImport.noProseInfo">
+        <source xml:lang="en">Failed to generate column information for the specified file.</source>
+        <target state="translated">无法为指定的文件生成列信息。</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.noPreviewData">
+        <source xml:lang="en">Failed to retrieve any data from the specified file.</source>
+        <target state="translated">无法从指定的文件中检索任何数据。</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.prosePreviewMessage">
+        <source xml:lang="en">This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.</source>
+        <target state="translated">此操作分析了输入文件的结构并生成了下方的前 50 行预览。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/tableFromFile/pages/summaryPage" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="tableFromFileImport.importInformation">
+        <source xml:lang="en">Data Virtualization information</source>
+        <target state="translated">数据虚拟化信息</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.databaseName">
+        <source xml:lang="en">Database name</source>
+        <target state="translated">数据库名</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.fileFormat">
+        <source xml:lang="en">File format name</source>
+        <target state="translated">文件格式名称</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.next">
+        <source xml:lang="en">Next</source>
+        <target state="translated">下一页</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.serverName">
+        <source xml:lang="en">Server name</source>
+        <target state="translated">服务器名称</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.summaryFileName">
+        <source xml:lang="en">Source File</source>
+        <target state="translated">源文件</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.summaryFolderName">
+        <source xml:lang="en">Source Folder</source>
+        <target state="translated">源文件夹</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.tableName">
+        <source xml:lang="en">Table name</source>
+        <target state="translated">表名</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.tableSchema">
+        <source xml:lang="en">Table schema</source>
+        <target state="translated">表架构</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.importData">
+        <source xml:lang="en">Virtualize Data</source>
+        <target state="translated">虚拟化数据</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/tableFromFile/tableFromFileWizard" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="tableFromFileImport.onlyCsvSupported">
+        <source xml:lang="en">Currently only csv files are supported for this wizard.</source>
+        <target state="translated">此向导当前仅支持 csv 文件。</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.page2Name">
+        <source xml:lang="en">Modify Columns</source>
+        <target state="translated">修改列</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.noCsvFileFound">
+        <source xml:lang="en">No csv files were found in the specified folder.</source>
+        <target state="translated">在指定的文件夹中找不到 csv 文件。</target>
+      </trans-unit>
+      <trans-unit id="import.needFile">
+        <source xml:lang="en">Please select a source file or folder before using this wizard.</source>
+        <target state="translated">请在使用此向导之前选择源文件或文件夹。</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.page1Name">
+        <source xml:lang="en">Preview Data</source>
+        <target state="translated">预览数据</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.page0Name">
+        <source xml:lang="en">Select the destination database for your external table</source>
+        <target state="translated">选择外部表的目标数据库</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.page3Name">
+        <source xml:lang="en">Summary</source>
+        <target state="translated">摘要</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.openScriptMsg">
+        <source xml:lang="en">The script has opened in a document window. You can view it once the wizard is closed.</source>
+        <target state="translated">脚本已在文档窗口中打开。关闭向导后即可查看它。</target>
+      </trans-unit>
+      <trans-unit id="tableFromFile.taskLabel">
+        <source xml:lang="en">Virtualize Data</source>
+        <target state="translated">虚拟化数据</target>
+      </trans-unit>
+      <trans-unit id="tableFromFileImport.wizardName">
+        <source xml:lang="en">Virtualize Data From CSV</source>
+        <target state="translated">从 CSV 虚拟化数据</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/connectionDetailsPage" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="newCredOption">
+        <source xml:lang="en">-- Create New Credential --</source>
+        <target state="translated">--新建凭据--</target>
+      </trans-unit>
+      <trans-unit id="credentialNameDropdown">
+        <source xml:lang="en">Choose Credential</source>
+        <target state="translated">选择凭据</target>
+      </trans-unit>
+      <trans-unit id="credentialFields">
+        <source xml:lang="en">Configure Credential</source>
+        <target state="translated">配置凭据</target>
+      </trans-unit>
+      <trans-unit id="connectionDetailsTitle">
+        <source xml:lang="en">Create a connection to your Data Source</source>
+        <target state="translated">无法与数据源建立连接</target>
+      </trans-unit>
+      <trans-unit id="sourceNameInput">
+        <source xml:lang="en">External Data Source Name</source>
+        <target state="translated">外部数据源名称</target>
+      </trans-unit>
+      <trans-unit id="credentialNameInput">
+        <source xml:lang="en">New Credential Name</source>
+        <target state="translated">新的凭据名称</target>
+      </trans-unit>
+      <trans-unit id="passwordInput">
+        <source xml:lang="en">Password</source>
+        <target state="translated">密码</target>
+      </trans-unit>
+      <trans-unit id="serverFields">
+        <source xml:lang="en">Server Connection</source>
+        <target state="translated">服务器连接</target>
+      </trans-unit>
+      <trans-unit id="dataSourceHelpText">
+        <source xml:lang="en">The name for your External Data Source.</source>
+        <target state="translated">外部数据源的名称。</target>
+      </trans-unit>
+      <trans-unit id="credNameHelpText">
+        <source xml:lang="en">The name of the Database Scoped Credential used to securely store the login information for the External Data Source you are creating.</source>
+        <target state="translated">用于安全存储正在创建的外部数据源的登录信息的数据库范围内凭据的名称。</target>
+      </trans-unit>
+      <trans-unit id="usernameInput">
+        <source xml:lang="en">Username</source>
+        <target state="translated">用户名</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/createMasterKeyPage" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="masterKeyExistsMsg">
+        <source xml:lang="en">A Master Key already exists for the selected database. No action is required on this page.</source>
+        <target state="translated">所选数据库已存在主密钥。无需执行此页面上的任何操作。</target>
+      </trans-unit>
+      <trans-unit id="createMasterKeyDescription">
+        <source xml:lang="en">A master key is required. This secures the credentials used by an External Data Source. Note that you should back up the master key by using BACKUP MASTER KEY and store the backup in a secure, off-site location.</source>
+        <target state="translated">主密钥是必需的。这可保护外部数据源使用的凭据。请注意，应使用 BACKUP MASTER KEY 备份主密钥，并将备份存储在安全的站点外位置。</target>
+      </trans-unit>
+      <trans-unit id="masterKeyPasswordConfirmInput">
+        <source xml:lang="en">Confirm Password</source>
+        <target state="translated">确认密码</target>
+      </trans-unit>
+      <trans-unit id="createMasterKeyTitle">
+        <source xml:lang="en">Create Database Master Key</source>
+        <target state="translated">创建数据库主密钥</target>
+      </trans-unit>
+      <trans-unit id="masterKeyPasswordInput">
+        <source xml:lang="en">Password</source>
+        <target state="translated">密码</target>
+      </trans-unit>
+      <trans-unit id="passwordMismatchWithConfirmError">
+        <source xml:lang="en">Password values do not match.</source>
+        <target state="translated">密码值不匹配。</target>
+      </trans-unit>
+      <trans-unit id="masterKeyPasswordLabel">
+        <source xml:lang="en">Set the Master Key password.</source>
+        <target state="translated">设置主密钥密码。</target>
+      </trans-unit>
+      <trans-unit id="pwdReminderText">
+        <source xml:lang="en">Strong passwords use a combination of alphanumeric, upper, lower, and special characters.</source>
+        <target state="translated">强度高的密码使用字母数字、大小写字母和特殊字符的组合。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/objectMappingPage" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="mappingTableCheckboxHelpText">
+        <source xml:lang="en">Clicking on the checkbox will select that table to be mapped.</source>
+        <target state="translated">点击复选框将选择要映射的表。</target>
+      </trans-unit>
+      <trans-unit id="mappingTableHelpText">
+        <source xml:lang="en">Clicking on the table name will show you the column mapping information for that table.</source>
+        <target state="translated">点击表名将显示该表的列映射信息。</target>
+      </trans-unit>
+      <trans-unit id="mapping.collations">
+        <source xml:lang="en">Collations</source>
+        <target state="translated">排序规则</target>
+      </trans-unit>
+      <trans-unit id="externalTableMappingLabel">
+        <source xml:lang="en">Column Mapping</source>
+        <target state="translated">列映射</target>
+      </trans-unit>
+      <trans-unit id="mapping.externalName">
+        <source xml:lang="en">External</source>
+        <target state="translated">外部</target>
+      </trans-unit>
+      <trans-unit id="objectMappingTitle">
+        <source xml:lang="en">Map your data source objects to your external table</source>
+        <target state="translated">将数据源对象映射到外部表</target>
+      </trans-unit>
+      <trans-unit id="noObjectSelectedMessage">
+        <source xml:lang="en">No objects were selected.</source>
+        <target state="translated">未选择对象。</target>
+      </trans-unit>
+      <trans-unit id="noTableError">
+        <source xml:lang="en">No table information present for '{0}'</source>
+        <target state="translated">没有“{0}”的表信息</target>
+      </trans-unit>
+      <trans-unit id="mapping.nullable">
+        <source xml:lang="en">Nullable</source>
+        <target state="translated">可为 Null</target>
+      </trans-unit>
+      <trans-unit id="mapping.sqlDataType">
+        <source xml:lang="en">SQL Data Type</source>
+        <target state="translated">SQL 数据类型</target>
+      </trans-unit>
+      <trans-unit id="mapping.SourceName">
+        <source xml:lang="en">Source</source>
+        <target state="translated">源</target>
+      </trans-unit>
+      <trans-unit id="tableFolderLabel">
+        <source xml:lang="en">Tables</source>
+        <target state="translated">表</target>
+      </trans-unit>
+      <trans-unit id="warning.unsupported_column_type_description">
+        <source xml:lang="en">These column types are not supported for external tables:{0}{1}</source>
+        <target state="translated">外部表不支持这些列类型:{0}{1}</target>
+      </trans-unit>
+      <trans-unit id="warning.unsupported_column_type_title">
+        <source xml:lang="en">Unsupported Column Types found</source>
+        <target state="translated">找到不受支持的列类型</target>
+      </trans-unit>
+      <trans-unit id="viewFolderLabel">
+        <source xml:lang="en">Views</source>
+        <target state="translated">视图</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/selectDataSourcePage" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="noServerTypeError">
+        <source xml:lang="en">A data source type must be selected.</source>
+        <target state="translated">必须选择数据源类型。</target>
+      </trans-unit>
+      <trans-unit id="noDestDatabaseError">
+        <source xml:lang="en">A destination database must be selected.</source>
+        <target state="translated">必须选择目标数据库。</target>
+      </trans-unit>
+      <trans-unit id="defaultSourceType">
+        <source xml:lang="en">Default</source>
+        <target state="translated">默认值</target>
+      </trans-unit>
+      <trans-unit id="selectDataSrcTitle">
+        <source xml:lang="en">Select a Data Source</source>
+        <target state="translated">选择数据源</target>
+      </trans-unit>
+      <trans-unit id="destDBLabel">
+        <source xml:lang="en">Select the destination database for your external table</source>
+        <target state="translated">选择外部表的目标数据库</target>
+      </trans-unit>
+      <trans-unit id="sourceCardsLabel">
+        <source xml:lang="en">Select your data source type</source>
+        <target state="translated">选择数据源</target>
+      </trans-unit>
+      <trans-unit id="destDBHelpText">
+        <source xml:lang="en">The database in which to create your External Data Source.</source>
+        <target state="translated">要在其中创建外部数据源的数据库。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/summaryPage" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="summaryMasterKeyLabel">
+        <source xml:lang="en">Database Master Key</source>
+        <target state="translated">数据库主密钥</target>
+      </trans-unit>
+      <trans-unit id="summaryCredLabel">
+        <source xml:lang="en">Database Scoped Credential</source>
+        <target state="translated">数据库范围的凭据</target>
+      </trans-unit>
+      <trans-unit id="summaryDestDb">
+        <source xml:lang="en">Destination Database:</source>
+        <target state="translated">目标数据库:</target>
+      </trans-unit>
+      <trans-unit id="virtualizeTaskStart">
+        <source xml:lang="en">Executing script...</source>
+        <target state="translated">正在执行脚本…。</target>
+      </trans-unit>
+      <trans-unit id="summaryDataSrcLabel">
+        <source xml:lang="en">External Data Source</source>
+        <target state="translated">外部数据源</target>
+      </trans-unit>
+      <trans-unit id="summaryExternalTableLabel">
+        <source xml:lang="en">External Table</source>
+        <target state="translated">外部表</target>
+      </trans-unit>
+      <trans-unit id="createSourceInfo">
+        <source xml:lang="en">External Table creation completed successfully</source>
+        <target state="translated">已成功完成外部表创建</target>
+      </trans-unit>
+      <trans-unit id="createSourceError">
+        <source xml:lang="en">External Table creation failed</source>
+        <target state="translated">外部表创建失败</target>
+      </trans-unit>
+      <trans-unit id="summaryObjNameLabel">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名称</target>
+      </trans-unit>
+      <trans-unit id="summaryObjTypeLabel">
+        <source xml:lang="en">Object type</source>
+        <target state="translated">对象类型</target>
+      </trans-unit>
+      <trans-unit id="summaryNewSchemaLabel">
+        <source xml:lang="en">Schema</source>
+        <target state="translated">架构</target>
+      </trans-unit>
+      <trans-unit id="summaryPageTitle">
+        <source xml:lang="en">Summary</source>
+        <target state="translated">摘要</target>
+      </trans-unit>
+      <trans-unit id="summaryTitle">
+        <source xml:lang="en">The following objects will be created in the destination database:</source>
+        <target state="translated">将在目标数据库中创建以下对象:</target>
+      </trans-unit>
+      <trans-unit id="virtualizeTaskLabel">
+        <source xml:lang="en">Virtualize Data</source>
+        <target state="translated">虚拟化数据</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/virtualizeData/virtualizeDataWizard" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="doneButtonLabel">
+        <source xml:lang="en">Create</source>
+        <target state="translated">创建</target>
+      </trans-unit>
+      <trans-unit id="openScriptMsg">
+        <source xml:lang="en">The script has opened in a document window. You can view it once the wizard is closed.</source>
+        <target state="translated">脚本已在文档窗口中打开。关闭向导后即可查看它。</target>
+      </trans-unit>
+      <trans-unit id="getExtDataTitle">
+        <source xml:lang="en">Virtualize Data</source>
+        <target state="translated">虚拟化数据</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/dist/wizards/wizardCommands" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="noConnection">
+        <source xml:lang="en">Data Virtualization requires a connection to be selected.</source>
+        <target state="translated">数据虚拟化需要选择连接。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.datavirtualization/package" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="title.datavirtualization">
+        <source xml:lang="en">Data Virtualization</source>
+        <target state="translated">数据虚拟化</target>
+      </trans-unit>
+      <trans-unit id="config.logDebugInfo">
+        <source xml:lang="en">Enable/disable logging debug information to the developer console.</source>
+        <target state="translated">启用/禁用将调试信息记录到开发人员控制台。</target>
+      </trans-unit>
+      <trans-unit id="config.proseParsingMaxLines">
+        <source xml:lang="en">Number of lines to read from a file to run PROSE parsing on.</source>
+        <target state="translated">要从文件中读取以运行 PROSE 分析的行数。</target>
+      </trans-unit>
+      <trans-unit id="description.datavirtualization">
+        <source xml:lang="en">Support for Data Virtualization features in SQL Server</source>
+        <target state="translated">支持 SQL Server 中的数据虚拟化功能</target>
+      </trans-unit>
+      <trans-unit id="config.extensionDescription">
+        <source xml:lang="en">Support for Data Virtualization in SQL Server, including wizards for creating an External Table from an External Data Source or CSV files.</source>
+        <target state="translated">支持 SQL Server 中的数据虚拟化，包括从外部数据源或 CSV 文件创建外部表的向导。</target>
+      </trans-unit>
+      <trans-unit id="title.tasks">
+        <source xml:lang="en">Tasks</source>
+        <target state="translated">任务</target>
+      </trans-unit>
+      <trans-unit id="title.openVirtualizeDataWizard">
+        <source xml:lang="en">Virtualize Data</source>
+        <target state="translated">虚拟化数据</target>
+      </trans-unit>
+      <trans-unit id="title.openMssqlHdfsTableWizard">
+        <source xml:lang="en">Virtualize Data From CSV Files</source>
+        <target state="translated">从 CSV 文件虚拟化数据</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

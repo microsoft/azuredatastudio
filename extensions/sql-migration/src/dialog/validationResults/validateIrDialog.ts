@@ -50,6 +50,7 @@ export class ValidateIrDialog {
 	private _resultsTable!: azdata.TableComponent;
 	private _startLoader!: azdata.LoadingComponent;
 	private _startButton!: azdata.ButtonComponent;
+	private _revalidationButton!: azdata.ButtonComponent;
 	private _cancelButton!: azdata.ButtonComponent;
 	private _copyButton!: azdata.ButtonComponent;
 	private _validationResult: any[][] = [];
@@ -144,12 +145,23 @@ export class ValidateIrDialog {
 							label: constants.VALIDATE_IR_STOP_VALIDATION,
 							enabled: false,
 						}).component();
+
+					this._revalidationButton = view.modelBuilder.button()
+						.withProps({
+							iconPath: IconPathHelper.redo,
+							iconHeight: 18,
+							iconWidth: 18,
+							width: 170,
+							label: constants.VALIDATE_IR_UNSUCCESSFUL_REVALIDATION,
+							enabled: false,
+						}).component();
+
 					this._copyButton = view.modelBuilder.button()
 						.withProps({
 							iconPath: IconPathHelper.copy,
 							iconHeight: 18,
 							iconWidth: 18,
-							width: 150,
+							width: 140,
 							label: constants.VALIDATE_IR_COPY_RESULTS,
 							enabled: false,
 						}).component();
@@ -157,6 +169,10 @@ export class ValidateIrDialog {
 					this._disposables.push(
 						this._startButton.onDidClick(
 							async (e) => await this._runValidation()));
+
+					this._disposables.push(
+						this._revalidationButton.onDidClick(
+							async (e) => await this._runUnsuccessfulRevalidation()));
 					this._disposables.push(
 						this._cancelButton.onDidClick(
 							e => {
@@ -172,6 +188,7 @@ export class ValidateIrDialog {
 						.withToolbarItems([
 							{ component: this._startButton },
 							{ component: this._cancelButton },
+							{ component: this._revalidationButton },
 							{ component: this._copyButton }])
 						.component();
 
@@ -262,6 +279,7 @@ export class ValidateIrDialog {
 		try {
 			this._startLoader.loading = true;
 			this._startButton.enabled = false;
+			this._revalidationButton.enabled = false;
 			this._cancelButton.enabled = true;
 			this._copyButton.enabled = false;
 			this._dialog!.okButton.enabled = false;
@@ -274,6 +292,30 @@ export class ValidateIrDialog {
 		} finally {
 			this._startLoader.loading = false;
 			this._startButton.enabled = true;
+			this._revalidationButton.enabled = !this._model.isIrTargetValidated;
+			this._cancelButton.enabled = false;
+			this._copyButton.enabled = true;
+			this._dialog!.okButton.enabled = this._model.isIrTargetValidated;
+			this._dialog!.cancelButton.enabled = !this._model.isIrTargetValidated;
+		}
+	}
+
+	private async _runUnsuccessfulRevalidation(results?: ValidationResult[]): Promise<void> {
+		try {
+			this._startLoader.loading = true;
+			this._startButton.enabled = false;
+			this._revalidationButton.enabled = false;
+			this._cancelButton.enabled = true;
+			this._copyButton.enabled = false;
+			this._dialog!.okButton.enabled = false;
+			this._dialog!.cancelButton.enabled = true;
+			if (!this._model.isIrTargetValidated) {
+				await this._revalidate();
+			}
+		} finally {
+			this._startLoader.loading = false;
+			this._startButton.enabled = true;
+			this._revalidationButton.enabled = !this._model.isIrTargetValidated;
 			this._cancelButton.enabled = false;
 			this._copyButton.enabled = true;
 			this._dialog!.okButton.enabled = this._model.isIrTargetValidated;
@@ -373,7 +415,19 @@ export class ValidateIrDialog {
 		this._saveResults();
 	}
 
-	private async _validateDatabaseMigration(): Promise<void> {
+	private async _revalidate(): Promise<void> {
+		await this._initIrResultsForRevalidation();
+
+		if (this._model.isSqlDbTarget) {
+			await this._validateSqlDbMigration(true);
+		} else {
+			await this._validateDatabaseMigration(true);
+		}
+
+		this._saveResults();
+	}
+
+	private async _validateDatabaseMigration(skipSuccessfulSteps: boolean = false): Promise<void> {
 		const currentConnection = await getSourceConnectionProfile();
 		const sourceServerName = currentConnection?.serverName!;
 		const encryptConnection = getEncryptConnectionValue(currentConnection);
@@ -426,17 +480,21 @@ export class ValidateIrDialog {
 		};
 
 		// validate integration runtime (IR) is online
-		if (!await validate(sourceDatabaseName, networkShare, true, false, false, false)) {
-			this._canceled = true;
-			await this._updateValidateIrResults(testNumber + 1, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED])
-			return;
+		if (!skipSuccessfulSteps || this._validationResult[testNumber][ValidationResultIndex.state] !== ValidateIrState.Succeeded) {
+			if (!await validate(sourceDatabaseName, networkShare, true, false, false, false)) {
+				this._canceled = true;
+				await this._updateValidateIrResults(testNumber + 1, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED])
+				return;
+			}
 		}
 		testNumber++;
 
 		// validate blob container connectivity
-		if (!await validate(sourceDatabaseName, networkShare, false, false, false, true)) {
-			await this._updateValidateIrResults(testNumber + 1, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED])
-			return;
+		if (!skipSuccessfulSteps || this._validationResult[testNumber][ValidationResultIndex.state] !== ValidateIrState.Succeeded) {
+			if (!await validate(sourceDatabaseName, networkShare, false, false, false, true)) {
+				await this._updateValidateIrResults(testNumber + 1, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED])
+				return;
+			}
 		}
 
 		for (let i = 0; i < databaseCount; i++) {
@@ -448,14 +506,18 @@ export class ValidateIrDialog {
 				break;
 			}
 			// validate source connectivity
-			await validate(sourceDatabaseName, networkShare, false, false, true, false);
+			if (!skipSuccessfulSteps || this._validationResult[testNumber][ValidationResultIndex.state] !== ValidateIrState.Succeeded) {
+				await validate(sourceDatabaseName, networkShare, false, false, true, false);
+			}
 			testNumber++;
 			if (this._canceled) {
 				await this._updateValidateIrResults(testNumber, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED])
 				break;
 			}
 			// valdiate source location / network share connectivity
-			await validate(sourceDatabaseName, networkShare, false, true, false, false);
+			if (!skipSuccessfulSteps || this._validationResult[testNumber][ValidationResultIndex.state] !== ValidateIrState.Succeeded) {
+				await validate(sourceDatabaseName, networkShare, false, true, false, false);
+			}
 		}
 	}
 
@@ -469,7 +531,7 @@ export class ValidateIrDialog {
 		return error;
 	}
 
-	private async _validateSqlDbMigration(): Promise<void> {
+	private async _validateSqlDbMigration(skipSuccessfulSteps: boolean = false): Promise<void> {
 		const currentConnection = await getSourceConnectionProfile();
 		const sourceServerName = currentConnection?.serverName!;
 		const encryptConnection = getEncryptConnectionValue(currentConnection);
@@ -521,10 +583,12 @@ export class ValidateIrDialog {
 		};
 
 		// validate IR is online
-		if (!await validate(sourceDatabaseName, targetDatabaseName, true, false, false)) {
-			this._canceled = true;
-			await this._updateValidateIrResults(testNumber + 1, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED]);
-			return;
+		if (!skipSuccessfulSteps || this._validationResult[testNumber][ValidationResultIndex.state] !== ValidateIrState.Succeeded) {
+			if (!await validate(sourceDatabaseName, targetDatabaseName, true, false, false)) {
+				this._canceled = true;
+				await this._updateValidateIrResults(testNumber + 1, ValidateIrState.Canceled, [constants.VALIDATE_IR_VALIDATION_CANCELED]);
+				return;
+			}
 		}
 
 		for (let i = 0; i < databaseCount; i++) {
@@ -537,7 +601,9 @@ export class ValidateIrDialog {
 				break;
 			}
 			// validate source connectivity
-			await validate(sourceDatabaseName, targetDatabaseName, false, true, false);
+			if (!skipSuccessfulSteps || this._validationResult[testNumber][ValidationResultIndex.state] !== ValidateIrState.Succeeded) {
+				await validate(sourceDatabaseName, targetDatabaseName, false, true, false);
+			}
 
 			testNumber++;
 			if (this._canceled) {
@@ -545,7 +611,9 @@ export class ValidateIrDialog {
 				break;
 			}
 			// validate target connectivity
-			await validate(sourceDatabaseName, targetDatabaseName, false, false, true);
+			if (!skipSuccessfulSteps || this._validationResult[testNumber][ValidationResultIndex.state] !== ValidateIrState.Succeeded) {
+				await validate(sourceDatabaseName, targetDatabaseName, false, false, true);
+			}
 		}
 	}
 
@@ -582,6 +650,21 @@ export class ValidateIrDialog {
 			row[ValidationResultIndex.icon],
 			row[ValidationResultIndex.status]]);
 		await this._resultsTable.updateProperty('data', data);
+	}
+
+	private async _initIrResultsForRevalidation(results?: ValidationResult[]): Promise<void> {
+		this._valdiationErrors = [];
+		this._canceled = false;
+		let testNumber: number = 0;
+
+		this._validationResult.forEach(async element => {
+			if (element[ValidationResultIndex.state] !== ValidateIrState.Succeeded) {
+				await this._updateValidateIrResults(testNumber++, ValidateIrState.Pending);
+			}
+			else {
+				testNumber++;
+			}
+		});
 	}
 
 	private async _initSqlDbIrResults(results?: ValidationResult[]): Promise<void> {

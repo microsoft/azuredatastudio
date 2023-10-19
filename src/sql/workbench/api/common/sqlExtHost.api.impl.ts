@@ -143,6 +143,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				openChangePasswordDialog(profile: azdata.IConnectionProfile): Thenable<string | undefined> {
 					return extHostConnectionManagement.$openChangePasswordDialog(profile);
 				},
+				getNonDefaultOptions(profile: azdata.IConnectionProfile): Thenable<string> {
+					return extHostConnectionManagement.$getNonDefaultOptions(profile);
+				},
 				listDatabases(connectionId: string): Thenable<string[]> {
 					return extHostConnectionManagement.$listDatabases(connectionId);
 				},
@@ -488,8 +491,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				openCustomErrorDialog(options: sqlExtHostTypes.IErrorDialogOptions): Thenable<string | undefined> {
 					return extHostModelViewDialog.openCustomErrorDialog(options);
 				},
-				openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Thenable<string | undefined> {
-					return extHostWindow.$openServerFileBrowserDialog(connectionUri, targetPath, fileFilters);
+				openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[], showFoldersOnly?: boolean): Thenable<string | undefined> {
+					return extHostWindow.$openServerFileBrowserDialog(connectionUri, targetPath, fileFilters, showFoldersOnly);
 				}
 			};
 

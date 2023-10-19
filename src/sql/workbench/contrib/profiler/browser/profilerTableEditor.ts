@@ -36,6 +36,7 @@ import { IAccessibilityService } from 'vs/platform/accessibility/common/accessib
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 
 export interface ProfilerTableViewState {
 	scrollTop: number;
@@ -57,6 +58,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 	private _actionMap: { [x: string]: IEditorAction } = {};
 	private _statusbarItem: IDisposable;
 	private _showStatusBarItem: boolean;
+	public loadingSpinner: LoadingSpinner;
 
 	private _onDidChangeConfiguration = new Emitter<IConfigurationChangedEvent>();
 	public onDidChangeConfiguration: Event<IConfigurationChangedEvent> = this._onDidChangeConfiguration.event;
@@ -88,6 +90,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		this._overlay.className = 'overlayWidgets';
 		this._overlay.style.width = '100%';
 		this._overlay.style.zIndex = '4';
+		this._overlay.style.top = '50px';
 		parent.appendChild(this._overlay);
 
 		this._profilerTable = new Table(parent, this._accessibilityService, this._quickInputService, defaultTableStyles, {
@@ -129,6 +132,8 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 			this._contextKeyService,
 			this._themeService
 		);
+
+		this.loadingSpinner = new LoadingSpinner(this._overlay, { showText: true, fullSize: false });
 	}
 
 	public override setInput(input: ProfilerInput): Promise<void> {

@@ -113,3 +113,21 @@ export const PERFORMANCE_DATA_DIALOG_CSS = {
 	'line-height': '18px',
 	'font-weight': '600',
 };
+
+export const TDE_VALIDATION_INFO_LABEL = {
+	'font-size': '14px',
+	'line-height': '20px',
+	'font-weight': '600',
+	'margin': '0 0 0 0px',
+	'width': '400px',
+	'display': 'inline-block'
+}
+
+export const TDE_VALIDATION_INFO_TEXT = {
+	'font-size': '13px',
+	'line-height': '18px',
+	'margin': '0 0 0 0px',
+	'width': '440px',
+	'overflow': 'scroll',
+	'display': 'inline-block'
+}

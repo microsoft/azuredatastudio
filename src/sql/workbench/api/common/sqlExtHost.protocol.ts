@@ -254,7 +254,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Copies the selected data to clipboard.
 	 */
-	$copyResults(handle: number, requestParams: azdata.CopyResultsRequestParams): Thenable<void> { throw ni(); }
+	$copyResults(handle: number, requestParams: azdata.CopyResultsRequestParams): Thenable<azdata.CopyResultsRequestResult> { throw ni(); }
 
 	/**
 	 * Commits all pending edits in an edit session
@@ -355,7 +355,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Open a file browser
 	 */
-	$openFileBrowser(handle: number, ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean> { throw ni(); }
+	$openFileBrowser(handle: number, ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean, showFoldersOnly?: boolean): Thenable<boolean> { throw ni(); }
 
 
 	/**
@@ -596,10 +596,6 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$isExecutionPlan(handle: number, value: string): Thenable<azdata.executionPlan.IsExecutionPlanResult> { throw ni(); }
 	/**
-	 * Generates server context.
-	 */
-	$generateServerContextualization(handle: number, ownerUri: string): void { throw ni(); }
-	/**
 	 * Gets server context.
 	 */
 	$getServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GetServerContextualizationResult> { throw ni(); }
@@ -738,6 +734,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getServerInfo(connectedId: string): Thenable<azdata.ServerInfo>;
 	$openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection>;
 	$openChangePasswordDialog(profile: azdata.IConnectionProfile): Thenable<string | undefined>;
+	$getNonDefaultOptions(profile: azdata.IConnectionProfile): Thenable<string>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;
@@ -814,6 +811,7 @@ export interface ExtHostModelViewTreeViewsShape {
 	$onNodeCheckedChanged(treeViewId: string, treeItemHandle?: string, checked?: boolean): void;
 	$onNodeSelected(treeViewId: string, nodes: string[]): void;
 
+	$setSelectionAndFocus(treeViewId: string, selectionHandles: string[], focusHandle: string): void;
 	$setExpanded(treeViewId: string, treeItemHandle: string, expanded: boolean): void;
 	$setSelection(treeViewId: string, treeItemHandles: string[]): void;
 	$setVisible(treeViewId: string, visible: boolean): void;
@@ -837,7 +835,7 @@ export interface ExtHostWorkspaceShape {
 }
 
 export interface ExtHostWindowShape {
-	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string | undefined>;
+	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[], showFoldersOnly?: boolean): Promise<string | undefined>;
 }
 
 export interface MainThreadWorkspaceShape {
@@ -847,7 +845,7 @@ export interface MainThreadWorkspaceShape {
 }
 
 export interface MainThreadWindowShape {
-	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string | undefined>;
+	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[], showFoldersOnly?: boolean): Promise<string | undefined>;
 }
 
 export interface MainThreadBackgroundTaskManagementShape extends IDisposable {

@@ -27,6 +27,7 @@ import { registerTableDesignerCommands } from './tableDesigner/tableDesigner';
 import { registerObjectManagementCommands } from './objectManagement/commands';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from './telemetry';
 import { noConvertResult, noDocumentFound, unsupportedPlatform } from './localizedConstants';
+import { registerConnectionCommands } from './connection/commands';
 
 const localize = nls.loadMessageBundle();
 
@@ -152,10 +153,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 			}
 			await displayReloadAds();
 		}
+		// Prompt to reload ADS as we send the proxy URL to STS to instantiate Http Client instances.
+		if (e.affectsConfiguration(Constants.configHttpProxy) || e.affectsConfiguration(Constants.configHttpProxyStrictSSL)) {
+			await displayReloadAds();
+		}
 	}));
 
 	registerTableDesignerCommands(appContext);
 	registerObjectManagementCommands(appContext);
+	registerConnectionCommands(appContext);
 
 	// context.subscriptions.push(new SqlNotebookController()); Temporarily disabled due to breaking query editor
 

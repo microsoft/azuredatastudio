@@ -12,7 +12,7 @@ import { AppContext } from './common/appContext';
 import { IExtensionApi, IPackageManageProvider } from './types';
 import { CellType } from './contracts/content';
 import { NotebookUriHandler } from './protocol/notebookUriHandler';
-import { BuiltInCommands, unsavedBooksContextKey } from './common/constants';
+import { BuiltInCommands, CommandContext, unsavedBooksContextKey } from './common/constants';
 import { RemoteBookController } from './book/remoteBookController';
 import { RemoteBookDialog } from './dialog/remoteBookDialog';
 import { RemoteBookDialogModel } from './dialog/remoteBookDialogModel';
@@ -22,6 +22,7 @@ import { BookTreeItem } from './book/bookTreeItem';
 import Logger from './common/logger';
 import { sendNotebookActionEvent, NbTelemetryView, NbTelemetryAction } from './telemetry';
 import { TelemetryReporter } from './telemetry';
+import { JupyterServerInstallation } from './jupyter/jupyterServerInstallation';
 
 const localize = nls.loadMessageBundle();
 
@@ -39,6 +40,11 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	if (vscode.env.uiKind === vscode.UIKind.Web) {
 		await config.update('allowRoot', true, vscode.ConfigurationTarget.Global);
 	}
+
+	// Check if python is already installed in order to enable the Manage Notebook Packages dialog
+	let pythonInstalled = JupyterServerInstallation.isPythonInstalled();
+	await vscode.commands.executeCommand(BuiltInCommands.SetContext, CommandContext.NotebookPythonInstalled, pythonInstalled);
+
 	/**
 	 *  									***** IMPORTANT *****
 	 * If changes are made to bookTreeView.openBook, please ensure backwards compatibility with its current state.
@@ -153,7 +159,6 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	if (!result) {
 		return undefined;
 	}
-
 
 	const bookTreeViewProvider = appContext.bookTreeViewProvider;
 	await bookTreeViewProvider.initialized;

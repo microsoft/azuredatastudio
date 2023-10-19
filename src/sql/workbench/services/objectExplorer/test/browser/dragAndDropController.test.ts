@@ -10,6 +10,7 @@ import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/t
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { ServerTreeDragAndDrop } from 'sql/workbench/services/objectExplorer/browser/dragAndDropController';
 import { TestTree } from 'sql/workbench/test/browser/parts/tree/treeMock';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -90,7 +91,7 @@ suite('SQL Drag And Drop Controller tests', () => {
 			undefined, // configuration service
 			new TestCapabilitiesService(), // capabilities service
 		);
-		serverTreeDragAndDrop = new ServerTreeDragAndDrop(mockConnectionManagementService.object);
+		serverTreeDragAndDrop = new ServerTreeDragAndDrop(mockConnectionManagementService.object, new TestNotificationService());
 
 		capabilitiesService = new TestCapabilitiesService();
 		capabilitiesService.capabilities[mssqlProviderName] = { connection: msSQLCapabilities };

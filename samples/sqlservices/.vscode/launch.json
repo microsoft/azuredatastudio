@@ -13,7 +13,7 @@
     "configurations": [
 
         {
-            "name": "Debug in AzureDataStudio install",
+            "name": "Debug in Azure Data Studio install",
             "type": "sqlopsExtensionHost",
             "request": "launch",
             "runtimeExecutable": "azuredatastudio",
@@ -24,7 +24,7 @@
 		{
 			"type": "node",
 			"request": "attach",
-			"name": "Attach to Ops Studio",
+			"name": "Attach to Azure Data Studio",
 			"protocol": "inspector",
 			"port": 5870,
 			"restart": true,

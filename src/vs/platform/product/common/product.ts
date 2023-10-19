@@ -59,11 +59,10 @@ else {
 	if (Object.keys(product).length === 0) {
 		Object.assign(product, {
 			version: '1.78.0-dev',
-			vscodeVersion: '1.63.0-dev',
-			nameLong: 'Azure Data Studio Dev',
 			nameShort: 'Azure Data Studio Dev',
+			nameLong: 'Azure Data Studio Dev',
 			applicationName: 'azuredatastudio-oss',
-			dataFolderName: '.azuredatastudio-oss',
+			dataFolderName: 'azuredatastudio-oss',
 			urlProtocol: 'azuredatastudio-oss',
 			reportIssueUrl: 'https://github.com/microsoft/azuredatastudio/issues/new',
 			licenseName: 'MIT',

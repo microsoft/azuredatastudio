@@ -20,11 +20,12 @@ export class AudioCueLineDebuggerContribution {
 	// ) {
 	// 	super();
 
-	// 	const isEnabled = observableFromEvent(
+	// const isEnabled = observableFromEvent(
 	// 		audioCueService.onEnabledChanged(AudioCue.onDebugBreak),
 	// 		() => audioCueService.isEnabled(AudioCue.onDebugBreak)
 	// 	);
 	// 	this._register(autorunWithStore((reader, store) => {
+	// 		/** @description subscribe to debug sessions */
 	// 		if (!isEnabled.read(reader)) {
 	// 			return;
 	// 		}
@@ -46,14 +47,13 @@ export class AudioCueLineDebuggerContribution {
 	// 			sessionDisposables.delete(session);
 	// 		}));
 
-	// 		debugService
-	// 			.getModel()
-	// 			.getSessions()
-	// 			.forEach((session) =>
-	// 				sessionDisposables.set(session, this.handleSession(session))
-	// 			);
-
-	// 	}, 'subscribe to debug sessions'));
+	//		debugService
+	//			.getModel()
+	//			.getSessions()
+	//			.forEach((session) =>
+	//				sessionDisposables.set(session, this.handleSession(session))
+	//			);
+	//	}));
 	// }
 
 	// private handleSession(session: IDebugSession): IDisposable {

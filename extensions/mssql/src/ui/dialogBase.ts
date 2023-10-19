@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { EOL } from 'os';
 import * as uiLoc from '../ui/localizedConstants';
+import { IconPathHelper } from '../iconHelper';
 
 export const DefaultLabelWidth = 150;
 export const DefaultInputWidth = 300;
@@ -23,7 +24,8 @@ export function getTableHeight(rowCount: number, minRowCount: number = DefaultMi
 
 export interface DialogButton {
 	buttonAriaLabel: string;
-	buttonHandler: (button: azdata.ButtonComponent) => Promise<void>
+	buttonHandler: (button: azdata.ButtonComponent) => Promise<void>,
+	enabled?: boolean
 }
 
 export type TableListItemEnabledStateGetter<T> = (item: T) => boolean;
@@ -77,7 +79,9 @@ export abstract class DialogBase<DialogResult> {
 
 	protected onFormFieldChange(): void { }
 
-	protected get removeButtonEnabled(): boolean { return true; }
+	protected removeButtonEnabled(table: azdata.TableComponent): boolean { return true; }
+
+	protected addButtonEnabled(table: azdata.TableComponent): boolean { return true; }
 
 	protected validateInput(): Promise<string[]> { return Promise.resolve([]); }
 
@@ -130,10 +134,16 @@ export abstract class DialogBase<DialogResult> {
 		return errors.length === 0;
 	}
 
-	protected createLabelInputContainer(label: string, component: azdata.Component, required: boolean = false): azdata.FlexContainer {
-		const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth, value: label, requiredIndicator: required, CSSStyles: { 'padding-right': '10px' } }).component();
-		const container = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent], { flex: '0 0 auto' }).component();
-		container.addItem(component, { flex: '1 1 auto' });
+	protected createLabelInputContainer(label: string, component: azdata.Component | azdata.Component[], required: boolean = false): azdata.FlexContainer {
+		let container: azdata.FlexContainer = undefined;
+		if (Array.isArray(component)) {
+			const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth - 40, value: label, requiredIndicator: required, CSSStyles: { 'padding-right': '10px' } }).component();
+			container = this.modelView.modelBuilder.flexContainer().withItems([labelComponent, ...component], { CSSStyles: { 'margin-right': '5px', 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		} else {
+			const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth, value: label, requiredIndicator: required, CSSStyles: { 'padding-right': '10px' } }).component();
+			container = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent], { flex: '0 0 auto' }).component();
+			container.addItem(component, { flex: '1 1 auto' });
+		}
 		return container;
 	}
 
@@ -244,7 +254,7 @@ export abstract class DialogBase<DialogResult> {
 		return table;
 	}
 
-	protected async setTableData(table: azdata.TableComponent, data: any[][], maxRowCount: number = DefaultMaxTableRowCount) {
+	protected async setTableData(table: azdata.TableComponent, data: any[][], maxRowCount: number = DefaultMaxTableRowCount): Promise<void> {
 		await table.updateProperties({
 			data: data,
 			height: getTableHeight(data.length, DefaultMinTableRowCount, maxRowCount)
@@ -288,12 +298,13 @@ export abstract class DialogBase<DialogResult> {
 			if (editButton !== undefined) {
 				editButtonComponent.enabled = tableSelectedRowsLengthCheck;
 			}
+			addButtonComponent.enabled = this.addButtonEnabled(table);
 			removeButtonComponent.enabled = !!isRemoveEnabled && tableSelectedRowsLengthCheck;
 		}
 		addButtonComponent = this.createButton(uiLoc.AddText, addbutton.buttonAriaLabel, async () => {
 			await addbutton.buttonHandler(addButtonComponent);
 			updateButtons();
-		});
+		}, addbutton.enabled ?? true);
 		buttonComponents.push(addButtonComponent);
 
 		if (editButton !== undefined) {
@@ -314,7 +325,7 @@ export abstract class DialogBase<DialogResult> {
 		buttonComponents.push(removeButtonComponent);
 
 		this.disposables.push(table.onRowSelected(() => {
-			const isRemoveButtonEnabled = this.removeButtonEnabled;
+			const isRemoveButtonEnabled = this.removeButtonEnabled(table);
 			updateButtons(isRemoveButtonEnabled);
 		}));
 
@@ -369,6 +380,24 @@ export abstract class DialogBase<DialogResult> {
 			flexWrap: 'nowrap',
 			justifyContent: justifyContent
 		}).withItems(items, { flex: '0 0 auto' }).component();
+	}
+
+	protected createHorizontalContainer(header: string, items: azdata.Component[]): azdata.FlexContainer {
+		return this.modelView.modelBuilder.flexContainer().withItems(items, { CSSStyles: { 'margin-right': '5px', 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+	}
+
+	protected createBrowseButton(handler: () => Promise<void>, enabled: boolean = true): azdata.ButtonComponent {
+		const button = this.dialogObject.modelView.modelBuilder.button().withProps({
+			ariaLabel: 'browse',
+			iconPath: IconPathHelper.folder,
+			width: '18px',
+			height: '20px',
+			enabled: enabled
+		}).component();
+		this.disposables.push(button.onDidClick(async () => {
+			await handler();
+		}));
+		return button;
 	}
 
 	protected createRadioButton(label: string, groupName: string, checked: boolean, handler: (checked: boolean) => Promise<void>, enabled: boolean = true): azdata.RadioButtonComponent {

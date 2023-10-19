@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/Microsoft.azuremonitor/dist/azuremonitorServer" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="downloadingServiceSizeChannelMsg">
+        <source xml:lang="en">({0} KB)</source>
+        <target state="translated">({0} KB)</target>
+      </trans-unit>
+      <trans-unit id="downloadServiceDoneChannelMsg">
+        <source xml:lang="en">Downloaded {0}</source>
+        <target state="translated">已下載 {0}</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceStatusMsg">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">正在下載 {0}</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceChannelMsg">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">正在下載 {0}</target>
+      </trans-unit>
+      <trans-unit id="failedToStartServiceErrorMsg">
+        <source xml:lang="en">Failed to start {0}</source>
+        <target state="translated">無法啟動 {0}</target>
+      </trans-unit>
+      <trans-unit id="installedServiceChannelMsg">
+        <source xml:lang="en">Installed {0}</source>
+        <target state="translated">已安裝 {0}</target>
+      </trans-unit>
+      <trans-unit id="installingServiceStatusMsg">
+        <source xml:lang="en">Installing {0}</source>
+        <target state="translated">正在安裝 {0}</target>
+      </trans-unit>
+      <trans-unit id="installingServiceChannelMsg">
+        <source xml:lang="en">Installing {0} to {1}</source>
+        <target state="translated">正在將 {0} 安裝到 {1}</target>
+      </trans-unit>
+      <trans-unit id="startingServiceStatusMsg">
+        <source xml:lang="en">Starting {0}</source>
+        <target state="translated">正在啟動 {0}</target>
+      </trans-unit>
+      <trans-unit id="serviceStartedStatusMsg">
+        <source xml:lang="en">{0} Started</source>
+        <target state="translated">已啟動 {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.azuremonitor/dist/features/accountFeature" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="kusto.accountDoesNotExist">
+        <source xml:lang="en">Account does not exist.</source>
+        <target state="translated">帳戶不存在。</target>
+      </trans-unit>
+      <trans-unit id="kusto.missingLinkedAzureAccount">
+        <source xml:lang="en">Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query.</source>
+        <target state="translated">Azure Data Studio 必須連絡 Azure Key Vault 以存取 Always Encrypted 的資料行主要金鑰，但沒有任何已連結的 Azure 帳戶可供使用。請新增已連結的 Azure 帳戶，然後重試一次此查詢。</target>
+      </trans-unit>
+      <trans-unit id="kusto.insufficientlyPrivelagedAzureAccount">
+        <source xml:lang="en">The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.</source>
+        <target state="translated">為 {0} 所設定的 Azure 帳戶，沒有足夠的權限讓 Azure Key Vault 存取 Always Encrypted 的資料行主要金鑰。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.azuremonitor/dist/main" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="notebookFileType">
+        <source xml:lang="en">Notebooks</source>
+        <target state="translated">Notebooks</target>
+      </trans-unit>
+      <trans-unit id="unsupportedFileType">
+        <source xml:lang="en">Only .ipynb Notebooks are supported</source>
+        <target state="translated">僅支援 .ipynb Notebooks</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.unsupportedPlatform">
+        <source xml:lang="en">Unsupported platform</source>
+        <target state="translated">不支援的平台</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.azuremonitor/dist/objectExplorerNodeProvider/command" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="progress">
+        <source xml:lang="en">$(sync~spin) {0}...</source>
+        <target state="translated">$(sync~spin) {0}...</target>
+      </trans-unit>
+      <trans-unit id="cancelTooltip">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">取消</target>
+      </trans-unit>
+      <trans-unit id="cancel">
+        <source xml:lang="en">Cancel operation?</source>
+        <target state="translated">要取消作業嗎?</target>
+      </trans-unit>
+      <trans-unit id="azureMonitor.searchServers">
+        <source xml:lang="en">Search Server Names</source>
+        <target state="translated">搜尋伺服器名稱</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.azuremonitor/dist/objectExplorerNodeProvider/objectExplorerNodeProvider" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="notifyError">
+        <source xml:lang="en">Error notifying of node change: {0}</source>
+        <target state="translated">通知節點變更時發生錯誤: {0}</target>
+      </trans-unit>
+      <trans-unit id="rootLabel">
+        <source xml:lang="en">Root</source>
+        <target state="translated">根</target>
+      </trans-unit>
+      <trans-unit id="sessionNotFound">
+        <source xml:lang="en">Session for node {0} does not exist</source>
+        <target state="translated">節點 {0} 的工作階段不存在</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.azuremonitor/dist/telemetry" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="viewKnownIssuesText">
+        <source xml:lang="en">View Known Issues</source>
+        <target state="translated">檢視已知問題</target>
+      </trans-unit>
+      <trans-unit id="serviceCrashMessage">
+        <source xml:lang="en">{0} component exited unexpectedly. Please restart Azure Data Studio.</source>
+        <target state="translated">{0} 個元件意外結束。請重新啟動 Azure Data Studio。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.azuremonitor/package" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="azuremonitor.connectionProperties.dbaPrivilege.label">
+        <source xml:lang="en">Administrative privileges</source>
+        <target state="translated">必須使用系統管理權限</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.dbaPrivilege.description">
+        <source xml:lang="en">Administrative privileges: SYSDBA or SYSOPER</source>
+        <target state="translated">系統管理權限: SYSDBA 或 SYSOPER</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.authType.displayName">
+        <source xml:lang="en">Authentication type</source>
+        <target state="translated">驗證類型</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.authType.categoryValues.azureMFA">
+        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
+        <target state="translated">Azure Active Directory - MFA 通用支援</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.displayName">
+        <source xml:lang="en">Azure Monitor Logs</source>
+        <target state="translated">Azure 監視器記錄</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.description">
+        <source xml:lang="en">Azure Monitor access for Azure Data Studio</source>
+        <target state="translated">Azure Data Studio 的 Azure 監視器存取權</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.connectionName.description">
+        <source xml:lang="en">Custom name of the connection</source>
+        <target state="translated">連線的自訂名稱</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionOptions.databaseName.displayName">
+        <source xml:lang="en">Database</source>
+        <target state="translated">資料庫</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.password.description">
+        <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
+        <target state="translated">代表要在連線至資料來源時使用的密碼</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.userName.description">
+        <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
+        <target state="translated">代表要在連線至資料來源時使用的使用者識別碼</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.serverName.description">
+        <source xml:lang="en">Log Analytics Workspace ID</source>
+        <target state="translated">Log Analytics 工作區識別碼</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.metadataPooling.label">
+        <source xml:lang="en">Metadata Pooling</source>
+        <target state="translated">中繼資料共用</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.objectsListProperties.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名稱</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.databasesListProperties.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名稱</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.connectionName.displayName">
+        <source xml:lang="en">Name (optional)</source>
+        <target state="translated">名稱 (選用)</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.password.displayName">
+        <source xml:lang="en">Password</source>
+        <target state="translated">密碼</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.proxyUserPassword.description">
+        <source xml:lang="en">Password of the proxy user.</source>
+        <target state="translated">Proxy 使用者的密碼。</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.proxyUserPassword.label">
+        <source xml:lang="en">Proxy Password</source>
+        <target state="translated">Proxy 密碼</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.proxyUserId.label">
+        <source xml:lang="en">Proxy User Id</source>
+        <target state="translated">Proxy 使用者識別碼</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.groupName.security">
+        <source xml:lang="en">Security</source>
+        <target state="translated">安全性</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.databasesListProperties.size">
+        <source xml:lang="en">Size (MB)</source>
+        <target state="translated">大小 (MB)</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.groupName.source">
+        <source xml:lang="en">Source</source>
+        <target state="translated">來源</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.authType.description">
+        <source xml:lang="en">Specifies the method of authenticating with Azure Monitor</source>
+        <target state="translated">指定使用 Azure 監視器驗證的方法</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionOptions.databaseName.description">
+        <source xml:lang="en">The name of the initial catalog or database in the data source</source>
+        <target state="translated">資料來源中初始目錄或資料庫的名稱。</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.metadataPooling.description">
+        <source xml:lang="en">This attribute indicates whether the metadata information for executed queries is cached for improved performance.</source>
+        <target state="translated">此屬性指出是否快取執行查詢的中繼資料資訊以提升效能。</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.objectsListProperties.metadataTypeName">
+        <source xml:lang="en">Type</source>
+        <target state="translated">類型</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.userName.displayName">
+        <source xml:lang="en">User name</source>
+        <target state="translated">使用者名稱</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.proxyUserId.description">
+        <source xml:lang="en">User name of the proxy user.</source>
+        <target state="translated">Proxy 使用者的使用者名稱。</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.serverName.displayName">
+        <source xml:lang="en">Workspace ID</source>
+        <target state="translated">工作區識別碼</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.cloud.workspaceProperties.id">
+        <source xml:lang="en">Workspace ID</source>
+        <target state="translated">工作區 ID</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.cloud.workspaceProperties.name">
+        <source xml:lang="en">Workspace Name</source>
+        <target state="translated">工作區名稱</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
