@@ -103,3 +103,22 @@ export function getNewThemeNotification(label: string): string {
 }
 
 //#endregion
+
+//#region VS Code About Dialog
+
+export function aboutDetail(productVersion: string, commit: string, date: string, electronVersion: string, chromeVersion: string, nodeVersion: string, v8: string, osProps: string, vscodeVersion: string): string {
+	return localize({ key: 'aboutDetail', comment: ['Electron, Chromium, Node.js and V8 are product names that need no translation'] },
+		"Version: {0}\nCommit: {1}\nDate: {2}\nElectron: {3}\nChromium: {4}\nNode.js: {5}\nV8: {6}\nOS: {7}",
+		productVersion,
+		commit,
+		date,
+		electronVersion,
+		chromeVersion,
+		nodeVersion,
+		v8,
+		osProps,
+		vscodeVersion
+	);
+}
+
+//#endregion
