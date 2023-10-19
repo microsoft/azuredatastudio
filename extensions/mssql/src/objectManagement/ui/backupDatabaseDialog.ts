@@ -97,16 +97,23 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	private initializeMediaOptionsTab(): azdata.Tab {
-		let components: azdata.Component[] = [];
+		// let components: azdata.Component[] = [];
 
-		let group = this.createGroup('', components, true, true);
-		return this.createTab('mediaOptionsId', loc.BackupMediaOptionsLabel, group);
+		let overwriteGroup = this.createGroup('Overwrite media', [], false);
+		let reliabilityGroup = this.createGroup('Reliability', [], false);
+		let transactionGroup = this.createGroup('Transaction log', [], false);
+
+		let parentGroup = this.createGroup('', [overwriteGroup, reliabilityGroup, transactionGroup], false);
+		return this.createTab('mediaOptionsId', loc.BackupMediaOptionsLabel, parentGroup);
 	}
 
 	private initializeBackupOptionsTab(): azdata.Tab {
-		let components: azdata.Component[] = [];
+		// let components: azdata.Component[] = [];
 
-		let group = this.createGroup('', components, true, true);
-		return this.createTab('backupOptionsId', loc.BackupOptionsLabel, group);
+		let overwriteGroup = this.createGroup('Compression', [], false);
+		let reliabilityGroup = this.createGroup('Encryption', [], false);
+
+		let parentGroup = this.createGroup('', [overwriteGroup, reliabilityGroup], false);
+		return this.createTab('backupOptionsId', loc.BackupOptionsLabel, parentGroup);
 	}
 }
