@@ -98,13 +98,24 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	private initializeOptionsSection(): azdata.GroupContainer {
-		// let components: azdata.Component[] = [];
-
+		// Overwrite media
 		let overwriteGroup = this.createGroup('Overwrite media', [], false);
+
+		// Reliability
 		let reliabilityGroup = this.createGroup('Reliability', [], false);
+
+		// Transaction log
 		let transactionGroup = this.createGroup('Transaction log', [], false);
 
-		let compressionGroup = this.createGroup('Compression', [], false);
+		// Compression
+		let compressionValues = ['Use the default server setting', 'Compress backup', 'Do not compress backup'];
+		let compressionDropdown = this.createDropdown('Set backup compression', newValue => {
+			return Promise.resolve();
+		}, compressionValues, compressionValues[0]);
+		let compressionContainer = this.createLabelInputContainer('Set backup compression', compressionDropdown);
+		let compressionGroup = this.createGroup('Compression', [compressionContainer], false);
+
+		// Encryption
 		let encryptionGroup = this.createGroup('Encryption', [], false);
 
 		return this.createGroup(loc.OptionsSectionHeader, [overwriteGroup, reliabilityGroup, transactionGroup, compressionGroup, encryptionGroup], true, true);
