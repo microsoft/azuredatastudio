@@ -24,7 +24,7 @@ import { IServerContextualizationService } from 'sql/workbench/services/contextu
 
 const MAX_SIZE = 13;
 
-function trimTitle(title: string): string {
+export function trimTitle(title: string): string {
 	const length = title.length;
 	const diff = length - MAX_SIZE;
 
