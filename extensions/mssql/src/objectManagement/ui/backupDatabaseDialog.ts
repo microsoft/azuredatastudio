@@ -99,13 +99,13 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	private initializeOptionsSection(): azdata.GroupContainer {
 		// Overwrite media
-		let overwriteGroup = this.createGroup('Overwrite media', [], false);
+		let overwriteGroup = this.createGroup(loc.BackupOverwriteMediaLabel, [], false);
 
 		// Reliability
-		let reliabilityGroup = this.createGroup('Reliability', [], false);
+		let reliabilityGroup = this.createGroup(loc.BackupReliabilityLabel, [], false);
 
 		// Transaction log
-		let transactionGroup = this.createGroup('Transaction log', [], false);
+		let transactionGroup = this.createGroup(loc.BackupTransactionLogLabel, [], false);
 
 		// Compression
 		let compressionValues = ['Use the default server setting', 'Compress backup', 'Do not compress backup'];
@@ -113,10 +113,24 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			return Promise.resolve();
 		}, compressionValues, compressionValues[0]);
 		let compressionContainer = this.createLabelInputContainer('Set backup compression', compressionDropdown);
-		let compressionGroup = this.createGroup('Compression', [compressionContainer], false);
+		let compressionGroup = this.createGroup(loc.BackupCompressionLabel, [compressionContainer], false);
 
 		// Encryption
-		let encryptionGroup = this.createGroup('Encryption', [], false);
+		let encryptCheckbox = this.createCheckbox('Encrypt backup', checked => {
+			return Promise.resolve();
+		}, false, false);
+
+		let algorithmValues = ['AES 128', 'AES 192', 'AES 256', 'Triple DES'];
+		let algorithmDropdown = this.createDropdown('Algorithm', newValue => {
+			return Promise.resolve();
+		}, algorithmValues, algorithmValues[0], false);
+		let algorithmContainer = this.createLabelInputContainer('Algorithm', algorithmDropdown);
+
+		// TODO: add "Certificate or Encryption key" field
+
+		let encryptionDescription = this.modelView.modelBuilder.text().withProps({ value: 'Encryption is available only when \'Back up to a new media set\' is selected above. ' }).component();
+
+		let encryptionGroup = this.createGroup(loc.BackupEncryptionLabel, [encryptCheckbox, algorithmContainer, encryptionDescription], false);
 
 		return this.createGroup(loc.OptionsSectionHeader, [overwriteGroup, reliabilityGroup, transactionGroup, compressionGroup, encryptionGroup], true, true);
 	}
