@@ -109,6 +109,10 @@
 		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"
 	},
 	"builtInExtensions": [
-		"Microsoft.sql-migration"
+		{
+			"name": "Microsoft.sql-migration",
+			"version": "1.4.10",
+			"repo": "https://github.com/microsoft/azuredatastudio"
+		}
 	]
 }
