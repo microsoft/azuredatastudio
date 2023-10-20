@@ -11,12 +11,8 @@ import { BackupDatabaseDocUrl } from '../constants';
 import * as loc from '../localizedConstants';
 import { DefaultInputWidth, DialogButton } from '../../ui/dialogBase';
 
-// const DialogWidth = '750px';
-
 export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
-
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		// options.width = DialogWidth;
 		super(objectManagementService, options, loc.BackupDatabaseDialogTitle(options.database), 'BackupDatabase');
 		this.dialogObject.okButton.label = loc.BackupButtonLabel;
 	}
@@ -30,26 +26,11 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let optionsSection = this.initializeOptionsSection();
 
 		this.formContainer.addItems([generalSection, optionsSection]);
-
-		// let backupOptionsTab = this.initializeBackupOptionsTab();
-
-		// const tabGroup = { title: '', tabs: [generalTab, mediaOptionsTab, backupOptionsTab] };
-		// const tabbedPannel = this.modelView.modelBuilder.tabbedPanel()
-		// 	.withTabs([tabGroup])
-		// 	.withLayout({
-		// 		orientation: azdata.TabOrientation.Vertical
-		// 	})
-		// 	.withProps({
-		// 		CSSStyles: {
-		// 			'margin': '-10px 0px 0px -10px'
-		// 		}
-		// 	}).component();
-		// this.formContainer.addItem(tabbedPannel);
 	}
 
 	private initializeGeneralSection(): azdata.GroupContainer {
 		let components: azdata.Component[] = [];
-		let inputBox = this.createInputBox(newValue => {
+		let backupInput = this.createInputBox(newValue => {
 			return Promise.resolve();
 		}, {
 			ariaLabel: '',
@@ -58,10 +39,10 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			value: '',
 			width: DefaultInputWidth
 		});
-		let backupInput = this.createLabelInputContainer('Backup name', inputBox);
-		components.push(backupInput);
+		let backupInputContainer = this.createLabelInputContainer('Backup name', backupInput);
+		components.push(backupInputContainer);
 
-		inputBox = this.createInputBox(newValue => {
+		let inputBox = this.createInputBox(newValue => {
 			return Promise.resolve();
 		}, {
 			ariaLabel: this.objectInfo.recoveryModel,
@@ -73,9 +54,10 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let recoveryModelInput = this.createLabelInputContainer('Recovery model', inputBox);
 		components.push(recoveryModelInput);
 
-		let backupTypes = ['Full', 'Differential', 'Transaction Log'];
-		let backupTypeDropdown = this.createDropdown('Backup type', newValue => {
-			return Promise.resolve();
+		const backupTypes = ['Full', 'Differential', 'Transaction Log'];
+		let backupTypeDropdown = this.createDropdown('Backup type', async newValue => {
+			// Update backup name with new backup type
+			backupInput.value = backupInput.ariaLabel = `${this.objectInfo.name}-${newValue.replace(' ', '-')}-${new Date().toJSON().slice(0, 19)}`;
 		}, backupTypes, backupTypes[0]);
 		let backupContainer = this.createLabelInputContainer('Backup type', backupTypeDropdown);
 		components.push(backupContainer);
