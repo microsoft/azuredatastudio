@@ -9,7 +9,7 @@ import { IObjectManagementService } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { BackupDatabaseDocUrl } from '../constants';
 import * as loc from '../localizedConstants';
-import { DefaultInputWidth } from '../../ui/dialogBase';
+import { DefaultInputWidth, DialogButton } from '../../ui/dialogBase';
 
 // const DialogWidth = '750px';
 
@@ -92,7 +92,20 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let backupDestContainer = this.createLabelInputContainer('Back up to', backupDestDropdown);
 		components.push(backupDestContainer);
 
-		// TODO: Add backup files table
+		let filesTable = this.createTable('Backup Files', ['Backup Files'], []);
+		this.disposables.push(filesTable.onRowSelected(() => this.onFileRowSelected()))
+		components.push(filesTable);
+
+		let addButton: DialogButton = {
+			buttonAriaLabel: loc.AddBackupFileAriaLabel,
+			buttonHandler: async () => await this.onAddFilesButtonClicked()
+		};
+		let removeButton: DialogButton = {
+			buttonAriaLabel: loc.RemoveBackupFileAriaLabel,
+			buttonHandler: async () => await this.onRemoveFilesButtonClicked()
+		};
+		const buttonContainer = this.addButtonsForTable(filesTable, addButton, removeButton);
+		components.push(buttonContainer);
 
 		return this.createGroup(loc.GeneralSectionHeader, components, false);
 	}
@@ -180,5 +193,14 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let encryptionGroup = this.createGroup(loc.BackupEncryptionLabel, [encryptCheckbox, algorithmGroup], false);
 
 		return this.createGroup(loc.OptionsSectionHeader, [overwriteGroup, reliabilityGroup, transactionGroup, compressionGroup, encryptionGroup], true, true);
+	}
+
+	private async onAddFilesButtonClicked(): Promise<void> {
+	}
+
+	private async onRemoveFilesButtonClicked(): Promise<void> {
+	}
+
+	private async onFileRowSelected(): Promise<void> {
 	}
 }
