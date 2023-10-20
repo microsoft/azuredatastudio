@@ -88,6 +88,22 @@ panel {
 	outline: none;
 }
 
+.tabbedPanel .tabList .tab-header.loading,
+.hc-light .tabbedPanel .tabList .tab-header.loading {
+	pointer-events:none;
+	cursor: not-allowed;
+	background-image: url("./loading.svg");
+	background-position: center right 5px;
+	background-repeat: no-repeat;
+	background-size: 16px;
+	opacity: 0.5;
+}
+
+.vs-dark .tabbedPanel .tabList .tab-header.loading,
+.hc-black .tabbedPanel .tabList .tab-header.loading {
+	background-image: url("./loading_inverse.svg");
+}
+
 .tabbedPanel.horizontal > .title .tabList .tab .tabLabel,
 .tabbedPanel.vertical > .title .tabList .tab .tabLabel {
 	text-overflow: ellipsis;
