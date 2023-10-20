@@ -151,7 +151,8 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let backupTailButton = this.createRadioButton('Back up the tail of the log, and leave the database in the restoring state', 'BackupTransactionLog', false, checked => {
 			return Promise.resolve();
 		}, false);
-		let transactionGroup = this.createGroup(loc.BackupTransactionLogLabel, [truncateButton, backupTailButton], false);
+		let transactionDescription = this.modelView.modelBuilder.text().withProps({ value: 'Transaction Log options are only available only when Backup Type is set to Tansaction Log above. ' }).component();
+		let transactionGroup = this.createGroup(loc.BackupTransactionLogLabel, [truncateButton, backupTailButton, transactionDescription], false);
 
 		// Compression
 		let compressionValues = ['Use the default server setting', 'Compress backup', 'Do not compress backup'];
@@ -174,9 +175,9 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 		// TODO: add "Certificate or Encryption key" field
 
-		let encryptionDescription = this.modelView.modelBuilder.text().withProps({ value: 'Encryption is available only when \'Back up to a new media set\' is selected above. ' }).component();
-
-		let encryptionGroup = this.createGroup(loc.BackupEncryptionLabel, [encryptCheckbox, algorithmContainer, encryptionDescription], false);
+		let encryptionDescription = this.modelView.modelBuilder.text().withProps({ value: 'Encryption options are only available when \'Back up to a new media set\' is selected above. ' }).component();
+		let algorithmGroup = this.createGroup('', [algorithmContainer, encryptionDescription]);
+		let encryptionGroup = this.createGroup(loc.BackupEncryptionLabel, [encryptCheckbox, algorithmGroup], false);
 
 		return this.createGroup(loc.OptionsSectionHeader, [overwriteGroup, reliabilityGroup, transactionGroup, compressionGroup, encryptionGroup], true, true);
 	}
