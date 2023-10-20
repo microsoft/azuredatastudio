@@ -108,11 +108,27 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let overwriteExistingButton = this.createRadioButton('Overwrite all existing backup sets', 'BackupExistingMedia', false, checked => {
 			return Promise.resolve();
 		}, false);
+		let existingMediaButtonsGroup = this.createGroup('', [appendExistingButton, overwriteExistingButton]);
 
 		let newMediaButton = this.createRadioButton('Back up to a new media set, and erase all existing backup sets', 'BackupOverwriteMedia', false, checked => {
 			return Promise.resolve();
 		}, false);
-		let overwriteGroup = this.createGroup(loc.BackupOverwriteMediaLabel, [], false);
+		let mediaSetInput = this.createInputBox(newValue => {
+			return Promise.resolve();
+		}, { enabled: false });
+		let mediaSetContainer = this.createLabelInputContainer('New media set name', mediaSetInput);
+		let mediaDescriptionInput = this.createInputBox(newValue => {
+			return Promise.resolve();
+		}, { enabled: false });
+		let mediaDescriptionContainer = this.createLabelInputContainer('New media set description', mediaDescriptionInput);
+		let newMediaButtonsGroup = this.createGroup('', [mediaSetContainer, mediaDescriptionContainer]);
+
+		let overwriteGroup = this.createGroup(loc.BackupOverwriteMediaLabel, [
+			existingMediaButton,
+			existingMediaButtonsGroup,
+			newMediaButton,
+			newMediaButtonsGroup
+		], false);
 
 		// Reliability
 		let verifyCheckbox = this.createCheckbox('Verify backup when finished', checked => {
