@@ -99,6 +99,19 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	private initializeOptionsSection(): azdata.GroupContainer {
 		// Overwrite media
+		let existingMediaButton = this.createRadioButton('Back up the the existing media set', 'BackupOverwriteMedia', false, checked => {
+			return Promise.resolve();
+		}, false);
+		let appendExistingButton = this.createRadioButton('Append to the existing backup set', 'BackupExistingMedia', false, checked => {
+			return Promise.resolve();
+		}, false);
+		let overwriteExistingButton = this.createRadioButton('Overwrite all existing backup sets', 'BackupExistingMedia', false, checked => {
+			return Promise.resolve();
+		}, false);
+
+		let newMediaButton = this.createRadioButton('Back up to a new media set, and erase all existing backup sets', 'BackupOverwriteMedia', false, checked => {
+			return Promise.resolve();
+		}, false);
 		let overwriteGroup = this.createGroup(loc.BackupOverwriteMediaLabel, [], false);
 
 		// Reliability
