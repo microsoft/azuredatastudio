@@ -39,7 +39,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			value: '',
 			width: DefaultInputWidth
 		});
-		let backupInputContainer = this.createLabelInputContainer('Backup name', backupInput);
+		let backupInputContainer = this.createLabelInputContainer(loc.BackupNameLabel, backupInput);
 		components.push(backupInputContainer);
 
 		let inputBox = this.createInputBox(newValue => {
@@ -51,27 +51,27 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			value: this.objectInfo.recoveryModel,
 			width: DefaultInputWidth
 		});
-		let recoveryModelInput = this.createLabelInputContainer('Recovery model', inputBox);
+		let recoveryModelInput = this.createLabelInputContainer(loc.BackupRecoveryLabel, inputBox);
 		components.push(recoveryModelInput);
 
 		const backupTypes = ['Full', 'Differential', 'Transaction Log'];
-		let backupTypeDropdown = this.createDropdown('Backup type', async newValue => {
+		let backupTypeDropdown = this.createDropdown(loc.BackupTypeLabel, async newValue => {
 			// Update backup name with new backup type
 			backupInput.value = backupInput.ariaLabel = `${this.objectInfo.name}-${newValue.replace(' ', '-')}-${new Date().toJSON().slice(0, 19)}`;
 		}, backupTypes, backupTypes[0]);
-		let backupContainer = this.createLabelInputContainer('Backup type', backupTypeDropdown);
+		let backupContainer = this.createLabelInputContainer(loc.BackupTypeLabel, backupTypeDropdown);
 		components.push(backupContainer);
 
-		let copyBackupCheckbox = this.createCheckbox('Copy-only backup', checked => {
+		let copyBackupCheckbox = this.createCheckbox(loc.BackupCopyLabel, checked => {
 			return Promise.resolve();
 		});
 		components.push(copyBackupCheckbox);
 
-		let backupDestinations = ['Disk', 'URL'];
-		let backupDestDropdown = this.createDropdown('Back up to', checked => {
+		let backupDestinations = [loc.BackupDiskLabel, loc.BackupUrlLabel];
+		let backupDestDropdown = this.createDropdown(loc.BackupToLabel, checked => {
 			return Promise.resolve();
 		}, backupDestinations, backupDestinations[0]);
-		let backupDestContainer = this.createLabelInputContainer('Back up to', backupDestDropdown);
+		let backupDestContainer = this.createLabelInputContainer(loc.BackupToLabel, backupDestDropdown);
 		components.push(backupDestContainer);
 
 		let filesTable = this.createTable(loc.BackupFilesLabel, [loc.BackupFilesLabel], []);
