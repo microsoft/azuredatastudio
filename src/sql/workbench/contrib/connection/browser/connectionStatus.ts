@@ -18,12 +18,9 @@ import { IQueryModelService } from 'sql/workbench/services/query/common/queryMod
 export class ConnectionStatusbarItem extends Disposable implements IWorkbenchContribution {
 
 	private static readonly ID = 'status.connection.status';
-	private static readonly SPIDID = 'status.connection.spid';
 
 	private statusItem: IStatusbarEntryAccessor;
-	private SPIDStatusItem: IStatusbarEntryAccessor;
 	private readonly name = localize('status.connection.status', "Connection Status");
-	private readonly SPIDname = localize('status.connection.spid', "Connection SPID");
 
 
 	constructor(
@@ -44,48 +41,26 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 				StatusbarAlignment.RIGHT, 100)
 		);
 
-		this.SPIDStatusItem = this._register(
-			this.statusbarService.addEntry({
-				name: this.SPIDname,
-				text: '',
-				ariaLabel: ''
-			},
-				ConnectionStatusbarItem.SPIDID,
-				StatusbarAlignment.RIGHT, 100)
-		);
-
 		this.hide();
 
-		this._register(this.connectionManagementService.onConnect(() => { this._updateSPIDStatus(); this._updateStatus(); }));
-		this._register(this.connectionManagementService.onConnectionChanged(() => { this._updateSPIDStatus(); this._updateStatus(); }));
-		this._register(this.connectionManagementService.onDisconnect(() => { this._updateSPIDStatus(); this._updateStatus(); }));
-		this._register(this.editorService.onDidActiveEditorChange(() => { this._updateSPIDStatus(); this._updateStatus(); }));
-		this._register(this.objectExplorerService.onSelectionOrFocusChange(() => { this._updateSPIDStatus(); this._updateStatus(); }));
+		this._register(this.connectionManagementService.onConnect(() => { this._updateStatus(); }));
+		this._register(this.connectionManagementService.onConnectionChanged(() => { this._updateStatus(); }));
+		this._register(this.connectionManagementService.onDisconnect(() => { this._updateStatus(); }));
+		this._register(this.editorService.onDidActiveEditorChange(() => { this._updateStatus(); }));
+		this._register(this.objectExplorerService.onSelectionOrFocusChange(() => { this._updateStatus(); }));
 		this._register(this.queryModelService.onSpidAvailable(e => this._refreshSPIDStatus(e.type, e.data)));
 	}
 
 	private hide() {
 		this.statusbarService.updateEntryVisibility(ConnectionStatusbarItem.ID, false);
-		this.statusbarService.updateEntryVisibility(ConnectionStatusbarItem.SPIDID, false);
 	}
 
 	private show() {
 		this.statusbarService.updateEntryVisibility(ConnectionStatusbarItem.ID, true);
-		this.statusbarService.updateEntryVisibility(ConnectionStatusbarItem.SPIDID, true);
 	}
 
 	// Update the connection status shown in the bar
 	private _updateStatus(): void {
-		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
-		if (activeConnection) {
-			this._setConnectionText(activeConnection);
-			this.show();
-		} else {
-			this.hide();
-		}
-	}
-
-	private _updateSPIDStatus(): void {
 		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
 		if (activeConnection) {
 			let uri = this.connectionManagementService.getConnectionUriFromId(activeConnection.id);
@@ -98,15 +73,15 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 				}
 			}
 			if (info && info.spid) {
-				let text = '(' + info.spid + ')'
-				let tooltip = 'SPID: ' + info.spid;
-				this.SPIDStatusItem.update({
-					name: this.SPIDname,
-					text: text,
-					ariaLabel: text,
-					tooltip
-				});
+				this._setConnectionText(activeConnection, 'SPID', info.spid)
 			}
+			else {
+				this._setConnectionText(activeConnection);
+			}
+			this.show();
+		}
+		else {
+			this.hide();
 		}
 	}
 
@@ -122,21 +97,14 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 			if (currUri === uri) {
 				if (info) {
 					info.spid = spid;
+					this._setConnectionText(activeConnection, 'SPID', spid);
 				}
-				let text = '(' + spid + ')'
-				let tooltip = 'SPID: ' + spid;
-				this.SPIDStatusItem.update({
-					name: this.SPIDname,
-					text: text,
-					ariaLabel: text,
-					tooltip
-				});
 			}
 		}
 	}
 
 	// Set connection info to connection status bar
-	private _setConnectionText(connectionProfile: IConnectionProfile): void {
+	private _setConnectionText(connectionProfile: IConnectionProfile, spidName?: string, spid?: number): void {
 		let text: string = connectionProfile.serverName;
 		if (text) {
 			if (connectionProfile.databaseName && connectionProfile.databaseName !== '') {
@@ -151,6 +119,11 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 
 		if (connectionProfile.userName && connectionProfile.userName !== '') {
 			tooltip = tooltip + 'Login: ' + connectionProfile.userName + '\r\n';
+		}
+
+		if (spid) {
+			text += ' (' + spid + ')';
+			tooltip += (spidName ? spidName : 'SPID') + ': ' + spid
 		}
 
 		this.statusItem.update({
