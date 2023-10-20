@@ -184,6 +184,12 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 		this._register(this.connectionManagementService.onConnectionChanged(e => {
 			this._onDidChangeLabel.fire();
+
+			const databaseName = e?.connectionProfile?.databaseName ?? '';
+			if (this.uri && databaseName) {
+				// Intentionally not awaiting, so that contextualization can happen in the background
+				void this.serverContextualizationService?.contextualizeUriForCopilot(this.uri, databaseName);
+			}
 		}));
 
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
@@ -322,8 +328,12 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		}
 		this._onDidChangeLabel.fire();
 
-		// Intentionally not awaiting, so that contextualization can happen in the background
-		void this.serverContextualizationService?.contextualizeUriForCopilot(this.uri);
+		let profile = this.connectionManagementService.getConnectionProfile(this.uri);
+		const databaseName = profile?.databaseName ?? '';
+		if (databaseName) {
+			// Intentionally not awaiting, so that contextualization can happen in the background
+			void this.serverContextualizationService?.contextualizeUriForCopilot(this.uri, databaseName);
+		}
 	}
 
 	public onDisconnect(): void {

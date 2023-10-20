@@ -576,7 +576,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	// Server contextualization handler
 	public $registerServerContextualizationProvider(providerId: string, handle: number): void {
 		this._serverContextualizationService.registerProvider(providerId, <azdata.contextualization.ServerContextualizationProvider>{
-			getServerContextualization: (ownerUri: string) => this._proxy.$getServerContextualization(handle, ownerUri)
+			getServerContextualization: (ownerUri: string, databaseName: string) => this._proxy.$getServerContextualization(handle, ownerUri, databaseName)
 		});
 	}
 

@@ -972,7 +972,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	// Server Contextualization API
 
-	public override $getServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GetServerContextualizationResult> {
-		return this._resolveProvider<azdata.contextualization.ServerContextualizationProvider>(handle).getServerContextualization(ownerUri);
+	public override $getServerContextualization(handle: number, ownerUri: string, databaseName: string): Thenable<azdata.contextualization.GetServerContextualizationResult> {
+		return this._resolveProvider<azdata.contextualization.ServerContextualizationProvider>(handle).getServerContextualization(ownerUri, databaseName);
 	}
 }

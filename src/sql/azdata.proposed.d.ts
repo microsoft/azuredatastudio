@@ -1801,8 +1801,9 @@ declare module 'azdata' {
 			/**
 			 * Gets server context, which can be in the form of create scripts but is left up each provider.
 			 * @param ownerUri The URI of the connection to get context for.
+			 * @param databaseName The name of the database to get context for
 			 */
-			getServerContextualization(ownerUri: string): Thenable<GetServerContextualizationResult>;
+			getServerContextualization(ownerUri: string, databaseName: string): Thenable<GetServerContextualizationResult>;
 		}
 	}
 

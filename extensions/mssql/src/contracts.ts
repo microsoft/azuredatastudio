@@ -1565,6 +1565,7 @@ export namespace ExecutionPlanComparisonRequest {
 
 export interface ServerContextualizationParams {
 	ownerUri: string;
+	databaseName: string;
 }
 
 export namespace GetServerContextualizationRequest {

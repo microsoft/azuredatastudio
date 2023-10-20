@@ -1330,9 +1330,10 @@ export class ServerContextualizationServiceFeature extends SqlOpsFeature<undefin
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		const getServerContextualization = (ownerUri: string): Thenable<azdata.contextualization.GetServerContextualizationResult> => {
+		const getServerContextualization = (ownerUri: string, databaseName: string): Thenable<azdata.contextualization.GetServerContextualizationResult> => {
 			const params: contracts.ServerContextualizationParams = {
-				ownerUri: ownerUri
+				ownerUri: ownerUri,
+				databaseName: databaseName
 			};
 
 			return client.sendRequest(contracts.GetServerContextualizationRequest.type, params).then(

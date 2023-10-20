@@ -65,7 +65,7 @@ export class ServerContextualizationService extends Disposable implements IServe
 	 * @param uri The URI to contextualize for Copilot.
 	 * @returns Copilot will have the URI contextualized when the promise completes.
 	 */
-	public async contextualizeUriForCopilot(uri: string): Promise<void> {
+	public async contextualizeUriForCopilot(uri: string, databaseName: string): Promise<void> {
 		// Don't need to take any actions if contextualization is not enabled and can return
 		const isContextualizationNeeded = await this.isContextualizationNeeded();
 		if (!isContextualizationNeeded) {
@@ -73,7 +73,7 @@ export class ServerContextualizationService extends Disposable implements IServe
 			return;
 		}
 
-		const getServerContextualizationResult = await this.getServerContextualization(uri);
+		const getServerContextualizationResult = await this.getServerContextualization(uri, databaseName);
 		if (getServerContextualizationResult.context) {
 			this._logService.info(`Server contextualization was retrieved for the URI (${uri}) connection, so sending that to Copilot for context.`);
 
@@ -88,13 +88,13 @@ export class ServerContextualizationService extends Disposable implements IServe
 	 * Gets all database context.
 	 * @param ownerUri The URI of the connection to get context for.
 	 */
-	private async getServerContextualization(ownerUri: string): Promise<azdata.contextualization.GetServerContextualizationResult> {
+	private async getServerContextualization(ownerUri: string, databaseName: string): Promise<azdata.contextualization.GetServerContextualizationResult> {
 		const providerName = this._connectionManagementService.getProviderIdFromUri(ownerUri);
 		const handler = this.getProvider(providerName);
 		if (handler) {
 			this._logService.info(`Getting server contextualization for ${ownerUri}`);
 
-			return await handler.getServerContextualization(ownerUri);
+			return await handler.getServerContextualization(ownerUri, databaseName);
 		}
 		else {
 			this._logService.info(`No server contextualization provider found for ${ownerUri}`);

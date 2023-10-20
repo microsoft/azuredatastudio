@@ -598,7 +598,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Gets server context.
 	 */
-	$getServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GetServerContextualizationResult> { throw ni(); }
+	$getServerContextualization(handle: number, ownerUri: string, databaseName: string): Thenable<azdata.contextualization.GetServerContextualizationResult> { throw ni(); }
 }
 
 /**
