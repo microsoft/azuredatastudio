@@ -64,10 +64,10 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		inputBox = this.createInputBox(newValue => {
 			return Promise.resolve();
 		}, {
-			ariaLabel: '',
+			ariaLabel: this.objectInfo.recoveryModel,
 			inputType: 'text',
 			enabled: false,
-			value: '',
+			value: this.objectInfo.recoveryModel,
 			width: DefaultInputWidth
 		});
 		let recoveryModelInput = this.createLabelInputContainer('Recovery model', inputBox);
@@ -92,7 +92,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let backupDestContainer = this.createLabelInputContainer('Back up to', backupDestDropdown);
 		components.push(backupDestContainer);
 
-		let filesTable = this.createTable('Backup Files', ['Backup Files'], []);
+		let filesTable = this.createTable(loc.BackupFilesLabel, [loc.BackupFilesLabel], []);
 		this.disposables.push(filesTable.onRowSelected(() => this.onFileRowSelected()))
 		components.push(filesTable);
 

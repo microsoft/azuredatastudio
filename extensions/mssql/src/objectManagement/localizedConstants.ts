@@ -247,6 +247,7 @@ export const BackupReliabilityLabel = localize('objectManagement.backupReliabili
 export const BackupExpirationLabel = localize('objectManagement.backupExpiration', "Expiration");
 export const AddBackupFileAriaLabel = localize('objectManagement.addBackupFileText', "Add backup files");
 export const RemoveBackupFileAriaLabel = localize('objectManagement.removeBackupFileText', "Remove backup file");
+export const BackupFilesLabel = localize('objectManagement.backupFilesLabel', "Backup Files");
 
 
 // Login
