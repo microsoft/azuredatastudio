@@ -36,22 +36,6 @@
     "configuration": [
       {
         "type": "object",
-        "title": "%azure.resource.config.title%",
-        "properties": {
-          "azure.resource.config.filter": {
-            "type": "array",
-            "default": null,
-            "description": "%azure.resource.config.filter.description%"
-          },
-          "azure.tenant.config.filter": {
-            "type": "array",
-            "default": [],
-            "description": "%azure.tenant.config.filter.description%"
-          }
-        }
-      },
-      {
-        "type": "object",
         "title": "%config.azureAccountConfigurationSection%",
         "properties": {
           "accounts.azure.cloud.enablePublicCloud": {

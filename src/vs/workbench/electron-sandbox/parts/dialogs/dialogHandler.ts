@@ -86,7 +86,7 @@ export class NativeDialogHandler extends AbstractDialogHandler {
 				this.productService.commit || 'Unknown',
 				this.productService.date ? `${this.productService.date}${useAgo ? ' (' + fromNow(new Date(this.productService.date), true) + ')' : ''}` : 'Unknown',
 				process.versions['electron'],
-				process.versions['microsoft-build'], // {{SQL CARBON EDIT}} Removing Electron Build ID from detail string
+				process.versions['microsoft-build'],
 				process.versions['chrome'],
 				process.versions['node'],
 				process.versions['v8'],
