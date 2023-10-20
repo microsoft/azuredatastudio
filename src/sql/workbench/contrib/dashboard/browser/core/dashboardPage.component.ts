@@ -521,19 +521,12 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			if (owningExtension) {
 				// wait for the extension to be activated
 				new Promise<void>((resolve) => {
-
 					const resolveTab = () => {
 						tab.loading = false;
 						this._cd.detectChanges();
 						resolve();
 					}
-					// If the extension is already activated, we can resolve immediately
-					if (this.extensionService.getExtensionsStatus()[owningExtension.id]?.activationTimes?.activateResolvedTime !== undefined) {
-						tab.loading = false;
-						resolveTab();
-					}
-
-					// Otherwise, we'll wait for the extension to be activated
+					// We'll listen for the extension status change event and resolve the promise when the extension is activated
 					const disposable = this.extensionService.onDidChangeExtensionsStatus(e => {
 						e.forEach(extension => {
 							if (extension.value === owningExtension.id) {
@@ -542,6 +535,11 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 							}
 						})
 					});
+					// If the extension is already activated, we can resolve immediately
+					if (this.extensionService.getExtensionsStatus()[owningExtension.id]?.activationTimes?.activateResolvedTime !== undefined) {
+						tab.loading = false;
+						resolveTab();
+					}
 				}).catch(e => {
 					this.logService.error(`Error adding tab ${tab.title} contributed by extension ${owningExtension.id}. Error: ${e}`);
 				})
