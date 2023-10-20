@@ -530,12 +530,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				break;
 			}
 
-			case PerformanceDataSourceOptions.OpenExisting: {
-				if (utils.hasRecommendations(this.migrationStateModel)) {
-				}
-				break;
-			}
-
 			// initial state before "Get Azure recommendation" dialog
 			default: {
 				await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'none' });
@@ -593,6 +587,5 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator(pageChangeInfo => true);
 		this.wizard.message = { text: '' };
-		// this.eventListener?.dispose();
 	}
 }

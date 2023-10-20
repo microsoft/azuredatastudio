@@ -170,7 +170,7 @@ export class IssueSummary {
 				value: constants.OBJECT_DETAILS,
 				CSSStyles: {
 					...styles.LIGHT_LABEL_CSS,
-					'margin': '12px 0px 0px 0px',
+					'margin': '12px 0px 0px 0px'
 				}
 			}).component();
 		const objectDescriptionStyle = {
