@@ -259,6 +259,18 @@ export class ResultSerializer {
 			if (saveConfig.includeHeaders !== undefined) {
 				saveResultsParams.includeHeaders = saveConfig.includeHeaders;
 			}
+			if (saveConfig.freezeHeaderRow !== undefined) {
+				saveResultsParams.freezeHeaderRow = saveConfig.freezeHeaderRow;
+			}
+			if (saveConfig.boldHeaderRow !== undefined) {
+				saveResultsParams.boldHeaderRow = saveConfig.boldHeaderRow;
+			}
+			if (saveConfig.autoFilterHeaderRow !== undefined) {
+				saveResultsParams.autoFilterHeaderRow = saveConfig.autoFilterHeaderRow;
+			}
+			if (saveConfig.autoSizeColumns !== undefined) {
+				saveResultsParams.autoSizeColumns = saveConfig.autoSizeColumns;
+			}
 		}
 
 		return saveResultsParams;
