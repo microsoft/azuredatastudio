@@ -4394,34 +4394,34 @@
 					},
 					"versions": [
 						{
-							"version": "0.6.0",
-							"lastUpdated": "07/17/2023",
+							"version": "1.0.2",
+							"lastUpdated": "10/23/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23198.1/dsct-oracle-to-ms-sql-0.6.0.vsix"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23292.2/dsct-oracle-to-ms-sql-1.0.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23198.1/dsctIcon.png"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23292.2/dsctIcon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23198.1/README.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23292.2/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23198.1/CHANGELOG.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23292.2/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23198.1/package.json"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23292.2/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/LICENSE.rtf"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23292.2/LICENSE.htm"
 								}
 							],
 							"properties": [
@@ -4445,7 +4445,7 @@
 						}
 					],
 					"statistics": [],
-					"flags": "preview"
+					"flags": ""
 				},
 				{
 					"extensionId": "88",
@@ -5147,66 +5147,67 @@
 					"flags": "preview"
 				},
 				{
-				"extensionId": "101",
-				"extensionName": "ads-searcheverywhere",
-				"displayName": "Search Everywhere",
-				"shortDescription": "Search tables, views, stored procedures, functions by name or code.",
-				"publisher": {
-					"displayName": "MikhailT",
-					"publisherId": "MikhailT",
-					"publisherName": "MikhailT"
+					"extensionId": "101",
+					"extensionName": "ads-searcheverywhere",
+					"displayName": "Search Everywhere",
+					"shortDescription": "Search tables, views, stored procedures, functions by name or code.",
+					"publisher": {
+						"displayName": "MikhailT",
+						"publisherId": "MikhailT",
+						"publisherName": "MikhailT"
+					},
+					"versions": [
+						{
+							"version": "1.0.0",
+							"lastUpdated": "07/23/2023",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/MikhailProfile/SearchEverywhere/releases/tag/ads"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/png/search.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
+									"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/CHANGELOG.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/MikhailProfile/SearchEverywhere"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				},
-				"versions": [
-					{
-						"version": "1.0.0",
-						"lastUpdated": "07/23/2023",
-						"assetUri": "",
-						"fallbackAssetUri": "fallbackAssetUri",
-						"files": [
-							{
-								"assetType": "Microsoft.SQLOps.DownloadPage",
-								"source": "https://github.com/MikhailProfile/SearchEverywhere/releases/tag/ads"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-								"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/png/search.png"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-								"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/README.md"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-								"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/CHANGELOG.md"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Code.Manifest",
-								"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/package.json"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Services.Content.License",
-								"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/LICENSE"
-							}
-						],
-						"properties": [
-							{
-								"key": "Microsoft.VisualStudio.Code.Engine",
-								"value": "*"
-							},
-							{
-								"key": "Microsoft.AzDataEngine",
-								"value": "*"
-							},
-							{
-								"key": "Microsoft.VisualStudio.Services.Links.Source",
-								"value": "https://github.com/MikhailProfile/SearchEverywhere"
-							}
-						]
-					}
-				],
-				"statistics": [],
-				"flags": ""
-			},{
+				{
 					"extensionId": "102",
 					"extensionName": "storeprocdure2SQL",
 					"displayName": "Store Procdure To SQL",
@@ -5266,133 +5267,133 @@
 					],
 					"statistics": [],
 					"flags": ""
-			},
-			{
-				"extensionId": "103",
-				"extensionName": "black",
-				"displayName": "Black",
-				"shortDescription": "A port of the VSCode Black color theme by Jaakkko for use with Azure Data Studio.",
-				"publisher": {
-					"displayName": "Will Hinson",
-					"publisherId": "will-hinson",
-					"publisherName": "will-hinson"
 				},
-				"versions": [
-					{
-						"version": "0.0.1",
-						"lastUpdated": "10/3/2023",
-						"assetUri": "",
-						"fallbackAssetUri": "fallbackAssetUri",
-						"files": [
-							{
-								"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-								"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/packages/black-0.0.1.vsix"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-								"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/assets/icon.png"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-								"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/README.md"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Code.Manifest",
-								"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/package.json"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Services.Content.License",
-								"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/LICENSE"
-							}
-						],
-						"properties": [
-							{
-								"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
-								"value": ""
-							},
-							{
-								"key": "Microsoft.VisualStudio.Code.Engine",
-								"value": "*"
-							},
-							{
-								"key": "Microsoft.AzDataEngine",
-								"value": "*"
-							},
-							{
-								"key": "Microsoft.VisualStudio.Services.Links.Source",
-								"value": "https://github.com/will-hinson/ads-black-theme"
-							}
-						]
-					}
-				],
-				"statistics": [],
-				"flags": ""
-			},
-			{
-				"extensionId": "104",
-				"extensionName": "azuredatastudio-oracle-extension-pack",
-				"displayName": "Database Migration Service Pack for Oracle",
-				"shortDescription": "Provides seamless assessment, conversion, and data migration to Azure Database PaaS service, eliminating any potential challenges during the migration process",
-				"publisher": {
-					"displayName": "Microsoft",
-					"publisherId": "Microsoft",
-					"publisherName": "Microsoft"
+				{
+					"extensionId": "103",
+					"extensionName": "black",
+					"displayName": "Black",
+					"shortDescription": "A port of the VSCode Black color theme by Jaakkko for use with Azure Data Studio.",
+					"publisher": {
+						"displayName": "Will Hinson",
+						"publisherId": "will-hinson",
+						"publisherName": "will-hinson"
+					},
+					"versions": [
+						{
+							"version": "0.0.1",
+							"lastUpdated": "10/3/2023",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/packages/black-0.0.1.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/assets/icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/will-hinson/ads-black-theme"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				},
-				"versions": [
-					{
-						"version": "1.1.4",
-						"lastUpdated": "10/19/2023",
-						"assetUri": "",
-						"fallbackAssetUri": "fallbackAssetUri",
-						"files": [
-							{
-								"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-								"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.4/azuredatastudio-oracle-extension-pack-1.1.4.vsix"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-								"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.4/extension.png"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-								"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.4/README.md"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Code.Manifest",
-								"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.4/package.json"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Services.Content.License",
-								"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.4/LICENSE.html"
-							}
-						],
-						"properties": [
-							{
-								"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
-								"value": ""
-							},
-							{
-								"key": "Microsoft.VisualStudio.Code.ExtensionPack",
-								"value": "Microsoft.azuredatastudio-dma-oracle,microsoft.dsct-oracle-to-ms-sql,microsoft.oracle-datamigration"
-							},
-							{
-								"key": "Microsoft.VisualStudio.Code.Engine",
-								"value": "*"
-							},
-							{
-								"key": "Microsoft.AzDataEngine",
-								"value": "*"
-							},
-							{
-								"key": "Microsoft.VisualStudio.Services.Links.Source",
-								"value": "https://github.com/Microsoft/azuredatastudio"
-							}
-						]
-					}
-				],
-				"statistics": [],
-				"flags": "preview"
-			}
+				{
+					"extensionId": "104",
+					"extensionName": "azuredatastudio-oracle-extension-pack",
+					"displayName": "Database Migration Service Pack for Oracle",
+					"shortDescription": "Provides seamless assessment, conversion, and data migration to Azure Database PaaS service, eliminating any potential challenges during the migration process",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "1.1.4",
+							"lastUpdated": "10/19/2023",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.4/azuredatastudio-oracle-extension-pack-1.1.4.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.4/extension.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.4/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.4/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.4/LICENSE.html"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionPack",
+									"value": "Microsoft.azuredatastudio-dma-oracle,microsoft.dsct-oracle-to-ms-sql,microsoft.oracle-datamigration"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				}
 			],
 			"resultMetadata": [
 				{
