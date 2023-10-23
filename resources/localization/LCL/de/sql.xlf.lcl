@@ -4630,7 +4630,7 @@
         <Str Cat="Text">
           <Val><![CDATA[: Session Name: {0}]D;]A;]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[: Sitzungsname: {0}\u000d]A;]]></Val>
+            <Val><![CDATA[: Sitzungsname: {0}]D;]A;]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
