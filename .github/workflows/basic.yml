@@ -35,7 +35,7 @@ jobs:
 
       - name: Compute node modules cache key
         id: nodeModulesCacheKey
-        run: echo "{value}=$(node build/azure-pipelines/common/computeNodeModulesCacheKey.js)" >> $GITHUB_OUTPUT
+        run: echo "{value}=$(node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js)" >> $GITHUB_OUTPUT
       - name: Cache node modules
         id: cacheNodeModules
         uses: actions/cache@v3
@@ -89,7 +89,7 @@ jobs:
       # {{SQL CARBON TODO}} Update node modules caching to work with our cache keys
       - name: Compute node modules cache key
         id: nodeModulesCacheKey
-        run: echo "{value}=$(node build/azure-pipelines/common/computeNodeModulesCacheKey.js)" >> $GITHUB_OUTPUT
+        run: echo "{value}=$(node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js)" >> $GITHUB_OUTPUT
       - name: Cache node modules
         id: cacheNodeModules
         uses: actions/cache@v3
@@ -157,7 +157,7 @@ jobs:
 
   #     - name: Compute node modules cache key
   #       id: nodeModulesCacheKey
-  #       run: echo "value=$(node build/azure-pipelines/common/computeNodeModulesCacheKey.js)" >> $GITHUB_OUTPUT
+  #       run: echo "value=$(node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js)" >> $GITHUB_OUTPUT
   #     - name: Cache node modules
   #       id: cacheNodeModules
   #       uses: actions/cache@v3
