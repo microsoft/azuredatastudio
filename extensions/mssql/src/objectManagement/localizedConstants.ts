@@ -258,6 +258,18 @@ export const SQLAuthenticationTypeDisplayText = localize('objectManagement.login
 export const AADAuthenticationTypeDisplayText = localize('objectManagement.login.aadAuthenticationType', "Microsoft Entra ID Authentication");
 export const OldPasswordCannotBeEmptyError = localize('objectManagement.login.oldPasswordCannotBeEmptyError', "Old password cannot be empty.");
 
+//Restore Database
+export const RestoreFromText = localize('objectManagement.restoredatabase.restoreFromText', "Restore from");
+export const BackupFilePathText = localize('objectManagement.restoredatabase.backupFilePathText', "Backup file path");
+export const DatabaseText = localize('objectManagement.restoredatabase.databaseText', "Database");
+export const TargetDatabaseText = localize('objectManagement.restoredatabase.targetDatabaseText', "Target database");
+export const RestoreToText = localize('objectManagement.restoredatabase.restoreToText', "Restore to");
+export const SourceSectionText = localize('objectManagement.restoredatabase.SourceSectionText', "Source");
+export const DestinationSectionText = localize('objectManagement.restoredatabase.DestinationSectionText', "Destination");
+export const RestorePlanSectionText = localize('objectManagement.restoredatabase.RestorePlanSectionText', "Restore plan");
+export const RestoreFromBackupFileOptionText = localize('objectManagement.restoredatabase.restoreFromBackupFileOptionText', "Backup file");
+export const RestoreFromDatabaseOptionText = localize('objectManagement.restoredatabase.restoreFromDatabaseOptionText', "Database");
+
 // User
 export const UserTypeText = localize('objectManagement.user.type', "Type");
 export const UserType_LoginMapped = localize('objectManagement.user.loginMapped', "Mapped to a server login");
