@@ -19,6 +19,7 @@ import { EncodingMode } from 'vs/workbench/services/textfile/common/textfiles';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IEditorModel, IEditorOptions } from 'vs/platform/editor/common/editor';
 import { Verbosity } from 'vs/workbench/common/editor';
+import { trimTitle } from 'sql/workbench/common/editor/query/queryEditorInput';
 
 /**
  * Input for the EditDataEditor.
@@ -224,22 +225,26 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	}
 
 	public getEncoding(): string | undefined { return this._sql.getEncoding(); }
-	public override getName(): string {
+	public override getName(longForm?: boolean): string {
 		let profile = this._connectionManagementService.getConnectionProfile(this.uri);
-		let title = this._sql.getName();
+		let baseTitle = this._sql.getName();
 		if (profile) {
+			let profileInfo = '';
 			if (profile.connectionName) {
-				title += ` - ${profile.connectionName}`;
+				profileInfo += `${profile.connectionName}`;
 			}
 			else {
-				title += ` - ${profile.serverName}`;
+				profileInfo += `${profile.serverName}`;
 				if (profile.databaseName) {
-					title += `.${profile.databaseName}`;
+					profileInfo += `.${profile.databaseName}`;
 				}
-				title += ` (${profile.userName || profile.authenticationType})`;
+				profileInfo += ` (${profile.userName || profile.authenticationType})`;
 			}
+			return baseTitle + (longForm ? (' - ' + profileInfo) : ` - ${trimTitle(profileInfo)}`);
 		}
-		return title;
+		else {
+			return baseTitle;
+		}
 	}
 	public override getTitle(verbosity?: Verbosity): string {
 		let fullTitle = this._sql.getName();
@@ -253,6 +258,9 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 			let nonDefaultOptions = this._connectionManagementService.getNonDefaultOptions(profile);
 			fullTitle += nonDefaultOptions;
 		}
+		else {
+			fullTitle = this.getName(true);
+		}
 		switch (verbosity) {
 			case Verbosity.LONG:
 				// Used by tabsTitleControl as the tooltip hover.
@@ -261,7 +269,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 			case Verbosity.SHORT:
 			case Verbosity.MEDIUM:
 				// Used for header title by tabsTitleControl.
-				return this.getName();
+				return this.getName(true);
 		}
 	}
 	public get hasAssociatedFilePath(): boolean { return this._sql.model.hasAssociatedFilePath; }
