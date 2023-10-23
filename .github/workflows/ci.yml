@@ -32,6 +32,9 @@ jobs:
       - name: Compute node modules cache key
         id: nodeModulesCacheKey
         run: echo "value=$(node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js)" >> $GITHUB_OUTPUT
+      - name: Echo Cache Key
+        id: echoCacheKey
+        run: echo ${{ steps.nodeModulesCacheKey.outputs.value }}
       - name: Cache node modules
         id: cacheNodeModules
         uses: actions/cache@v3
@@ -243,7 +246,7 @@ jobs:
       - name: Compute node modules cache key
         id: nodeModulesCacheKey
         # {{ SQL Carbon Edit}} Use sql-computeNodeModulesCacheKey
-        run: echo "{value}=$(node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js)" >> $GITHUB_OUTPUT
+        run: echo "value=$(node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js)" >> $GITHUB_OUTPUT
       - name: Cache node modules
         id: cacheNodeModules
         uses: actions/cache@v3
@@ -254,7 +257,7 @@ jobs:
       - name: Get yarn cache directory path
         id: yarnCacheDirPath
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-        run: echo "{dir}=$(yarn cache dir)" >> $GITHUB_OUTPUT
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
       - name: Cache yarn directory
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
         uses: actions/cache@v3
