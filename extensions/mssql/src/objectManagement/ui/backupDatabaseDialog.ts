@@ -21,6 +21,10 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		return BackupDatabaseDocUrl;
 	}
 
+	protected override get saveChangesTaskLabel(): string {
+		return loc.BackupDatabaseOperationDisplayName(this.objectInfo.name);
+	}
+
 	protected override async initializeUI(): Promise<void> {
 		let generalSection = this.initializeGeneralSection();
 		let optionsSection = this.initializeOptionsSection();

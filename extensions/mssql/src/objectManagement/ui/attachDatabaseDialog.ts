@@ -37,7 +37,7 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	protected override get saveChangesTaskLabel(): string {
-		return loc.BackupDatabaseOperationDisplayName(this.objectInfo.name);
+		return loc.AttachDatabaseOperationDisplayName;
 	}
 
 	protected async initializeUI(): Promise<void> {
