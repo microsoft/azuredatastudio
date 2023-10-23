@@ -9,7 +9,7 @@ import * as constants from '../constants';
 import * as contracts from '../contracts';
 
 import { BaseService, ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
-import { ObjectManagement, IObjectManagementService, DatabaseFileData } from 'mssql';
+import { ObjectManagement, IObjectManagementService, DatabaseFileData, BackupInfo } from 'mssql';
 import { ClientCapabilities } from 'vscode-languageclient';
 import { AppContext } from '../appContext';
 
@@ -82,7 +82,7 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		return this.runWithErrorHandling(contracts.AttachDatabaseRequest.type, params);
 	}
 
-	async backupDatabase(connectionUri: string, backupInfo: { [key: string]: any }, taskMode: azdata.TaskExecutionMode): Promise<string> {
+	async backupDatabase(connectionUri: string, backupInfo: BackupInfo, taskMode: azdata.TaskExecutionMode): Promise<string> {
 		const params: contracts.BackupDatabaseRequestParams = { connectionUri, backupInfo, taskMode };
 		return this.runWithErrorHandling(contracts.BackupDatabaseRequest.type, params);
 	}
@@ -276,7 +276,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve('');
 	}
 
-	async backupDatabase(connectionUri: string, backupInfo: { [key: string]: any }, taskMode: azdata.TaskExecutionMode): Promise<string> {
+	async backupDatabase(connectionUri: string, backupInfo: BackupInfo, taskMode: azdata.TaskExecutionMode): Promise<string> {
 		return this.delayAndResolve('');
 	}
 
