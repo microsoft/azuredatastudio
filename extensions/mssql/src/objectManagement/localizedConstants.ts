@@ -138,7 +138,13 @@ export function OpenAttachDatabaseDialogError(error: string): string {
 	}, "An error occurred while opening the attach database dialog. {0}", error);
 }
 
-export const AttachDatabaseOperationDisplayName = localize('objectManagement.attachDatabaseOperationName', "Attach database");
+export function BackupDatabaseOperationDisplayName(objectName: string): string {
+	return localize({
+		key: 'objectManagement.backupDatabaseOperationName',
+		comment: ['{0}: object name.']
+	}, "Backup database '{0}'", objectName);
+}
+
 
 export function OpenObjectPropertiesDialogError(objectType: string, objectName: string, error: string): string {
 	return localize({

@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { IObjectManagementService } from 'mssql';
+import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { BackupDatabaseDocUrl } from '../constants';
 import * as loc from '../localizedConstants';
@@ -184,5 +184,13 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	private async onFileRowSelected(): Promise<void> {
+	}
+
+	public override async generateScript(): Promise<string> {
+		return '';
+	}
+
+	public override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
+
 	}
 }
