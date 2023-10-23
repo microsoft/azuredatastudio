@@ -126,7 +126,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 			};
 			const tokenClaims = <TokenClaims>result.response.idTokenClaims;
 			const account = await this.hydrateAccount(token, tokenClaims);
-			await this.msalCacheProvider.writeTokenToLocalCache(token);
+			try {
+				await this.msalCacheProvider.writeTokenToLocalCache(token);
+			} catch (ex) {
+				Logger.error(`Error writing token to local cache: ${ex}`);
+			}
 			loginComplete?.resolve();
 			return account;
 		} catch (ex) {
