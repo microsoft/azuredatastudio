@@ -25,6 +25,10 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		return loc.BackupDatabaseOperationDisplayName(this.objectInfo.name);
 	}
 
+	protected override get opensEditorSeparately(): boolean {
+		return true;
+	}
+
 	protected override async initializeUI(): Promise<void> {
 		let generalSection = this.initializeGeneralSection();
 		let optionsSection = this.initializeOptionsSection();

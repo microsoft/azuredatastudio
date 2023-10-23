@@ -82,6 +82,13 @@ export abstract class ScriptableDialogBase<OptionsType extends ScriptableDialogO
 	}
 
 	/**
+	 * Whether this dialog will open its own query editor when the script button is clicked. (like for Backup & Restore)
+	 */
+	protected get opensEditorSeparately(): boolean {
+		return false;
+	}
+
+	/**
 	 * Called when the script button is clicked, returns the script that will be opened up in a new editor.
 	 */
 	protected abstract generateScript(): Promise<string>;
@@ -95,7 +102,9 @@ export abstract class ScriptableDialogBase<OptionsType extends ScriptableDialogO
 			}
 			let message: string;
 			const script = await this.generateScript();
-			if (script) {
+			if (this.opensEditorSeparately) {
+				message = localizedConstants.ScriptGeneratedText;
+			} else if (script) {
 				message = localizedConstants.ScriptGeneratedText;
 				let doc = await azdata.queryeditor.openQueryDocument({ content: script }, providerId);
 				if (this.options.objectExplorerContext?.connectionProfile) {
