@@ -58,7 +58,7 @@ export class MockExtensionContext implements vscode.ExtensionContext {
 	secrets: vscode.SecretStorage;
 	extension: vscode.Extension<any>;
 	extensionUri: vscode.Uri;
-	environmentVariableCollection: vscode.EnvironmentVariableCollection;
+	environmentVariableCollection: vscode.GlobalEnvironmentVariableCollection;
 	storageUri: vscode.Uri;
 	globalStorageUri: vscode.Uri;
 	globalStoragePath: string;

@@ -150,6 +150,17 @@
     <trans-unit id="ReinstallAction.successReload">
       <source xml:lang="en">Please reload Azure Data Studio to complete reinstalling the extension {0}.</source>
     </trans-unit>
+    <trans-unit id="aboutDetail">
+      <source xml:lang="en">Version: {0}
+Commit: {1}
+Date: {2}
+Electron: {3}
+Chromium: {4}
+Node.js: {5}
+V8: {6}
+OS: {7}</source>
+      <note>Electron, Chromium, Node.js and V8 are product names that need no translation</note>
+    </trans-unit>
     <trans-unit id="activateLanguagePack">
       <source xml:lang="en">In order to use Azure Data Studio in {0}, Azure Data Studio needs to restart.</source>
     </trans-unit>
@@ -944,11 +955,18 @@ Default Skipped Commands:
     <trans-unit id="profiler.sessionStopped">
       <source xml:lang="en">XEvent Profiler Session stopped unexpectedly on the server {0}.</source>
     </trans-unit>
+    <trans-unit id="profilerInput.connDetails">
+      <source xml:lang="en">Connection Details: </source>
+    </trans-unit>
     <trans-unit id="profilerInput.notConnected">
       <source xml:lang="en">Not connected</source>
     </trans-unit>
     <trans-unit id="profilerInput.profiler">
       <source xml:lang="en">Profiler</source>
+    </trans-unit>
+    <trans-unit id="profilerInput.sessionName">
+      <source xml:lang="en">: Session Name: {0}
+</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/editor/resourceViewer/resourceViewerInput" source-language="en" datatype="plaintext"><body>
@@ -4626,6 +4644,18 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.saveAsCsv.textIdentifier">
       <source xml:lang="en">Character used for enclosing text fields when saving results as CSV</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsExcel.autoFilterHeaderRow">
+      <source xml:lang="en">When true, enable auto filtering on the header row when saving results as an Excel file</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsExcel.autoSizeColumns">
+      <source xml:lang="en">When true, attempt to automatically size columns when saving results as an Excel file</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsExcel.boldHeaderRow">
+      <source xml:lang="en">When true, make the header row bold when saving results as an Excel file</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsExcel.freezeHeaderRow">
+      <source xml:lang="en">When true, freeze the header row when saving results as an Excel file</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.saveAsExcel.includeHeaders">
       <source xml:lang="en">When true, column headers are included when saving results as an Excel file</source>

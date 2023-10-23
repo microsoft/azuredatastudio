@@ -291,10 +291,10 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 			await utils.clearDropDown(this._azureAccountsDropdown);
 			await utils.clearDropDown(this._accountTenantDropdown);
-			await utils.clearDropDownWithLoading(this._azureSubscriptionDropdown, constants.SELECT_A_SUBSCRIPTION);
-			await utils.clearDropDownWithLoading(this._azureLocationDropdown, constants.SELECT_A_LOCATION);
-			await utils.clearDropDownWithLoading(this._azureResourceGroupDropdown, constants.SELECT_A_RESOURCE_GROUP);
-			await utils.clearDropDownWithLoading(this._azureResourceDropdown, constants.SELECT_SERVICE_PLACEHOLDER);
+			await utils.clearDropDownWithLoading(this._azureSubscriptionDropdown);
+			await utils.clearDropDownWithLoading(this._azureLocationDropdown);
+			await utils.clearDropDownWithLoading(this._azureResourceGroupDropdown);
+			await utils.clearDropDownWithLoading(this._azureResourceDropdown);
 		}
 
 		await utils.updateControlDisplay(this._certMigrationRequiredInfoBox, this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates());
@@ -954,11 +954,11 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					this._accountTenantDropdown,
 					tenantId,
 					true);
-				const selectedTenant = this.migrationStateModel._accountTenants?.find(tenant => tenant.displayName === (<azdata.CategoryValue>this._accountTenantDropdown.value)?.displayName);
-				this.migrationStateModel._azureTenant = selectedTenant
-					? utils.deepClone(selectedTenant)
-					: undefined!;
 			}
+			const selectedTenant = this.migrationStateModel._accountTenants?.find(tenant => tenant.displayName === (<azdata.CategoryValue>this._accountTenantDropdown.value)?.displayName);
+			this.migrationStateModel._azureTenant = selectedTenant
+				? utils.deepClone(selectedTenant)
+				: undefined!;
 			await this._azureAccountsDropdown.validate();
 		} finally {
 			this._accountTenantDropdown.loading = false;

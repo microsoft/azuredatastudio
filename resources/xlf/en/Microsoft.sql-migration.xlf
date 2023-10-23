@@ -1943,7 +1943,7 @@
       <source xml:lang="en">Select a target database</source>
     </trans-unit>
     <trans-unit id="sql.migration.select.service.select.migration.target">
-      <source xml:lang="en">Select a target server.</source>
+      <source xml:lang="en">Select a target server</source>
     </trans-unit>
     <trans-unit id="sql.migration.select.service.select.a.tenant">
       <source xml:lang="en">Select a tenant</source>

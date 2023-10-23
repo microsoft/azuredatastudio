@@ -62,8 +62,8 @@ export class MsalCachePluginProvider {
 		return this._fileEncryptionHelper.getEncryptionKeys();
 	}
 
-	public async clearCacheEncryptionKeys(): Promise<void> {
-		await this._fileEncryptionHelper.clearEncryptionKeys();
+	public async refreshCacheEncryptionKeys(): Promise<void> {
+		await this._fileEncryptionHelper.refreshEncryptionKeys();
 	}
 
 	public getCachePlugin(): ICachePlugin {

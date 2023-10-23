@@ -123,7 +123,6 @@ export interface TargetDatabaseInfo {
 	isReadOnly: boolean;
 	sourceTables: Map<string, TableInfo>;
 	targetTables: Map<string, TableInfo>;
-	enableSchemaMigration: boolean;
 }
 
 export interface LoginTableInfo {
@@ -371,7 +370,6 @@ export async function collectTargetDatabaseInfo(
 				isReadOnly: getSqlBoolean(row[7]),
 				sourceTables: new Map(),
 				targetTables: new Map(),
-				enableSchemaMigration: false,
 			};
 		}) ?? [];
 	}
