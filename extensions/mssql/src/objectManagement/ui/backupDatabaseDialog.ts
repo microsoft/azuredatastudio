@@ -62,7 +62,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let recoveryModelInput = this.createLabelInputContainer(loc.BackupRecoveryLabel, inputBox);
 		components.push(recoveryModelInput);
 
-		const backupTypes = ['Full', 'Differential', 'Transaction Log'];
+		const backupTypes = [loc.BackupFull, loc.BackupDifferential, loc.BackupTransactionLogLabel];
 		let backupTypeDropdown = this.createDropdown(loc.BackupTypeLabel, async newValue => {
 			// Update backup name with new backup type
 			backupInput.value = backupInput.ariaLabel = `${this.objectInfo.name}-${newValue.replace(' ', '-')}-${new Date().toJSON().slice(0, 19)}`;

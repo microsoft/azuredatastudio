@@ -264,7 +264,8 @@ export const BackupUrlLabel = localize('objectManagement.backupUrlLabel', "URL")
 export const BackupToLabel = localize('objectManagement.backupToLabel', "Back up to");
 export const BackupServerCertificate = localize('objectManagement.backupServerCertificate', "Server Certificate");
 export const BackupAsymmetricKey = localize('objectManagement.backupAsymmetricKey', "Asymmetric Key");
-
+export const BackupFull = localize('objectManagement.backupFull', "Full");
+export const BackupDifferential = localize('objectManagement.backupDifferential', "Differential");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");
