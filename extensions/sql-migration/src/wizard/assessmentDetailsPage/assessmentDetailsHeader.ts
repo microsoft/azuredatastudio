@@ -10,6 +10,7 @@ import { MigrationStateModel } from '../../models/stateMachine';
 import { MigrationTargetType } from '../../api/utils';
 import * as utils from '../../api/utils';
 import { IssueCategory } from '../../constants/helper';
+import { IconPathHelper } from '../../constants/iconPathHelper';
 
 interface IActionMetadata {
 	title?: string,
@@ -21,10 +22,29 @@ export class AssessmentDetailsHeader {
 	private _view!: azdata.ModelView;
 	private _valueContainers: azdata.TextComponent[] = [];
 	private _targetSelectionDropdown!: azdata.DropDownComponent;
+	private _targetTypeContainer!: azdata.FlexContainer;
+	private _noTargetSelectedContainer!: azdata.FlexContainer;
+	private _headerCardsContainer!: azdata.FlexContainer;
 
 	// public getter for target type selection drop down.
 	public get targetTypeDropdown() {
 		return this._targetSelectionDropdown;
+	}
+
+	// public getter for target type container.
+	public get targetTypeContainer() {
+		return this._targetTypeContainer;
+	}
+
+
+	// public getter for noTargetSelectedContainer.
+	public get noTargetSelectedContainer() {
+		return this._noTargetSelectedContainer;
+	}
+
+	//public getter for headerCardsContainer.
+	public get headerCardsContainer() {
+		return this._headerCardsContainer;
 	}
 
 	// function that creates the component for header section of assessment details page.
@@ -38,9 +58,11 @@ export class AssessmentDetailsHeader {
 			}
 		}).component();
 
-		const targetTypeContainer = this.createTargetTypeContainer();
+		this._targetTypeContainer = this.createTargetTypeContainer();
 
-		const headerCardsContainer = view.modelBuilder.flexContainer().withLayout({
+		this._noTargetSelectedContainer = this.createTargetSelectedContainer();
+
+		this._headerCardsContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 		}).component();
 
@@ -57,11 +79,50 @@ export class AssessmentDetailsHeader {
 			}];
 
 		// create individual card component for each property in above list
-		headerCardsContainer.addItems(assessmentHeaderLabels.map(l => this.createCard(l)));
+		this._headerCardsContainer.addItems(assessmentHeaderLabels.map(l => this.createCard(l)));
 
-		headerContainer.addItems([targetTypeContainer, headerCardsContainer]);
+		headerContainer.addItems([this._targetTypeContainer, this._noTargetSelectedContainer, this._headerCardsContainer]);
 
 		return headerContainer;
+	}
+
+	// function creating ui for no target selected container.
+	private createTargetSelectedContainer(): azdata.FlexContainer {
+		const container = this._view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column',
+		}).withProps({
+			CSSStyles: {
+				'margin-left': '50px',
+				'margin-top': '50px'
+			}
+		}).component();
+
+		const emptyStateImage = this._view.modelBuilder.image().withProps({
+			iconPath: IconPathHelper.emptyState,
+			iconHeight: 200,
+			iconWidth: 200,
+			width: 200,
+			height: 200,
+			CSSStyles: {
+				'opacity': '50%',
+				'margin': '3% auto',
+				'filter': 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))'
+			}
+		}).component();
+
+		const noTargetSelectedText = this._view.modelBuilder.text().withProps({
+			value: constants.NO_TARGET_SELECTED_LABEL,
+			width: 210,
+			height: 34,
+			CSSStyles: {
+				...styles.NOTE_CSS,
+				'margin': 'auto',
+				'text-align': 'center'
+			}
+		}).component();
+
+		container.addItems([emptyStateImage, noTargetSelectedText]);
+		return container;
 	}
 
 	// function defining ui for card component in ui section.
@@ -140,10 +201,10 @@ export class AssessmentDetailsHeader {
 
 		this._targetSelectionDropdown = this._view.modelBuilder.dropDown().withProps({
 			ariaLabel: constants.AZURE_SQL_TARGET,
-			value: constants.SUMMARY_SQLDB_TYPE,
-			values: [constants.SUMMARY_SQLDB_TYPE, constants.SUMMARY_VM_TYPE, constants.SUMMARY_MI_TYPE],
+			placeholder: constants.SELECT_TARGET_LABEL,
+			values: [constants.SUMMARY_SQLDB_TYPE, constants.SUMMARY_MI_TYPE, constants.SUMMARY_VM_TYPE],
 			width: 250,
-			editable: false,
+			editable: true,
 			CSSStyles: {
 				'margin-top': '-0.2em',
 				'margin-left': '10px'

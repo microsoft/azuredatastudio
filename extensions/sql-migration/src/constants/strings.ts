@@ -83,10 +83,10 @@ export const XEVENTS_ASSESSMENT_HELPLINK = localize('sql.migration.database.asse
 export const XEVENTS_ASSESSMENT_OPEN_FOLDER = localize('sql.migration.database.assessment.xevents.instructions', "Select a folder where extended events session files (.xel and .xem) are stored");
 
 // Assessment results
-export const ASSESSMENT_RESULTS_PAGE_TITLE = localize('sql.migration.assessment.results.title', "Assessment results");
+export const ASSESSMENT_RESULTS_PAGE_TITLE = localize('sql.migration.assessment.results.title', "Target Platform & Assessment Results");
 export const ASSESSMENT_RESULTS_SUMMARY_LABEL_CAPS = localize('sql.migration.assessment.results.summary.label.caps', "ASSESSMENT RESULTS");
+export const ASSESSMENT_RESULTS_PAGE_HEADER = localize('sql.migration.assessment.results.header', "Choose Target platform, view assessment results and select database(s) for migration.");
 export const ASSESSMENT_RESULTS_SUMMARY_LABEL_DESCRIPTION = localize('sql.migration.assessment.results.summary.label.description', "Assessment results shows the migration readiness of the database(s)");
-export const ASSESSMENT_RESULTS_PAGE_HEADER = localize('sql.migration.assessment.results.header', "View assessment results and select database(s) for migration");
 export const DATABASES_ASSESSED_LABEL = localize('sql.migration.database.assessed.label', "Database(s) assessed");
 export const MIGRATION_TIME_LABEL = localize('sql.migration.migration.time.label', "Ready for migration");
 export const ASSESSMENT_FINDINGS_LABEL = localize('sql.migration.assessment.findings.label', "Assessment findings");
@@ -118,7 +118,8 @@ export function WARNING_READINESS_DESCRIPTION(warnings: number) {
 	return localize('sql.migration.non.readiness.description', "The database is ready to migrate with {0} warnings.", warnings);
 }
 export const READINESS_DESCRIPTION = localize('sql.migration.readiness.description', "The database is ready to migrate.");
-export const SELECT_TARGET_LABEL = localize('sql.migration.select.target.label', 'Select target type:');
+export const SELECT_TARGET_LABEL = localize('sql.migration.no.target.selected.label', 'Select target type');
+export const NO_TARGET_SELECTED_LABEL = localize('sql.migration.select.target.label', 'No Target selected. Select Target to view the Assessment Summary.');
 export const FINDINGS_LABEL = localize('sql.migration.findings.label', "Findings");
 export const ENCRYPTION_LABEL = localize('sql.migration.encryption.label', "Encryption");
 export const ENCRYPTION_DESCRIPTION = localize('sql.migration.encryption.description', "This database is encrypted using Transparent data encryption (TDE). You need to migrate certificates before you can migrate this database.");
