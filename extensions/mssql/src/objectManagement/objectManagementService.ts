@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import * as azdata from 'azdata';
 import { ApplicationRoleViewInfo, AuthenticationType, DatabaseRoleViewInfo, DatabaseViewInfo, LoginViewInfo, SecurablePermissions, SecurableTypeMetadata, ServerRoleViewInfo, User, UserType, UserViewInfo } from './interfaces';
 import * as Utils from '../utils';
 import * as constants from '../constants';
@@ -79,6 +80,11 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 	async attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Promise<string> {
 		const params: contracts.AttachDatabaseRequestParams = { connectionUri, databases, generateScript };
 		return this.runWithErrorHandling(contracts.AttachDatabaseRequest.type, params);
+	}
+
+	async backupDatabase(connectionUri: string, backupInfo: { [key: string]: any }, taskMode: azdata.TaskExecutionMode): Promise<string> {
+		const params: contracts.BackupDatabaseRequestParams = { connectionUri, backupInfo, taskMode };
+		return this.runWithErrorHandling(contracts.BackupDatabaseRequest.type, params);
 	}
 
 	async getDataFolder(connectionUri: string): Promise<string> {
@@ -267,6 +273,10 @@ export class TestObjectManagementService implements IObjectManagementService {
 	}
 
 	async attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Promise<string> {
+		return this.delayAndResolve('');
+	}
+
+	async backupDatabase(connectionUri: string, backupInfo: { [key: string]: any }, taskMode: azdata.TaskExecutionMode): Promise<string> {
 		return this.delayAndResolve('');
 	}
 

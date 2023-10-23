@@ -1680,6 +1680,16 @@ export namespace AttachDatabaseRequest {
 	export const type = new RequestType<AttachDatabaseRequestParams, string, void, void>('objectManagement/attachDatabase');
 }
 
+export interface BackupDatabaseRequestParams {
+	connectionUri: string;
+	backupInfo: { [key: string]: any };
+	taskMode: azdata.TaskExecutionMode;
+}
+
+export namespace BackupDatabaseRequest {
+	export const type = new RequestType<BackupDatabaseRequestParams, string, void, void>('backup/backup');
+}
+
 export interface GetDataFolderRequestParams {
 	connectionUri: string;
 }
