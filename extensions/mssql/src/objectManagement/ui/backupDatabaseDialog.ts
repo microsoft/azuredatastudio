@@ -75,7 +75,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		});
 		components.push(copyBackupCheckbox);
 
-		let backupDestinations = [loc.BackupDiskLabel, loc.BackupUrlLabel];
+		let backupDestinations = [loc.BackupDiskLabel]; // TODO: Add URL type
 		let backupDestDropdown = this.createDropdown(loc.BackupToLabel, checked => {
 			return Promise.resolve();
 		}, backupDestinations, backupDestinations[0]);
@@ -170,16 +170,20 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			return Promise.resolve();
 		}, false, false);
 
-		let algorithmValues = ['AES 128', 'AES 192', 'AES 256', 'Triple DES'];
+		let algorithmValues = [aes128, aes192, aes256, tripleDES];
 		let algorithmDropdown = this.createDropdown('Algorithm', newValue => {
 			return Promise.resolve();
 		}, algorithmValues, algorithmValues[0], false);
 		let algorithmContainer = this.createLabelInputContainer('Algorithm', algorithmDropdown);
 
-		// TODO: add "Certificate or Encryption key" field
+		let encryptorValues = this.getEncryptorOptions();
+		let encryptorDropdown = this.createDropdown('Certificate or Asymmetric Key', newValue => {
+			return Promise.resolve();
+		}, encryptorValues, encryptorValues[0], false);
+		let encryptorContainer = this.createLabelInputContainer('Certificate or Asymmetric Key', encryptorDropdown);
 
 		let encryptionDescription = this.modelView.modelBuilder.text().withProps({ value: 'Encryption options are only available when \'Back up to a new media set\' is selected above. ' }).component();
-		let algorithmGroup = this.createGroup('', [algorithmContainer, encryptionDescription]);
+		let algorithmGroup = this.createGroup('', [algorithmContainer, encryptorContainer, encryptionDescription]);
 		let encryptionGroup = this.createGroup(loc.BackupEncryptionLabel, [encryptCheckbox, algorithmGroup], false);
 
 		return this.createGroup(loc.OptionsSectionHeader, [overwriteGroup, reliabilityGroup, transactionGroup, compressionGroup, encryptionGroup], true, true);
@@ -201,4 +205,22 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	public override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
 
 	}
+
+	private getEncryptorOptions(): string[] {
+		let options: string[] = [];
+		if (this.objectInfo.backupEncryptors) {
+			this.objectInfo.backupEncryptors.forEach((encryptor) => {
+				let encryptorTypeStr = (encryptor.encryptorType === 0 ? loc.BackupServerCertificate : loc.BackupAsymmetricKey);
+				options.push(`${encryptor.encryptorName} (${encryptorTypeStr})`);
+			});
+		}
+		return options;
+	}
 }
+
+// const maxDevices: number = 64;
+
+const aes128 = 'AES 128';
+const aes192 = 'AES 192';
+const aes256 = 'AES 256';
+const tripleDES = 'Triple DES';

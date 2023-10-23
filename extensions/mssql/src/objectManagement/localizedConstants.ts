@@ -262,6 +262,8 @@ export const BackupCopyLabel = localize('objectManagement.backupCopyLabel', "Cop
 export const BackupDiskLabel = localize('objectManagement.backupDiskLabel', "Disk");
 export const BackupUrlLabel = localize('objectManagement.backupUrlLabel', "URL");
 export const BackupToLabel = localize('objectManagement.backupToLabel', "Back up to");
+export const BackupServerCertificate = localize('objectManagement.backupServerCertificate', "Server Certificate");
+export const BackupAsymmetricKey = localize('objectManagement.backupAsymmetricKey', "Asymmetric Key");
 
 
 // Login
