@@ -1070,12 +1070,12 @@ declare module 'mssql' {
 		/**
 		 * List of selected file groups
 		 */
-		selectedFileGroup: { [key: string]: string };
+		selectedFileGroup: { [path: string]: string };
 
 		/**
 		 * List of {key: backup path, value: device type}
 		 */
-		backupPathDevices: { [key: string]: number };
+		backupPathDevices: { [path: string]: number };
 
 		/**
 		 * List of selected backup paths
