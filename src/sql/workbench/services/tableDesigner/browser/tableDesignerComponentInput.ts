@@ -125,12 +125,14 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			generateScriptEvent.withAdditionalMeasurements({
 				'elapsedTimeMs': new Date().getTime() - startTime
 			}).send();
-			// Close notification in 1 second.
-			setTimeout(() => notificationHandle.close(), 1000);
 		} catch (error) {
 			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.generateScriptError', "An error occured while generating the script: {0}", error?.message ?? error), error?.data);
 			this.updateState(this.valid, this.dirty);
 			this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, TelemetryAction.GenerateScript).withAdditionalProperties(telemetryInfo).send();
+		} finally {
+			// Close notification in 2 seconds to prevent user action after script generation is complete.
+			// Users should not be required to close notification prompts.
+			setTimeout(() => notificationHandle.close(), 2000);
 		}
 	}
 
@@ -159,13 +161,15 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			publishEvent.withAdditionalMeasurements({
 				'elapsedTimeMs': new Date().getTime() - startTime
 			}).withAdditionalProperties(metadataTelemetryInfo).send();
-			// Close notification in 1 second.
-			setTimeout(() => saveNotificationHandle.close(), 1000);
 			isPublishSuccessful = true;
 		} catch (error) {
 			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.publishChangeError', "An error occured while publishing changes: {0}", error?.message ?? error), error?.data);
 			this.updateState(this.valid, this.dirty);
 			this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, TelemetryAction.PublishChanges).withAdditionalProperties(telemetryInfo).send();
+		} finally {
+			// Close notification in 2 seconds to prevent user action after table publish is complete.
+			// Users should not be required to close notification prompts.
+			setTimeout(() => saveNotificationHandle.close(), 2000);
 		}
 
 		if (isPublishSuccessful) {
