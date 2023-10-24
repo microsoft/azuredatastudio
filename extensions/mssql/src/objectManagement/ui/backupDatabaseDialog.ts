@@ -9,11 +9,15 @@ import { BackupInfo, IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { BackupDatabaseDocUrl } from '../constants';
 import * as loc from '../localizedConstants';
-import { DefaultInputWidth, DialogButton } from '../../ui/dialogBase';
+import { DefaultInputWidth, DefaultMinTableRowCount, DialogButton, getTableHeight } from '../../ui/dialogBase';
 import { isUndefinedOrNull } from '../../types';
 import { TaskExecutionMode } from 'azdata';
+import { getErrorMessage } from '../../utils';
 
 export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
+	private readonly _fileFilters: azdata.window.FileFilters[] = [{ label: loc.BackupFilesLabel, filters: ['*.bak', '*.tm'] }];
+	private _backupFilePaths: string[] = [];
+
 	private _backupNameInput: azdata.InputBoxComponent;
 	private _backupTypeDropdown: azdata.DropDownComponent;
 	private _copyBackupCheckbox: azdata.CheckBoxComponent;
@@ -112,7 +116,6 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		components.push(backupDestContainer);
 
 		this._backupFilesTable = this.createTable(loc.BackupFilesLabel, [loc.BackupFilesLabel], []);
-		this.disposables.push(this._backupFilesTable.onRowSelected(() => this.onFileRowSelected()))
 		components.push(this._backupFilesTable);
 
 		let addButton: DialogButton = {
@@ -240,12 +243,38 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	private async onAddFilesButtonClicked(): Promise<void> {
+		try {
+			let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
+			let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, this._fileFilters);
+			if (filePath) {
+				this._backupFilePaths.push(filePath);
+				await this.updateTableData();
+			}
+		} catch (error) {
+			this.dialogObject.message = {
+				text: getErrorMessage(error),
+				level: azdata.window.MessageLevel.Error
+			};
+		}
 	}
 
 	private async onRemoveFilesButtonClicked(): Promise<void> {
+		let selectedRows = this._backupFilesTable.selectedRows;
+		let deletedRowCount = 0;
+		for (let row of selectedRows) {
+			let index = row - deletedRowCount;
+			this._backupFilePaths.splice(index, 1);
+			deletedRowCount++;
+		}
+		await this.updateTableData();
 	}
 
-	private async onFileRowSelected(): Promise<void> {
+	private async updateTableData(): Promise<void> {
+		await this._backupFilesTable.updateProperties({
+			data: this._backupFilePaths,
+			height: getTableHeight(this._backupFilePaths.length, DefaultMinTableRowCount)
+		});
+		this.onFormFieldChange();
 	}
 
 	public override async generateScript(): Promise<string> {
