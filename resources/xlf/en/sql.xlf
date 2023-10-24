@@ -1921,6 +1921,9 @@ Default Skipped Commands:
     <trans-unit id="dashboard.generalTabGroupHeader">
       <source xml:lang="en">General</source>
     </trans-unit>
+    <trans-unit id="dashboard.tabLoadingError">
+      <source xml:lang="en">Error loading tab {0}</source>
+    </trans-unit>
     <trans-unit id="home">
       <source xml:lang="en">Home</source>
     </trans-unit>
