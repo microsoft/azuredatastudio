@@ -1680,6 +1680,15 @@ export namespace AttachDatabaseRequest {
 	export const type = new RequestType<AttachDatabaseRequestParams, string, void, void>('objectManagement/attachDatabase');
 }
 
+
+export interface GetDataFolderRequestParams {
+	connectionUri: string;
+}
+
+export namespace GetDataFolderRequest {
+	export const type = new RequestType<GetDataFolderRequestParams, string, void, void>('admin/getdatafolder');
+}
+
 export interface BackupDatabaseRequestParams {
 	connectionUri: string;
 	backupInfo: { [key: string]: any };
@@ -1690,12 +1699,12 @@ export namespace BackupDatabaseRequest {
 	export const type = new RequestType<BackupDatabaseRequestParams, string, void, void>('backup/backup');
 }
 
-export interface GetDataFolderRequestParams {
+export interface GetBackupFolderRequestParams {
 	connectionUri: string;
 }
 
-export namespace GetDataFolderRequest {
-	export const type = new RequestType<GetDataFolderRequestParams, string, void, void>('admin/getdatafolder');
+export namespace GetBackupFolderRequest {
+	export const type = new RequestType<GetBackupFolderRequestParams, string, void, void>('admin/getbackupfolder');
 }
 
 export interface GetAssociatedFilesRequestParams {

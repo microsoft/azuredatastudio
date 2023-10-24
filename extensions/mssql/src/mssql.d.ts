@@ -1019,6 +1019,12 @@ declare module 'mssql' {
 		 */
 		getDataFolder(connectionUri: string): Thenable<string>;
 		/**
+		 * Gets the file path for the default database backup file folder for a SQL Server instance.
+		 * @param connectionUri The URI of the connection for the specific server.
+		 * @returns The file path to the backup folder.
+		 */
+		getBackupFolder(connectionUri: string): Thenable<string>;
+		/**
 		 * Retrieves other database files associated with a specified primary file, such as Data, Log, and FileStream files.
 		 * @param connectionUri The URI of the connection for the specific server.
 		 * @param primaryFilePath The file path for the primary database file on the target server.
