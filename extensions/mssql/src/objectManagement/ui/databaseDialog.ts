@@ -1360,7 +1360,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				metaData.valueForPrimary,
 				secondaryUnsupportedConfigsSet.has(metaData.id) ? localizedConstants.NotAvailableText : metaData.valueForSecondary]
 			}),
-			height: getTableHeight(this.objectInfo.databaseScopedConfigurations.length, 1, DscTableRowLength),
+			height: getTableHeight(this.objectInfo.databaseScopedConfigurations.length, 1, DscTableRowLength + 5),
 			width: DefaultTableWidth
 		}).component();
 
