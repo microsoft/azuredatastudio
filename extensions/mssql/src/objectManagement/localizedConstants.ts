@@ -259,17 +259,30 @@ export const AADAuthenticationTypeDisplayText = localize('objectManagement.login
 export const OldPasswordCannotBeEmptyError = localize('objectManagement.login.oldPasswordCannotBeEmptyError', "Old password cannot be empty.");
 
 //Restore Database
-export const RestoreFromText = localize('objectManagement.restoredatabase.restoreFromText', "Restore from");
-export const BackupFilePathText = localize('objectManagement.restoredatabase.backupFilePathText', "Backup file path");
-export const DatabaseText = localize('objectManagement.restoredatabase.databaseText', "Database");
-export const TargetDatabaseText = localize('objectManagement.restoredatabase.targetDatabaseText', "Target database");
-export const RestoreToText = localize('objectManagement.restoredatabase.restoreToText', "Restore to");
-export const SourceSectionText = localize('objectManagement.restoredatabase.SourceSectionText', "Source");
-export const DestinationSectionText = localize('objectManagement.restoredatabase.DestinationSectionText', "Destination");
-export const RestorePlanSectionText = localize('objectManagement.restoredatabase.RestorePlanSectionText', "Restore plan");
-export const RestoreFromBackupFileOptionText = localize('objectManagement.restoredatabase.restoreFromBackupFileOptionText', "Backup file");
-export const RestoreFromDatabaseOptionText = localize('objectManagement.restoredatabase.restoreFromDatabaseOptionText', "Database");
-export const BackupFolderPathTitle = localize('objectManagement.restoredatabase.backupFolderPathTitle', "Please enter one or more file paths separated by commas");
+export const RestoreFromText = localize('objectManagement.restoreDatabase.restoreFromText', "Restore from");
+export const BackupFilePathText = localize('objectManagement.restoreDatabase.backupFilePathText', "Backup file path");
+export const DatabaseText = localize('objectManagement.restoreDatabase.databaseText', "Database");
+export const TargetDatabaseText = localize('objectManagement.restoreDatabase.targetDatabaseText', "Target database");
+export const RestoreToText = localize('objectManagement.restoreDatabase.restoreToText', "Restore to");
+export const SourceSectionText = localize('objectManagement.restoreDatabase.SourceSectionText', "Source");
+export const DestinationSectionText = localize('objectManagement.restoreDatabase.DestinationSectionText', "Destination");
+export const RestorePlanSectionText = localize('objectManagement.restoreDatabase.RestorePlanSectionText', "Restore plan");
+export const RestoreFromBackupFileOptionText = localize('objectManagement.restoreDatabase.restoreFromBackupFileOptionText', "Backup file");
+export const RestoreFromDatabaseOptionText = localize('objectManagement.restoreDatabase.restoreFromDatabaseOptionText', "Database");
+export const BackupFolderPathTitle = localize('objectManagement.restoreDatabase.backupFolderPathTitle', "Please enter one or more file paths separated by commas");
+export const RestoreDatabaseFilesAsText = localize('objectManagement.restoreDatabase.restoreDatabaseFilesAsText', "Restore database files as");
+export const RestoreDatabaseFileDetailsText = localize('objectManagement.restoreDatabase.restoreDatabaseFileDetailsText', "Restore database file Details");
+export const RestoreOptionsText = localize('objectManagement.restoreDatabase.restoreOptionsText', "Restore Options");
+export const RestoreTailLogBackupText = localize('objectManagement.restoreDatabase.restoreTailLogBackupOptionsText', "Tail-log backup");
+export const RestoreServerConnectionsOptionsText = localize('objectManagement.restoreDatabase.restoreServerConnectionsOptionsText', "Server connections");
+export const RelocateAllFilesText = localize('objectManagement.restoreDatabase.relocateAllFilesText', "Relocate All Files");
+export const DataFileFolderText = localize('objectManagement.restoreDatabase.dataFileFolderText', "Data File Folder");
+export const LogFileFolderText = localize('objectManagement.restoreDatabase.logFileFolderText', "Log File Folder");
+export const OverwriteTheExistingDatabaseText = localize('objectManagement.restoreDatabase.overwriteTheExistingDatabaseText', "Overwrite the existing database (WITH REPLACE)");
+export const PreserveReplicationSettingsText = localize('objectManagement.restoreDatabase.preserveReplicationSettingsText', "Preserve the replication settings (WITH KEEP_REPLICATION)");
+export const RestrictAccessToRestoredDBText = localize('objectManagement.restoreDatabase.restrictAccessToRestoredDBText', "Restrict access to the restored database (WITH RESTRICTED_USER)");
+export const RecoveryStateText = localize('objectManagement.restoreDatabase.recoveryStateText', "Recovery State");
+export const StandbyFileText = localize('objectManagement.restoreDatabase.standbyFileText', "Standby file");
 
 // User
 export const UserTypeText = localize('objectManagement.user.type', "Type");

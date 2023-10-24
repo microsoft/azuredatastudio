@@ -426,7 +426,7 @@ async function handleRestoreDatabase(context: azdata.ObjectExplorerContext, serv
 		const parentUrn = await getParentUrn(context);
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
-			isNewObject: true,
+			isNewObject: false,
 			database: context.connectionProfile!.databaseName!,
 			objectType: ObjectManagement.NodeType.Database,
 			objectName: '',

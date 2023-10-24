@@ -25,6 +25,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	private backupFilePathInput: azdata.InputBoxComponent;
 	private backupFilePathContainer: azdata.FlexContainer;
 	private backupFilePathButton: azdata.ButtonComponent;
+	private relocateAllFiles: azdata.CheckBoxComponent;
+	private overwriteExistingDatabase: azdata.CheckBoxComponent;
+	private preserveReplicationSettings: azdata.CheckBoxComponent;
+	private restrictAccessToRestoredDB: azdata.CheckBoxComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		options.width = Dialog_Width;
@@ -49,7 +53,8 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			title: localizedConstants.FilesSectionHeader,
 			id: this.filesTabId,
 			content: this.createGroup('', [
-				this.initializeRestorePlanSection()
+				this.initializeRestoreDatabaseFilesSection(),
+				this.initializeRestoreDatabaseFilesDetailsSection()
 			], false)
 		};
 		tabs.push(this.filesTab);
@@ -58,7 +63,9 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			title: localizedConstants.OptionsSectionHeader,
 			id: this.optionsTabId,
 			content: this.createGroup('', [
-				this.initializeRestorePlanSection()
+				this.initializeRestoreOptionsSection(),
+				this.initializeTailLogBackupSection(),
+				this.initializeServerConnectionsSection()
 			], false)
 		};
 		tabs.push(this.optionsTab);
@@ -119,7 +126,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		// source Database
 		let restoreDatabase = this.createDropdown(localizedConstants.DatabaseText, async () => {
 			// this.objectInfo.collationName = collationDropbox.value as string;
-		}, [], '', true, RestoreInputsWidth, true, true);
+		}, this.viewInfo.restoreDatabaseInfo.sourceDatabaseNames, '', true, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.DatabaseText, restoreDatabase));
 
 		return this.createGroup(localizedConstants.SourceSectionText, containers, true);
@@ -130,7 +137,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 		let targetDatabase = this.createDropdown(localizedConstants.TargetDatabaseText, async () => {
 			// this.objectInfo.collationName = collationDropbox.value as string;
-		}, [], '', true, RestoreInputsWidth, true, true);
+		}, this.viewInfo.restoreDatabaseInfo.targetDatabaseNames, '', true, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.TargetDatabaseText, targetDatabase));
 
 		const props: azdata.InputBoxProperties = {
@@ -151,6 +158,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	private initializeRestorePlanSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
 
+		// TODO: here comes table with backup details
 		return this.createGroup(localizedConstants.SourceSectionText, [
 		], true);
 	}
@@ -164,6 +172,101 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		if (filePath?.length > 0) {
 			this.backupFilePathInput.value = filePath;
 		}
+	}
+	//#endregion
+
+	//#region Files Tab
+	private initializeRestoreDatabaseFilesSection(): azdata.GroupContainer {
+		let containers: azdata.Component[] = [];
+		// Relocate all files
+		this.relocateAllFiles = this.createCheckbox(localizedConstants.RelocateAllFilesText, async (checked) => {
+			// this.objectInfo.autoCreateIncrementalStatistics = checked;
+		}, true);
+		containers.push(this.relocateAllFiles);
+
+		// Data	File folder
+		const dataFileFolder = this.createInputBox(async (newValue) => {
+			// this.result.path = newValue;
+		}, {
+			ariaLabel: localizedConstants.DataFileFolderText,
+			inputType: 'text',
+			enabled: false,
+			value: '',
+			width: RestoreInputsWidth
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.DataFileFolderText, dataFileFolder));
+
+		// Log file folder
+		const logFileFolder = this.createInputBox(async (newValue) => {
+			// this.result.path = newValue;
+		}, {
+			ariaLabel: localizedConstants.LogFileFolderText,
+			inputType: 'text',
+			enabled: false,
+			value: '',
+			width: RestoreInputsWidth
+		});
+		containers.push(this.createLabelInputContainer(localizedConstants.LogFileFolderText, logFileFolder));
+		return this.createGroup(localizedConstants.RestoreDatabaseFilesAsText, containers, true);
+	}
+
+	private initializeRestoreDatabaseFilesDetailsSection(): azdata.GroupContainer {
+		return this.createGroup(localizedConstants.RestoreDatabaseFileDetailsText, [
+		], true);
+	}
+	//#endregion
+
+	//#region Options Tab
+	private initializeRestoreOptionsSection(): azdata.GroupContainer {
+		let containers: azdata.Component[] = [];
+		// Overwrite the existing database (WITH REPLACE)
+		this.overwriteExistingDatabase = this.createCheckbox(localizedConstants.OverwriteTheExistingDatabaseText, async (checked) => {
+			// this.objectInfo.autoCreateIncrementalStatistics = checked;
+		}, true);
+		containers.push(this.overwriteExistingDatabase);
+
+		// Preserve the replication settings (WITH KEEP_REPLICATION)
+		this.preserveReplicationSettings = this.createCheckbox(localizedConstants.PreserveReplicationSettingsText, async (checked) => {
+			// this.objectInfo.autoCreateIncrementalStatistics = checked;
+		}, true);
+		containers.push(this.preserveReplicationSettings);
+
+		// Restrict access to the restored database (WITH RESTRICTED_USER)
+		this.restrictAccessToRestoredDB = this.createCheckbox(localizedConstants.RestrictAccessToRestoredDBText, async (checked) => {
+			// this.objectInfo.autoCreateIncrementalStatistics = checked;
+		}, true);
+		containers.push(this.restrictAccessToRestoredDB);
+
+		//Recovery state
+		let recoveryState = this.createDropdown(localizedConstants.RecoveryStateText, async () => {
+			// this.objectInfo.collationName = collationDropbox.value as string;
+		}, [], '', true, RestoreInputsWidth, true, true);
+		containers.push(this.createLabelInputContainer(localizedConstants.RecoveryStateText, recoveryState));
+
+		//Stand by file
+		const props: azdata.InputBoxProperties = {
+			ariaLabel: localizedConstants.StandbyFileText,
+			required: false,
+			enabled: false,
+			width: RestoreInputsWidth,
+			value: ''
+		};
+		let restoreTo = this.createInputBox(async () => {
+			// this.objectInfo.collationName = collationDropbox.value as string;
+		}, props);
+		containers.push(this.createLabelInputContainer(localizedConstants.StandbyFileText, restoreTo));
+
+		return this.createGroup(localizedConstants.RestoreOptionsText, containers, true);
+	}
+
+	private initializeTailLogBackupSection(): azdata.GroupContainer {
+		return this.createGroup(localizedConstants.RestoreTailLogBackupText, [
+		], true);
+	}
+
+	private initializeServerConnectionsSection(): azdata.GroupContainer {
+		return this.createGroup(localizedConstants.RestoreServerConnectionsOptionsText, [
+		], true);
 	}
 	//#endregion
 }

@@ -487,6 +487,7 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	queryStoreCaptureModeOptions?: string[];
 	sizeBasedCleanupModeOptions?: string[];
 	staleThresholdOptions?: string[];
+	restoreDatabaseInfo?: RestoreDatabaseInfo;
 }
 
 export interface QueryStoreOptions {
@@ -525,6 +526,11 @@ export interface OptionsCollection {
 export interface AzureEditionDetails {
 	editionDisplayName: string;
 	editionOptions: OptionsCollection;
+}
+
+export interface RestoreDatabaseInfo {
+	sourceDatabaseNames: string[];
+	targetDatabaseNames: string[];
 }
 
 export interface ProcessorAffinity {
