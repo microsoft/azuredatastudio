@@ -63,13 +63,13 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	protected override async initializeUI(): Promise<void> {
-		let generalSection = this.initializeGeneralSection();
+		let generalSection = await this.initializeGeneralSection();
 		let optionsSection = this.initializeOptionsSection();
 
 		this.formContainer.addItems([generalSection, optionsSection]);
 	}
 
-	private initializeGeneralSection(): azdata.GroupContainer {
+	private async initializeGeneralSection(): Promise<azdata.GroupContainer> {
 		let components: azdata.Component[] = [];
 		const backupTypes = [loc.BackupFull, loc.BackupDifferential, loc.BackupTransactionLog];
 		let defaultName = this.getDefaultFileName(backupTypes[0]);
@@ -109,13 +109,17 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		components.push(this._copyBackupCheckbox);
 
 		const backupDestinations = [loc.BackupDiskLabel]; // TODO: Add URL type when enabled
-		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, checked => {
+		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, newValue => {
 			return Promise.resolve();
 		}, backupDestinations, backupDestinations[0]);
 		let backupDestContainer = this.createLabelInputContainer(loc.BackupToLabel, this._backupDestDropdown);
 		components.push(backupDestContainer);
 
-		this._backupFilesTable = this.createTable(loc.BackupFilesLabel, [loc.BackupFilesLabel], []);
+		let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
+		let pathSeparator = dataFolder.startsWith('/') ? '/' : '\\';
+		let defaultPath = `${dataFolder}${pathSeparator}${defaultName}.bak`;
+		this._backupFilePaths.push(defaultPath);
+		this._backupFilesTable = this.createTable(loc.BackupFilesLabel, [loc.BackupFilesLabel], [[defaultPath]]);
 		components.push(this._backupFilesTable);
 
 		let addButton: DialogButton = {
@@ -315,7 +319,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			encryptorName = selectedEncryptor.substring(0, selectedEncryptor.lastIndexOf('('));
 		}
 
-		let filePaths = this.getBackupFilePaths();
+		let filePaths = this._backupFilePaths;
 		let createNewMedia = this._newMediaButton.checked;
 		let backupInfo: BackupInfo = {
 			databaseName: this.objectInfo.name,
@@ -364,7 +368,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	private getBackupDeviceType(): number {
-		if (this._backupTypeDropdown.value === loc.BackupUrlLabel) {
+		if (this._backupDestDropdown.value === loc.BackupUrlLabel) {
 			return PhysicalDeviceType.Url;
 		}
 		return PhysicalDeviceType.Disk;
@@ -377,10 +381,6 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			pathDeviceMap[path] = deviceType;
 		});
 		return pathDeviceMap;
-	}
-
-	private getBackupFilePaths(): string[] {
-		return this._backupFilesTable.data.map(row => row[0] as string);
 	}
 }
 
