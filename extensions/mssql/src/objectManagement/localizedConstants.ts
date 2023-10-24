@@ -269,6 +269,7 @@ export const DestinationSectionText = localize('objectManagement.restoredatabase
 export const RestorePlanSectionText = localize('objectManagement.restoredatabase.RestorePlanSectionText', "Restore plan");
 export const RestoreFromBackupFileOptionText = localize('objectManagement.restoredatabase.restoreFromBackupFileOptionText', "Backup file");
 export const RestoreFromDatabaseOptionText = localize('objectManagement.restoredatabase.restoreFromDatabaseOptionText', "Database");
+export const BackupFolderPathTitle = localize('objectManagement.restoredatabase.backupFolderPathTitle', "Please enter one or more file paths separated by commas");
 
 // User
 export const UserTypeText = localize('objectManagement.user.type', "Type");

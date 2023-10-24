@@ -786,7 +786,7 @@
         },
         {
           "command": "mssql.restoreDatabase",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && !isCloud && mssql:engineedition != 11&& nodeType && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
           "group": "backupRestore@1"
         }
       ],

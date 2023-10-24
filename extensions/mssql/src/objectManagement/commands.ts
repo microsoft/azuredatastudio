@@ -417,7 +417,6 @@ async function handleDropDatabase(context: azdata.ObjectExplorerContext, service
 	}
 }
 
-
 async function handleRestoreDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
 	const connectionUri = await getConnectionUri(context);
 	if (!connectionUri) {

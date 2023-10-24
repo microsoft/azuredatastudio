@@ -11,16 +11,23 @@ import { DefaultInputWidth } from '../../ui/dialogBase';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { IObjectManagementService } from 'mssql';
 
+const Dialog_Width = '750px';
+const RestoreInputsWidth = DefaultInputWidth + 250;
 
 export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// restore diaog tabs
 	private generalTab: azdata.Tab;
-	private readonly generalTabId: string = 'generalDatabaseId';
+	private filesTab: azdata.Tab;
+	private optionsTab: azdata.Tab;
+	private readonly generalTabId: string = 'restoreGeneralDatabaseId';
+	private readonly filesTabId: string = 'restoreFilesDatabaseId';
+	private readonly optionsTabId: string = 'restoreOptionsDatabaseId';
 	private backupFilePathInput: azdata.InputBoxComponent;
 	private backupFilePathContainer: azdata.FlexContainer;
 	private backupFilePathButton: azdata.ButtonComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
+		options.width = Dialog_Width;
 		super(objectManagementService, options, loc.RestoreDatabaseDialogTitle(options.database), 'DetachDatabase');
 	}
 
@@ -37,6 +44,24 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			], false)
 		};
 		tabs.push(this.generalTab);
+
+		this.filesTab = {
+			title: localizedConstants.FilesSectionHeader,
+			id: this.filesTabId,
+			content: this.createGroup('', [
+				this.initializeRestorePlanSection()
+			], false)
+		};
+		tabs.push(this.filesTab);
+
+		this.optionsTab = {
+			title: localizedConstants.OptionsSectionHeader,
+			id: this.optionsTabId,
+			content: this.createGroup('', [
+				this.initializeRestorePlanSection()
+			], false)
+		};
+		tabs.push(this.optionsTab);
 
 		const propertiesTabGroup = { title: '', tabs: tabs };
 		const propertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
@@ -65,10 +90,12 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		let restoreFrom = this.createDropdown(localizedConstants.RestoreFromText, async (newValue) => {
 			if (newValue === localizedConstants.RestoreFromBackupFileOptionText) {
 				this.backupFilePathContainer.display = 'inline-flex';
+			} else {
+				this.backupFilePathContainer.display = 'none';
 			}
 			// this.objectInfo.collationName = collationDropbox.value as string;
 		}, [localizedConstants.RestoreFromDatabaseOptionText, localizedConstants.RestoreFromBackupFileOptionText],
-			localizedConstants.RestoreFromDatabaseOptionText, true, DefaultInputWidth, true, true);
+			localizedConstants.RestoreFromDatabaseOptionText, true, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.RestoreFromText, restoreFrom));
 
 		// Backup file path
@@ -79,7 +106,8 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			inputType: 'text',
 			enabled: true,
 			value: '',
-			width: DefaultInputWidth - 30
+			width: RestoreInputsWidth - 30,
+			placeHolder: localizedConstants.BackupFolderPathTitle
 		});
 		this.backupFilePathButton = this.createButton('...', '...', async () => { await this.createFileBrowser() });
 		this.backupFilePathButton.width = 25;
@@ -91,7 +119,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		// source Database
 		let restoreDatabase = this.createDropdown(localizedConstants.DatabaseText, async () => {
 			// this.objectInfo.collationName = collationDropbox.value as string;
-		}, [], '', true, DefaultInputWidth, true, true);
+		}, [], '', true, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.DatabaseText, restoreDatabase));
 
 		return this.createGroup(localizedConstants.SourceSectionText, containers, true);
@@ -102,14 +130,14 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 		let targetDatabase = this.createDropdown(localizedConstants.TargetDatabaseText, async () => {
 			// this.objectInfo.collationName = collationDropbox.value as string;
-		}, [], '', true, DefaultInputWidth, true, true);
+		}, [], '', true, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.TargetDatabaseText, targetDatabase));
 
 		const props: azdata.InputBoxProperties = {
 			ariaLabel: localizedConstants.RestoreToText,
 			required: false,
 			enabled: false,
-			width: DefaultInputWidth,
+			width: RestoreInputsWidth,
 			value: ''
 		};
 		let restoreTo = this.createInputBox(async () => {
