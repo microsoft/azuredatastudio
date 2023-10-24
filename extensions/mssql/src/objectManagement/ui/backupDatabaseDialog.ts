@@ -287,7 +287,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		}
 
 		let filePaths = this.getBackupFilePaths();
-		let isFormatChecked = this._overwriteExistingMediaButton.checked || this._newMediaButton.checked;
+		let createNewMedia = this._newMediaButton.checked;
 		let backupInfo: BackupInfo = {
 			databaseName: this.objectInfo.name,
 			backupType: this.getBackupTypeNumber(),
@@ -301,11 +301,11 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			isCopyOnly: this._copyBackupCheckbox.checked,
 
 			// Get advanced options
-			formatMedia: isFormatChecked,
-			initialize: isFormatChecked,
-			skipTapeHeader: isFormatChecked!,
-			mediaName: (isFormatChecked ? this._mediaNameInput.value : ''),
-			mediaDescription: (isFormatChecked ? this._mediaDescriptionInput.value : ''),
+			formatMedia: createNewMedia,
+			initialize: createNewMedia,
+			skipTapeHeader: createNewMedia,
+			mediaName: (createNewMedia ? this._mediaNameInput.value : ''),
+			mediaDescription: (createNewMedia ? this._mediaDescriptionInput.value : ''),
 			checksum: this._checksumCheckbox.checked,
 			continueAfterError: this._continueOnErrorCheckbox.checked,
 			logTruncation: this._truncateLogButton.checked,
