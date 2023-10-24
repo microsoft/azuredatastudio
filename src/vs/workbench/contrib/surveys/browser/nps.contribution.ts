@@ -71,12 +71,13 @@ class NPSContribution implements IWorkbenchContribution {
 			[{
 				label: nls.localize('takeSurvey', "Take Survey"),
 				run: () => {
-					openerService.open(URI.parse(`${productService.npsSurveyUrl}?o=${encodeURIComponent(platform)}&v=${encodeURIComponent(productService.version)}&m=${encodeURIComponent(telemetryService.machineId)}`));
+					// {{SQL Carbon Edit}} Pass context parameters in correct format to NPS Survey URL to gather the same in feedback metadata.
+					openerService.open(URI.parse(`${productService.npsSurveyUrl}?ctx=${encodeURIComponent(`{"ProductVersion":"${productService.version}","Platform":"${platform}","MachineId":"${telemetryService.machineId}"`)}`));
 					storageService.store(IS_CANDIDATE_KEY, false, StorageScope.APPLICATION, StorageTarget.USER);
 					storageService.store(SKIP_VERSION_KEY, productService.version, StorageScope.APPLICATION, StorageTarget.USER);
 				}
 			}, {
-				label: nls.localize('remindLater', "Remind Me later"),
+				label: nls.localize('remindLater', "Remind Me Later"),
 				run: () => storageService.store(SESSION_COUNT_KEY, sessionCount - 3, StorageScope.APPLICATION, StorageTarget.USER)
 			}, {
 				label: nls.localize('neverAgain', "Don't Show Again"),

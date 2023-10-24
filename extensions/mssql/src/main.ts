@@ -153,6 +153,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 			}
 			await displayReloadAds();
 		}
+		// Prompt to reload ADS as we send the proxy URL to STS to instantiate Http Client instances.
+		if (e.affectsConfiguration(Constants.configHttpProxy) || e.affectsConfiguration(Constants.configHttpProxyStrictSSL)) {
+			await displayReloadAds();
+		}
 	}));
 
 	registerTableDesignerCommands(appContext);
@@ -162,7 +166,17 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	// context.subscriptions.push(new SqlNotebookController()); Temporarily disabled due to breaking query editor
 
 	context.subscriptions.push(TelemetryReporter);
+	var provider = azdata.dataprotocol.getProvider<azdata.QueryProvider>('MSSQL', azdata.DataProviderType.QueryProvider);
+	var disposable = provider.registerOnQueryComplete(params => {
+		console.log(params.ownerUri);
+		disposable.dispose();
+	});
 
+	var connProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>('MSSQL', azdata.DataProviderType.ConnectionProvider);
+	var disposable2 = connProvider.registerOnConnectionComplete(params => {
+		console.log(params.ownerUri);
+		disposable2.dispose();
+	}) as any as vscode.Disposable;
 	return createMssqlApi(appContext, server);
 }
 

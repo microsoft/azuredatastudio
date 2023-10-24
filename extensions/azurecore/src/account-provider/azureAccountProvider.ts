@@ -20,8 +20,8 @@ import { AzureAuthCodeGrant } from './auths/azureAuthCodeGrant';
 import { AzureDeviceCode } from './auths/azureDeviceCode';
 import * as Constants from '../constants';
 import { MsalCachePluginProvider } from './utils/msalCachePlugin';
-import { getTenantIgnoreList } from '../utils';
 import { TenantIgnoredError } from '../utils/TenantIgnoredError';
+import { multiple_matching_tokens_error } from '../constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -149,35 +149,32 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 				Logger.info(`Could not fetch access token from cache: ${e}, fetching new access token instead.`);
 			}
 			tenantId = tenantId || account.properties.owningTenant.id;
-			if (getTenantIgnoreList().includes(tenantId)) {
-				// Tenant found in ignore list, don't fetch access token.
-				Logger.info(`Tenant ${tenantId} found in the ignore list, authentication will not be attempted. Please remove tenant from setting: '${Constants.AzureTenantConfigFilterSetting}' if you want to re-enable tenant for authentication.`);
-				throw new TenantIgnoredError(localize('tenantIgnoredError', 'Tenant found in ignore list, authentication not attempted. You can remove tenant {0} from ignore list in settings.json file: {1} if you wish to access resources from this tenant.', tenantId, Constants.AzureTenantConfigFilterSetting));
+			let authResult = await azureAuth.getToken(account.key.accountId, resource, tenantId);
+			if (this.isAuthenticationResult(authResult) && authResult.account && authResult.account.idTokenClaims) {
+				const token: Token = {
+					key: authResult.account.homeAccountId,
+					token: authResult.accessToken,
+					tokenType: authResult.tokenType,
+					expiresOn: authResult.account.idTokenClaims.exp!,
+					tenantId: tenantId,
+					resource: resource
+				};
+				try {
+					await this.msalCacheProvider.writeTokenToLocalCache(token);
+				} catch (e) {
+					Logger.error(`Could not save access token to local cache: ${e}, this might cause throttling of AAD requests.`);
+				}
+				return token;
 			} else {
-				let authResult = await azureAuth.getToken(account.key.accountId, resource, tenantId);
-				if (this.isAuthenticationResult(authResult) && authResult.account && authResult.account.idTokenClaims) {
-					const token: Token = {
-						key: authResult.account.homeAccountId,
-						token: authResult.accessToken,
-						tokenType: authResult.tokenType,
-						expiresOn: authResult.account.idTokenClaims.exp!,
-						tenantId: tenantId,
-						resource: resource
-					};
-					try {
-						await this.msalCacheProvider.writeTokenToLocalCache(token);
-					} catch (e) {
-						Logger.error(`Could not save access token to local cache: ${e}, this might cause throttling of AAD requests.`);
+				Logger.error(`MSAL: getToken call failed: ${authResult}`);
+				// Throw error with MSAL-specific code/message, else throw generic error message
+				if (this.isProviderError(authResult)) {
+					if (authResult.errorCode?.includes(multiple_matching_tokens_error)) {
+						authResult.errorMessage = authResult.errorMessage?.concat(` To resolve this error, please clear token cache, and refresh account credentials.`);
 					}
-					return token;
+					throw new Error(localize('msalTokenError', `{0} occurred when acquiring token. \n{1}`, authResult.errorCode, authResult.errorMessage));
 				} else {
-					Logger.error(`MSAL: getToken call failed: ${authResult}`);
-					// Throw error with MSAL-specific code/message, else throw generic error message
-					if (this.isProviderError(authResult)) {
-						throw new Error(localize('msalTokenError', `{0} occurred when acquiring token. \n{1}`, authResult.errorCode, authResult.errorMessage));
-					} else {
-						throw new Error(localize('genericTokenError', 'Failed to get token'));
-					}
+					throw new Error(localize('genericTokenError', 'Failed to get token'));
 				}
 			}
 		} else {
@@ -211,7 +208,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	private isValidToken(accessToken: Token | undefined): boolean {
 		const currentTime = new Date().getTime() / 1000;
 		return (accessToken !== undefined && accessToken.expiresOn !== undefined
-			&& Number(accessToken.expiresOn) - currentTime > 2 * 60); // threshold = 2 mins
+			&& Number(accessToken.expiresOn) - currentTime > 5 * 60); // threshold = 5 mins (matches the threshold used in MSAL dotnet)
 	}
 
 	private async _getSecurityToken(account: AzureAccount, resource: azdata.AzureResource): Promise<MultiTenantTokenResponse | undefined> {

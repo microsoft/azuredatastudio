@@ -9,6 +9,8 @@ interface ICSSPluginConfig {
 
 /**
  * Invoked by the loader at run-time
+ *
+ * @skipMangle
  */
 export function load(name: string, req: AMDLoader.IRelativeRequire, load: AMDLoader.IPluginLoadCallback, config: AMDLoader.IConfigurationOptions | { isBuild?: boolean }): void { // {{SQL CARBON EDIT}} Added type to config
 	config = config || {};

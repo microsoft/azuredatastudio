@@ -92,22 +92,31 @@ export class UpdateProjectFromDatabaseDialog {
 			const databaseRow = this.createDatabaseRow(view);
 			await this.populateServerDropdown();
 
-			const sourceDatabaseFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			sourceDatabaseFormSection.addItems([connectionRow, databaseRow]);
+			const sourceDatabaseFormSection = view.modelBuilder.groupContainer().withLayout({
+				header: constants.sourceDatabase,
+				collapsible: false,
+				collapsed: false
+			}).withItems([connectionRow, databaseRow]).component();
 
 			const projectLocationRow = this.createProjectLocationRow(view);
 			const folderStructureRow = this.createFolderStructureRow(view);
-			const targetProjectFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			targetProjectFormSection.addItems([projectLocationRow, folderStructureRow]);
+			const targetProjectFormSection = view.modelBuilder.groupContainer().withLayout({
+				header: constants.TargetDatabase,
+				collapsible: false,
+				collapsed: false
+			}).withItems([projectLocationRow, folderStructureRow]).component();
 
 			const actionRow = await this.createActionRow(view);
-			const actionFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			actionFormSection.addItems([actionRow]);
+			const actionFormSection = view.modelBuilder.groupContainer().withLayout({
+				header: constants.updateAction,
+				collapsible: false,
+				collapsed: false
+			}).withItems([actionRow]).component();
 
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
 					{
-						title: constants.sourceDatabase,
+						title: '',
 						components: [
 							{
 								component: sourceDatabaseFormSection,
@@ -115,7 +124,7 @@ export class UpdateProjectFromDatabaseDialog {
 						]
 					},
 					{
-						title: constants.targetProject,
+						title: '',
 						components: [
 							{
 								component: targetProjectFormSection,
@@ -123,7 +132,7 @@ export class UpdateProjectFromDatabaseDialog {
 						]
 					},
 					{
-						title: constants.updateAction,
+						title: '',
 						components: [
 							{
 								component: actionFormSection,
