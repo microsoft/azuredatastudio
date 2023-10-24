@@ -519,7 +519,7 @@ declare module 'azdata' {
 
 	export interface ConnectionInfoSummary {
 		/**
-		 * Server Process ID returned from service host, if connection was successful.
+		 * Optional Server Process ID returned from the provider, which will be displayed in the status bar for the editor the query was ran in. 
 		 */
 		spid?: number | undefined;
 	}
