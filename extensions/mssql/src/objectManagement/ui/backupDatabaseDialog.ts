@@ -102,28 +102,28 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	private initializeOptionsSection(): azdata.GroupContainer {
 		// Overwrite media
-		let existingMediaButton = this.createRadioButton('Back up the the existing media set', 'BackupOverwriteMedia', false, checked => {
+		let existingMediaButton = this.createRadioButton(loc.BackupToExistingMedia, 'BackupOverwriteMedia', false, checked => {
 			return Promise.resolve();
 		}, false);
-		let appendExistingButton = this.createRadioButton('Append to the existing backup set', 'BackupExistingMedia', false, checked => {
+		let appendExistingButton = this.createRadioButton(loc.AppendToExistingBackup, 'BackupExistingMedia', false, checked => {
 			return Promise.resolve();
 		}, false);
-		let overwriteExistingButton = this.createRadioButton('Overwrite all existing backup sets', 'BackupExistingMedia', false, checked => {
+		let overwriteExistingButton = this.createRadioButton(loc.OverwriteExistingBackups, 'BackupExistingMedia', false, checked => {
 			return Promise.resolve();
 		}, false);
 		let existingMediaButtonsGroup = this.createGroup('', [appendExistingButton, overwriteExistingButton]);
 
-		let newMediaButton = this.createRadioButton('Back up to a new media set, and erase all existing backup sets', 'BackupOverwriteMedia', false, checked => {
+		let newMediaButton = this.createRadioButton(loc.BackupAndEraseExisting, 'BackupOverwriteMedia', false, checked => {
 			return Promise.resolve();
 		}, false);
 		let mediaSetInput = this.createInputBox(newValue => {
 			return Promise.resolve();
 		}, { enabled: false });
-		let mediaSetContainer = this.createLabelInputContainer('New media set name', mediaSetInput);
+		let mediaSetContainer = this.createLabelInputContainer(loc.BackupNewMediaName, mediaSetInput);
 		let mediaDescriptionInput = this.createInputBox(newValue => {
 			return Promise.resolve();
 		}, { enabled: false });
-		let mediaDescriptionContainer = this.createLabelInputContainer('New media set description', mediaDescriptionInput);
+		let mediaDescriptionContainer = this.createLabelInputContainer(loc.BackupNewMediaDescription, mediaDescriptionInput);
 		let newMediaButtonsGroup = this.createGroup('', [mediaSetContainer, mediaDescriptionContainer]);
 
 		let overwriteGroup = this.createGroup(loc.BackupOverwriteMediaLabel, [
@@ -134,13 +134,13 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		], false);
 
 		// Reliability
-		let verifyCheckbox = this.createCheckbox('Verify backup when finished', checked => {
+		let verifyCheckbox = this.createCheckbox(loc.VerifyBackupWhenFinished, checked => {
 			return Promise.resolve();
 		});
-		let checksumCheckbox = this.createCheckbox('Perform checksum before writing to media', checked => {
+		let checksumCheckbox = this.createCheckbox(loc.BackupPerformChecksum, checked => {
 			return Promise.resolve();
 		});
-		let continueCheckbox = this.createCheckbox('Continue on error', checked => {
+		let continueCheckbox = this.createCheckbox(loc.BackupContinueOnError, checked => {
 			return Promise.resolve();
 		});
 
@@ -148,13 +148,13 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 		// Transaction log
 		// Only should be enabled if backup type is Transaction Log
-		let truncateButton = this.createRadioButton('Truncate the transaction log', 'BackupTransactionLog', false, checked => {
+		let truncateButton = this.createRadioButton(loc.BackupTruncateLog, 'BackupTransactionLog', false, checked => {
 			return Promise.resolve();
 		}, false);
-		let backupTailButton = this.createRadioButton('Back up the tail of the log, and leave the database in the restoring state', 'BackupTransactionLog', false, checked => {
+		let backupTailButton = this.createRadioButton(loc.BackupLogTail, 'BackupTransactionLog', false, checked => {
 			return Promise.resolve();
 		}, false);
-		let transactionDescription = this.modelView.modelBuilder.text().withProps({ value: 'Transaction Log options are only available only when Backup Type is set to Tansaction Log above. ' }).component();
+		let transactionDescription = this.modelView.modelBuilder.text().withProps({ value: loc.TransactionLogNotice }).component();
 		let transactionGroup = this.createGroup(loc.BackupTransactionLogLabel, [truncateButton, backupTailButton, transactionDescription], false);
 
 		// Compression

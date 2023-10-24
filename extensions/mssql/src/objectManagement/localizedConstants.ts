@@ -244,6 +244,8 @@ export const DropDatabaseOptions = localize('objectManagement.dropDatabaseOption
 export const CloseConnections = localize('objectManagement.closeConnections', "Close existing connections");
 export const DeleteBackupHistory = localize('objectManagement.deleteBackupHistory', "Delete backup and restore history information for database");
 export const DatabaseDetailsLabel = localize('objectManagement.databaseDetails', "Database Details");
+
+// Backup database
 export const BackupDatabaseDialogTitle = (dbName: string) => localize('objectManagement.backupDatabaseDialogTitle', "Backup Database - {0} (Preview)", dbName);
 export const BackupButtonLabel = localize('objectManagement.backupButtonLabel', "Backup");
 export const BackupOverwriteMediaLabel = localize('objectManagement.backupOverwriteMedia', "Overwrite media");
@@ -266,6 +268,18 @@ export const BackupServerCertificate = localize('objectManagement.backupServerCe
 export const BackupAsymmetricKey = localize('objectManagement.backupAsymmetricKey', "Asymmetric Key");
 export const BackupFull = localize('objectManagement.backupFull', "Full");
 export const BackupDifferential = localize('objectManagement.backupDifferential', "Differential");
+export const BackupToExistingMedia = localize('objectManagement.backupToExistingMedia', "Back up to the existing media set");
+export const AppendToExistingBackup = localize('objectManagement.appendToExistingBackup', "Append to the existing backup set");
+export const OverwriteExistingBackups = localize('objectManagement.overwriteExistingBackups', "Overwrite all existing backup sets");
+export const BackupAndEraseExisting = localize('objectManagement.backupAndEraseExisting', "Back up to a new media set, and erase all existing backup sets");
+export const BackupNewMediaName = localize('objectManagement.backupNewMediaName', "New media set name");
+export const BackupNewMediaDescription = localize('objectManagement.backupNewMediaDescription', "New media set description");
+export const VerifyBackupWhenFinished = localize('objectManagement.verifyBackupWhenFinished', "Verify backup when finished");
+export const BackupPerformChecksum = localize('objectManagement.backupPerformChecksum', "Perform checksum before writing to media");
+export const BackupContinueOnError = localize('objectManagement.backupContinueOnError', "Continue on error");
+export const BackupTruncateLog = localize('objectManagement.backupTruncateLog', "Truncate the transaction log");
+export const BackupLogTail = localize('objectManagement.backupLogTail', "Back up the tail of the log, and leave the database in the restoring state");
+export const TransactionLogNotice = localize('objectManagement.transactionLogNotice', "Transaction Log options are only available only when Backup Type is set to Tansaction Log above.");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");
