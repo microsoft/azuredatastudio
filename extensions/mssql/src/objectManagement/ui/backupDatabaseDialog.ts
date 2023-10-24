@@ -75,7 +75,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		});
 		components.push(copyBackupCheckbox);
 
-		let backupDestinations = [loc.BackupDiskLabel]; // TODO: Add URL type
+		let backupDestinations = [loc.BackupDiskLabel]; // TODO: Add URL type when enabled
 		let backupDestDropdown = this.createDropdown(loc.BackupToLabel, checked => {
 			return Promise.resolve();
 		}, backupDestinations, backupDestinations[0]);
