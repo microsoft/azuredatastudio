@@ -73,7 +73,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 				}
 			}
 			if (info && info.spid) {
-				this._setConnectionText(activeConnection, 'SPID', info.spid)
+				this._setConnectionText(activeConnection, info.spid)
 			}
 			else {
 				this._setConnectionText(activeConnection);
@@ -97,14 +97,14 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 			if (currUri === uri) {
 				if (info) {
 					info.spid = spid;
-					this._setConnectionText(activeConnection, 'SPID', spid);
+					this._setConnectionText(activeConnection, spid);
 				}
 			}
 		}
 	}
 
 	// Set connection info to connection status bar
-	private _setConnectionText(connectionProfile: IConnectionProfile, spidName?: string, spid?: number): void {
+	private _setConnectionText(connectionProfile: IConnectionProfile, spid?: number): void {
 		let text: string = connectionProfile.serverName;
 		if (text) {
 			if (connectionProfile.databaseName && connectionProfile.databaseName !== '') {
@@ -123,7 +123,8 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 
 		if (spid) {
 			text += ' (' + spid + ')';
-			tooltip += (spidName ? spidName : 'SPID') + ': ' + spid
+			let processIDName = connectionProfile.serverCapabilities.processIDName;
+			tooltip += (processIDName ? processIDName : 'PID') + ': ' + spid
 		}
 
 		this.statusItem.update({

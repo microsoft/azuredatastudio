@@ -80,6 +80,7 @@
 	"cloud.serverProperties.serverVersion": "Version",
 	"cloud.serverProperties.serverEdition": "Type",
 	"mssql.provider.displayName": "Microsoft SQL Server",
+	"mssql.provider.processID": "Server Process ID",
 	"mssql.connectionOptions.connectionName.displayName": "Name (optional)",
 	"mssql.connectionOptions.connectionName.description": "Custom name of the connection",
 	"mssql.connectionOptions.serverName.displayName": "Server",

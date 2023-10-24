@@ -121,6 +121,11 @@ export interface ConnectionProviderProperties {
 	 * Otherwise ADS will handle the copy request on the UI side.
 	 */
 	supportCopyResultsToClipboard?: boolean;
+
+	/**
+	 * The process ID name used by the Service Host.
+	 */
+	processIDName?: string;
 }
 
 export interface ProviderFeatures {
