@@ -63,7 +63,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	public messages?: HTMLElement;
 	private _buttonSection?: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;
-	private _tree?: ITree | AsyncServerTree;
+	private _tree: ITree | AsyncServerTree | undefined;
 	private _onSelectionOrFocusChange: Emitter<void>;
 	private _actionProvider: ServerTreeActionProvider;
 	private _viewKey: IContextKey<ServerTreeViewView>;
@@ -150,8 +150,12 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		return this._actionProvider;
 	}
 
+	/**
+	 * Returns instance of server tree used by the server Tree View.
+	 * If server tree view has not yet rendered, tree instance can be undefined.
+	 */
 	public get tree(): ITree | AsyncServerTree | undefined {
-		return this._tree ?? undefined;
+		return this._tree;
 	}
 
 	/**

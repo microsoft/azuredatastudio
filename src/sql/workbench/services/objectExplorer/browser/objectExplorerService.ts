@@ -829,7 +829,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			return undefined;
 		}
 		let selection = this._serverTreeView.getSelection();
-		if (selection.length === 1) {
+		if (selection?.length === 1) {
 			let selectedNode = selection[0];
 			if (selectedNode instanceof ConnectionProfile) {
 				return { profile: selectedNode, databaseName: undefined };
