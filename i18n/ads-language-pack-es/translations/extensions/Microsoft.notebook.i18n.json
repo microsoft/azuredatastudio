@@ -173,7 +173,7 @@
 		},
 		"dist/dialog/managePackages/managePackagesDialog": {
 			"managePackages.cancelButtonText": "Cerrar",
-			"managePackages.dialogName": "Administrar paquetes"
+			"managePackages.dialogName": "Administrar paquetes de bloc de notas"
 		},
 		"dist/extension": {
 			"codeCellName": "Código",
@@ -183,7 +183,8 @@
 		"dist/jupyter/jupyterController": {
 			"confirmReinstall": "¿Está seguro de que desea volver a instalar?",
 			"notebookFileType": "Cuadernos",
-			"unsupportedFileType": "Solo se admiten los Notebooks de tipo .ipynb"
+			"unsupportedFileType": "Solo se admiten los Notebooks de tipo .ipynb",
+			"pythonNotSetup": "Python no está configurado actualmente para bloc de notas. El comando \"Configurar Python para blocs de notas\" debe ejecutarse antes de poder administrar paquetes de bloc de notas."
 		},
 		"dist/jupyter/jupyterExecuteProvider": {
 			"errNotebookUriMissing": "Se requiere una ruta de acceso del cuaderno"
@@ -266,7 +267,7 @@
 			"books-preview-category": "Jupyter Books",
 			"notebook.useExistingPython.description": "Ruta de acceso local a una instalación de Python preexistente utilizada por Notebooks.",
 			"notebook.pythonPath.description": "Ruta de acceso local a la instalación de Python utilizada por Notebooks.",
-			"title.managePackages": "Administrar paquetes",
+			"title.managePackages": "Administrar paquetes de bloc de notas",
 			"notebook.maxBookSearchDepth.description": "Profundidad máxima de subdirectorios para buscar Books (especifique 0 para infinito)",
 			"notebook.maxTableRows.description": "Número máximo de filas devueltas por tabla en el editor de Notebook",
 			"title.moveTo": "Mover a...",

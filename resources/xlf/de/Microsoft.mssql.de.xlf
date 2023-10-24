@@ -201,7 +201,7 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.purgeQueryStoreDataMessage">
         <source xml:lang="en">Are you sure you want to purge the Query Store data from '{0}'?</source>
-        <target state="new">Are you sure you want to purge the Query Store data from '{0}'?</target>
+        <target state="translated">Möchten Sie die Abfragespeicherdaten aus "{0}" löschen?</target>
       </trans-unit>
       <trans-unit id="objectManagement.associatedDatabaseFiles">
         <source xml:lang="en">Associated Database Files</source>
@@ -224,8 +224,8 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <target state="translated">Datenbank anfügen</target>
       </trans-unit>
       <trans-unit id="objectManagement.user.aadAuth">
-        <source xml:lang="en">Authenticate with Azure Active Directory</source>
-        <target state="translated">Authentifizieren mit Azure Active Directory</target>
+        <source xml:lang="en">Authenticate with Microsoft Entra</source>
+        <target state="translated">Mit Microsoft Entra authentifizieren</target>
       </trans-unit>
       <trans-unit id="objectManagement.user.sqlAuth">
         <source xml:lang="en">Authenticate with password</source>
@@ -275,13 +275,13 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <source xml:lang="en">Automatically set processor affinity mask for all processors</source>
         <target state="translated">Prozessoraffinitätsmaske für alle Prozessoren automatisch festlegen</target>
       </trans-unit>
-      <trans-unit id="objectManagement.login.aadAuthenticationType">
-        <source xml:lang="en">Azure Active Directory Authentication</source>
-        <target state="translated">Azure Active Directory-Authentifizierung</target>
-      </trans-unit>
       <trans-unit id="objectManagement.azurePricingLink">
         <source xml:lang="en">Azure SQL Database pricing calculator</source>
         <target state="translated">Preisrechner für Azure SQL-Datenbank</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backButtonLabel">
+        <source xml:lang="en">Back</source>
+        <target state="translated">Zurück</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.backupSectionHeader">
         <source xml:lang="en">Backup</source>
@@ -654,6 +654,10 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <source xml:lang="en">Filegroup</source>
         <target state="translated">Dateigruppe</target>
       </trans-unit>
+      <trans-unit id="objectManagement.filegroupsNameInput">
+        <source xml:lang="en">Filegroup Name</source>
+        <target state="translated">Dateigruppenname</target>
+      </trans-unit>
       <trans-unit id="objectManagement.filegroupsSectionHeader">
         <source xml:lang="en">Filegroups</source>
         <target state="translated">Dateigruppen</target>
@@ -882,6 +886,10 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <source xml:lang="en">Memory Used By Memory Optimized Objects</source>
         <target state="translated">Von speicheroptimierten Objekten genutzter Arbeitsspeicher</target>
       </trans-unit>
+      <trans-unit id="objectManagement.login.aadAuthenticationType">
+        <source xml:lang="en">Microsoft Entra ID Authentication</source>
+        <target state="translated">Microsoft Entra-ID-Authentifizierung</target>
+      </trans-unit>
       <trans-unit id="objectManagement.minServerMemoryText">
         <source xml:lang="en">Minimum Server Memory (MB)</source>
         <target state="translated">Minimaler Serverarbeitsspeicher (MB)</target>
@@ -889,6 +897,10 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
       <trans-unit id="objectManagement.databaseProperties.monitoringSectionText">
         <source xml:lang="en">Monitoring</source>
         <target state="translated">Überwachung</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.notAvailableText">
+        <source xml:lang="en">N/A</source>
+        <target state="translated">n. v</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.name">
         <source xml:lang="en">Name</source>
@@ -1044,7 +1056,7 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.purgeQueryDataButtonText">
         <source xml:lang="en">Purge Query Store Data</source>
-        <target state="new">Purge Query Store Data</target>
+        <target state="translated">Abfragespeicherdaten bereinigen</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.databaseProperties.queryStoreTabHeader">
         <source xml:lang="en">Query Store</source>
@@ -1249,7 +1261,7 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.stateQueryThresholdInDaysText">
         <source xml:lang="en">State Query Threshold (Days)</source>
-        <target state="new">State Query Threshold (Days)</target>
+        <target state="translated">Schwellenwert für Zustandsabfragen (Tage)</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.statisticsCollectionInterval">
         <source xml:lang="en">Statistics Collection Interval</source>
@@ -1335,6 +1347,10 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
       <trans-unit id="objectManagement.databaseProperties.valueForSecondaryColumnHeader">
         <source xml:lang="en">Value for Secondary</source>
         <target state="translated">Wert für sekundäre</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.locksValidation">
+        <source xml:lang="en">Value should be greater than {0}. Choose 0 for default settings.</source>
+        <target state="translated">Der Wert muss größer als {0} sein. Wählen Sie 0 als Standardeinstellungen aus.</target>
       </trans-unit>
       <trans-unit id="objectManagement.versionText">
         <source xml:lang="en">Version</source>
@@ -1598,13 +1614,13 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <source xml:lang="en">Associate schemas to JSON files in the current project</source>
         <target state="translated">Hiermit werden Schemas zu JSON-Dateien im aktuellen Projekt zugeordnet.</target>
       </trans-unit>
-      <trans-unit id="title.attachDatabase">
-        <source xml:lang="en">Attach (Preview)</source>
-        <target state="translated">Anfügen (Vorschau)</target>
-      </trans-unit>
       <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
         <source xml:lang="en">Attach DB filename</source>
         <target state="translated">Dateiname der anzufügenden Datenbank</target>
+      </trans-unit>
+      <trans-unit id="title.attachDatabase">
+        <source xml:lang="en">Attach Database (Preview)</source>
+        <target state="translated">Datenbank anfügen (Vorschau)</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
         <source xml:lang="en">Attestation URL</source>
@@ -1618,10 +1634,6 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <source xml:lang="en">Authentication type</source>
         <target state="translated">Authentifizierungstyp</target>
       </trans-unit>
-      <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
-        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory: universell mit MFA-Unterstützung</target>
-      </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS">
         <source xml:lang="en">Azure Attestation</source>
         <target state="translated">Azure Attestation</target>
@@ -1629,6 +1641,10 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
       <trans-unit id="title.changeNotebookConnection">
         <source xml:lang="en">Change SQL Notebook Connection</source>
         <target state="translated">SQL-Notebook-Verbindung ändern</target>
+      </trans-unit>
+      <trans-unit id="mssql.connection.clearPooledConnections">
+        <source xml:lang="en">Clear Pooled Connections</source>
+        <target state="translated">Gepoolte Verbindungen löschen</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.commandTimeout.displayName">
         <source xml:lang="en">Command timeout</source>
@@ -1695,8 +1711,8 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <target state="translated">Entwurf</target>
       </trans-unit>
       <trans-unit id="title.detachDatabase">
-        <source xml:lang="en">Detach (Preview)</source>
-        <target state="translated">Trennen (Vorschau)</target>
+        <source xml:lang="en">Detach Database (Preview)</source>
+        <target state="translated">Datenbank trennen (Vorschau)</target>
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.disableGroupBySchema">
         <source xml:lang="en">Disable Group By Schema</source>
@@ -1811,8 +1827,8 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <target state="translated">Aktiviert</target>
       </trans-unit>
       <trans-unit id="mssql.enableConnectionPooling">
-        <source xml:lang="en">Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed. To clear pooled connections, run the command: 'SQL Server: Clear Pooled Connections'</source>
-        <target state="new">Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed. To clear pooled connections, run the command: 'SQL Server: Clear Pooled Connections'</target>
+        <source xml:lang="en">Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed. To clear pooled connections, run the command: 'MSSQL: Clear Pooled Connections'</source>
+        <target state="translated">Aktiviert das Verbindungspooling für MSSQL-Verbindungen, um die Gesamtleistung der Azure Data Studio-Konnektivität zu verbessern. Diese Einstellung ist standardmäßig aktiviert. Azure Data Studio muss nach dem Ändern des Werts neu gestartet werden. Führen Sie den folgenden Befehl aus, um gepoolte Verbindungen zu löschen: „MSSQL: Gepoolte Verbindungen löschen“</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.description">
         <source xml:lang="en">Enables or disables Always Encrypted for the connection</source>
@@ -1946,6 +1962,10 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <source xml:lang="en">Maximum size of text and ntext data returned from a SELECT statement</source>
         <target state="translated">Maximale Größe von text- und ntext-Daten, die von einer SELECT-Anweisung zurückgegeben werden</target>
       </trans-unit>
+      <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
+        <source xml:lang="en">Microsoft Entra ID - Universal with MFA support</source>
+        <target state="translated">Microsoft Entra ID – Universell mit MFA-Unterstützung</target>
+      </trans-unit>
       <trans-unit id="mssql.provider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>
         <target state="translated">Microsoft SQL Server</target>
@@ -1978,17 +1998,33 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <source xml:lang="en">Name of the SQL Server instance</source>
         <target state="translated">Name der SQL Server-Instanz</target>
       </trans-unit>
-      <trans-unit id="title.newObject">
-        <source xml:lang="en">New (Preview)</source>
-        <target state="translated">Neu (Vorschau)</target>
+      <trans-unit id="title.newApplicationRole">
+        <source xml:lang="en">New Application Role (Preview)</source>
+        <target state="translated">Neue Anwendungsrolle (Vorschau)</target>
       </trans-unit>
       <trans-unit id="title.newDatabase">
         <source xml:lang="en">New Database (Preview)</source>
         <target state="translated">Neue Datenbank (Vorschau)</target>
       </trans-unit>
+      <trans-unit id="title.newDatabaseRole">
+        <source xml:lang="en">New Database Role (Preview)</source>
+        <target state="translated">Neue Datenbankrolle (Vorschau)</target>
+      </trans-unit>
+      <trans-unit id="title.newLogin">
+        <source xml:lang="en">New Login (Preview)</source>
+        <target state="translated">Neue Anmeldung (Vorschau)</target>
+      </trans-unit>
+      <trans-unit id="title.newServerRole">
+        <source xml:lang="en">New Server Role (Preview)</source>
+        <target state="translated">Neue Serverrolle (Vorschau)</target>
+      </trans-unit>
       <trans-unit id="title.newTable">
         <source xml:lang="en">New Table</source>
         <target state="translated">Neue Tabelle</target>
+      </trans-unit>
+      <trans-unit id="title.newUser">
+        <source xml:lang="en">New User (Preview)</source>
+        <target state="translated">Neuer Benutzer (Vorschau)</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None">
         <source xml:lang="en">None</source>
@@ -2069,10 +2105,6 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
       <trans-unit id="mssql.connectionOptions.authType.categoryValues.sqlLogin">
         <source xml:lang="en">SQL Login</source>
         <target state="translated">SQL-Anmeldung</target>
-      </trans-unit>
-      <trans-unit id="mssql.connection.clearPooledConnections">
-        <source xml:lang="en">SQL Server: Clear Pooled Connections</source>
-        <target state="new">SQL Server: Clear Pooled Connections</target>
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.disableGroupBySchemaTitle">
         <source xml:lang="en">SQL Server: Disable Group By Schema</source>
@@ -2332,7 +2364,7 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.placeholder">
         <source xml:lang="en">e.g. servername,port</source>
-        <target state="new">e.g. servername,port</target>
+        <target state="translated">Beispiel: Servername,Port</target>
       </trans-unit>
       <trans-unit id="mssql.format.placeCommasBeforeNextStatement">
         <source xml:lang="en">should commas be placed at the beginning of each statement in a list e.g. ', mycolumn2' instead of at the end e.g. 'mycolumn1,'</source>

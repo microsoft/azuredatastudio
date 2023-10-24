@@ -173,7 +173,10 @@
 			"notFound": "{0} не найдено в ZIP-архиве."
 		},
 		"vs/editor/browser/controller/textAreaHandler": {
-			"accessibilityOffAriaLabel": "Сейчас редактор недоступен. Нажмите {0} для отображения вариантов.",
+			"accessibilityModeOff": "Сейчас редактор недоступен.",
+			"accessibilityOffAriaLabel": "{0} Чтобы включить оптимизированный режим читателя, используйте {1}",
+			"accessibilityOffAriaLabelNoKb": "{0} Чтобы включить оптимизированный режим читателя, откройте быстрый выбор с помощью {1} и выполните команду \"Активация режима специальных возможностей для читателя\", который сейчас не может быть активирован с помощью клавиатуры.",
+			"accessibilityOffAriaLabelNoKbs": "{0} Назначьте сочетание клавиш для команды \"Активация режима специальных возможностей для читателя\", используя редактор настраиваемых сочетаний клавиш с помощью {1} и запустите его.",
 			"editor": "редактор"
 		},
 		"vs/editor/browser/coreCommands": {
@@ -192,6 +195,12 @@
 			"cursors.maximum": "Число курсоров ограничено {0}. Для проведения крупных изменений рекомендуется использовать [поиск и замену](https://code.visualstudio.com/docs/editor/codebasics#_find-and-replace) или увеличить значение параметра ограничения нескольких курсоров в редакторе.",
 			"goToSetting": "Увеличить значение ограничения нескольких курсоров"
 		},
+		"vs/editor/browser/widget/diffEditor.contribution": {
+			"Open Accessible Diff Viewer": "Открыть средство просмотра с поддержкой специальных возможностей инструмента сравнений",
+			"accessibleDiffViewer": "Доступное представление различий",
+			"editor.action.accessibleDiffViewer.next": "Перейти к следующему различию",
+			"editor.action.accessibleDiffViewer.prev": "Перейти к предыдущему различию"
+		},
 		"vs/editor/browser/widget/diffEditorWidget": {
 			"diff-aria-navigation-tip": " используйте SHIFT + F7 для навигации по изменениям",
 			"diff.tooLarge": "Нельзя сравнить файлы, потому что один из файлов слишком большой.",
@@ -199,32 +208,52 @@
 			"diffRemoveIcon": "Оформление строки для удалений в редакторе несовпадений.",
 			"revertChangeHoverMessage": "Выберите, чтобы отменить изменение"
 		},
+		"vs/editor/browser/widget/diffEditorWidget2/accessibleDiffViewer": {
+			"accessibleDiffViewerCloseIcon": "Значок \"Закрыть\" в средстве просмотра с поддержкой специальных возможностей инструмента сравнений",
+			"accessibleDiffViewerInsertIcon": "Значок \"Вставить\" в средстве просмотра с поддержкой специальных возможностей инструмента сравнений",
+			"accessibleDiffViewerRemoveIcon": "Значок \"Удалить\" в средстве просмотра с поддержкой специальных возможностей инструмента сравнений",
+			"ariaLabel": "Доступное средство просмотра инструмента сравнения. Используйте клавиши СТРЕЛКА ВВЕРХ и СТРЕЛКА ВНИЗ для перемещения.",
+			"blankLine": "пустой",
+			"deleteLine": "- {0} исходная строка {1}",
+			"equalLine": "{0} исходная строка {1} измененная строка {2}",
+			"header": "Различие {0} из {1}: исходная строка {2}, {3}, измененная строка {4}, {5}",
+			"insertLine": "+ {0} измененная строка {1}",
+			"label.close": "Закрыть",
+			"more_lines_changed": "{0} строк изменено",
+			"no_lines_changed": "строки не изменены",
+			"one_line_changed": "1 строка изменена",
+			"unchangedLine": "{0} неизмененная строка {1}"
+		},
 		"vs/editor/browser/widget/diffEditorWidget2/colors": {
-			"diffEditor.move.border": "The border color for text that got moved in the diff editor."
+			"diffEditor.move.border": "Цвет границы для текста, перемещенного в редакторе несовпадений."
 		},
 		"vs/editor/browser/widget/diffEditorWidget2/decorations": {
-			"diffInsertIcon": "Line decoration for inserts in the diff editor.",
-			"diffRemoveIcon": "Line decoration for removals in the diff editor.",
-			"revertChangeHoverMessage": "Click to revert change"
+			"diffInsertIcon": "Оформление строки для вставок в редакторе несовпадений.",
+			"diffRemoveIcon": "Оформление строки для удалений в редакторе несовпадений.",
+			"revertChangeHoverMessage": "Выберите, чтобы отменить изменение"
 		},
-		"vs/editor/browser/widget/diffEditorWidget2/diffEditorWidget2": {
-			"diff-aria-navigation-tip": " используйте SHIFT + F7 для навигации по изменениям"
+		"vs/editor/browser/widget/diffEditorWidget2/diffEditorEditors": {
+			"diff-aria-navigation-tip": " используйте {0}, чтобы открыть справку по специальным возможностям."
 		},
 		"vs/editor/browser/widget/diffEditorWidget2/diffEditorWidget2.contribution": {
-			"collapseUnchangedRegions": "Show Unchanged Regions",
-			"showMoves": "Show Moves",
-			"showUnchangedRegions": "Collapse Unchanged Regions",
+			"collapseUnchangedRegions": "Показать неизмененные регионы",
+			"diffEditor": "Редактор несовпадений",
+			"showUnchangedRegions": "Свернуть неизмененные регионы",
+			"switchSide": "Переключить сторону",
 			"toggleCollapseUnchangedRegions": "Переключатель свертывания неизмененных регионов",
-			"toggleShowMovedCodeBlocks": "Toggle Show Moved Code Blocks"
+			"toggleShowMovedCodeBlocks": "Показать или скрыть перемещенные блоки кода"
 		},
 		"vs/editor/browser/widget/diffEditorWidget2/inlineDiffDeletedCodeMargin": {
-			"diff.clipboard.copyChangedLineContent.label": "Copy changed line ({0})",
-			"diff.clipboard.copyChangedLinesContent.label": "Copy changed lines",
-			"diff.clipboard.copyChangedLinesContent.single.label": "Copy changed line",
-			"diff.clipboard.copyDeletedLineContent.label": "Copy deleted line ({0})",
-			"diff.clipboard.copyDeletedLinesContent.label": "Copy deleted lines",
-			"diff.clipboard.copyDeletedLinesContent.single.label": "Copy deleted line",
-			"diff.inline.revertChange.label": "Revert this change"
+			"diff.clipboard.copyChangedLineContent.label": "Копировать измененную строку ({0})",
+			"diff.clipboard.copyChangedLinesContent.label": "Копировать измененные строки",
+			"diff.clipboard.copyChangedLinesContent.single.label": "Копировать измененную строку",
+			"diff.clipboard.copyDeletedLineContent.label": "Копировать удаленную строку ({0})",
+			"diff.clipboard.copyDeletedLinesContent.label": "Копировать удаленные строки",
+			"diff.clipboard.copyDeletedLinesContent.single.label": "Копировать удаленную строку",
+			"diff.inline.revertChange.label": "Отменить это изменение"
+		},
+		"vs/editor/browser/widget/diffEditorWidget2/unchangedRanges": {
+			"foldUnchanged": "Свернуть неизмененную область"
 		},
 		"vs/editor/browser/widget/diffReview": {
 			"blankLine": "пустой",
@@ -232,8 +261,6 @@
 			"diffReviewCloseIcon": "Значок для кнопки \"Закрыть\" в окне проверки несовпадений.",
 			"diffReviewInsertIcon": "Значок для кнопки \"Вставить\" в окне проверки несовпадений.",
 			"diffReviewRemoveIcon": "Значок для кнопки \"Удалить\" в окне проверки несовпадений.",
-			"editor.action.diffReview.next": "Перейти к следующему различию",
-			"editor.action.diffReview.prev": "Перейти к предыдущему различию",
 			"equalLine": "{0} исходная строка {1} измененная строка {2}",
 			"header": "Различие {0} из {1}: исходная строка {2}, {3}, измененная строка {4}, {5}",
 			"insertLine": "+ {0} измененная строка {1}",
@@ -254,7 +281,7 @@
 		},
 		"vs/editor/common/config/editorConfigurationSchema": {
 			"codeLens": "Определяет, отображается ли CodeLens в редакторе.",
-			"collapseUnchangedRegions": "Определяет, отображает ли редактор несовпадений неизмененные регионы. Работает только при настройке параметра \"diffEditor.experimental.useVersion2\".",
+			"collapseUnchangedRegions": "Определяет, отображает ли редактор несовпадений неизмененные регионы. Работает только при настройке параметра {0}.",
 			"detectIndentation": "На основе содержимого файла определяет, будут ли {0} и {1} автоматически обнаружены при открытии файла.",
 			"diffAlgorithm.advanced": "Использует расширенный алгоритм сравнения.",
 			"diffAlgorithm.legacy": "Использует устаревший алгоритм сравнения.",
@@ -279,7 +306,8 @@
 			"semanticHighlighting.enabled": "Определяет показ семантической подсветки для языков, поддерживающих ее.",
 			"semanticHighlighting.false": "Семантическое выделение отключено для всех цветовых тем.",
 			"semanticHighlighting.true": "Семантическое выделение включено для всех цветовых тем.",
-			"showMoves": "Controls whether the diff editor should show detected code moves. Only works when 'diffEditor.experimental.useVersion2' is set.",
+			"showEmptyDecorations": "Определяет, отображает ли редактор несовпадений пустые элементы оформления, чтобы увидеть, где вставлены или удалены символы.",
+			"showMoves": "Определяет, должен ли редактор несовпадений показывать обнаруженные перемещения кода. Работает только при настройке параметра {0}.",
 			"sideBySide": "Определяет, как редактор несовпадений отображает отличия: рядом или в тексте.",
 			"stablePeek": "Оставлять быстрый редактор открытым даже при двойном щелчке по его содержимому и при нажатии ESC.",
 			"tabSize": "Число пробелов, соответствующее табуляции. Этот параметр переопределяется на основе содержимого файла, если включен параметр {0}.",
@@ -320,7 +348,7 @@
 			"codeLens": "Определяет, отображается ли CodeLens в редакторе.",
 			"codeLensFontFamily": "Управляет семейством шрифтов для CodeLens.",
 			"codeLensFontSize": "Определяет размер шрифта в пикселях для CodeLens. Если задано значение 0, то используется 90% от размера #editor.fontSize#.",
-			"colorDecoratorActivatedOn": "Controls the condition to make a color picker appear from a color decorator",
+			"colorDecoratorActivatedOn": "Управляет условием отображения палитры в декораторе цвета",
 			"colorDecorators": "Определяет, должны ли в редакторе отображаться внутренние декораторы цвета и средство выбора цвета.",
 			"colorDecoratorsLimit": "Управляет максимальным количеством цветовых декораторов, которые можно отрисовать в редакторе одновременно.",
 			"columnSelection": "Включение того, что выбор с помощью клавиатуры и мыши приводит к выбору столбца.",
@@ -360,9 +388,9 @@
 			"editor.autoSurround.brackets": "Обрамлять с помощью скобок, а не кавычек.",
 			"editor.autoSurround.languageDefined": "Использовать конфигурации языка для автоматического обрамления выделений.",
 			"editor.autoSurround.quotes": "Обрамлять с помощью кавычек, а не скобок.",
-			"editor.colorDecoratorActivatedOn.click": "Make the color picker appear on click of the color decorator",
-			"editor.colorDecoratorActivatedOn.clickAndHover": "Make the color picker appear both on click and hover of the color decorator",
-			"editor.colorDecoratorActivatedOn.hover": "Make the color picker appear on hover of the color decorator",
+			"editor.colorDecoratorActivatedOn.click": "Показывать палитру при щелчке декоратора цвета",
+			"editor.colorDecoratorActivatedOn.clickAndHover": "Показывать палитру при щелчке и при наведении указателя на декоратор цвета",
+			"editor.colorDecoratorActivatedOn.hover": "Показывать палитру при наведении указателя на декоратор цвета",
 			"editor.editor.gotoLocation.multipleDeclarations": "Управляет поведением команды \"Перейти к объявлению\" при наличии нескольких целевых расположений.",
 			"editor.editor.gotoLocation.multipleDefinitions": "Управляет поведением команды \"Перейти к определению\" при наличии нескольких целевых расположений.",
 			"editor.editor.gotoLocation.multipleImplemenattions": "Управляет поведением команды \"Перейти к реализациям\" при наличии нескольких целевых расположений.",
@@ -559,6 +587,7 @@
 			"scrollbar.vertical.visible": "Вертикальная полоса прокрутки всегда будет видна.",
 			"scrollbar.verticalScrollbarSize": "Ширина вертикальной полосы прокрутки.",
 			"selectLeadingAndTrailingWhitespace": "Должны ли всегда быть выбраны начальный и конечный пробелы.",
+			"selectSubwords": "Следует ли выбирать вложенные слова (например, \"foo\" в \"fooBar\" или \"foo_bar\").",
 			"selectionClipboard": "Контролирует, следует ли поддерживать первичный буфер обмена Linux.",
 			"selectionHighlight": "Определяет, должен ли редактор выделять совпадения, аналогичные выбранному фрагменту.",
 			"showDeprecated": "Управляет перечеркиванием устаревших переменных.",
@@ -637,8 +666,16 @@
 		},
 		"vs/editor/common/core/editorColorRegistry": {
 			"caret": "Цвет курсора редактора.",
+			"deprecatedEditorActiveIndentGuide": "Свойство \"editorIndentGuide.activeBackground\" является нерекомендуемым. Вместо этого используйте \"editorIndentGuide.activeBackground1\".",
 			"deprecatedEditorActiveLineNumber": "Параметр 'Id' является устаревшим. Используйте вместо него параметр 'editorLineNumber.activeForeground'.",
+			"deprecatedEditorIndentGuides": "Свойство \"editorIndentGuide.background\" является нерекомендуемым. Вместо этого используйте \"editorIndentGuide.background1\".",
 			"editorActiveIndentGuide": "Цвет активных направляющих для отступов редактора.",
+			"editorActiveIndentGuide1": "Цвет активных направляющих для отступов редактора (1).",
+			"editorActiveIndentGuide2": "Цвет активных направляющих для отступов редактора (2).",
+			"editorActiveIndentGuide3": "Цвет активных направляющих для отступов редактора (3).",
+			"editorActiveIndentGuide4": "Цвет активных направляющих для отступов редактора (4).",
+			"editorActiveIndentGuide5": "Цвет активных направляющих для отступов редактора (5).",
+			"editorActiveIndentGuide6": "Цвет активных направляющих для отступов редактора (6).",
 			"editorActiveLineNumber": "Цвет номера активной строки редактора",
 			"editorBracketHighlightForeground1": "Цвет переднего плана для скобок (1). Требуется включить раскраску парных скобок.",
 			"editorBracketHighlightForeground2": "Цвет переднего плана для скобок (2). Требуется включить раскраску парных скобок.",
@@ -669,6 +706,12 @@
 			"editorGhostTextForeground": "Цвет переднего плана для едва различимого текста в редакторе.",
 			"editorGutter": "Цвет фона поля в редакторе. В поле размещаются отступы глифов и номера строк.",
 			"editorIndentGuides": "Цвет направляющих для отступов редактора.",
+			"editorIndentGuides1": "Цвет направляющих для отступов редактора (1).",
+			"editorIndentGuides2": "Цвет направляющих для отступов редактора (2).",
+			"editorIndentGuides3": "Цвет направляющих для отступов редактора (3).",
+			"editorIndentGuides4": "Цвет направляющих для отступов редактора (4).",
+			"editorIndentGuides5": "Цвет направляющих для отступов редактора (5).",
+			"editorIndentGuides6": "Цвет направляющих для отступов редактора (6).",
 			"editorLineNumbers": "Цвет номеров строк редактора.",
 			"editorOverviewRulerBackground": "Цвет фона обзорной линейки редактора.",
 			"editorOverviewRulerBorder": "Цвет границы для линейки в окне просмотра.",
@@ -690,6 +733,7 @@
 			"unnecessaryCodeOpacity": "Непрозрачность ненужного (неиспользуемого) исходного кода в редакторе. Например, \"#000000c0\" отображает код с непрозрачностью 75 %. В высококонтрастных темах для выделения ненужного кода вместо затенения используйте цвет темы \"editorUnnecessaryCode.border\"."
 		},
 		"vs/editor/common/editorContextKeys": {
+			"accessibleDiffViewerVisible": "Отображается ли средство просмотра с поддержкой специальных возможностей инструмента сравнений",
 			"editorColumnSelection": "Включен ли параметр \"editor.columnSelection\"",
 			"editorFocus": "Находится ли фокус на редакторе или на мини-приложении редактора (например, фокус находится на мини-приложении поиска)",
 			"editorHasCodeActionsProvider": "Есть ли в редакторе поставщик действий с кодом",
@@ -715,7 +759,7 @@
 			"editorHoverFocused": "Находится ли в фокусе наведение в редакторе",
 			"editorHoverVisible": "Является ли наведение в редакторе видимым",
 			"editorLangId": "Идентификатор языка редактора",
-			"editorReadonly": "Доступен ли редактор только для чтения",
+			"editorReadonly": "Является ли редактор доступным только для чтения",
 			"editorTabMovesFocus": "Перемещается ли фокус с редактора при нажатии клавиши TAB",
 			"editorTextFocus": "Находится ли фокус на тексте в редакторе (курсор мигает)",
 			"inCompositeEditor": "Является ли редактор частью большего редактора (например, записных книжек)",
@@ -727,6 +771,35 @@
 			"stickyScrollVisible": "Отображается ли залипание прокрутки",
 			"textInputFocus": "Находится ли фокус на редакторе или на поле ввода форматированного текста (курсор мигает)"
 		},
+		"vs/editor/common/languages": {
+			"Array": "массив",
+			"Boolean": "логическое значение",
+			"Class": "класс",
+			"Constant": "константа",
+			"Constructor": "конструктор",
+			"Enum": "перечисление",
+			"EnumMember": "элемент перечисления",
+			"Event": "событие",
+			"Field": "поле",
+			"File": "файл",
+			"Function": "функция",
+			"Interface": "интерфейс",
+			"Key": "ключ",
+			"Method": "метод",
+			"Module": "модуль",
+			"Namespace": "пространство имен",
+			"Null": "NULL",
+			"Number": "число",
+			"Object": "объект",
+			"Operator": "оператор",
+			"Package": "пакет",
+			"Property": "свойство",
+			"String": "строка",
+			"Struct": "структура",
+			"TypeParameter": "параметр типа",
+			"Variable": "Переменная",
+			"symbolAriaLabel": "{0} ({1})"
+		},
 		"vs/editor/common/languages/modesRegistry": {
 			"plainText.alias": "Простой текст"
 		},
@@ -736,25 +809,26 @@
 		"vs/editor/common/standaloneStrings": {
 			"accessibilityHelpMessage": "Нажмите ALT+F1 для доступа к параметрам специальных возможностей.",
 			"accessibilityHelpTitle": "Справка по специальным возможностям",
-			"auto_off": "The editor is configured to never be optimized for usage with a Screen Reader",
-			"auto_on": "Редактор настроен для оптимальной работы со средством чтения с экрана.",
+			"auto_off": "Приложение не настроено для оптимальной работы со средством чтения с экрана.",
+			"auto_on": "Приложение настроено для оптимальной работы со средством чтения с экрана.",
 			"bulkEditServiceSummary": "Внесено изменений в файлах ({1}): {0}.",
-			"changeConfigToOnMac": "Чтобы оптимизировать редактор для использования со средством чтения с экрана, нажмите COMMAND+E.",
-			"changeConfigToOnWinLinux": "Чтобы оптимизировать редактор для использования со средством чтения с экрана, нажмите CTRL+E.",
-			"editableDiffEditor": "You are in a pane of a diff editor.",
-			"editableEditor": "You are in a code editor",
+			"changeConfigToOnMac": "Чтобы оптимизировать приложение для использования со средством чтения с экрана, нажмите COMMMAND+E.",
+			"changeConfigToOnWinLinux": "Чтобы оптимизировать приложение для использования со средством чтения с экрана, нажмите CTRL+E.",
+			"editableDiffEditor": "Вы находитесь в области редактора несовпадений.",
+			"editableEditor": "Вы находитесь в редакторе кода",
 			"editorViewAccessibleLabel": "Содержимое редактора",
 			"gotoLineActionLabel": "Перейти к строке/столбцу...",
 			"helpQuickAccess": "Показать всех поставщиков быстрого доступа",
 			"inspectTokens": "Разработчик: проверить токены",
-			"openDoc": "Press H now to open a browser window with more information related to editor accessibility.",
-			"openingDocs": "Открывается страница документации о специальных возможностях редактора.",
+			"openingDocs": "Открывается страница документации о специальных возможностях.",
 			"quickCommandActionHelp": "Показать и выполнить команды",
 			"quickCommandActionLabel": "Палитра команд",
 			"quickOutlineActionLabel": "Перейти к символу...",
 			"quickOutlineByCategoryActionLabel": "Перейти к символу по категориям...",
-			"readonlyDiffEditor": "You are in a read-only pane of a diff editor.",
-			"readonlyEditor": "You are in a read-only code editor",
+			"readonlyDiffEditor": "Вы находитесь в области редактора несовпадений с доступом только для чтения.",
+			"readonlyEditor": "Вы находитесь в редакторе кода с доступом только для чтения",
+			"screenReaderModeDisabled": "Оптимизированный режим средства чтения с экрана отключен.",
+			"screenReaderModeEnabled": "Оптимизированный режим средства чтения с экрана включен.",
 			"showAccessibilityHelpAction": "Показать справку по специальным возможностям",
 			"tabFocusModeOffMsg": "При нажатии клавиши TAB в текущем редакторе будет вставлен символ табуляции. Чтобы изменить это поведение, нажмите клавишу {0}.",
 			"tabFocusModeOffMsgNoKb": "При нажатии клавиши TAB в текущем редакторе будет вставлен символ табуляции. Команду {0} сейчас невозможно выполнить с помощью настраиваемого сочетания клавиш.",
@@ -955,7 +1029,7 @@
 			"findSelectionIcon": "Значок для кнопки \"Найти в выбранном\" в мини-приложении поиска в редакторе.",
 			"label.closeButton": "Закрыть",
 			"label.find": "Найти",
-			"label.findDialog": "Find / Replace",
+			"label.findDialog": "Поиск и замена",
 			"label.matchesLocation": "{0} из {1}",
 			"label.nextMatchButton": "Следующее совпадение",
 			"label.noResults": "Результаты отсутствуют",
@@ -1109,7 +1183,8 @@
 			"location.kb": "Символ {0} из {1}, {2} для следующего"
 		},
 		"vs/editor/contrib/hover/browser/hover": {
-			"escapeFocusHover": "Выйти из наведения в фокусе",
+			"chatAccessibleViewHint": "Проверьте этот аспект в доступном представлении с помощью {0}",
+			"chatAccessibleViewHintNoKb": "Проверьте этот аспект в доступном представлении с помощью команды \"Открыть доступное представление\", которая в настоящее время недоступна для активации с помощью сочетания клавиш",
 			"goToBottomHover": "Перейти к нижнему наведению",
 			"goToTopHover": "Перейти к верхнему наведению",
 			"pageDownHover": "Перейти на страницу вниз в наведении",
@@ -1411,7 +1486,7 @@
 		"vs/editor/contrib/stickyScroll/browser/stickyScrollActions": {
 			"focusStickyScroll": "Фокус на залипании прокрутки",
 			"goToFocusedStickyScrollLine.title": "Перейти к строке залипания прокрутки, которая находится в фокусе",
-			"miStickyScroll": "&&&Залипание прокрутки",
+			"miStickyScroll": "&&Залипание прокрутки",
 			"mifocusStickyScroll": "&&Фокус на залипании прокрутки",
 			"mitoggleStickyScroll": "&&Переключить залипание прокрутки",
 			"selectEditor.title": "Выберите редактор",
@@ -1451,8 +1526,8 @@
 			"editorSuggestWidgetSelectedIconForeground": "Цвет переднего плана значка выбранной записи в мини-приложении предложений.",
 			"editorSuggestWidgetStatusForeground": "Цвет переднего плана для состояния рекомендации мини-приложения.",
 			"label.desc": "{0}, {1}",
-			"label.detail": "{0}{1}",
-			"label.full": "{0}{1}, {2}",
+			"label.detail": "{0} {1}",
+			"label.full": "{0} {1}, {2}",
 			"suggest": "Предложить",
 			"suggestWidget.loading": "Загрузка...",
 			"suggestWidget.noSuggestions": "Предложения отсутствуют."
@@ -1603,9 +1678,9 @@
 			"selectPrevCodeAction.title": "Выбрать предыдущее действие"
 		},
 		"vs/platform/audioCues/browser/audioCueService": {
-			"audioCues.chatRequestSent": "Chat Request Sent",
-			"audioCues.chatResponsePending": "Chat Response Pending",
-			"audioCues.chatResponseReceived": "Chat Response Received",
+			"audioCues.chatRequestSent": "Отправлен запрос на чат",
+			"audioCues.chatResponsePending": "Ожидание ответа чата",
+			"audioCues.chatResponseReceived": "Получен ответ чата",
 			"audioCues.diffLineDeleted": "Удалена разностная строка",
 			"audioCues.diffLineInserted": "Вставлена разностная строка",
 			"audioCues.diffLineModified": "Изменена строка различий",
@@ -1691,6 +1766,7 @@
 			"cliDataDir": "Каталог, в котором должны храниться метаданные CLI.",
 			"deprecated.useInstead": "Взамен используйте {0}.",
 			"diff": "Сравнение двух файлов друг с другом",
+			"disableChromiumSandbox": "Используйте этот параметр только в том случае, если требуется запустить приложение от имени пользователя sudo в Linux или от имени пользователя с повышенными правами в среде AppLocker в Windows.",
 			"disableExtension": "Отключите предоставленное расширение. Этот параметр не сохраняется и действует только в том случае, если команда открывает новое окно.",
 			"disableExtensions": "Отключите все установленные расширения. Этот параметр не сохраняется и действует только в том случае, если команда открывает новое окно.",
 			"disableGPU": "Отключить аппаратное ускорение GPU.",
@@ -1746,7 +1822,7 @@
 			"multipleDependentsError": "Не удается удалить расширение \"{0}\". От него зависят расширения \"{1}\", \"{2}\" и другие расширения.",
 			"multipleIndirectDependentsError": "Не удается удалить расширение \"{0}\". Для его удаления необходимо удалить расширения \"{1}\", \"{2}\", \"{3}\" и другие расширения, которые зависят от него.",
 			"notFoundCompatibleDependency": "Невозможно установить расширение \"{0}\" из-за несовместимости с текущей версией {1} (версия {2}).",
-			"notFoundCompatiblePrereleaseDependency": "Невозможно установить предварительный выпуск расширения \"{0}\" из-за несовместимости с текущей версией {1} (версия {2}).",
+			"notFoundDeprecatedReplacementExtension": "Невозможно установить расширение \"{0}\", так как оно устарело, а заменяющее расширение \"{1}\" не может быть найдено.",
 			"notFoundReleaseExtension": "Не удается установить версию выпуска \"{0}\", так как отсутствует версия выпуска.",
 			"singleDependentError": "Не удается удалить расширение \"{0}\". От него зависит расширение \"{1}\".",
 			"singleIndirectDependentError": "Не удается удалить расширение \"{0}\". Для его удаления необходимо удалить расширения \"{1}\" и \"{2}\", которые зависят от него.",
@@ -1863,7 +1939,7 @@
 			"deleteFailedTrashAndAtomicUnsupported": "Не удалось атомарно удалить файл \"{0}\", так как включено использование корзины.",
 			"deleteFailedTrashUnsupported": "Не удалось удалить файл \"{0}\" через корзину, так как что поставщик не поддерживает это.",
 			"err.read": "Не удалось считать файл \"{0}\" ({1})",
-			"err.readonly": "Не удается изменить файл \"{0}\", доступный только для чтения",
+			"err.readonly": "Невозможно изменить файл только для чтения '{0}'",
 			"err.write": "Не удается записать файл \"{0}\" ({1})",
 			"fileExists": "Не удается создать файл \"{0}\", так как он уже существует и флаг перезаписи не установлен.",
 			"fileIsDirectoryReadError": "Не удалось считать файл \"{0}\", который на самом деле является каталогом",
@@ -2053,12 +2129,14 @@
 			"remoteTunnelService.authorizing": "Подключение в качестве {0} ({1})",
 			"remoteTunnelService.building": "Сборка CLI из источников",
 			"remoteTunnelService.openTunnel": "Открытие туннеля",
-			"remoteTunnelService.openTunnelWithName": "Открытие туннеля {0}"
+			"remoteTunnelService.openTunnelWithName": "Открытие туннеля {0}",
+			"remoteTunnelService.serviceInstallFailed": "Не удалось установить туннель как службу, начиная с сеанса..."
 		},
 		"vs/platform/request/common/request": {
 			"httpConfigurationTitle": "HTTP",
 			"proxy": "Параметр используемого прокси-сервера. Если не установлен, он будет унаследовать от переменных среды \"http_proxy\" и \"https_proxy\".",
 			"proxyAuthorization": "Значение, которое будет отправляться в качестве заголовка \"Proxy-Authorization\" для каждого сетевого запроса.",
+			"proxyKerberosServicePrincipal": "Переопределяет имя основной службы для проверки подлинности Kerberos с помощью HTTP-прокси. Если значение не задано, используется значение по умолчанию на основе имени узла прокси-сервера.",
 			"proxySupport": "Используйте поддержку прокси-сервера для расширений.",
 			"proxySupportFallback": "Включить поддержку прокси-сервера для расширений, вернуться к вариантам запроса, если прокси-сервер не найден.",
 			"proxySupportOff": "Отключить поддержку прокси-сервера для расширений.",
@@ -2067,10 +2145,6 @@
 			"request": "Сетевые запросы",
 			"strictSSL": "Управляет тем, должен ли сертификат прокси-сервера проверяться по списку предоставленных ЦС.",
 			"systemCertificates": "Определяет, нужно ли загружать сертификаты ЦС из ОС. (В Windows и macOS после отключения этой функции требуется перезагрузить окно.)"
-		},
-		"vs/platform/secrets/common/secrets": {
-			"notEncrypted": "Secrets are not being stored on disk because encryption is not available in this environment.",
-			"openTroubleshooting": "Open Troubleshooting"
 		},
 		"vs/platform/shell/node/shellEnv": {
 			"resolveShellEnvError": "Невозможно разрешить среду оболочки: {0}",
@@ -2099,14 +2173,17 @@
 			"telemetry.usage": "Данные об использовании",
 			"telemetryConfigurationTitle": "Телеметрия"
 		},
+		"vs/platform/terminal/common/terminalLogService": {
+			"terminalLoggerName": "Терминал"
+		},
 		"vs/platform/terminal/common/terminalPlatformConfiguration": {
-			"terminal.integrated.automationProfile.linux": "The terminal profile to use on Linux for automation-related terminal usage like tasks and debug.",
-			"terminal.integrated.automationProfile.osx": "The terminal profile to use on macOS for automation-related terminal usage like tasks and debug.",
+			"terminal.integrated.automationProfile.linux": "Профиль терминала в Linux для использования терминалов, связанного с автоматизацией, такого как задачи и отладка.",
+			"terminal.integrated.automationProfile.osx": "Профиль терминала в macOS для использования терминалов, связанного с автоматизацией, такого как задачи и отладка.",
 			"terminal.integrated.automationProfile.windows": "Профиль терминала, используемый для использования терминалов, связанных с автоматизацией, таких как задачи и отладка. Этот параметр будет пропущен, если задано {0} (сейчас не рекомендуется).",
 			"terminal.integrated.confirmIgnoreProcesses": "Набор имен процессов, которые нужно игнорировать при использовании параметра {0}.",
-			"terminal.integrated.defaultProfile.linux": "The default terminal profile on Linux.",
-			"terminal.integrated.defaultProfile.osx": "The default terminal profile on macOS.",
-			"terminal.integrated.defaultProfile.windows": "The default terminal profile on Windows.",
+			"terminal.integrated.defaultProfile.linux": "Профиль терминала по умолчанию в Linux.",
+			"terminal.integrated.defaultProfile.osx": "Профиль терминала по умолчанию в macOS.",
+			"terminal.integrated.defaultProfile.windows": "Профиль терминала по умолчанию в Windows.",
 			"terminal.integrated.inheritEnv": "Должны ли новые оболочки наследовать свою среду от VS Code, который может попытаться получить оболочку входа для обеспечения инициализации $PATH и других переменных разработки. Это не влияет на Windows.",
 			"terminal.integrated.persistentSessionScrollback": "Определяет максимальное количество строк, которое будет восстановлено при повторном подключении к постоянному сеансу терминала. Увеличение этого параметра приведет к восстановлению дополнительных строк прокрутки за счет увеличения объема памяти и увеличит время, необходимое для подключения к терминалам при запуске. Для вступления в силу этого параметра требуется перезагрузка. Параметру должно быть присвоено значение, меньшее или равное \"#terminal.integrated.scrollback#\".",
 			"terminal.integrated.profile": "Набор настроек профиля терминала для {0}, позволяющий добавлять, удалять или изменять способ запуска терминалов. Профили состоят из обязательного пути, необязательных аргументов и других параметров представления.\r\n\r\nДля переопределения существующего профиля используйте имя этого профиля в качестве ключа, например:\r\n\r\n{1}\r\n\r\n{2}Подробнее о настройке профилей{3}.",
@@ -2179,7 +2256,9 @@
 			"contrastBorder": "Дополнительная граница вокруг элементов, которая отделяет их от других элементов для улучшения контраста.",
 			"descriptionForeground": "Цвет текста элемента, содержащего пояснения, например, для метки.",
 			"diffDiagonalFill": "Цвет диагональной заливки для редактора несовпадений. Диагональная заливка используется в размещаемых рядом представлениях несовпадений.",
-			"diffEditor.unchangedRegionBackground": "Цвет неизмененных блоков в редакторе несовпадений.",
+			"diffEditor.unchangedCodeBackground": "Цвет фона неизмененного кода в редакторе несовпадений.",
+			"diffEditor.unchangedRegionBackground": "Цвет фона неизмененных блоков в редакторе несовпадений.",
+			"diffEditor.unchangedRegionForeground": "Цвет переднего плана неизмененных блоков в редакторе несовпадений.",
 			"diffEditorBorder": "Цвет границы между двумя текстовыми редакторами.",
 			"diffEditorInserted": "Цвет фона для вставленного текста. Цвет не должен быть непрозрачным, чтобы не скрыть расположенные ниже элементы оформления.",
 			"diffEditorInsertedLineGutter": "Цвет фона для поля, где вставлены строки.",
@@ -2752,9 +2831,9 @@
 			"folderStatusMessageRemoveSingleFolder": "Расширение \"{0}\" удалило одну папку из рабочей области"
 		},
 		"vs/workbench/api/browser/statusBarExtensionPoint": {
-			"accessibilityInformation": "Defines the role and aria label to be used when the status bar entry is focused.",
-			"accessibilityInformation.label": "The aria label of the status bar entry. Defaults to the entry's text.",
-			"accessibilityInformation.role": "The role of the status bar entry which defines how a screen reader interacts with it. More about aria roles can be found here https://w3c.github.io/aria/#widget_roles",
+			"accessibilityInformation": "Определяет роль и метку ARIA, которые будут использоваться, когда фокус переходит на запись в строке состояния.",
+			"accessibilityInformation.label": "Метка ARIA записи в строке состояния. По умолчанию используется текст записи.",
+			"accessibilityInformation.role": "Роль записи в строке состояния, которая определяет, как с ней взаимодействует средство чтения с экрана. Дополнительные сведения о ролях ARIA можно найти здесь: https://w3c.github.io/aria/#widget_roles",
 			"alignment": "Выравнивание записи строки состояния.",
 			"command": "Команда, выполняемая при щелчке записи строки состояния.",
 			"id": "Идентификатор записи строки состояния. Должно быть уникальным в расширении. При вызове \"vscode.window.createStatusBarItem(id, ...)\"-API должно использоваться то же значение.",
@@ -2762,7 +2841,7 @@
 			"name": "Имя записи, например \"Индикатор языка Python\", \"Состояние Git\" и т. д. Старайтесь использовать короткое, но достаточно понятное имя, чтобы пользователи могли понять назначение элемента строки состояния.",
 			"priority": "Приоритет записи строки состояния. Чем больше значение, тем левее должен отображаться элемент.",
 			"text": "Текст, отображающийся для записи. Вы можете внедрить значки в текст, используя синтаксис \"$(<name>)\", например \"Hello $(globe)!\".",
-			"tooltip": "The tooltip text for the entry.",
+			"tooltip": "Текст подсказки для записи.",
 			"vscode.extension.contributes.statusBarItems": "Добавляет элементы в строку состояния."
 		},
 		"vs/workbench/api/browser/viewsExtensionPoint": {
@@ -2870,6 +2949,10 @@
 			"remote": "Хост-процесс для расширений (удаленный)",
 			"worker": "Хост-процесс для расширений (рабочая роль)"
 		},
+		"vs/workbench/api/common/extHostNotebook": {
+			"err.readonly": "Невозможно изменить файл только для чтения \"{0}\"",
+			"fileModifiedError": "Файл изменен с"
+		},
 		"vs/workbench/api/common/extHostProgress": {
 			"extensionSource": "{0} (расширение)"
 		},
@@ -2885,6 +2968,10 @@
 		},
 		"vs/workbench/api/common/extHostTreeViews": {
 			"treeView.duplicateElement": "Элемент с идентификационным номером {0} уже зарегестрирован"
+		},
+		"vs/workbench/api/common/extHostTunnelService": {
+			"tunnelPrivacy.private": "Частный",
+			"tunnelPrivacy.public": "Общедоступный"
 		},
 		"vs/workbench/api/common/extHostWorkspace": {
 			"updateerror": "Расширению \"{0}\" не удалось обновить папки рабочей области: {1}"
@@ -2903,27 +2990,20 @@
 		"vs/workbench/api/node/extHostDebugService": {
 			"debug.terminal.title": "Процесс отладки"
 		},
-		"vs/workbench/api/node/extHostTunnelService": {
-			"tunnelPrivacy.private": "Частный",
-			"tunnelPrivacy.public": "Общедоступный"
-		},
 		"vs/workbench/browser/actions/developerActions": {
 			"inspect context keys": "Проверить ключи контекста",
-			"keyboardShortcutsFormat.command": "Название команды.",
-			"keyboardShortcutsFormat.commandAndKeys": "Заголовок команды и ключи.",
-			"keyboardShortcutsFormat.commandWithGroup": "Название команды с префиксом группы.",
-			"keyboardShortcutsFormat.commandWithGroupAndKeys": "Название команды и клавиши, команда с префиксом группы.",
-			"keyboardShortcutsFormat.keys": "Клавиши.",
 			"logStorage": "Содержимое базы данных хранилища журналов",
 			"logWorkingCopies": "Рабочие копии журнала",
 			"screencastMode.fontSize": "Задает размер шрифта (в пикселах) для клавиатуры в режиме записи с экрана.",
-			"screencastMode.hideSingleEditorCursorMoves": "Скрыть команды единичного перемещения курсора редактора в режиме записи с экрана.",
+			"screencastMode.keyboardOptions.description": "Параметры настройки наложения клавиатуры в режиме экранной трансляции.",
+			"screencastMode.keyboardOptions.showCommandGroups": "Показывать имена групп команд, когда команды также отображаются.",
+			"screencastMode.keyboardOptions.showCommands": "Показывать имена команд.",
+			"screencastMode.keyboardOptions.showKeys": "Показать необработанные ключи.",
+			"screencastMode.keyboardOptions.showSingleEditorCursorMoves": "Показать отдельные команды перемещения курсора редактора.",
 			"screencastMode.keyboardOverlayTimeout": "Определяет время (в миллисекундах), в течение которого отображается наложение клавиатуры в режиме записи с экрана.",
-			"screencastMode.keyboardShortcutsFormat": "Определяет, что отображается в наложении клавиатуры при отображении сочетаний клавиш.",
 			"screencastMode.location.verticalPosition": "Определяет вертикальное смещение перекрытия для режима записи с экрана в нижней части окна в процентах от высоты рабочей области.",
 			"screencastMode.mouseIndicatorColor": "Задает цвет индикатора мыши в шестнадцатеричном формате (#RGB, #RGBA, #RRGGBB или #RRGGBBAA) в режиме записи с экрана.",
 			"screencastMode.mouseIndicatorSize": "Задает размер курсора мыши (в пикселях) в режиме записи с экрана.",
-			"screencastMode.onlyKeyboardShortcuts": "Показывать только сочетания клавиш в режиме записи с экрана (не включать имена действий).",
 			"screencastModeConfigurationTitle": "Режим записи с экрана",
 			"storageLogDialogDetails": "Откройте средства разработчика в меню и выберите вкладку \"Консоль\".",
 			"storageLogDialogMessage": "Содержимое базы данных хранилища зарегистрировано в средствах разработчика.",
@@ -3518,7 +3598,7 @@
 			"unlockEditorGroup": "Разблокировать группу редакторов"
 		},
 		"vs/workbench/browser/parts/editor/editorConfiguration": {
-			"editor.editorAssociations": "Настройте стандартные маски для редакторов (например, `\"*.hex\": \"hexEditor.hexedit\"`). Они имеют приоритет над поведением по умолчанию.",
+			"editor.editorAssociations": "Настройте [шаблоны подстановки](https://aka.ms/vscode-glob-patterns) для редакторов (например, `\"*.hex\": \"hexEditor.hexedit\"`). Они имеют приоритет над поведением по умолчанию.",
 			"editorLargeFileSizeConfirmation": "Определяет минимальный размер файла в МБ перед запросом подтверждения при открытии в редакторе. Обратите внимание, что этот параметр может применяться не ко всем типам редакторов и средам.",
 			"interactiveWindow": "Интерактивное окно",
 			"markdownPreview": "Предварительный просмотр Markdown",
@@ -3684,8 +3764,12 @@
 			"toggleDoNotDisturbMode": "Переключить режим \"Не беспокоить\""
 		},
 		"vs/workbench/browser/parts/notifications/notificationsList": {
+			"notificationAccessibleViewHint": "Проверка ответа в доступном представлении с помощью {0}",
+			"notificationAccessibleViewHintNoKb": "Проверьте ответ в доступном представлении с помощью команды \"Открыть доступное представление\", которая в настоящее время недоступна для активации с помощью сочетания клавиш",
 			"notificationAriaLabel": "{0}, уведомление",
+			"notificationAriaLabelHint": "{0}, уведомление {1}",
 			"notificationWithSourceAriaLabel": "{0}, источник: {1}, уведомление",
+			"notificationWithSourceAriaLabelHint": "{0}, источник: {1}, уведомление {2}",
 			"notificationsList": "Список уведомлений"
 		},
 		"vs/workbench/browser/parts/notifications/notificationsStatus": {
@@ -3894,13 +3978,14 @@
 			"decorations.badges": "Определяет, следует ли использовать эмблемы в декораторах файла в редакторе.",
 			"decorations.colors": "Определяет, следует ли использовать цвета в декораторах файла в редакторе.",
 			"dirty": "\"${dirty}\": указывает, когда в активном редакторе есть несохраненные изменения.",
+			"doubleClickTabToToggleEditorGroupSizes": "Определяет, следует ли развернуть/восстановить группу редакторов при двойном нажатии вкладки. Это значение игнорируется, если параметр \"#workbench.editor.showTabs#\" отключен.",
 			"editorOpenPositioning": "Определяет место открытия редакторов. Выберите 'left' или 'right', чтобы открывать редакторы слева или справа от активного редактора. Выберите 'first' или 'last', чтобы открывать редакторы независимо от активного редактора.",
 			"editorTabCloseButton": "Определяет положение кнопок \"Закрыть\" на вкладках редактора или отключает их, если задано значение \"off\". Это значение игнорируется, если параметр \"#workbench.editor.showTabs#\" отключен.",
 			"enableMenuBarMnemonics": "Определяет, можно ли открыть главные меню с помощью сочетаний клавиш ALT+клавиша. Отключение мнемоник позволяет вместо этого привязать такие сочетания ALT+клавиша к командам редактора.",
 			"enablePreview": "Определяет, будут ли открытые редакторы отображаться в режиме предварительного просмотра. Редакторы в режиме предварительного просмотра не остаются открытыми и используются повторно, пока не будут явно закреплены в открытом состоянии (с помощью двойного щелчка или открытия режима редактирования). Имена файлов в таких редакторах выделяются курсивом.",
 			"enablePreviewFromCodeNavigation": "Определяет, остаются ли редакторы в режиме предварительного просмотра при запуске в них навигации по коду. Редакторы в режиме предварительного просмотра не остаются открытыми и используются повторно, пока не будут явно закреплены в открытом состоянии (с помощью двойного щелчка или открытия режима редактирования). Это значение пропускается, если отключен параметр #workbench.editor.enablePreview#.",
 			"enablePreviewFromQuickOpen": "Определяет, будут ли редакторы, открытые с помощью Quick Open, отображаться в режиме предварительного просмотра. Редакторы в режиме предварительного просмотра не остаются открытыми и используются повторно, пока не будут явно закреплены в открытом состоянии (с помощью двойного щелчка или открытия режима редактирования). Если включено, нажмите и удерживайте клавишу CTRL перед выбором, чтобы открыть редактор без предварительного просмотра. Это значение пропускается, если отключен параметр #workbench.editor.enablePreview#.",
-			"exclude": "Настройте пути или [стандартные маски](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) для исключения файлов из локального журнала файлов. Стандартные маски всегда вычисляются относительно пути к папке рабочей области, если они не являются абсолютными путями. Изменение этого параметра не влияет на существующие записи локального журнала файлов.",
+			"exclude": "Настройте пути или [универсальные шаблоны](https://aka.ms/vscode-glob-patterns) для исключения файлов из локальной истории файлов. Шаблоны подстановки всегда оцениваются относительно пути к папке рабочей области, если только они не являются абсолютными путями. Изменение этого параметра не влияет на существующие записи истории локальных файлов.",
 			"focusRecentEditorAfterClose": "Определяет, закрываются ли вкладки в порядке использования, начиная с последней, либо слева направо.",
 			"folderName": "\"${folderName}\": имя папки рабочей области, где находится файл (например, myFolder).",
 			"folderPath": "\"${folderPath}\": путь к папке рабочей области, где содержится файл (например, /Users/Development/myFolder).",
@@ -3941,9 +4026,6 @@
 			"rootNameShort": "\"${rootNameShort}\": сокращенное имя рабочей области без суффиксов (например, myFolder, myRemoteFolder или myWorkspace)",
 			"rootPath": "\"${rootPath}\": путь к открытой рабочей области или папке (например, /Users/Development/myWorkspace).",
 			"scrollToSwitchTabs": "Определяет, приводит ли прокрутка по вкладкам к их открытию. По умолчанию при прокрутке вкладки только отображаются, но не открываются. Чтобы изменить это поведение, можно нажать и удерживать клавишу SHIFT во время прокрутки. Это значение игнорируется, если параметр #workbench.editor.showTabs# отключен.",
-			"security.allowedUNCHosts": "Набор имен узлов UNC (без начальной или конечной обратной косой черты, например \"192.168.0.1\" или \"my-server\") для разрешения без подтверждения пользователем. Если доступ к узлу UNC запрещен с помощью этого параметра или не подтвержден пользователем, произойдет ошибка, а операция будет остановлена. При изменении этого параметра требуется перезагрузка. Дополнительные сведения об этом параметре см. на странице https://aka.ms/vscode-windows-unc.",
-			"security.allowedUNCHosts.patternErrorMessage": "Имена узлов UNC не должны содержать обратную косую черту.",
-			"security.restrictUNCAccess": "Если этот параметр включен, разрешается доступ только к именам узлов UNC, разрешенным параметром \"#security.allowedUNCHosts#\" или после подтверждения пользователем. Дополнительные сведения об этом параметре см. на странице https://aka.ms/vscode-windows-unc.",
 			"separator": "\"${separator}\": условный разделитель (\"-\"), который отображается, только если он окружен переменными со значениями или статическим текстом.",
 			"settings.editor.desc": "Определяет, какой редактор параметров использовать по умолчанию.",
 			"settings.editor.json": "Использовать редактор файлов JSON.",
@@ -4012,12 +4094,14 @@
 			"workbench.editor.showLanguageDetectionHints.notebook": "Показывать в редакторах записных книжек",
 			"workbench.editor.splitInGroupLayoutHorizontal": "Редакторы размещены слева направо.",
 			"workbench.editor.splitInGroupLayoutVertical": "Редакторы размещены сверху вниз.",
+			"workbench.editor.splitSizingAuto": "Разделяет активную группу редакторов на равные части, если только все группы редакторов уже не разделены на равные части. В этом случае разделяет все группы редакторов на равные части.",
 			"workbench.editor.splitSizingDistribute": "Разделяет группы редакторов на равные части.",
 			"workbench.editor.splitSizingSplit": "Разделяет активную группу редакторов на равные части.",
 			"workbench.editor.tabSizing.fit": "Всегда оставлять вкладки достаточно большим для отображения всей метки редактора.",
 			"workbench.editor.tabSizing.fixed": "Сделайте все вкладки одинакового размера, что позволяет уменьшить их размер, если недостаточно свободного места для одновременного отображения всех вкладок.",
 			"workbench.editor.tabSizing.shrink": "Уменьшать вкладки, если свободного пространства недостаточно для отображения всех вкладок.",
-			"workbench.editor.tabSizingFixedMaxWidth": "Controls the maximum width of tabs when `#workbench.editor.tabSizing#` size is set to `fixed`.",
+			"workbench.editor.tabSizingFixedMaxWidth": "Управляет максимальной шириной вкладок, если для размера \"#workbench.editor.tabSizing#\" задано значение \"fixed\".",
+			"workbench.editor.tabSizingFixedMinWidth": "Управляет минимальной шириной вкладок, если для размера \"#workbench.editor.tabSizing#\" задано значение \"fixed\".",
 			"workbench.editor.titleScrollbarSizing.default": "Размер по умолчанию.",
 			"workbench.editor.titleScrollbarSizing.large": "Увеличивает размер, упрощая захват с помощью мыши.",
 			"workbench.editor.untitled.labelFormat.content": "Имя безымянного файла является производным от содержимого его первой строки, если только не имеется соответствующий путь к файлу. Возврат к этому имени выполняется, если строка является пустой или содержит символы, отличные от словообразующих.",
@@ -4048,6 +4132,9 @@
 		},
 		"vs/workbench/common/configuration": {
 			"applicationConfigurationTitle": "Приложение",
+			"security.allowedUNCHosts": "Набор имен узлов UNC (без начальной или конечной обратной косой черты, например \"192.168.0.1\" или \"my-server\") для разрешения без подтверждения пользователем. Если доступ к узлу UNC запрещен с помощью этого параметра или не подтвержден пользователем, произойдет ошибка, а операция будет остановлена. При изменении этого параметра требуется перезагрузка. Дополнительные сведения об этом параметре см. на странице https://aka.ms/vscode-windows-unc.",
+			"security.allowedUNCHosts.patternErrorMessage": "Имена узлов UNC не должны содержать обратную косую черту.",
+			"security.restrictUNCAccess": "Если этот параметр включен, разрешается доступ только к именам узлов UNC, разрешенным параметром \"#security.allowedUNCHosts#\" или после подтверждения пользователем. Дополнительные сведения об этом параметре см. на странице https://aka.ms/vscode-windows-unc.",
 			"securityConfigurationTitle": "Безопасность",
 			"workbenchConfigurationTitle": "Рабочее место"
 		},
@@ -4056,7 +4143,7 @@
 			"activeEditor": "Идентификатор активного редактора",
 			"activeEditorAvailableEditorIds": "Доступные идентификаторы редакторов, которые можно использовать для активного редактора",
 			"activeEditorCanRevert": "Может ли активный редактор отменять изменения",
-			"activeEditorCanToggleReadonly": "Может ли активный редактор переключаться между доступом только для чтения и возможностью записи",
+			"activeEditorCanToggleReadonly": "Может ли активный редактор переключаться между режимом только для чтения и возможностью записи.",
 			"activeEditorGroupEmpty": "Является ли активная группа редакторов пустой",
 			"activeEditorGroupIndex": "Индекс активной группы редакторов",
 			"activeEditorGroupLast": "Является ли активная группа редакторов последней группой",
@@ -4283,6 +4370,7 @@
 		"vs/workbench/electron-sandbox/desktop.contribution": {
 			"application.shellEnvironmentResolutionTimeout": "Управляет временем ожидания (в секундах) перед отказом от разрешения среды оболочки, когда приложение еще не запущено из терминала. Дополнительные сведения см. в [документации](https://go.microsoft.com/fwlink/?linkid=2149667).",
 			"argv.crashReporterId": "Уникальный идентификатор для корреляции отчетов о сбоях, отправляемых из этого экземпляра приложения.",
+			"argv.disableChromiumSandbox": "Отключает песочницу Chromium. Это полезно при запуске VS Code с повышенными правами в Linux и в AppLocker под Windows.",
 			"argv.disableHardwareAcceleration": "Отключает аппаратное ускорение. Изменять этот параметр следует только при наличии проблем с графикой.",
 			"argv.enableCrashReporter": "Позволяет отключать отчеты о сбоях и при изменении значения перезапускает приложение.",
 			"argv.enebleProposedApi": "Включить предложенные API для списка идентификаторов расширений (например, \"vscode.git\"). Предложенные API являются нестабильными и могут работать со сбоями. Этот параметр можно устанавливать только при разработке и тестировании расширений.",
@@ -4297,6 +4385,7 @@
 			"mergeAllWindowTabs": "Объединить все окна",
 			"miExit": "В&&ыход",
 			"moveWindowTabToNewWindow": "Переместить вкладку окна в новое окно",
+			"nativeContextMenuLocation": "Разрешить операционной системе управлять расположением контекстного меню в случаях, когда меню должно появиться под указателем мыши.",
 			"newTab": "Вкладка нового окна",
 			"newWindowDimensions": "Определяет размеры нового открывающегося окна, если по крайней мере одно окно уже открыто. Обратите внимание, что этот параметр не влияет на первое открываемое окно. Размеры и расположение первого окна всегда будут совпадать с размерами и расположением этого окна перед закрытием.",
 			"openWithoutArgumentsInNewWindow": "Управляет тем, необходимо ли открыть новое пустое окно при запуске второго экземпляра без аргументов или перевести фокус на последний запущенный экземпляр.\r\nОбратите внимание, что в некоторых случаях этот параметр игнорируется (например, при использовании параметров \"--new-window\" или \"--reuse-window\"). ",
@@ -4334,7 +4423,7 @@
 			"join.closeStorage": "Сохранение состояния пользовательского интерфейса"
 		},
 		"vs/workbench/electron-sandbox/parts/dialogs/dialogHandler": {
-			"aboutDetail": "Версия: {0}\r\nФиксация: {1}\r\nДата: {2}\r\nElectron: {3}\r\nChromium: {4}\r\nNode.js: {5}\r\nV8: {6}\r\nОС: {7}",
+			"aboutDetail": "Версия: {0}\r\nФиксация: {1}\r\nДата: {2}\r\nElectron: {3}\r\nElectronBuildId: {4}\r\nChromium: {5}\r\nNode.js: {6}\r\nV8: {7}\r\nОС: {8}",
 			"copy": "&&Копировать",
 			"okButton": "ОК"
 		},
@@ -4344,6 +4433,7 @@
 			"closeWindowMessage": "Подтверждаете закрытие окна?",
 			"configure": "Настройка",
 			"doNotAskAgain": "Не спрашивать снова",
+			"downloadArmBuild": "Скачать",
 			"exitButtonLabel": "&&Выход",
 			"keychainWriteError": "Не удалось записать сведения о входе в цепочку ключей. Ошибка: \"{0}\".",
 			"learnMore": "Дополнительные сведения",
@@ -4362,6 +4452,7 @@
 			"resolveShellEnvironment": "Разрешение среды оболочки...",
 			"restart": "Перезапустить",
 			"runningAsRoot": "Не рекомендуется запускать {0} с правами привилегированного пользователя.",
+			"runningTranslated": "Вы используете эмулированную версию {0}. Для повышения производительности скачайте собственную версию arm64 сборки {0} для вашего компьютера.",
 			"shutdownErrorClose": "Не удалось закрыть окно из-за непредвиденной ошибки",
 			"shutdownErrorDetail": "Ошибка: {0}",
 			"shutdownErrorLoad": "Не удалось изменить рабочую область из-за непредвиденной ошибки",
@@ -4383,28 +4474,46 @@
 			"windowseolmessage": "{0} в {1} скоро прекратит получать обновления. Рассмотрите возможность обновления версии Windows."
 		},
 		"vs/workbench/contrib/accessibility/browser/accessibility.contribution": {
-			"terminal-help-label": "terminal accessibility help"
+			"editor-help": "справка по специальным возможностям редактора",
+			"hoverAccessibleView": "Представление с поддержкой специальных возможностей при наведении",
+			"notification": "Доступное представление уведомлений",
+			"notification.accessibleView": "Источник {0}: {1}"
 		},
 		"vs/workbench/contrib/accessibility/browser/accessibilityContribution": {
-			"accessibilityConfigurationTitle": "Accessibility",
-			"verbosity.chat.description": "Provide information about how to access the chat help menu when the chat input is focused",
-			"verbosity.diffEditor.description": "Provide information about how to navigate changes in the diff editor when it is focused",
-			"verbosity.interactiveEditor.description": "Provide information about how to access the inline editor chat accessibility help menu when the input is focused",
-			"verbosity.keybindingsEditor.description": "Provide information about how to change a keybinding in the keybindings editor when a row is focused",
-			"verbosity.notebook": "Provide information about how to focus the cell container or inner editor when a notebook cell is focused.",
-			"verbosity.terminal.description": "Provide information about how to access the terminal accessibility help menu when the terminal is focused"
+			"accessibilityConfigurationTitle": "Специальные возможности",
+			"editor.action.accessibilityHelp": "Открыть справку по специальным возможностям",
+			"editor.action.accessibleView": "Открыть представление с поддержкой специальных возможностей",
+			"editor.action.accessibleViewNext": "Показать следующие элементы в доступном представлении",
+			"editor.action.accessibleViewPrevious": "Показать предыдущие элементы в доступном представлении",
+			"verbosity.chat.description": "Укажите сведения о том, как получить доступ к меню справки чата, когда поле ввода чата находится в фокусе",
+			"verbosity.diffEditor.description": "Укажите сведения о том, как перемещаться между изменениями в редакторе несовпадений, когда он находится в фокусе",
+			"verbosity.hover": "Укажите сведения о том, как открыть наведение в доступном представлении.",
+			"verbosity.interactiveEditor.description": "Укажите сведения о том, как получить доступ к справочному меню специальных возможностей чата встроенного редактора, и предупреждение с подсказками, которые описывают, как использовать функцию, когда ввод находится на фокусе",
+			"verbosity.keybindingsEditor.description": "Предоставить сведения о способах изменения привязки клавиш в редакторе привязок клавиш при находящейся в фокусе строке.",
+			"verbosity.notebook": "Укажите сведения о том, как перевести фокус на контейнер ячейки или внутренний редактор, если в фокусе находится ячейка записной книжки.",
+			"verbosity.notification": "Укажите сведения о том, как открыть уведомление в доступном представлении.",
+			"verbosity.terminal.description": "Укажите сведения о том, как получить доступ к меню справки по специальным возможностям терминала, когда он находится в фокусе"
 		},
 		"vs/workbench/contrib/accessibility/browser/accessibleView": {
-			"exit-tip": "Exit this menu via the Escape key.\r\n"
+			"accessibleViewAriaLabel": "{0}",
+			"accessibleViewAriaLabelWithNav": "{0} {1}",
+			"chatAccessibleViewHint": "Проверьте этот аспект в доступном представлении с помощью {0}",
+			"chatAccessibleViewHintNoKb": "Проверьте этот аспект в доступном представлении с помощью команды \"Открыть доступное представление\", которая в настоящее время недоступна для активации с помощью сочетания клавиш",
+			"chatAccessibleViewNextPreviousHint": "Показать следующие элементы ({0}) или предыдущие элементы ({1}) в доступном представлении",
+			"chatAccessibleViewNextPreviousHintNoKb": "Отображайте следующий или предыдущий элемента в доступном представлении, настроив сочетания клавиш для отображения следующего или предыдущего элемента в доступном представлении",
+			"disable-help-hint": "\r\nЧтобы отключить указание \"accessibility.verbosity\" для этой возможности, нажмите клавишу D.\r\n",
+			"disableAccessibilityHelp": "Уровень детализации специальных возможностей {0} отключен",
+			"exit-tip": "Выйдите из этого диалога с помощью клавиши Escape.",
+			"openDoc": "\r\nНажмите клавишу H, чтобы открыть окно браузера с дополнительной информацией о специальных возможностях.\r\n"
 		},
 		"vs/workbench/contrib/audioCues/browser/audioCues.contribution": {
-			"audioCues.chatRequestSent": "Plays a sound when a chat request is made.",
-			"audioCues.chatResponsePending": "Plays a sound on loop while the response is pending.",
-			"audioCues.chatResponseReceived": "Plays a sound on loop while the response has been received.",
+			"audioCues.chatRequestSent": "Воспроизводит звук при выполнении запроса чата.",
+			"audioCues.chatResponsePending": "Воспроизводит звук в цикле, пока ожидается ответ.",
+			"audioCues.chatResponseReceived": "Воспроизводит звук в цикле при получении ответа.",
 			"audioCues.debouncePositionChanges": "Следует ли отменить изменения положения",
-			"audioCues.diffLineDeleted": "Воспроизводит звук при перемещении фокуса на удаленную строку в режиме просмотра различий или на следующее или предыдущее изменение",
-			"audioCues.diffLineInserted": "Воспроизводит звук при перемещении фокуса на вставленную строку в режиме просмотра различий или на следующее или предыдущее изменение",
-			"audioCues.diffLineModified": "Воспроизводит звук при перемещении фокуса на измененную строку в режиме просмотра различий или на следующее или предыдущее изменение",
+			"audioCues.diffLineDeleted": "Воспроизводит звук, когда фокус перемещается на удаленную строку в режиме просмотра с поддержкой специальных возможностей инструмента сравнений или на следующее/предыдущее изменение",
+			"audioCues.diffLineInserted": "Воспроизводит звук при перемещении фокуса на вставленную строку в режиме просмотра инструмента сравнений или на следующее или предыдущее изменение",
+			"audioCues.diffLineModified": "Воспроизводит звук, когда фокус перемещается на измененную строку в режиме просмотра с поддержкой специальных возможностей инструмента сравнений или на следующее/предыдущее изменение",
 			"audioCues.enabled.auto": "Включить звуковой сигнал при подключении средства чтения с экрана.",
 			"audioCues.enabled.off": "Отключить звуковой сигнал.",
 			"audioCues.enabled.on": "Включить звуковой сигнал.",
@@ -4521,27 +4630,32 @@
 			"tree.aria": "Иерархия вызовов"
 		},
 		"vs/workbench/contrib/chat/browser/actions/chatAccessibilityHelp": {
-			"chat-help-label": "Chat accessibility help",
-			"chat.announcement": "Chat responses will be announced as they come in. A response will indicate the number of code blocks, if any, and then the rest of the response.",
-			"chat.overview": "The chat view is comprised of an input box and a request/response list. The input box is used to make requests and the list is used to display responses.",
-			"chat.requestHistory": "In the input box, use up and down arrows to navigate your request history. Edit input and use enter or the submit button to run a new request.",
-			"inline-chat-label": "Inline chat accessibility help",
-			"inlineChat.access": "It can be activated via quick fix actions or directly using the command: Inline Chat: Start Code Chat ({0}).",
-			"inlineChat.contextActions": "Context menu actions may run a request prefixed with /fix or /explain. These prefixes can be used directly in the input box to apply those specific actions.",
-			"inlineChat.diff": "Once in the diff editor, enter review mode with ({0}). Use up and down arrows to navigate lines with the proposed changes.",
-			"inlineChat.diffNoKb": "Tab again to enter the Diff editor with the changes and enter review mode with the Go to Next Difference Command. Use Up/DownArrow to navigate lines with the proposed changes.",
-			"inlineChat.explain": "When a request is prefixed with /explain, a response will explain the code in the current selection and the chat view will be focused.",
-			"inlineChat.fix": "When a request is prefixed with /fix, a response will indicate the problem with the current code. A diff editor will be rendered and can be reached by tabbing.",
-			"inlineChat.overview": "Inline chat occurs within a code editor and takes into account the current selection. It is useful for refactoring, fixing, and more. Keep in mind that AI generated code may be incorrect.",
-			"inlineChat.toolbar": "Use tab to reach conditional parts like commands, status, message responses and more.",
-			"workbench.action.chat.clear": "Команда \"Очистить чат\" ({0}) очищает список запросов/ответов.",
-			"workbench.action.chat.clearNoKb": "Команда \"Очистить чат\" очищает список запросов/ответов. В настоящее время ее нельзя активировать с помощью настраиваемого сочетания клавиш.",
-			"workbench.action.chat.focus": "The Focus Chat command ({0}) focuses the chat request/response list, which can be navigated with up and down arrows.",
-			"workbench.action.chat.focusInput": "Команда фокуса на поле ввода чата ({0}) переводит фокус на поле ввода для запросов чата.",
-			"workbench.action.chat.focusNoKb": "Команда \"Фокус на списке чатов\" переводит фокус на список запросов/ответов чата, по которому можно переходить с помощью клавиш СТРЕЛКА ВВЕРХ и СТРЕЛКА ВНИЗ. В настоящее время ее невозможно активировать с помощью сочетания клавиш.",
-			"workbench.action.chat.nextCodeBlock": "Команда \"Чат: следующий блок кода ({0})\" переводит фокус на следующий блок кода в ответе.",
-			"workbench.action.chat.nextCodeBlockNoKb": "Команда \"Чат: следующий блок кода\" переводит фокус на следующий блок кода в ответе. В настоящее время ее нельзя активировать с помощью настраиваемого сочетания клавиш.",
-			"workbench.action.interactiveSession.focusInputNoKb": "Команда \"Фокус на вводе текста в чате\" переводит фокус на поле ввода для запросов чата. В настоящее время ее невозможно активировать с помощью сочетания клавиш."
+			"chat-help-label": "Справка по специальным возможностям чата",
+			"chat.announcement": "Ответы в чате будут объявляться по мере их получения. В ответе будет указано количество блоков кода (если они есть), а затем остальная часть ответа.",
+			"chat.audioCues": "Звуковые подсказки можно изменить с помощью параметров с префиксом audioCues.chat. По умолчанию, если запрос занимает более 4 секунд, вы услышите звуковую подсказку, указывающую на то, что выполнение еще не закончено.",
+			"chat.inspectResponse": "В поле ввода проверьте последний ответ в представлении с поддержкой специальных возможностей через {0}",
+			"chat.inspectResponseNoKb": "Сфокусировав поле ввода, проверьте последний ответ в представлении с поддержкой специальных возможностей с помощью команды \"Открыть представление с поддержкой специальных возможностей\", которая в настоящее время не может быть запущена с помощью сочетания клавиш.",
+			"chat.overview": "Представление чата состоит из поля ввода и списка запросов и ответов. Поле ввода используется для создания запросов, а список — для отображения ответов.",
+			"chat.requestHistory": "В поле входных данных используйте клавиши СТРЕЛКА ВВЕРХ и СТРЕЛКА ВНИЗ для навигации по журналу запросов. Измените входные данные и используйте клавишу ВВОД или кнопку отправки для выполнения нового запроса.",
+			"inline-chat-label": "Справка по специальным возможностям для встроенного чата",
+			"inlineChat.access": "Его можно активировать с помощью действий кода или напрямую с помощью команды \"Встроенный чат: начать чат с кодом\" ({0}).",
+			"inlineChat.contextActions": "Действия контекстного меню могут выполнять запрос с префиксом /. Type / для поиска таких готовых команд.",
+			"inlineChat.diff": "В редакторе несовпадений перейдите в режим проверки с помощью ({0}). Используйте клавиши СТРЕЛКА ВВЕРХ и СТРЕЛКА ВНИЗ для перехода между строками с предложенными изменениями.",
+			"inlineChat.diffNoKb": "Нажмите клавишу TAB еще раз, чтобы перейти в редактор несовпадений с изменениями и перейти в режим проверки кода с помощью команды \"Перейти к следующему несовпадению\". Для перехода между строками с предложенными изменениями используйте клавиши СТРЕЛКА ВВЕРХ и СТРЕЛКА ВНИЗ.",
+			"inlineChat.fix": "При активации исправления ответ указывает на проблему с текущим кодом. Будет отрисован редактор несовпадений, к которому можно будет перейти по табуляции.",
+			"inlineChat.inspectResponse": "В поле ввода проверьте ответ в представлении с поддержкой специальных возможностей через {0}",
+			"inlineChat.inspectResponseNoKb": "Сфокусировав поле ввода, проверьте ответ в представлении с поддержкой специальных возможностей с помощью команды \"Открыть представление с поддержкой специальных возможностей\", которая в настоящее время не может быть запущена с помощью сочетания клавиш.",
+			"inlineChat.overview": "Встроенный чат происходит в редакторе кода и учитывает текущий выбор. Это полезно для внесения изменений в текущий редактор. Например, исправление обнаруженных ошибок, документирование или рефакторинг кода. Имейте в виду, что код, созданный ИИ, может быть неправильным.",
+			"inlineChat.requestHistory": "В поле входных данных используйте {0} и {1} для навигации по журналу запросов. Измените входные данные и используйте клавишу ВВОД или кнопку отправки для выполнения нового запроса.",
+			"inlineChat.toolbar": "Используйте вкладку для доступа к условным частям, например командам, состоянию, ответам на сообщения и т. д.",
+			"workbench.action.chat.clear": "Чтобы очистить список запросов/ответов, выполните команду \"Очистить чат\" ({0}).",
+			"workbench.action.chat.clearNoKb": "Чтобы очистить список запросов/ответов, выполните команду \"Очистить чат\". В настоящее время ее нельзя активировать с помощью настраиваемого сочетания клавиш.",
+			"workbench.action.chat.focus": "Чтобы перевести фокус на список запросов/ответов чата, по которому можно переходить с помощью клавиш СТРЕЛКА ВВЕРХ и СТРЕЛКА ВНИЗ, выполните команду \"Фокус на чате\" ({0}).",
+			"workbench.action.chat.focusInput": "Чтобы перевести фокус на поле ввода для запросов чата, выполните команду \"Фокус на поле ввода чата\" ({0}).",
+			"workbench.action.chat.focusNoKb": "Чтобы перевести фокус на список запросов/ответов чата, по которому можно переходить с помощью клавиш СТРЕЛКА ВВЕРХ и СТРЕЛКА ВНИЗ, выполните команду \"Фокус на списке чатов\". В настоящее время ее невозможно активировать с помощью сочетания клавиш.",
+			"workbench.action.chat.nextCodeBlock": "Чтобы перевести фокус на следующий блок кода в ответе, выполните команду \"Чат: следующий блок кода ({0})\" .",
+			"workbench.action.chat.nextCodeBlockNoKb": "Чтобы перевести фокус на следующий блок кода в ответе, выполните команду \"Чат: следующий блок кода\". В настоящее время ее нельзя активировать с помощью настраиваемого сочетания клавиш.",
+			"workbench.action.interactiveSession.focusInputNoKb": "Чтобы перевести фокус на поле ввода для запросов чата, выполните команду \"Фокус на вводе текста в чате\". В настоящее время ее невозможно активировать с помощью сочетания клавиш."
 		},
 		"vs/workbench/contrib/chat/browser/actions/chatActions": {
 			"actions.chat.acceptInput": "Принять ввод чата",
@@ -4583,24 +4697,35 @@
 			"interactiveSession.openInEditor.label": "Открыть сеанс в редакторе",
 			"interactiveSession.openInSidebar.label": "Открыть сеанс на боковой панели"
 		},
-		"vs/workbench/contrib/chat/browser/actions/chatQuickInputActions": {
-			"askQuickQuestion": "Задать быстрый вопрос",
-			"askabot": "Задайте {0} вопрос..."
-		},
 		"vs/workbench/contrib/chat/browser/actions/chatTitleActions": {
 			"chat.remove.label": "Удалить запрос и ответ",
-			"interactive.helpful.label": "Helpful",
+			"interactive.helpful.label": "Полезное",
 			"interactive.insertIntoNotebook.label": "Вставить в записную книжку",
-			"interactive.unhelpful.label": "Unhelpful"
+			"interactive.unhelpful.label": "Бесполезное"
+		},
+		"vs/workbench/contrib/chat/browser/actions/quickQuestionActions/multipleByScrollQuickQuestionAction": {
+			"clear": "Очистить",
+			"openInChat": "Открыть в представлении чата"
+		},
+		"vs/workbench/contrib/chat/browser/actions/quickQuestionActions/quickQuestionAction": {
+			"chat": "Чат"
+		},
+		"vs/workbench/contrib/chat/browser/actions/quickQuestionActions/singleQuickQuestionAction": {
+			"askabot": "Задайте {0} вопрос..."
 		},
 		"vs/workbench/contrib/chat/browser/chat.contribution": {
 			"chat": "Чат",
+			"chatAccessibleView": "Представление с поддержкой специальных возможностей в чате",
+			"interactiveSession.defaultMode": "Управляет режимом чата по умолчанию.",
+			"interactiveSession.defaultMode.both": "Отображает значок чата на панели действий и в строке заголовка, который открывают соответствующие режимы чата.",
+			"interactiveSession.defaultMode.chatView": "Используйте режим чата в качестве режима по умолчанию. Значок чата отображается на панели действий.",
+			"interactiveSession.defaultMode.quickQuestion": "Используйте быстрый вопрос в качестве режима по умолчанию. Значок чата отображается в строке заголовка.",
 			"interactiveSession.editor.fontFamily": "Определяет семейство шрифтов в блоках кода чата.",
 			"interactiveSession.editor.fontSize": "Определяет размер шрифта в пикселях в блоках кода чата.",
 			"interactiveSession.editor.fontWeight": "Определяет насыщенность шрифта в блоках кода чата.",
 			"interactiveSession.editor.lineHeight": "Определяет высоту строки в пикселях в блоках кода чата. Используйте значение 0 для определения высоты строки по размеру шрифта.",
 			"interactiveSession.editor.wordWrap": "Определяет, следует ли переносить строки в блоках кода чата.",
-			"interactiveSession.experimental.quickQuestion.enable": "Определяет, включена ли функция быстрого вопроса.",
+			"interactiveSession.quickQuestion.mode": "Управляет режимом чата с быстрыми вопросами.",
 			"interactiveSessionConfigurationTitle": "Чат"
 		},
 		"vs/workbench/contrib/chat/browser/chatContributionServiceImpl": {
@@ -4615,7 +4740,7 @@
 			"chatEditorName": "Чат"
 		},
 		"vs/workbench/contrib/chat/browser/chatInputPart": {
-			"actions.chat.accessibiltyHelp": "Ввод чата, введите здесь код и нажмите клавишу ВВОД для запуска. Используйте {0} для получения справки по специальным возможностям чата.",
+			"actions.chat.accessibiltyHelp": "Входные данные чата. Введите текст, чтобы задать вопрос, или введите \"/\", чтобы открыть разделы, нажмите клавишу ВВОД, чтобы отправить запрос. Используйте {0}, чтобы открыть справку по специальным возможностям чата.",
 			"chatInput": "Ввод чата",
 			"chatInput.accessibilityHelpNoKb": "Ввод чата, введите здесь код и нажмите клавишу ВВОД для запуска. Для получения дополнительных сведений воспользуйтесь командой получения справки по специальным возможностям чата."
 		},
@@ -4625,8 +4750,15 @@
 			"chat.codeBlock.toolbarVerbose": "Панель инструментов для блока кода, доступ к которому можно получить на вкладке",
 			"chat.codeBlockHelp": "Блок кода",
 			"chat.codeBlockLabel": "Блок кода {0}",
-			"multiCodeBlock": "Несколько ({0}) блоков кода: {1}",
-			"singleCodeBlock": "1 блок кода: {0}"
+			"multiCodeBlock": "Несколько ({0}) блоков кода",
+			"multiCodeBlockHint": "Несколько ({0}) блоков кода: {1}",
+			"noCodeBlocks": "{0}",
+			"noCodeBlocksHint": "{0} {1}",
+			"singleCodeBlock": "1 блок кода: {0}",
+			"singleCodeBlockHint": "1 блок кода: {0} {1}"
+		},
+		"vs/workbench/contrib/chat/browser/chatSlashCommandContentWidget": {
+			"exited slash command mode": "Выполнен выход из режима{0}"
 		},
 		"vs/workbench/contrib/chat/browser/chatWidget": {
 			"clear": "Очистить сеанс"
@@ -4677,30 +4809,15 @@
 			"contributes.documentation.refactorings": "Предоставленная документация для рефакторингов."
 		},
 		"vs/workbench/contrib/codeEditor/browser/accessibility/accessibility": {
-			"accessibilityHelpTitle": "Справка по специальным возможностям",
-			"auto_off": "В редакторе настроено автоматическое определение средства чтения с экрана, но сейчас это средство не подключено.",
-			"auto_on": "Редактор автоматически определил, что средство чтения с экрана подключено.",
-			"auto_unknown": "В редакторе настроено определение средства чтения с экрана с помощью API платформы, но текущая среда выполнения это не поддерживает.",
-			"changeConfigToOnMac": "Чтобы включить постоянную оптимизацию редактора для использования со средствами чтения с экрана, нажмите COMMMAND+E.",
-			"changeConfigToOnWinLinux": "Чтобы включить постоянную оптимизацию редактора для использования со средствами чтения с экрана, нажмите CTRL+E.",
-			"configuredOff": "Для редактора не настроена оптимизация для использования со средствами чтения с экрана.",
-			"configuredOn": "Конфигурация редактора всегда оптимизирована для использования со средством чтения с экрана. Это можно изменить с помощью команды \"Активация режима специальных возможностей для средства чтения с экрана\" или параметра \"editor.accessibilitySupport\".",
-			"emergencyConfOn": "Установка значения \"on\" для параметра \"editor.accessibilitySupport\".",
-			"introMsg": "Благодарим за ознакомление со специальными возможностями VS Code.",
-			"openDocMac": "Нажмите COMMAND+H, чтобы открыть окно браузера с дополнительными сведениями о специальных возможностях VS Code.",
-			"openDocWinLinux": "Нажмите CTRL+H, чтобы открыть окно браузера с дополнительными сведениями о специальных возможностях VS Code.",
-			"openingDocs": "Открывается страница документации по специальным возможностям VS Code.",
-			"outroMsg": "Вы можете закрыть эту подсказку и вернуться в редактор, нажав клавиши ESCAPE или SHIFT+ESCAPE.",
-			"status": "Состояние:",
-			"tabFocusModeOffMsg": "При нажатии клавиши TAB в текущем редакторе будет вставлен символ табуляции. Чтобы изменить это поведение, нажмите клавишу {0}.",
-			"tabFocusModeOffMsgNoKb": "При нажатии клавиши TAB в текущем редакторе будет вставлен символ табуляции. Команду {0} сейчас невозможно выполнить с помощью настраиваемого сочетания клавиш.",
-			"tabFocusModeOnMsg": "При нажатии клавиши TAB в текущем редакторе фокус ввода переместится на следующий элемент, способный его принять. Чтобы изменить это поведение, нажмите клавишу {0}.",
-			"tabFocusModeOnMsgNoKb": "При нажатии клавиши TAB в текущем редакторе фокус ввода переместится на следующий элемент, способный его принять. Команду {0} сейчас невозможно выполнить с помощью настраиваемого сочетания клавиш.",
 			"toggleScreenReaderMode": "Активация режима специальных возможностей для средства чтения с экрана"
 		},
 		"vs/workbench/contrib/codeEditor/browser/diffEditorHelper": {
+			"chat-help-label": "Справка по специальным возможностям редактора несовпадений",
 			"hintTimeout": "Алгоритм поиска различий был остановлен досрочно (через {0} мс).",
 			"hintWhitespace": "Показать различия пробелов",
+			"msg1": "Вы находитесь в редакторе несовпадений.",
+			"msg2": "Нажмите {0} или {1}, чтобы просмотреть следующее или предыдущее несовпадение в режиме просмотра несовпадений, оптимизированном для средств чтения с экрана.",
+			"msg3": "Для управления воспроизведением звуковых сигналов можно настроить следующие параметры: {0}.",
 			"removeTimeout": "Снять ограничение"
 		},
 		"vs/workbench/contrib/codeEditor/browser/find/simpleFindWidget": {
@@ -4796,33 +4913,7 @@
 		},
 		"vs/workbench/contrib/codeEditor/browser/outline/documentSymbolsTree": {
 			"1.problem": "Проблем в этом элементе: 1",
-			"Array": "массив",
-			"Boolean": "логическое значение",
-			"Class": "класс",
-			"Constant": "константа",
-			"Constructor": "конструктор",
-			"Enum": "перечисление",
-			"EnumMember": "элемент перечисления",
-			"Event": "событие",
-			"Field": "поле",
-			"File": "файл",
-			"Function": "функция",
-			"Interface": "интерфейс",
-			"Key": "ключ",
-			"Method": "метод",
-			"Module": "модуль",
 			"N.problem": "Проблем в этом элементе: {0}",
-			"Namespace": "пространство имен",
-			"Null": "NULL",
-			"Number": "число",
-			"Object": "объект",
-			"Operator": "оператор",
-			"Package": "пакет",
-			"Property": "свойство",
-			"String": "строка",
-			"Struct": "структура",
-			"TypeParameter": "параметр типа",
-			"Variable": "Переменная",
 			"deep.problem": "Содержит элементы с проблемами",
 			"title.template": "{0} ({1})"
 		},
@@ -4921,7 +5012,7 @@
 			"reply": "Ответить..."
 		},
 		"vs/workbench/contrib/comments/browser/comments.contribution": {
-			"comments.maxHeight": "Controls whether the comments widget scrolls or expands.",
+			"comments.maxHeight": "Определяет, прокручивается или развертывается мини-приложение комментариев.",
 			"comments.openPanel.deprecated": "Этот параметр является нерекомендуемым. Рекомендуется использовать comments.openView.",
 			"comments.openView": "Определяет, когда должно открываться представление комментариев.",
 			"comments.openView.file": "Представление комментариев будет открываться, когда файл с комментариями активен.",
@@ -5113,9 +5204,9 @@
 		},
 		"vs/workbench/contrib/debug/browser/breakpointWidget": {
 			"breakpointType": "Тип точки останова",
-			"breakpointWidgetExpressionPlaceholder": "Прервать выполнение, если выражение равно true. Нажмите клавишу ВВОД, чтобы принять, или ESC для отмены.",
-			"breakpointWidgetHitCountPlaceholder": "Прервать при определенном количестве обращений. Нажмите клавишу ВВОД, чтобы принять, или ESC для отмены.",
-			"breakpointWidgetLogMessagePlaceholder": "Сообщение, которое должно быть записано в журнал при срабатывании точки останова. Выражения в фигурных скобках {} интерполируются. Нажмите клавишу ВВОД, чтобы принять, или ESC, чтобы отменить действие.",
+			"breakpointWidgetExpressionPlaceholder": "Прервать выполнение, если выражение равно true. Нажмите клавишу {0}, чтобы принять, или {1} для отмены.",
+			"breakpointWidgetHitCountPlaceholder": "Прервать при определенном количестве обращений. Нажмите клавишу {0}, чтобы принять, или {1} для отмены.",
+			"breakpointWidgetLogMessagePlaceholder": "Сообщение, которое должно быть записано в журнал при срабатывании точки останова. Выражения в фигурных скобках {} интерполируются. Нажмите клавишу {0}, чтобы принять, или {1}, чтобы отменить действие.",
 			"expression": "Выражение",
 			"hitCount": "Количество обращений",
 			"logMessage": "Сообщение журнала"
@@ -5567,10 +5658,10 @@
 			"allDebuggersDisabled": "Все расширения отладки отключены. Включите расширение отладки или установите новое расширение из Marketplace.",
 			"customizeRunAndDebug": "Чтобы настроить выполнение и отладку, [создайте файл launch.json](command:{0}).",
 			"customizeRunAndDebugOpenFolder": "Чтобы настроить выполнение и отладку, [откройте папку](command:{0}) и создайте файл launch.json.",
-			"detectThenRunAndDebug": "[Показать все автоматические конфигурации отладки](command:{0}).",
+			"detectThenRunAndDebug": "Показать все автоматические конфигурации отладки",
 			"openAFileWhichCanBeDebugged": "[Откройте файл](command:{0}), который можно отладить или запустить.",
 			"run": "Запустить",
-			"runAndDebugAction": "[Запуск и отладка{0}](command:{1})"
+			"runAndDebugAction": "Запуск и отладка"
 		},
 		"vs/workbench/contrib/debug/common/abstractDebugAdapter": {
 			"timeout": "Время ожидания для \"{1}\" — {0} мс"
@@ -5624,7 +5715,7 @@
 			"suspendDebuggeeSupported": "Установите значение \"true\", если фокусированный сеанс поддерживает возможность приостановки отлаживаемого кода.",
 			"terminateDebuggeeSupported": "Установите значение true, если сфокусированный сеанс поддерживает возможность завершения отлаживаемого кода.",
 			"variableEvaluateNamePresent": "Значение true, если для переменной, на которой находится фокус, задано поле \"evalauteName\".",
-			"variableIsReadonly": "Значение true, если переменная, на которой находится фокус, доступна только для чтения.",
+			"variableIsReadonly": "Истинно, когда сфокусированная переменная доступна только для чтения.",
 			"variablesFocused": "Значение true, если фокус находится на представлении \"Переменные\", в противном случае — false.",
 			"watchExpressionsExist": "Значение true, если существует хотя бы одно выражение с контрольным значением, в противном случае — false.",
 			"watchExpressionsFocused": "Значение true, если на представлении \"Контрольное значение\" находится фокус, в противном случае — false.",
@@ -5783,11 +5874,12 @@
 		},
 		"vs/workbench/contrib/editSessions/browser/editSessionsStorageService": {
 			"choose account placeholder": "Выберите учетную запись для хранения своих рабочих изменений в облаке",
+			"choose account read placeholder": "Выберите учетную запись для восстановления рабочих изменений из облака",
 			"delete all cloud changes": "Удалить все сохраненные данные из облака.",
 			"others": "Другие",
 			"reset auth.v3": "Отключить облачные изменения...",
 			"sign in": "Включить облачные изменения...",
-			"sign in badge": "Turn on Cloud Changes... (1)",
+			"sign in badge": "Включить облачные изменения… (1)",
 			"sign in using account": "Вход с помощью {0}",
 			"sign out of cloud changes clear data prompt": "Вы хотите отключить хранение рабочих изменений в облаке?",
 			"signed in": "Вход выполнен"
@@ -6094,6 +6186,7 @@
 			"workbench.extensions.action.copyExtensionId": "Копировать идентификатор расширения",
 			"workbench.extensions.action.ignoreRecommendation": "Пропустить рекомендацию",
 			"workbench.extensions.action.removeExtensionFromWorkspaceRecommendations": "Удалить из рекомендаций рабочей области",
+			"workbench.extensions.action.toggleApplyToAllProfiles": "Применить расширение для всех профилей",
 			"workbench.extensions.action.toggleIgnoreExtension": "Синхронизация этого расширения",
 			"workbench.extensions.action.undoIgnoredRecommendation": "Отменить пропуск рекомендации",
 			"workbench.extensions.installExtension.arg.decription": "Идентификатор расширения или URI ресурса VSIX",
@@ -6193,7 +6286,6 @@
 			"install pre-release version": "Установить предварительную версию",
 			"install previous version": "Установить определенную версию расширения...",
 			"install release version": "Установить версию выпуска",
-			"install release version message": "Хотите установить версию выпуска?",
 			"install remote extensions": "Установить удаленные расширения локально",
 			"install vsix": "После скачивания установите загруженный VSIX '{0}' вручную.",
 			"installExtensionComplete": "Установка расширения {0} завершена.",
@@ -6484,12 +6576,16 @@
 		"vs/workbench/contrib/externalTerminal/electron-sandbox/externalTerminal.contribution": {
 			"explorer.openInTerminalKind": "Если файл открывается из проводника в терминале, определяет, какой тип терминала будет запущен",
 			"globalConsoleAction": "Открыть новый внешний терминал",
+			"sourceControlRepositories.openInTerminalKind": "При открытии репозитория из представления репозиториев системы управления версиями в терминале определяет, какой тип терминала будет запущен.",
 			"terminal.explorerKind.both": "Используйте два других вместе.",
 			"terminal.explorerKind.external": "Использовать настроенный внешний терминал.",
 			"terminal.explorerKind.integrated": "Использовать встроенный терминал VS Code.",
 			"terminal.external.linuxExec": "Настройка терминала для запуска в Linux.",
 			"terminal.external.osxExec": "Определяет, какое приложение терминала использовать в macOS.",
 			"terminal.external.windowsExec": "Настройка терминала, который будет запущен в Windows.",
+			"terminal.sourceControlRepositoriesKind.both": "Используйте два других вместе.",
+			"terminal.sourceControlRepositoriesKind.external": "Использовать настроенный внешний терминал.",
+			"terminal.sourceControlRepositoriesKind.integrated": "Использовать встроенный терминал VS Code.",
 			"terminalConfigurationTitle": "Внешний терминал"
 		},
 		"vs/workbench/contrib/externalUriOpener/common/configuration": {
@@ -6645,10 +6741,10 @@
 			"retry": "Повторить",
 			"retryButtonLabel": "&&Повторить",
 			"saveAllInGroup": "Сохранить все в группе",
-			"setActiveEditorReadonlyInSession": "Настроить активный редактор только для чтения в сеансе",
+			"setActiveEditorReadonlyInSession": "Установить Active Editor только для чтения в сеансе",
 			"setActiveEditorWriteableInSession": "Настроить активный редактор доступным для записи в сеансе",
 			"showInExplorer": "Показать активный файл в представлении проводника",
-			"toggleActiveEditorReadonlyInSession": "Переключить активный редактор только для чтения в сеансе",
+			"toggleActiveEditorReadonlyInSession": "Переключить активный редактор в режим только для чтения в сеансе",
 			"toggleAutoSave": "Включить/отключить автоматическое сохранение",
 			"trashFailed": "Не удалось выполнить удаление в корзину. Вы действительно хотите выполнить удаление навсегда?",
 			"undoBin": "Вы можете восстановить этот файл из корзины.",
@@ -6687,7 +6783,7 @@
 			"openFile": "Открыть файл...",
 			"openToSide": "Открыть сбоку",
 			"reopenWith": "Открыть редактор повторно с помощью…",
-			"revealInSideBar": "Отобразить в проводнике",
+			"revealInSideBar": "Показать в панели проводника",
 			"revert": "Отменить изменения в файле",
 			"revertLocalChanges": "Отменить изменения и вернуться к исходному содержимому файла",
 			"saveAll": "Сохранить все",
@@ -6751,7 +6847,7 @@
 			"autoReveal.focusNoScroll": "Файлы не будут прокручиваться в представлении, но на них будет оставаться фокус.",
 			"autoReveal.off": "Файлы не будут отображаться и не будут выбраны.",
 			"autoReveal.on": "Файлы будут отображаться и будут выбраны.",
-			"autoRevealExclude": "Настройте пути или [стандартные маски](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) для исключения файлов и папок из отображения и выбора в проводнике при их открытии. Стандартные маски всегда вычисляются относительно пути к папке рабочей области, если они не являются абсолютными путями.",
+			"autoRevealExclude": "Настройте пути или [шаблоны подстановок](https://aka.ms/vscode-glob-patterns), чтобы файлы и папки не отображались и не выбирались в Проводнике при их открытии. Шаблоны подстановки всегда оцениваются относительно пути к папке рабочей области, если только они не являются абсолютными путями.",
 			"autoSave": "Управляет [автоматическим сохранением](https://code.visualstudio.com/docs/editor/codebasics#_save-auto-save) редакторов с несохраненными изменениями.",
 			"autoSaveDelay": "Определяет задержку в миллисекундах, после которой редактор с несохраненными изменениями будет сохранен автоматически. Применяется только в случае, когда для параметра \"#files.autoSave#\" задано значение \"{0}\".",
 			"binaryFileEditor": "Редактор двоичных файлов",
@@ -6764,6 +6860,7 @@
 			"copyRelativePathSeparator.backslash": "Использовать обратную косую черту в качестве символа разделения путей.",
 			"copyRelativePathSeparator.slash": "Использовать косую черту в качестве символа разделения путей.",
 			"defaultLanguage": "Языковой идентификатор по умолчанию, назначаемый новым файлам. Если задано значение \"${activeEditorLanguage}\", будет использоваться языковой идентификатор текущего активного текстового редактора, если таковой имеется.",
+			"defaultPathErrorMessage": "Путь по умолчанию для диалоговых окон файлов должен быть абсолютным путем (например, C:\\\\myFolder или /myFolder).",
 			"disabled": "Отключает именование с приращением. Если имеются два файла с одинаковым именем, будет предложено перезаписать существующий файл.",
 			"enableDragAndDrop": "Определяет, разрешает ли проводник перемещать файлы и папки с помощью перетаскивания. Этот параметр распространяется только на перетаскивание в проводнике.",
 			"enableUndo": "Определяет, должен ли обозреватель поддерживать отмену операций с файлами и папками.",
@@ -6776,7 +6873,7 @@
 			"eol.LF": "LF",
 			"eol.auto": "Использует символ конца строки операционной системы.",
 			"everything": "Форматирование всего файла.",
-			"exclude": "Настройте [шаблоны подстановок](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) для исключения файлов и папок. Например, File Explorer решает, какие файлы и папки показывать или скрывать, на основе этого параметра. Обратитесь к настройке `#search.exclude#`, чтобы определить исключения для поиска. Обратитесь к настройке `#explorer.excludeGitIgnore#` для игнорирования файлов на основе вашего `.gitignore`.",
+			"exclude": "Настройте [шаблоны подстановки](https://aka.ms/vscode-glob-patterns) для исключения файлов и папок. Например, File Explorer решает, какие файлы и папки показывать или скрывать, на основе этого параметра. Обратитесь к настройке `#search.exclude#`, чтобы определить исключения для поиска. Обратитесь к настройке `#explorer.excludeGitIgnore#` для игнорирования файлов на основе вашего `.gitignore`.",
 			"excludeGitignore": "Определяет, следует ли анализировать записи в .gitignore и исключать их из обозревателя. Аналогично {0}.",
 			"expandSingleFolderWorkspaces": "Определяет, должен ли обозреватель расширять многокорневые рабочие области, содержащие только одну папку, во время инициализации",
 			"explorer.autoRevealExclude.boolean": "Стандартная маска, соответствующая путям к файлам. Задайте значение true или false, чтобы включить или отключить маску.",
@@ -6786,6 +6883,7 @@
 			"explorer.incrementalNaming": "Определяет стратегию именования при вставке повторяющихся элементов в обозревателе.",
 			"explorerConfigurationTitle": "Проводник",
 			"falseDescription": "Отключение шаблона.",
+			"fileDialogDefaultPath": "Путь по умолчанию для диалоговых окон файлов, переопределяющий путь к основной папке пользователя. Используется только при отсутствии пути, определяемого контекстом, например для недавно открывавшегося файла или папки.",
 			"fileNesting.description": "Каждый шаблон ключа может содержать один символ `*`, который будет соответствовать любой строке.",
 			"fileNestingEnabled": "Определяет, включено ли вложение файлов в обозревателе. Вложение файлов позволяет визуально группировать связанные файлы в каталоге в один родительский файл.",
 			"fileNestingExpand": "Управляет автоматическим расширением вложенных файлов. Чтобы это вступило в силу, необходимо установить {0}.",
@@ -6801,9 +6899,9 @@
 			"files.saveConflictResolution": "Конфликт сохранения может возникнуть, когда на диск сохраняется файл, который одновременно был изменен другой программой. Чтобы предотвратить потерю данных, пользователю предлагается сравнить изменения в редакторе с версией на диске. Этот параметр следует изменять только в том случае, если вы часто сталкиваетесь с ошибками при конфликтах сохранения, так как неосмотрительное его использование может привести к потере данных.",
 			"files.simpleDialog.enable": "Включает простое диалоговое окно файла для открытия и сохранения файлов и папок. Простое диалоговое окно файла заменяет диалоговое окно системного файла, если включено.",
 			"filesConfigurationTitle": "Файлы",
-			"filesReadonlyExclude": "Настройте пути или [стандартные маски](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options), чтобы исключить пометку элементов как доступных только для чтения, если они являются соответствующим результатом при применении параметра \"#files.readonlyInclude#\". Стандартные маски всегда вычисляются относительно пути к папке рабочей области, если они не являются абсолютными путями. Файлы от поставщиков файловой системы с доступом только для чтения всегда будут доступны только для чтения независимо от этого параметра.",
-			"filesReadonlyFromPermissions": "Помечает файлы как доступные только для чтения, если их разрешения указывают на это. Это можно переопределить с помощью параметров \"#files.readonlyInclude#\" и \"#files.readonlyExclude#\".",
-			"filesReadonlyInclude": "Настройте пути или [стандартные маски](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) с целью пометки только для чтения. Стандартные маски всегда вычисляются относительно пути к папке рабочей области, если они не являются абсолютными путями. Вы можете исключить соответствующие пути с помощью параметра \"#files.readonlyExclude#\". Файлы от поставщиков файловой системы с доступом только для чтения всегда будут доступны только для чтения независимо от этого параметра.",
+			"filesReadonlyExclude": "Настройте пути или [шаблоны подстановок](https://aka.ms/vscode-glob-patterns), чтобы они не помечались как доступные только для чтения, если они совпадают в результате настройки `#files.readonlyInclude#`. Шаблоны подстановки всегда оцениваются относительно пути к папке рабочей области, если только они не являются абсолютными путями. Файлы от поставщиков файловой системы только для чтения всегда будут доступны только для чтения независимо от этого параметра.",
+			"filesReadonlyFromPermissions": "Помечает файлы как доступные только для чтения, если это указано в их правах доступа к файлам. Это можно переопределить с помощью настроек `#files.readonlyInclude#` и `#files.readonlyExclude#`.",
+			"filesReadonlyInclude": "Настройте пути или [шаблоны подстановки](https://aka.ms/vscode-glob-patterns), чтобы пометить их как доступные только для чтения. Шаблоны подстановки всегда оцениваются относительно пути к папке рабочей области, если только они не являются абсолютными путями. Вы можете исключить совпадающие пути с помощью параметра `#files.readonlyExclude#`. Файлы от поставщиков файловой системы только для чтения всегда будут доступны только для чтения независимо от этого параметра.",
 			"formatOnSave": "Форматирование файла при сохранении. Модуль форматирования должен быть доступен, файл не должен сохраняться по истечении времени задержки, и работа редактора не должна завершаться.",
 			"formatOnSaveMode": "Определяет, применяется ли формат при сохранении ко всему файлу или только к изменениям в файле. Этот параметр применяется только в том случае, если параметр \"#editor.formatOnSave#\" включен.",
 			"hotExit": "Определяет, запоминаются ли несохраненные файлы между сеансами. В этом случае приглашение на их сохранение при выходе из редактора не появляется.",
@@ -6840,7 +6938,7 @@
 			"trimTrailingWhitespace": "Если этот параметр включен, при сохранении файла будут удалены концевые пробелы.",
 			"trueDescription": "Включение шаблона.",
 			"useTrash": "Перемещение файлов/папок в корзину ОС (корзину Windows) при удалении. При отключении этого параметра файлы и папки будут удаляться навсегда.",
-			"watcherExclude": "Настройте пути или стандартные маски для их исключения из отслеживания файлов. Пути могут быть относительными (по отслеживаемой папке) или абсолютными. Стандартные маски соответствуют относительному пути из отслеживаемой папки. Если процесс отслеживания файлов потребляет много ресурсов ЦП, исключите большие папки, которые представляют меньший интерес (например, выходные папки сборки).",
+			"watcherExclude": "Настройте пути или [шаблоны подстановки](https://aka.ms/vscode-glob-patterns), чтобы исключить их из просмотра файлов. Пути могут быть относительными к отслеживаемой папке или абсолютными. Шаблоны подстановки сопоставляются относительно отслеживаемой папки. Когда вы сталкиваетесь с тем, что процесс наблюдения за файлами использует много ресурсов ЦП, обязательно исключите большие папки, которые не представляют интереса (например, выходные папки сборки).",
 			"watcherInclude": "Настройте дополнительные пути для отслеживания изменений в рабочей области. По умолчанию все папки рабочей области будут отслеживаться в обратном порядке, за исключением папок, которые являются символьными ссылками. Для поддержки наблюдения за такими папками вы можете явно добавить абсолютные или относительные пути. Относительные пути будут разрешены в абсолютный путь с помощью текущей открытой рабочей области."
 		},
 		"vs/workbench/contrib/files/browser/views/emptyView": {
@@ -6898,7 +6996,7 @@
 			"explorerResourceIsFolder": "Значение true, если элемент, на котором находится фокус в Обозревателе, является папкой.",
 			"explorerResourceIsRoot": "Значение true, если элемент, на котором находится фокус в Обозревателе, является корневой папкой.",
 			"explorerResourceMoveableToTrash": "Значение true, если элемент, на котором находится фокус в Обозревателе, может быть перемещен в корзину.",
-			"explorerResourceReadonly": "Значение true, если элемент, на котором находится фокус в Обозревателе, доступен только для чтения.",
+			"explorerResourceReadonly": "Истинно значение, когда сфокусированный элемент в EXPLORER доступен только для чтения.",
 			"explorerViewletCompressedFirstFocus": "Значение true, если фокус находится внутри первой части компактного элемента в представлении \"Обозреватель\".",
 			"explorerViewletCompressedFocus": "Значение true, если элемент, на котором находится фокус в представлении \"Обозреватель\", является компактным элементом.",
 			"explorerViewletCompressedLastFocus": "Значение true, если фокус находится внутри последней части компактного элемента в представлении \"Обозреватель\".",
@@ -6914,7 +7012,7 @@
 			"miShare": "Поделиться",
 			"openContainer": "Открыть содержащую папку",
 			"revealInMac": "Отобразить в Finder",
-			"revealInWindows": "Показать в проводнике"
+			"revealInWindows": "Открыть в проводнике"
 		},
 		"vs/workbench/contrib/folding/browser/folding.contribution": {
 			"formatter.default": "Определяет поставщик диапазона свертывания по умолчанию, который получает приоритет над всеми другими поставщиками. Это должен быть ИД расширения, предоставляющего поставщик.",
@@ -6956,90 +7054,103 @@
 			"read.title": "Чтение строки со встроенными подсказками",
 			"stop.title": "Остановить чтение встроенных подсказок."
 		},
+		"vs/workbench/contrib/inlineChat/browser/inlineChat.contribution": {
+			"inlineChatAccessibleView": "Представление с поддержкой специальных возможностей встроенного чата"
+		},
 		"vs/workbench/contrib/inlineChat/browser/inlineChatActions": {
-			"accept": "Make Request",
-			"apply1": "Accept Changes",
-			"apply2": "Accept",
-			"arrowDown": "Cursor Down",
-			"arrowUp": "Cursor Up",
-			"cancel": "Cancel",
-			"cat": "Inline Chat",
-			"contractMessage": "Contract Message",
-			"copyRecordings": "(Developer) Write Exchange to Clipboard",
-			"discard": "Discard",
-			"discardMenu": "Discard...",
-			"expandMessage": "Expand Message",
-			"feedback.helpful": "Helpful",
-			"feedback.unhelpful": "Unhelpful",
-			"focus": "Focus Input",
-			"label": "'{0}' and {1} follow ups ({2})",
-			"nextFromHistory": "Next From History",
-			"previousFromHistory": "Previous From History",
-			"rerun": "Regenerate Response",
-			"rerunShort": "Regenerate",
-			"run": "Start Code Chat",
-			"stop": "Stop Request",
-			"toggleDiff": "Toggle Diff",
-			"toggleDiff2": "Show Inline Diff",
-			"undo.clipboard": "Discard to Clipboard",
-			"undo.newfile": "Discard to New File",
-			"unstash": "Resume Last Dismissed Code Chat",
-			"viewInChat": "View in Chat"
+			"accept": "Выполнить запрос",
+			"apply1": "Принять изменения",
+			"apply2": "Принять",
+			"arrowDown": "Курсор вниз",
+			"arrowUp": "Курсор вверх",
+			"cancel": "Отмена",
+			"cat": "Встроенный чат",
+			"contractMessage": "Показать меньше",
+			"copyRecordings": "(Разработчик) Запись Exchange в буфер обмена",
+			"discard": "Отменить",
+			"discardMenu": "Отменить...",
+			"expandMessage": "Показать еще",
+			"feedback.helpful": "Полезное",
+			"feedback.unhelpful": "Бесполезное",
+			"focus": "Фокус на входных данных",
+			"label": "\"{0}\" и последующие действия {1} ({2})",
+			"miShowDiff": "&&Показать несовпадения",
+			"miShowDiff2": "&&Показать несовпадения",
+			"nextFromHistory": "Далее из журнала",
+			"previousFromHistory": "Предыдущее из журнала",
+			"rerun": "Повторно создать ответ",
+			"rerunShort": "Повторно создать",
+			"run": "Начать чат с кодом",
+			"showDiff": "Показать несовпадения",
+			"showDiff2": "Показать несовпадения",
+			"stop": "Остановить запрос",
+			"undo.clipboard": "Отменить для буфера обмена",
+			"undo.newfile": "Отменить для нового файла",
+			"unstash": "Возобновить последний закрытый чат с кодом",
+			"viewInChat": "Просмотреть в чате"
 		},
 		"vs/workbench/contrib/inlineChat/browser/inlineChatController": {
-			"create.fail": "Failed to start editor chat",
-			"create.fail.detail": "Please consult the error log and try again later.",
-			"default.placeholder": "Ask a question",
-			"default.placeholder.history": "{0} ({1}, {2} for history)",
-			"empty": "No results, please refine your input and try again",
-			"err.apply": "Failed to apply changes.",
-			"err.discard": "Failed to discard changes.",
-			"thinking": "Thinking…",
-			"welcome.1": "AI-generated code may be incorrect",
-			"welcome.2": "Getting ready..."
+			"create.fail": "Не удалось запустить чат редактора",
+			"create.fail.detail": "Просмотрите журнал ошибок и повторите попытку позже.",
+			"default.placeholder": "Задайте вопрос",
+			"default.placeholder.history": "{0} ({1}, {2} для журнала)",
+			"editResponseMessage": "Используйте клавишу TAB, чтобы перейти в редактор несовпадений и проверить предложенные изменения.",
+			"empty": "Нет результатов. Уточните входные данные и повторите попытку",
+			"err.apply": "Не удалось применить изменения.",
+			"err.discard": "Не удалось отменить изменения.",
+			"markdownResponseMessage": "{0}",
+			"thinking": "Думаю…",
+			"welcome.1": "Созданный ИИ код может быть неправильным",
+			"welcome.2": "Идет подготовка…"
 		},
 		"vs/workbench/contrib/inlineChat/browser/inlineChatStrategies": {
-			"lines.0": "Nothing changed",
-			"lines.1": "Changed 1 line",
-			"lines.N": "Changed {0} lines"
+			"lines.0": "Ничего не изменилось",
+			"lines.1": "Изменена 1 строка",
+			"lines.N": "Изменено строк: {0}"
 		},
 		"vs/workbench/contrib/inlineChat/browser/inlineChatWidget": {
-			"aria-label": "Inline Chat Input",
-			"inlineChat.accessibilityHelp": "Inline Chat Input, Use {0} for Inline Chat Accessibility Help.",
-			"inlineChat.accessibilityHelpNoKb": "Inline Chat Input, Run the Inline Chat Accessibility Help command for more information.",
-			"modified": "Modified",
-			"original": "Original"
+			"aria-label": "Входные данные встроенного чата",
+			"inlineChat.accessibilityHelp": "Входные данные встроенного чата, используйте {0} для справки по специальным возможностям для встроенного чата.",
+			"inlineChat.accessibilityHelpNoKb": "Входные данные встроенного чата. Для получения дополнительных сведений выполните команду \"Справка по специальным возможностям для встроенного чата\".",
+			"inlineChatClosed": "Закрытое мини-приложение встроенного чата",
+			"modified": "Изменено",
+			"original": "Первоначальный"
 		},
 		"vs/workbench/contrib/inlineChat/common/inlineChat": {
-			"inlineChat.background": "Background color of the interactive editor widget",
-			"inlineChat.border": "Border color of the interactive editor widget",
-			"inlineChat.regionHighlight": "Background highlighting of the current interactive region. Must be transparent.",
-			"inlineChat.shadow": "Shadow color of the interactive editor widget",
-			"inlineChatDidEdit": "Whether interactive editor did change any code",
-			"inlineChatDiff": "Whether interactive editor show diffs for changes",
-			"inlineChatDiff.inserted": "Background color of inserted text in the interactive editor input",
-			"inlineChatDiff.removed": "Background color of removed text in the interactive editor input",
-			"inlineChatDocumentChanged": "Whether the document has changed concurrently",
-			"inlineChatEmpty": "Whether the interactive editor input is empty",
-			"inlineChatFocused": "Whether the interactive editor input is focused",
-			"inlineChatHasActiveRequest": "Whether interactive editor has an active request",
-			"inlineChatHasProvider": "Whether a provider for interactive editors exists",
-			"inlineChatHasStashedSession": "Whether interactive editor has kept a session for quick restore",
-			"inlineChatInnerCursorFirst": "Whether the cursor of the iteractive editor input is on the first line",
-			"inlineChatInnerCursorLast": "Whether the cursor of the iteractive editor input is on the last line",
-			"inlineChatInput.background": "Background color of the interactive editor input",
-			"inlineChatInput.border": "Border color of the interactive editor input",
-			"inlineChatInput.focusBorder": "Border color of the interactive editor input when focused",
-			"inlineChatInput.placeholderForeground": "Foreground color of the interactive editor input placeholder",
-			"inlineChatLastFeedbackKind": "The last kind of feedback that was provided",
-			"inlineChatMarkdownMessageCropState": "Whether the interactive editor message is cropped, not cropped or expanded",
-			"inlineChatOuterCursorPosition": "Whether the cursor of the outer editor is above or below the interactive editor input",
-			"inlineChatResponseType": "What type was the last response of the current interactive editor session",
-			"inlineChatVisible": "Whether the interactive editor input is visible",
-			"mode": "Configure if changes crafted in the interactive editor are applied directly to the document or are previewed first.",
-			"mode.live": "Changes are applied directly to the document but can be highlighted via inline diffs. Ending a session will keep the changes.",
-			"mode.livePreview": "Changes are applied directly to the document and are highlighted visually via inline or side-by-side diffs. Ending a session will keep the changes.",
-			"mode.preview": "Changes are previewed only and need to be accepted via the apply button. Ending a session will discard the changes."
+			"inlineChat.background": "Цвет фона виджета интерактивного редактора",
+			"inlineChat.border": "Цвет границы мини-приложения интерактивного редактора",
+			"inlineChat.regionHighlight": "Фоновое выделение текущей интерактивной области. Должно быть прозрачным.",
+			"inlineChat.shadow": "Цвет тени мини-приложения интерактивного редактора",
+			"inlineChatDidEdit": "Изменил ли интерактивный редактор какой-либо код",
+			"inlineChatDiff.inserted": "Цвет фона введенного текста во входных данных интерактивного редактора",
+			"inlineChatDiff.removed": "Цвет фона удаленного текста во входных данных интерактивного редактора",
+			"inlineChatDocumentChanged": "Изменился ли документ одновременно",
+			"inlineChatEmpty": "Пусты ли входные данные интерактивного редактора",
+			"inlineChatFocused": "Находятся ли входные данные интерактивного редактора в фокусе",
+			"inlineChatHasActiveRequest": "Есть ли активный запрос в интерактивном редакторе",
+			"inlineChatHasProvider": "Существует ли поставщик для интерактивных редакторов",
+			"inlineChatHasStashedSession": "Сохранил ли интерактивный редактор сеанс для быстрого восстановления",
+			"inlineChatInnerCursorEnd": "Находится ли курсор ввода интерактивного редактора в конце ввода",
+			"inlineChatInnerCursorFirst": "Находится ли курсор входных данных интерактивного редактора в первой строке",
+			"inlineChatInnerCursorLast": "Находится ли курсор входных данных интерактивного редактора в последней строке",
+			"inlineChatInnerCursorStart": "Находится ли курсор ввода интерактивного редактора в начале ввода",
+			"inlineChatInput.background": "Цвет фона входных данных интерактивного редактора",
+			"inlineChatInput.border": "Цвет границы входных данных интерактивного редактора",
+			"inlineChatInput.focusBorder": "Цвет границы входных данных интерактивного редактора при наведении фокуса",
+			"inlineChatInput.placeholderForeground": "Цвет переднего плана заполнителя входных данных интерактивного редактора",
+			"inlineChatLastFeedbackKind": "Последний вид предоставленного отзыва",
+			"inlineChatMarkdownMessageCropState": "Состояние сообщения интерактивного редактора: обрезано, не обрезано или развернуто",
+			"inlineChatOuterCursorPosition": "Находится ли курсор внешнего редактора выше или ниже входных данных интерактивного редактора",
+			"inlineChatResponseFocused": "Сфокусирован ли отклик интерактивного мини-приложения",
+			"inlineChatResponseType": "Какой тип был последним ответом текущего интерактивного сеанса редактора",
+			"inlineChatResponseTypes": "Какой тип ответов получен",
+			"inlineChatUserDidEdit": "Внес ли пользователь изменения поверх встроенного чата",
+			"inlineChatVisible": "Видны ли входные данные интерактивного редактора",
+			"mode": "Укажите, будут ли изменения, созданные в интерактивном редакторе, применяться непосредственно к документу или сначала будет осуществляться предварительный просмотр.",
+			"mode.live": "Изменения применяются непосредственно к документу, но могут быть выделены с помощью функции строковых несовпадений. При завершении сеанса изменения сохраняются.",
+			"mode.livePreview": "Изменения применяются непосредственно к документу и визуально выделяются с помощью функции строковых или параллельных несовпадений. При завершении сеанса изменения сохраняются.",
+			"mode.preview": "Изменения отображаются только в режиме предварительного просмотра и должны быть приняты с помощью кнопки \"Применить\". При завершении сеанса изменения будут отменены.",
+			"showDiff": "Включение или отключение отображения инструмента сравнения при внесении изменений. Работает только с inlineChat.mode со значением live или livePreview."
 		},
 		"vs/workbench/contrib/interactive/browser/interactive.contribution": {
 			"interactive.activeCodeBorder": "Цвет границы для текущей интерактивной ячейки кода, когда редактор находится в фокусе.",
@@ -7054,8 +7165,7 @@
 			"interactiveScrollToBottom": "Прокрутить до нижней границы",
 			"interactiveScrollToTop": "Прокрутить до верхней границы",
 			"interactiveWindow": "Интерактивное окно",
-			"interactiveWindow.alwaysScrollOnNewCell": "Автоматически прокрутите интерактивное окно, чтобы показать выходные данные последнего выполненного оператора. Если это значение равно false, окно будет прокручиваться только в том случае, если оно уже прокручивалось до последней ячейки.",
-			"interactiveWindow.restore": "Определяет, следует ли восстанавливать сеансы/журнал интерактивного окна во время перезагрузки окна. Управляют ли расширения участвующих контроллеров сохранением состояния контроллеров, используемых в интерактивных окнах при перезагрузке окон."
+			"interactiveWindow.alwaysScrollOnNewCell": "Автоматически прокрутите интерактивное окно, чтобы показать выходные данные последнего выполненного оператора. Если это значение равно false, окно будет прокручиваться только в том случае, если оно уже прокручивалось до последней ячейки."
 		},
 		"vs/workbench/contrib/interactive/browser/interactiveEditor": {
 			"interactiveInputPlaceHolder": "Введите код \"{0}\" и здесь нажмите \"{1}\" для выполнения"
@@ -7295,6 +7405,7 @@
 			"localHistory.rename": "Переименовать",
 			"localHistory.restore": "Восстановить содержимое",
 			"localHistory.restoreViaPicker": "Найти запись для восстановления",
+			"localHistory.restoreViaPickerMenu": "Локальный журнал: поиск записи для восстановления...",
 			"localHistory.selectForCompare": "Выбрать для сравнения",
 			"localHistoryCompareToFileEditorLabel": "{0} ({1} • {2}) ↔ {3}",
 			"localHistoryCompareToPreviousEditorLabel": "{0} ({1} • {2}) ↔ {3} ({4} • {5})",
@@ -7313,7 +7424,7 @@
 		"vs/workbench/contrib/localHistory/electron-sandbox/localHistoryCommands": {
 			"openContainer": "Открыть содержащую папку",
 			"revealInMac": "Отобразить в Finder",
-			"revealInWindows": "Показать в проводнике"
+			"revealInWindows": "Открыть в проводнике"
 		},
 		"vs/workbench/contrib/localization/common/localization.contribution": {
 			"vscode.extension.contributes.localizations": "Добавляет локализации в редактор",
@@ -7752,7 +7863,6 @@
 		},
 		"vs/workbench/contrib/notebook/browser/contrib/outline/notebookOutline": {
 			"breadcrumbs.showCodeCells": "Если этот параметр включен, элементы навигации записных книжек содержат ячейки кода.",
-			"empty": "пустая ячейка",
 			"outline.showCodeCells": "Если параметр включен, в структуре записной книжки отображаются ячейки кода."
 		},
 		"vs/workbench/contrib/notebook/browser/contrib/profile/notebookProfile": {
@@ -7909,17 +8019,34 @@
 			"notebook.outputLineHeight": "Высота строки для вывода текста в ячейках записной книжки.\r\n – При значении 0 используется высота строки редактора.\r\n – Значения от 0 до 8 будут использоваться в качестве множителя размера шрифта.\r\n – Значения больше или равные 8 будут использоваться в качестве действительных значений.",
 			"notebook.outputScrolling": "Изначально отображать выходные данные записной книжки в прокручиваемом регионе, если длина превышает ограничение",
 			"notebook.outputWordWrap": "Управляет переносом строк в выходных данных.",
+			"notebook.remoteSaving": "Включает добавочное сохранение записных книжек в удаленной среде. Если этот параметр включен, на узел расширения отправляются только изменения, внесенные в записную книжку, что повышает производительность для больших записных книжек и медленных сетевых подключений.",
 			"notebook.showCellStatusbar.description": "Должна ли отображаться строка состояния ячейки.",
 			"notebook.showCellStatusbar.hidden.description": "Строка состояния ячейки всегда скрыта.",
 			"notebook.showCellStatusbar.visible.description": "Строка состояния ячейки всегда отображается.",
 			"notebook.showCellStatusbar.visibleAfterExecute.description": "Строка состояния ячейки скрывается до выполнения ячейки. Затем она становится видимой для отображения состояния выполнения.",
 			"notebook.showFoldingControls.description": "Определяет, когда отображать сворачивающуюся стрелку заголовка Markdown.",
+			"notebook.stickyScroll.description": "Экспериментальные опции. Управляйте отображением заголовков записной книжки с залипанием прокрутки в редакторе записной книжки.",
 			"notebook.textOutputLineLimit": "Определяет, сколько строк текста отображается при выводе текста. Если {0} включен, этот параметр используется для определения высоты прокрутки выходных данных.",
 			"notebook.undoRedoPerCell.description": "Следует ли использовать отдельный стек отмены/повтора для каждой ячейки.",
 			"notebookConfigurationTitle": "Записная книжка",
 			"showFoldingControls.always": "Сворачивающиеся элементы управления видны всегда.",
 			"showFoldingControls.mouseover": "Сворачивающиеся элементы управления видны только при наведении курсора мыши.",
 			"showFoldingControls.never": "Никогда не показывать элементы управления свертыванием и уменьшать размер переплета."
+		},
+		"vs/workbench/contrib/notebook/browser/notebookAccessibility": {
+			"NotebookCellOutputAccessibleView": "Доступное представление выходных данных ячейки записной книжки",
+			"notebook.cell.edit": "Команда \"Изменить ячейку\" ({0}) переводит фокус на входные данные ячейки.",
+			"notebook.cell.editNoKb": "Команда \"Изменить ячейку\" переводит фокус на входные данные ячейки и в настоящее время не может активироваться с помощью настраиваемого сочетания клавиш.",
+			"notebook.cell.executeAndFocusContainer": "Команда \"Выполнить ячейку\" ({0}) выполняет ячейку, которая находится в фокусе.",
+			"notebook.cell.executeAndFocusContainerNoKb": "Команда \"Выполнить ячейку\" выполняет ячейку, которая находится в фокусе, и в настоящее время ее нельзя активировать с помощью настраиваемого сочетания клавиш.",
+			"notebook.cell.focusInOutput": "Команда \"Фокус на выходных данных\" ({0}) устанавливает фокус на выходных данных ячейки.",
+			"notebook.cell.focusInOutputNoKb": "Команда \"Выйти из изменения\" устанавливает фокус на выходных данных ячейки и в настоящее время не может активироваться с помощью настраиваемого сочетания клавиш.",
+			"notebook.cell.insertCodeCellBelowAndFocusContainer": "Команды \"Вставить ячейку выше/ниже\" создают новые пустые ячейки кода",
+			"notebook.cell.quitEdit": "Команда \"Выйти из изменения\" ({0}) устанавливает фокус на контейнере ячейки. Для выхода из режима виртуального курсора, если он активен, может потребоваться дважды нажать стандартную клавишу (ESCAPE).",
+			"notebook.cell.quitEditNoKb": "Команда \"Выйти из изменения\" устанавливает фокус на контейнере ячейки и в настоящее время не может активироваться с помощью настраиваемого сочетания клавиш.",
+			"notebook.cellNavigation": "Стрелки вверх и вниз будут перемещать фокус между ячейками, когда фокус находится на внешнем контейнере ячейки",
+			"notebook.changeCellType": "Команды \"Изменить ячейку на код/Markdown\" используются для переключения между типами ячеек.",
+			"notebook.overview": "Представление записной книжки — это коллекция ячеек кода и Markdown. Ячейки кода можно выполнять, и они будут создавать выходные данные непосредственно под ячейкой."
 		},
 		"vs/workbench/contrib/notebook/browser/notebookEditor": {
 			"fail.noEditor": "Не удается открыть ресурс с типом редактора записной книжки \"{0}\". Убедитесь, что у вас установлено и включено правильное расширение.",
@@ -7954,6 +8081,8 @@
 			"notebookStatusRunningIcon.foreground": "Цвет значка выполнения для ячеек записной книжки в строке состояния ячейки.",
 			"notebookStatusSuccessIcon.foreground": "Цвет значка ошибки для ячеек записной книжки в строке состояния ячейки.",
 			"notebookTreeAriaLabel": "Записная книжка",
+			"notebookTreeAriaLabelHelp": "Notebook\r\nИспользуйте {0} для получения справки по специальным возможностям",
+			"notebookTreeAriaLabelHelpNoKb": "Notebook\r\nДля получения дополнительных сведений запустите команду \"Открыть справку по специальным возможностям\"",
 			"selectedCellBackground": "Цвет фона ячейки при выборе ячейки."
 		},
 		"vs/workbench/contrib/notebook/browser/notebookExtensionPoint": {
@@ -8078,10 +8207,19 @@
 		"vs/workbench/contrib/notebook/browser/view/renderers/cellRenderer": {
 			"cellExecutionOrderCountLabel": "Порядок выполнения"
 		},
+		"vs/workbench/contrib/notebook/browser/viewModel/notebookOutlineProvider": {
+			"empty": "пустая ячейка"
+		},
+		"vs/workbench/contrib/notebook/browser/viewParts/notebookEditorStickyScroll": {
+			"miNotebookStickyScroll": "&&Залипание прокрутки записной книжки",
+			"mitoggleStickyScroll": "&&Переключатель залипания прокрутки записной книжки",
+			"notebookStickyScroll": "Залипание прокрутки записной книжки",
+			"toggleStickyScroll": "Переключатель залипания прокрутки записной книжки"
+		},
 		"vs/workbench/contrib/notebook/browser/viewParts/notebookKernelQuickPickStrategy": {
 			"current1": "Выбрано",
 			"current2": "{0} - выбрано сейчас",
-			"installSuggestedKernel": "Установить рекомендуемые расширения",
+			"installSuggestedKernel": "Установить или включить рекомендуемые расширения",
 			"kernels.detecting": "Обнаружение ядер",
 			"kernels.selectedKernelAndKernelDetectionRunning": "Выбранное ядро: {0} (выполняются задачи обнаружения ядра)",
 			"learnMoreTooltip": "Дополнительные сведения",
@@ -8099,7 +8237,7 @@
 			"notebookActions.selectKernel.args": "Аргументы ядра записных книжек"
 		},
 		"vs/workbench/contrib/notebook/common/notebookEditorInput": {
-			"vetoExtHostRestart": "Notebook '{0}' could not be saved."
+			"vetoExtHostRestart": "Не удалось сохранить Notebook \"{0}\"."
 		},
 		"vs/workbench/contrib/offline/browser/offline.contribution": {
 			"offline": "Похоже, отсутствует подключение к сети. Некоторые функции могут быть недоступны.",
@@ -8165,6 +8303,7 @@
 		"vs/workbench/contrib/output/browser/output.contribution": {
 			"clearOutput.label": "Очистить выходные данные",
 			"extensionLogs": "Журналы расширений",
+			"logFile": "Идентификатор файла журнала, который необходимо открыть, например `\"window\"`. В настоящее время лучший способ получить его — это получить идентификатор, проверив команды `workbench.action.output.show.<id>`",
 			"logViewer": "Средство просмотра журналов",
 			"miToggleOutput": "&&Выходные данные",
 			"openActiveLogOutputFile": "Открыть выходной файл журнала",
@@ -8177,7 +8316,7 @@
 			"outputViewIcon": "Значок представления выходных данных.",
 			"selectOutput": "Выбор канала вывода",
 			"selectlog": "Выберите журнал",
-			"selectlogFile": "Выберите файл журнала",
+			"selectlogFile": "Выбор файла журнала",
 			"showLogs": "Показать журналы...",
 			"showOutputChannels": "Показать каналы вывода…",
 			"switchBetweenOutputs.label": "Выход переключения",
@@ -8269,18 +8408,18 @@
 			"status.workbench.keyboardLayout": "Раскладка клавиатуры"
 		},
 		"vs/workbench/contrib/preferences/browser/preferences.contribution": {
-			"Keyboard Shortcuts": "Сочетания клавиш",
 			"clear": "Очистить результаты поиска",
 			"clearHistory": "Очистить журнал поиска сочетаний клавиш",
 			"defineKeybinding.start": "Определить назначение клавиш",
 			"filterUntrusted": "Показать параметры рабочей области без доверия",
 			"keybindingsEditor": "Редактор настраиваемых сочетаний клавиш",
+			"keyboardShortcuts": "Сочетания клавиш",
 			"miOpenOnlineSettings": "&&Параметры веб-служб",
 			"miOpenSettings": "&&Параметры",
 			"miOpenTelemetrySettings": "&&Параметры телеметрии",
 			"miPreferences": "&&Настройки",
 			"openAccessibilitySettings": "Открыть параметры специальных возможностей",
-			"openCurrentProfileSettingsJson": "Открыть текущие параметры профиля (JSON)",
+			"openApplicationSettingsJson": "Открыть параметры приложения (JSON)",
 			"openDefaultKeybindingsFile": "Открыть сочетания клавиш по умолчанию (JSON)",
 			"openFolderSettings": "Открыть параметры папок",
 			"openFolderSettingsFile": "Открыть параметры папки (JSON)",
@@ -8330,6 +8469,7 @@
 			"settingsScopeDropDownIcon": "Значок для кнопки раскрывающегося списка папок в редакторе параметров JSON с разделением."
 		},
 		"vs/workbench/contrib/preferences/browser/preferencesRenderers": {
+			"allProfileSettingWhileInNonDefaultProfileSetting": "Этот параметр нельзя применить, так как он настроен на применение во всех профилях с помощью параметра {0}. Вместо этого будет использоваться значение из профиля по умолчанию.",
 			"copyDefaultValue": "Копировать в параметры",
 			"defaultProfileSettingWhileNonDefaultActive": "Этот параметр нельзя применить, пока активен профиль не по умолчанию. Он будет применяться с активным профилем по умолчанию.",
 			"editTtile": "Изменить",
@@ -8403,7 +8543,7 @@
 			"application": "Приложение",
 			"audioCues": "Звуковые подсказки",
 			"breadcrumbs": "Элементы навигации",
-			"chat": "Chat",
+			"chat": "Чат",
 			"comments": "Комментарии",
 			"commonlyUsed": "Часто используемые",
 			"cursor": "Курсор",
@@ -8464,6 +8604,7 @@
 			"tagSettingsSearchTooltip": "Добавить фильтр тегов"
 		},
 		"vs/workbench/contrib/preferences/browser/settingsTree": {
+			"applyToAllProfiles": "Применить параметр ко всем профилям",
 			"copySettingAsJSONLabel": "Копировать параметр в формате JSON",
 			"copySettingIdLabel": "Копировать идентификатор параметра",
 			"editInSettingsJson": "Изменить в settings.json",
@@ -8545,7 +8686,6 @@
 			"textInputBoxForeground": "Цвет переднего плана для поля ввода текста в редакторе параметров."
 		},
 		"vs/workbench/contrib/quickaccess/browser/commandsQuickAccess": {
-			"askInChat": "Задать вопрос в чате",
 			"askXInChat": "Запросить {0}: {1}",
 			"clearButtonLabel": "&&Очистить",
 			"clearCommandHistory": "Очистить журнал команд",
@@ -8660,7 +8800,6 @@
 			"host.open": "Открытие удаленного репозитория...",
 			"host.reconnecting": "Выполняется повторное подключение к {0}…",
 			"host.tooltip": "Редактирование в {0}",
-			"installRemotes": "Установка дополнительных удаленных расширений...",
 			"miCloseRemote": "Закрыть уда&&ленное подключение",
 			"networkStatusHighLatencyTooltip": "Похоже, в сети высокая задержка (последнее значение: {0} мс, среднее значение: {1} мс). Некоторые компоненты могут реагировать медленно.",
 			"networkStatusOfflineTooltip": "Похоже, отсутствует подключение к сети. Некоторые функции могут быть недоступны.",
@@ -8670,6 +8809,9 @@
 			"remote.close": "Закрыть удаленное подключение",
 			"remote.install": "Установка расширений удаленной разработки",
 			"remote.showMenu": "Показать удаленное меню",
+			"remote.startActions.help": "Подробнее",
+			"remote.startActions.install": "Установить",
+			"remote.startActions.installingExtension": "Установка расширения... ",
 			"remoteActions": "Выберите параметр, чтобы открыть удаленное окно",
 			"remoteHost": "Удаленный узел",
 			"statusBarOfflineBackground": "Цвет фона строки состояния, когда область Workbench находится в автономном режиме. Строка состояния отображается в нижней части окна",
@@ -8679,13 +8821,7 @@
 		},
 		"vs/workbench/contrib/remote/browser/remoteStartEntry": {
 			"remote.category": "Удаленный",
-			"remote.showStartEntryActions": "Показать удаленные действия начальной записи",
-			"remote.showTunnelStartEntryActions": "Показать начальную запись для удаленных туннелей",
-			"remote.startActions.help": "Подробнее",
-			"remote.startActions.install": "Установить",
-			"remote.startActions.installingExtension": "Установка расширения... ",
-			"remote.startActions.quickPickPlaceholder": "Выберите вариант для подключения",
-			"workbench.remote.showStartListEntry": "Если этот параметр включен, на странице приветствия отображается запись начала списка, чтобы приступить к работе с удаленными интерфейсами."
+			"remote.showWebStartEntryActions": "Показать удаленную начальную запись для Интернета"
 		},
 		"vs/workbench/contrib/remote/browser/tunnelFactory": {
 			"tunnelPrivacy.private": "Частный",
@@ -8817,6 +8953,7 @@
 			"remoteTunnel.actions.turnOff": "Отключить удаленный доступ к туннелю...",
 			"remoteTunnel.actions.turnOn": "Включить удаленный доступ к туннелю...",
 			"remoteTunnel.category": "Удаленные туннели",
+			"remoteTunnel.serviceInstallFailed": "Не удалось установить как службу, и мы вернулись к запуску туннеля для этого сеанса. Подробные сведения см. в [журнале ошибок](command:{0}) .",
 			"remoteTunnel.turnOff.confirm": "Вы хотите отключить удаленный доступ к туннелю?",
 			"remoteTunnel.turnOffAttached.confirm": "Вы хотите отключить удаленный туннельный доступ? Это приведет к остановке службы, запущенной извне.",
 			"remoteTunnelAccess.machineName": "Имя, под которым регистрируется удаленный доступ к туннелю. Если не указано, используется имя узла.",
@@ -8825,6 +8962,11 @@
 			"sign in using account": "Вход с помощью {0}",
 			"signed in": "Вход выполнен",
 			"startTunnel.progress.title": "[Запуск удаленного туннеля](command:{0})",
+			"tunnel.enable.placeholder": "Выберите, как вы хотите включить доступ",
+			"tunnel.enable.service": "Установка в качестве службы",
+			"tunnel.enable.service.description": "Запускать при входе в систему",
+			"tunnel.enable.session": "Включить для этого сеанса",
+			"tunnel.enable.session.description": "Запускать при открытии {0}",
 			"tunnel.preview": "В настоящее время удаленные туннели доступны в предварительной версии. Сообщите о возникающих проблемах с помощью команды \"Справка: сообщить о проблеме\"."
 		},
 		"vs/workbench/contrib/sash/browser/sash.contribution": {
@@ -8880,7 +9022,8 @@
 			"miViewSCM": "Система &&управления версиями",
 			"no open repo": "Поставщики систем управления версиями не зарегистрированы.",
 			"no open repo in an untrusted workspace": "Ни один из зарегистрированных поставщиков системы управления версиями не работает в ограниченном режиме.",
-			"open in terminal": "Открыть в терминале",
+			"open in external terminal": "Открыть во внешнем терминале",
+			"open in integrated terminal": "Открыть во встроенном терминале",
 			"providersVisible": "Определяет число репозиториев, отображаемых в разделе \"Репозитории системы управления версиями\". Задайте значение 0, чтобы размеры представления можно было изменить вручную.",
 			"repositoriesSortOrder": "Управляет порядком сортировки репозиториев в представлении репозиториев системы управления версиями.",
 			"scm accept": "Cистема управления версиями: принятие входных данных",
@@ -8991,6 +9134,7 @@
 			"search.decorations.badges": "Определяет, следует ли использовать эмблемы в декорациях файла.",
 			"search.decorations.colors": "Определяет, следует ли использовать цвета в декорациях файла.",
 			"search.defaultViewMode": "Управляет режимом просмотра результатов поиска по умолчанию.",
+			"search.experimental.closedNotebookResults": "Показать результаты расширенного содержимого редактора записных книжек для закрытых записных книжек. Обновите результаты поиска после изменения этого параметра.",
 			"search.followSymlinks": "Определяет, нужно ли следовать символическим ссылкам при поиске.",
 			"search.globalFindClipboard": "Определяет, должно ли представление поиска считывать или изменять общий буфер обмена поиска в macOS.",
 			"search.location": "Управляет тем, будет ли панель поиска отображаться в виде представления в боковой колонке или в виде панели в области панели, чтобы освободить пространство по горизонтали.",
@@ -9051,7 +9195,7 @@
 			"findInWorkspace": "Найти в рабочей области...",
 			"miFindInFiles": "Найти &&в файлах",
 			"restrictResultsToFolder": "Ограничить поиск папкой",
-			"revealInSideBar": "Отобразить в проводнике"
+			"revealInSideBar": "Показать в панели проводника"
 		},
 		"vs/workbench/contrib/search/browser/searchActionsNav": {
 			"AddCursorsAtSearchResults.label": "Добавить курсоры в результатах поиска",
@@ -9252,11 +9396,12 @@
 		},
 		"vs/workbench/contrib/share/browser/share.contribution": {
 			"close": "Закрыть",
+			"experimental.share.enabled": "Определяет, следует ли отображать действие \"Поделиться\" рядом с командным центром, если {0}: {1}.",
 			"generating link": "Создание ссылки...",
 			"open link": "Открыть ссылку",
 			"share": "Поделиться...",
 			"shareSuccess": "Ссылка скопирована в буфер обмена!",
-			"shareTextSuccess": "Copied text to clipboard!"
+			"shareTextSuccess": "Текст скопирован в буфер обмена!"
 		},
 		"vs/workbench/contrib/share/browser/shareService": {
 			"shareProviderCount": "Количество доступных поставщиков общего доступа",
@@ -9490,6 +9635,7 @@
 			"tasksConfigurationTitle": "Задачи",
 			"tasksQuickAccessHelp": "Выполнить задачу",
 			"tasksQuickAccessPlaceholder": "Введите имя задачи для запуска.",
+			"userTasks": "Задачи пользователя",
 			"workbench.action.tasks.openUserTasks": "Открытые задачи пользователя",
 			"workbench.action.tasks.openWorkspaceFileTasks": "Открыть задачи рабочей области"
 		},
@@ -9786,10 +9932,10 @@
 			"TaskSystem.terminateTask": "&&Завершить задачу"
 		},
 		"vs/workbench/contrib/terminal/browser/baseTerminalBackend": {
-			"nonResponsivePtyHost": "The connection to the terminal's pty host process is unresponsive, terminals may stop working. Click to manually restart the pty host.",
-			"ptyHostStatus": "Pty Host Status",
-			"ptyHostStatus.ariaLabel": "Pty Host is unresponsive",
-			"ptyHostStatus.short": "Pty Host"
+			"nonResponsivePtyHost": "Подключение к хост-процессу pty терминала не отвечает. Терминалы могут перестать работать. Щелкните для перезапуска хоста pty вручную.",
+			"ptyHostStatus": "Состояние хост-процесса pty",
+			"ptyHostStatus.ariaLabel": "Хост-процесс pty не отвечает",
+			"ptyHostStatus.short": "Хост-процесс pty"
 		},
 		"vs/workbench/contrib/terminal/browser/environmentVariableInfo": {
 			"ScopedEnvironmentContributionInfo": "рабочая область",
@@ -10056,9 +10202,8 @@
 		"vs/workbench/contrib/terminal/browser/xterm/xtermTerminal": {
 			"dontShowAgain": "Больше не показывать",
 			"no": "Нет",
-			"terminal.integrated.copySelection.noSelection": "The terminal has no selection to copy",
+			"terminal.integrated.copySelection.noSelection": "В терминале отсутствует выделенный текст для копирования",
 			"terminal.slowRendering": "Ускорение GPU терминала на вашем компьютере работает медленно. Вы хотите переключиться, чтобы отключить его, что может повысить производительность? [Дополнительные сведения о параметрах терминала](https://code.visualstudio.com/docs/editor/integrated-terminal#_changing-how-the-terminal-is-rendered).",
-			"terminalLoggerName": "Terminal",
 			"yes": "Да"
 		},
 		"vs/workbench/contrib/terminal/common/terminal": {
@@ -10138,7 +10283,7 @@
 			"terminal.integrated.drawBoldTextInBrightColors": "Определяет, будет ли полужирный текст в терминале всегда использовать яркий вариант цвета ANSI.",
 			"terminal.integrated.enableBell": "Определяет, включены ли звуковые оповещения в терминале. Это отображается в виде колокольчика рядом с именем терминала.",
 			"terminal.integrated.enableFileLinks": "Указывает, следует ли включить ссылки на файлы в терминалах. Ссылки могут работать медленно при использовании сетевого диска, так как каждая ссылка на файл проверяется в файловой системе. Изменение вступит в силу только в новых терминалах.",
-			"terminal.integrated.enableImages": "Enables image support in the terminal. Both sixel and iTerm's inline image protocol are supported on Linux and macOS, Windows support will light up automatically when ConPTY passes through the sequences. Images will currently not be restored between window reloads/reconnects.",
+			"terminal.integrated.enableImages": "Включает поддержку изображений в терминале (только при включении {0}). В Linux и macOS поддерживаются протоколы встроенных рисунков Sixel и iTerm. Поддержка в Windows автоматически активируется при прохождении ConPTY через последовательности. Изображения не будут восстанавливаться после перезагрузок/повторных подключений окна.",
 			"terminal.integrated.enableMultiLinePasteWarning": "Отображайте диалоговое окно предупреждения при вставке нескольких строк в терминал. Диалоговое окно не отображается, когда:\r\n\r\n– Включен режим вставки в квадратных скобках (оболочка поддерживает многострочную вставку по умолчанию)\r\n– Вставка обрабатывается строкой чтения оболочки (в случае pwsh)",
 			"terminal.integrated.enablePersistentSessions": "Сохранять сеансы или журнал терминалов для рабочей области при перезагрузке окна.",
 			"terminal.integrated.env.linux": "Объект с переменными окружения, которые будут добавлены в процесс VS Code для использования терминалом в Linux. Задайте значение null, чтобы удалить переменную среды.",
@@ -10229,7 +10374,7 @@
 			"terminal.integrated.unicodeVersion.eleven": "Юникод версии 11. Эта версия обеспечивает улучшенную поддержку современных систем, использующих современные версии Юникода.",
 			"terminal.integrated.unicodeVersion.six": "Юникод версии 6. Это старая версия, которая должна лучше работать на старых системах.",
 			"terminal.integrated.windowsEnableConpty": "Указывает, следует ли использовать ConPTY для взаимодействия процессов терминала Windows (требуется Windows 10 с номером сборки 18309 или более поздним). Если задано значение false, будет использоваться Winpty.",
-			"terminal.integrated.wordSeparators": "Строка, содержащая все символы, которые должны рассматриваться как разделители слов при двойном щелчке для выбора функции слов.",
+			"terminal.integrated.wordSeparators": "Строка, содержащая все символы, которые будут считаться разделителями слов при двойном щелчке для выбора слова и при обнаружении резервной ссылки \"слово\". Поскольку это используется для обнаружения ссылок, включение таких символов, как \":\", которые используются при обнаружении ссылок, приведет к игнорированию строк и столбцов ссылок, таких как \"file:10:5\".",
 			"terminalDescription": "Управляет описанием терминала, которое отображается справа от заголовка. Переменные заменяются в зависимости от контекста:",
 			"terminalIntegratedConfigurationTitle": "Встроенный терминал",
 			"terminalTitle": "Управляет названием терминала. Переменные заменяются в зависимости от контекста:",
@@ -10243,7 +10388,7 @@
 			"terminalCountContextKey": "Текущее число терминалов.",
 			"terminalEditorFocusContextKey": "Находится ли фокус на терминале в области редактора.",
 			"terminalFocusContextKey": "Находится ли фокус на терминале.",
-			"terminalFocusInAnyContextKey": "Whether any terminal is focused, including detached terminals used in other UI.",
+			"terminalFocusInAnyContextKey": "Указывает, находится ли какой-либо терминал в фокусе, в том числе отключенные терминалы, используемые в другом пользовательском интерфейсе.",
 			"terminalProcessSupportedContextKey": "Можно ли запустить процессы терминала в текущей рабочей области.",
 			"terminalShellIntegrationEnabled": "Определяет, включена ли интеграция оболочки в активном терминале",
 			"terminalShellTypeContextKey": "Тип оболочки активного терминала, устанавливается на последнее известное значение, если отсутствуют терминалы.",
@@ -10251,7 +10396,7 @@
 			"terminalTabsFocusContextKey": "Находится ли фокус на мини-приложении вкладок терминала.",
 			"terminalTabsSingularSelectedContextKey": "Выбран ли один терминал из списка вкладок терминала.",
 			"terminalTextSelectedContextKey": "Выбран ли текст в активном терминале.",
-			"terminalTextSelectedInFocusedContextKey": "Whether text is selected in a focused terminal.",
+			"terminalTextSelectedInFocusedContextKey": "Указывает, выбран ли текст в терминале с фокусом.",
 			"terminalViewShowing": "Отображается ли представление терминала"
 		},
 		"vs/workbench/contrib/terminal/common/terminalStrings": {
@@ -10306,23 +10451,23 @@
 			"newWithProfileNoKb": "Команда \"Создать новый терминал\" (с профилем) позволяет легко создавать терминалы с использованием определенного профиля и в настоящее время не может быть активирована с помощью настраиваемого сочетания клавиш.",
 			"openDetectedLink": "Команда открытия обнаруженной ссылки ({0}) позволяет средствам чтения с экрана легко открывать ссылки, найденные в терминале.",
 			"openDetectedLinkNoKb": "Команда \"Открыть обнаруженную ссылку\" позволяет программам чтения с экрана легко открывать ссылки, найденные в терминале, и сейчас не активируется привязкой клавиш.",
-			"readMore": "[Read more about terminal accessibility](https://code.visualstudio.com/docs/editor/accessibility#_terminal-accessibility)",
 			"runRecentCommand": "Выполнить недавнюю команду ({0})",
 			"runRecentCommandNoKb": "Выполнить недавнюю команду с помощью привязки клавиш сейчас невозможно.",
 			"shellIntegration": "Терминал содержит функцию интеграции оболочки, которая обеспечивает улучшенный интерфейс и предоставляет полезные команды для средств чтения с экрана, например:",
-			"terminal-help-label": "terminal accessibility help"
+			"terminal-help-label": "справка по специальным возможностям терминала"
 		},
 		"vs/workbench/contrib/terminalContrib/accessibility/browser/terminalAccessibleBuffer": {
 			"terminal.integrated.accessibleBuffer": "Буфер терминалов",
 			"terminal.integrated.symbolQuickPick.labelNoExitCode": "{0}"
 		},
 		"vs/workbench/contrib/terminalContrib/developer/browser/terminal.developer.contribution": {
-			"workbench.action.terminal.restartPtyHost": "Restart Pty Host",
+			"workbench.action.terminal.restartPtyHost": "Перезапустить хост-процесс pty",
 			"workbench.action.terminal.showTextureAtlas": "Показать набор текстур терминалов",
 			"workbench.action.terminal.writeDataToTerminal": "Запись данных в терминал",
 			"workbench.action.terminal.writeDataToTerminal.prompt": "Введите данные для записи непосредственно в терминал, минуя PTY"
 		},
 		"vs/workbench/contrib/terminalContrib/environmentChanges/browser/terminal.environmentChanges.contribution": {
+			"ScopedEnvironmentContributionInfo": "Рабочая область",
 			"envChanges": "Изменения среды терминала",
 			"extension": "Расширение: {0}",
 			"workbench.action.terminal.showEnvironmentContributions": "Показать вклад среды"
@@ -10437,8 +10582,6 @@
 			"testing.editFocusedTest": "Перейти к тесту",
 			"testing.noProfiles": "Профили с поддержкой непрерывного запуска тестов не найдены",
 			"testing.openOutputPeek": "Обзор выходных данных",
-			"testing.pickTask": "Выберите запуск, чтобы отобразить выходные данные для",
-			"testing.pickTaskUnnamed": "Запуск #{0}",
 			"testing.reRunFailTests": "Повторить запуск неудачных тестов",
 			"testing.reRunLastRun": "Повторить последний запуск",
 			"testing.refreshTests": "Обновить тесты",
@@ -10520,33 +10663,24 @@
 			"messageMoreLines1": "+ еще 1 строка",
 			"messageMoreLinesN": "+ еще несколько строк ({0})",
 			"run test": "Запустить тест",
-			"runNoOutout": "The test run did not record any output.",
-			"runNoOutputForPast": "Test output is only available for new test runs.",
+			"runNoOutout": "Тестовый запуск не записал никаких выходных данных.",
+			"runNoOutputForPast": "Выходные данные теста доступны только для новых тестовых запусков.",
 			"testOutputTitle": "Выходные данные теста",
 			"testUnnamedTask": "Задача без имени",
 			"testing.debugLastRun": "Отладка тестового запуска",
 			"testing.goToError": "Перейти к источнику",
-			"testing.goToFile": "Перейти к файлу",
+			"testing.goToFile": "Перейти к источнику",
 			"testing.goToNextMessage": "Перейти к следующей ошибке теста",
 			"testing.goToPreviousMessage": "Перейти к предыдущему сбою теста",
 			"testing.markdownPeekError": "Не удалось открыть предварительную версию markdown: {0}.\r\n\r\n Убедитесь, что расширение markdown включено.",
 			"testing.openMessageInEditor": "Открыть в редакторе",
 			"testing.reRunLastRun": "Повторно запустить тестовый запуск",
 			"testing.revealInExplorer": "Открыть в Обозревателе тестов",
-			"testing.showMessageInTerminal": "Показать выходные данные в терминале",
 			"testing.showResultOutput": "Показать выходные данные результатов",
 			"testing.toggleTestingPeekHistory": "Переключить журнал тестов в режиме обзора",
 			"testingOutputActual": "Фактический результат",
 			"testingOutputExpected": "Ожидаемый результат",
 			"testingPeekLabel": "Сообщения результатов теста"
-		},
-		"vs/workbench/contrib/testing/browser/testingOutputTerminalService": {
-			"runFinished": "Тестовый запуск завершен в {0}",
-			"runNoOutout": "Тестовый запуск не записал никаких выходных данных.",
-			"testNoRunYet": "\r\nТесты еще не были завершены.\r\n",
-			"testOutputTerminalTitle": "Выходные данные теста",
-			"testOutputTerminalTitleWithDate": "Протестировать выходные данные в {0}",
-			"testOutputTerminalTitleWithDateAndTaskName": "{0} в {1}"
 		},
 		"vs/workbench/contrib/testing/browser/testingProgressUiService": {
 			"testProgress.completed": "Пройдено тестов: {0}/{1} ({2}%).",
@@ -10597,7 +10731,7 @@
 			"testing.openTesting.openOnTestFailure": "Открыть представление тестирования при любом сбое теста",
 			"testing.openTesting.openOnTestStart": "Открыть представление тестирования при запуске тестов",
 			"testing.saveBeforeTest": "Определяет, следует ли сохранять \"грязные\" редакторы перед проведением тестов.",
-			"testing.showAllMessages": "Controls whether to show messages from all test runs."
+			"testing.showAllMessages": "Определяет, следует ли отображать сообщения из всех тестовых запусков."
 		},
 		"vs/workbench/contrib/testing/common/constants": {
 			"testGroup.coverage": "Охват",
@@ -10746,6 +10880,7 @@
 			"installUpdate...": "Установить обновление… (1)",
 			"installingUpdate": "Идет установка обновления...",
 			"later": "Позже",
+			"learn more": "Дополнительные сведения",
 			"noUpdatesAvailable": "Доступные обновления отсутствуют.",
 			"read the release notes": "Вас приветствует {0} v{1}! Вы хотите прочитать заметки о выпуске?",
 			"relaunchDetailInsiders": "Нажмите кнопку перезагрузки, чтобы переключиться на версию предварительной оценки VS Code.",
@@ -10756,10 +10891,12 @@
 			"restartToUpdate": "Перезапустить для обновления (1)",
 			"selectSyncService.detail": "Версия VSCode для программы предварительной оценки синхронизирует параметры, настраиваемые сочетания клавиш, расширения, фрагменты кода и состояние пользовательского интерфейса, используя отдельную службу синхронизации параметров для программы предварительной оценки по умолчанию.",
 			"selectSyncService.message": "Выберите службу синхронизации параметров, которая будет использоваться после изменения версии.",
+			"showUpdateReleaseNotes": "Показать заметки о выпуске обновления",
 			"switchToInsiders": "Переключиться на версию для участников программы предварительной оценки...",
 			"switchToStable": "Переключиться на стабильную версию...",
 			"thereIsUpdateAvailable": "Доступно обновление.",
 			"update service": "Обновить службу",
+			"update service disabled": "Обновления отключены, так как выполняется установка {0} на уровне пользователя от имени администратора.",
 			"update.noReleaseNotesOnline": "Для этой версии {0} нет заметок о выпуске в Интернете.",
 			"updateAvailable": "Доступно обновление: {0} {1}",
 			"updateAvailableAfterRestart": "Перезапустите {0}, чтобы применить последнее обновление.",
@@ -10802,38 +10939,28 @@
 			"workbench.trustedDomains.promptInTrustedWorkspace": "Если включено, при открытии ссылок в доверенных рабочих областях будут появляться запросы доверенных доменов."
 		},
 		"vs/workbench/contrib/userDataProfile/browser/userDataProfile": {
-			"create empty profile": "Создать пустой профиль...",
-			"create from current profle": "Создать из текущего профиля...",
 			"create profile": "Создать профиль…",
-			"create profile from template title": "{0}: создать…",
-			"create profile from templates": "Создать профиль из шаблонов...",
-			"create profile title": "Создать профиль…",
 			"current": "Текущий",
 			"delete profile": "Удалить профиль…",
 			"delete specific profile": "Удалить профиль…",
-			"empty": "Пустой профиль",
+			"edit profile": "Изменение профиля...",
 			"export profile": "Экспортировать профиль…",
 			"export profile in share": "Экспортировать профиль ({0})…",
-			"import from file": "Создать из файла шаблона профиля",
-			"import from url": "Создать из URL-адреса шаблона профиля",
+			"import from file": "Выберите файл...",
+			"import from url": "Импортировать с URL-адреса",
 			"import profile": "Импортировать профиль…",
 			"import profile dialog": "Выбрать файл шаблона профиля",
-			"import profile placeholder": "Укажите URL-адрес шаблона профиля или выберите файл шаблона профиля",
-			"import profile quick pick title": "Создать профиль из шаблона профиля…",
+			"import profile placeholder": "Укажите URL-адрес шаблона профиля",
+			"import profile quick pick title": "Импорт из шаблона профиля...",
 			"import profile share": "Импортировать профиль…",
-			"name": "Имя профиля",
-			"no templates": "Нет шаблонов для создания из",
 			"pick profile to delete": "Выберите профили для удаления",
 			"profile import error": "Ошибка при создании профиля: {0}",
-			"profileExists": "Профиль с именем {0} уже существует.",
 			"profiles": "Профили ({0})",
-			"rename profile": "Переименовать…",
-			"save profile as": "Создать из текущего профиля...",
+			"save profile as": "Сохранить текущий профиль как...",
 			"selectProfile": "Выберите профиль",
-			"show profile contents": "Показать содержимое…",
+			"show profile contents": "Показать содержимое профиля",
 			"switchProfile": "Переключить профиль…",
-			"templates": "Шаблоны профилей",
-			"using current": "Использование текущего профиля"
+			"templates": "Шаблоны профилей"
 		},
 		"vs/workbench/contrib/userDataProfile/browser/userDataProfileActions": {
 			"cleanup profile": "Профили очистки",
@@ -11016,7 +11143,7 @@
 			"dialogClose": "Закрыть диалоговое окно"
 		},
 		"vs/workbench/contrib/welcomeGettingStarted/browser/featuredExtensionService": {
-			"gettingStarted.featuredTitle": "Подборка"
+			"gettingStarted.featuredTitle": "Рекомендуемое"
 		},
 		"vs/workbench/contrib/welcomeGettingStarted/browser/gettingStarted": {
 			"allDone": "Пометить как выполненное",
@@ -11127,7 +11254,7 @@
 		},
 		"vs/workbench/contrib/welcomeGettingStarted/browser/startupPage": {
 			"startupPage.markdownPreviewError": "Не удалось открыть предварительную версию markdown: {0}.\r\n\r\n Убедитесь, что расширение markdown включено.",
-			"welcome.displayName": "Welcome Page"
+			"welcome.displayName": "Страница приветствия"
 		},
 		"vs/workbench/contrib/welcomeGettingStarted/common/gettingStartedContent": {
 			"browseLangExts": "Обзор языковых расширений",
@@ -11172,6 +11299,8 @@
 			"gettingStarted.pickColor.title": "Выберите нужный вид",
 			"gettingStarted.playground.description.interpolated": "Хотите создавать код быстрее и легче? Попробуйте использовать мощные функции редактирования кода в интерактивной тестовой площадке.\r\n{0}",
 			"gettingStarted.playground.title": "Переопределение навыков редактирования",
+			"gettingStarted.profiles.description.interpolated": "Профили позволяют создавать наборы настроек VS Code, которые включают параметры, расширения и состояние пользовательского интерфейса. Создайте свой профиль с нуля или используйте предопределенный набор шаблонов профилей для конкретного рабочего процесса.\r\n{0}",
+			"gettingStarted.profiles.title": "Настройка VS Code с профилями",
 			"gettingStarted.quickOpen.description.interpolated": "Мгновенно переходите между файлами с помощью нажатия всего одной клавиши. Совет: чтобы открыть несколько файлов, нажмите клавишу СТРЕЛКА ВПРАВО.\r\n{0}",
 			"gettingStarted.quickOpen.title": "Быстрая навигация между файлами",
 			"gettingStarted.scm.description.interpolated": "Команды Git больше не нужно искать! Рабочие процессы Git и GitHub полностью интегрированы.\r\n{0}",
@@ -11226,6 +11355,7 @@
 			"splitEditor": "Разделить редактор",
 			"titleID": "Обзор цветовых тем",
 			"toggleMenuBar": "Переключить строку меню",
+			"tryProfiles": "Попробовать профили",
 			"tweakSettings": "Оптимизировать параметры",
 			"watch": "Просмотреть руководство",
 			"workspaceTrust": "Доверие для рабочей области"
@@ -11532,6 +11662,9 @@
 			"vscode.extension.contributes.submenus": "Добавляет пункты подменю в редактор",
 			"webview.context": "Контекстное меню веб-просмотра"
 		},
+		"vs/workbench/services/assignment/common/assignmentService": {
+			"workbench.enableExperiments": "Получает эксперименты для запуска от веб-службы Майкрософт."
+		},
 		"vs/workbench/services/authentication/browser/authenticationService": {
 			"accessRequest": "Предоставить доступ к {0} для {1}… (1)",
 			"allow": "&&Разрешить",
@@ -11558,7 +11691,8 @@
 		},
 		"vs/workbench/services/configuration/browser/configurationService": {
 			"configurationDefaults.description": "Добавление значений по умолчанию для конфигураций",
-			"experimental": "Эксперименты"
+			"experimental": "Эксперименты",
+			"setting description": "Настройте параметры для применения ко всем профилям."
 		},
 		"vs/workbench/services/configuration/common/configurationEditing": {
 			"errorConfigurationFileDirty": "Не удалось выполнить запись в параметры пользователя, поскольку в этом файле есть несохраненные изменения. Сохраните файл параметров пользователя, затем повторите попытку.",
@@ -11591,6 +11725,7 @@
 			"errorUnknown": "Не удается записать в {0} из-за внутренней ошибки.",
 			"errorUnknownKey": "Не удалось записать в {0}, так как {1} не является зарегистрированной конфигурацией.",
 			"folderTarget": "Параметры папок",
+			"fsError": "Ошибка при записи в {0}. {1}",
 			"open": "Открыть параметры",
 			"openLaunchConfiguration": "Открыть конфигурацию запуска",
 			"openTasksConfiguration": "Открыть конфигурацию задач",
@@ -11707,11 +11842,11 @@
 			"promptOpenWith.updateDefaultPlaceHolder": "Выбрать новый редактор по умолчанию для \"{0}\""
 		},
 		"vs/workbench/services/editor/common/editorResolverService": {
-			"editor.editorAssociations": "Настройте стандартные маски для редакторов (например, `\"*.hex\": \"hexEditor.hexedit\"`). Они имеют приоритет над поведением по умолчанию."
+			"editor.editorAssociations": "Настройте [шаблоны подстановки](https://aka.ms/vscode-glob-patterns) для редакторов (например, `\"*.hex\": \"hexEditor.hexedit\"`). Они имеют приоритет над поведением по умолчанию."
 		},
 		"vs/workbench/services/extensionManagement/browser/extensionBisect": {
-			"I cannot reproduce": "I can't reproduce",
-			"This is Bad": "I can reproduce",
+			"I cannot reproduce": "Не могу воспроизвести",
+			"This is Bad": "Могу воспроизвести",
 			"bisect": "Разделение расширений пополам активно и отключило расширения ({0}). Убедитесь, что проблему все еще можно воспроизвести, и продолжите процедуру, выбрав один из этих параметров.",
 			"bisect.plural": "Разделение расширений пополам активно и отключило расширения ({0}). Убедитесь, что проблему все еще можно воспроизвести, и продолжите процедуру, выбрав один из этих параметров.",
 			"bisect.singular": "Функция разделения расширений пополам активна и отключила 1 расширение. Убедитесь, что проблему по-прежнему можно воспроизвести, и продолжите, выбрав один из этих вариантов.",
@@ -11724,9 +11859,9 @@
 			"msg.next": "Разделение расширения пополам",
 			"msg.start": "Разделение расширения пополам",
 			"msg2": "&&Начать разделение расширения пополам",
-			"next.bad": "I can &&reproduce",
+			"next.bad": "Могу &&воспроизвести",
 			"next.cancel": "&&Отменить деление пополам",
-			"next.good": "I ca&&n't reproduce",
+			"next.good": "&&Не могу воспроизвести",
 			"next.stop": "&&Остановить разделение пополам",
 			"report": "&&Сообщить о проблеме и продолжить",
 			"title.isBad": "Продолжить разделение расширений пополам",
@@ -11783,7 +11918,6 @@
 		},
 		"vs/workbench/services/extensionManagement/electron-sandbox/remoteExtensionManagementService": {
 			"notFoundCompatibleDependency": "Невозможно установить расширение \"{0}\" из-за несовместимости с текущей версией {1} (версия {2}).",
-			"notFoundCompatiblePrereleaseDependency": "Невозможно установить предварительный выпуск расширения \"{0}\" из-за несовместимости с текущей версией {1} (версия {2}).",
 			"notFoundReleaseExtension": "Не удается установить версию выпуска расширения \"{0}\", так как отсутствует версия выпуска."
 		},
 		"vs/workbench/services/extensionRecommendations/common/workspaceExtensionsConfig": {
@@ -11933,6 +12067,13 @@
 			"restartExtensionHost.reason": "Перезапуск узла расширения по явному запросу.",
 			"startBisect": "Начать разделение расширения пополам"
 		},
+		"vs/workbench/services/filesConfiguration/common/filesConfigurationService": {
+			"configuredReadonly": "Редактор доступен только для чтения, потому что файл был установлен только для чтения в настройках. [Нажмите здесь](command:{0}) для настройки.",
+			"fileLocked": "Редактор доступен только для чтения из-за прав доступа к файлам. [Нажмите здесь](command:{0}), чтобы установить возможность записи в любом случае.",
+			"fileReadonly": "Редактор доступен только для чтения, потому что файл доступен только для чтения.",
+			"providerReadonly": "Редактор доступен только для чтения, потому что файловая система файла доступна только для чтения.",
+			"sessionReadonly": "Редактор доступен только для чтения, поскольку в этом сеансе файл был установлен только для чтения. [Нажмите здесь](command:{0}), чтобы сделать доступной запись."
+		},
 		"vs/workbench/services/history/browser/historyService": {
 			"canNavigateBack": "Возможен ли переход назад в журнале редактора",
 			"canNavigateBackInEditLocations": "Можно ли переходить назад в журнале правок в навигации редактора",
@@ -11957,26 +12098,26 @@
 			"integrity.prompt": "Похоже, ваша установка {0} повреждена. Повторите установку."
 		},
 		"vs/workbench/services/issue/browser/issueTroubleshoot": {
-			"I cannot reproduce": "I can't reproduce",
-			"Stop": "Stop",
-			"This is Bad": "I can reproduce",
-			"ask to download insiders": "Please try to download and reproduce the issue in {0} insiders.",
-			"ask to reproduce issue": "Please try to reproduce the issue in {0} insiders and confirm if the issue exists there.",
-			"bad": "I can reproduce",
-			"detail.start": "Issue troubleshooting is a process to help you identify if the issue is with {0} or caused by an extension.\r\n\r\nDuring the process the window reloads repeatedly. Each time you must confirm if you are still seeing problems.",
-			"download insiders": "Download {0} Insiders",
-			"empty.profile": "Issue troubleshooting is active and has temporarily reset your settings to defaults. Check if you can still reproduce the problem and proceed by selecting from these options.",
-			"good": "I can't reproduce",
-			"issue is in core": "Issue troubleshooting has identified that the issue is with {0}.",
-			"issue is with configuration": "Issue troubleshooting has identified that the issue is caused by your settings. Please report the issue by sharing your settings.",
-			"msg": "&&Troubleshoot Issue",
-			"profile.extensions.disabled": "Issue troubleshooting is active and has temprarily disabled all installed extensions. Check if you can still reproduce the problem and proceed by selecting from these options.",
-			"report anyway": "Report Issue Anyway",
-			"stop": "Stop",
-			"title.stop": "Stop Troubleshoot Issue",
-			"troubleshoot issue": "Troubleshoot Issue",
-			"troubleshootIssue": "Troubleshoot Issue...",
-			"use insiders": "This likely means that the issue has been addressed already and will be available in an upcoming release. You can safely use {0} insiders until the new stable version is available."
+			"I cannot reproduce": "Не удается воспроизвести",
+			"Stop": "Остановить",
+			"This is Bad": "Я могу воспроизвести",
+			"ask to download insiders": "Попробуйте скачать и воспроизвести проблему в версиях предварительной оценки {0}.",
+			"ask to reproduce issue": "Попробуйте воспроизвести проблему в версиях предварительной оценки {0} и убедитесь, что проблема там существует.",
+			"bad": "Я могу воспроизвести",
+			"detail.start": "Устранение неполадок — это процесс, который помогает определить причину проблемы. Причиной проблемы может быть неправильная настройка, расширение или {0}.\r\n\r\nВо время процесса окно перезагружается несколько раз. Каждый раз необходимо подтверждать, сохраняется ли проблема.",
+			"download insiders": "Скачать версии предварительной оценки {0}",
+			"empty.profile": "Процесс устранения неполадок активен и временно сбросил ваши конфигурации до настроек по умолчанию. Убедитесь, что проблему все еще можно воспроизвести, и продолжите процедуру, выбрав один из этих параметров.",
+			"good": "Не удается воспроизвести",
+			"issue is in core": "При устранении проблемы обнаружено, что она возникла в {0}.",
+			"issue is with configuration": "При устранении неполадок обнаружено, что причиной проблемы являются конфигурации. Сообщите о проблеме, экспортировав конфигурации с помощью команды \"Экспорт профиля\" и добавьте файл в отчет о проблеме.",
+			"msg": "&&Устранение проблемы",
+			"profile.extensions.disabled": "Процесс устранения неполадок активен и временно отключил все установленные расширения. Убедитесь, что проблему все еще можно воспроизвести, и продолжите процедуру, выбрав один из этих параметров.",
+			"report anyway": "Все равно сообщить о проблеме",
+			"stop": "Остановить",
+			"title.stop": "Остановить устранение проблемы",
+			"troubleshoot issue": "Устранение проблемы",
+			"troubleshootIssue": "Устранение проблемы...",
+			"use insiders": "Это может означать, что у проблемы уже есть решение, которое будет доступно в предстоящем выпуске. Вы можете безопасно использовать версии предварительной оценки {0}, пока не будет доступна новая стабильная версия."
 		},
 		"vs/workbench/services/keybinding/browser/keybindingService": {
 			"invalid.keybindings": "Недопустимое значение \"contributes.{0}\": {1}",
@@ -12157,6 +12298,14 @@
 		},
 		"vs/workbench/services/search/common/queryBuilder": {
 			"search.noWorkspaceWithName": "Папка рабочей области не существует: {0}"
+		},
+		"vs/workbench/services/secrets/electron-sandbox/secretStorageService": {
+			"encryptionNotAvailableJustTroubleshootingGuide": "Не удалось определить набор ключей ОС для хранения данных, связанных с шифрованием, в текущей классической среде.",
+			"isGnome": "Вы работаете в среде GNOME, но набор ключей ОС недоступен для шифрования. Убедитесь, что установлено и запущено решение gnome-keyring или другая совместимая реализация libsecret.",
+			"isKwallet": "Вы работаете в среде KDE, но набор ключей ОС недоступен для шифрования. Убедитесь, что запущен kwallet.",
+			"troubleshootingButton": "Открыть руководство по устранению неполадок",
+			"usePlainText": "Использовать менее надежное шифрование",
+			"usePlainTextExtraSentence": "Откройте руководство по устранению неполадок, чтобы устранить эту проблему. Вы также можете применить менее надежное шифрование, не использующее набор ключей ОС."
 		},
 		"vs/workbench/services/suggest/browser/simpleSuggestWidget": {
 			"ariaCurrenttSuggestionReadDetails": "{0}, документы: {1}",
@@ -12431,32 +12580,47 @@
 			"settings": "Параметры"
 		},
 		"vs/workbench/services/userDataProfile/browser/snippetsResource": {
+			"exclude": "Выберите фрагмент {0}",
 			"snippets": "Фрагменты кода"
 		},
 		"vs/workbench/services/userDataProfile/browser/tasksResource": {
 			"tasks": "Задачи пользователя"
 		},
 		"vs/workbench/services/userDataProfile/browser/userDataProfileImportExportService": {
-			"Importing profile": "{0} ({1})…",
 			"applied profile": "{0}: успешно применено.",
 			"cancel": "Отмена",
 			"close": "Закрыть",
 			"copy": "&&Копировать ссылку",
+			"create": "Создать",
+			"create from": "Копировать из:",
+			"create from profile": "Создать профиль: {0}",
 			"create new": "&&Создать профиль",
+			"create new profle": "Создать профиль...",
 			"create new title": "Создать профиль",
+			"create profile": "Создание профиля",
+			"customise the profile": "Выберите, что нужно настроить в профиле:",
+			"empty profile": "Нет",
 			"export": "Экспортировать",
 			"export profile dialog": "Сохранить профиль",
 			"export profile name": "Укажите имя профиля",
 			"export profile title": "Экспортировать профиль",
 			"export success": "Профиль \"{0}\" успешно экспортирован.",
+			"extensions": "Расширения",
 			"file": "файл",
+			"from default": "Из профиля по умолчанию",
+			"from existing profiles": "Существующие профили",
+			"from templates": "Шаблоны профилей",
 			"import": "Создание профиля",
 			"import in desktop": "Создать профиль в {0}…",
 			"import profile": "Создание профиля",
 			"install extensions title": "Установить расширения",
+			"invalid configurations": "Профиль должен содержать хотя бы одну конфигурацию.",
+			"keybindings": "Сочетания клавиш",
 			"learn more": "Подробнее",
 			"local": "Локальный",
 			"name": "Имя профиля",
+			"name placeholder": "Имя профиля",
+			"name required": "Укажите имя для нового профиля",
 			"open": "&&Открыть ссылку",
 			"open in": "&&Открыть в {0}",
 			"overwrite": "&&Перезаписать",
@@ -12468,17 +12632,25 @@
 			"profileExists": "Профиль с именем {0} уже существует.",
 			"profiles.applying": "{0}: применение...",
 			"profiles.exporting": "{0}: экспорт...",
-			"progress extensions": "{0} ({1}): применение расширений...",
-			"progress global state": "{0} ({1}): применение состояния...",
-			"progress keybindings": "{0} ({1}): применение сочетаний клавиш...",
-			"progress settings": "{0} ({1}): выполняется применение параметров...",
-			"progress snippets": "{0} ({1}): применение фрагментов кода...",
-			"progress tasks": "{0} ({1}): применение задач...",
+			"progress extensions": "Применение расширений...",
+			"progress global state": "Применение состояния...",
+			"progress keybindings": "Применение сочетания клавиш...",
+			"progress settings": "Применение параметров…",
+			"progress snippets": "Применение фрагментов кода...",
+			"progress tasks": "Применение задач...",
 			"resolving uri": "{0}: разрешение содержимого профиля...",
+			"save": "Сохранить",
+			"save profile": "Изменить профиль {0}...",
 			"select": "Выбрать {0}",
 			"select profile": "Выбор профиля",
 			"select profile content handler": "Экспортировать профиль \"{0}\" как...",
-			"switching profile": "{0} ({1}): применение…"
+			"settings": "Параметры",
+			"snippets": "Пользовательские фрагменты кода",
+			"switching profile": "Переключение профиля...",
+			"tasks": "Задачи пользователя",
+			"troubleshoot issue": "Устранение неполадок",
+			"troubleshoot profile progress": "Настройка профиля устранения неполадок: {0}",
+			"use default profile": "Использование профиля по умолчанию"
 		},
 		"vs/workbench/services/userDataProfile/browser/userDataProfileManagement": {
 			"cannotDeleteDefaultProfile": "Не удается удалить профиль по умолчанию",
@@ -12486,6 +12658,7 @@
 			"reload button": "&&Перезагрузить",
 			"reload message": "Для переключения профиля требуется перезагрузка VS Code.",
 			"reload message when removed": "Текущий профиль удален. Перезагрузите, чтобы вернуться к профилю по умолчанию",
+			"reload message when updated": "Текущий профиль обновлен. Перезагрузите, чтобы вернуться к обновленному профилю",
 			"switch profile": "Переключение на профиль."
 		},
 		"vs/workbench/services/userDataProfile/common/userDataProfile": {
@@ -12681,12 +12854,14 @@
 			"InstallVSIXAction.allowNone": "Ваша политика расширений запрещает устанавливать расширения. Измените политику расширений и повторите попытку.",
 			"InstallVSIXAction.successReload": "Установка расширения {0} из VSIX завершена. Перезагрузите Azure Data Studio, чтобы включить это расширение.",
 			"ReinstallAction.successReload": "Перезагрузите Azure Data Studio, чтобы завершить переустановку расширения {0}.",
+			"aboutDetail": "Version: {0}\r\nCommit: {1}\r\nDate: {2}\r\nElectron: {3}\r\nChromium: {4}\r\nNode.js: {5}\r\nV8: {6}\r\nOS: {7}",
 			"activateLanguagePack": "Чтобы использовать Azure Data Studio в {0}, необходимо перезапустить Azure Data Studio.",
 			"appName": "\"${appName}\": например, Azure Data Studio.",
 			"azuredatastudio": "Azure Data Studio",
 			"azuredatastudio.download": "Скачать",
 			"azuredatastudio.downloadTooltip": "Скачать это расширение из внешнего источника",
 			"azuredatastudio.installTooltip": "Установить это расширение",
+			"azuredatastudio.themeUpdatedNotification": "В Azure Data Studio теперь есть новая тема по умолчанию \"{0}\". При желании вы можете вернуться к старой теме или попробовать одну из множества других доступных цветовых тем.",
 			"connectionDialogBrowseTree.context": "Контекстное меню дерева просмотра диалогового окна подключения",
 			"dashboard.toolbar": "Меню действий инструментов панели мониторинга",
 			"dataExplorer.action": "Меню действий раздела контейнера представления обозревателя данных",
@@ -12705,6 +12880,7 @@
 			"miNewQuery": "Создать &&запрос",
 			"miinstallVsix": "Установить расширение из пакета VSIX",
 			"newQuery": "Создать запрос",
+			"newThemeNotification": "В Azure Data Studio теперь есть новая тема по умолчанию \"{0}\". Вы хотите попробовать ее?",
 			"notebook.cellTitle": "Меню заголовка ячейки записной книжки",
 			"notebook.cellToolbarLocation.description": "Следует ли отображать панель инструментов ячейки или скрыть ее. (Только для Записных книжек VS Code)",
 			"notebook.cellToolbarVisibility.description": "Следует ли отображать панель инструментов ячейки при наведении указателя мыши или щелчке. (Только для Записных книжек VS Code)",
@@ -12969,8 +13145,10 @@
 			"profiler.eventsLost": "В сеансе Профилировщика XEvent для {0} были потеряны события.",
 			"profiler.sessionCreationError": "Ошибка при запуске нового сеанса",
 			"profiler.sessionStopped": "Сеанс Профилировщика XEvent был неожиданно остановлен на сервере {0}.",
+			"profilerInput.connDetails": "Сведения о подключении: ",
 			"profilerInput.notConnected": "Нет соединения",
-			"profilerInput.profiler": "Профилировщик"
+			"profilerInput.profiler": "Профилировщик",
+			"profilerInput.sessionName": ": Имя сеанса: {0}\r\n"
 		},
 		"sql/workbench/browser/editor/resourceViewer/resourceViewerInput": {
 			"resourceViewer.showActions": "Показать действия",
@@ -13050,6 +13228,20 @@
 			"selectScriptForEditNotGeneratedError": "Не удалось создать скрипт для электронного обмена данными.",
 			"selectScriptNotGeneratedError": "Не удалось создать сценарий выбора для выбранного объекта.",
 			"updateOperationName": "Обновить"
+		},
+		"sql/workbench/common/backup/constants": {
+			"backup.asymmetricKey": "Асимметричный ключ",
+			"backup.compressBackup": "Сжимать резервные копии",
+			"backup.defaultCompression": "Использовать параметр сервера по умолчанию",
+			"backup.doNotCompress": "Не сжимать резервные копии",
+			"backup.labelDatabase": "База данных",
+			"backup.labelDifferential": "Разностное",
+			"backup.labelDisk": "Диск",
+			"backup.labelFilegroup": "Файлы и файловые группы",
+			"backup.labelFull": "Полное",
+			"backup.labelLog": "Журнал транзакций",
+			"backup.labelUrl": "URL-адрес",
+			"backup.serverCertificate": "Сертификат сервера"
 		},
 		"sql/workbench/common/constants": {
 			"notebookMultipleRequestsError": "Невозможно выполнить ячейку кода. Выполняется другая ячейка."
@@ -13243,6 +13435,18 @@
 			"charts.maxAllowedRowsExceeded": "Превышено максимальное количество строк для встроенных диаграмм, используются только первые {0} строк. Чтобы настроить это значение, откройте настройки пользователя и выполните поиск: “builtinCharts.maxRowCount”.",
 			"charts.neverShowAgain": "Больше не показывать"
 		},
+		"sql/workbench/contrib/commandLine/electron-sandbox/commandLine": {
+			"commandline.propertiesFormatError": "Не удалось проанализировать дополнительные свойства подключения как JSON. Произошла ошибка: {0}. Значение полученных свойств: {1}",
+			"confirmConnect": "Вы действительно хотите выполнить подключение?",
+			"connectServerDetail": "Будет выполнено подключение к серверу {0}",
+			"connectingLabel": "Подключение: {0}",
+			"connectingQueryLabel": "Файл с запросом на подключение",
+			"errConnectUrl": "Не удалось открыть URL-адрес из-за ошибки {0}",
+			"open": "&&Открыть",
+			"openingNewQueryLabel": "Открытие нового запроса: {0}",
+			"runningCommandLabel": "Выполняемая команда: {0}",
+			"warnServerRequired": "Не удается выполнить подключение, так как информация о сервере не указана"
+		},
 		"sql/workbench/contrib/configuration/common/configurationUpgrader": {
 			"workbench.configuration.upgradeUser": "{0} был заменен на {1} в параметрах пользователя.",
 			"workbench.configuration.upgradeWorkspace": "{0} был заменен на {1} в параметрах рабочей области."
@@ -13250,8 +13454,8 @@
 		"sql/workbench/contrib/connection/browser/connection.contribution": {
 			"connection.showUnsupportedServerVersionWarning": "Надо ли показывать предупреждающее сообщение при подключении пользователя к версии сервера, которую не поддерживает Azure Data Studio.",
 			"registeredServers.collapseAll": "Свернуть все подключения",
-			"sql.defaultAuthenticationType.AzureMFA": "Azure Active Directory — универсальный с поддержкой MFA",
-			"sql.defaultAuthenticationType.AzureMFAAndUser": "Azure Active Directory — пароль",
+			"sql.defaultAuthenticationType.AzureMFA": "Microsoft Entra ID — универсальный с поддержкой MFA",
+			"sql.defaultAuthenticationType.AzureMFAAndUser": "Microsoft Entra ID — пароль",
 			"sql.defaultAuthenticationType.Integrated": "Проверка подлинности Windows",
 			"sql.defaultAuthenticationType.SqlLogin": "Имя входа SQL",
 			"sql.defaultAuthenticationTypeDescription": "Тип проверки подлинности по умолчанию, используемый при подключении к ресурсам Azure. ",
@@ -13336,6 +13540,7 @@
 		"sql/workbench/contrib/dashboard/browser/core/dashboardPage.component": {
 			"dashboard.configureDashboardTooltip": "Подробнее о настройке панели мониторинга",
 			"dashboard.generalTabGroupHeader": "Общие",
+			"dashboard.tabLoadingError": "Error loading tab {0}",
 			"home": "Домашняя страница",
 			"missingConnectionInfo": "Не удалось найти сведения о подключении для этой панели мониторинга"
 		},
@@ -14397,6 +14602,10 @@
 			"queryEditor.results.saveAsCsv.includeHeaders": "Если этот параметр имеет значение true, то при сохранении результата в формате CSV в файл будут включены заголовки столбцов",
 			"queryEditor.results.saveAsCsv.lineSeperator": "Символы, используемые для разделения строк при сохранении результатов в файле CSV",
 			"queryEditor.results.saveAsCsv.textIdentifier": "Символ, используемый для обрамления текстовых полей при сохранении результатов в файле CSV",
+			"queryEditor.results.saveAsExcel.autoFilterHeaderRow": "Если установлено значение ИСТИНА, включать автоматическую фильтрацию в строке заголовка при сохранении результатов в виде файла Excel.",
+			"queryEditor.results.saveAsExcel.autoSizeColumns": "Если установлено значение ИСТИНА, пытаться автоматически изменить размер столбцов при сохранении результатов в виде файла Excel.",
+			"queryEditor.results.saveAsExcel.boldHeaderRow": "Если установлено значение ИСТИНА, выделять строку заголовка жирным шрифтом при сохранении результатов в виде файла Excel.",
+			"queryEditor.results.saveAsExcel.freezeHeaderRow": "Если установлено значение ИСТИНА, замораживать строку заголовка при сохранении результатов в виде файла Excel.",
 			"queryEditor.results.saveAsExcel.includeHeaders": "Если установлено значение true, то заголовки столбцов будут включены при сохранении результатов в файле Excel.",
 			"queryEditor.results.saveAsMarkdown.encoding": "Кодирование файла, используемое при сохранении результатов в формате Markdown",
 			"queryEditor.results.saveAsMarkdown.includeHeaders": "Если задано значение ИСТИНА, заголовки столбцов включаются при сохранении результатов в виде файла Markdown.",
@@ -14557,6 +14766,11 @@
 			"errorMsgFromCancelTask": "Не удалось отменить задачу.",
 			"taskAction.script": "Скрипт"
 		},
+		"sql/workbench/contrib/telemetry/browser/telemetryOptOut": {
+			"telemetryOptOut.optInNotice": "Помогите улучшить Azure Data Studio, разрешив корпорации Майкрософт сбор данных об использовании. Прочтите наше [заявление о конфиденциальности]({0}) и узнайте, как [явно согласиться на его использование]({1}).",
+			"telemetryOptOut.optOutNotice": "Помогите улучшить Azure Data Studio, разрешив корпорации Майкрософт сбор данных об использовании. Прочтите наше [заявление о конфиденциальности]({0}) и узнайте, как [явно отказаться от него]({1}).",
+			"telemetryOptOut.readMore": "Дополнительные сведения"
+		},
 		"sql/workbench/contrib/tsgops/browser/tsgopsActions": {
 			"hideActivityBarViewContainers": "Скрыть вьюлет расширения",
 			"hidePanel": "Скрыть панель",
@@ -14574,6 +14788,114 @@
 		"sql/workbench/contrib/webview/browser/webViewDialog": {
 			"webViewDialog.close": "Закрыть",
 			"webViewDialog.ok": "ОК"
+		},
+		"sql/workbench/contrib/welcome/browser/abstractEnablePreviewFeatures": {
+			"enablePreviewFeatures.never": "Больше не показывать",
+			"enablePreviewFeatures.no": "Нет",
+			"enablePreviewFeatures.notice": "Предварительные версии функций расширяют возможности Azure Data Studio, предоставляя полный доступ к новым функциям и улучшениям. Дополнительные сведения о предварительных версиях функций см. [здесь]({0}). Вы хотите включить предварительные версии функций?",
+			"enablePreviewFeatures.yes": "Да (рекомендуется)"
+		},
+		"sql/workbench/contrib/welcome/browser/az_data_welcome_page": {
+			"welcomePage.createConnection": "Создать подключение",
+			"welcomePage.createConnectionBody": "Подключение к экземпляру базы данных с помощью диалогового окна подключения.",
+			"welcomePage.createNotebook": "Создать записную книжку",
+			"welcomePage.createNotebookBody": "Создание записной книжки с помощью собственного редактора записных книжек.",
+			"welcomePage.deployServer": "Развернуть сервер",
+			"welcomePage.deployServerBody": "Создание нового экземпляра реляционной службы данных на выбранной вами платформе.",
+			"welcomePage.documentation": "Документация",
+			"welcomePage.documentationBody": "Посетите центр документации, где можно найти примеры, руководства и ссылки на PowerShell, API-интерфейсы и т. д.",
+			"welcomePage.extensions": "Расширения",
+			"welcomePage.gettingStarted": "Приступая к работе",
+			"welcomePage.gettingStartedBody": "Ознакомьтесь с возможностями, предлагаемыми Azure Data Studio, и узнайте, как использовать их с максимальной эффективностью.",
+			"welcomePage.history": "Журнал",
+			"welcomePage.learnMore": "Дополнительные сведения ",
+			"welcomePage.location": "Расположение",
+			"welcomePage.moreRecent": "Показать больше",
+			"welcomePage.name": "Имя",
+			"welcomePage.resources": "Ресурсы",
+			"welcomePage.runQuery": "Выполнить запрос",
+			"welcomePage.runQueryBody": "Взаимодействие с данными через редактор запросов.",
+			"welcomePage.showAll": "Показать все",
+			"welcomePage.showOnStartup": "Отображать страницу приветствия при запуске",
+			"welcomePage.usefuLinks": "Полезные ссылки",
+			"welcomePage.videoDescriptionIntroduction": "Общие сведения о записных книжках в Azure Data Studio | Данные предоставлены",
+			"welcomePage.videoDescriptionOverview": "Обзор Azure Data Studio",
+			"welcomePage.videos": "Видео"
+		},
+		"sql/workbench/contrib/welcome/browser/gettingStartedTour": {
+			"GuidedTour.addExtensions": "Расширьте функциональные возможности Azure Data Studio, установив расширения, разработанные корпорацией Майкрософт (нами) и сторонним сообществом (вами).",
+			"GuidedTour.connections": "Подключения",
+			"GuidedTour.discoverWelcomePage": "На странице приветствия можно просмотреть сведения об основных компонентах, недавно открывавшихся файлах и рекомендуемых расширениях. Дополнительные сведения о том, как начать работу с Azure Data Studio, можно получить из наших видеороликов и документации.",
+			"GuidedTour.extensions": "Расширения",
+			"GuidedTour.finish": "Готово",
+			"GuidedTour.five": "5",
+			"GuidedTour.four": "4",
+			"GuidedTour.gettingStartedNotebooks": "Начните создавать свои записные книжки или коллекцию записных книжек в едином расположении.",
+			"GuidedTour.makeConnections": "Подключайтесь, выполняйте запросы и управляйте подключениями из SQL Server, Azure и других сред.",
+			"GuidedTour.makeConnesetSettings": "Настройте Azure Data Studio на основе своих предпочтений. Вы можете настроить такие параметры, как автосохранение и размер вкладок, изменить сочетания клавиш и выбрать цветовую тему по своему вкусу.",
+			"GuidedTour.next": "Далее",
+			"GuidedTour.notebooks": "Записные книжки",
+			"GuidedTour.one": "1",
+			"GuidedTour.readMore": "Дополнительные сведения",
+			"GuidedTour.settings": "Параметры",
+			"GuidedTour.three": "3",
+			"GuidedTour.two": "2",
+			"GuidedTour.welcomePage": "Страница приветствия",
+			"guidedTour": "Приветственный обзор",
+			"hideGuidedTour": "Скрыть приветственный обзор"
+		},
+		"sql/workbench/contrib/welcome/browser/welcomePage": {
+			"WelcomePage.TakeATour": "Вы хотите ознакомиться с кратким обзором Azure Data Studio?",
+			"WelcomePage.welcome": "Добро пожаловать!",
+			"closeTourBar": "Закрыть панель краткого обзора",
+			"details": "Подробные сведения",
+			"ok": "OK",
+			"welcome.title": "Приветствие",
+			"welcomePage": "Приветствие",
+			"welcomePage.PostgreSQL": "PostgreSQL",
+			"welcomePage.PostgreSQLDescription": "Подключайтесь к базам данных Postgres, отправляйте запросы и управляйте ими с помощью Azure Data Studio",
+			"welcomePage.adminPack": "Пакет администрирования SQL",
+			"welcomePage.adminPackDescription": "Пакет администрирования для SQL Server — это набор популярных расширений для администрирования баз данных, которые помогут управлять SQL Server",
+			"welcomePage.background": "Цвет фона страницы приветствия.",
+			"welcomePage.dataVirtualization": "Виртуализация данных",
+			"welcomePage.dataVirtualizationDescription": "Виртуализируйте данные с помощью SQL Server 2019 и создавайте внешние таблицы с помощью интерактивных мастеров",
+			"welcomePage.deployServer": "Развернуть сервер",
+			"welcomePage.extensionPackAlreadyInstalled": "Поддержка {0} уже добавлена.",
+			"welcomePage.extensionPackNotFound": "Не удается найти поддержку для {0} с идентификатором {1}.",
+			"welcomePage.install": "Установить",
+			"welcomePage.installed": "Установлено",
+			"welcomePage.installingExtensionPack": "Установка дополнительной поддержки для {0}...",
+			"welcomePage.new": "Создать",
+			"welcomePage.newConnection": "Создать подключение",
+			"welcomePage.newNotebook": "Создать записную книжку",
+			"welcomePage.newQuery": "Создать запрос",
+			"welcomePage.open": "Открыть…",
+			"welcomePage.openFile": "Открыть файл…",
+			"welcomePage.openFolder": "Открыть папку…",
+			"welcomePage.openFolderWithPath": "Открыть папку {0} с путем {1}",
+			"welcomePage.powershell": "PowerShell",
+			"welcomePage.powershellDescription": "Создавайте и выполняйте скрипты PowerShell с помощью расширенного редактора запросов Azure Data Studio",
+			"welcomePage.showAdminPack": "Пакет администрирования SQL",
+			"welcomePage.sqlServerAgent": "Агент SQL Server",
+			"welcomePage.sqlServerDacpac": "Пакет приложения уровня данных SQL Server",
+			"welcomePage.sqlServerImport": "Импорт SQL Server",
+			"welcomePage.sqlServerProfiler": "Приложение SQL Server Profiler",
+			"welcomePage.startTour": "Начать обзор",
+			"welcomePage.willReloadAfterInstallingExtensionPack": "После установки дополнительной поддержки для {0} окно будет перезагружено."
+		},
+		"sql/workbench/contrib/welcome/browser/welcomePage.contribution": {
+			"miWelcome": "&&Приветствие",
+			"workbench.startupEditor": "Управляет тем, какой редактор отображается при запуске, если содержимое редактора не было восстановлено из предыдущего сеанса.",
+			"workbench.startupEditor.newUntitledFile": "Открыть новый файл без названия (применяется только при открытии пустого окна).",
+			"workbench.startupEditor.none": "Запустить без редактора.",
+			"workbench.startupEditor.readme": "Открыть файл сведений при открытии папки, содержащей этот файл, в противном случае вернуться к \\\"welcomePage\\\". Примечание: этот параметр применяется только в качестве глобальной конфигурации. Он будет проигнорирован, если задан в рабочей области или конфигурации папки.",
+			"workbench.startupEditor.welcomePage": "Откройте домашнюю страницу с содержимым, которое поможет начать работу с Azure Data Studio и расширениями.",
+			"workbench.startupEditor.welcomePageInEmptyWorkbench": "Открывать страницу приветствия при открытии пустой рабочей области.",
+			"workbench.startupEditor.welcomePageWithTour": "Открытие страницы приветствия с туром \"Приступая к работе\" (по умолчанию)"
+		},
+		"sql/workbench/contrib/welcome/electron-sandbox/gettingStarted": {
+			"miGettingStarted": "&&Начало работы",
+			"showReleaseNotes": "Показать раздел \"Начало работы\""
 		},
 		"sql/workbench/services/accountManagement/browser/accountDialog": {
 			"accountDialog.addConnection": "Добавить учетную запись",
@@ -14634,7 +14956,7 @@
 			"backupRestoreUrlBrowserDialog.sharedAccessSignatureButton": "Создать учетные данные",
 			"backupRestoreUrlBrowserDialog.storageAccount": "Учетная запись хранения",
 			"backupRestoreUrlBrowserDialog.subscription": "Подписка Azure",
-			"backupRestoreUrlBrowserDialog.tenant": "Клиент Azure AD",
+			"backupRestoreUrlBrowserDialog.tenant": "Клиент Microsoft Entra",
 			"fileBrowser.discard": "Отменить",
 			"fileBrowser.ok": "ОК"
 		},
@@ -14713,7 +15035,7 @@
 			"boolean.false": "ЛОЖЬ",
 			"boolean.true": "ИСТИНА",
 			"connection.azureAccountDropdownLabel": "Учетная запись",
-			"connection.azureTenantDropdownLabel": "Клиент Azure AD",
+			"connection.azureTenantDropdownLabel": "Клиент Microsoft Entra",
 			"connectionName": "Имя (необязательно)",
 			"connectionWidget.AddAzureAccount": "Добавить учетную запись…",
 			"connectionWidget.ConnectionStringError": "Не удалось проанализировать строку подключения. {0}",
@@ -14792,7 +15114,7 @@
 			"selectExecutionPlanProvider": "Выберите поставщика, чтобы открыть план выполнения"
 		},
 		"sql/workbench/services/fileBrowser/browser/fileBrowserDialog": {
-			"fileBrowser.discard": "Отменить",
+			"fileBrowser.back": "Назад",
 			"fileBrowser.ok": "ОК",
 			"fileFilter": "Файлы типа",
 			"filebrowser.filepath": "Выбранный путь"
@@ -14962,6 +15284,9 @@
 			"registeredServers.clearRecentConnections": "Удалить",
 			"showAllConnections": "Показать все подключения"
 		},
+		"sql/workbench/services/objectExplorer/browser/dragAndDropController": {
+			"objectExplorer.dragAndDropController.existingIdenticalProfile": "Не удалось перетащить профиль в группу: в этой группе уже существует профиль с идентичными параметрами."
+		},
 		"sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog": {
 			"filterDialog.errorDateRange": "Дата начала не может быть установлена позже даты окончания.",
 			"filterDialog.errorEndDate": "Дата окончания не указана.",
@@ -15045,6 +15370,11 @@
 			"profilerFilterDialog.title": "Фильтры",
 			"profilerFilterDialog.valueColumn": "Значение"
 		},
+		"sql/workbench/services/profiler/browser/profilerService": {
+			"FileFilterDescription": "Файлы XEL",
+			"FileTooLarge": "Файл слишком велик для открытия в профилировщике. Профилировщик может открывать файлы размером менее 1 ГБ.",
+			"LargeFileWait": "Загрузка файла может занять некоторое время из-за его размера."
+		},
 		"sql/workbench/services/query/common/gridDataProvider": {
 			"gridDataProvider.cancelCopyResults": "Отмена",
 			"gridDataProvider.closeNotification": "Закрыть",
@@ -15055,7 +15385,6 @@
 			"gridDataProvider.turnOnCopyNotificationsMessage": "Уведомления о завершении копирования отключены. Чтобы повторно включить их, измените параметр: queryEditor.results.showCopyCompletedNotification"
 		},
 		"sql/workbench/services/query/common/queryManagement": {
-			"queryManagement.noQueryRunnerForUri": "Не найдено средство выполнения запросов для URI: {0}",
 			"queryManagement.uriAlreadyHasQueryRunner": "URI: у {0} неожиданно оказалось выполнения запросов."
 		},
 		"sql/workbench/services/query/common/queryModelService": {
@@ -15273,153 +15602,6 @@
 			"InProgressWarning": "Выполняется одна или несколько задач. Вы действительно хотите выйти?",
 			"taskService.no": "Нет",
 			"taskService.yes": "Да"
-		},
-		"sql/workbench/common/backup/constants": {
-			"backup.asymmetricKey": "Асимметричный ключ",
-			"backup.compressBackup": "Сжимать резервные копии",
-			"backup.defaultCompression": "Использовать параметр сервера по умолчанию",
-			"backup.doNotCompress": "Не сжимать резервные копии",
-			"backup.labelDatabase": "База данных",
-			"backup.labelDifferential": "Разностное",
-			"backup.labelDisk": "Диск",
-			"backup.labelFilegroup": "Файлы и файловые группы",
-			"backup.labelFull": "Полное",
-			"backup.labelLog": "Журнал транзакций",
-			"backup.labelUrl": "URL-адрес",
-			"backup.serverCertificate": "Сертификат сервера"
-		},
-		"sql/workbench/contrib/commandLine/electron-sandbox/commandLine": {
-			"commandline.propertiesFormatError": "Не удалось проанализировать дополнительные свойства подключения как JSON. Произошла ошибка: {0}. Значение полученных свойств: {1}",
-			"confirmConnect": "Вы действительно хотите выполнить подключение?",
-			"connectServerDetail": "Будет выполнено подключение к серверу {0}",
-			"connectingLabel": "Подключение: {0}",
-			"connectingQueryLabel": "Файл с запросом на подключение",
-			"errConnectUrl": "Не удалось открыть URL-адрес из-за ошибки {0}",
-			"open": "&&Открыть",
-			"openingNewQueryLabel": "Открытие нового запроса: {0}",
-			"runningCommandLabel": "Выполняемая команда: {0}",
-			"warnServerRequired": "Не удается выполнить подключение, так как информация о сервере не указана"
-		},
-		"sql/workbench/contrib/telemetry/browser/telemetryOptOut": {
-			"telemetryOptOut.optInNotice": "Помогите улучшить Azure Data Studio, разрешив корпорации Майкрософт сбор данных об использовании. Прочтите наше [заявление о конфиденциальности]({0}) и узнайте, как [явно согласиться на его использование]({1}).",
-			"telemetryOptOut.optOutNotice": "Помогите улучшить Azure Data Studio, разрешив корпорации Майкрософт сбор данных об использовании. Прочтите наше [заявление о конфиденциальности]({0}) и узнайте, как [явно отказаться от него]({1}).",
-			"telemetryOptOut.readMore": "Дополнительные сведения"
-		},
-		"sql/workbench/contrib/welcome/browser/abstractEnablePreviewFeatures": {
-			"enablePreviewFeatures.never": "Больше не показывать",
-			"enablePreviewFeatures.no": "Нет",
-			"enablePreviewFeatures.notice": "Предварительные версии функций расширяют возможности Azure Data Studio, предоставляя полный доступ к новым функциям и улучшениям. Дополнительные сведения о предварительных версиях функций см. [здесь]({0}). Вы хотите включить предварительные версии функций?",
-			"enablePreviewFeatures.yes": "Да (рекомендуется)"
-		},
-		"sql/workbench/contrib/welcome/browser/az_data_welcome_page": {
-			"welcomePage.createConnection": "Создать подключение",
-			"welcomePage.createConnectionBody": "Подключение к экземпляру базы данных с помощью диалогового окна подключения.",
-			"welcomePage.createNotebook": "Создать записную книжку",
-			"welcomePage.createNotebookBody": "Создание записной книжки с помощью собственного редактора записных книжек.",
-			"welcomePage.deployServer": "Развернуть сервер",
-			"welcomePage.deployServerBody": "Создание нового экземпляра реляционной службы данных на выбранной вами платформе.",
-			"welcomePage.documentation": "Документация",
-			"welcomePage.documentationBody": "Посетите центр документации, где можно найти примеры, руководства и ссылки на PowerShell, API-интерфейсы и т. д.",
-			"welcomePage.extensions": "Расширения",
-			"welcomePage.gettingStarted": "Приступая к работе",
-			"welcomePage.gettingStartedBody": "Ознакомьтесь с возможностями, предлагаемыми Azure Data Studio, и узнайте, как использовать их с максимальной эффективностью.",
-			"welcomePage.history": "Журнал",
-			"welcomePage.learnMore": "Дополнительные сведения ",
-			"welcomePage.location": "Расположение",
-			"welcomePage.moreRecent": "Показать больше",
-			"welcomePage.name": "Имя",
-			"welcomePage.resources": "Ресурсы",
-			"welcomePage.runQuery": "Выполнить запрос",
-			"welcomePage.runQueryBody": "Взаимодействие с данными через редактор запросов.",
-			"welcomePage.showAll": "Показать все",
-			"welcomePage.showOnStartup": "Отображать страницу приветствия при запуске",
-			"welcomePage.usefuLinks": "Полезные ссылки",
-			"welcomePage.videoDescriptionIntroduction": "Общие сведения о записных книжках в Azure Data Studio | Данные предоставлены",
-			"welcomePage.videoDescriptionOverview": "Обзор Azure Data Studio",
-			"welcomePage.videos": "Видео"
-		},
-		"sql/workbench/contrib/welcome/browser/gettingStartedTour": {
-			"GuidedTour.addExtensions": "Расширьте функциональные возможности Azure Data Studio, установив расширения, разработанные корпорацией Майкрософт (нами) и сторонним сообществом (вами).",
-			"GuidedTour.connections": "Подключения",
-			"GuidedTour.discoverWelcomePage": "На странице приветствия можно просмотреть сведения об основных компонентах, недавно открывавшихся файлах и рекомендуемых расширениях. Дополнительные сведения о том, как начать работу с Azure Data Studio, можно получить из наших видеороликов и документации.",
-			"GuidedTour.extensions": "Расширения",
-			"GuidedTour.finish": "Готово",
-			"GuidedTour.five": "5",
-			"GuidedTour.four": "4",
-			"GuidedTour.gettingStartedNotebooks": "Начните создавать свои записные книжки или коллекцию записных книжек в едином расположении.",
-			"GuidedTour.makeConnections": "Подключайтесь, выполняйте запросы и управляйте подключениями из SQL Server, Azure и других сред.",
-			"GuidedTour.makeConnesetSettings": "Настройте Azure Data Studio на основе своих предпочтений. Вы можете настроить такие параметры, как автосохранение и размер вкладок, изменить сочетания клавиш и выбрать цветовую тему по своему вкусу.",
-			"GuidedTour.next": "Далее",
-			"GuidedTour.notebooks": "Записные книжки",
-			"GuidedTour.one": "1",
-			"GuidedTour.readMore": "Дополнительные сведения",
-			"GuidedTour.settings": "Параметры",
-			"GuidedTour.three": "3",
-			"GuidedTour.two": "2",
-			"GuidedTour.welcomePage": "Страница приветствия",
-			"guidedTour": "Приветственный обзор",
-			"hideGuidedTour": "Скрыть приветственный обзор"
-		},
-		"sql/workbench/contrib/welcome/browser/welcomePage": {
-			"WelcomePage.TakeATour": "Вы хотите ознакомиться с кратким обзором Azure Data Studio?",
-			"WelcomePage.welcome": "Добро пожаловать!",
-			"closeTourBar": "Закрыть панель краткого обзора",
-			"details": "Подробные сведения",
-			"ok": "OK",
-			"welcome.title": "Приветствие",
-			"welcomePage": "Приветствие",
-			"welcomePage.PostgreSQL": "PostgreSQL",
-			"welcomePage.PostgreSQLDescription": "Подключайтесь к базам данных Postgres, отправляйте запросы и управляйте ими с помощью Azure Data Studio",
-			"welcomePage.adminPack": "Пакет администрирования SQL",
-			"welcomePage.adminPackDescription": "Пакет администрирования для SQL Server — это набор популярных расширений для администрирования баз данных, которые помогут управлять SQL Server",
-			"welcomePage.background": "Цвет фона страницы приветствия.",
-			"welcomePage.dataVirtualization": "Виртуализация данных",
-			"welcomePage.dataVirtualizationDescription": "Виртуализируйте данные с помощью SQL Server 2019 и создавайте внешние таблицы с помощью интерактивных мастеров",
-			"welcomePage.deployServer": "Развернуть сервер",
-			"welcomePage.extensionPackAlreadyInstalled": "Поддержка {0} уже добавлена.",
-			"welcomePage.extensionPackNotFound": "Не удается найти поддержку для {0} с идентификатором {1}.",
-			"welcomePage.install": "Установить",
-			"welcomePage.installed": "Установлено",
-			"welcomePage.installingExtensionPack": "Установка дополнительной поддержки для {0}...",
-			"welcomePage.new": "Создать",
-			"welcomePage.newConnection": "Создать подключение",
-			"welcomePage.newNotebook": "Создать записную книжку",
-			"welcomePage.newQuery": "Создать запрос",
-			"welcomePage.open": "Открыть…",
-			"welcomePage.openFile": "Открыть файл…",
-			"welcomePage.openFolder": "Открыть папку…",
-			"welcomePage.openFolderWithPath": "Открыть папку {0} с путем {1}",
-			"welcomePage.powershell": "PowerShell",
-			"welcomePage.powershellDescription": "Создавайте и выполняйте скрипты PowerShell с помощью расширенного редактора запросов Azure Data Studio",
-			"welcomePage.showAdminPack": "Пакет администрирования SQL",
-			"welcomePage.sqlServerAgent": "Агент SQL Server",
-			"welcomePage.sqlServerDacpac": "Пакет приложения уровня данных SQL Server",
-			"welcomePage.sqlServerImport": "Импорт SQL Server",
-			"welcomePage.sqlServerProfiler": "Приложение SQL Server Profiler",
-			"welcomePage.startTour": "Начать обзор",
-			"welcomePage.willReloadAfterInstallingExtensionPack": "После установки дополнительной поддержки для {0} окно будет перезагружено."
-		},
-		"sql/workbench/contrib/welcome/browser/welcomePage.contribution": {
-			"miWelcome": "&&Приветствие",
-			"workbench.startupEditor": "Управляет тем, какой редактор отображается при запуске, если содержимое редактора не было восстановлено из предыдущего сеанса.",
-			"workbench.startupEditor.newUntitledFile": "Открыть новый файл без названия (применяется только при открытии пустого окна).",
-			"workbench.startupEditor.none": "Запустить без редактора.",
-			"workbench.startupEditor.readme": "Открыть файл сведений при открытии папки, содержащей этот файл, в противном случае вернуться к \\\"welcomePage\\\". Примечание: этот параметр применяется только в качестве глобальной конфигурации. Он будет проигнорирован, если задан в рабочей области или конфигурации папки.",
-			"workbench.startupEditor.welcomePage": "Откройте домашнюю страницу с содержимым, которое поможет начать работу с Azure Data Studio и расширениями.",
-			"workbench.startupEditor.welcomePageInEmptyWorkbench": "Открывать страницу приветствия при открытии пустой рабочей области.",
-			"workbench.startupEditor.welcomePageWithTour": "Открытие страницы приветствия с туром \"Приступая к работе\" (по умолчанию)"
-		},
-		"sql/workbench/contrib/welcome/electron-sandbox/gettingStarted": {
-			"miGettingStarted": "&&Начало работы",
-			"showReleaseNotes": "Показать раздел \"Начало работы\""
-		},
-		"sql/workbench/services/objectExplorer/browser/dragAndDropController": {
-			"objectExplorer.dragAndDropController.existingIdenticalProfile": "Не удалось перетащить профиль в группу: в этой группе уже существует профиль с идентичными параметрами."
-		},
-		"sql/workbench/services/profiler/browser/profilerService": {
-			"FileFilterDescription": "Файлы XEL",
-			"FileTooLarge": "Файл слишком велик для открытия в профилировщике. Профилировщик может открывать файлы размером менее 1 ГБ.",
-			"LargeFileWait": "Загрузка файла может занять некоторое время из-за его размера."
 		}
 	}
 }

@@ -220,6 +220,25 @@
         <source xml:lang="en">Please reload Azure Data Studio to complete reinstalling the extension {0}.</source>
         <target state="translated">Azure Data Studio를 다시 로드하고 {0} 확장의 재설치를 완료하세요.</target>
       </trans-unit>
+      <trans-unit id="aboutDetail">
+        <source xml:lang="en">Version: {0}
+Commit: {1}
+Date: {2}
+Electron: {3}
+Chromium: {4}
+Node.js: {5}
+V8: {6}
+OS: {7}</source>
+        <note>Electron, Chromium, Node.js and V8 are product names that need no translation</note>
+        <target state="new">Version: {0}
+Commit: {1}
+Date: {2}
+Electron: {3}
+Chromium: {4}
+Node.js: {5}
+V8: {6}
+OS: {7}</target>
+      </trans-unit>
       <trans-unit id="activateLanguagePack">
         <source xml:lang="en">In order to use Azure Data Studio in {0}, Azure Data Studio needs to restart.</source>
         <target state="translated">{0}에서 Azure Data Studio를 사용하려면 Azure Data Studio를 다시 시작해야 합니다.</target>
@@ -243,6 +262,11 @@
       <trans-unit id="azuredatastudio.installTooltip">
         <source xml:lang="en">Install this extension</source>
         <target state="translated">이 확장 설치</target>
+      </trans-unit>
+      <trans-unit id="azuredatastudio.themeUpdatedNotification">
+        <source xml:lang="en">Azure Data Studio now ships with a new default theme '{0}'. If you prefer, you can switch back to the old theme or try one of the many other color themes available.</source>
+        <note>{0} is the name of the new default theme</note>
+        <target state="translated">이제 Azure Data Studio에서 새 '{0}' 기본 테마를 제공합니다. 원하는 경우 이전 테마로 다시 전환하거나 제공되는 다른 여러 색 테마 중 하나를 사용해 볼 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="connectionDialogBrowseTree.context">
         <source xml:lang="en">The connection dialog's browse tree context menu</source>
@@ -319,6 +343,11 @@
       <trans-unit id="newQuery">
         <source xml:lang="en">New Query</source>
         <target state="translated">새 쿼리</target>
+      </trans-unit>
+      <trans-unit id="newThemeNotification">
+        <source xml:lang="en">Azure Data Studio now ships with a new default theme '{0}'. Do you want to give it a try?</source>
+        <note>{0} is the name of the new default theme</note>
+        <target state="translated">이제 Azure Data Studio에서 새 '{0}' 기본 테마를 제공합니다. 사용해 보시겠어요?</target>
       </trans-unit>
       <trans-unit id="notebook.cellTitle">
         <source xml:lang="en">The notebook cell title menu</source>
@@ -1319,6 +1348,10 @@ Default Skipped Commands:
         <source xml:lang="en">XEvent Profiler Session stopped unexpectedly on the server {0}.</source>
         <target state="translated">{0} 서버에서 XEvent Profiler 세션이 예기치 않게 중지되었습니다.</target>
       </trans-unit>
+      <trans-unit id="profilerInput.connDetails">
+        <source xml:lang="en">Connection Details: </source>
+        <target state="translated">연결 세부 정보: </target>
+      </trans-unit>
       <trans-unit id="profilerInput.notConnected">
         <source xml:lang="en">Not connected</source>
         <target state="translated">연결되지 않음</target>
@@ -1326,6 +1359,12 @@ Default Skipped Commands:
       <trans-unit id="profilerInput.profiler">
         <source xml:lang="en">Profiler</source>
         <target state="translated">Profiler</target>
+      </trans-unit>
+      <trans-unit id="profilerInput.sessionName">
+        <source xml:lang="en">: Session Name: {0}
+</source>
+        <target state="translated">: 세션 이름: {0}
+</target>
       </trans-unit>
     </body>
   </file>
@@ -2384,12 +2423,12 @@ Default Skipped Commands:
         <target state="translated">모든 연결 축소</target>
       </trans-unit>
       <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
-        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory - MFA가 지원되는 유니버설</target>
+        <source xml:lang="en">Microsoft Entra ID - Universal with MFA support</source>
+        <target state="translated">Microsoft Entra ID - MFA 지원으로 유니버설</target>
       </trans-unit>
       <trans-unit id="sql.defaultAuthenticationType.AzureMFAAndUser">
-        <source xml:lang="en">Azure Active Directory - Password</source>
-        <target state="translated">Azure Active Directory - 암호</target>
+        <source xml:lang="en">Microsoft Entra ID - Password</source>
+        <target state="translated">Microsoft Entra ID - 암호</target>
       </trans-unit>
       <trans-unit id="sql.defaultAuthenticationType.Integrated">
         <source xml:lang="en">Windows Authentication</source>
@@ -2670,6 +2709,10 @@ Default Skipped Commands:
       <trans-unit id="dashboard.generalTabGroupHeader">
         <source xml:lang="en">General</source>
         <target state="translated">일반</target>
+      </trans-unit>
+      <trans-unit id="dashboard.tabLoadingError">
+        <source xml:lang="en">Error loading tab {0}</source>
+        <target state="new">Error loading tab {0}</target>
       </trans-unit>
       <trans-unit id="home">
         <source xml:lang="en">Home</source>
@@ -6463,6 +6506,22 @@ Error: {1}</source>
         <source xml:lang="en">Character used for enclosing text fields when saving results as CSV</source>
         <target state="translated">결과를 CSV로 저장할 때 텍스트 필드를 묶는 데 사용하는 문자</target>
       </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsExcel.autoFilterHeaderRow">
+        <source xml:lang="en">When true, enable auto filtering on the header row when saving results as an Excel file</source>
+        <target state="translated">true이면 결과를 Excel 파일로 저장할 때 머리글 행에서 자동 필터링을 사용하도록 설정합니다.</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsExcel.autoSizeColumns">
+        <source xml:lang="en">When true, attempt to automatically size columns when saving results as an Excel file</source>
+        <target state="translated">true이면 결과를 Excel 파일로 저장할 때 열 크기를 자동으로 조정하도록 시도합니다.</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsExcel.boldHeaderRow">
+        <source xml:lang="en">When true, make the header row bold when saving results as an Excel file</source>
+        <target state="translated">true이면 결과를 Excel 파일로 저장할 때 머리글 행을 굵게 표시합니다.</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsExcel.freezeHeaderRow">
+        <source xml:lang="en">When true, freeze the header row when saving results as an Excel file</source>
+        <target state="translated">true이면 결과를 Excel 파일로 저장할 때 머리글 행을 고정합니다.</target>
+      </trans-unit>
       <trans-unit id="queryEditor.results.saveAsExcel.includeHeaders">
         <source xml:lang="en">When true, column headers are included when saving results as an Excel file</source>
         <target state="translated">true이면 결과를 Excel 파일로 저장할 때 열 머리글이 포함됩니다.</target>
@@ -7714,8 +7773,8 @@ Error Message: {1}</source>
         <target state="translated">Azure 구독</target>
       </trans-unit>
       <trans-unit id="backupRestoreUrlBrowserDialog.tenant">
-        <source xml:lang="en">Azure AD Tenant</source>
-        <target state="translated">Azure AD 테넌트</target>
+        <source xml:lang="en">Microsoft Entra Tenant</source>
+        <target state="translated">Microsoft Entra 테넌트</target>
       </trans-unit>
       <trans-unit id="fileBrowser.discard">
         <source xml:lang="en">Discard</source>
@@ -7998,8 +8057,8 @@ Error Message: {1}</source>
         <target state="translated">계정</target>
       </trans-unit>
       <trans-unit id="connection.azureTenantDropdownLabel">
-        <source xml:lang="en">Azure AD tenant</source>
-        <target state="translated">Azure AD 테넌트</target>
+        <source xml:lang="en">Microsoft Entra tenant</source>
+        <target state="translated">Microsoft Entra 테넌트</target>
       </trans-unit>
       <trans-unit id="connectionName">
         <source xml:lang="en">Name (optional)</source>
@@ -8270,9 +8329,9 @@ Error Message: {1}</source>
   </file>
   <file original="src/sql/workbench/services/fileBrowser/browser/fileBrowserDialog" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="fileBrowser.discard">
-        <source xml:lang="en">Discard</source>
-        <target state="translated">삭제</target>
+      <trans-unit id="fileBrowser.back">
+        <source xml:lang="en">Back</source>
+        <target state="translated">뒤로</target>
       </trans-unit>
       <trans-unit id="fileBrowser.ok">
         <source xml:lang="en">OK</source>
@@ -9215,10 +9274,6 @@ Error Message: {1}</source>
   </file>
   <file original="src/sql/workbench/services/query/common/queryManagement" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="queryManagement.noQueryRunnerForUri">
-        <source xml:lang="en">Could not find Query Runner for uri: {0}</source>
-        <target state="translated">{0} URI에 대한 쿼리 실행기를 찾을 수 없습니다.</target>
-      </trans-unit>
       <trans-unit id="queryManagement.uriAlreadyHasQueryRunner">
         <source xml:lang="en">Uri: {0} unexpectedly already has a query runner.</source>
         <target state="translated">URI: {0} 예외에는 쿼리 실행기를 이미 가지고 있습니다.</target>

@@ -220,6 +220,25 @@
         <source xml:lang="en">Please reload Azure Data Studio to complete reinstalling the extension {0}.</source>
         <target state="translated">請重新載入 Azure Data Studio 以完成重新安裝延伸模組 {0}。</target>
       </trans-unit>
+      <trans-unit id="aboutDetail">
+        <source xml:lang="en">Version: {0}
+Commit: {1}
+Date: {2}
+Electron: {3}
+Chromium: {4}
+Node.js: {5}
+V8: {6}
+OS: {7}</source>
+        <note>Electron, Chromium, Node.js and V8 are product names that need no translation</note>
+        <target state="new">Version: {0}
+Commit: {1}
+Date: {2}
+Electron: {3}
+Chromium: {4}
+Node.js: {5}
+V8: {6}
+OS: {7}</target>
+      </trans-unit>
       <trans-unit id="activateLanguagePack">
         <source xml:lang="en">In order to use Azure Data Studio in {0}, Azure Data Studio needs to restart.</source>
         <target state="translated">若要在 {0} 中使用 Azure Data Studio，Azure Data Studio 需要重新啟動。</target>
@@ -243,6 +262,11 @@
       <trans-unit id="azuredatastudio.installTooltip">
         <source xml:lang="en">Install this extension</source>
         <target state="translated">安裝此延伸模組</target>
+      </trans-unit>
+      <trans-unit id="azuredatastudio.themeUpdatedNotification">
+        <source xml:lang="en">Azure Data Studio now ships with a new default theme '{0}'. If you prefer, you can switch back to the old theme or try one of the many other color themes available.</source>
+        <note>{0} is the name of the new default theme</note>
+        <target state="translated">Azure Data Studio 現在隨附新的預設佈景主題 '{0}'。如果您想要的話，您可以切換回舊的佈景主題，或嘗試其他多種可用的色彩佈景主題。</target>
       </trans-unit>
       <trans-unit id="connectionDialogBrowseTree.context">
         <source xml:lang="en">The connection dialog's browse tree context menu</source>
@@ -319,6 +343,11 @@
       <trans-unit id="newQuery">
         <source xml:lang="en">New Query</source>
         <target state="translated">新增查詢</target>
+      </trans-unit>
+      <trans-unit id="newThemeNotification">
+        <source xml:lang="en">Azure Data Studio now ships with a new default theme '{0}'. Do you want to give it a try?</source>
+        <note>{0} is the name of the new default theme</note>
+        <target state="translated">Azure Data Studio 現在隨附新的預設佈景主題 '{0}'。您要試試看嗎?</target>
       </trans-unit>
       <trans-unit id="notebook.cellTitle">
         <source xml:lang="en">The notebook cell title menu</source>
@@ -1319,6 +1348,10 @@ Default Skipped Commands:
         <source xml:lang="en">XEvent Profiler Session stopped unexpectedly on the server {0}.</source>
         <target state="translated">伺服器 {0} 上的 XEvent 分析工具工作階段意外停止。</target>
       </trans-unit>
+      <trans-unit id="profilerInput.connDetails">
+        <source xml:lang="en">Connection Details: </source>
+        <target state="translated">連線詳細資料: </target>
+      </trans-unit>
       <trans-unit id="profilerInput.notConnected">
         <source xml:lang="en">Not connected</source>
         <target state="translated">未連線</target>
@@ -1326,6 +1359,12 @@ Default Skipped Commands:
       <trans-unit id="profilerInput.profiler">
         <source xml:lang="en">Profiler</source>
         <target state="translated">分析工具</target>
+      </trans-unit>
+      <trans-unit id="profilerInput.sessionName">
+        <source xml:lang="en">: Session Name: {0}
+</source>
+        <target state="translated">: 工作階段名稱: {0}
+</target>
       </trans-unit>
     </body>
   </file>
@@ -2384,12 +2423,12 @@ Default Skipped Commands:
         <target state="translated">摺疊所有連線</target>
       </trans-unit>
       <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
-        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory - MFA 通用支援</target>
+        <source xml:lang="en">Microsoft Entra ID - Universal with MFA support</source>
+        <target state="translated">Microsoft Entra ID - 通用與 MFA 支援</target>
       </trans-unit>
       <trans-unit id="sql.defaultAuthenticationType.AzureMFAAndUser">
-        <source xml:lang="en">Azure Active Directory - Password</source>
-        <target state="translated">Azure Active Directory - 密碼</target>
+        <source xml:lang="en">Microsoft Entra ID - Password</source>
+        <target state="translated">Microsoft Entra ID - 密碼</target>
       </trans-unit>
       <trans-unit id="sql.defaultAuthenticationType.Integrated">
         <source xml:lang="en">Windows Authentication</source>
@@ -2670,6 +2709,10 @@ Default Skipped Commands:
       <trans-unit id="dashboard.generalTabGroupHeader">
         <source xml:lang="en">General</source>
         <target state="translated">一般</target>
+      </trans-unit>
+      <trans-unit id="dashboard.tabLoadingError">
+        <source xml:lang="en">Error loading tab {0}</source>
+        <target state="new">Error loading tab {0}</target>
       </trans-unit>
       <trans-unit id="home">
         <source xml:lang="en">Home</source>
@@ -6463,6 +6506,22 @@ Error: {1}</source>
         <source xml:lang="en">Character used for enclosing text fields when saving results as CSV</source>
         <target state="translated">將結果另存為 CSV 時，用於括住文字欄位的字元</target>
       </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsExcel.autoFilterHeaderRow">
+        <source xml:lang="en">When true, enable auto filtering on the header row when saving results as an Excel file</source>
+        <target state="translated">若為 true，則在將結果另存為 Excel 檔案時，在標題列上啟用自動篩選</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsExcel.autoSizeColumns">
+        <source xml:lang="en">When true, attempt to automatically size columns when saving results as an Excel file</source>
+        <target state="translated">若為 true，則在將結果另存為 Excel 檔案時，嘗試自動調整欄大小</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsExcel.boldHeaderRow">
+        <source xml:lang="en">When true, make the header row bold when saving results as an Excel file</source>
+        <target state="translated">若為 true，則在將結果另存為 Excel 檔案時，將標題列變成粗體</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsExcel.freezeHeaderRow">
+        <source xml:lang="en">When true, freeze the header row when saving results as an Excel file</source>
+        <target state="translated">若為 true，則在將結果另存為 Excel 檔案時，凍結標題列</target>
+      </trans-unit>
       <trans-unit id="queryEditor.results.saveAsExcel.includeHeaders">
         <source xml:lang="en">When true, column headers are included when saving results as an Excel file</source>
         <target state="translated">若設定為 true，會在將結果另存為 Excel 檔案時包含資料行標題</target>
@@ -7714,8 +7773,8 @@ Error Message: {1}</source>
         <target state="translated">Azure 訂用帳戶</target>
       </trans-unit>
       <trans-unit id="backupRestoreUrlBrowserDialog.tenant">
-        <source xml:lang="en">Azure AD Tenant</source>
-        <target state="translated">Azure AD 租用戶</target>
+        <source xml:lang="en">Microsoft Entra Tenant</source>
+        <target state="translated">Microsoft Entra 租用戶</target>
       </trans-unit>
       <trans-unit id="fileBrowser.discard">
         <source xml:lang="en">Discard</source>
@@ -7998,8 +8057,8 @@ Error Message: {1}</source>
         <target state="translated">帳戶</target>
       </trans-unit>
       <trans-unit id="connection.azureTenantDropdownLabel">
-        <source xml:lang="en">Azure AD tenant</source>
-        <target state="translated">Azure AD 租用戶</target>
+        <source xml:lang="en">Microsoft Entra tenant</source>
+        <target state="translated">Microsoft Entra 租用戶</target>
       </trans-unit>
       <trans-unit id="connectionName">
         <source xml:lang="en">Name (optional)</source>
@@ -8270,9 +8329,9 @@ Error Message: {1}</source>
   </file>
   <file original="src/sql/workbench/services/fileBrowser/browser/fileBrowserDialog" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
-      <trans-unit id="fileBrowser.discard">
-        <source xml:lang="en">Discard</source>
-        <target state="translated">捨棄</target>
+      <trans-unit id="fileBrowser.back">
+        <source xml:lang="en">Back</source>
+        <target state="translated">上一步</target>
       </trans-unit>
       <trans-unit id="fileBrowser.ok">
         <source xml:lang="en">OK</source>
@@ -9215,10 +9274,6 @@ Error Message: {1}</source>
   </file>
   <file original="src/sql/workbench/services/query/common/queryManagement" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
-      <trans-unit id="queryManagement.noQueryRunnerForUri">
-        <source xml:lang="en">Could not find Query Runner for uri: {0}</source>
-        <target state="translated">找不到 URI: {0} 的查詢執行器</target>
-      </trans-unit>
       <trans-unit id="queryManagement.uriAlreadyHasQueryRunner">
         <source xml:lang="en">Uri: {0} unexpectedly already has a query runner.</source>
         <target state="translated">URI: {0} 意外地已有查詢執行器。</target>

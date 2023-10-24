@@ -192,7 +192,7 @@
       </trans-unit>
       <trans-unit id="openInNewTab">
         <source xml:lang="en">Open In New Tab</source>
-        <target state="new">Open In New Tab</target>
+        <target state="translated">Apri in una nuova scheda</target>
       </trans-unit>
       <trans-unit id="overallResourceConsumption">
         <source xml:lang="en">Overall Resource Consumption</source>

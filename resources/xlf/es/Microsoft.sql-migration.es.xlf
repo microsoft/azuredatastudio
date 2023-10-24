@@ -222,10 +222,6 @@
         <source xml:lang="en">An error occurred while restarting the migration.</source>
         <target state="translated">Error al reiniciar la migración.</target>
       </trans-unit>
-      <trans-unit id="sql.migration.starting.migration.error">
-        <source xml:lang="en">An error occurred while starting the certificate migration: '{0}'</source>
-        <target state="translated">Error al iniciar la migración del certificado: '{0}'</target>
-      </trans-unit>
       <trans-unit id="sql.migration.wizard.login.error.title">
         <source xml:lang="en">An error occurred while trying to get {0} login information.</source>
         <target state="translated">Error al intentar obtener {0} información de inicio de sesión.</target>
@@ -309,18 +305,6 @@
       <trans-unit id="sql.migration.authentication.type">
         <source xml:lang="en">Authentication type</source>
         <target state="translated">Tipo de autenticación</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.azure.tenant">
-        <source xml:lang="en">Azure AD tenant</source>
-        <target state="translated">Inquilino de Azure AD</target>
-      </trans-unit>
-      <trans-unit id="sql.login.migration.enter.AAD.domain.name.to.continue">
-        <source xml:lang="en">Azure Active Directory (AAD) Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).</source>
-        <target state="translated">Azure Active Directory (AAD) El nombre de dominio es necesario para migrar el inicio de sesión de Windows. Escriba un nombre de dominio de AAD o anule la selección de los inicios de sesión de Windows.</target>
-      </trans-unit>
-      <trans-unit id="sql.login.migration.aad.domain.name.input.box.label">
-        <source xml:lang="en">Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)</source>
-        <target state="translated">Azure Active Directory nombre de dominio (solo es necesario para migrar inicios de sesión de autenticación de Windows)</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.link.dmsGuide">
         <source xml:lang="en">Azure Database Migration Guides</source>
@@ -625,6 +609,10 @@ Consulte a continuación las instrucciones de registro.</target>
       <trans-unit id="sql.migration.tde.wizard.optionscaption">
         <source xml:lang="en">Certificate migration</source>
         <target state="translated">Migración de certificados</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.group.title">
+        <source xml:lang="en">Certificate validations</source>
+        <target state="translated">Validaciones de certificados</target>
       </trans-unit>
       <trans-unit id="sql.migration.validation.dialog.title">
         <source xml:lang="en">Certificates Migration</source>
@@ -1010,6 +998,10 @@ Consulte a continuación las instrucciones de registro.</target>
         <source xml:lang="en">Delete migration</source>
         <target state="translated">Eliminar migración</target>
       </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.description">
+        <source xml:lang="en">Description</source>
+        <target state="translated">Descripción</target>
+      </trans-unit>
       <trans-unit id="sql.migration.description">
         <source xml:lang="en">Description</source>
         <target state="translated">Descripción</target>
@@ -1182,6 +1174,10 @@ Consulte a continuación las instrucciones de registro.</target>
         <source xml:lang="en">Enter the target user name</source>
         <target state="translated">Introduzca el nombre de usuario de destino</target>
       </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.error">
+        <source xml:lang="en">Error</source>
+        <target state="translated">Error</target>
+      </trans-unit>
       <trans-unit id="sql.migration.error">
         <source xml:lang="en">Error</source>
         <target state="translated">Error</target>
@@ -1217,6 +1213,10 @@ Consulte a continuación las instrucciones de registro.</target>
         <target state="translated">Se produjeron errores al recopilar datos de rendimiento para el servidor '{0}'. Si estos problemas persisten, intente reiniciar el proceso de recopilación de datos:
 
 {1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.select.azure.mi.db.count.threshold.exceeds.error">
+        <source xml:lang="en">Error: Azure SQL Managed Instance supports maximum {0} user databases per instance. Select {0} or less database(s) to proceed further.</source>
+        <target state="translated">Error: Azure SQL Managed Instance admite un máximo de {0} bases de datos de usuario por instancia. Seleccione {0} o menos bases de datos para continuar.</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.migrate.server.roles.and.set.permissions">
         <source xml:lang="en">Establishing user mappings completed.
@@ -1421,6 +1421,14 @@ Actualmente, migrando roles de servidor, estableciendo asignaciones de servidor 
       <trans-unit id="sql.migration.database.migration.migration.mode.tool.tip">
         <source xml:lang="en">In Azure Database Migration Service, you can migrate your databases offline or while they are online. In an offline migration, application downtime starts when the migration starts. To limit downtime to the time it takes you to cut over to the new environment after the migration, use an online migration.</source>
         <target state="translated">En Azure Database Migration Service, puede migrar las bases de datos sin conexión o mientras están en línea. En una migración sin conexión, el tiempo de inactividad de la aplicación se inicia cuando se inicia la migración. Para limitar el tiempo de inactividad al tiempo que se tarda en pasar al nuevo entorno después de la migración, use una migración en línea.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.requirements.message">
+        <source xml:lang="en">In order for certificate migration to succeed, you must meet all of the requirements listed below.
+
+Click "Run validation" to check that requirements are met.</source>
+        <target state="translated">Para que la migración del certificado tenga éxito, debe cumplir todos los requisitos que se indican a continuación.
+
+Haga clic en "Ejecutar validación" para comprobar que se cumplen los requisitos.</target>
       </trans-unit>
       <trans-unit id="sql.migration.copy.status.inprogress">
         <source xml:lang="en">In progress</source>
@@ -1653,6 +1661,18 @@ Actualmente, migrando roles de servidor, estableciendo asignaciones de servidor 
       <trans-unit id="sql.migration.sku.memory.requirement">
         <source xml:lang="en">Memory requirement</source>
         <target state="translated">Requisito de memoria</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.aad.domain.name.input.box.label">
+        <source xml:lang="en">Microsoft Entra ID Domain Name (only required to migrate Windows Authenication Logins)</source>
+        <target state="translated">Nombre de dominio Microsoft Entra ID (solo necesario para migrar los inicios de sesión de autenticación de Windows)</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.enter.AAD.domain.name.to.continue">
+        <source xml:lang="en">Microsoft Entra ID Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).</source>
+        <target state="translated">El nombre del dominio de Microsoft Entra ID es necesario para migrar el inicio de sesión de Windows. Escriba un nombre de dominio de AAD o anule la selección de los inicios de sesión de Windows.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.azure.tenant">
+        <source xml:lang="en">Microsoft Entra tenant</source>
+        <target state="translated">Inquilino de Microsoft Entra</target>
       </trans-unit>
       <trans-unit id="sql.migration.start.login.migration.button">
         <source xml:lang="en">Migrate</source>
@@ -2082,6 +2102,10 @@ Actualmente, migrando roles de servidor, estableciendo asignaciones de servidor 
         <source xml:lang="en">Pending</source>
         <target state="translated">Pendiente</target>
       </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.status.pending">
+        <source xml:lang="en">Pending</source>
+        <target state="translated">Pendiente</target>
+      </trans-unit>
       <trans-unit id="sql.migration.validation.state.pending">
         <source xml:lang="en">Pending</source>
         <target state="translated">Pendiente</target>
@@ -2137,6 +2161,14 @@ Actualmente, migrando roles de servidor, estableciendo asignaciones de servidor 
       <trans-unit id="sql.migration.service.selection.location.msg">
         <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
         <target state="translated">Seleccione la ubicación de los archivos de copia de seguridad de la base de datos antes de continuar.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsd">
+        <source xml:lang="en">Premium SSD</source>
+        <target state="translated">SSD prémium</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsdV2">
+        <source xml:lang="en">Premium SSD v2</source>
+        <target state="translated">SSD prémium v2</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureConfiguration.premiumSeries">
         <source xml:lang="en">Premium-series</source>
@@ -2394,11 +2426,19 @@ Actualmente, migrando roles de servidor, estableciendo asignaciones de servidor 
         <source xml:lang="en">Run migration workflow again</source>
         <target state="translated">Volver a ejecutar el flujo de trabajo de migración</target>
       </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.run.validation">
+        <source xml:lang="en">Run validation</source>
+        <target state="translated">Ejecutar validación</target>
+      </trans-unit>
       <trans-unit id="sql.migration.run.validation">
         <source xml:lang="en">Run validation</source>
         <target state="translated">Ejecutar validación</target>
       </trans-unit>
       <trans-unit id="sql.migration.state.running">
+        <source xml:lang="en">Running</source>
+        <target state="translated">En ejecución</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.running">
         <source xml:lang="en">Running</source>
         <target state="translated">En ejecución</target>
       </trans-unit>
@@ -2575,8 +2615,8 @@ Actualmente, migrando roles de servidor, estableciendo asignaciones de servidor 
         <target state="translated">Seleccionar una base de datos de destino</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.service.select.migration.target">
-        <source xml:lang="en">Select a target server.</source>
-        <target state="translated">Seleccione un servidor de destino.</target>
+        <source xml:lang="en">Select a target server</source>
+        <target state="translated">Seleccione un servidor de destino</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.service.select.a.tenant">
         <source xml:lang="en">Select a tenant</source>
@@ -2770,6 +2810,14 @@ Actualmente, migrando roles de servidor, estableciendo asignaciones de servidor 
         <source xml:lang="en">Source version</source>
         <target state="translated">Versión de origen</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.standardHdd">
+        <source xml:lang="en">Standard HDD</source>
+        <target state="translated">HDD estándar</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.StandardSsd">
+        <source xml:lang="en">Standard SSD</source>
+        <target state="translated">SSD estándar</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.start">
         <source xml:lang="en">Start</source>
         <target state="translated">Inicio</target>
@@ -2911,6 +2959,10 @@ Actualmente, migrando roles de servidor, estableciendo asignaciones de servidor 
         <target state="translated">Nombre de la suscripción para su destino de Azure SQL</target>
       </trans-unit>
       <trans-unit id="sql.migration.state.succeeded">
+        <source xml:lang="en">Succeeded</source>
+        <target state="translated">Correcto</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.status.succeeded">
         <source xml:lang="en">Succeeded</source>
         <target state="translated">Correcto</target>
       </trans-unit>
@@ -3110,6 +3162,10 @@ Actualmente, migrando roles de servidor, estableciendo asignaciones de servidor 
         <source xml:lang="en">The fininish time for the migration</source>
         <target state="translated">La hora de finalización de la migración</target>
       </trans-unit>
+      <trans-unit id="sql.migration.starting.migration.error">
+        <source xml:lang="en">The following error has occurred while starting the certificate migration: '{0}'</source>
+        <target state="translated">Se ha producido el siguiente error al iniciar la migración del certificado: "{0}"</target>
+      </trans-unit>
       <trans-unit id="sql.migration.service.error.not.ready">
         <source xml:lang="en">The following error occurred while retrieving registration information for Azure Database Migration Service '{0}'. Please click refresh and try again. Error: '{1}'.</source>
         <target state="translated">Error al recuperar la información de registro de Azure Database Migration Service '{0}'. Haga clic en Actualizar e inténtelo de nuevo. Error: '{1}'.</target>
@@ -3242,6 +3298,10 @@ Actualmente, migrando roles de servidor, estableciendo asignaciones de servidor 
         <source xml:lang="en">To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.</source>
         <target state="translated">Para migrar al destino Azure SQL, elija un modo de migración en función de los requisitos del tiempo de inactividad.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.select.azure.mi.db.count.under.threshold">
+        <source xml:lang="en">To proceed, press Select button</source>
+        <target state="translated">Para continuar, presione el botón Seleccionar</target>
+      </trans-unit>
       <trans-unit id="sql.migration.details.serverobjects.all.tables.label">
         <source xml:lang="en">Total tables</source>
         <target state="translated">Número total de tablas</target>
@@ -3249,6 +3309,10 @@ Actualmente, migrando roles de servidor, estableciendo asignaciones de servidor 
       <trans-unit id="sql.migration.restore.backuptype.transactionlog">
         <source xml:lang="en">Transaction log</source>
         <target state="translated">Registro de transacciones</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.troubleshooting.tips">
+        <source xml:lang="en">Troubleshooting tips</source>
+        <target state="translated">Consejos para la solución de problemas</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.link.mi">
         <source xml:lang="en">Tutorial:  Migrate to Azure SQL Managed Instance (online)</source>
@@ -3274,9 +3338,17 @@ Actualmente, migrando roles de servidor, estableciendo asignaciones de servidor 
         <source xml:lang="en">Type: {0}</source>
         <target state="translated">Tipo: {0}</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.UltraSsd">
+        <source xml:lang="en">Ultra SSD</source>
+        <target state="translated">SSD Ultra</target>
+      </trans-unit>
       <trans-unit id="sql.migration.restore.backuptype.unknown">
         <source xml:lang="en">Unknown</source>
         <target state="translated">Desconocidas</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.unknown">
+        <source xml:lang="en">Unknown disk type</source>
+        <target state="translated">Tipo de Disco desconocido</target>
       </trans-unit>
       <trans-unit id="sql.migration.field.label.unrestorable.files">
         <source xml:lang="en">Unrestorable files</source>
@@ -3325,6 +3397,10 @@ Estableciendo asignaciones de usuario.</target>
       <trans-unit id="sql.migration.starting.login.failed">
         <source xml:lang="en">Validating and migrating logins failed</source>
         <target state="translated">Error al validar y migrar inicios de sesión</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.title">
+        <source xml:lang="en">Validation</source>
+        <target state="translated">Validación</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.camceled">
         <source xml:lang="en">Validation check canceled</source>
@@ -3675,8 +3751,12 @@ Esta operación puede tardar varios minutos.</target>
         <target state="translated">{0} s</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureConfiguration.storage">
-        <source xml:lang="en">{0} x {1}</source>
-        <target state="translated">{0} x {1}</target>
+        <source xml:lang="en">{0} x {1} </source>
+        <target state="translated">{0} x {1} </target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.disk">
+        <source xml:lang="en">{0} {1}GB ({2} IOPS, {3} MB/s)</source>
+        <target state="translated">{0} {1}GB ({2} IOPS, {3} MB/s)</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.percentage">
         <source xml:lang="en">{0}%</source>

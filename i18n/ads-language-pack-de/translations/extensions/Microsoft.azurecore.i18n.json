@@ -9,11 +9,7 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/account-provider/auths/azureAuth": {
-			"azurecore.confirmIgnoreTenantDialog.body": "Azure Data Studio löst keine Authentifizierung für diesen Mandanten {0} ({1}) mehr aus, und der Zugriff auf Ressourcen ist nicht möglich. \r\n\r\nUm den Zugriff auf Ressourcen für diesen Mandanten wieder zuzulassen, müssen Sie den Mandanten aus der Ausschlussliste in der Einstellung '{2}' entfernen.\r\n\r\nMöchten Sie den Vorgang fortsetzen?",
 			"azurecore.consentDialog.cancel": "Abbrechen",
-			"azurecore.consentDialog.authenticate": "Abbrechen und authentifizieren",
-			"azurecore.confirmIgnoreTenantDialog.confirm": "Bestätigen",
-			"azurecore.consentDialog.ignore": "Mandanten ignorieren",
 			"azure.microsoftAccountDisplayName": "Microsoft-Konto",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azurecore.consentDialog.open": "Öffnen",
@@ -38,7 +34,6 @@
 			"genericTokenError": "Fehler beim Abrufen des Tokens",
 			"azure.NoAuthMethod.Available": "Es ist keine Azure-Authentifizierungsmethode verfügbar. Sie müssen die Authentifizierungsmethoden in der ADS-Konfiguration aktivieren.",
 			"azure.NoAuthMethod.Selected": "Es wurde keine Azure-Authentifizierungsmethode ausgewählt. Sie müssen die Art der Authentifizierung auswählen, die Sie verwenden möchten.",
-			"tenantIgnoredError": "Der Mandant wurde in der Liste \"Ignorieren\" gefunden. Es wurde keine Authentifizierung versucht. Sie können die Mandanten-{0} aus der Liste der zu ignorierenden Elemente in der Datei \"settings.json\" entfernen: {1}, wenn Sie auf Ressourcen von diesem Mandanten zugreifen möchten.",
 			"msalTokenError": "{0} beim Abrufen des Tokens. \r\n{1}"
 		},
 		"dist/account-provider/azureAccountProviderService": {
@@ -253,7 +248,6 @@
 			"config.providerSettings.endpoints.azureKustoResource": "Azure Kusto-Ressourcenendpunkt",
 			"config.providerSettings.endpoints.logAnalytics": "Azure Log Analytics-Endpunkt",
 			"config.providerSettings.endpoints.portal": "Azure-Portalendpunkt",
-			"azure.resource.config.title": "Konfiguration von Azure-Ressourcen",
 			"config.providerSettings.endpoints.azureStorageResource": "Azure Storage-Ressourcenendpunkt",
 			"config.providerSettings.endpoints.azureStorageResourceSuffix": "Suffix für Azure Storage-Ressourcenendpunkt",
 			"azure.resource.refreshall.title": "Azure: Alle Konten aktualisieren",
@@ -287,8 +281,6 @@
 			"config.piiLogging": "Hiermit wird festgelegt, ob personenbezogene Informationen (PII) im Ausgangskanal und in der Protokolldatei des Ausgangskanals von Azure-Konten protokolliert werden sollen.",
 			"config.enableUsGovCloudDescription": "Hiermit wird festgelegt, ob die Integration der Azure-Cloud für US-Behörden (Fairfax) aktiviert werden soll.",
 			"azure.resource.startterminal.title": "Cloud Shell starten",
-			"azure.tenant.config.filter.description": "Die Liste der Mandanten-IDs, die beim Abfragen von Azure-Ressourcen oder beim Anfordern von Authentifizierungstoken übersprungen werden.",
-			"azure.resource.config.filter.description": "Der Ressourcenfilter, jedes Element besteht aus einer Konto-ID, einer Abonnement-ID und einem Namen (durch Schrägstriche getrennt)",
 			"config.loggingLevel": "[Optional] Die Ausführlichkeitsprotokollierung für die Azure-Konten-Erweiterung."
 		}
 	}

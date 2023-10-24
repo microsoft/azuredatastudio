@@ -222,10 +222,6 @@
         <source xml:lang="en">An error occurred while restarting the migration.</source>
         <target state="translated">开始迁移时出现错误。</target>
       </trans-unit>
-      <trans-unit id="sql.migration.starting.migration.error">
-        <source xml:lang="en">An error occurred while starting the certificate migration: '{0}'</source>
-        <target state="translated">启动证书迁移时出错:“{0}”</target>
-      </trans-unit>
       <trans-unit id="sql.migration.wizard.login.error.title">
         <source xml:lang="en">An error occurred while trying to get {0} login information.</source>
         <target state="translated">尝试获取 {0} 登录信息时出错。</target>
@@ -309,18 +305,6 @@
       <trans-unit id="sql.migration.authentication.type">
         <source xml:lang="en">Authentication type</source>
         <target state="translated">身份验证类型</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.azure.tenant">
-        <source xml:lang="en">Azure AD tenant</source>
-        <target state="translated">Azure AD 租户</target>
-      </trans-unit>
-      <trans-unit id="sql.login.migration.enter.AAD.domain.name.to.continue">
-        <source xml:lang="en">Azure Active Directory (AAD) Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).</source>
-        <target state="translated">Azure Active Directory (AAD)域名是迁移 Windows 登录名所必需的。请输入 AAD 域名或取消选择 windows 登录名。</target>
-      </trans-unit>
-      <trans-unit id="sql.login.migration.aad.domain.name.input.box.label">
-        <source xml:lang="en">Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)</source>
-        <target state="translated">Azure Active Directory 域名(仅在迁移 Windows 身份验证登录名时需要)</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.link.dmsGuide">
         <source xml:lang="en">Azure Database Migration Guides</source>
@@ -625,6 +609,10 @@ See below for registration instructions.</source>
       <trans-unit id="sql.migration.tde.wizard.optionscaption">
         <source xml:lang="en">Certificate migration</source>
         <target state="translated">证书迁移</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.group.title">
+        <source xml:lang="en">Certificate validations</source>
+        <target state="translated">证书验证</target>
       </trans-unit>
       <trans-unit id="sql.migration.validation.dialog.title">
         <source xml:lang="en">Certificates Migration</source>
@@ -1010,6 +998,10 @@ See below for registration instructions.</source>
         <source xml:lang="en">Delete migration</source>
         <target state="translated">删除迁移</target>
       </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.description">
+        <source xml:lang="en">Description</source>
+        <target state="translated">说明</target>
+      </trans-unit>
       <trans-unit id="sql.migration.description">
         <source xml:lang="en">Description</source>
         <target state="translated">说明</target>
@@ -1182,6 +1174,10 @@ See below for registration instructions.</source>
         <source xml:lang="en">Enter the target user name</source>
         <target state="translated">输入目标用户名</target>
       </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.error">
+        <source xml:lang="en">Error</source>
+        <target state="translated">错误</target>
+      </trans-unit>
       <trans-unit id="sql.migration.error">
         <source xml:lang="en">Error</source>
         <target state="translated">错误</target>
@@ -1217,6 +1213,10 @@ See below for registration instructions.</source>
         <target state="translated">收集服务器“{0}”的性能数据时出错。如果这些问题仍然存在，请尝试重启数据收集过程:
 
 {1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.select.azure.mi.db.count.threshold.exceeds.error">
+        <source xml:lang="en">Error: Azure SQL Managed Instance supports maximum {0} user databases per instance. Select {0} or less database(s) to proceed further.</source>
+        <target state="translated">错误: Azure SQL 托管实例支持每个实例的最大 {0} 用户数据库数。选择 {0} 或减少数据库数量以继续。</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.migrate.server.roles.and.set.permissions">
         <source xml:lang="en">Establishing user mappings completed.
@@ -1421,6 +1421,14 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.database.migration.migration.mode.tool.tip">
         <source xml:lang="en">In Azure Database Migration Service, you can migrate your databases offline or while they are online. In an offline migration, application downtime starts when the migration starts. To limit downtime to the time it takes you to cut over to the new environment after the migration, use an online migration.</source>
         <target state="translated">在 Azure 数据库迁移服务中，可以在脱机或联机时迁移数据库。脱机迁移期间，应用程序停机时间在迁移开始时开始。如果要在迁移后将故障时间限制为要直接转换到新环境的时间，请使用联机迁移。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.requirements.message">
+        <source xml:lang="en">In order for certificate migration to succeed, you must meet all of the requirements listed below.
+
+Click "Run validation" to check that requirements are met.</source>
+        <target state="translated">为了使证书迁移成功，必须满足下面列出的所有要求。
+
+单击“运行验证”以检查是否满足要求。</target>
       </trans-unit>
       <trans-unit id="sql.migration.copy.status.inprogress">
         <source xml:lang="en">In progress</source>
@@ -1653,6 +1661,18 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.sku.memory.requirement">
         <source xml:lang="en">Memory requirement</source>
         <target state="translated">内存要求</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.aad.domain.name.input.box.label">
+        <source xml:lang="en">Microsoft Entra ID Domain Name (only required to migrate Windows Authenication Logins)</source>
+        <target state="translated">Microsoft Entra ID 域名(仅需要迁移 Windows 身份验证登录名)</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.enter.AAD.domain.name.to.continue">
+        <source xml:lang="en">Microsoft Entra ID Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).</source>
+        <target state="translated">Microsoft Entra ID 域名是迁移 Windows 登录名所必需的。请输入 AAD 域名或取消选择 windows 登录名。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.azure.tenant">
+        <source xml:lang="en">Microsoft Entra tenant</source>
+        <target state="translated">Microsoft Entra 租户</target>
       </trans-unit>
       <trans-unit id="sql.migration.start.login.migration.button">
         <source xml:lang="en">Migrate</source>
@@ -2082,6 +2102,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Pending</source>
         <target state="translated">挂起</target>
       </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.status.pending">
+        <source xml:lang="en">Pending</source>
+        <target state="translated">挂起</target>
+      </trans-unit>
       <trans-unit id="sql.migration.validation.state.pending">
         <source xml:lang="en">Pending</source>
         <target state="translated">挂起</target>
@@ -2137,6 +2161,14 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.service.selection.location.msg">
         <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
         <target state="translated">请先选择数据库备份文件的位置，然后再继续。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsd">
+        <source xml:lang="en">Premium SSD</source>
+        <target state="translated">高级 SSD</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsdV2">
+        <source xml:lang="en">Premium SSD v2</source>
+        <target state="translated">高级 SSD v2</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureConfiguration.premiumSeries">
         <source xml:lang="en">Premium-series</source>
@@ -2394,11 +2426,19 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Run migration workflow again</source>
         <target state="translated">再次运行迁移工作流</target>
       </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.run.validation">
+        <source xml:lang="en">Run validation</source>
+        <target state="translated">运行验证</target>
+      </trans-unit>
       <trans-unit id="sql.migration.run.validation">
         <source xml:lang="en">Run validation</source>
         <target state="translated">运行验证</target>
       </trans-unit>
       <trans-unit id="sql.migration.state.running">
+        <source xml:lang="en">Running</source>
+        <target state="translated">正在运行</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.running">
         <source xml:lang="en">Running</source>
         <target state="translated">正在运行</target>
       </trans-unit>
@@ -2575,8 +2615,8 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <target state="translated">选择目标数据库。</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.service.select.migration.target">
-        <source xml:lang="en">Select a target server.</source>
-        <target state="translated">选择目标服务器。</target>
+        <source xml:lang="en">Select a target server</source>
+        <target state="translated">选择目标服务器</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.service.select.a.tenant">
         <source xml:lang="en">Select a tenant</source>
@@ -2770,6 +2810,14 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Source version</source>
         <target state="translated">源版本</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.standardHdd">
+        <source xml:lang="en">Standard HDD</source>
+        <target state="translated">标准 HDD</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.StandardSsd">
+        <source xml:lang="en">Standard SSD</source>
+        <target state="translated">标准 SSD</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.start">
         <source xml:lang="en">Start</source>
         <target state="translated">开始</target>
@@ -2911,6 +2959,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <target state="translated">Azure SQL 目标的订阅名称</target>
       </trans-unit>
       <trans-unit id="sql.migration.state.succeeded">
+        <source xml:lang="en">Succeeded</source>
+        <target state="translated">成功</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.status.succeeded">
         <source xml:lang="en">Succeeded</source>
         <target state="translated">成功</target>
       </trans-unit>
@@ -3110,6 +3162,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">The fininish time for the migration</source>
         <target state="translated">迁移的完成时间</target>
       </trans-unit>
+      <trans-unit id="sql.migration.starting.migration.error">
+        <source xml:lang="en">The following error has occurred while starting the certificate migration: '{0}'</source>
+        <target state="translated">启动证书迁移时出现以下错误:“{0}”</target>
+      </trans-unit>
       <trans-unit id="sql.migration.service.error.not.ready">
         <source xml:lang="en">The following error occurred while retrieving registration information for Azure Database Migration Service '{0}'. Please click refresh and try again. Error: '{1}'.</source>
         <target state="translated">检索 Azure 数据库迁移服务 "{0}" 的注册信息时出现以下错误。请单击“刷新”，然后重试。错误: "{1}"。</target>
@@ -3242,6 +3298,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.</source>
         <target state="translated">要迁移到 Azure SQL 目标，请根据停机时间要求选择迁移模式。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.select.azure.mi.db.count.under.threshold">
+        <source xml:lang="en">To proceed, press Select button</source>
+        <target state="translated">若要继续，请按“选择”按钮</target>
+      </trans-unit>
       <trans-unit id="sql.migration.details.serverobjects.all.tables.label">
         <source xml:lang="en">Total tables</source>
         <target state="translated">表数总计</target>
@@ -3249,6 +3309,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.restore.backuptype.transactionlog">
         <source xml:lang="en">Transaction log</source>
         <target state="translated">事务日志</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.troubleshooting.tips">
+        <source xml:lang="en">Troubleshooting tips</source>
+        <target state="translated">故障排除提示</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.link.mi">
         <source xml:lang="en">Tutorial:  Migrate to Azure SQL Managed Instance (online)</source>
@@ -3274,9 +3338,17 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Type: {0}</source>
         <target state="translated">类型: {0}</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.UltraSsd">
+        <source xml:lang="en">Ultra SSD</source>
+        <target state="translated">超级 SSD</target>
+      </trans-unit>
       <trans-unit id="sql.migration.restore.backuptype.unknown">
         <source xml:lang="en">Unknown</source>
         <target state="translated">未知</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.unknown">
+        <source xml:lang="en">Unknown disk type</source>
+        <target state="translated">未知磁盘类型</target>
       </trans-unit>
       <trans-unit id="sql.migration.field.label.unrestorable.files">
         <source xml:lang="en">Unrestorable files</source>
@@ -3325,6 +3397,10 @@ Establishing user mappings.</source>
       <trans-unit id="sql.migration.starting.login.failed">
         <source xml:lang="en">Validating and migrating logins failed</source>
         <target state="translated">验证和迁移登录失败</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.title">
+        <source xml:lang="en">Validation</source>
+        <target state="translated">验证</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.camceled">
         <source xml:lang="en">Validation check canceled</source>
@@ -3675,8 +3751,12 @@ This may take some time.</source>
         <target state="translated">{0} 秒</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureConfiguration.storage">
-        <source xml:lang="en">{0} x {1}</source>
-        <target state="translated">{0} x {1}</target>
+        <source xml:lang="en">{0} x {1} </source>
+        <target state="translated">{0} x {1} </target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.disk">
+        <source xml:lang="en">{0} {1}GB ({2} IOPS, {3} MB/s)</source>
+        <target state="translated">{0}{1}GB ({2} IOPS、{3} MB/秒)</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.percentage">
         <source xml:lang="en">{0}%</source>
