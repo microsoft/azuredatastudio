@@ -17,7 +17,7 @@ import * as vscode from 'vscode';
 
 const MAXDOP_Max_Limit = 32767;
 const PAUSED_RESUMABLE_INDEX_Max_Limit = 71582;
-const DscTableRowLength = 15;
+const DscTableRowLength = 20;
 const Dialog_Width = '750px';
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
@@ -1188,7 +1188,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	}
 
 	/**
-	 * Gets the server filestream access level
+	 * Gets the server filestream enabled state
 	 * @returns true if the server filestream access level is not null and not disabled
 	 */
 	private get serverFilestreamEnabled(): boolean {
@@ -1375,7 +1375,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				metaData.valueForPrimary,
 				secondaryUnsupportedConfigsSet.has(metaData.id) ? localizedConstants.NotAvailableText : metaData.valueForSecondary]
 			}),
-			height: getTableHeight(this.objectInfo.databaseScopedConfigurations.length, 1, DscTableRowLength + 5),
+			height: getTableHeight(this.objectInfo.databaseScopedConfigurations.length, 1, DscTableRowLength),
 			width: DefaultTableWidth
 		}).component();
 
