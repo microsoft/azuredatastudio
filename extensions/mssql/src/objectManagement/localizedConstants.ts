@@ -280,6 +280,14 @@ export const BackupContinueOnError = localize('objectManagement.backupContinueOn
 export const BackupTruncateLog = localize('objectManagement.backupTruncateLog', "Truncate the transaction log");
 export const BackupLogTail = localize('objectManagement.backupLogTail', "Back up the tail of the log, and leave the database in the restoring state");
 export const TransactionLogNotice = localize('objectManagement.transactionLogNotice', "Transaction Log options are only available only when Backup Type is set to Tansaction Log above.");
+export const BackupSetCompression = localize('objectManagement.backupCompression', "Set backup compression");
+export const EncryptBackup = localize('objectManagement.encryptBackup', "Encrypt backup");
+export const BackupAlgorithm = localize('objectManagement.backupAlgorithm', "Algorithm");
+export const BackupCertificate = localize('objectManagement.backupCertificate', "Certificate or Asymmetric key");
+export const BackupEncryptNotice = localize('objectManagement.backupEncryptNotice', "Encryption options are only available when 'Back up to a new media set' is selected above.");
+export const BackupDefaultSetting = localize('objectManagement.backupDefaultSetting', "Use the default server setting");
+export const CompressBackup = localize('objectManagement.compressBackup', "Compress backup");
+export const DontCompressBackup = localize('objectManagement.dontCompressBackup', "Do not compress backup");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");

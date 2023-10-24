@@ -102,18 +102,20 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	private initializeOptionsSection(): azdata.GroupContainer {
 		// Overwrite media
-		let existingMediaButton = this.createRadioButton(loc.BackupToExistingMedia, 'BackupOverwriteMedia', false, checked => {
+		const overwriteGroupId = 'BackupOverwriteMedia';
+		let existingMediaButton = this.createRadioButton(loc.BackupToExistingMedia, overwriteGroupId, false, checked => {
 			return Promise.resolve();
 		}, false);
-		let appendExistingButton = this.createRadioButton(loc.AppendToExistingBackup, 'BackupExistingMedia', false, checked => {
+		const existingGroupId = 'BackupExistingMedia';
+		let appendExistingButton = this.createRadioButton(loc.AppendToExistingBackup, existingGroupId, false, checked => {
 			return Promise.resolve();
 		}, false);
-		let overwriteExistingButton = this.createRadioButton(loc.OverwriteExistingBackups, 'BackupExistingMedia', false, checked => {
+		let overwriteExistingButton = this.createRadioButton(loc.OverwriteExistingBackups, existingGroupId, false, checked => {
 			return Promise.resolve();
 		}, false);
 		let existingMediaButtonsGroup = this.createGroup('', [appendExistingButton, overwriteExistingButton]);
 
-		let newMediaButton = this.createRadioButton(loc.BackupAndEraseExisting, 'BackupOverwriteMedia', false, checked => {
+		let newMediaButton = this.createRadioButton(loc.BackupAndEraseExisting, overwriteGroupId, false, checked => {
 			return Promise.resolve();
 		}, false);
 		let mediaSetInput = this.createInputBox(newValue => {
@@ -148,41 +150,42 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 		// Transaction log
 		// Only should be enabled if backup type is Transaction Log
-		let truncateButton = this.createRadioButton(loc.BackupTruncateLog, 'BackupTransactionLog', false, checked => {
+		const transactionGroupId = 'BackupTransactionLog';
+		let truncateButton = this.createRadioButton(loc.BackupTruncateLog, transactionGroupId, false, checked => {
 			return Promise.resolve();
 		}, false);
-		let backupTailButton = this.createRadioButton(loc.BackupLogTail, 'BackupTransactionLog', false, checked => {
+		let backupTailButton = this.createRadioButton(loc.BackupLogTail, transactionGroupId, false, checked => {
 			return Promise.resolve();
 		}, false);
 		let transactionDescription = this.modelView.modelBuilder.text().withProps({ value: loc.TransactionLogNotice }).component();
 		let transactionGroup = this.createGroup(loc.BackupTransactionLogLabel, [truncateButton, backupTailButton, transactionDescription], false);
 
 		// Compression
-		let compressionValues = ['Use the default server setting', 'Compress backup', 'Do not compress backup'];
-		let compressionDropdown = this.createDropdown('Set backup compression', newValue => {
+		let compressionValues = [loc.BackupDefaultSetting, loc.CompressBackup, loc.DontCompressBackup];
+		let compressionDropdown = this.createDropdown(loc.BackupSetCompression, newValue => {
 			return Promise.resolve();
 		}, compressionValues, compressionValues[0]);
-		let compressionContainer = this.createLabelInputContainer('Set backup compression', compressionDropdown);
+		let compressionContainer = this.createLabelInputContainer(loc.BackupSetCompression, compressionDropdown);
 		let compressionGroup = this.createGroup(loc.BackupCompressionLabel, [compressionContainer], false);
 
 		// Encryption
-		let encryptCheckbox = this.createCheckbox('Encrypt backup', checked => {
+		let encryptCheckbox = this.createCheckbox(loc.EncryptBackup, checked => {
 			return Promise.resolve();
 		}, false, false);
 
 		let algorithmValues = [aes128, aes192, aes256, tripleDES];
-		let algorithmDropdown = this.createDropdown('Algorithm', newValue => {
+		let algorithmDropdown = this.createDropdown(loc.BackupAlgorithm, newValue => {
 			return Promise.resolve();
 		}, algorithmValues, algorithmValues[0], false);
-		let algorithmContainer = this.createLabelInputContainer('Algorithm', algorithmDropdown);
+		let algorithmContainer = this.createLabelInputContainer(loc.BackupAlgorithm, algorithmDropdown);
 
 		let encryptorValues = this.getEncryptorOptions();
-		let encryptorDropdown = this.createDropdown('Certificate or Asymmetric Key', newValue => {
+		let encryptorDropdown = this.createDropdown(loc.BackupCertificate, newValue => {
 			return Promise.resolve();
 		}, encryptorValues, encryptorValues[0], false);
-		let encryptorContainer = this.createLabelInputContainer('Certificate or Asymmetric Key', encryptorDropdown);
+		let encryptorContainer = this.createLabelInputContainer(loc.BackupCertificate, encryptorDropdown);
 
-		let encryptionDescription = this.modelView.modelBuilder.text().withProps({ value: 'Encryption options are only available when \'Back up to a new media set\' is selected above. ' }).component();
+		let encryptionDescription = this.modelView.modelBuilder.text().withProps({ value: loc.BackupEncryptNotice }).component();
 		let algorithmGroup = this.createGroup('', [algorithmContainer, encryptorContainer, encryptionDescription]);
 		let encryptionGroup = this.createGroup(loc.BackupEncryptionLabel, [encryptCheckbox, algorithmGroup], false);
 
