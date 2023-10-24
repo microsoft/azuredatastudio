@@ -825,7 +825,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	 * or undefined if there are multiple selections or no such connection
 	 */
 	public getSelectedProfileAndDatabase(): { profile?: ConnectionProfile, databaseName?: string } | undefined {
-		if (!this._serverTreeView) {
+		if (!this._serverTreeView || !this._serverTreeView.tree) {
 			return undefined;
 		}
 		let selection = this._serverTreeView.getSelection();

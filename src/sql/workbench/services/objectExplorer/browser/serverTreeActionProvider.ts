@@ -51,7 +51,7 @@ export class ServerTreeActionProvider {
 	 */
 	public getActions(tree: AsyncServerTree | ITree, element: ServerTreeElement, inlineOnly: boolean = false): IAction[] {
 		if (element instanceof ConnectionProfile) {
-			return this.getConnectionActions(tree, element, inlineOnly);
+			return tree ? this.getConnectionActions(tree, element, inlineOnly) : [];
 		}
 		if (element instanceof ConnectionProfileGroup) {
 			return this.getConnectionProfileGroupActions(element);
@@ -59,11 +59,11 @@ export class ServerTreeActionProvider {
 		if (element instanceof TreeNode) {
 			const profile = element.getConnectionProfile();
 			if (profile) {
-				return this.getObjectExplorerNodeActions({
+				return tree ? this.getObjectExplorerNodeActions({
 					tree: tree,
 					profile,
 					treeNode: element
-				}, inlineOnly);
+				}, inlineOnly) : [];
 			}
 		}
 		return [];
@@ -73,25 +73,26 @@ export class ServerTreeActionProvider {
 	 * Get the default action for the given element.
 	 */
 	public getDefaultAction(tree: AsyncServerTree | ITree, element: ServerTreeElement): IAction | undefined {
-		const actions = this.getActions(tree, element).filter(a => {
-			return a instanceof MenuItemAction && a.isDefault;
-		});
-		if (actions.length === 1) {
-			return actions[0];
-		} else if (actions.length > 1) {
-			let nodeName: string;
-			if (element instanceof ConnectionProfile) {
-				nodeName = element.serverName;
-			} else if (element instanceof ConnectionProfileGroup) {
-				nodeName = element.name;
-			} else {
-				nodeName = element.label;
+		if (tree) {
+			const actions = this.getActions(tree, element).filter(a => {
+				return a instanceof MenuItemAction && a.isDefault;
+			});
+			if (actions.length === 1) {
+				return actions[0];
+			} else if (actions.length > 1) {
+				let nodeName: string;
+				if (element instanceof ConnectionProfile) {
+					nodeName = element.serverName;
+				} else if (element instanceof ConnectionProfileGroup) {
+					nodeName = element.name;
+				} else {
+					nodeName = element.label;
+				}
+				this._logService.error(`Multiple default actions defined for node: ${nodeName}, actions: ${actions.map(a => a.id).join(', ')}`);
 			}
-			this._logService.error(`Multiple default actions defined for node: ${nodeName}, actions: ${actions.map(a => a.id).join(', ')}`);
 		}
 		return undefined;
 	}
-
 
 	public getRecentConnectionActions(element: ConnectionProfile): IAction[] {
 		return [
