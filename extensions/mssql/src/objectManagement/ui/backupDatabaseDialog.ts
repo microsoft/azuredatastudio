@@ -38,13 +38,15 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	private initializeGeneralSection(): azdata.GroupContainer {
 		let components: azdata.Component[] = [];
+		const backupTypes = [loc.BackupFull, loc.BackupDifferential, loc.BackupTransactionLogLabel];
+		let defaultName = this.getDefaultFileName(backupTypes[0]);
 		let backupInput = this.createInputBox(newValue => {
 			return Promise.resolve();
 		}, {
-			ariaLabel: '',
+			ariaLabel: defaultName,
 			inputType: 'text',
 			enabled: true,
-			value: '',
+			value: defaultName,
 			width: DefaultInputWidth
 		});
 		let backupInputContainer = this.createLabelInputContainer(loc.BackupNameLabel, backupInput);
@@ -62,10 +64,9 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let recoveryModelInput = this.createLabelInputContainer(loc.BackupRecoveryLabel, inputBox);
 		components.push(recoveryModelInput);
 
-		const backupTypes = [loc.BackupFull, loc.BackupDifferential, loc.BackupTransactionLogLabel];
 		let backupTypeDropdown = this.createDropdown(loc.BackupTypeLabel, async newValue => {
 			// Update backup name with new backup type
-			backupInput.value = backupInput.ariaLabel = `${this.objectInfo.name}-${newValue.replace(' ', '-')}-${new Date().toJSON().slice(0, 19)}`;
+			backupInput.value = backupInput.ariaLabel = this.getDefaultFileName(newValue);
 		}, backupTypes, backupTypes[0]);
 		let backupContainer = this.createLabelInputContainer(loc.BackupTypeLabel, backupTypeDropdown);
 		components.push(backupContainer);
@@ -101,23 +102,17 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	private initializeOptionsSection(): azdata.GroupContainer {
-		// Overwrite media
-		const overwriteGroupId = 'BackupOverwriteMedia';
-		let existingMediaButton = this.createRadioButton(loc.BackupToExistingMedia, overwriteGroupId, false, checked => {
-			return Promise.resolve();
-		}, false);
+		// Media options
+		// Options for overwriting existing media - enabled by default
 		const existingGroupId = 'BackupExistingMedia';
-		let appendExistingButton = this.createRadioButton(loc.AppendToExistingBackup, existingGroupId, false, checked => {
+		let appendExistingButton = this.createRadioButton(loc.AppendToExistingBackup, existingGroupId, true, checked => {
 			return Promise.resolve();
-		}, false);
+		});
 		let overwriteExistingButton = this.createRadioButton(loc.OverwriteExistingBackups, existingGroupId, false, checked => {
 			return Promise.resolve();
-		}, false);
-		let existingMediaButtonsGroup = this.createGroup('', [appendExistingButton, overwriteExistingButton]);
+		});
 
-		let newMediaButton = this.createRadioButton(loc.BackupAndEraseExisting, overwriteGroupId, false, checked => {
-			return Promise.resolve();
-		}, false);
+		// Options for writing to new media
 		let mediaSetInput = this.createInputBox(newValue => {
 			return Promise.resolve();
 		}, { enabled: false });
@@ -127,6 +122,30 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		}, { enabled: false });
 		let mediaDescriptionContainer = this.createLabelInputContainer(loc.BackupNewMediaDescription, mediaDescriptionInput);
 		let newMediaButtonsGroup = this.createGroup('', [mediaSetContainer, mediaDescriptionContainer]);
+
+		// Overall button that selects overwriting existing media - enabled by default
+		const overwriteGroupId = 'BackupOverwriteMedia';
+		let existingMediaButton = this.createRadioButton(loc.BackupToExistingMedia, overwriteGroupId, true, async checked => {
+			if (checked) {
+				appendExistingButton.enabled = true;
+				overwriteExistingButton.enabled = true;
+
+				mediaSetInput.enabled = false;
+				mediaDescriptionInput.enabled = false;
+			}
+		});
+		let existingMediaButtonsGroup = this.createGroup('', [appendExistingButton, overwriteExistingButton]);
+
+		// Overall button that selects writing to new media
+		let newMediaButton = this.createRadioButton(loc.BackupAndEraseExisting, overwriteGroupId, false, async checked => {
+			if (checked) {
+				appendExistingButton.enabled = false;
+				overwriteExistingButton.enabled = false;
+
+				mediaSetInput.enabled = true;
+				mediaDescriptionInput.enabled = true;
+			}
+		});
 
 		let overwriteGroup = this.createGroup(loc.BackupOverwriteMediaLabel, [
 			existingMediaButton,
@@ -218,6 +237,10 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			});
 		}
 		return options;
+	}
+
+	private getDefaultFileName(backupType: string): string {
+		return `${this.objectInfo.name}-${backupType.replace(' ', '-')}-${new Date().toJSON().slice(0, 19)}`;
 	}
 }
 
