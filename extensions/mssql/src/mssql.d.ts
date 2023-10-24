@@ -1058,19 +1058,9 @@ declare module 'mssql' {
 		backupDeviceType: number;
 
 		/**
-		 * The text input of selected files
-		 */
-		selectedFiles: string;
-
-		/**
 		 * Backupset name
 		 */
 		backupsetName: string;
-
-		/**
-		 * List of selected file groups
-		 */
-		selectedFileGroup: { [path: string]: string };
 
 		/**
 		 * List of {key: backup path, value: device type}

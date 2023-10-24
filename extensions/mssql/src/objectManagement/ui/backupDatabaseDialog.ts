@@ -294,9 +294,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			backupComponent: 0,
 			backupDeviceType: this.getBackupDeviceType(),
 			backupPathList: filePaths,
-			selectedFiles: undefined,
 			backupsetName: this._backupNameInput.value,
-			selectedFileGroup: undefined,
 			backupPathDevices: this.getBackupTypePairs(filePaths),
 			isCopyOnly: this._copyBackupCheckbox.checked,
 
