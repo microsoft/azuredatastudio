@@ -18,6 +18,7 @@ import { ILogService } from 'vs/platform/log/common/log';
  * @param objectExplorerService
  * @param connectionManagementService
  * @param workbenchEditorService
+ * @param logService
  * @param topLevelOnly If true, only return top-level (i.e. connected) Object Explorer connections instead of database connections when appropriate
 */
 export function getCurrentGlobalConnection(objectExplorerService: IObjectExplorerService,
