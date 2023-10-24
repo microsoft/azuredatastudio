@@ -1133,21 +1133,6 @@ declare module 'mssql' {
 		tailLogBackup: boolean;
 
 		/**
-		 * Gets or sets a textual description for a particular backup set.
-		 */
-		backupSetDescription: string;
-
-		/**
-		 * Gets or sets the number of days that must elapse before a backup set can be overwritten.
-		 */
-		retainDays: number;
-
-		/**
-		 * Gets or sets the date and time when the backup set expires and the backup data is no longer considered relevant.
-		 */
-		expirationDate: Date;
-
-		/**
 		 * Gets or sets the backup compression option.
 		 * This should be converted to BackupCompressionOptions when setting it to Backup object.
 		 */

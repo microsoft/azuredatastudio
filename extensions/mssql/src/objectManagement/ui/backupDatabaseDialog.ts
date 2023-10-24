@@ -5,11 +5,13 @@
 
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { IObjectManagementService, ObjectManagement } from 'mssql';
+import { BackupInfo, IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { BackupDatabaseDocUrl } from '../constants';
 import * as loc from '../localizedConstants';
 import { DefaultInputWidth, DialogButton } from '../../ui/dialogBase';
+import { isUndefinedOrNull } from '../../types';
+import { TaskExecutionMode } from 'azdata';
 
 export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private _backupNameInput: azdata.InputBoxComponent;
@@ -28,7 +30,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	private _verifyCheckbox: azdata.CheckBoxComponent;
 	private _checksumCheckbox: azdata.CheckBoxComponent;
-	private _continueCheckbox: azdata.CheckBoxComponent;
+	private _continueOnErrorCheckbox: azdata.CheckBoxComponent;
 
 	private _truncateLogButton: azdata.RadioButtonComponent;
 	private _backupLogTailButton: azdata.RadioButtonComponent;
@@ -65,7 +67,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	private initializeGeneralSection(): azdata.GroupContainer {
 		let components: azdata.Component[] = [];
-		const backupTypes = [loc.BackupFull, loc.BackupDifferential, loc.BackupTransactionLogLabel];
+		const backupTypes = [loc.BackupFull, loc.BackupDifferential, loc.BackupTransactionLog];
 		let defaultName = this.getDefaultFileName(backupTypes[0]);
 		this._backupNameInput = this.createInputBox(newValue => {
 			return Promise.resolve();
@@ -187,11 +189,11 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		this._checksumCheckbox = this.createCheckbox(loc.BackupPerformChecksum, checked => {
 			return Promise.resolve();
 		});
-		this._continueCheckbox = this.createCheckbox(loc.BackupContinueOnError, checked => {
+		this._continueOnErrorCheckbox = this.createCheckbox(loc.BackupContinueOnError, checked => {
 			return Promise.resolve();
 		});
 
-		let reliabilityGroup = this.createGroup(loc.BackupReliabilityLabel, [this._verifyCheckbox, this._checksumCheckbox, this._continueCheckbox], false);
+		let reliabilityGroup = this.createGroup(loc.BackupReliabilityLabel, [this._verifyCheckbox, this._checksumCheckbox, this._continueOnErrorCheckbox], false);
 
 		// Transaction log
 		// Only should be enabled if backup type is Transaction Log
@@ -203,7 +205,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			return Promise.resolve();
 		}, false);
 		let transactionDescription = this.modelView.modelBuilder.text().withProps({ value: loc.TransactionLogNotice }).component();
-		let transactionGroup = this.createGroup(loc.BackupTransactionLogLabel, [this._truncateLogButton, this._backupLogTailButton, transactionDescription], false);
+		let transactionGroup = this.createGroup(loc.BackupTransactionLog, [this._truncateLogButton, this._backupLogTailButton, transactionDescription], false);
 
 		// Compression
 		let compressionValues = [loc.BackupDefaultSetting, loc.CompressBackup, loc.DontCompressBackup];
@@ -247,11 +249,15 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	public override async generateScript(): Promise<string> {
-		return '';
+		let backupInfo = this.createBackupInfo();
+		await this.objectManagementService.backupDatabase(this.options.connectionUri, backupInfo, TaskExecutionMode.script);
+		// The backup call will open its own query window, so don't return any script here.
+		return undefined;
 	}
 
 	public override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
-
+		let backupInfo = this.createBackupInfo();
+		await this.objectManagementService.backupDatabase(this.options.connectionUri, backupInfo, TaskExecutionMode.execute);
 	}
 
 	private getEncryptorOptions(): string[] {
@@ -268,6 +274,87 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	private getDefaultFileName(backupType: string): string {
 		return `${this.objectInfo.name}-${backupType.replace(' ', '-')}-${new Date().toJSON().slice(0, 19)}`;
 	}
+
+	private createBackupInfo(): BackupInfo {
+		let encryptorName = '';
+		let encryptorType: number | undefined;
+
+		if (this._encryptCheckbox.checked && !isUndefinedOrNull(this._encryptorDropdown.value)) {
+			let selectedEncryptor = this._encryptorDropdown.value as string;
+			let encryptorTypeStr = selectedEncryptor.substring(selectedEncryptor.lastIndexOf('(') + 1, selectedEncryptor.lastIndexOf(')'));
+			encryptorType = (encryptorTypeStr === loc.BackupServerCertificate ? 0 : 1);
+			encryptorName = selectedEncryptor.substring(0, selectedEncryptor.lastIndexOf('('));
+		}
+
+		let filePaths = this.getBackupFilePaths();
+		let isFormatChecked = this._overwriteExistingMediaButton.checked || this._newMediaButton.checked;
+		let backupInfo: BackupInfo = {
+			databaseName: this.objectInfo.name,
+			backupType: this.getBackupTypeNumber(),
+			backupComponent: 0,
+			backupDeviceType: this.getBackupDeviceType(),
+			backupPathList: filePaths,
+			selectedFiles: undefined,
+			backupsetName: this._backupNameInput.value,
+			selectedFileGroup: undefined,
+			backupPathDevices: this.getBackupTypePairs(filePaths),
+			isCopyOnly: this._copyBackupCheckbox.checked,
+
+			// Get advanced options
+			formatMedia: isFormatChecked,
+			initialize: isFormatChecked,
+			skipTapeHeader: isFormatChecked!,
+			mediaName: (isFormatChecked ? this._mediaNameInput.value : ''),
+			mediaDescription: (isFormatChecked ? this._mediaDescriptionInput.value : ''),
+			checksum: this._checksumCheckbox.checked,
+			continueAfterError: this._continueOnErrorCheckbox.checked,
+			logTruncation: this._truncateLogButton.checked,
+			tailLogBackup: this._backupLogTailButton.checked,
+			compressionOption: (this._compressionTypeDropdown.values as string[]).indexOf(this._compressionTypeDropdown.value as string),
+			verifyBackupRequired: this._verifyCheckbox.checked,
+			encryptionAlgorithm: (this._encryptCheckbox.checked ? (this._algorithmDropdown.values as string[]).indexOf(this._algorithmDropdown.value as string) : 0),
+			encryptorType: encryptorType,
+			encryptorName: encryptorName
+		};
+
+		return backupInfo;
+	}
+
+	private getBackupTypeNumber(): number {
+		let backupType: number;
+		switch (this._backupTypeDropdown.value) {
+			case loc.BackupFull:
+				backupType = 0;
+				break;
+			case loc.BackupDifferential:
+				backupType = 1;
+				break;
+			case loc.BackupTransactionLog:
+				backupType = 2;
+				break;
+		}
+		return backupType;
+	}
+
+	private getBackupDeviceType(): number {
+		if (this._backupTypeDropdown.value === loc.BackupUrlLabel) {
+			return PhysicalDeviceType.Url;
+		}
+		return PhysicalDeviceType.Disk;
+	}
+
+	private getBackupTypePairs(filePaths: string[]): { [path: string]: number } {
+		let pathDeviceMap: { [path: string]: number } = {};
+		let deviceType = this.getBackupDeviceType();
+		filePaths.forEach(path => {
+			pathDeviceMap[path] = deviceType;
+		});
+		return pathDeviceMap;
+	}
+
+	private getBackupFilePaths(): string[] {
+		return this._backupFilesTable.data.map(row => row[0] as string);
+	}
 }
 
 // const maxDevices: number = 64;
@@ -276,3 +363,14 @@ const aes128 = 'AES 128';
 const aes192 = 'AES 192';
 const aes256 = 'AES 256';
 const tripleDES = 'Triple DES';
+
+enum PhysicalDeviceType {
+	Disk = 2,
+	FloppyA = 3,
+	FloppyB = 4,
+	Tape = 5,
+	Pipe = 6,
+	CDRom = 7,
+	Url = 9,
+	Unknown = 100
+}
