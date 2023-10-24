@@ -150,6 +150,17 @@
     <trans-unit id="ReinstallAction.successReload">
       <source xml:lang="en">Please reload Azure Data Studio to complete reinstalling the extension {0}.</source>
     </trans-unit>
+    <trans-unit id="aboutDetail">
+      <source xml:lang="en">Version: {0}
+Commit: {1}
+Date: {2}
+Electron: {3}
+Chromium: {4}
+Node.js: {5}
+V8: {6}
+OS: {7}</source>
+      <note>Electron, Chromium, Node.js and V8 are product names that need no translation</note>
+    </trans-unit>
     <trans-unit id="activateLanguagePack">
       <source xml:lang="en">In order to use Azure Data Studio in {0}, Azure Data Studio needs to restart.</source>
     </trans-unit>
@@ -1909,6 +1920,9 @@ Default Skipped Commands:
     </trans-unit>
     <trans-unit id="dashboard.generalTabGroupHeader">
       <source xml:lang="en">General</source>
+    </trans-unit>
+    <trans-unit id="dashboard.tabLoadingError">
+      <source xml:lang="en">Error loading tab {0}</source>
     </trans-unit>
     <trans-unit id="home">
       <source xml:lang="en">Home</source>

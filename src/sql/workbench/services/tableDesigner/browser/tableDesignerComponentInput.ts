@@ -129,6 +129,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.generateScriptError', "An error occured while generating the script: {0}", error?.message ?? error), error?.data);
 			this.updateState(this.valid, this.dirty);
 			this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, TelemetryAction.GenerateScript).withAdditionalProperties(telemetryInfo).send();
+		} finally {
+			// Close notification in 2 seconds to prevent user action after script generation is complete.
+			// Users should not be required to close notification prompts.
+			setTimeout(() => notificationHandle.close(), 2000);
 		}
 	}
 
@@ -162,6 +166,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.publishChangeError', "An error occured while publishing changes: {0}", error?.message ?? error), error?.data);
 			this.updateState(this.valid, this.dirty);
 			this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, TelemetryAction.PublishChanges).withAdditionalProperties(telemetryInfo).send();
+		} finally {
+			// Close notification in 2 seconds to prevent user action after table publish is complete.
+			// Users should not be required to close notification prompts.
+			setTimeout(() => saveNotificationHandle.close(), 2000);
 		}
 
 		if (isPublishSuccessful) {

@@ -143,6 +143,9 @@ abstract class AbstractTreeView extends Disposable implements ITreeView {
 	private readonly _onDidChangeCheckboxState: Emitter<readonly ITreeItem[]> = this._register(new Emitter<readonly ITreeItem[]>());
 	readonly onDidChangeCheckboxState: Event<readonly ITreeItem[]> = this._onDidChangeCheckboxState.event;
 
+	private readonly _onDidChangeSelectionAndFocus: Emitter<{ selection: readonly ITreeItem[]; focus: ITreeItem; }> = this._register(new Emitter<{ selection: readonly ITreeItem[]; focus: ITreeItem; }>);
+	readonly onDidChangeSelectionAndFocus: Event<{ selection: readonly ITreeItem[]; focus: ITreeItem; }> = this._onDidChangeSelectionAndFocus.event;
+
 	private readonly _onDidCompleteRefresh: Emitter<void> = this._register(new Emitter<void>());
 
 	private nodeContext: NodeContextKey;
@@ -169,8 +172,6 @@ abstract class AbstractTreeView extends Disposable implements ITreeView {
 		// Try not to add anything that could be costly to this constructor. It gets called once per tree view
 		// during startup, and anything added here can affect performance.
 	}
-
-	onDidChangeSelectionAndFocus: Event<{ selection: readonly ITreeItem[]; focus: ITreeItem; }>;
 
 	private _isInitialized: boolean = false;
 	private initialize() {
