@@ -9,6 +9,7 @@ import * as azdata from 'azdata';
 import { ConnectParams } from 'dataprotocol-client/lib/protocol';
 import * as mssql from 'mssql';
 import { DatabaseFileData } from 'mssql';
+import { BackupResponse } from 'azdata';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
 
@@ -1691,12 +1692,12 @@ export namespace GetDataFolderRequest {
 
 export interface BackupDatabaseRequestParams {
 	connectionUri: string;
-	backupInfo: { [key: string]: any };
+	backupInfo: mssql.BackupInfo;
 	taskMode: azdata.TaskExecutionMode;
 }
 
 export namespace BackupDatabaseRequest {
-	export const type = new RequestType<BackupDatabaseRequestParams, string, void, void>('backup/backup');
+	export const type = new RequestType<BackupDatabaseRequestParams, BackupResponse, void, void>('backup/backup');
 }
 
 export interface GetBackupFolderRequestParams {

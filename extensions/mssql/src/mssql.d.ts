@@ -1001,7 +1001,7 @@ declare module 'mssql' {
 		 * @param backupInfo Various settings for how to backup the database.
 		 * @param taskMode Whether to run the backup operation, generate a script for it, or both.
 		 */
-		backupDatabase(connectionUri: string, backupInfo: BackupInfo, taskMode: azdata.TaskExecutionMode): Thenable<string>;
+		backupDatabase(connectionUri: string, backupInfo: BackupInfo, taskMode: azdata.TaskExecutionMode): Thenable<azdata.BackupResponse>;
 		/**
 		 * Drop a database.
 		 * @param connectionUri The URI of the server connection.

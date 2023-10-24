@@ -12,6 +12,7 @@ import { BaseService, ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-clie
 import { ObjectManagement, IObjectManagementService, DatabaseFileData, BackupInfo } from 'mssql';
 import { ClientCapabilities } from 'vscode-languageclient';
 import { AppContext } from '../appContext';
+import { BackupResponse } from 'azdata';
 
 export class ObjectManagementService extends BaseService implements IObjectManagementService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
@@ -82,7 +83,7 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		return this.runWithErrorHandling(contracts.AttachDatabaseRequest.type, params);
 	}
 
-	async backupDatabase(connectionUri: string, backupInfo: BackupInfo, taskMode: azdata.TaskExecutionMode): Promise<string> {
+	async backupDatabase(connectionUri: string, backupInfo: BackupInfo, taskMode: azdata.TaskExecutionMode): Promise<BackupResponse> {
 		const params: contracts.BackupDatabaseRequestParams = { connectionUri, backupInfo, taskMode };
 		return this.runWithErrorHandling(contracts.BackupDatabaseRequest.type, params);
 	}
@@ -281,8 +282,8 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve('');
 	}
 
-	async backupDatabase(connectionUri: string, backupInfo: BackupInfo, taskMode: azdata.TaskExecutionMode): Promise<string> {
-		return this.delayAndResolve('');
+	async backupDatabase(connectionUri: string, backupInfo: BackupInfo, taskMode: azdata.TaskExecutionMode): Promise<azdata.BackupResponse> {
+		return this.delayAndResolve({ result: true, taskId: 0 });
 	}
 
 	dropDatabase(connectionUri: string, database: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string> {

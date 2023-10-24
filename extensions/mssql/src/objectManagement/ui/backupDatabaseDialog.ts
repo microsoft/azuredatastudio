@@ -54,6 +54,10 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		return BackupDatabaseDocUrl;
 	}
 
+	protected override get isDirty(): boolean {
+		return true;
+	}
+
 	protected override get saveChangesTaskLabel(): string {
 		return loc.BackupDatabaseOperationDisplayName(this.objectInfo.name);
 	}
@@ -283,7 +287,10 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	public override async generateScript(): Promise<string> {
 		let backupInfo = this.createBackupInfo();
-		await this.objectManagementService.backupDatabase(this.options.connectionUri, backupInfo, TaskExecutionMode.script);
+		let response = await this.objectManagementService.backupDatabase(this.options.connectionUri, backupInfo, TaskExecutionMode.script);
+		if (!response.result) {
+			throw new Error('Script operation failed.');
+		}
 		// The backup call will open its own query window, so don't return any script here.
 		return undefined;
 	}
