@@ -72,7 +72,7 @@ export class ServerTreeActionProvider {
 	/**
 	 * Get the default action for the given element.
 	 */
-	public getDefaultAction(tree: AsyncServerTree | ITree, element: ServerTreeElement): IAction | undefined {
+	public getDefaultAction(tree: AsyncServerTree | ITree | undefined, element: ServerTreeElement): IAction | undefined {
 		if (tree) {
 			const actions = this.getActions(tree, element).filter(a => {
 				return a instanceof MenuItemAction && a.isDefault;
