@@ -177,6 +177,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		this._existingMediaButton = this.createRadioButton(loc.BackupToExistingMedia, overwriteGroupId, true, async checked => {
 			if (checked) {
 				this._appendExistingMediaButton.enabled = true;
+				this._appendExistingMediaButton.checked = true;
 				this._overwriteExistingMediaButton.enabled = true;
 
 				this._mediaNameInput.enabled = false;
@@ -189,7 +190,9 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		this._newMediaButton = this.createRadioButton(loc.BackupAndEraseExisting, overwriteGroupId, false, async checked => {
 			if (checked) {
 				this._appendExistingMediaButton.enabled = false;
+				this._appendExistingMediaButton.checked = false;
 				this._overwriteExistingMediaButton.enabled = false;
+				this._overwriteExistingMediaButton.checked = false;
 
 				this._mediaNameInput.enabled = true;
 				this._mediaDescriptionInput.enabled = true;
