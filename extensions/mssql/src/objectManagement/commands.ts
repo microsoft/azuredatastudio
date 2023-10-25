@@ -164,7 +164,6 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 
 async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
 	const connectionUri = await getConnectionUri(context);
-	const dialogWidth = '750px';
 	if (!connectionUri) {
 		return;
 	}
@@ -180,7 +179,6 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 			objectUrn: object.urn,
 			objectExplorerContext: context
 		};
-		options.width = dialogWidth;
 		const dialog = getDialog(service, options);
 		const startTime = Date.now();
 		await dialog.open();
@@ -416,6 +414,7 @@ async function handleDropDatabase(context: azdata.ObjectExplorerContext, service
 }
 
 function getDialog(service: IObjectManagementService, dialogOptions: ObjectManagementDialogOptions): ObjectManagementDialogBase<ObjectManagement.SqlObject, ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
+	const dialogWidth = '750px';
 	switch (dialogOptions.objectType) {
 		case ObjectManagement.NodeType.ApplicationRole:
 			return new ApplicationRoleDialog(service, dialogOptions);
@@ -426,10 +425,12 @@ function getDialog(service: IObjectManagementService, dialogOptions: ObjectManag
 		case ObjectManagement.NodeType.ServerLevelServerRole:
 			return new ServerRoleDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.Server:
+			dialogOptions.width = dialogOptions.isNewObject ? undefined : dialogWidth;
 			return new ServerPropertiesDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.User:
 			return new UserDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.Database:
+			dialogOptions.width = dialogOptions.isNewObject ? undefined : dialogWidth;
 			return new DatabaseDialog(service, dialogOptions);
 		default:
 			throw new Error(`Unsupported object type: ${dialogOptions.objectType}`);
