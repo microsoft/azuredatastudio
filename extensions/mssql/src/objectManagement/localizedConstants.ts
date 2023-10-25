@@ -288,6 +288,7 @@ export const BackupEncryptNotice = localize('objectManagement.backupEncryptNotic
 export const BackupDefaultSetting = localize('objectManagement.backupDefaultSetting', "Use the default server setting");
 export const CompressBackup = localize('objectManagement.compressBackup', "Compress backup");
 export const DontCompressBackup = localize('objectManagement.dontCompressBackup', "Do not compress backup");
+export const RecoveryModelSimple = localize('objectManagement.recoveryModelSimple', "Simple");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");

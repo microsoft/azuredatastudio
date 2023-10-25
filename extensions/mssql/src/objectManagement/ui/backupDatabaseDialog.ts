@@ -75,7 +75,14 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	private async initializeGeneralSection(): Promise<azdata.GroupContainer> {
 		let components: azdata.Component[] = [];
-		const backupTypes = [loc.BackupFull, loc.BackupDifferential, loc.BackupTransactionLog];
+		const backupTypes = [loc.BackupFull];
+		if (this.objectInfo.name !== 'master') {
+			backupTypes.push(loc.BackupDifferential);
+			if (this.objectInfo.recoveryModel !== loc.RecoveryModelSimple) {
+				backupTypes.push(loc.BackupTransactionLog);
+			}
+		}
+
 		let defaultName = this.getDefaultFileName(backupTypes[0]);
 		this._backupSetNameInput = this.createInputBox(newValue => {
 			return Promise.resolve();
