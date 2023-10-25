@@ -218,11 +218,11 @@ export class IssueSummary {
 
 	//refresh issue summary values.
 	public async refreshAssessmentDetailsAsync(selectedIssue?: SqlMigrationAssessmentResultItem): Promise<void> {
-		await this._descriptionText.updateProperty('value', selectedIssue?.description || '');
-		await this._recommendationText.updateProperty('value', selectedIssue?.message || constants.NA);
+		this._descriptionText.value = selectedIssue?.description ?? '';
+		this._recommendationText.value = selectedIssue?.message ?? constants.NA;
 
 		if (selectedIssue?.helpLink) {
-			await this._moreInfoTitle.updateProperty('display', 'flex');
+			this._moreInfoTitle.display = 'flex';
 			await this._moreInfoText.updateProperties({
 				'display': 'flex',
 				'url': selectedIssue?.helpLink || '',
@@ -231,7 +231,7 @@ export class IssueSummary {
 				'showLinkIcon': true
 			});
 		} else {
-			await this._moreInfoTitle.updateProperty('display', 'none');
+			this._moreInfoTitle.display = 'none';
 			await this._moreInfoText.updateProperties({
 				'display': 'none',
 				'url': '',
