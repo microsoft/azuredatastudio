@@ -18,7 +18,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	private readonly _fileFilters: azdata.window.FileFilters[] = [{ label: loc.BackupFilesLabel, filters: ['*.bak', '*.tm'] }];
 	private _backupFilePaths: string[] = [];
 
-	private _backupNameInput: azdata.InputBoxComponent;
+	private _backupSetNameInput: azdata.InputBoxComponent;
 	private _backupTypeDropdown: azdata.DropDownComponent;
 	private _copyBackupCheckbox: azdata.CheckBoxComponent;
 	private _backupDestDropdown: azdata.DropDownComponent;
@@ -77,7 +77,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let components: azdata.Component[] = [];
 		const backupTypes = [loc.BackupFull, loc.BackupDifferential, loc.BackupTransactionLog];
 		let defaultName = this.getDefaultFileName(backupTypes[0]);
-		this._backupNameInput = this.createInputBox(newValue => {
+		this._backupSetNameInput = this.createInputBox(newValue => {
 			return Promise.resolve();
 		}, {
 			ariaLabel: defaultName,
@@ -86,7 +86,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			value: defaultName,
 			width: DefaultInputWidth
 		});
-		let backupInputContainer = this.createLabelInputContainer(loc.BackupNameLabel, this._backupNameInput);
+		let backupInputContainer = this.createLabelInputContainer(loc.BackupNameLabel, this._backupSetNameInput);
 		components.push(backupInputContainer);
 
 		// Recovery Model field is always disabled since it's a database setting
@@ -104,7 +104,17 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 		this._backupTypeDropdown = this.createDropdown(loc.BackupTypeLabel, async newValue => {
 			// Update backup name with new backup type
-			this._backupNameInput.value = this._backupNameInput.ariaLabel = this.getDefaultFileName(newValue);
+			this._backupSetNameInput.value = this._backupSetNameInput.ariaLabel = this.getDefaultFileName(newValue);
+			if (newValue === loc.BackupTransactionLog) {
+				this._truncateLogButton.enabled = true;
+				this._truncateLogButton.checked = true;
+				this._backupLogTailButton.enabled = true;
+			} else {
+				this._truncateLogButton.enabled = false;
+				this._truncateLogButton.checked = false;
+				this._backupLogTailButton.enabled = false;
+				this._backupLogTailButton.checked = false;
+			}
 		}, backupTypes, backupTypes[0]);
 		let backupContainer = this.createLabelInputContainer(loc.BackupTypeLabel, this._backupTypeDropdown);
 		components.push(backupContainer);
@@ -334,7 +344,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			backupComponent: 0,
 			backupDeviceType: this.getBackupDeviceType(),
 			backupPathList: filePaths,
-			backupsetName: this._backupNameInput.value,
+			backupsetName: this._backupSetNameInput.value,
 			backupPathDevices: this.getBackupTypePairs(filePaths),
 			isCopyOnly: this._copyBackupCheckbox.checked,
 
