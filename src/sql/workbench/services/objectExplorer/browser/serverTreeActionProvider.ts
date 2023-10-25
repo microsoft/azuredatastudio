@@ -49,7 +49,7 @@ export class ServerTreeActionProvider {
 	/**
 	 * Return actions given an element in the tree
 	 */
-	public getActions(tree: AsyncServerTree | ITree, element: ServerTreeElement, inlineOnly: boolean = false): IAction[] {
+	public getActions(tree: AsyncServerTree | ITree | undefined, element: ServerTreeElement, inlineOnly: boolean = false): IAction[] {
 		if (element instanceof ConnectionProfile) {
 			return tree ? this.getConnectionActions(tree, element, inlineOnly) : [];
 		}
@@ -104,7 +104,7 @@ export class ServerTreeActionProvider {
 	/**
 	 * Return actions for connection elements
 	 */
-	private getConnectionActions(tree: AsyncServerTree | ITree, profile: ConnectionProfile, inlineOnly: boolean = false): IAction[] {
+	private getConnectionActions(tree: AsyncServerTree | ITree | undefined, profile: ConnectionProfile, inlineOnly: boolean = false): IAction[] {
 		let node = new TreeNode(NodeType.Server, NodeType.Server, '', false, '', '', '', '', undefined, undefined, undefined, undefined);
 		// Only update password and not access tokens to avoid login prompts when opening context menu.
 		this._connectionManagementService.addSavedPassword(profile, true);
@@ -273,7 +273,7 @@ export class ServerTreeActionProvider {
 }
 
 interface ObjectExplorerContext {
-	tree: AsyncServerTree | ITree;
+	tree: AsyncServerTree | ITree | undefined;
 	profile: ConnectionProfile;
 	treeNode?: TreeNode;
 }
