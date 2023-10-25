@@ -283,6 +283,10 @@ export const PreserveReplicationSettingsText = localize('objectManagement.restor
 export const RestrictAccessToRestoredDBText = localize('objectManagement.restoreDatabase.restrictAccessToRestoredDBText', "Restrict access to the restored database (WITH RESTRICTED_USER)");
 export const RecoveryStateText = localize('objectManagement.restoreDatabase.recoveryStateText', "Recovery State");
 export const StandbyFileText = localize('objectManagement.restoreDatabase.standbyFileText', "Standby file");
+export const TakeTailLogBackupBeforeRestoreText = localize('objectManagement.restoreDatabase.takeTailLogBackupBeforeRestoreText', "Take tail-log backup before restore");
+export const LeaveSourceDBText = localize('objectManagement.restoreDatabase.leaveSourceDBText', "Leave source database in the restoring state (WITH NORECOVERY)");
+export const TailLogBackupFileText = localize('objectManagement.restoreDatabase.tailLogBackupFileText', "Tail Log Backup File");
+export const CloseExistingConnectionText = localize('objectManagement.restoreDatabase.closeExistingConnectionText', "Close existing connections to destination database");
 
 // User
 export const UserTypeText = localize('objectManagement.user.type', "Type");

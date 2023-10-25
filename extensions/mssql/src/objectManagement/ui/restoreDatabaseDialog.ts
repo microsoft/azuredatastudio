@@ -29,6 +29,9 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	private overwriteExistingDatabase: azdata.CheckBoxComponent;
 	private preserveReplicationSettings: azdata.CheckBoxComponent;
 	private restrictAccessToRestoredDB: azdata.CheckBoxComponent;
+	private takeTailLogBackup: azdata.CheckBoxComponent;
+	private leaveSourceDB: azdata.CheckBoxComponent;
+	private closeExistingConnections: azdata.CheckBoxComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		options.width = Dialog_Width;
@@ -260,13 +263,42 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	}
 
 	private initializeTailLogBackupSection(): azdata.GroupContainer {
-		return this.createGroup(localizedConstants.RestoreTailLogBackupText, [
-		], true);
+		let containers: azdata.Component[] = [];
+		// Take tail-log backup before restore
+		this.takeTailLogBackup = this.createCheckbox(localizedConstants.TakeTailLogBackupBeforeRestoreText, async (checked) => {
+			// this.objectInfo.autoCreateIncrementalStatistics = checked;
+		}, true);
+		containers.push(this.takeTailLogBackup);
+
+		// leave source database in the restoring state (WITH NORECOVERY)
+		this.leaveSourceDB = this.createCheckbox(localizedConstants.LeaveSourceDBText, async (checked) => {
+			// this.objectInfo.autoCreateIncrementalStatistics = checked;
+		}, true);
+		containers.push(this.leaveSourceDB);
+
+		// Tail log backup file
+		const props: azdata.InputBoxProperties = {
+			ariaLabel: localizedConstants.TailLogBackupFileText,
+			required: false,
+			enabled: false,
+			width: RestoreInputsWidth,
+			value: ''
+		};
+		let tailLogBackupFile = this.createInputBox(async () => {
+			// this.objectInfo.collationName = collationDropbox.value as string;
+		}, props);
+		containers.push(this.createLabelInputContainer(localizedConstants.TailLogBackupFileText, tailLogBackupFile));
+
+		return this.createGroup(localizedConstants.RestoreTailLogBackupText, containers, true);
 	}
 
 	private initializeServerConnectionsSection(): azdata.GroupContainer {
-		return this.createGroup(localizedConstants.RestoreServerConnectionsOptionsText, [
-		], true);
+		// Close existing server connections to destination database
+		this.closeExistingConnections = this.createCheckbox(localizedConstants.CloseExistingConnectionText, async (checked) => {
+			// this.objectInfo.autoCreateIncrementalStatistics = checked;
+		}, true);
+
+		return this.createGroup(localizedConstants.RestoreServerConnectionsOptionsText, [this.closeExistingConnections], true);
 	}
 	//#endregion
 }
