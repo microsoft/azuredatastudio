@@ -83,9 +83,9 @@ export const XEVENTS_ASSESSMENT_HELPLINK = localize('sql.migration.database.asse
 export const XEVENTS_ASSESSMENT_OPEN_FOLDER = localize('sql.migration.database.assessment.xevents.instructions', "Select a folder where extended events session files (.xel and .xem) are stored");
 
 // Assessment results
-export const ASSESSMENT_RESULTS_PAGE_TITLE = localize('sql.migration.assessment.results.title', "Target Platform & Assessment Results");
+export const ASSESSMENT_RESULTS_PAGE_TITLE = localize('sql.migration.assessment.results.title', "Target platform & assessment results");
 export const ASSESSMENT_RESULTS_SUMMARY_LABEL_CAPS = localize('sql.migration.assessment.results.summary.label.caps', "ASSESSMENT RESULTS");
-export const ASSESSMENT_RESULTS_PAGE_HEADER = localize('sql.migration.assessment.results.header', "Choose Target platform, view assessment results and select database(s) for migration.");
+export const ASSESSMENT_RESULTS_PAGE_HEADER = localize('sql.migration.assessment.results.header', "Choose target platform, view assessment results and select database(s) for migration.");
 export const ASSESSMENT_RESULTS_SUMMARY_LABEL_DESCRIPTION = localize('sql.migration.assessment.results.summary.label.description', "Assessment results shows the migration readiness of the database(s)");
 export const DATABASES_ASSESSED_LABEL = localize('sql.migration.database.assessed.label', "Database(s) assessed");
 export const MIGRATION_TIME_LABEL = localize('sql.migration.migration.time.label', "Ready for migration");
@@ -94,19 +94,19 @@ export const MIGRATION_READINESS_LABEL = localize('sql.migration.migration.readi
 export const SUMMARY_TITLE = localize('sql.migration.summary.title', "Summary");
 export const DETAILS_TITLE = localize('sql.migration.details.title', "Details");
 export const ASSESSMENT_SUMMARY_TITLE = localize('sql.migration.assessment.summary.title', "Assessment summary");
-export const READINESS_SECTION_TITLE = localize('sql.migration.readiness.section.title', "Migration readiness of assessed databases in the Server instance");
-export function TOTAL_FINDINGS_LABEL(findingsCount: number) { return localize('sql.migration.total.findings.label', "Total findings:{0}", findingsCount) }
+export const READINESS_SECTION_TITLE = localize('sql.migration.readiness.section.title', "Migration readiness of assessed databases in the server instance");
+export function TOTAL_FINDINGS_LABEL(findingsCount: number) { return localize('sql.migration.total.findings.label', "Total findings: {0}", findingsCount) }
 export const ISSUES_LABEL = localize('sql.migration.issues.label', "Blocking issues");
 export const INSTANCE_FINDING_SUMMARY = localize('sql.migration.instance.finding.summary', "Server instance assessment findings summary");
 export const SEVERITY_FINDINGS_LABEL = localize('sql.migration.severity.findings.label', "Findings by severity");
-export function ASSESSED_DBS_LABEL(databasesCount: number) { return localize('sql.migration.assessed.dbs.label', "Assessed databases:{0}", databasesCount) }
+export function ASSESSED_DBS_LABEL(databasesCount: number) { return localize('sql.migration.assessed.dbs.label', "Assessed databases: {0}", databasesCount) }
 export const NOT_READY = localize('sql.migration.not.ready', "Not ready");
 export const READY = localize('sql.migration.ready', "Ready");
 export const NEEDS_REVIEW = localize('sql.migration.needs.review', "Needs review");
 export const READY_WARN = localize('sql.migration.ready.warn', "Ready with warnings");
 export const BLOCKERS = localize('sql.migration.ready', "Blockers");
 export const DATABASE_ISSUES_SUMMARY = localize('sql.migration.database.issues.summary', "Database assessment issues summary");
-export function TOTAL_ISSUES_LABEL(issuesCount: number) { return localize('sql.migration.total.issues.label', "Total issues found:{0}", issuesCount) }
+export function TOTAL_ISSUES_LABEL(issuesCount: number) { return localize('sql.migration.total.issues.label', "Total issues found: {0}", issuesCount) }
 export const SEVERITY_ISSUES_LABEL = localize('sql.migration.severity.issues.label', "Issues by severity");
 export function DB_READINESS_SECTION_TITLE(dbName: string) {
 	return localize('sql.migration.db.readiness.section.title', "Database {0} migration readiness", dbName);
@@ -119,13 +119,13 @@ export function WARNING_READINESS_DESCRIPTION(warnings: number) {
 }
 export const READINESS_DESCRIPTION = localize('sql.migration.readiness.description', "The database is ready to migrate.");
 export const SELECT_TARGET_LABEL = localize('sql.migration.no.target.selected.label', 'Select target type');
-export const NO_TARGET_SELECTED_LABEL = localize('sql.migration.select.target.label', 'No Target selected. Select Target to view the Assessment Summary.');
+export const NO_TARGET_SELECTED_LABEL = localize('sql.migration.select.target.label', 'No target selected. Select target to view the assessment summary.');
 export const FINDINGS_LABEL = localize('sql.migration.findings.label', "Findings");
 export const ENCRYPTION_LABEL = localize('sql.migration.encryption.label', "Encryption");
-export const ENCRYPTION_DESCRIPTION = localize('sql.migration.encryption.description', "This database is encrypted using Transparent data encryption (TDE). You need to migrate certificates before you can migrate this database.");
+export const ENCRYPTION_DESCRIPTION = localize('sql.migration.encryption.description', "This database is encrypted using Transparent Data Encryption (TDE). You need to migrate certificates before you can migrate this database.");
 
 // Assessment results and recommendations
-export const ASSESSMENT_SUMMARY_AND_RECOMMENDATIONS_PAGE_TITLE = localize('sql.migration.assessment.summary.and.recommendations.title', "Assessment Summary and SKU recommendations");
+export const ASSESSMENT_SUMMARY_AND_RECOMMENDATIONS_PAGE_TITLE = localize('sql.migration.assessment.summary.and.recommendations.title', "Assessment summary and SKU recommendations");
 export const ASSESSMENT_BLOCKING_ISSUE_TITLE = localize('sql.migration.assessments.blocking.issue', 'This is a blocking issue that will prevent the database migration from succeeding.');
 export const ASSESSMENT_IN_PROGRESS = localize('sql.migration.assessment.in.progress', "Assessment in progress");
 export function ASSESSMENT_IN_PROGRESS_CONTENT(dbName: string) {
@@ -178,8 +178,8 @@ export const AZURE_SQL_MI_DB_COUNT_THRESHOLD_EXCEEDS_ERROR = (selectedDbCount: n
 };
 export const AZURE_SQL_MI_DB_COUNT_UNDER_THRESHOLD = localize('sql.migration.select.azure.mi.db.count.under.threshold', 'To proceed, press Select button');
 export const REFRESH_ASSESSMENT_LABEL = localize('sql.migration.refresh.assessment.label', "Refresh assessment");
-export const REFRESH_SKU_LABEL = localize('sql.migration.refresh.sku.label', "Refresh SKU recommendation");
-export const ASSESSMENT_SUMMARY_AND_SKU_RECOMMENDATION_FOR_TARGETS_LABEL = localize('sql.migration.wizard.assessment.summary.and.sku.for.targets.label', "View Assessment summary and SKU recommendations for Azure SQL Targets");
+export const REFRESH_SKU_LABEL = localize('sql.migration.refresh.sku.label', "Refresh SKU recommendations");
+export const ASSESSMENT_SUMMARY_AND_SKU_RECOMMENDATION_FOR_TARGETS_LABEL = localize('sql.migration.wizard.assessment.summary.and.sku.for.targets.label', "View assessment summary and SKU recommendations for Azure SQL targets");
 
 export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure SQL Managed Instance (PaaS)");
 export const SKU_RECOMMENDATION_SQLDB_CARD_TEXT = localize('sql.migration.sku.sqldb.card.title', "Azure SQL Database (PaaS)");
