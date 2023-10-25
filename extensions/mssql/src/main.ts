@@ -170,7 +170,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	var disposable = provider.registerOnQueryComplete(params => {
 		console.log(params.ownerUri);
 		disposable.dispose();
-	});
+	}) as any as vscode.Disposable;
 
 	var connProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>('MSSQL', azdata.DataProviderType.ConnectionProvider);
 	var disposable2 = connProvider.registerOnConnectionComplete(params => {
