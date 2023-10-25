@@ -228,7 +228,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let compressionGroup = this.createGroup(loc.BackupCompressionLabel, [compressionContainer], false);
 
 		// Encryption
-		this._encryptCheckbox = this.createCheckbox(loc.EncryptBackup, checked => {
+		this._encryptCheckbox = this.createCheckbox(loc.EncryptBackup, async checked => {
 			this._algorithmDropdown.enabled = checked;
 			this._encryptorDropdown.enabled = checked;
 		}, false, false);
