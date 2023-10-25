@@ -1691,7 +1691,7 @@ export namespace GetDataFolderRequest {
 }
 
 export interface BackupDatabaseRequestParams {
-	connectionUri: string;
+	ownerUri: string;
 	backupInfo: mssql.BackupInfo;
 	taskMode: azdata.TaskExecutionMode;
 }
