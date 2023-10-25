@@ -2454,6 +2454,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.aboutDetail" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Version: {0}]D;]A;Commit: {1}]D;]A;Date: {2}]D;]A;Electron: {3}]D;]A;Chromium: {4}]D;]A;Node.js: {5}]D;]A;V8: {6}]D;]A;OS: {7}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[版本：{0}]D;]A;提交：{1}]D;]A;日期：{2}]D;]A;Electron：{3}]D;]A;Chromium：{4}]D;]A;Node.js：{5}]D;]A;V8：{6}]D;]A;OS：{7}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/base/common/locConstants.activateLanguagePack" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[In order to use Azure Data Studio in {0}, Azure Data Studio needs to restart.]]></Val>

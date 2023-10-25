@@ -85,8 +85,8 @@ export class AzureMonitorObjectExplorerNodeProvider extends ProviderBase impleme
 		return Promise.resolve(response);
 	}
 
-	registerOnExpandCompleted(handler: (response: azdata.ObjectExplorerExpandInfo) => any): void {
-		this.expandCompleteEmitter.event(handler);
+	registerOnExpandCompleted(handler: (response: azdata.ObjectExplorerExpandInfo) => any): vscode.Disposable {
+		return this.expandCompleteEmitter.event(handler);
 	}
 
 	notifyNodeChanged(node: TreeNode): void {

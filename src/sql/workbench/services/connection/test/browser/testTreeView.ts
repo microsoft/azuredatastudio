@@ -83,7 +83,6 @@ export class TreeView extends Disposable implements ITreeView {
 	public root: ITreeItem;
 	private elementsToRefresh: ITreeItem[] = [];
 
-
 	private readonly _onDidChangeCheckboxState: Emitter<readonly ITreeItem[]> = this._register(new Emitter<readonly ITreeItem[]>());
 	readonly onDidChangeCheckboxState: Event<readonly ITreeItem[]> = this._onDidChangeCheckboxState.event;
 
@@ -113,6 +112,9 @@ export class TreeView extends Disposable implements ITreeView {
 
 	private readonly _onDidChangeDescription: Emitter<string | undefined> = this._register(new Emitter<string | undefined>());
 	readonly onDidChangeDescription: Event<string | undefined> = this._onDidChangeDescription.event;
+
+	private readonly _onDidChangeSelectionAndFocus: Emitter<{ selection: readonly ITreeItem[]; focus: ITreeItem; }> = this._register(new Emitter<{ selection: readonly ITreeItem[]; focus: ITreeItem; }>);
+	readonly onDidChangeSelectionAndFocus: Event<{ selection: readonly ITreeItem[]; focus: ITreeItem; }> = this._onDidChangeSelectionAndFocus.event;
 
 	private readonly _onDidCompleteRefresh: Emitter<void> = this._register(new Emitter<void>());
 
@@ -155,7 +157,6 @@ export class TreeView extends Disposable implements ITreeView {
 	}
 
 	dragAndDropController?: ITreeViewDragAndDropController;
-	onDidChangeSelectionAndFocus: Event<{ selection: readonly ITreeItem[]; focus: ITreeItem; }>;
 
 	get viewContainer(): ViewContainer {
 		return this.viewDescriptorService.getViewContainerByViewId(this.id)!;
