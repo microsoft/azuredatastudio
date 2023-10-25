@@ -107,13 +107,10 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			this._backupSetNameInput.value = this._backupSetNameInput.ariaLabel = this.getDefaultFileName(newValue);
 			if (newValue === loc.BackupTransactionLog) {
 				this._truncateLogButton.enabled = true;
-				this._truncateLogButton.checked = true;
 				this._backupLogTailButton.enabled = true;
 			} else {
 				this._truncateLogButton.enabled = false;
-				this._truncateLogButton.checked = false;
 				this._backupLogTailButton.enabled = false;
-				this._backupLogTailButton.checked = false;
 			}
 		}, backupTypes, backupTypes[0]);
 		let backupContainer = this.createLabelInputContainer(loc.BackupTypeLabel, this._backupTypeDropdown);
@@ -154,12 +151,8 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		// Media options
 		// Options for overwriting existing media - enabled by default
 		const existingGroupId = 'BackupExistingMedia';
-		this._appendExistingMediaButton = this.createRadioButton(loc.AppendToExistingBackup, existingGroupId, true, checked => {
-			return Promise.resolve();
-		});
-		this._overwriteExistingMediaButton = this.createRadioButton(loc.OverwriteExistingBackups, existingGroupId, false, checked => {
-			return Promise.resolve();
-		});
+		this._appendExistingMediaButton = this.createRadioButton(loc.AppendToExistingBackup, existingGroupId, true, () => undefined);
+		this._overwriteExistingMediaButton = this.createRadioButton(loc.OverwriteExistingBackups, existingGroupId, false, () => undefined);
 
 		// Options for writing to new media
 		this._mediaNameInput = this.createInputBox(newValue => {
@@ -177,16 +170,12 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		this._existingMediaButton = this.createRadioButton(loc.BackupToExistingMedia, overwriteGroupId, true, async checked => {
 			if (checked) {
 				this._appendExistingMediaButton.enabled = true;
-				this._appendExistingMediaButton.checked = true;
 				this._overwriteExistingMediaButton.enabled = true;
 
 				this._mediaNameInput.enabled = false;
 				this._mediaDescriptionInput.enabled = false;
 
 				this._encryptCheckbox.enabled = false;
-				this._encryptCheckbox.checked = false;
-				this._algorithmDropdown.enabled = false;
-				this._encryptorDropdown.enabled = false;
 			}
 		});
 		let existingMediaButtonsGroup = this.createGroup('', [this._appendExistingMediaButton, this._overwriteExistingMediaButton]);
@@ -195,16 +184,12 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		this._newMediaButton = this.createRadioButton(loc.BackupAndEraseExisting, overwriteGroupId, false, async checked => {
 			if (checked) {
 				this._appendExistingMediaButton.enabled = false;
-				this._appendExistingMediaButton.checked = false;
 				this._overwriteExistingMediaButton.enabled = false;
-				this._overwriteExistingMediaButton.checked = false;
 
 				this._mediaNameInput.enabled = true;
 				this._mediaDescriptionInput.enabled = true;
 
 				this._encryptCheckbox.enabled = true;
-				this._algorithmDropdown.enabled = true;
-				this._encryptorDropdown.enabled = true;
 			}
 		});
 
@@ -231,38 +216,29 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		// Transaction log
 		// Only should be enabled if backup type is Transaction Log
 		const transactionGroupId = 'BackupTransactionLog';
-		this._truncateLogButton = this.createRadioButton(loc.BackupTruncateLog, transactionGroupId, false, checked => {
-			return Promise.resolve();
-		}, false);
-		this._backupLogTailButton = this.createRadioButton(loc.BackupLogTail, transactionGroupId, false, checked => {
-			return Promise.resolve();
-		}, false);
+		this._truncateLogButton = this.createRadioButton(loc.BackupTruncateLog, transactionGroupId, true, () => undefined, false);
+		this._backupLogTailButton = this.createRadioButton(loc.BackupLogTail, transactionGroupId, false, () => undefined, false);
 		let transactionDescription = this.modelView.modelBuilder.text().withProps({ value: loc.TransactionLogNotice }).component();
 		let transactionGroup = this.createGroup(loc.BackupTransactionLog, [this._truncateLogButton, this._backupLogTailButton, transactionDescription], false);
 
 		// Compression
 		let compressionValues = [loc.BackupDefaultSetting, loc.CompressBackup, loc.DontCompressBackup];
-		this._compressionTypeDropdown = this.createDropdown(loc.BackupSetCompression, newValue => {
-			return Promise.resolve();
-		}, compressionValues, compressionValues[0]);
+		this._compressionTypeDropdown = this.createDropdown(loc.BackupSetCompression, () => undefined, compressionValues, compressionValues[0]);
 		let compressionContainer = this.createLabelInputContainer(loc.BackupSetCompression, this._compressionTypeDropdown);
 		let compressionGroup = this.createGroup(loc.BackupCompressionLabel, [compressionContainer], false);
 
 		// Encryption
 		this._encryptCheckbox = this.createCheckbox(loc.EncryptBackup, checked => {
-			return Promise.resolve();
+			this._algorithmDropdown.enabled = checked;
+			this._encryptorDropdown.enabled = checked;
 		}, false, false);
 
 		let algorithmValues = [aes128, aes192, aes256, tripleDES];
-		this._algorithmDropdown = this.createDropdown(loc.BackupAlgorithm, newValue => {
-			return Promise.resolve();
-		}, algorithmValues, algorithmValues[0], false);
+		this._algorithmDropdown = this.createDropdown(loc.BackupAlgorithm, () => undefined, algorithmValues, algorithmValues[0], false);
 		let algorithmContainer = this.createLabelInputContainer(loc.BackupAlgorithm, this._algorithmDropdown);
 
 		let encryptorValues = this.getEncryptorOptions();
-		this._encryptorDropdown = this.createDropdown(loc.BackupCertificate, newValue => {
-			return Promise.resolve();
-		}, encryptorValues, encryptorValues[0], false);
+		this._encryptorDropdown = this.createDropdown(loc.BackupCertificate, () => undefined, encryptorValues, encryptorValues[0], false);
 		let encryptorContainer = this.createLabelInputContainer(loc.BackupCertificate, this._encryptorDropdown);
 
 		let encryptionDescription = this.modelView.modelBuilder.text().withProps({ value: loc.BackupEncryptNotice }).component();
