@@ -164,6 +164,7 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 
 async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
 	const connectionUri = await getConnectionUri(context);
+	const dialogWidth = '750px';
 	if (!connectionUri) {
 		return;
 	}
@@ -179,6 +180,7 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 			objectUrn: object.urn,
 			objectExplorerContext: context
 		};
+		options.width = dialogWidth;
 		const dialog = getDialog(service, options);
 		const startTime = Date.now();
 		await dialog.open();
