@@ -224,20 +224,22 @@
         <source xml:lang="en">Version: {0}
 Commit: {1}
 Date: {2}
-Electron: {3}
-Chromium: {4}
-Node.js: {5}
-V8: {6}
-OS: {7}</source>
+VS Code: {3}
+Electron: {4}
+Chromium: {5}
+Node.js: {6}
+V8: {7}
+OS: {8}</source>
         <note>Electron, Chromium, Node.js and V8 are product names that need no translation</note>
-        <target state="translated">Versão: {0}
-Confirmar: {1}
-Data: {2}
-Eletrônica: {3}
-Chromium: {4}
-Node.js: {5}
-V8: {6}
-Sistema Operacional: {7}</target>
+        <target state="new">Version: {0}
+Commit: {1}
+Date: {2}
+VS Code: {3}
+Electron: {4}
+Chromium: {5}
+Node.js: {6}
+V8: {7}
+OS: {8}</target>
       </trans-unit>
       <trans-unit id="activateLanguagePack">
         <source xml:lang="en">In order to use Azure Data Studio in {0}, Azure Data Studio needs to restart.</source>
@@ -2713,7 +2715,7 @@ Comandos Padrão Ignorados:
       </trans-unit>
       <trans-unit id="dashboard.tabLoadingError">
         <source xml:lang="en">Error loading tab {0}</source>
-        <target state="new">Error loading tab {0}</target>
+        <target state="translated">Erro ao carregar a guia {0}</target>
       </trans-unit>
       <trans-unit id="home">
         <source xml:lang="en">Home</source>

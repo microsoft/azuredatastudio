@@ -12854,7 +12854,7 @@
 			"InstallVSIXAction.allowNone": "확장 정책에서 확장 설치를 허용하지 않습니다. 확장 정책을 변경하고 다시 시도하세요.",
 			"InstallVSIXAction.successReload": "VSIX의 {0} 확장 설치가 완료되었습니다. Azure Data Studio를 다시 로드하여 사용하도록 설정하세요.",
 			"ReinstallAction.successReload": "Azure Data Studio를 다시 로드하고 {0} 확장의 재설치를 완료하세요.",
-			"aboutDetail": "버전: {0}\r\n커밋: {1}\r\n날짜: {2}\r\nElectron: {3}\r\nChromium: {4}\r\nNode.js: {5}\r\nV8: {6}\r\nOS: {7}",
+			"aboutDetail": "Version: {0}\r\nCommit: {1}\r\nDate: {2}\r\nVS Code: {3}\r\nElectron: {4}\r\nChromium: {5}\r\nNode.js: {6}\r\nV8: {7}\r\nOS: {8}",
 			"activateLanguagePack": "{0}에서 Azure Data Studio를 사용하려면 Azure Data Studio를 다시 시작해야 합니다.",
 			"appName": "`${appName}`: 예 - Azure Data Studio.",
 			"azuredatastudio": "Azure Data Studio",
@@ -13540,7 +13540,7 @@
 		"sql/workbench/contrib/dashboard/browser/core/dashboardPage.component": {
 			"dashboard.configureDashboardTooltip": "대시보드를 구성하는 방법에 대해 자세히 알아보기",
 			"dashboard.generalTabGroupHeader": "일반",
-			"dashboard.tabLoadingError": "Error loading tab {0}",
+			"dashboard.tabLoadingError": "{0} 탭 로드 오류",
 			"home": "홈",
 			"missingConnectionInfo": "이 대시보드의 연결 정보를 찾을 수 없습니다."
 		},

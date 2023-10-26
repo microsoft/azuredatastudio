@@ -12854,7 +12854,7 @@
 			"InstallVSIXAction.allowNone": "La directiva de extensión no permite instalar extensiones. Cambie la directiva de extensión e inténtelo de nuevo.",
 			"InstallVSIXAction.successReload": "Se ha completado la instalación de la extensión {0} de VSIX. Recargue Azure Data Studio para habilitarla.",
 			"ReinstallAction.successReload": "Vuelva a cargar Azure Data Studio para completar la reinstalación de la extensión {0}.",
-			"aboutDetail": "Versión: {0}\r\nConfirmar: {1}\r\nFecha: {2}\r\nElectron: {3}\r\nChromium: {4}\r\nNode.js: {5}\r\nV8: {6}\r\nSISTEMA OPERATIVO: {7}",
+			"aboutDetail": "Version: {0}\r\nCommit: {1}\r\nDate: {2}\r\nVS Code: {3}\r\nElectron: {4}\r\nChromium: {5}\r\nNode.js: {6}\r\nV8: {7}\r\nOS: {8}",
 			"activateLanguagePack": "Para poder usar Azure Data Studio en {0}, Azure Data Studio debe reiniciarse.",
 			"appName": "\"${appName}\": por ejemplo, Azure Data Studio.",
 			"azuredatastudio": "Azure Data Studio",
@@ -13540,7 +13540,7 @@
 		"sql/workbench/contrib/dashboard/browser/core/dashboardPage.component": {
 			"dashboard.configureDashboardTooltip": "Más información sobre la configuración de el panel",
 			"dashboard.generalTabGroupHeader": "General",
-			"dashboard.tabLoadingError": "Error loading tab {0}",
+			"dashboard.tabLoadingError": "Error al cargar la pestaña {0}",
 			"home": "Inicio",
 			"missingConnectionInfo": "No se encontró información de conexión para este panel"
 		},

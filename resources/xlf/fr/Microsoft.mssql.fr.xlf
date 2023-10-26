@@ -1954,6 +1954,10 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
         <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
         <target state="translated">Nombre maximal d'anciens fichiers ayant dépassé mssql.logRetentionMinutes à supprimer au démarrage. Les fichiers qui ne sont pas nettoyés du fait de cette limitation le sont au prochain démarrage d'Azure Data Studio.</target>
       </trans-unit>
+      <trans-unit id="mssql.parallelMessageProcessingLimit">
+        <source xml:lang="en">Maximum number of requests that should be handled in parallel by the backend SQL Tools Service. This brings performance benefits to MSSQL queries and connections. This limit is applicable only when `MSSQL: Parallel Message Processing` is enabled. The default value is 100, and can be adjusted as needed as per OS support. Azure Data Studio is required to be relaunched when the value is changed.</source>
+        <target state="new">Maximum number of requests that should be handled in parallel by the backend SQL Tools Service. This brings performance benefits to MSSQL queries and connections. This limit is applicable only when `MSSQL: Parallel Message Processing` is enabled. The default value is 100, and can be adjusted as needed as per OS support. Azure Data Studio is required to be relaunched when the value is changed.</target>
+      </trans-unit>
       <trans-unit id="mssql.query.setRowCount">
         <source xml:lang="en">Maximum number of rows to return before the server stops processing your query.</source>
         <target state="translated">Nombre maximal de lignes à retourner avant que le serveur arrête le traitement de votre requête.</target>
@@ -2326,6 +2330,10 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
         <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
         <target state="translated">Quand la valeur est true, l'objet de connexion est tiré du pool approprié ou, si nécessaire, est créé et ajouté au pool approprié</target>
       </trans-unit>
+      <trans-unit id="mssql.parallelMessageProcessing">
+        <source xml:lang="en">Whether the requests to the backend SQL Tools Service should be handled in parallel. This brings performance benefits to MSSQL queries and connections. The default value is true. Azure Data Studio is required to be relaunched when the value is changed.</source>
+        <target state="new">Whether the requests to the backend SQL Tools Service should be handled in parallel. This brings performance benefits to MSSQL queries and connections. The default value is true. Azure Data Studio is required to be relaunched when the value is changed.</target>
+      </trans-unit>
       <trans-unit id="mssql.tableDesigner.allowDisableAndReenableDdlTriggers">
         <source xml:lang="en">Whether to allow table designer to disable and re-enable DDL triggers during publish</source>
         <target state="translated">Indique s’il faut autoriser le Concepteur de tables à désactiver et réactiver les déclencheurs DDL pendant la publication</target>
@@ -2341,10 +2349,6 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
       <trans-unit id="mssql.connectionOptions.workstationId.displayName">
         <source xml:lang="en">Workstation Id</source>
         <target state="translated">ID de station de travail</target>
-      </trans-unit>
-      <trans-unit id="mssql.parallelMessageProcessing">
-        <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</source>
-        <target state="translated">[Expérimental] Indique si les requêtes au service des outils SQL doivent être traitées en parallèle. Ceci est introduit pour découvrir les problèmes qui pourraient survenir lors du traitement de toutes les demandes en parallèle. La valeur par défaut est faux. Azure Data Studio doit être relancé lorsque la valeur est modifiée.</target>
       </trans-unit>
       <trans-unit id="mssql.ignorePlatformWarning">
         <source xml:lang="en">[Optional] Do not show unsupported platform warnings</source>

@@ -12854,7 +12854,7 @@
 			"InstallVSIXAction.allowNone": "扩展策略不允许安装扩展。请更改扩展策略，然后重试。",
 			"InstallVSIXAction.successReload": "已完成从 VSIX 安装 {0} 扩展的过程。请重新加载 Azure Data Studio 以启用它。",
 			"ReinstallAction.successReload": "请重新加载 Azure Data Studio 以完成扩展 {0} 的重新安装。",
-			"aboutDetail": "版本：{0}\r\n提交：{1}\r\n日期：{2}\r\nElectron：{3}\r\nChromium：{4}\r\nNode.js：{5}\r\nV8：{6}\r\nOS：{7}",
+			"aboutDetail": "Version: {0}\r\nCommit: {1}\r\nDate: {2}\r\nVS Code: {3}\r\nElectron: {4}\r\nChromium: {5}\r\nNode.js: {6}\r\nV8: {7}\r\nOS: {8}",
 			"activateLanguagePack": "若要在 {0} 中使用 Azure Data Studio，Azure Data Studio需要重启。",
 			"appName": "“${appName}”: 例如 Azure Data Studio。",
 			"azuredatastudio": "Azure Data Studio",

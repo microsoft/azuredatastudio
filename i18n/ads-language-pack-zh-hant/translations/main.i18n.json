@@ -12854,7 +12854,7 @@
 			"InstallVSIXAction.allowNone": "您的延伸模組原則不允許安裝延伸模組。請變更您的延伸模組原則，然後再試一次。",
 			"InstallVSIXAction.successReload": "延伸模組 {0} 已從 VSIX 安裝完成。請重新載入 Azure Data Studio 以啟用此延伸模組。",
 			"ReinstallAction.successReload": "請重新載入 Azure Data Studio 以完成重新安裝延伸模組 {0}。",
-			"aboutDetail": "版本: {0}\r\n認可: {1}\r\n日期: {2}\r\nElectron: {3}\r\nChromium: {4}\r\nNode.js: {5}\r\nV8: {6}\r\nOS: {7}",
+			"aboutDetail": "Version: {0}\r\nCommit: {1}\r\nDate: {2}\r\nVS Code: {3}\r\nElectron: {4}\r\nChromium: {5}\r\nNode.js: {6}\r\nV8: {7}\r\nOS: {8}",
 			"activateLanguagePack": "若要在 {0} 中使用 Azure Data Studio，Azure Data Studio 需要重新啟動。",
 			"appName": "'${appName}': 例如 Azure Data Studio。",
 			"azuredatastudio": "Azure Data Studio",
@@ -13540,7 +13540,7 @@
 		"sql/workbench/contrib/dashboard/browser/core/dashboardPage.component": {
 			"dashboard.configureDashboardTooltip": "深入了解如何設定儀表板",
 			"dashboard.generalTabGroupHeader": "一般",
-			"dashboard.tabLoadingError": "Error loading tab {0}",
+			"dashboard.tabLoadingError": "載入標籤 {0} 時發生錯誤",
 			"home": "首頁",
 			"missingConnectionInfo": "此儀表板上找不到連線資訊"
 		},
