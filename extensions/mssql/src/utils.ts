@@ -151,7 +151,7 @@ export function setConfigPreloadDatabaseModel(enable: boolean): void {
 
 /**
  * Retrieves configuration `mssql:parallelMessageProcessing` from settings file.
- * @returns true if setting is enabled in ADS or running ADS in dev mode.
+ * @returns true if setting is enabled in ADS (enabled by default).
  */
 export function getParallelMessageProcessingConfig(): boolean {
 	const config = getConfiguration();
@@ -163,7 +163,7 @@ export function getParallelMessageProcessingConfig(): boolean {
 
 /**
  * Retrieves configuration `mssql:parallelMessageProcessingLimit` from settings file.
- * @returns true if setting is enabled in ADS or running ADS in dev mode.
+ * @returns max number of parallel messages that are allowed to be processed by backend service, 100 by default.
  */
 export function getParallelMessageProcessingLimitConfig(): number {
 	const config = getConfiguration();
