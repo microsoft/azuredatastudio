@@ -90,6 +90,7 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		const params: contracts.GetBackupFolderRequestParams = { connectionUri };
 		return this.runWithErrorHandling(contracts.GetBackupFolderRequest.type, params);
 	}
+
 	async getAssociatedFiles(connectionUri: string, primaryFilePath: string): Promise<string[]> {
 		const params: contracts.GetAssociatedFilesRequestParams = { connectionUri, primaryFilePath };
 		return this.runWithErrorHandling(contracts.GetAssociatedFilesRequest.type, params);
