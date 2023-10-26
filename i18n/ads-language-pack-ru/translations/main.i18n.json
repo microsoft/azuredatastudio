@@ -12854,7 +12854,7 @@
 			"InstallVSIXAction.allowNone": "Ваша политика расширений запрещает устанавливать расширения. Измените политику расширений и повторите попытку.",
 			"InstallVSIXAction.successReload": "Установка расширения {0} из VSIX завершена. Перезагрузите Azure Data Studio, чтобы включить это расширение.",
 			"ReinstallAction.successReload": "Перезагрузите Azure Data Studio, чтобы завершить переустановку расширения {0}.",
-			"aboutDetail": "Version: {0}\r\nCommit: {1}\r\nDate: {2}\r\nElectron: {3}\r\nChromium: {4}\r\nNode.js: {5}\r\nV8: {6}\r\nOS: {7}",
+			"aboutDetail": "Версия: {0}\r\nФиксация: {1}\r\nДата: {2}\r\nElectron: {3}\r\nChromium: {4}\r\nNode.js: {5}\r\nV8: {6}\r\nОС: {7}",
 			"activateLanguagePack": "Чтобы использовать Azure Data Studio в {0}, необходимо перезапустить Azure Data Studio.",
 			"appName": "\"${appName}\": например, Azure Data Studio.",
 			"azuredatastudio": "Azure Data Studio",

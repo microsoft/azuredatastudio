@@ -12854,7 +12854,7 @@
 			"InstallVSIXAction.allowNone": "Die Erweiterungsrichtlinie lässt die Installation von Erweiterungen nicht zu. Ändern Sie Ihre Erweiterungsrichtlinie und versuchen Sie es noch mal.",
 			"InstallVSIXAction.successReload": "Die Installation der Erweiterung \"{0}\" aus VSIX wurde abgeschlossen. Laden Sie Azure Data Studio neu, um sie zu aktivieren.",
 			"ReinstallAction.successReload": "Laden Sie Azure Data Studio neu, um die Neuinstallation der Erweiterung {0} abzuschließen.",
-			"aboutDetail": "Version: {0}\r\nCommit: {1}\r\nDate: {2}\r\nElectron: {3}\r\nChromium: {4}\r\nNode.js: {5}\r\nV8: {6}\r\nOS: {7}",
+			"aboutDetail": "Version: {0}\r\nCommit: {1}\r\nDatum: {2}\r\nElectron: {3}\r\nChromium: {4}\r\nNode.js: {5}\r\nV8: {6}\r\nBETRIEBSSYSTEM: {7}",
 			"activateLanguagePack": "Um Azure Data Studio in {0} zu verwenden, muss Azure Data Studio neu gestartet werden.",
 			"appName": "\"${appName}\": z. B. Azure Data Studio.",
 			"azuredatastudio": "Azure Data Studio",

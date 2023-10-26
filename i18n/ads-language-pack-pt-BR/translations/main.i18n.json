@@ -12854,7 +12854,7 @@
 			"InstallVSIXAction.allowNone": "A política de extensão não permite a instalação de extensões. Altere sua política de extensão e tente novamente.",
 			"InstallVSIXAction.successReload": "A instalação da extensão {0} foi concluída do VSIX. Recarregue o Azure Data Studio para habilitá-la.",
 			"ReinstallAction.successReload": "Recarregue o Azure Data Studio para concluir a reinstalação da extensão {0}.",
-			"aboutDetail": "Version: {0}\r\nCommit: {1}\r\nDate: {2}\r\nElectron: {3}\r\nChromium: {4}\r\nNode.js: {5}\r\nV8: {6}\r\nOS: {7}",
+			"aboutDetail": "Versão: {0}\r\nConfirmar: {1}\r\nData: {2}\r\nEletrônica: {3}\r\nChromium: {4}\r\nNode.js: {5}\r\nV8: {6}\r\nSistema Operacional: {7}",
 			"activateLanguagePack": "Para usar o Azure Data Studio em {0}, o Azure Data Studio precisa ser reiniciado.",
 			"appName": "'${appName}': por exemplo, Azure Data Studio.",
 			"azuredatastudio": "Azure Data Studio",

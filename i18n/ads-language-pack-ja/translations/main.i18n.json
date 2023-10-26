@@ -12854,7 +12854,7 @@
 			"InstallVSIXAction.allowNone": "拡張機能のポリシーでは、拡張機能のインストールは許可されていません。拡張機能ポリシーを変更して、もう一度お試しください。",
 			"InstallVSIXAction.successReload": "VSIX からの {0} 拡張機能のインストールが完了しました。有効にするには、Azure Data Studio を再度読み込んでください。",
 			"ReinstallAction.successReload": "拡張機能 {0}の再インストールを完了するには、Azure Data Studio を再度読み込んでください。",
-			"aboutDetail": "Version: {0}\r\nCommit: {1}\r\nDate: {2}\r\nElectron: {3}\r\nChromium: {4}\r\nNode.js: {5}\r\nV8: {6}\r\nOS: {7}",
+			"aboutDetail": "バージョン: {0}\r\nコミット: {1}\r\n日付: {2}\r\nElectron: {3}\r\nChromium: {4}\r\nNode.js: {5}\r\nV8: {6}\r\nOS: {7}",
 			"activateLanguagePack": "{0}で Azure Data Studio を使用するには、Azure Data Studio を再起動する必要があります。",
 			"appName": "'${appName}': 例: Azure Data Studio。",
 			"azuredatastudio": "Azure Data Studio",

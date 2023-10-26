@@ -12854,7 +12854,7 @@
 			"InstallVSIXAction.allowNone": "I criteri di estensione non consentono l'installazione delle estensioni. Modificare i criteri per l'estensione e riprovare.",
 			"InstallVSIXAction.successReload": "L'installazione dell'estensione {0} da VSIX è stata completata. Ricaricare Azure Data Studio per abilitarla.",
 			"ReinstallAction.successReload": "Ricaricare reload Azure Data Studio per completare la reinstallazione dell'estensione {0}.",
-			"aboutDetail": "Version: {0}\r\nCommit: {1}\r\nDate: {2}\r\nElectron: {3}\r\nChromium: {4}\r\nNode.js: {5}\r\nV8: {6}\r\nOS: {7}",
+			"aboutDetail": "Versione: {0}\r\nEsegui commit: {1}\r\nData: {2}\r\nElectron{3}\r\nChromium: {4}\r\nNode.js: {5}\r\nV8: {6}\r\nSISTEMA OPERATIVO: {7}",
 			"activateLanguagePack": "Per usare Azure Data Studio in {0}, Azure Data Studio deve essere riavviato.",
 			"appName": "`${appName}`, ad esempio Azure Data Studio.",
 			"azuredatastudio": "Azure Data Studio",
