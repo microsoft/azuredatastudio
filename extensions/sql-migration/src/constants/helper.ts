@@ -91,6 +91,18 @@ export const ValidationErrorCodes = {
 	SqlInfoValidationFailed: '2056'
 };
 
+// Color codes for Graph
+export const ColorCodes = {
+	NotReadyState_Red: "#E00B1C",
+	ReadyState_Green: "#57A300",
+	ReadyWithWarningState_Amber: "#DB7500"
+}
+
+export const IssueCategory = {
+	Issue: "Issue",
+	Warning: "Warning"
+}
+
 const _dateFormatter = new Intl.DateTimeFormat(
 	undefined, {
 	year: 'numeric',
