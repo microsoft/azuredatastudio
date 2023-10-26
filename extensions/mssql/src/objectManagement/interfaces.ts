@@ -459,6 +459,7 @@ export interface Database extends ObjectManagement.SqlObject {
 	files?: DatabaseFile[];
 	filegroups?: FileGroup[];
 	queryStoreOptions?: QueryStoreOptions;
+	restoreOptions?: RestoreOptions;
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
@@ -502,6 +503,21 @@ export interface QueryStoreOptions {
 	waitStatisticsCaptureMode?: string;
 	capturePolicyOptions?: QueryStoreCapturePolicyOptions;
 	currentStorageSizeInMB: number;
+}
+
+export interface RestoreOptions {
+	defaultDataFileFolderPath: string;
+	defaultLogFileFolderPath: string;
+	defaultBackupFileFolderPath: string;
+	restorePlanDetailInfo?: RestorePlanDetailInfo;
+}
+
+export interface RestorePlanDetailInfo {
+	name: string;
+	currentValue: any;
+	isReadOnly: boolean;
+	isVisible: boolean;
+	defaultValue: any;
 }
 
 export interface QueryStoreCapturePolicyOptions {

@@ -140,7 +140,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 		let targetDatabase = this.createDropdown(localizedConstants.TargetDatabaseText, async () => {
 			// this.objectInfo.collationName = collationDropbox.value as string;
-		}, this.viewInfo.restoreDatabaseInfo.targetDatabaseNames, '', true, RestoreInputsWidth, true, true);
+		}, this.viewInfo.restoreDatabaseInfo.targetDatabaseNames, this.objectInfo.name, true, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.TargetDatabaseText, targetDatabase));
 
 		const props: azdata.InputBoxProperties = {
@@ -194,7 +194,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			ariaLabel: localizedConstants.DataFileFolderText,
 			inputType: 'text',
 			enabled: false,
-			value: '',
+			value: this.objectInfo.restoreOptions.defaultDataFileFolderPath,
 			width: RestoreInputsWidth
 		});
 		containers.push(this.createLabelInputContainer(localizedConstants.DataFileFolderText, dataFileFolder));
@@ -206,7 +206,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			ariaLabel: localizedConstants.LogFileFolderText,
 			inputType: 'text',
 			enabled: false,
-			value: '',
+			value: this.objectInfo.restoreOptions.defaultLogFileFolderPath,
 			width: RestoreInputsWidth
 		});
 		containers.push(this.createLabelInputContainer(localizedConstants.LogFileFolderText, logFileFolder));
