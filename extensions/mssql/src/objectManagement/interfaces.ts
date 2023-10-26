@@ -488,6 +488,7 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	queryStoreCaptureModeOptions?: string[];
 	sizeBasedCleanupModeOptions?: string[];
 	staleThresholdOptions?: string[];
+	serverFilestreamAccessLevel?: FileStreamEffectiveLevel;
 	restoreDatabaseInfo?: RestoreDatabaseInfo;
 }
 
@@ -650,6 +651,13 @@ export const enum FileGroupType {
 	RowsFileGroup = 0,
 	FileStreamDataFileGroup = 2,
 	MemoryOptimizedDataFileGroup = 3
+}
+
+export const enum FileStreamEffectiveLevel {
+	Disabled = 0,
+	TSqlAccess,
+	TSqlLocalFileSystemAccess,
+	TSqlFullFileSystemAccess
 }
 
 export interface DatabaseFile {

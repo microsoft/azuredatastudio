@@ -12,24 +12,25 @@ import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment } from 'vs/workbench/services/statusbar/browser/statusbar';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { localize } from 'vs/nls';
+import { ILogService } from 'vs/platform/log/common/log';
 
 // Connection status bar showing the current global connection
 export class ConnectionStatusbarItem extends Disposable implements IWorkbenchContribution {
 
 	private static readonly ID = 'status.connection.status';
-
-	private statusItem: IStatusbarEntryAccessor;
 	private readonly name = localize('status.connection.status', "Connection Status");
+	private statusItem: IStatusbarEntryAccessor;
 
 	constructor(
-		@IStatusbarService private readonly statusbarService: IStatusbarService,
-		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
-		@IEditorService private readonly editorService: IEditorService,
-		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService,
+		@IStatusbarService private readonly _statusbarService: IStatusbarService,
+		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
+		@IEditorService private readonly _editorService: IEditorService,
+		@IObjectExplorerService private readonly _objectExplorerService: IObjectExplorerService,
+		@ILogService private readonly _logService: ILogService
 	) {
 		super();
 		this.statusItem = this._register(
-			this.statusbarService.addEntry({
+			this._statusbarService.addEntry({
 				name: this.name,
 				text: '',
 				ariaLabel: ''
@@ -40,24 +41,24 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 
 		this.hide();
 
-		this._register(this.connectionManagementService.onConnect(() => this._updateStatus()));
-		this._register(this.connectionManagementService.onConnectionChanged(() => this._updateStatus()));
-		this._register(this.connectionManagementService.onDisconnect(() => this._updateStatus()));
-		this._register(this.editorService.onDidActiveEditorChange(() => this._updateStatus()));
-		this._register(this.objectExplorerService.onSelectionOrFocusChange(() => this._updateStatus()));
+		this._register(this._connectionManagementService.onConnect(() => this._updateStatus()));
+		this._register(this._connectionManagementService.onConnectionChanged(() => this._updateStatus()));
+		this._register(this._connectionManagementService.onDisconnect(() => this._updateStatus()));
+		this._register(this._editorService.onDidActiveEditorChange(() => this._updateStatus()));
+		this._register(this._objectExplorerService.onSelectionOrFocusChange(() => this._updateStatus()));
 	}
 
 	private hide() {
-		this.statusbarService.updateEntryVisibility(ConnectionStatusbarItem.ID, false);
+		this._statusbarService.updateEntryVisibility(ConnectionStatusbarItem.ID, false);
 	}
 
 	private show() {
-		this.statusbarService.updateEntryVisibility(ConnectionStatusbarItem.ID, true);
+		this._statusbarService.updateEntryVisibility(ConnectionStatusbarItem.ID, true);
 	}
 
 	// Update the connection status shown in the bar
 	private _updateStatus(): void {
-		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService, this._logService);
 		if (activeConnection) {
 			this._setConnectionText(activeConnection);
 			this.show();

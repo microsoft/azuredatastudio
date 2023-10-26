@@ -393,9 +393,9 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 	private ok() {
 		let returnValue = '';
 		if (this._restoreDialog) {
-			returnValue = `https://${this._storageAccountSelectorBox.value}.blob${this._selectedAccount.properties.providerSettings.settings.azureStorageResource.endpointSuffix}/${this._blobContainerSelectorBox.value}/${this._backupFileSelectorBox.value}`;
+			returnValue = `https://${this._storageAccountSelectorBox.value}.blob${this._selectedAccount.properties.providerSettings.settings.azureStorageResource.endpointSuffix}${this._blobContainerSelectorBox.value}/${this._backupFileSelectorBox.value}`;
 		} else {
-			returnValue = `https://${this._storageAccountSelectorBox.value}.blob${this._selectedAccount.properties.providerSettings.settings.azureStorageResource.endpointSuffix}/${this._blobContainerSelectorBox.value}/${this._backupFileInputBox.value}`;
+			returnValue = `https://${this._storageAccountSelectorBox.value}.blob${this._selectedAccount.properties.providerSettings.settings.azureStorageResource.endpointSuffix}${this._blobContainerSelectorBox.value}/${this._backupFileInputBox.value}`;
 		}
 		this.onOk.resolve(returnValue);
 		this.close('ok');

@@ -24,6 +24,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { ILogService } from 'vs/platform/log/common/log';
 
 const editorFactoryRegistry = Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory);
 
@@ -35,24 +36,26 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 	 */
 	static readonly languages = ['kusto', 'loganalytics', 'sql'];	//TODO Add language id here for new languages supported in query editor. Make it easier to contribute new extension's languageID
 
-	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService,
-		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
-		@IEditorService private readonly editorService: IEditorService,
-		@IQueryEditorService private readonly queryEditorService: IQueryEditorService) { }
+	constructor(
+		@IInstantiationService private readonly _instantiationService: IInstantiationService,
+		@IObjectExplorerService private readonly _objectExplorerService: IObjectExplorerService,
+		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
+		@IEditorService private readonly _editorService: IEditorService,
+		@IQueryEditorService private readonly _queryEditorService: IQueryEditorService,
+		@ILogService private readonly _logService: ILogService) { }
 
 	async convertInput(activeEditor: EditorInput): Promise<QueryEditorInput | undefined> {
 		if (!(activeEditor instanceof FileEditorInput) && !(activeEditor instanceof UntitledTextEditorInput)) {
 			return undefined;
 		}
-		const queryResultsInput = this.instantiationService.createInstance(QueryResultsInput, activeEditor.resource.toString(true));
+		const queryResultsInput = this._instantiationService.createInstance(QueryResultsInput, activeEditor.resource.toString(true));
 		let queryEditorInput: QueryEditorInput;
 		if (activeEditor instanceof FileEditorInput) {
-			queryEditorInput = this.instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput);
+			queryEditorInput = this._instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput);
 		} else if (activeEditor instanceof UntitledTextEditorInput) {
 			const content = (await activeEditor.resolve()).textEditorModel.getValue();
-			queryEditorInput = await this.queryEditorService.newSqlEditor({
-				resource: this.editorService.isOpened(activeEditor) ? activeEditor.resource : undefined,
+			queryEditorInput = await this._queryEditorService.newSqlEditor({
+				resource: this._editorService.isOpened(activeEditor) ? activeEditor.resource : undefined,
 				open: false, initialContent: content
 			}) as UntitledQueryEditorInput;
 		}
@@ -62,12 +65,12 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 	}
 
 	syncConvertInput(activeEditor: EditorInput): QueryEditorInput | undefined {
-		const queryResultsInput = this.instantiationService.createInstance(QueryResultsInput, activeEditor.resource.toString(true));
+		const queryResultsInput = this._instantiationService.createInstance(QueryResultsInput, activeEditor.resource.toString(true));
 		let queryEditorInput: QueryEditorInput;
 		if (activeEditor instanceof FileEditorInput) {
-			queryEditorInput = this.instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput);
+			queryEditorInput = this._instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput);
 		} else if (activeEditor instanceof UntitledTextEditorInput) {
-			queryEditorInput = this.instantiationService.createInstance(UntitledQueryEditorInput, '', activeEditor, queryResultsInput);
+			queryEditorInput = this._instantiationService.createInstance(UntitledQueryEditorInput, '', activeEditor, queryResultsInput);
 		} else {
 			return undefined;
 		}
@@ -77,10 +80,10 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 	}
 
 	private connectInput(queryEditorInput: QueryEditorInput): void {
-		const existingProfile = this.connectionManagementService.getConnectionProfile(queryEditorInput.uri);
+		const existingProfile = this._connectionManagementService.getConnectionProfile(queryEditorInput.uri);
 		// Create new connection if only there is no existing connectionProfile with the uri.
 		if (!existingProfile) {
-			const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+			const profile = getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService, this._logService);
 			if (profile) {
 				const options: IConnectionCompletionOptions = {
 					params: { connectionType: ConnectionType.editor, runQueryOnCompletion: undefined, input: queryEditorInput },
@@ -89,7 +92,9 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 					showConnectionDialogOnError: true,
 					showFirewallRuleOnError: true
 				};
-				this.connectionManagementService.connect(profile, queryEditorInput.uri, options).catch(err => onUnexpectedError(err));
+				this._connectionManagementService.connect(profile, queryEditorInput.uri, options).catch(err => onUnexpectedError(err));
+			} else {
+				this._logService.trace(`queryEditorFactory.connectInput: Global connection not found, connection profile not attached to editor ${queryEditorInput.uri}`)
 			}
 		}
 	}
