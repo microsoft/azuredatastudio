@@ -134,8 +134,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		components.push(backupDestContainer);
 
 		let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
-		let pathSeparator = dataFolder.startsWith('/') ? '/' : '\\';
-		let defaultPath = `${dataFolder}${pathSeparator}${defaultName}.bak`;
+		let defaultPath = `${dataFolder}${defaultName}.bak`; // Data folder path already includes a trailing path separator
 		this._backupFilePaths.push(defaultPath);
 		this._backupFilesTable = this.createTable(loc.BackupFilesLabel, [loc.BackupFilesLabel], [[defaultPath]]);
 		components.push(this._backupFilesTable);
