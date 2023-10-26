@@ -55,7 +55,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	protected override get isDirty(): boolean {
-		return true;
+		return this._backupFilePaths?.length > 0 && this._backupSetNameInput?.value?.length > 0;
 	}
 
 	protected override get saveChangesTaskLabel(): string {
@@ -83,7 +83,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			}
 		}
 
-		let defaultName = this.getDefaultFileName(backupTypes[0]);
+		let defaultName = this.getDefaultBackupName(backupTypes[0]);
 		this._backupSetNameInput = this.createInputBox(newValue => {
 			return Promise.resolve();
 		}, {
@@ -111,7 +111,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 		this._backupTypeDropdown = this.createDropdown(loc.BackupTypeLabel, async newValue => {
 			// Update backup name with new backup type
-			this._backupSetNameInput.value = this._backupSetNameInput.ariaLabel = this.getDefaultFileName(newValue);
+			this._backupSetNameInput.value = this._backupSetNameInput.ariaLabel = this.getDefaultBackupName(newValue);
 			if (newValue === loc.BackupTransactionLog) {
 				this._truncateLogButton.enabled = true;
 				this._backupLogTailButton.enabled = true;
@@ -315,10 +315,10 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		return options;
 	}
 
-	private getDefaultFileName(backupType: string): string {
+	private getDefaultBackupName(backupType: string): string {
 		let d: Date = new Date();
 		let dateTimeSuffix: string = `-${d.getFullYear()}${d.getMonth() + 1}${d.getDate()}-${d.getHours()}-${d.getMinutes()}-${d.getSeconds()}`;
-		let defaultBackupFileName = `${this.objectInfo.name}${dateTimeSuffix}.bak`;
+		let defaultBackupFileName = `${this.objectInfo.name}${dateTimeSuffix}`;
 		return defaultBackupFileName;
 	}
 
