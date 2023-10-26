@@ -86,6 +86,11 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		return this.runWithErrorHandling(contracts.GetDataFolderRequest.type, params);
 	}
 
+	async getBackupFolder(connectionUri: string): Promise<string> {
+		const params: contracts.GetBackupFolderRequestParams = { connectionUri };
+		return this.runWithErrorHandling(contracts.GetBackupFolderRequest.type, params);
+	}
+
 	async getAssociatedFiles(connectionUri: string, primaryFilePath: string): Promise<string[]> {
 		const params: contracts.GetAssociatedFilesRequestParams = { connectionUri, primaryFilePath };
 		return this.runWithErrorHandling(contracts.GetAssociatedFilesRequest.type, params);
@@ -275,6 +280,10 @@ export class TestObjectManagementService implements IObjectManagementService {
 	}
 
 	async getDataFolder(connectionUri: string): Promise<string> {
+		return this.delayAndResolve('');
+	}
+
+	async getBackupFolder(connectionUri: string): Promise<string> {
 		return this.delayAndResolve('');
 	}
 
