@@ -88,7 +88,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 	}
 
 	private _refreshPIDStatus(uri: string, pid: any): void {
-		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService);
+		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService, this._logService);
 		if (activeConnection) {
 			let currUri = this._connectionManagementService.getConnectionUriFromId(activeConnection.id);
 			if (this._editorService.activeEditor) {
