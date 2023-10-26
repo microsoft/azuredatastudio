@@ -135,7 +135,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 				}
 			});
 		}
-		if (e.affectsConfiguration(Constants.configAsyncParallelProcessingName)) {
+		if (e.affectsConfiguration(Constants.configAsyncParallelProcessingName) || e.affectsConfiguration(Constants.configAsyncParallelProcessingLimitName)) {
 			if (Utils.getParallelMessageProcessingConfig()) {
 				TelemetryReporter.sendActionEvent(TelemetryViews.MssqlConnections, TelemetryActions.EnableFeatureAsyncParallelProcessing);
 			}

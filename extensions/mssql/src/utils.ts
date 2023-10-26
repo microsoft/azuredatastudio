@@ -19,6 +19,7 @@ const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
 const extensionConfigSectionName = 'mssql';
 const configLogDebugInfo = 'logDebugInfo';
 const parallelMessageProcessingConfig = 'parallelMessageProcessing';
+const parallelMessageProcessingLimitConfig = 'parallelMessageProcessingLimit';
 const enableSqlAuthenticationProviderConfig = 'enableSqlAuthenticationProvider';
 const enableConnectionPoolingConfig = 'enableConnectionPooling';
 const tableDesignerPreloadConfig = 'tableDesigner.preloadDatabaseModel';
@@ -155,12 +156,22 @@ export function setConfigPreloadDatabaseModel(enable: boolean): void {
 export function getParallelMessageProcessingConfig(): boolean {
 	const config = getConfiguration();
 	if (!config) {
-		return false;
+		return true; // default value
 	}
-	const setting = config.inspect(parallelMessageProcessingConfig);
-	return (azdata.env.quality === azdata.env.AppQuality.dev && setting?.globalValue === undefined && setting?.workspaceValue === undefined) ? true : config[parallelMessageProcessingConfig];
+	return config[parallelMessageProcessingConfig];
 }
 
+/**
+ * Retrieves configuration `mssql:parallelMessageProcessingLimit` from settings file.
+ * @returns true if setting is enabled in ADS or running ADS in dev mode.
+ */
+export function getParallelMessageProcessingLimitConfig(): number {
+	const config = getConfiguration();
+	if (!config) {
+		return 100; // default value
+	}
+	return config[parallelMessageProcessingLimitConfig];
+}
 /**
  * Retrieves configuration `mssql:enableSqlAuthenticationProvider` from settings file.
  * @returns true if setting is enabled in ADS, false otherwise.

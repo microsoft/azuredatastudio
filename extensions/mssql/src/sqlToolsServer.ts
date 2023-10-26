@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as path from 'path';
 import * as azurecore from 'azurecore';
-import { getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableConnectionPoolingConfig, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, logDebug, TracingLevel } from './utils';
+import { getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableConnectionPoolingConfig, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, getParallelMessageProcessingLimitConfig, logDebug, TracingLevel } from './utils';
 import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature/*, ServerContextualizationServiceFeature*/ } from './features'; // LEWISSANCHEZ TODO: Put back ServerContextualizationServiceFeature once ready.
@@ -163,6 +163,9 @@ function generateServerOptions(logPath: string, executablePath: string): ServerO
 	const enableAsyncMessageProcessing = getParallelMessageProcessingConfig();
 	if (enableAsyncMessageProcessing) {
 		launchArgs.push('--parallel-message-processing');
+		const pmpLimit = getParallelMessageProcessingLimitConfig();
+		launchArgs.push('--parallel-message-processing-limit');
+		launchArgs.push(String(pmpLimit));
 	}
 	const enableSqlAuthenticationProvider = getEnableSqlAuthenticationProviderConfig();
 	if (enableSqlAuthenticationProvider === true) {
