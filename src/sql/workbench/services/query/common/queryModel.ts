@@ -82,7 +82,7 @@ export interface IQueryModelService {
 	onRunQueryUpdate: Event<string>;
 	onRunQueryComplete: Event<string>;
 	onQueryEvent: Event<IQueryEvent>;
-	onSpidAvailable: Event<QueryEvent>;
+	onPidAvailable: Event<QueryEvent>;
 
 	// Edit Data Functions
 	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit?: number, queryString?: string): void;

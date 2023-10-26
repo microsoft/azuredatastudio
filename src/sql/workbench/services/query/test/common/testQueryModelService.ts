@@ -120,5 +120,5 @@ export class TestQueryModelService implements IQueryModelService {
 		throw new Error('Method not implemented.');
 	}
 	onEditSessionReady: Event<azdata.EditSessionReadyParams>;
-	onSpidAvailable: Event<QueryEvent>;
+	onPidAvailable: Event<QueryEvent>;
 }

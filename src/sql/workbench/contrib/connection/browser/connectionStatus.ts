@@ -48,7 +48,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		this._register(this.connectionManagementService.onDisconnect(() => { this._updateStatus(); }));
 		this._register(this.editorService.onDidActiveEditorChange(() => { this._updateStatus(); }));
 		this._register(this.objectExplorerService.onSelectionOrFocusChange(() => { this._updateStatus(); }));
-		this._register(this.queryModelService.onSpidAvailable(e => this._refreshSPIDStatus(e.type, e.data)));
+		this._register(this.queryModelService.onPidAvailable(e => this._refreshPIDStatus(e.type, e.data)));
 	}
 
 	private hide() {
@@ -66,14 +66,14 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 			let uri = this.connectionManagementService.getConnectionUriFromId(activeConnection.id);
 			let info = this.connectionManagementService.getConnectionInfo(uri);
 			if (this.editorService.activeEditor) {
-				// USE ACTIVE EDITOR INFO AS THE SPID WILL BE DIFFERENT FOR EDITOR CONNECTION.
+				// USE ACTIVE EDITOR INFO AS THE PID WILL BE DIFFERENT FOR EDITOR CONNECTION.
 				let newInfo = this.connectionManagementService.getConnectionInfo(this.editorService.activeEditor.resource.toString());
 				if (newInfo) {
 					info = newInfo;
 				}
 			}
-			if (info && info.spid) {
-				this._setConnectionText(activeConnection, info.spid)
+			if (info && info.pid) {
+				this._setConnectionText(activeConnection, info.pid)
 			}
 			else {
 				this._setConnectionText(activeConnection);
@@ -85,26 +85,26 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		}
 	}
 
-	private _refreshSPIDStatus(uri: string, spid: any): void {
+	private _refreshPIDStatus(uri: string, pid: any): void {
 		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
 		if (activeConnection) {
 			let currUri = this.connectionManagementService.getConnectionUriFromId(activeConnection.id);
 			if (this.editorService.activeEditor) {
-				// USE ACTIVE EDITOR INFO AS THE SPID WILL BE DIFFERENT FOR EDITOR CONNECTION.
+				// USE ACTIVE EDITOR INFO AS THE PID WILL BE DIFFERENT FOR EDITOR CONNECTION.
 				currUri = this.editorService.activeEditor.resource.toString();
 			}
 			let info = this.connectionManagementService.getConnectionInfo(currUri);
 			if (currUri === uri) {
 				if (info) {
-					info.spid = spid;
-					this._setConnectionText(activeConnection, spid);
+					info.pid = pid;
+					this._setConnectionText(activeConnection, pid);
 				}
 			}
 		}
 	}
 
 	// Set connection info to connection status bar
-	private _setConnectionText(connectionProfile: IConnectionProfile, spid?: number): void {
+	private _setConnectionText(connectionProfile: IConnectionProfile, pid?: string): void {
 		let text: string = connectionProfile.serverName;
 		if (text) {
 			if (connectionProfile.databaseName && connectionProfile.databaseName !== '') {
@@ -121,10 +121,10 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 			tooltip = tooltip + 'Login: ' + connectionProfile.userName + '\r\n';
 		}
 
-		if (spid) {
-			text += ' (' + spid + ')';
+		if (pid) {
+			text += ' (' + pid + ')';
 			let processIDName = connectionProfile.serverCapabilities.processIDName;
-			tooltip += (processIDName ? processIDName : 'PID') + ': ' + spid
+			tooltip += (processIDName ? processIDName : 'PID') + ': ' + pid
 		}
 
 		this.statusItem.update({

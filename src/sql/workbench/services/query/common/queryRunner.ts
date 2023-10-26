@@ -83,8 +83,8 @@ export default class QueryRunner extends Disposable {
 	private readonly _onVisualize = this._register(new Emitter<ResultSetSummary>());
 	public readonly onVisualize = this._onVisualize.event;
 
-	private readonly _onSpidAvailable = this._register(new Emitter<QueryEvent>());
-	public readonly onSpidAvailable = this._onSpidAvailable.event;
+	private readonly _onPidAvailable = this._register(new Emitter<QueryEvent>());
+	public readonly onPidAvailable = this._onPidAvailable.event;
 
 	private _queryStartTime?: Date;
 	public get queryStartTime(): Date | undefined {
@@ -283,12 +283,12 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Handle a QueryComplete from the service layer
 	 */
-	public handleSpid(spid: number): void {
-		let spidEvent: QueryEvent = {
+	public handlePid(pid: string): void {
+		let pidEvent: QueryEvent = {
 			type: this.uri,
-			data: spid,
+			data: pid,
 		}
-		this._onSpidAvailable.fire(spidEvent);
+		this._onPidAvailable.fire(pidEvent);
 	}
 
 	/**

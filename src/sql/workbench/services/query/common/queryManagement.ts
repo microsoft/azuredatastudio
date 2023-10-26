@@ -371,10 +371,10 @@ export class QueryManagementService implements IQueryManagementService {
 	}
 
 	public onQueryComplete(result: azdata.QueryExecuteCompleteNotificationResult): void {
-		//TODO - Need to notify and update the SPID toolbar once we receive the information about SPID.
+		//TODO - Need to notify and update the PID toolbar once we receive the information about PID.
 		this._notify(result.ownerUri, (runner: QueryRunner) => {
-			if (result.spid) {
-				runner.handleSpid(result.spid);
+			if (result.pid) {
+				runner.handlePid(result.pid);
 			}
 			runner.handleQueryComplete(result.batchSummaries.map(s => ({ ...s, range: selectionDataToRange(s.selection) })));
 		});
