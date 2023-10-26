@@ -1690,6 +1690,14 @@ export namespace GetDataFolderRequest {
 	export const type = new RequestType<GetDataFolderRequestParams, string, void, void>('admin/getdatafolder');
 }
 
+export interface GetBackupFolderRequestParams {
+	connectionUri: string;
+}
+
+export namespace GetBackupFolderRequest {
+	export const type = new RequestType<GetBackupFolderRequestParams, string, void, void>('admin/getbackupfolder');
+}
+
 export interface BackupDatabaseRequestParams {
 	ownerUri: string;
 	backupInfo: mssql.BackupInfo;
@@ -1698,14 +1706,6 @@ export interface BackupDatabaseRequestParams {
 
 export namespace BackupDatabaseRequest {
 	export const type = new RequestType<BackupDatabaseRequestParams, BackupResponse, void, void>('backup/backup');
-}
-
-export interface GetBackupFolderRequestParams {
-	connectionUri: string;
-}
-
-export namespace GetBackupFolderRequest {
-	export const type = new RequestType<GetBackupFolderRequestParams, string, void, void>('admin/getbackupfolder');
 }
 
 export interface GetAssociatedFilesRequestParams {
