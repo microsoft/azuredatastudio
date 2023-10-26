@@ -316,7 +316,10 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	private getDefaultFileName(backupType: string): string {
-		return `${this.objectInfo.name}-${backupType.replace(' ', '-')}-${new Date().toJSON().slice(0, 19)}`;
+		let d: Date = new Date();
+		let dateTimeSuffix: string = `-${d.getFullYear()}${d.getMonth() + 1}${d.getDate()}-${d.getHours()}-${d.getMinutes()}-${d.getSeconds()}`;
+		let defaultBackupFileName = `${this.objectInfo.name}${dateTimeSuffix}.bak`;
+		return defaultBackupFileName;
 	}
 
 	private createBackupInfo(): BackupInfo {
