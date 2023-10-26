@@ -618,7 +618,7 @@ export class RestoreDialog extends Modal {
 
 	public enableRestoreButton(enabled: boolean): void {
 		this.spinner = false;
-		if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance && this.viewModel.databases.includes(this._targetDatabaseInputBox.value)) {
+		if (this._engineEdition !== DatabaseEngineEdition.SqlDataWarehouse && this._engineEdition !== DatabaseEngineEdition.SqlOnDemand && this.viewModel.databases.includes(this._targetDatabaseInputBox.value)) {
 			this._restoreButton!.enabled = false;
 			this._scriptButton!.enabled = false;
 		}
@@ -888,7 +888,7 @@ export class RestoreDialog extends Modal {
 		this._urlInputBox.value = '';
 		this._targetDatabaseInputBox.value = '';
 		let title;
-		if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance) {
+		if (this._engineEdition !== DatabaseEngineEdition.SqlDataWarehouse && this._engineEdition !== DatabaseEngineEdition.SqlOnDemand) {
 			this._restoreFromSelectBox.setOptions([this._urlTitle]);
 			title = this._urlTitle;
 			// to fetch databases
