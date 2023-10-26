@@ -27,6 +27,8 @@ export class IconPathHelper {
 	public static sqlServerLogo: IconPath;
 	public static sqlDatabaseLogo: IconPath;
 	public static sqlDatabaseWarningLogo: IconPath;
+	public static sqlDatabaseNotReadyLogo: IconPath;
+	public static sqlDatabaseReadyLogo: IconPath;
 	public static cancel: IconPath;
 	public static warning: IconPath;
 	public static info: IconPath;
@@ -50,6 +52,13 @@ export class IconPathHelper {
 	public static breadCrumb: IconPath;
 	public static allTables: IconPath;
 	public static notFound: IconPath;
+	public static startDataCollection: IconPath;
+	public static stopDataCollection: IconPath;
+	public static import: IconPath;
+	public static settings: IconPath;
+	public static encryption: IconPath;
+	public static openFolder: IconPath;
+	public static emptyState: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -115,6 +124,14 @@ export class IconPathHelper {
 		IconPathHelper.sqlDatabaseWarningLogo = {
 			light: context.asAbsolutePath('images/sqlDatabaseWarning.svg'),
 			dark: context.asAbsolutePath('images/sqlDatabaseWarning.svg')
+		};
+		IconPathHelper.sqlDatabaseNotReadyLogo = {
+			light: context.asAbsolutePath('images/sqlDatabaseNotReady.svg'),
+			dark: context.asAbsolutePath('images/sqlDatabaseNotReady.svg')
+		};
+		IconPathHelper.sqlDatabaseReadyLogo = {
+			light: context.asAbsolutePath('images/sqlDatabaseReady.svg'),
+			dark: context.asAbsolutePath('images/sqlDatabaseReady.svg')
 		};
 		IconPathHelper.cancel = {
 			light: context.asAbsolutePath('images/cancel.svg'),
@@ -207,6 +224,34 @@ export class IconPathHelper {
 		IconPathHelper.notFound = {
 			light: context.asAbsolutePath('images/notFound.svg'),
 			dark: context.asAbsolutePath('images/notFound.svg'),
+		};
+		IconPathHelper.startDataCollection = {
+			light: context.asAbsolutePath('images/startDataCollection.svg'),
+			dark: context.asAbsolutePath('images/startDataCollection.svg')
+		};
+		IconPathHelper.stopDataCollection = {
+			light: context.asAbsolutePath('images/stopDataCollection.svg'),
+			dark: context.asAbsolutePath('images/stopDataCollection.svg')
+		};
+		IconPathHelper.import = {
+			light: context.asAbsolutePath('images/import.svg'),
+			dark: context.asAbsolutePath('images/import.svg')
+		};
+		IconPathHelper.settings = {
+			light: context.asAbsolutePath('images/settings.svg'),
+			dark: context.asAbsolutePath('images/settings.svg')
+		};
+		IconPathHelper.encryption = {
+			light: context.asAbsolutePath('images/encryption.svg'),
+			dark: context.asAbsolutePath('images/encryption.svg')
+		};
+		IconPathHelper.openFolder = {
+			light: context.asAbsolutePath('images/openFolder.svg'),
+			dark: context.asAbsolutePath('images/openFolder.svg')
+		};
+		IconPathHelper.emptyState = {
+			light: context.asAbsolutePath('images/blankCanvas.svg'),
+			dark: context.asAbsolutePath('images/blankCanvas.svg')
 		};
 	}
 }
