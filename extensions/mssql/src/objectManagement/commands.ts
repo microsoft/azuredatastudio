@@ -414,7 +414,7 @@ async function handleDropDatabase(context: azdata.ObjectExplorerContext, service
 }
 
 function getDialog(service: IObjectManagementService, dialogOptions: ObjectManagementDialogOptions): ObjectManagementDialogBase<ObjectManagement.SqlObject, ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
-	const dialogWidth = '750px';
+	const verticalTabsDialogWidth = '750px';
 	switch (dialogOptions.objectType) {
 		case ObjectManagement.NodeType.ApplicationRole:
 			return new ApplicationRoleDialog(service, dialogOptions);
@@ -425,12 +425,12 @@ function getDialog(service: IObjectManagementService, dialogOptions: ObjectManag
 		case ObjectManagement.NodeType.ServerLevelServerRole:
 			return new ServerRoleDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.Server:
-			dialogOptions.width = dialogOptions.isNewObject ? undefined : dialogWidth;
+			dialogOptions.width = dialogOptions.isNewObject ? undefined : verticalTabsDialogWidth;
 			return new ServerPropertiesDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.User:
 			return new UserDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.Database:
-			dialogOptions.width = dialogOptions.isNewObject ? undefined : dialogWidth;
+			dialogOptions.width = dialogOptions.isNewObject ? undefined : verticalTabsDialogWidth;
 			return new DatabaseDialog(service, dialogOptions);
 		default:
 			throw new Error(`Unsupported object type: ${dialogOptions.objectType}`);
