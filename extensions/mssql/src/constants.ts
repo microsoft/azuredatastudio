@@ -30,8 +30,8 @@ export const QueryStoreService = 'queryStoreService';
 
 // CONFIGURATION VALUES //////////////////////////////////////////////////////////
 export const configObjectExplorerGroupBySchemaFlagName = 'mssql.objectExplorer.groupBySchema';
-export const configAsyncParallelProcessingName = 'mssql.parallelMessageProcessing';
-export const configAsyncParallelProcessingLimitName = 'mssql.parallelMessageProcessingLimit';
+export const configParallelMessageProcessingName = 'mssql.parallelMessageProcessing';
+export const configParallelMessageProcessingLimitName = 'mssql.parallelMessageProcessingLimit';
 export const configEnableSqlAuthenticationProviderName = 'mssql.enableSqlAuthenticationProvider';
 export const configEnableConnectionPoolingName = 'mssql.enableConnectionPooling';
 export const configHttpProxy = 'http.proxy';
