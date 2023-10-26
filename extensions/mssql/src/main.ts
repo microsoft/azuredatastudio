@@ -26,6 +26,7 @@ import { registerTableDesignerCommands } from './tableDesigner/tableDesigner';
 // import { SqlNotebookController } from './sqlNotebook/sqlNotebookController';
 import { registerObjectManagementCommands } from './objectManagement/commands';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from './telemetry';
+import { TelemetryEventMeasures } from '@microsoft/ads-extension-telemetry';
 import { noConvertResult, noDocumentFound, unsupportedPlatform } from './localizedConstants';
 import { registerConnectionCommands } from './connection/commands';
 
@@ -135,10 +136,16 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 				}
 			});
 		}
-		if (e.affectsConfiguration(Constants.configAsyncParallelProcessingName)) {
+		if (e.affectsConfiguration(Constants.configParallelMessageProcessingName)) {
 			if (Utils.getParallelMessageProcessingConfig()) {
 				TelemetryReporter.sendActionEvent(TelemetryViews.MssqlConnections, TelemetryActions.EnableFeatureAsyncParallelProcessing);
 			}
+			await displayReloadAds();
+		}
+		if (Utils.getParallelMessageProcessingConfig() && e.affectsConfiguration(Constants.configParallelMessageProcessingLimitName)) {
+			let additionalMeasurements: TelemetryEventMeasures;
+			additionalMeasurements.parallelMessageProcessingLimit = Utils.getParallelMessageProcessingLimitConfig()
+			TelemetryReporter.sendMetricsEvent(additionalMeasurements, Constants.configParallelMessageProcessingLimitName);
 			await displayReloadAds();
 		}
 		if (e.affectsConfiguration(Constants.configEnableSqlAuthenticationProviderName)) {
@@ -166,17 +173,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	// context.subscriptions.push(new SqlNotebookController()); Temporarily disabled due to breaking query editor
 
 	context.subscriptions.push(TelemetryReporter);
-	var provider = azdata.dataprotocol.getProvider<azdata.QueryProvider>('MSSQL', azdata.DataProviderType.QueryProvider);
-	var disposable = provider.registerOnQueryComplete(params => {
-		console.log(params.ownerUri);
-		disposable.dispose();
-	});
-
-	var connProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>('MSSQL', azdata.DataProviderType.ConnectionProvider);
-	var disposable2 = connProvider.registerOnConnectionComplete(params => {
-		console.log(params.ownerUri);
-		disposable2.dispose();
-	}) as any as vscode.Disposable;
 	return createMssqlApi(appContext, server);
 }
 

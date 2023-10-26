@@ -70,6 +70,50 @@ export const BIG_NUMBER_CSS = {
 	'margin': '0',
 };
 
+export const SUBTITLE_LABEL_CSS = {
+	...BODY_CSS,
+	'font-weight': '400',
+};
+
+export const CARD_CSS = {
+	'width': '190px',
+	'box-shadow': '0px 1px 4px rgba(0, 0, 0, 0.13)',
+	'padding': '8px 0px 8px 12px',
+	'border-radius': '4px',
+	'margin-top': '8px'
+};
+
+export const TOOLBAR_CSS = {
+	'font-size': '12px',
+	'line-height': '16px',
+	'font-weight': '400',
+	'margin': '0',
+};
+
+
+export const CARD_AXES_LABEL = {
+	'font-size': '12px',
+	'height': '14px',
+	'line-height': '14px',
+	'margin': '0px',
+	'text-align': 'right',
+	'font-weight': '600',
+};
+
+
+export const ASSESSMENT_SUMMARY_CARD_CSS = {
+	'font-size': '16px',
+	'line-height': '21.28px',
+	'font-weight': '700',
+	'margin': '0px',
+};
+
+export const PERFORMANCE_DATA_DIALOG_CSS = {
+	'font-size': '13px',
+	'line-height': '18px',
+	'font-weight': '600',
+};
+
 export const TDE_VALIDATION_INFO_LABEL = {
 	'font-size': '14px',
 	'line-height': '20px',

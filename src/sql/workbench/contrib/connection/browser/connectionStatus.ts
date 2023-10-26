@@ -13,26 +13,28 @@ import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment } from '
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { localize } from 'vs/nls';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
+import { ILogService } from 'vs/platform/log/common/log';
+
 
 // Connection status bar showing the current global connection
 export class ConnectionStatusbarItem extends Disposable implements IWorkbenchContribution {
 
 	private static readonly ID = 'status.connection.status';
-
-	private statusItem: IStatusbarEntryAccessor;
 	private readonly name = localize('status.connection.status', "Connection Status");
+	private statusItem: IStatusbarEntryAccessor;
 
 
 	constructor(
-		@IStatusbarService private readonly statusbarService: IStatusbarService,
-		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
-		@IEditorService private readonly editorService: IEditorService,
-		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService,
-		@IQueryModelService private queryModelService: IQueryModelService,
+		@IStatusbarService private readonly _statusbarService: IStatusbarService,
+		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
+		@IEditorService private readonly _editorService: IEditorService,
+		@IObjectExplorerService private readonly _objectExplorerService: IObjectExplorerService,
+    @IQueryModelService private _queryModelService: IQueryModelService,
+		@ILogService private readonly _logService: ILogService
 	) {
 		super();
 		this.statusItem = this._register(
-			this.statusbarService.addEntry({
+			this._statusbarService.addEntry({
 				name: this.name,
 				text: '',
 				ariaLabel: ''
@@ -43,31 +45,31 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 
 		this.hide();
 
-		this._register(this.connectionManagementService.onConnect(() => { this._updateStatus(); }));
-		this._register(this.connectionManagementService.onConnectionChanged(() => { this._updateStatus(); }));
-		this._register(this.connectionManagementService.onDisconnect(() => { this._updateStatus(); }));
-		this._register(this.editorService.onDidActiveEditorChange(() => { this._updateStatus(); }));
-		this._register(this.objectExplorerService.onSelectionOrFocusChange(() => { this._updateStatus(); }));
-		this._register(this.queryModelService.onPidAvailable(e => this._refreshPIDStatus(e.type, e.data)));
+		this._register(this._connectionManagementService.onConnect(() => this._updateStatus()));
+		this._register(this._connectionManagementService.onConnectionChanged(() => this._updateStatus()));
+		this._register(this._connectionManagementService.onDisconnect(() => this._updateStatus()));
+		this._register(this._editorService.onDidActiveEditorChange(() => this._updateStatus()));
+		this._register(this._objectExplorerService.onSelectionOrFocusChange(() => this._updateStatus()));
+    this._register(this._queryModelService.onPidAvailable(e => this._refreshPIDStatus(e.type, e.data)));
 	}
 
 	private hide() {
-		this.statusbarService.updateEntryVisibility(ConnectionStatusbarItem.ID, false);
+		this._statusbarService.updateEntryVisibility(ConnectionStatusbarItem.ID, false);
 	}
 
 	private show() {
-		this.statusbarService.updateEntryVisibility(ConnectionStatusbarItem.ID, true);
+		this._statusbarService.updateEntryVisibility(ConnectionStatusbarItem.ID, true);
 	}
 
 	// Update the connection status shown in the bar
 	private _updateStatus(): void {
-		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService, this._logService);
 		if (activeConnection) {
-			let uri = this.connectionManagementService.getConnectionUriFromId(activeConnection.id);
-			let info = this.connectionManagementService.getConnectionInfo(uri);
-			if (this.editorService.activeEditor) {
+			let uri = this._connectionManagementService.getConnectionUriFromId(activeConnection.id);
+			let info = this._connectionManagementService.getConnectionInfo(uri);
+			if (this._editorService.activeEditor) {
 				// USE ACTIVE EDITOR INFO AS THE PID WILL BE DIFFERENT FOR EDITOR CONNECTION.
-				let newInfo = this.connectionManagementService.getConnectionInfo(this.editorService.activeEditor.resource.toString());
+				let newInfo = this._connectionManagementService.getConnectionInfo(this._editorService.activeEditor.resource.toString());
 				if (newInfo) {
 					info = newInfo;
 				}
@@ -86,14 +88,14 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 	}
 
 	private _refreshPIDStatus(uri: string, pid: any): void {
-		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService);
 		if (activeConnection) {
-			let currUri = this.connectionManagementService.getConnectionUriFromId(activeConnection.id);
-			if (this.editorService.activeEditor) {
+			let currUri = this._connectionManagementService.getConnectionUriFromId(activeConnection.id);
+			if (this._editorService.activeEditor) {
 				// USE ACTIVE EDITOR INFO AS THE PID WILL BE DIFFERENT FOR EDITOR CONNECTION.
-				currUri = this.editorService.activeEditor.resource.toString();
+				currUri = this._editorService.activeEditor.resource.toString();
 			}
-			let info = this.connectionManagementService.getConnectionInfo(currUri);
+			let info = this._connectionManagementService.getConnectionInfo(currUri);
 			if (currUri === uri) {
 				if (info) {
 					info.pid = pid;

@@ -508,7 +508,14 @@
         "mssql.parallelMessageProcessing": {
           "type": "boolean",
           "description": "%mssql.parallelMessageProcessing%",
-          "default": false
+          "default": true
+        },
+        "mssql.parallelMessageProcessingLimit": {
+          "type": "integer",
+          "description": "%mssql.parallelMessageProcessingLimit%",
+          "default": 100,
+          "minimum": 10,
+          "maximum": 2147483647
         },
         "mssql.enableSqlAuthenticationProvider": {
           "type": "boolean",
