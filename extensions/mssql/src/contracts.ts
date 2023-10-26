@@ -1691,6 +1691,7 @@ export namespace GetDataFolderRequest {
 export interface GetBackupFolderRequestParams {
 	connectionUri: string;
 }
+
 export namespace GetBackupFolderRequest {
 	export const type = new RequestType<GetBackupFolderRequestParams, string, void, void>('admin/getbackupfolder');
 }
