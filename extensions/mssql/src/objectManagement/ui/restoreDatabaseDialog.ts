@@ -243,7 +243,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		//Recovery state
 		let recoveryState = this.createDropdown(localizedConstants.RecoveryStateText, async () => {
 			// this.objectInfo.collationName = collationDropbox.value as string;
-		}, [], '', true, RestoreInputsWidth, true, true);
+		}, this.viewInfo.restoreDatabaseInfo.recoveryStateOptions, '', true, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.RecoveryStateText, recoveryState));
 
 		//Stand by file

@@ -548,6 +548,7 @@ export interface AzureEditionDetails {
 export interface RestoreDatabaseInfo {
 	sourceDatabaseNames: string[];
 	targetDatabaseNames: string[];
+	recoveryStateOptions: string[];
 }
 
 export interface ProcessorAffinity {
