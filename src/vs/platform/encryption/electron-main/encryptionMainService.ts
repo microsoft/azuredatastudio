@@ -21,6 +21,7 @@ export class EncryptionMainService implements IEncryptionMainService {
 	_serviceBrand: undefined;
 
 	constructor(
+		private readonly machineId: string, // {{SQL CARBON EDIT}} Remove vscode-encrypt after 1.47 release
 		@ILogService private readonly logService: ILogService
 	) {
 		// if this commandLine switch is set, the user has opted in to using basic text encryption
@@ -43,14 +44,21 @@ export class EncryptionMainService implements IEncryptionMainService {
 
 	async decrypt(value: string): Promise<string> {
 		let parsedValue: { data: string };
+		// {{SQL CARBON EDIT}} Remove vscode-encrypt after 1.47 release
 		try {
 			parsedValue = JSON.parse(value);
 			if (!parsedValue.data) {
-				throw new Error(`[EncryptionMainService] Invalid encrypted value: ${value}`);
+				this.logService.trace('[EncryptionMainService] Unable to parse encrypted value. Attempting old decryption.');
+				return this.oldDecrypt(value);
 			}
-			const bufferToDecrypt = Buffer.from(parsedValue.data);
+		} catch (e) {
+			this.logService.trace('[EncryptionMainService] Unable to parse encrypted value. Attempting old decryption.', e);
+			return this.oldDecrypt(value);
+		}
+		const bufferToDecrypt = Buffer.from(parsedValue.data);
 
-			this.logService.trace('[EncryptionMainService] Decrypting value.');
+		this.logService.trace('[EncryptionMainService] Decrypting value.');
+		try {
 			const result = safeStorage.decryptString(bufferToDecrypt);
 			this.logService.trace('[EncryptionMainService] Decrypted value.');
 			return result;
@@ -96,5 +104,22 @@ export class EncryptionMainService implements IEncryptionMainService {
 		}
 
 		safeStorage.setUsePlainTextEncryption(true);
+	}
+
+	// {{SQL CARBON EDIT}} Remove vscode-encrypt after 1.47 release
+	private async oldDecrypt(value: string): Promise<string> {
+		let encryption: { decrypt(salt: string, value: string): Promise<string> };
+		try {
+			encryption = await new Promise((resolve, reject) => require(['vscode-encrypt'], resolve, reject));
+		} catch (e) {
+			return value;
+		}
+
+		try {
+			return encryption.decrypt(this.machineId, value);
+		} catch (e) {
+			this.logService.error(e);
+			return value;
+		}
 	}
 }
