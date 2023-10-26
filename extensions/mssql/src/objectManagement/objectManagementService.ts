@@ -83,8 +83,8 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		return this.runWithErrorHandling(contracts.AttachDatabaseRequest.type, params);
 	}
 
-	async backupDatabase(connectionUri: string, backupInfo: BackupInfo, taskMode: azdata.TaskExecutionMode): Promise<BackupResponse> {
-		const params: contracts.BackupDatabaseRequestParams = { ownerUri: connectionUri, backupInfo, taskMode };
+	async backupDatabase(connectionUri: string, backupInfo: BackupInfo, taskExecutionMode: azdata.TaskExecutionMode): Promise<BackupResponse> {
+		const params: contracts.BackupDatabaseRequestParams = { ownerUri: connectionUri, backupInfo, taskExecutionMode: taskExecutionMode };
 		return this.runWithErrorHandling(contracts.BackupDatabaseRequest.type, params);
 	}
 

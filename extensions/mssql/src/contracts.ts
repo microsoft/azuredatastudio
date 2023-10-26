@@ -1701,7 +1701,7 @@ export namespace GetBackupFolderRequest {
 export interface BackupDatabaseRequestParams {
 	ownerUri: string;
 	backupInfo: mssql.BackupInfo;
-	taskMode: azdata.TaskExecutionMode;
+	taskExecutionMode: azdata.TaskExecutionMode;
 }
 
 export namespace BackupDatabaseRequest {
