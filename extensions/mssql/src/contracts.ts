@@ -1688,6 +1688,14 @@ export namespace GetDataFolderRequest {
 	export const type = new RequestType<GetDataFolderRequestParams, string, void, void>('admin/getdatafolder');
 }
 
+export interface GetBackupFolderRequestParams {
+	connectionUri: string;
+}
+
+export namespace GetBackupFolderRequest {
+	export const type = new RequestType<GetBackupFolderRequestParams, string, void, void>('admin/getbackupfolder');
+}
+
 export interface GetAssociatedFilesRequestParams {
 	connectionUri: string;
 	primaryFilePath: string;
