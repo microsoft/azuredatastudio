@@ -301,7 +301,10 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	public override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
 		let backupInfo = this.createBackupInfo();
-		await this.objectManagementService.backupDatabase(this.options.connectionUri, backupInfo, TaskExecutionMode.execute);
+		let response = await this.objectManagementService.backupDatabase(this.options.connectionUri, backupInfo, TaskExecutionMode.execute);
+		if (!response.result) {
+			throw new Error('Backup operation failed.');
+		}
 	}
 
 	private getEncryptorOptions(): string[] {
