@@ -339,7 +339,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			backupComponent: 0,
 			backupDeviceType: this.getBackupDeviceType(),
 			backupPathList: filePaths,
-			backupsetName: this._backupSetNameInput.value,
+			backupSetName: this._backupSetNameInput.value,
 			backupPathDevices: this.getBackupTypePairs(filePaths),
 			isCopyOnly: this._copyBackupCheckbox.checked,
 
@@ -353,6 +353,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			continueAfterError: this._continueOnErrorCheckbox.checked,
 			logTruncation: this._truncateLogButton.checked,
 			tailLogBackup: this._backupLogTailButton.checked,
+			retainDays: 0,
 			compressionOption: (this._compressionTypeDropdown.values as string[]).indexOf(this._compressionTypeDropdown.value as string),
 			verifyBackupRequired: this._verifyCheckbox.checked,
 			encryptionAlgorithm: (this._encryptCheckbox.checked ? (this._algorithmDropdown.values as string[]).indexOf(this._algorithmDropdown.value as string) : 0),

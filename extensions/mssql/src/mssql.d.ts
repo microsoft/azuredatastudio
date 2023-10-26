@@ -1066,7 +1066,7 @@ declare module 'mssql' {
 		/**
 		 * Backupset name
 		 */
-		backupsetName: string;
+		backupSetName: string;
 
 		/**
 		 * List of {key: backup path, value: device type}
@@ -1127,6 +1127,11 @@ declare module 'mssql' {
 		 * Gets or sets a Boolean property value that determines whether to backup the tail of the log
 		 */
 		tailLogBackup: boolean;
+
+		/**
+		 * Gets or sets the number of days that must elapse before a backup set can be overwritten.
+		 */
+		retainDays: number;
 
 		/**
 		 * Gets or sets the backup compression option.
