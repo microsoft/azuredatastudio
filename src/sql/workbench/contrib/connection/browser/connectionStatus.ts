@@ -29,7 +29,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
 		@IEditorService private readonly _editorService: IEditorService,
 		@IObjectExplorerService private readonly _objectExplorerService: IObjectExplorerService,
-    @IQueryModelService private _queryModelService: IQueryModelService,
+		@IQueryModelService private _queryModelService: IQueryModelService,
 		@ILogService private readonly _logService: ILogService
 	) {
 		super();
@@ -50,7 +50,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		this._register(this._connectionManagementService.onDisconnect(() => this._updateStatus()));
 		this._register(this._editorService.onDidActiveEditorChange(() => this._updateStatus()));
 		this._register(this._objectExplorerService.onSelectionOrFocusChange(() => this._updateStatus()));
-    this._register(this._queryModelService.onPidAvailable(e => this._refreshPIDStatus(e.type, e.data)));
+		this._register(this._queryModelService.onPidAvailable(e => this._refreshPIDStatus(e.type, e.data)));
 	}
 
 	private hide() {
