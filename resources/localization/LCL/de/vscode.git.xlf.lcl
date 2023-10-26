@@ -100,6 +100,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/vscode.git/bundle.++CODE++06d2d2cf7b10db10195c834f0403e5802aa68f6551afec39fdc6fb549ca73302" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0} (Type changed)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} (Typ geändert)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/vscode.git/bundle.++CODE++06da38448937c5ca3cf8a9a4e91edb8a50fcfb20885e7d93d5019bf591fdc5c0" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Delete Branch]]></Val>
@@ -604,6 +613,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/vscode.git/bundle.++CODE++34f8bd615c01255a5815e862d415a991324737482a7d66c874f16a10427897a0" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0} Commit (Amend)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} Committen (Korrigieren)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/vscode.git/bundle.++CODE++35a96c53b643b0cfb6501a078cb24a26c2158f732df4e497c68292ab9b2fb387" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Undo merge commit]]></Val>
@@ -636,6 +654,15 @@
           <Val><![CDATA[Commit to New Branch & Synchronize Changes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Commit an neuer Verzweigung ausführen und Änderungen synchronisieren]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/vscode.git/bundle.++CODE++382638de5d12f729cec7910b1bb7998999342f9ab710360306bd29bdd8d89ca3" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Reopen Closed Repositories]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Geschlossene Repositorys erneut öffnen]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -753,6 +780,15 @@
           <Val><![CDATA[The repository does not have any commits. Please make an initial commit before creating a stash.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Das Repository weist keine Commits auf. Führen Sie einen ersten Commit aus, bevor Sie einen Stash erstellen.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/vscode.git/bundle.++CODE++43cfba061c66b48d18654d4630284c8f93f76fd551a761506e76d04100be78d2" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Pick a repository to reopen]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Zu öffnendes Repository auswählen]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1540,11 +1576,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/vscode.git/bundle.++CODE++975dd75001ae0d7c535f15e85326be3fc636a908ef77dcd64931d0564b64c7f5" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enables the following features: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Folgende Features werden aktivieren: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/vscode.git/bundle.++CODE++978fa11dc34a758c8d99fce0d36a97740cb8abe19bd39a1be049b57bb9a98e57" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create Empty Commit]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Leeren Commit erstellen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/vscode.git/bundle.++CODE++9a67de1b5740e2d935f5bab0d89233b2b75a777a7ea3b57c7e53ac29427c91c6" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Save All & Commit Changes]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Alles speichern und Änderungen committen]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2161,6 +2215,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/vscode.git/bundle.++CODE++dce9960e3b2a3c0c30e66c7e1a3ec396a86650a7acb8fd3cedf74196356deb54" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Type Changed]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Typ geändert]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/vscode.git/bundle.++CODE++de161ac4087726413ce474f53279a95dc36167a2274bb58721f8720b87bfd611" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add to Workspace]]></Val>
@@ -2341,15 +2404,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/vscode.git/bundle.++CODE++e98f3fe796a6bb3a6a887b34998889dc6aad09782c4abf35f15e75aa0a1c32d5" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Save All & Commit]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Alle speichern & committen]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/vscode.git/bundle.++CODE++e9f8f78f902c9e4bbe0a5c91eb57172bbc53f6698bb4521006df79aa6b280dbe" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Keep Their Version]]></Val>
@@ -2400,15 +2454,6 @@
           <Val><![CDATA[Open]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Öffnen]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/vscode.git/bundle.++CODE++ed1fdf6e6ca057297a99375eca0f051f9ffbec49a1767e2126918b24e1350dff" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Commit Staged Changes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Gestagete Änderungen committen]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2917,6 +2962,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/vscode.git/package.command.commitAmend" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Commit (Amend)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Committen (Korrigieren)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/vscode.git/package.command.commitAmendNoVerify" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Commit (Amend, No Verify)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Committen (Korrigieren, keine Überprüfung)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/vscode.git/package.command.commitEmpty" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Commit Empty]]></Val>
@@ -2958,6 +3021,24 @@
           <Val><![CDATA[Commit (No Verify)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Commit ausführen (keine Überprüfung)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/vscode.git/package.command.commitSigned" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Commit (Signed Off)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Committen (Abgemeldet)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/vscode.git/package.command.commitSignedNoVerify" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Commit (Signed Off, No Verify)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Committen (Abgemeldet, keine Überprüfung)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3384,6 +3465,15 @@
           <Val><![CDATA[Rename Branch...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Branch umbenennen...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/vscode.git/package.command.reopenClosedRepositories" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Reopen Closed Repositories...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Geschlossene Repositorys erneut öffnen...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4101,10 +4191,13 @@
       </Item>
       <Item ItemId=";extensions/vscode.git/package.config.defaultBranchName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The name of the default branch (ex: main, trunk, development) when initializing a new git repository. When set to empty, the default branch name configured in git will be used.]]></Val>
+          <Val><![CDATA[The name of the default branch (ex: main, trunk, development) when initializing a new git repository. When set to empty, the default branch name configured in git will be used. **Note:** Requires git version `2.28.0` or later.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Der Name des Standardbranchs (z. B. main, trunk, development), wenn ein neues Git-Repository initialisiert wird. Bei Festlegung auf "empty" wird der in Git konfigurierte Standardbranchname verwendet.]]></Val>
+            <Val><![CDATA[Der Name des Standardbranchs (z. B. main, trunk, development), wenn ein neues Git-Repository initialisiert wird. Bei Festlegung auf "empty" wird der in Git konfigurierte Standardbranchname verwendet. **Hinweis:** Erfordert Git-Version 2.28.0 oder höher.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The name of the default branch (ex: main, trunk, development) when initializing a new git repository. When set to empty, the default branch name configured in git will be used.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4725,10 +4818,13 @@
       </Item>
       <Item ItemId=";extensions/vscode.git/package.config.similarityThreshold" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Controls the threshold of the similarity index (i.e. amount of additions/deletions compared to the file's size) for changes in a pair of added/deleted files to be considered a rename.]]></Val>
+          <Val><![CDATA[Controls the threshold of the similarity index (i.e. amount of additions/deletions compared to the file's size) for changes in a pair of added/deleted files to be considered a rename. **Note:** Requires git version `2.18.0` or later.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Steuert den Schwellenwert des Ähnlichkeitsindexes (d. h. die Anzahl der Hinzufügungen/Löschungen im Vergleich zur Dateigröße) für Änderungen in einem Paar hinzugefügter/gelöschter Dateien, die als Umbenennung betrachtet werden sollen.]]></Val>
+            <Val><![CDATA[Steuert den Schwellenwert des Ähnlichkeitsindexes (d. h. die Anzahl der Hinzufügungen/Löschungen im Vergleich zur Dateigröße) für Änderungen in einem Paar hinzugefügter/gelöschter Dateien, die als Umbenennung betrachtet werden sollen. **Hinweis:** Erfordert Git-Version 2.18.0 oder höher.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Controls the threshold of the similarity index (i.e. amount of additions/deletions compared to the file's size) for changes in a pair of added/deleted files to be considered a rename.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4788,24 +4884,24 @@
       </Item>
       <Item ItemId=";extensions/vscode.git/package.config.terminalAuthentication" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Controls whether to enable VS Code to be the authentication handler for Git processes spawned in the Integrated Terminal. Note: Terminals need to be restarted to pick up a change in this setting.]]></Val>
+          <Val><![CDATA[Controls whether to enable Azure Data Studio to be the authentication handler for Git processes spawned in the Integrated Terminal. Note: Terminals need to be restarted to pick up a change in this setting.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Steuert, ob VS Code als Authentifizierungshandler für Git-Prozesse aktiviert werden soll, die im integrierten Terminal erzeugt werden. Hinweis: Terminals müssen neu gestartet werden, damit eine Änderung dieser Einstellung wirksam wird.]]></Val>
+            <Val><![CDATA[Steuert, ob Azure Data Studio als Authentifizierungshandler für Git-Prozesse aktiviert werden soll, die im integrierten Terminal erzeugt werden. Hinweis: Terminals müssen neu gestartet werden, um eine Änderung in dieser Einstellung zu übernehmen.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Controls whether to enable VS Code to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.]]></Val>
+            <Val><![CDATA[Controls whether to enable VS Code to be the authentication handler for Git processes spawned in the Integrated Terminal. Note: Terminals need to be restarted to pick up a change in this setting.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/vscode.git/package.config.terminalGitEditor" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Controls whether to enable VS Code to be the Git editor for Git processes spawned in the integrated terminal. Note: Terminals need to be restarted to pick up a change in this setting.]]></Val>
+          <Val><![CDATA[Controls whether to enable Azure Data Studio to be the Git editor for Git processes spawned in the integrated terminal. Note: Terminals need to be restarted to pick up a change in this setting.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Steuert, ob VS Code als Git-Editor für Git-Prozesse aktiviert werden soll, die im integrierten Terminal erzeugt werden. Hinweis: Terminals müssen neu gestartet werden, um eine Änderung in dieser Einstellung zu übernehmen.]]></Val>
+            <Val><![CDATA[Steuert, ob Azure Data Studio als Git-Editor für Git-Prozesse aktiviert werden soll, die im integrierten Terminal erzeugt werden. Hinweis: Terminals müssen neu gestartet werden, um eine Änderung in dieser Einstellung zu übernehmen.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Controls whether to enable VS Code to be git editor for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.]]></Val>
+            <Val><![CDATA[Controls whether to enable VS Code to be the Git editor for Git processes spawned in the integrated terminal. Note: Terminals need to be restarted to pick up a change in this setting.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -5065,14 +5161,32 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/vscode.git/package.view.workbench.scm.closedRepositories" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Git repositories were found that were previously closed.]A;[Reopen Closed Repositories]5D;(command:git.reopenClosedRepositories)]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Es wurden Git-Repositorys gefunden, die zuvor geschlossen wurden.]A;[Geschlossene Repositorys erneut öffnen]5D;(command:git.reopenClosedRepositories)]A;Weitere Informationen zur Verwendung von Git und Quellcodeverwaltung in Azure Data Studio [finden Sie in unserer Dokumentation]5D;(https://aka.ms/vscode-scm).]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/vscode.git/package.view.workbench.scm.closedRepository" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[A git repository was found that was previously closed.]A;[Reopen Closed Repository]5D;(command:git.reopenClosedRepositories)]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Es wurde ein Git-Repository gefunden, das zuvor geschlossen war.]A;[Geschlossene Repository erneut öffnen]5D;(command:git.reopenClosedRepositories)]A;Weitere Informationen zur Verwendung von Git und Quellcodeverwaltung in Azure Data Studio [finden Sie in unserer Dokumentation]5D;(https://aka.ms/vscode-scm).]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/vscode.git/package.view.workbench.scm.disabled" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[If you would like to use git features, please enable git in your [settings]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]A;To learn more about how to use git and source control in VS Code [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Val><![CDATA[If you would like to use git features, please enable git in your [settings]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Wenn Sie Git-Features verwenden möchten, müssen Sie Git in Ihren [Einstellungen]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D) aktivieren.]A;Weitere Informationen zur Verwendung von Git und der Quellcodeverwaltung in VS Code [finden Sie in unserer Dokumentation]5D;(https://aka.ms/vscode-scm).]]></Val>
+            <Val><![CDATA[Wenn Sie Git-Features verwenden möchten, aktivieren Sie Git in Ihren [Einstellungen]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]A;Weitere Informationen zur Verwendung von Git und Quellcodeverwaltung in Azure Data Studio [finden Sie in unserer Dokumentation]5D;(https://aka.ms/vscode-scm).]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[If you would like to use git features, please enable git in your [settings]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]D;]A;To learn more about how to use git and source control in VS Code [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+            <Val><![CDATA[If you would like to use git features, please enable git in your [settings]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]A;To learn more about how to use git and source control in VS Code [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
