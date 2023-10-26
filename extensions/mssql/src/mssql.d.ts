@@ -1064,9 +1064,19 @@ declare module 'mssql' {
 		backupDeviceType: number;
 
 		/**
+		 *  The text input of selected files
+		 */
+		selectedFiles: string;
+
+		/**
 		 * Backupset name
 		 */
-		backupSetName: string;
+		backupsetName: string;
+
+		/**
+		 * List of {key: backup path, value: device type}
+		 */
+		selectedFileGroup: { [path: string]: string };
 
 		/**
 		 * List of {key: backup path, value: device type}
@@ -1077,6 +1087,7 @@ declare module 'mssql' {
 		 * List of selected backup paths
 		 */
 		backupPathList: string[];
+
 
 		/**
 		 * Indicates if the backup should be copy-only

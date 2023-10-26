@@ -528,7 +528,7 @@ export class BackupComponent extends AngularDisposable {
 			this.recoveryBox!.disable();
 			this.mediaNameBox!.disable();
 			this.mediaDescriptionBox!.disable();
-			if (this._engineEdition !== DatabaseEngineEdition.SqlDataWarehouse && this._engineEdition !== DatabaseEngineEdition.SqlOnDemand) {
+			if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance) {
 				this.toUrlCheckBox.checked = true;
 				this.copyOnlyCheckBox.checked = true;
 				this.backupTypeSelectBox!.disable();
