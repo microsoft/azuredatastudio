@@ -338,6 +338,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 		let filePaths = this._backupFilePaths;
 		let createNewMedia = this._newMediaButton.checked;
+		let overwriteExistingMedia = this._overwriteExistingMediaButton.enabled && this._overwriteExistingMediaButton.checked;
 		let backupInfo: BackupInfo = {
 			databaseName: this.objectInfo.name,
 			backupType: this.getBackupTypeNumber(),
@@ -352,7 +353,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 			// Get advanced options
 			formatMedia: createNewMedia,
-			initialize: createNewMedia,
+			initialize: createNewMedia || overwriteExistingMedia,
 			skipTapeHeader: createNewMedia,
 			mediaName: (createNewMedia ? this._mediaNameInput.value : ''),
 			mediaDescription: (createNewMedia ? this._mediaDescriptionInput.value : ''),
