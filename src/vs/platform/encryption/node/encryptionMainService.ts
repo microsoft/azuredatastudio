@@ -6,7 +6,7 @@
 import { ICommonEncryptionService } from 'vs/platform/encryption/common/encryptionService';
 import { ILogService } from 'vs/platform/log/common/log';
 
-// {{SQL CARBON EDIT}} Remove vscode-encrypt after 1.47 release
+// {{SQL CARBON EDIT}} Remove vscode-encrypt in a post-1.47 release https://github.com/microsoft/azuredatastudio/issues/24737
 
 export interface Encryption {
 	encrypt(salt: string, value: string): Promise<string>;

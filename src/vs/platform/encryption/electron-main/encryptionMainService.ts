@@ -21,7 +21,7 @@ export class EncryptionMainService implements IEncryptionMainService {
 	_serviceBrand: undefined;
 
 	constructor(
-		private readonly machineId: string, // {{SQL CARBON EDIT}} Remove vscode-encrypt after 1.47 release
+		private readonly machineId: string, // {{SQL CARBON EDIT}} Remove vscode-encrypt in a post-1.47 release https://github.com/microsoft/azuredatastudio/issues/24737
 		@ILogService private readonly logService: ILogService
 	) {
 		// if this commandLine switch is set, the user has opted in to using basic text encryption
@@ -44,7 +44,7 @@ export class EncryptionMainService implements IEncryptionMainService {
 
 	async decrypt(value: string): Promise<string> {
 		let parsedValue: { data: string };
-		// {{SQL CARBON EDIT}} Remove vscode-encrypt after 1.47 release
+		// {{SQL CARBON EDIT}} Remove vscode-encrypt in a post-1.47 release https://github.com/microsoft/azuredatastudio/issues/24737
 		try {
 			parsedValue = JSON.parse(value);
 			if (!parsedValue.data) {
@@ -106,7 +106,7 @@ export class EncryptionMainService implements IEncryptionMainService {
 		safeStorage.setUsePlainTextEncryption(true);
 	}
 
-	// {{SQL CARBON EDIT}} Remove vscode-encrypt after 1.47 release
+	// {{SQL CARBON EDIT}} Remove vscode-encrypt in a post-1.47 release https://github.com/microsoft/azuredatastudio/issues/24737
 	private async oldDecrypt(value: string): Promise<string> {
 		let encryption: { decrypt(salt: string, value: string): Promise<string> };
 		try {
