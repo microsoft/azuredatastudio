@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { MigrationTargetType } from '../../api/utils';
+import { IssueCategory } from '../../constants/helper';
 import { Page, SavedInfo } from '../../models/stateMachine';
 
 export function parseAssessmentReport(assessmentReport: any): any {
@@ -72,7 +73,7 @@ export function parseAssessmentReport(assessmentReport: any): any {
 					kind: ar.Category,
 					message: ar.Impact,
 					appliesToMigrationTargetPlatform: saveInfo.migrationTargetType,
-					issueCategory: ar.ChangeCategory,
+					issueCategory: getIssueCategory(ar.Severity),
 					impactedObjects: ar.ImpactedObjects.map((io: any) => {
 						return {
 							name: io.Name,
@@ -104,7 +105,7 @@ export function parseAssessmentReport(assessmentReport: any): any {
 							kind: ar.Category,
 							message: ar.Impact,
 							appliesToMigrationTargetPlatform: saveInfo.migrationTargetType,
-							issueCategory: ar.ChangeCategory,
+							issueCategory: getIssueCategory(ar.Severity),
 							databaseName: d.Name,
 							impactedObjects: ar.ImpactedObjects.map((io: any) => {
 								return {
@@ -202,4 +203,14 @@ export function parseAssessmentReport(assessmentReport: any): any {
 	saveInfo.databaseList = databaseList.sort();
 
 	return saveInfo;
+}
+
+export function getIssueCategory(severity: string): string {
+	switch (severity) {
+		case 'Error':
+			return IssueCategory.Issue;
+		case 'Warning':
+			return IssueCategory.Warning;
+	}
+	return '';
 }

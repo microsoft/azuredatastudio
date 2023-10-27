@@ -15,6 +15,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { DatabaseSummary } from './databaseSummary';
 import { IssueSummary } from './issueSummary';
 import { SqlMigrationAssessmentResultItem } from '../../service/contracts';
+import { IssueCategory } from '../../constants/helper';
 
 // Class that defines ui for body section of assessment result page
 export class AssessmentDetailsBody {
@@ -254,12 +255,26 @@ export class AssessmentDetailsBody {
 					return {
 						id: index.toString(),
 						label: v.checkId,
-						icon: v.databaseRestoreFails ? IconPathHelper.error : undefined,
+						icon: v.issueCategory === IssueCategory.Issue ? IconPathHelper.error : IconPathHelper.warning,
 						ariaLabel: v.databaseRestoreFails ? constants.BLOCKING_ISSUE_ARIA_LABEL(v.checkId) : v.checkId,
 					};
 				});
 
-			this._warningsOrIssuesListSection.options = assessmentResults;
+			let uniqueLabels = new Set<string>();
+			let uniqueOptions = new Map<string, azdata.ListViewOption>();
+
+			// loop through the assessmentResults array and add the labels and options to the set and map
+			for (let result of assessmentResults) {
+				if (!uniqueLabels.has(result.label)) {
+					uniqueLabels.add(result.label);
+					uniqueOptions.set(result.label, result);
+				}
+			}
+
+			// create a new array of ListViewOption objects from the map values
+			let uniqueAssessmentResults: azdata.ListViewOption[] = Array.from(uniqueOptions.values());
+
+			this._warningsOrIssuesListSection.options = uniqueAssessmentResults;
 		}
 		else {
 			this._warningsOrIssuesListSection.options = [];
