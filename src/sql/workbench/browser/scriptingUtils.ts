@@ -180,5 +180,5 @@ function getScriptingParamDetails(connectionService: IConnectionManagementServic
 
 function getServerInfo(connectionService: IConnectionManagementService, ownerUri: string): azdata.ServerInfo | undefined {
 	let connection: ConnectionManagementInfo = connectionService.getConnectionInfo(ownerUri);
-	return connection.serverInfo;
+	return connection?.serverInfo;
 }
