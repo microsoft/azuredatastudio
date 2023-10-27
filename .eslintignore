@@ -35,3 +35,7 @@
 **/test/unit/assert.js
 **/test/automation/out/**
 **/typings/**
+**/quality/agc/extensions/azurecore/src/**
+**/resources/server/bin-dev/code-web.js
+**/build/lib/patch.ts
+**/src/vs/platform/encryption/node/encryptionMainService.ts

@@ -98,4 +98,3 @@ export class EncryptionMainService implements IEncryptionMainService {
 		safeStorage.setUsePlainTextEncryption(true);
 	}
 }
-
