@@ -154,11 +154,12 @@
       <source xml:lang="en">Version: {0}
 Commit: {1}
 Date: {2}
-Electron: {3}
-Chromium: {4}
-Node.js: {5}
-V8: {6}
-OS: {7}</source>
+VS Code: {3}
+Electron: {4}
+Chromium: {5}
+Node.js: {6}
+V8: {7}
+OS: {8}</source>
       <note>Electron, Chromium, Node.js and V8 are product names that need no translation</note>
     </trans-unit>
     <trans-unit id="activateLanguagePack">
