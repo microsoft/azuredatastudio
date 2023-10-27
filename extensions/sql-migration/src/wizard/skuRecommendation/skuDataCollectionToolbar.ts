@@ -26,6 +26,7 @@ import { SkuEditParametersDialog } from '../../dialog/skuRecommendationResults/s
 // Extension Settings
 export const sqlRecommendationConfigurationKey = 'azureRecommendation';
 export const dataCollectionPathKey = 'dataCollectionPath';
+export const relativeDefaultPerfDataPath = "\\AppData\\Roaming\\azuredatastudio\\PerfData";
 
 export class SkuDataCollectionToolbar implements vscode.Disposable {
 	private _refreshButtonSelectionDropdown!: azdata.DropDownComponent;
@@ -146,16 +147,17 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 			if (!selectedOption || selectedOption === defaultPathOption) {
 
 				const extensionSettingsUserPath: string = vscode.workspace.getConfiguration(sqlRecommendationConfigurationKey)[dataCollectionPathKey];
+				const defaultExtensionSettingsUserPath: string = "%userprofile%" + relativeDefaultPerfDataPath;
 
-				// Case 1: Global Settings
-				if (extensionSettingsUserPath !== "" && fs.existsSync(extensionSettingsUserPath)) {
-					this._defaultPathForStartDataCollection = extensionSettingsUserPath;
-
-				}
-				// Check: Invalid path provided - Use default path
-				else if (extensionSettingsUserPath !== "" && !fs.existsSync(extensionSettingsUserPath)) {
-					this._defaultPathForStartDataCollection = this.getDefaultPath();
-					// TODO - Show some information to user about provided does not exist.
+				if (extensionSettingsUserPath !== "" && extensionSettingsUserPath !== defaultExtensionSettingsUserPath) {
+					// Case 1: Global Settings
+					if (fs.existsSync(extensionSettingsUserPath)) {
+						this._defaultPathForStartDataCollection = extensionSettingsUserPath;
+					}
+					// Check: Invalid path provided - Use default path
+					else {
+						this._defaultPathForStartDataCollection = this.getDefaultPath();
+					}
 				}
 				// No path provided - Use default path
 				else {
@@ -290,7 +292,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 
 	public getDefaultPath(): string {
 		// TODO - Exact default Path needed.
-		return path.join(utils.getUserHome() ?? "", "\\AppData\\Roaming\\azuredatastudio\\logs");
+		return path.join(utils.getUserHome() ?? "", relativeDefaultPerfDataPath);
 	}
 
 	private async executeDataCollection() {
