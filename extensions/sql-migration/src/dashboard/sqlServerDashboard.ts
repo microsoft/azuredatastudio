@@ -550,7 +550,8 @@ export class DashboardWidget {
 							this.stateModel._assessmentResults = savedInfo.serverAssessment;
 							await this.stateModel.loadSavedInfo();
 
-							serverName = savedInfo.serverAssessment?.issues[0].serverName;
+							serverName = savedInfo.serverAssessment?.issues[0]?.serverName ??
+								savedInfo.serverAssessment?.databaseAssessments[0]?.issues[0]?.serverName;
 							this.stateModel.serverName = serverName;
 						}
 

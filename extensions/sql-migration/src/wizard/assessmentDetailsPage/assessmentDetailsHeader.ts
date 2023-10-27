@@ -69,16 +69,17 @@ export class AssessmentDetailsHeader {
 		}).component();
 
 		// List of card labels displayed in header section of Assessment details page.
-		const assessmentHeaderLabels = [
-			{
+		const assessmentHeaderLabels = [];
+		if (!this._readonly) {
+			assessmentHeaderLabels.push({
 				title: constants.RECOMMENDED_CONFIGURATION
-			},
-			{
-				title: constants.DATABASES_ASSESSED_LABEL
-			},
-			{
-				title: constants.MIGRATION_TIME_LABEL
-			}];
+			})
+		}
+		assessmentHeaderLabels.push({
+			title: constants.DATABASES_ASSESSED_LABEL
+		}, {
+			title: constants.MIGRATION_TIME_LABEL
+		});
 
 		// create individual card component for each property in above list
 		this._headerCardsContainer.addItems(assessmentHeaderLabels.map(l => this.createCard(l)));
@@ -167,22 +168,24 @@ export class AssessmentDetailsHeader {
 		// this value is populated to handle the case when user selects a target type and want to resume later.
 		this._targetSelectionDropdown.value = this.getTargetTypeBasedOnModel(migrationStateModel._targetType);
 
-		const recommendedConfigurations = await utils.getRecommendedConfiguration(migrationStateModel._targetType, migrationStateModel);
-		let configurationValue = recommendedConfigurations[0] ?? "--";
-
-		if (migrationStateModel._targetType === MigrationTargetType.SQLVM && recommendedConfigurations?.length > 1) {
-			configurationValue = recommendedConfigurations[0] + "\n" + recommendedConfigurations[1];
-		}
-		const assessmentHeaderValues = [
-			{
+		const assessmentHeaderValues: { value: string | string[] | undefined; }[] = [];
+		if (!this._readonly) {
+			const recommendedConfigurations = await utils.getRecommendedConfiguration(migrationStateModel._targetType, migrationStateModel);
+			let configurationValue = recommendedConfigurations[0] ?? "--";
+			if (migrationStateModel._targetType === MigrationTargetType.SQLVM && recommendedConfigurations?.length > 1) {
+				configurationValue = recommendedConfigurations[0] + "\n" + recommendedConfigurations[1];
+			}
+			assessmentHeaderValues.push({
 				value: configurationValue
-			},
+			})
+		}
+		assessmentHeaderValues.push(
 			{
-				value: String(migrationStateModel?._assessedDatabaseList.length)
+				value: String(migrationStateModel._assessmentResults?.databaseAssessments?.length)
 			},
 			{
 				value: String(migrationStateModel._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === migrationStateModel._targetType && issue.issueCategory === IssueCategory.Issue)?.length === 0)?.length)
-			}];
+			});
 
 		// iterating over each value container and filling it with the corresponding text.
 		let index = 0;
