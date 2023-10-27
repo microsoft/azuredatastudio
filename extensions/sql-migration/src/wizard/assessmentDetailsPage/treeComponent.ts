@@ -59,7 +59,7 @@ export class TreeComponent {
 	private _disposables: vscode.Disposable[] = [];
 	private _model!: MigrationStateModel;
 
-	constructor(public wizard: azdata.window.Wizard) { }
+	constructor(public wizard: azdata.window.Wizard, private _readOnly: boolean = false) { }
 
 	public get instanceTable() {
 		return this._instanceTable;
@@ -194,8 +194,8 @@ export class TreeComponent {
 						displayName: '',
 						valueType: azdata.DeclarativeDataType.boolean,
 						width: 20,
-						isReadOnly: false,
-						showCheckAll: true,
+						isReadOnly: this._readOnly,
+						showCheckAll: !this._readOnly,
 						headerCssStyles: headerLeft,
 					},
 					{
@@ -233,14 +233,14 @@ export class TreeComponent {
 
 	private async updateValuesOnSelectionAsync(migrationStateModel: MigrationStateModel) {
 		const selectedDbsCount = this.selectedDbs()?.length;
-		if (migrationStateModel._targetType === MigrationTargetType.SQLMI && selectedDbsCount > AZURE_SQL_MI_DB_COUNT_THRESHOLD) {
+		if (!this._readOnly && migrationStateModel._targetType === MigrationTargetType.SQLMI && selectedDbsCount > AZURE_SQL_MI_DB_COUNT_THRESHOLD) {
 			this.wizard.nextButton.enabled = false;
 			this.wizard.message = {
 				level: azdata.window.MessageLevel.Error,
 				text: constants.AZURE_SQL_MI_DB_COUNT_THRESHOLD_EXCEEDS_ERROR(AZURE_SQL_MI_DB_COUNT_THRESHOLD)
 			};
 		}
-		else if (!this.wizard.nextButton.enabled) {
+		else if (!this._readOnly && !this.wizard.nextButton.enabled) {
 			this.wizard.nextButton.enabled = true;
 			this.wizard.message = {
 				level: azdata.window.MessageLevel.Information,
@@ -303,7 +303,7 @@ export class TreeComponent {
 			});
 		} else {
 
-			if (migrationStateModel._targetType === MigrationTargetType.SQLMI && selectedDbs?.length > AZURE_SQL_MI_DB_COUNT_THRESHOLD) {
+			if (!this._readOnly && migrationStateModel._targetType === MigrationTargetType.SQLMI && selectedDbs?.length > AZURE_SQL_MI_DB_COUNT_THRESHOLD) {
 				this.wizard.nextButton.enabled = false;
 				this.wizard.message = {
 					level: azdata.window.MessageLevel.Error,

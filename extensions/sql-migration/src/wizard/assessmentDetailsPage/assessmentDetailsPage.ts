@@ -16,7 +16,6 @@ import { EOL } from 'os';
 import * as fs from 'fs';
 import path = require('path');
 import * as utils from '../../api/utils';
-import { IssueCategory } from '../../constants/helper';
 
 // Class where assessment details page is defined
 export class AssessmentDetailsPage extends MigrationWizardPage {
@@ -35,7 +34,7 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 			wizard,
 			azdata.window.createWizardPage(constants.ASSESSMENT_RESULTS_PAGE_TITLE),
 			migrationStateModel);
-		this._header = new AssessmentDetailsHeader();
+		this._header = new AssessmentDetailsHeader(migrationStateModel);
 		this._body = new AssessmentDetailsBody(migrationStateModel, wizard);
 	}
 
@@ -203,26 +202,28 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 
 	// function to add warning message to wizard in case of target change
 	private addWarningNotReadyCondition() {
-		if (this.migrationStateModel._targetType === MigrationTargetType.SQLMI) {
-			if (this.migrationStateModel._assessmentResults?.databaseAssessments.some(db => db.issues.find(issue => issue.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI && issue.issueCategory === IssueCategory.Issue))) {
-				this.wizard.message = {
-					level: azdata.window.MessageLevel.Warning,
-					text: constants.ASSESSMENT_MIGRATION_WARNING_SQLMI,
-				};
+		var warningMessage;
+		switch (this.migrationStateModel._targetType) {
+			case MigrationTargetType.SQLMI: {
+				warningMessage = constants.ASSESSMENT_MIGRATION_WARNING_SQLMI;
+				break;
 			}
-			else { this.wizard.message = { text: '' }; }
-		} else if (this.migrationStateModel._targetType === MigrationTargetType.SQLDB) {
-			if (this.migrationStateModel._assessmentResults?.databaseAssessments.some(db => db.issues.find(issue => issue.appliesToMigrationTargetPlatform === MigrationTargetType.SQLDB && issue.issueCategory === IssueCategory.Issue))) {
-				this.wizard.message = {
-					level: azdata.window.MessageLevel.Warning,
-					text: constants.ASSESSMENT_MIGRATION_WARNING_SQLDB,
-				};
+			case MigrationTargetType.SQLDB: {
+				warningMessage = constants.ASSESSMENT_MIGRATION_WARNING_SQLDB;
+				break;
 			}
-			else {
-				this.wizard.message = { text: '' };
+			default: {
 			}
 		}
-		else { this.wizard.message = { text: '' }; }
+
+		if (this.migrationStateModel._assessmentResults?.databaseAssessments.some(db => db.issues.find(issue => issue.databaseRestoreFails && issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType))) {
+			if (warningMessage) {
+				this.wizard.message = {
+					level: azdata.window.MessageLevel.Warning,
+					text: warningMessage,
+				};
+			}
+		}
 	}
 
 	//function to control display of no target selection text

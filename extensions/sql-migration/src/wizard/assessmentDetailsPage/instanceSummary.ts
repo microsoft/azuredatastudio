@@ -95,13 +95,13 @@ export class InstanceSummary {
 	public async populateInstanceSummaryContainerAsync(): Promise<void> {
 		this._previousMiTdeMigrationConfig = this.migrationStateModel.tdeMigrationConfig;
 		await this.refreshTdeViewAsync();
-		this._assessedDatabases.value = constants.ASSESSED_DBS_LABEL(this.migrationStateModel._databasesForAssessment?.length);
+		this._assessedDatabases.value = constants.ASSESSED_DBS_LABEL(this.migrationStateModel._assessmentResults?.databaseAssessments?.length);
 		this._totalFindingLabels.value = constants.TOTAL_FINDINGS_LABEL(this.migrationStateModel._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType).length);
 
 		const dbAssessments = this.migrationStateModel._assessmentResults.databaseAssessments;
 		const readyDbsCount = dbAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType).length === 0).length;
 		const notReadyDbsCount = dbAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel._targetType && issue.issueCategory === IssueCategory.Issue).length !== 0).length;
-		const readyWithWarnDbsCount = this.migrationStateModel._databasesForAssessment?.length - (readyDbsCount + notReadyDbsCount);
+		const readyWithWarnDbsCount = dbAssessments.length - (readyDbsCount + notReadyDbsCount);
 
 		const readinessStates = [
 			{

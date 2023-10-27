@@ -7,6 +7,7 @@ import { Page, SavedInfo } from '../../models/stateMachine';
 
 export function parseAssessmentReport(assessmentReport: any): any {
 	const saveInfo: SavedInfo = {
+		xEventsFilesFolderPath: null,
 		closedPage: Page.ImportAssessment,
 		databaseAssessment: [],
 		databaseList: [],

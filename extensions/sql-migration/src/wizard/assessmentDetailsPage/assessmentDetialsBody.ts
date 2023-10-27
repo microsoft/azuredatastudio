@@ -29,8 +29,9 @@ export class AssessmentDetailsBody {
 	private _activeIssues!: SqlMigrationAssessmentResultItem[];
 
 	constructor(public migrationStateModel: MigrationStateModel,
-		public wizard: azdata.window.Wizard) {
-		this._treeComponent = new TreeComponent(wizard);
+		public wizard: azdata.window.Wizard,
+		readonly: boolean = false) {
+		this._treeComponent = new TreeComponent(wizard, readonly);
 		this._instanceSummary = new InstanceSummary(migrationStateModel);
 	}
 
@@ -177,12 +178,7 @@ export class AssessmentDetailsBody {
 		// when database is selected
 		this._disposables.push(this._treeComponent.databaseTable.onRowSelected(async (e) => {
 			_isInstanceSummarySelected = false;
-			if (this.migrationStateModel?._targetType === MigrationTargetType.SQLMI ||
-				this.migrationStateModel?._targetType === MigrationTargetType.SQLDB) {
-				this._activeIssues = this.migrationStateModel._assessmentResults?.databaseAssessments[e.row].issues.filter(i => i.appliesToMigrationTargetPlatform === this.migrationStateModel?._targetType);
-			} else {
-				this._activeIssues = [];
-			}
+			this._activeIssues = this.migrationStateModel._assessmentResults?.databaseAssessments[e.row].issues.filter(i => i.appliesToMigrationTargetPlatform === this.migrationStateModel?._targetType);
 			await instanceSummary.updateCssStyles({
 				'display': 'none'
 			});

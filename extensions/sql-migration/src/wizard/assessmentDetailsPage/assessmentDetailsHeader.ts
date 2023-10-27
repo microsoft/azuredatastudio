@@ -47,6 +47,8 @@ export class AssessmentDetailsHeader {
 		return this._headerCardsContainer;
 	}
 
+	constructor(public migrationStateModel: MigrationStateModel, private _readonly: boolean = false) { }
+
 	// function that creates the component for header section of assessment details page.
 	public createAssessmentDetailsHeader(view: azdata.ModelView): azdata.Component {
 		this._view = view;
@@ -190,6 +192,31 @@ export class AssessmentDetailsHeader {
 
 	// function that create target selection dropdown
 	private createTargetTypeContainer(): azdata.FlexContainer {
+		let targetTypes = [constants.SUMMARY_SQLDB_TYPE, constants.SUMMARY_MI_TYPE, constants.SUMMARY_VM_TYPE];
+		if (this._readonly) {
+			const targetPlatforms = new Set<string>();
+			const issues = this.migrationStateModel._assessmentResults?.issues;
+			for (let j = 0; j < issues.length; ++j) {
+				targetPlatforms.add(issues[j].appliesToMigrationTargetPlatform);
+			}
+
+			for (let i = 0; i < this.migrationStateModel._assessmentResults?.databaseAssessments.length; ++i) {
+				const issues = this.migrationStateModel._assessmentResults?.databaseAssessments[i].issues;
+				for (let j = 0; j < issues.length; ++j) {
+					targetPlatforms.add(issues[j].appliesToMigrationTargetPlatform);
+				}
+			}
+
+			targetTypes = Array.from(targetPlatforms).sort().map(v => {
+				switch (v) {
+					case MigrationTargetType.SQLDB: return constants.SUMMARY_SQLDB_TYPE;
+					case MigrationTargetType.SQLMI: return constants.SUMMARY_MI_TYPE;
+					case MigrationTargetType.SQLVM: return constants.SUMMARY_VM_TYPE;
+					default: return v.toString();
+				}
+			});
+		}
+
 		const targetTypeContainer = this._view.modelBuilder.flexContainer().component();
 
 		const selectLabel = this._view.modelBuilder.text().withProps({
@@ -202,7 +229,7 @@ export class AssessmentDetailsHeader {
 		this._targetSelectionDropdown = this._view.modelBuilder.dropDown().withProps({
 			ariaLabel: constants.AZURE_SQL_TARGET,
 			placeholder: constants.SELECT_TARGET_LABEL,
-			values: [constants.SUMMARY_SQLDB_TYPE, constants.SUMMARY_MI_TYPE, constants.SUMMARY_VM_TYPE],
+			values: targetTypes,
 			width: 250,
 			editable: true,
 			CSSStyles: {
