@@ -45,6 +45,9 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	private _algorithmDropdown: azdata.DropDownComponent;
 	private _encryptorDropdown: azdata.DropDownComponent;
 
+	private _defaultBackupFolderPath: string;
+	private _defaultBackupPathSeparator: string;
+
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options, loc.BackupDatabaseDialogTitle(options.database), 'BackupDatabase');
 		this.dialogObject.okButton.label = loc.BackupButtonLabel;
@@ -67,6 +70,9 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	protected override async initializeUI(): Promise<void> {
+		this._defaultBackupFolderPath = await this.objectManagementService.getBackupFolder(this.options.connectionUri);
+		this._defaultBackupPathSeparator = this._defaultBackupFolderPath[0] === '/' ? '/' : '\\';
+
 		let generalSection = await this.initializeGeneralSection();
 		let optionsSection = this.initializeOptionsSection();
 
@@ -133,8 +139,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let backupDestContainer = this.createLabelInputContainer(loc.BackupToLabel, this._backupDestDropdown);
 		components.push(backupDestContainer);
 
-		let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
-		let defaultPath = `${dataFolder}${defaultName}.bak`; // Data folder path already includes a trailing path separator
+		let defaultPath = `${this._defaultBackupFolderPath}${this._defaultBackupPathSeparator}${defaultName}.bak`;
 		this._backupFilePaths.push(defaultPath);
 		this._backupFilesTable = this.createTable(loc.BackupFilesLabel, [loc.BackupFilesLabel], [[defaultPath]]);
 		components.push(this._backupFilesTable);
@@ -256,8 +261,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	private async onAddFilesButtonClicked(): Promise<void> {
 		try {
-			let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
-			let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, this._fileFilters);
+			let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, this._defaultBackupFolderPath, this._fileFilters);
 			if (filePath) {
 				this._backupFilePaths.push(filePath);
 				await this.updateTableData();
