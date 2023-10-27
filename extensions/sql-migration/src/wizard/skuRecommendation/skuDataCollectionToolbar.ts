@@ -215,6 +215,8 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 				}
 			}).component();
 
+		stopPerformanceCollectionButton.enabled = false;
+
 		this._disposables.push(stopPerformanceCollectionButton.onDidClick(async () => {
 			await this.migrationStateModel.stopPerfDataCollection();
 			await this.skuRecommendationPage.refreshAzureRecommendation();
@@ -301,6 +303,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 					await this._restartPerformanceCollectionButton.updateCssStyles({ 'display': 'inline' });
 					this._restartPerformanceCollectionButton.enabled = true;
 				}
+				break;
 			}
 			case PerformanceDataSourceOptions.OpenExisting: {
 				if (utils.hasRecommendations(this.migrationStateModel)) {
