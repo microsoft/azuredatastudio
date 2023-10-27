@@ -148,11 +148,9 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			required: false,
 			enabled: false,
 			width: RestoreInputsWidth,
-			value: ''
+			value: this.viewInfo.restoreDatabaseInfo.lastBackupTaken
 		};
-		let restoreTo = this.createInputBox(async () => {
-			// this.objectInfo.collationName = collationDropbox.value as string;
-		}, props);
+		let restoreTo = this.createInputBox(async () => { }, props);
 		containers.push(this.createLabelInputContainer(localizedConstants.RestoreToText, restoreTo));
 
 		return this.createGroup(localizedConstants.DestinationSectionText, containers, true);
@@ -183,8 +181,8 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		let containers: azdata.Component[] = [];
 		// Relocate all files
 		this.relocateAllFiles = this.createCheckbox(localizedConstants.RelocateAllFilesText, async (checked) => {
-			// this.objectInfo.autoCreateIncrementalStatistics = checked;
-		}, true);
+			this.objectInfo.restoreOptions.relocateDbFiles = checked;
+		}, this.objectInfo.restoreOptions.relocateDbFiles);
 		containers.push(this.relocateAllFiles);
 
 		// Data	File folder
@@ -194,7 +192,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			ariaLabel: localizedConstants.DataFileFolderText,
 			inputType: 'text',
 			enabled: false,
-			value: this.objectInfo.restoreOptions.defaultDataFileFolderPath,
+			value: this.objectInfo.restoreOptions.dataFileFolder,
 			width: RestoreInputsWidth
 		});
 		containers.push(this.createLabelInputContainer(localizedConstants.DataFileFolderText, dataFileFolder));
@@ -206,7 +204,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			ariaLabel: localizedConstants.LogFileFolderText,
 			inputType: 'text',
 			enabled: false,
-			value: this.objectInfo.restoreOptions.defaultLogFileFolderPath,
+			value: this.objectInfo.restoreOptions.logFileFolder,
 			width: RestoreInputsWidth
 		});
 		containers.push(this.createLabelInputContainer(localizedConstants.LogFileFolderText, logFileFolder));
@@ -224,26 +222,26 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		let containers: azdata.Component[] = [];
 		// Overwrite the existing database (WITH REPLACE)
 		this.overwriteExistingDatabase = this.createCheckbox(localizedConstants.OverwriteTheExistingDatabaseText, async (checked) => {
-			// this.objectInfo.autoCreateIncrementalStatistics = checked;
-		}, true);
+			this.objectInfo.restoreOptions.replaceDatabase = checked;
+		}, this.objectInfo.restoreOptions.replaceDatabase);
 		containers.push(this.overwriteExistingDatabase);
 
 		// Preserve the replication settings (WITH KEEP_REPLICATION)
 		this.preserveReplicationSettings = this.createCheckbox(localizedConstants.PreserveReplicationSettingsText, async (checked) => {
-			// this.objectInfo.autoCreateIncrementalStatistics = checked;
-		}, true);
+			this.objectInfo.restoreOptions.keepReplication = checked;
+		}, this.objectInfo.restoreOptions.keepReplication);
 		containers.push(this.preserveReplicationSettings);
 
 		// Restrict access to the restored database (WITH RESTRICTED_USER)
 		this.restrictAccessToRestoredDB = this.createCheckbox(localizedConstants.RestrictAccessToRestoredDBText, async (checked) => {
-			// this.objectInfo.autoCreateIncrementalStatistics = checked;
-		}, true);
+			this.objectInfo.restoreOptions.setRestrictedUser = checked;
+		}, this.objectInfo.restoreOptions.setRestrictedUser);
 		containers.push(this.restrictAccessToRestoredDB);
 
 		//Recovery state
-		let recoveryState = this.createDropdown(localizedConstants.RecoveryStateText, async () => {
-			// this.objectInfo.collationName = collationDropbox.value as string;
-		}, this.viewInfo.restoreDatabaseInfo.recoveryStateOptions, '', true, RestoreInputsWidth, true, true);
+		let recoveryState = this.createDropdown(localizedConstants.RecoveryStateText, async (newValue) => {
+			this.objectInfo.restoreOptions.recoveryState = newValue as string;
+		}, this.viewInfo.restoreDatabaseInfo.recoveryStateOptions, this.viewInfo.restoreDatabaseInfo.recoveryStateOptions[0], true, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.RecoveryStateText, recoveryState));
 
 		//Stand by file
@@ -252,10 +250,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			required: false,
 			enabled: false,
 			width: RestoreInputsWidth,
-			value: ''
+			value: this.objectInfo.restoreOptions.standbyFile
 		};
-		let restoreTo = this.createInputBox(async () => {
-			// this.objectInfo.collationName = collationDropbox.value as string;
+		let restoreTo = this.createInputBox(async (newValue) => {
+			this.objectInfo.restoreOptions.standbyFile = newValue;
 		}, props);
 		containers.push(this.createLabelInputContainer(localizedConstants.StandbyFileText, restoreTo));
 
@@ -266,14 +264,14 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		let containers: azdata.Component[] = [];
 		// Take tail-log backup before restore
 		this.takeTailLogBackup = this.createCheckbox(localizedConstants.TakeTailLogBackupBeforeRestoreText, async (checked) => {
-			// this.objectInfo.autoCreateIncrementalStatistics = checked;
-		}, true);
+			this.objectInfo.restoreOptions.backupTailLog = checked;
+		}, this.objectInfo.restoreOptions.backupTailLog);
 		containers.push(this.takeTailLogBackup);
 
 		// leave source database in the restoring state (WITH NORECOVERY)
 		this.leaveSourceDB = this.createCheckbox(localizedConstants.LeaveSourceDBText, async (checked) => {
-			// this.objectInfo.autoCreateIncrementalStatistics = checked;
-		}, true);
+			this.objectInfo.restoreOptions.tailLogWithNoRecovery = checked;
+		}, this.objectInfo.restoreOptions.tailLogWithNoRecovery);
 		containers.push(this.leaveSourceDB);
 
 		// Tail log backup file
@@ -282,10 +280,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			required: false,
 			enabled: false,
 			width: RestoreInputsWidth,
-			value: ''
+			value: this.objectInfo.restoreOptions.tailLogBackupFile
 		};
-		let tailLogBackupFile = this.createInputBox(async () => {
-			// this.objectInfo.collationName = collationDropbox.value as string;
+		let tailLogBackupFile = this.createInputBox(async (newValue) => {
+			this.objectInfo.restoreOptions.tailLogBackupFile = newValue;
 		}, props);
 		containers.push(this.createLabelInputContainer(localizedConstants.TailLogBackupFileText, tailLogBackupFile));
 
@@ -295,8 +293,8 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	private initializeServerConnectionsSection(): azdata.GroupContainer {
 		// Close existing server connections to destination database
 		this.closeExistingConnections = this.createCheckbox(localizedConstants.CloseExistingConnectionText, async (checked) => {
-			// this.objectInfo.autoCreateIncrementalStatistics = checked;
-		}, true);
+			this.objectInfo.restoreOptions.closeExistingConnection = checked;
+		}, this.objectInfo.restoreOptions.closeExistingConnection);
 
 		return this.createGroup(localizedConstants.RestoreServerConnectionsOptionsText, [this.closeExistingConnections], true);
 	}

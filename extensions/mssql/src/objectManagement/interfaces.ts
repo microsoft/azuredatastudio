@@ -506,19 +506,27 @@ export interface QueryStoreOptions {
 	currentStorageSizeInMB: number;
 }
 
-export interface RestoreOptions {
-	defaultDataFileFolderPath: string;
-	defaultLogFileFolderPath: string;
-	defaultBackupFileFolderPath: string;
-	restorePlanDetailInfo?: RestorePlanDetailInfo;
+export interface RestoreDatabaseInfo {
+	sourceDatabaseNames: string[];
+	targetDatabaseNames: string[];
+	recoveryStateOptions: string[];
+	lastBackupTaken: string;
 }
 
-export interface RestorePlanDetailInfo {
-	name: string;
-	currentValue: any;
-	isReadOnly: boolean;
-	isVisible: boolean;
-	defaultValue: any;
+export interface RestoreOptions {
+	keepReplication: boolean;
+	replaceDatabase: boolean;
+	setRestrictedUser: boolean;
+	recoveryState: string;
+	backupTailLog: boolean;
+	tailLogBackupFile: string;
+	tailLogWithNoRecovery: boolean;
+	closeExistingConnection: boolean;
+	relocateDbFiles: boolean;
+	dataFileFolder: string;
+	logFileFolder: string;
+	standbyFile: string;
+	overwriteTargetDatabase: boolean;
 }
 
 export interface QueryStoreCapturePolicyOptions {
@@ -543,12 +551,6 @@ export interface OptionsCollection {
 export interface AzureEditionDetails {
 	editionDisplayName: string;
 	editionOptions: OptionsCollection;
-}
-
-export interface RestoreDatabaseInfo {
-	sourceDatabaseNames: string[];
-	targetDatabaseNames: string[];
-	recoveryStateOptions: string[];
 }
 
 export interface ProcessorAffinity {
