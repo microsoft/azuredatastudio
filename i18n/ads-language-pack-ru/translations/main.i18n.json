@@ -13540,7 +13540,7 @@
 		"sql/workbench/contrib/dashboard/browser/core/dashboardPage.component": {
 			"dashboard.configureDashboardTooltip": "Подробнее о настройке панели мониторинга",
 			"dashboard.generalTabGroupHeader": "Общие",
-			"dashboard.tabLoadingError": "Error loading tab {0}",
+			"dashboard.tabLoadingError": "Ошибка при загрузке вкладки: {0}",
 			"home": "Домашняя страница",
 			"missingConnectionInfo": "Не удалось найти сведения о подключении для этой панели мониторинга"
 		},

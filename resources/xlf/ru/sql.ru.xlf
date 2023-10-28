@@ -2714,7 +2714,7 @@ Default Skipped Commands:
       </trans-unit>
       <trans-unit id="dashboard.tabLoadingError">
         <source xml:lang="en">Error loading tab {0}</source>
-        <target state="new">Error loading tab {0}</target>
+        <target state="translated">Ошибка при загрузке вкладки: {0}</target>
       </trans-unit>
       <trans-unit id="home">
         <source xml:lang="en">Home</source>

@@ -13540,7 +13540,7 @@
 		"sql/workbench/contrib/dashboard/browser/core/dashboardPage.component": {
 			"dashboard.configureDashboardTooltip": "详细了解如何配置仪表板",
 			"dashboard.generalTabGroupHeader": "常规",
-			"dashboard.tabLoadingError": "Error loading tab {0}",
+			"dashboard.tabLoadingError": "加载选项卡 {0} 时出错",
 			"home": "主页",
 			"missingConnectionInfo": "未找到此仪表板的连接信息"
 		},
