@@ -9,11 +9,7 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/account-provider/auths/azureAuth": {
-			"azurecore.confirmIgnoreTenantDialog.body": "Azure Data Studio에서 이 테넌트 {0}({1})에 대한 인증을 더 이상 트리거하지 않으며 리소스에 액세스할 수 없게 됩니다 \r\n\r\n이 테넌트의 리소스에 대한 액세스를 다시 허용하려면 '{2}' 설정의 제외 목록에서 테넌트를 제거해야 합니다.\r\n\r\n계속하시겠습니까?",
 			"azurecore.consentDialog.cancel": "취소",
-			"azurecore.consentDialog.authenticate": "취소 및 인증",
-			"azurecore.confirmIgnoreTenantDialog.confirm": "확인",
-			"azurecore.consentDialog.ignore": "테넌트 무시",
 			"azure.microsoftAccountDisplayName": "Microsoft 계정",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azurecore.consentDialog.open": "열기",
@@ -38,7 +34,6 @@
 			"genericTokenError": "토큰을 가져오지 못했습니다.",
 			"azure.NoAuthMethod.Available": "사용 가능한 Azure 인증 방법이 없습니다. ADS 구성에서 인증 방법을 사용하도록 설정해야 합니다.",
 			"azure.NoAuthMethod.Selected": "Azure 인증 방법이 선택되지 않았습니다. 사용할 인증 방법을 선택해야 합니다.",
-			"tenantIgnoredError": "테넌트가 무시 목록에 있습니다. 인증이 시도되지 않았습니다. {1} settings.json 파일의 무시 목록에서 {0} 테넌트를 제거하여 이 테넌트의 리소스에 액세스할 수 있습니다.",
 			"msalTokenError": "토큰을 획득할 때 {0}이(가) 발생했습니다. \r\n{1}"
 		},
 		"dist/account-provider/azureAccountProviderService": {
@@ -253,7 +248,6 @@
 			"config.providerSettings.endpoints.azureKustoResource": "Azure Kusto 리소스 엔드포인트",
 			"config.providerSettings.endpoints.logAnalytics": "Azure Log Analytics 엔드포인트",
 			"config.providerSettings.endpoints.portal": "Azure Portal 엔드포인트",
-			"azure.resource.config.title": "Azure 리소스 구성",
 			"config.providerSettings.endpoints.azureStorageResource": "Azure Storage 리소스 엔드포인트",
 			"config.providerSettings.endpoints.azureStorageResourceSuffix": "Azure Storage 리소스 엔드포인트 접미사",
 			"azure.resource.refreshall.title": "Azure: 모든 계정 새로 고침",
@@ -287,8 +281,6 @@
 			"config.piiLogging": "개인 식별 정보(PII)는 Azure 계정 출력 채널 및 출력 채널 로그 파일에 기록되어야 합니다.",
 			"config.enableUsGovCloudDescription": "US Government Azure 클라우드(Fairfax) 통합을 사용하도록 설정한 경우",
 			"azure.resource.startterminal.title": "Cloud Shell 시작",
-			"azure.tenant.config.filter.description": "Azure 리소스를 쿼리하거나 인증 토큰을 요청할 때 건너뛸 테넌트 ID 목록입니다.",
-			"azure.resource.config.filter.description": "리소스 필터, 각 요소는 계정 ID임, 구독 ID와 이름은 슬래시로 구분됨",
 			"config.loggingLevel": "[선택 사항] Azure 계정 확장에 대한 로깅의 자세한 정도입니다."
 		}
 	}

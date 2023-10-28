@@ -9,11 +9,7 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/account-provider/auths/azureAuth": {
-			"azurecore.confirmIgnoreTenantDialog.body": "Azure Data Studio 不會再觸發此租用戶 {0} ({1}) 的驗證，且資源將無法存取。. \r\n\r\n若要再次允許此租用戶存取資源，您必須從 '{2}' 設定的排除清單中移除該租用戶。\r\n\r\n是否要繼續?",
 			"azurecore.consentDialog.cancel": "取消",
-			"azurecore.consentDialog.authenticate": "註冊並驗證",
-			"azurecore.confirmIgnoreTenantDialog.confirm": "確認",
-			"azurecore.consentDialog.ignore": "忽略租用戶",
 			"azure.microsoftAccountDisplayName": "Microsoft 帳戶",
 			"azure.microsoftCorpAccount": "Microsoft Corp.",
 			"azurecore.consentDialog.open": "開啟",
@@ -38,7 +34,6 @@
 			"genericTokenError": "無法取得權杖",
 			"azure.NoAuthMethod.Available": "沒有任何可用的 Azure 驗證方法。您必須在 ADS 組態中啟用驗證方法。",
 			"azure.NoAuthMethod.Selected": "未選取任何 Azure 驗證方法。您必須選取要使用的驗證方法。",
-			"tenantIgnoredError": "在忽略清單中找到的租用戶未嘗試過驗證。如果想要存取此租用戶 {0} 的資源，可以從 settings.json 檔案中的忽略清單 {1} 中移除該租用戶。",
 			"msalTokenError": "取得權杖時發生 {0}。\r\n{1}"
 		},
 		"dist/account-provider/azureAccountProviderService": {
@@ -253,7 +248,6 @@
 			"config.providerSettings.endpoints.azureKustoResource": "Azure Kusto 資源端點",
 			"config.providerSettings.endpoints.logAnalytics": "Azure Log Analytics 端點",
 			"config.providerSettings.endpoints.portal": "Azure 入口網站端點",
-			"azure.resource.config.title": "Azure 資源組態",
 			"config.providerSettings.endpoints.azureStorageResource": "Azure 儲存體資源端點",
 			"config.providerSettings.endpoints.azureStorageResourceSuffix": "Azure 儲存體資源端點尾碼",
 			"azure.resource.refreshall.title": "Azure: 重新整理所有帳戶",
@@ -287,8 +281,6 @@
 			"config.piiLogging": "是否要將個人識別資訊 (PII) 記錄在 Azure 帳戶輸出通道與輸出通道記錄檔中。",
 			"config.enableUsGovCloudDescription": "是否應啟用 US Government Azure 雲端 (Fairfax) 整合",
 			"azure.resource.startterminal.title": "啟動 Cloud Shell",
-			"azure.tenant.config.filter.description": "查詢 Azure 資源或要求驗證權杖時會略過的租用戶識別碼清單。",
-			"azure.resource.config.filter.description": "資源篩選條件，每個元素都是以正斜線分隔的帳戶識別碼、訂用帳戶識別碼和名稱",
 			"config.loggingLevel": "[選用] Azure 帳戶延伸模組的記錄詳細程度。"
 		}
 	}

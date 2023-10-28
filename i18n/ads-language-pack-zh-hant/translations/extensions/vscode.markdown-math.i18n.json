@@ -10,6 +10,7 @@
 	"contents": {
 		"package": {
 			"config.markdown.math.enabled": "啟用/停用在內建 Markdown 預覽中呈現數學。",
+			"config.markdown.math.macros": "自訂巨集的集合。每個巨集都是一組機碼值，其中的機碼是新命令名稱，而值是巨集的擴充。",
 			"description": "在筆記本中新增 Markdown 的數學支援。",
 			"displayName": "Markdown 數學"
 		}

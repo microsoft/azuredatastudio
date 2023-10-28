@@ -625,8 +625,8 @@
         <target state="translated">Fermer</target>
       </trans-unit>
       <trans-unit id="managePackages.dialogName">
-        <source xml:lang="en">Manage Packages</source>
-        <target state="translated">Gérer les packages</target>
+        <source xml:lang="en">Manage Notebook Packages</source>
+        <target state="translated">Gérer les packages de notebooks</target>
       </trans-unit>
     </body>
   </file>
@@ -659,6 +659,10 @@
       <trans-unit id="unsupportedFileType">
         <source xml:lang="en">Only .ipynb Notebooks are supported</source>
         <target state="translated">Seuls les notebooks .ipynb sont pris en charge</target>
+      </trans-unit>
+      <trans-unit id="pythonNotSetup">
+        <source xml:lang="en">Python is not currently configured for notebooks. The 'Configure Python for Notebooks' command must be run before being able to manage notebook packages.</source>
+        <target state="translated">Python n’est actuellement pas configuré pour les notebooks. La commande « Configurer Python pour notebooks » doit être exécutée avant de pouvoir gérer les packages de notebooks.</target>
       </trans-unit>
     </body>
   </file>
@@ -957,8 +961,8 @@
         <target state="translated">Chemin local de l'installation Python utilisé par Notebooks.</target>
       </trans-unit>
       <trans-unit id="title.managePackages">
-        <source xml:lang="en">Manage Packages</source>
-        <target state="translated">Gérer les packages</target>
+        <source xml:lang="en">Manage Notebook Packages</source>
+        <target state="translated">Gérer les packages de notebooks</target>
       </trans-unit>
       <trans-unit id="notebook.maxBookSearchDepth.description">
         <source xml:lang="en">Maximum depth of subdirectories to search for Books (Enter 0 for infinite)</source>

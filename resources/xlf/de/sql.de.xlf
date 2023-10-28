@@ -220,6 +220,27 @@
         <source xml:lang="en">Please reload Azure Data Studio to complete reinstalling the extension {0}.</source>
         <target state="translated">Laden Sie Azure Data Studio neu, um die Neuinstallation der Erweiterung {0} abzuschließen.</target>
       </trans-unit>
+      <trans-unit id="aboutDetail">
+        <source xml:lang="en">Version: {0}
+Commit: {1}
+Date: {2}
+VS Code: {3}
+Electron: {4}
+Chromium: {5}
+Node.js: {6}
+V8: {7}
+OS: {8}</source>
+        <note>Electron, Chromium, Node.js and V8 are product names that need no translation</note>
+        <target state="new">Version: {0}
+Commit: {1}
+Date: {2}
+VS Code: {3}
+Electron: {4}
+Chromium: {5}
+Node.js: {6}
+V8: {7}
+OS: {8}</target>
+      </trans-unit>
       <trans-unit id="activateLanguagePack">
         <source xml:lang="en">In order to use Azure Data Studio in {0}, Azure Data Studio needs to restart.</source>
         <target state="translated">Um Azure Data Studio in {0} zu verwenden, muss Azure Data Studio neu gestartet werden.</target>
@@ -243,6 +264,11 @@
       <trans-unit id="azuredatastudio.installTooltip">
         <source xml:lang="en">Install this extension</source>
         <target state="translated">Diese Erweiterung installieren</target>
+      </trans-unit>
+      <trans-unit id="azuredatastudio.themeUpdatedNotification">
+        <source xml:lang="en">Azure Data Studio now ships with a new default theme '{0}'. If you prefer, you can switch back to the old theme or try one of the many other color themes available.</source>
+        <note>{0} is the name of the new default theme</note>
+        <target state="translated">Azure Data Studio wird jetzt mit einem neuen Standarddesign "{0}" ausgeliefert. Wenn Sie möchten, können Sie zum alten Design zurückkehren oder eines der vielen anderen verfügbaren Farbdesigns ausprobieren.</target>
       </trans-unit>
       <trans-unit id="connectionDialogBrowseTree.context">
         <source xml:lang="en">The connection dialog's browse tree context menu</source>
@@ -319,6 +345,11 @@
       <trans-unit id="newQuery">
         <source xml:lang="en">New Query</source>
         <target state="translated">Neue Abfrage</target>
+      </trans-unit>
+      <trans-unit id="newThemeNotification">
+        <source xml:lang="en">Azure Data Studio now ships with a new default theme '{0}'. Do you want to give it a try?</source>
+        <note>{0} is the name of the new default theme</note>
+        <target state="translated">Azure Data Studio wird jetzt mit einem neuen Standarddesign "{0}" ausgeliefert. Möchten Sie es ausprobieren?</target>
       </trans-unit>
       <trans-unit id="notebook.cellTitle">
         <source xml:lang="en">The notebook cell title menu</source>
@@ -1319,6 +1350,10 @@ Die folgende Liste der übersprungenen Standardbefehle wird abgeschnitten, wenn 
         <source xml:lang="en">XEvent Profiler Session stopped unexpectedly on the server {0}.</source>
         <target state="translated">Die XEvent Profiler-Sitzung wurde auf dem Server "{0}" unerwartet beendet.</target>
       </trans-unit>
+      <trans-unit id="profilerInput.connDetails">
+        <source xml:lang="en">Connection Details: </source>
+        <target state="translated">Verbindungsdetails: </target>
+      </trans-unit>
       <trans-unit id="profilerInput.notConnected">
         <source xml:lang="en">Not connected</source>
         <target state="translated">Nicht verbunden</target>
@@ -1326,6 +1361,12 @@ Die folgende Liste der übersprungenen Standardbefehle wird abgeschnitten, wenn 
       <trans-unit id="profilerInput.profiler">
         <source xml:lang="en">Profiler</source>
         <target state="translated">Profiler</target>
+      </trans-unit>
+      <trans-unit id="profilerInput.sessionName">
+        <source xml:lang="en">: Session Name: {0}
+</source>
+        <target state="translated">: Sitzungsname: {0}
+</target>
       </trans-unit>
     </body>
   </file>
@@ -2384,12 +2425,12 @@ Die folgende Liste der übersprungenen Standardbefehle wird abgeschnitten, wenn 
         <target state="translated">Alle Verbindungen reduzieren</target>
       </trans-unit>
       <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
-        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory: universell mit MFA-Unterstützung</target>
+        <source xml:lang="en">Microsoft Entra ID - Universal with MFA support</source>
+        <target state="translated">Microsoft Entra ID – Universell mit MFA-Unterstützung</target>
       </trans-unit>
       <trans-unit id="sql.defaultAuthenticationType.AzureMFAAndUser">
-        <source xml:lang="en">Azure Active Directory - Password</source>
-        <target state="translated">Azure Active Directory: Kennwort</target>
+        <source xml:lang="en">Microsoft Entra ID - Password</source>
+        <target state="translated">Microsoft Entra ID – Kennwort</target>
       </trans-unit>
       <trans-unit id="sql.defaultAuthenticationType.Integrated">
         <source xml:lang="en">Windows Authentication</source>
@@ -2670,6 +2711,10 @@ Die folgende Liste der übersprungenen Standardbefehle wird abgeschnitten, wenn 
       <trans-unit id="dashboard.generalTabGroupHeader">
         <source xml:lang="en">General</source>
         <target state="translated">Allgemein</target>
+      </trans-unit>
+      <trans-unit id="dashboard.tabLoadingError">
+        <source xml:lang="en">Error loading tab {0}</source>
+        <target state="translated">Fehler beim Laden der Registerkarte {0}</target>
       </trans-unit>
       <trans-unit id="home">
         <source xml:lang="en">Home</source>
@@ -6463,6 +6508,22 @@ Fehler: {1}</target>
         <source xml:lang="en">Character used for enclosing text fields when saving results as CSV</source>
         <target state="translated">Zeichen für das Umschließen von Textfeldern, das beim Speichern der Ergebnisse als CSV verwendet wird</target>
       </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsExcel.autoFilterHeaderRow">
+        <source xml:lang="en">When true, enable auto filtering on the header row when saving results as an Excel file</source>
+        <target state="translated">Bei WAHR aktivieren Sie die automatische Filterung für die Kopfzeile, wenn Sie Ergebnisse als Excel-Datei speichern.</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsExcel.autoSizeColumns">
+        <source xml:lang="en">When true, attempt to automatically size columns when saving results as an Excel file</source>
+        <target state="translated">Bei WAHR wird beim Speichern der Ergebnisse als Excel-Datei versucht, die Größe von Spalten automatisch zu ändern.</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsExcel.boldHeaderRow">
+        <source xml:lang="en">When true, make the header row bold when saving results as an Excel file</source>
+        <target state="translated">Bei WAHR wird die Kopfzeile beim Speichern der Ergebnisse als Excel-Datei fett formatiert.</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsExcel.freezeHeaderRow">
+        <source xml:lang="en">When true, freeze the header row when saving results as an Excel file</source>
+        <target state="translated">Bei WAHR fixieren Sie die Kopfzeile beim Speichern der Ergebnisse als Excel-Datei.</target>
+      </trans-unit>
       <trans-unit id="queryEditor.results.saveAsExcel.includeHeaders">
         <source xml:lang="en">When true, column headers are included when saving results as an Excel file</source>
         <target state="translated">Bei Festlegung auf WAHR werden beim Speichern der Ergebnisse als eine Excel-Datei auch die Spaltenüberschriften einbezogen.</target>
@@ -7714,8 +7775,8 @@ Fehlermeldung: {1}</target>
         <target state="translated">Azure-Abonnement</target>
       </trans-unit>
       <trans-unit id="backupRestoreUrlBrowserDialog.tenant">
-        <source xml:lang="en">Azure AD Tenant</source>
-        <target state="translated">Azure AD-Mandant</target>
+        <source xml:lang="en">Microsoft Entra Tenant</source>
+        <target state="translated">Microsoft Entra-Mandant</target>
       </trans-unit>
       <trans-unit id="fileBrowser.discard">
         <source xml:lang="en">Discard</source>
@@ -7998,8 +8059,8 @@ Fehlermeldung: {1}</target>
         <target state="translated">Konto</target>
       </trans-unit>
       <trans-unit id="connection.azureTenantDropdownLabel">
-        <source xml:lang="en">Azure AD tenant</source>
-        <target state="translated">Azure AD-Mandant</target>
+        <source xml:lang="en">Microsoft Entra tenant</source>
+        <target state="translated">Microsoft Entra-Mandant</target>
       </trans-unit>
       <trans-unit id="connectionName">
         <source xml:lang="en">Name (optional)</source>
@@ -8270,9 +8331,9 @@ Fehlermeldung: {1}</target>
   </file>
   <file original="src/sql/workbench/services/fileBrowser/browser/fileBrowserDialog" source-language="en" datatype="plaintext" target-language="de">
     <body>
-      <trans-unit id="fileBrowser.discard">
-        <source xml:lang="en">Discard</source>
-        <target state="translated">Verwerfen</target>
+      <trans-unit id="fileBrowser.back">
+        <source xml:lang="en">Back</source>
+        <target state="translated">Zurück</target>
       </trans-unit>
       <trans-unit id="fileBrowser.ok">
         <source xml:lang="en">OK</source>
@@ -9215,10 +9276,6 @@ Fehlermeldung: {1}</target>
   </file>
   <file original="src/sql/workbench/services/query/common/queryManagement" source-language="en" datatype="plaintext" target-language="de">
     <body>
-      <trans-unit id="queryManagement.noQueryRunnerForUri">
-        <source xml:lang="en">Could not find Query Runner for uri: {0}</source>
-        <target state="translated">Die Abfragenausführung für URI konnte nicht gefunden werden: {0}</target>
-      </trans-unit>
       <trans-unit id="queryManagement.uriAlreadyHasQueryRunner">
         <source xml:lang="en">Uri: {0} unexpectedly already has a query runner.</source>
         <target state="translated">URI: {0} verfügt unerwarteterweise bereits über eine Abfragenausführung.</target>

@@ -214,10 +214,6 @@
         <source xml:lang="en">Commit Hash</source>
         <target state="translated">커밋 해시</target>
       </trans-unit>
-      <trans-unit id="++CODE++ed1fdf6e6ca057297a99375eca0f051f9ffbec49a1767e2126918b24e1350dff">
-        <source xml:lang="en">Commit Staged Changes</source>
-        <target state="translated">스테이징된 변경 사항 커밋</target>
-      </trans-unit>
       <trans-unit id="++CODE++26306d203c4a6f1a77f32cd065d7d11593ba0c7a9b5c52c188b98f22b620941f">
         <source xml:lang="en">Commit message</source>
         <target state="translated">커밋 메시지</target>
@@ -381,6 +377,10 @@
       <trans-unit id="++CODE++969ccbd3cf6300ecd5c880459d81ae9027df7517563184a1b8b15282db230621">
         <source xml:lang="en">Email</source>
         <target state="translated">전자 메일</target>
+      </trans-unit>
+      <trans-unit id="++CODE++975dd75001ae0d7c535f15e85326be3fc636a908ef77dcd64931d0564b64c7f5">
+        <source xml:lang="en">Enables the following features: {0}</source>
+        <target state="translated">다음 기능을 사용하도록 설정: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++f9e38e00f92b08ea1873eb83b3a80656bca1da49a4b862e70d1a34d654a052dd">
         <source xml:lang="en">Failed to authenticate to git remote.</source>
@@ -626,6 +626,10 @@
         <source xml:lang="en">Pick a repository to open</source>
         <target state="translated">열려는 리포지토리 선택</target>
       </trans-unit>
+      <trans-unit id="++CODE++43cfba061c66b48d18654d4630284c8f93f76fd551a761506e76d04100be78d2">
+        <source xml:lang="en">Pick a repository to reopen</source>
+        <target state="translated">다시 열 리포지토리 선택</target>
+      </trans-unit>
       <trans-unit id="++CODE++4409fc12fb9667fbb6713fe6c40de5a69128fafb717e7f925f9829d842769a66">
         <source xml:lang="en">Pick a stash to apply</source>
         <target state="translated">적용할 스태시 선택</target>
@@ -746,6 +750,10 @@ Do not translate "Branch" as it is a git term</note>
         <source xml:lang="en">Remote name format invalid</source>
         <target state="translated">잘못된 원격 이름 형식</target>
       </trans-unit>
+      <trans-unit id="++CODE++382638de5d12f729cec7910b1bb7998999342f9ab710360306bd29bdd8d89ca3">
+        <source xml:lang="en">Reopen Closed Repositories</source>
+        <target state="translated">닫힌 리포지토리 다시 열기</target>
+      </trans-unit>
       <trans-unit id="++CODE++25202086021659225a6b0065ed7ea55875f99c94859e62037b4e00bf1aead47b">
         <source xml:lang="en">Replace Local Tag(s)</source>
         <target state="translated">로컬 태그 교체</target>
@@ -758,9 +766,9 @@ Do not translate "Branch" as it is a git term</note>
         <source xml:lang="en">Restore files</source>
         <target state="translated">파일 복원</target>
       </trans-unit>
-      <trans-unit id="++CODE++e98f3fe796a6bb3a6a887b34998889dc6aad09782c4abf35f15e75aa0a1c32d5">
-        <source xml:lang="en">Save All &amp; Commit</source>
-        <target state="translated">모두 저장 및 커밋</target>
+      <trans-unit id="++CODE++9a67de1b5740e2d935f5bab0d89233b2b75a777a7ea3b57c7e53ac29427c91c6">
+        <source xml:lang="en">Save All &amp; Commit Changes</source>
+        <target state="translated">변경 내용 모두 저장 및 커밋</target>
       </trans-unit>
       <trans-unit id="++CODE++73bd1493a71408520de7d84d0c500708f92ae677a49fe1cec7350d5363f1088e">
         <source xml:lang="en">Save All &amp; Stash</source>
@@ -982,6 +990,10 @@ Do not translate "Branch" as it is a git term</note>
         <source xml:lang="en">Too many changes were detected. Only the first {0} changes will be shown below.</source>
         <target state="translated">너무 많은 변경 내용이 감지되었습니다. 첫 번째 {0} 변경 내용만 아래에 표시됩니다.</target>
       </trans-unit>
+      <trans-unit id="++CODE++dce9960e3b2a3c0c30e66c7e1a3ec396a86650a7acb8fd3cedf74196356deb54">
+        <source xml:lang="en">Type Changed</source>
+        <target state="translated">형식을 변경했습니다.</target>
+      </trans-unit>
       <trans-unit id="++CODE++4460d1b1316e9beeda90bd568c3e9d13b47a3710674433fd1022371f8e1d3108">
         <source xml:lang="en">Unable to pull from remote repository due to conflicting tag(s): {0}. Would you like to resolve the conflict by replacing the local tag(s)?</source>
         <target state="translated">충돌하는 태그로 인해 원격 리포지토리에서 가져올 수 없음: {0}. 로컬 태그를 교체하여 충돌을 해결하시겠습니까?</target>
@@ -1106,6 +1118,10 @@ Do not translate "Branch" as it is a git term</note>
         <source xml:lang="en">{0} (Theirs)</source>
         <target state="translated">{0}(다른 사용자의 변경 내용)</target>
       </trans-unit>
+      <trans-unit id="++CODE++06d2d2cf7b10db10195c834f0403e5802aa68f6551afec39fdc6fb549ca73302">
+        <source xml:lang="en">{0} (Type changed)</source>
+        <target state="translated">{0}(형식을 변경함)</target>
+      </trans-unit>
       <trans-unit id="++CODE++236384de21336e110098c378d5fbdee9628af5281f36a15d98daa43702757ff0">
         <source xml:lang="en">{0} (Untracked)</source>
         <target state="translated">{0}(추적되지 않음)</target>
@@ -1133,6 +1149,10 @@ Do not translate "Branch" as it is a git term</note>
       <trans-unit id="++CODE++9e5f10ce1f838d861901ebb2c83f8824296843cff8472960cfafc0098182383c">
         <source xml:lang="en">{0} Commit &amp; Sync</source>
         <target state="translated">{0} 커밋 및 동기화</target>
+      </trans-unit>
+      <trans-unit id="++CODE++34f8bd615c01255a5815e862d415a991324737482a7d66c874f16a10427897a0">
+        <source xml:lang="en">{0} Commit (Amend)</source>
+        <target state="translated">{0} 커밋(수정)</target>
       </trans-unit>
       <trans-unit id="++CODE++5ea8624f43aa58ee102eae1842f3ba8a08c5bc1e1541440e5fcf3d9c91f78463">
         <source xml:lang="en">{0} Continue</source>
@@ -1178,11 +1198,22 @@ Do not translate "Branch" as it is a git term</note>
 Use the [git.openRepositoryInParentFolders](command:workbench.action.openSettings?%5B%22git.openRepositoryInParentFolders%22%5D) setting to control whether git repositories in parent folders of workspaces or open files are opened. To learn more [read our docs](https://aka.ms/vscode-git-repository-in-parent-folders).</source>
         <note>{Locked='](command:git.openRepositoriesInParentFolders'}
 {Locked='](command:workbench.action.openSettings?%5B%22git.openRepositoryInParentFolders%22%5D'}
-Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for VS Code
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
 Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">git 리포지토리가 작업 영역의 부모 폴더 또는 열린 파일에서 발견되었습니다.
  [리포지토리 열기](command:git.openRepositoriesInParentFolders)
  [git.openRepositoryInParentFolders](command:workbench.action.openSettings?%5B%22git.openRepositoryInParentFolders%22%5D) 설정을 사용하여 작업 영역의 부모 폴더 또는 열린 파일의 git 리포지토리를 열지 여부를 제어합니다. 자세한 내용은 [문서를 읽어보세요](https://aka.ms/vscode-git-repository-in-parent-folders).</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.closedRepository">
+        <source xml:lang="en">A git repository was found that was previously closed.
+[Reopen Closed Repository](command:git.reopenClosedRepositories)
+To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:git.reopenClosedRepositories'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
+        <target state="translated">이전에 닫힌 git 리포지토리가 발견되었습니다.
+[닫힌 리포지토리 다시 열기](command:git.reopenClosedRepositories)
+Azure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 참조하세요.</target>
       </trans-unit>
       <trans-unit id="config.branchRandomNameDictionary.adjectives">
         <source xml:lang="en">A random adjective</source>
@@ -1392,9 +1423,25 @@ Please make sure there is no space between the right bracket and left parenthesi
         <source xml:lang="en">Commit</source>
         <target state="translated">커밋</target>
       </trans-unit>
+      <trans-unit id="command.commitAmend">
+        <source xml:lang="en">Commit (Amend)</source>
+        <target state="translated">커밋(수정)</target>
+      </trans-unit>
+      <trans-unit id="command.commitAmendNoVerify">
+        <source xml:lang="en">Commit (Amend, No Verify)</source>
+        <target state="translated">커밋(수정, 확인 안 함)</target>
+      </trans-unit>
       <trans-unit id="command.commitNoVerify">
         <source xml:lang="en">Commit (No Verify)</source>
         <target state="translated">커밋(확인 안 함)</target>
+      </trans-unit>
+      <trans-unit id="command.commitSigned">
+        <source xml:lang="en">Commit (Signed Off)</source>
+        <target state="translated">커밋(로그오프됨)</target>
+      </trans-unit>
+      <trans-unit id="command.commitSignedNoVerify">
+        <source xml:lang="en">Commit (Signed Off, No Verify)</source>
+        <target state="translated">커밋(로그오프됨, 확인 안 함)</target>
       </trans-unit>
       <trans-unit id="command.commitAll">
         <source xml:lang="en">Commit All</source>
@@ -1529,8 +1576,8 @@ Please make sure there is no space between the right bracket and left parenthesi
         <target state="translated">분기의 정렬 순서를 제어합니다.</target>
       </trans-unit>
       <trans-unit id="config.similarityThreshold">
-        <source xml:lang="en">Controls the threshold of the similarity index (i.e. amount of additions/deletions compared to the file's size) for changes in a pair of added/deleted files to be considered a rename.</source>
-        <target state="translated">추가/삭제된 파일 쌍의 변경 사항을 이름 변경으로 간주하기 위한 유사성 색인의 임계값(예: 파일 크기와 비교한 추가/삭제 양)을 제어합니다.</target>
+        <source xml:lang="en">Controls the threshold of the similarity index (i.e. amount of additions/deletions compared to the file's size) for changes in a pair of added/deleted files to be considered a rename. **Note:** Requires git version `2.18.0` or later.</source>
+        <target state="translated">추가/삭제된 파일 쌍의 변경 사항을 이름 변경으로 간주하기 위한 유사성 색인의 임계값(예: 파일 크기와 비교한 추가/삭제 양)을 제어합니다. **참고:** git 버전 `2.18.0` 이상이 필요합니다.</target>
       </trans-unit>
       <trans-unit id="config.discardAllScope">
         <source xml:lang="en">Controls what changes are discarded by the `Discard all changes` command. `all` discards all changes. `tracked` discards only tracked files. `prompt` shows a prompt dialog every time the action is run.</source>
@@ -1625,12 +1672,12 @@ Please make sure there is no space between the right bracket and left parenthesi
         <target state="translated">Git 하위 모듈을 자동으로 검색할지 여부를 제어합니다.</target>
       </trans-unit>
       <trans-unit id="config.terminalGitEditor">
-        <source xml:lang="en">Controls whether to enable VS Code to be the Git editor for Git processes spawned in the integrated terminal. Note: Terminals need to be restarted to pick up a change in this setting.</source>
-        <target state="translated">통합 터미널에서 생성된 Git 프로세스에 대해 Git 편집기로 VS Code를 사용할지 여부를 제어합니다. 참고: 이 설정에서 변경 사항을 선택하려면 터미널을 다시 시작해야 합니다.</target>
+        <source xml:lang="en">Controls whether to enable Azure Data Studio to be the Git editor for Git processes spawned in the integrated terminal. Note: Terminals need to be restarted to pick up a change in this setting.</source>
+        <target state="translated">통합 터미널에서 생성된 Git 프로세스에 대해 Git 편집기로 Azure Data Studio를 사용할지 여부를 제어합니다. 참고: 이 설정에서 변경 사항을 선택하려면 터미널을 다시 시작해야 합니다.</target>
       </trans-unit>
       <trans-unit id="config.terminalAuthentication">
-        <source xml:lang="en">Controls whether to enable VS Code to be the authentication handler for Git processes spawned in the Integrated Terminal. Note: Terminals need to be restarted to pick up a change in this setting.</source>
-        <target state="translated">통합 터미널에서 생성된 Git 프로세스의 인증 처리기로 VS Code를 사용할지를 제어합니다. 참고: 이 설정의 변경 내용을 적용하려면 터미널을 다시 시작해야 합니다.</target>
+        <source xml:lang="en">Controls whether to enable Azure Data Studio to be the authentication handler for Git processes spawned in the Integrated Terminal. Note: Terminals need to be restarted to pick up a change in this setting.</source>
+        <target state="translated">통합 터미널에서 생성된 git 프로세스의 인증 처리기로 Azure Data Studio를 사용할지 여부를 제어합니다. 참고: 이 설정에서 변경 사항을 선택하려면 터미널을 다시 시작해야 합니다.</target>
       </trans-unit>
       <trans-unit id="config.openAfterClone">
         <source xml:lang="en">Controls whether to open a repository automatically after cloning.</source>
@@ -1826,20 +1873,31 @@ Please make sure there is no space between the right bracket and left parenthesi
 Use the [git.openRepositoryInParentFolders](command:workbench.action.openSettings?%5B%22git.openRepositoryInParentFolders%22%5D) setting to control whether git repositories in parent folders of workspace or open files are opened. To learn more [read our docs](https://aka.ms/vscode-git-repository-in-parent-folders).</source>
         <note>{Locked='](command:git.openRepositoriesInParentFolders'}
 {Locked='](command:workbench.action.openSettings?%5B%22git.openRepositoryInParentFolders%22%5D'}
-Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for VS Code
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
 Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">Git 리포지토리가 작업 영역의 부모 폴더 또는 열린 파일에서 발견되었습니다.
  [리포지토리 열기](command:git.openRepositoriesInParentFolders)
  [git.openRepositoryInParentFolders](command:workbench.action.openSettings?%5B%22git.openRepositoryInParentFolders%22%5D) 설정을 사용하여 작업 영역의 부모 폴더 또는 열린 파일의 git 리포지토리를 열지 여부를 제어합니다. 자세한 내용은 [문서를 읽어보세요](https://aka.ms/vscode-git-repository-in-parent-folders).</target>
       </trans-unit>
+      <trans-unit id="view.workbench.scm.closedRepositories">
+        <source xml:lang="en">Git repositories were found that were previously closed.
+[Reopen Closed Repositories](command:git.reopenClosedRepositories)
+To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:git.reopenClosedRepositories'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
+        <target state="translated">이전에 닫힌 Git 리포지토리가 발견되었습니다.
+[닫힌 리포지토리 다시 열기](command:git.reopenClosedRepositories)
+Azure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 참조하세요.</target>
+      </trans-unit>
       <trans-unit id="view.workbench.scm.disabled">
         <source xml:lang="en">If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
-To learn more about how to use git and source control in VS Code [read our docs](https://aka.ms/vscode-scm).</source>
+To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
         <note>{Locked='](command:workbench.action.openSettings?%5B%22git.enabled%22%5D'}
 Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
 Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
-        <target state="translated">git 기능을 사용하려면 [설정](command:workbench.action.openSettings?%5B%22git.enabled%22%5D)에서 git을 사용하도록 설정하세요.
-VS Code에서 Git 및 원본 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 참조하세요.</target>
+        <target state="translated">git 기능을 사용하려면 [설정](command:workbench.action.openSettings?%5B%22git.enabled%22%5D)에서 git을 활성화하세요.
+Azure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 참조하세요.</target>
       </trans-unit>
       <trans-unit id="config.ignoreSubmodules">
         <source xml:lang="en">Ignore modifications to submodules in the file tree.</source>
@@ -2085,6 +2143,10 @@ Please make sure there is no space between the right bracket and left parenthesi
         <source xml:lang="en">Rename Branch...</source>
         <target state="translated">분기 이름 바꾸기...</target>
       </trans-unit>
+      <trans-unit id="command.reopenClosedRepositories">
+        <source xml:lang="en">Reopen Closed Repositories...</source>
+        <target state="translated">닫힌 리포지토리 다시 열기...</target>
+      </trans-unit>
       <trans-unit id="command.git.openMergeEditor">
         <source xml:lang="en">Resolve in Merge Editor</source>
         <target state="translated">병합 편집기에서 확인</target>
@@ -2261,7 +2323,7 @@ Please make sure there is no space between the right bracket and left parenthesi
 [Manage Unsafe Repositories](command:git.manageUnsafeRepositories)
 To learn more about unsafe repositories [read our docs](https://aka.ms/vscode-git-unsafe-repository).</source>
         <note>{Locked='](command:git.manageUnsafeRepositories'}
-Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for VS Code
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
 Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">검색된 Git 리포지토리는 폴더를 현재 사용자가 아닌 다른 사람이 소유하고 있으므로 잠재적으로 안전하지 않을 수 있습니다.
 [안전하지 않은 저장소 관리](command:git.manageUnsafeRepositories)
@@ -2272,7 +2334,7 @@ Please make sure there is no space between the right bracket and left parenthesi
 [Manage Unsafe Repositories](command:git.manageUnsafeRepositories)
 To learn more about unsafe repositories [read our docs](https://aka.ms/vscode-git-unsafe-repository).</source>
         <note>{Locked='](command:git.manageUnsafeRepositories'}
-Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for VS Code
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
 Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">검색된 Git 리포지토리는 폴더를 현재 사용자가 아닌 다른 사람이 소유하고 있으므로 잠재적으로 안전하지 않습니다.
 [안전하지 않은 리포지토리 관리](command:git.manageUnsafeRepositories)
@@ -2290,8 +2352,8 @@ Please make sure there is no space between the right bracket and left parenthesi
 Azure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 읽어보세요.</target>
       </trans-unit>
       <trans-unit id="config.defaultBranchName">
-        <source xml:lang="en">The name of the default branch (ex: main, trunk, development) when initializing a new git repository. When set to empty, the default branch name configured in git will be used.</source>
-        <target state="translated">새 Git 리포지토리를 초기화할 때 기본 분기(예: main, trunk, development)의 이름입니다. 빈 값으로 설정하면 git에 구성된 기본 분기 이름이 사용됩니다.</target>
+        <source xml:lang="en">The name of the default branch (ex: main, trunk, development) when initializing a new git repository. When set to empty, the default branch name configured in git will be used. **Note:** Requires git version `2.28.0` or later.</source>
+        <target state="translated">새 Git 리포지토리를 초기화할 때 기본 분기(예: main, trunk, development)의 이름입니다. 빈 값으로 설정하면 git에 구성된 기본 분기 이름이 사용됩니다. **참고:** git 버전 `2.28.0` 이상이 필요합니다.</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.workspace">
         <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.

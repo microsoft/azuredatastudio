@@ -220,6 +220,27 @@
         <source xml:lang="en">Please reload Azure Data Studio to complete reinstalling the extension {0}.</source>
         <target state="translated">Перезагрузите Azure Data Studio, чтобы завершить переустановку расширения {0}.</target>
       </trans-unit>
+      <trans-unit id="aboutDetail">
+        <source xml:lang="en">Version: {0}
+Commit: {1}
+Date: {2}
+VS Code: {3}
+Electron: {4}
+Chromium: {5}
+Node.js: {6}
+V8: {7}
+OS: {8}</source>
+        <note>Electron, Chromium, Node.js and V8 are product names that need no translation</note>
+        <target state="new">Version: {0}
+Commit: {1}
+Date: {2}
+VS Code: {3}
+Electron: {4}
+Chromium: {5}
+Node.js: {6}
+V8: {7}
+OS: {8}</target>
+      </trans-unit>
       <trans-unit id="activateLanguagePack">
         <source xml:lang="en">In order to use Azure Data Studio in {0}, Azure Data Studio needs to restart.</source>
         <target state="translated">Чтобы использовать Azure Data Studio в {0}, необходимо перезапустить Azure Data Studio.</target>
@@ -243,6 +264,11 @@
       <trans-unit id="azuredatastudio.installTooltip">
         <source xml:lang="en">Install this extension</source>
         <target state="translated">Установить это расширение</target>
+      </trans-unit>
+      <trans-unit id="azuredatastudio.themeUpdatedNotification">
+        <source xml:lang="en">Azure Data Studio now ships with a new default theme '{0}'. If you prefer, you can switch back to the old theme or try one of the many other color themes available.</source>
+        <note>{0} is the name of the new default theme</note>
+        <target state="translated">В Azure Data Studio теперь есть новая тема по умолчанию "{0}". При желании вы можете вернуться к старой теме или попробовать одну из множества других доступных цветовых тем.</target>
       </trans-unit>
       <trans-unit id="connectionDialogBrowseTree.context">
         <source xml:lang="en">The connection dialog's browse tree context menu</source>
@@ -319,6 +345,11 @@
       <trans-unit id="newQuery">
         <source xml:lang="en">New Query</source>
         <target state="translated">Создать запрос</target>
+      </trans-unit>
+      <trans-unit id="newThemeNotification">
+        <source xml:lang="en">Azure Data Studio now ships with a new default theme '{0}'. Do you want to give it a try?</source>
+        <note>{0} is the name of the new default theme</note>
+        <target state="translated">В Azure Data Studio теперь есть новая тема по умолчанию "{0}". Вы хотите попробовать ее?</target>
       </trans-unit>
       <trans-unit id="notebook.cellTitle">
         <source xml:lang="en">The notebook cell title menu</source>
@@ -1319,6 +1350,10 @@ Default Skipped Commands:
         <source xml:lang="en">XEvent Profiler Session stopped unexpectedly on the server {0}.</source>
         <target state="translated">Сеанс Профилировщика XEvent был неожиданно остановлен на сервере {0}.</target>
       </trans-unit>
+      <trans-unit id="profilerInput.connDetails">
+        <source xml:lang="en">Connection Details: </source>
+        <target state="translated">Сведения о подключении: </target>
+      </trans-unit>
       <trans-unit id="profilerInput.notConnected">
         <source xml:lang="en">Not connected</source>
         <target state="translated">Нет соединения</target>
@@ -1326,6 +1361,12 @@ Default Skipped Commands:
       <trans-unit id="profilerInput.profiler">
         <source xml:lang="en">Profiler</source>
         <target state="translated">Профилировщик</target>
+      </trans-unit>
+      <trans-unit id="profilerInput.sessionName">
+        <source xml:lang="en">: Session Name: {0}
+</source>
+        <target state="translated">: Имя сеанса: {0}
+</target>
       </trans-unit>
     </body>
   </file>
@@ -2384,12 +2425,12 @@ Default Skipped Commands:
         <target state="translated">Свернуть все подключения</target>
       </trans-unit>
       <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
-        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory — универсальный с поддержкой MFA</target>
+        <source xml:lang="en">Microsoft Entra ID - Universal with MFA support</source>
+        <target state="translated">Microsoft Entra ID — универсальный с поддержкой MFA</target>
       </trans-unit>
       <trans-unit id="sql.defaultAuthenticationType.AzureMFAAndUser">
-        <source xml:lang="en">Azure Active Directory - Password</source>
-        <target state="translated">Azure Active Directory — пароль</target>
+        <source xml:lang="en">Microsoft Entra ID - Password</source>
+        <target state="translated">Microsoft Entra ID — пароль</target>
       </trans-unit>
       <trans-unit id="sql.defaultAuthenticationType.Integrated">
         <source xml:lang="en">Windows Authentication</source>
@@ -2670,6 +2711,10 @@ Default Skipped Commands:
       <trans-unit id="dashboard.generalTabGroupHeader">
         <source xml:lang="en">General</source>
         <target state="translated">Общие</target>
+      </trans-unit>
+      <trans-unit id="dashboard.tabLoadingError">
+        <source xml:lang="en">Error loading tab {0}</source>
+        <target state="translated">Ошибка при загрузке вкладки: {0}</target>
       </trans-unit>
       <trans-unit id="home">
         <source xml:lang="en">Home</source>
@@ -6463,6 +6508,22 @@ Error: {1}</source>
         <source xml:lang="en">Character used for enclosing text fields when saving results as CSV</source>
         <target state="translated">Символ, используемый для обрамления текстовых полей при сохранении результатов в файле CSV</target>
       </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsExcel.autoFilterHeaderRow">
+        <source xml:lang="en">When true, enable auto filtering on the header row when saving results as an Excel file</source>
+        <target state="translated">Если установлено значение ИСТИНА, включать автоматическую фильтрацию в строке заголовка при сохранении результатов в виде файла Excel.</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsExcel.autoSizeColumns">
+        <source xml:lang="en">When true, attempt to automatically size columns when saving results as an Excel file</source>
+        <target state="translated">Если установлено значение ИСТИНА, пытаться автоматически изменить размер столбцов при сохранении результатов в виде файла Excel.</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsExcel.boldHeaderRow">
+        <source xml:lang="en">When true, make the header row bold when saving results as an Excel file</source>
+        <target state="translated">Если установлено значение ИСТИНА, выделять строку заголовка жирным шрифтом при сохранении результатов в виде файла Excel.</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsExcel.freezeHeaderRow">
+        <source xml:lang="en">When true, freeze the header row when saving results as an Excel file</source>
+        <target state="translated">Если установлено значение ИСТИНА, замораживать строку заголовка при сохранении результатов в виде файла Excel.</target>
+      </trans-unit>
       <trans-unit id="queryEditor.results.saveAsExcel.includeHeaders">
         <source xml:lang="en">When true, column headers are included when saving results as an Excel file</source>
         <target state="translated">Если установлено значение true, то заголовки столбцов будут включены при сохранении результатов в файле Excel.</target>
@@ -7714,8 +7775,8 @@ Error Message: {1}</source>
         <target state="translated">Подписка Azure</target>
       </trans-unit>
       <trans-unit id="backupRestoreUrlBrowserDialog.tenant">
-        <source xml:lang="en">Azure AD Tenant</source>
-        <target state="translated">Клиент Azure AD</target>
+        <source xml:lang="en">Microsoft Entra Tenant</source>
+        <target state="translated">Клиент Microsoft Entra</target>
       </trans-unit>
       <trans-unit id="fileBrowser.discard">
         <source xml:lang="en">Discard</source>
@@ -7998,8 +8059,8 @@ Error Message: {1}</source>
         <target state="translated">Учетная запись</target>
       </trans-unit>
       <trans-unit id="connection.azureTenantDropdownLabel">
-        <source xml:lang="en">Azure AD tenant</source>
-        <target state="translated">Клиент Azure AD</target>
+        <source xml:lang="en">Microsoft Entra tenant</source>
+        <target state="translated">Клиент Microsoft Entra</target>
       </trans-unit>
       <trans-unit id="connectionName">
         <source xml:lang="en">Name (optional)</source>
@@ -8270,9 +8331,9 @@ Error Message: {1}</source>
   </file>
   <file original="src/sql/workbench/services/fileBrowser/browser/fileBrowserDialog" source-language="en" datatype="plaintext" target-language="ru">
     <body>
-      <trans-unit id="fileBrowser.discard">
-        <source xml:lang="en">Discard</source>
-        <target state="translated">Отменить</target>
+      <trans-unit id="fileBrowser.back">
+        <source xml:lang="en">Back</source>
+        <target state="translated">Назад</target>
       </trans-unit>
       <trans-unit id="fileBrowser.ok">
         <source xml:lang="en">OK</source>
@@ -9215,10 +9276,6 @@ Error Message: {1}</source>
   </file>
   <file original="src/sql/workbench/services/query/common/queryManagement" source-language="en" datatype="plaintext" target-language="ru">
     <body>
-      <trans-unit id="queryManagement.noQueryRunnerForUri">
-        <source xml:lang="en">Could not find Query Runner for uri: {0}</source>
-        <target state="translated">Не найдено средство выполнения запросов для URI: {0}</target>
-      </trans-unit>
       <trans-unit id="queryManagement.uriAlreadyHasQueryRunner">
         <source xml:lang="en">Uri: {0} unexpectedly already has a query runner.</source>
         <target state="translated">URI: у {0} неожиданно оказалось выполнения запросов.</target>
