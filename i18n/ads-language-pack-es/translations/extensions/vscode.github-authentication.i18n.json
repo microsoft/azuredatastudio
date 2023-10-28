@@ -26,7 +26,8 @@
 			"Your Code: {0}/The {0} will be a code, e.g. 123-456": "Su código: {0}",
 			"device code": "código del dispositivo",
 			"local server": "servidor local",
-			"personal access token": "token de acceso personal"
+			"personal access token": "token de acceso personal",
+			"url handler": "Controlador de URL"
 		},
 		"package": {
 			"description": "Proveedor de autenticación de GitHub",

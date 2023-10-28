@@ -55,7 +55,7 @@
 			"filterMinPlanLabel": "最小计划数",
 			"minuteLabel": "分钟",
 			"okButtonText": "确定",
-			"openInNewTab": "Open In New Tab",
+			"openInNewTab": "在新选项卡中打开",
 			"overallResourceConsumption": "总体资源消耗",
 			"overallResourceConsumptionToolbarLabel": "数据库 {0} 的总体资源消耗量",
 			"physicalReadsLabel": "物理读取(KB)",

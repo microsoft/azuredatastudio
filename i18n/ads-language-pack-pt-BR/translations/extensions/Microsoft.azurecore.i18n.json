@@ -9,11 +9,7 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/account-provider/auths/azureAuth": {
-			"azurecore.confirmIgnoreTenantDialog.body": "O Azure Data Studio não acionará mais a autenticação para este locatário {0} ({1}) e os recursos não estarão acessíveis.\r\n\r\nPara permitir o acesso aos recursos para este locatário novamente, você precisará remover o locatário da lista de exclusão na configuração '{2}'.\r\n\r\nVocê deseja continuar?",
 			"azurecore.consentDialog.cancel": "Cancelar",
-			"azurecore.consentDialog.authenticate": "Cancelar e autenticar",
-			"azurecore.confirmIgnoreTenantDialog.confirm": "Confirmar",
-			"azurecore.consentDialog.ignore": "Ignorar Locatário",
 			"azure.microsoftAccountDisplayName": "Conta Microsoft",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azurecore.consentDialog.open": "Abrir",
@@ -38,7 +34,6 @@
 			"genericTokenError": "Falha ao obter o token",
 			"azure.NoAuthMethod.Available": "Nenhum método de autenticação do Azure disponível. Você precisa habilitar os métodos de autenticação na configuração do ADS.",
 			"azure.NoAuthMethod.Selected": "Nenhum método de autenticação do Azure selecionado. Você precisa selecionar o método de autenticação que deseja usar.",
-			"tenantIgnoredError": "Inquilino encontrado na lista de ignorados, autenticação não tentada. Você pode remover o locatário {0} da lista de ignorados no arquivo settings.json: {1} se desejar acessar os recursos deste inquilino.",
 			"msalTokenError": "{0} ocorreu ao adquirir o token. \r\n{1}"
 		},
 		"dist/account-provider/azureAccountProviderService": {
@@ -253,7 +248,6 @@
 			"config.providerSettings.endpoints.azureKustoResource": "Ponto de Extremidade de Recurso do Azure Kusto",
 			"config.providerSettings.endpoints.logAnalytics": "Ponto de Extremidade do Azure Log Analytics",
 			"config.providerSettings.endpoints.portal": "Ponto de Extremidade do Portal do Azure",
-			"azure.resource.config.title": "Configuração de Recurso do Azure",
 			"config.providerSettings.endpoints.azureStorageResource": "Ponto de Extremidade de Recurso do Armazenamento do Azure",
 			"config.providerSettings.endpoints.azureStorageResourceSuffix": "Sufixo do Ponto de Extremidade de Recurso do Armazenamento do Azure",
 			"azure.resource.refreshall.title": "Azure: Atualizar Todas as Contas",
@@ -287,8 +281,6 @@
 			"config.piiLogging": "As Informações de Identificação Pessoal (PII) devem ser registradas no canal de saída das Contas do Azure e no arquivo de log do canal de saída.",
 			"config.enableUsGovCloudDescription": "A integração de nuvem do US Government Azure (Fairfax) deve estar habilitada?",
 			"azure.resource.startterminal.title": "Iniciar Cloud Shell",
-			"azure.tenant.config.filter.description": "A lista de IDs de locatário que serão ignoradas ao consultar recursos do Azure ou solicitar tokens de autenticação.",
-			"azure.resource.config.filter.description": "O filtro de recursos, cada elemento é uma ID de conta, uma ID da assinatura e um nome, separados por uma barra",
 			"config.loggingLevel": "[Opcional] O detalhamento do registro em log para a extensão de Contas do Azure."
 		}
 	}

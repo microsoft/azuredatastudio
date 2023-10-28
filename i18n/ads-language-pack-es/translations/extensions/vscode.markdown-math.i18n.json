@@ -10,6 +10,7 @@
 	"contents": {
 		"package": {
 			"config.markdown.math.enabled": "Habilite o deshabilite la representación matemática en la vista previa integrada de Markdown.",
+			"config.markdown.math.macros": "Colección de macros personalizadas. Cada macro es un par clave-valor en el que la clave es un nuevo nombre de comando y el valor es la expansión de la macro.",
 			"description": "Agrega compatibilidad matemática a Markdown en blocs de notas.",
 			"displayName": "Matemáticas de Markdown"
 		}

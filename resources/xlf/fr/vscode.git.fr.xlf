@@ -214,10 +214,6 @@
         <source xml:lang="en">Commit Hash</source>
         <target state="translated">Commiter le code de hachage</target>
       </trans-unit>
-      <trans-unit id="++CODE++ed1fdf6e6ca057297a99375eca0f051f9ffbec49a1767e2126918b24e1350dff">
-        <source xml:lang="en">Commit Staged Changes</source>
-        <target state="translated">Commiter les changements indexés</target>
-      </trans-unit>
       <trans-unit id="++CODE++26306d203c4a6f1a77f32cd065d7d11593ba0c7a9b5c52c188b98f22b620941f">
         <source xml:lang="en">Commit message</source>
         <target state="translated">Message de validation</target>
@@ -381,6 +377,10 @@
       <trans-unit id="++CODE++969ccbd3cf6300ecd5c880459d81ae9027df7517563184a1b8b15282db230621">
         <source xml:lang="en">Email</source>
         <target state="translated">E-mail</target>
+      </trans-unit>
+      <trans-unit id="++CODE++975dd75001ae0d7c535f15e85326be3fc636a908ef77dcd64931d0564b64c7f5">
+        <source xml:lang="en">Enables the following features: {0}</source>
+        <target state="translated">Active les fonctionnalités suivantes : {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++f9e38e00f92b08ea1873eb83b3a80656bca1da49a4b862e70d1a34d654a052dd">
         <source xml:lang="en">Failed to authenticate to git remote.</source>
@@ -626,6 +626,10 @@
         <source xml:lang="en">Pick a repository to open</source>
         <target state="translated">Choisir un référentiel à ouvrir</target>
       </trans-unit>
+      <trans-unit id="++CODE++43cfba061c66b48d18654d4630284c8f93f76fd551a761506e76d04100be78d2">
+        <source xml:lang="en">Pick a repository to reopen</source>
+        <target state="translated">Choisir un référentiel à rouvrir</target>
+      </trans-unit>
       <trans-unit id="++CODE++4409fc12fb9667fbb6713fe6c40de5a69128fafb717e7f925f9829d842769a66">
         <source xml:lang="en">Pick a stash to apply</source>
         <target state="translated">Choisir une remise (stash) à appliquer</target>
@@ -746,6 +750,10 @@ Do not translate "Branch" as it is a git term</note>
         <source xml:lang="en">Remote name format invalid</source>
         <target state="translated">Format non valide du nom de dépôt distant</target>
       </trans-unit>
+      <trans-unit id="++CODE++382638de5d12f729cec7910b1bb7998999342f9ab710360306bd29bdd8d89ca3">
+        <source xml:lang="en">Reopen Closed Repositories</source>
+        <target state="translated">Rouvrir les référentiels fermés</target>
+      </trans-unit>
       <trans-unit id="++CODE++25202086021659225a6b0065ed7ea55875f99c94859e62037b4e00bf1aead47b">
         <source xml:lang="en">Replace Local Tag(s)</source>
         <target state="translated">Remplacer la ou les balises locales</target>
@@ -758,9 +766,9 @@ Do not translate "Branch" as it is a git term</note>
         <source xml:lang="en">Restore files</source>
         <target state="translated">Restaurer les fichiers</target>
       </trans-unit>
-      <trans-unit id="++CODE++e98f3fe796a6bb3a6a887b34998889dc6aad09782c4abf35f15e75aa0a1c32d5">
-        <source xml:lang="en">Save All &amp; Commit</source>
-        <target state="translated">Tout enregistrer et valider</target>
+      <trans-unit id="++CODE++9a67de1b5740e2d935f5bab0d89233b2b75a777a7ea3b57c7e53ac29427c91c6">
+        <source xml:lang="en">Save All &amp; Commit Changes</source>
+        <target state="translated">Enregistrer tout et valider les modifications</target>
       </trans-unit>
       <trans-unit id="++CODE++73bd1493a71408520de7d84d0c500708f92ae677a49fe1cec7350d5363f1088e">
         <source xml:lang="en">Save All &amp; Stash</source>
@@ -982,6 +990,10 @@ Do not translate "Branch" as it is a git term</note>
         <source xml:lang="en">Too many changes were detected. Only the first {0} changes will be shown below.</source>
         <target state="translated">Trop de modifications ont été détectées. Seules les premières modifications {0} s’affichent ci-dessous.</target>
       </trans-unit>
+      <trans-unit id="++CODE++dce9960e3b2a3c0c30e66c7e1a3ec396a86650a7acb8fd3cedf74196356deb54">
+        <source xml:lang="en">Type Changed</source>
+        <target state="translated">Type modifié</target>
+      </trans-unit>
       <trans-unit id="++CODE++4460d1b1316e9beeda90bd568c3e9d13b47a3710674433fd1022371f8e1d3108">
         <source xml:lang="en">Unable to pull from remote repository due to conflicting tag(s): {0}. Would you like to resolve the conflict by replacing the local tag(s)?</source>
         <target state="translated">Nous n’avons pas pu extraire du référentiel distant en raison d'une ou plusieurs balises en conflit : {0}. Souhaitez-vous résoudre le conflit en remplaçant la ou les balises locales ?</target>
@@ -1106,6 +1118,10 @@ Do not translate "Branch" as it is a git term</note>
         <source xml:lang="en">{0} (Theirs)</source>
         <target state="translated">{0} (à eux)</target>
       </trans-unit>
+      <trans-unit id="++CODE++06d2d2cf7b10db10195c834f0403e5802aa68f6551afec39fdc6fb549ca73302">
+        <source xml:lang="en">{0} (Type changed)</source>
+        <target state="translated">{0} (Type modifié)</target>
+      </trans-unit>
       <trans-unit id="++CODE++236384de21336e110098c378d5fbdee9628af5281f36a15d98daa43702757ff0">
         <source xml:lang="en">{0} (Untracked)</source>
         <target state="translated">{0} (non suivi)</target>
@@ -1133,6 +1149,10 @@ Do not translate "Branch" as it is a git term</note>
       <trans-unit id="++CODE++9e5f10ce1f838d861901ebb2c83f8824296843cff8472960cfafc0098182383c">
         <source xml:lang="en">{0} Commit &amp; Sync</source>
         <target state="translated">Validation {0} et synchronisation</target>
+      </trans-unit>
+      <trans-unit id="++CODE++34f8bd615c01255a5815e862d415a991324737482a7d66c874f16a10427897a0">
+        <source xml:lang="en">{0} Commit (Amend)</source>
+        <target state="translated">Validation {0} (Modifier)</target>
       </trans-unit>
       <trans-unit id="++CODE++5ea8624f43aa58ee102eae1842f3ba8a08c5bc1e1541440e5fcf3d9c91f78463">
         <source xml:lang="en">{0} Continue</source>
@@ -1178,11 +1198,22 @@ Do not translate "Branch" as it is a git term</note>
 Use the [git.openRepositoryInParentFolders](command:workbench.action.openSettings?%5B%22git.openRepositoryInParentFolders%22%5D) setting to control whether git repositories in parent folders of workspaces or open files are opened. To learn more [read our docs](https://aka.ms/vscode-git-repository-in-parent-folders).</source>
         <note>{Locked='](command:git.openRepositoriesInParentFolders'}
 {Locked='](command:workbench.action.openSettings?%5B%22git.openRepositoryInParentFolders%22%5D'}
-Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for VS Code
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
 Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">Un dépôt Git a été trouvé dans les dossiers parents de l’espace de travail ou dans les fichiers ouverts.
  [Ouvrir le référentiel](command:git.openRepositoriesInParentFolders)
  Utilisez le paramètre [git.openRepositoryInParentFolders](command:workbench.action.openSettings?%5B%22git.openRepositoryInParentFolders%22%5D) pour contrôler si les dépôts Git dans les dossiers parents des espaces de travail ou les fichiers ouverts sont ouverts. Pour en savoir plus [lire nos documents](https://aka.ms/vscode-git-repository-in-parent-folders).</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.closedRepository">
+        <source xml:lang="en">A git repository was found that was previously closed.
+[Reopen Closed Repository](command:git.reopenClosedRepositories)
+To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:git.reopenClosedRepositories'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
+        <target state="translated">Un dépôt git précédemment fermé a été trouvé.
+[Reopen Closed Repository](command:git.reopenClosedRepositories)
+Pour en savoir plus sur l'utilisation de git et du contrôle de source dans Azure Data Studio, [read our docs](https://aka.ms/vscode-scm).</target>
       </trans-unit>
       <trans-unit id="config.branchRandomNameDictionary.adjectives">
         <source xml:lang="en">A random adjective</source>
@@ -1392,9 +1423,25 @@ Please make sure there is no space between the right bracket and left parenthesi
         <source xml:lang="en">Commit</source>
         <target state="translated">Activer</target>
       </trans-unit>
+      <trans-unit id="command.commitAmend">
+        <source xml:lang="en">Commit (Amend)</source>
+        <target state="translated">Validation (Modifier)</target>
+      </trans-unit>
+      <trans-unit id="command.commitAmendNoVerify">
+        <source xml:lang="en">Commit (Amend, No Verify)</source>
+        <target state="translated">Validation (Modifier, aucune vérification)</target>
+      </trans-unit>
       <trans-unit id="command.commitNoVerify">
         <source xml:lang="en">Commit (No Verify)</source>
         <target state="translated">Commiter (aucune vérification)</target>
+      </trans-unit>
+      <trans-unit id="command.commitSigned">
+        <source xml:lang="en">Commit (Signed Off)</source>
+        <target state="translated">Validation (désactivée)</target>
+      </trans-unit>
+      <trans-unit id="command.commitSignedNoVerify">
+        <source xml:lang="en">Commit (Signed Off, No Verify)</source>
+        <target state="translated">Validation (désactivé, aucune vérification)</target>
       </trans-unit>
       <trans-unit id="command.commitAll">
         <source xml:lang="en">Commit All</source>
@@ -1529,8 +1576,8 @@ Please make sure there is no space between the right bracket and left parenthesi
         <target state="translated">Contrôle l'ordre de tri des branches.</target>
       </trans-unit>
       <trans-unit id="config.similarityThreshold">
-        <source xml:lang="en">Controls the threshold of the similarity index (i.e. amount of additions/deletions compared to the file's size) for changes in a pair of added/deleted files to be considered a rename.</source>
-        <target state="translated">Contrôle le seuil de l’index de similarité (c’est-à-dire le nombre d’ajouts/suppressions par rapport à la taille du fichier) pour que les modifications apportées à une paire de fichiers ajoutés/supprimés soient considérées comme un changement de nom.</target>
+        <source xml:lang="en">Controls the threshold of the similarity index (i.e. amount of additions/deletions compared to the file's size) for changes in a pair of added/deleted files to be considered a rename. **Note:** Requires git version `2.18.0` or later.</source>
+        <target state="translated">Contrôle le seuil de l’index de similarité (c’est-à-dire le nombre d’ajouts/suppressions par rapport à la taille du fichier) pour que les modifications apportées à une paire de fichiers ajoutés/supprimés soient considérées comme un changement de nom. **Remarque :** Nécessite git version '2.18.0' ou ultérieure.</target>
       </trans-unit>
       <trans-unit id="config.discardAllScope">
         <source xml:lang="en">Controls what changes are discarded by the `Discard all changes` command. `all` discards all changes. `tracked` discards only tracked files. `prompt` shows a prompt dialog every time the action is run.</source>
@@ -1625,12 +1672,12 @@ Please make sure there is no space between the right bracket and left parenthesi
         <target state="translated">Contrôle s’il faut détecter automatiquement les sous-modules git.</target>
       </trans-unit>
       <trans-unit id="config.terminalGitEditor">
-        <source xml:lang="en">Controls whether to enable VS Code to be the Git editor for Git processes spawned in the integrated terminal. Note: Terminals need to be restarted to pick up a change in this setting.</source>
-        <target state="translated">Détermine si VS Code doit être activé en tant qu’éditeur Git pour les processus git générés dans le terminal intégré. Remarque : Les terminaux doivent redémarrer pour permettre la prise en compte des changements apportés à ce paramètre.</target>
+        <source xml:lang="en">Controls whether to enable Azure Data Studio to be the Git editor for Git processes spawned in the integrated terminal. Note: Terminals need to be restarted to pick up a change in this setting.</source>
+        <target state="translated">Contrôle s'il faut activer Azure Data Studio comme éditeur Git pour les processus Git générés dans le terminal intégré. Remarque : les terminaux doivent être redémarrés pour prendre en compte une modification de ce paramètre.</target>
       </trans-unit>
       <trans-unit id="config.terminalAuthentication">
-        <source xml:lang="en">Controls whether to enable VS Code to be the authentication handler for Git processes spawned in the Integrated Terminal. Note: Terminals need to be restarted to pick up a change in this setting.</source>
-        <target state="translated">Détermine si VS Code doit être activé en tant que gestionnaire d’authentification pour les processus git générés dans le terminal intégré. Remarque : Les terminaux doivent redémarrer pour permettre la prise en compte des changements apportés à ce paramètre.</target>
+        <source xml:lang="en">Controls whether to enable Azure Data Studio to be the authentication handler for Git processes spawned in the Integrated Terminal. Note: Terminals need to be restarted to pick up a change in this setting.</source>
+        <target state="translated">Contrôle si Azure Data Studio doit être activé comme gestionnaire d'authentification pour les processus Git générés dans le terminal intégré. Remarque : les terminaux doivent être redémarrés pour prendre en compte une modification de ce paramètre.</target>
       </trans-unit>
       <trans-unit id="config.openAfterClone">
         <source xml:lang="en">Controls whether to open a repository automatically after cloning.</source>
@@ -1826,20 +1873,31 @@ Please make sure there is no space between the right bracket and left parenthesi
 Use the [git.openRepositoryInParentFolders](command:workbench.action.openSettings?%5B%22git.openRepositoryInParentFolders%22%5D) setting to control whether git repositories in parent folders of workspace or open files are opened. To learn more [read our docs](https://aka.ms/vscode-git-repository-in-parent-folders).</source>
         <note>{Locked='](command:git.openRepositoriesInParentFolders'}
 {Locked='](command:workbench.action.openSettings?%5B%22git.openRepositoryInParentFolders%22%5D'}
-Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for VS Code
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
 Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">Des dépôts Git ont été trouvés dans les dossiers parents de l’espace de travail ou dans les fichiers ouverts.
  [Ouvrir le référentiel](command:git.openRepositoriesInParentFolders)
  Utilisez le paramètre [git.openRepositoryInParentFolders](command:workbench.action.openSettings?%5B%22git.openRepositoryInParentFolders%22%5D) pour contrôler si les dépôts Git dans les dossiers parents de l’espace de travail ou les fichiers ouverts sont ouverts. Pour en savoir plus [lire nos documents](https://aka.ms/vscode-git-repository-in-parent-folders).</target>
       </trans-unit>
+      <trans-unit id="view.workbench.scm.closedRepositories">
+        <source xml:lang="en">Git repositories were found that were previously closed.
+[Reopen Closed Repositories](command:git.reopenClosedRepositories)
+To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:git.reopenClosedRepositories'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
+        <target state="translated">Des référentiels Git précédemment fermés ont été trouvés.
+[Reopen Closed Repositories](command:git.reopenClosedRepositories)
+Pour en savoir plus sur l'utilisation de git et du contrôle de source dans Azure Data Studio, [read our docs](https://aka.ms/vscode-scm).</target>
+      </trans-unit>
       <trans-unit id="view.workbench.scm.disabled">
         <source xml:lang="en">If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
-To learn more about how to use git and source control in VS Code [read our docs](https://aka.ms/vscode-scm).</source>
+To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
         <note>{Locked='](command:workbench.action.openSettings?%5B%22git.enabled%22%5D'}
 Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
 Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
-        <target state="translated">Si vous voulez utiliser des fonctionnalités git, activez git dans vos [paramètres](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
-Pour en savoir plus sur l'utilisation de Git et du contrôle de code source dans VS Code, [lisez notre documentation](https://aka.ms/vscode-scm).</target>
+        <target state="translated">Si vous souhaitez utiliser les fonctionnalités de git, veuillez activer git dans vos [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
+Pour en savoir plus sur l'utilisation de git et du contrôle de source dans Azure Data Studio, [read our docs](https://aka.ms/vscode-scm).</target>
       </trans-unit>
       <trans-unit id="config.ignoreSubmodules">
         <source xml:lang="en">Ignore modifications to submodules in the file tree.</source>
@@ -2085,6 +2143,10 @@ Please make sure there is no space between the right bracket and left parenthesi
         <source xml:lang="en">Rename Branch...</source>
         <target state="translated">Renommer la branche...</target>
       </trans-unit>
+      <trans-unit id="command.reopenClosedRepositories">
+        <source xml:lang="en">Reopen Closed Repositories...</source>
+        <target state="translated">Rouvrir les référentiels fermés...</target>
+      </trans-unit>
       <trans-unit id="command.git.openMergeEditor">
         <source xml:lang="en">Resolve in Merge Editor</source>
         <target state="translated">Résoudre dans l’éditeur de fusion</target>
@@ -2261,7 +2323,7 @@ Après l’installation, [reload](command:workbench.action.reloadWindow) (ou [tr
 [Manage Unsafe Repositories](command:git.manageUnsafeRepositories)
 To learn more about unsafe repositories [read our docs](https://aka.ms/vscode-git-unsafe-repository).</source>
         <note>{Locked='](command:git.manageUnsafeRepositories'}
-Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for VS Code
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
 Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">Les référentiels Git détectés sont potentiellement dangereux, car les dossiers appartiennent à une autre personne que l’utilisateur actuel.
 [Gérez les référentiels non sécurisés](command:git.manageUnsafeRepositories)
@@ -2272,7 +2334,7 @@ Pour en savoir plus sur les référentiels non sécurisés [consultez nos docume
 [Manage Unsafe Repositories](command:git.manageUnsafeRepositories)
 To learn more about unsafe repositories [read our docs](https://aka.ms/vscode-git-unsafe-repository).</source>
         <note>{Locked='](command:git.manageUnsafeRepositories'}
-Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for VS Code
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
 Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">Le référentiel Git détecté est potentiellement dangereux, car le dossier appartient à une autre personne que l’utilisateur actuel.
 [Gérez les référentiels non sécurisés](command:git.manageUnsafeRepositories)
@@ -2290,8 +2352,8 @@ Please make sure there is no space between the right bracket and left parenthesi
 Pour en savoir plus sur l’utilisation de git et du contrôle de code source dans Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</target>
       </trans-unit>
       <trans-unit id="config.defaultBranchName">
-        <source xml:lang="en">The name of the default branch (ex: main, trunk, development) when initializing a new git repository. When set to empty, the default branch name configured in git will be used.</source>
-        <target state="translated">Le nom de la branche par défaut (ex : main, jonction, développement) lors de l’initialisation d’un nouveau référentiel git. S’il est vide, le nom de la branche par défaut configuré dans git sera utilisé.</target>
+        <source xml:lang="en">The name of the default branch (ex: main, trunk, development) when initializing a new git repository. When set to empty, the default branch name configured in git will be used. **Note:** Requires git version `2.28.0` or later.</source>
+        <target state="translated">Nom de la branche par défaut (par exemple, main, trunk, development) lors de l’initialisation d’un nouveau dépôt Git. Lorsqu’il est défini sur vide, le nom de branche par défaut configuré dans Git est utilisé. **Remarque :** Nécessite git version '2.28.0' ou ultérieure.</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.workspace">
         <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.
