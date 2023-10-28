@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { ICellValue, IQueryMessage, ResultSetSubset } from 'sql/workbench/services/query/common/query';
+import { QueryConnID, ICellValue, IQueryMessage, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
@@ -18,7 +18,7 @@ import {
 	queryeditor,
 	executionPlan
 } from 'azdata';
-import { QueryEvent, QueryInfo } from 'sql/workbench/services/query/common/queryModelService';
+import { QueryInfo } from 'sql/workbench/services/query/common/queryModelService';
 import { IRange } from 'vs/editor/common/core/range';
 
 export const SERVICE_ID = 'queryModelService';
@@ -82,7 +82,7 @@ export interface IQueryModelService {
 	onRunQueryUpdate: Event<string>;
 	onRunQueryComplete: Event<string>;
 	onQueryEvent: Event<IQueryEvent>;
-	onPidAvailable: Event<QueryEvent>;
+	onConnIdAvailable: Event<QueryConnID>;
 
 	// Edit Data Functions
 	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit?: number, queryString?: string): void;

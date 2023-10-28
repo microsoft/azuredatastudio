@@ -75,3 +75,8 @@ export interface ICellValue {
 	isNull?: boolean;
 	invariantCultureDisplayValue?: string;
 }
+
+export interface QueryConnID {
+	uri: string;
+	connId: string;
+}

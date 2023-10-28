@@ -64,7 +64,7 @@ export interface ConnectionManagementInfo {
 	ownerUri: string;
 
 	/**
-	 * process id assigned to the connection
+	 * ID used to identify the connection on the server, if available.
 	 */
-	pid?: string;
+	serverConnectionId?: string;
 }

@@ -123,9 +123,9 @@ export interface ConnectionProviderProperties {
 	supportCopyResultsToClipboard?: boolean;
 
 	/**
-	 * The process ID name used by the Service Host.
+	 * The name to display in the UI for the id value used to identify connections in the server.
 	 */
-	processIDName?: string;
+	serverConnectionIDName?: string;
 }
 
 export interface ProviderFeatures {

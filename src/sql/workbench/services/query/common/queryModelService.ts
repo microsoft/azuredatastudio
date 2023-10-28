@@ -21,6 +21,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import Severity from 'vs/base/common/severity';
 import EditQueryRunner from 'sql/workbench/services/editData/common/editQueryRunner';
 import { IRange } from 'vs/editor/common/core/range';
+import { QueryConnID } from 'sql/workbench/services/query/common/query';
 import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 
@@ -70,7 +71,7 @@ export class QueryModelService implements IQueryModelService {
 	private _onRunQueryComplete: Emitter<string>;
 	private _onQueryEvent: Emitter<IQueryEvent>;
 	private _onEditSessionReady: Emitter<azdata.EditSessionReadyParams>;
-	private _onPidAvailableEmitter: Emitter<QueryEvent>;
+	private _onConnIdAvailableEmitter: Emitter<QueryConnID>;
 	private _onCellSelectionChangedEmitter = new Emitter<ICellValue[]>();
 
 	// EVENTS /////////////////////////////////////////////////////////////
@@ -80,7 +81,7 @@ export class QueryModelService implements IQueryModelService {
 	public get onQueryEvent(): Event<IQueryEvent> { return this._onQueryEvent.event; }
 	public get onEditSessionReady(): Event<azdata.EditSessionReadyParams> { return this._onEditSessionReady.event; }
 	public get onCellSelectionChanged(): Event<ICellValue[]> { return this._onCellSelectionChangedEmitter.event; }
-	public get onPidAvailable(): Event<QueryEvent> { return this._onPidAvailableEmitter.event; }
+	public get onConnIdAvailable(): Event<QueryConnID> { return this._onConnIdAvailableEmitter.event; }
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
@@ -96,7 +97,7 @@ export class QueryModelService implements IQueryModelService {
 		this._onRunQueryComplete = new Emitter<string>();
 		this._onQueryEvent = new Emitter<IQueryEvent>();
 		this._onEditSessionReady = new Emitter<azdata.EditSessionReadyParams>();
-		this._onPidAvailableEmitter = new Emitter<QueryEvent>();
+		this._onConnIdAvailableEmitter = new Emitter<QueryConnID>();
 	}
 
 	// IQUERYMODEL /////////////////////////////////////////////////////////
@@ -391,8 +392,8 @@ export class QueryModelService implements IQueryModelService {
 			this._onQueryEvent.fire(event);
 		});
 
-		queryRunner.onPidAvailable(e => {
-			this._onPidAvailableEmitter.fire(e);
+		queryRunner.onConnIdAvailable(e => {
+			this._onConnIdAvailableEmitter.fire(e);
 		});
 
 		info.queryRunner = queryRunner;

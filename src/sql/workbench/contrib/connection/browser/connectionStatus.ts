@@ -50,7 +50,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		this._register(this._connectionManagementService.onDisconnect(() => this._updateStatus()));
 		this._register(this._editorService.onDidActiveEditorChange(() => this._updateStatus()));
 		this._register(this._objectExplorerService.onSelectionOrFocusChange(() => this._updateStatus()));
-		this._register(this._queryModelService.onPidAvailable(e => this._refreshPIDStatus(e.type, e.data)));
+		this._register(this._queryModelService.onConnIdAvailable(e => this._refreshIDStatus(e.uri, e.connId)));
 	}
 
 	private hide() {
@@ -64,22 +64,14 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 	// Update the connection status shown in the bar
 	private _updateStatus(): void {
 		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService, this._logService);
+		let id = undefined;
+		if (this._editorService.activeEditor) {
+			// USE ACTIVE EDITOR INFO AS THE ID WILL BE DIFFERENT FOR EDITOR CONNECTION.
+			let newInfo = this._connectionManagementService.getConnectionInfo(this._editorService.activeEditor.resource.toString());
+			id = newInfo?.serverConnectionId;
+		}
 		if (activeConnection) {
-			let uri = this._connectionManagementService.getConnectionUriFromId(activeConnection.id);
-			let info = this._connectionManagementService.getConnectionInfo(uri);
-			if (this._editorService.activeEditor) {
-				// USE ACTIVE EDITOR INFO AS THE PID WILL BE DIFFERENT FOR EDITOR CONNECTION.
-				let newInfo = this._connectionManagementService.getConnectionInfo(this._editorService.activeEditor.resource.toString());
-				if (newInfo) {
-					info = newInfo;
-				}
-			}
-			if (info && info.pid) {
-				this._setConnectionText(activeConnection, info.pid)
-			}
-			else {
-				this._setConnectionText(activeConnection);
-			}
+			this._setConnectionText(activeConnection, id)
 			this.show();
 		}
 		else {
@@ -87,26 +79,23 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		}
 	}
 
-	private _refreshPIDStatus(uri: string, pid: any): void {
+	private _refreshIDStatus(uri: string, id: string | undefined): void {
 		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService, this._logService);
-		if (activeConnection) {
-			let currUri = this._connectionManagementService.getConnectionUriFromId(activeConnection.id);
-			if (this._editorService.activeEditor) {
-				// USE ACTIVE EDITOR INFO AS THE PID WILL BE DIFFERENT FOR EDITOR CONNECTION.
-				currUri = this._editorService.activeEditor.resource.toString();
-			}
+		if (this._editorService.activeEditor) {
+			// USE ACTIVE EDITOR INFO AS THE ID WILL BE DIFFERENT FOR EDITOR CONNECTION.
+			let currUri = this._editorService.activeEditor.resource.toString();
 			let info = this._connectionManagementService.getConnectionInfo(currUri);
 			if (currUri === uri) {
 				if (info) {
-					info.pid = pid;
-					this._setConnectionText(activeConnection, pid);
+					info.serverConnectionId = id;
+					this._setConnectionText(activeConnection, id);
 				}
 			}
 		}
 	}
 
 	// Set connection info to connection status bar
-	private _setConnectionText(connectionProfile: IConnectionProfile, pid?: string): void {
+	private _setConnectionText(connectionProfile: IConnectionProfile, id?: string): void {
 		let text: string = connectionProfile.serverName;
 		if (text) {
 			if (connectionProfile.databaseName && connectionProfile.databaseName !== '') {
@@ -116,17 +105,17 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 			}
 		}
 
-		let tooltip = 'Server: ' + connectionProfile.serverName + '\r\n' +
-			'Database: ' + (connectionProfile.databaseName ? connectionProfile.databaseName : '<default>') + '\r\n';
+		let tooltip = localize('status.connection.baseTooltip', 'Server: {0}\r\nDatabase: {1}\r\n', connectionProfile.serverName,
+			(connectionProfile.databaseName ? connectionProfile.databaseName : '<default>'));
 
 		if (connectionProfile.userName && connectionProfile.userName !== '') {
-			tooltip = tooltip + 'Login: ' + connectionProfile.userName + '\r\n';
+			tooltip = tooltip + localize('status.connection.tooltipLogin', 'Login: {0}\r\n', connectionProfile.userName);
 		}
 
-		if (pid) {
-			text += ' (' + pid + ')';
-			let processIDName = connectionProfile.serverCapabilities.processIDName;
-			tooltip += (processIDName ? processIDName : 'PID') + ': ' + pid
+		if (id) {
+			text += ' (' + id + ')';
+			const serverConnectionIDName = connectionProfile.serverCapabilities.serverConnectionIDName || 'PID';
+			tooltip += serverConnectionIDName + ': ' + id;
 		}
 
 		this.statusItem.update({

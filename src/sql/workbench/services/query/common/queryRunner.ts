@@ -31,7 +31,7 @@ import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { QueryEvent } from 'sql/workbench/services/query/common/queryModelService';
+import { QueryConnID } from 'sql/workbench/services/query/common/query';
 
 /*
 * Query Runner class which handles running a query, reports the results to the content manager,
@@ -83,8 +83,8 @@ export default class QueryRunner extends Disposable {
 	private readonly _onVisualize = this._register(new Emitter<ResultSetSummary>());
 	public readonly onVisualize = this._onVisualize.event;
 
-	private readonly _onPidAvailable = this._register(new Emitter<QueryEvent>());
-	public readonly onPidAvailable = this._onPidAvailable.event;
+	private readonly _onConnIdAvailable = this._register(new Emitter<QueryConnID>());
+	public readonly onConnIdAvailable = this._onConnIdAvailable.event;
 
 	private _queryStartTime?: Date;
 	public get queryStartTime(): Date | undefined {
@@ -281,14 +281,14 @@ export default class QueryRunner extends Disposable {
 	}
 
 	/**
-	 * Handle a QueryComplete from the service layer
+	 * Used to update the Server Connection ID of the current connection as assigned by the server after query complete.
 	 */
-	public handlePid(pid: string): void {
-		let pidEvent: QueryEvent = {
-			type: this.uri,
-			data: pid,
+	public handleServerConnId(id: string): void {
+		let idEvent: QueryConnID = {
+			uri: this.uri,
+			connId: id,
 		}
-		this._onPidAvailable.fire(pidEvent);
+		this._onConnIdAvailable.fire(idEvent);
 	}
 
 	/**
