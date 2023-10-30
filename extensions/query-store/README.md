@@ -16,4 +16,4 @@ Please report issues and feature requests [here.](https://github.com/microsoft/a
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-Licensed under the [Source EULA](https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt).
+Licensed under the [MIT License](https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt).
