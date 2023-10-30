@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
@@ -50,7 +50,7 @@ function getNewFileContent(content: string, tag: string) {
 	const oldheader = [
 		`/*---------------------------------------------------------------------------------------------`,
 		` *  Copyright (c) Microsoft Corporation. All rights reserved.`,
-		` *  Licensed under the Source EULA. See License.txt in the project root for license information.`,
+		` *  Licensed under the MIT License. See License.txt in the project root for license information.`,
 		` *--------------------------------------------------------------------------------------------*/`
 	].join('\n');
 
@@ -73,7 +73,7 @@ function getNewFileHeader(tag: string) {
 		``,
 		`/*---------------------------------------------------------------------------------------------`,
 		` *  Copyright (c) Microsoft Corporation. All rights reserved.`,
-		` *  Licensed under the Source EULA.`,
+		` *  Licensed under the MIT License.`,
 		` *  See https://github.com/microsoft/azuredatastudio/blob/main/LICENSE.txt for license information.`,
 		` *--------------------------------------------------------------------------------------------*/`,
 		``,
