@@ -296,7 +296,7 @@
       </trans-unit>
       <trans-unit id="sql.migration.assessment.summary.title">
         <source xml:lang="en">Assessment summary</source>
-        <target state="new">Assessment summary</target>
+        <target state="translated">Zusammenfassung der Bewertung</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.summary.and.recommendations.title">
         <source xml:lang="en">Assessment summary and SKU recommendations</source>
@@ -408,7 +408,7 @@ Anweisungen zur Registrierung finden Sie unten.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.sqldb.card.title">
         <source xml:lang="en">Azure SQL Database (PaaS)</source>
-        <target state="new">Azure SQL Database (PaaS)</target>
+        <target state="translated">Azure SQL-Database (PaaS)</target>
       </trans-unit>
       <trans-unit id="sql.migration.azure.sql.database">
         <source xml:lang="en">Azure SQL Database Server</source>
@@ -432,7 +432,7 @@ Anweisungen zur Registrierung finden Sie unten.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.mi.card.title">
         <source xml:lang="en">Azure SQL Managed Instance (PaaS)</source>
-        <target state="new">Azure SQL Managed Instance (PaaS)</target>
+        <target state="translated">Azure SQL Managed Instance (PaaS)</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.title">
         <source xml:lang="en">Azure SQL Migration</source>
@@ -556,7 +556,7 @@ Anweisungen zur Registrierung finden Sie unten.</target>
       </trans-unit>
       <trans-unit id="sql.migration.ready">
         <source xml:lang="en">Blockers</source>
-        <target state="new">Blockers</target>
+        <target state="translated">Blockaden</target>
       </trans-unit>
       <trans-unit id="sql.migration.issue.aria.label">
         <source xml:lang="en">Blocking Issue: {0}</source>
@@ -952,7 +952,7 @@ Anweisungen zur Registrierung finden Sie unten.</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.issues.summary">
         <source xml:lang="en">Database assessment issues summary</source>
-        <target state="new">Database assessment issues summary</target>
+        <target state="translated">Zusammenfassung der Datenbankbewertungsprobleme</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.target.source.collation.error">
         <source xml:lang="en">Database mapping error (Error code: {0}) was found between '{1}' and '{2}' databases. The source database collation '{3}' does not match the target database collation '{4}'. Please select or re-create a target database with the same collation as the source database.</source>
@@ -1040,7 +1040,7 @@ Anweisungen zur Registrierung finden Sie unten.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.data.collection.default.path">
         <source xml:lang="en">Default path</source>
-        <target state="new">Default path</target>
+        <target state="translated">Standardpfad</target>
       </trans-unit>
       <trans-unit id="sql.migration.delete.migration">
         <source xml:lang="en">Delete migration</source>
@@ -1056,7 +1056,7 @@ Anweisungen zur Registrierung finden Sie unten.</target>
       </trans-unit>
       <trans-unit id="sql.migration.details.title">
         <source xml:lang="en">Details</source>
-        <target state="new">Details</target>
+        <target state="translated">Details</target>
       </trans-unit>
       <trans-unit id="sql.migration.details.copied">
         <source xml:lang="en">Details copied</source>
@@ -1152,7 +1152,7 @@ Anweisungen zur Registrierung finden Sie unten.</target>
       </trans-unit>
       <trans-unit id="sql.migration.encryption.label">
         <source xml:lang="en">Encryption</source>
-        <target state="new">Encryption</target>
+        <target state="translated">Verschlüsselung</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.already.exists.vm.info">
         <source xml:lang="en">Ensure that the provided database name(s) do not already exist on the target SQL Server on Azure Virtual Machine.</source>
@@ -1380,11 +1380,11 @@ Aktuell werden Serverrollen migriert, Serverzuordnungen eingerichtet und Berecht
       </trans-unit>
       <trans-unit id="sql.migration.findings.label">
         <source xml:lang="en">Findings</source>
-        <target state="new">Findings</target>
+        <target state="translated">Ergebnisse</target>
       </trans-unit>
       <trans-unit id="sql.migration.severity.findings.label">
         <source xml:lang="en">Findings by severity</source>
-        <target state="new">Findings by severity</target>
+        <target state="translated">Ergebnisse nach Schweregrad</target>
       </trans-unit>
       <trans-unit id="sql.migration.finish.time">
         <source xml:lang="en">Finish time</source>
@@ -1488,7 +1488,7 @@ Aktuell werden Serverrollen migriert, Serverzuordnungen eingerichtet und Berecht
       </trans-unit>
       <trans-unit id="sql.migration.import">
         <source xml:lang="en">Import</source>
-        <target state="new">Import</target>
+        <target state="translated">Importieren</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.import.performance.data">
         <source xml:lang="en">Import performance data</source>
@@ -1872,7 +1872,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.migration.readiness.label">
         <source xml:lang="en">Migration readiness</source>
-        <target state="new">Migration readiness</target>
+        <target state="translated">Migrationsbereitschaft</target>
       </trans-unit>
       <trans-unit id="sql.migration.readiness.section.title">
         <source xml:lang="en">Migration readiness of assessed databases in the server instance</source>
@@ -1960,7 +1960,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.needs.review">
         <source xml:lang="en">Needs review</source>
-        <target state="new">Needs review</target>
+        <target state="translated">Prüfung erforderlich</target>
       </trans-unit>
       <trans-unit id="sql.migration.tde.wizard.network.share.label">
         <source xml:lang="en">Network path for certificate</source>
@@ -2136,7 +2136,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.not.ready">
         <source xml:lang="en">Not ready</source>
-        <target state="new">Not ready</target>
+        <target state="translated">Nicht bereit</target>
       </trans-unit>
       <trans-unit id="sql.migration.restore.status.not.started">
         <source xml:lang="en">Not started</source>
@@ -2328,7 +2328,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.migration.time.label">
         <source xml:lang="en">Ready for migration</source>
-        <target state="new">Ready for migration</target>
+        <target state="translated">Bereit für Migration</target>
       </trans-unit>
       <trans-unit id="sql.migration.ready.warn">
         <source xml:lang="en">Ready with warnings</source>
@@ -2392,7 +2392,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.refresh.assessment.label">
         <source xml:lang="en">Refresh assessment</source>
-        <target state="new">Refresh assessment</target>
+        <target state="translated">Bewertung aktualisieren</target>
       </trans-unit>
       <trans-unit id="sql.migration.refresh.key1">
         <source xml:lang="en">Refresh key 1</source>
@@ -2604,7 +2604,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.sku.vm.card.title">
         <source xml:lang="en">SQL Server on Azure Virtual Machine (IaaS)</source>
-        <target state="new">SQL Server on Azure Virtual Machine (IaaS)</target>
+        <target state="translated">SQL Server auf Azure-VM (IaaS)</target>
       </trans-unit>
       <trans-unit id="sql.migration.azure.sql.database.virtual.machine">
         <source xml:lang="en">SQL Server on Azure Virtual Machines</source>
@@ -2688,7 +2688,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.sku.import.performance.data.dialog.open.file">
         <source xml:lang="en">Select a file</source>
-        <target state="new">Select a file</target>
+        <target state="translated">Datei auswählen</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.import.performance.data.dialog.helper.message">
         <source xml:lang="en">Select a folder on your local drive</source>
@@ -3136,7 +3136,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.summary.title">
         <source xml:lang="en">Summary</source>
-        <target state="new">Summary</target>
+        <target state="translated">Zusammenfassung</target>
       </trans-unit>
       <trans-unit id="sql.migration.tde.migrate.required">
         <source xml:lang="en">TDE certificate migration must be successful before continuing.</source>
