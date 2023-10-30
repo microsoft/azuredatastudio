@@ -55,7 +55,7 @@
 			"filterMinPlanLabel": "Nombre minimum de forfaits",
 			"minuteLabel": "Minute",
 			"okButtonText": "OK",
-			"openInNewTab": "Open In New Tab",
+			"openInNewTab": "Ouvrir dans un nouvel onglet",
 			"overallResourceConsumption": "Consommation globale des ressources",
 			"overallResourceConsumptionToolbarLabel": "Consommation globale des ressources pour base de données {0}",
 			"physicalReadsLabel": "Lectures physiques (Ko)",

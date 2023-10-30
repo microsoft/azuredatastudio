@@ -9,11 +9,7 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/account-provider/auths/azureAuth": {
-			"azurecore.confirmIgnoreTenantDialog.body": "Azure Data Studio はこのテナント {0} ({1}) の認証をトリガーしなくなり、リソースにアクセスできなくなります。\r\n\r\nこのテナントのリソースへのアクセスを再度許可するには、'{2}' 設定の除外リストからテナントを削除する必要があります。\r\n\r\n続行しますか?",
 			"azurecore.consentDialog.cancel": "キャンセル",
-			"azurecore.consentDialog.authenticate": "キャンセルと認証",
-			"azurecore.confirmIgnoreTenantDialog.confirm": "確認",
-			"azurecore.consentDialog.ignore": "テナントの無視",
 			"azure.microsoftAccountDisplayName": "Microsoft アカウント",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azurecore.consentDialog.open": "開く",
@@ -38,7 +34,6 @@
 			"genericTokenError": "トークンを取得できませんでした",
 			"azure.NoAuthMethod.Available": "使用可能な Azure 認証方法がありません。ADS 構成で認証方法を有効にする必要があります。",
 			"azure.NoAuthMethod.Selected": "Azure 認証方法が選択されていません。使用する認証方法を選択する必要があります。",
-			"tenantIgnoredError": "無視リストにテナントが見つかりましたが、認証は試行されませんでした。このテナントからリソースにアクセスする場合は、settings.json ファイル: {1} の無視リストからテナント {0} を削除できます。",
 			"msalTokenError": "トークンの取得中に {0} が発生しました。\r\n{1}"
 		},
 		"dist/account-provider/azureAccountProviderService": {
@@ -253,7 +248,6 @@
 			"config.providerSettings.endpoints.azureKustoResource": "Azure Kusto リソース エンドポイント",
 			"config.providerSettings.endpoints.logAnalytics": "Azure Log Analytics エンドポイント",
 			"config.providerSettings.endpoints.portal": "Azure portal エンドポイント",
-			"azure.resource.config.title": "Azure リソースの構成",
 			"config.providerSettings.endpoints.azureStorageResource": "Azure Storage リソース エンドポイント",
 			"config.providerSettings.endpoints.azureStorageResourceSuffix": "Azure Storage リソース エンドポイント サフィックス",
 			"azure.resource.refreshall.title": "Azure: すべてのアカウントを更新する",
@@ -287,8 +281,6 @@
 			"config.piiLogging": "個人を特定できる情報 (PII) を Azure アカウントの出力チャネルと出力チャネルのログ ファイルにログ記録してしまった場合。",
 			"config.enableUsGovCloudDescription": "米国政府向け Azure クラウド (Fairfax) 統合を有効にするかどうか",
 			"azure.resource.startterminal.title": "Cloud Shell の開始",
-			"azure.tenant.config.filter.description": "Azure リソースのクエリまたは認証トークンの要求時にスキップされるテナント ID の一覧。",
-			"azure.resource.config.filter.description": "リソース フィルターの各要素であるアカウント ID、サブスクリプション ID、名前はスラッシュで区切ります",
 			"config.loggingLevel": "[オプション] Azure アカウント拡張機能のログ記録の詳細。"
 		}
 	}
