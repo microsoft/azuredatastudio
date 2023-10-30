@@ -5,7 +5,7 @@
 	"dataFolderName": ".azuredatastudio",
 	"win32MutexName": "azuredatastudio",
 	"licenseName": "Microsoft EULA",
-	"licenseUrl": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/LICENSE.txt",
+	"licenseUrl": "https://aka.ms/ads-license",
 	"serverLicenseUrl": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/LICENSE.txt",
 	"serverGreeting": [],
 	"serverLicense": [],
