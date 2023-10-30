@@ -23,4 +23,4 @@ To learn more about our Privacy Statement visit [this link](https://go.microsoft
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-Licensed under the [Source EULA](https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt).
+Licensed under the [MIT License](https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt).

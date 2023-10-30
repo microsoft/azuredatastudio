@@ -55,7 +55,7 @@
 			"filterMinPlanLabel": "Número mínimo de planos",
 			"minuteLabel": "Minuto",
 			"okButtonText": "Ok",
-			"openInNewTab": "Open In New Tab",
+			"openInNewTab": "Abrir em Nova Guia",
 			"overallResourceConsumption": "Consumo Geral de Recursos",
 			"overallResourceConsumptionToolbarLabel": "Consumo geral de recursos para o banco de dados {0}",
 			"physicalReadsLabel": "Leituras Físicas (KB)",

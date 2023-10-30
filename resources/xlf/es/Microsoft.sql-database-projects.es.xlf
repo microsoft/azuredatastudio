@@ -728,10 +728,6 @@
         <source xml:lang="en">Location</source>
         <target state="translated">Ubicación</target>
       </trans-unit>
-      <trans-unit id="edgeEulaAgreementTitle">
-        <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
-        <target state="translated">Contrato de licencia de Microsoft Azure SQL Edge</target>
-      </trans-unit>
       <trans-unit id="eulaAgreementTitle">
         <source xml:lang="en">Microsoft SQL Server License Agreement</source>
         <target state="translated">Contrato de licencia de Microsoft SQL Server</target>
@@ -1351,10 +1347,6 @@
       <trans-unit id="updatingProjectFromDatabase">
         <source xml:lang="en">Updating {0} from {1}...</source>
         <target state="translated">Actualizando {0} desde {1}...</target>
-      </trans-unit>
-      <trans-unit id="dockerImagesPlaceHolder">
-        <source xml:lang="en">Use {0} on local arm64/Apple Silicon</source>
-        <target state="translated">Usar {0} en arm64/Apple Silicon local</target>
       </trans-unit>
       <trans-unit id="userSelectionCancelled">
         <source xml:lang="en">User has cancelled selection for how to run autorest.</source>

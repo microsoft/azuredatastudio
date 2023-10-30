@@ -625,8 +625,8 @@
         <target state="translated">閉じる</target>
       </trans-unit>
       <trans-unit id="managePackages.dialogName">
-        <source xml:lang="en">Manage Packages</source>
-        <target state="translated">パッケージの管理</target>
+        <source xml:lang="en">Manage Notebook Packages</source>
+        <target state="translated">Notebook パッケージの管理</target>
       </trans-unit>
     </body>
   </file>
@@ -659,6 +659,10 @@
       <trans-unit id="unsupportedFileType">
         <source xml:lang="en">Only .ipynb Notebooks are supported</source>
         <target state="translated">.ipynb ノートブックのみがサポートされています</target>
+      </trans-unit>
+      <trans-unit id="pythonNotSetup">
+        <source xml:lang="en">Python is not currently configured for notebooks. The 'Configure Python for Notebooks' command must be run before being able to manage notebook packages.</source>
+        <target state="translated">Python は現在ノートブック用に構成されていません。Notebooks パッケージの管理をできるようにするには、まず「Configure Python for Notebooks」 コマンドを実行する必要があります。</target>
       </trans-unit>
     </body>
   </file>
@@ -957,8 +961,8 @@
         <target state="translated">ノートブックで使用される Python インストールへのローカル パス。</target>
       </trans-unit>
       <trans-unit id="title.managePackages">
-        <source xml:lang="en">Manage Packages</source>
-        <target state="translated">パッケージの管理</target>
+        <source xml:lang="en">Manage Notebook Packages</source>
+        <target state="translated">Notebook パッケージの管理</target>
       </trans-unit>
       <trans-unit id="notebook.maxBookSearchDepth.description">
         <source xml:lang="en">Maximum depth of subdirectories to search for Books (Enter 0 for infinite)</source>

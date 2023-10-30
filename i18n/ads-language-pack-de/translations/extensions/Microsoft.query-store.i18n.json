@@ -55,7 +55,7 @@
 			"filterMinPlanLabel": "Mindestanzahl von Plänen",
 			"minuteLabel": "Minute",
 			"okButtonText": "OK",
-			"openInNewTab": "Open In New Tab",
+			"openInNewTab": "In neuer Registerkarte öffnen",
 			"overallResourceConsumption": "Ressourcenverbrauch gesamt",
 			"overallResourceConsumptionToolbarLabel": "Gesamtressourcenverbrauch für Datenbank \"{0}\"",
 			"physicalReadsLabel": "Physische Lesevorgänge (KB)",

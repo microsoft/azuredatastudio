@@ -2,33 +2,9 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/Microsoft.azurecore/dist/account-provider/auths/azureAuth" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="azurecore.confirmIgnoreTenantDialog.body">
-        <source xml:lang="en">Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. 
-
-To allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.
-
-Do you wish to proceed?</source>
-        <target state="translated">Azure Data Studio non attiverà più l'autenticazione per questo tenant {0} ({1}) e le risorse non saranno accessibili. 
-
-Per consentire di nuovo l'accesso alle risorse del tenant, è necessario rimuovere il tenant dall'elenco di esclusione nell'impostazione '{2}'.
-
-Continuare?</target>
-      </trans-unit>
       <trans-unit id="azurecore.consentDialog.cancel">
         <source xml:lang="en">Cancel</source>
         <target state="translated">Annulla</target>
-      </trans-unit>
-      <trans-unit id="azurecore.consentDialog.authenticate">
-        <source xml:lang="en">Cancel and Authenticate</source>
-        <target state="translated">Annulla ed esegui autenticazione</target>
-      </trans-unit>
-      <trans-unit id="azurecore.confirmIgnoreTenantDialog.confirm">
-        <source xml:lang="en">Confirm</source>
-        <target state="translated">Conferma</target>
-      </trans-unit>
-      <trans-unit id="azurecore.consentDialog.ignore">
-        <source xml:lang="en">Ignore Tenant</source>
-        <target state="translated">Ignora tenant</target>
       </trans-unit>
       <trans-unit id="azure.microsoftAccountDisplayName">
         <source xml:lang="en">Microsoft Account</source>
@@ -117,10 +93,6 @@ Continuare?</target>
       <trans-unit id="azure.NoAuthMethod.Selected">
         <source xml:lang="en">No Azure auth method selected. You must select what method of authentication you want to use.</source>
         <target state="translated">Non è stato selezionato alcun metodo di autenticazione di Azure. È necessario selezionare il metodo di autenticazione che si vuole usare.</target>
-      </trans-unit>
-      <trans-unit id="tenantIgnoredError">
-        <source xml:lang="en">Tenant found in ignore list, authentication not attempted. You can remove tenant {0} from ignore list in settings.json file: {1} if you wish to access resources from this tenant.</source>
-        <target state="translated">Tenant trovato nell'elenco di elementi da ignorare. L'autenticazione non è stata tentata. Se si vuole accedere alle risorse di questo tenant, è possibile rimuovere il tenant {0} dall'elenco di elementi da ignorare nel file settings.json {1}.</target>
       </trans-unit>
       <trans-unit id="msalTokenError">
         <source xml:lang="en">{0} occurred when acquiring token. 
@@ -846,10 +818,6 @@ Continuare?</target>
         <source xml:lang="en">Azure Portal Endpoint</source>
         <target state="translated">Endpoint del portale di Azure</target>
       </trans-unit>
-      <trans-unit id="azure.resource.config.title">
-        <source xml:lang="en">Azure Resource Configuration</source>
-        <target state="translated">Configurazione risorse di Azure</target>
-      </trans-unit>
       <trans-unit id="config.providerSettings.endpoints.azureStorageResource">
         <source xml:lang="en">Azure Storage Resource Endpoint</source>
         <target state="translated">Endpoint risorsa Archiviazione di Azure</target>
@@ -981,14 +949,6 @@ Continuare?</target>
       <trans-unit id="azure.resource.startterminal.title">
         <source xml:lang="en">Start Cloud Shell</source>
         <target state="translated">Avvia Cloud Shell</target>
-      </trans-unit>
-      <trans-unit id="azure.tenant.config.filter.description">
-        <source xml:lang="en">The list of tenant IDs which will be skipped when querying Azure resources or requesting authentication tokens.</source>
-        <target state="translated">Elenco di ID di tenant che verranno ignorati durante l'esecuzione di query sulle risorse di Azure o la richiesta di token di autenticazione.</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.config.filter.description">
-        <source xml:lang="en">The resource filter, each element is an account id, a subscription id and name separated by a slash</source>
-        <target state="translated">Filtro delle risorse. Ogni elemento è costituito da un ID account, un ID sottoscrizione e un nome separati da una barra</target>
       </trans-unit>
       <trans-unit id="config.loggingLevel">
         <source xml:lang="en">[Optional] The verbosity of logging for the Azure Accounts extension.</source>

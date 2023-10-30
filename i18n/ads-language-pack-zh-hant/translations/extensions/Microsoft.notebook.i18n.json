@@ -173,7 +173,7 @@
 		},
 		"dist/dialog/managePackages/managePackagesDialog": {
 			"managePackages.cancelButtonText": "關閉",
-			"managePackages.dialogName": "管理套件"
+			"managePackages.dialogName": "管理筆記本封裝"
 		},
 		"dist/extension": {
 			"codeCellName": "程式碼",
@@ -183,7 +183,8 @@
 		"dist/jupyter/jupyterController": {
 			"confirmReinstall": "確定要重新安裝嗎?",
 			"notebookFileType": "Notebooks",
-			"unsupportedFileType": "僅支援 .ipynb Notebooks"
+			"unsupportedFileType": "僅支援 .ipynb Notebooks",
+			"pythonNotSetup": "筆記本目前未設定 Python。必須先執行 'Configure Python for Notebooks' 命令，才能管理筆記本封裝。"
 		},
 		"dist/jupyter/jupyterExecuteProvider": {
 			"errNotebookUriMissing": "筆記本路徑為必要項"
@@ -266,7 +267,7 @@
 			"books-preview-category": "Jupyter 書籍",
 			"notebook.useExistingPython.description": "Notebooks 所使用之現有 python 安裝的本機路徑。",
 			"notebook.pythonPath.description": "Notebooks 所使用之 python 安裝的本機路徑。",
-			"title.managePackages": "管理套件",
+			"title.managePackages": "管理筆記本封裝",
 			"notebook.maxBookSearchDepth.description": "用來搜尋書籍的子目錄最大深度 (輸入 0 表示無限)",
 			"notebook.maxTableRows.description": "Notebook 編輯器中每一資料表傳回的資料列數上限",
 			"title.moveTo": "移至...",

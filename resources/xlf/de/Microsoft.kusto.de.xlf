@@ -138,10 +138,6 @@
         <source xml:lang="en">Authentication type</source>
         <target state="translated">Authentifizierungstyp</target>
       </trans-unit>
-      <trans-unit id="kusto.connectionOptions.authType.categoryValues.azureMFA">
-        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory: universell mit MFA-Unterstützung</target>
-      </trans-unit>
       <trans-unit id="kusto.provider.displayName">
         <source xml:lang="en">Azure Data Explorer (Kusto)</source>
         <target state="translated">Azure Data Explorer (Kusto)</target>
@@ -209,6 +205,10 @@
       <trans-unit id="kusto.connectionOptions.serverName.description">
         <source xml:lang="en">Kusto cluster name</source>
         <target state="translated">Kusto-Clustername</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.authType.categoryValues.azureMFA">
+        <source xml:lang="en">Microsoft Entra ID - Universal with MFA support</source>
+        <target state="translated">Microsoft Entra ID – Universell mit MFA-Unterstützung</target>
       </trans-unit>
       <trans-unit id="objectsListProperties.name">
         <source xml:lang="en">Name</source>
