@@ -570,6 +570,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 
 			const errors: string[] = [];
+			if (this._skipAssessmentCheckbox.checked === false) {
+				errors.push(constants.SELECT_SKIP_ASSESSMENT_CHECK_TO_CONTINUE);
+			}
+
 			if (errors.length > 0) {
 				this.wizard.message = {
 					text: errors.join(EOL),
