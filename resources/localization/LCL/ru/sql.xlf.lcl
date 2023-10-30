@@ -2456,10 +2456,13 @@
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.aboutDetail" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Version: {0}]D;]A;Commit: {1}]D;]A;Date: {2}]D;]A;Electron: {3}]D;]A;Chromium: {4}]D;]A;Node.js: {5}]D;]A;V8: {6}]D;]A;OS: {7}]]></Val>
+          <Val><![CDATA[Version: {0}]D;]A;Commit: {1}]D;]A;Date: {2}]D;]A;VS Code: {3}]D;]A;Electron: {4}]D;]A;Chromium: {5}]D;]A;Node.js: {6}]D;]A;V8: {7}]D;]A;OS: {8}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Версия: {0}]D;]A;Фиксация: {1}]D;]A;Дата: {2}]D;]A;Electron: {3}]D;]A;Chromium: {4}]D;]A;Node.js: {5}]D;]A;V8: {6}]D;]A;ОС: {7}]]></Val>
+            <Val><![CDATA[Версия: {0}]D;]A;Фиксация: {1}]D;]A;Дата: {2}]D;]A;VS Code: {3}]D;]A;Electron: {4}]D;]A;Chromium: {5}]D;]A;Node.js: {6}]D;]A;V8: {7}]D;]A;ОС: {8}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Version: {0}]D;]A;Commit: {1}]D;]A;Date: {2}]D;]A;Electron: {3}]D;]A;Chromium: {4}]D;]A;Node.js: {5}]D;]A;V8: {6}]D;]A;OS: {7}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
