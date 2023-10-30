@@ -98,7 +98,8 @@ export class ImportPerformanceDataDialog {
 		}).component();
 
 		this._disposables.push(this._importButton.onDidClick(async () => {
-			await this.execute();
+			await this.skuRecommendationPage.startCardLoading();
+			void this.execute();
 			this._creationEvent.emit('done');
 		}));
 
