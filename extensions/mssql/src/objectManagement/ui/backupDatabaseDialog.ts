@@ -49,6 +49,8 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	private _defaultBackupPathSeparator: string;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
+		// Increase dialog width since there are a lot of indented controls in the backup dialog
+		options.width = '550px';
 		super(objectManagementService, options, loc.BackupDatabaseDialogTitle(options.database), 'BackupDatabase');
 		this.dialogObject.okButton.label = loc.BackupButtonLabel;
 	}
