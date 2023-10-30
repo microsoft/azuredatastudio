@@ -529,6 +529,19 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				}
 				break;
 			}
+			case PerformanceDataSourceOptions.OpenExisting: {
+				if (utils.hasRecommendations(this.migrationStateModel)) {
+					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'flex' });
+
+					await this._skuDataCollectionStatusIcon.updateProperties({
+						iconPath: IconPathHelper.completedMigration
+					});
+
+					this._skuDataCollectionStatusText.value = constants.AZURE_RECOMMENDATION_STATUS_DATA_IMPORTED;
+					this._skuDataCollectionTimerText.value = '';
+				}
+				break;
+			}
 
 			// initial state before "Get Azure recommendation" dialog
 			default: {

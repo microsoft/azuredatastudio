@@ -9,30 +9,30 @@
 	"version": "1.0.0",
 	"contents": {
 		"bundle": {
-			"Error validating custom environment setting: {0}": "Error validating custom environment setting: {0}",
+			"Error validating custom environment setting: {0}": "Fehler beim Überprüfen der benutzerdefinierten Umgebungseinstellung: {0}",
 			"Microsoft Authentication": "Microsoft Authentication",
 			"Microsoft Sovereign Cloud Authentication": "Microsoft Sovereign Cloud-Authentifizierung",
-			"Open settings": "Open settings",
+			"Open settings": "Einstellungen öffnen",
 			"Paste authorization code here...": "Autorisierungscode hier einfügen...",
 			"Provide the authorization code to complete the sign in flow.": "Geben Sie den Autorisierungscode an, um den Anmeldefluss abzuschließen.",
-			"The environment `{0}` is not a valid environment.": "The environment `{0}` is not a valid environment.",
+			"The environment `{0}` is not a valid environment.": "Die Umgebung \"{0}\" ist keine gültige Umgebung.",
 			"You have been signed out because reading stored authentication information failed.": "Sie wurden abgemeldet, weil beim Lesen der gespeicherten Authentifizierungsinformationen ein Fehler aufgetreten ist.",
-			"You must also specify a custom environment in order to use the custom environment auth provider.": "You must also specify a custom environment in order to use the custom environment auth provider."
+			"You must also specify a custom environment in order to use the custom environment auth provider.": "Sie müssen auch eine benutzerdefinierte Umgebung angeben, um den Authentifizierungsanbieter der benutzerdefinierten Umgebung zu verwenden."
 		},
 		"package": {
 			"description": "Microsoft-Authentifizierungsanbieter",
 			"displayName": "Microsoft-Konto",
-			"microsoft-sovereign-cloud.customEnvironment.activeDirectoryEndpointUrl.description": "The Active Directory endpoint for the custom Sovereign Cloud.",
-			"microsoft-sovereign-cloud.customEnvironment.activeDirectoryResourceId.description": "The Active Directory resource ID for the custom Sovereign Cloud.",
-			"microsoft-sovereign-cloud.customEnvironment.description": "The custom configuration for the Sovereign Cloud to use with the Microsoft Sovereign Cloud authentication provider. This along with setting `#microsoft-sovereign-cloud.environment#` to `custom` is required to use this feature.",
-			"microsoft-sovereign-cloud.customEnvironment.managementEndpointUrl.description": "The management endpoint for the custom Sovereign Cloud.",
-			"microsoft-sovereign-cloud.customEnvironment.name.description": "The name of the custom Sovereign Cloud.",
-			"microsoft-sovereign-cloud.customEnvironment.portalUrl.description": "The portal URL for the custom Sovereign Cloud.",
-			"microsoft-sovereign-cloud.customEnvironment.resourceManagerEndpointUrl.description": "The resource manager endpoint for the custom Sovereign Cloud.",
-			"microsoft-sovereign-cloud.environment.description": "The Sovereign Cloud to use for authentication. If you select `custom`, you must also set the `#microsoft-sovereign-cloud.customEnvironment#` setting.",
+			"microsoft-sovereign-cloud.customEnvironment.activeDirectoryEndpointUrl.description": "Der Active Directory-Endpunkt für die benutzerdefinierte Sovereign Cloud.",
+			"microsoft-sovereign-cloud.customEnvironment.activeDirectoryResourceId.description": "Der Active Directory-Ressourcen-ID für die benutzerdefinierte Sovereign Cloud.",
+			"microsoft-sovereign-cloud.customEnvironment.description": "Die benutzerdefinierte Konfiguration für die Sovereign Cloud, die mit dem Microsoft Sovereign Cloud-Authentifizierungsanbieter verwendet werden soll. Dies ist zusammen mit der Einstellung `#microsoft-sovereign-cloud.environment#` auf \"benutzerdefiniert\" erforderlich, um dieses Feature zu verwenden.",
+			"microsoft-sovereign-cloud.customEnvironment.managementEndpointUrl.description": "Der Verwaltungsendpunkt für die benutzerdefinierte Sovereign Cloud.",
+			"microsoft-sovereign-cloud.customEnvironment.name.description": "Der Name der benutzerdefinierten Sovereign Cloud.",
+			"microsoft-sovereign-cloud.customEnvironment.portalUrl.description": "Die Portal-URL für die benutzerdefinierte Sovereign Cloud.",
+			"microsoft-sovereign-cloud.customEnvironment.resourceManagerEndpointUrl.description": "Der Ressourcen-Manager-Endpunkt für die benutzerdefinierte Sovereign Cloud.",
+			"microsoft-sovereign-cloud.environment.description": "Die für die Authentifizierung zu verwendende Sovereign Cloud. Wenn Sie \"Benutzerdefiniert\" auswählen, müssen Sie auch die Einstellung `#microsoft-sovereign-cloud.customEnvironment#` vornehmen.",
 			"microsoft-sovereign-cloud.environment.enumDescriptions.AzureChinaCloud": "Azure China",
 			"microsoft-sovereign-cloud.environment.enumDescriptions.AzureUSGovernment": "Azure US Government",
-			"microsoft-sovereign-cloud.environment.enumDescriptions.custom": "A custom Microsoft Sovereign Cloud",
+			"microsoft-sovereign-cloud.environment.enumDescriptions.custom": "Eine benutzerdefinierte Microsoft Sovereign Cloud",
 			"signIn": "Anmelden",
 			"signOut": "Abmelden"
 		}

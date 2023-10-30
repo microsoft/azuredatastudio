@@ -26,6 +26,7 @@ import { registerTableDesignerCommands } from './tableDesigner/tableDesigner';
 // import { SqlNotebookController } from './sqlNotebook/sqlNotebookController';
 import { registerObjectManagementCommands } from './objectManagement/commands';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from './telemetry';
+import { TelemetryEventMeasures } from '@microsoft/ads-extension-telemetry';
 import { noConvertResult, noDocumentFound, unsupportedPlatform } from './localizedConstants';
 import { registerConnectionCommands } from './connection/commands';
 
@@ -135,10 +136,16 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 				}
 			});
 		}
-		if (e.affectsConfiguration(Constants.configAsyncParallelProcessingName)) {
+		if (e.affectsConfiguration(Constants.configParallelMessageProcessingName)) {
 			if (Utils.getParallelMessageProcessingConfig()) {
 				TelemetryReporter.sendActionEvent(TelemetryViews.MssqlConnections, TelemetryActions.EnableFeatureAsyncParallelProcessing);
 			}
+			await displayReloadAds();
+		}
+		if (Utils.getParallelMessageProcessingConfig() && e.affectsConfiguration(Constants.configParallelMessageProcessingLimitName)) {
+			let additionalMeasurements: TelemetryEventMeasures;
+			additionalMeasurements.parallelMessageProcessingLimit = Utils.getParallelMessageProcessingLimitConfig()
+			TelemetryReporter.sendMetricsEvent(additionalMeasurements, Constants.configParallelMessageProcessingLimitName);
 			await displayReloadAds();
 		}
 		if (e.affectsConfiguration(Constants.configEnableSqlAuthenticationProviderName)) {

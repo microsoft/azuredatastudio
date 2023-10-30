@@ -9,11 +9,7 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/account-provider/auths/azureAuth": {
-			"azurecore.confirmIgnoreTenantDialog.body": "Azure Data Studio ya no desencadenará la autenticación para este inquilino {0} ({1}) y no se podrá acceder a los recursos. \r\n\r\nPara permitir de nuevo el acceso a los recursos de este inquilino, deberá quitar al inquilino de la lista de exclusión en la configuración \"{2}\".\r\n\r\n¿Desea continuar?",
 			"azurecore.consentDialog.cancel": "Cancelar",
-			"azurecore.consentDialog.authenticate": "Cancelar y autenticar",
-			"azurecore.confirmIgnoreTenantDialog.confirm": "Confirmar",
-			"azurecore.consentDialog.ignore": "Omitir inquilino",
 			"azure.microsoftAccountDisplayName": "Cuenta de Microsoft",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azurecore.consentDialog.open": "Abrir",
@@ -38,7 +34,6 @@
 			"genericTokenError": "No se pudo obtener el token.",
 			"azure.NoAuthMethod.Available": "No hay ningún método de autenticación de Azure disponible. Debe habilitar los métodos de autenticación en la configuración de ADS.",
 			"azure.NoAuthMethod.Selected": "No se ha seleccionado ningún método de autenticación de Azure. Debe seleccionar el método de autenticación que quiera usar.",
-			"tenantIgnoredError": "Inquilino encontrado en la lista de omitidos, autenticación no intentada. Puede quitar al inquilino {0} de la lista de omitidos en el archivo settings.json: {1} si quiere acceder a los recursos de este inquilino.",
 			"msalTokenError": "{0} se produjo al adquirir el token. \r\n{1}"
 		},
 		"dist/account-provider/azureAccountProviderService": {
@@ -253,7 +248,6 @@
 			"config.providerSettings.endpoints.azureKustoResource": "Punto de conexión de recursos de Azure Kusto",
 			"config.providerSettings.endpoints.logAnalytics": "Punto de conexión de Azure Log Analytics",
 			"config.providerSettings.endpoints.portal": "Punto de conexión de Azure Portal",
-			"azure.resource.config.title": "Configuración de recursos de Azure",
 			"config.providerSettings.endpoints.azureStorageResource": "Punto de conexión de recursos de Azure Storage",
 			"config.providerSettings.endpoints.azureStorageResourceSuffix": "Sufijo de punto de conexión de recursos de Azure Storage",
 			"azure.resource.refreshall.title": "Azure: actualizar todas las cuentas",
@@ -287,8 +281,6 @@
 			"config.piiLogging": "La información de identificación personal (DCP) debe registrarse en el canal de salida de las cuentas de Azure y en el archivo de registro del canal de salida.",
 			"config.enableUsGovCloudDescription": "Si debería habilitarse la integración de la nube de US Government Azure",
 			"azure.resource.startterminal.title": "Inicio de Cloud Shell",
-			"azure.tenant.config.filter.description": "Lista de id. de inquilino que se omitirán al consultar recursos de Azure o solicitar tokens de autenticación.",
-			"azure.resource.config.filter.description": "Filtro de recursos. Cada elemento es un id. de cuenta, un id. de suscripción y un nombre separados por una barra diagonal",
 			"config.loggingLevel": "[Optional] El nivel de detalle del registro de la extensión Cuentas de Azure."
 		}
 	}

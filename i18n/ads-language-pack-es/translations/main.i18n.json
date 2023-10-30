@@ -173,7 +173,10 @@
 			"notFound": "{0} no se encontró dentro del archivo zip."
 		},
 		"vs/editor/browser/controller/textAreaHandler": {
-			"accessibilityOffAriaLabel": "El editor no es accesible en este momento. Pulse {0} para ver las opciones.",
+			"accessibilityModeOff": "No se puede acceder al editor en este momento.",
+			"accessibilityOffAriaLabel": "{0} Para habilitar el modo optimizado para lectores de pantalla, use {1}",
+			"accessibilityOffAriaLabelNoKb": "{0} Para habilitar el modo optimizado para lector de pantalla, abra la selección rápida con {1} y ejecute el comando Alternar modo de accesibilidad del lector de pantalla, que actualmente no se puede desencadenar mediante el teclado.",
+			"accessibilityOffAriaLabelNoKbs": "{0} Para asignar un enlace de teclado para el comando Alternar modo de accesibilidad del lector de pantalla, acceda al editor de enlaces de teclado con {1} y ejecútelo.",
 			"editor": "editor"
 		},
 		"vs/editor/browser/coreCommands": {
@@ -192,6 +195,12 @@
 			"cursors.maximum": "El número de cursores se ha limitado a {0}. Considere la posibilidad de usar [buscar y reemplazar](https://code.visualstudio.com/docs/editor/codebasics#_find-and-replace) para realizar cambios mayores o aumentar la configuración del límite de varios cursores del editor.",
 			"goToSetting": "Aumentar el límite de varios cursores"
 		},
+		"vs/editor/browser/widget/diffEditor.contribution": {
+			"Open Accessible Diff Viewer": "Abrir visor de diferencias accesibles",
+			"accessibleDiffViewer": "Visor de diferencias accesibles",
+			"editor.action.accessibleDiffViewer.next": "Ir a la siguiente diferencia",
+			"editor.action.accessibleDiffViewer.prev": "Ir a la diferencia anterior"
+		},
 		"vs/editor/browser/widget/diffEditorWidget": {
 			"diff-aria-navigation-tip": " usar Mayús + F7 para navegar por los cambios",
 			"diff.tooLarge": "Los archivos no se pueden comparar porque uno de ellos es demasiado grande.",
@@ -199,32 +208,52 @@
 			"diffRemoveIcon": "Decoración de línea para las eliminaciones en el editor de diferencias.",
 			"revertChangeHoverMessage": "Haga clic para revertir el cambio"
 		},
+		"vs/editor/browser/widget/diffEditorWidget2/accessibleDiffViewer": {
+			"accessibleDiffViewerCloseIcon": "Icono de \"Cerrar\" en el visor de diferencias accesible.",
+			"accessibleDiffViewerInsertIcon": "Icono de \"Insertar\" en el visor de diferencias accesible.",
+			"accessibleDiffViewerRemoveIcon": "Icono de \"Quitar\" en el visor de diferencias accesible.",
+			"ariaLabel": "Visor de diferencias accesible. Utilice la flecha hacia arriba y hacia abajo para navegar.",
+			"blankLine": "Blanco",
+			"deleteLine": "- {0} línea original {1}",
+			"equalLine": "{0} línea original {1} línea modificada {2}",
+			"header": "Diferencia {0} de {1}: línea original {2}, {3}, línea modificada {4}, {5}",
+			"insertLine": "+ {0} línea modificada {1}",
+			"label.close": "Cerrar",
+			"more_lines_changed": "{0} líneas cambiadas",
+			"no_lines_changed": "no se han cambiado líneas",
+			"one_line_changed": "1 línea cambiada",
+			"unchangedLine": "{0} línea sin cambios {1}"
+		},
 		"vs/editor/browser/widget/diffEditorWidget2/colors": {
-			"diffEditor.move.border": "The border color for text that got moved in the diff editor."
+			"diffEditor.move.border": "Color del borde del texto que se movió en el editor de diferencias."
 		},
 		"vs/editor/browser/widget/diffEditorWidget2/decorations": {
-			"diffInsertIcon": "Line decoration for inserts in the diff editor.",
-			"diffRemoveIcon": "Line decoration for removals in the diff editor.",
-			"revertChangeHoverMessage": "Click to revert change"
+			"diffInsertIcon": "Decoración de línea para las inserciones en el editor de diferencias.",
+			"diffRemoveIcon": "Decoración de línea para las eliminaciones en el editor de diferencias.",
+			"revertChangeHoverMessage": "Haga clic para revertir el cambio"
 		},
-		"vs/editor/browser/widget/diffEditorWidget2/diffEditorWidget2": {
-			"diff-aria-navigation-tip": " usar Mayús + F7 para navegar por los cambios"
+		"vs/editor/browser/widget/diffEditorWidget2/diffEditorEditors": {
+			"diff-aria-navigation-tip": " use {0} para abrir la ayuda de accesibilidad."
 		},
 		"vs/editor/browser/widget/diffEditorWidget2/diffEditorWidget2.contribution": {
-			"collapseUnchangedRegions": "Show Unchanged Regions",
-			"showMoves": "Show Moves",
-			"showUnchangedRegions": "Collapse Unchanged Regions",
+			"collapseUnchangedRegions": "Mostrar regiones sin cambios",
+			"diffEditor": "Editor de diferencias",
+			"showUnchangedRegions": "Contraer regiones sin cambios",
+			"switchSide": "Lado del conmutador",
 			"toggleCollapseUnchangedRegions": "Alternar contraer regiones sin cambios",
-			"toggleShowMovedCodeBlocks": "Toggle Show Moved Code Blocks"
+			"toggleShowMovedCodeBlocks": "Alternar Mostrar bloques de código movidos"
 		},
 		"vs/editor/browser/widget/diffEditorWidget2/inlineDiffDeletedCodeMargin": {
-			"diff.clipboard.copyChangedLineContent.label": "Copy changed line ({0})",
-			"diff.clipboard.copyChangedLinesContent.label": "Copy changed lines",
-			"diff.clipboard.copyChangedLinesContent.single.label": "Copy changed line",
-			"diff.clipboard.copyDeletedLineContent.label": "Copy deleted line ({0})",
-			"diff.clipboard.copyDeletedLinesContent.label": "Copy deleted lines",
-			"diff.clipboard.copyDeletedLinesContent.single.label": "Copy deleted line",
-			"diff.inline.revertChange.label": "Revert this change"
+			"diff.clipboard.copyChangedLineContent.label": "Copiar línea cambiada ({0})",
+			"diff.clipboard.copyChangedLinesContent.label": "Copiar líneas cambiadas",
+			"diff.clipboard.copyChangedLinesContent.single.label": "Copiar línea cambiada",
+			"diff.clipboard.copyDeletedLineContent.label": "Copiar la línea eliminada ({0})",
+			"diff.clipboard.copyDeletedLinesContent.label": "Copiar líneas eliminadas",
+			"diff.clipboard.copyDeletedLinesContent.single.label": "Copiar línea eliminada",
+			"diff.inline.revertChange.label": "Revertir este cambio"
+		},
+		"vs/editor/browser/widget/diffEditorWidget2/unchangedRanges": {
+			"foldUnchanged": "Plegar la región sin cambios"
 		},
 		"vs/editor/browser/widget/diffReview": {
 			"blankLine": "vacío",
@@ -232,8 +261,6 @@
 			"diffReviewCloseIcon": "Icono para \"Cerrar\" en la revisión de diferencias.",
 			"diffReviewInsertIcon": "Icono para \"Insertar\" en la revisión de diferencias.",
 			"diffReviewRemoveIcon": "Icono para \"Quitar\" en la revisión de diferencias.",
-			"editor.action.diffReview.next": "Ir a la siguiente diferencia",
-			"editor.action.diffReview.prev": "Ir a la diferencia anterior",
 			"equalLine": "{0} línea original {1} línea modificada {2}",
 			"header": "Diferencia {0} de {1}: línea original {2}, {3}, línea modificada {4}, {5}",
 			"insertLine": "+ {0} línea modificada {1}",
@@ -254,7 +281,7 @@
 		},
 		"vs/editor/common/config/editorConfigurationSchema": {
 			"codeLens": "Controla si el editor muestra CodeLens.",
-			"collapseUnchangedRegions": "Controla si el editor de diferencias muestra regiones sin cambios. Solo funciona cuando se establece \"diffEditor.experimental.useVersion2\".",
+			"collapseUnchangedRegions": "Controlar si el editor de diferencias muestra las regiones sin cambios. Solo funciona si {0}se establece.",
 			"detectIndentation": "Controla si {0} y {1} se detectan automáticamente al abrir un archivo en función del contenido de este.",
 			"diffAlgorithm.advanced": "Usa el algoritmo de diferenciación avanzada.",
 			"diffAlgorithm.legacy": "Usa el algoritmo de diferenciación heredado.",
@@ -279,7 +306,8 @@
 			"semanticHighlighting.enabled": "Controla si se muestra semanticHighlighting para los idiomas que lo admiten.",
 			"semanticHighlighting.false": "El resaltado semántico está deshabilitado para todos los temas de color.",
 			"semanticHighlighting.true": "El resaltado semántico está habilitado para todos los temas de color.",
-			"showMoves": "Controls whether the diff editor should show detected code moves. Only works when 'diffEditor.experimental.useVersion2' is set.",
+			"showEmptyDecorations": "Controla si el editor de diferencias muestra decoraciones vacías para ver dónde se insertan o eliminan los caracteres.",
+			"showMoves": "Controlar si el editor de diferencias debe mostrar los movimientos de código detectados. Solo funciona cuando {0} se establece.",
 			"sideBySide": "Controla si el editor de diferencias muestra las diferencias en paralelo o alineadas.",
 			"stablePeek": "Mantiene abiertos los editores interactivos, incluso al hacer doble clic en su contenido o presionar \"Escape\".",
 			"tabSize": "El número de espacios a los que equivale una tabulación. Este valor se invalida en función del contenido del archivo cuando {0} está activado.",
@@ -320,7 +348,7 @@
 			"codeLens": "Controla si el editor muestra CodeLens.",
 			"codeLensFontFamily": "Controla la familia de fuentes para CodeLens.",
 			"codeLensFontSize": "Controla el tamaño de fuente de CodeLens en píxeles. Cuando se establece en 0, se usa el 90 % de \"#editor.fontSize#\".",
-			"colorDecoratorActivatedOn": "Controls the condition to make a color picker appear from a color decorator",
+			"colorDecoratorActivatedOn": "Controla la condición para que un selector de colores aparezca de un decorador de color",
 			"colorDecorators": "Controla si el editor debe representar el Selector de colores y los elementos Decorator de color en línea.",
 			"colorDecoratorsLimit": "Controla el número máximo de decoradores de color que se pueden representar en un editor a la vez.",
 			"columnSelection": "Habilite que la selección con el mouse y las teclas esté realizando la selección de columnas.",
@@ -360,9 +388,9 @@
 			"editor.autoSurround.brackets": "Envolver con corchetes, pero no con comillas.",
 			"editor.autoSurround.languageDefined": "Use las configuraciones de idioma para determinar cuándo delimitar las selecciones automáticamente.",
 			"editor.autoSurround.quotes": "Envolver con comillas, pero no con corchetes.",
-			"editor.colorDecoratorActivatedOn.click": "Make the color picker appear on click of the color decorator",
-			"editor.colorDecoratorActivatedOn.clickAndHover": "Make the color picker appear both on click and hover of the color decorator",
-			"editor.colorDecoratorActivatedOn.hover": "Make the color picker appear on hover of the color decorator",
+			"editor.colorDecoratorActivatedOn.click": "Hacer que el selector de colores aparezca al hacer clic en el decorador de color",
+			"editor.colorDecoratorActivatedOn.clickAndHover": "Hacer que el selector de colores aparezca tanto al hacer clic como al mantener el puntero sobre el decorador de color",
+			"editor.colorDecoratorActivatedOn.hover": "Hacer que el selector de colores aparezca al pasar el puntero sobre el decorador de color",
 			"editor.editor.gotoLocation.multipleDeclarations": "Controla el comportamiento del comando \"Ir a declaración\" cuando existen varias ubicaciones de destino.",
 			"editor.editor.gotoLocation.multipleDefinitions": "Controla el comportamiento del comando \"Ir a definición\" cuando existen varias ubicaciones de destino.",
 			"editor.editor.gotoLocation.multipleImplemenattions": "Controla el comportamiento del comando \"Ir a implementaciones\" cuando existen varias ubicaciones de destino.",
@@ -559,6 +587,7 @@
 			"scrollbar.vertical.visible": "La barra de desplazamiento vertical estará siempre visible.",
 			"scrollbar.verticalScrollbarSize": "Ancho de la barra de desplazamiento vertical.",
 			"selectLeadingAndTrailingWhitespace": "Indica si los espacios en blanco iniciales y finales deben seleccionarse siempre.",
+			"selectSubwords": "Indica si se deben seleccionar las subpalabras (como \"foo\" en \"fooBar\" o \"foo_bar\").",
 			"selectionClipboard": "Controla si el portapapeles principal de Linux debe admitirse.",
 			"selectionHighlight": "Controla si el editor debe destacar las coincidencias similares a la selección.",
 			"showDeprecated": "Controla las variables en desuso tachadas.",
@@ -637,8 +666,16 @@
 		},
 		"vs/editor/common/core/editorColorRegistry": {
 			"caret": "Color del cursor del editor.",
+			"deprecatedEditorActiveIndentGuide": "\"editorIndentGuide.activeBackground\" está en desuso. Use \"editorIndentGuide.activeBackground1\" en su lugar.",
 			"deprecatedEditorActiveLineNumber": "ID es obsoleto. Usar en lugar 'editorLineNumber.activeForeground'. ",
+			"deprecatedEditorIndentGuides": "\"editorIndentGuide.background\" está en desuso. Use \"editorIndentGuide.background1\" en su lugar.",
 			"editorActiveIndentGuide": "Color de las guías de sangría activas del editor.",
+			"editorActiveIndentGuide1": "Color de las guías de sangría del editor activo (1).",
+			"editorActiveIndentGuide2": "Color de las guías de sangría del editor activo (2).",
+			"editorActiveIndentGuide3": "Color de las guías de sangría del editor activo (3).",
+			"editorActiveIndentGuide4": "Color de las guías de sangría del editor activo (4).",
+			"editorActiveIndentGuide5": "Color de las guías de sangría del editor activo (5).",
+			"editorActiveIndentGuide6": "Color de las guías de sangría del editor activo (6).",
 			"editorActiveLineNumber": "Color del número de línea activa en el editor",
 			"editorBracketHighlightForeground1": "Color de primer plano de los corchetes (1). Requiere que se habilite la coloración del par de corchetes.",
 			"editorBracketHighlightForeground2": "Color de primer plano de los corchetes (2). Requiere que se habilite la coloración del par de corchetes.",
@@ -669,6 +706,12 @@
 			"editorGhostTextForeground": "Color de primer plano del texto fantasma en el editor.",
 			"editorGutter": "Color de fondo del margen del editor. Este espacio contiene los márgenes de glifos y los números de línea.",
 			"editorIndentGuides": "Color de las guías de sangría del editor.",
+			"editorIndentGuides1": "Color de las guías de sangría del editor (1).",
+			"editorIndentGuides2": "Color de las guías de sangría del editor (2).",
+			"editorIndentGuides3": "Color de las guías de sangría del editor (3).",
+			"editorIndentGuides4": "Color de las guías de sangría del editor (4).",
+			"editorIndentGuides5": "Color de las guías de sangría del editor (5).",
+			"editorIndentGuides6": "Color de las guías de sangría del editor (6).",
 			"editorLineNumbers": "Color de números de línea del editor.",
 			"editorOverviewRulerBackground": "Color de fondo de la regla de información general del editor.",
 			"editorOverviewRulerBorder": "Color del borde de la regla de visión general.",
@@ -690,6 +733,7 @@
 			"unnecessaryCodeOpacity": "Opacidad de código fuente innecesario (sin usar) en el editor. Por ejemplo, \"#000000c0\" representará el código con un 75 % de opacidad. Para temas de alto contraste, utilice el color del tema 'editorUnnecessaryCode.border' para resaltar el código innecesario en vez de atenuarlo."
 		},
 		"vs/editor/common/editorContextKeys": {
+			"accessibleDiffViewerVisible": "Si el visor de diferencias accesible está visible",
 			"editorColumnSelection": "Si \"editor.columnSelection\" se ha habilitado",
 			"editorFocus": "Si el editor o un widget del editor tiene el foco (por ejemplo, el foco está en el widget de búsqueda)",
 			"editorHasCodeActionsProvider": "Si el editor tiene un proveedor de acciones de código",
@@ -727,6 +771,35 @@
 			"stickyScrollVisible": "Si el desplazamiento permanente está visible",
 			"textInputFocus": "Si un editor o una entrada de texto enriquecido tienen el foco (el cursor parpadea)"
 		},
+		"vs/editor/common/languages": {
+			"Array": "matriz",
+			"Boolean": "booleano",
+			"Class": "clase",
+			"Constant": "constante",
+			"Constructor": "constructor",
+			"Enum": "enumeración",
+			"EnumMember": "miembro de la enumeración",
+			"Event": "evento",
+			"Field": "campo",
+			"File": "archivo",
+			"Function": "función",
+			"Interface": "interfaz",
+			"Key": "clave",
+			"Method": "método",
+			"Module": "módulo",
+			"Namespace": "espacio de nombres",
+			"Null": "NULL",
+			"Number": "número",
+			"Object": "objeto",
+			"Operator": "operador",
+			"Package": "paquete",
+			"Property": "propiedad",
+			"String": "cadena",
+			"Struct": "estructura",
+			"TypeParameter": "parámetro de tipo",
+			"Variable": "variable",
+			"symbolAriaLabel": "{0} ({1})"
+		},
 		"vs/editor/common/languages/modesRegistry": {
 			"plainText.alias": "Texto sin formato"
 		},
@@ -736,25 +809,26 @@
 		"vs/editor/common/standaloneStrings": {
 			"accessibilityHelpMessage": "Presione Alt+F1 para ver las opciones de accesibilidad.",
 			"accessibilityHelpTitle": "Ayuda de accesibilidad",
-			"auto_off": "The editor is configured to never be optimized for usage with a Screen Reader",
-			"auto_on": "El editor está configurado para optimizarse para su uso con un lector de pantalla.",
+			"auto_off": "La aplicación está configurada para que nunca se optimice para su uso con un lector de pantalla",
+			"auto_on": "La aplicación está configurada para optimizarse para su uso con un lector de pantalla.",
 			"bulkEditServiceSummary": "{0} ediciones realizadas en {1} archivos",
-			"changeConfigToOnMac": "Para configurar el editor de forma que se optimice su uso con un lector de pantalla, presione ahora Comando+E.",
-			"changeConfigToOnWinLinux": "Para configurar el editor de forma que se optimice su uso con un lector de pantalla, presione ahora Control+E.",
-			"editableDiffEditor": "You are in a pane of a diff editor.",
-			"editableEditor": "You are in a code editor",
+			"changeConfigToOnMac": "Para configurar la aplicación para que se optimice para su uso con un lector de pantalla, presione Comando+E ahora.",
+			"changeConfigToOnWinLinux": "Para configurar la aplicación para que se optimice para su uso con un lector de pantalla, presione Control+E ahora.",
+			"editableDiffEditor": "Está en un panel de un editor de diferencias.",
+			"editableEditor": "Está en un editor de código",
 			"editorViewAccessibleLabel": "Contenido del editor",
 			"gotoLineActionLabel": "Vaya a Línea/Columna...",
 			"helpQuickAccess": "Mostrar todos los proveedores de acceso rápido",
 			"inspectTokens": "Desarrollador: inspeccionar tokens",
-			"openDoc": "Press H now to open a browser window with more information related to editor accessibility.",
-			"openingDocs": "Se abrirá ahora la página de documentación de accesibilidad del editor.",
+			"openingDocs": "Abriendo ahora la página de documentación de accesibilidad.",
 			"quickCommandActionHelp": "Mostrar y ejecutar comandos",
 			"quickCommandActionLabel": "Paleta de comandos",
 			"quickOutlineActionLabel": "Ir a símbolo...",
 			"quickOutlineByCategoryActionLabel": "Ir a símbolo por categoría...",
-			"readonlyDiffEditor": "You are in a read-only pane of a diff editor.",
-			"readonlyEditor": "You are in a read-only code editor",
+			"readonlyDiffEditor": "Está en un panel de solo lectura de un editor de diferencias.",
+			"readonlyEditor": "Está en un editor de código de solo lectura",
+			"screenReaderModeDisabled": "Modo optimizado del lector de pantalla deshabilitado.",
+			"screenReaderModeEnabled": "Modo optimizado para lector de pantalla habilitado.",
 			"showAccessibilityHelpAction": "Mostrar ayuda de accesibilidad",
 			"tabFocusModeOffMsg": "Al presionar TAB en el editor actual, se insertará el carácter de tabulación. Presione {0} para activar o desactivar este comportamiento.",
 			"tabFocusModeOffMsgNoKb": "Al presionar TAB en el editor actual, se insertará el carácter de tabulación. El comando {0} no se puede desencadenar actualmente mediante un enlace de teclado.",
@@ -955,7 +1029,7 @@
 			"findSelectionIcon": "Icono para \"Buscar en selección\" en el widget de búsqueda del editor.",
 			"label.closeButton": "Cerrar",
 			"label.find": "Buscar",
-			"label.findDialog": "Find / Replace",
+			"label.findDialog": "Buscar y reemplazar",
 			"label.matchesLocation": "{0} de {1}",
 			"label.nextMatchButton": "Coincidencia siguiente",
 			"label.noResults": "No hay resultados",
@@ -1109,7 +1183,8 @@
 			"location.kb": "Símbolo {0} de {1}, {2} para el siguiente"
 		},
 		"vs/editor/contrib/hover/browser/hover": {
-			"escapeFocusHover": "Foco de escape al mantener el puntero",
+			"chatAccessibleViewHint": "Inspeccione esto en la vista accesible con {0}",
+			"chatAccessibleViewHintNoKb": "Inspeccione esto en la vista accesible mediante el comando Abrir vista accesible, que actualmente no se puede desencadenar mediante el enlace de teclado.",
 			"goToBottomHover": "Ir a la parte inferior al mantener el puntero",
 			"goToTopHover": "Ir al puntero superior",
 			"pageDownHover": "Desplazamiento de página hacia abajo",
@@ -1451,8 +1526,8 @@
 			"editorSuggestWidgetSelectedIconForeground": "Color de primer plano del icono de la entrada seleccionada en el widget de sugerencias.",
 			"editorSuggestWidgetStatusForeground": "Color de primer plano del estado del widget sugerido.",
 			"label.desc": "{0}, {1}",
-			"label.detail": "{0}{1}",
-			"label.full": "{0}{1}, {2}",
+			"label.detail": "{0} {1}",
+			"label.full": "{0} {1}, {2}",
 			"suggest": "Sugerir",
 			"suggestWidget.loading": "Cargando...",
 			"suggestWidget.noSuggestions": "No hay sugerencias."
@@ -1603,9 +1678,9 @@
 			"selectPrevCodeAction.title": "Seleccione la acción anterior"
 		},
 		"vs/platform/audioCues/browser/audioCueService": {
-			"audioCues.chatRequestSent": "Chat Request Sent",
-			"audioCues.chatResponsePending": "Chat Response Pending",
-			"audioCues.chatResponseReceived": "Chat Response Received",
+			"audioCues.chatRequestSent": "Se envió una solicitud de chat",
+			"audioCues.chatResponsePending": "Respuesta de chat pendiente",
+			"audioCues.chatResponseReceived": "Respuesta de chat recibida",
 			"audioCues.diffLineDeleted": "Línea de diferencia eliminada",
 			"audioCues.diffLineInserted": "Línea de diferencia insertada",
 			"audioCues.diffLineModified": "Línea de diferencia modificada",
@@ -1691,6 +1766,7 @@
 			"cliDataDir": "Directorio donde deben almacenarse los metadatos de la CLI.",
 			"deprecated.useInstead": "Use {0} en su lugar.",
 			"diff": "Comparar dos archivos entre sí.",
+			"disableChromiumSandbox": "Use esta opción solo cuando sea requerida para iniciar la aplicación como usuario de sudo en Linux o cuando se ejecute como un usuario con privilegios elevados en un entorno de AppLocker en Windows.",
 			"disableExtension": "Deshabilite la extensión proporcionada. Esta opción no es persistente y solo es efectiva cuando el comando abre una nueva ventana.",
 			"disableExtensions": "Deshabilite las extensiones instaladas. Esta opción no es persistente y solo es efectiva cuando el comando abre una nueva ventana.",
 			"disableGPU": "Deshabilita la aceleración de hardware de GPU.",
@@ -1746,7 +1822,7 @@
 			"multipleDependentsError": "No se puede desinstalar la extensión \"{0}\". Las extensiones \"{1}\" y \"{2}\", entre otras, dependen de esta.",
 			"multipleIndirectDependentsError": "No se puede desinstalar la extensión \"{0}\". Incluye la desinstalación de la extensión \"{1}\" y las extensiones \"{2}\" y \"{3}\", entre otras, dependen de esta.",
 			"notFoundCompatibleDependency": "No se puede instalar la extensión \"{0}\" porque no es compatible con la versión actual de {1} (versión {2}).",
-			"notFoundCompatiblePrereleaseDependency": "No se puede instalar la versión preliminar de la extensión \"{0}\" porque no es compatible con la versión actual de {1} (versión {2}).",
+			"notFoundDeprecatedReplacementExtension": "No se puede instalar la extensión '{0}' porque estaba en desuso y no se encuentra la extensión de reemplazo '{1}'.",
 			"notFoundReleaseExtension": "No se puede instalar la versión de lanzamiento de la extensión \"{0}\" porque no tiene ninguna versión de lanzamiento.",
 			"singleDependentError": "No se puede desinstalar la extensión \"{0}\". La extensión \"{1}\" depende de esta.",
 			"singleIndirectDependentError": "No se puede desinstalar la extensión \"{0}\". Incluye la desinstalación de la extensión \"{1}\" y la extensión \"{2}\" depende de esta.",
@@ -2053,12 +2129,14 @@
 			"remoteTunnelService.authorizing": "Conectarse como {0} ({1})",
 			"remoteTunnelService.building": "Compilación de la CLI a partir de orígenes",
 			"remoteTunnelService.openTunnel": "Abriendo túnel",
-			"remoteTunnelService.openTunnelWithName": "Abriendo túnel {0}"
+			"remoteTunnelService.openTunnelWithName": "Abriendo túnel {0}",
+			"remoteTunnelService.serviceInstallFailed": "No se pudo instalar el túnel como servicio, empezando en la sesión..."
 		},
 		"vs/platform/request/common/request": {
 			"httpConfigurationTitle": "HTTP",
 			"proxy": "La configuración de proxy que se usará. Si no se establece, se heredará de las variables de entorno \"http_proxy\" y \"https_proxy\".",
 			"proxyAuthorization": "El valor para enviar como el encabezado \"Autenticación de proxy\" para cada solicitud de red.",
+			"proxyKerberosServicePrincipal": "Invalida el nombre del servicio principal para la autenticación Kerberos con el proxy HTTP. Cuando no se establece, se usa un valor predeterminado basado en el nombre de host del proxy.",
 			"proxySupport": "Utilice el soporte de proxy para extensiones.",
 			"proxySupportFallback": "Habilitar compatibilidad con proxy para extensiones, revertir a opciones de solicitud cuando no se encuentre ningún proxy.",
 			"proxySupportOff": "Deshabilite la compatibilidad de proxy para las extensiones.",
@@ -2067,10 +2145,6 @@
 			"request": "Solicitudes de red",
 			"strictSSL": "Controla si el certificado del servidor proxy debe comprobarse en la lista de entidades de certificación proporcionada.",
 			"systemCertificates": "Controla si los certificados de entidad de certificación deben cargarse desde el SO. (En Windows y macOS, se requiere una recarga de la ventana después de desactivar esta opción)."
-		},
-		"vs/platform/secrets/common/secrets": {
-			"notEncrypted": "Secrets are not being stored on disk because encryption is not available in this environment.",
-			"openTroubleshooting": "Open Troubleshooting"
 		},
 		"vs/platform/shell/node/shellEnv": {
 			"resolveShellEnvError": "No se puede resolver el entorno de shell: {0}",
@@ -2099,14 +2173,17 @@
 			"telemetry.usage": "Datos de uso",
 			"telemetryConfigurationTitle": "Telemetría"
 		},
+		"vs/platform/terminal/common/terminalLogService": {
+			"terminalLoggerName": "Terminal"
+		},
 		"vs/platform/terminal/common/terminalPlatformConfiguration": {
-			"terminal.integrated.automationProfile.linux": "The terminal profile to use on Linux for automation-related terminal usage like tasks and debug.",
-			"terminal.integrated.automationProfile.osx": "The terminal profile to use on macOS for automation-related terminal usage like tasks and debug.",
+			"terminal.integrated.automationProfile.linux": "Perfil del terminal que se va a usar en Linux para el uso de terminales relacionados con la automatización, como tareas y depuración.",
+			"terminal.integrated.automationProfile.osx": "Perfil del terminal que se va a usar en macOS para el uso de terminales relacionados con la automatización, como tareas y depuración.",
 			"terminal.integrated.automationProfile.windows": "Perfil del terminal que se va a usar para el uso de terminales relacionados con la automatización, como tareas y depuración. Esta configuración se omitirá actualmente si se establece {0} (ahora en desuso).",
 			"terminal.integrated.confirmIgnoreProcesses": "Conjunto de nombres de proceso que se omitirán al usar la configuración de {0}.",
-			"terminal.integrated.defaultProfile.linux": "The default terminal profile on Linux.",
-			"terminal.integrated.defaultProfile.osx": "The default terminal profile on macOS.",
-			"terminal.integrated.defaultProfile.windows": "The default terminal profile on Windows.",
+			"terminal.integrated.defaultProfile.linux": "Perfil de terminal predeterminado en Linux.",
+			"terminal.integrated.defaultProfile.osx": "Perfil de terminal predeterminado en macOS.",
+			"terminal.integrated.defaultProfile.windows": "Perfil de terminal predeterminado en Windows.",
 			"terminal.integrated.inheritEnv": "Si los nuevos shells deben heredar su entorno de VS Code, lo que puede generar un shell de inicio de sesión para asegurarse de que se inicializan $PATH y otras variables de desarrollo. Esto no tiene ningún efecto en Windows.",
 			"terminal.integrated.persistentSessionScrollback": "Controla la cantidad máxima de líneas que se restaurarán al volver a conectarse a una sesión de terminal persistente. Si aumenta este número, se restaurarán más líneas de scrollback con el costo de más memoria asociado y aumentará el tiempo que se tarda en conectarse a los terminales al iniciarse. Esta configuración requiere un reinicio para que se aplique y debe establecerse en un valor menor o igual a \"#terminal.integrated.scrollback#\".",
 			"terminal.integrated.profile": "Conjunto de personalizaciones de perfil de terminal para {0} que permite agregar, quitar o cambiar la forma en que se inician los terminales. Los perfiles se componen de una ruta de acceso obligatoria, argumentos opcionales y otras opciones de presentación.\r\n\r\nPara reemplazar un perfil existente, use su nombre de perfil como clave, por ejemplo: \r\n\r\n{1}\r\n\r\n{2}Obtenga más información sobre la configuración de perfiles{3}.",
@@ -2179,7 +2256,9 @@
 			"contrastBorder": "Un borde adicional alrededor de los elementos para separarlos unos de otros y así mejorar el contraste.",
 			"descriptionForeground": "Color de primer plano para el texto descriptivo que proporciona información adicional, por ejemplo para una etiqueta.",
 			"diffDiagonalFill": "Color de relleno diagonal del editor de diferencias. El relleno diagonal se usa en las vistas de diferencias en paralelo.",
-			"diffEditor.unchangedRegionBackground": "Color de los bloques sin modificar en el editor de diferencias.",
+			"diffEditor.unchangedCodeBackground": "Color de fondo del código sin modificar en el editor de diferencias.",
+			"diffEditor.unchangedRegionBackground": "Color de fondo de los bloques sin modificar en el editor de diferencias.",
+			"diffEditor.unchangedRegionForeground": "Color de primer plano de los bloques sin modificar en el editor de diferencias.",
 			"diffEditorBorder": "Color del borde entre ambos editores de texto.",
 			"diffEditorInserted": "Color de fondo para el texto que se insertó. El color no debe ser opaco para no ocultar las decoraciones subyacentes.",
 			"diffEditorInsertedLineGutter": "Color de fondo del margen donde se insertaron las líneas.",
@@ -2395,7 +2474,7 @@
 			"operator": "Estilo para operadores.",
 			"parameter": "Estilo de parámetros.",
 			"property": "Estilo de propiedades.",
-			"readonly": "Estilo que se usará para los símbolos que son de solo lectura.",
+			"readonly": "Estilo que se va a usar para los símbolos que son de solo lectura.",
 			"regexp": "Estilo para expresiones.",
 			"schema.fontStyle.error": "El estilo de fuente debe ser \"cursiva\", \"negrita\", \"subrayado\", \"tachado\" o una combinación. La cadena vacía anula todos los estilos.",
 			"schema.token.background.warning": "En este momento los colores de fondo para Token no están soportados.",
@@ -2752,9 +2831,9 @@
 			"folderStatusMessageRemoveSingleFolder": "Extensión ' {0} ' eliminó 1 carpeta del área de trabajo"
 		},
 		"vs/workbench/api/browser/statusBarExtensionPoint": {
-			"accessibilityInformation": "Defines the role and aria label to be used when the status bar entry is focused.",
-			"accessibilityInformation.label": "The aria label of the status bar entry. Defaults to the entry's text.",
-			"accessibilityInformation.role": "The role of the status bar entry which defines how a screen reader interacts with it. More about aria roles can be found here https://w3c.github.io/aria/#widget_roles",
+			"accessibilityInformation": "Define el rol y la etiqueta aria que se usarán cuando la entrada de la barra de estado esté centrada.",
+			"accessibilityInformation.label": "Etiqueta aria de la entrada de la barra de estado. El valor predeterminado es el texto de la entrada.",
+			"accessibilityInformation.role": "Rol de la entrada de la barra de estado que define cómo interactúa un lector de pantalla con él. Puede encontrar más información sobre los roles aria aquí https://w3c.github.io/aria/#widget_roles",
 			"alignment": "Alineación de la entrada de la barra de estado.",
 			"command": "Comando que se ejecutará cuando se haga clic en la entrada de la barra de estado.",
 			"id": "Identificador de la entrada de la barra de estado. Debe ser único en la extensión. Se debe usar el mismo valor al llamar a la API \"vscode.window.createStatusBarItem(id, ...)\"",
@@ -2762,7 +2841,7 @@
 			"name": "Nombre de la entrada, como \"Indicador de lenguaje de Python\", \"Estado de GIT\", etc. Intente que la longitud del nombre sea breve, pero lo suficientemente descriptiva como para que los usuarios puedan comprender de qué trata el elemento de la barra de estado.",
 			"priority": "Prioridad de la entrada de la barra de estado. Un mayor valor significa que el elemento se mostrará más a la izquierda.",
 			"text": "Texto que se va a mostrar para la entrada. Puede insertar iconos en el texto aprovechando la sintaxis \"$(<name>)\", como \"Hola $(globe)!\".",
-			"tooltip": "The tooltip text for the entry.",
+			"tooltip": "El texto de información sobre herramientas para la entrada.",
 			"vscode.extension.contributes.statusBarItems": "Aporta elementos a la barra de estado."
 		},
 		"vs/workbench/api/browser/viewsExtensionPoint": {
@@ -2870,6 +2949,10 @@
 			"remote": "Host de extensión (remoto)",
 			"worker": "Host de extensión (trabajo)"
 		},
+		"vs/workbench/api/common/extHostNotebook": {
+			"err.readonly": "No se puede modificar el archivo de solo lectura \"{0}\"",
+			"fileModifiedError": "Archivo Modificado Desde"
+		},
 		"vs/workbench/api/common/extHostProgress": {
 			"extensionSource": "{0} (extensión)"
 		},
@@ -2885,6 +2968,10 @@
 		},
 		"vs/workbench/api/common/extHostTreeViews": {
 			"treeView.duplicateElement": "El elemento con id {0} está ya registrado"
+		},
+		"vs/workbench/api/common/extHostTunnelService": {
+			"tunnelPrivacy.private": "Privado",
+			"tunnelPrivacy.public": "Público"
 		},
 		"vs/workbench/api/common/extHostWorkspace": {
 			"updateerror": "La extensión ' {0} ' no pudo actualizar las carpetas del área de trabajo: {1}"
@@ -2903,27 +2990,20 @@
 		"vs/workbench/api/node/extHostDebugService": {
 			"debug.terminal.title": "Proceso de depuración"
 		},
-		"vs/workbench/api/node/extHostTunnelService": {
-			"tunnelPrivacy.private": "Privado",
-			"tunnelPrivacy.public": "Público"
-		},
 		"vs/workbench/browser/actions/developerActions": {
 			"inspect context keys": "Inspeccionar claves de contexto",
-			"keyboardShortcutsFormat.command": "Título del comando.",
-			"keyboardShortcutsFormat.commandAndKeys": "Título y teclas del comando.",
-			"keyboardShortcutsFormat.commandWithGroup": "Título del comando precedido por su grupo.",
-			"keyboardShortcutsFormat.commandWithGroupAndKeys": "Título y teclas del comando con el comando precedido por su grupo.",
-			"keyboardShortcutsFormat.keys": "Teclas.",
 			"logStorage": "Registrar el contenido de la base de datos de almacenamiento",
 			"logWorkingCopies": "Registrar copias de trabajo",
 			"screencastMode.fontSize": "Controla el tamaño de fuente (en píxeles) del teclado de modo de presentación de pantalla.",
-			"screencastMode.hideSingleEditorCursorMoves": "Oculta los comandos de movimiento del cursor del editor único en el modo de presentación en pantalla.",
+			"screencastMode.keyboardOptions.description": "Opciones para personalizar la superposición del teclado en el modo de presentación en pantalla.",
+			"screencastMode.keyboardOptions.showCommandGroups": "Mostrar los nombres del grupo de comandos cuando también se muestran los comandos.",
+			"screencastMode.keyboardOptions.showCommands": "Mostrar nombres de comandos.",
+			"screencastMode.keyboardOptions.showKeys": "Mostrar claves sin formato.",
+			"screencastMode.keyboardOptions.showSingleEditorCursorMoves": "Mostrar comandos de movimiento de cursor de editor único.",
 			"screencastMode.keyboardOverlayTimeout": "Controla el tiempo (en milisegundos) que se muestra la superposición del teclado en el modo de presentación de pantalla.",
-			"screencastMode.keyboardShortcutsFormat": "Controla lo que se muestra en la superposición de teclado al mostrar accesos directos.",
 			"screencastMode.location.verticalPosition": "Controla el desplazamiento vertical de la superposición del modo de presentación en pantalla desde la parte inferior como un porcentaje de la altura del área de trabajo.",
 			"screencastMode.mouseIndicatorColor": "Controla el color en notación hexadecimal (#RGB, #RGBA, #RRGGBB o #RRGGBBAA) del indicador del mouse en el modo de presentación en pantalla.",
 			"screencastMode.mouseIndicatorSize": "Controla el tamaño (en píxeles) del indicador de mouse en el modo de presentación de pantalla.",
-			"screencastMode.onlyKeyboardShortcuts": "Mostrar solo los métodos abreviados de teclado en el modo de presentación en pantalla (no incluir nombres de acción).",
 			"screencastModeConfigurationTitle": "Modo de presentación en pantalla",
 			"storageLogDialogDetails": "Abra las herramientas de desarrollo en el menú y seleccione la pestaña Consola.",
 			"storageLogDialogMessage": "El contenido de la base de datos de almacenamiento se ha registrado en las herramientas de desarrollo.",
@@ -3518,7 +3598,7 @@
 			"unlockEditorGroup": "Desbloquear grupo de editores"
 		},
 		"vs/workbench/browser/parts/editor/editorConfiguration": {
-			"editor.editorAssociations": "Configurar patrones glob a los editores (por ejemplo `\"*.hex\": \"hexEditor.hexedit\"`). Estos tienen prioridad sobre el comportamiento predeterminado.",
+			"editor.editorAssociations": "Configure [patrones globales](https://aka.ms/vscode-glob-patterns) en editores (por ejemplo, '\"*.hex\": \"hexEditor.hexedit\"'). Tienen prioridad sobre el comportamiento predeterminado.",
 			"editorLargeFileSizeConfirmation": "Controla el tamaño mínimo de un archivo en MB antes de pedir confirmación al abrir en el editor. Tenga en cuenta que esta configuración puede no aplicarse a todos los entornos y tipos de editor.",
 			"interactiveWindow": "Ventana interactiva",
 			"markdownPreview": "Vista previa de Markdown",
@@ -3684,8 +3764,12 @@
 			"toggleDoNotDisturbMode": "Alternar modo No molestar"
 		},
 		"vs/workbench/browser/parts/notifications/notificationsList": {
+			"notificationAccessibleViewHint": "Inspeccione la respuesta en la vista accesible con {0}",
+			"notificationAccessibleViewHintNoKb": "Inspeccione la respuesta en la vista accesible mediante el comando Abrir vista accesible, que actualmente no se puede desencadenar mediante el enlace de teclado.",
 			"notificationAriaLabel": "{0}, notificación",
+			"notificationAriaLabelHint": "{0}, notificación, {1}",
 			"notificationWithSourceAriaLabel": "{0}, origen: {1}, notificación",
+			"notificationWithSourceAriaLabelHint": "{0}, origen: {1}, notificación, {2}",
 			"notificationsList": "Lista de notificaciones"
 		},
 		"vs/workbench/browser/parts/notifications/notificationsStatus": {
@@ -3894,13 +3978,14 @@
 			"decorations.badges": "Controla si las decoraciones de archivo del editor deben usar distintivos.",
 			"decorations.colors": "Controla si las decoraciones de archivo del editor deben usar colores. ",
 			"dirty": "\"${dirty}\": un indicador de cuándo el editor activo tiene cambios sin guardar.",
+			"doubleClickTabToToggleEditorGroupSizes": "Controla si se debe maximizar o restaurar el grupo de editores al hacer doble clic en una pestaña. Este valor se omite cuando \"#workbench.editor.showTabs#\" está deshabilitado.",
 			"editorOpenPositioning": "Controla dónde se abren los editores. Seleccione \"left\" o \"right\" para abrir los editores a la izquierda o la derecha del que está activo actualmente. Seleccione \"first\" o \"last\" para abrir los editores con independencia del que está activo.",
 			"editorTabCloseButton": "Controla la posición de los botones de cierre de pestañas del editor o los deshabilita cuando se establece en \"off\". Este valor se omite cuando \"#workbench.editor.showTabs#\" está deshabilitado.",
 			"enableMenuBarMnemonics": "Controla si los menús principales se pueden abrir a través de los accesos directos de la tecla Alt. La desactivación de las teclas de acceso permite vincular estos accesos directos de tecla Alt a los comandos del editor en su lugar.",
 			"enablePreview": "Controla si los editores abiertos se muestran como editores de vista previa. Los editores de vista previa no permanecen abiertos, se reutilizan hasta que se establecen explícitamente para mantenerse abiertos (mediante doble clic o edición) y muestran los nombres de archivo en cursiva.",
 			"enablePreviewFromCodeNavigation": "Controla si los editores permanecen en vista previa cuando se inicia la navegación de código desde ellos. Los editores en vista previa no se mantienen abiertos y se reutilizan hasta que se establece explícitamente que se mantengan abiertos (mediante doble clic o edición). Este valor se omite cuando \"#workbench.editor.enablePreview#\" está deshabilitado.",
 			"enablePreviewFromQuickOpen": "Controla si los editores abiertos desde Quick Open se muestran como editores de vista previa. Los editores de vista previa no permanecen abiertos y se reutilizan hasta que se establecen explícitamente para mantenerse abiertos (mediante doble clic o edición). Cuando esté habilitada, mantenga presionada la tecla Ctrl antes de la selección para abrir un editor como una vista previa. Este valor se omite cuando `#workbench.editor.enablePreview#` está deshabilitado.",
-			"exclude": "Configure rutas de acceso o [glob patterns](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) para excluir archivos del historial de archivos local. Los patrones globales siempre se evalúan en relación con la ruta de acceso de la carpeta del área de trabajo, a menos que sean rutas absolutas. El cambio de esta configuración no afecta a las entradas existentes del historial de archivos locales.",
+			"exclude": "Configure rutas de acceso o [patrones globales](https://aka.ms/vscode-glob-patterns) para excluir archivos del historial de archivos local. Los patrones globales siempre se evalúan en relación con la ruta de acceso de la carpeta del área de trabajo, a menos que sean rutas de acceso absolutas. Cambiar esta configuración no tiene ningún efecto en las entradas del historial de archivos locales existentes.",
 			"focusRecentEditorAfterClose": "Controla si las pestañas se cierran en el orden de uso más reciente o de izquierda a derecha.",
 			"folderName": "`${folderName}`: nombre de la carpeta del área de trabajo que contiene el archivo (p. ej., myFolder).",
 			"folderPath": "`${folderPath}`: ruta de acceso de archivo de la carpeta del área de trabajo que contiene el archivo (p. ej., /Users/Development/myFolder).",
@@ -3941,9 +4026,6 @@
 			"rootNameShort": "'${rootNameShort}': nombre acortado del área de trabajo sin sufijos (por ejemplo, myFolder, myRemoteFolder o myWorkspace).",
 			"rootPath": "\"${rootPath}\": ruta de acceso de archivo del área de trabajo o la carpeta abierta (por ejemplo, /Users/Development/myWorkspace).",
 			"scrollToSwitchTabs": "Controla si las pestañas se abrirán o no al desplazarse sobre ellas. De forma predeterminada, las pestañas solo se muestran cuando se desplaza sobre ellas, pero no se abren. Puede mantener presionada la tecla Mayús mientras se desplaza para cambiar el comportamiento en esa duración. Este valor se omite cuando \"#workbench.editor.showTabs#\" está deshabilitado.",
-			"security.allowedUNCHosts": "Conjunto de nombres de host UNC (sin barra diagonal o inversa inicial o final, por ejemplo \"192.168.0.1\" en \"mi-server\") que se permiten sin confirmación del usuario. Si se está accediendo a un host UNC que no está permitido a través de esta configuración o no se ha confirmado mediante la confirmación del usuario, se producirá un error y se detendrá la operación. Se requiere un reinicio al cambiar esta configuración. Obtenga más información sobre esta configuración en https://aka.ms/vscode-windows-unc.",
-			"security.allowedUNCHosts.patternErrorMessage": "Los nombres de host UNC no deben contener barras diagonales inversas.",
-			"security.restrictUNCAccess": "Si se habilita, solo permite el acceso a los nombres de host UNC permitidos por la configuración '#security.allowedUNCHosts#' o después de la confirmación del usuario. Obtenga más información sobre esta configuración en https://aka.ms/vscode-windows-unc.",
 			"separator": "`${separator}`: un separador condicional (\" - \") que solo se muestra cuando está rodeado por variables con valores o texto estático.",
 			"settings.editor.desc": "Determina el editor de configuración que se va a usar de forma predeterminada.",
 			"settings.editor.json": "Use el editor de archivos JSON.",
@@ -4012,12 +4094,14 @@
 			"workbench.editor.showLanguageDetectionHints.notebook": "Mostrar en los editores del bloc de notas",
 			"workbench.editor.splitInGroupLayoutHorizontal": "Los editores se colocan de izquierda a derecha.",
 			"workbench.editor.splitInGroupLayoutVertical": "Los editores se colocan de arriba abajo.",
+			"workbench.editor.splitSizingAuto": "Divide el grupo de editores activo en partes iguales, a menos que todos los grupos de editores ya estén en partes iguales. En ese caso, divide todos los grupos de editores en partes iguales.",
 			"workbench.editor.splitSizingDistribute": "Divide todos los grupos de editores en partes iguales.",
 			"workbench.editor.splitSizingSplit": "Divide el grupo de editor activo en partes iguales.",
 			"workbench.editor.tabSizing.fit": "Mantenga siempre un tamaño de pestaña suficientemente grande para mostrar la etiqueta del editor completa.",
 			"workbench.editor.tabSizing.fixed": "Haga que todas las pestañas tengan el mismo tamaño, a la vez que les permite reducir su tamaño cuando el espacio disponible no sea suficiente para mostrar todas las pestañas a la vez.",
 			"workbench.editor.tabSizing.shrink": "Permita que se reduzca el tamaño de las pestañas cuando el espacio disponible no es suficiente para mostrarlas todas a la vez.",
-			"workbench.editor.tabSizingFixedMaxWidth": "Controls the maximum width of tabs when `#workbench.editor.tabSizing#` size is set to `fixed`.",
+			"workbench.editor.tabSizingFixedMaxWidth": "Controla el ancho máximo de las pestañas cuando el tamaño de \"#workbench.editor.tabSizing#\" se establece en \"fixed\".",
+			"workbench.editor.tabSizingFixedMinWidth": "Controla el ancho mínimo de las pestañas cuando el tamaño de \"#workbench.editor.tabSizing#\" se establece en \"fixed\".",
 			"workbench.editor.titleScrollbarSizing.default": "El tamaño predeterminado.",
 			"workbench.editor.titleScrollbarSizing.large": "Aumenta el tamaño, por lo que se puede capturar más fácilmente con el mouse.",
 			"workbench.editor.untitled.labelFormat.content": "El nombre del archivo sin título se deriva del contenido de su primera línea a menos que tenga una ruta de acceso de archivo asociada. Se recurrirá al nombre en caso de que la línea esté vacía o no contenga caracteres de palabra.",
@@ -4048,6 +4132,9 @@
 		},
 		"vs/workbench/common/configuration": {
 			"applicationConfigurationTitle": "Aplicación",
+			"security.allowedUNCHosts": "Conjunto de nombres de host UNC (sin barra diagonal o inversa inicial o final, por ejemplo \"192.168.0.1\" en \"mi-server\") que se permiten sin confirmación del usuario. Si se está accediendo a un host UNC que no está permitido a través de esta configuración o no se ha confirmado mediante la confirmación del usuario, se producirá un error y se detendrá la operación. Se requiere un reinicio al cambiar esta configuración. Obtenga más información sobre esta configuración en https://aka.ms/vscode-windows-unc.",
+			"security.allowedUNCHosts.patternErrorMessage": "Los nombres de host UNC no deben contener barras diagonales inversas.",
+			"security.restrictUNCAccess": "Si se habilita, solo permite el acceso a los nombres de host UNC permitidos por la configuración '#security.allowedUNCHosts#' o después de la confirmación del usuario. Obtenga más información sobre esta configuración en https://aka.ms/vscode-windows-unc.",
 			"securityConfigurationTitle": "Seguridad",
 			"workbenchConfigurationTitle": "Workbench"
 		},
@@ -4283,6 +4370,7 @@
 		"vs/workbench/electron-sandbox/desktop.contribution": {
 			"application.shellEnvironmentResolutionTimeout": "Controla el tiempo de espera en segundos antes de dejar de resolver el entorno de shell cuando la aplicación no se ha iniciado ya desde un terminal. Consulte nuestra [documentation](https://go.microsoft.com/fwlink/?linkid=2149667) para obtener más información.",
 			"argv.crashReporterId": "Identificador único que se usa para correlacionar los informes de bloqueo enviados desde esta instancia de la aplicación.",
+			"argv.disableChromiumSandbox": "Deshabilita el espacio aislado de Chromium. Esto es útil cuando se ejecuta VS Code con privilegios elevados en Linux y se ejecuta en AppLocker en Windows.",
 			"argv.disableHardwareAcceleration": "Deshabilita la aceleración de hardware. Solo cambie esta opción si encuentra problemas gráficos.",
 			"argv.enableCrashReporter": "Permite deshabilitar el informe de bloqueo; debe reiniciar la aplicación si se cambia el valor.",
 			"argv.enebleProposedApi": "Habilite las API propuestas para una lista de identificadores de extensiones (como \"vscode. git\"). Las API propuestas son inestables y están sujetas a interrupciones sin advertencia en cualquier momento. Esta operación solo debe establecerse para el desarrollo de extensiones y para pruebas.",
@@ -4297,6 +4385,7 @@
 			"mergeAllWindowTabs": "Combinar todas las ventanas",
 			"miExit": "S&&alir",
 			"moveWindowTabToNewWindow": "Mover pestaña de ventana a una nueva ventana",
+			"nativeContextMenuLocation": "Permita que el sistema operativo controle el posicionamiento del menú contextual en los casos en los que debe aparecer debajo del mouse.",
 			"newTab": "Pestaña Nueva ventana",
 			"newWindowDimensions": "Controla las dimensiones de apertura de una nueva ventana cuando ya existe al menos una ventana abierta. Tenga en cuenta que esta configuración no afecta a la primera ventana abierta, que siempre se restaurará al tamaño y ubicación en las que se dejó antes de cerrarla",
 			"openWithoutArgumentsInNewWindow": "Controla si debe abrirse una ventana nueva vacía cuando se inicia una segunda instancia sin argumentos o si debe obtener el foco la última instancia en ejecución.\r\nTenga en cuenta que aún puede haber casos en los que este valor se ignore (por ejemplo, al usar la opción de la lí­nea de comandos \"--new-window\" o \"--reuse-window\"). ",
@@ -4334,7 +4423,7 @@
 			"join.closeStorage": "Guardando el estado de la interfaz de usuario"
 		},
 		"vs/workbench/electron-sandbox/parts/dialogs/dialogHandler": {
-			"aboutDetail": "Versión: {0}\r\nCommit: {1}\r\nFecha: {2}\r\nElectrón: {3}\r\nChromium: {4}\r\nNode.js: {5}\r\nV8: {6}\r\nOS: {7}",
+			"aboutDetail": "Versión: {0}\r\nConfirmar: {1}\r\nFecha: {2}\r\nElectron: {3}\r\nElectronBuildId: {4}\r\nChromium: {5}\r\nNode.js: {6}\r\nV8: {7}\r\nSO: {8}",
 			"copy": "&&Copiar",
 			"okButton": "Aceptar"
 		},
@@ -4344,6 +4433,7 @@
 			"closeWindowMessage": "¿Está seguro de que desea cerrar la ventana?",
 			"configure": "Configurar",
 			"doNotAskAgain": "No volver a hacerme esta pregunta",
+			"downloadArmBuild": "Descargar",
 			"exitButtonLabel": "&&Salida",
 			"keychainWriteError": "Error al escribir la información de inicio de sesión en la cadena de claves: '{0}'.",
 			"learnMore": "Más información",
@@ -4362,6 +4452,7 @@
 			"resolveShellEnvironment": "Resolviendo el entorno de shell...",
 			"restart": "Reiniciar",
 			"runningAsRoot": "No se recomienda ejecutar {0} como usuario raíz.",
+			"runningTranslated": "Está ejecutando una versión emulada de {0}. Para obtener un mejor rendimiento, descargue la versión arm64 nativa de la compilación {0} para su máquina.",
 			"shutdownErrorClose": "Un error inesperado impidió que se cerrara la ventana",
 			"shutdownErrorDetail": "Error: {0}",
 			"shutdownErrorLoad": "Un error inesperado impidió cambiar el área de trabajo",
@@ -4383,28 +4474,46 @@
 			"windowseolmessage": "{0} el {1} pronto dejarán de recibir actualizaciones. Considere la posibilidad de actualizar la versión de Windows."
 		},
 		"vs/workbench/contrib/accessibility/browser/accessibility.contribution": {
-			"terminal-help-label": "terminal accessibility help"
+			"editor-help": "ayuda de accesibilidad del editor",
+			"hoverAccessibleView": "Vista accesible al mantener el puntero",
+			"notification": "Vista accesible de notificaciones",
+			"notification.accessibleView": "{0} Origen: {1}"
 		},
 		"vs/workbench/contrib/accessibility/browser/accessibilityContribution": {
-			"accessibilityConfigurationTitle": "Accessibility",
-			"verbosity.chat.description": "Provide information about how to access the chat help menu when the chat input is focused",
-			"verbosity.diffEditor.description": "Provide information about how to navigate changes in the diff editor when it is focused",
-			"verbosity.interactiveEditor.description": "Provide information about how to access the inline editor chat accessibility help menu when the input is focused",
-			"verbosity.keybindingsEditor.description": "Provide information about how to change a keybinding in the keybindings editor when a row is focused",
-			"verbosity.notebook": "Provide information about how to focus the cell container or inner editor when a notebook cell is focused.",
-			"verbosity.terminal.description": "Provide information about how to access the terminal accessibility help menu when the terminal is focused"
+			"accessibilityConfigurationTitle": "Accesibilidad",
+			"editor.action.accessibilityHelp": "Abrir la ayuda de accesibilidad",
+			"editor.action.accessibleView": "Abrir Vista accesible",
+			"editor.action.accessibleViewNext": "Mostrar siguiente en vista accesible",
+			"editor.action.accessibleViewPrevious": "Mostrar anterior en vista accesible",
+			"verbosity.chat.description": "Proporcionar información sobre cómo acceder al menú de ayuda del chat cuando la entrada del chat está centrada",
+			"verbosity.diffEditor.description": "Proporcionar información sobre cómo navegar por los cambios en el editor de diferencias cuando se centra",
+			"verbosity.hover": "Proporcione información sobre cómo abrir el puntero en una vista accesible.",
+			"verbosity.interactiveEditor.description": "Proporcionar información sobre cómo acceder al menú de ayuda de accesibilidad del chat del editor insertado y alertar con sugerencias que describen cómo usar la característica cuando la entrada está centrada",
+			"verbosity.keybindingsEditor.description": "Proporcionar información sobre cómo cambiar un enlace de teclado en el editor de enlaces de teclado cuando se centra una fila",
+			"verbosity.notebook": "Proporcione información sobre cómo enfocar el contenedor de celdas o el editor interno cuando se centra una celda del bloc de notas.",
+			"verbosity.notification": "Proporcione información sobre cómo abrir la notificación en una vista accesible.",
+			"verbosity.terminal.description": "Proporcionar información sobre cómo acceder al menú de ayuda de accesibilidad del terminal cuando el terminal está centrado"
 		},
 		"vs/workbench/contrib/accessibility/browser/accessibleView": {
-			"exit-tip": "Exit this menu via the Escape key.\r\n"
+			"accessibleViewAriaLabel": "{0}",
+			"accessibleViewAriaLabelWithNav": "{0} {1}",
+			"chatAccessibleViewHint": "Inspeccione esto en la vista accesible con {0}",
+			"chatAccessibleViewHintNoKb": "Inspeccione esto en la vista accesible mediante el comando Abrir vista accesible, que actualmente no se puede desencadenar mediante el enlace de teclado.",
+			"chatAccessibleViewNextPreviousHint": "Mostrar el siguiente elemento {0} o anterior {1} en la vista accesible",
+			"chatAccessibleViewNextPreviousHintNoKb": "Mostrar el elemento siguiente o anterior en la vista accesible mediante la configuración de enlaces de teclado para Mostrar siguiente o Anterior en vista accesible",
+			"disable-help-hint": "\r\nPara deshabilitar la sugerencia \"accessibility.verbosity\" para esta característica, presione D ahora.\r\n",
+			"disableAccessibilityHelp": "El nivel de detalle de accesibilidad {0} ahora está deshabilitado",
+			"exit-tip": "Salga de este cuadro de diálogo mediante la tecla Escape.",
+			"openDoc": "\r\nPresione H ahora para abrir una ventana del explorador con más información relacionada con la accesibilidad del editor.\r\n"
 		},
 		"vs/workbench/contrib/audioCues/browser/audioCues.contribution": {
-			"audioCues.chatRequestSent": "Plays a sound when a chat request is made.",
-			"audioCues.chatResponsePending": "Plays a sound on loop while the response is pending.",
-			"audioCues.chatResponseReceived": "Plays a sound on loop while the response has been received.",
+			"audioCues.chatRequestSent": "Reproduce un sonido cuando se realiza una solicitud de chat.",
+			"audioCues.chatResponsePending": "Reproduce un sonido en bucle mientras la respuesta está pendiente.",
+			"audioCues.chatResponseReceived": "Reproduce un sonido en bucle mientras la respuesta se ha recibido.",
 			"audioCues.debouncePositionChanges": "Si se deben anular los cambios de posición o no",
-			"audioCues.diffLineDeleted": "Reproduce un sonido cuando el foco se mueve a una línea eliminada en modo de revisión de diferencias o al cambio siguiente o anterior.",
+			"audioCues.diffLineDeleted": "Reproduce un sonido cuando el foco se mueve a una línea eliminada en modo de visor de diferencias accesible o al cambio siguiente o anterior",
 			"audioCues.diffLineInserted": "Reproduce un sonido cuando el foco se mueve a una línea insertada en modo de revisión de diferencias o al cambio siguiente o anterior",
-			"audioCues.diffLineModified": "Reproduce un sonido cuando el foco se mueve a una línea modificada en modo de revisión de diferencias o al cambio siguiente o anterior",
+			"audioCues.diffLineModified": "Reproduce un sonido cuando el foco se mueve a una línea modificada en modo de visor de diferencias accesible o al cambio siguiente o anterior",
 			"audioCues.enabled.auto": "Habilita las indicaciones de audio cuando se conecta un lector de pantalla.",
 			"audioCues.enabled.off": "Deshabilitar indicaciones de audio.",
 			"audioCues.enabled.on": "Habilite indicaciones de audio.",
@@ -4521,27 +4630,32 @@
 			"tree.aria": "Jerarquía de llamadas"
 		},
 		"vs/workbench/contrib/chat/browser/actions/chatAccessibilityHelp": {
-			"chat-help-label": "Chat accessibility help",
-			"chat.announcement": "Chat responses will be announced as they come in. A response will indicate the number of code blocks, if any, and then the rest of the response.",
-			"chat.overview": "The chat view is comprised of an input box and a request/response list. The input box is used to make requests and the list is used to display responses.",
-			"chat.requestHistory": "In the input box, use up and down arrows to navigate your request history. Edit input and use enter or the submit button to run a new request.",
-			"inline-chat-label": "Inline chat accessibility help",
-			"inlineChat.access": "It can be activated via quick fix actions or directly using the command: Inline Chat: Start Code Chat ({0}).",
-			"inlineChat.contextActions": "Context menu actions may run a request prefixed with /fix or /explain. These prefixes can be used directly in the input box to apply those specific actions.",
-			"inlineChat.diff": "Once in the diff editor, enter review mode with ({0}). Use up and down arrows to navigate lines with the proposed changes.",
-			"inlineChat.diffNoKb": "Tab again to enter the Diff editor with the changes and enter review mode with the Go to Next Difference Command. Use Up/DownArrow to navigate lines with the proposed changes.",
-			"inlineChat.explain": "When a request is prefixed with /explain, a response will explain the code in the current selection and the chat view will be focused.",
-			"inlineChat.fix": "When a request is prefixed with /fix, a response will indicate the problem with the current code. A diff editor will be rendered and can be reached by tabbing.",
-			"inlineChat.overview": "Inline chat occurs within a code editor and takes into account the current selection. It is useful for refactoring, fixing, and more. Keep in mind that AI generated code may be incorrect.",
-			"inlineChat.toolbar": "Use tab to reach conditional parts like commands, status, message responses and more.",
-			"workbench.action.chat.clear": "El comando Borrar chat ({0}) borra la lista de peticiones/respuestas.",
-			"workbench.action.chat.clearNoKb": "El comando Borrar chat borra la lista de peticiones/respuestas y actualmente no se puede activar mediante una combinación de teclas.",
-			"workbench.action.chat.focus": "The Focus Chat command ({0}) focuses the chat request/response list, which can be navigated with up and down arrows.",
-			"workbench.action.chat.focusInput": "El comando Focus Chat Input ({0}) activa el cuadro de entrada de las solicitudes de chat.",
-			"workbench.action.chat.focusNoKb": "El comando Enfocar lista de chats activa la lista de solicitudes y respuestas de chat, por la que se puede navegar con las flechas Arriba y Abajo y actualmente no se puede desencadenar mediante un enlace de teclado.",
-			"workbench.action.chat.nextCodeBlock": "El comando Chat: Siguiente bloque de código ({0}) enfoca el siguiente bloque de código dentro de una respuesta.",
-			"workbench.action.chat.nextCodeBlockNoKb": "El comando Chat: Siguiente bloque de código centra el siguiente bloque de código dentro de una respuesta y actualmente no se puede activar mediante una combinación de teclas..",
-			"workbench.action.interactiveSession.focusInputNoKb": "El comando Enfocar lista de chats Input centra el cuadro de entrada para las solicitudes de chat y actualmente no se puede desencadenar mediante un enlace de teclado."
+			"chat-help-label": "Ayuda de accesibilidad del chat",
+			"chat.announcement": "Las respuestas del chat se anunciarán a medida que vayan llegando. Una respuesta indicará el número de bloques de código, si los hay, y a continuación el resto de la respuesta.",
+			"chat.audioCues": "Las indicaciones de audio se pueden cambiar a través de la configuración con un prefijo de audioCues.chat. De forma predeterminada, si una solicitud tarda más de 4 segundos, escuchará una indicación de audio que indica que el progreso todavía se está produciendo.",
+			"chat.inspectResponse": "En el cuadro de entrada, inspeccione la última respuesta en la vista accesible a través de {0}",
+			"chat.inspectResponseNoKb": "Con el cuadro de entrada centrado, inspeccione la última respuesta en la vista accesible mediante el comando Abrir vista accesible, que actualmente no se puede desencadenar mediante un enlace de teclado.",
+			"chat.overview": "La vista de chat consta de un cuadro de entrada y una lista de solicitudes y respuestas. El cuadro de entrada se usa para realizar solicitudes y la lista se usa para mostrar respuestas.",
+			"chat.requestHistory": "En el cuadro de entrada, utilice las flechas arriba y abajo para navegar por el historial de solicitudes. Edite la entrada y pulse Entrar o el botón de Enviar para ejecutar una nueva solicitud.",
+			"inline-chat-label": "Ayuda de accesibilidad del chat insertado",
+			"inlineChat.access": "Se puede activar mediante acciones de código o directamente mediante el comando: Chat en línea: Iniciar chat de código ({0}).",
+			"inlineChat.contextActions": "Las acciones del menú contextual pueden ejecutar una solicitud con el prefijo /. Escriba / para detectar estos comandos listos.",
+			"inlineChat.diff": "Una vez en el editor de diferencias, entre en el modo de revisión con ({0}). Use las flechas arriba y abajo para desplazarse por las líneas con los cambios propuestos.",
+			"inlineChat.diffNoKb": "Vuelva a tabular para entrar en el editor de diferencias con los cambios y entrar en el modo de revisión con el comando Ir a la diferencia siguiente. Use Arriba o Abajo para desplazarse por las líneas con los cambios propuestos.",
+			"inlineChat.fix": "Si se invoca una acción de corrección, una respuesta indicará el problema con el código actual. Se representará un editor de diferencias y se puede acceder a él mediante tabulación.",
+			"inlineChat.inspectResponse": "En el cuadro de entrada, inspeccione la respuesta en la vista accesible a través de {0}",
+			"inlineChat.inspectResponseNoKb": "Con el cuadro de entrada centrado, inspeccione la respuesta en la vista accesible mediante el comando Abrir vista accesible, que actualmente no se puede desencadenar mediante un enlace de teclado.",
+			"inlineChat.overview": "El chat en línea se realiza dentro de un editor de código y tiene en cuenta la selección actual. Resulta útil para realizar cambios en el editor actual. Por ejemplo, arreglar diagnósticos, documentar o refactorizar código. Tenga en cuenta que el código generado por inteligencia artificial puede ser incorrecto.",
+			"inlineChat.requestHistory": "En el cuadro de entrada, use {0} y {1} para navegar por el historial de solicitudes. Edite la entrada y use entrar o el botón Enviar para ejecutar una nueva solicitud.",
+			"inlineChat.toolbar": "Utilice el tabulador para acceder a partes condicionales como comandos, estado, respuestas a mensajes y mucho más.",
+			"workbench.action.chat.clear": "Para borrar la lista de solicitudes y respuestas, invoque el comando Borrar chat ({0}).",
+			"workbench.action.chat.clearNoKb": "Para borrar la lista de solicitudes y respuestas, invoque el comando Borrar chat, que actualmente no se puede desencadenar mediante un enlace de teclado.",
+			"workbench.action.chat.focus": "El comando Focus Chat ({0}) activa la lista de solicitudes y respuestas del chat, por la que se puede navegar con las flechas Arriba y Abajo.",
+			"workbench.action.chat.focusInput": "Para enfocar el cuadro de entrada para las solicitudes de chat, invoque el comando Foco de entrada de chat ({0})",
+			"workbench.action.chat.focusNoKb": "Para enfocar la lista de solicitudes y respuestas de chat, por la que se puede navegar con las flechas arriba y abajo, invoque el comando Enfocar lista de chat, que actualmente no se puede activar mediante una combinación de teclas.",
+			"workbench.action.chat.nextCodeBlock": "Para enfocar el siguiente bloque de código dentro de una respuesta, invoque el comando Chat: Siguiente bloque de código ({0}).",
+			"workbench.action.chat.nextCodeBlockNoKb": "Para enfocar el siguiente bloque de código dentro de una respuesta, invoque el comando Chat: siguiente bloque de código, que actualmente no se puede desencadenar mediante un enlace de teclado.",
+			"workbench.action.interactiveSession.focusInputNoKb": "Para enfocar el cuadro de entrada de las solicitudes de chat, invoque el comando Enfocar entrada de chat, que actualmente no se puede activar por medio de una combinación de teclas."
 		},
 		"vs/workbench/contrib/chat/browser/actions/chatActions": {
 			"actions.chat.acceptInput": "Aceptar entrada de chat",
@@ -4583,24 +4697,35 @@
 			"interactiveSession.openInEditor.label": "Abrir sesión en el editor",
 			"interactiveSession.openInSidebar.label": "Abrir sesión en la barra lateral"
 		},
-		"vs/workbench/contrib/chat/browser/actions/chatQuickInputActions": {
-			"askQuickQuestion": "Hacer pregunta rápida",
-			"askabot": "Hacer pregunta a {0}"
-		},
 		"vs/workbench/contrib/chat/browser/actions/chatTitleActions": {
 			"chat.remove.label": "Quitar solicitud y respuesta",
-			"interactive.helpful.label": "Helpful",
+			"interactive.helpful.label": "Útil",
 			"interactive.insertIntoNotebook.label": "Insertar en Notebook",
-			"interactive.unhelpful.label": "Unhelpful"
+			"interactive.unhelpful.label": "Inútil"
+		},
+		"vs/workbench/contrib/chat/browser/actions/quickQuestionActions/multipleByScrollQuickQuestionAction": {
+			"clear": "Borrar",
+			"openInChat": "Abrir en la vista de chat"
+		},
+		"vs/workbench/contrib/chat/browser/actions/quickQuestionActions/quickQuestionAction": {
+			"chat": "Chat"
+		},
+		"vs/workbench/contrib/chat/browser/actions/quickQuestionActions/singleQuickQuestionAction": {
+			"askabot": "Hacer pregunta a {0}"
 		},
 		"vs/workbench/contrib/chat/browser/chat.contribution": {
 			"chat": "Chat",
+			"chatAccessibleView": "Vista accesible de chat",
+			"interactiveSession.defaultMode": "Controle el modo predeterminado de la experiencia de chat.",
+			"interactiveSession.defaultMode.both": "Muestra el icono de chat en la barra de actividades y la barra de título que abren sus respectivos modos de chat.",
+			"interactiveSession.defaultMode.chatView": "Use la vista de chat como modo predeterminado. Muestra el icono de chat en la barra de actividades.",
+			"interactiveSession.defaultMode.quickQuestion": "Use la pregunta rápida como modo predeterminado. Muestra el icono de chat en la barra de título.",
 			"interactiveSession.editor.fontFamily": "Controla la familia de las fuentes en los bloques de código de chat.",
 			"interactiveSession.editor.fontSize": "Controla el tamaño de fuente en píxeles en bloques de código de chat.",
 			"interactiveSession.editor.fontWeight": "Controla el grosor de la fuente en los bloques de código de chat.",
 			"interactiveSession.editor.lineHeight": "Controla la altura de la línea en píxeles en bloques de código de chat. Use 0 para calcular la altura de la línea del tamaño de fuente.",
 			"interactiveSession.editor.wordWrap": "Controla si las líneas deben ajustarse en bloques de código de chat.",
-			"interactiveSession.experimental.quickQuestion.enable": "Controla si la característica de preguntas rápidas está habilitada.",
+			"interactiveSession.quickQuestion.mode": "Controla el modo de la experiencia de chat de preguntas rápidas.",
 			"interactiveSessionConfigurationTitle": "Chat"
 		},
 		"vs/workbench/contrib/chat/browser/chatContributionServiceImpl": {
@@ -4615,7 +4740,7 @@
 			"chatEditorName": "Chat"
 		},
 		"vs/workbench/contrib/chat/browser/chatInputPart": {
-			"actions.chat.accessibiltyHelp": "Entrada de chat, escriba el código aquí y presione Entrar para ejecutarlo. Use {0} para la Ayuda de accesibilidad del chat.",
+			"actions.chat.accessibiltyHelp": "Entrada de chat, Escribir para hacer preguntas o escribir / para temas, presione Entrar para enviar la solicitud. Use {0} para la Ayuda de accesibilidad del chat.",
 			"chatInput": "Entrada de chat",
 			"chatInput.accessibilityHelpNoKb": "Entrada de chat, escriba el código aquí y presione Entrar para ejecutarlo. Use el comando Ayuda de accesibilidad del chat para obtener más información."
 		},
@@ -4625,8 +4750,15 @@
 			"chat.codeBlock.toolbarVerbose": "Barra de herramientas para bloque de código al que se puede acceder a través de la pestaña",
 			"chat.codeBlockHelp": "Bloque de código",
 			"chat.codeBlockLabel": "Bloque de código {0}",
-			"multiCodeBlock": "{0} bloques de código: {1}",
-			"singleCodeBlock": "1 bloque de código: {0}"
+			"multiCodeBlock": "bloques de código{0} ",
+			"multiCodeBlockHint": "{0} bloques de código: {1}",
+			"noCodeBlocks": "{0}",
+			"noCodeBlocksHint": "{0} {1}",
+			"singleCodeBlock": "1 bloque de código: {0}",
+			"singleCodeBlockHint": "1 bloque de código: {0} {1}"
+		},
+		"vs/workbench/contrib/chat/browser/chatSlashCommandContentWidget": {
+			"exited slash command mode": "Se salió del modo {0}"
 		},
 		"vs/workbench/contrib/chat/browser/chatWidget": {
 			"clear": "Borrar la sesión"
@@ -4677,30 +4809,15 @@
 			"contributes.documentation.refactorings": "Documentación aportada para refactorizaciones."
 		},
 		"vs/workbench/contrib/codeEditor/browser/accessibility/accessibility": {
-			"accessibilityHelpTitle": "Ayuda de accesibilidad",
-			"auto_off": "El editor está configurado para detectar automáticamente cuándo está conectado un lector de pantalla, lo que no es el caso en este momento.",
-			"auto_on": "El editor ha detectado automáticamente un lector de pantalla conectado.",
-			"auto_unknown": "El editor está configurado para usar API de plataforma para detectar cuándo está conectado un lector de pantalla, pero el entorno actual de tiempo de ejecución no admite esta característica.",
-			"changeConfigToOnMac": "Para configurar el editor de forma que esté optimizado de permanentemente para su uso con un lector de pantalla, presione ahora Comando+E.",
-			"changeConfigToOnWinLinux": "Para configurar el editor de forma que esté optimizado permanentemente para su uso con un lector de pantalla, presione ahora Control+E.",
-			"configuredOff": "El editor está configurado de forma que no esté nunca optimizado para su uso con un lector de pantalla.",
-			"configuredOn": "El editor está configurado para optimizarse permanentemente para su uso con un lector de pantalla; puede cambiarlo mediante el comando \"Alternar modo de accesibilidad del lector de pantalla\" o editando la configuración \"editor.accessibilitySupport\".",
-			"emergencyConfOn": "Se cambiará ahora el valor de configuración \"editor.accessibilitySupport\" a \"activado\".",
-			"introMsg": "Gracias por probar las opciones de accesibilidad de VS Code.",
-			"openDocMac": "Presione Comando+H ahora para abrir una ventana de explorador con más información de VS Code relacionada con la accesibilidad.",
-			"openDocWinLinux": "Presione Control+H ahora para abrir una ventana de explorador con más información de VS Code relacionada con la accesibilidad.",
-			"openingDocs": "Se abrirá ahora la página de documentación de accesibilidad de VS Code.",
-			"outroMsg": "Para descartar esta información sobre herramientas y volver al editor, presione Esc o Mayús+Escape.",
-			"status": "Estado:",
-			"tabFocusModeOffMsg": "Al presionar TAB en el editor actual, se insertará el carácter de tabulación. Presione {0} para activar o desactivar este comportamiento.",
-			"tabFocusModeOffMsgNoKb": "Al presionar TAB en el editor actual, se insertará el carácter de tabulación. El comando {0} no se puede desencadenar actualmente mediante un enlace de teclado.",
-			"tabFocusModeOnMsg": "Al presionar TAB en el editor actual, el foco se mueve al siguiente elemento activable. Presione {0} para activar o desactivar este comportamiento.",
-			"tabFocusModeOnMsgNoKb": "Al presionar TAB en el editor actual, el foco se mueve al siguiente elemento activable. El comando {0} no se puede desencadenar actualmente mediante un enlace de teclado.",
 			"toggleScreenReaderMode": "Alternar modo de accesibilidad del lector de pantalla"
 		},
 		"vs/workbench/contrib/codeEditor/browser/diffEditorHelper": {
+			"chat-help-label": "Ayuda de accesibilidad del editor de diferencias",
 			"hintTimeout": "El algoritmo de comparación se detuvo pronto (después de {0} ms).",
 			"hintWhitespace": "Mostrar diferencias de espacios en blanco",
+			"msg1": "Usted está en un editor de diferencias.",
+			"msg2": "Presione {0} o {1} para ver la diferencia siguiente o anterior en el modo de revisión de diferencias que está optimizado para lectores de pantalla.",
+			"msg3": "Para controlar qué indicaciones de audio se deben reproducir, se pueden configurar las siguientes opciones: {0}.",
 			"removeTimeout": "Quitar límite"
 		},
 		"vs/workbench/contrib/codeEditor/browser/find/simpleFindWidget": {
@@ -4796,33 +4913,7 @@
 		},
 		"vs/workbench/contrib/codeEditor/browser/outline/documentSymbolsTree": {
 			"1.problem": "1 problema en este elemento",
-			"Array": "matriz",
-			"Boolean": "booleano",
-			"Class": "clase",
-			"Constant": "constante",
-			"Constructor": "constructor",
-			"Enum": "enumeración",
-			"EnumMember": "miembro de la enumeración",
-			"Event": "evento",
-			"Field": "campo",
-			"File": "archivo",
-			"Function": "función",
-			"Interface": "interfaz",
-			"Key": "clave",
-			"Method": "método",
-			"Module": "módulo",
 			"N.problem": "{0} problemas en este elemento",
-			"Namespace": "espacio de nombres",
-			"Null": "NULL",
-			"Number": "número",
-			"Object": "objeto",
-			"Operator": "operador",
-			"Package": "paquete",
-			"Property": "propiedad",
-			"String": "cadena",
-			"Struct": "estructura",
-			"TypeParameter": "parámetro de tipo",
-			"Variable": "variable",
 			"deep.problem": "Contiene elementos con problemas",
 			"title.template": "{0} ({1})"
 		},
@@ -4921,7 +5012,7 @@
 			"reply": "Responder..."
 		},
 		"vs/workbench/contrib/comments/browser/comments.contribution": {
-			"comments.maxHeight": "Controls whether the comments widget scrolls or expands.",
+			"comments.maxHeight": "Controla si el widget de comentarios se desplaza o se expande.",
 			"comments.openPanel.deprecated": "Esta configuración está en desuso en favor de `comments.openView`.",
 			"comments.openView": "Controla cuándo debe abrirse la vista de comentarios.",
 			"comments.openView.file": "La vista de comentarios se abrirá cuando un archivo con comentarios esté activo.",
@@ -5113,9 +5204,9 @@
 		},
 		"vs/workbench/contrib/debug/browser/breakpointWidget": {
 			"breakpointType": "Tipo de punto de interrupción",
-			"breakpointWidgetExpressionPlaceholder": "Interrumpir cuando la expresión se evalúa como true. Presione \"ENTRAR\" para aceptar o \"Esc\" para cancelar.",
-			"breakpointWidgetHitCountPlaceholder": "Interrumpir cuando se alcance el número de llamadas. Presione \"ENTRAR\" para aceptar o \"Esc\" para cancelar.",
-			"breakpointWidgetLogMessagePlaceholder": "Mensaje para registrar cuando se alcanza el punto de interrupción. Las expresiones entre {} son interpoladas. 'Enter' para aceptar, 'esc' para cancelar. ",
+			"breakpointWidgetExpressionPlaceholder": "Interrumpir cuando la expresión se evalúa como true. ''{0}'' para aceptar, ''{1}'' para cancelar.",
+			"breakpointWidgetHitCountPlaceholder": "Interrumpir cuando se cumple la condición de recuento de llamadas. ''{0}'' para aceptar, ''{1}'' para cancelar.",
+			"breakpointWidgetLogMessagePlaceholder": "Mensaje para registrar cuando se alcanza el punto de interrupción. Las expresiones dentro de {} se interpolan. ''{0}'' para aceptar, ''{1}'' para cancelar.",
 			"expression": "Expresión",
 			"hitCount": "Número de llamadas",
 			"logMessage": "Mensaje de registro"
@@ -5567,10 +5658,10 @@
 			"allDebuggersDisabled": "Todas las extensiones de depuración están deshabilitadas. Habilite una extensión de depuración o instale una nueva desde Marketplace.",
 			"customizeRunAndDebug": "Para personalizar Ejecutar y depurar [cree un archivo launch.json](command:{0}).",
 			"customizeRunAndDebugOpenFolder": "Para personalizar Ejecutar y depurar, [abra una carpeta](command:{0}) y cree un archivo launch.json.",
-			"detectThenRunAndDebug": "[Mostrar todas las configuraciones de depuración automática](command:{0}).",
+			"detectThenRunAndDebug": "Mostrar todas las configuraciones de depuración automática",
 			"openAFileWhichCanBeDebugged": "[Abrir un archivo](command:{0}) que se puede depurar o ejecutar.",
 			"run": "Ejecutar",
-			"runAndDebugAction": "[Ejecutar y depurar{0}](command:{1})"
+			"runAndDebugAction": "Ejecución y depuración"
 		},
 		"vs/workbench/contrib/debug/common/abstractDebugAdapter": {
 			"timeout": "Tiempo de espera de {0} ms para \"{1}\""
@@ -5624,7 +5715,7 @@
 			"suspendDebuggeeSupported": "True cuando la sesión centrada admite la funcionalidad de depuración de suspensión.",
 			"terminateDebuggeeSupported": "Es true cuando la sesión que tiene el foco admite la capacidad de finalizar el depurador.",
 			"variableEvaluateNamePresent": "Es True cuando la variable con foco tiene un conjunto de campos \"evaluateName\".",
-			"variableIsReadonly": "True cuando la variable con foco es de solo lectura.",
+			"variableIsReadonly": "True cuando la variable prioritario es de solo lectura.",
 			"variablesFocused": "Es true cuando las vistas de VARIABLES tienen el foco; de lo contrario, es false.",
 			"watchExpressionsExist": "Es true cuando existe al menos una expresión de inspección; de lo contrario, es false.",
 			"watchExpressionsFocused": "Es true cuando la vista de INSPECCIÓN tiene el foco; de lo contrario, es false.",
@@ -5783,11 +5874,12 @@
 		},
 		"vs/workbench/contrib/editSessions/browser/editSessionsStorageService": {
 			"choose account placeholder": "Seleccione una cuenta para almacenar sus cambios de trabajo en la nube",
+			"choose account read placeholder": "Seleccione una cuenta para restaurar sus cambios de trabajo de la nube",
 			"delete all cloud changes": "Elimine todos los datos almacenados de la nube.",
 			"others": "Otros",
 			"reset auth.v3": "Desactivar los cambios en la nube.",
 			"sign in": "Activar los cambios en la nube...",
-			"sign in badge": "Turn on Cloud Changes... (1)",
+			"sign in badge": "Activar los cambios en la nube... (1)",
 			"sign in using account": "Iniciar sesión con {0}",
 			"sign out of cloud changes clear data prompt": "¿Desea desactivar el almacenamiento de los cambios en el trabajo en la nube?",
 			"signed in": "Sesión iniciada"
@@ -6094,6 +6186,7 @@
 			"workbench.extensions.action.copyExtensionId": "Copiar Id. de extensión",
 			"workbench.extensions.action.ignoreRecommendation": "Omitir recomendación",
 			"workbench.extensions.action.removeExtensionFromWorkspaceRecommendations": "Quitar de las recomendaciones del área de trabajo",
+			"workbench.extensions.action.toggleApplyToAllProfiles": "Aplicar extensión a todos los perfiles",
 			"workbench.extensions.action.toggleIgnoreExtension": "Sincronizar esta extensión",
 			"workbench.extensions.action.undoIgnoredRecommendation": "Deshacer la recomendación ignorada",
 			"workbench.extensions.installExtension.arg.decription": "Identificador de extensión o URI de recurso VSIX",
@@ -6193,7 +6286,6 @@
 			"install pre-release version": "Instalar la versión preliminar",
 			"install previous version": "Instalar la versión específica de la extensión...",
 			"install release version": "Instalar versión de lanzamiento",
-			"install release version message": "¿Desea instalar la versión de lanzamiento?",
 			"install remote extensions": "Instalar extensiones remotas de forma local",
 			"install vsix": "Una vez descargado el VSIX de \"{0}\", instálelo manualmente.",
 			"installExtensionComplete": "La instalación de la extensión {0} ha finalizado.",
@@ -6484,12 +6576,16 @@
 		"vs/workbench/contrib/externalTerminal/electron-sandbox/externalTerminal.contribution": {
 			"explorer.openInTerminalKind": "Al abrir un archivo desde el explorador en un terminal, determina qué tipo de terminal se iniciará",
 			"globalConsoleAction": "Abrir nuevo terminal externo",
+			"sourceControlRepositories.openInTerminalKind": "Al abrir un repositorio desde la vista de repositorios de control de fuentes en un terminal, determina qué tipo de terminal se iniciará",
 			"terminal.explorerKind.both": "Use las otras dos opciones juntas.",
 			"terminal.explorerKind.external": "Use el terminal externo configurado.",
 			"terminal.explorerKind.integrated": "Use el terminal integrado de VS Code.",
 			"terminal.external.linuxExec": "Personaliza qué terminal debe ejecutarse en Linux.",
 			"terminal.external.osxExec": "Personaliza qué aplicación terminal se ejecutará en macOS.",
 			"terminal.external.windowsExec": "Personaliza qué terminal debe ejecutarse en Windows.",
+			"terminal.sourceControlRepositoriesKind.both": "Use las otras dos opciones juntas.",
+			"terminal.sourceControlRepositoriesKind.external": "Use el terminal externo configurado.",
+			"terminal.sourceControlRepositoriesKind.integrated": "Use el terminal integrado de VS Code.",
 			"terminalConfigurationTitle": "Terminal externo"
 		},
 		"vs/workbench/contrib/externalUriOpener/common/configuration": {
@@ -6639,7 +6735,7 @@
 			"renameBulkEdit": "Cambiar nombre de {0} a {1}",
 			"renamingBulkEdit": "Cambiar el nombre de {0} a {1}",
 			"replaceButtonLabel": "&&Reemplazar",
-			"resetActiveEditorReadonlyInSession": "Restablecer el editor activo como solo lectura en la sesión",
+			"resetActiveEditorReadonlyInSession": "Restablecer el editor activo de solo lectura en la sesión",
 			"restore": "Puede restaurar este archivo con el comando Deshacer.",
 			"restorePlural": "Puede restaurar estos archivos con el comando Deshacer.",
 			"retry": "Reintentar",
@@ -6648,7 +6744,7 @@
 			"setActiveEditorReadonlyInSession": "Establecer editor activo como solo lectura en la sesión",
 			"setActiveEditorWriteableInSession": "Establecer editor activo editable en sesión",
 			"showInExplorer": "Mostrar archivo activo en la vista Explorador",
-			"toggleActiveEditorReadonlyInSession": "Alternar el editor activo como solo lectura en la sesión",
+			"toggleActiveEditorReadonlyInSession": "Alternar el editor activo de solo lectura en la sesión",
 			"toggleAutoSave": "Alternar autoguardado",
 			"trashFailed": "No se pudo eliminar usando la papelera. ¿Desea eliminar de forma permanente?",
 			"undoBin": "Puede restaurar este archivo desde la Papelera de reciclaje.",
@@ -6751,7 +6847,7 @@
 			"autoReveal.focusNoScroll": "Los archivos no se desplazarán a la vista, pero mantendrán el foco.",
 			"autoReveal.off": "Los archivos no se mostrarán ni seleccionarán.",
 			"autoReveal.on": "Los archivos se mostrarán y seleccionarán.",
-			"autoRevealExclude": "Configure rutas de acceso o [glob patterns](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) para excluir archivos y carpetas de ser revelados y seleccionados en el Explorador cuando se abran. Los patrones globales siempre se evalúan en relación con la ruta de acceso de la carpeta del área de trabajo, a menos que sean rutas absolutas.",
+			"autoRevealExclude": "Configure rutas o [patrones glob](https://aka.ms/vscode-glob-patterns) para excluir los archivos y carpetas de ser revelados y seleccionados en el Explorador al abrirlos. Los patrones globales siempre se evalúan en relación con la ruta de la carpeta del área de trabajo, a menos que sean rutas absolutas.",
 			"autoSave": "Controla el [guardado automático](https://code.visualstudio.com/docs/editor/codebasics#_save-auto-save) de los editores que tienen cambios no guardados.",
 			"autoSaveDelay": "Controla el retraso en milisegundos después del cual un editor con cambios sin guardar se guarda automáticamente. Solo se aplica cuando '#files.autoSave#' está establecido en \"{0}\".",
 			"binaryFileEditor": "Editor de archivos binarios",
@@ -6764,6 +6860,7 @@
 			"copyRelativePathSeparator.backslash": "Usar barra diagonal inversa como carácter de separación de ruta de acceso.",
 			"copyRelativePathSeparator.slash": "Usar la barra diagonal como carácter de separación de ruta de acceso.",
 			"defaultLanguage": "El identificador de idioma predeterminado que se asigna a los archivos nuevos. Si se configura en \"${activeEditorLanguage}\", se usará el identificador de idioma del editor de texto activo actualmente, si existe.",
+			"defaultPathErrorMessage": "La ruta de acceso predeterminada para los cuadros de diálogo de archivo debe ser una ruta de acceso absoluta (por ejemplo, C:\\\\myFolder o /myFolder).",
 			"disabled": "Deshabilita la nomenclatura incremental. Si existen dos archivos con el mismo nombre, se le pedirá que sobrescriba el archivo existente.",
 			"enableDragAndDrop": "Controla si el explorador debe permitir mover archivos y carpetas mediante la acción de arrastrar y colocar. Esta configuración solo afecta a la funcionalidad de arrastrar y colocar desde dentro del explorador.",
 			"enableUndo": "Controla si el Explorador debe permitir deshacer las operaciones con archivos y carpetas.",
@@ -6776,7 +6873,7 @@
 			"eol.LF": "LF",
 			"eol.auto": "Utiliza el carácter de final de línea específico del sistema operativo.",
 			"everything": "Formatea todo el archivo.",
-			"exclude": "Configure [patrones globales](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) para excluir archivos y carpetas. Por ejemplo, el Explorador de archivos decide qué archivos y carpetas se mostrarán u ocultarán en función de esta configuración. Consulte la configuración \"#search.exclude#\" para definir los elementos excluidos específicos de la búsqueda. Consulte la configuración \"#explorer.excludeGitIgnore#\" para omitir los archivos basados en \".gitignore\".",
+			"exclude": "Configure patrones globales para excluir archivos y carpetas. Por ejemplo, el explorador de archivos decide qué archivos y carpetas se mostrarán u ocultarán en función de este valor. Consulte el valor \"#search.exclude\" para definir los elementos excluidos específicos de la búsqueda. Lea más acerca de los patrones globales [aquí](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options).",
 			"excludeGitignore": "Controla si las entradas en .gitignore deben ser analizadas y excluidas del Explorador. Similar a {0}.",
 			"expandSingleFolderWorkspaces": "Controla si el Explorador debe expandir las áreas de trabajo multi-raíz que contienen una sola carpeta durante la inicialización",
 			"explorer.autoRevealExclude.boolean": "El patrón global con el que se harán coincidir las rutas de acceso de los archivos. Establézcalo en true o false para habilitarlo o deshabilitarlo.",
@@ -6786,6 +6883,7 @@
 			"explorer.incrementalNaming": "Controla qué estrategia de nomenclatura se usa cuando se da un nuevo nombre a un elemento del Explorador duplicado al pegar.",
 			"explorerConfigurationTitle": "Explorador de archivos",
 			"falseDescription": "Deshabilitar el patrón.",
+			"fileDialogDefaultPath": "Ruta de acceso predeterminada para los cuadros de diálogo de archivo, que reemplaza la ruta de acceso principal del usuario. Solo se usa en ausencia de una ruta de acceso específica del contexto, como el archivo o carpeta abierto más recientemente.",
 			"fileNesting.description": "Cada patrón de clave puede contener un único carácter `*` que coincidirá con cualquier cadena.",
 			"fileNestingEnabled": "Controla si el anidamiento de archivos está activado en el Explorador. El anidamiento de archivos permite que los archivos relacionados en un directorio se agrupen visualmente bajo un único archivo principal.",
 			"fileNestingExpand": "Controla si los anidamientos de archivos se expanden automáticamente. {0} debe estar definido para que surta efecto.",
@@ -6801,9 +6899,9 @@
 			"files.saveConflictResolution": "Puede producirse un conflicto al guardar si un archivo se guarda en un disco que se cambió mientras por otro programa. Para evitar la pérdida de datos, se pide al usuario que compare los cambios en el editor con la versión en el disco. Esta configuración solo se debe cambiar si se producen errores de conflicto de guardado con frecuencia, y puede provocar la pérdida de datos si se utiliza sin precaución.",
 			"files.simpleDialog.enable": "Habilita el cuadro de diálogo de archivo simple para abrir y guardar archivos y carpetas. El cuadro de diálogo de archivo simple reemplaza al cuadro de diálogo de archivo del sistema cuando está habilitado.",
 			"filesConfigurationTitle": "Archivos",
-			"filesReadonlyExclude": "Configure rutas de acceso o [glob patterns](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) para impedir que se marquen como de solo lectura si coinciden como resultado de la configuración \"#files.readonlyInclude#\". Los patrones globales siempre se evalúan en relación con la ruta de acceso de la carpeta del área de trabajo, a menos que sean rutas absolutas. Los archivos de proveedores del sistema de archivos de solo lectura siempre serán de solo lectura independientemente de esta configuración.",
+			"filesReadonlyExclude": "Configure las rutas o [patrones glob](https://aka.ms/vscode-glob-patterns) para excluirlas de ser marcadas como solo lectura si coinciden como resultado de la configuración `#files.readonlyInclude#`. Los patrones globales siempre se evalúan de forma relativa a la ruta de la carpeta del área de trabajo, a menos que sean rutas absolutas. Los archivos de proveedores de sistemas de archivos de solo lectura siempre serán de solo lectura, independientemente de esta configuración.",
 			"filesReadonlyFromPermissions": "Marca los archivos como de solo lectura cuando sus permisos de archivo se indican como tales. Esto se puede invalidar mediante las configuraciones \"#files.readonlyInclude#\" y \"#files.readonlyExclude#\".",
-			"filesReadonlyInclude": "Configure rutas de acceso o [glob patterns](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) para marcar como de solo lectura. Los patrones globales siempre se evalúan en relación con la ruta de acceso de la carpeta del área de trabajo, a menos que sean rutas absolutas. Puede excluir rutas de acceso coincidentes mediante la configuración \"#files.readonlyExclude#\". Los archivos de proveedores del sistema de archivos de solo lectura siempre serán de solo lectura independientemente de esta configuración.",
+			"filesReadonlyInclude": "Configure rutas de acceso o [patrones globales](https://aka.ms/vscode-glob-patterns) para marcar como de solo lectura. Los patrones globales siempre se evalúan en relación con la ruta de acceso de la carpeta del área de trabajo, a menos que sean rutas de acceso absolutas. Puede excluir rutas de acceso coincidentes a través del valor \"#files.readonlyExclude#\". Los archivos de proveedores de sistema de archivos de solo lectura siempre serán de solo lectura independientemente de esta configuración.",
 			"formatOnSave": "Formatear archivo al guardar: debe haber un formateador disponible, el archivo no se debe guardar después de un retardo y no se debe cerrar el editor.",
 			"formatOnSaveMode": "Controla si la opción de formato al guardar formatea todo el archivo o solo las modificaciones. Solo se aplica cuando \"#editor.formatOnSave#\" está habilitado.",
 			"hotExit": "Controla si los archivos no guardados se recuerdan entre las sesiones, lo que permite omitir el mensaje para guardar al salir del editor.",
@@ -6840,7 +6938,7 @@
 			"trimTrailingWhitespace": "Si se habilita, se recortará el espacio final cuando se guarde un archivo.",
 			"trueDescription": "Habilitar el patrón.",
 			"useTrash": "Mueve archivos y carpetas a la papelera del sistema operativo (papelera de reciclaje en Windows) al eliminar. Si desactiva esta opción, los archivos y carpetas se eliminarán permanentemente.",
-			"watcherExclude": "Configure las rutas de acceso o patrones globales para excluirlos de la inspección de archivos. Las rutas de acceso pueden ser relativas a la carpeta inspeccionada o absolutas. Los patrones globales coinciden en relación a la carpeta inspeccionada. Cuando observe que el proceso de supervisión de archivos consume mucha CPU, asegúrese de excluir las carpetas grandes que sean de menor interés (como las carpetas de salida de la compilación).",
+			"watcherExclude": "Configure las rutas o [patrones glob](https://aka.ms/vscode-glob-patterns) que se excluirán de la vigilancia de archivos. Las rutas pueden ser relativas a la carpeta vigilada o absolutas. Los patrones glob se comparan en relación a la carpeta vigilada. Si el proceso de supervisión de archivos consume mucha CPU, asegúrese de excluir las carpetas grandes que sean de menor interés (como las carpetas de salida de la compilación).",
 			"watcherInclude": "Configure rutas de acceso adicionales para inspeccionar los cambios dentro del área de trabajo. De forma predeterminada, todas las carpetas del área de trabajo se verán de forma recursiva, excepto las carpetas que son vínculos simbólicos. Puede agregar explícitamente rutas de acceso absolutas o relativas para admitir la visualización de carpetas que son vínculos simbólicos. Las rutas de acceso relativas se resolverán en una ruta de acceso absoluta mediante el área de trabajo abierta actualmente."
 		},
 		"vs/workbench/contrib/files/browser/views/emptyView": {
@@ -6898,7 +6996,7 @@
 			"explorerResourceIsFolder": "Es true cuando el elemento del EXPLORADOR con foco es una carpeta.",
 			"explorerResourceIsRoot": "Es true cuando el elemento del EXPLORADOR con foco es una carpeta raíz.",
 			"explorerResourceMoveableToTrash": "Es true cuando el elemento del EXPLORADOR con foco puede enviarse a la papelera.",
-			"explorerResourceReadonly": "Es true cuando el elemento del EXPLORADOR con foco es de solo lectura.",
+			"explorerResourceReadonly": "Verdadero cuando el elemento enfocado en el EXPLORADOR es de solo lectura.",
 			"explorerViewletCompressedFirstFocus": "Es true cuando el foco está en la primera parte de un elemento compacto en la vista del EXPLORADOR.",
 			"explorerViewletCompressedFocus": "Es true cuando el elemento con foco en la vista del EXPLORADOR es un elemento compacto.",
 			"explorerViewletCompressedLastFocus": "Es true cuando el foco está en la última parte de un elemento compacto en la vista del EXPLORADOR.",
@@ -6956,90 +7054,103 @@
 			"read.title": "Leer línea con sugerencias insertadas",
 			"stop.title": "Detener lectura de sugerencias incrustación"
 		},
+		"vs/workbench/contrib/inlineChat/browser/inlineChat.contribution": {
+			"inlineChatAccessibleView": "Vista accesible del chat insertado"
+		},
 		"vs/workbench/contrib/inlineChat/browser/inlineChatActions": {
-			"accept": "Make Request",
-			"apply1": "Accept Changes",
-			"apply2": "Accept",
-			"arrowDown": "Cursor Down",
-			"arrowUp": "Cursor Up",
-			"cancel": "Cancel",
-			"cat": "Inline Chat",
-			"contractMessage": "Contract Message",
-			"copyRecordings": "(Developer) Write Exchange to Clipboard",
-			"discard": "Discard",
-			"discardMenu": "Discard...",
-			"expandMessage": "Expand Message",
-			"feedback.helpful": "Helpful",
-			"feedback.unhelpful": "Unhelpful",
-			"focus": "Focus Input",
-			"label": "'{0}' and {1} follow ups ({2})",
-			"nextFromHistory": "Next From History",
-			"previousFromHistory": "Previous From History",
-			"rerun": "Regenerate Response",
-			"rerunShort": "Regenerate",
-			"run": "Start Code Chat",
-			"stop": "Stop Request",
-			"toggleDiff": "Toggle Diff",
-			"toggleDiff2": "Show Inline Diff",
-			"undo.clipboard": "Discard to Clipboard",
-			"undo.newfile": "Discard to New File",
-			"unstash": "Resume Last Dismissed Code Chat",
-			"viewInChat": "View in Chat"
+			"accept": "Crear solicitud",
+			"apply1": "Aceptar cambios",
+			"apply2": "Aceptar",
+			"arrowDown": "Cursor hacia abajo",
+			"arrowUp": "Cursor hacia arriba",
+			"cancel": "Cancelar",
+			"cat": "Chat insertado",
+			"contractMessage": "Mostrar menos",
+			"copyRecordings": "(Desarrollador) Escribir Exchange en el Portapapeles",
+			"discard": "Descartar",
+			"discardMenu": "Descartar...",
+			"expandMessage": "Mostrar más",
+			"feedback.helpful": "Útil",
+			"feedback.unhelpful": "Inútil",
+			"focus": "Entrada de foco",
+			"label": "Seguimientos de \"{0}\" y {1} ({2})",
+			"miShowDiff": "&&Mostrar diferencia",
+			"miShowDiff2": "&&Mostrar diferencia",
+			"nextFromHistory": "Siguiente del historial",
+			"previousFromHistory": "Anterior desde el historial",
+			"rerun": "Regenerar respuesta",
+			"rerunShort": "Regenerar",
+			"run": "Iniciar chat de código",
+			"showDiff": "Mostrar diferencia",
+			"showDiff2": "Mostrar diferencia",
+			"stop": "Detener solicitud",
+			"undo.clipboard": "Descartar al Portapapeles",
+			"undo.newfile": "Descartar en archivo nuevo",
+			"unstash": "Reanudar el último chat de código descartado",
+			"viewInChat": "Ver en chat"
 		},
 		"vs/workbench/contrib/inlineChat/browser/inlineChatController": {
-			"create.fail": "Failed to start editor chat",
-			"create.fail.detail": "Please consult the error log and try again later.",
-			"default.placeholder": "Ask a question",
-			"default.placeholder.history": "{0} ({1}, {2} for history)",
-			"empty": "No results, please refine your input and try again",
-			"err.apply": "Failed to apply changes.",
-			"err.discard": "Failed to discard changes.",
-			"thinking": "Thinking…",
-			"welcome.1": "AI-generated code may be incorrect",
-			"welcome.2": "Getting ready..."
+			"create.fail": "Error al iniciar el chat del editor",
+			"create.fail.detail": "Consulte el registro de errores y vuelva a intentarlo más tarde.",
+			"default.placeholder": "Hacer una pregunta",
+			"default.placeholder.history": "{0} ({1}, {2} para el historial)",
+			"editResponseMessage": "Use la pestaña para ir al editor de diferencias y revisar los cambios propuestos.",
+			"empty": "No hay resultados, refina la entrada e inténtalo de nuevo",
+			"err.apply": "Error al aplicar los cambios.",
+			"err.discard": "Error al descartar los cambios.",
+			"markdownResponseMessage": "{0}",
+			"thinking": "Pensando...",
+			"welcome.1": "El contenido generado por inteligencia artificial puede ser incorrecto",
+			"welcome.2": "En preparación..."
 		},
 		"vs/workbench/contrib/inlineChat/browser/inlineChatStrategies": {
-			"lines.0": "Nothing changed",
-			"lines.1": "Changed 1 line",
-			"lines.N": "Changed {0} lines"
+			"lines.0": "No ha cambiado nada",
+			"lines.1": "Se modificó 1 línea",
+			"lines.N": "Líneas {0} modificadas"
 		},
 		"vs/workbench/contrib/inlineChat/browser/inlineChatWidget": {
-			"aria-label": "Inline Chat Input",
-			"inlineChat.accessibilityHelp": "Inline Chat Input, Use {0} for Inline Chat Accessibility Help.",
-			"inlineChat.accessibilityHelpNoKb": "Inline Chat Input, Run the Inline Chat Accessibility Help command for more information.",
-			"modified": "Modified",
+			"aria-label": "Entrada de chat insertado",
+			"inlineChat.accessibilityHelp": "Entrada de chat insertado, use {0} para la Ayuda de accesibilidad del chat insertado.",
+			"inlineChat.accessibilityHelpNoKb": "Entrada de chat insertado, ejecute el comando Ayuda de accesibilidad del chat insertado para obtener más información.",
+			"inlineChatClosed": "Widget de chat en línea cerrado",
+			"modified": "Modificado",
 			"original": "Original"
 		},
 		"vs/workbench/contrib/inlineChat/common/inlineChat": {
-			"inlineChat.background": "Background color of the interactive editor widget",
-			"inlineChat.border": "Border color of the interactive editor widget",
-			"inlineChat.regionHighlight": "Background highlighting of the current interactive region. Must be transparent.",
-			"inlineChat.shadow": "Shadow color of the interactive editor widget",
-			"inlineChatDidEdit": "Whether interactive editor did change any code",
-			"inlineChatDiff": "Whether interactive editor show diffs for changes",
-			"inlineChatDiff.inserted": "Background color of inserted text in the interactive editor input",
-			"inlineChatDiff.removed": "Background color of removed text in the interactive editor input",
-			"inlineChatDocumentChanged": "Whether the document has changed concurrently",
-			"inlineChatEmpty": "Whether the interactive editor input is empty",
-			"inlineChatFocused": "Whether the interactive editor input is focused",
-			"inlineChatHasActiveRequest": "Whether interactive editor has an active request",
-			"inlineChatHasProvider": "Whether a provider for interactive editors exists",
-			"inlineChatHasStashedSession": "Whether interactive editor has kept a session for quick restore",
-			"inlineChatInnerCursorFirst": "Whether the cursor of the iteractive editor input is on the first line",
-			"inlineChatInnerCursorLast": "Whether the cursor of the iteractive editor input is on the last line",
-			"inlineChatInput.background": "Background color of the interactive editor input",
-			"inlineChatInput.border": "Border color of the interactive editor input",
-			"inlineChatInput.focusBorder": "Border color of the interactive editor input when focused",
-			"inlineChatInput.placeholderForeground": "Foreground color of the interactive editor input placeholder",
-			"inlineChatLastFeedbackKind": "The last kind of feedback that was provided",
-			"inlineChatMarkdownMessageCropState": "Whether the interactive editor message is cropped, not cropped or expanded",
-			"inlineChatOuterCursorPosition": "Whether the cursor of the outer editor is above or below the interactive editor input",
-			"inlineChatResponseType": "What type was the last response of the current interactive editor session",
-			"inlineChatVisible": "Whether the interactive editor input is visible",
-			"mode": "Configure if changes crafted in the interactive editor are applied directly to the document or are previewed first.",
-			"mode.live": "Changes are applied directly to the document but can be highlighted via inline diffs. Ending a session will keep the changes.",
-			"mode.livePreview": "Changes are applied directly to the document and are highlighted visually via inline or side-by-side diffs. Ending a session will keep the changes.",
-			"mode.preview": "Changes are previewed only and need to be accepted via the apply button. Ending a session will discard the changes."
+			"inlineChat.background": "Color de fondo del widget del editor interactivo",
+			"inlineChat.border": "Color de borde del widget del editor interactivo",
+			"inlineChat.regionHighlight": "Resaltado en segundo plano de la región interactiva actual. Debe ser transparente.",
+			"inlineChat.shadow": "Color de sombra del widget del editor interactivo",
+			"inlineChatDidEdit": "Si el editor interactivo ha cambiado algún código",
+			"inlineChatDiff.inserted": "Color de fondo del texto insertado en la entrada del editor interactivo",
+			"inlineChatDiff.removed": "Color de fondo del texto quitado de la entrada del editor interactivo",
+			"inlineChatDocumentChanged": "Si el documento ha cambiado simultáneamente",
+			"inlineChatEmpty": "Si la entrada del editor interactivo está vacía",
+			"inlineChatFocused": "Si la entrada del editor interactivo está enfocada",
+			"inlineChatHasActiveRequest": "Si el editor interactivo tiene una solicitud activa",
+			"inlineChatHasProvider": "Si existe un proveedor para editores interactivos",
+			"inlineChatHasStashedSession": "Si el editor interactivo ha mantenido una sesión para una restauración rápida",
+			"inlineChatInnerCursorEnd": "Si el cursor de la entrada del editor iterantivo está al final de la entrada",
+			"inlineChatInnerCursorFirst": "Si el cursor de la entrada del editor iterante está en la primera línea",
+			"inlineChatInnerCursorLast": "Si el cursor de la entrada del editor iterante está en la última línea",
+			"inlineChatInnerCursorStart": "Si el cursor de la entrada del editor iteractivo está al principio de la entrada",
+			"inlineChatInput.background": "Color de fondo de la entrada del editor interactivo",
+			"inlineChatInput.border": "Color de borde de la entrada del editor interactivo",
+			"inlineChatInput.focusBorder": "Color de borde de la entrada del editor interactivo cuando se enfoca",
+			"inlineChatInput.placeholderForeground": "Color de primer plano del marcador de posición de entrada del editor interactivo",
+			"inlineChatLastFeedbackKind": "Último tipo de comentario que se proporcionó",
+			"inlineChatMarkdownMessageCropState": "Si el mensaje del editor interactivo está recortado, no recortado o expandido",
+			"inlineChatOuterCursorPosition": "Si el cursor del editor externo está por encima o por debajo de la entrada del editor interactivo",
+			"inlineChatResponseFocused": "Si la respuesta del widget interactivo está centrada",
+			"inlineChatResponseType": "¿Qué tipo fue la última respuesta de la sesión del editor interactivo actual?",
+			"inlineChatResponseTypes": "¿De qué tipo son las respuestas que ha recibido?",
+			"inlineChatUserDidEdit": "Si el usuario realizó cambios encima del chat en línea",
+			"inlineChatVisible": "Si la entrada del editor interactivo está visible",
+			"mode": "Configure si los cambios diseñados en el editor interactivo se aplican directamente al documento o se obtiene una vista previa primero.",
+			"mode.live": "Los cambios se aplican directamente al documento, pero se pueden resaltar mediante diferencias insertadas. Al finalizar una sesión, se conservarán los cambios.",
+			"mode.livePreview": "Los cambios se aplican directamente al documento y se resaltan visualmente a través de diferencias en línea o en paralelo. Al finalizar una sesión, se conservarán los cambios.",
+			"mode.preview": "Solo se obtiene una vista previa de los cambios y es necesario aceptarlos mediante el botón Aplicar. Al finalizar una sesión, se descartarán los cambios.",
+			"showDiff": "Habilite o deshabilite la visualización de la diferencia cuando se generan ediciones. Solo funciona con inlineChat.mode igual a live o livePreview."
 		},
 		"vs/workbench/contrib/interactive/browser/interactive.contribution": {
 			"interactive.activeCodeBorder": "Color del borde de la celda de código interactivo actual cuando el editor tiene el foco.",
@@ -7054,8 +7165,7 @@
 			"interactiveScrollToBottom": "Desplazar al final",
 			"interactiveScrollToTop": "Desplazar al principio",
 			"interactiveWindow": "Ventana interactiva",
-			"interactiveWindow.alwaysScrollOnNewCell": "Desplazar automáticamente la ventana interactiva para mostrar la salida de la última instrucción ejecutada. Si este valor es falso, la ventana solo se desplazará si la última celda era ya aquella a la que se había desplazado.",
-			"interactiveWindow.restore": "Controla si las sesiones o el historial de la ventana interactiva deben restaurarse a través de recargas de ventana. Si el estado de los controladores usados en Windows Interactivo se conserva entre recargas de ventana se controla mediante extensiones que contribuyen a los controladores."
+			"interactiveWindow.alwaysScrollOnNewCell": "Desplazar automáticamente la ventana interactiva para mostrar la salida de la última instrucción ejecutada. Si este valor es falso, la ventana solo se desplazará si la última celda era ya aquella a la que se había desplazado."
 		},
 		"vs/workbench/contrib/interactive/browser/interactiveEditor": {
 			"interactiveInputPlaceHolder": "Escriba él código '{0}' aquí y presione {1} para ejecutar"
@@ -7295,6 +7405,7 @@
 			"localHistory.rename": "Cambiar nombre",
 			"localHistory.restore": "Restaurar contenido",
 			"localHistory.restoreViaPicker": "Buscar entrada para restaurar",
+			"localHistory.restoreViaPickerMenu": "Historial local: buscar entrada para restaurar...",
 			"localHistory.selectForCompare": "Seleccionar para comparar",
 			"localHistoryCompareToFileEditorLabel": "{0} ({1} • {2}) ↔ {3}",
 			"localHistoryCompareToPreviousEditorLabel": "{0} ({1} • {2}) ↔ {3} ({4} • {5})",
@@ -7752,7 +7863,6 @@
 		},
 		"vs/workbench/contrib/notebook/browser/contrib/outline/notebookOutline": {
 			"breadcrumbs.showCodeCells": "Cuando se habilita, las rutas de navegación de bloc de notas contienen celdas de código.",
-			"empty": "celda vacía",
 			"outline.showCodeCells": "Cuando se habilita, el esquema del bloc de notas muestra celdas de código."
 		},
 		"vs/workbench/contrib/notebook/browser/contrib/profile/notebookProfile": {
@@ -7909,17 +8019,34 @@
 			"notebook.outputLineHeight": "Alto de línea del texto de salida dentro de las celdas del bloc de notas.\r\n - Cuando se establece en 0, se usa el alto de línea del editor.\r\n - Los valores entre 0 y 8 se usarán como multiplicador con el tamaño de fuente.\r\n - Los valores mayores o iguales que 8 se usarán como valores efectivos.",
 			"notebook.outputScrolling": "Presentar inicialmente las salidas del bloc de notas en una región desplazable cuando no supere el límite",
 			"notebook.outputWordWrap": "Controla si las líneas de la salida deben encapsularse.",
+			"notebook.remoteSaving": "Habilita el guardado incremental de blocs de notas en el entorno Remoto. Cuando está habilitado, solo se envían al host de extensión los cambios realizados en el bloc de notas, lo que mejora el rendimiento en el caso de blocs de notas de gran tamaño y conexiones de red lentas.",
 			"notebook.showCellStatusbar.description": "Indica si se debe mostrar la barra de estado de la celda.",
 			"notebook.showCellStatusbar.hidden.description": "La barra de estado de la celda siempre está oculta.",
 			"notebook.showCellStatusbar.visible.description": "La barra de estado de la celda siempre está visible.",
 			"notebook.showCellStatusbar.visibleAfterExecute.description": "La barra de estado de la celda se oculta hasta que se ha ejecutado la celda. A continuación, se hace visible para mostrar el estado de ejecución.",
 			"notebook.showFoldingControls.description": "Controla cuándo se muestra la flecha de plegado del encabezado de Markdown.",
+			"notebook.stickyScroll.description": "Experimental. Controlar si se van a representar los encabezados de desplazamiento permanente del bloc de notas en el editor del bloc de notas.",
 			"notebook.textOutputLineLimit": "Controla cuántas líneas de texto se muestran en una salida de texto. Si {0} está habilitado, esta configuración se usa para determinar el alto de desplazamiento de la salida.",
 			"notebook.undoRedoPerCell.description": "Indica si se debe utilizar una pila para deshacer o rehacer separada para cada celda.",
 			"notebookConfigurationTitle": "Bloc de notas",
 			"showFoldingControls.always": "Los controles plegables siempre están visibles.",
 			"showFoldingControls.mouseover": "Los controles plegables sólo son visibles al pasar el mouse.",
 			"showFoldingControls.never": "No mostrar nunca los controles de plegado y reducir el tamaño del medianil."
+		},
+		"vs/workbench/contrib/notebook/browser/notebookAccessibility": {
+			"NotebookCellOutputAccessibleView": "Vista accesible de la salida de celda del bloc de notas",
+			"notebook.cell.edit": "El comando Editar celda ({0}) se centrará en la entrada de celda.",
+			"notebook.cell.editNoKb": "El comando Editar celda se centrará en la entrada de la celda, y actualmente no se puede desencadenar mediante un enlace de teclado.",
+			"notebook.cell.executeAndFocusContainer": "El comando Ejecutar celda ({0}) ejecuta la celda que tiene el foco actualmente.",
+			"notebook.cell.executeAndFocusContainerNoKb": "El comando Ejecutar celda ejecuta la celda que actualmente tiene el foco y que no se puede desencadenar actualmente mediante un enlace de teclado.",
+			"notebook.cell.focusInOutput": "El comando Foco de salida ({0}) establecerá el foco en la salida de la celda.",
+			"notebook.cell.focusInOutputNoKb": "El comando Salir de la edición establecerá el foco en la salida de la celda, y actualmente no se puede desencadenar mediante un enlace de teclado.",
+			"notebook.cell.insertCodeCellBelowAndFocusContainer": "Los comandos Insertar celda superior/inferior crearán nuevas celdas de código vacías",
+			"notebook.cell.quitEdit": "El comando Salir de edición ({0}) establecerá el foco en el contenedor de celdas. Es posible que sea necesario presionar dos veces la tecla predeterminada (Escape) para salir del cursor virtual si está activo.",
+			"notebook.cell.quitEditNoKb": "El comando Salir de la edición establecerá el foco en contenedor de la celda, y actualmente no se puede desencadenar mediante un enlace de teclado.",
+			"notebook.cellNavigation": "Las flechas arriba y abajo moverán el foco entre las celdas mientras se centran en el contenedor de celdas externas",
+			"notebook.changeCellType": "Los comandos Cambiar celda a Código o Markdown se usan para cambiar entre tipos de celda.",
+			"notebook.overview": "La vista del cuaderno es una colección de celdas de código y markdown. Las celdas de código se pueden ejecutar y producirán resultados directamente debajo de la celda."
 		},
 		"vs/workbench/contrib/notebook/browser/notebookEditor": {
 			"fail.noEditor": "No se puede abrir el recurso con el tipo de editor del bloc de notas '{0}'. Compruebe si tiene instalada y habilitada la extensión correcta.",
@@ -7954,6 +8081,8 @@
 			"notebookStatusRunningIcon.foreground": "Color del icono en ejecución de las celdas del Bloc de notas en la barra de estado de la celda.",
 			"notebookStatusSuccessIcon.foreground": "Color del icono de error de las celdas del Bloc de notas en la barra de estado de la celda.",
 			"notebookTreeAriaLabel": "Cuaderno",
+			"notebookTreeAriaLabelHelp": "Bloc de notas\r\nUsa {0} para obtener ayuda de accesibilidad",
+			"notebookTreeAriaLabelHelpNoKb": "Bloc de notas\r\nEjecute el comando Abrir ayuda de accesibilidad para obtener más información",
 			"selectedCellBackground": "Color de fondo de una celda cuando esta se selecciona."
 		},
 		"vs/workbench/contrib/notebook/browser/notebookExtensionPoint": {
@@ -8078,10 +8207,19 @@
 		"vs/workbench/contrib/notebook/browser/view/renderers/cellRenderer": {
 			"cellExecutionOrderCountLabel": "Orden de ejecución"
 		},
+		"vs/workbench/contrib/notebook/browser/viewModel/notebookOutlineProvider": {
+			"empty": "celda vacía"
+		},
+		"vs/workbench/contrib/notebook/browser/viewParts/notebookEditorStickyScroll": {
+			"miNotebookStickyScroll": "&&Desplazamiento permanente del bloc de notas",
+			"mitoggleStickyScroll": "&&Alternar desplazamiento permanente del bloc de notas",
+			"notebookStickyScroll": "Desplazamiento permanente del bloc de notas",
+			"toggleStickyScroll": "Alternar desplazamiento permanente del bloc de notas"
+		},
 		"vs/workbench/contrib/notebook/browser/viewParts/notebookKernelQuickPickStrategy": {
 			"current1": "Seleccionado actualmente",
 			"current2": "{0} - Seleccionado actualmente",
-			"installSuggestedKernel": "Instalar extensiones sugeridas",
+			"installSuggestedKernel": "Instalar o habilitar extensiones sugeridas",
 			"kernels.detecting": "Detectando Kernels",
 			"kernels.selectedKernelAndKernelDetectionRunning": "Kernel seleccionado: {0} (tareas de detección de kernel en ejecución)",
 			"learnMoreTooltip": "Más información",
@@ -8099,7 +8237,7 @@
 			"notebookActions.selectKernel.args": "Argumentos del kernel del bloc de notas"
 		},
 		"vs/workbench/contrib/notebook/common/notebookEditorInput": {
-			"vetoExtHostRestart": "Notebook '{0}' could not be saved."
+			"vetoExtHostRestart": "No se pudo guardar el bloc de notas '{0}'."
 		},
 		"vs/workbench/contrib/offline/browser/offline.contribution": {
 			"offline": "La red parece estar sin conexión, es posible que algunas características no estén disponibles.",
@@ -8165,6 +8303,7 @@
 		"vs/workbench/contrib/output/browser/output.contribution": {
 			"clearOutput.label": "Borrar salida",
 			"extensionLogs": "Registros de extensión",
+			"logFile": "Id. del archivo de registro que se va a abrir, por ejemplo \"window\". Actualmente, la mejor manera de obtenerlo es comprobar los comandos \"workbench.action.output.show.<id>\".",
 			"logViewer": "Visor de registros",
 			"miToggleOutput": "&&Salida",
 			"openActiveLogOutputFile": "Abrir el archivo de salida del registro",
@@ -8177,7 +8316,7 @@
 			"outputViewIcon": "Vea el icono de la vista de salida.",
 			"selectOutput": "Seleccionar canal de salida",
 			"selectlog": "Seleccionar registro",
-			"selectlogFile": "Seleccionar el archivo de registro",
+			"selectlogFile": "Seleccionar archivo de registro",
 			"showLogs": "Mostrar registros...",
 			"showOutputChannels": "Mostrar canales de salida...",
 			"switchBetweenOutputs.label": "Salida del conmutador",
@@ -8269,18 +8408,18 @@
 			"status.workbench.keyboardLayout": "Distribución del teclado"
 		},
 		"vs/workbench/contrib/preferences/browser/preferences.contribution": {
-			"Keyboard Shortcuts": "Métodos abreviados de teclado",
 			"clear": "Borrar resultados de la búsqueda",
 			"clearHistory": "Borrar historial de búsqueda de métodos abreviados de teclado",
 			"defineKeybinding.start": "Definir enlace de teclado",
 			"filterUntrusted": "Mostrar la configuración del área de trabajo de no confianza",
 			"keybindingsEditor": "Editor de enlaces de teclado",
+			"keyboardShortcuts": "Métodos abreviados de teclado",
 			"miOpenOnlineSettings": "&&Configuración de los servicios en línea",
 			"miOpenSettings": "&&Configuración",
 			"miOpenTelemetrySettings": "&&Configuración de telemetría",
 			"miPreferences": "&&Preferencias",
 			"openAccessibilitySettings": "Abrir configuración de accesibilidad",
-			"openCurrentProfileSettingsJson": "Abrir configuración de perfil actual (JSON)",
+			"openApplicationSettingsJson": "Abrir la configuración de la aplicación (JSON)",
 			"openDefaultKeybindingsFile": "Abrir métodos abreviados de teclado predeterminados (JSON)",
 			"openFolderSettings": "Abrir Configuración de carpeta",
 			"openFolderSettingsFile": "Abrir configuración de carpetas (JSON)",
@@ -8330,6 +8469,7 @@
 			"settingsScopeDropDownIcon": "Icono del botón de lista desplegable de carpeta en el Editor de configuraciones de JSON dividido."
 		},
 		"vs/workbench/contrib/preferences/browser/preferencesRenderers": {
+			"allProfileSettingWhileInNonDefaultProfileSetting": "Esta configuración no se puede aplicar porque está configurada para aplicarse en todos los perfiles mediante la configuración {0}. En su lugar, se usará el valor del perfil predeterminado.",
 			"copyDefaultValue": "Copiar en Configuración",
 			"defaultProfileSettingWhileNonDefaultActive": "Esta configuración no se puede aplicar mientras esté activo un perfil no predeterminado. Se aplicará cuando el perfil predeterminado esté activo.",
 			"editTtile": "Editar",
@@ -8464,6 +8604,7 @@
 			"tagSettingsSearchTooltip": "Agregar un filtro de etiquetas"
 		},
 		"vs/workbench/contrib/preferences/browser/settingsTree": {
+			"applyToAllProfiles": "Aplicar configuración a todos los perfiles",
 			"copySettingAsJSONLabel": "Copiar configuración como JSON",
 			"copySettingIdLabel": "Copiar identificador de configuración",
 			"editInSettingsJson": "Editar en settings.json",
@@ -8545,7 +8686,6 @@
 			"textInputBoxForeground": "Configuración del cuadro de entrada de texto del editor en primer plano."
 		},
 		"vs/workbench/contrib/quickaccess/browser/commandsQuickAccess": {
-			"askInChat": "Preguntar en el chat",
 			"askXInChat": "Preguntar {0}: {1}",
 			"clearButtonLabel": "&&Borrar",
 			"clearCommandHistory": "Borrar historial de comandos",
@@ -8660,7 +8800,6 @@
 			"host.open": "Abriendo remoto...",
 			"host.reconnecting": "Reconectando con {0}...",
 			"host.tooltip": "Editando en {0}",
-			"installRemotes": "Instalar extensiones remotas adicionales...",
 			"miCloseRemote": "Cerrar conexión re&&mota",
 			"networkStatusHighLatencyTooltip": "Parece que la red tiene una latencia alta ({0} ms última vez, {1} ms promedio); algunas características pueden responder con lentitud.",
 			"networkStatusOfflineTooltip": "La red parece estar sin conexión, es posible que algunas características no estén disponibles.",
@@ -8670,6 +8809,9 @@
 			"remote.close": "Cerrar conexión remota",
 			"remote.install": "Instalar extensiones de desarrollo remoto",
 			"remote.showMenu": "Mostrar menú remoto",
+			"remote.startActions.help": "Más información",
+			"remote.startActions.install": "Instalar",
+			"remote.startActions.installingExtension": "Instalando extensión... ",
 			"remoteActions": "Seleccionar una opción para abrir una ventana remota",
 			"remoteHost": "Host remoto",
 			"statusBarOfflineBackground": "Color de fondo de la barra de estado cuando el área de trabajo está sin conexión. La barra de estado se muestra en la parte inferior de la ventana",
@@ -8679,13 +8821,7 @@
 		},
 		"vs/workbench/contrib/remote/browser/remoteStartEntry": {
 			"remote.category": "Remoto",
-			"remote.showStartEntryActions": "Mostrar acciones de entrada de inicio remoto",
-			"remote.showTunnelStartEntryActions": "Mostrar entrada de inicio para túneles remotos",
-			"remote.startActions.help": "Más información",
-			"remote.startActions.install": "Instalar",
-			"remote.startActions.installingExtension": "Instalando extensión... ",
-			"remote.startActions.quickPickPlaceholder": "Seleccione una opción para conectar",
-			"workbench.remote.showStartListEntry": "Cuando está habilitada, se muestra una entrada de la lista de inicio para empezar a trabajar con experiencias remotas en la página principal."
+			"remote.showWebStartEntryActions": "Mostrar entrada de inicio remoto para web"
 		},
 		"vs/workbench/contrib/remote/browser/tunnelFactory": {
 			"tunnelPrivacy.private": "Privado",
@@ -8817,6 +8953,7 @@
 			"remoteTunnel.actions.turnOff": "Desactivar el acceso a túnel remoto...",
 			"remoteTunnel.actions.turnOn": "Activar el acceso a túnel remoto...",
 			"remoteTunnel.category": "Remoto Tunnels",
+			"remoteTunnel.serviceInstallFailed": "Error en la instalación como servicio. Hemos vuelto a ejecutar el túnel para esta sesión. Consulte el [registro de errores](command:{0}) para obtener más detalles.",
 			"remoteTunnel.turnOff.confirm": "¿Desea desactivar el acceso a túnel remoto?",
 			"remoteTunnel.turnOffAttached.confirm": "¿Desea desactivar el acceso a túnel remoto? Esto también detendrá el servicio que se inició externamente.",
 			"remoteTunnelAccess.machineName": "Nombre con el que se registra el acceso al túnel remoto. Si no se establece, se usa el nombre de host.",
@@ -8825,6 +8962,11 @@
 			"sign in using account": "Iniciar sesión con {0}",
 			"signed in": "Sesión iniciada",
 			"startTunnel.progress.title": "[Iniciando túnel remoto] (command:{0})",
+			"tunnel.enable.placeholder": "Seleccione cómo desea habilitar el acceso",
+			"tunnel.enable.service": "Instalar como servicio",
+			"tunnel.enable.service.description": "Ejecutar cuando inicie sesión",
+			"tunnel.enable.session": "Activar para esta sesión",
+			"tunnel.enable.session.description": "Ejecutar cuando {0} esté abierto",
 			"tunnel.preview": "Los túneles remotos están actualmente en versión preliminar. Informe de cualquier problema con el comando \"Ayuda: notificar problema\"."
 		},
 		"vs/workbench/contrib/sash/browser/sash.contribution": {
@@ -8880,7 +9022,8 @@
 			"miViewSCM": "&&Control de código fuente",
 			"no open repo": "No hay proveedores de control de código fuente registrados.",
 			"no open repo in an untrusted workspace": "Ninguno de los proveedores de control de código fuente registrados funciona en modo restringido.",
-			"open in terminal": "Abrir en terminal",
+			"open in external terminal": "Abrir en terminal externo",
+			"open in integrated terminal": "Abrir en terminal integrado",
 			"providersVisible": "Controla cuántos repositorios están visibles en la sección Repositorios de control de código fuente. Establézcalo en 0 para poder cambiar manualmente el tamaño de la vista.",
 			"repositoriesSortOrder": "Controla el criterio de ordenación de los repositorios en la vista de repositorios de control de código fuente.",
 			"scm accept": "Control de código fuente: aceptar entrada",
@@ -8991,6 +9134,7 @@
 			"search.decorations.badges": "Controla si las decoraciones de archivo deben usar distintivos.",
 			"search.decorations.colors": "Controla si las decoraciones de archivo deben usar colores.",
 			"search.defaultViewMode": "Controla el modo de vista de resultados de búsqueda predeterminado.",
+			"search.experimental.closedNotebookResults": "Muestra resultados de contenido enriquecido del editor de blocs de notas para blocs de notas cerrados. Actualice los resultados de la búsqueda después de cambiar esta configuración.",
 			"search.followSymlinks": "Controla si debe seguir enlaces simbólicos durante la búsqueda.",
 			"search.globalFindClipboard": "Controla si la vista de búsqueda debe leer o modificar el portapapeles de búsqueda compartido en macOS.",
 			"search.location": "Controla si la búsqueda se muestra como una vista en la barra lateral o como un panel en el área de paneles para disponer de más espacio horizontal.",
@@ -9252,11 +9396,12 @@
 		},
 		"vs/workbench/contrib/share/browser/share.contribution": {
 			"close": "Cerrar",
+			"experimental.share.enabled": "Controla si se debe representar la acción Compartir junto al centro de comandos cuando {0} es {1}.",
 			"generating link": "Generando vínculo...",
 			"open link": "Abrir vínculo",
 			"share": "Compartir...",
 			"shareSuccess": "Vínculo copiado en el portapapeles",
-			"shareTextSuccess": "Copied text to clipboard!"
+			"shareTextSuccess": "Se ha copiado texto al portapapeles"
 		},
 		"vs/workbench/contrib/share/browser/shareService": {
 			"shareProviderCount": "Número de proveedores de recursos compartidos disponibles",
@@ -9490,6 +9635,7 @@
 			"tasksConfigurationTitle": "Tareas",
 			"tasksQuickAccessHelp": "Ejecutar tarea",
 			"tasksQuickAccessPlaceholder": "Escriba el nombre de una tarea para ejecutarla.",
+			"userTasks": "Tareas de usuario",
 			"workbench.action.tasks.openUserTasks": "Abrir tareas de usuario",
 			"workbench.action.tasks.openWorkspaceFileTasks": "Abrir tareas del área de trabajo"
 		},
@@ -9786,10 +9932,10 @@
 			"TaskSystem.terminateTask": "&&Finalizar tarea"
 		},
 		"vs/workbench/contrib/terminal/browser/baseTerminalBackend": {
-			"nonResponsivePtyHost": "The connection to the terminal's pty host process is unresponsive, terminals may stop working. Click to manually restart the pty host.",
-			"ptyHostStatus": "Pty Host Status",
-			"ptyHostStatus.ariaLabel": "Pty Host is unresponsive",
-			"ptyHostStatus.short": "Pty Host"
+			"nonResponsivePtyHost": "La conexión al proceso de host pty del terminal no responde, puede que los terminales dejen de funcionar. Haga clic para reiniciar el host pty manualmente.",
+			"ptyHostStatus": "Estado del host pty",
+			"ptyHostStatus.ariaLabel": "El host pty no responde",
+			"ptyHostStatus.short": "Host Pty"
 		},
 		"vs/workbench/contrib/terminal/browser/environmentVariableInfo": {
 			"ScopedEnvironmentContributionInfo": "área de trabajo",
@@ -10056,9 +10202,8 @@
 		"vs/workbench/contrib/terminal/browser/xterm/xtermTerminal": {
 			"dontShowAgain": "No mostrar de nuevo",
 			"no": "No",
-			"terminal.integrated.copySelection.noSelection": "The terminal has no selection to copy",
+			"terminal.integrated.copySelection.noSelection": "El terminal no tiene ninguna selección para copiar",
 			"terminal.slowRendering": "La aceleración de GPU del terminal parece ser lenta en su equipo. ¿Le gustaría cambiar para deshabilitarlo, lo cual podría mejorar el rendimiento? [Obtenga más información sobre la configuración del terminal](https://code.visualstudio.com/docs/editor/integrated-terminal#_changing-how-the-terminal-is-rendered).",
-			"terminalLoggerName": "Terminal",
 			"yes": "Sí"
 		},
 		"vs/workbench/contrib/terminal/common/terminal": {
@@ -10138,7 +10283,7 @@
 			"terminal.integrated.drawBoldTextInBrightColors": "Controla si el texto en negrita del terminal usará siempre la variante de color de ANSI \"bright\".",
 			"terminal.integrated.enableBell": "Controla si la campana de terminal está habilitada. Se muestra como una campana visual junto al nombre del terminal.",
 			"terminal.integrated.enableFileLinks": "Indica si se deben habilitar los vínculos de archivo en los terminales. Los vínculos pueden ser lentos cuando se trabaja en una unidad de red en particular porque cada vínculo de archivo se comprueba en el sistema de archivos. Cambiar esto solo surtirá efecto en los terminales nuevos.",
-			"terminal.integrated.enableImages": "Enables image support in the terminal. Both sixel and iTerm's inline image protocol are supported on Linux and macOS, Windows support will light up automatically when ConPTY passes through the sequences. Images will currently not be restored between window reloads/reconnects.",
+			"terminal.integrated.enableImages": "Habilita la compatibilidad con imágenes en el terminal; esto solo funcionará cuando {0} esté habilitado. Tanto sixel como el protocolo de imagen en línea de iTerm se admiten en Linux y macOS. La compatibilidad con Windows se activará automáticamente cuando ConPTY pase por las secuencias. Actualmente, las imágenes no se restaurarán entre las recargas o las reconexiones de la ventana.",
 			"terminal.integrated.enableMultiLinePasteWarning": "Muestra un cuadro de diálogo de advertencia al pegar varias líneas en el terminal. El cuadro de diálogo no muestra cuando:\r\n\r\n- El modo de pegado entre corchetes está habilitado (el shell admite pegar varias líneas de forma nativa)\r\n- La línea de lectura del shell controla el pegado (en el caso de pwsh)",
 			"terminal.integrated.enablePersistentSessions": "Conservar las sesiones de terminal o el historial del área de trabajo entre recargas de ventana.",
 			"terminal.integrated.env.linux": "Objeto con variables de entorno que se agregarán al proceso de VS Code que el terminal va a usar en Linux. Establézcalo en \"null\" para eliminar la variable de entorno.",
@@ -10229,7 +10374,7 @@
 			"terminal.integrated.unicodeVersion.eleven": "Versión 11 de Unicode. Esta versión proporciona una mejor compatibilidad con sistemas modernos que usan versiones modernas de Unicode.",
 			"terminal.integrated.unicodeVersion.six": "Versión 6 de Unicode. Esta es una versión anterior que debería funcionar mejor en sistemas anteriores.",
 			"terminal.integrated.windowsEnableConpty": "Indica si se debe usar ConPTY para la comunicación en procesos de terminales de Windows (requiere Windows 10, número de compilación 18309 y posteriores). Si es false, se usará Winpty.",
-			"terminal.integrated.wordSeparators": "Cadena que contiene todos los caracteres que se van a considerar separadores de palabras por doble clic para seleccionar la característica de palabra.",
+			"terminal.integrated.wordSeparators": "Cadena que contiene todos los caracteres que se van a considerar separadores de palabras al hacer doble clic para seleccionar una palabra y en la detección de vínculos de reserva \"palabra\". Puesto que se usa para la detección de vínculos, incluir caracteres como \":\" que se usan al detectar vínculos hará que se omita la parte de línea y columna de vínculos como \"file:10:5\"",
 			"terminalDescription": "Controla la descripción del terminal, que aparece a la derecha del título. Las variables se sustituyen en función del contexto:",
 			"terminalIntegratedConfigurationTitle": "Terminal integrado",
 			"terminalTitle": "Controla el título del terminal. Las variables se sustituyen en función del contexto:",
@@ -10243,7 +10388,7 @@
 			"terminalCountContextKey": "Número actual de terminales.",
 			"terminalEditorFocusContextKey": "Indica si un terminal en el área del editor tiene foco.",
 			"terminalFocusContextKey": "Indica si el terminal recibe el foco.",
-			"terminalFocusInAnyContextKey": "Whether any terminal is focused, including detached terminals used in other UI.",
+			"terminalFocusInAnyContextKey": "Indica si algún terminal es prioritario, incluidos los terminales desasociados que se usan en otra interfaz de usuario.",
 			"terminalProcessSupportedContextKey": "Indica si los procesos de terminal pueden iniciarse en el área de trabajo actual.",
 			"terminalShellIntegrationEnabled": "Si la integración de shell está habilitada en el terminal activo",
 			"terminalShellTypeContextKey": "El tipo de shell del terminal activo. Se establece en el último valor conocido cuando no existe ningún terminal.",
@@ -10251,7 +10396,7 @@
 			"terminalTabsFocusContextKey": "Indica si el foco está sobre el widget de pestañas del terminal",
 			"terminalTabsSingularSelectedContextKey": "Indica si hay un terminal seleccionado en la lista de pestañas de terminal.",
 			"terminalTextSelectedContextKey": "Indica si el texto está seleccionado en el terminal activo",
-			"terminalTextSelectedInFocusedContextKey": "Whether text is selected in a focused terminal.",
+			"terminalTextSelectedInFocusedContextKey": "Indica si el texto está seleccionado en un terminal prioritario.",
 			"terminalViewShowing": "Si se muestra la vista del terminal"
 		},
 		"vs/workbench/contrib/terminal/common/terminalStrings": {
@@ -10306,23 +10451,23 @@
 			"newWithProfileNoKb": "El comando Crear nuevo terminal (con perfil) permite crear fácilmente terminales con un perfil específico y actualmente no se puede desencadenar mediante un enlace de teclado.",
 			"openDetectedLink": "El comando Abrir vínculo detectado ({0}) permite a los lectores de pantalla abrir fácilmente los vínculos que se encuentran en el terminal.",
 			"openDetectedLinkNoKb": "El comando Abrir vínculo detectado permite a los lectores de pantalla abrir fácilmente los vínculos que se encuentran en el terminal y actualmente no se puede desencadenar mediante un enlace de teclado.",
-			"readMore": "[Más información sobre la accesibilidad del terminal](https://code.visualstudio.com/docs/editor/accessibility#_terminal-accessibility)",
 			"runRecentCommand": "Ejecutar comando reciente ({0})",
 			"runRecentCommandNoKb": "Actualmente, la opción Ejecutar comando reciente no se puede desencadenar mediante un enlace de teclado.",
 			"shellIntegration": "El terminal tiene una característica llamada integración de shell que ofrece una experiencia mejorada y proporciona comandos útiles para los lectores de pantalla como:",
-			"terminal-help-label": "terminal accessibility help"
+			"terminal-help-label": "ayuda de accesibilidad del terminal"
 		},
 		"vs/workbench/contrib/terminalContrib/accessibility/browser/terminalAccessibleBuffer": {
 			"terminal.integrated.accessibleBuffer": "Búfer de terminal",
 			"terminal.integrated.symbolQuickPick.labelNoExitCode": "{0}"
 		},
 		"vs/workbench/contrib/terminalContrib/developer/browser/terminal.developer.contribution": {
-			"workbench.action.terminal.restartPtyHost": "Restart Pty Host",
+			"workbench.action.terminal.restartPtyHost": "Reiniciar host pty",
 			"workbench.action.terminal.showTextureAtlas": "Mostrar atlas de textura terminal",
 			"workbench.action.terminal.writeDataToTerminal": "Escribir datos en el terminal",
 			"workbench.action.terminal.writeDataToTerminal.prompt": "Escriba los datos para escribir directamente en el terminal, omitiendo el pty"
 		},
 		"vs/workbench/contrib/terminalContrib/environmentChanges/browser/terminal.environmentChanges.contribution": {
+			"ScopedEnvironmentContributionInfo": "área de trabajo",
 			"envChanges": "Cambios en el entorno del terminal",
 			"extension": "Extensión: {0}",
 			"workbench.action.terminal.showEnvironmentContributions": "Mostrar contribuciones del entorno"
@@ -10437,8 +10582,6 @@
 			"testing.editFocusedTest": "Ir a la prueba",
 			"testing.noProfiles": "No se encontraron perfiles habilitados para la ejecución continua de prueba",
 			"testing.openOutputPeek": "Ver salida",
-			"testing.pickTask": "Seleccione una ejecución para la que mostrar la salida",
-			"testing.pickTaskUnnamed": "Ejecute #{0}",
 			"testing.reRunFailTests": "Volver a ejecutar las pruebas con errores",
 			"testing.reRunLastRun": "Volver a realizar la última ejecución",
 			"testing.refreshTests": "Actualizar pruebas",
@@ -10520,33 +10663,24 @@
 			"messageMoreLines1": "+ 1 línea más",
 			"messageMoreLinesN": "+ {0} líneas más",
 			"run test": "Ejecutar prueba",
-			"runNoOutout": "The test run did not record any output.",
-			"runNoOutputForPast": "Test output is only available for new test runs.",
+			"runNoOutout": "La ejecución de la prueba no registró ninguna salida",
+			"runNoOutputForPast": "La salida de pruebas solo está disponible para nuevas series de pruebas.",
 			"testOutputTitle": "Salida de prueba",
 			"testUnnamedTask": "Tarea sin nombre",
 			"testing.debugLastRun": "Ejecución de la prueba de depuración",
 			"testing.goToError": "Ir a origen",
-			"testing.goToFile": "Ir al archivo",
+			"testing.goToFile": "Ir a origen",
 			"testing.goToNextMessage": "Ir al siguiente error de prueba",
 			"testing.goToPreviousMessage": "Ir al error anterior de la prueba",
 			"testing.markdownPeekError": "No se pudo abrir la vista previa de Markdown: {0}.\r\n\r\nAsegúrese de que la extensión Markdown está habilitada.",
 			"testing.openMessageInEditor": "Abrir en el editor",
 			"testing.reRunLastRun": "Volver a ejecutar la prueba",
 			"testing.revealInExplorer": "Mostrar en el Explorador de pruebas",
-			"testing.showMessageInTerminal": "Mostrar salida en terminal",
 			"testing.showResultOutput": "Mostrar salida de resultado",
 			"testing.toggleTestingPeekHistory": "Alternar historial de pruebas en Inspección",
 			"testingOutputActual": "Resultado real",
 			"testingOutputExpected": "Resultado esperado",
 			"testingPeekLabel": "Mensajes de los resultados de las pruebas"
-		},
-		"vs/workbench/contrib/testing/browser/testingOutputTerminalService": {
-			"runFinished": "La prueba terminó en {0} ",
-			"runNoOutout": "La ejecución de la prueba no registró ninguna salida",
-			"testNoRunYet": "\r\nTodavía no se han hecho pruebas.\r\n",
-			"testOutputTerminalTitle": "Salida de prueba",
-			"testOutputTerminalTitleWithDate": "Salida de la prueba en {0}",
-			"testOutputTerminalTitleWithDateAndTaskName": "{0} a las {1}"
 		},
 		"vs/workbench/contrib/testing/browser/testingProgressUiService": {
 			"testProgress.completed": "{0}/{1} pruebas superadas ({2} %)",
@@ -10597,7 +10731,7 @@
 			"testing.openTesting.openOnTestFailure": "Abrir la vista de pruebas en caso de error de prueba",
 			"testing.openTesting.openOnTestStart": "Abrir la vista de pruebas cuando se inicien las pruebas",
 			"testing.saveBeforeTest": "Controla si se guardan todos los editores con modificaciones antes de ejecutar una prueba.",
-			"testing.showAllMessages": "Controls whether to show messages from all test runs."
+			"testing.showAllMessages": "Controla si se muestran los mensajes de todas las series de pruebas."
 		},
 		"vs/workbench/contrib/testing/common/constants": {
 			"testGroup.coverage": "Cobertura",
@@ -10746,6 +10880,7 @@
 			"installUpdate...": "Instalar actualización... (1)",
 			"installingUpdate": "Instalando actualización...",
 			"later": "Más tarde",
+			"learn more": "Más información",
 			"noUpdatesAvailable": "Actualmente, no hay actualizaciones disponibles.",
 			"read the release notes": "{0} v{1}. ¿Quiere leer las notas de la versión?",
 			"relaunchDetailInsiders": "Presione el botón de recarga para cambiar a la versión de Insider de VS Code.",
@@ -10756,10 +10891,12 @@
 			"restartToUpdate": "Reiniciar para actualizar (1)",
 			"selectSyncService.detail": "La versión Insiders de VS Code sincronizará sus configuraciones, combinaciones de teclas, extensiones, fragmentos y estado de la interfaz de usuario utilizando el servicio de sincronización de configuraciones insiders predeterminado.",
 			"selectSyncService.message": "Elegir el servicio de sincronización de la configuración que se va a usar después de cambiar la versión",
+			"showUpdateReleaseNotes": "Mostrar notas de la versión de actualización",
 			"switchToInsiders": "Cambiar a la versión de participantes...",
 			"switchToStable": "Cambiar a la versión estable...",
 			"thereIsUpdateAvailable": "Hay una actualización disponible.",
 			"update service": "Servicio de Actualización",
+			"update service disabled": "Las actualizaciones están deshabilitadas porque está ejecutando la instalación de ámbito de usuario de {0} como administrador.",
 			"update.noReleaseNotesOnline": "Esta versión de {0} no tiene notas de la versión en línea.",
 			"updateAvailable": "Hay una actualización disponible: {0} {1}",
 			"updateAvailableAfterRestart": "Reinicie {0} para aplicar la última actualización.",
@@ -10802,38 +10939,28 @@
 			"workbench.trustedDomains.promptInTrustedWorkspace": "Cuando está habilitado, aparecen solicitudes del dominio de confianza al abrir los vínculos en las áreas de trabajo de confianza."
 		},
 		"vs/workbench/contrib/userDataProfile/browser/userDataProfile": {
-			"create empty profile": "Crear un perfil vacío...",
-			"create from current profle": "Crear a partir del perfil actual...",
 			"create profile": "Crear perfil...",
-			"create profile from template title": "{0}: Crear...",
-			"create profile from templates": "Crear perfil a partir de plantillas...",
-			"create profile title": "Crear perfil...",
 			"current": "Actual",
 			"delete profile": "Eliminar perfil...",
 			"delete specific profile": "Eliminar perfil...",
-			"empty": "Perfil vacío",
+			"edit profile": "Editar perfil…",
 			"export profile": "Exportar perfil...",
 			"export profile in share": "Exportar perfil ({0})...",
-			"import from file": "Crear a partir del archivo de plantilla de perfil",
-			"import from url": "Crear a partir de la dirección URL de plantilla de perfil",
+			"import from file": "Seleccionar archivo...",
+			"import from url": "Importar desde la dirección URL",
 			"import profile": "Importar perfil...",
 			"import profile dialog": "Seleccionar archivo de plantilla de perfil",
-			"import profile placeholder": "Proporcione la dirección URL de la plantilla del perfil o seleccione el archivo de plantilla de perfil que quiere importar.",
-			"import profile quick pick title": "Crear perfil a partir de plantilla de perfil...",
+			"import profile placeholder": "Proporcionar dirección URL de plantilla de perfil",
+			"import profile quick pick title": "Importar desde plantilla de perfil...",
 			"import profile share": "Importar perfil...",
-			"name": "Nombre del perfil",
-			"no templates": "No hay plantillas desde las que crear",
 			"pick profile to delete": "Seleccionar perfiles para eliminar",
 			"profile import error": "Error al crear el perfil: {0}",
-			"profileExists": "Ya existe un perfil con el nombre {0}.",
 			"profiles": "Perfiles ({0})",
-			"rename profile": "Cambiar nombre...",
-			"save profile as": "Crear a partir del perfil actual...",
+			"save profile as": "Guardar perfil actual como...",
 			"selectProfile": "Seleccionar perfil",
-			"show profile contents": "Mostrar contenido",
+			"show profile contents": "Mostrar contenido del perfil",
 			"switchProfile": "Cambiar perfil...",
-			"templates": "Plantillas del perfil",
-			"using current": "Se usa el perfil actual"
+			"templates": "Plantillas del perfil"
 		},
 		"vs/workbench/contrib/userDataProfile/browser/userDataProfileActions": {
 			"cleanup profile": "Limpiar perfiles",
@@ -11016,7 +11143,7 @@
 			"dialogClose": "Cerrar cuadro de diálogo"
 		},
 		"vs/workbench/contrib/welcomeGettingStarted/browser/featuredExtensionService": {
-			"gettingStarted.featuredTitle": "Destacadas"
+			"gettingStarted.featuredTitle": "Recomendado"
 		},
 		"vs/workbench/contrib/welcomeGettingStarted/browser/gettingStarted": {
 			"allDone": "Marcar como Listo",
@@ -11127,7 +11254,7 @@
 		},
 		"vs/workbench/contrib/welcomeGettingStarted/browser/startupPage": {
 			"startupPage.markdownPreviewError": "No se pudo abrir la vista previa de Markdown: {0}.\r\n\r\nAsegúrese de que la extensión Markdown está habilitada.",
-			"welcome.displayName": "Welcome Page"
+			"welcome.displayName": "Página de bienvenida"
 		},
 		"vs/workbench/contrib/welcomeGettingStarted/common/gettingStartedContent": {
 			"browseLangExts": "Examinar extensiones de lenguaje",
@@ -11172,6 +11299,8 @@
 			"gettingStarted.pickColor.title": "Elija el aspecto que desee",
 			"gettingStarted.playground.description.interpolated": "¿Quiere codificar de forma más rápida y más inteligente? Practique las eficaces características de edición de código en el sitio de pruebas interactivo.\r\n{0}",
 			"gettingStarted.playground.title": "Redefinir sus habilidades de edición",
+			"gettingStarted.profiles.description.interpolated": "Los perfiles le permiten crear conjuntos de personalizaciones de VS Code que incluyen configuración, extensiones y estado de la interfaz de usuario. Cree su propio perfil desde cero o use el conjunto predefinido de plantillas de perfil para el flujo de trabajo específico.\r\n{0}",
+			"gettingStarted.profiles.title": "Personalizar VS Code con perfiles",
 			"gettingStarted.quickOpen.description.interpolated": "Navegue entre los distintos archivos en un instante con una sola pulsación de tecla. Sugerencia: Para abrir varios archivos, presione la tecla de flecha derecha.\r\n{0}",
 			"gettingStarted.quickOpen.title": "Navegar rápidamente entre los archivos",
 			"gettingStarted.scm.description.interpolated": "Ya no tendrá que buscar más comandos de Git. Los flujos de trabajo de Git y GitHub están integrados sin problemas.\r\n{0}",
@@ -11226,6 +11355,7 @@
 			"splitEditor": "Dividir editor",
 			"titleID": "Examinar temas de color",
 			"toggleMenuBar": "Alternar barra de menús",
+			"tryProfiles": "Probar perfiles",
 			"tweakSettings": "Retocar mi configuración",
 			"watch": "Ver tutorial",
 			"workspaceTrust": "Confianza en el área de trabajo"
@@ -11532,6 +11662,9 @@
 			"vscode.extension.contributes.submenus": "Aporta elementos del submenú al editor.",
 			"webview.context": "El menú contextual de vista web"
 		},
+		"vs/workbench/services/assignment/common/assignmentService": {
+			"workbench.enableExperiments": "Captura experimentos que se van a ejecutar desde un servicio en línea de Microsoft."
+		},
 		"vs/workbench/services/authentication/browser/authenticationService": {
 			"accessRequest": "Conceder acceso a {0} para {1}... (1)",
 			"allow": "&&Permitir",
@@ -11558,7 +11691,8 @@
 		},
 		"vs/workbench/services/configuration/browser/configurationService": {
 			"configurationDefaults.description": "Valores predeterminados de contribución para las configuraciones",
-			"experimental": "Experimentos"
+			"experimental": "Experimentos",
+			"setting description": "Configure las opciones que se aplicarán a todos los perfiles."
 		},
 		"vs/workbench/services/configuration/common/configurationEditing": {
 			"errorConfigurationFileDirty": "No se puede escribir en la configuración de usuario porque el archivo tiene cambios sin guardar. Guarde primero el archivo de configuración de usuario e inténtelo de nuevo.",
@@ -11591,6 +11725,7 @@
 			"errorUnknown": "No se puede escribir en {0} debido a un error interno.",
 			"errorUnknownKey": "No se puede escribir en {0} porque {1} no es una configuración registrada.",
 			"folderTarget": "Configuración de Carpeta",
+			"fsError": "Error al escribir en {0}. {1}",
 			"open": "Abrir configuración",
 			"openLaunchConfiguration": "Abrir configuración de inicio",
 			"openTasksConfiguration": "Abrir configuración de tareas",
@@ -11707,11 +11842,11 @@
 			"promptOpenWith.updateDefaultPlaceHolder": "Seleccionar el nuevo editor predeterminado para '{0}'"
 		},
 		"vs/workbench/services/editor/common/editorResolverService": {
-			"editor.editorAssociations": "Configurar patrones glob a los editores (por ejemplo `\"*.hex\": \"hexEditor.hexedit\"`). Estos tienen prioridad sobre el comportamiento predeterminado."
+			"editor.editorAssociations": "Configure [patrones globales](https://aka.ms/vscode-glob-patterns) en editores (por ejemplo, '\"*.hex\": \"hexEditor.hexedit\"'). Tienen prioridad sobre el comportamiento predeterminado."
 		},
 		"vs/workbench/services/extensionManagement/browser/extensionBisect": {
-			"I cannot reproduce": "I can't reproduce",
-			"This is Bad": "I can reproduce",
+			"I cannot reproduce": "No puedo reproducir",
+			"This is Bad": "Puedo reproducir",
 			"bisect": "La extensión Bisect está activa y ha deshabilitado {0} extensiones. Compruebe si aún puede reproducir el problema y, a continuación, seleccione una de estas opciones.",
 			"bisect.plural": "La extensión Bisect está activa y ha deshabilitado {0} extensiones. Compruebe si aún puede reproducir el problema y, a continuación, seleccione una de estas opciones.",
 			"bisect.singular": "La extensión Bisect está activa y ha deshabilitado 1 extensión. Compruebe si aún puede reproducir el problema y, a continuación, seleccione una de estas opciones.",
@@ -11724,9 +11859,9 @@
 			"msg.next": "Extensión Bisect",
 			"msg.start": "Extensión Bisect",
 			"msg2": "&&Iniciar extensión Bisect",
-			"next.bad": "I can &&reproduce",
+			"next.bad": "Puedo &&reproducir",
 			"next.cancel": "&&Cancelar Bisect",
-			"next.good": "I ca&&n't reproduce",
+			"next.good": "No pue&&do reproducir",
 			"next.stop": "&&Detener Bisect",
 			"report": "&&Informar del problema y continuar",
 			"title.isBad": "Continuar con la extensión Bisect",
@@ -11783,7 +11918,6 @@
 		},
 		"vs/workbench/services/extensionManagement/electron-sandbox/remoteExtensionManagementService": {
 			"notFoundCompatibleDependency": "No se puede instalar la extensión \"{0}\" porque no es compatible con la versión actual de {1} (versión {2}).",
-			"notFoundCompatiblePrereleaseDependency": "No se puede instalar la versión preliminar de la extensión \"{0}\" porque no es compatible con la versión actual de {1} (versión {2}).",
 			"notFoundReleaseExtension": "No se puede instalar la versión de lanzamiento de la extensión '{0}' porque no tiene ninguna versión de lanzamiento."
 		},
 		"vs/workbench/services/extensionRecommendations/common/workspaceExtensionsConfig": {
@@ -11933,6 +12067,13 @@
 			"restartExtensionHost.reason": "Reiniciando el host de extensión en una solicitud explícita.",
 			"startBisect": "Iniciar extensión Bisect"
 		},
+		"vs/workbench/services/filesConfiguration/common/filesConfigurationService": {
+			"configuredReadonly": "El editor es de solo lectura porque el archivo se ha establecido como de solo lectura a través de la configuración. [Haga clic aquí](command:{0}) para configurar.",
+			"fileLocked": "El editor es de solo lectura debido a los permisos de archivo. [Haga clic aquí](command:{0}) para establecer la opción de escritura de todos modos.",
+			"fileReadonly": "El editor es de solo lectura porque el archivo es de solo lectura.",
+			"providerReadonly": "El editor es de solo lectura porque el sistema de archivos del archivo es de solo lectura.",
+			"sessionReadonly": "El editor es de solo lectura porque el archivo se ha establecido como de solo lectura en esta sesión. [Haga clic aquí](command:{0}) para establecer que se pueda escribir."
+		},
 		"vs/workbench/services/history/browser/historyService": {
 			"canNavigateBack": "Si es posible retroceder al navegar en el historial del editor",
 			"canNavigateBackInEditLocations": "Si es posible navegar hacia atrás en el historial de ubicaciones de edición del editor",
@@ -11957,26 +12098,26 @@
 			"integrity.prompt": "La instalación de {0} parece estar dañada. Vuelva a instalar."
 		},
 		"vs/workbench/services/issue/browser/issueTroubleshoot": {
-			"I cannot reproduce": "I can't reproduce",
-			"Stop": "Stop",
-			"This is Bad": "I can reproduce",
-			"ask to download insiders": "Please try to download and reproduce the issue in {0} insiders.",
-			"ask to reproduce issue": "Please try to reproduce the issue in {0} insiders and confirm if the issue exists there.",
-			"bad": "I can reproduce",
-			"detail.start": "Issue troubleshooting is a process to help you identify if the issue is with {0} or caused by an extension.\r\n\r\nDuring the process the window reloads repeatedly. Each time you must confirm if you are still seeing problems.",
-			"download insiders": "Download {0} Insiders",
-			"empty.profile": "Issue troubleshooting is active and has temporarily reset your settings to defaults. Check if you can still reproduce the problem and proceed by selecting from these options.",
-			"good": "I can't reproduce",
-			"issue is in core": "Issue troubleshooting has identified that the issue is with {0}.",
-			"issue is with configuration": "Issue troubleshooting has identified that the issue is caused by your settings. Please report the issue by sharing your settings.",
-			"msg": "&&Troubleshoot Issue",
-			"profile.extensions.disabled": "Issue troubleshooting is active and has temprarily disabled all installed extensions. Check if you can still reproduce the problem and proceed by selecting from these options.",
-			"report anyway": "Report Issue Anyway",
-			"stop": "Stop",
-			"title.stop": "Stop Troubleshoot Issue",
-			"troubleshoot issue": "Troubleshoot Issue",
-			"troubleshootIssue": "Troubleshoot Issue...",
-			"use insiders": "This likely means that the issue has been addressed already and will be available in an upcoming release. You can safely use {0} insiders until the new stable version is available."
+			"I cannot reproduce": "No puedo reproducir",
+			"Stop": "Detener",
+			"This is Bad": "Puedo reproducir",
+			"ask to download insiders": "Intente descargar y reproducir el problema en {0} participantes de Insider.",
+			"ask to reproduce issue": "Intente reproducir el problema en {0} participantes de Insider y confirme si el problema existe allí.",
+			"bad": "Puedo reproducir",
+			"detail.start": "La solución de problemas es un proceso que le ayuda a identificar la causa de un problema. La causa de un problema puede ser un error de configuración, debido a una extensión o ser {0} él mismo.\r\n\r\nDurante el proceso, la ventana se vuelve a cargar varias veces. Cada vez que deba confirmar si sigue viendo el problema.",
+			"download insiders": "Descargar {0} participantes de Insider",
+			"empty.profile": "La solución de problemas está activa y ha restablecido temporalmente las configuraciones a los valores predeterminados. Compruebe si todavía puede reproducir el problema y continúe seleccionando entre estas opciones.",
+			"good": "No puedo reproducir",
+			"issue is in core": "La solución de problemas ha identificado que el problema es con {0}.",
+			"issue is with configuration": "La solución de problemas ha identificado que el problema se debe a las configuraciones. Para notificar el problema, exporte las configuraciones mediante el comando \"Exportar Perfil\" y comparta el archivo en el informe de problemas.",
+			"msg": "&&Solucionar problema",
+			"profile.extensions.disabled": "La solución de problemas está activa y ha deshabilitado temporalmente todas las extensiones instaladas. Compruebe si todavía puede reproducir el problema y continúe seleccionando entre estas opciones.",
+			"report anyway": "Notificar problema de todos modos",
+			"stop": "Detener",
+			"title.stop": "Tener la solución de problemas",
+			"troubleshoot issue": "Solucionar problema",
+			"troubleshootIssue": "Solucionar problema...",
+			"use insiders": "Probablemente, esto significa que el problema ya se ha solucionado y estará disponible en una próxima versión. Puede usar {0} participantes de Insider de forma segura hasta que la nueva versión estable esté disponible."
 		},
 		"vs/workbench/services/keybinding/browser/keybindingService": {
 			"invalid.keybindings": "Valor de \"contributes.{0}\" no válido: {1}",
@@ -12157,6 +12298,14 @@
 		},
 		"vs/workbench/services/search/common/queryBuilder": {
 			"search.noWorkspaceWithName": "La carpeta del área de trabajo no existe: {0}"
+		},
+		"vs/workbench/services/secrets/electron-sandbox/secretStorageService": {
+			"encryptionNotAvailableJustTroubleshootingGuide": "No se pudo identificar el conjunto de claves del sistema operativo para almacenar los datos relacionados con el cifrado en el entorno de escritorio actual.",
+			"isGnome": "Está ejecutando este proceso en un entorno de tipo GNOME, pero el conjunto de claves del sistema operativo no está disponible para el cifrado. Asegúrese de que tiene instalado el elemento gnome-keyring u otra implementación compatible con libsecret y que se esté ejecutando.",
+			"isKwallet": "Está ejecutando este proceso en un entorno de KDE, pero el conjunto de claves del sistema operativo no está disponible para el cifrado. Asegúrese de que el elemento kwallet está en ejecución.",
+			"troubleshootingButton": "Abrir la guía de solución de problemas",
+			"usePlainText": "Usar el cifrado más débil",
+			"usePlainTextExtraSentence": "Abra la guía de solución de problemas para solucionar este problema o use un cifrado más débil que no use el conjunto de claves del sistema operativo."
 		},
 		"vs/workbench/services/suggest/browser/simpleSuggestWidget": {
 			"ariaCurrenttSuggestionReadDetails": "{0}, documentos: {1}",
@@ -12431,32 +12580,47 @@
 			"settings": "Configuración"
 		},
 		"vs/workbench/services/userDataProfile/browser/snippetsResource": {
+			"exclude": "Seleccionar {0} de fragmento de código",
 			"snippets": "Fragmentos de código"
 		},
 		"vs/workbench/services/userDataProfile/browser/tasksResource": {
 			"tasks": "Tareas de usuario"
 		},
 		"vs/workbench/services/userDataProfile/browser/userDataProfileImportExportService": {
-			"Importing profile": "{0} ({1})...",
 			"applied profile": "{0}: se aplicó correctamente.",
 			"cancel": "Cancelar",
 			"close": "Cerrar",
 			"copy": "&&Copiar vínculo",
+			"create": "Crear",
+			"create from": "Copiar de:",
+			"create from profile": "Crear perfil: {0}",
 			"create new": "&&Crear nuevo perfil",
+			"create new profle": "Crear perfil...",
 			"create new title": "Crear perfil",
+			"create profile": "Crear perfil",
+			"customise the profile": "Elija qué configurar en su perfil:",
+			"empty profile": "Ninguno",
 			"export": "Exportar",
 			"export profile dialog": "Guardar perfil",
 			"export profile name": "Asigne un nombre al perfil",
 			"export profile title": "Exportar perfil",
 			"export success": "El perfil '{0}' se exportó correctamente.",
+			"extensions": "Extensiones",
 			"file": "archivo",
+			"from default": "Del perfil predeterminado",
+			"from existing profiles": "Perfiles existentes",
+			"from templates": "Plantillas del perfil",
 			"import": "Crear perfil",
 			"import in desktop": "Crear perfil en {0}",
 			"import profile": "Crear perfil",
 			"install extensions title": "Instalar extensiones",
+			"invalid configurations": "El perfil debe contener al menos una configuración.",
+			"keybindings": "Métodos abreviados de teclado",
 			"learn more": "Más información",
 			"local": "Local",
 			"name": "Nombre del perfil",
+			"name placeholder": "Nombre del perfil",
+			"name required": "Proporcione un nombre para el nuevo perfil",
 			"open": "&&Abrir vínculo",
 			"open in": "&&Abrir en {0}",
 			"overwrite": "&&Sobrescribir",
@@ -12468,17 +12632,25 @@
 			"profileExists": "Ya existe un perfil con el nombre {0}.",
 			"profiles.applying": "{0}: aplicando...",
 			"profiles.exporting": "{0}: Exportando...",
-			"progress extensions": "{0} ({1}): Aplicando extensiones...",
-			"progress global state": "{0} ({1}): Aplicando estado...",
-			"progress keybindings": "{0} ({1}): Aplicando métodos abreviados de teclado...",
-			"progress settings": "{0} ({1}): Aplicando la configuración...",
-			"progress snippets": "{0} ({1}): Aplicando fragmentos de código...",
-			"progress tasks": "{0} ({1}): Aplicando tareas...",
+			"progress extensions": "Aplicando extensiones...",
+			"progress global state": "Aplicando estado...",
+			"progress keybindings": "Aplicando métodos abreviados de teclado...",
+			"progress settings": "Aplicando configuración...",
+			"progress snippets": "Aplicando fragmentos de código...",
+			"progress tasks": "Aplicando tareas...",
 			"resolving uri": "{0}: Resolviendo el contenido del perfil...",
+			"save": "Guardar",
+			"save profile": "Editar perfil de {0} ...",
 			"select": "Seleccionar {0}",
 			"select profile": "Seleccionar perfil",
 			"select profile content handler": "Exporte el perfil \"{0}\" como...",
-			"switching profile": "{0} ({1}): Aplicando..."
+			"settings": "Configuración",
+			"snippets": "Fragmentos de código de usuario",
+			"switching profile": "Cambiando de perfil...",
+			"tasks": "Tareas de usuario",
+			"troubleshoot issue": "Solucionar problema",
+			"troubleshoot profile progress": "Configurando perfil de solución de problemas: {0}",
+			"use default profile": "Usar perfil predeterminado"
 		},
 		"vs/workbench/services/userDataProfile/browser/userDataProfileManagement": {
 			"cannotDeleteDefaultProfile": "No se puede eliminar el perfil predeterminado",
@@ -12486,6 +12658,7 @@
 			"reload button": "&&Recargar",
 			"reload message": "Cambiar un perfil requiere volver a cargar VS Code.",
 			"reload message when removed": "Se ha quitado el perfil actual. Vuelva a cargar para volver al perfil predeterminado.",
+			"reload message when updated": "Se ha actualizado el perfil actual. Vuelva a cargar para volver al perfil actualizado.",
 			"switch profile": "Cambiar a un perfil."
 		},
 		"vs/workbench/services/userDataProfile/common/userDataProfile": {
@@ -12681,12 +12854,14 @@
 			"InstallVSIXAction.allowNone": "La directiva de extensión no permite instalar extensiones. Cambie la directiva de extensión e inténtelo de nuevo.",
 			"InstallVSIXAction.successReload": "Se ha completado la instalación de la extensión {0} de VSIX. Recargue Azure Data Studio para habilitarla.",
 			"ReinstallAction.successReload": "Vuelva a cargar Azure Data Studio para completar la reinstalación de la extensión {0}.",
+			"aboutDetail": "Version: {0}\r\nCommit: {1}\r\nDate: {2}\r\nVS Code: {3}\r\nElectron: {4}\r\nChromium: {5}\r\nNode.js: {6}\r\nV8: {7}\r\nOS: {8}",
 			"activateLanguagePack": "Para poder usar Azure Data Studio en {0}, Azure Data Studio debe reiniciarse.",
 			"appName": "\"${appName}\": por ejemplo, Azure Data Studio.",
 			"azuredatastudio": "Azure Data Studio",
 			"azuredatastudio.download": "Descargar",
 			"azuredatastudio.downloadTooltip": "Descargar esta extensión desde una fuente externa",
 			"azuredatastudio.installTooltip": "Instalar esta extensión",
+			"azuredatastudio.themeUpdatedNotification": "Azure Data Studio ahora cuenta con un nuevo tema predeterminado \"{0}\". Si lo prefiere, puede volver al tema anterior o probar uno de los muchos otros temas de color disponibles.",
 			"connectionDialogBrowseTree.context": "Menú contextual del árbol de búsqueda del cuadro de diálogo de conexión",
 			"dashboard.toolbar": "Menú de acción de la barra de herramientas del panel",
 			"dataExplorer.action": "Menú de acción del título del contenedor de la vista dataexplorer",
@@ -12705,6 +12880,7 @@
 			"miNewQuery": "Nueva &&consulta",
 			"miinstallVsix": "Instalar extensión desde el paquete VSIX",
 			"newQuery": "Nueva consulta",
+			"newThemeNotification": "Azure Data Studio ahora cuenta con un nuevo tema predeterminado \"{0}\". ¿Desea probarlo?",
 			"notebook.cellTitle": "El menú de título de la celda del cuaderno",
 			"notebook.cellToolbarLocation.description": "Indica si la barra de herramientas de celdas debe mostrarse u ocultarse. (solo para Notebooks de VS Code)",
 			"notebook.cellToolbarVisibility.description": "Indica si la barra de herramientas de celdas debe aparecer al mantener el puntero sobre ella o al hacer clic. (solo para Notebooks de VS Code)",
@@ -12969,8 +13145,10 @@
 			"profiler.eventsLost": "La sesión de XEvent Profiler para {0} tiene eventos perdidos.",
 			"profiler.sessionCreationError": "Error al iniciar nueva sesión",
 			"profiler.sessionStopped": "La sesión de XEvent Profiler se detuvo inesperadamente en el servidor {0}.",
+			"profilerInput.connDetails": "Detalles de conexión: ",
 			"profilerInput.notConnected": "No conectado",
-			"profilerInput.profiler": "Profiler"
+			"profilerInput.profiler": "Profiler",
+			"profilerInput.sessionName": "Nombre de sesión: {0}\r\n"
 		},
 		"sql/workbench/browser/editor/resourceViewer/resourceViewerInput": {
 			"resourceViewer.showActions": "Mostrar acciones",
@@ -13050,6 +13228,20 @@
 			"selectScriptForEditNotGeneratedError": "No se pudo generar el script para el editor de Editar datos.",
 			"selectScriptNotGeneratedError": "No se pudo generar el script de selección para el objeto seleccionado.",
 			"updateOperationName": "Actualizar"
+		},
+		"sql/workbench/common/backup/constants": {
+			"backup.asymmetricKey": "Clave asimétrica",
+			"backup.compressBackup": "Comprimir copia de seguridad",
+			"backup.defaultCompression": "Utilizar la configuración del servidor predeterminada",
+			"backup.doNotCompress": "No comprimir copia de seguridad",
+			"backup.labelDatabase": "Base de datos",
+			"backup.labelDifferential": "Diferencial",
+			"backup.labelDisk": "Disco",
+			"backup.labelFilegroup": "Archivos y grupos de archivos",
+			"backup.labelFull": "Completa",
+			"backup.labelLog": "Registro de transacciones",
+			"backup.labelUrl": "URL",
+			"backup.serverCertificate": "Certificado de servidor"
 		},
 		"sql/workbench/common/constants": {
 			"notebookMultipleRequestsError": "No se puede ejecutar la celda de código. Actualmente se está ejecutando otra celda."
@@ -13243,6 +13435,18 @@
 			"charts.maxAllowedRowsExceeded": "Se ha superado el número máximo de filas para gráficos integrados, solo se usan las primeras {0} filas. Para configurar el valor, puede abrir la configuración de usuario y buscar: \"builtinCharts. maxRowCount\".",
 			"charts.neverShowAgain": "No volver a mostrar"
 		},
+		"sql/workbench/contrib/commandLine/electron-sandbox/commandLine": {
+			"commandline.propertiesFormatError": "Las propiedades de conexión avanzadas no se han podido analizar como JSON, se ha producido un error: {0} Valor de propiedades recibido: {1}",
+			"confirmConnect": "¿Seguro que desea conectarse?",
+			"connectServerDetail": "Esto se conectará al servidor {0}",
+			"connectingLabel": "Conectando: {0}",
+			"connectingQueryLabel": "Conectando con el archivo de consulta",
+			"errConnectUrl": "No se pudo abrir la dirección URL debido a un error {0}",
+			"open": "&&Abrir",
+			"openingNewQueryLabel": "Abriendo nueva consulta: {0}",
+			"runningCommandLabel": "Ejecutando comando: {0}",
+			"warnServerRequired": "No se puede conectar ya que no se proporcionó información del servidor"
+		},
 		"sql/workbench/contrib/configuration/common/configurationUpgrader": {
 			"workbench.configuration.upgradeUser": "{0} se ha reemplazado por {1} en la configuración de usuario.",
 			"workbench.configuration.upgradeWorkspace": "{0} se ha reemplazado por {1} en la configuración del área de trabajo."
@@ -13250,8 +13454,8 @@
 		"sql/workbench/contrib/connection/browser/connection.contribution": {
 			"connection.showUnsupportedServerVersionWarning": "Si se muestra o no el mensaje de advertencia cuando el usuario se conecta a una versión del servidor que no es compatible con Azure Data Studio.",
 			"registeredServers.collapseAll": "Contraer todas las conexiones",
-			"sql.defaultAuthenticationType.AzureMFA": "Azure Active Directory: universal con compatibilidad con MFA",
-			"sql.defaultAuthenticationType.AzureMFAAndUser": "Azure Active Directory: contraseña",
+			"sql.defaultAuthenticationType.AzureMFA": "Microsoft Entra ID: Universal con soporte MFA",
+			"sql.defaultAuthenticationType.AzureMFAAndUser": "Microsoft Entra ID; Contraseña",
 			"sql.defaultAuthenticationType.Integrated": "Autenticación de Windows",
 			"sql.defaultAuthenticationType.SqlLogin": "Inicio de sesión de SQL",
 			"sql.defaultAuthenticationTypeDescription": "Tipo de autenticación predeterminado que será usado al conectarse a los recursos de Azure. ",
@@ -13336,6 +13540,7 @@
 		"sql/workbench/contrib/dashboard/browser/core/dashboardPage.component": {
 			"dashboard.configureDashboardTooltip": "Más información sobre la configuración de el panel",
 			"dashboard.generalTabGroupHeader": "General",
+			"dashboard.tabLoadingError": "Error al cargar la pestaña {0}",
 			"home": "Inicio",
 			"missingConnectionInfo": "No se encontró información de conexión para este panel"
 		},
@@ -14397,6 +14602,10 @@
 			"queryEditor.results.saveAsCsv.includeHeaders": "Si es \"true\", los encabezados de columna se incluirán al guardar los resultados como CSV.",
 			"queryEditor.results.saveAsCsv.lineSeperator": "Caracteres que se usan para separar las filas al guardar los resultados como CSV.",
 			"queryEditor.results.saveAsCsv.textIdentifier": "Carácter que se usa para delimitar los campos de texto al guardar los resultados como CSV.",
+			"queryEditor.results.saveAsExcel.autoFilterHeaderRow": "Cuando sea true, habilite el filtrado automático en la fila de encabezado al guardar los resultados como un archivo de Excel.",
+			"queryEditor.results.saveAsExcel.autoSizeColumns": "Cuando sea true, intente cambiar automáticamente el tamaño de las columnas al guardar los resultados como un archivo de Excel.",
+			"queryEditor.results.saveAsExcel.boldHeaderRow": "Cuando sea true, establezca la fila de encabezado en negrita al guardar los resultados como un archivo de Excel.",
+			"queryEditor.results.saveAsExcel.freezeHeaderRow": "Cuando sea true, inmoviliza la fila de encabezado al guardar los resultados como un archivo de Excel",
 			"queryEditor.results.saveAsExcel.includeHeaders": "Cuando es true, los encabezados de columna se incluyen al guardar los resultados como un archivo de Excel.",
 			"queryEditor.results.saveAsMarkdown.encoding": "Codificación de archivo empleada al guardar los resultados como Markdown",
 			"queryEditor.results.saveAsMarkdown.includeHeaders": "Cuando es verdadero, los encabezados de columna se incluyen al guardar los resultados como un archivo de Markdown",
@@ -14557,6 +14766,11 @@
 			"errorMsgFromCancelTask": "No se ha podido ejecutar la tarea.",
 			"taskAction.script": "Script"
 		},
+		"sql/workbench/contrib/telemetry/browser/telemetryOptOut": {
+			"telemetryOptOut.optInNotice": "Ayude a mejorar Azure Data Studio al permitir que Microsoft recopile datos de uso. Lea nuestra [declaración de privacidad]({0}) y obtenga información sobre cómo [participar]({1}).",
+			"telemetryOptOut.optOutNotice": "Ayude a mejorar Azure Data Studio al permitir que Microsoft recopile datos de uso. Lea nuestra [declaración de privacidad]({0}) y obtenga información sobre cómo [rechazar]({1}).",
+			"telemetryOptOut.readMore": "Más información"
+		},
 		"sql/workbench/contrib/tsgops/browser/tsgopsActions": {
 			"hideActivityBarViewContainers": "Ocultar el viewlet de extensión",
 			"hidePanel": "Ocultar el panel",
@@ -14574,6 +14788,114 @@
 		"sql/workbench/contrib/webview/browser/webViewDialog": {
 			"webViewDialog.close": "Cerrar",
 			"webViewDialog.ok": "Aceptar"
+		},
+		"sql/workbench/contrib/welcome/browser/abstractEnablePreviewFeatures": {
+			"enablePreviewFeatures.never": "No, no volver a mostrar",
+			"enablePreviewFeatures.no": "No",
+			"enablePreviewFeatures.notice": "Las características en versión preliminar mejoran la experiencia en Azure Data Studio, ya que ofrecen acceso completo a nuevas funciones y mejoras. Puede obtener más información sobre las características en versión preliminar [aquí]({0}). ¿Quiere habilitar las características en versión preliminar?",
+			"enablePreviewFeatures.yes": "Sí (opción recomendada)"
+		},
+		"sql/workbench/contrib/welcome/browser/az_data_welcome_page": {
+			"welcomePage.createConnection": "Crear una conexión",
+			"welcomePage.createConnectionBody": "Conéctese a una instancia de una base de datos por medio del cuadro de diálogo de conexión.",
+			"welcomePage.createNotebook": "Crear un cuaderno",
+			"welcomePage.createNotebookBody": "Cree un nuevo cuaderno con un editor de cuadernos nativo.",
+			"welcomePage.deployServer": "Implementar un servidor",
+			"welcomePage.deployServerBody": "Cree una nueva instancia de un servicio de datos relacionales en la plataforma de su elección.",
+			"welcomePage.documentation": "Documentación",
+			"welcomePage.documentationBody": "Visite el centro de documentación para acceder a guías de inicio rápido y paso a paso, así como consultar referencias para PowerShell, API, etc.",
+			"welcomePage.extensions": "Extensiones",
+			"welcomePage.gettingStarted": "Introducción",
+			"welcomePage.gettingStartedBody": "Descubra las funcionalidades que ofrece Azure Data Studio y aprenda a sacarles el máximo partido.",
+			"welcomePage.history": "Historial",
+			"welcomePage.learnMore": "Más información ",
+			"welcomePage.location": "Ubicación",
+			"welcomePage.moreRecent": "Mostrar más",
+			"welcomePage.name": "Nombre",
+			"welcomePage.resources": "Recursos",
+			"welcomePage.runQuery": "Ejecutar una consulta",
+			"welcomePage.runQueryBody": "Interactúe con los datos por medio de un editor de consultas.",
+			"welcomePage.showAll": "Mostrar todo",
+			"welcomePage.showOnStartup": "Mostrar página principal al inicio",
+			"welcomePage.usefuLinks": "Vínculos útiles",
+			"welcomePage.videoDescriptionIntroduction": "Introducción a los cuadernos de Azure Data Studio | Datos expuestos",
+			"welcomePage.videoDescriptionOverview": "Información general de Azure Data Studio",
+			"welcomePage.videos": "Vídeos"
+		},
+		"sql/workbench/contrib/welcome/browser/gettingStartedTour": {
+			"GuidedTour.addExtensions": "Amplíe la funcionalidad de Azure Data Studio mediante la instalación de extensiones desarrolladas por nosotros y Microsoft, así como por la comunidad de terceros (es decir, ¡usted!).",
+			"GuidedTour.connections": "Conexiones",
+			"GuidedTour.discoverWelcomePage": "Descubra las principales características, los archivos abiertos recientemente y las extensiones recomendadas en la página de bienvenida. Para obtener más información sobre cómo empezar a trabajar con Azure Data Studio, consulte los vídeos y la documentación.",
+			"GuidedTour.extensions": "Extensiones",
+			"GuidedTour.finish": "Finalizar",
+			"GuidedTour.five": "5",
+			"GuidedTour.four": "4",
+			"GuidedTour.gettingStartedNotebooks": "Empiece a crear su propio cuaderno o colección de cuadernos en un solo lugar.",
+			"GuidedTour.makeConnections": "Conéctese a SQL Server y Azure, realice consultas, administre las conexiones y mucho más.",
+			"GuidedTour.makeConnesetSettings": "Personalice Azure Data Studio según sus preferencias. Puede configurar opciones como el autoguardado y el tamaño de las pestañas, personalizar los métodos abreviados de teclado y cambiar a un tema de color de su gusto.",
+			"GuidedTour.next": "Siguiente",
+			"GuidedTour.notebooks": "Cuadernos",
+			"GuidedTour.one": "1",
+			"GuidedTour.readMore": "Más información",
+			"GuidedTour.settings": "Configuración",
+			"GuidedTour.three": "3",
+			"GuidedTour.two": "2",
+			"GuidedTour.welcomePage": "Página de bienvenida",
+			"guidedTour": "Paseo de bienvenida para el usuario",
+			"hideGuidedTour": "Ocultar paseo de presentación"
+		},
+		"sql/workbench/contrib/welcome/browser/welcomePage": {
+			"WelcomePage.TakeATour": "¿Le gustaría dar un paseo introductorio por Azure Data Studio?",
+			"WelcomePage.welcome": "¡Le damos la bienvenida!",
+			"closeTourBar": "Cerrar barra del paseo introductorio",
+			"details": "Detalles",
+			"ok": "Aceptar",
+			"welcome.title": "Bienvenida",
+			"welcomePage": "Bienvenida",
+			"welcomePage.PostgreSQL": "PostgreSQL",
+			"welcomePage.PostgreSQLDescription": "Conéctese a bases de datos Postgre, adminístrelas y realice consultas en ellas con Azure Data Studio.",
+			"welcomePage.adminPack": "Paquete de administración de SQL",
+			"welcomePage.adminPackDescription": "El paquete de administración para SQL Server es una colección de populares extensiones de administración de bases de datos para ayudarle a administrar SQL Server.",
+			"welcomePage.background": "Color de fondo para la página de bienvenida.",
+			"welcomePage.dataVirtualization": "Virtualización de datos",
+			"welcomePage.dataVirtualizationDescription": "Virtualice datos con SQL Server 2019 y cree tablas externas por medio de asistentes interactivos.",
+			"welcomePage.deployServer": "Implementar un servidor",
+			"welcomePage.extensionPackAlreadyInstalled": "El soporte para '{0}' ya está instalado.",
+			"welcomePage.extensionPackNotFound": "No se pudo encontrar el soporte para {0} con id {1}.",
+			"welcomePage.install": "Instalar",
+			"welcomePage.installed": "Instalado",
+			"welcomePage.installingExtensionPack": "Instalando compatibilidad adicional con {0}...",
+			"welcomePage.new": "Nuevo",
+			"welcomePage.newConnection": "Nueva conexión",
+			"welcomePage.newNotebook": "Nuevo cuaderno",
+			"welcomePage.newQuery": "Nueva consulta",
+			"welcomePage.open": "Abrir...",
+			"welcomePage.openFile": "Abrir archivo...",
+			"welcomePage.openFolder": "Abrir carpeta...",
+			"welcomePage.openFolderWithPath": "Abrir la carpeta {0} con la ruta de acceso {1}",
+			"welcomePage.powershell": "PowerShell",
+			"welcomePage.powershellDescription": "Escriba y ejecute scripts de PowerShell con el editor de consultas enriquecidas de Azure Data Studio.",
+			"welcomePage.showAdminPack": "Paquete de administración de SQL",
+			"welcomePage.sqlServerAgent": "Agente SQL Server",
+			"welcomePage.sqlServerDacpac": "SQL Server dacpac",
+			"welcomePage.sqlServerImport": "Importación de SQL Server",
+			"welcomePage.sqlServerProfiler": "SQL Server Profiler",
+			"welcomePage.startTour": "Iniciar paseo",
+			"welcomePage.willReloadAfterInstallingExtensionPack": "La ventana se volverá a cargar después de instalar compatibilidad adicional con {0}."
+		},
+		"sql/workbench/contrib/welcome/browser/welcomePage.contribution": {
+			"miWelcome": "&&Bienvenido",
+			"workbench.startupEditor": "Controla qué editor se muestra al inicio, si no se restaura ninguno de la sesión anterior.",
+			"workbench.startupEditor.newUntitledFile": "Abra un archivo nuevo sin título (solo se aplica al abrir una ventana vacía).",
+			"workbench.startupEditor.none": "Iniciar sin un editor.",
+			"workbench.startupEditor.readme": "Abra el archivo Léame cuando abra una carpeta que contenga uno, en caso contrario, vuelva a “welcomePage”. Nota: esta situación solo se observa en la configuración global y se omitirá si se establece en una configuración de área de trabajo o carpeta.",
+			"workbench.startupEditor.welcomePage": "Abrir la página principal, con contenido que ayude a empezar a trabajar con Azure Data Studio y extensiones.",
+			"workbench.startupEditor.welcomePageInEmptyWorkbench": "Abrir la página principal cuando se abra un área de trabajo vacía.",
+			"workbench.startupEditor.welcomePageWithTour": "Abrir la página principal con el tour de Introducción (predeterminado)"
+		},
+		"sql/workbench/contrib/welcome/electron-sandbox/gettingStarted": {
+			"miGettingStarted": "I&&ntroducción",
+			"showReleaseNotes": "Ver introducción"
 		},
 		"sql/workbench/services/accountManagement/browser/accountDialog": {
 			"accountDialog.addConnection": "Agregar una cuenta",
@@ -14634,7 +14956,7 @@
 			"backupRestoreUrlBrowserDialog.sharedAccessSignatureButton": "Crear credenciales",
 			"backupRestoreUrlBrowserDialog.storageAccount": "Cuenta de almacenamiento",
 			"backupRestoreUrlBrowserDialog.subscription": "Suscripción a Azure",
-			"backupRestoreUrlBrowserDialog.tenant": "Inquilino de Azure AD",
+			"backupRestoreUrlBrowserDialog.tenant": "Inquilino de Microsoft Entra",
 			"fileBrowser.discard": "Descartar",
 			"fileBrowser.ok": "Aceptar"
 		},
@@ -14713,7 +15035,7 @@
 			"boolean.false": "Falso",
 			"boolean.true": "Verdadero",
 			"connection.azureAccountDropdownLabel": "Cuenta",
-			"connection.azureTenantDropdownLabel": "Inquilino de Azure AD",
+			"connection.azureTenantDropdownLabel": "Inquilino de Microsoft Entra",
 			"connectionName": "Nombre (opcional)",
 			"connectionWidget.AddAzureAccount": "Agregar una cuenta...",
 			"connectionWidget.ConnectionStringError": "No se ha podido analizar la cadena de conexión. {0}",
@@ -14792,7 +15114,7 @@
 			"selectExecutionPlanProvider": "Seleccionar un proveedor para abrir el plan de ejecución"
 		},
 		"sql/workbench/services/fileBrowser/browser/fileBrowserDialog": {
-			"fileBrowser.discard": "Descartar",
+			"fileBrowser.back": "Atrás",
 			"fileBrowser.ok": "Aceptar",
 			"fileFilter": "Archivos de tipo",
 			"filebrowser.filepath": "Ruta seleccionada"
@@ -14962,6 +15284,9 @@
 			"registeredServers.clearRecentConnections": "Eliminar",
 			"showAllConnections": "Mostrar todas las conexiones"
 		},
+		"sql/workbench/services/objectExplorer/browser/dragAndDropController": {
+			"objectExplorer.dragAndDropController.existingIdenticalProfile": "No se puede arrastrar el perfil al grupo: ya existe un perfil con opciones idénticas en el grupo."
+		},
 		"sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog": {
 			"filterDialog.errorDateRange": "La fecha de inicio no puede ser posterior a la fecha de finalización.",
 			"filterDialog.errorEndDate": "No se ha especificado la fecha final",
@@ -15045,6 +15370,11 @@
 			"profilerFilterDialog.title": "Filtros",
 			"profilerFilterDialog.valueColumn": "Valor"
 		},
+		"sql/workbench/services/profiler/browser/profilerService": {
+			"FileFilterDescription": "Archivos XEL",
+			"FileTooLarge": "El archivo es demasiado grande para abrirlo en el generador de perfiles. El generador de perfiles puede abrir archivos de menos de 1 GB.",
+			"LargeFileWait": "La carga del archivo puede tardar un momento debido al tamaño del archivo."
+		},
 		"sql/workbench/services/query/common/gridDataProvider": {
 			"gridDataProvider.cancelCopyResults": "Cancelar",
 			"gridDataProvider.closeNotification": "Cerrar",
@@ -15055,7 +15385,6 @@
 			"gridDataProvider.turnOnCopyNotificationsMessage": "Las notificaciones de copia completada ahora están deshabilitadas. Para volver a habilitarlas, modifique la opción de configuración: queryEditor.results.showCopyCompletedNotification"
 		},
 		"sql/workbench/services/query/common/queryManagement": {
-			"queryManagement.noQueryRunnerForUri": "No se encontró el ejecutor de consultas para el URI: {0}",
 			"queryManagement.uriAlreadyHasQueryRunner": "URI: inesperadamente {0} ya tiene un ejecutor de consultas."
 		},
 		"sql/workbench/services/query/common/queryModelService": {
@@ -15273,153 +15602,6 @@
 			"InProgressWarning": "1 o más tareas están en curso. ¿Seguro que desea salir?",
 			"taskService.no": "No",
 			"taskService.yes": "Sí"
-		},
-		"sql/workbench/common/backup/constants": {
-			"backup.asymmetricKey": "Clave asimétrica",
-			"backup.compressBackup": "Comprimir copia de seguridad",
-			"backup.defaultCompression": "Utilizar la configuración del servidor predeterminada",
-			"backup.doNotCompress": "No comprimir copia de seguridad",
-			"backup.labelDatabase": "Base de datos",
-			"backup.labelDifferential": "Diferencial",
-			"backup.labelDisk": "Disco",
-			"backup.labelFilegroup": "Archivos y grupos de archivos",
-			"backup.labelFull": "Completa",
-			"backup.labelLog": "Registro de transacciones",
-			"backup.labelUrl": "URL",
-			"backup.serverCertificate": "Certificado de servidor"
-		},
-		"sql/workbench/contrib/commandLine/electron-sandbox/commandLine": {
-			"commandline.propertiesFormatError": "Las propiedades de conexión avanzadas no se han podido analizar como JSON, se ha producido un error: {0} Valor de propiedades recibido: {1}",
-			"confirmConnect": "¿Seguro que desea conectarse?",
-			"connectServerDetail": "Esto se conectará al servidor {0}",
-			"connectingLabel": "Conectando: {0}",
-			"connectingQueryLabel": "Conectando con el archivo de consulta",
-			"errConnectUrl": "No se pudo abrir la dirección URL debido a un error {0}",
-			"open": "&&Abrir",
-			"openingNewQueryLabel": "Abriendo nueva consulta: {0}",
-			"runningCommandLabel": "Ejecutando comando: {0}",
-			"warnServerRequired": "No se puede conectar ya que no se proporcionó información del servidor"
-		},
-		"sql/workbench/contrib/telemetry/browser/telemetryOptOut": {
-			"telemetryOptOut.optInNotice": "Ayude a mejorar Azure Data Studio al permitir que Microsoft recopile datos de uso. Lea nuestra [declaración de privacidad]({0}) y obtenga información sobre cómo [participar]({1}).",
-			"telemetryOptOut.optOutNotice": "Ayude a mejorar Azure Data Studio al permitir que Microsoft recopile datos de uso. Lea nuestra [declaración de privacidad]({0}) y obtenga información sobre cómo [rechazar]({1}).",
-			"telemetryOptOut.readMore": "Más información"
-		},
-		"sql/workbench/contrib/welcome/browser/abstractEnablePreviewFeatures": {
-			"enablePreviewFeatures.never": "No, no volver a mostrar",
-			"enablePreviewFeatures.no": "No",
-			"enablePreviewFeatures.notice": "Las características en versión preliminar mejoran la experiencia en Azure Data Studio, ya que ofrecen acceso completo a nuevas funciones y mejoras. Puede obtener más información sobre las características en versión preliminar [aquí]({0}). ¿Quiere habilitar las características en versión preliminar?",
-			"enablePreviewFeatures.yes": "Sí (opción recomendada)"
-		},
-		"sql/workbench/contrib/welcome/browser/az_data_welcome_page": {
-			"welcomePage.createConnection": "Crear una conexión",
-			"welcomePage.createConnectionBody": "Conéctese a una instancia de una base de datos por medio del cuadro de diálogo de conexión.",
-			"welcomePage.createNotebook": "Crear un cuaderno",
-			"welcomePage.createNotebookBody": "Cree un nuevo cuaderno con un editor de cuadernos nativo.",
-			"welcomePage.deployServer": "Implementar un servidor",
-			"welcomePage.deployServerBody": "Cree una nueva instancia de un servicio de datos relacionales en la plataforma de su elección.",
-			"welcomePage.documentation": "Documentación",
-			"welcomePage.documentationBody": "Visite el centro de documentación para acceder a guías de inicio rápido y paso a paso, así como consultar referencias para PowerShell, API, etc.",
-			"welcomePage.extensions": "Extensiones",
-			"welcomePage.gettingStarted": "Introducción",
-			"welcomePage.gettingStartedBody": "Descubra las funcionalidades que ofrece Azure Data Studio y aprenda a sacarles el máximo partido.",
-			"welcomePage.history": "Historial",
-			"welcomePage.learnMore": "Más información ",
-			"welcomePage.location": "Ubicación",
-			"welcomePage.moreRecent": "Mostrar más",
-			"welcomePage.name": "Nombre",
-			"welcomePage.resources": "Recursos",
-			"welcomePage.runQuery": "Ejecutar una consulta",
-			"welcomePage.runQueryBody": "Interactúe con los datos por medio de un editor de consultas.",
-			"welcomePage.showAll": "Mostrar todo",
-			"welcomePage.showOnStartup": "Mostrar página principal al inicio",
-			"welcomePage.usefuLinks": "Vínculos útiles",
-			"welcomePage.videoDescriptionIntroduction": "Introducción a los cuadernos de Azure Data Studio | Datos expuestos",
-			"welcomePage.videoDescriptionOverview": "Información general de Azure Data Studio",
-			"welcomePage.videos": "Vídeos"
-		},
-		"sql/workbench/contrib/welcome/browser/gettingStartedTour": {
-			"GuidedTour.addExtensions": "Amplíe la funcionalidad de Azure Data Studio mediante la instalación de extensiones desarrolladas por nosotros y Microsoft, así como por la comunidad de terceros (es decir, ¡usted!).",
-			"GuidedTour.connections": "Conexiones",
-			"GuidedTour.discoverWelcomePage": "Descubra las principales características, los archivos abiertos recientemente y las extensiones recomendadas en la página de bienvenida. Para obtener más información sobre cómo empezar a trabajar con Azure Data Studio, consulte los vídeos y la documentación.",
-			"GuidedTour.extensions": "Extensiones",
-			"GuidedTour.finish": "Finalizar",
-			"GuidedTour.five": "5",
-			"GuidedTour.four": "4",
-			"GuidedTour.gettingStartedNotebooks": "Empiece a crear su propio cuaderno o colección de cuadernos en un solo lugar.",
-			"GuidedTour.makeConnections": "Conéctese a SQL Server y Azure, realice consultas, administre las conexiones y mucho más.",
-			"GuidedTour.makeConnesetSettings": "Personalice Azure Data Studio según sus preferencias. Puede configurar opciones como el autoguardado y el tamaño de las pestañas, personalizar los métodos abreviados de teclado y cambiar a un tema de color de su gusto.",
-			"GuidedTour.next": "Siguiente",
-			"GuidedTour.notebooks": "Cuadernos",
-			"GuidedTour.one": "1",
-			"GuidedTour.readMore": "Más información",
-			"GuidedTour.settings": "Configuración",
-			"GuidedTour.three": "3",
-			"GuidedTour.two": "2",
-			"GuidedTour.welcomePage": "Página de bienvenida",
-			"guidedTour": "Paseo de bienvenida para el usuario",
-			"hideGuidedTour": "Ocultar paseo de presentación"
-		},
-		"sql/workbench/contrib/welcome/browser/welcomePage": {
-			"WelcomePage.TakeATour": "¿Le gustaría dar un paseo introductorio por Azure Data Studio?",
-			"WelcomePage.welcome": "¡Le damos la bienvenida!",
-			"closeTourBar": "Cerrar barra del paseo introductorio",
-			"details": "Detalles",
-			"ok": "Aceptar",
-			"welcome.title": "Bienvenida",
-			"welcomePage": "Bienvenida",
-			"welcomePage.PostgreSQL": "PostgreSQL",
-			"welcomePage.PostgreSQLDescription": "Conéctese a bases de datos Postgre, adminístrelas y realice consultas en ellas con Azure Data Studio.",
-			"welcomePage.adminPack": "Paquete de administración de SQL",
-			"welcomePage.adminPackDescription": "El paquete de administración para SQL Server es una colección de populares extensiones de administración de bases de datos para ayudarle a administrar SQL Server.",
-			"welcomePage.background": "Color de fondo para la página de bienvenida.",
-			"welcomePage.dataVirtualization": "Virtualización de datos",
-			"welcomePage.dataVirtualizationDescription": "Virtualice datos con SQL Server 2019 y cree tablas externas por medio de asistentes interactivos.",
-			"welcomePage.deployServer": "Implementar un servidor",
-			"welcomePage.extensionPackAlreadyInstalled": "El soporte para '{0}' ya está instalado.",
-			"welcomePage.extensionPackNotFound": "No se pudo encontrar el soporte para {0} con id {1}.",
-			"welcomePage.install": "Instalar",
-			"welcomePage.installed": "Instalado",
-			"welcomePage.installingExtensionPack": "Instalando compatibilidad adicional con {0}...",
-			"welcomePage.new": "Nuevo",
-			"welcomePage.newConnection": "Nueva conexión",
-			"welcomePage.newNotebook": "Nuevo cuaderno",
-			"welcomePage.newQuery": "Nueva consulta",
-			"welcomePage.open": "Abrir...",
-			"welcomePage.openFile": "Abrir archivo...",
-			"welcomePage.openFolder": "Abrir carpeta...",
-			"welcomePage.openFolderWithPath": "Abrir la carpeta {0} con la ruta de acceso {1}",
-			"welcomePage.powershell": "PowerShell",
-			"welcomePage.powershellDescription": "Escriba y ejecute scripts de PowerShell con el editor de consultas enriquecidas de Azure Data Studio.",
-			"welcomePage.showAdminPack": "Paquete de administración de SQL",
-			"welcomePage.sqlServerAgent": "Agente SQL Server",
-			"welcomePage.sqlServerDacpac": "SQL Server dacpac",
-			"welcomePage.sqlServerImport": "Importación de SQL Server",
-			"welcomePage.sqlServerProfiler": "SQL Server Profiler",
-			"welcomePage.startTour": "Iniciar paseo",
-			"welcomePage.willReloadAfterInstallingExtensionPack": "La ventana se volverá a cargar después de instalar compatibilidad adicional con {0}."
-		},
-		"sql/workbench/contrib/welcome/browser/welcomePage.contribution": {
-			"miWelcome": "&&Bienvenido",
-			"workbench.startupEditor": "Controla qué editor se muestra al inicio, si no se restaura ninguno de la sesión anterior.",
-			"workbench.startupEditor.newUntitledFile": "Abra un archivo nuevo sin título (solo se aplica al abrir una ventana vacía).",
-			"workbench.startupEditor.none": "Iniciar sin un editor.",
-			"workbench.startupEditor.readme": "Abra el archivo Léame cuando abra una carpeta que contenga uno, en caso contrario, vuelva a “welcomePage”. Nota: esta situación solo se observa en la configuración global y se omitirá si se establece en una configuración de área de trabajo o carpeta.",
-			"workbench.startupEditor.welcomePage": "Abrir la página principal, con contenido que ayude a empezar a trabajar con Azure Data Studio y extensiones.",
-			"workbench.startupEditor.welcomePageInEmptyWorkbench": "Abrir la página principal cuando se abra un área de trabajo vacía.",
-			"workbench.startupEditor.welcomePageWithTour": "Abrir la página principal con el tour de Introducción (predeterminado)"
-		},
-		"sql/workbench/contrib/welcome/electron-sandbox/gettingStarted": {
-			"miGettingStarted": "I&&ntroducción",
-			"showReleaseNotes": "Ver introducción"
-		},
-		"sql/workbench/services/objectExplorer/browser/dragAndDropController": {
-			"objectExplorer.dragAndDropController.existingIdenticalProfile": "No se puede arrastrar el perfil al grupo: ya existe un perfil con opciones idénticas en el grupo."
-		},
-		"sql/workbench/services/profiler/browser/profilerService": {
-			"FileFilterDescription": "Archivos XEL",
-			"FileTooLarge": "El archivo es demasiado grande para abrirlo en el generador de perfiles. El generador de perfiles puede abrir archivos de menos de 1 GB.",
-			"LargeFileWait": "La carga del archivo puede tardar un momento debido al tamaño del archivo."
 		}
 	}
 }

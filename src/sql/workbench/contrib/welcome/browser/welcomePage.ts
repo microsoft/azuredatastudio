@@ -289,7 +289,7 @@ class WelcomePage extends Disposable {
 		}
 
 		showOnStartup.addEventListener('click', e => {
-			this.configurationService.updateValue(configurationKey, showOnStartup.checked ? 'welcomePageWithTour' : 'newUntitledFile', ConfigurationTarget.USER);
+			this.configurationService.updateValue(configurationKey, showOnStartup.checked ? 'welcomePageWithTour' : 'none', ConfigurationTarget.USER);
 		});
 		const prodName = container.querySelector('.welcomePage .title .caption') as HTMLElement;
 		if (prodName) {

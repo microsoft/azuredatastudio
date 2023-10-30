@@ -9,11 +9,7 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/account-provider/auths/azureAuth": {
-			"azurecore.confirmIgnoreTenantDialog.body": "Azure Data Studio больше не будет запускать проверку подлинности для этого клиента {0} ({1}), а ресурсы будут недоступны. \r\n\r\nЧтобы снова разрешить доступ к ресурсам для этого клиента, необходимо удалить его из списка исключений в параметре \"{2}\".\r\n\r\nВы хотите продолжить?",
 			"azurecore.consentDialog.cancel": "Отмена",
-			"azurecore.consentDialog.authenticate": "Отмена и проверка подлинности",
-			"azurecore.confirmIgnoreTenantDialog.confirm": "Подтвердить",
-			"azurecore.consentDialog.ignore": "Игнорировать клиента",
 			"azure.microsoftAccountDisplayName": "Учетная запись Майкрософт",
 			"azure.microsoftCorpAccount": "Корпорация Майкрософт",
 			"azurecore.consentDialog.open": "Открыть",
@@ -38,7 +34,6 @@
 			"genericTokenError": "Не удалось получить маркер",
 			"azure.NoAuthMethod.Available": "Методы проверки подлинности Azure недоступны. Необходимо включить методы проверки подлинности в конфигурации ADS.",
 			"azure.NoAuthMethod.Selected": "Метод проверки подлинности Azure не выбран. Необходимо выбрать метод проверки подлинности, который будет использоваться.",
-			"tenantIgnoredError": "Клиент найден в списке игнорирования, проверка подлинности не предпринята. Вы можете удалить клиент из {0} списка игнорирования в файле settings.json: {1} если вы хотите получить доступ к ресурсам этого клиента.",
 			"msalTokenError": "{0} произошло при приобретении маркера. \r\n{1}"
 		},
 		"dist/account-provider/azureAccountProviderService": {
@@ -253,7 +248,6 @@
 			"config.providerSettings.endpoints.azureKustoResource": "Конечная точка ресурса Azure Kusto",
 			"config.providerSettings.endpoints.logAnalytics": "Конечная точка Azure Log Analytics",
 			"config.providerSettings.endpoints.portal": "Конечная точка портала Azure",
-			"azure.resource.config.title": "Конфигурация ресурсов Azure",
 			"config.providerSettings.endpoints.azureStorageResource": "Конечная точка ресурса службы хранилища Azure",
 			"config.providerSettings.endpoints.azureStorageResourceSuffix": "Суффикс конечной точки ресурса службы хранилища Azure",
 			"azure.resource.refreshall.title": "Azure: обновление всех учетных записей",
@@ -287,8 +281,6 @@
 			"config.piiLogging": "Следует ли регистрировать идентифицирующие данные конечного пользователя (PII) в выходном канале учетных записей Azure и файле журнала выходного канала.",
 			"config.enableUsGovCloudDescription": "Следует ли включить интеграцию облака Azure для государственных организаций США (Fairfax)",
 			"azure.resource.startterminal.title": "Запуск Cloud Shell",
-			"azure.tenant.config.filter.description": "Список идентификаторов клиентов, которые будут пропущены при запросе ресурсов Azure или запросе маркеров проверки подлинности.",
-			"azure.resource.config.filter.description": "Фильтр ресурсов, каждый элемент представляет собой идентификатор учетной записи, идентификатор подписки и имя, разделенные косой чертой",
 			"config.loggingLevel": "[Необязательно] Уровень детализации ведения журнала для расширения \"Учетные записи Azure\"."
 		}
 	}
