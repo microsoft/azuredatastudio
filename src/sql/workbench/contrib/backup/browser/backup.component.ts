@@ -162,6 +162,8 @@ export class BackupComponent extends AngularDisposable {
 
 	private _uri?: string;
 	private _engineEdition?: number;
+	private _allowFileBackup: boolean = false;
+	private _allowUrlBackup: boolean = false;
 
 	private connection?: IConnectionProfile;
 	private databaseName?: string;
@@ -485,6 +487,12 @@ export class BackupComponent extends AngularDisposable {
 		this.isEncryptChecked = false;
 		this.selectedInitOption = this.existingMediaOptions[0];
 		this.backupTypeOptions = [];
+		if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance) {
+			this._allowUrlBackup = true;
+		} else if (this._engineEdition !== DatabaseEngineEdition.SqlDataWarehouse && this._engineEdition !== DatabaseEngineEdition.SqlOnDemand) {
+			this._allowUrlBackup = true;
+			this._allowFileBackup = true;
+		}
 
 		if (isMetadataPopulated) {
 			this.enableBackupButton();
@@ -528,20 +536,21 @@ export class BackupComponent extends AngularDisposable {
 			this.recoveryBox!.disable();
 			this.mediaNameBox!.disable();
 			this.mediaDescriptionBox!.disable();
-			if (this._engineEdition !== DatabaseEngineEdition.SqlDataWarehouse && this._engineEdition !== DatabaseEngineEdition.SqlOnDemand) {
+
+			if (this._allowUrlBackup) {
 				this.toUrlCheckBox.checked = true;
 				this.copyOnlyCheckBox.checked = true;
-				this.backupTypeSelectBox!.disable();
-				this.copyOnlyCheckBox!.disable();
-				this.backupRetainDaysBox!.disable();
-				this.disableMedia = true;
-			} else {
-				this.toUrlCheckBox.checked = false;
-				this.copyOnlyCheckBox.checked = false;
-				this.backupRetainDaysBox!.enable();
-				this.copyOnlyCheckBox!.enable();
 				this.backupTypeSelectBox!.enable();
-				this.disableMedia = false;
+				if (this._allowFileBackup) {
+					this.backupRetainDaysBox!.enable();
+					this.copyOnlyCheckBox!.enable();
+					this.toUrlCheckBox.enable();
+					this.disableMedia = false;
+				} else {
+					this.backupRetainDaysBox!.enable();
+					this.copyOnlyCheckBox!.disable();
+					this.disableMedia = false;
+				}
 			}
 			this.onChangeToUrl();
 
@@ -569,7 +578,9 @@ export class BackupComponent extends AngularDisposable {
 			for (let i in this.backupPathTypePairs) {
 				pathlist.push({ text: i });
 			}
-			this.setDefaultBackupPaths();
+			if (Object.keys(this.backupPathTypePairs).length === 0) {
+				this.setDefaultBackupPaths();
+			}
 			this.pathListBox!.setOptions(pathlist, 0);
 		}
 	}
