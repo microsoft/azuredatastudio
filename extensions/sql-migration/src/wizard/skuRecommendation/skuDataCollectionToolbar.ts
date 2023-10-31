@@ -150,20 +150,13 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 				const defaultExtensionSettingsUserPath: string = "%userprofile%" + relativeDefaultPerfDataPath;
 
 				if (extensionSettingsUserPath !== "" && extensionSettingsUserPath !== defaultExtensionSettingsUserPath) {
-					// Case 1: Global Settings
+					// Case 1: Global Settings - If path exists
 					if (fs.existsSync(extensionSettingsUserPath)) {
 						this._defaultPathForStartDataCollection = extensionSettingsUserPath;
 					}
-					// Check: Invalid path provided - Use default path
-					else {
-						this._defaultPathForStartDataCollection = this.getDefaultPath();
-					}
-				}
-				// No path provided - Use default path
-				else {
-					this._defaultPathForStartDataCollection = this.getDefaultPath();
 				}
 
+				//If invalid path provided or no path provided in Extension settings - Use default path set in the code.
 				// If default path does not exist, create one.
 				if (!fs.existsSync(this._defaultPathForStartDataCollection)) {
 					fs.mkdirSync(this._defaultPathForStartDataCollection);
