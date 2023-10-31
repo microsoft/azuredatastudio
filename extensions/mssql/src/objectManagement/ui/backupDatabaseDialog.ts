@@ -189,6 +189,8 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 				this._mediaDescriptionInput.enabled = false;
 
 				this._encryptCheckbox.enabled = false;
+				this._algorithmDropdown.enabled = false;
+				this._encryptorDropdown.enabled = false;
 			}
 		});
 		let existingMediaButtonsGroup = this.createGroup('', [this._appendExistingMediaButton, this._overwriteExistingMediaButton]);
@@ -203,6 +205,10 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 				this._mediaDescriptionInput.enabled = true;
 
 				this._encryptCheckbox.enabled = true;
+				if (this._encryptCheckbox.checked) {
+					this._algorithmDropdown.enabled = true;
+					this._encryptorDropdown.enabled = true;
+				}
 			}
 		});
 
