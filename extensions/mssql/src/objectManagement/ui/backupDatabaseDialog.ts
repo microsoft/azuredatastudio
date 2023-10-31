@@ -42,11 +42,12 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	private _compressionTypeDropdown: azdata.DropDownComponent;
 
 	private _encryptCheckbox: azdata.CheckBoxComponent;
-	private _algorithmDropdown: azdata.DropDownComponent;
-	private _encryptorDropdown: azdata.DropDownComponent;
+	private _algorithmDropdown?: azdata.DropDownComponent;
+	private _encryptorDropdown?: azdata.DropDownComponent;
 
 	private _defaultBackupFolderPath: string;
 	private _defaultBackupPathSeparator: string;
+	private _encryptorOptions: string[];
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		// Increase dialog width since there are a lot of indented controls in the backup dialog
@@ -74,6 +75,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	protected override async initializeUI(): Promise<void> {
 		this._defaultBackupFolderPath = await this.objectManagementService.getBackupFolder(this.options.connectionUri);
 		this._defaultBackupPathSeparator = this._defaultBackupFolderPath[0] === '/' ? '/' : '\\';
+		this._encryptorOptions = this.getEncryptorOptions();
 
 		let generalSection = await this.initializeGeneralSection();
 		let optionsSection = this.initializeOptionsSection();
@@ -189,8 +191,12 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 				this._mediaDescriptionInput.enabled = false;
 
 				this._encryptCheckbox.enabled = false;
-				this._algorithmDropdown.enabled = false;
-				this._encryptorDropdown.enabled = false;
+				if (this._algorithmDropdown) {
+					this._algorithmDropdown.enabled = false;
+				}
+				if (this._encryptorDropdown) {
+					this._encryptorDropdown.enabled = false;
+				}
 			}
 		});
 		let existingMediaButtonsGroup = this.createGroup('', [this._appendExistingMediaButton, this._overwriteExistingMediaButton]);
@@ -206,8 +212,12 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 				this._encryptCheckbox.enabled = true;
 				if (this._encryptCheckbox.checked) {
-					this._algorithmDropdown.enabled = true;
-					this._encryptorDropdown.enabled = true;
+					if (this._algorithmDropdown) {
+						this._algorithmDropdown.enabled = true;
+					}
+					if (this._encryptorDropdown) {
+						this._encryptorDropdown.enabled = true;
+					}
 				}
 			}
 		});
@@ -247,22 +257,33 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let compressionGroup = this.createGroup(loc.BackupCompressionLabel, [compressionContainer], false);
 
 		// Encryption
+		let encryptionComponents: azdata.Component[] = [];
 		this._encryptCheckbox = this.createCheckbox(loc.EncryptBackup, async checked => {
-			this._algorithmDropdown.enabled = checked;
-			this._encryptorDropdown.enabled = checked;
+			if (this._algorithmDropdown) {
+				this._algorithmDropdown.enabled = checked;
+			}
+			if (this._encryptorDropdown) {
+				this._encryptorDropdown.enabled = checked;
+			}
 		}, false, false);
+		encryptionComponents.push(this._encryptCheckbox);
 
-		let algorithmValues = [aes128, aes192, aes256, tripleDES];
-		this._algorithmDropdown = this.createDropdown(loc.BackupAlgorithm, () => undefined, algorithmValues, algorithmValues[0], false);
-		let algorithmContainer = this.createLabelInputContainer(loc.BackupAlgorithm, this._algorithmDropdown);
+		if (this._encryptorOptions.length > 0) {
+			let algorithmValues = [aes128, aes192, aes256, tripleDES];
+			this._algorithmDropdown = this.createDropdown(loc.BackupAlgorithm, () => undefined, algorithmValues, algorithmValues[0], false);
+			let algorithmContainer = this.createLabelInputContainer(loc.BackupAlgorithm, this._algorithmDropdown);
 
-		let encryptorValues = this.getEncryptorOptions();
-		this._encryptorDropdown = this.createDropdown(loc.BackupCertificate, () => undefined, encryptorValues, encryptorValues[0], false);
-		let encryptorContainer = this.createLabelInputContainer(loc.BackupCertificate, this._encryptorDropdown);
+			this._encryptorDropdown = this.createDropdown(loc.BackupCertificate, () => undefined, this._encryptorOptions, this._encryptorOptions[0], false);
+			let encryptorContainer = this.createLabelInputContainer(loc.BackupCertificate, this._encryptorDropdown);
 
-		let encryptionDescription = this.modelView.modelBuilder.text().withProps({ value: loc.BackupEncryptNotice }).component();
-		let algorithmGroup = this.createGroup('', [algorithmContainer, encryptorContainer, encryptionDescription]);
-		let encryptionGroup = this.createGroup(loc.BackupEncryptionLabel, [this._encryptCheckbox, algorithmGroup], false);
+			let encryptionDescription = this.modelView.modelBuilder.text().withProps({ value: loc.BackupEncryptNotice }).component();
+			let algorithmGroup = this.createGroup('', [algorithmContainer, encryptorContainer, encryptionDescription]);
+			encryptionComponents.push(algorithmGroup);
+		} else {
+			let encryptorWarning = this.modelView.modelBuilder.text().withProps({ value: loc.NoEncryptorWarning }).component();
+			encryptionComponents.push(encryptorWarning);
+		}
+		let encryptionGroup = this.createGroup(loc.BackupEncryptionLabel, encryptionComponents, false);
 
 		return this.createGroup(loc.OptionsSectionHeader, [overwriteGroup, reliabilityGroup, transactionGroup, compressionGroup, encryptionGroup], true, true);
 	}
@@ -340,12 +361,19 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	private createBackupInfo(): BackupInfo {
 		let encryptorName = '';
 		let encryptorType: number | undefined;
+		let encryptionAlgorithmIndex = 0;
 
-		if (this._encryptCheckbox.checked && !isUndefinedOrNull(this._encryptorDropdown.value)) {
-			let selectedEncryptor = this._encryptorDropdown.value as string;
-			let encryptorTypeStr = selectedEncryptor.substring(selectedEncryptor.lastIndexOf('(') + 1, selectedEncryptor.lastIndexOf(')'));
-			encryptorType = (encryptorTypeStr === loc.BackupServerCertificate ? 0 : 1);
-			encryptorName = selectedEncryptor.substring(0, selectedEncryptor.lastIndexOf('('));
+		if (this._encryptCheckbox.checked) {
+			if (this._encryptorDropdown && !isUndefinedOrNull(this._encryptorDropdown.value)) {
+				let selectedEncryptor = this._encryptorDropdown.value as string;
+				let encryptorTypeStr = selectedEncryptor.substring(selectedEncryptor.lastIndexOf('(') + 1, selectedEncryptor.lastIndexOf(')'));
+				encryptorType = (encryptorTypeStr === loc.BackupServerCertificate ? 0 : 1);
+				encryptorName = selectedEncryptor.substring(0, selectedEncryptor.lastIndexOf('('));
+			}
+
+			if (this._algorithmDropdown) {
+				encryptionAlgorithmIndex = (this._algorithmDropdown.values as string[]).indexOf(this._algorithmDropdown.value as string);
+			}
 		}
 
 		let filePaths = this._backupFilePaths;
@@ -376,7 +404,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			retainDays: 0,
 			compressionOption: (this._compressionTypeDropdown.values as string[]).indexOf(this._compressionTypeDropdown.value as string),
 			verifyBackupRequired: this._verifyCheckbox.checked,
-			encryptionAlgorithm: (this._encryptCheckbox.checked ? (this._algorithmDropdown.values as string[]).indexOf(this._algorithmDropdown.value as string) : 0),
+			encryptionAlgorithm: encryptionAlgorithmIndex,
 			encryptorType: encryptorType,
 			encryptorName: encryptorName
 		};

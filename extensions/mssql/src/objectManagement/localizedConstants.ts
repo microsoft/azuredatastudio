@@ -284,6 +284,7 @@ export const BackupSetCompression = localize('objectManagement.backupCompression
 export const EncryptBackup = localize('objectManagement.encryptBackup', "Encrypt backup");
 export const BackupAlgorithm = localize('objectManagement.backupAlgorithm', "Algorithm");
 export const BackupCertificate = localize('objectManagement.backupCertificate', "Certificate or Asymmetric key");
+export const NoEncryptorWarning = localize('objectManagement.noEncryptorWarning', "No certificate or asymmetric key is available")
 export const BackupEncryptNotice = localize('objectManagement.backupEncryptNotice', "Encryption options are only available when 'Back up to a new media set' is selected above.");
 export const BackupDefaultSetting = localize('objectManagement.backupDefaultSetting', "Use the default server setting");
 export const CompressBackup = localize('objectManagement.compressBackup', "Compress backup");
