@@ -514,19 +514,45 @@ export interface RestoreDatabaseInfo {
 }
 
 export interface RestoreOptions {
-	keepReplication: boolean;
-	replaceDatabase: boolean;
-	setRestrictedUser: boolean;
-	recoveryState: string;
-	backupTailLog: boolean;
-	tailLogBackupFile: string;
-	tailLogWithNoRecovery: boolean;
-	closeExistingConnection: boolean;
-	relocateDbFiles: boolean;
-	dataFileFolder: string;
-	logFileFolder: string;
-	standbyFile: string;
-	overwriteTargetDatabase: boolean;
+	restorePlanResponse: RestorePlanResponse;
+}
+
+export interface RestorePlanResponse {
+	sessionId: string;
+	backupSetsToRestore: DatabaseFileInfo[];
+	canRestore: boolean;
+	errorMessage?: string | undefined;
+	dbFiles: RestoreDatabaseFileInfo[];
+	databaseNamesFromBackupSets: string[];
+	planDetails: { [key: string]: RestorePlanDetailInfo };
+}
+
+export interface DatabaseFileInfo {
+	properties: LocalizedPropertyInfo[];
+	id: string;
+	isSelected: boolean;
+}
+
+export interface RestorePlanDetailInfo {
+	name: string;
+	currentValue: any;
+	isReadOnly: boolean;
+	isVisible: boolean;
+	defaultValue: any;
+}
+
+export interface LocalizedPropertyInfo {
+	propertyName: string;
+	propertyValue: string;
+	propertyDisplayName: string;
+	propertyValueDisplayName: string;
+}
+
+export interface RestoreDatabaseFileInfo {
+	fileType: string;
+	logicalFileName: string;
+	originalFileName: string;
+	restoreAsFileName: string;
 }
 
 export interface QueryStoreCapturePolicyOptions {
