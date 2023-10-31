@@ -96,7 +96,7 @@
       </trans-unit>
       <trans-unit id="sql.migration.assessment.results.summary.label.caps">
         <source xml:lang="en">ASSESSMENT RESULTS</source>
-        <target state="new">ASSESSMENT RESULTS</target>
+        <target state="translated">BEWERTUNGSERGEBNISSE</target>
       </trans-unit>
       <trans-unit id="sql.migration.active.backup.files">
         <source xml:lang="en">Active backup files</source>
@@ -268,11 +268,11 @@
       </trans-unit>
       <trans-unit id="sql.migration.assessed.dbs.label">
         <source xml:lang="en">Assessed databases: {0}</source>
-        <target state="new">Assessed databases: {0}</target>
+        <target state="translated">Bewertete Datenbanken: {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.findings.label">
         <source xml:lang="en">Assessment findings</source>
-        <target state="new">Assessment findings</target>
+        <target state="translated">Bewertungsergebnisse</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.in.progress">
         <source xml:lang="en">Assessment in progress</source>
@@ -292,15 +292,15 @@
       </trans-unit>
       <trans-unit id="sql.migration.assessment.results.summary.label.description">
         <source xml:lang="en">Assessment results shows the migration readiness of the database(s)</source>
-        <target state="new">Assessment results shows the migration readiness of the database(s)</target>
+        <target state="translated">Die Bewertungsergebnisse zeigen die Migrationsbereitschaft der Datenbank(en) an.</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.summary.title">
         <source xml:lang="en">Assessment summary</source>
-        <target state="translated">Zusammenfassung der Bewertung</target>
+        <target state="translated">Bewertungszusammenfassung</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.summary.and.recommendations.title">
         <source xml:lang="en">Assessment summary and SKU recommendations</source>
-        <target state="new">Assessment summary and SKU recommendations</target>
+        <target state="translated">Bewertungszusammenfassung und SKU-Empfehlungen</target>
       </trans-unit>
       <trans-unit id="sql.migration.authKeys.header">
         <source xml:lang="en">Authentication key</source>
@@ -484,7 +484,7 @@ Anweisungen zur Registrierung finden Sie unten.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.card.azureRecommendation.notEnabled">
         <source xml:lang="en">Azure recommendation is not available. Click 'Start data collection' button above to get started.</source>
-        <target state="new">Azure recommendation is not available. Click 'Start data collection' button above to get started.</target>
+        <target state="translated">Die Azure-Empfehlung ist nicht verfügbar. Klicken Sie oben auf die Schaltfläche "Datensammlung starten", um zu beginnen.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.description">
         <source xml:lang="en">Azure recommendation requires performance data of SQL server instance to provide target recommendation. Enable performance data collection to receive the target recommendation for the databases you want to migrate. The longer this will be enabled the better the recommendation. You can disable performance data collection at any time.</source>
@@ -564,7 +564,7 @@ Anweisungen zur Registrierung finden Sie unten.</target>
       </trans-unit>
       <trans-unit id="sql.migration.issues.label">
         <source xml:lang="en">Blocking issues</source>
-        <target state="new">Blocking issues</target>
+        <target state="translated">Blockierprobleme</target>
       </trans-unit>
       <trans-unit id="sql.migration.browse">
         <source xml:lang="en">Browse</source>
@@ -680,7 +680,7 @@ Anweisungen zur Registrierung finden Sie unten.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.data.collection.choose.path">
         <source xml:lang="en">Choose a path...</source>
-        <target state="new">Choose a path...</target>
+        <target state="translated">Pfad auswählen...</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.chooseMethod.instructions">
         <source xml:lang="en">Choose how you want to provide performance data</source>
@@ -688,7 +688,7 @@ Anweisungen zur Registrierung finden Sie unten.</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.results.header">
         <source xml:lang="en">Choose target platform, view assessment results and select database(s) for migration.</source>
-        <target state="new">Choose target platform, view assessment results and select database(s) for migration.</target>
+        <target state="translated">Wählen Sie die Zielplattform aus, zeigen Sie die Bewertungsergebnisse an, und wählen Sie Datenbanken für die Migration aus.</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.service.delete.label">
         <source xml:lang="en">Clear</source>
@@ -700,7 +700,7 @@ Anweisungen zur Registrierung finden Sie unten.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.status.manualRefreshTimer">
         <source xml:lang="en">Click on 'Refresh SKU' for updated recommendations.</source>
-        <target state="new">Click on 'Refresh SKU' for updated recommendations.</target>
+        <target state="translated">Klicken Sie auf "SKU aktualisieren", um aktualisierte Empfehlungen anzuzeigen.</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.prompt">
         <source xml:lang="en">Click on SQL Server instance or any of the databases on the left to view its details.</source>
@@ -896,11 +896,11 @@ Anweisungen zur Registrierung finden Sie unten.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.status.inProgress">
         <source xml:lang="en">Data collection is in progress. </source>
-        <target state="new">Data collection is in progress. </target>
+        <target state="translated">Datensammlung wird durchgeführt. </target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.status.refining">
         <source xml:lang="en">Data collection still in progress. </source>
-        <target state="new">Data collection still in progress. </target>
+        <target state="translated">Die Datensammlung wird noch ausgeführt. </target>
       </trans-unit>
       <trans-unit id="sql.migration.copy.throughput.info">
         <source xml:lang="en">Data movement throughput achieved during the migration of your database backups to Azure. This is the rate of data transfer, calculated by data read divided by duration of backups migration to Azure.</source>
@@ -996,11 +996,11 @@ Anweisungen zur Registrierung finden Sie unten.</target>
       </trans-unit>
       <trans-unit id="sql.migration.db.readiness.section.title">
         <source xml:lang="en">Database {0} migration readiness</source>
-        <target state="new">Database {0} migration readiness</target>
+        <target state="translated">Migrationsbereitschaft der Datenbank "{0}"</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.assessed.label">
         <source xml:lang="en">Database(s) assessed</source>
-        <target state="new">Database(s) assessed</target>
+        <target state="translated">Bewertete Datenbank(en)</target>
       </trans-unit>
       <trans-unit id="sql.migration.tde.migrate.column.databases">
         <source xml:lang="en">Databases</source>
@@ -1436,7 +1436,7 @@ Aktuell werden Serverrollen migriert, Serverzuordnungen eingerichtet und Berecht
       </trans-unit>
       <trans-unit id="sql.migration.recommended.configuration.summary.label.description">
         <source xml:lang="en">Get the right-sized SKU recommendations for Azure SQL Targets.</source>
-        <target state="new">Get the right-sized SKU recommendations for Azure SQL Targets.</target>
+        <target state="translated">Erhalten Sie die Empfehlungen zur richtigen SKU-Größe für Azure SQL-Ziele.</target>
       </trans-unit>
       <trans-unit id="sql.migration.table.selection.status.column">
         <source xml:lang="en">Has rows</source>
@@ -1492,11 +1492,11 @@ Aktuell werden Serverrollen migriert, Serverzuordnungen eingerichtet und Berecht
       </trans-unit>
       <trans-unit id="sql.migration.sku.import.performance.data">
         <source xml:lang="en">Import performance data</source>
-        <target state="new">Import performance data</target>
+        <target state="translated">Leistungsdaten importieren</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.import.performance.data.dialog.description">
         <source xml:lang="en">Import this data file from an existing folder, if you have already collected it using Data Migration Assistant.</source>
-        <target state="new">Import this data file from an existing folder, if you have already collected it using Data Migration Assistant.</target>
+        <target state="translated">Importieren Sie diese Datendatei aus einem vorhandenen Ordner, wenn Sie diese Daten bereits mit dem Datenmigrations-Assistenten gesammelt haben.</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.migration.migration.mode.tool.tip">
         <source xml:lang="en">In Azure Database Migration Service, you can migrate your databases offline or while they are online. In an offline migration, application downtime starts when the migration starts. To limit downtime to the time it takes you to cut over to the new environment after the migration, use an online migration.</source>
@@ -1568,7 +1568,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.severity.issues.label">
         <source xml:lang="en">Issues by severity</source>
-        <target state="new">Issues by severity</target>
+        <target state="translated">Probleme nach Schweregrad</target>
       </trans-unit>
       <trans-unit id="sql.migration.key1.label">
         <source xml:lang="en">Key 1</source>
@@ -1876,7 +1876,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.readiness.section.title">
         <source xml:lang="en">Migration readiness of assessed databases in the server instance</source>
-        <target state="new">Migration readiness of assessed databases in the server instance</target>
+        <target state="translated">Migrationsbereitschaft bewerteter Datenbanken in der Serverinstanz</target>
       </trans-unit>
       <trans-unit id="serviceCrashMessage">
         <source xml:lang="en">Migration service component could not start. {0}</source>
@@ -2108,7 +2108,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.select.target.label">
         <source xml:lang="en">No target selected. Select target to view the assessment summary.</source>
-        <target state="new">No target selected. Select target to view the assessment summary.</target>
+        <target state="translated">Kein Ziel ausgewählt. Wählen Sie ein Ziel aus, um die Bewertungszusammenfassung anzuzeigen.</target>
       </trans-unit>
       <trans-unit id="sql.migration.no.virtualMachine.found">
         <source xml:lang="en">No virtual machines found.</source>
@@ -2312,7 +2312,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommended.configuration.summary.label.caps">
         <source xml:lang="en">RECOMMENDED CONFIGURATION</source>
-        <target state="new">RECOMMENDED CONFIGURATION</target>
+        <target state="translated">EMPFOHLENE KONFIGURATION</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.targetStorageConfiguration.caching.readOnly">
         <source xml:lang="en">Read-only</source>
@@ -2332,7 +2332,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.ready.warn">
         <source xml:lang="en">Ready with warnings</source>
-        <target state="new">Ready with warnings</target>
+        <target state="translated">Bereit mit Warnungen</target>
       </trans-unit>
       <trans-unit id="sql.migration.copy.status.rebuildingindexes">
         <source xml:lang="en">Rebuilding indexes</source>
@@ -2388,7 +2388,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.refresh.sku.label">
         <source xml:lang="en">Refresh SKU recommendations</source>
-        <target state="new">Refresh SKU recommendations</target>
+        <target state="translated">SKU-Empfehlungen aktualisieren</target>
       </trans-unit>
       <trans-unit id="sql.migration.refresh.assessment.label">
         <source xml:lang="en">Refresh assessment</source>
@@ -2692,7 +2692,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.sku.import.performance.data.dialog.helper.message">
         <source xml:lang="en">Select a folder on your local drive</source>
-        <target state="new">Select a folder on your local drive</target>
+        <target state="translated">Wählen Sie einen Ordner auf Ihrem lokalen Laufwerk aus.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.collectDataSelectFolder.instructions">
         <source xml:lang="en">Select a folder on your local drive where performance data will be saved</source>
@@ -2780,7 +2780,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.no.target.selected.label">
         <source xml:lang="en">Select target type</source>
-        <target state="new">Select target type</target>
+        <target state="translated">Zieltyp auswählen</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.assessment.description">
         <source xml:lang="en">Select the databases that you want to assess for migration to Azure SQL.</source>
@@ -2832,7 +2832,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.instance.finding.summary">
         <source xml:lang="en">Server instance assessment findings summary</source>
-        <target state="new">Server instance assessment findings summary</target>
+        <target state="translated">Zusammenfassung der Bewertungsergebnisse der Serverinstanz</target>
       </trans-unit>
       <trans-unit id="sql.migration.details.serverobjects.label">
         <source xml:lang="en">Server objects</source>
@@ -2956,7 +2956,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.sku.start.performance.collection">
         <source xml:lang="en">Start data collection</source>
-        <target state="new">Start data collection</target>
+        <target state="translated">Datensammlung starten</target>
       </trans-unit>
       <trans-unit id="sql.migration.start.migration.button">
         <source xml:lang="en">Start migration</source>
@@ -3232,7 +3232,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.assessment.results.title">
         <source xml:lang="en">Target platform &amp; assessment results</source>
-        <target state="new">Target platform &amp; assessment results</target>
+        <target state="translated">Zielplattform und Bewertungsergebnisse</target>
       </trans-unit>
       <trans-unit id="sql.migration.target.server">
         <source xml:lang="en">Target server</source>
@@ -3296,11 +3296,11 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.non.readiness.description">
         <source xml:lang="en">The database is ready to migrate with {0} warnings.</source>
-        <target state="new">The database is ready to migrate with {0} warnings.</target>
+        <target state="translated">Die Datenbank ist bereit für die Migration mit {0} Warnungen.</target>
       </trans-unit>
       <trans-unit id="sql.migration.readiness.description">
         <source xml:lang="en">The database is ready to migrate.</source>
-        <target state="new">The database is ready to migrate.</target>
+        <target state="translated">Die Datenbank ist bereit für die Migration.</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.migration.duration.tool.tip">
         <source xml:lang="en">The duration of the migration</source>
@@ -3356,7 +3356,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.encryption.description">
         <source xml:lang="en">This database is encrypted using Transparent Data Encryption (TDE). You need to migrate certificates before you can migrate this database.</source>
-        <target state="new">This database is encrypted using Transparent Data Encryption (TDE). You need to migrate certificates before you can migrate this database.</target>
+        <target state="translated">Diese Datenbank wird mit TDE (Transparent Data Encryption) verschlüsselt. Sie müssen Zertifikate migrieren, bevor Sie diese Datenbank migrieren können.</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessments.blocking.issue">
         <source xml:lang="en">This is a blocking issue that will prevent the database migration from succeeding.</source>
@@ -3364,7 +3364,7 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.status.autoRefreshTimer">
         <source xml:lang="en">Time before next SKU recommendation update: {0} minute(s).</source>
-        <target state="new">Time before next SKU recommendation update: {0} minute(s).</target>
+        <target state="translated">Zeit bis zur nächsten Aktualisierung von SKU-Empfehlungen: {0} Minute(n).</target>
       </trans-unit>
       <trans-unit id="sql.migration.missing.targetPassword.error">
         <source xml:lang="en">To continue, enter a valid target password.</source>
@@ -3460,11 +3460,11 @@ Klicken Sie auf "Überprüfung ausführen", um zu überprüfen, ob die Anforderu
       </trans-unit>
       <trans-unit id="sql.migration.total.findings.label">
         <source xml:lang="en">Total findings: {0}</source>
-        <target state="new">Total findings: {0}</target>
+        <target state="translated">Ergebnisse gesamt: {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.total.issues.label">
         <source xml:lang="en">Total issues found: {0}</source>
-        <target state="new">Total issues found: {0}</target>
+        <target state="translated">Gesamtanzahl gefundener Probleme: {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.details.serverobjects.all.tables.label">
         <source xml:lang="en">Total tables</source>
@@ -3632,7 +3632,7 @@ Benutzerzuordnungen werden eingerichtet.</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.assessment.summary.and.sku.for.targets.label">
         <source xml:lang="en">View assessment summary and SKU recommendations for Azure SQL targets</source>
-        <target state="new">View assessment summary and SKU recommendations for Azure SQL targets</target>
+        <target state="translated">Bewertungszusammenfassung und SKU-Empfehlungen für Azure SQL-Ziele anzeigen</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.viewDetails">
         <source xml:lang="en">View details</source>
@@ -3704,7 +3704,7 @@ Wenn die Namen von Quelle und Datenbank nicht übereinstimmen, werden einige Ber
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.data.collection.popup.message.label">
         <source xml:lang="en">Where do you want to save collected data?</source>
-        <target state="new">Where do you want to save collected data?</target>
+        <target state="translated">Wo möchten Sie gesammelte Daten speichern?</target>
       </trans-unit>
       <trans-unit id="sql.migration.network.share.windows.user.label">
         <source xml:lang="en">Windows user account with read access to the network share location</source>
@@ -3760,15 +3760,15 @@ Wenn die Namen von Quelle und Datenbank nicht übereinstimmen, werden einige Ber
       </trans-unit>
       <trans-unit id="sql.migration.wizard.sku.error.message">
         <source xml:lang="en">message: {0}</source>
-        <target state="new">message: {0}</target>
+        <target state="translated">Meldung: {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.sku.assessment.error.with.info">
         <source xml:lang="en">message: {0}{1}errorSummary: {2}{3}possibleCauses: {4}}{5}guidance: {6}{7}errorId: {8}</source>
-        <target state="new">message: {0}{1}errorSummary: {2}{3}possibleCauses: {4}}{5}guidance: {6}{7}errorId: {8}</target>
+        <target state="translated">message: {0}{1}errorSummary: {2}{3}possibleCauses: {4}}{5}guidance: {6}{7}errorId: {8}</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.sku.assessment.error.with.stack">
         <source xml:lang="en">message: {0}{1}stack: {2}</source>
-        <target state="new">message: {0}{1}stack: {2}</target>
+        <target state="translated">Meldung: {0}{1}Stapel: {2}</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.value">
         <source xml:lang="en">{0}</source>
