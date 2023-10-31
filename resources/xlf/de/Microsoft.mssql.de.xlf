@@ -1956,7 +1956,7 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
       </trans-unit>
       <trans-unit id="mssql.parallelMessageProcessingLimit">
         <source xml:lang="en">Maximum number of requests that should be handled in parallel by the backend SQL Tools Service. This brings performance benefits to MSSQL queries and connections. This limit is applicable only when `MSSQL: Parallel Message Processing` is enabled. The default value is 100, and can be adjusted as needed as per OS support. Azure Data Studio is required to be relaunched when the value is changed.</source>
-        <target state="new">Maximum number of requests that should be handled in parallel by the backend SQL Tools Service. This brings performance benefits to MSSQL queries and connections. This limit is applicable only when `MSSQL: Parallel Message Processing` is enabled. The default value is 100, and can be adjusted as needed as per OS support. Azure Data Studio is required to be relaunched when the value is changed.</target>
+        <target state="translated">Maximale Anzahl von Anforderungen, die von der Back-End-Instanz von SQL Tools Service parallel verarbeitet werden sollen. Dies bietet Leistungsvorteile für MSSQL-Abfragen und -Verbindungen. Dieser Grenzwert gilt nur, wenn "MSSQL: Parallele Nachrichtenverarbeitung" aktiviert ist. Der Standardwert ist 100 und kann der Betriebssystemunterstützung entsprechend nach Bedarf angepasst werden. Azure Data Studio muss nach dem Ändern des Werts neu gestartet werden.</target>
       </trans-unit>
       <trans-unit id="mssql.query.setRowCount">
         <source xml:lang="en">Maximum number of rows to return before the server stops processing your query.</source>
@@ -2332,7 +2332,7 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
       </trans-unit>
       <trans-unit id="mssql.parallelMessageProcessing">
         <source xml:lang="en">Whether the requests to the backend SQL Tools Service should be handled in parallel. This brings performance benefits to MSSQL queries and connections. The default value is true. Azure Data Studio is required to be relaunched when the value is changed.</source>
-        <target state="new">Whether the requests to the backend SQL Tools Service should be handled in parallel. This brings performance benefits to MSSQL queries and connections. The default value is true. Azure Data Studio is required to be relaunched when the value is changed.</target>
+        <target state="translated">Legt fest, ob die Anforderungen an die Back-End-Instanz von SQL Tools Service parallel verarbeitet werden sollen. Dies bietet Leistungsvorteile für MSSQL-Abfragen und -Verbindungen. Der Standardwert ist TRUE. Azure Data Studio muss nach dem Ändern des Werts neu gestartet werden.</target>
       </trans-unit>
       <trans-unit id="mssql.tableDesigner.allowDisableAndReenableDdlTriggers">
         <source xml:lang="en">Whether to allow table designer to disable and re-enable DDL triggers during publish</source>
