@@ -287,6 +287,19 @@ export const TakeTailLogBackupBeforeRestoreText = localize('objectManagement.res
 export const LeaveSourceDBText = localize('objectManagement.restoreDatabase.leaveSourceDBText', "Leave source database in the restoring state (WITH NORECOVERY)");
 export const TailLogBackupFileText = localize('objectManagement.restoreDatabase.tailLogBackupFileText', "Tail Log Backup File");
 export const CloseExistingConnectionText = localize('objectManagement.restoreDatabase.closeExistingConnectionText', "Close existing connections to destination database");
+export const RestoreText = localize('objectManagement.restoreDatabase.restorePlan.restoreText', "Restore");
+export const ComponentText = localize('objectManagement.restoreDatabase.restorePlan.componentText', "Component");
+export const TypeText = localize('objectManagement.restoreDatabase.restorePlan.typeText', "Type");
+export const ServerText = localize('objectManagement.restoreDatabase.restorePlan.serverText', "Server");
+export const PositionText = localize('objectManagement.restoreDatabase.restorePlan.positionText', "Position");
+export const FirstLSNText = localize('objectManagement.restoreDatabase.restorePlan.firstLSNText', "First LSN");
+export const LastLSNText = localize('objectManagement.restoreDatabase.restorePlan.lastLSNText', "Last LSN");
+export const CheckpointLSNText = localize('objectManagement.restoreDatabase.restorePlan.checkpointLSNText', "Checkpoint LSN");
+export const FullLSNText = localize('objectManagement.restoreDatabase.restorePlan.FullLSNText', "Full LSN");
+export const StartDateText = localize('objectManagement.restoreDatabase.restorePlan.startDateText', "Start Date");
+export const FinishDateText = localize('objectManagement.restoreDatabase.restorePlan.FinishDateText', "Finish Date");
+export const UserNameText = localize('objectManagement.restoreDatabase.restorePlan.userNameText', "User Name");
+export const ExpirationText = localize('objectManagement.restoreDatabase.restorePlan.expirationText', "Expiration");
 
 // User
 export const UserTypeText = localize('objectManagement.user.type', "Type");

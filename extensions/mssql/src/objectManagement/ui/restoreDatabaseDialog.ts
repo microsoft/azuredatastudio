@@ -7,8 +7,8 @@ import * as azdata from 'azdata';
 import * as loc from '../localizedConstants';
 import * as localizedConstants from '../localizedConstants';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { DefaultInputWidth } from '../../ui/dialogBase';
-import { Database, DatabaseViewInfo } from '../interfaces';
+import { DefaultInputWidth, DefaultMaxTableRowCount, DefaultMinTableRowCount, DefaultTableWidth, getTableHeight } from '../../ui/dialogBase';
+import { Database, DatabaseFileInfo, DatabaseViewInfo } from '../interfaces';
 import { IObjectManagementService } from 'mssql';
 
 const Dialog_Width = '750px';
@@ -32,6 +32,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	private takeTailLogBackup: azdata.CheckBoxComponent;
 	private leaveSourceDB: azdata.CheckBoxComponent;
 	private closeExistingConnections: azdata.CheckBoxComponent;
+	private restorePlanTable: azdata.TableComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		options.width = Dialog_Width;
@@ -157,10 +158,94 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	}
 
 	private initializeRestorePlanSection(): azdata.GroupContainer {
-		let containers: azdata.Component[] = [];
+		this.restorePlanTable = this.modelView.modelBuilder.table().withProps({
+			columns: [{
+				type: azdata.ColumnType.checkBox,
+				value: localizedConstants.RestoreText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.NameText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.ComponentText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.TypeText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.ServerText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.DatabaseText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.PositionText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.FirstLSNText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.LastLSNText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.CheckpointLSNText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.FullLSNText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.StartDateText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.FinishDateText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.SizeText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.UserNameText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.ExpirationText
+			}],
+			data: this.objectInfo.restoreOptions.restorePlanResponse.backupSetsToRestore?.map(plan => {
+				return this.convertToDataView(plan);
+			}),
+			height: getTableHeight(this.objectInfo.restoreOptions.restorePlanResponse.backupSetsToRestore?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
+			width: DefaultTableWidth,
+			forceFitColumns: azdata.ColumnSizingMode.DataFit,
+			CSSStyles: {
+				'margin-left': '10px'
+			}
+		}).component();
 
-		// TODO: here comes table with backup details
-		return this.createGroup(localizedConstants.SourceSectionText, containers, true);
+		return this.createGroup(localizedConstants.SourceSectionText, [this.restorePlanTable], true);
+	}
+
+	/**
+	 * Converts the database file info object to a data view object
+	 * @param fileInfo database file info object
+	 * @returns data view object
+	 */
+	private convertToDataView(fileInfo: DatabaseFileInfo): any[] {
+		return [
+			fileInfo.isSelected, //Restore
+			fileInfo.properties[0].propertyValueDisplayName, //Name
+			fileInfo.properties[1].propertyValueDisplayName, //Component
+			fileInfo.properties[2].propertyValueDisplayName, //Type
+			fileInfo.properties[3].propertyValueDisplayName, //Server
+			fileInfo.properties[4].propertyValueDisplayName, //Database
+			fileInfo.properties[5].propertyValueDisplayName, //Position
+			fileInfo.properties[6].propertyValueDisplayName, //FirstLSN
+			fileInfo.properties[7].propertyValueDisplayName, //LastLSN
+			fileInfo.properties[8].propertyValueDisplayName, //CheckpointLSN
+			fileInfo.properties[9].propertyValueDisplayName, //FullLSN
+			fileInfo.properties[10].propertyValueDisplayName, //StartDate
+			fileInfo.properties[11].propertyValueDisplayName, //FinishDate
+			fileInfo.properties[12].propertyValueDisplayName, //Size
+			fileInfo.properties[13].propertyValueDisplayName, //UserName
+			fileInfo.properties[14].propertyValueDisplayName  //Expiration
+		];
 	}
 
 	/**
