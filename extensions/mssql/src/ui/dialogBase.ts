@@ -140,9 +140,15 @@ export abstract class DialogBase<DialogResult> {
 			const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth - 40, value: label, requiredIndicator: required, CSSStyles: { 'padding-right': '10px' } }).component();
 			container = this.modelView.modelBuilder.flexContainer().withItems([labelComponent, ...component], { CSSStyles: { 'margin-right': '5px', 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 		} else {
-			const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth, value: label, requiredIndicator: required, CSSStyles: { 'padding-right': '10px' } }).component();
-			container = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent], { flex: '0 0 auto' }).component();
-			container.addItem(component, { flex: '1 1 auto' });
+			if (required) {
+				const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth, value: label, requiredIndicator: required, CSSStyles: { 'padding-right': '10px' } }).component();
+				container = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent], { flex: '0 0 auto' }).component();
+				container.addItem(component, { flex: '1 1 auto' });
+			} else {
+				const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth - 10, value: label, requiredIndicator: required, CSSStyles: { 'margin-left': '10px' } }).component();
+				container = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent], { flex: '0 0 auto' }).component();
+				container.addItem(component, { flex: '1 1 auto' });
+			}
 		}
 		return container;
 	}
@@ -186,6 +192,7 @@ export abstract class DialogBase<DialogResult> {
 		properties.inputType = properties.inputType ?? 'text';
 		properties.value = properties.value ?? '';
 		properties.enabled = properties.enabled ?? true;
+		properties.required = properties.required;
 		const inputbox = this.modelView.modelBuilder.inputBox().withProps(properties);
 		if (customValidation) {
 			inputbox.withValidation(customValidation);
