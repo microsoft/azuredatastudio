@@ -234,8 +234,8 @@ export class NativeWindow extends Disposable {
 					label: localize('downloadArmBuild', "Download"),
 					run: () => {
 						const quality = this.productService.quality;
-						const stableURL = 'https://code.visualstudio.com/docs/?dv=osx';
-						const insidersURL = 'https://code.visualstudio.com/docs/?dv=osx&build=insiders';
+						const stableURL = 'https://aka.ms/download-azure-data-studio-macos-arm64'; // {{SQL CARBON EDIT}} Use our own link
+						const insidersURL = 'https://aka.ms/download-azure-data-studio-macos-arm64-insiders'; // {{SQL CARBON EDIT}} Use our own link
 						this.openerService.open(quality === 'stable' ? stableURL : insidersURL);
 					}
 				}]
