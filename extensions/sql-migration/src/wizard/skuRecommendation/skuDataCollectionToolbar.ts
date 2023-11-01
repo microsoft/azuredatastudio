@@ -37,7 +37,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 
 	constructor(private skuRecommendationPage: SKURecommendationPage, public wizard: azdata.window.Wizard, private migrationStateModel: MigrationStateModel) {
 		// TODO - Recheck later if we want to keep this path only. For now this is decided.
-		this._defaultPathForStartDataCollection = path.join(utils.getUserHome() ?? "", "\\AppData\\Roaming\\azuredatastudio\\logs");
+		this._defaultPathForStartDataCollection = path.join(utils.getUserHome() ?? "", "\\AppData\\Roaming\\azuredatastudio\\PerfData");
 	}
 
 	public createToolbar(view: azdata.ModelView): azdata.ToolbarContainer {

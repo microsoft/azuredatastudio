@@ -48,6 +48,9 @@
         <Item ItemId=";(...) ion" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Assessment results shows the migration readiness of the database(s)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[I risultati della valutazione mostrano l'idoneità per la migrazione dei database]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -57,6 +60,9 @@
         <Item ItemId=";(...) tle" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Assessment summary and SKU recommendations]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Riepilogo della valutazione e raccomandazioni sullo SKU]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -174,6 +180,9 @@
         <Item ItemId=";(...) escription" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Get the right-sized SKU recommendations for Azure SQL Targets.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Ottenere le raccomandazioni appropriate sullo SKU per le destinazioni di Azure SQL.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -231,6 +240,9 @@
         <Item ItemId=";(...) hoose.path" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Choose a path...]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Scegliere un percorso...]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -252,6 +264,9 @@
         <Item ItemId=";(...) opup.message.label" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Where do you want to save collected data?]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Dove si vogliono salvare i dati raccolti?]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -285,8 +300,8 @@
         <Item ItemId=";(...) hTimer" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Time before next SKU recommendation update: {0} minute(s).]]></Val>
-            <Tgt Cat="Text" Stat="Update" Orig="New">
-              <Val><![CDATA[Le raccomandazioni iniziali verranno aggiornate automaticamente tra circa {0} minuto/i.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Tempo prima del prossimo aggiornamento della raccomandazione sullo SKU: {0} minuto/i.]]></Val>
             </Tgt>
             <Prev Cat="Text">
               <Val><![CDATA[Initial recommendations will automatically refresh in approximately {0} minute(s).]]></Val>
@@ -300,8 +315,8 @@
         <Item ItemId=";(...) eshTimer" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Click on 'Refresh SKU' for updated recommendations.]]></Val>
-            <Tgt Cat="Text" Stat="Update" Orig="New">
-              <Val><![CDATA[Controllare periodicamente la disponibilità di consigli aggiornati premendo il pulsante “Aggiorna raccomandazione”.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Fare clic su 'Aggiorna SKU' per le raccomandazioni aggiornate.]]></Val>
             </Tgt>
             <Prev Cat="Text">
               <Val><![CDATA[Check back periodically for updated recommendations by pressing the 'Refresh recommendation' button.]]></Val>
@@ -315,6 +330,9 @@
         <Item ItemId=";(...) ption" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Import this data file from an existing folder, if you have already collected it using Data Migration Assistant.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Importa questo file di dati da una cartella esistente, se è già stato raccolto tramite Data Migration Assistant.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -324,6 +342,9 @@
         <Item ItemId=";(...) .message" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Select a folder on your local drive]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Selezionare una cartella nell'unità locale]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -334,7 +355,7 @@
           <Str Cat="Text">
             <Val><![CDATA[Select a file]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Seleziona un file]]></Val>
+              <Val><![CDATA[Selezionare un file]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -357,6 +378,9 @@
         <Item ItemId=";(...) el.caps" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[RECOMMENDED CONFIGURATION]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[CONFIGURAZIONE CONSIGLIATA]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -540,6 +564,9 @@
         <Item ItemId=";(...) gets.label" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[View assessment summary and SKU recommendations for Azure SQL targets]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Visualizza il riepilogo della valutazione e le raccomandazioni sullo SKU per le destinazioni di Azure SQL]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1126,6 +1153,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.assessed.dbs.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Assessed databases: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Database valutati: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1153,6 +1183,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.assessment.findings.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Assessment findings]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Risultati della valutazione]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1222,18 +1255,27 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.assessment.results.header" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Choose target platform, view assessment results and select database(s) for migration.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Scegliere la piattaforma di destinazione, visualizzare i risultati della valutazione e selezionare i database per la migrazione.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.assessment.results.summary.label.caps" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[ASSESSMENT RESULTS]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[RISULTATI DELLA VALUTAZIONE]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.assessment.results.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target platform & assessment results]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Piattaforma di destinazione e risultati della valutazione]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2407,6 +2449,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.assessed.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database(s) assessed]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Database valutati]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2857,6 +2902,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.db.readiness.section.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database {0} migration readiness]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Idoneità per la migrazione del database {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3070,6 +3118,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.encryption.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This database is encrypted using Transparent Data Encryption (TDE). You need to migrate certificates before you can migrate this database.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Questo database è crittografato con Transparent Data Encryption (TDE). È necessario eseguire la migrazione dei certificati prima di poter eseguire la migrazione di questo database.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3454,6 +3505,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.instance.finding.summary" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server instance assessment findings summary]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Riepilogo dei risultati di valutazione dell'istanza del server]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3808,6 +3862,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.issues.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Blocking issues]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Problemi che causano un blocco]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4615,6 +4672,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.no.target.selected.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select target type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Seleziona tipo di destinazione]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4633,6 +4693,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.non.readiness.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The database is ready to migrate with {0} warnings.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Il database è pronto per la migrazione con {0} avvisi.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4640,7 +4703,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Not ready]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Non idoneo]]></Val>
+            <Val><![CDATA[Non pronto]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4897,12 +4960,18 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.readiness.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The database is ready to migrate.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Il database è pronto per la migrazione.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.readiness.section.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Migration readiness of assessed databases in the server instance]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Idoneità per la migrazione dei database valutati nell'istanza del server]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4910,7 +4979,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Blockers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Bloccanti]]></Val>
+            <Val><![CDATA[Blocchi]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4918,6 +4987,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.ready.warn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ready with warnings]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Pronto con avvisi]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4987,6 +5059,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.refresh.sku.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Refresh SKU recommendations]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aggiorna raccomandazioni sullo SKU]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5725,6 +5800,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.select.target.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No target selected. Select target to view the assessment summary.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nessuna destinazione selezionata. Selezionare la destinazione per visualizzare il riepilogo della valutazione.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6052,6 +6130,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.severity.issues.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Issues by severity]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Problemi per gravità]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6325,8 +6406,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureRecommendation.status.inProgress" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Data collection is in progress. ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Raccolta dati in corso. Generazione delle raccomandazioni iniziali...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La raccolta dei dati è in corso. ]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Data collection in progress. Generating initial recommendations...]]></Val>
@@ -6349,8 +6430,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureRecommendation.status.refining" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Data collection still in progress. ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Raccolta dati ancora in corso. Affinamento delle raccomandazioni esistenti...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Raccolta dati ancora in corso. ]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Data collection still in progress. Refining existing recommendations...]]></Val>
@@ -6406,8 +6487,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.card.azureRecommendation.notEnabled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure recommendation is not available. Click 'Start data collection' button above to get started.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[La raccomandazione di Azure non è disponibile. Fare clic sul pulsante \"Ottieni raccomandazione di Azure\" di seguito]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La raccomandazione di Azure non è disponibile. Per iniziare, fare clic sul pulsante 'Avvia raccolta dati'.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure recommendation is not available. Click “Get Azure recommendation” button below]]></Val>
@@ -6472,6 +6553,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.import.performance.data" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Import performance data]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Importa dati sulle prestazioni]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6925,6 +7009,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.start.performance.collection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Start data collection]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Avvia raccolta dati]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8662,12 +8749,18 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.total.findings.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Total findings: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Risultati totali: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.total.issues.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Total issues found: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Problemi totali rilevati: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -9250,12 +9343,18 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.wizard.sku.assessment.error.with.info" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[message: {0}{1}errorSummary: {2}{3}possibleCauses: {4}}{5}guidance: {6}{7}errorId: {8}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[messaggio: {0}{1}errorSummary: {2}{3}possibleCauses: {4}}{5}indicazioni: {6}{7}errorId: {8}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.wizard.sku.assessment.error.with.stack" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[message: {0}{1}stack: {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[messaggio: {0}{1}stack: {2}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -9283,6 +9382,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.wizard.sku.error.message" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[message: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[messaggio: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
