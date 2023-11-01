@@ -140,15 +140,15 @@ export abstract class DialogBase<DialogResult> {
 			const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth - 40, value: label, requiredIndicator: required, CSSStyles: { 'padding-right': '10px' } }).component();
 			container = this.modelView.modelBuilder.flexContainer().withItems([labelComponent, ...component], { CSSStyles: { 'margin-right': '5px', 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 		} else {
+			let props: azdata.TextComponentProperties;
 			if (required) {
-				const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth, value: label, requiredIndicator: required, CSSStyles: { 'padding-right': '10px' } }).component();
-				container = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent], { flex: '0 0 auto' }).component();
-				container.addItem(component, { flex: '1 1 auto' });
+				props = { width: DefaultLabelWidth, value: label, requiredIndicator: required, CSSStyles: { 'padding-right': '10px' } };
 			} else {
-				const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth - 10, value: label, requiredIndicator: required, CSSStyles: { 'margin-left': '10px' } }).component();
-				container = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent], { flex: '0 0 auto' }).component();
-				container.addItem(component, { flex: '1 1 auto' });
+				props = { width: DefaultLabelWidth - 10, value: label, requiredIndicator: required, CSSStyles: { 'margin-left': '10px' } };
 			}
+			const labelComponent = this.modelView.modelBuilder.text().withProps(props).component();
+			container = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent], { flex: '0 0 auto' }).component();
+			container.addItem(component, { flex: '1 1 auto' });
 		}
 		return container;
 	}
