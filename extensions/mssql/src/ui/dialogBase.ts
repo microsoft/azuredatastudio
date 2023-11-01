@@ -142,9 +142,10 @@ export abstract class DialogBase<DialogResult> {
 		} else {
 			let props: azdata.TextComponentProperties;
 			if (required) {
-				props = { width: DefaultLabelWidth, value: label, requiredIndicator: required, CSSStyles: { 'padding-right': '10px' } };
+				props = { width: DefaultLabelWidth, value: label, requiredIndicator: required };
 			} else {
-				props = { width: DefaultLabelWidth - 10, value: label, requiredIndicator: required, CSSStyles: { 'margin-left': '10px' } };
+				// The required label adds extra padding to the text component, so we need to modify the width and the padding of optional labels to fix the misalignment.
+				props = { width: DefaultLabelWidth - 10, value: label, requiredIndicator: required, CSSStyles: { 'padding-right': '10px' } };
 			}
 			const labelComponent = this.modelView.modelBuilder.text().withProps(props).component();
 			container = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent], { flex: '0 0 auto' }).component();
