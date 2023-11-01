@@ -275,8 +275,6 @@
   },
   "resolutions": {
     "elliptic": "^6.5.3",
-    "nwmatcher": "^1.4.4",
-    "http-proxy-agent": "^5.0.0",
-    "https-proxy-agent": "^5.0.0"
+    "nwmatcher": "^1.4.4"
   }
 }
