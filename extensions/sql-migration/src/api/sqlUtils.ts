@@ -123,8 +123,6 @@ export interface TargetDatabaseInfo {
 	isReadOnly: boolean;
 	sourceTables: Map<string, TableInfo>;
 	targetTables: Map<string, TableInfo>;
-	enableSchemaMigration: boolean;
-	hasMissingTables: boolean;
 }
 
 export interface LoginTableInfo {
@@ -372,10 +370,6 @@ export async function collectTargetDatabaseInfo(
 				isReadOnly: getSqlBoolean(row[7]),
 				sourceTables: new Map(),
 				targetTables: new Map(),
-				enableSchemaMigration: false,
-				// Default as true so that the initial text is 'Not selected'
-				// in the schema column
-				hasMissingTables: true
 			};
 		}) ?? [];
 	}
