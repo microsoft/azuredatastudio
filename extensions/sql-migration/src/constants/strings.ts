@@ -196,6 +196,7 @@ export const VIEW_SELECT_BUTTON_LABEL = localize('sql.migration.view.select.butt
 export function TOTAL_DATABASES_SELECTED(selectedDbCount: number, totalDbCount: number): string {
 	return localize('total.databases.selected', "{0} of {1} databases selected", selectedDbCount, totalDbCount);
 }
+export const SELECT_SKIP_ASSESSMENT_CHECK_TO_CONTINUE = localize('sql.migration.select.skip.assessment.check.to.continue', "To continue, check skip assessment option.");
 export const SELECT_TARGET_TO_CONTINUE = localize('sql.migration.select.target.to.continue', "To continue, select a target.");
 export const SELECT_DATABASE_TO_MIGRATE = localize('sql.migration.select.database.to.migrate', "Select the databases to migrate.");
 export const ASSESSMENT_COMPLETED = (serverName: string): string => {

@@ -231,9 +231,9 @@ Node.js: {6}
 V8: {7}
 OS: {8}</source>
         <note>Electron, Chromium, Node.js and V8 are product names that need no translation</note>
-        <target state="new">Version: {0}
-Commit: {1}
-Date: {2}
+        <target state="translated">版本: {0}
+提交: {1}
+日期: {2}
 VS Code: {3}
 Electron: {4}
 Chromium: {5}
