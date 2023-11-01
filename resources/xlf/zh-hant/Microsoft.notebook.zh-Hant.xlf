@@ -625,8 +625,8 @@
         <target state="translated">關閉</target>
       </trans-unit>
       <trans-unit id="managePackages.dialogName">
-        <source xml:lang="en">Manage Packages</source>
-        <target state="translated">管理套件</target>
+        <source xml:lang="en">Manage Notebook Packages</source>
+        <target state="translated">管理筆記本封裝</target>
       </trans-unit>
     </body>
   </file>
@@ -659,6 +659,10 @@
       <trans-unit id="unsupportedFileType">
         <source xml:lang="en">Only .ipynb Notebooks are supported</source>
         <target state="translated">僅支援 .ipynb Notebooks</target>
+      </trans-unit>
+      <trans-unit id="pythonNotSetup">
+        <source xml:lang="en">Python is not currently configured for notebooks. The 'Configure Python for Notebooks' command must be run before being able to manage notebook packages.</source>
+        <target state="translated">筆記本目前未設定 Python。必須先執行 'Configure Python for Notebooks' 命令，才能管理筆記本封裝。</target>
       </trans-unit>
     </body>
   </file>
@@ -957,8 +961,8 @@
         <target state="translated">Notebooks 所使用之 python 安裝的本機路徑。</target>
       </trans-unit>
       <trans-unit id="title.managePackages">
-        <source xml:lang="en">Manage Packages</source>
-        <target state="translated">管理套件</target>
+        <source xml:lang="en">Manage Notebook Packages</source>
+        <target state="translated">管理筆記本封裝</target>
       </trans-unit>
       <trans-unit id="notebook.maxBookSearchDepth.description">
         <source xml:lang="en">Maximum depth of subdirectories to search for Books (Enter 0 for infinite)</source>

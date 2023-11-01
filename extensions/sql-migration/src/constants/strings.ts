@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
@@ -196,6 +196,7 @@ export const VIEW_SELECT_BUTTON_LABEL = localize('sql.migration.view.select.butt
 export function TOTAL_DATABASES_SELECTED(selectedDbCount: number, totalDbCount: number): string {
 	return localize('total.databases.selected', "{0} of {1} databases selected", selectedDbCount, totalDbCount);
 }
+export const SELECT_SKIP_ASSESSMENT_CHECK_TO_CONTINUE = localize('sql.migration.select.skip.assessment.check.to.continue', "To continue, check skip assessment option.");
 export const SELECT_TARGET_TO_CONTINUE = localize('sql.migration.select.target.to.continue', "To continue, select a target.");
 export const SELECT_DATABASE_TO_MIGRATE = localize('sql.migration.select.database.to.migrate', "Select the databases to migrate.");
 export const ASSESSMENT_COMPLETED = (serverName: string): string => {

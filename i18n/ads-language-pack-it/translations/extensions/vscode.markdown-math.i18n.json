@@ -10,6 +10,7 @@
 	"contents": {
 		"package": {
 			"config.markdown.math.enabled": "Abilita/Disabilita la matematica del rendering nell'anteprima Markdown predefinita.",
+			"config.markdown.math.macros": "Raccolta di macro personalizzate. Ogni macro è una coppia chiave-valore in cui la chiave è un nuovo nome di comando e il valore è l'espansione della macro.",
 			"description": "Aggiunge il supporto delle operazioni matematiche a Markdown nei notebook.",
 			"displayName": "Matematica Markdown"
 		}

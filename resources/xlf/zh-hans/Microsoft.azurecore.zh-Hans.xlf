@@ -2,33 +2,9 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/Microsoft.azurecore/dist/account-provider/auths/azureAuth" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="azurecore.confirmIgnoreTenantDialog.body">
-        <source xml:lang="en">Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. 
-
-To allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.
-
-Do you wish to proceed?</source>
-        <target state="translated">Azure Data Studio 将不再触发此租户 {0} ({1}) 的身份验证，并且资源将无法访问。
-
-若要再次允许访问此租户的资源，需要从“{2}”设置的排除列表中删除租户。
-
-是否要继续?</target>
-      </trans-unit>
       <trans-unit id="azurecore.consentDialog.cancel">
         <source xml:lang="en">Cancel</source>
         <target state="translated">取消</target>
-      </trans-unit>
-      <trans-unit id="azurecore.consentDialog.authenticate">
-        <source xml:lang="en">Cancel and Authenticate</source>
-        <target state="translated">取消并进行身份验证</target>
-      </trans-unit>
-      <trans-unit id="azurecore.confirmIgnoreTenantDialog.confirm">
-        <source xml:lang="en">Confirm</source>
-        <target state="translated">确认</target>
-      </trans-unit>
-      <trans-unit id="azurecore.consentDialog.ignore">
-        <source xml:lang="en">Ignore Tenant</source>
-        <target state="translated">忽略租户</target>
       </trans-unit>
       <trans-unit id="azure.microsoftAccountDisplayName">
         <source xml:lang="en">Microsoft Account</source>
@@ -117,10 +93,6 @@ Do you wish to proceed?</source>
       <trans-unit id="azure.NoAuthMethod.Selected">
         <source xml:lang="en">No Azure auth method selected. You must select what method of authentication you want to use.</source>
         <target state="translated">未选择任何 Azure 身份验证方法。必须选择你要使用的身份验证方法。</target>
-      </trans-unit>
-      <trans-unit id="tenantIgnoredError">
-        <source xml:lang="en">Tenant found in ignore list, authentication not attempted. You can remove tenant {0} from ignore list in settings.json file: {1} if you wish to access resources from this tenant.</source>
-        <target state="translated">在忽略列表中找到租户，未尝试身份验证。 如果要从此租户访问资源，可以从 settings.json 文件: {1} 中的忽略列表中删除租户 {0}。</target>
       </trans-unit>
       <trans-unit id="msalTokenError">
         <source xml:lang="en">{0} occurred when acquiring token. 
@@ -846,10 +818,6 @@ Do you wish to proceed?</source>
         <source xml:lang="en">Azure Portal Endpoint</source>
         <target state="translated">Azure 门户终结点</target>
       </trans-unit>
-      <trans-unit id="azure.resource.config.title">
-        <source xml:lang="en">Azure Resource Configuration</source>
-        <target state="translated">Azure 资源配置</target>
-      </trans-unit>
       <trans-unit id="config.providerSettings.endpoints.azureStorageResource">
         <source xml:lang="en">Azure Storage Resource Endpoint</source>
         <target state="translated">Azure 存储资源终结点</target>
@@ -981,14 +949,6 @@ Do you wish to proceed?</source>
       <trans-unit id="azure.resource.startterminal.title">
         <source xml:lang="en">Start Cloud Shell</source>
         <target state="translated">启动 Cloud Shell</target>
-      </trans-unit>
-      <trans-unit id="azure.tenant.config.filter.description">
-        <source xml:lang="en">The list of tenant IDs which will be skipped when querying Azure resources or requesting authentication tokens.</source>
-        <target state="translated">查询 Azure 资源或请求身份验证令牌时将跳过的租户 ID 列表。</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.config.filter.description">
-        <source xml:lang="en">The resource filter, each element is an account id, a subscription id and name separated by a slash</source>
-        <target state="translated">资源筛选器，每个元素是帐户 ID、订阅 ID 和由斜杠分隔的名称</target>
       </trans-unit>
       <trans-unit id="config.loggingLevel">
         <source xml:lang="en">[Optional] The verbosity of logging for the Azure Accounts extension.</source>

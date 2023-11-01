@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/backupDialog';
@@ -528,7 +528,7 @@ export class BackupComponent extends AngularDisposable {
 			this.recoveryBox!.disable();
 			this.mediaNameBox!.disable();
 			this.mediaDescriptionBox!.disable();
-			if (this._engineEdition !== DatabaseEngineEdition.SqlDataWarehouse && this._engineEdition !== DatabaseEngineEdition.SqlOnDemand) {
+			if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance) {
 				this.toUrlCheckBox.checked = true;
 				this.copyOnlyCheckBox.checked = true;
 				this.backupTypeSelectBox!.disable();
