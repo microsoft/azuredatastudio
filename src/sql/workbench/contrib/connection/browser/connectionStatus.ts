@@ -16,14 +16,12 @@ import { IQueryModelService } from 'sql/workbench/services/query/common/queryMod
 import { ILogService } from 'vs/platform/log/common/log';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 
-
 // Connection status bar showing the current global connection
 export class ConnectionStatusbarItem extends Disposable implements IWorkbenchContribution {
 
 	private static readonly ID = 'status.connection.status';
 	private readonly name = localize('status.connection.status', "Connection Status");
 	private statusItem: IStatusbarEntryAccessor;
-
 
 	constructor(
 		@IStatusbarService private readonly _statusbarService: IStatusbarService,
@@ -67,7 +65,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService, this._logService);
 		let id = undefined;
 		let editorNewInfo = this.getCurrentActiveEditorInfo();
-		// retrieve the currently focused editor so we can get the correct SPID value from it.
+		// retrieve the currently focused editor so we can get the correct SPID value for it.
 		if (editorNewInfo) {
 			// active editor info is needed as uri for editor is treated as a separate process on the server.
 			// make sure the active editor has the same connection as the current global connection, otherwise the user has selected an unrelated connection in OE.
