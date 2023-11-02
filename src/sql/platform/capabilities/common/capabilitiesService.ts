@@ -123,9 +123,9 @@ export interface ConnectionProviderProperties {
 	supportCopyResultsToClipboard?: boolean;
 
 	/**
-	 * The name to display in the UI for the id value used to identify connections in the server.
+	 * The name to display in the UI for the id value used to identify connections in the server. Defaults to PID if not specified.
 	 */
-	serverConnectionIDName?: string;
+	serverConnectionIdName?: string;
 }
 
 export interface ProviderFeatures {

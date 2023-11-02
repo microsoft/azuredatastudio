@@ -14,6 +14,7 @@ import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { localize } from 'vs/nls';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 
 
 // Connection status bar showing the current global connection
@@ -50,7 +51,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		this._register(this._connectionManagementService.onDisconnect(() => this._updateStatus()));
 		this._register(this._editorService.onDidActiveEditorChange(() => this._updateStatus()));
 		this._register(this._objectExplorerService.onSelectionOrFocusChange(() => this._updateStatus()));
-		this._register(this._queryModelService.onConnIdAvailable(e => this._refreshIDStatus(e.uri, e.connId)));
+		this._register(this._queryModelService.onConnectionIdUpdated(e => this._updateUriForInfo(e.uri, e.connId)));
 	}
 
 	private hide() {
@@ -65,10 +66,14 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 	private _updateStatus(): void {
 		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService, this._logService);
 		let id = undefined;
-		if (this._editorService.activeEditor) {
-			// USE ACTIVE EDITOR INFO AS THE ID WILL BE DIFFERENT FOR EDITOR CONNECTION.
-			let newInfo = this._connectionManagementService.getConnectionInfo(this._editorService.activeEditor.resource.toString());
-			id = newInfo?.serverConnectionId;
+		let editorNewInfo = this.getCurrentActiveEditorInfo();
+		// retrieve the currently focused editor so we can get the correct SPID value from it.
+		if (editorNewInfo) {
+			// active editor info is needed as uri for editor is treated as a separate process on the server.
+			// make sure the active editor has the same connection as the current global connection, otherwise the user has selected an unrelated connection in OE.
+			if (editorNewInfo && editorNewInfo?.connectionProfile?.id === activeConnection?.id) {
+				id = editorNewInfo?.serverConnectionId;
+			}
 		}
 		if (activeConnection) {
 			this._setConnectionText(activeConnection, id)
@@ -79,19 +84,27 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		}
 	}
 
-	private _refreshIDStatus(uri: string, id: string | undefined): void {
-		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService, this._logService);
-		if (this._editorService.activeEditor) {
-			// USE ACTIVE EDITOR INFO AS THE ID WILL BE DIFFERENT FOR EDITOR CONNECTION.
-			let currUri = this._editorService.activeEditor.resource.toString();
-			let info = this._connectionManagementService.getConnectionInfo(currUri);
-			if (currUri === uri) {
-				if (info) {
-					info.serverConnectionId = id;
-					this._setConnectionText(activeConnection, id);
-				}
-			}
+	// If the connection server id for URI changes, we need to update the info for the URI with the new one
+	// If the current editor is the one being updated, we will do a refresh if the id is different.
+	private _updateUriForInfo(uriToUpdate: string, idForUpdate: string) {
+		let newInfo = this._connectionManagementService.getConnectionInfo(uriToUpdate);
+		let isDifferent = false;
+		if (newInfo && newInfo.serverConnectionId !== idForUpdate) {
+			isDifferent = true;
+			newInfo.serverConnectionId = idForUpdate;
 		}
+		let activeInfo = this.getCurrentActiveEditorInfo()
+		if (activeInfo && activeInfo.ownerUri === newInfo.ownerUri && isDifferent) {
+			this._updateStatus();
+		}
+	}
+
+	// Helper function for getting the connection info of the current editor.
+	private getCurrentActiveEditorInfo(): ConnectionManagementInfo | undefined {
+		if (this._editorService.activeEditor) {
+			return this._connectionManagementService.getConnectionInfo(this._editorService.activeEditor.resource.toString());
+		}
+		return undefined;
 	}
 
 	// Set connection info to connection status bar
@@ -105,17 +118,17 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 			}
 		}
 
-		let tooltip = localize('status.connection.baseTooltip', 'Server: {0}\r\nDatabase: {1}\r\n', connectionProfile.serverName,
+		let tooltip = localize('status.connection.baseTooltip', 'Server: {0}\nDatabase: {1}\n', connectionProfile.serverName,
 			(connectionProfile.databaseName ? connectionProfile.databaseName : '<default>'));
 
 		if (connectionProfile.userName && connectionProfile.userName !== '') {
-			tooltip = tooltip + localize('status.connection.tooltipLogin', 'Login: {0}\r\n', connectionProfile.userName);
+			tooltip = tooltip + localize('status.connection.tooltipLogin', 'Login: {0}\n', connectionProfile.userName);
 		}
 
 		if (id) {
 			text += ' (' + id + ')';
-			const serverConnectionIDName = connectionProfile.serverCapabilities.serverConnectionIDName || 'PID';
-			tooltip += serverConnectionIDName + ': ' + id;
+			const serverConnectionIdName = connectionProfile.serverCapabilities.serverConnectionIdName || 'PID';
+			tooltip += serverConnectionIdName + ': ' + id;
 		}
 
 		this.statusItem.update({

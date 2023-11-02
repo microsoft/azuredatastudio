@@ -1036,7 +1036,7 @@
     "connectionProvider": {
       "providerId": "MSSQL",
       "displayName": "%mssql.provider.displayName%",
-      "serverConnectionIDName": "%mssql.provider.processID%",
+      "serverConnectionIdName": "%mssql.provider.serverProcessId%",
       "useFullOptions": true,
       "isExecutionPlanProvider": true,
       "supportCopyResultsToClipboard": true,

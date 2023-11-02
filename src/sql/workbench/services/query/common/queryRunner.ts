@@ -83,8 +83,8 @@ export default class QueryRunner extends Disposable {
 	private readonly _onVisualize = this._register(new Emitter<ResultSetSummary>());
 	public readonly onVisualize = this._onVisualize.event;
 
-	private readonly _onConnIdAvailable = this._register(new Emitter<QueryConnID>());
-	public readonly onConnIdAvailable = this._onConnIdAvailable.event;
+	private readonly _onConnectionIdUpdated = this._register(new Emitter<QueryConnID>());
+	public readonly onConnectionIdUpdated = this._onConnectionIdUpdated.event;
 
 	private _queryStartTime?: Date;
 	public get queryStartTime(): Date | undefined {
@@ -288,7 +288,7 @@ export default class QueryRunner extends Disposable {
 			uri: this.uri,
 			connId: id,
 		}
-		this._onConnIdAvailable.fire(idEvent);
+		this._onConnectionIdUpdated.fire(idEvent);
 	}
 
 	/**
