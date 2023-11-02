@@ -203,7 +203,7 @@ export class ImportPerformanceDataDialog {
 			.component();
 
 		this._openExistingFolderInput = _view.modelBuilder.inputBox().withProps({
-			placeHolder: constants.IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FILE,
+			placeHolder: constants.IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FOLDER,
 			readOnly: true,
 			height: 24,
 			width: 222,
