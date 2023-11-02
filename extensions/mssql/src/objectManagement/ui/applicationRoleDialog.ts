@@ -67,22 +67,33 @@ export class ApplicationRoleDialog extends PrincipalDialogBase<ApplicationRoleIn
 			ariaLabel: localizedConstants.NameText,
 			inputType: 'text',
 			enabled: this.options.isNewObject,
-			value: this.objectInfo.name
+			value: this.objectInfo.name,
+			required: true
 		});
-		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
+		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput, true);
 
 		this.defaultSchemaDropdown = this.createDropdown(localizedConstants.DefaultSchemaText, async (newValue) => {
 			this.objectInfo.defaultSchema = newValue;
 		}, this.viewInfo.schemas, this.objectInfo.defaultSchema!);
 		const defaultSchemaContainer = this.createLabelInputContainer(localizedConstants.DefaultSchemaText, this.defaultSchemaDropdown);
 
-		this.passwordInput = this.createPasswordInputBox(localizedConstants.PasswordText, async (newValue) => {
+		this.passwordInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.password = newValue;
-		}, this.objectInfo.password ?? '');
-		const passwordContainer = this.createLabelInputContainer(localizedConstants.PasswordText, this.passwordInput);
+		}, {
+			ariaLabel: localizedConstants.PasswordText,
+			inputType: 'password',
+			value: this.objectInfo.password ?? '',
+			required: true
+		});
+		const passwordContainer = this.createLabelInputContainer(localizedConstants.PasswordText, this.passwordInput, true);
 
-		this.confirmPasswordInput = this.createPasswordInputBox(localizedConstants.ConfirmPasswordText, async () => { }, this.objectInfo.password ?? '');
-		const confirmPasswordContainer = this.createLabelInputContainer(localizedConstants.ConfirmPasswordText, this.confirmPasswordInput);
+		this.confirmPasswordInput = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.ConfirmPasswordText,
+			inputType: 'password',
+			value: this.objectInfo.password ?? '',
+			required: true
+		});
+		const confirmPasswordContainer = this.createLabelInputContainer(localizedConstants.ConfirmPasswordText, this.confirmPasswordInput, true);
 
 		this.generalSection = this.createGroup(localizedConstants.GeneralSectionHeader, [nameContainer, defaultSchemaContainer, passwordContainer, confirmPasswordContainer], false);
 	}
