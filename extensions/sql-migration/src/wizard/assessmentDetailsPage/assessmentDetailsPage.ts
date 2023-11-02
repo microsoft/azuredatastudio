@@ -59,7 +59,7 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 			if (value) {
 				const selectedTargetType = this.getTargetTypeBasedOnSelection(value);
 				await this.shouldNoTargetSelectionDisplayAsync(false);
-				this.executeChange(selectedTargetType);
+				await this.executeChange(selectedTargetType);
 				await this._header.populateAssessmentDetailsHeader(this.migrationStateModel);
 				await this._body.populateAssessmentBodyAsync();
 			}
@@ -103,12 +103,12 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		this.wizard.registerNavigationValidator((pageChangeInfo) => {
+		this.wizard.registerNavigationValidator(async (pageChangeInfo) => {
 			this.wizard.message = { text: '' };
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
 			}
-			this.executeChange(this.migrationStateModel._targetType);
+			await this.executeChange(this.migrationStateModel._targetType);
 			const errors: string[] = [];
 			if (this.migrationStateModel._databasesForMigration.length === 0) {
 				errors.push(constants.SELECT_DATABASE_TO_MIGRATE);
@@ -128,7 +128,7 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 			await this.shouldNoTargetSelectionDisplayAsync(true);
 		}
 		else {
-			this.executeChange(this.migrationStateModel._targetType);
+			await this.executeChange(this.migrationStateModel._targetType);
 			await this._header.populateAssessmentDetailsHeader(this.migrationStateModel);
 			await this._body.populateAssessmentBodyAsync();
 		}
@@ -166,7 +166,8 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 	}
 
 	// function to execute when user changes target type for the selected databases.
-	private executeChange(newTargetType: string): void {
+	private async executeChange(newTargetType: string): Promise<void> {
+		await this._body.treeComponent.initialize(this.migrationStateModel);
 		const selectedDbs = this._body.treeComponent.selectedDbs();
 		switch (newTargetType) {
 			case MigrationTargetType.SQLMI:
