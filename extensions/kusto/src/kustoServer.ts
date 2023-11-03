@@ -45,6 +45,7 @@ export class KustoServer {
 			const installationComplete = Date.now();
 			let serverOptions = generateServerOptions(context.extensionContext.logUri.fsPath, path);
 			let clientOptions = getClientOptions(context);
+			// IMPORTANT: 'kusto' must match the prefix name of configuration: 'kusto.tracingServer'.
 			this.client = new SqlOpsDataClient('kusto', Constants.serviceName, serverOptions, clientOptions);
 			const processStart = Date.now();
 			const clientReadyPromise = this.client.onReady().then(() => {
