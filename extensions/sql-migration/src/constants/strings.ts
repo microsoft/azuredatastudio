@@ -255,7 +255,7 @@ export const RESTART_PERFORMANCE_COLLECTION = localize('sql.migration.sku.restar
 export const IMPORT_PERFORMANCE_DATA = localize('sql.migration.sku.import.performance.data', "Import performance data");
 export const IMPORT_PERFORMANCE_DATA_DIALOG_DESCRIPTION = localize('sql.migration.sku.import.performance.data.dialog.description', "Import this data file from an existing folder, if you have already collected it using Data Migration Assistant.");
 export const IMPORT_PERFORMANCE_DATA_DIALOG_HELPER_MESSAGE = localize('sql.migration.sku.import.performance.data.dialog.helper.message', "Select a folder on your local drive");
-export const IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FILE = localize('sql.migration.sku.import.performance.data.dialog.open.file', "Select a file");
+export const IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FOLDER = localize('sql.migration.sku.import.performance.data.dialog.open.folder', "Select a folder");
 // allow-any-unicode-next-line
 export const AZURE_RECOMMENDATION_CARD_NOT_ENABLED = localize('sql.migration.sku.card.azureRecommendation.notEnabled', "Azure recommendation is not available. Click 'Start data collection' button above to get started.");
 export const AZURE_RECOMMENDATION_CARD_IN_PROGRESS = localize('sql.migration.sku.card.azureRecommendation.inProgress', "Azure recommendation will be displayed once data collection is complete.");
@@ -266,7 +266,7 @@ export const AZURE_RECOMMENDATION_STATUS_STOPPED = localize('sql.migration.sku.a
 export function AZURE_RECOMMENDATION_STATUS_AUTO_REFRESH_TIMER(mins: number): string {
 	return localize('sql.migration.sku.azureRecommendation.status.autoRefreshTimer', "Time before next SKU recommendation update: {0} minute(s).", mins.toFixed(0));
 }
-export const AZURE_RECOMMENDATION_STATUS_MANUAL_REFRESH_TIMER = localize('sql.migration.sku.azureRecommendation.status.manualRefreshTimer', "Click on 'Refresh SKU' for updated recommendations.");
+export const AZURE_RECOMMENDATION_STATUS_MANUAL_REFRESH_TIMER = localize('sql.migration.sku.azureRecommendation.status.manualRefreshTimer', "Click on 'Refresh SKU recommendation' for updated recommendations.");
 export const AZURE_RECOMMENDATION_STATUS_DATA_IMPORTED = localize('sql.migration.sku.azureRecommendation.status.imported', "Azure recommendation has been applied using the provided data. Import or collect additional data to refine the recommendation.");
 export const AZURE_RECOMMENDATION_TOOLTIP_NOT_STARTED = localize('sql.migration.sku.azureRecommendation.tooltip.notStarted', "Click the button below to import or collect database performance data.");
 export const AZURE_RECOMMENDATION_TOOLTIP_IN_PROGRESS = localize('sql.migration.sku.azureRecommendation.tooltip.inProgress', "Running the performance collection for a longer period of time helps ensure a more accurate recommendation.");
