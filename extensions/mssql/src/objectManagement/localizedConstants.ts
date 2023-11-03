@@ -300,6 +300,9 @@ export const StartDateText = localize('objectManagement.restoreDatabase.restoreP
 export const FinishDateText = localize('objectManagement.restoreDatabase.restorePlan.FinishDateText', "Finish Date");
 export const UserNameText = localize('objectManagement.restoreDatabase.restorePlan.userNameText', "User Name");
 export const ExpirationText = localize('objectManagement.restoreDatabase.restorePlan.expirationText', "Expiration");
+export const LogicalFileNameText = localize('objectManagement.restoreDatabase.restorePlan.logicalFileNameText', "Logical File Name");
+export const OriginalFileNameText = localize('objectManagement.restoreDatabase.restorePlan.originalFileNameText', "Original File Name");
+export const RestoreAsText = localize('objectManagement.restoreDatabase.restorePlan.restoreAsText', "Restore As");
 
 // User
 export const UserTypeText = localize('objectManagement.user.type', "Type");

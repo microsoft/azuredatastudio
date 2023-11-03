@@ -10,9 +10,10 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { DefaultInputWidth, DefaultMaxTableRowCount, DefaultMinTableRowCount, DefaultTableWidth, getTableHeight } from '../../ui/dialogBase';
 import { Database, DatabaseFileInfo, DatabaseViewInfo } from '../interfaces';
 import { IObjectManagementService } from 'mssql';
+import { RestoreDatabaseFileInfo } from 'azdata';
 
-const Dialog_Width = '750px';
-const RestoreInputsWidth = DefaultInputWidth + 250;
+const Dialog_Width = '1150px';
+const RestoreInputsWidth = DefaultInputWidth + 650;
 
 export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// restore diaog tabs
@@ -164,55 +165,70 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 				value: localizedConstants.RestoreText
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.NameText
+				value: localizedConstants.NameText,
+				width: 200
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.ComponentText
+				value: localizedConstants.ComponentText,
+				width: 70
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.TypeText
+				value: localizedConstants.TypeText,
+				width: 35
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.ServerText
+				value: localizedConstants.ServerText,
+				width: 75
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.DatabaseText
+				value: localizedConstants.DatabaseText,
+				width: 75
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.PositionText
+				value: localizedConstants.PositionText,
+				width: 48
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.FirstLSNText
+				value: localizedConstants.FirstLSNText,
+				width: 52
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.LastLSNText
+				value: localizedConstants.LastLSNText,
+				width: 52
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.CheckpointLSNText
+				value: localizedConstants.CheckpointLSNText,
+				width: 88
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.FullLSNText
+				value: localizedConstants.FullLSNText,
+				width: 50
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.StartDateText
+				value: localizedConstants.StartDateText,
+				width: 85
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.FinishDateText
+				value: localizedConstants.FinishDateText,
+				width: 82
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.SizeText
+				value: localizedConstants.SizeText,
+				width: 50
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.UserNameText
+				value: localizedConstants.UserNameText,
+				width: 65
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.ExpirationText
+				value: localizedConstants.ExpirationText,
+				width: 60
 			}],
 			data: this.objectInfo.restoreOptions.restorePlanResponse.backupSetsToRestore?.map(plan => {
 				return this.convertToDataView(plan);
 			}),
 			height: getTableHeight(this.objectInfo.restoreOptions.restorePlanResponse.backupSetsToRestore?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
-			width: DefaultTableWidth,
+			width: 1100,
 			forceFitColumns: azdata.ColumnSizingMode.DataFit,
 			CSSStyles: {
 				'margin-left': '10px'
@@ -296,9 +312,47 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	}
 
 	private initializeRestoreDatabaseFilesDetailsSection(): azdata.GroupContainer {
-		return this.createGroup(localizedConstants.RestoreDatabaseFileDetailsText, [
-		], true);
+		const restoredatabaseTable = this.modelView.modelBuilder.table().withProps({
+			columns: [{
+				type: azdata.ColumnType.text,
+				value: localizedConstants.LogicalFileNameText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.FileTypeText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.OriginalFileNameText
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.RestoreAsText
+			}],
+			data: this.objectInfo.restoreOptions.restorePlanResponse.dbFiles?.map(plan => {
+				return this.convertToRestoreDbTableDataView(plan);
+			}),
+			height: getTableHeight(this.objectInfo.restoreOptions.restorePlanResponse.backupSetsToRestore?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
+			forceFitColumns: azdata.ColumnSizingMode.DataFit,
+			CSSStyles: {
+				'margin-left': '10px'
+			}
+		}).component();
+
+		return this.createGroup(localizedConstants.RestoreDatabaseFileDetailsText, [restoredatabaseTable], true);
 	}
+
+	/**
+	 * Converts the restore database file info object to a data view object
+	 * @param fileInfo restore database file info object
+	 * @returns data view object
+	 */
+	private convertToRestoreDbTableDataView(fileInfo: RestoreDatabaseFileInfo): any[] {
+		return [
+			fileInfo.logicalFileName,
+			fileInfo.fileType,
+			fileInfo.originalFileName,
+			fileInfo.restoreAsFileName
+		];
+	}
+
 	//#endregion
 
 	//#region Options Tab
