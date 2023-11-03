@@ -10,6 +10,7 @@
 	"databasesListProperties.size": "Size (MB)",
 	"objectsListProperties.name": "Name",
 	"objectsListProperties.metadataTypeName": "Type",
+	"title.showLogFile": "Show Log File",
 	"kusto.configuration.title": "KUSTO configuration",
 	"kusto.query.displayBitAsNumber": "Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'",
 	"kusto.format.alignColumnDefinitionsInColumns": "Should column definitions be aligned?",
