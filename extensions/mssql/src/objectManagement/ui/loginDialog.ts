@@ -96,7 +96,9 @@ export class LoginDialog extends PrincipalDialogBase<Login, LoginViewInfo> {
 
 		this.initializeServerRolesSection();
 		sections.push(this.serverRoleSection);
-		sections.push(this.securableSection);
+		if (!this.objectInfo.hidePermissions) {
+			sections.push(this.securableSection);
+		}
 
 		this.formContainer.addItems(sections, this.getSectionItemLayout());
 	}
