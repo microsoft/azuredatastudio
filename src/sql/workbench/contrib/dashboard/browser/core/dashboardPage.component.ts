@@ -536,7 +536,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 						})
 					});
 
-					// If the extension is already activated or has no activation events (i.e. it's already activated), we can resolve immediately
+					// If the extension is already activated or has no activation events (i.e. it's already activated or has no code to activate), we can resolve immediately
 					if (!owningExtension.activationEvents || owningExtension.activationEvents.length === 0 || this.extensionService.getExtensionsStatus()[owningExtension.id]?.activationTimes?.activateResolvedTime !== undefined) {
 						tab.loading = false;
 						resolveTab();
