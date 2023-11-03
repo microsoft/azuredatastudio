@@ -312,7 +312,7 @@
             "verbose"
           ],
           "default": "off",
-          "description": "%mssql.tracing.desc%"
+          "description": "%mssql.tracingServer%"
         },
         "mssql.logRetentionMinutes": {
           "type": "number",
