@@ -40,8 +40,11 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends SecurityPrincip
 	}
 
 	protected override async initializeUI(): Promise<void> {
-		this.securablePermissions = deepClone(this.objectInfo.securablePermissions);
-		this.initializeSecurableSection();
+		// Hide permissions if the object type doesn't support it, like for built-in system logins.
+		if (!this.objectInfo.hidePermissions) {
+			this.securablePermissions = deepClone(this.objectInfo.securablePermissions);
+			this.initializeSecurableSection();
+		}
 	}
 
 	private initializeSecurableSection(): void {
