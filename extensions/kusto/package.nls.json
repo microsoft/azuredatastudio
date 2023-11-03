@@ -18,7 +18,7 @@
 	"kusto.format.keywordCasing": "Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)",
 	"kusto.logDebugInfo": "[Optional] Log debug output to the console (View -> Output) and then select appropriate output channel from the dropdown",
 	"kusto.tracingLevel": "[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information",
-	"kusto.tracingServer": "[Optional] Traces the communication between Azure Data Studio and SQL Tools Service to the SQL Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.",
+	"kusto.tracingServer": "[Optional] Traces the communication between Azure Data Studio and Kusto Tools Service to the Kusto Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.",
 	"kusto.provider.displayName": "Azure Data Explorer (Kusto)",
 	"kusto.connectionOptions.connectionName.displayName": "Name (optional)",
 	"kusto.connectionOptions.connectionName.description": "Custom name of the connection",
