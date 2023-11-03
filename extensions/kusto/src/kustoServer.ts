@@ -23,7 +23,7 @@ const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 
-// The mapping between MSSQL log level and the service downloader log level.
+// The mapping between KQL log level and the service downloader log level.
 const LogLevelMapping: { [key: string]: number } = {
 	[TracingLevel.All]: LogLevel.Verbose,
 	[TracingLevel.Critical]: LogLevel.Critical,
@@ -45,7 +45,7 @@ export class KustoServer {
 			const installationComplete = Date.now();
 			let serverOptions = generateServerOptions(context.extensionContext.logUri.fsPath, path);
 			let clientOptions = getClientOptions(context);
-			this.client = new SqlOpsDataClient('kusto', Constants.serviceName, serverOptions, clientOptions); // TodoKusto: Update constant
+			this.client = new SqlOpsDataClient('kusto', Constants.serviceName, serverOptions, clientOptions);
 			const processStart = Date.now();
 			const clientReadyPromise = this.client.onReady().then(() => {
 				const processEnd = Date.now();
@@ -76,7 +76,8 @@ export class KustoServer {
 	}
 
 	private async download(context: AppContext): Promise<string> {
-		const rawConfig = await fs.readFile(path.join(context.extensionContext.extensionPath, 'config.json')); // TodoKusto: Update config.json to refer to the right exe
+		const configDir = context.extensionContext.extensionPath;
+		const rawConfig = await fs.readFile(path.join(configDir, 'config.json'));
 		this.config = JSON.parse(rawConfig.toString())!;
 		this.config.installDirectory = path.join(__dirname, this.config.installDirectory);
 		this.config.proxy = vscode.workspace.getConfiguration('http').get<string>('proxy')!;
@@ -147,7 +148,7 @@ function generateHandleServerProviderEvent() {
 
 function getClientOptions(context: AppContext): ClientOptions {
 	return {
-		documentSelector: ['kusto'],		// TodoKusto: This should be same as the language id in package.json. See if we can surface that better later.
+		documentSelector: ['kusto'],
 		synchronize: {
 			configurationSection: Constants.extensionConfigSectionName
 		},
