@@ -33,7 +33,7 @@ export class KustoServer {
 			const installationStart = Date.now();
 			const path = await this.download(context);
 			const installationComplete = Date.now();
-			let serverOptions = generateServerOptions(context.extensionContext.logPath, path);
+			let serverOptions = generateServerOptions(context.extensionContext.logUri.fsPath, path);
 			let clientOptions = getClientOptions(context);
 			this.client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions); // TodoKusto: Update constant
 			const processStart = Date.now();

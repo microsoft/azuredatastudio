@@ -30,7 +30,7 @@ export class CredentialStore {
 			this._config.executableFiles = ['MicrosoftSqlToolsCredentials.exe', 'MicrosoftSqlToolsCredentials'];
 		}
 		this.context = context;
-		this._logPath = this.context.extensionContext.logPath;
+		this._logPath = this.context.extensionContext.logUri.fsPath;
 	}
 
 	public async start(): Promise<void> {
