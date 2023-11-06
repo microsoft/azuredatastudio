@@ -232,10 +232,12 @@ export class EditDataGridPanel extends GridParentComponent {
 				// If a cell is not edited and retrieved direct from the SQL server, it would be in the form of a DBCellValue.
 				// We use the DBCellValue's cleaned displayValue as the text value.
 				returnVal = this.replaceLinebreaks(value.displayValue);
+				returnVal = returnVal.trim();
 			}
 			else if (typeof value === 'string') {
 				// Once a cell has been edited, the cell value will no longer be a DBCellValue until refresh.
 				returnVal = this.replaceLinebreaks(value);
+				returnVal = returnVal.trim();
 			}
 			return returnVal;
 		};
