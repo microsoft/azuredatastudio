@@ -61,7 +61,7 @@ export class SqlToolsServer {
 			const serverPath = await this.download(context);
 			this.installDirectory = path.dirname(serverPath);
 			const installationComplete = Date.now();
-			let serverOptions = generateServerOptions(context.extensionContext.logPath, serverPath);
+			let serverOptions = generateServerOptions(context.extensionContext.logUri.fsPath, serverPath);
 			let clientOptions = getClientOptions(context);
 			this.client = new SqlOpsDataClient('mssql', Constants.serviceName, serverOptions, clientOptions);
 			const processStart = Date.now();
@@ -143,7 +143,7 @@ export class SqlToolsServer {
 
 	private activateFeatures(context: AppContext): Promise<void> {
 		const credsStore = new CredentialStore(context, this.config);
-		const resourceProvider = new AzureResourceProvider(context.extensionContext.logPath, this.config);
+		const resourceProvider = new AzureResourceProvider(context.extensionContext.logUri.fsPath, this.config);
 		this.disposables.push(credsStore);
 		this.disposables.push(resourceProvider);
 		context.registerService(Constants.AzureBlobService, new AzureBlobService(this.client));

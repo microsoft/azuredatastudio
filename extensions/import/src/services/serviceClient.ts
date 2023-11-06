@@ -93,7 +93,7 @@ export class ServiceClient {
 	private generateServerOptions(executablePath: string, context: vscode.ExtensionContext): ServerOptions {
 		let launchArgs = [];
 		launchArgs.push('--log-dir');
-		let logFileLocation = context.logPath;
+		let logFileLocation = context.logUri.fsPath;
 		launchArgs.push(logFileLocation);
 		let config = vscode.workspace.getConfiguration(Constants.extensionConfigSectionName);
 		if (config) {
