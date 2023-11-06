@@ -13,6 +13,7 @@ import { isValidSQLPassword } from '../utils';
 import { DefaultMaxTableRowCount } from '../../ui/dialogBase';
 import { PrincipalDialogBase } from './principalDialogBase';
 import { AuthenticationType, Login, LoginViewInfo } from '../interfaces';
+import { isUndefinedOrNull } from '../../types';
 
 export class LoginDialog extends PrincipalDialogBase<Login, LoginViewInfo> {
 	private generalSection: azdata.GroupContainer;
@@ -96,7 +97,7 @@ export class LoginDialog extends PrincipalDialogBase<Login, LoginViewInfo> {
 
 		this.initializeServerRolesSection();
 		sections.push(this.serverRoleSection);
-		if (!this.objectInfo.hidePermissions) {
+		if (!isUndefinedOrNull(this.objectInfo.securablePermissions)) {
 			sections.push(this.securableSection);
 		}
 
