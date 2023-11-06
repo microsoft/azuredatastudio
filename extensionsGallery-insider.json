@@ -2371,7 +2371,7 @@
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.46.0/ads-language-pack-ja-1.47.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.47.0/ads-language-pack-ja-1.47.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
