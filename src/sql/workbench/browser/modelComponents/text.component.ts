@@ -51,7 +51,7 @@ const errorTextClass = 'error-text';
 		<div *ngIf="showDiv;else noDiv" style="display:flex;flex-flow:row;align-items:center;" [style.width]="getWidth()" [style.height]="getHeight()">
 			<p [title]="title" [ngStyle]="this.CSSStyles" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden" [attr.aria-live]="ariaLive"></p>
 			<div #textContainer id="textContainer"></div>
-			<div *ngIf="description" tabindex="0" class="modelview-text-tooltip" [attr.aria-label]="description" role="img" (mouseenter)="showTooltip($event)" (focus)="showTooltip($event)" (keydown)="onDescriptionKeyDown($event)">
+			<div *ngIf="description" tabindex="0" class="modelview-text-tooltip" [attr.aria-label]="description" role="tooltip" (mouseenter)="showTooltip($event)" (focus)="showTooltip($event)" (keydown)="onDescriptionKeyDown($event)">
 				<div class="modelview-text-tooltip-content" [innerHTML]="description"></div>
 			</div>
 		</div>
