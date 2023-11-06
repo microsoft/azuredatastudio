@@ -14,6 +14,7 @@ import { RestoreDatabaseFileInfo } from 'azdata';
 
 const Dialog_Width = '1150px';
 const RestoreInputsWidth = DefaultInputWidth + 650;
+const RestoreTablesWidth = DefaultTableWidth + 650;
 
 export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// restore diaog tabs
@@ -30,10 +31,12 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	private overwriteExistingDatabase: azdata.CheckBoxComponent;
 	private preserveReplicationSettings: azdata.CheckBoxComponent;
 	private restrictAccessToRestoredDB: azdata.CheckBoxComponent;
+	private standByFileInput: azdata.InputBoxComponent;
 	private takeTailLogBackup: azdata.CheckBoxComponent;
 	private leaveSourceDB: azdata.CheckBoxComponent;
 	private closeExistingConnections: azdata.CheckBoxComponent;
 	private restorePlanTable: azdata.TableComponent;
+	private restoreDatabase: azdata.DropDownComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		options.width = Dialog_Width;
@@ -102,6 +105,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		let restoreFrom = this.createDropdown(localizedConstants.RestoreFromText, async (newValue) => {
 			if (newValue === localizedConstants.RestoreFromBackupFileOptionText) {
 				this.backupFilePathContainer.display = 'inline-flex';
+				this.restoreDatabase.enabled = false;
 			} else {
 				this.backupFilePathContainer.display = 'none';
 			}
@@ -129,10 +133,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		containers.push(this.backupFilePathContainer);
 
 		// source Database
-		let restoreDatabase = this.createDropdown(localizedConstants.DatabaseText, async () => {
+		this.restoreDatabase = this.createDropdown(localizedConstants.DatabaseText, async () => {
 			// this.objectInfo.collationName = collationDropbox.value as string;
 		}, this.viewInfo.restoreDatabaseInfo.sourceDatabaseNames, '', true, RestoreInputsWidth, true, true);
-		containers.push(this.createLabelInputContainer(localizedConstants.DatabaseText, restoreDatabase));
+		containers.push(this.createLabelInputContainer(localizedConstants.DatabaseText, this.restoreDatabase));
 
 		return this.createGroup(localizedConstants.SourceSectionText, containers, true);
 	}
@@ -228,7 +232,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 				return this.convertToDataView(plan);
 			}),
 			height: getTableHeight(this.objectInfo.restoreOptions.restorePlanResponse.backupSetsToRestore?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
-			width: 1100,
+			width: RestoreTablesWidth,
 			forceFitColumns: azdata.ColumnSizingMode.DataFit,
 			CSSStyles: {
 				'margin-left': '10px'
@@ -295,7 +299,9 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			value: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.dataFileFolder.defaultValue,
 			width: RestoreInputsWidth
 		});
-		containers.push(this.createLabelInputContainer(localizedConstants.DataFileFolderText, dataFileFolder));
+		const dataDileFolderContainer = this.createLabelInputContainer(localizedConstants.DataFileFolderText, dataFileFolder);
+		dataDileFolderContainer.CSSStyles = { 'margin-left': '20px' };
+		containers.push(dataDileFolderContainer);
 
 		// Log file folder
 		const logFileFolder = this.createInputBox(async (newValue) => {
@@ -307,7 +313,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			value: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.logFileFolder.defaultValue,
 			width: RestoreInputsWidth
 		});
-		containers.push(this.createLabelInputContainer(localizedConstants.LogFileFolderText, logFileFolder));
+		const logFileFolderContainer = this.createLabelInputContainer(localizedConstants.LogFileFolderText, logFileFolder);
+		logFileFolderContainer.CSSStyles = { 'margin-left': '20px' };
+		containers.push(logFileFolderContainer);
+
 		return this.createGroup(localizedConstants.RestoreDatabaseFilesAsText, containers, true);
 	}
 
@@ -329,8 +338,9 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			data: this.objectInfo.restoreOptions.restorePlanResponse.dbFiles?.map(plan => {
 				return this.convertToRestoreDbTableDataView(plan);
 			}),
-			height: getTableHeight(this.objectInfo.restoreOptions.restorePlanResponse.backupSetsToRestore?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
+			height: getTableHeight(this.objectInfo.restoreOptions.restorePlanResponse.dbFiles?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
 			forceFitColumns: azdata.ColumnSizingMode.DataFit,
+			width: RestoreTablesWidth,
 			CSSStyles: {
 				'margin-left': '10px'
 			}
@@ -378,6 +388,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 		//Recovery state
 		let recoveryState = this.createDropdown(localizedConstants.RecoveryStateText, async (newValue) => {
+			this.ToggleRestoreOptionsOnRecoveryStateOptions(newValue as string);
 			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.recoveryState.currentValue = newValue as string;
 		}, this.viewInfo.restoreDatabaseInfo.recoveryStateOptions, this.viewInfo.restoreDatabaseInfo.recoveryStateOptions[0], true, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.RecoveryStateText, recoveryState));
@@ -390,10 +401,12 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			width: RestoreInputsWidth,
 			value: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.standbyFile.defaultValue
 		};
-		let restoreTo = this.createInputBox(async (newValue) => {
+		this.standByFileInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.standbyFile.currentValue = newValue;
 		}, props);
-		containers.push(this.createLabelInputContainer(localizedConstants.StandbyFileText, restoreTo));
+		const standByFileContainer = this.createLabelInputContainer(localizedConstants.StandbyFileText, this.standByFileInput);
+		standByFileContainer.CSSStyles = { 'margin-left': '20px' };
+		containers.push(standByFileContainer);
 
 		return this.createGroup(localizedConstants.RestoreOptionsText, containers, true);
 	}
@@ -410,6 +423,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		this.leaveSourceDB = this.createCheckbox(localizedConstants.LeaveSourceDBText, async (checked) => {
 			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogWithNoRecovery.currentValue = checked;
 		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogWithNoRecovery.defaultValue);
+		this.leaveSourceDB.CSSStyles = { 'margin-left': '20px' };
 		containers.push(this.leaveSourceDB);
 
 		// Tail log backup file
@@ -423,7 +437,9 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		let tailLogBackupFile = this.createInputBox(async (newValue) => {
 			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogBackupFile.currentValue = newValue;
 		}, props);
-		containers.push(this.createLabelInputContainer(localizedConstants.TailLogBackupFileText, tailLogBackupFile));
+		const tailLogBackupFileContainer = this.createLabelInputContainer(localizedConstants.TailLogBackupFileText, tailLogBackupFile);
+		tailLogBackupFileContainer.CSSStyles = { 'margin-left': '20px' };
+		containers.push(tailLogBackupFileContainer);
 
 		return this.createGroup(localizedConstants.RestoreTailLogBackupText, containers, true);
 	}
@@ -435,6 +451,22 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.closeExistingConnections.defaultValue);
 
 		return this.createGroup(localizedConstants.RestoreServerConnectionsOptionsText, [this.closeExistingConnections], true);
+	}
+
+	private ToggleRestoreOptionsOnRecoveryStateOptions(recoveryStateOption: string): void {
+		let preserveReplicationSettingsEnableState = true;
+		let standByFileEnableState = false;
+		// Option - Recovery with NoRecovery
+		if (recoveryStateOption === this.viewInfo.restoreDatabaseInfo.recoveryStateOptions[1]) {
+			preserveReplicationSettingsEnableState = false;
+		}
+		// Option - Recovery with NoRecovery
+		else if (recoveryStateOption === this.viewInfo.restoreDatabaseInfo.recoveryStateOptions[2]) {
+			standByFileEnableState = true;
+		}
+
+		this.preserveReplicationSettings.enabled = preserveReplicationSettingsEnableState;
+		this.standByFileInput.enabled = standByFileEnableState;
 	}
 	//#endregion
 }
