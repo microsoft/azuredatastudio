@@ -382,8 +382,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 					ownedSchemas: [],
 					databaseRoles: [],
 					password: '',
-					securablePermissions: [],
-					hidePermissions: false
+					securablePermissions: []
 				},
 				languages: languages,
 				schemas: schemas,

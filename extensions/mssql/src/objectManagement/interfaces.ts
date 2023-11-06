@@ -9,7 +9,6 @@ import { ObjectManagement } from 'mssql';
  */
 export interface SecurityPrincipalObject extends ObjectManagement.SqlObject {
 	securablePermissions: SecurablePermissions[];
-	hidePermissions: boolean;
 }
 
 /**
