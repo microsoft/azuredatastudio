@@ -43,8 +43,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	}
 
 	// ensure our log path exists
-	if (!(await Utils.exists(context.logPath))) {
-		await fs.mkdir(context.logPath);
+	if (!(await Utils.exists(context.logUri.fsPath))) {
+		await fs.mkdir(context.logUri.fsPath);
 	}
 
 	IconPathHelper.setExtensionContext(context);
@@ -197,7 +197,7 @@ function registerLogCommand(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('mssql.showLogFile', async () => {
 		const choice = await vscode.window.showQuickPick(logFiles);
 		if (choice) {
-			const document = await vscode.workspace.openTextDocument(vscode.Uri.file(path.join(context.logPath, choice)));
+			const document = await vscode.workspace.openTextDocument(vscode.Uri.file(path.join(context.logUri.fsPath, choice)));
 			if (document) {
 				void vscode.window.showTextDocument(document);
 			}
