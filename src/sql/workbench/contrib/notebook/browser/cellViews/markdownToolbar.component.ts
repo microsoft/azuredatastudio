@@ -265,7 +265,6 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 					if (originalImageName !== attachmentName) {
 						imageCalloutResult.insertEscapedMarkdown = `![${attachmentName}](attachment:${attachmentName.replace(/\s/g, '')})`;
 					}
-					await insertFormattedMarkdown(imageCalloutResult.insertEscapedMarkdown, this.getCellEditorControl());
 				}
 				await insertFormattedMarkdown(imageCalloutResult.insertEscapedMarkdown, this.getCellEditorControl());
 			}

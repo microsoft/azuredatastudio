@@ -53,6 +53,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _disposables: vscode.Disposable[] = [];
 
 	private _serverName: string = '';
+	private _skipAssessmentValid: boolean = false;
 
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
@@ -359,6 +360,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			'block');
 
 		this._assessmentSummaryCardLoader.loading = assessing;
+		this._skipAssessmentValid = (!assessing && failedAssessment);
 	}
 
 	// Refresh the assessment summary details.
@@ -583,7 +585,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 
 			const errors: string[] = [];
-			if (this._skipAssessmentCheckbox.checked === false) {
+			if (this._skipAssessmentValid && !this._skipAssessmentCheckbox.checked) {
 				errors.push(constants.SELECT_SKIP_ASSESSMENT_CHECK_TO_CONTINUE);
 			}
 
