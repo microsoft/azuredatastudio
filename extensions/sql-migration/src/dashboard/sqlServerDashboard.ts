@@ -108,7 +108,6 @@ export class DashboardWidget {
 			};
 
 			const dashboardTab = await new DashboardTab().create(
-				this._context,
 				view,
 				async (filter: AdsMigrationStatus) => await openMigrationFcn(filter),
 				this._onServiceContextChanged,

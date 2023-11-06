@@ -199,15 +199,15 @@ export class AssessmentDetailsHeader {
 		if (this._readonly) {
 			const targetPlatforms = new Set<string>();
 			const issues = this.migrationStateModel._assessmentResults?.issues;
-			for (let j = 0; j < issues.length; ++j) {
-				targetPlatforms.add(issues[j].appliesToMigrationTargetPlatform);
-			}
+			issues.forEach((issue) => {
+				targetPlatforms.add(issue.appliesToMigrationTargetPlatform);
+			});
 
-			for (let i = 0; i < this.migrationStateModel._assessmentResults?.databaseAssessments.length; ++i) {
+			for (let i = 0; i < this.migrationStateModel._assessmentResults?.databaseAssessments.length; i++) {
 				const issues = this.migrationStateModel._assessmentResults?.databaseAssessments[i].issues;
-				for (let j = 0; j < issues.length; ++j) {
-					targetPlatforms.add(issues[j].appliesToMigrationTargetPlatform);
-				}
+				issues.forEach((issue) => {
+					targetPlatforms.add(issue.appliesToMigrationTargetPlatform);
+				});
 			}
 
 			targetTypes = Array.from(targetPlatforms).sort().map(v => {
