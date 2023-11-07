@@ -40,7 +40,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends SecurityPrincip
 	}
 
 	protected override async initializeUI(): Promise<void> {
-		this.securablePermissions = deepClone(this.objectInfo.securablePermissions);
+		this.securablePermissions = deepClone(this.objectInfo.securablePermissions) ?? [];
 		this.initializeSecurableSection();
 	}
 
