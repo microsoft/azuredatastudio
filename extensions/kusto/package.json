@@ -43,6 +43,11 @@
           "dark": "resources/dark/open_notebook_inverse.svg",
           "light": "resources/light/open_notebook.svg"
         }
+      },
+      {
+        "command": "kusto.showLogFile",
+        "category": "Kusto",
+        "title": "%title.showLogFile%"
       }
     ],
     "languages": [

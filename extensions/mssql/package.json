@@ -133,36 +133,6 @@
         "title": "%title.renameObject%"
       },
       {
-        "command": "mssql.newDatabaseRole",
-        "category": "MSSQL",
-        "title": "%title.newDatabaseRole%",
-        "icon": "$(add)"
-      },
-      {
-        "command": "mssql.newLogin",
-        "category": "MSSQL",
-        "title": "%title.newLogin%",
-        "icon": "$(add)"
-      },
-      {
-        "command": "mssql.newUser",
-        "category": "MSSQL",
-        "title": "%title.newUser%",
-        "icon": "$(add)"
-      },
-      {
-        "command": "mssql.newApplicationRole",
-        "category": "MSSQL",
-        "title": "%title.newApplicationRole%",
-        "icon": "$(add)"
-      },
-      {
-        "command": "mssql.newServerRole",
-        "category": "MSSQL",
-        "title": "%title.newServerRole%",
-        "icon": "$(add)"
-      },
-      {
         "command": "mssql.detachDatabase",
         "category": "MSSQL",
         "title": "%title.detachDatabase%"
