@@ -601,10 +601,6 @@
           "when": "false"
         },
         {
-          "command": "mssql.backupDatabase",
-          "when": "false"
-        },
-        {
           "command": "mssql.enableGroupBySchemaTitle",
           "when": "false"
         },
