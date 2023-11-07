@@ -31,7 +31,7 @@ export class HelpAndSupportDialog {
 	}
 
 	public async openDialog(): Promise<void> {
-		this.dialog = azdata.window.createModelViewDialog('Help + Support', 'Help + Support', '585px');
+		this.dialog = azdata.window.createModelViewDialog(constants.HELP_SUPPORT_TITLE, constants.HELP_SUPPORT_TITLE, '585px');
 		const dialogSetupPromises: Thenable<void>[] = [];
 		dialogSetupPromises.push(this.initializeDialog(this.dialog));
 		azdata.window.openDialog(this.dialog);
@@ -51,20 +51,20 @@ export class HelpAndSupportDialog {
 		}).component();
 
 		const support = [{
-			title: 'Support Resources',
-			description: 'Explore Documentation',
+			title: constants.SUPPORT_RESOURCES_TITLE,
+			description: constants.SUPPORT_RESOURCES_DESCRIPTION,
 			link: '',
 			iconPath: IconPathHelper.info,
 		},
 		{
-			title: 'Support Request',
-			description: 'Create a Support Request',
+			title: constants.SUPPORT_REQUEST_TITLE,
+			description: constants.SUPPORT_REQUEST_DESCRIPTION,
 			link: '',
 			iconPath: IconPathHelper.newSupportRequest,
 		},
 		{
-			title: 'Community Support',
-			description: 'Connect with Microsoft Community',
+			title: constants.COMMUNITY_SUPPORT_TITLE,
+			description: constants.COMMUNITY_SUPPORT_DESCRIPTION,
 			link: '',
 			iconPath: IconPathHelper.newSupportRequest,
 		}];
@@ -128,14 +128,14 @@ export class HelpAndSupportDialog {
 		}).component();
 
 		const note = view.modelBuilder.text().withProps({
-			value: 'To receive assistance from Microsoft customer support, please log a service request on Service Hub at aka.ms/servicehub.',
+			value: constants.SUPPORT_REQUEST_NOTE,
 			CSSStyles: {
 				'margin-block-end': '-1px'
 			},
 		}).component();
 
 		const communitySupportNote = view.modelBuilder.text().withProps({
-			value: 'You can post your question with the Microsoft community support through the Q&A channel.',
+			value: constants.COMMUNITY_SUPPORT_NOTE,
 			CSSStyles: {
 				'margin-block-end': '-1px'
 			},
@@ -144,28 +144,28 @@ export class HelpAndSupportDialog {
 		linksContainer.addItems([linkComponent]);
 		labelsContainer.addItems([linksContainer]);
 
-		if (linkMetaData.title === 'Support request') {
+		if (linkMetaData.title === constants.SUPPORT_REQUEST_TITLE) {
 			linkComponent.onDidClick(async () => await this.launchNewSupportRequest());
 			labelsContainer.addItem(note);
 		}
-		else if (linkMetaData.title === 'Community support') {
+		else if (linkMetaData.title === constants.COMMUNITY_SUPPORT_TITLE) {
 			linkComponent.onDidClick(async () => await this.launchCommunityRequest());
 			labelsContainer.addItem(communitySupportNote);
 		}
 		else
-			linkComponent.url = 'https://github.com/microsoft/azuredatastudio'
+			linkComponent.url = 'https://aka.ms/dms-overview'
 
 		return labelsContainer;
 
 	}
 
 	async launchNewSupportRequest(): Promise<void> {
-		await vscode.env.openExternal(vscode.Uri.parse(
-			`https://github.com/microsoft/azuredatastudio`));
+		const supportUrl = `https://portal.azure.com/#blade/Microsoft_Azure_Support/HelpAndSupportBlade/newsupportrequest`;
+		await vscode.env.openExternal(vscode.Uri.parse(supportUrl));
 	}
 
 	async launchCommunityRequest(): Promise<void> {
 		await vscode.env.openExternal(vscode.Uri.parse(
-			`https://github.com/microsoft/azuredatastudio`));
+			`https://aka.ms/DMSqna`));
 	}
 }
