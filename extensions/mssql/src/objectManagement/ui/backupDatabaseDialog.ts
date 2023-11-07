@@ -98,9 +98,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		}
 
 		let defaultName = this.getDefaultBackupName(backupTypes[0]);
-		this._backupSetNameInput = this.createInputBox(newValue => {
-			return Promise.resolve();
-		}, {
+		this._backupSetNameInput = this.createInputBox(() => undefined, {
 			ariaLabel: defaultName,
 			inputType: 'text',
 			enabled: true,
@@ -111,9 +109,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		components.push(backupInputContainer);
 
 		// Recovery Model field is always disabled since it's a database setting
-		let recoveryModelInput = this.createInputBox(newValue => {
-			return Promise.resolve();
-		}, {
+		let recoveryModelInput = this.createInputBox(() => undefined, {
 			ariaLabel: this.objectInfo.recoveryModel,
 			inputType: 'text',
 			enabled: false,
@@ -141,9 +137,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		components.push(this._copyBackupCheckbox);
 
 		const backupDestinations = [loc.BackupDiskLabel]; // TODO: Add URL type when enabled
-		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, newValue => {
-			return Promise.resolve();
-		}, backupDestinations, backupDestinations[0]);
+		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, () => undefined, backupDestinations, backupDestinations[0]);
 		let backupDestContainer = this.createLabelInputContainer(loc.BackupToLabel, this._backupDestDropdown);
 		components.push(backupDestContainer);
 
@@ -174,13 +168,9 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		this._overwriteExistingMediaButton = this.createRadioButton(loc.OverwriteExistingBackups, existingGroupId, false, () => undefined);
 
 		// Options for writing to new media
-		this._mediaNameInput = this.createInputBox(newValue => {
-			return Promise.resolve();
-		}, { enabled: false });
+		this._mediaNameInput = this.createInputBox(() => undefined, { enabled: false });
 		let mediaSetContainer = this.createLabelInputContainer(loc.BackupNewMediaName, this._mediaNameInput);
-		this._mediaDescriptionInput = this.createInputBox(newValue => {
-			return Promise.resolve();
-		}, { enabled: false });
+		this._mediaDescriptionInput = this.createInputBox(() => undefined, { enabled: false });
 		let mediaDescriptionContainer = this.createLabelInputContainer(loc.BackupNewMediaDescription, this._mediaDescriptionInput);
 		let newMediaButtonsGroup = this.createGroup('', [mediaSetContainer, mediaDescriptionContainer]);
 
@@ -230,15 +220,9 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		], false);
 
 		// Reliability
-		this._verifyCheckbox = this.createCheckbox(loc.VerifyBackupWhenFinished, checked => {
-			return Promise.resolve();
-		});
-		this._checksumCheckbox = this.createCheckbox(loc.BackupPerformChecksum, checked => {
-			return Promise.resolve();
-		});
-		this._continueOnErrorCheckbox = this.createCheckbox(loc.BackupContinueOnError, checked => {
-			return Promise.resolve();
-		});
+		this._verifyCheckbox = this.createCheckbox(loc.VerifyBackupWhenFinished, () => undefined);
+		this._checksumCheckbox = this.createCheckbox(loc.BackupPerformChecksum, () => undefined);
+		this._continueOnErrorCheckbox = this.createCheckbox(loc.BackupContinueOnError, () => undefined);
 
 		let reliabilityGroup = this.createGroup(loc.BackupReliabilityLabel, [this._verifyCheckbox, this._checksumCheckbox, this._continueOnErrorCheckbox], false);
 
