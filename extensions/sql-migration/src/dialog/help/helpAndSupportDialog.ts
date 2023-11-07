@@ -8,6 +8,10 @@ import * as azdata from 'azdata';
 import * as constants from '../../constants/strings';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 
+export const supportResourcesLink: string = 'https://aka.ms/dms-overview';
+export const supportRequestLink: string = `https://portal.azure.com/#blade/Microsoft_Azure_Support/HelpAndSupportBlade/newsupportrequest`;
+export const communitySupportLink: string = `https://aka.ms/DMSqna`;
+
 interface IActionMetadata {
 	title: string,
 	description: string,
@@ -153,19 +157,19 @@ export class HelpAndSupportDialog {
 			labelsContainer.addItem(communitySupportNote);
 		}
 		else
-			linkComponent.url = 'https://aka.ms/dms-overview'
+			linkComponent.url = supportResourcesLink;
 
 		return labelsContainer;
 
 	}
 
 	async launchNewSupportRequest(): Promise<void> {
-		const supportUrl = `https://portal.azure.com/#blade/Microsoft_Azure_Support/HelpAndSupportBlade/newsupportrequest`;
-		await vscode.env.openExternal(vscode.Uri.parse(supportUrl));
+		await vscode.env.openExternal(vscode.Uri.parse(
+			supportRequestLink));
 	}
 
 	async launchCommunityRequest(): Promise<void> {
 		await vscode.env.openExternal(vscode.Uri.parse(
-			`https://aka.ms/DMSqna`));
+			communitySupportLink));
 	}
 }
