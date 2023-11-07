@@ -1681,7 +1681,6 @@ export namespace AttachDatabaseRequest {
 	export const type = new RequestType<AttachDatabaseRequestParams, string, void, void>('objectManagement/attachDatabase');
 }
 
-
 export interface GetDataFolderRequestParams {
 	connectionUri: string;
 }
