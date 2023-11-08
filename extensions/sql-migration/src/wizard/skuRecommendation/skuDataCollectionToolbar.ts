@@ -71,7 +71,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		const refreshAssessmentButton = view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
-				label: "Refresh Assessment",
+				label: constants.REFRESH_ASSESSMENT_LABEL,
 				height: 36,
 				iconHeight: 16,
 				iconWidth: 16,
@@ -92,7 +92,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		const refreshSkuButton = view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
-				label: "Refresh SKU",
+				label: constants.REFRESH_SKU_LABEL,
 				height: 36,
 				iconHeight: 16,
 				iconWidth: 16,
