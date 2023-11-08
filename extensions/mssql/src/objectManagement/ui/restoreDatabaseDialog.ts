@@ -40,7 +40,8 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		options.width = Dialog_Width;
-		super(objectManagementService, options, loc.RestoreDatabaseDialogTitle(options.database), 'DetachDatabase');
+		super(objectManagementService, options, loc.RestoreDatabaseDialogTitle(options.database), 'RestoreDatabase');
+		this.dialogObject.okButton.label = localizedConstants.RestoreText;
 	}
 
 	protected async initializeUI(): Promise<void> {
@@ -286,7 +287,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		// Relocate all files
 		this.relocateAllFiles = this.createCheckbox(localizedConstants.RelocateAllFilesText, async (checked) => {
 			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.currentValue = checked;
-		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.defaultValue);
+		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.defaultValue, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.isReadOnly);
 		containers.push(this.relocateAllFiles);
 
 		// Data	File folder
@@ -297,7 +298,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			inputType: 'text',
 			enabled: false,
 			value: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.dataFileFolder.defaultValue,
-			width: RestoreInputsWidth
+			width: RestoreInputsWidth - 20
 		});
 		const dataDileFolderContainer = this.createLabelInputContainer(localizedConstants.DataFileFolderText, dataFileFolder);
 		dataDileFolderContainer.CSSStyles = { 'margin-left': '20px' };
@@ -311,7 +312,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			inputType: 'text',
 			enabled: false,
 			value: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.logFileFolder.defaultValue,
-			width: RestoreInputsWidth
+			width: RestoreInputsWidth - 20
 		});
 		const logFileFolderContainer = this.createLabelInputContainer(localizedConstants.LogFileFolderText, logFileFolder);
 		logFileFolderContainer.CSSStyles = { 'margin-left': '20px' };
@@ -388,9 +389,11 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 		//Recovery state
 		let recoveryState = this.createDropdown(localizedConstants.RecoveryStateText, async (newValue) => {
-			this.ToggleRestoreOptionsOnRecoveryStateOptions(newValue as string);
-			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.recoveryState.currentValue = newValue as string;
-		}, this.viewInfo.restoreDatabaseInfo.recoveryStateOptions, this.viewInfo.restoreDatabaseInfo.recoveryStateOptions[0], true, RestoreInputsWidth, true, true);
+			this.toggleRestoreOptionsOnRecoveryStateOptions(newValue as string);
+			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.recoveryState.currentValue = this.viewInfo.restoreDatabaseInfo.recoveryStateOptions.find(a => a.displayName === newValue).name as string;
+		}, this.viewInfo.restoreDatabaseInfo.recoveryStateOptions.map(a => a.displayName)
+			, this.viewInfo.restoreDatabaseInfo.recoveryStateOptions.find(a => a.name === this.objectInfo.restoreOptions.restorePlanResponse.planDetails.recoveryState.defaultValue).displayName
+			, true, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.RecoveryStateText, recoveryState));
 
 		//Stand by file
@@ -398,7 +401,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			ariaLabel: localizedConstants.StandbyFileText,
 			required: false,
 			enabled: false,
-			width: RestoreInputsWidth,
+			width: RestoreInputsWidth - 20,
 			value: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.standbyFile.defaultValue
 		};
 		this.standByFileInput = this.createInputBox(async (newValue) => {
@@ -416,13 +419,13 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		// Take tail-log backup before restore
 		this.takeTailLogBackup = this.createCheckbox(localizedConstants.TakeTailLogBackupBeforeRestoreText, async (checked) => {
 			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.currentValue = checked;
-		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.defaultValue);
+		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.defaultValue, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.isReadOnly);
 		containers.push(this.takeTailLogBackup);
 
 		// leave source database in the restoring state (WITH NORECOVERY)
 		this.leaveSourceDB = this.createCheckbox(localizedConstants.LeaveSourceDBText, async (checked) => {
 			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogWithNoRecovery.currentValue = checked;
-		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogWithNoRecovery.defaultValue);
+		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogWithNoRecovery.defaultValue, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogWithNoRecovery.isReadOnly);
 		this.leaveSourceDB.CSSStyles = { 'margin-left': '20px' };
 		containers.push(this.leaveSourceDB);
 
@@ -431,7 +434,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			ariaLabel: localizedConstants.TailLogBackupFileText,
 			required: false,
 			enabled: false,
-			width: RestoreInputsWidth,
+			width: RestoreInputsWidth - 20,
 			value: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogBackupFile.defaultValue
 		};
 		let tailLogBackupFile = this.createInputBox(async (newValue) => {
@@ -453,15 +456,15 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		return this.createGroup(localizedConstants.RestoreServerConnectionsOptionsText, [this.closeExistingConnections], true);
 	}
 
-	private ToggleRestoreOptionsOnRecoveryStateOptions(recoveryStateOption: string): void {
+	private toggleRestoreOptionsOnRecoveryStateOptions(recoveryStateOption: string): void {
 		let preserveReplicationSettingsEnableState = true;
 		let standByFileEnableState = false;
-		// Option - Recovery with NoRecovery
-		if (recoveryStateOption === this.viewInfo.restoreDatabaseInfo.recoveryStateOptions[1]) {
+		// Option - Restore with NoRecovery
+		if (recoveryStateOption === this.viewInfo.restoreDatabaseInfo.recoveryStateOptions[1].displayName) {
 			preserveReplicationSettingsEnableState = false;
 		}
-		// Option - Recovery with NoRecovery
-		else if (recoveryStateOption === this.viewInfo.restoreDatabaseInfo.recoveryStateOptions[2]) {
+		// Option - Restore with standby
+		else if (recoveryStateOption === this.viewInfo.restoreDatabaseInfo.recoveryStateOptions[2].displayName) {
 			standByFileEnableState = true;
 		}
 

@@ -509,8 +509,13 @@ export interface QueryStoreOptions {
 export interface RestoreDatabaseInfo {
 	sourceDatabaseNames: string[];
 	targetDatabaseNames: string[];
-	recoveryStateOptions: string[];
+	recoveryStateOptions: CategoryValue[];
 	lastBackupTaken: string;
+}
+
+export interface CategoryValue {
+	displayName: string;
+	name: string;
 }
 
 export interface RestoreOptions {
@@ -561,6 +566,7 @@ export interface QueryStoreCapturePolicyOptions {
 	totalCompileCPUTimeInMS: number;
 	totalExecutionCPUTimeInMS: number;
 }
+
 
 export interface DatabaseScopedConfigurationsInfo {
 	id: number;
