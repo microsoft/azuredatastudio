@@ -30,7 +30,7 @@ export function NoDialogFoundError(nodeType: string, objectType: string): string
 export function NotSupportedError(objectType: string): string { return localize('objectManagement.notSupportedError', "This command is not supported for object type '{0}'.", objectType); }
 
 // Shared Strings
-export const FailedToRetrieveConnectionInfoErrorMessage: string = localize('objectManagement.noConnectionUriError', "Failed to retrieve the connection information, please reconnect and try again.")
+export const FailedToRetrieveConnectionInfoErrorMessage: string = localize('objectManagement.noConnectionUriError', "Failed to retrieve the connection information, please reconnect and try again.");
 export const RenameObjectDialogTitle: string = localize('objectManagement.renameObjectDialogTitle', "Enter new name");
 export const OwnerText: string = localize('objectManagement.ownerText', "Owner");
 export const BrowseText = localize('objectManagement.browseText', "Browse…");
@@ -110,6 +110,13 @@ export function OpenDetachDatabaseDialogError(error: string): string {
 	}, "An error occurred while opening the detach database dialog. {0}", error);
 }
 
+export function OpenBackupDatabaseDialogError(error: string): string {
+	return localize({
+		key: 'objectManagement.openBackupDatabaseDialogError',
+		comment: ['{0}: error message.']
+	}, "An error occurred while opening the backup database dialog. {0}", error);
+}
+
 export function DetachDatabaseOperationDisplayName(objectName: string): string {
 	return localize({
 		key: 'objectManagement.detachDatabaseOperationName',
@@ -132,6 +139,13 @@ export function OpenAttachDatabaseDialogError(error: string): string {
 }
 
 export const AttachDatabaseOperationDisplayName = localize('objectManagement.attachDatabaseOperationName', "Attach database");
+
+export function BackupDatabaseOperationDisplayName(objectName: string): string {
+	return localize({
+		key: 'objectManagement.backupDatabaseOperationName',
+		comment: ['{0}: object name.']
+	}, "Backup database '{0}'", objectName);
+}
 
 export function OpenObjectPropertiesDialogError(objectType: string, objectName: string, error: string): string {
 	return localize({
@@ -220,7 +234,7 @@ export const NoDatabaseFilesError = localize('objectManagement.doDatabaseFilesEr
 export const DatabasesToAttachLabel = localize('objectManagement.databasesToAttach', "Databases to Attach");
 export const AssociatedFilesLabel = localize('objectManagement.associatedDatabaseFiles', "Associated Database Files");
 export const MdfFileLocation = localize('objectManagement.mdfFileLocation', "MDF File Location");
-export const DatabaseFilesFilterLabel = localize('objectManagement.databaseFilesFilterLabel', "Database Data Files")
+export const DatabaseFilesFilterLabel = localize('objectManagement.databaseFilesFilterLabel', "Database Data Files");
 export const DatabaseName = localize('objectManagement.databaseName', "DB Name");
 export const AttachAsText = localize('objectManagement.attachAsText', "Attach As");
 export const AttachButtonLabel = localize('objectManagement.attachButtonLabel', "Attach");
@@ -230,6 +244,52 @@ export const DropDatabaseOptions = localize('objectManagement.dropDatabaseOption
 export const CloseConnections = localize('objectManagement.closeConnections', "Close existing connections");
 export const DeleteBackupHistory = localize('objectManagement.deleteBackupHistory', "Delete backup and restore history information for database");
 export const DatabaseDetailsLabel = localize('objectManagement.databaseDetails', "Database Details");
+
+// Backup database
+export const BackupDatabaseDialogTitle = (dbName: string) => localize('objectManagement.backupDatabaseDialogTitle', "Backup Database - {0} (Preview)", dbName);
+export const BackupButtonLabel = localize('objectManagement.backupButtonLabel', "Backup");
+export const BackupOverwriteMediaLabel = localize('objectManagement.backupOverwriteMedia', "Overwrite media");
+export const BackupCompressionLabel = localize('objectManagement.backupCompression', "Compression");
+export const BackupEncryptionLabel = localize('objectManagement.backupEncryption', "Encryption");
+export const BackupTransactionLog = localize('objectManagement.backupTransactionLog', "Transaction Log");
+export const BackupReliabilityLabel = localize('objectManagement.backupReliability', "Reliability");
+export const BackupExpirationLabel = localize('objectManagement.backupExpiration', "Expiration");
+export const AddBackupFileAriaLabel = localize('objectManagement.addBackupFileText', "Add backup files");
+export const RemoveBackupFileAriaLabel = localize('objectManagement.removeBackupFileText', "Remove backup file");
+export const BackupFilesLabel = localize('objectManagement.backupFilesLabel', "Backup Files");
+export const BackupNameLabel = localize('objectManagement.backupNameLabel', "Backup set name");
+export const BackupRecoveryLabel = localize('objectManagement.backupRecoveryLabel', "Recovery model");
+export const BackupTypeLabel = localize('objectManagement.backupTypeLabel', "Backup type");
+export const BackupCopyLabel = localize('objectManagement.backupCopyLabel', "Copy-only backup");
+export const BackupDiskLabel = localize('objectManagement.backupDiskLabel', "Disk");
+export const BackupUrlLabel = localize('objectManagement.backupUrlLabel', "URL");
+export const BackupToLabel = localize('objectManagement.backupToLabel', "Back up to");
+export const BackupServerCertificate = localize('objectManagement.backupServerCertificate', "Server Certificate");
+export const BackupAsymmetricKey = localize('objectManagement.backupAsymmetricKey', "Asymmetric Key");
+export const BackupFull = localize('objectManagement.backupFull', "Full");
+export const BackupDifferential = localize('objectManagement.backupDifferential', "Differential");
+export const BackupToExistingMedia = localize('objectManagement.backupToExistingMedia', "Back up to the existing media set");
+export const AppendToExistingBackup = localize('objectManagement.appendToExistingBackup', "Append to the existing backup set");
+export const OverwriteExistingBackups = localize('objectManagement.overwriteExistingBackups', "Overwrite all existing backup sets");
+export const BackupAndEraseExisting = localize('objectManagement.backupAndEraseExisting', "Back up to a new media set, and erase all existing backup sets");
+export const BackupNewMediaName = localize('objectManagement.backupNewMediaName', "New media set name");
+export const BackupNewMediaDescription = localize('objectManagement.backupNewMediaDescription', "New media set description");
+export const VerifyBackupWhenFinished = localize('objectManagement.verifyBackupWhenFinished', "Verify backup when finished");
+export const BackupPerformChecksum = localize('objectManagement.backupPerformChecksum', "Perform checksum before writing to media");
+export const BackupContinueOnError = localize('objectManagement.backupContinueOnError', "Continue on error");
+export const BackupTruncateLog = localize('objectManagement.backupTruncateLog', "Truncate the transaction log");
+export const BackupLogTail = localize('objectManagement.backupLogTail', "Back up the tail of the log, and leave the database in the restoring state");
+export const TransactionLogNotice = localize('objectManagement.transactionLogNotice', "Transaction Log options are only available only when Backup Type is set to Tansaction Log above.");
+export const BackupSetCompression = localize('objectManagement.backupCompression', "Set backup compression");
+export const EncryptBackup = localize('objectManagement.encryptBackup', "Encrypt backup");
+export const BackupAlgorithm = localize('objectManagement.backupAlgorithm', "Algorithm");
+export const BackupCertificate = localize('objectManagement.backupCertificate', "Certificate or Asymmetric key");
+export const NoEncryptorWarning = localize('objectManagement.noEncryptorWarning', "No certificate or asymmetric key is available")
+export const BackupEncryptNotice = localize('objectManagement.backupEncryptNotice', "Encryption options are only available when 'Back up to a new media set' is selected above.");
+export const BackupDefaultSetting = localize('objectManagement.backupDefaultSetting', "Use the default server setting");
+export const CompressBackup = localize('objectManagement.compressBackup', "Compress backup");
+export const DontCompressBackup = localize('objectManagement.dontCompressBackup', "Do not compress backup");
+export const RecoveryModelSimple = localize('objectManagement.recoveryModelSimple', "Simple");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");
