@@ -119,7 +119,7 @@ steps:
       set -e
       service xvfb start
     displayName: Start xvfb
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
       set -e
@@ -259,7 +259,7 @@ steps:
       mkdir -p $(Build.ArtifactStagingDirectory)/test-results/coverage
       cp --parents -r $(Build.SourcesDirectory)/extensions/*/coverage/** $(Build.ArtifactStagingDirectory)/test-results/coverage
     displayName: Copy Coverage
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results test-results.xml'
@@ -267,14 +267,14 @@ steps:
       testResultsFiles: '*.xml'
       searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
     continueOnError: true
-    condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
+    condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: crash reports'
     inputs:
       PathtoPublish: '$(Build.SourcesDirectory)/.build/crashes'
       ArtifactName: crashes
-    condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
+    condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
