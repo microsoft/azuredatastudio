@@ -19,7 +19,7 @@ configurationRegistry.registerConfiguration({
 		'update.mode': {
 			type: 'string',
 			enum: ['none', 'manual', 'start', 'default'],
-			default: 'default',
+			default: 'none',
 			scope: ConfigurationScope.APPLICATION,
 			description: localize('updateMode', "Configure whether you receive automatic updates. Requires a restart after change. The updates are fetched from a Microsoft online service."),
 			tags: ['usesOnlineServices'],
