@@ -618,11 +618,6 @@
           "group": "1_objectManagement@0"
         },
         {
-          "command": "mssql.newDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
-          "group": "1_objectManagement@0"
-        },
-        {
           "command": "mssql.newDatabaseRole",
           "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == DatabaseRoles && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@0"
@@ -767,11 +762,6 @@
         {
           "command": "mssql.newDatabase",
           "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && config.workbench.enablePreviewFeatures",
-          "group": "1_objectManagement@0"
-        },
-        {
-          "command": "mssql.newDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Database  && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@0"
         },
         {
