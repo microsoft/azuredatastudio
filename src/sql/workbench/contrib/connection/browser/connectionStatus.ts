@@ -62,19 +62,20 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 
 	// Update the connection status shown in the bar
 	private _updateStatus(): void {
-		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService, this._logService);
-		let id = undefined;
-		let editorNewInfo = this.getCurrentActiveEditorInfo();
-		// retrieve the currently focused editor so we can get the correct SPID value for it.
+		let activeConnection: IConnectionProfile = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService, this._logService);
+		let connectionId: string = undefined;
+		let editorNewInfo: ConnectionManagementInfo = this.getCurrentActiveEditorInfo();
+		// retrieve the currently focused editor so we can get the correct connection id value for it.
 		if (editorNewInfo) {
-			// active editor info is needed as uri for editor is treated as a separate process on the server.
-			// make sure the active editor has the same connection as the current global connection, otherwise the user has selected an unrelated connection in OE.
+			// We only want to display the connection ID for editor connections, so first check to make
+			// sure the connection we're displaying information for (which may be from OE or other
+			// sources) matches the current active editor before updating the ID
 			if (editorNewInfo && editorNewInfo?.connectionProfile?.id === activeConnection?.id) {
-				id = editorNewInfo?.serverConnectionId;
+				connectionId = editorNewInfo?.serverConnectionId;
 			}
 		}
 		if (activeConnection) {
-			this._setConnectionText(activeConnection, id)
+			this._setConnectionText(activeConnection, connectionId)
 			this.show();
 		}
 		else {
@@ -85,8 +86,8 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 	// If the connection server id for URI changes, we need to update the info for the URI with the new one
 	// If the current editor is the one being updated, we will do a refresh if the id is different.
 	private _updateUriForInfo(uriToUpdate: string, idForUpdate: string) {
-		let newInfo = this._connectionManagementService.getConnectionInfo(uriToUpdate);
-		let isDifferent = false;
+		let newInfo: ConnectionManagementInfo = this._connectionManagementService.getConnectionInfo(uriToUpdate);
+		let isDifferent: boolean = false;
 		if (newInfo && newInfo.serverConnectionId !== idForUpdate) {
 			isDifferent = true;
 			newInfo.serverConnectionId = idForUpdate;
@@ -116,17 +117,17 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 			}
 		}
 
-		let tooltip = localize('status.connection.baseTooltip', 'Server: {0}\nDatabase: {1}\n', connectionProfile.serverName,
+		let tooltip = localize('status.connection.baseTooltip', 'Server: {0}\nDatabase: {1}', connectionProfile.serverName,
 			(connectionProfile.databaseName ? connectionProfile.databaseName : '<default>'));
 
 		if (connectionProfile.userName && connectionProfile.userName !== '') {
-			tooltip = tooltip + localize('status.connection.tooltipLogin', 'Login: {0}\n', connectionProfile.userName);
+			tooltip += '\n' + localize('status.connection.tooltipLogin', 'Login: {0}', connectionProfile.userName);
 		}
 
 		if (id) {
 			text += ' (' + id + ')';
 			const serverConnectionIdName = connectionProfile.serverCapabilities.serverConnectionIdName || 'PID';
-			tooltip += serverConnectionIdName + ': ' + id;
+			tooltip += '\n' + serverConnectionIdName + ': ' + id;
 		}
 
 		this.statusItem.update({

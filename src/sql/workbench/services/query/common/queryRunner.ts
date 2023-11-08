@@ -31,7 +31,7 @@ import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { QueryConnID } from 'sql/workbench/services/query/common/query';
+import { ServerConnID } from 'sql/workbench/services/query/common/query';
 
 /*
 * Query Runner class which handles running a query, reports the results to the content manager,
@@ -83,7 +83,7 @@ export default class QueryRunner extends Disposable {
 	private readonly _onVisualize = this._register(new Emitter<ResultSetSummary>());
 	public readonly onVisualize = this._onVisualize.event;
 
-	private readonly _onConnectionIdUpdated = this._register(new Emitter<QueryConnID>());
+	private readonly _onConnectionIdUpdated = this._register(new Emitter<ServerConnID>());
 	public readonly onConnectionIdUpdated = this._onConnectionIdUpdated.event;
 
 	private _queryStartTime?: Date;
@@ -284,7 +284,7 @@ export default class QueryRunner extends Disposable {
 	 * Used to update the Server Connection ID of the current connection as assigned by the server after query complete.
 	 */
 	public handleServerConnId(id: string): void {
-		let idEvent: QueryConnID = {
+		let idEvent: ServerConnID = {
 			uri: this.uri,
 			connId: id,
 		}

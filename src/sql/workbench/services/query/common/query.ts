@@ -76,7 +76,7 @@ export interface ICellValue {
 	invariantCultureDisplayValue?: string;
 }
 
-export interface QueryConnID {
+export interface ServerConnID {
 	uri: string;
 	connId: string;
 }
