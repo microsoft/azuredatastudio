@@ -63,14 +63,6 @@ function getNewFileHeader(tag: string) {
 
 	// {{SQL CARBON EDIT}} Use our own header
 	const header = [
-		`// Type definitions for Azure Data Studio ${shorttag}`,
-		`// Project: https://github.com/microsoft/azuredatastudio`,
-		`// Definitions by: Charles Gagnon <https://github.com/Charles-Gagnon>`,
-		`//                 Alan Ren: <https://github.com/alanrenmsft>`,
-		`//                 Karl Burtram: <https://github.com/kburtram>`,
-		`//                 Ken Van Hyning: <https://github.com/kenvanhyning>`,
-		`// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped`,
-		``,
 		`/*---------------------------------------------------------------------------------------------`,
 		` *  Copyright (c) Microsoft Corporation. All rights reserved.`,
 		` *  Licensed under the MIT License.`,
