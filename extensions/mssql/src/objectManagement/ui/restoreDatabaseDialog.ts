@@ -308,7 +308,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	 */
 	private async createFileBrowser(): Promise<void> {
 		let backupFolder = await this.objectManagementService.getBackupFolder(this.options.connectionUri);
-		let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, backupFolder, [{ label: localizedConstants.allFiles, filters: ['*.bak'] }], true);
+		let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, backupFolder, [{ label: localizedConstants.allFiles, filters: ['*.bak'] }]);
 		if (filePath?.length > 0) {
 			this.backupFilePathInput.value = filePath;
 		}
@@ -356,14 +356,30 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		});
 		await this.setTableData(this.restoreDatabaseTable, restoreDatabaseTableNewdata, DefaultMaxTableRowCount);
 
+		// Reset Relocate all files checkbox
+		this.relocateAllFiles.checked = this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.defaultValue;
+		this.relocateAllFiles.enabled = !this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.isReadOnly;
+
 		// Reset Restore to
 		await this.restoreTo.updateProperty('value', this.objectInfo.restoreOptions.restorePlanResponse.planDetails.lastBackupTaken.currentValue);
 
 		// Reset Stanby
 		await this.standByFileInput.updateProperty('value', this.objectInfo.restoreOptions.restorePlanResponse.planDetails.standbyFile.defaultValue);
 
-		//Reset Backup file
+		// Reset tail-log backup checkbox
+		this.takeTailLogBackup.checked = this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.defaultValue;
+		this.takeTailLogBackup.enabled = !this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.isReadOnly;
+
+		// Reset leave source db checkbox
+		this.leaveSourceDB.checked = this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogWithNoRecovery.defaultValue;
+		this.leaveSourceDB.enabled = !this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogWithNoRecovery.isReadOnly;
+
+		// REset Tail-log backup file
 		await this.tailLogBackupFile.updateProperty('value', this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogBackupFile.defaultValue);
+
+		// Server connection
+		this.closeExistingConnections.checked = this.objectInfo.restoreOptions.restorePlanResponse.planDetails.closeExistingConnections.defaultValue;
+		this.closeExistingConnections.enabled = !this.objectInfo.restoreOptions.restorePlanResponse.planDetails.closeExistingConnections.isReadOnly;
 	}
 	//#endregion
 
@@ -373,7 +389,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		// Relocate all files
 		this.relocateAllFiles = this.createCheckbox(localizedConstants.RelocateAllFilesText, async (checked) => {
 			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.currentValue = checked;
-		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.defaultValue, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.isReadOnly);
+		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.defaultValue, !this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.isReadOnly);
 		containers.push(this.relocateAllFiles);
 
 		// Data	File folder
@@ -505,13 +521,13 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		// Take tail-log backup before restore
 		this.takeTailLogBackup = this.createCheckbox(localizedConstants.TakeTailLogBackupBeforeRestoreText, async (checked) => {
 			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.currentValue = checked;
-		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.defaultValue, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.isReadOnly);
+		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.defaultValue, !this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.isReadOnly);
 		containers.push(this.takeTailLogBackup);
 
 		// leave source database in the restoring state (WITH NORECOVERY)
 		this.leaveSourceDB = this.createCheckbox(localizedConstants.LeaveSourceDBText, async (checked) => {
 			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogWithNoRecovery.currentValue = checked;
-		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogWithNoRecovery.defaultValue, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogWithNoRecovery.isReadOnly);
+		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogWithNoRecovery.defaultValue, !this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogWithNoRecovery.isReadOnly);
 		this.leaveSourceDB.CSSStyles = { 'margin-left': '20px' };
 		containers.push(this.leaveSourceDB);
 
