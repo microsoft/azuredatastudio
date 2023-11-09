@@ -515,7 +515,7 @@
       <source xml:lang="en">Clear</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.azureRecommendation.status.manualRefreshTimer">
-      <source xml:lang="en">Click on &apos;Refresh SKU&apos; for updated recommendations.</source>
+      <source xml:lang="en">Click on &apos;Refresh SKU recommendation&apos; for updated recommendations.</source>
     </trans-unit>
     <trans-unit id="sql.migration.select.prompt">
       <source xml:lang="en">Click on SQL Server instance or any of the databases on the left to view its details.</source>
@@ -1996,8 +1996,8 @@
     <trans-unit id="sql.migration.blob.container.select">
       <source xml:lang="en">Select a blob container value first.</source>
     </trans-unit>
-    <trans-unit id="sql.migration.sku.import.performance.data.dialog.open.file">
-      <source xml:lang="en">Select a file</source>
+    <trans-unit id="sql.migration.sku.import.performance.data.dialog.open.folder">
+      <source xml:lang="en">Select a folder</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.import.performance.data.dialog.helper.message">
       <source xml:lang="en">Select a folder on your local drive</source>
@@ -2505,6 +2505,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.sku.azureRecommendation.status.autoRefreshTimer">
       <source xml:lang="en">Time before next SKU recommendation update: {0} minute(s).</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.skip.assessment.check.to.continue">
+      <source xml:lang="en">To continue, check skip assessment option.</source>
     </trans-unit>
     <trans-unit id="sql.migration.missing.targetPassword.error">
       <source xml:lang="en">To continue, enter a valid target password.</source>
