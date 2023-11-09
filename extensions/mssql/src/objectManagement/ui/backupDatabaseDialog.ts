@@ -296,7 +296,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	private async updateTableData(): Promise<void> {
 		await this._backupFilesTable.updateProperties({
-			data: this._backupFilePaths,
+			data: this._backupFilePaths.map(path => [path]),
 			height: getTableHeight(this._backupFilePaths.length, DefaultMinTableRowCount)
 		});
 		this.onFormFieldChange();
