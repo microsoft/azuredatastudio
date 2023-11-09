@@ -21,7 +21,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import Severity from 'vs/base/common/severity';
 import EditQueryRunner from 'sql/workbench/services/editData/common/editQueryRunner';
 import { IRange } from 'vs/editor/common/core/range';
-import { QueryConnID } from 'sql/workbench/services/query/common/query';
+import { ServerConnID } from 'sql/workbench/services/query/common/query';
 import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 
@@ -71,7 +71,7 @@ export class QueryModelService implements IQueryModelService {
 	private _onRunQueryComplete: Emitter<string>;
 	private _onQueryEvent: Emitter<IQueryEvent>;
 	private _onEditSessionReady: Emitter<azdata.EditSessionReadyParams>;
-	private _onConnectionIdAvailableEmitter: Emitter<QueryConnID>;
+	private _onConnectionIdAvailableEmitter: Emitter<ServerConnID>;
 	private _onCellSelectionChangedEmitter = new Emitter<ICellValue[]>();
 
 	// EVENTS /////////////////////////////////////////////////////////////
@@ -81,7 +81,7 @@ export class QueryModelService implements IQueryModelService {
 	public get onQueryEvent(): Event<IQueryEvent> { return this._onQueryEvent.event; }
 	public get onEditSessionReady(): Event<azdata.EditSessionReadyParams> { return this._onEditSessionReady.event; }
 	public get onCellSelectionChanged(): Event<ICellValue[]> { return this._onCellSelectionChangedEmitter.event; }
-	public get onConnectionIdUpdated(): Event<QueryConnID> { return this._onConnectionIdAvailableEmitter.event; }
+	public get onConnectionIdUpdated(): Event<ServerConnID> { return this._onConnectionIdAvailableEmitter.event; }
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
@@ -97,7 +97,7 @@ export class QueryModelService implements IQueryModelService {
 		this._onRunQueryComplete = new Emitter<string>();
 		this._onQueryEvent = new Emitter<IQueryEvent>();
 		this._onEditSessionReady = new Emitter<azdata.EditSessionReadyParams>();
-		this._onConnectionIdAvailableEmitter = new Emitter<QueryConnID>();
+		this._onConnectionIdAvailableEmitter = new Emitter<ServerConnID>();
 	}
 
 	// IQUERYMODEL /////////////////////////////////////////////////////////
