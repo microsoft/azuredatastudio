@@ -996,6 +996,14 @@ declare module 'mssql' {
 		 */
 		attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Thenable<string>;
 		/**
+		 * Backup a database.
+		 * @param connectionUri The URI of the server connection.
+		 * @param backupInfo Various settings for how to backup the database.
+		 * @param taskMode Whether to run the backup operation, generate a script for it, or both.
+		 * @returns A response indicating if the backup or scripting operation started successfully.
+		 */
+		backupDatabase(connectionUri: string, backupInfo: BackupInfo, taskMode: azdata.TaskExecutionMode): Thenable<azdata.BackupResponse>;
+		/**
 		 * Drop a database.
 		 * @param connectionUri The URI of the server connection.
 		 * @param database The target database.
@@ -1037,6 +1045,140 @@ declare module 'mssql' {
 		 * @param database The target database.
 		 */
 		purgeQueryStoreData(connectionUri: string, database: string): Thenable<void>;
+	}
+
+	/**
+	 * Various settings options for performing a database backup.
+	 */
+	export interface BackupInfo {
+		/**
+		 * Name of the datbase to perfom backup
+		 */
+		databaseName: string;
+
+		/**
+		 * Component to backup - Database or Files
+		 */
+		backupComponent: number;
+
+		/**
+		 * Type of backup - Full/Differential/Log
+		 */
+		backupType: number;
+
+		/**
+		 * Backup device - Disk, Url, etc.
+		 */
+		backupDeviceType: number;
+
+		/**
+		 *  The text input of selected files
+		 */
+		selectedFiles: string;
+
+		/**
+		 * Backupset name
+		 */
+		backupsetName: string;
+
+		/**
+		 * List of {key: backup path, value: device type}
+		 */
+		selectedFileGroup: { [path: string]: string };
+
+		/**
+		 * List of {key: backup path, value: device type}
+		 */
+		backupPathDevices: { [path: string]: number };
+
+		/**
+		 * List of selected backup paths
+		 */
+		backupPathList: string[];
+
+
+		/**
+		 * Indicates if the backup should be copy-only
+		 */
+		isCopyOnly: boolean;
+
+		/**
+		 * Gets or sets a Boolean property value that determines whether a media is formatted as the first step of the backup operation.
+		 */
+		formatMedia: boolean;
+
+		/**
+		 * Gets or sets a Boolean property value that determines whether the devices associated with a backup operation are initialized as part of the backup operation.
+		 */
+		initialize: boolean;
+
+		/**
+		 * Gets or sets Boolean property that determines whether the tape header is read.
+		 */
+		skipTapeHeader: boolean;
+
+		/**
+		 * Gets or sets the name used to identify a particular media set.
+		 */
+		mediaName: string;
+
+		/**
+		 * Gets or sets a textual description of the medium that contains a backup set.
+		 */
+		mediaDescription: string;
+
+		/**
+		 * Gets or sets a Boolean property value that determines whether a checksum value is calculated during backup or restore operations.
+		 */
+		checksum: boolean;
+
+		/**
+		 * Gets or sets a Boolean property value that determines whether the backup or restore continues after a checksum error occurs.
+		 */
+		continueAfterError: boolean;
+
+		/**
+		 * Gets or sets a Boolean property value that determines whether to truncate the database log.
+		 */
+		logTruncation: boolean;
+
+		/**
+		 * Gets or sets a Boolean property value that determines whether to backup the tail of the log
+		 */
+		tailLogBackup: boolean;
+
+		/**
+		 * Gets or sets the number of days that must elapse before a backup set can be overwritten.
+		 */
+		retainDays: number;
+
+		/**
+		 * Gets or sets the backup compression option.
+		 * This should be converted to BackupCompressionOptions when setting it to Backup object.
+		 */
+		compressionOption: number;
+
+		/**
+		 * Gets or sets a Boolean property that determines whether verify is required.
+		 */
+		verifyBackupRequired: boolean;
+
+		/**
+		 * Specifies the algorithm type used for backup encryption.
+		 * This should be converted to BackupEncryptionAlgorithm when creating BackupEncryptionOptions object.
+		 */
+		encryptionAlgorithm: number;
+
+		/**
+		 * Specifies the encryptor type used to encrypt an encryption key.
+		 * This should be converted to BackupEncryptorType when creating BackupEncryptionOptions object.
+		 */
+		encryptorType: number;
+
+		/**
+		 * Gets or sets the name of the encryptor.
+		 */
+		encryptorName: string;
 	}
 
 	export interface DatabaseFileData {

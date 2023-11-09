@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
 import { ConnectParams } from 'dataprotocol-client/lib/protocol';
 import * as mssql from 'mssql';
 import { DatabaseFileData } from 'mssql';
-import { RestorePlanResponse } from 'azdata';
+import { BackupResponse, RestorePlanResponse } from 'azdata';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
 
@@ -1703,6 +1703,16 @@ export interface RestoreParams extends azdata.RestoreInfo {
 
 export namespace RestorePlanRequest {
 	export const type = new RequestType<RestoreParams, RestorePlanResponse, void, void>('restore/restoreplan');
+}
+
+export interface BackupDatabaseRequestParams {
+	ownerUri: string;
+	backupInfo: mssql.BackupInfo;
+	taskExecutionMode: azdata.TaskExecutionMode;
+}
+
+export namespace BackupDatabaseRequest {
+	export const type = new RequestType<BackupDatabaseRequestParams, BackupResponse, void, void>('backup/backup');
 }
 
 export interface GetAssociatedFilesRequestParams {

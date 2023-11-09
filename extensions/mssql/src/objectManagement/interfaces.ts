@@ -460,6 +460,7 @@ export interface Database extends ObjectManagement.SqlObject {
 	filegroups?: FileGroup[];
 	queryStoreOptions?: QueryStoreOptions;
 	restoreOptions?: RestoreOptions;
+	backupEncryptors?: BackupEncryptor[];
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
@@ -566,6 +567,10 @@ export interface QueryStoreCapturePolicyOptions {
 	totalExecutionCPUTimeInMS: number;
 }
 
+export interface BackupEncryptor {
+	encryptorType: number;
+	encryptorName: string;
+}
 
 export interface DatabaseScopedConfigurationsInfo {
 	id: number;

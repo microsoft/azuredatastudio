@@ -24,6 +24,9 @@
     <trans-unit id="downloadingServiceChannelMsg">
       <source xml:lang="en">Downloading {0}</source>
     </trans-unit>
+    <trans-unit id="entryExtractedChannelMsg">
+      <source xml:lang="en">Extracted {0} ({1}/{2})</source>
+    </trans-unit>
     <trans-unit id="failedToStartServiceErrorMsg">
       <source xml:lang="en">Failed to start {0}</source>
     </trans-unit>
@@ -190,6 +193,9 @@
     <trans-unit id="kusto.format.keywordCasing">
       <source xml:lang="en">Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)</source>
     </trans-unit>
+    <trans-unit id="title.showLogFile">
+      <source xml:lang="en">Show Log File</source>
+    </trans-unit>
     <trans-unit id="databasesListProperties.size">
       <source xml:lang="en">Size (MB)</source>
     </trans-unit>
@@ -240,6 +246,9 @@
     </trans-unit>
     <trans-unit id="kusto.tracingLevel">
       <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
+    </trans-unit>
+    <trans-unit id="kusto.tracingServer">
+      <source xml:lang="en">[Optional] Traces the communication between Azure Data Studio and Kusto Tools Service to the Kusto Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.</source>
     </trans-unit>
   </body></file>
 </xliff>

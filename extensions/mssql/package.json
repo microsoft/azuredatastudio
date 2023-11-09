@@ -148,6 +148,11 @@
         "title": "%title.restoreDatabase%"
       },
       {
+        "command": "mssql.backupDatabase",
+        "category": "MSSQL",
+        "title": "%title.backupDatabase%"
+      },
+      {
         "command": "mssql.enableGroupBySchema",
         "category": "MSSQL",
         "title": "%mssql.objectExplorer.enableGroupBySchema%",
@@ -601,6 +606,10 @@
           "when": "false"
         },
         {
+          "command": "mssql.backupDatabase",
+          "when": "false"
+        },
+        {
           "command": "mssql.enableGroupBySchemaTitle",
           "when": "false"
         },
@@ -624,11 +633,6 @@
         {
           "command": "mssql.newDatabase",
           "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && config.workbench.enablePreviewFeatures",
-          "group": "1_objectManagement@0"
-        },
-        {
-          "command": "mssql.newDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@0"
         },
         {
@@ -707,6 +711,11 @@
           "group": "1_objectManagement@3"
         },
         {
+          "command": "mssql.backupDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && mssql:engineedition != 11 && config.workbench.enablePreviewFeatures && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
+          "group": "1_objectManagement@3"
+        },
+        {
           "command": "mssql.dropDatabase",
           "when": "connectionProvider == MSSQL && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@4"
@@ -781,11 +790,6 @@
         {
           "command": "mssql.newDatabase",
           "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && config.workbench.enablePreviewFeatures",
-          "group": "1_objectManagement@0"
-        },
-        {
-          "command": "mssql.newDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Database  && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@0"
         },
         {
