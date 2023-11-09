@@ -140,8 +140,15 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		containers.push(this.createLabelInputContainer(localizedConstants.RestoreFromText, restoreFrom));
 
 		// Backup file path
-		this.backupFilePathInput = this.createInputBox(async (newValue) => {
-			// this.result.path = newValue;
+		this.backupFilePathInput = this.createInputBox(async () => {
+			this.dialogObject.loading = true;
+			// Get the new restore plan for the selected file
+			const restorePlanInfo = this.setRestoreOption(this.backupFilePathInput);
+			const restorePlan = await this.objectManagementService.getRestorePlan(restorePlanInfo);
+
+			// Update the dailog values with the new restore plan
+			await this.updateRestoreDialog(restorePlan);
+			this.dialogObject.loading = false;
 		}, {
 			ariaLabel: localizedConstants.BackupFilePathText,
 			inputType: 'text',
@@ -162,7 +169,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.sourceDatabaseName.currentValue = newValue;
 			this.dialogObject.loading = true;
 			// Get the new restore plan for the selected source database
-			const restorePlanInfo = this.setRestoreOption();
+			const restorePlanInfo = this.setRestoreOption(this.restoreDatabase);
 			const restorePlan = await this.objectManagementService.getRestorePlan(restorePlanInfo);
 
 			// Update the dailog values with the new restore plan
@@ -318,15 +325,16 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	 * Prepares the restore params to get restore plan for the selected source database
 	 * @returns restore params
 	 */
-	private setRestoreOption(): RestoreParams {
+	private setRestoreOption(inputType: azdata.DropDownComponent | azdata.InputBoxComponent): RestoreParams {
 		let options = {
 			ownerUri: this.options.connectionUri,
 			targetDatabaseName: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.targetDatabaseName.currentValue,
-			sourceDatabaseName: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.sourceDatabaseName.currentValue,
+			sourceDatabaseName: inputType === this.restoreDatabase ? this.objectInfo.restoreOptions.restorePlanResponse.planDetails.sourceDatabaseName.currentValue : null,
 			relocateDbFiles: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.currentValue,
-			readHeaderFromMedia: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.readHeaderFromMedia.currentValue,
+			readHeaderFromMedia: inputType === this.restoreDatabase ? false : true,
 			taskExecutionMode: azdata.TaskExecutionMode.execute,
 			overwriteTargetDatabase: true,
+			backupFilePaths: inputType === this.backupFilePathInput ? this.backupFilePathInput.value : null
 		};
 
 		const restoreParams: RestoreParams = {
