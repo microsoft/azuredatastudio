@@ -1603,12 +1603,21 @@ export const DESKTOP_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.button
 export const DESKTOP_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.migration.description', 'Migrate to Azure SQL');
 export const DESKTOP_LOGIN_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.button.login.migration.label', 'New login migration (PREVIEW)');
 export const DESKTOP_LOGIN_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.login.migration.description', 'Migrate logins to Azure SQL');
-export const DESKTOP_SUPPORT_BUTTON_LABEL = localize('sql.migration.tab.button.support.label', 'New support request');
-export const DESKTOP_SUPPORT_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.support.description', 'New support request');
+export const DESKTOP_HELP_SUPPORT_BUTTON_LABEL = localize('sql.migration.tab.button.help.support.label', 'Help + Support');
+export const DESKTOP_HELP_SUPPORT_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.help.support.description', 'Help + Support');
 export const DESKTOP_FEEDBACK_BUTTON_LABEL = localize('sql.migration.tab.button.feedback.label', 'Feedback');
 export const DESKTOP_FEEDBACK_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.feedback.description', 'Feedback');
 export const DESKTOP_DASHBOARD_TAB_TITLE = localize('sql.migration.tab.dashboard.title', 'Dashboard');
 export const DESKTOP_MIGRATIONS_TAB_TITLE = localize('sql.migration.tab.migrations.title', 'Migrations');
+export const HELP_SUPPORT_TITLE = localize('sql.migration.help.support.title', 'Help + Support');
+export const SUPPORT_RESOURCES_TITLE = localize('sql.migration.support.resources.title', 'Support resources');
+export const SUPPORT_RESOURCES_DESCRIPTION = localize('sql.migration.support.resources.description', 'Explore documentation');
+export const SUPPORT_REQUEST_TITLE = localize('sql.migration.support.request.title', 'Support request');
+export const SUPPORT_REQUEST_DESCRIPTION = localize('sql.migration.support.request.descrption', 'Create a support request');
+export const SUPPORT_REQUEST_NOTE = localize('sql.migration.support.request.note', 'To receive assistance from Microsoft customer support, please log a service request on Service Hub at aka.ms/servicehub.');
+export const COMMUNITY_SUPPORT_TITLE = localize('sql.migration.community.support.title', 'Community support')
+export const COMMUNITY_SUPPORT_DESCRIPTION = localize('sql.migration.community.support.description', 'Connect with Microsoft Community');
+export const COMMUNITY_SUPPORT_NOTE = localize('sql.migration.community.support.note', 'You can post your question with the Microsoft community support through the Q&A channel.');
 
 // dashboard tab
 export const DASHBOARD_HELP_LINK_MIGRATE_USING_ADS = localize('sql.migration.dashboard.help.link.migrateUsingADS', 'Migrate databases using Azure Data Studio');
