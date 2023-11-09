@@ -23,6 +23,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	private _copyBackupCheckbox: azdata.CheckBoxComponent;
 	private _backupDestDropdown: azdata.DropDownComponent;
 	private _backupFilesTable: azdata.TableComponent;
+	private _backupUrlInput: azdata.InputBoxComponent;
 
 	private _existingMediaButton: azdata.RadioButtonComponent;
 	private _appendExistingMediaButton: azdata.RadioButtonComponent;
@@ -61,7 +62,8 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	protected override get isDirty(): boolean {
-		return this._backupFilePaths?.length > 0 && this._backupSetNameInput?.value?.length > 0;
+		let pathsPresent = this.useUrlMode ? this._backupUrlInput.value?.length > 0 : this._backupFilePaths?.length > 0;
+		return pathsPresent && this._backupSetNameInput?.value?.length > 0;
 	}
 
 	protected override get saveChangesTaskLabel(): string {
@@ -74,6 +76,14 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	private get encryptionSupported(): boolean {
 		return this._encryptorOptions.length > 0;
+	}
+
+	private get useUrlMode(): boolean {
+		if (this._backupTypeDropdown) {
+			return this._backupTypeDropdown.value === loc.BackupUrlLabel;
+		} else {
+			return this.viewInfo.isManagedInstance;
+		}
 	}
 
 	protected override async initializeUI(): Promise<void> {
@@ -127,33 +137,47 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 				this._truncateLogButton.enabled = false;
 				this._backupLogTailButton.enabled = false;
 			}
-		}, backupTypes, backupTypes[0]);
+		}, backupTypes, backupTypes[0], !this.useUrlMode);
 		let backupContainer = this.createLabelInputContainer(loc.BackupTypeLabel, this._backupTypeDropdown);
 		components.push(backupContainer);
 
-		this._copyBackupCheckbox = this.createCheckbox(loc.BackupCopyLabel, () => undefined);
+		this._copyBackupCheckbox = this.createCheckbox(loc.BackupCopyLabel, () => undefined, this.useUrlMode, !this.useUrlMode);
 		components.push(this._copyBackupCheckbox);
 
 		const backupDestinations = [loc.BackupDiskLabel, loc.BackupUrlLabel];
-		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, label => this.switchBackupDestination(label), backupDestinations, backupDestinations[0]);
+		let defaultDest = this.useUrlMode ? backupDestinations[1] : backupDestinations[0];
+		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, label => {
+			let isUrl = label === loc.BackupUrlLabel;
+			return this.toggleBackupDestination(isUrl);
+		}, backupDestinations, defaultDest, !this.useUrlMode);
 		let backupDestContainer = this.createLabelInputContainer(loc.BackupToLabel, this._backupDestDropdown);
 		components.push(backupDestContainer);
 
-		let defaultPath = `${this._defaultBackupFolderPath}${this._defaultBackupPathSeparator}${defaultName}.bak`;
-		this._backupFilePaths.push(defaultPath);
-		this._backupFilesTable = this.createTable(loc.BackupFilesLabel, [loc.BackupFilesLabel], [[defaultPath]]);
-		components.push(this._backupFilesTable);
+		if (this.useUrlMode) {
+			this._backupUrlInput = this.createInputBox(() => undefined, {
+				inputType: 'text',
+				width: DefaultInputWidth
+			});
+			let browseUrlButton = this.createBrowseButton(() => this.onBrowseUrlButtonClicked());
+			let urlInputGroup = this.createGroup(loc.BackupToUrlLabel, [this._backupUrlInput, browseUrlButton], false);
+			components.push(urlInputGroup);
+		} else {
+			let defaultPath = `${this._defaultBackupFolderPath}${this._defaultBackupPathSeparator}${defaultName}.bak`;
+			this._backupFilePaths.push(defaultPath);
+			this._backupFilesTable = this.createTable(loc.BackupFilesLabel, [loc.BackupFilesLabel], [[defaultPath]]);
+			components.push(this._backupFilesTable);
 
-		let addButton: DialogButton = {
-			buttonAriaLabel: loc.AddBackupFileAriaLabel,
-			buttonHandler: async () => await this.onAddFilesButtonClicked()
-		};
-		let removeButton: DialogButton = {
-			buttonAriaLabel: loc.RemoveBackupFileAriaLabel,
-			buttonHandler: async () => await this.onRemoveFilesButtonClicked()
-		};
-		const buttonContainer = this.addButtonsForTable(this._backupFilesTable, addButton, removeButton);
-		components.push(buttonContainer);
+			let addButton: DialogButton = {
+				buttonAriaLabel: loc.AddBackupFileAriaLabel,
+				buttonHandler: async () => await this.onAddFilesButtonClicked()
+			};
+			let removeButton: DialogButton = {
+				buttonAriaLabel: loc.RemoveBackupFileAriaLabel,
+				buttonHandler: async () => await this.onRemoveFilesButtonClicked()
+			};
+			const buttonContainer = this.addButtonsForTable(this._backupFilesTable, addButton, removeButton);
+			components.push(buttonContainer);
+		}
 
 		return this.createGroup(loc.GeneralSectionHeader, components, false);
 	}
@@ -309,6 +333,10 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		this.onFormFieldChange();
 	}
 
+	private async onBrowseUrlButtonClicked(): Promise<void> {
+
+	}
+
 	public override async generateScript(): Promise<string> {
 		let backupInfo = this.createBackupInfo();
 		let response = await this.objectManagementService.backupDatabase(this.options.connectionUri, backupInfo, TaskExecutionMode.script);
@@ -361,19 +389,20 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			encryptionAlgorithmIndex = (this._algorithmDropdown.values as string[]).indexOf(this._algorithmDropdown.value as string);
 		}
 
-		let filePaths = this._backupFilePaths;
+		let backupDestPaths = this.useUrlMode ? [this._backupUrlInput.value] : this._backupFilePaths;
 		let createNewMedia = this._newMediaButton.checked;
 		let overwriteExistingMedia = this._overwriteExistingMediaButton.enabled && this._overwriteExistingMediaButton.checked;
+		let deviceType = this.getBackupDeviceType();
 		let backupInfo: BackupInfo = {
 			databaseName: this.objectInfo.name,
 			backupType: this.getBackupTypeNumber(),
 			backupComponent: 0,
-			backupDeviceType: this.getBackupDeviceType(),
-			backupPathList: filePaths,
+			backupDeviceType: deviceType,
+			backupPathList: backupDestPaths,
 			selectedFiles: undefined,
 			backupsetName: this._backupSetNameInput.value,
 			selectedFileGroup: undefined,
-			backupPathDevices: this.getBackupTypePairs(filePaths),
+			backupPathDevices: this.getBackupTypePairs(deviceType, backupDestPaths),
 			isCopyOnly: this._copyBackupCheckbox.checked,
 
 			// Get advanced options
@@ -420,17 +449,16 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		return PhysicalDeviceType.Disk;
 	}
 
-	private getBackupTypePairs(filePaths: string[]): { [path: string]: number } {
+	private getBackupTypePairs(deviceType: number, filePaths: string[]): { [path: string]: number } {
 		let pathDeviceMap: { [path: string]: number } = {};
-		let deviceType = this.getBackupDeviceType();
 		filePaths.forEach(path => {
 			pathDeviceMap[path] = deviceType;
 		});
 		return pathDeviceMap;
 	}
 
-	private async switchBackupDestination(destLabel: string): Promise<void> {
-		if (destLabel === loc.BackupUrlLabel) {
+	private async toggleBackupDestination(useUrlMode: boolean): Promise<void> {
+		if (useUrlMode) {
 
 		} else {
 
