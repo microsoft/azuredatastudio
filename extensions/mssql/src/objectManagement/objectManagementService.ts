@@ -2,13 +2,13 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { ApplicationRoleViewInfo, AuthenticationType, DatabaseRoleViewInfo, DatabaseViewInfo, LoginViewInfo, SecurablePermissions, SecurableTypeMetadata, ServerRoleViewInfo, User, UserType, UserViewInfo } from './interfaces';
+import { ApplicationRoleViewInfo, AuthenticationType, DatabaseRoleViewInfo, DatabaseViewInfo, LoginViewInfo, RestorePlanResponse, SecurablePermissions, SecurableTypeMetadata, ServerRoleViewInfo, User, UserType, UserViewInfo } from './interfaces';
 import * as Utils from '../utils';
 import * as constants from '../constants';
 import * as contracts from '../contracts';
 
 import { BaseService, ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
-import { ObjectManagement, IObjectManagementService, DatabaseFileData } from 'mssql';
+import { ObjectManagement, IObjectManagementService, DatabaseFileData, RestoreParams } from 'mssql';
 import { ClientCapabilities } from 'vscode-languageclient';
 import { AppContext } from '../appContext';
 
@@ -79,6 +79,11 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 	async attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Promise<string> {
 		const params: contracts.AttachDatabaseRequestParams = { connectionUri, databases, generateScript };
 		return this.runWithErrorHandling(contracts.AttachDatabaseRequest.type, params);
+	}
+
+	async getRestorePlan(restoreParams: RestoreParams): Promise<RestorePlanResponse> {
+		const params: contracts.RestoreParams = restoreParams;
+		return this.runWithErrorHandling(contracts.RestorePlanRequest.type, params);
 	}
 
 	async getDataFolder(connectionUri: string): Promise<string> {
@@ -285,6 +290,10 @@ export class TestObjectManagementService implements IObjectManagementService {
 
 	async getBackupFolder(connectionUri: string): Promise<string> {
 		return this.delayAndResolve('');
+	}
+
+	async getRestorePlan(restoreParams: RestoreParams): Promise<RestorePlanResponse> {
+		return this.delayAndResolve({ result: true, taskId: 0 });
 	}
 
 	async getAssociatedFiles(connectionUri: string, primaryFilePath: string): Promise<string[]> {

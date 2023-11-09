@@ -1025,6 +1025,13 @@ declare module 'mssql' {
 		 */
 		getAssociatedFiles(connectionUri: string, primaryFilePath: string): Thenable<string[]>;
 		/**
+		 * Retrieves the restore plan for a selected database.
+		 * @param connectionUri The URI of the connection for the specific server.
+		 * @param restoreInfo  The information needed to restore the database.
+		 * @returns  restore plan to do the restore operation on a database.
+		 */
+		getRestorePlan(restoreInfo: RestoreParams): Thenable<azdata.RestorePlanResponse>;
+		/**
 		 * Clears all query store data from the database
 		 * @param connectionUri The URI of the server connection.
 		 * @param database The target database.
@@ -1036,6 +1043,12 @@ declare module 'mssql' {
 		databaseName: string;
 		databaseFilePaths: string[];
 		owner: string;
+	}
+
+	export interface RestoreParams extends azdata.RestoreInfo {
+		ownerUri: string;
+	}
+	export interface RestorePlanResponse extends azdata.RestorePlanResponse {
 	}
 	//#endregion
 

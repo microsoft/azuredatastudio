@@ -45,6 +45,11 @@ export const QueryStorePropertiesDocUrl = 'https://learn.microsoft.com/sql/relat
 export const DatabaseFilesPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-files-page'
 export const DatabaseFileGroupsPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-filegroups-page'
 
+// Restore database help links
+export const RestoreDatabaseGeneralTabDocUrl = 'https://learn.microsoft.com/sql/relational-databases/backup-restore/restore-database-general-page'
+export const RestoreDatabaseFilesTabDocUrl = 'https://learn.microsoft.com/sql/relational-databases/backup-restore/restore-database-files-page'
+export const RestoreDatabaseOptionsTabDocUrl = 'https://learn.microsoft.com/sql/relational-databases/backup-restore/restore-database-options-page'
+
 export const enum TelemetryActions {
 	CreateObject = 'CreateObject',
 	DropObject = 'DropObject',

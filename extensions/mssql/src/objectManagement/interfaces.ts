@@ -510,7 +510,6 @@ export interface RestoreDatabaseInfo {
 	sourceDatabaseNames: string[];
 	targetDatabaseNames: string[];
 	recoveryStateOptions: CategoryValue[];
-	lastBackupTaken: string;
 }
 
 export interface CategoryValue {
