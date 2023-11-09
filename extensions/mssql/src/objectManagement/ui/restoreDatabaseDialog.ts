@@ -160,12 +160,14 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		// source Database
 		this.restoreDatabase = this.createDropdown(localizedConstants.DatabaseText, async (newValue) => {
 			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.sourceDatabaseName.currentValue = newValue;
-
+			this.dialogObject.loading = true;
 			// Get the new restore plan for the selected source database
 			const restorePlanInfo = this.setRestoreOption();
 			const restorePlan = await this.objectManagementService.getRestorePlan(restorePlanInfo);
 
+			// Update the dailog values with the new restore plan
 			await this.updateRestoreDialog(restorePlan);
+			this.dialogObject.loading = false;
 		}, this.viewInfo.restoreDatabaseInfo.sourceDatabaseNames, '', true, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.DatabaseText, this.restoreDatabase));
 
@@ -540,6 +542,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		return this.createGroup(localizedConstants.RestoreServerConnectionsOptionsText, [this.closeExistingConnections], true);
 	}
 
+	/**
+	 * Enable/disable the restore options based on the recovery state option
+	 * @param recoveryStateOption recovery state option
+	 */
 	private toggleRestoreOptionsOnRecoveryStateOptions(recoveryStateOption: string): void {
 		let preserveReplicationSettingsEnableState = true;
 		let standByFileEnableState = false;
