@@ -134,8 +134,8 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		this._copyBackupCheckbox = this.createCheckbox(loc.BackupCopyLabel, () => undefined);
 		components.push(this._copyBackupCheckbox);
 
-		const backupDestinations = [loc.BackupDiskLabel]; // TODO: Add URL type when enabled
-		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, () => undefined, backupDestinations, backupDestinations[0]);
+		const backupDestinations = [loc.BackupDiskLabel, loc.BackupUrlLabel];
+		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, label => this.switchBackupDestination(label), backupDestinations, backupDestinations[0]);
 		let backupDestContainer = this.createLabelInputContainer(loc.BackupToLabel, this._backupDestDropdown);
 		components.push(backupDestContainer);
 
@@ -427,6 +427,14 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			pathDeviceMap[path] = deviceType;
 		});
 		return pathDeviceMap;
+	}
+
+	private async switchBackupDestination(destLabel: string): Promise<void> {
+		if (destLabel === loc.BackupUrlLabel) {
+
+		} else {
+
+		}
 	}
 }
 
