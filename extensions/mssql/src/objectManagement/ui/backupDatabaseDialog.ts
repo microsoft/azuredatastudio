@@ -184,9 +184,9 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	private initializeOptionsSection(): azdata.GroupContainer {
 		// Media options
-		// Options for overwriting existing media - enabled by default
+		// Options for overwriting existing media
 		const existingGroupId = 'BackupExistingMedia';
-		this._appendExistingMediaButton = this.createRadioButton(loc.AppendToExistingBackup, existingGroupId, true, () => undefined);
+		this._appendExistingMediaButton = this.createRadioButton(loc.AppendToExistingBackup, existingGroupId, !this.useUrlMode, () => undefined);
 		this._overwriteExistingMediaButton = this.createRadioButton(loc.OverwriteExistingBackups, existingGroupId, false, () => undefined);
 
 		// Options for writing to new media
@@ -212,7 +212,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 					this._encryptorDropdown.enabled = false;
 				}
 			}
-		});
+		}, !this.useUrlMode);
 		let existingMediaButtonsGroup = this.createGroup('', [this._appendExistingMediaButton, this._overwriteExistingMediaButton]);
 
 		// Overall button that selects writing to new media
@@ -232,7 +232,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 					}
 				}
 			}
-		});
+		}, !this.useUrlMode);
 
 		let overwriteGroup = this.createGroup(loc.BackupOverwriteMediaLabel, [
 			this._existingMediaButton,
