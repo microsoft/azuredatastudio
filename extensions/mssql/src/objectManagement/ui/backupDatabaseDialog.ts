@@ -120,8 +120,6 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		components.push(recoveryInputContainer);
 
 		this._backupTypeDropdown = this.createDropdown(loc.BackupTypeLabel, async newValue => {
-			// Update backup name with new backup type
-			this._backupSetNameInput.value = this._backupSetNameInput.ariaLabel = this.getDefaultBackupName(newValue);
 			if (newValue === loc.BackupTransactionLog) {
 				this._truncateLogButton.enabled = true;
 				this._backupLogTailButton.enabled = true;
