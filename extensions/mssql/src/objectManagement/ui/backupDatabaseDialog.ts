@@ -272,8 +272,15 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		try {
 			let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, this._defaultBackupFolderPath, this._fileFilters);
 			if (filePath) {
-				this._backupFilePaths.push(filePath);
-				await this.updateTableData();
+				if (this._backupFilePaths.includes(filePath)) {
+					this.dialogObject.message = {
+						text: loc.PathAlreadyAddedError,
+						level: azdata.window.MessageLevel.Error
+					}
+				} else {
+					this._backupFilePaths.push(filePath);
+					await this.updateTableData();
+				}
 			}
 		} catch (error) {
 			this.dialogObject.message = {
