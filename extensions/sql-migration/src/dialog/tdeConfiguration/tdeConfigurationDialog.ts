@@ -10,6 +10,7 @@ import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
 import * as utils from '../../api/utils';
 import { ConfigDialogSetting } from '../../models/tdeModels'
+import { IconPathHelper } from '../../constants/iconPathHelper';
 
 export class TdeConfigurationDialog {
 
@@ -22,7 +23,21 @@ export class TdeConfigurationDialog {
 	private _adsConfirmationCheckBox!: azdata.CheckBoxComponent;
 	private _manualMethodWarningContainer!: azdata.FlexContainer;
 	private _networkPathText!: azdata.InputBoxComponent;
+	private _validationTable!: azdata.TableComponent;
 	private _onClosed: () => void;
+
+	private _validationSuccessDescriptionErrorAndTips!: string[][];
+
+	private _validationGroup!: azdata.GroupContainer;
+
+	private _descriptionLabel!: azdata.TextComponent;
+	private _descriptionText!: azdata.TextComponent;
+
+	private _errorLabel!: azdata.TextComponent;
+	private _errorText!: azdata.TextComponent;
+
+	private _troubleshootingTipsLabel!: azdata.TextComponent;
+	private _troubleshootingTipsText!: azdata.TextComponent;
 
 	constructor(public migrationStateModel: MigrationStateModel, onClosed: () => void) {
 		this._onClosed = onClosed;
@@ -130,6 +145,24 @@ export class TdeConfigurationDialog {
 			adsMethodButton.onDidChangeCheckedState(async checked => {
 				if (checked) {
 					this.migrationStateModel.tdeMigrationConfig.setPendingTdeMigrationMethod(ConfigDialogSetting.ExportCertificates);
+					let validationTitleData = await this.migrationStateModel.getTdeValidationTitles();
+
+					let networkPathValidated =
+						(this.migrationStateModel.tdeMigrationConfig.getPendingNetworkPath() !== '') &&
+						(this.migrationStateModel.tdeMigrationConfig.getPendingNetworkPath() === this.migrationStateModel.tdeMigrationConfig.getLastValidatedNetworkPath())
+
+					let result = validationTitleData.result.map(validationTitle => {
+						return [
+							validationTitle,
+							{
+								'icon': networkPathValidated ? IconPathHelper.completedMigration : IconPathHelper.notFound,
+								'title': networkPathValidated ? constants.TDE_VALIDATION_STATUS_SUCCEEDED : constants.TDE_VALIDATION_STATUS_PENDING
+							},
+							networkPathValidated ? constants.TDE_VALIDATION_STATUS_SUCCEEDED : constants.TDE_VALIDATION_STATUS_PENDING
+						]
+					});
+
+					await this._validationTable.updateProperty('data', result)
 					await this.updateUI();
 				}
 			}));
@@ -228,6 +261,7 @@ export class TdeConfigurationDialog {
 		this._disposables.push(
 			this._networkPathText.onTextChanged(async networkPath => {
 				this.migrationStateModel.tdeMigrationConfig.setPendingNetworkPath(networkPath);
+				await this.updateUI();
 			}));
 
 		this._adsConfirmationCheckBox = _view.modelBuilder.checkBox()
@@ -242,16 +276,285 @@ export class TdeConfigurationDialog {
 		this._disposables.push(
 			this._adsConfirmationCheckBox.onChanged(async checked => {
 				this.migrationStateModel.tdeMigrationConfig.setPendingExportCertUserConsent(checked);
+				if (checked) {
+					this._validationGroup.collapsed = false;
+				}
+
 				await this.updateUI();
 			}));
+
+		const preValidationSeparator = _view.modelBuilder.separator().component();
+
+		const validationRequiredLabel = _view.modelBuilder.text()
+			.withProps({
+				value: constants.TDE_VALIDATION_REQUIREMENTS_MESSAGE,
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'margin': '4px 2px 4px 0px'
+				}
+			}).component();
+
+		const runValidationButton = _view.modelBuilder.button()
+			.withProps(
+				{
+					label: constants.TDE_VALIDATION_STATUS_RUN_VALIDATION,
+					enabled: true,
+					CSSStyles: {
+						width: 'calc(100% - 10px)'
+					}
+				}).component();
+
+		this._disposables.push(
+			runValidationButton.onDidClick(async (e) => {
+				let data = this._validationTable.data.map((e) => {
+					return [
+						e[0],
+						{
+							'icon': IconPathHelper.inProgressMigration,
+							'title': constants.TDE_VALIDATION_STATUS_RUNNING
+						},
+						constants.TDE_VALIDATION_STATUS_RUNNING
+					]
+				});
+				await this._validationTable.updateProperty('data', data);
+
+				let validationData = await this.migrationStateModel.runTdeValidation(
+					this.migrationStateModel.tdeMigrationConfig.getPendingNetworkPath());
+
+				let allValidationsSucceeded = true;
+
+				this._validationSuccessDescriptionErrorAndTips = validationData.result.map(e => {
+					return [
+						e.validationStatus.toString(),
+						e.validationDescription,
+						e.validationErrorMessage,
+						e.validationTroubleshootingTips
+					]
+				});
+
+				let res = validationData.result.map(e => {
+					if (e.validationStatus < 0) {
+						allValidationsSucceeded = false;
+					}
+
+					return [
+						e.validationTitle,
+						{
+							'icon': e.validationStatus > 0 ? IconPathHelper.completedMigration : IconPathHelper.error,
+							'title': e.validationStatusString
+						},
+						e.validationStatusString
+					]
+				});
+
+				await this._validationTable.updateProperty('data', res);
+
+				if (allValidationsSucceeded) {
+					this.migrationStateModel.tdeMigrationConfig.setLastValidatedNetworkPath(
+						this.migrationStateModel.tdeMigrationConfig.getPendingNetworkPath());
+					await this.updateUI();
+				}
+			}));
+
+		this._validationTable = this._createValidationTable(_view);
+
+		this._disposables.push(
+			this._validationTable.onRowSelected(
+				async (e) => {
+					const selectedRows: number[] = this._validationTable.selectedRows ?? [];
+
+					selectedRows.forEach((rowIndex) => {
+						let successful = this._validationSuccessDescriptionErrorAndTips[rowIndex][0] === "1" // Value will be "1" if successful
+						let description = this._validationSuccessDescriptionErrorAndTips[rowIndex][1];
+						let errorMessage = this._validationSuccessDescriptionErrorAndTips[rowIndex][2];
+						let tips = this._validationSuccessDescriptionErrorAndTips[rowIndex][3];
+
+						this._descriptionText.value = description;
+						this._descriptionLabel.CSSStyles = {
+							...styles.TDE_VALIDATION_INFO_LABEL
+						}
+						this._descriptionText.CSSStyles = {
+							...styles.TDE_VALIDATION_INFO_TEXT
+						}
+
+						this._errorText.value = errorMessage;
+						this._errorLabel.CSSStyles = {
+							...styles.TDE_VALIDATION_INFO_LABEL
+						}
+						this._errorText.CSSStyles = {
+							...styles.TDE_VALIDATION_INFO_TEXT
+						}
+
+						this._troubleshootingTipsText.value = tips;
+
+						if (successful) {
+							this._errorLabel.CSSStyles = {
+								...styles.TDE_VALIDATION_INFO_LABEL,
+								'display': 'none'
+							}
+							this._errorText.CSSStyles = {
+								...styles.TDE_VALIDATION_INFO_TEXT,
+								'display': 'none'
+							}
+
+							this._troubleshootingTipsLabel.CSSStyles = {
+								...styles.TDE_VALIDATION_INFO_LABEL,
+								'display': 'none'
+							}
+							this._troubleshootingTipsText.CSSStyles = {
+								...styles.TDE_VALIDATION_INFO_TEXT,
+								'display': 'none'
+							}
+						} else {
+							if (errorMessage === null || errorMessage?.length === 0) {
+								this._errorLabel.CSSStyles = {
+									...styles.TDE_VALIDATION_INFO_LABEL,
+									'display': 'none'
+								}
+								this._errorText.CSSStyles = {
+									...styles.TDE_VALIDATION_INFO_TEXT,
+									'display': 'none'
+								}
+							}
+
+							this._troubleshootingTipsLabel.CSSStyles = {
+								...styles.TDE_VALIDATION_INFO_LABEL
+							}
+							this._troubleshootingTipsText.CSSStyles = {
+								...styles.TDE_VALIDATION_INFO_TEXT
+							}
+						}
+					});
+				}));
+
+		const postValidationSeparator = _view.modelBuilder.separator().component();
+
+		this._descriptionLabel = _view.modelBuilder.text()
+			.withProps({
+				value: constants.TDE_VALIDATION_DESCRIPTION,
+				CSSStyles: {
+					...styles.TDE_VALIDATION_INFO_LABEL,
+					'display': 'none'
+				}
+			}).component();
+		this._descriptionText = _view.modelBuilder.text()
+			.withProps({
+				value: '',
+				CSSStyles: {
+					...styles.TDE_VALIDATION_INFO_TEXT,
+					'display': 'none'
+				}
+			}).component();
+
+		this._errorLabel = _view.modelBuilder.text()
+			.withProps({
+				value: constants.TDE_VALIDATION_ERROR,
+				CSSStyles: {
+					...styles.TDE_VALIDATION_INFO_LABEL,
+					'display': 'none'
+				}
+			}).component();
+		this._errorText = _view.modelBuilder.text()
+			.withProps({
+				value: '',
+				CSSStyles: {
+					...styles.TDE_VALIDATION_INFO_TEXT,
+					'display': 'none'
+				}
+			}).component();
+
+		this._troubleshootingTipsLabel = _view.modelBuilder.text()
+			.withProps({
+				value: constants.TDE_VALIDATION_TROUBLESHOOTING_TIPS,
+				CSSStyles: {
+					...styles.TDE_VALIDATION_INFO_LABEL,
+					'display': 'none'
+				}
+			}).component();
+		this._troubleshootingTipsText = _view.modelBuilder.text()
+			.withProps({
+				value: '',
+				CSSStyles: {
+					...styles.TDE_VALIDATION_INFO_TEXT,
+					'display': 'none'
+				}
+			}).component();
+
+		this._validationGroup = _view.modelBuilder.groupContainer()
+			.withLayout({
+				header: constants.TDE_VALIDATION_GROUP_TITLE,
+				collapsible: true,
+				collapsed: true
+			}).withProps({
+				collapsed: true,
+				CSSStyles: {
+					'margin': '0 0 0 10px',
+					'padding': '0 0 0 0',
+				}
+			})
+			.withItems([
+				preValidationSeparator,
+				validationRequiredLabel,
+				runValidationButton,
+				this._validationTable,
+				this._descriptionLabel,
+				this._descriptionText,
+				this._errorLabel,
+				this._errorText,
+				this._troubleshootingTipsLabel,
+				this._troubleshootingTipsText,
+				postValidationSeparator
+			])
+			.component();
 
 		container.addItems([
 			adsMethodInfoMessage,
 			networkPathLabel,
 			this._networkPathText,
-			this._adsConfirmationCheckBox]);
+			this._adsConfirmationCheckBox,
+			this._validationGroup
+		]);
 
 		return container;
+	}
+
+	private _createValidationTable(view: azdata.ModelView): azdata.TableComponent {
+		return view.modelBuilder.table()
+			.withProps({
+				columns: [
+					{
+						value: 'title',
+						name: constants.TDE_VALIDATION_TITLE,
+						type: azdata.ColumnType.text,
+						width: 320,
+						headerCssClass: 'no-borders',
+						cssClass: 'no-borders align-with-header',
+					},
+					{
+						value: 'image',
+						name: '',
+						type: azdata.ColumnType.icon,
+						width: 30,
+						headerCssClass: 'no-borders display-none',
+						cssClass: 'no-borders align-with-header',
+					},
+					{
+						value: 'message',
+						name: constants.TDE_MIGRATE_COLUMN_STATUS,
+						type: azdata.ColumnType.text,
+						width: 100,
+						headerCssClass: 'no-borders',
+						cssClass: 'no-borders align-with-header',
+					},
+				],
+				data: [],
+				width: 450,
+				height: 80,
+				CSSStyles: {
+					'margin-top': '10px'
+				},
+			})
+			.component();
 	}
 
 	private createManualWarningContainer(_view: azdata.ModelView): azdata.FlexContainer {
@@ -293,7 +596,7 @@ export class TdeConfigurationDialog {
 		await utils.updateControlDisplay(this._adsMethodConfirmationContainer, exportCertsUsingAds);
 		await utils.updateControlDisplay(this._manualMethodWarningContainer, this.migrationStateModel.tdeMigrationConfig.getPendingConfigDialogSetting() === ConfigDialogSetting.DoNotExport);
 
-		this.dialog!.okButton.enabled = this.migrationStateModel.tdeMigrationConfig.isAnyChangeReadyToBeApplied()
+		this.dialog!.okButton.enabled = this.migrationStateModel.tdeMigrationConfig.isAnyChangeReadyToBeApplied();
 	}
 
 	public async openDialog(dialogName?: string,) {

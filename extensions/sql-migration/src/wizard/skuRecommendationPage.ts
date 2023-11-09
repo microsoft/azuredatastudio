@@ -654,6 +654,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	public async refreshCardText(showLoadingIcon: boolean = true): Promise<void> {
 		this._rbgLoader.loading = showLoadingIcon && true;
+		if (!this._rbg.selectedCardId) {
+			this._rbg.selectedCardId = MigrationTargetType.SQLMI;
+		}
+
 		switch (this._rbg.selectedCardId) {
 			case MigrationTargetType.SQLMI:
 				this.migrationStateModel._databasesForMigration = this.migrationStateModel._miDbs;
@@ -753,20 +757,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 									constants.VM_CONFIGURATION(
 										recommendation.targetSku.virtualMachineSize!.sizeName,
 										recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
-
-								const dataDisk = constants.STORAGE_CONFIGURATION(
-									recommendation.targetSku.dataDiskSizes![0].size,
-									recommendation.targetSku.dataDiskSizes!.length);
-								const storageDisk = constants.STORAGE_CONFIGURATION(
-									recommendation.targetSku.logDiskSizes![0].size,
-									recommendation.targetSku.logDiskSizes!.length);
-								const tempDb = recommendation.targetSku.tempDbDiskSizes!.length > 0
-									? constants.STORAGE_CONFIGURATION(
-										recommendation.targetSku.logDiskSizes![0].size,
-										recommendation.targetSku.logDiskSizes!.length)
-									: constants.LOCAL_SSD;
-								this._rbg.cards[index].descriptions[CardDescriptionIndex.VM_CONFIGURATIONS].textValue =
-									constants.VM_CONFIGURATION_PREVIEW(dataDisk, storageDisk, tempDb);
+								// Removed disk details from summary as per experience requirements.
 							}
 						}
 						break;

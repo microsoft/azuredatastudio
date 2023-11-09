@@ -114,7 +114,7 @@ export async function getUniqueFileName(fileName: string, folderPath?: string): 
 }
 
 export function escapeClosingBrackets(str: string): string {
-	return str.replace(']', ']]');
+	return str.replace(/]/g, ']]');
 }
 
 /**

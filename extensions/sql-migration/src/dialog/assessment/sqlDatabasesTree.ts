@@ -14,6 +14,8 @@ import { selectDatabasesFromList } from '../../constants/helper';
 import { getSourceConnectionProfile } from '../../api/sqlUtils';
 import { SqlMigrationAssessmentResultItem, SqlMigrationImpactedObjectInfo } from '../../service/contracts';
 
+const AZURE_SQL_MI_DB_COUNT_THRESHOLD = 100;
+
 const styleLeft: azdata.CssStyles = {
 	'border': 'none',
 	'text-align': 'left',
@@ -888,6 +890,14 @@ export class SqlDatabaseTree {
 				]);
 			});
 		} else {
+			if (this._targetType === MigrationTargetType.SQLMI && selectedDbs?.length > AZURE_SQL_MI_DB_COUNT_THRESHOLD) {
+				this._dialog.okButton.enabled = false;
+				this._dialog.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: constants.AZURE_SQL_MI_DB_COUNT_THRESHOLD_EXCEEDS_ERROR(AZURE_SQL_MI_DB_COUNT_THRESHOLD),
+				};
+			}
+
 			instanceTableValues = [[
 				{
 					value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
@@ -933,8 +943,24 @@ export class SqlDatabaseTree {
 	}
 
 	private async updateValuesOnSelection() {
+		const selectedDbsCount = this.selectedDbs()?.length;
+		if (this._targetType === MigrationTargetType.SQLMI && selectedDbsCount > AZURE_SQL_MI_DB_COUNT_THRESHOLD) {
+			this._dialog.okButton.enabled = false;
+			this._dialog.message = {
+				level: azdata.window.MessageLevel.Error,
+				text: constants.AZURE_SQL_MI_DB_COUNT_THRESHOLD_EXCEEDS_ERROR(AZURE_SQL_MI_DB_COUNT_THRESHOLD)
+			};
+		}
+		else if (!this._dialog.okButton.enabled) {
+			this._dialog.okButton.enabled = true;
+			this._dialog.message = {
+				level: azdata.window.MessageLevel.Information,
+				text: constants.AZURE_SQL_MI_DB_COUNT_UNDER_THRESHOLD
+			};
+		}
+
 		await this._databaseCount.updateProperties({
-			'value': constants.DATABASES(this.selectedDbs()?.length, this._model._databasesForAssessment?.length)
+			'value': constants.DATABASES(selectedDbsCount, this._model._databasesForAssessment?.length)
 		});
 	}
 

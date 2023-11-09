@@ -163,7 +163,7 @@
       <source xml:lang="en">Attach database</source>
     </trans-unit>
     <trans-unit id="objectManagement.user.aadAuth">
-      <source xml:lang="en">Authenticate with Azure Active Directory</source>
+      <source xml:lang="en">Authenticate with Microsoft Entra</source>
     </trans-unit>
     <trans-unit id="objectManagement.user.sqlAuth">
       <source xml:lang="en">Authenticate with password</source>
@@ -201,11 +201,11 @@
     <trans-unit id="objectManagement.autoSetProcessorAffinityMaskForAll">
       <source xml:lang="en">Automatically set processor affinity mask for all processors</source>
     </trans-unit>
-    <trans-unit id="objectManagement.login.aadAuthenticationType">
-      <source xml:lang="en">Azure Active Directory Authentication</source>
-    </trans-unit>
     <trans-unit id="objectManagement.azurePricingLink">
       <source xml:lang="en">Azure SQL Database pricing calculator</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backButtonLabel">
+      <source xml:lang="en">Back</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.backupSectionHeader">
       <source xml:lang="en">Backup</source>
@@ -486,6 +486,9 @@
     <trans-unit id="objectManagement.databaseProperties.filegroupText">
       <source xml:lang="en">Filegroup</source>
     </trans-unit>
+    <trans-unit id="objectManagement.filegroupsNameInput">
+      <source xml:lang="en">Filegroup Name</source>
+    </trans-unit>
     <trans-unit id="objectManagement.filegroupsSectionHeader">
       <source xml:lang="en">Filegroups</source>
     </trans-unit>
@@ -657,11 +660,17 @@
     <trans-unit id="objectManagement.databaseProperties.memoryUsed">
       <source xml:lang="en">Memory Used By Memory Optimized Objects</source>
     </trans-unit>
+    <trans-unit id="objectManagement.login.aadAuthenticationType">
+      <source xml:lang="en">Microsoft Entra ID Authentication</source>
+    </trans-unit>
     <trans-unit id="objectManagement.minServerMemoryText">
       <source xml:lang="en">Minimum Server Memory (MB)</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.monitoringSectionText">
       <source xml:lang="en">Monitoring</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.notAvailableText">
+      <source xml:lang="en">N/A</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.name">
       <source xml:lang="en">Name</source>
@@ -998,6 +1007,9 @@
     <trans-unit id="objectManagement.databaseProperties.valueForSecondaryColumnHeader">
       <source xml:lang="en">Value for Secondary</source>
     </trans-unit>
+    <trans-unit id="objectManagement.locksValidation">
+      <source xml:lang="en">Value should be greater than {0}. Choose 0 for default settings.</source>
+    </trans-unit>
     <trans-unit id="objectManagement.versionText">
       <source xml:lang="en">Version</source>
     </trans-unit>
@@ -1190,11 +1202,11 @@
     <trans-unit id="json.schemas.desc">
       <source xml:lang="en">Associate schemas to JSON files in the current project</source>
     </trans-unit>
-    <trans-unit id="title.attachDatabase">
-      <source xml:lang="en">Attach (Preview)</source>
-    </trans-unit>
     <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
       <source xml:lang="en">Attach DB filename</source>
+    </trans-unit>
+    <trans-unit id="title.attachDatabase">
+      <source xml:lang="en">Attach Database (Preview)</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
       <source xml:lang="en">Attestation URL</source>
@@ -1205,14 +1217,14 @@
     <trans-unit id="mssql.connectionOptions.authType.displayName">
       <source xml:lang="en">Authentication type</source>
     </trans-unit>
-    <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
-      <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-    </trans-unit>
     <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS">
       <source xml:lang="en">Azure Attestation</source>
     </trans-unit>
     <trans-unit id="title.changeNotebookConnection">
       <source xml:lang="en">Change SQL Notebook Connection</source>
+    </trans-unit>
+    <trans-unit id="mssql.connection.clearPooledConnections">
+      <source xml:lang="en">Clear Pooled Connections</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.commandTimeout.displayName">
       <source xml:lang="en">Command timeout</source>
@@ -1263,7 +1275,7 @@
       <source xml:lang="en">Design</source>
     </trans-unit>
     <trans-unit id="title.detachDatabase">
-      <source xml:lang="en">Detach (Preview)</source>
+      <source xml:lang="en">Detach Database (Preview)</source>
     </trans-unit>
     <trans-unit id="mssql.objectExplorer.disableGroupBySchema">
       <source xml:lang="en">Disable Group By Schema</source>
@@ -1350,7 +1362,7 @@
       <source xml:lang="en">Enabled</source>
     </trans-unit>
     <trans-unit id="mssql.enableConnectionPooling">
-      <source xml:lang="en">Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed. To clear pooled connections, run the command: &apos;SQL Server: Clear Pooled Connections&apos;</source>
+      <source xml:lang="en">Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed. To clear pooled connections, run the command: &apos;MSSQL: Clear Pooled Connections&apos;</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.description">
       <source xml:lang="en">Enables or disables Always Encrypted for the connection</source>
@@ -1451,6 +1463,9 @@
     <trans-unit id="mssql.query.textSize">
       <source xml:lang="en">Maximum size of text and ntext data returned from a SELECT statement</source>
     </trans-unit>
+    <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
+      <source xml:lang="en">Microsoft Entra ID - Universal with MFA support</source>
+    </trans-unit>
     <trans-unit id="mssql.provider.displayName">
       <source xml:lang="en">Microsoft SQL Server</source>
     </trans-unit>
@@ -1475,14 +1490,26 @@
     <trans-unit id="mssql.connectionOptions.serverName.description">
       <source xml:lang="en">Name of the SQL Server instance</source>
     </trans-unit>
-    <trans-unit id="title.newObject">
-      <source xml:lang="en">New (Preview)</source>
+    <trans-unit id="title.newApplicationRole">
+      <source xml:lang="en">New Application Role (Preview)</source>
     </trans-unit>
     <trans-unit id="title.newDatabase">
       <source xml:lang="en">New Database (Preview)</source>
     </trans-unit>
+    <trans-unit id="title.newDatabaseRole">
+      <source xml:lang="en">New Database Role (Preview)</source>
+    </trans-unit>
+    <trans-unit id="title.newLogin">
+      <source xml:lang="en">New Login (Preview)</source>
+    </trans-unit>
+    <trans-unit id="title.newServerRole">
+      <source xml:lang="en">New Server Role (Preview)</source>
+    </trans-unit>
     <trans-unit id="title.newTable">
       <source xml:lang="en">New Table</source>
+    </trans-unit>
+    <trans-unit id="title.newUser">
+      <source xml:lang="en">New User (Preview)</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None">
       <source xml:lang="en">None</source>
@@ -1543,9 +1570,6 @@
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.authType.categoryValues.sqlLogin">
       <source xml:lang="en">SQL Login</source>
-    </trans-unit>
-    <trans-unit id="mssql.connection.clearPooledConnections">
-      <source xml:lang="en">SQL Server: Clear Pooled Connections</source>
     </trans-unit>
     <trans-unit id="mssql.objectExplorer.disableGroupBySchemaTitle">
       <source xml:lang="en">SQL Server: Disable Group By Schema</source>

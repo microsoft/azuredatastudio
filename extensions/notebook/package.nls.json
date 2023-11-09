@@ -38,7 +38,7 @@
 	"config.jupyter.kernelConfigValuesDescription": "Configuration options for Jupyter kernels. This is automatically managed and not recommended to be manually edited.",
 	"title.reinstallNotebookDependencies": "Reinstall Notebook dependencies",
 	"title.configurePython": "Configure Python for Notebooks",
-	"title.managePackages": "Manage Packages",
+	"title.managePackages": "Manage Notebook Packages",
 	"title.SQL19PreviewBook": "SQL Server 2019 Guide",
 	"books-preview-category": "Jupyter Books",
 	"title.saveJupyterBook": "Save Jupyter Book",

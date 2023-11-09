@@ -25,6 +25,8 @@ steps:
   - script: |
       set -e
       tar -xzf $(Pipeline.Workspace)/compilation.tar.gz
+      # delete tar.gz after it's been extracted to clear up the space
+      rm $(Pipeline.Workspace)/compilation.tar.gz
     displayName: Extract compilation output
 
   - script: |

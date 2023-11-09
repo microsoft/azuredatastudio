@@ -68,6 +68,10 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			: localizedConstants.UpdateObjectOperationDisplayName(typeDisplayName, this.options.objectName);
 	}
 
+	protected get actionName(): string {
+		return this.options.isNewObject ? TelemetryActions.CreateObject : TelemetryActions.UpdateObject;
+	}
+
 	protected override async initialize(): Promise<void> {
 		await super.initialize();
 		this.dialogObject.registerOperation({
@@ -75,7 +79,6 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			description: '',
 			isCancelable: false,
 			operation: async (operation: azdata.BackgroundOperation): Promise<void> => {
-				const actionName = this.options.isNewObject ? TelemetryActions.CreateObject : TelemetryActions.UpdateObject;
 				try {
 					if (this.isDirty) {
 						const startTime = Date.now();
@@ -89,7 +92,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 							}
 						}
 
-						TelemetryReporter.sendTelemetryEvent(actionName, {
+						TelemetryReporter.sendTelemetryEvent(this.actionName, {
 							objectType: this.options.objectType
 						}, {
 							elapsedTimeMs: Date.now() - startTime
@@ -99,7 +102,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				}
 				catch (err) {
 					operation.updateStatus(azdata.TaskStatus.Failed, getErrorMessage(err));
-					TelemetryReporter.createErrorEvent2(ObjectManagementViewName, actionName, err).withAdditionalProperties({
+					TelemetryReporter.createErrorEvent2(ObjectManagementViewName, this.actionName, err).withAdditionalProperties({
 						objectType: this.options.objectType
 					}).send();
 				} finally {

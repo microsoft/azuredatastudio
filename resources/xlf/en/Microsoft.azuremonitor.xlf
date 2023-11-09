@@ -97,9 +97,6 @@
     <trans-unit id="azuremonitor.connectionProperties.authType.displayName">
       <source xml:lang="en">Authentication type</source>
     </trans-unit>
-    <trans-unit id="azuremonitor.connectionProperties.authType.categoryValues.azureMFA">
-      <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-    </trans-unit>
     <trans-unit id="azuremonitor.displayName">
       <source xml:lang="en">Azure Monitor Logs</source>
     </trans-unit>
@@ -123,6 +120,9 @@
     </trans-unit>
     <trans-unit id="azuremonitor.connectionProperties.metadataPooling.label">
       <source xml:lang="en">Metadata Pooling</source>
+    </trans-unit>
+    <trans-unit id="azuremonitor.connectionProperties.authType.categoryValues.azureMFA">
+      <source xml:lang="en">Microsoft Entra ID - Universal with MFA support</source>
     </trans-unit>
     <trans-unit id="azuremonitor.objectsListProperties.name">
       <source xml:lang="en">Name</source>

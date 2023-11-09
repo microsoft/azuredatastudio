@@ -15,6 +15,7 @@ export class FileBrowserViewModel {
 	private _expandPath: string;
 	private _fileFilters: [{ label: string, filters: string[] }];
 	private _fileValidationServiceType: string;
+	private _showFoldersOnly: boolean;
 	public formattedFileFilters: string[];
 
 	constructor(@IFileBrowserService private _fileBrowserService: IFileBrowserService) {
@@ -28,14 +29,20 @@ export class FileBrowserViewModel {
 		this._fileBrowserService.onPathValidate(args => onPathValidateCallback(args));
 	}
 
+	public get showFoldersOnly(): boolean {
+		return this._showFoldersOnly;
+	}
+
 	public initialize(ownerUri: string,
 		expandPath: string,
 		fileFilters: [{ label: string, filters: string[] }],
 		fileValidationServiceType: string,
+		showFoldersOnly?: boolean
 	) {
 		this._ownerUri = ownerUri;
 		this._expandPath = expandPath;
 		this._fileValidationServiceType = fileValidationServiceType;
+		this._showFoldersOnly = !!showFoldersOnly;
 
 		if (!fileFilters) {
 			this._fileFilters = [{ label: localize('allFiles', "All files"), filters: ['*'] }];
@@ -55,7 +62,7 @@ export class FileBrowserViewModel {
 
 	public async openFileBrowser(filterIndex: number, changeFilter: boolean): Promise<void> {
 		if (this._fileFilters[filterIndex]) {
-			await this._fileBrowserService.openFileBrowser(this._ownerUri, this._expandPath, this._fileFilters[filterIndex].filters, changeFilter);
+			await this._fileBrowserService.openFileBrowser(this._ownerUri, this._expandPath, this._fileFilters[filterIndex].filters, changeFilter, this._showFoldersOnly);
 		}
 	}
 

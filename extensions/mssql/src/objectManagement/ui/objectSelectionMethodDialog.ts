@@ -40,6 +40,9 @@ export class ObjectSelectionMethodDialog extends DialogBase<ObjectSelectionMetho
 			schema: undefined,
 			objectTypes: []
 		};
+
+		// Relabel Cancel button to Back, since clicking cancel on an inner dialog makes it seem like it would close the whole dialog overall
+		this.dialogObject.cancelButton.label = localizedConstants.BackButtonLabel;
 	}
 
 	protected override async initialize(): Promise<void> {

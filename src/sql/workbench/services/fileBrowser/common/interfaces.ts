@@ -24,7 +24,7 @@ export interface IFileBrowserService {
 	/**
 	 * Open file browser
 	 */
-	openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Promise<boolean>;
+	openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean, showFoldersOnly?: boolean): Promise<boolean>;
 
 	/**
 	 * Event called when file browser is opened

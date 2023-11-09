@@ -25,7 +25,8 @@ export class FileBrowserDialogController implements IFileBrowserDialogController
 		fileFilters: [{ label: string, filters: string[] }],
 		fileValidationServiceType: string,
 		isWide: boolean,
-		handleOnClosed: (path: string | undefined) => void
+		handleOnClosed: (path: string | undefined) => void,
+		showFoldersOnly?: boolean
 	): void {
 		if (!this._fileBrowserDialog) {
 			this._fileBrowserDialog = this._instantiationService.createInstance(FileBrowserDialog, localize('filebrowser.selectFile', "Select a file"));
@@ -44,6 +45,6 @@ export class FileBrowserDialogController implements IFileBrowserDialogController
 			this._fileBrowserDialog = undefined;
 		});
 
-		this._fileBrowserDialog.open(ownerUri, expandPath, fileFilters, fileValidationServiceType);
+		this._fileBrowserDialog.open(ownerUri, expandPath, fileFilters, fileValidationServiceType, showFoldersOnly);
 	}
 }

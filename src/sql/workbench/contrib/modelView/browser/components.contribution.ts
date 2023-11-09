@@ -37,6 +37,7 @@ import ListViewComponent from 'sql/workbench/browser/modelComponents/listView.co
 import InfoBoxComponent from 'sql/workbench/browser/modelComponents/infoBox.component';
 import SliderComponent from 'sql/workbench/browser/modelComponents/slider.component';
 import ExecutionPlanComponent from 'sql/workbench/browser/modelComponents/executionPlan.component';
+import ChartComponent from 'sql/workbench/browser/modelComponents/chart.component';
 
 export const DIV_CONTAINER = 'div-container';
 registerComponentType(DIV_CONTAINER, ModelComponentTypes.DivContainer, DivContainer);
@@ -134,3 +135,6 @@ registerComponentType(SLIDER_COMPONENT, ModelComponentTypes.Slider, SliderCompon
 
 export const EXECUTION_PLAN_COMPONENT = 'executionplan-component';
 registerComponentType(EXECUTION_PLAN_COMPONENT, ModelComponentTypes.ExecutionPlan, ExecutionPlanComponent);
+
+export const CHART_COMPONENT = 'chart-component';
+registerComponentType(CHART_COMPONENT, ModelComponentTypes.Chart, ChartComponent);

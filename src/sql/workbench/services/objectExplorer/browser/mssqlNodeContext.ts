@@ -28,7 +28,7 @@ export interface INodeContextValue {
  */
 export class MssqlNodeContext extends Disposable {
 
-	static readonly canSelect = new Set([NodeType.Table, NodeType.View]);
+	static readonly canSelect = new Set([NodeType.HistoryTable, NodeType.Table, NodeType.View]);
 	static readonly canEditData = new Set([NodeType.Table]);
 	static readonly canCreateOrDelete = new Set([NodeType.AggregateFunction, NodeType.PartitionFunction, NodeType.ScalarValuedFunction,
 	NodeType.Schema, NodeType.StoredProcedure, NodeType.Table, NodeType.TableValuedFunction,

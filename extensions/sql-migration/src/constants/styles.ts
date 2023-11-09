@@ -69,3 +69,21 @@ export const BIG_NUMBER_CSS = {
 	'line-height': '36px',
 	'margin': '0',
 };
+
+export const TDE_VALIDATION_INFO_LABEL = {
+	'font-size': '14px',
+	'line-height': '20px',
+	'font-weight': '600',
+	'margin': '0 0 0 0px',
+	'width': '400px',
+	'display': 'inline-block'
+}
+
+export const TDE_VALIDATION_INFO_TEXT = {
+	'font-size': '13px',
+	'line-height': '18px',
+	'margin': '0 0 0 0px',
+	'width': '440px',
+	'overflow': 'scroll',
+	'display': 'inline-block'
+}

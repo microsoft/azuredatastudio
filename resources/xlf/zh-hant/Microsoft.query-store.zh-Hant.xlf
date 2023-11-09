@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/Microsoft.query-store/dist/common/constants" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="aggregationSizeLabel">
+        <source xml:lang="en">Aggregation Size</source>
+        <target state="translated">彙總大小:</target>
+      </trans-unit>
+      <trans-unit id="allLabel">
+        <source xml:lang="en">All</source>
+        <target state="translated">全部</target>
+      </trans-unit>
+      <trans-unit id="applyButtonText">
+        <source xml:lang="en">Apply</source>
+        <target state="translated">套用</target>
+      </trans-unit>
+      <trans-unit id="automaticLabel">
+        <source xml:lang="en">Automatic</source>
+        <target state="translated">自動</target>
+      </trans-unit>
+      <trans-unit id="avgLabel">
+        <source xml:lang="en">Avg</source>
+        <target state="translated">平均值</target>
+      </trans-unit>
+      <trans-unit id="basedOnLabel">
+        <source xml:lang="en">Based on:</source>
+        <target state="translated">依據:</target>
+      </trans-unit>
+      <trans-unit id="CLRTimeLabel">
+        <source xml:lang="en">CLR Time (ms)</source>
+        <target state="translated">CLR 時間 (毫秒)</target>
+      </trans-unit>
+      <trans-unit id="cpuTime">
+        <source xml:lang="en">CPU Time</source>
+        <target state="translated">CPU 時間</target>
+      </trans-unit>
+      <trans-unit id="CPUTimeLabel">
+        <source xml:lang="en">CPU Time (ms)</source>
+        <target state="translated">CPU 時間 (毫秒)</target>
+      </trans-unit>
+      <trans-unit id="cancelButtonText">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">取消</target>
+      </trans-unit>
+      <trans-unit id="topConsumersRadioButtonsLabel">
+        <source xml:lang="en">Check for top consumers of:</source>
+        <target state="translated">檢查下列項目的前幾名取用者:</target>
+      </trans-unit>
+      <trans-unit id="configure">
+        <source xml:lang="en">Configure</source>
+        <target state="translated">設定</target>
+      </trans-unit>
+      <trans-unit id="criteria">
+        <source xml:lang="en">Criteria</source>
+        <target state="translated">準則</target>
+      </trans-unit>
+      <trans-unit id="customLabel">
+        <source xml:lang="en">Custom</source>
+        <target state="translated">自訂</target>
+      </trans-unit>
+      <trans-unit id="++CODE++9cb725c039170871de7978892c2fdf0f763f58359bd66bd0b1a06b0bdf3f6b38">
+        <source xml:lang="en">DOP</source>
+        <target state="translated">DOP</target>
+      </trans-unit>
+      <trans-unit id="dayLabel">
+        <source xml:lang="en">Day</source>
+        <target state="translated">天</target>
+      </trans-unit>
+      <trans-unit id="duration">
+        <source xml:lang="en">Duration</source>
+        <target state="translated">持續時間</target>
+      </trans-unit>
+      <trans-unit id="durationLabel">
+        <source xml:lang="en">Duration (ms)</source>
+        <target state="translated">持續時間 (毫秒)</target>
+      </trans-unit>
+      <trans-unit id="executionCountLabel">
+        <source xml:lang="en">Execution Count</source>
+        <target state="translated">執行計數</target>
+      </trans-unit>
+      <trans-unit id="executionCount">
+        <source xml:lang="en">Execution Count</source>
+        <target state="translated">執行計數</target>
+      </trans-unit>
+      <trans-unit id="filterLabel">
+        <source xml:lang="en">Filters</source>
+        <target state="translated">篩選</target>
+      </trans-unit>
+      <trans-unit id="fromLabel">
+        <source xml:lang="en">From</source>
+        <target state="translated">從</target>
+      </trans-unit>
+      <trans-unit id="hourLabel">
+        <source xml:lang="en">Hour</source>
+        <target state="translated">小時</target>
+      </trans-unit>
+      <trans-unit id="last12HoursLabel">
+        <source xml:lang="en">Last 12 hours</source>
+        <target state="translated">過去 12 小時</target>
+      </trans-unit>
+      <trans-unit id="last15MinsLabel">
+        <source xml:lang="en">Last 15 minutes</source>
+        <target state="translated">過去 15 分鐘</target>
+      </trans-unit>
+      <trans-unit id="last2DaysLabel">
+        <source xml:lang="en">Last 2 days</source>
+        <target state="translated">過去 2 天</target>
+      </trans-unit>
+      <trans-unit id="last2WeeksLabel">
+        <source xml:lang="en">Last 2 weeks</source>
+        <target state="translated">過去 2 週</target>
+      </trans-unit>
+      <trans-unit id="last3MonthsLabel">
+        <source xml:lang="en">Last 3 months</source>
+        <target state="translated">過去 3 個月</target>
+      </trans-unit>
+      <trans-unit id="last30MinsLabel">
+        <source xml:lang="en">Last 30 minutes</source>
+        <target state="translated">過去 30 分鐘</target>
+      </trans-unit>
+      <trans-unit id="last5MinsLabel">
+        <source xml:lang="en">Last 5 minutes</source>
+        <target state="translated">過去 5 分鐘</target>
+      </trans-unit>
+      <trans-unit id="last6MonthsLabel">
+        <source xml:lang="en">Last 6 months</source>
+        <target state="translated">過去 6 個月</target>
+      </trans-unit>
+      <trans-unit id="lastDayLabel">
+        <source xml:lang="en">Last day</source>
+        <target state="translated">最後一天</target>
+      </trans-unit>
+      <trans-unit id="lastHourLabel">
+        <source xml:lang="en">Last hour</source>
+        <target state="translated">最近 1 小時</target>
+      </trans-unit>
+      <trans-unit id="lastMonthLabel">
+        <source xml:lang="en">Last month</source>
+        <target state="translated">上個月</target>
+      </trans-unit>
+      <trans-unit id="lastWeekLabel">
+        <source xml:lang="en">Last week</source>
+        <target state="translated">上週</target>
+      </trans-unit>
+      <trans-unit id="lastYearLabel">
+        <source xml:lang="en">Last year</source>
+        <target state="translated">去年</target>
+      </trans-unit>
+      <trans-unit id="localLabel">
+        <source xml:lang="en">Local</source>
+        <target state="translated">本機</target>
+      </trans-unit>
+      <trans-unit id="logMemoryUsedLabel">
+        <source xml:lang="en">Log Memory Used (KB)</source>
+        <target state="translated">已使用的記錄記憶體 (KB)</target>
+      </trans-unit>
+      <trans-unit id="logicalReads">
+        <source xml:lang="en">Logical Reads</source>
+        <target state="translated">邏輯讀取次數</target>
+      </trans-unit>
+      <trans-unit id="logicalReadsLabel">
+        <source xml:lang="en">Logical Reads (KB)</source>
+        <target state="translated">邏輯讀取 (KB)</target>
+      </trans-unit>
+      <trans-unit id="logicalWritesLabel">
+        <source xml:lang="en">Logical Writes (KB)</source>
+        <target state="translated">邏輯寫入 (KB)</target>
+      </trans-unit>
+      <trans-unit id="maxLabel">
+        <source xml:lang="en">Max</source>
+        <target state="translated">最大值</target>
+      </trans-unit>
+      <trans-unit id="memoryConsumptionLabel">
+        <source xml:lang="en">Memory Consumption (KB)</source>
+        <target state="translated">記憶體使用量 (KB)</target>
+      </trans-unit>
+      <trans-unit id="minLabel">
+        <source xml:lang="en">Min</source>
+        <target state="translated">最小值</target>
+      </trans-unit>
+      <trans-unit id="filterMinPlanLabel">
+        <source xml:lang="en">Min number of plans</source>
+        <target state="translated">方案數目下限</target>
+      </trans-unit>
+      <trans-unit id="minuteLabel">
+        <source xml:lang="en">Minute</source>
+        <target state="translated">分鐘</target>
+      </trans-unit>
+      <trans-unit id="okButtonText">
+        <source xml:lang="en">Ok</source>
+        <target state="translated">確定</target>
+      </trans-unit>
+      <trans-unit id="openInNewTab">
+        <source xml:lang="en">Open In New Tab</source>
+        <target state="translated">在新索引標籤中開啟</target>
+      </trans-unit>
+      <trans-unit id="overallResourceConsumption">
+        <source xml:lang="en">Overall Resource Consumption</source>
+        <target state="translated">整體資源耗用量</target>
+      </trans-unit>
+      <trans-unit id="overallResourceConsumptionToolbarLabel">
+        <source xml:lang="en">Overall resource consumption for database {0}</source>
+        <target state="translated">資料庫 {0} 的整體資源耗用量</target>
+      </trans-unit>
+      <trans-unit id="physicalReadsLabel">
+        <source xml:lang="en">Physical Reads (KB)</source>
+        <target state="translated">實體讀取 (KB)</target>
+      </trans-unit>
+      <trans-unit id="planSummary">
+        <source xml:lang="en">Plan Summary for query {0}</source>
+        <target state="translated">查詢 {0} 的計劃摘要</target>
+      </trans-unit>
+      <trans-unit id="plan">
+        <source xml:lang="en">Plan {0}</source>
+        <target state="translated">計劃 {0}</target>
+      </trans-unit>
+      <trans-unit id="queries">
+        <source xml:lang="en">Queries</source>
+        <target state="translated">查詢</target>
+      </trans-unit>
+      <trans-unit id="queryStoreDashboardTitle">
+        <source xml:lang="en">Query Store - {0}</source>
+        <target state="translated">查詢存放區 - {0}</target>
+      </trans-unit>
+      <trans-unit id="resourceConsumptionCriteriaTitle">
+        <source xml:lang="en">Resource Consumption Criteria</source>
+        <target state="translated">資源使用量準則</target>
+      </trans-unit>
+      <trans-unit id="returnLabel">
+        <source xml:lang="en">Return</source>
+        <target state="translated">傳回</target>
+      </trans-unit>
+      <trans-unit id="rowCountLabel">
+        <source xml:lang="en">Row Count</source>
+        <target state="translated">資料列計數</target>
+      </trans-unit>
+      <trans-unit id="showChartTitle">
+        <source xml:lang="en">Show Chart for</source>
+        <target state="translated">顯示以下內容的圖表:</target>
+      </trans-unit>
+      <trans-unit id="stdDevLabel">
+        <source xml:lang="en">Std Dev</source>
+        <target state="translated">標準差</target>
+      </trans-unit>
+      <trans-unit id="tempDBMermoryUsedLabel">
+        <source xml:lang="en">Temp DB Memory Used (KB)</source>
+        <target state="translated">已使用的暫存 DB 記憶體 (KB)</target>
+      </trans-unit>
+      <trans-unit id="timeFormatLabel">
+        <source xml:lang="en">Time Format</source>
+        <target state="translated">時間格式</target>
+      </trans-unit>
+      <trans-unit id="timeIntervalLabel">
+        <source xml:lang="en">Time Interval</source>
+        <target state="translated">時間間隔</target>
+      </trans-unit>
+      <trans-unit id="timeSettingsLabel">
+        <source xml:lang="en">Time Settings</source>
+        <target state="translated">時間設定</target>
+      </trans-unit>
+      <trans-unit id="toLabel">
+        <source xml:lang="en">To</source>
+        <target state="translated">至</target>
+      </trans-unit>
+      <trans-unit id="topLabel">
+        <source xml:lang="en">Top</source>
+        <target state="translated">最前幾項</target>
+      </trans-unit>
+      <trans-unit id="topResourceConsumingQueriesToolbarLabel">
+        <source xml:lang="en">Top 25 resource consumers for database {0}</source>
+        <target state="translated">資料庫 {0} 的前 25 個資源取用者</target>
+      </trans-unit>
+      <trans-unit id="topResourceConsumingQueries">
+        <source xml:lang="en">Top Resource Consuming Queries</source>
+        <target state="translated">資源耗用量排名在前的查詢</target>
+      </trans-unit>
+      <trans-unit id="totalLabel">
+        <source xml:lang="en">Total</source>
+        <target state="translated">總計</target>
+      </trans-unit>
+      <trans-unit id="++CODE++17bc05152f339d6dc2fb2844595760e9009662c4315fa1ac0d61c7e47dfbdbb3">
+        <source xml:lang="en">UTC</source>
+        <target state="translated">UTC</target>
+      </trans-unit>
+      <trans-unit id="waitTimeLabel">
+        <source xml:lang="en">Wait Time (ms)</source>
+        <target state="translated">等候時間 (毫秒)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/Microsoft.query-store/package" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="queryStore.openQueryStoreDashboard">
+        <source xml:lang="en">Query Store</source>
+        <target state="translated">查詢存放區</target>
+      </trans-unit>
+      <trans-unit id="queryStore.category">
+        <source xml:lang="en">Query Store</source>
+        <target state="translated">查詢存放區</target>
+      </trans-unit>
+      <trans-unit id="queryStore.displayName">
+        <source xml:lang="en">Query Store</source>
+        <target state="translated">查詢存放區</target>
+      </trans-unit>
+      <trans-unit id="queryStore.description">
+        <source xml:lang="en">Query Store extension for Azure Data Studio.</source>
+        <target state="translated">適用於 Azure Data Studio 的查詢存放區延伸模組。</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

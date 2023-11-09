@@ -16,6 +16,7 @@ import * as dashboard from './modelViewDashboard';
 import { ConnectionProvider } from '../featureProviders/connectionProvider';
 import { IconProvider } from '../featureProviders/iconProvider';
 import { ObjectExplorerProvider } from '../featureProviders/objectExplorerProvider';
+import * as chartExamples from '../chartExamples';
 
 /**
  * The main controller class that initializes the extension
@@ -115,6 +116,12 @@ export default class MainController implements vscode.Disposable {
 			await this.getTreeTabContent(view);
 		});
 		dialog.content.push(treeTab);
+
+		const graphTab = azdata.window.createTab('Graphs');
+		graphTab.registerContent(async (view) => {
+			await this.getGraphTabContent(view);
+		});
+		dialog.content.push(graphTab);
 
 		// Open the dialog
 
@@ -701,9 +708,141 @@ export default class MainController implements vscode.Disposable {
 		await view.initializeModel(formWrapper);
 	}
 
-	//#endregion
+	private async getGraphTabContent(view: azdata.ModelView): Promise<void> {
+		const barChart = view.modelBuilder.chart<'bar', azdata.BarChartData, azdata.BarChartOptions>()
+			.withProps({
+				chartType: 'bar',
+				data: chartExamples.barData,
+				options: chartExamples.barOptions,
+				width: '500px',
+				height: '300px'
+			}).component();
 
-	//#region Registrations
+		const horizontalBarChart = view.modelBuilder.chart<'horizontalBar', azdata.HorizontalBarChartData, azdata.HorizontalBarChartOptions>()
+			.withProps({
+				chartType: 'horizontalBar',
+				data: chartExamples.horizontalBarData,
+				options: chartExamples.horizontalBarOptions,
+				width: '500px',
+				height: '300px'
+			}).component();
+
+		const lineChart = view.modelBuilder.chart<'line', azdata.LineChartData, azdata.LineChartOptions>()
+			.withProps({
+				chartType: 'line',
+				data: chartExamples.lineData,
+				options: chartExamples.lineOptions,
+				width: '500px',
+				height: '300px'
+			}).component();
+
+		const pieChart = view.modelBuilder.chart<'pie', azdata.PieChartData, azdata.PieChartOptions>()
+			.withProps({
+				chartType: 'pie',
+				data: chartExamples.pieData,
+				options: chartExamples.pieOptions,
+				width: '300px',
+				height: '300px'
+			}).component();
+
+		const doughnutChart = view.modelBuilder.chart<'doughnut', azdata.DoughnutChartData, azdata.DoughnutChartOptions>()
+			.withProps({
+				chartType: 'doughnut',
+				data: chartExamples.doughnutData,
+				options: chartExamples.doughnutOptions,
+				width: '400px',
+				height: '400px'
+			}).component();
+
+		const scatterplot = view.modelBuilder.chart<'scatter', azdata.ScatterplotData, azdata.ScatterplotOptions>()
+			.withProps({
+				chartType: 'scatter',
+				data: chartExamples.scatterData,
+				options: chartExamples.scatterOptions,
+				width: '400px',
+				height: '400px'
+			}).component();
+
+		const bubbleChart = view.modelBuilder.chart<'bubble', azdata.BubbleChartData, azdata.BubbleChartOptions>()
+			.withProps({
+				chartType: 'bubble',
+				data: chartExamples.bubbleData,
+				options: chartExamples.bubbleOptions,
+				width: '500px',
+				height: '500px'
+			}).component();
+
+		const polarChart = view.modelBuilder.chart<'polarArea', azdata.PolarAreaChartData, azdata.PolarAreaChartOptions>()
+			.withProps({
+				chartType: 'polarArea',
+				data: chartExamples.polarData,
+				options: chartExamples.polarOptions,
+				width: '500px',
+				height: '500px'
+			}).component();
+
+		const radarChart = view.modelBuilder.chart<'radar', azdata.RadarChartData, azdata.RadarChartOptions>()
+			.withProps({
+				chartType: 'radar',
+				data: chartExamples.radarData,
+				options: chartExamples.radarOptions,
+				width: '500px',
+				height: '500px'
+			}).component();
+
+		const button = view.modelBuilder.button()
+			.withProps({
+				label: 'Click to change bar chart data'
+			}).component();
+
+		button.onDidClick(async () => {
+			// To update data, a new data object must be created and passed.
+			// If the existing one is updated, it's detected as the same object, and "saves" the effort of send propertyChanged events.
+
+			const newDataSets: azdata.BarChartDataSet[] = [];
+
+			for (let i = 0; i < chartExamples.barData.datasets.length; i++) {
+				const newSet: azdata.BarChartDataSet = {
+					...chartExamples.barData.datasets[i], // spread to preserve existing colors and label
+					data: []
+				};
+
+				for (let j = 0; j < chartExamples.barData.datasets[i].data.length; j++) {
+					newSet.data.push(Math.random() * 8);
+				}
+
+				newDataSets.push(newSet);
+			}
+
+			const newData: azdata.BarChartData = {
+				labels: chartExamples.barData.labels,
+				datasets: newDataSets
+			};
+
+			await barChart.updateProperty('data', newData);
+		});
+
+		const flexContainer = view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' })
+			.withProps({ CSSStyles: { 'padding': '20px 15px' } })
+			.component();
+
+		flexContainer.addItem(button, { flex: '0 0 auto' });
+		flexContainer.addItem(barChart, { flex: '0 0 auto' });
+		flexContainer.addItem(horizontalBarChart, { flex: '0 0 auto' });
+		flexContainer.addItem(lineChart, { flex: '0 0 auto' });
+		flexContainer.addItem(pieChart, { flex: '0 0 auto' });
+		flexContainer.addItem(doughnutChart, { flex: '0 0 auto' });
+		flexContainer.addItem(scatterplot, { flex: '0 0 auto' });
+		flexContainer.addItem(bubbleChart, { flex: '0 0 auto' });
+		flexContainer.addItem(polarChart, { flex: '0 0 auto' });
+		flexContainer.addItem(radarChart, { flex: '0 0 auto' });
+
+		const flexWrapper = view.modelBuilder.loadingComponent().withItem(flexContainer).component();
+		flexWrapper.loading = false;
+
+		await view.initializeModel(flexWrapper);
+	}
 
 	private registerSqlServicesModelView(): void {
 		azdata.ui.registerModelViewProvider('sqlservices', async (view) => {

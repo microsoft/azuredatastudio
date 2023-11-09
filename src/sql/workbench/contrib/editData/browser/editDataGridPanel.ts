@@ -82,8 +82,11 @@ export class EditDataGridPanel extends GridParentComponent {
 	// Prevent the cell submission function from being called multiple times.
 	private cellSubmitInProgress: boolean;
 
-	// Prevent the tab focus from doing any damage to the table while its being reverted.
+	// Prevent the tab focus from doing any damage to the table while a cell is being reverted.
 	private cellRevertInProgress: boolean;
+
+	// Prevent the tab focus from doing any damage to the table while a row is being reverted.
+	private rowRevertInProgress: boolean
 
 	// Manually submit the cell after edit end if it's the null row.
 	private isInNullRow: boolean;
@@ -343,7 +346,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		// definition for the column (ie, the selection was reset)
 		// Also skip when cell updates are happening as we don't want to affect other cells while this is going on.
 		// (focus should shift back to current cell if it is set)
-		if (row === undefined || column === undefined || this.cellSubmitInProgress || this.cellRevertInProgress) {
+		if (row === undefined || column === undefined || this.cellSubmitInProgress || this.cellRevertInProgress || this.rowRevertInProgress) {
 			return;
 		}
 
@@ -626,6 +629,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
 
 	private async revertCurrentRow(): Promise<void> {
+		this.rowRevertInProgress = true;
 		let currentNewRowIndex = this.dataSet.totalRows - 2;
 		if (this.newRowVisible && this.currentCell.row === currentNewRowIndex) {
 			// revert our last new row
@@ -664,6 +668,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				}
 			}
 		}
+		this.rowRevertInProgress = false;
 	}
 
 	private async revertCurrentCell(): Promise<void> {

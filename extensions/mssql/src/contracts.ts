@@ -1650,7 +1650,6 @@ export namespace SearchObjectRequest {
 export interface DetachDatabaseRequestParams {
 	connectionUri: string;
 	database: string;
-	objectUrn: string;
 	dropConnections: boolean;
 	updateStatistics: boolean;
 	generateScript: boolean;
@@ -1663,7 +1662,6 @@ export namespace DetachDatabaseRequest {
 export interface DropDatabaseRequestParams {
 	connectionUri: string;
 	database: string;
-	objectUrn: string;
 	dropConnections: boolean;
 	deleteBackupHistory: boolean;
 	generateScript: boolean;
@@ -1701,13 +1699,12 @@ export namespace GetAssociatedFilesRequest {
 }
 
 export namespace PurgeQueryStoreDataRequest {
-	export const type = new RequestType<purgeQueryStoreDataRequestParams, void, void, void>('objectManagement/purgeQueryStoreData');
+	export const type = new RequestType<PurgeQueryStoreDataRequestParams, void, void, void>('objectManagement/purgeQueryStoreData');
 }
 
-export interface purgeQueryStoreDataRequestParams {
+export interface PurgeQueryStoreDataRequestParams {
 	connectionUri: string;
 	database: string;
-	objectUrn: string;
 }
 
 // ------------------------------- < Object Management > ------------------------------------

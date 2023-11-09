@@ -1321,6 +1321,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 		else {
 			spec = notebookConstants.sqlKernelSpec;
+			this.logService.info(`Could not find kernel spec from display name ${displayName}. Defaulting to SQL kernel.`);
 		}
 		return spec;
 	}
