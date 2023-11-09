@@ -79,8 +79,8 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	private get useUrlMode(): boolean {
-		if (this._backupTypeDropdown) {
-			return this._backupTypeDropdown.value === loc.BackupUrlLabel;
+		if (this._backupDestDropdown) {
+			return this._backupDestDropdown.value === loc.BackupUrlLabel;
 		} else {
 			return this.viewInfo.isManagedInstance;
 		}
