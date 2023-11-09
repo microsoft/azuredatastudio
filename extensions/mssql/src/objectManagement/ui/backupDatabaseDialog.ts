@@ -120,8 +120,6 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		components.push(recoveryInputContainer);
 
 		this._backupTypeDropdown = this.createDropdown(loc.BackupTypeLabel, async newValue => {
-			// Update backup name with new backup type
-			this._backupSetNameInput.value = this._backupSetNameInput.ariaLabel = this.getDefaultBackupName(newValue);
 			if (newValue === loc.BackupTransactionLog) {
 				this._truncateLogButton.enabled = true;
 				this._backupLogTailButton.enabled = true;
@@ -274,8 +272,15 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		try {
 			let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, this._defaultBackupFolderPath, this._fileFilters);
 			if (filePath) {
-				this._backupFilePaths.push(filePath);
-				await this.updateTableData();
+				if (this._backupFilePaths.includes(filePath)) {
+					this.dialogObject.message = {
+						text: loc.PathAlreadyAddedError,
+						level: azdata.window.MessageLevel.Error
+					}
+				} else {
+					this._backupFilePaths.push(filePath);
+					await this.updateTableData();
+				}
 			}
 		} catch (error) {
 			this.dialogObject.message = {
@@ -298,7 +303,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	private async updateTableData(): Promise<void> {
 		await this._backupFilesTable.updateProperties({
-			data: this._backupFilePaths,
+			data: this._backupFilePaths.map(path => [path]),
 			height: getTableHeight(this._backupFilePaths.length, DefaultMinTableRowCount)
 		});
 		this.onFormFieldChange();
