@@ -78,6 +78,9 @@
     <trans-unit id="objectManagement.objectSelectionMethodDialogTitle">
       <source xml:lang="en">Add Objects</source>
     </trans-unit>
+    <trans-unit id="objectManagement.addBackupFileText">
+      <source xml:lang="en">Add backup files</source>
+    </trans-unit>
     <trans-unit id="objectManagement.addFileText">
       <source xml:lang="en">Add database files</source>
     </trans-unit>
@@ -89,6 +92,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.advancedSectionHeader">
       <source xml:lang="en">Advanced</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupAlgorithm">
+      <source xml:lang="en">Algorithm</source>
     </trans-unit>
     <trans-unit id="objectManagement.allFiles">
       <source xml:lang="en">All Files</source>
@@ -108,6 +114,10 @@
     </trans-unit>
     <trans-unit id="objectManagement.openAttachDatabaseDialogError">
       <source xml:lang="en">An error occurred while opening the attach database dialog. {0}</source>
+      <note>{0}: error message.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.openBackupDatabaseDialogError">
+      <source xml:lang="en">An error occurred while opening the backup database dialog. {0}</source>
       <note>{0}: error message.</note>
     </trans-unit>
     <trans-unit id="objectManagement.openDetachDatabaseDialogError">
@@ -134,6 +144,9 @@
       <source xml:lang="en">An error occurred while renaming {0} &apos;{1}&apos; to &apos;{2}&apos;. {3}</source>
       <note>{0} object type, {1}: original name, {2}: new name, {3}: error message.</note>
     </trans-unit>
+    <trans-unit id="objectManagement.appendToExistingBackup">
+      <source xml:lang="en">Append to the existing backup set</source>
+    </trans-unit>
     <trans-unit id="objectManagement.ApplicationRoleTypeDisplayNameInTitle">
       <source xml:lang="en">Application Role</source>
     </trans-unit>
@@ -149,6 +162,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.associatedDatabaseFiles">
       <source xml:lang="en">Associated Database Files</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupAsymmetricKey">
+      <source xml:lang="en">Asymmetric Key</source>
     </trans-unit>
     <trans-unit id="objectManagement.attachButtonLabel">
       <source xml:lang="en">Attach</source>
@@ -207,11 +223,32 @@
     <trans-unit id="objectManagement.backButtonLabel">
       <source xml:lang="en">Back</source>
     </trans-unit>
+    <trans-unit id="objectManagement.backupLogTail">
+      <source xml:lang="en">Back up the tail of the log, and leave the database in the restoring state</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupToLabel">
+      <source xml:lang="en">Back up to</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupAndEraseExisting">
+      <source xml:lang="en">Back up to a new media set, and erase all existing backup sets</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupToExistingMedia">
+      <source xml:lang="en">Back up to the existing media set</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.backupSectionHeader">
       <source xml:lang="en">Backup</source>
     </trans-unit>
     <trans-unit id="objectManagement.backupLocationText">
       <source xml:lang="en">Backup</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupButtonLabel">
+      <source xml:lang="en">Backup</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupDatabaseDialogTitle">
+      <source xml:lang="en">Backup Database - {0} (Preview)</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupFilesLabel">
+      <source xml:lang="en">Backup Files</source>
     </trans-unit>
     <trans-unit id="objectManagement.backupRedundancyLabel">
       <source xml:lang="en">Backup Storage Redundancy</source>
@@ -221,6 +258,16 @@
     </trans-unit>
     <trans-unit id="objectManagement.backupChecksumText">
       <source xml:lang="en">Backup checksum</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupDatabaseOperationName">
+      <source xml:lang="en">Backup database &apos;{0}&apos;</source>
+      <note>{0}: object name.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupNameLabel">
+      <source xml:lang="en">Backup set name</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupTypeLabel">
+      <source xml:lang="en">Backup type</source>
     </trans-unit>
     <trans-unit id="objectManagement.blockedProcThresholdLabel">
       <source xml:lang="en">Blocked Process Threshold</source>
@@ -243,6 +290,9 @@
     <trans-unit id="objectManagement.databaseProperties.emptyFilegroupNameError">
       <source xml:lang="en">Cannot use empty object names for filegroups.</source>
     </trans-unit>
+    <trans-unit id="objectManagement.backupCertificate">
+      <source xml:lang="en">Certificate or Asymmetric key</source>
+    </trans-unit>
     <trans-unit id="objectManagement.needToRestartServer">
       <source xml:lang="en">Changes require server restart in order to be effective</source>
     </trans-unit>
@@ -258,6 +308,9 @@
     <trans-unit id="objectManagement.compressBackupText">
       <source xml:lang="en">Compress Backup</source>
     </trans-unit>
+    <trans-unit id="objectManagement.compressBackup">
+      <source xml:lang="en">Compress backup</source>
+    </trans-unit>
     <trans-unit id="objectManagement.configureSLOSectionHeader">
       <source xml:lang="en">Configure SLO</source>
     </trans-unit>
@@ -266,6 +319,12 @@
     </trans-unit>
     <trans-unit id="objectManagement.containmentTypeLabel">
       <source xml:lang="en">Containment Type</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupContinueOnError">
+      <source xml:lang="en">Continue on error</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupCopyLabel">
+      <source xml:lang="en">Copy-only backup</source>
     </trans-unit>
     <trans-unit id="objectManagement.costThresholdParallelismLabel">
       <source xml:lang="en">Cost Threshold Parallelism</source>
@@ -395,6 +454,15 @@
       <source xml:lang="en">Detach database &apos;{0}&apos;</source>
       <note>{0}: object name.</note>
     </trans-unit>
+    <trans-unit id="objectManagement.backupDifferential">
+      <source xml:lang="en">Differential</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupDiskLabel">
+      <source xml:lang="en">Disk</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.dontCompressBackup">
+      <source xml:lang="en">Do not compress backup</source>
+    </trans-unit>
     <trans-unit id="objectManagement.dropButtonLabel">
       <source xml:lang="en">Drop</source>
     </trans-unit>
@@ -435,8 +503,17 @@
     <trans-unit id="objectManagement.enabledLabel">
       <source xml:lang="en">Enabled</source>
     </trans-unit>
+    <trans-unit id="objectManagement.encryptBackup">
+      <source xml:lang="en">Encrypt backup</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupEncryption">
+      <source xml:lang="en">Encryption</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.encryptionEnabledText">
       <source xml:lang="en">Encryption Enabled</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupEncryptNotice">
+      <source xml:lang="en">Encryption options are only available when &apos;Back up to a new media set&apos; is selected above.</source>
     </trans-unit>
     <trans-unit id="objectManagement.login.enforcePasswordExpirationLabel">
       <source xml:lang="en">Enforce password expiration</source>
@@ -449,6 +526,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.executionCountText">
       <source xml:lang="en">Execution Count</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupExpiration">
+      <source xml:lang="en">Expiration</source>
     </trans-unit>
     <trans-unit id="objectManagement.explicitPermissionsTableLabel">
       <source xml:lang="en">Explicit permissions for selected securable</source>
@@ -509,6 +589,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.findText">
       <source xml:lang="en">Find</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupFull">
+      <source xml:lang="en">Full</source>
     </trans-unit>
     <trans-unit id="objectManagement.fullTextUpgradeOptionLabel">
       <source xml:lang="en">Full-Text Upgrade Option</source>
@@ -684,8 +767,17 @@
     <trans-unit id="objectManagement.nameCannotBeEmptyError">
       <source xml:lang="en">Name cannot be empty.</source>
     </trans-unit>
+    <trans-unit id="objectManagement.backupNewMediaDescription">
+      <source xml:lang="en">New media set description</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupNewMediaName">
+      <source xml:lang="en">New media set name</source>
+    </trans-unit>
     <trans-unit id="objectManagement.user.noLogin">
       <source xml:lang="en">No Login Access</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.noEncryptorWarning">
+      <source xml:lang="en">No certificate or asymmetric key is available</source>
     </trans-unit>
     <trans-unit id="objectManagement.doDatabaseFilesError">
       <source xml:lang="en">No database files were specified to attach to the server.</source>
@@ -729,6 +821,12 @@
     <trans-unit id="objectManagement.optimizeAdHocWorkloadsLabel">
       <source xml:lang="en">Optimize Ad Hoc Workloads</source>
     </trans-unit>
+    <trans-unit id="objectManagement.overwriteExistingBackups">
+      <source xml:lang="en">Overwrite all existing backup sets</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupOverwriteMedia">
+      <source xml:lang="en">Overwrite media</source>
+    </trans-unit>
     <trans-unit id="objectManagement.user.ownedSchemasLabel">
       <source xml:lang="en">Owned Schemas</source>
     </trans-unit>
@@ -758,6 +856,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.databaseFilePath">
       <source xml:lang="en">Path</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupPerformChecksum">
+      <source xml:lang="en">Perform checksum before writing to media</source>
     </trans-unit>
     <trans-unit id="objectManagement.permissionColumnHeader">
       <source xml:lang="en">Permission</source>
@@ -822,8 +923,17 @@
     <trans-unit id="objectManagement.recoveryModelLabel">
       <source xml:lang="en">Recovery Model</source>
     </trans-unit>
+    <trans-unit id="objectManagement.backupRecoveryLabel">
+      <source xml:lang="en">Recovery model</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupReliability">
+      <source xml:lang="en">Reliability</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.removeButton">
       <source xml:lang="en">Remove</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.removeBackupFileText">
+      <source xml:lang="en">Remove backup file</source>
     </trans-unit>
     <trans-unit id="objectManagement.removeFileText">
       <source xml:lang="en">Remove database file</source>
@@ -901,6 +1011,9 @@
     <trans-unit id="objectManagement.ServerDisplayName">
       <source xml:lang="en">Server</source>
     </trans-unit>
+    <trans-unit id="objectManagement.backupServerCertificate">
+      <source xml:lang="en">Server Certificate</source>
+    </trans-unit>
     <trans-unit id="objectManagement.serverCollation">
       <source xml:lang="en">Server Collation</source>
     </trans-unit>
@@ -918,6 +1031,12 @@
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.setSecondaryText">
       <source xml:lang="en">Set Secondary same as Primary</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupCompression">
+      <source xml:lang="en">Set backup compression</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.recoveryModelSimple">
+      <source xml:lang="en">Simple</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.size">
       <source xml:lang="en">Size (MB)</source>
@@ -970,6 +1089,15 @@
     <trans-unit id="objectManagement.databaseProperties.totalExecutionCPUTimeInMsText">
       <source xml:lang="en">Total Execution CPU Time (ms)</source>
     </trans-unit>
+    <trans-unit id="objectManagement.backupTransactionLog">
+      <source xml:lang="en">Transaction Log</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.transactionLogNotice">
+      <source xml:lang="en">Transaction Log options are only available only when Backup Type is set to Tansaction Log above.</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupTruncateLog">
+      <source xml:lang="en">Truncate the transaction log</source>
+    </trans-unit>
     <trans-unit id="objectManagement.twoDigitYearCutoffLabel">
       <source xml:lang="en">Two Digit Year Cutoff</source>
     </trans-unit>
@@ -978,6 +1106,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.databaseFileType">
       <source xml:lang="en">Type</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupUrlLabel">
+      <source xml:lang="en">URL</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.autoGrowthValueConversion.unlimited">
       <source xml:lang="en">Unlimited</source>
@@ -995,6 +1126,9 @@
     <trans-unit id="objectManagement.databaseProperties.useFullTextIndexingText">
       <source xml:lang="en">Use full-text indexing</source>
     </trans-unit>
+    <trans-unit id="objectManagement.backupDefaultSetting">
+      <source xml:lang="en">Use the default server setting</source>
+    </trans-unit>
     <trans-unit id="objectManagement.UserTypeDisplayNameInTitle">
       <source xml:lang="en">User</source>
     </trans-unit>
@@ -1009,6 +1143,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.locksValidation">
       <source xml:lang="en">Value should be greater than {0}. Choose 0 for default settings.</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.verifyBackupWhenFinished">
+      <source xml:lang="en">Verify backup when finished</source>
     </trans-unit>
     <trans-unit id="objectManagement.versionText">
       <source xml:lang="en">Version</source>
@@ -1219,6 +1356,9 @@
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS">
       <source xml:lang="en">Azure Attestation</source>
+    </trans-unit>
+    <trans-unit id="title.backupDatabase">
+      <source xml:lang="en">Backup Database (Preview)</source>
     </trans-unit>
     <trans-unit id="title.changeNotebookConnection">
       <source xml:lang="en">Change SQL Notebook Connection</source>
@@ -1694,9 +1834,6 @@
     <trans-unit id="mssql.objectExplorer.expandTimeout">
       <source xml:lang="en">The timeout in seconds for expanding a node in Object Explorer. The default value is 45 seconds.</source>
     </trans-unit>
-    <trans-unit id="mssql.tracing.desc">
-      <source xml:lang="en">Traces the communication between Azure Data Studio and SQL Tools Service to the SQL Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.</source>
-    </trans-unit>
     <trans-unit id="mssql.connectionOptions.trustServerCertificate.displayName">
       <source xml:lang="en">Trust server certificate</source>
     </trans-unit>
@@ -1765,6 +1902,9 @@
     </trans-unit>
     <trans-unit id="mssql.piiLogging">
       <source xml:lang="en">[Optional] Should Personally Identifiable Information (PII) be logged in the log file.</source>
+    </trans-unit>
+    <trans-unit id="mssql.tracing.desc">
+      <source xml:lang="en">[Optional] Traces the communication between Azure Data Studio and SQL Tools Service to the SQL Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.serverName.placeholder">
       <source xml:lang="en">e.g. servername,port</source>
