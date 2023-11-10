@@ -9,7 +9,7 @@ import { BackupInfo, IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { BackupDatabaseDocUrl } from '../constants';
 import * as loc from '../localizedConstants';
-import { DefaultButtonWidth, DefaultInputWidth, DefaultLabelWidth, DefaultLongInputWidth, DefaultMinTableRowCount, DialogButton, getTableHeight } from '../../ui/dialogBase';
+import { DefaultButtonWidth, DefaultInputWidth, DefaultLongInputWidth, DefaultMinTableRowCount, DialogButton, getTableHeight } from '../../ui/dialogBase';
 import { isUndefinedOrNull } from '../../types';
 import { TaskExecutionMode } from 'azdata';
 import { getErrorMessage } from '../../utils';
