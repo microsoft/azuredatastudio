@@ -137,7 +137,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 				this._truncateLogButton.enabled = false;
 				this._backupLogTailButton.enabled = false;
 			}
-		}, backupTypes, backupTypes[0], !this.useUrlMode);
+		}, backupTypes, backupTypes[0], false);
 		let backupContainer = this.createLabelInputContainer(loc.BackupTypeLabel, this._backupTypeDropdown);
 		components.push(backupContainer);
 
@@ -186,8 +186,8 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		// Media options
 		// Options for overwriting existing media
 		const existingGroupId = 'BackupExistingMedia';
-		this._appendExistingMediaButton = this.createRadioButton(loc.AppendToExistingBackup, existingGroupId, !this.useUrlMode, () => undefined);
-		this._overwriteExistingMediaButton = this.createRadioButton(loc.OverwriteExistingBackups, existingGroupId, false, () => undefined);
+		this._appendExistingMediaButton = this.createRadioButton(loc.AppendToExistingBackup, existingGroupId, true, () => undefined, !this.useUrlMode);
+		this._overwriteExistingMediaButton = this.createRadioButton(loc.OverwriteExistingBackups, existingGroupId, false, () => undefined, !this.useUrlMode);
 
 		// Options for writing to new media
 		this._mediaNameInput = this.createInputBox(() => undefined, { enabled: false });
@@ -199,7 +199,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		// Overall button that selects overwriting existing media - enabled by default
 		const overwriteGroupId = 'BackupOverwriteMedia';
 		this._existingMediaButton = this.createRadioButton(loc.BackupToExistingMedia, overwriteGroupId, true, async checked => {
-			if (checked) {
+			if (checked && !this.useUrlMode) {
 				this._appendExistingMediaButton.enabled = true;
 				this._overwriteExistingMediaButton.enabled = true;
 
@@ -217,7 +217,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 		// Overall button that selects writing to new media
 		this._newMediaButton = this.createRadioButton(loc.BackupAndEraseExisting, overwriteGroupId, false, async checked => {
-			if (checked) {
+			if (checked && !this.useUrlMode) {
 				this._appendExistingMediaButton.enabled = false;
 				this._overwriteExistingMediaButton.enabled = false;
 
@@ -269,19 +269,25 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 				this._algorithmDropdown.enabled = checked;
 				this._encryptorDropdown.enabled = checked;
 			}
-		}, false, false);
+		}, false, this.useUrlMode && this.encryptionSupported); // Normally encrypt is disabled until selecting New Media, but URL mode has no media options
 		encryptionComponents.push(this._encryptCheckbox);
 
 		if (this.encryptionSupported) {
+			let algorithmComponents = [];
 			let algorithmValues = [aes128, aes192, aes256, tripleDES];
 			this._algorithmDropdown = this.createDropdown(loc.BackupAlgorithm, () => undefined, algorithmValues, algorithmValues[0], false);
 			let algorithmContainer = this.createLabelInputContainer(loc.BackupAlgorithm, this._algorithmDropdown);
+			algorithmComponents.push(algorithmContainer);
 
 			this._encryptorDropdown = this.createDropdown(loc.BackupCertificate, () => undefined, this._encryptorOptions, this._encryptorOptions[0], false);
 			let encryptorContainer = this.createLabelInputContainer(loc.BackupCertificate, this._encryptorDropdown);
+			algorithmComponents.push(encryptorContainer);
 
-			let encryptionDescription = this.modelView.modelBuilder.text().withProps({ value: loc.BackupEncryptNotice }).component();
-			let algorithmGroup = this.createGroup('', [algorithmContainer, encryptorContainer, encryptionDescription]);
+			if (!this.useUrlMode) {
+				let encryptionDescription = this.modelView.modelBuilder.text().withProps({ value: loc.BackupEncryptNotice }).component();
+				algorithmComponents.push(encryptionDescription);
+			}
+			let algorithmGroup = this.createGroup('', algorithmComponents);
 			encryptionComponents.push(algorithmGroup);
 		} else {
 			let encryptorWarning = this.modelView.modelBuilder.text().withProps({ value: loc.NoEncryptorWarning }).component();
