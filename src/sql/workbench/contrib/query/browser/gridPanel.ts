@@ -1173,7 +1173,7 @@ function isJsonCell(value: ICellValue): boolean {
 
 function isXmlCell(value: ICellValue): boolean {
 	let isXML = false;
-	if (value && !value.isNull) {
+	if (value && !value.isNull && value.displayValue.trim() !== '') {
 		parseXMLString(value.displayValue, (err, _) => {
 			isXML = err === null;
 		});
