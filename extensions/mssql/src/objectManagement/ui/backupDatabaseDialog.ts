@@ -9,7 +9,7 @@ import { BackupInfo, IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { BackupDatabaseDocUrl } from '../constants';
 import * as loc from '../localizedConstants';
-import { DefaultInputWidth, DefaultMinTableRowCount, DialogButton, getTableHeight } from '../../ui/dialogBase';
+import { DefaultButtonWidth, DefaultInputWidth, DefaultLabelWidth, DefaultLongInputWidth, DefaultMinTableRowCount, DialogButton, getTableHeight } from '../../ui/dialogBase';
 import { isUndefinedOrNull } from '../../types';
 import { TaskExecutionMode } from 'azdata';
 import { getErrorMessage } from '../../utils';
@@ -156,9 +156,10 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		if (this.useUrlMode) {
 			this._backupUrlInput = this.createInputBox(() => undefined, {
 				inputType: 'text',
-				width: DefaultInputWidth
+				width: DefaultLongInputWidth
 			});
-			let browseUrlButton = this.createBrowseButton(() => this.onBrowseUrlButtonClicked());
+			let browseUrlButton = this.createButton(loc.BrowseText, loc.BrowseText, () => this.onBrowseUrlButtonClicked());
+			browseUrlButton.width = DefaultButtonWidth;
 			let urlInputGroup = this.createGroup(loc.BackupToUrlLabel, [this._backupUrlInput, browseUrlButton], false);
 			components.push(urlInputGroup);
 		} else {
