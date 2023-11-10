@@ -698,7 +698,7 @@
         },
         {
           "command": "mssql.backupDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && mssql:engineedition != 11 && config.workbench.enablePreviewFeatures && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && mssql:engineedition != 8 && mssql:engineedition != 11 && config.workbench.enablePreviewFeatures && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
           "group": "1_objectManagement@3"
         },
         {
