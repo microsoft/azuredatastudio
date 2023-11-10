@@ -250,11 +250,20 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 		// Transaction log
 		// Only should be enabled if backup type is Transaction Log
+		let transactionComponents = [];
 		const transactionGroupId = 'BackupTransactionLog';
 		this._truncateLogButton = this.createRadioButton(loc.BackupTruncateLog, transactionGroupId, true, () => undefined, false);
+		transactionComponents.push(this._truncateLogButton);
+
 		this._backupLogTailButton = this.createRadioButton(loc.BackupLogTail, transactionGroupId, false, () => undefined, false);
-		let transactionDescription = this.modelView.modelBuilder.text().withProps({ value: loc.TransactionLogNotice }).component();
-		let transactionGroup = this.createGroup(loc.BackupTransactionLog, [this._truncateLogButton, this._backupLogTailButton, transactionDescription], false);
+		transactionComponents.push(this._backupLogTailButton);
+
+		if (!this.useUrlMode) {
+			let transactionDescription = this.modelView.modelBuilder.text().withProps({ value: loc.TransactionLogNotice }).component();
+			transactionComponents.push(transactionDescription);
+		}
+
+		let transactionGroup = this.createGroup(loc.BackupTransactionLog, transactionComponents, false);
 
 		// Compression
 		let compressionValues = [loc.BackupDefaultSetting, loc.CompressBackup, loc.DontCompressBackup];
