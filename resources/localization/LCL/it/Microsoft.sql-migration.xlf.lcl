@@ -314,12 +314,12 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) eshTimer" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Click on 'Refresh SKU' for updated recommendations.]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Click on 'Refresh SKU recommendation' for updated recommendations.]]></Val>
+            <Tgt Cat="Text" Stat="Update" Orig="New">
               <Val><![CDATA[Fare clic su 'Aggiorna SKU' per le raccomandazioni aggiornate.]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[Check back periodically for updated recommendations by pressing the 'Refresh recommendation' button.]]></Val>
+              <Val><![CDATA[Click on 'Refresh SKU' for updated recommendations.]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />
@@ -351,11 +351,11 @@
       </Item>
       <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.import.performance.data.dialog.open.f" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ile" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) older" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Select a file]]></Val>
+            <Val><![CDATA[Select a folder]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Selezionare un file]]></Val>
+              <Val><![CDATA[Selezionare una cartella]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -5794,6 +5794,12 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Seleziona Servizio Migrazione del database]]></Val>
           </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.select.skip.assessment.check.to.continue" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[To continue, check skip assessment option.]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>
