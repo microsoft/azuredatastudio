@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -53,6 +53,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _disposables: vscode.Disposable[] = [];
 
 	private _serverName: string = '';
+	private _skipAssessmentValid: boolean = false;
 
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
@@ -359,6 +360,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			'block');
 
 		this._assessmentSummaryCardLoader.loading = assessing;
+		this._skipAssessmentValid = (!assessing && failedAssessment);
 	}
 
 	// Refresh the assessment summary details.
@@ -529,6 +531,19 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				}
 				break;
 			}
+			case PerformanceDataSourceOptions.OpenExisting: {
+				if (utils.hasRecommendations(this.migrationStateModel)) {
+					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'flex' });
+
+					await this._skuDataCollectionStatusIcon.updateProperties({
+						iconPath: IconPathHelper.completedMigration
+					});
+
+					this._skuDataCollectionStatusText.value = constants.AZURE_RECOMMENDATION_STATUS_DATA_IMPORTED;
+					this._skuDataCollectionTimerText.value = '';
+				}
+				break;
+			}
 
 			// initial state before "Get Azure recommendation" dialog
 			default: {
@@ -570,6 +585,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 
 			const errors: string[] = [];
+			if (this._skipAssessmentValid && !this._skipAssessmentCheckbox.checked) {
+				errors.push(constants.SELECT_SKIP_ASSESSMENT_CHECK_TO_CONTINUE);
+			}
+
 			if (errors.length > 0) {
 				this.wizard.message = {
 					text: errors.join(EOL),

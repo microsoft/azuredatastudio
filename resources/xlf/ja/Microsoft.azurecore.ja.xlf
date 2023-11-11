@@ -2,33 +2,9 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/Microsoft.azurecore/dist/account-provider/auths/azureAuth" source-language="en" datatype="plaintext" target-language="ja">
     <body>
-      <trans-unit id="azurecore.confirmIgnoreTenantDialog.body">
-        <source xml:lang="en">Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. 
-
-To allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.
-
-Do you wish to proceed?</source>
-        <target state="translated">Azure Data Studio はこのテナント {0} ({1}) の認証をトリガーしなくなり、リソースにアクセスできなくなります。
-
-このテナントのリソースへのアクセスを再度許可するには、'{2}' 設定の除外リストからテナントを削除する必要があります。
-
-続行しますか?</target>
-      </trans-unit>
       <trans-unit id="azurecore.consentDialog.cancel">
         <source xml:lang="en">Cancel</source>
         <target state="translated">キャンセル</target>
-      </trans-unit>
-      <trans-unit id="azurecore.consentDialog.authenticate">
-        <source xml:lang="en">Cancel and Authenticate</source>
-        <target state="translated">キャンセルと認証</target>
-      </trans-unit>
-      <trans-unit id="azurecore.confirmIgnoreTenantDialog.confirm">
-        <source xml:lang="en">Confirm</source>
-        <target state="translated">確認</target>
-      </trans-unit>
-      <trans-unit id="azurecore.consentDialog.ignore">
-        <source xml:lang="en">Ignore Tenant</source>
-        <target state="translated">テナントの無視</target>
       </trans-unit>
       <trans-unit id="azure.microsoftAccountDisplayName">
         <source xml:lang="en">Microsoft Account</source>
@@ -117,10 +93,6 @@ Do you wish to proceed?</source>
       <trans-unit id="azure.NoAuthMethod.Selected">
         <source xml:lang="en">No Azure auth method selected. You must select what method of authentication you want to use.</source>
         <target state="translated">Azure 認証方法が選択されていません。使用する認証方法を選択する必要があります。</target>
-      </trans-unit>
-      <trans-unit id="tenantIgnoredError">
-        <source xml:lang="en">Tenant found in ignore list, authentication not attempted. You can remove tenant {0} from ignore list in settings.json file: {1} if you wish to access resources from this tenant.</source>
-        <target state="translated">無視リストにテナントが見つかりましたが、認証は試行されませんでした。このテナントからリソースにアクセスする場合は、settings.json ファイル: {1} の無視リストからテナント {0} を削除できます。</target>
       </trans-unit>
       <trans-unit id="msalTokenError">
         <source xml:lang="en">{0} occurred when acquiring token. 
@@ -846,10 +818,6 @@ Do you wish to proceed?</source>
         <source xml:lang="en">Azure Portal Endpoint</source>
         <target state="translated">Azure portal エンドポイント</target>
       </trans-unit>
-      <trans-unit id="azure.resource.config.title">
-        <source xml:lang="en">Azure Resource Configuration</source>
-        <target state="translated">Azure リソースの構成</target>
-      </trans-unit>
       <trans-unit id="config.providerSettings.endpoints.azureStorageResource">
         <source xml:lang="en">Azure Storage Resource Endpoint</source>
         <target state="translated">Azure Storage リソース エンドポイント</target>
@@ -981,14 +949,6 @@ Do you wish to proceed?</source>
       <trans-unit id="azure.resource.startterminal.title">
         <source xml:lang="en">Start Cloud Shell</source>
         <target state="translated">Cloud Shell の開始</target>
-      </trans-unit>
-      <trans-unit id="azure.tenant.config.filter.description">
-        <source xml:lang="en">The list of tenant IDs which will be skipped when querying Azure resources or requesting authentication tokens.</source>
-        <target state="translated">Azure リソースのクエリまたは認証トークンの要求時にスキップされるテナント ID の一覧。</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.config.filter.description">
-        <source xml:lang="en">The resource filter, each element is an account id, a subscription id and name separated by a slash</source>
-        <target state="translated">リソース フィルターの各要素であるアカウント ID、サブスクリプション ID、名前はスラッシュで区切ります</target>
       </trans-unit>
       <trans-unit id="config.loggingLevel">
         <source xml:lang="en">[Optional] The verbosity of logging for the Azure Accounts extension.</source>

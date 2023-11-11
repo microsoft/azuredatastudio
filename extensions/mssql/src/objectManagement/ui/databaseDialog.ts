@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -18,7 +18,6 @@ import * as vscode from 'vscode';
 const MAXDOP_Max_Limit = 32767;
 const PAUSED_RESUMABLE_INDEX_Max_Limit = 71582;
 const DscTableRowLength = 20;
-const Dialog_Width = '750px';
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
@@ -123,7 +122,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		options.width = Dialog_Width;
 		super(objectManagementService, options);
 	}
 

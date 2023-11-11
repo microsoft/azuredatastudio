@@ -5042,13 +5042,22 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/package.mssql.parallelMessageProcessing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[[Experimental]5D; Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.]]></Val>
+          <Val><![CDATA[Whether the requests to the backend SQL Tools Service should be handled in parallel. This brings performance benefits to MSSQL queries and connections. The default value is true. Azure Data Studio is required to be relaunched when the value is changed.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[[試験段階]5D; SQL Tools Service への要求を並列で処理する必要があるかどうか。これは、すべての要求を並行して処理するときに発生する可能性がある問題を検出するために導入されています。既定値は false です。Azure Data Studio は、値が変更されたときに再起動する必要があります。]]></Val>
+            <Val><![CDATA[バックエンド SQL Tools サービスへの要求を並列で処理する必要があるかどうか。これにより、MSSQL クエリと接続にパフォーマンス上の利点がもたらされます。既定値は true です。Azure Data Studio は、値が変更されたときに再起動する必要があります。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[[Experimental]5D; Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.]]></Val>
+            <Val><![CDATA[[Experimental]5D; Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.]]></Val>
           </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.mssql/package.mssql.parallelMessageProcessingLimit" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Maximum number of requests that should be handled in parallel by the backend SQL Tools Service. This brings performance benefits to MSSQL queries and connections. This limit is applicable only when `MSSQL: Parallel Message Processing` is enabled. The default value is 100, and can be adjusted as needed as per OS support. Azure Data Studio is required to be relaunched when the value is changed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[バックエンド SQL Tools サービスが並列で処理する必要がある要求の最大数。これにより、MSSQL クエリと接続にパフォーマンス上の利点がもたらされます。この制限は、'MSSQL: 並列メッセージ処理' が有効な場合にのみ適用されます。既定値は 100 で、OS のサポートに応じて必要に応じて調整できます。Azure Data Studio は、値が変更されたときに再起動する必要があります。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { ObjectManagement } from 'mssql';
 
@@ -459,6 +459,7 @@ export interface Database extends ObjectManagement.SqlObject {
 	files?: DatabaseFile[];
 	filegroups?: FileGroup[];
 	queryStoreOptions?: QueryStoreOptions;
+	backupEncryptors?: BackupEncryptor[];
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
@@ -509,6 +510,11 @@ export interface QueryStoreCapturePolicyOptions {
 	staleThreshold: string;
 	totalCompileCPUTimeInMS: number;
 	totalExecutionCPUTimeInMS: number;
+}
+
+export interface BackupEncryptor {
+	encryptorType: number;
+	encryptorName: string;
 }
 
 export interface DatabaseScopedConfigurationsInfo {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./dashboardPage';
@@ -535,8 +535,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 							}
 						})
 					});
-					// If the extension is already activated, we can resolve immediately
-					if (this.extensionService.getExtensionsStatus()[owningExtension.id]?.activationTimes?.activateResolvedTime !== undefined) {
+
+					// If the extension is already activated or has no activation events (i.e. it's already activated or has no code to activate), we can resolve immediately
+					if (!owningExtension.activationEvents || owningExtension.activationEvents.length === 0 || this.extensionService.getExtensionsStatus()[owningExtension.id]?.activationTimes?.activateResolvedTime !== undefined) {
 						tab.loading = false;
 						resolveTab();
 					}

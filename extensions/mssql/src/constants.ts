@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 export const serviceName = 'SQL Tools Service';
@@ -30,7 +30,8 @@ export const QueryStoreService = 'queryStoreService';
 
 // CONFIGURATION VALUES //////////////////////////////////////////////////////////
 export const configObjectExplorerGroupBySchemaFlagName = 'mssql.objectExplorer.groupBySchema';
-export const configAsyncParallelProcessingName = 'mssql.parallelMessageProcessing';
+export const configParallelMessageProcessingName = 'mssql.parallelMessageProcessing';
+export const configParallelMessageProcessingLimitName = 'mssql.parallelMessageProcessingLimit';
 export const configEnableSqlAuthenticationProviderName = 'mssql.enableSqlAuthenticationProvider';
 export const configEnableConnectionPoolingName = 'mssql.enableConnectionPooling';
 export const configHttpProxy = 'http.proxy';
