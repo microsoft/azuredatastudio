@@ -149,8 +149,8 @@
         "properties": {
           "azureRecommendation.dataCollectionPath": {
             "type": "string",
-            "default": "%userprofile%\\AppData\\Roaming\\azuredatastudio\\PerfData",
-            "description": "Default path to store collected performance data for SKU recommendations."
+            "default": "",
+            "description": "%data-collection-path-description%"
           }
         }
       }

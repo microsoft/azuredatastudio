@@ -26,7 +26,7 @@ import { SkuEditParametersDialog } from '../../dialog/skuRecommendationResults/s
 // Extension Settings
 export const sqlRecommendationConfigurationKey = 'azureRecommendation';
 export const dataCollectionPathKey = 'dataCollectionPath';
-export const relativeDefaultPerfDataPath = "\\AppData\\Roaming\\azuredatastudio\\PerfData";
+export const relativeDefaultPerfDataPath = '\\AppData\\Roaming\\azuredatastudio\\PerfData';
 
 export class SkuDataCollectionToolbar implements vscode.Disposable {
 	private _refreshButtonSelectionDropdown!: azdata.DropDownComponent;
@@ -147,9 +147,8 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 			if (!selectedOption || selectedOption === defaultPathOption) {
 
 				const extensionSettingsUserPath: string = vscode.workspace.getConfiguration(sqlRecommendationConfigurationKey)[dataCollectionPathKey];
-				const defaultExtensionSettingsUserPath: string = "%userprofile%" + relativeDefaultPerfDataPath;
 
-				if (extensionSettingsUserPath !== "" && extensionSettingsUserPath !== defaultExtensionSettingsUserPath) {
+				if (extensionSettingsUserPath !== "") {
 					// Case 1: Global Settings - If path exists
 					if (fs.existsSync(extensionSettingsUserPath)) {
 						this._defaultPathForStartDataCollection = extensionSettingsUserPath;
