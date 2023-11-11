@@ -61,14 +61,14 @@ export class HelpAndSupportDialog {
 			iconPath: IconPathHelper.info,
 		},
 		{
-			title: constants.SUPPORT_REQUEST_TITLE,
-			description: constants.SUPPORT_REQUEST_DESCRIPTION,
+			title: constants.COMMUNITY_SUPPORT_TITLE,
+			description: constants.COMMUNITY_SUPPORT_DESCRIPTION,
 			link: '',
 			iconPath: IconPathHelper.newSupportRequest,
 		},
 		{
-			title: constants.COMMUNITY_SUPPORT_TITLE,
-			description: constants.COMMUNITY_SUPPORT_DESCRIPTION,
+			title: constants.SUPPORT_REQUEST_TITLE,
+			description: constants.SUPPORT_REQUEST_DESCRIPTION,
 			link: '',
 			iconPath: IconPathHelper.newSupportRequest,
 		}];
