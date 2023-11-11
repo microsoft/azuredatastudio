@@ -285,7 +285,6 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 	}
 
 	public getDefaultPath(): string {
-		// TODO - Exact default Path needed.
 		return path.join(utils.getUserHome() ?? "", relativeDefaultPerfDataPath);
 	}
 
