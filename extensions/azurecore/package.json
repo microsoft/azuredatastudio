@@ -510,7 +510,7 @@
     "@azure/msal-node": "1.16.0",
     "@azure/ms-rest-js": "^2.2.0",
     "@azure/storage-blob": "^12.13.0",
-    "axios": "^1.5.0",
+    "axios": "^1.6.0",
     "lockfile": "1.0.4",
     "@microsoft/ads-extension-telemetry": "^3.0.1",
     "node-fetch": "^2.6.7",
