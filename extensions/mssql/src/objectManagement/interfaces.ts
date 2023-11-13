@@ -459,7 +459,7 @@ export interface Database extends ObjectManagement.SqlObject {
 	files?: DatabaseFile[];
 	filegroups?: FileGroup[];
 	queryStoreOptions?: QueryStoreOptions;
-	restoreOptions?: RestoreOptions;
+	restorePlanResponse?: RestorePlanResponse;
 	backupEncryptors?: BackupEncryptor[];
 }
 
@@ -516,10 +516,6 @@ export interface RestoreDatabaseInfo {
 export interface CategoryValue {
 	displayName: string;
 	name: string;
-}
-
-export interface RestoreOptions {
-	restorePlanResponse: RestorePlanResponse;
 }
 
 export interface RestorePlanResponse {

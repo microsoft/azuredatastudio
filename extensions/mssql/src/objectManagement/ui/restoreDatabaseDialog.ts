@@ -12,7 +12,6 @@ import { Database, DatabaseFileInfo, DatabaseViewInfo, RestoreDatabaseFileInfo }
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { RestoreParams } from '../../contracts';
 import { RestoreDatabaseFilesTabDocUrl, RestoreDatabaseGeneralTabDocUrl, RestoreDatabaseOptionsTabDocUrl } from '../constants';
-import { isNullOrUndefined } from 'util';
 import { isUndefinedOrNull } from '../../types';
 
 
@@ -63,6 +62,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		return loc.RestoreDatabaseOperationDisplayName(this.objectInfo.name);
 	}
 
+	protected override get isDirty(): boolean {
+		return this.objectInfo.restorePlanResponse.backupSetsToRestore?.filter(plan => plan.isSelected === true).length > 0;
+	}
+
 	private getRestoreDialogDocUrl(): string {
 		let helpUrl = '';
 		switch (this.activeTabId) {
@@ -83,7 +86,6 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 	protected async initializeUI(): Promise<void> {
 		const tabs: azdata.Tab[] = [];
-		// Initialize general Tab
 		this.generalTab = {
 			title: localizedConstants.GeneralSectionHeader,
 			id: this.generalTabId,
@@ -132,6 +134,9 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		this.formContainer.addItem(propertiesTabbedPannel);
 	}
 
+	/**
+	 * Saving changes on Restore button click
+	 */
 	public override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
 		let restoreInfo = this.createRestoreInfo();
 		let response = await this.objectManagementService.restoreDatabase(restoreInfo);
@@ -140,20 +145,23 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		}
 	}
 
+	/**
+	 * Prepares and return restore params to restore a database
+	 * @returns Restore params
+	 */
 	private createRestoreInfo(): RestoreParams {
 		const isRestoreFromBackupFile = this.restoreFrom.value === localizedConstants.RestoreFromBackupFileOptionText;
 		let options: { [key: string]: any } = {};
-		Object.entries(this.objectInfo.restoreOptions.restorePlanResponse.planDetails).forEach(([key, value]) => {
+		Object.entries(this.objectInfo.restorePlanResponse.planDetails).forEach(([key, value]) => {
 			if (value !== null && value.currentValue !== undefined) {
 				options[key] = value.currentValue;
 			}
 		});
-
-		options.sessionId = this.objectInfo.restoreOptions.restorePlanResponse.sessionId;
+		options.sessionId = this.objectInfo.restorePlanResponse.sessionId;
 		options.backupFilePaths = isRestoreFromBackupFile ? this.backupFilePathInput.value : null;
 		options.readHeaderFromMedia = isRestoreFromBackupFile ? true : false;
 		options.overwriteTargetDatabase = false;
-		options.selectedBackupSets = this.objectInfo.restoreOptions.restorePlanResponse.backupSetsToRestore?.filter(a => a.isSelected).map(a => a.id);
+		options.selectedBackupSets = this.objectInfo.restorePlanResponse.backupSetsToRestore?.filter(a => a.isSelected).map(a => a.id);
 
 		const restoreParams: RestoreParams = {
 			ownerUri: this.options.connectionUri,
@@ -207,7 +215,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 		// source Database
 		this.restoreDatabase = this.createDropdown(localizedConstants.DatabaseText, async (newValue) => {
-			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.sourceDatabaseName.currentValue = newValue;
+			this.objectInfo.restorePlanResponse.planDetails.sourceDatabaseName.currentValue = newValue;
 			this.dialogObject.loading = true;
 			// Get the new restore plan for the selected source database
 			const restorePlanInfo = this.setRestoreOption(this.restoreDatabase);
@@ -216,7 +224,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			// Update the dailog values with the new restore plan
 			await this.updateRestoreDialog(restorePlan);
 			this.dialogObject.loading = false;
-		}, this.viewInfo.restoreDatabaseInfo.sourceDatabaseNames, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.sourceDatabaseName.currentValue, true, RestoreInputsWidth, true, true);
+		}, this.viewInfo.restoreDatabaseInfo.sourceDatabaseNames, this.objectInfo.restorePlanResponse.planDetails.sourceDatabaseName.currentValue, true, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.DatabaseText, this.restoreDatabase));
 
 		return this.createGroup(localizedConstants.SourceSectionText, containers, true);
@@ -227,8 +235,8 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 		// target database
 		let targetDatabase = this.createDropdown(localizedConstants.TargetDatabaseText, async (newValue) => {
-			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.targetDatabaseName.currentValue = newValue;
-		}, this.viewInfo.restoreDatabaseInfo.targetDatabaseNames, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.targetDatabaseName.currentValue, true, RestoreInputsWidth, true, true);
+			this.objectInfo.restorePlanResponse.planDetails.targetDatabaseName.currentValue = newValue;
+		}, this.viewInfo.restoreDatabaseInfo.targetDatabaseNames, this.objectInfo.restorePlanResponse.planDetails.targetDatabaseName.currentValue, true, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.TargetDatabaseText, targetDatabase));
 
 		// restore to
@@ -237,7 +245,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			required: false,
 			enabled: false,
 			width: RestoreInputsWidth,
-			value: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.lastBackupTaken.currentValue
+			value: this.objectInfo.restorePlanResponse.planDetails.lastBackupTaken.currentValue
 		};
 		this.restoreTo = this.createInputBox(async () => { }, props);
 		containers.push(this.createLabelInputContainer(localizedConstants.RestoreToText, this.restoreTo));
@@ -311,17 +319,37 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 				value: localizedConstants.ExpirationText,
 				width: 60
 			}],
-			data: this.objectInfo.restoreOptions.restorePlanResponse.backupSetsToRestore?.map(plan => {
-				return this.convertToDataView(plan);
+			data: this.objectInfo.restorePlanResponse.backupSetsToRestore?.map(plan => {
+				return this.convertRestorePlanObjectToDataView(plan);
 			}),
-			height: getTableHeight(this.objectInfo.restoreOptions.restorePlanResponse.backupSetsToRestore?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
+			height: getTableHeight(this.objectInfo.restorePlanResponse.backupSetsToRestore?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
 			width: RestoreTablesWidth,
 			forceFitColumns: azdata.ColumnSizingMode.DataFit,
 			CSSStyles: {
 				'margin-left': '10px'
 			}
 		}).component();
+		this.disposables.push(
+			this.restorePlanTable.onCellAction(async (arg: azdata.ICheckboxCellActionEventArgs) => {
+				let backupSets = this.objectInfo.restorePlanResponse.backupSetsToRestore;
+				if (arg.checked) {
+					for (let i = arg.row; i >= 0; i--) {
+						backupSets[i].isSelected = arg.checked;
+					}
+				} else {
+					for (let i = arg.row; i < backupSets.length; i++) {
+						backupSets[i].isSelected = arg.checked;
+					}
+				}
 
+				// Refresh the table with updated data
+				const newData = backupSets?.map(plan => {
+					return this.convertRestorePlanObjectToDataView(plan);
+				});
+				await this.setTableData(this.restorePlanTable, newData);
+				this.onFormFieldChange();
+			})
+		);
 		return this.createGroup(localizedConstants.SourceSectionText, [this.restorePlanTable], true);
 	}
 
@@ -330,7 +358,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	 * @param fileInfo database file info object
 	 * @returns data view object
 	 */
-	private convertToDataView(fileInfo: DatabaseFileInfo): any[] {
+	private convertRestorePlanObjectToDataView(fileInfo: DatabaseFileInfo): any[] {
 		return [
 			fileInfo.isSelected, //Restore
 			fileInfo.properties[0].propertyValueDisplayName, //Name
@@ -369,9 +397,9 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	private setRestoreOption(inputType: azdata.DropDownComponent | azdata.InputBoxComponent): RestoreParams {
 		let options = {
 			ownerUri: this.options.connectionUri,
-			targetDatabaseName: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.targetDatabaseName.currentValue,
-			sourceDatabaseName: inputType === this.restoreDatabase ? this.objectInfo.restoreOptions.restorePlanResponse.planDetails.sourceDatabaseName.currentValue : null,
-			relocateDbFiles: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.currentValue,
+			targetDatabaseName: this.objectInfo.restorePlanResponse.planDetails.targetDatabaseName.currentValue,
+			sourceDatabaseName: inputType === this.restoreDatabase ? this.objectInfo.restorePlanResponse.planDetails.sourceDatabaseName.currentValue : null,
+			relocateDbFiles: this.objectInfo.restorePlanResponse.planDetails.relocateDbFiles.currentValue,
 			readHeaderFromMedia: inputType === this.restoreDatabase ? false : true,
 			taskExecutionMode: azdata.TaskExecutionMode.execute,
 			overwriteTargetDatabase: true,
@@ -391,44 +419,44 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	 */
 	private async updateRestoreDialog(restorePlan: azdata.RestorePlanResponse): Promise<void> {
 		// Update the objectInfo restore plan details with the new restore plan
-		this.objectInfo.restoreOptions.restorePlanResponse = restorePlan;
+		this.objectInfo.restorePlanResponse = restorePlan;
 
 		// Update Restore Plan table
-		var restoreTableNewdata = this.objectInfo.restoreOptions.restorePlanResponse.backupSetsToRestore?.map(plan => {
-			return this.convertToDataView(plan);
+		var restoreTableNewdata = restorePlan.backupSetsToRestore?.map(plan => {
+			return this.convertRestorePlanObjectToDataView(plan);
 		});
 		await this.setTableData(this.restorePlanTable, restoreTableNewdata, DefaultMaxTableRowCount);
 
 		// Update Restore Database Files table
-		var restoreDatabaseTableNewdata = this.objectInfo.restoreOptions.restorePlanResponse.dbFiles?.map(plan => {
+		var restoreDatabaseTableNewdata = restorePlan.dbFiles?.map(plan => {
 			return this.convertToRestoreDbTableDataView(plan);
 		});
 		await this.setTableData(this.restoreDatabaseTable, restoreDatabaseTableNewdata, DefaultMaxTableRowCount);
 
 		// Reset Relocate all files checkbox
-		this.relocateAllFiles.checked = this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.defaultValue;
-		this.relocateAllFiles.enabled = !this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.isReadOnly;
+		this.relocateAllFiles.checked = restorePlan.planDetails.relocateDbFiles.defaultValue;
+		this.relocateAllFiles.enabled = !restorePlan.planDetails.relocateDbFiles.isReadOnly;
 
 		// Reset Restore to
-		await this.restoreTo.updateProperty('value', this.objectInfo.restoreOptions.restorePlanResponse.planDetails.lastBackupTaken.currentValue);
+		await this.restoreTo.updateProperty('value', restorePlan.planDetails.lastBackupTaken.currentValue);
 
 		// Reset Stanby
-		await this.standByFileInput.updateProperty('value', this.objectInfo.restoreOptions.restorePlanResponse.planDetails.standbyFile.defaultValue);
+		await this.standByFileInput.updateProperty('value', restorePlan.planDetails.standbyFile.defaultValue);
 
 		// Reset tail-log backup checkbox
-		this.takeTailLogBackup.checked = this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.defaultValue;
-		this.takeTailLogBackup.enabled = !this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.isReadOnly;
+		this.takeTailLogBackup.checked = restorePlan.planDetails.backupTailLog.defaultValue;
+		this.takeTailLogBackup.enabled = !restorePlan.planDetails.backupTailLog.isReadOnly;
 
 		// Reset leave source db checkbox
-		this.leaveSourceDB.checked = this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogWithNoRecovery.defaultValue;
-		this.leaveSourceDB.enabled = !this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogWithNoRecovery.isReadOnly;
+		this.leaveSourceDB.checked = restorePlan.planDetails.tailLogWithNoRecovery.defaultValue;
+		this.leaveSourceDB.enabled = !restorePlan.planDetails.tailLogWithNoRecovery.isReadOnly;
 
 		// REset Tail-log backup file
-		await this.tailLogBackupFile.updateProperty('value', this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogBackupFile.defaultValue);
+		await this.tailLogBackupFile.updateProperty('value', restorePlan.planDetails.tailLogBackupFile.defaultValue);
 
 		// Server connection
-		this.closeExistingConnections.checked = this.objectInfo.restoreOptions.restorePlanResponse.planDetails.closeExistingConnections.defaultValue;
-		this.closeExistingConnections.enabled = !this.objectInfo.restoreOptions.restorePlanResponse.planDetails.closeExistingConnections.isReadOnly;
+		this.closeExistingConnections.checked = restorePlan.planDetails.closeExistingConnections.defaultValue;
+		this.closeExistingConnections.enabled = !restorePlan.planDetails.closeExistingConnections.isReadOnly;
 	}
 	//#endregion
 
@@ -437,19 +465,19 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		let containers: azdata.Component[] = [];
 		// Relocate all files
 		this.relocateAllFiles = this.createCheckbox(localizedConstants.RelocateAllFilesText, async (checked) => {
-			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.currentValue = checked;
+			this.objectInfo.restorePlanResponse.planDetails.relocateDbFiles.currentValue = checked;
 			this.dataFileFolder.enabled = this.logFileFolder.enabled = checked;
-		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.defaultValue, !this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.isReadOnly);
+		}, this.objectInfo.restorePlanResponse.planDetails.relocateDbFiles.defaultValue, !this.objectInfo.restorePlanResponse.planDetails.relocateDbFiles.isReadOnly);
 		containers.push(this.relocateAllFiles);
 
 		// Data	File folder
 		this.dataFileFolder = this.createInputBox(async (newValue) => {
-			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.dataFileFolder.currentValue = newValue;
+			this.objectInfo.restorePlanResponse.planDetails.dataFileFolder.currentValue = newValue;
 		}, {
 			ariaLabel: localizedConstants.DataFileFolderText,
 			inputType: 'text',
 			enabled: false,
-			value: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.dataFileFolder.defaultValue,
+			value: this.objectInfo.restorePlanResponse.planDetails.dataFileFolder.defaultValue,
 			width: RestoreInputsWidth - 20
 		});
 		const dataDileFolderContainer = this.createLabelInputContainer(localizedConstants.DataFileFolderText, this.dataFileFolder);
@@ -458,12 +486,12 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 		// Log file folder
 		this.logFileFolder = this.createInputBox(async (newValue) => {
-			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.logFileFolder.currentValue = newValue;
+			this.objectInfo.restorePlanResponse.planDetails.logFileFolder.currentValue = newValue;
 		}, {
 			ariaLabel: localizedConstants.LogFileFolderText,
 			inputType: 'text',
 			enabled: false,
-			value: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.logFileFolder.defaultValue,
+			value: this.objectInfo.restorePlanResponse.planDetails.logFileFolder.defaultValue,
 			width: RestoreInputsWidth - 20
 		});
 		const logFileFolderContainer = this.createLabelInputContainer(localizedConstants.LogFileFolderText, this.logFileFolder);
@@ -488,10 +516,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 				type: azdata.ColumnType.text,
 				value: localizedConstants.RestoreAsText
 			}],
-			data: this.objectInfo.restoreOptions.restorePlanResponse.dbFiles?.map(plan => {
+			data: this.objectInfo.restorePlanResponse.dbFiles?.map(plan => {
 				return this.convertToRestoreDbTableDataView(plan);
 			}),
-			height: getTableHeight(this.objectInfo.restoreOptions.restorePlanResponse.dbFiles?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
+			height: getTableHeight(this.objectInfo.restorePlanResponse.dbFiles?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
 			forceFitColumns: azdata.ColumnSizingMode.DataFit,
 			width: RestoreTablesWidth,
 			CSSStyles: {
@@ -523,28 +551,28 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		let containers: azdata.Component[] = [];
 		// Overwrite the existing database (WITH REPLACE)
 		this.overwriteExistingDatabase = this.createCheckbox(localizedConstants.OverwriteTheExistingDatabaseText, async (checked) => {
-			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.replaceDatabase.currentValue = checked;
-		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.replaceDatabase.defaultValue);
+			this.objectInfo.restorePlanResponse.planDetails.replaceDatabase.currentValue = checked;
+		}, this.objectInfo.restorePlanResponse.planDetails.replaceDatabase.defaultValue);
 		containers.push(this.overwriteExistingDatabase);
 
 		// Preserve the replication settings (WITH KEEP_REPLICATION)
 		this.preserveReplicationSettings = this.createCheckbox(localizedConstants.PreserveReplicationSettingsText, async (checked) => {
-			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.keepReplication.currentValue = checked;
-		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.keepReplication.defaultValue);
+			this.objectInfo.restorePlanResponse.planDetails.keepReplication.currentValue = checked;
+		}, this.objectInfo.restorePlanResponse.planDetails.keepReplication.defaultValue);
 		containers.push(this.preserveReplicationSettings);
 
 		// Restrict access to the restored database (WITH RESTRICTED_USER)
 		this.restrictAccessToRestoredDB = this.createCheckbox(localizedConstants.RestrictAccessToRestoredDBText, async (checked) => {
-			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.setRestrictedUser.currentValue = checked;
-		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.setRestrictedUser.defaultValue);
+			this.objectInfo.restorePlanResponse.planDetails.setRestrictedUser.currentValue = checked;
+		}, this.objectInfo.restorePlanResponse.planDetails.setRestrictedUser.defaultValue);
 		containers.push(this.restrictAccessToRestoredDB);
 
 		//Recovery state
 		let recoveryState = this.createDropdown(localizedConstants.RecoveryStateText, async (newValue) => {
 			this.toggleRestoreOptionsOnRecoveryStateOptions(newValue as string);
-			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.recoveryState.currentValue = this.viewInfo.restoreDatabaseInfo.recoveryStateOptions.find(a => a.displayName === newValue).name as string;
+			this.objectInfo.restorePlanResponse.planDetails.recoveryState.currentValue = this.viewInfo.restoreDatabaseInfo.recoveryStateOptions.find(a => a.displayName === newValue).name as string;
 		}, this.viewInfo.restoreDatabaseInfo.recoveryStateOptions.map(a => a.displayName)
-			, this.viewInfo.restoreDatabaseInfo.recoveryStateOptions.find(a => a.name === this.objectInfo.restoreOptions.restorePlanResponse.planDetails.recoveryState.defaultValue).displayName
+			, this.viewInfo.restoreDatabaseInfo.recoveryStateOptions.find(a => a.name === this.objectInfo.restorePlanResponse.planDetails.recoveryState.defaultValue).displayName
 			, true, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.RecoveryStateText, recoveryState));
 
@@ -554,10 +582,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			required: false,
 			enabled: false,
 			width: RestoreInputsWidth - 20,
-			value: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.standbyFile.defaultValue
+			value: this.objectInfo.restorePlanResponse.planDetails.standbyFile.defaultValue
 		};
 		this.standByFileInput = this.createInputBox(async (newValue) => {
-			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.standbyFile.currentValue = newValue;
+			this.objectInfo.restorePlanResponse.planDetails.standbyFile.currentValue = newValue;
 		}, props);
 		const standByFileContainer = this.createLabelInputContainer(localizedConstants.StandbyFileText, this.standByFileInput);
 		standByFileContainer.CSSStyles = { 'margin-left': '20px' };
@@ -570,16 +598,16 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		let containers: azdata.Component[] = [];
 		// Take tail-log backup before restore
 		this.takeTailLogBackup = this.createCheckbox(localizedConstants.TakeTailLogBackupBeforeRestoreText, async (checked) => {
-			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.currentValue = checked;
+			this.objectInfo.restorePlanResponse.planDetails.backupTailLog.currentValue = checked;
 			this.leaveSourceDB.enabled = checked;
 			this.tailLogBackupFile.enabled = checked;
-		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.defaultValue, !this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.isReadOnly);
+		}, this.objectInfo.restorePlanResponse.planDetails.backupTailLog.defaultValue, !this.objectInfo.restorePlanResponse.planDetails.backupTailLog.isReadOnly);
 		containers.push(this.takeTailLogBackup);
 
 		// leave source database in the restoring state (WITH NORECOVERY)
 		this.leaveSourceDB = this.createCheckbox(localizedConstants.LeaveSourceDBText, async (checked) => {
-			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogWithNoRecovery.currentValue = checked;
-		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogWithNoRecovery.defaultValue, !this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogWithNoRecovery.isReadOnly);
+			this.objectInfo.restorePlanResponse.planDetails.tailLogWithNoRecovery.currentValue = checked;
+		}, this.objectInfo.restorePlanResponse.planDetails.tailLogWithNoRecovery.defaultValue, !this.objectInfo.restorePlanResponse.planDetails.tailLogWithNoRecovery.isReadOnly);
 		this.leaveSourceDB.CSSStyles = { 'margin-left': '20px' };
 		containers.push(this.leaveSourceDB);
 
@@ -589,10 +617,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			required: false,
 			enabled: true,
 			width: RestoreInputsWidth - 20,
-			value: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogBackupFile.defaultValue
+			value: this.objectInfo.restorePlanResponse.planDetails.tailLogBackupFile.defaultValue
 		};
 		this.tailLogBackupFile = this.createInputBox(async (newValue) => {
-			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogBackupFile.currentValue = newValue;
+			this.objectInfo.restorePlanResponse.planDetails.tailLogBackupFile.currentValue = newValue;
 		}, props);
 		const tailLogBackupFileContainer = this.createLabelInputContainer(localizedConstants.TailLogBackupFileText, this.tailLogBackupFile);
 		tailLogBackupFileContainer.CSSStyles = { 'margin-left': '20px' };
@@ -604,8 +632,8 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	private initializeServerConnectionsSection(): azdata.GroupContainer {
 		// Close existing server connections to destination database
 		this.closeExistingConnections = this.createCheckbox(localizedConstants.CloseExistingConnectionText, async (checked) => {
-			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.closeExistingConnections.currentValue = checked;
-		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.closeExistingConnections.defaultValue);
+			this.objectInfo.restorePlanResponse.planDetails.closeExistingConnections.currentValue = checked;
+		}, this.objectInfo.restorePlanResponse.planDetails.closeExistingConnections.defaultValue);
 
 		return this.createGroup(localizedConstants.RestoreServerConnectionsOptionsText, [this.closeExistingConnections], true);
 	}
