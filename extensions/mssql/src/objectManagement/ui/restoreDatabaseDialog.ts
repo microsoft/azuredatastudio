@@ -9,7 +9,7 @@ import * as localizedConstants from '../localizedConstants';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { DefaultInputWidth, DefaultMaxTableRowCount, DefaultMinTableRowCount, DefaultTableWidth, getTableHeight } from '../../ui/dialogBase';
 import { Database, DatabaseFileInfo, DatabaseViewInfo, RestoreDatabaseFileInfo } from '../interfaces';
-import { IObjectManagementService } from 'mssql';
+import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { RestoreParams } from '../../contracts';
 import { RestoreDatabaseFilesTabDocUrl, RestoreDatabaseGeneralTabDocUrl, RestoreDatabaseOptionsTabDocUrl } from '../constants';
 
@@ -43,6 +43,9 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	private restoreDatabaseTable: azdata.TableComponent;
 	private restoreTo: azdata.InputBoxComponent;
 	private tailLogBackupFile: azdata.InputBoxComponent;
+	private restoreFrom: azdata.DropDownComponent;
+	private dataFileFolder: azdata.InputBoxComponent;
+	private logFileFolder: azdata.InputBoxComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		options.width = Dialog_Width;
@@ -123,11 +126,43 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		this.formContainer.addItem(propertiesTabbedPannel);
 	}
 
+	public override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
+		let restoreInfo = this.createRestoreInfo();
+		let response = await this.objectManagementService.restoreDatabase(restoreInfo);
+		if (!response.result) {
+			throw new Error('Restore operation failed.');
+		}
+	}
+
+	private createRestoreInfo(): RestoreParams {
+		const isRestoreFromBackupFile = this.restoreFrom.value === localizedConstants.RestoreFromBackupFileOptionText;
+		let options: { [key: string]: any } = {};
+		Object.entries(this.objectInfo.restoreOptions.restorePlanResponse.planDetails).forEach(([key, value]) => {
+			if (value !== null && value.currentValue !== undefined) {
+				options[key] = value.currentValue;
+			}
+		});
+
+		options.sessionId = this.objectInfo.restoreOptions.restorePlanResponse.sessionId;
+		options.backupFilePaths = isRestoreFromBackupFile ? this.backupFilePathInput.value : null;
+		options.readHeaderFromMedia = isRestoreFromBackupFile ? true : false;
+		options.overwriteTargetDatabase = false;
+		options.selectedBackupSets = this.objectInfo.restoreOptions.restorePlanResponse.backupSetsToRestore?.filter(a => a.isSelected).map(a => a.id);
+
+		const restoreParams: RestoreParams = {
+			ownerUri: this.options.connectionUri,
+			options: options
+		};
+
+		return restoreParams;
+	}
+
 	//#region General Tab
 	private initializeSourceSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
+		this.objectInfo.name = this.options.database;
 		// Restore from
-		let restoreFrom = this.createDropdown(localizedConstants.RestoreFromText, async (newValue) => {
+		this.restoreFrom = this.createDropdown(localizedConstants.RestoreFromText, async (newValue) => {
 			if (newValue === localizedConstants.RestoreFromBackupFileOptionText) {
 				this.backupFilePathContainer.display = 'inline-flex';
 				this.restoreDatabase.enabled = false;
@@ -137,7 +172,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			}
 		}, [localizedConstants.RestoreFromDatabaseOptionText, localizedConstants.RestoreFromBackupFileOptionText],
 			localizedConstants.RestoreFromDatabaseOptionText, true, RestoreInputsWidth, true, true);
-		containers.push(this.createLabelInputContainer(localizedConstants.RestoreFromText, restoreFrom));
+		containers.push(this.createLabelInputContainer(localizedConstants.RestoreFromText, this.restoreFrom));
 
 		// Backup file path
 		this.backupFilePathInput = this.createInputBox(async () => {
@@ -175,7 +210,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			// Update the dailog values with the new restore plan
 			await this.updateRestoreDialog(restorePlan);
 			this.dialogObject.loading = false;
-		}, this.viewInfo.restoreDatabaseInfo.sourceDatabaseNames, '', true, RestoreInputsWidth, true, true);
+		}, this.viewInfo.restoreDatabaseInfo.sourceDatabaseNames, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.sourceDatabaseName.currentValue, true, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.DatabaseText, this.restoreDatabase));
 
 		return this.createGroup(localizedConstants.SourceSectionText, containers, true);
@@ -397,11 +432,12 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		// Relocate all files
 		this.relocateAllFiles = this.createCheckbox(localizedConstants.RelocateAllFilesText, async (checked) => {
 			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.currentValue = checked;
+			this.dataFileFolder.enabled = this.logFileFolder.enabled = checked;
 		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.defaultValue, !this.objectInfo.restoreOptions.restorePlanResponse.planDetails.relocateDbFiles.isReadOnly);
 		containers.push(this.relocateAllFiles);
 
 		// Data	File folder
-		const dataFileFolder = this.createInputBox(async (newValue) => {
+		this.dataFileFolder = this.createInputBox(async (newValue) => {
 			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.dataFileFolder.currentValue = newValue;
 		}, {
 			ariaLabel: localizedConstants.DataFileFolderText,
@@ -410,12 +446,12 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			value: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.dataFileFolder.defaultValue,
 			width: RestoreInputsWidth - 20
 		});
-		const dataDileFolderContainer = this.createLabelInputContainer(localizedConstants.DataFileFolderText, dataFileFolder);
+		const dataDileFolderContainer = this.createLabelInputContainer(localizedConstants.DataFileFolderText, this.dataFileFolder);
 		dataDileFolderContainer.CSSStyles = { 'margin-left': '20px' };
 		containers.push(dataDileFolderContainer);
 
 		// Log file folder
-		const logFileFolder = this.createInputBox(async (newValue) => {
+		this.logFileFolder = this.createInputBox(async (newValue) => {
 			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.logFileFolder.currentValue = newValue;
 		}, {
 			ariaLabel: localizedConstants.LogFileFolderText,
@@ -424,7 +460,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			value: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.logFileFolder.defaultValue,
 			width: RestoreInputsWidth - 20
 		});
-		const logFileFolderContainer = this.createLabelInputContainer(localizedConstants.LogFileFolderText, logFileFolder);
+		const logFileFolderContainer = this.createLabelInputContainer(localizedConstants.LogFileFolderText, this.logFileFolder);
 		logFileFolderContainer.CSSStyles = { 'margin-left': '20px' };
 		containers.push(logFileFolderContainer);
 
@@ -529,6 +565,8 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		// Take tail-log backup before restore
 		this.takeTailLogBackup = this.createCheckbox(localizedConstants.TakeTailLogBackupBeforeRestoreText, async (checked) => {
 			this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.currentValue = checked;
+			this.leaveSourceDB.enabled = checked;
+			this.tailLogBackupFile.enabled = checked;
 		}, this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.defaultValue, !this.objectInfo.restoreOptions.restorePlanResponse.planDetails.backupTailLog.isReadOnly);
 		containers.push(this.takeTailLogBackup);
 
@@ -543,7 +581,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		const props: azdata.InputBoxProperties = {
 			ariaLabel: localizedConstants.TailLogBackupFileText,
 			required: false,
-			enabled: false,
+			enabled: true,
 			width: RestoreInputsWidth - 20,
 			value: this.objectInfo.restoreOptions.restorePlanResponse.planDetails.tailLogBackupFile.defaultValue
 		};

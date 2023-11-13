@@ -12,6 +12,7 @@ import { ObjectManagement, IObjectManagementService, DatabaseFileData, BackupInf
 import { ClientCapabilities } from 'vscode-languageclient';
 import { AppContext } from '../appContext';
 import { BackupResponse } from 'azdata';
+import { RestoreResponse } from 'azdata';
 
 export class ObjectManagementService extends BaseService implements IObjectManagementService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
@@ -90,6 +91,11 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 	async backupDatabase(connectionUri: string, backupInfo: BackupInfo, taskExecutionMode: azdata.TaskExecutionMode): Promise<BackupResponse> {
 		const params: contracts.BackupDatabaseRequestParams = { ownerUri: connectionUri, backupInfo, taskExecutionMode: taskExecutionMode };
 		return this.runWithErrorHandling(contracts.BackupDatabaseRequest.type, params);
+	}
+
+	async restoreDatabase(restoreParams: RestoreParams): Promise<RestoreResponse> {
+		const params: contracts.RestoreParams = restoreParams;
+		return this.runWithErrorHandling(contracts.RestoreDatabaseRequest.type, params);
 	}
 
 	async getDataFolder(connectionUri: string): Promise<string> {
@@ -287,6 +293,10 @@ export class TestObjectManagementService implements IObjectManagementService {
 	}
 
 	async backupDatabase(connectionUri: string, backupInfo: BackupInfo, taskMode: azdata.TaskExecutionMode): Promise<azdata.BackupResponse> {
+		return this.delayAndResolve({ result: true, taskId: 0 });
+	}
+
+	async restoreDatabase(restoreParams: RestoreParams): Promise<azdata.RestoreResponse> {
 		return this.delayAndResolve({ result: true, taskId: 0 });
 	}
 

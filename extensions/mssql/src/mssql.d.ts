@@ -1004,6 +1004,12 @@ declare module 'mssql' {
 		 */
 		backupDatabase(connectionUri: string, backupInfo: BackupInfo, taskMode: azdata.TaskExecutionMode): Thenable<azdata.BackupResponse>;
 		/**
+		 * Restores a database.
+		 * @param restoreInfo  The information needed to restore the database.
+		 * @returns A response indicating if the restore or scripting operation started successfully.
+		 */
+		restoreDatabase(restoreInfo: RestoreParams): Thenable<azdata.RestoreResponse>;
+		/**
 		 * Drop a database.
 		 * @param connectionUri The URI of the server connection.
 		 * @param database The target database.
@@ -1034,7 +1040,6 @@ declare module 'mssql' {
 		getAssociatedFiles(connectionUri: string, primaryFilePath: string): Thenable<string[]>;
 		/**
 		 * Retrieves the restore plan for a selected database.
-		 * @param connectionUri The URI of the connection for the specific server.
 		 * @param restoreInfo  The information needed to restore the database.
 		 * @returns  restore plan to do the restore operation on a database.
 		 */
