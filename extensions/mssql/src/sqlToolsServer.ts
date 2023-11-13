@@ -63,6 +63,7 @@ export class SqlToolsServer {
 			const installationComplete = Date.now();
 			let serverOptions = generateServerOptions(context.extensionContext.logUri.fsPath, serverPath);
 			let clientOptions = getClientOptions(context);
+			// IMPORTANT: 'mssql' must match the prefix name of configuration: 'mssql.trace.server'.
 			this.client = new SqlOpsDataClient('mssql', Constants.serviceName, serverOptions, clientOptions);
 			const processStart = Date.now();
 			const clientReadyPromise = this.client.onReady().then(() => {

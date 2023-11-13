@@ -143,7 +143,7 @@ export class DashboardTab extends TabBase<DashboardTab> {
 		toolbar.addToolbarItems([
 			<azdata.ToolbarComponent>{ component: this.createNewMigrationButton() },
 			<azdata.ToolbarComponent>{ component: this.createNewLoginMigrationButton() },
-			<azdata.ToolbarComponent>{ component: this.createNewSupportRequestButton() },
+			<azdata.ToolbarComponent>{ component: this.createNewHelpAndSupportButton() },
 			<azdata.ToolbarComponent>{ component: this.createFeedbackButton() },
 		]);
 
