@@ -12,6 +12,8 @@ import { Database, DatabaseFileInfo, DatabaseViewInfo, RestoreDatabaseFileInfo }
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { RestoreParams } from '../../contracts';
 import { RestoreDatabaseFilesTabDocUrl, RestoreDatabaseGeneralTabDocUrl, RestoreDatabaseOptionsTabDocUrl } from '../constants';
+import { isNullOrUndefined } from 'util';
+import { isUndefinedOrNull } from '../../types';
 
 
 const Dialog_Width = '1150px';
@@ -55,6 +57,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 	protected override get helpUrl(): string {
 		return this.getRestoreDialogDocUrl();
+	}
+
+	protected override get saveChangesTaskLabel(): string {
+		return loc.RestoreDatabaseOperationDisplayName(this.objectInfo.name);
 	}
 
 	private getRestoreDialogDocUrl(): string {
@@ -129,8 +135,8 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	public override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
 		let restoreInfo = this.createRestoreInfo();
 		let response = await this.objectManagementService.restoreDatabase(restoreInfo);
-		if (!response.result) {
-			throw new Error('Restore operation failed.');
+		if (!isUndefinedOrNull(response.errorMessage)) {
+			throw new Error(response.errorMessage);
 		}
 	}
 

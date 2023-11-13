@@ -154,6 +154,13 @@ export function OpenRestoreDatabaseDialogError(error: string): string {
 	}, "An error occurred while opening the restore database dialog. {0}", error);
 }
 
+export function RestoreDatabaseOperationDisplayName(objectName: string): string {
+	return localize({
+		key: 'objectManagement.restoreDatabaseOperationName',
+		comment: ['{0}: object name.']
+	}, "Restore database '{0}'", objectName);
+}
+
 export function OpenObjectPropertiesDialogError(objectType: string, objectName: string, error: string): string {
 	return localize({
 		key: 'objectManagement.openObjectPropertiesDialogError',
