@@ -68,17 +68,15 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 	private _updateStatus(): void {
 		let activeConnection: IConnectionProfile = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService, this._logService);
 		let connectionId: string = undefined;
-		let activeEditorInfo: ConnectionManagementInfo = this.getCurrentActiveEditorInfo();
 		// retrieve the currently focused editor so we can get the correct connection id value for it.
-		if (activeEditorInfo) {
+		let activeEditorInfo: ConnectionManagementInfo = this.getCurrentActiveEditorInfo();
+		if (activeConnection) {
 			// We only want to display the connection ID for editor connections, so first check to make
 			// sure the connection we're displaying information for (which may be from OE or other
 			// sources) matches the current active editor before updating the ID
-			if (activeEditorInfo && activeEditorInfo?.connectionProfile?.id === activeConnection?.id) {
-				connectionId = activeEditorInfo?.serverConnectionId;
+			if (activeEditorInfo && activeEditorInfo.connectionProfile.id === activeConnection.id) {
+				connectionId = activeEditorInfo.serverConnectionId;
 			}
-		}
-		if (activeConnection) {
 			this._setConnectionText(activeConnection, connectionId)
 			this.show();
 		}
