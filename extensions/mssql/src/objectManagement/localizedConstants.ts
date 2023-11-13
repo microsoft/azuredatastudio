@@ -298,6 +298,7 @@ export const BackupDefaultSetting = localize('objectManagement.backupDefaultSett
 export const CompressBackup = localize('objectManagement.compressBackup', "Compress backup");
 export const DontCompressBackup = localize('objectManagement.dontCompressBackup', "Do not compress backup");
 export const RecoveryModelSimple = localize('objectManagement.recoveryModelSimple', "Simple");
+export const PathAlreadyAddedError = localize('objectManagement.pathAlreadyAddedError', "Provided path has already been added to the files list.");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");
