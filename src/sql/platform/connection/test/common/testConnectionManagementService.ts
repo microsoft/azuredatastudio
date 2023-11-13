@@ -216,6 +216,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined!;
 	}
 
+	public updateServerConnectionId(editorUri: string, newId: string): boolean {
+		return true;
+	}
+
 	addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile> {
 		return new Promise<IConnectionProfile>(() => connectionProfile);
 	}

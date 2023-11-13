@@ -1622,6 +1622,16 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStatusManager.isConnected(fileUri) ? this._connectionStatusManager.findConnection(fileUri) : undefined;
 	}
 
+	public updateServerConnectionId(editorUri: string, newId: string): boolean {
+		let newInfo: ConnectionManagementInfo = this.getConnectionInfo(editorUri);
+		let isDifferent: boolean = false;
+		if (newInfo && newInfo.serverConnectionId !== newId) {
+			isDifferent = true;
+			newInfo.serverConnectionId = newId;
+		}
+		return isDifferent;
+	}
+
 	public async listDatabases(connectionUri: string): Promise<azdata.ListDatabasesResult | undefined> {
 		await this.refreshAzureAccountTokenIfNecessary(connectionUri);
 		if (this.isConnected(connectionUri)) {

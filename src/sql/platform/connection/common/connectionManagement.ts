@@ -260,6 +260,8 @@ export interface IConnectionManagementService {
 
 	getConnectionInfo(fileUri: string): ConnectionManagementInfo | undefined;
 
+	updateServerConnectionId(editorUri: string, newId: string): boolean;
+
 	getDefaultProviderId(): string | undefined;
 
 	getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string };

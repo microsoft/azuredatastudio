@@ -86,19 +86,17 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 	}
 
 	/**
-	 * Updates the connection server id after a query has been run, since the URI may have changed.
+	 * Updates the server connection id after a query has been run, since the id may be changed on the server after a restart.
 	 * If the current editor is the one being updated, we will do a refresh if the id is different.
 	 */
 	private _refreshQueryUri(uriToUpdate: string, idForUpdate: string) {
-		let newInfo: ConnectionManagementInfo = this._connectionManagementService.getConnectionInfo(uriToUpdate);
-		let isDifferent: boolean = false;
-		if (newInfo && newInfo.serverConnectionId !== idForUpdate) {
-			isDifferent = true;
-			newInfo.serverConnectionId = idForUpdate;
-		}
-		let activeInfo = this.getCurrentActiveEditorInfo()
-		if (activeInfo && activeInfo.ownerUri === newInfo.ownerUri && isDifferent) {
-			this._updateStatus();
+		let isDifferent: boolean = this._connectionManagementService.updateServerConnectionId(uriToUpdate, idForUpdate);
+		if (isDifferent) {
+			let newInfo: ConnectionManagementInfo = this._connectionManagementService.getConnectionInfo(uriToUpdate);
+			let activeInfo = this.getCurrentActiveEditorInfo();
+			if (activeInfo && activeInfo.ownerUri === newInfo.ownerUri && isDifferent) {
+				this._updateStatus();
+			}
 		}
 	}
 
