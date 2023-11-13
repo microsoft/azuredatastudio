@@ -315,8 +315,8 @@
         <Item ItemId=";(...) eshTimer" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Click on 'Refresh SKU recommendation' for updated recommendations.]]></Val>
-            <Tgt Cat="Text" Stat="Update" Orig="New">
-              <Val><![CDATA[Щелкните "Обновить SKU" для получения обновленных рекомендаций.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Щелкните "Обновить рекомендации SKU" для получения обновленных рекомендаций.]]></Val>
             </Tgt>
             <Prev Cat="Text">
               <Val><![CDATA[Click on 'Refresh SKU' for updated recommendations.]]></Val>
@@ -5800,6 +5800,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.select.skip.assessment.check.to.continue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[To continue, check skip assessment option.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Чтобы продолжить, установите флажок "Пропустить оценку".]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

@@ -315,8 +315,8 @@
         <Item ItemId=";(...) eshTimer" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Click on 'Refresh SKU recommendation' for updated recommendations.]]></Val>
-            <Tgt Cat="Text" Stat="Update" Orig="New">
-              <Val><![CDATA[Cliquez sur « Actualiser le SKU » pour obtenir des recommandations mises à jour.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Cliquez sur « Actualiser la recommandation de l’UGS » pour obtenir des recommandations actualisées.]]></Val>
             </Tgt>
             <Prev Cat="Text">
               <Val><![CDATA[Click on 'Refresh SKU' for updated recommendations.]]></Val>
@@ -355,7 +355,7 @@
           <Str Cat="Text">
             <Val><![CDATA[Select a folder]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Sélectionner un dossier]]></Val>
+              <Val><![CDATA[Sélectionnez un dossier]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -5800,6 +5800,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.select.skip.assessment.check.to.continue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[To continue, check skip assessment option.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Pour continuer, vérifiez l’option ignorer l’évaluation.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

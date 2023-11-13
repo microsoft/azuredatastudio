@@ -676,6 +676,9 @@
       <Item ItemId=";extensions/Microsoft.kusto/package.kusto.tracingServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[[Optional]5D; Traces the communication between Azure Data Studio and Kusto Tools Service to the Kusto Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[[Opcional]5D; Realiza un seguimiento de la comunicación entre Azure Data Studio y el Servicio de herramientas de Kusto al canal de salida del Servicio de herramientas de Kusto. ADVERTENCIA: esto puede incluir información confidencial cuando está habilitado el registro detallado.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
