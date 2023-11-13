@@ -16,7 +16,9 @@ import { IQueryModelService } from 'sql/workbench/services/query/common/queryMod
 import { ILogService } from 'vs/platform/log/common/log';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 
-// Connection status bar showing the current global connection
+/**
+ * Connection status bar showing the current global connection
+ */
 export class ConnectionStatusbarItem extends Disposable implements IWorkbenchContribution {
 
 	private static readonly ID = 'status.connection.status';
@@ -49,7 +51,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		this._register(this._connectionManagementService.onDisconnect(() => this._updateStatus()));
 		this._register(this._editorService.onDidActiveEditorChange(() => this._updateStatus()));
 		this._register(this._objectExplorerService.onSelectionOrFocusChange(() => this._updateStatus()));
-		this._register(this._queryModelService.onConnectionIdUpdated(e => this._updateUriForInfo(e.uri, e.connId)));
+		this._register(this._queryModelService.onConnectionIdUpdated(e => this._refreshQueryUri(e.uri, e.connId)));
 	}
 
 	private hide() {
@@ -60,18 +62,20 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		this._statusbarService.updateEntryVisibility(ConnectionStatusbarItem.ID, true);
 	}
 
-	// Update the connection status shown in the bar
+	/**
+	 * Update the connection status shown in the bar
+	 */
 	private _updateStatus(): void {
 		let activeConnection: IConnectionProfile = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService, this._logService);
 		let connectionId: string = undefined;
-		let editorNewInfo: ConnectionManagementInfo = this.getCurrentActiveEditorInfo();
+		let activeEditorInfo: ConnectionManagementInfo = this.getCurrentActiveEditorInfo();
 		// retrieve the currently focused editor so we can get the correct connection id value for it.
-		if (editorNewInfo) {
+		if (activeEditorInfo) {
 			// We only want to display the connection ID for editor connections, so first check to make
 			// sure the connection we're displaying information for (which may be from OE or other
 			// sources) matches the current active editor before updating the ID
-			if (editorNewInfo && editorNewInfo?.connectionProfile?.id === activeConnection?.id) {
-				connectionId = editorNewInfo?.serverConnectionId;
+			if (activeEditorInfo && activeEditorInfo?.connectionProfile?.id === activeConnection?.id) {
+				connectionId = activeEditorInfo?.serverConnectionId;
 			}
 		}
 		if (activeConnection) {
@@ -83,9 +87,11 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		}
 	}
 
-	// If the connection server id for URI changes, we need to update the info for the URI with the new one
-	// If the current editor is the one being updated, we will do a refresh if the id is different.
-	private _updateUriForInfo(uriToUpdate: string, idForUpdate: string) {
+	/**
+	 * Updates the connection server id after a query has been run, since the URI may have changed.
+	 * If the current editor is the one being updated, we will do a refresh if the id is different.
+	 */
+	private _refreshQueryUri(uriToUpdate: string, idForUpdate: string) {
 		let newInfo: ConnectionManagementInfo = this._connectionManagementService.getConnectionInfo(uriToUpdate);
 		let isDifferent: boolean = false;
 		if (newInfo && newInfo.serverConnectionId !== idForUpdate) {
@@ -98,7 +104,9 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		}
 	}
 
-	// Helper function for getting the connection info of the current editor.
+	/**
+	 * Helper function for getting the connection info of the current editor.
+	 */
 	private getCurrentActiveEditorInfo(): ConnectionManagementInfo | undefined {
 		if (this._editorService.activeEditor) {
 			return this._connectionManagementService.getConnectionInfo(this._editorService.activeEditor.resource.toString());
@@ -106,7 +114,9 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		return undefined;
 	}
 
-	// Set connection info to connection status bar
+	/**
+	 * Set connection info to connection status bar
+	 */
 	private _setConnectionText(connectionProfile: IConnectionProfile, id?: string): void {
 		let text: string = connectionProfile.serverName;
 		if (text) {
