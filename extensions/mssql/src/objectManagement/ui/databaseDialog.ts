@@ -315,7 +315,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		const props: azdata.InputBoxProperties = {
 			ariaLabel: localizedConstants.NameText,
 			required: true,
-			maxLength: maxLengthDatabaseName,
+			maxLength: maxLengthDatabaseName
 		};
 
 		this.nameInput = this.createInputBox(async () => {
