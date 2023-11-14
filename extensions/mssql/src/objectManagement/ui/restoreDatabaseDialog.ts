@@ -13,6 +13,7 @@ import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { RestoreParams } from '../../contracts';
 import { RestoreDatabaseFilesTabDocUrl, RestoreDatabaseGeneralTabDocUrl, RestoreDatabaseOptionsTabDocUrl } from '../constants';
 import { isUndefinedOrNull } from '../../types';
+import { TaskExecutionMode } from 'azdata';
 
 
 const Dialog_Width = '1150px';
@@ -135,11 +136,25 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	}
 
 	/**
+	 * Generate the script to restore the selected database or file
+	 * @returns Script to restore the database
+	 */
+	public override async generateScript(): Promise<string> {
+		let restoreInfo = this.createRestoreInfo();
+		let response = await this.objectManagementService.restoreDatabase(restoreInfo, TaskExecutionMode.script);
+		if (!isUndefinedOrNull(response.errorMessage)) {
+			throw new Error(response.errorMessage);
+		}
+		// The restore call will open its own query window, so don't return any script here.
+		return undefined;
+	}
+
+	/**
 	 * Saving changes on Restore button click
 	 */
 	public override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
 		let restoreInfo = this.createRestoreInfo();
-		let response = await this.objectManagementService.restoreDatabase(restoreInfo);
+		let response = await this.objectManagementService.restoreDatabase(restoreInfo, TaskExecutionMode.execute);
 		if (!isUndefinedOrNull(response.errorMessage)) {
 			throw new Error(response.errorMessage);
 		}

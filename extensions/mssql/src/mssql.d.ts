@@ -1008,7 +1008,7 @@ declare module 'mssql' {
 		 * @param restoreInfo  The information needed to restore the database.
 		 * @returns A response indicating if the restore or scripting operation started successfully.
 		 */
-		restoreDatabase(restoreInfo: RestoreParams): Thenable<azdata.RestoreResponse>;
+		restoreDatabase(restoreInfo: RestoreParams, taskMode: azdata.TaskExecutionMode): Thenable<azdata.RestoreResponse>;
 		/**
 		 * Drop a database.
 		 * @param connectionUri The URI of the server connection.

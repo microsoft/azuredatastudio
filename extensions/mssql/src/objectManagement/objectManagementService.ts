@@ -93,8 +93,9 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		return this.runWithErrorHandling(contracts.BackupDatabaseRequest.type, params);
 	}
 
-	async restoreDatabase(restoreParams: RestoreParams): Promise<RestoreResponse> {
-		const params: contracts.RestoreParams = restoreParams;
+	async restoreDatabase(restoreParams: RestoreParams, taskExecutionMode: azdata.TaskExecutionMode): Promise<RestoreResponse> {
+		let params: contracts.RestoreParams = restoreParams;
+		params.taskExecutionMode = taskExecutionMode;
 		return this.runWithErrorHandling(contracts.RestoreDatabaseRequest.type, params);
 	}
 
@@ -296,7 +297,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve({ result: true, taskId: 0 });
 	}
 
-	async restoreDatabase(restoreParams: RestoreParams): Promise<azdata.RestoreResponse> {
+	async restoreDatabase(restoreParams: RestoreParams, taskMode: azdata.TaskExecutionMode): Promise<azdata.RestoreResponse> {
 		return this.delayAndResolve({ result: true, taskId: 0 });
 	}
 
