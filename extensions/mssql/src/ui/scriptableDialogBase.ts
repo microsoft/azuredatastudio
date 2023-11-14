@@ -82,6 +82,13 @@ export abstract class ScriptableDialogBase<OptionsType extends ScriptableDialogO
 	}
 
 	/**
+	 * Whether this dialog will open its own query editor when the script button is clicked. (like for Backup & Restore)
+	 */
+	protected get opensEditorSeparately(): boolean {
+		return false;
+	}
+
+	/**
 	 * Called when the script button is clicked, returns the script that will be opened up in a new editor.
 	 */
 	protected abstract generateScript(): Promise<string>;
@@ -93,33 +100,34 @@ export abstract class ScriptableDialogBase<OptionsType extends ScriptableDialogO
 			if (!isValid) {
 				return;
 			}
-			let message: string;
+			let message = localizedConstants.ScriptGeneratedText;
 			const script = await this.generateScript();
-			if (script) {
-				message = localizedConstants.ScriptGeneratedText;
-				let doc = await azdata.queryeditor.openQueryDocument({ content: script }, providerId);
-				if (this.options.objectExplorerContext?.connectionProfile) {
-					let profile = this.options.objectExplorerContext?.connectionProfile;
-					let convertedProfile: azdata.connection.ConnectionProfile = {
-						providerId: profile.providerName,
-						connectionId: profile.id,
-						connectionName: profile.connectionName,
-						serverName: profile.serverName,
-						databaseName: profile.databaseName,
-						userName: profile.userName,
-						password: profile.password,
-						authenticationType: profile.authenticationType,
-						savePassword: profile.savePassword,
-						groupFullName: profile.groupFullName,
-						groupId: profile.groupId,
-						saveProfile: profile.savePassword,
-						azureTenantId: profile.azureTenantId,
-						options: profile.options
-					};
-					await doc.connect(convertedProfile);
+			if (!this.opensEditorSeparately) {
+				if (script) {
+					let doc = await azdata.queryeditor.openQueryDocument({ content: script }, providerId);
+					if (this.options.objectExplorerContext?.connectionProfile) {
+						let profile = this.options.objectExplorerContext?.connectionProfile;
+						let convertedProfile: azdata.connection.ConnectionProfile = {
+							providerId: profile.providerName,
+							connectionId: profile.id,
+							connectionName: profile.connectionName,
+							serverName: profile.serverName,
+							databaseName: profile.databaseName,
+							userName: profile.userName,
+							password: profile.password,
+							authenticationType: profile.authenticationType,
+							savePassword: profile.savePassword,
+							groupFullName: profile.groupFullName,
+							groupId: profile.groupId,
+							saveProfile: profile.savePassword,
+							azureTenantId: profile.azureTenantId,
+							options: profile.options
+						};
+						await doc.connect(convertedProfile);
+					}
+				} else {
+					message = localizedConstants.NoActionScriptedMessage;
 				}
-			} else {
-				message = localizedConstants.NoActionScriptedMessage;
 			}
 			this.dialogObject.message = {
 				text: message,

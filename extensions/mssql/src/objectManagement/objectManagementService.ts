@@ -2,15 +2,17 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import * as azdata from 'azdata';
 import { ApplicationRoleViewInfo, AuthenticationType, DatabaseRoleViewInfo, DatabaseViewInfo, LoginViewInfo, SecurablePermissions, SecurableTypeMetadata, ServerRoleViewInfo, User, UserType, UserViewInfo } from './interfaces';
 import * as Utils from '../utils';
 import * as constants from '../constants';
 import * as contracts from '../contracts';
 
 import { BaseService, ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
-import { ObjectManagement, IObjectManagementService, DatabaseFileData } from 'mssql';
+import { ObjectManagement, IObjectManagementService, DatabaseFileData, BackupInfo } from 'mssql';
 import { ClientCapabilities } from 'vscode-languageclient';
 import { AppContext } from '../appContext';
+import { BackupResponse } from 'azdata';
 
 export class ObjectManagementService extends BaseService implements IObjectManagementService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
@@ -79,6 +81,11 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 	async attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Promise<string> {
 		const params: contracts.AttachDatabaseRequestParams = { connectionUri, databases, generateScript };
 		return this.runWithErrorHandling(contracts.AttachDatabaseRequest.type, params);
+	}
+
+	async backupDatabase(connectionUri: string, backupInfo: BackupInfo, taskExecutionMode: azdata.TaskExecutionMode): Promise<BackupResponse> {
+		const params: contracts.BackupDatabaseRequestParams = { ownerUri: connectionUri, backupInfo, taskExecutionMode: taskExecutionMode };
+		return this.runWithErrorHandling(contracts.BackupDatabaseRequest.type, params);
 	}
 
 	async getDataFolder(connectionUri: string): Promise<string> {
@@ -273,6 +280,10 @@ export class TestObjectManagementService implements IObjectManagementService {
 
 	async attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Promise<string> {
 		return this.delayAndResolve('');
+	}
+
+	async backupDatabase(connectionUri: string, backupInfo: BackupInfo, taskMode: azdata.TaskExecutionMode): Promise<azdata.BackupResponse> {
+		return this.delayAndResolve({ result: true, taskId: 0 });
 	}
 
 	dropDatabase(connectionUri: string, database: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string> {
