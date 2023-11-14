@@ -887,6 +887,9 @@
     <trans-unit id="objectManagement.properties">
       <source xml:lang="en">Properties</source>
     </trans-unit>
+    <trans-unit id="objectManagement.pathAlreadyAddedError">
+      <source xml:lang="en">Provided path has already been added to the files list.</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.purgeQueryDataButtonText">
       <source xml:lang="en">Purge Query Store Data</source>
     </trans-unit>
