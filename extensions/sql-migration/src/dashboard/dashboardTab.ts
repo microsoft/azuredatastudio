@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -143,7 +143,7 @@ export class DashboardTab extends TabBase<DashboardTab> {
 		toolbar.addToolbarItems([
 			<azdata.ToolbarComponent>{ component: this.createNewMigrationButton() },
 			<azdata.ToolbarComponent>{ component: this.createNewLoginMigrationButton() },
-			<azdata.ToolbarComponent>{ component: this.createNewSupportRequestButton() },
+			<azdata.ToolbarComponent>{ component: this.createNewHelpAndSupportButton() },
 			<azdata.ToolbarComponent>{ component: this.createFeedbackButton() },
 		]);
 

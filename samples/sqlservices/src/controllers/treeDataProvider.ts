@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -311,7 +311,7 @@ export class TreeDataProvider implements azdata.TreeComponentDataProvider<TreeNo
 
 	/**
 	 * Gets the parent of `element`. Returns `null` or `undefined` if `element` is a child of root.
-	 * 
+	 *
 	 * @param element The element from which the provider gets parent.
 	 * @returns Parent of the `element` or undefined.
 	 */

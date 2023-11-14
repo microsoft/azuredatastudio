@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -32,12 +32,12 @@ function createContext(): TestContext {
 			connectionUriChanged: () => { return Promise.reject(); },
 			saveResults: () => { return Promise.reject(); },
 			setQueryExecutionOptions: () => { return Promise.reject(); },
-			registerOnQueryComplete: () => { return Promise.reject(); },
-			registerOnBatchStart: () => { return Promise.reject(); },
-			registerOnBatchComplete: () => { return Promise.reject(); },
-			registerOnResultSetAvailable: () => { return Promise.reject(); },
-			registerOnResultSetUpdated: () => { return Promise.reject(); },
-			registerOnMessage: () => { return Promise.reject(); },
+			registerOnQueryComplete: () => { return Promise.reject() as any; },
+			registerOnBatchStart: () => { return Promise.reject() as any; },
+			registerOnBatchComplete: () => { return Promise.reject() as any; },
+			registerOnResultSetAvailable: () => { return Promise.reject() as any; },
+			registerOnResultSetUpdated: () => { return Promise.reject() as any; },
+			registerOnMessage: () => { return Promise.reject() as any; },
 			commitEdit: () => { return Promise.reject(); },
 			createRow: () => { return Promise.reject(); },
 			deleteRow: () => { return Promise.reject(); },
@@ -47,7 +47,7 @@ function createContext(): TestContext {
 			revertRow: () => { return Promise.reject(); },
 			updateCell: () => { return Promise.reject(); },
 			getEditRows: () => { return Promise.reject(); },
-			registerOnEditSessionReady: () => { return Promise.reject(); },
+			registerOnEditSessionReady: () => { return Promise.reject() as any; },
 		}
 	};
 }

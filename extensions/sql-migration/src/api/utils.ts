@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { window, Account, accounts, CategoryValue, DropDownComponent, IconPath, DisplayType, Component, ModelView, DeclarativeTableComponent, DeclarativeDataType, FlexContainer } from 'azdata';
@@ -16,6 +16,8 @@ import { getMigrationMode, getMigrationStatus, getMigrationTargetType, hasRestor
 import * as os from 'os';
 import * as styles from '../constants/styles';
 import { SqlMigrationService, getSqlMigrationServiceAuthKeys, regenerateSqlMigrationServiceAuthKey } from './azure';
+import { MigrationStateModel } from '../models/stateMachine';
+import * as contracts from '../service/contracts';
 
 export type TargetServerType = azure.SqlVMServer | azureResource.AzureSqlManagedInstance | azure.AzureSqlDatabaseServer;
 
@@ -1168,6 +1170,72 @@ export function createRegistrationInstructions(view: ModelView, testConnectionBu
 export async function clearDropDown(dropDown: DropDownComponent): Promise<void> {
 	await dropDown.updateProperty('value', undefined);
 	await dropDown.updateProperty('values', []);
+}
+
+export async function getRecommendedConfiguration(targetType: MigrationTargetType, model: MigrationStateModel): Promise<string[]> {
+
+	if (!hasRecommendations(model)) {
+		return [];
+	}
+	let recommendation;
+	switch (targetType) {
+		case MigrationTargetType.SQLVM:
+			// elastic model currently doesn't support SQL VM, so show the baseline model results regardless of user preference
+			recommendation = model._skuRecommendationResults.recommendations?.sqlVmRecommendationResults[0];
+
+			// result returned but no SKU recommended
+			if (!recommendation?.targetSku) {
+				return [constants.SKU_RECOMMENDATION_NO_RECOMMENDATION];
+			}
+			else {
+				const vmConfiguration = constants.VM_CONFIGURATION(
+					recommendation.targetSku.virtualMachineSize!.sizeName,
+					recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
+
+				return [vmConfiguration];
+			}
+		case MigrationTargetType.SQLDB:
+			const recommendations = model._skuEnableElastic
+				? model._skuRecommendationResults.recommendations!.elasticSqlDbRecommendationResults
+				: model._skuRecommendationResults.recommendations!.sqlDbRecommendationResults;
+			const successfulRecommendationsCount = recommendations.filter(r => r.targetSku !== null)?.length ?? 0;
+			return [constants.RECOMMENDATIONS_AVAILABLE(successfulRecommendationsCount)];
+		case MigrationTargetType.SQLMI:
+			if (model._skuEnableElastic) {
+				recommendation = model._skuRecommendationResults.recommendations?.elasticSqlMiRecommendationResults[0];
+			} else {
+				recommendation = model._skuRecommendationResults.recommendations?.sqlMiRecommendationResults[0];
+			}
+
+			// result returned but no SKU recommended
+			if (!recommendation?.targetSku) {
+				return [constants.SKU_RECOMMENDATION_NO_RECOMMENDATION];
+			}
+			else {
+				const serviceTier = recommendation.targetSku.category?.sqlServiceTier === contracts.AzureSqlPaaSServiceTier.GeneralPurpose
+					? constants.GENERAL_PURPOSE
+					: constants.BUSINESS_CRITICAL;
+				const hardwareType = recommendation.targetSku.category?.hardwareType === contracts.AzureSqlPaaSHardwareType.Gen5
+					? constants.GEN5
+					: recommendation.targetSku.category?.hardwareType === contracts.AzureSqlPaaSHardwareType.PremiumSeries
+						? constants.PREMIUM_SERIES
+						: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
+
+				return [constants.MI_CONFIGURATION_PREVIEW(
+					hardwareType,
+					serviceTier,
+					recommendation.targetSku.computeSize!,
+					recommendation.targetSku.storageMaxSizeInMb! / 1024)];
+			}
+	}
+}
+
+// Return true if Recommendations are ready and does not  have errors.
+export function hasRecommendations(model: MigrationStateModel): boolean {
+	return model._skuRecommendationResults?.recommendations
+		&& !model._skuRecommendationResults?.recommendationError
+		? true
+		: false;
 }
 
 export async function clearDropDownWithLoading(dropDown: DropDownComponent): Promise<void> {

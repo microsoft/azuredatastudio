@@ -26,7 +26,8 @@
 			"Your Code: {0}/The {0} will be a code, e.g. 123-456": "コード: {0}",
 			"device code": "デバイス コード",
 			"local server": "ローカル サーバー",
-			"personal access token": "個人用アクセス トークン"
+			"personal access token": "個人用アクセス トークン",
+			"url handler": "URL ハンドラー"
 		},
 		"package": {
 			"description": "GitHub 認証プロバイダー",

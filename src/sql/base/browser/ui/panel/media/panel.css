@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 .tabbedPanel {
@@ -86,6 +86,22 @@ panel {
 .hc-light .tabbedPanel .tabList .tab-header:hover:not(.selected) {
 	background-color: #dcdcdc;
 	outline: none;
+}
+
+.tabbedPanel .tabList .tab-header.loading,
+.hc-light .tabbedPanel .tabList .tab-header.loading {
+	pointer-events:none;
+	cursor: not-allowed;
+	background-image: url("./loading.svg");
+	background-position: center right 5px;
+	background-repeat: no-repeat;
+	background-size: 16px;
+	opacity: 0.5;
+}
+
+.vs-dark .tabbedPanel .tabList .tab-header.loading,
+.hc-black .tabbedPanel .tabList .tab-header.loading {
+	background-image: url("./loading_inverse.svg");
 }
 
 .tabbedPanel.horizontal > .title .tabList .tab .tabLabel,

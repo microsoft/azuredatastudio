@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -90,6 +90,18 @@ export const ValidationErrorCodes = {
 	// TODO: adding other error codes for troubleshooting
 	SqlInfoValidationFailed: '2056'
 };
+
+// Color codes for Graph
+export const ColorCodes = {
+	NotReadyState_Red: "#E00B1C",
+	ReadyState_Green: "#57A300",
+	ReadyWithWarningState_Amber: "#DB7500"
+}
+
+export const IssueCategory = {
+	Issue: "Issue",
+	Warning: "Warning"
+}
 
 const _dateFormatter = new Intl.DateTimeFormat(
 	undefined, {

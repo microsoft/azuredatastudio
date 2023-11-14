@@ -1,13 +1,13 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationStateModel, NetworkContainerType, Page } from '../models/stateMachine';
 import * as loc from '../constants/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { SKURecommendationPage } from './skuRecommendationPage';
+import { SKURecommendationPage } from './skuRecommendation/skuRecommendationPage';
 import { DatabaseBackupPage } from './databaseBackupPage';
 import { TargetSelectionPage } from './targetSelectionPage';
 import { LoginMigrationTargetSelectionPage } from './loginMigrationTargetSelectionPage';
@@ -22,6 +22,7 @@ import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrat
 import { azureResource } from 'azurecore';
 import { ServiceContextChangeEvent } from '../dashboard/tabBase';
 import { getSourceConnectionProfile } from '../api/sqlUtils';
+import { AssessmentDetailsPage } from './assessmentDetailsPage/assessmentDetailsPage';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
@@ -79,9 +80,16 @@ export class WizardController {
 		tdeMigrateButton.secondary = false;
 		tdeMigrateButton.hidden = true;
 
-		this._wizardObject.customButtons = [validateButton, tdeMigrateButton, saveAndCloseButton];
+		const saveAssessmentButton = azdata.window.createButton(
+			loc.SAVE_ASSESSMENT_REPORT,
+			'right');
+		saveAssessmentButton.secondary = true;
+		saveAssessmentButton.hidden = true;
+
+		this._wizardObject.customButtons = [validateButton, tdeMigrateButton, saveAssessmentButton, saveAndCloseButton];
 		const databaseSelectorPage = new DatabaseSelectorPage(this._wizardObject, stateModel);
 		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
+		const assessmentDetailsPage = new AssessmentDetailsPage(this._wizardObject, stateModel);
 		const targetSelectionPage = new TargetSelectionPage(this._wizardObject, stateModel);
 		const integrationRuntimePage = new IntergrationRuntimePage(this._wizardObject, stateModel);
 		const databaseBackupPage = new DatabaseBackupPage(this._wizardObject, stateModel);
@@ -90,6 +98,7 @@ export class WizardController {
 		const pages: MigrationWizardPage[] = [
 			databaseSelectorPage,
 			skuRecommendationPage,
+			assessmentDetailsPage,
 			targetSelectionPage,
 			integrationRuntimePage,
 			databaseBackupPage,

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
@@ -13,6 +13,7 @@ import { isValidSQLPassword } from '../utils';
 import { DefaultMaxTableRowCount } from '../../ui/dialogBase';
 import { PrincipalDialogBase } from './principalDialogBase';
 import { AuthenticationType, Login, LoginViewInfo } from '../interfaces';
+import { isUndefinedOrNull } from '../../types';
 
 export class LoginDialog extends PrincipalDialogBase<Login, LoginViewInfo> {
 	private generalSection: azdata.GroupContainer;
@@ -96,7 +97,9 @@ export class LoginDialog extends PrincipalDialogBase<Login, LoginViewInfo> {
 
 		this.initializeServerRolesSection();
 		sections.push(this.serverRoleSection);
-		sections.push(this.securableSection);
+		if (this.options.isNewObject || !isUndefinedOrNull(this.objectInfo.securablePermissions)) {
+			sections.push(this.securableSection);
+		}
 
 		this.formContainer.addItems(sections, this.getSectionItemLayout());
 	}

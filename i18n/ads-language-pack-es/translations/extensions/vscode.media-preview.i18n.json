@@ -32,7 +32,9 @@
 			"customEditor.imagePreview.displayName": "Vista previa de la imagen",
 			"customEditor.videoPreview.displayName": "Vista previa del vídeo",
 			"description": "Proporciona vistas previas integradas de VS Code para imágenes, audio y vídeo",
-			"displayName": "Vista previa de medios"
+			"displayName": "Vista previa de medios",
+			"videoPreviewerAutoPlay": "Empiece a reproducir vídeos al silenciar automáticamente.",
+			"videoPreviewerLoop": "Repita los vídeos de nuevo automáticamente."
 		}
 	}
 }

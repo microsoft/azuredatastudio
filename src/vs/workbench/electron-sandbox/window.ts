@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -234,8 +234,8 @@ export class NativeWindow extends Disposable {
 					label: localize('downloadArmBuild', "Download"),
 					run: () => {
 						const quality = this.productService.quality;
-						const stableURL = 'https://code.visualstudio.com/docs/?dv=osx';
-						const insidersURL = 'https://code.visualstudio.com/docs/?dv=osx&build=insiders';
+						const stableURL = 'https://aka.ms/download-azure-data-studio-macos-arm64'; // {{SQL CARBON EDIT}} Use our own link
+						const insidersURL = 'https://aka.ms/download-azure-data-studio-macos-arm64-insiders'; // {{SQL CARBON EDIT}} Use our own link
 						this.openerService.open(quality === 'stable' ? stableURL : insidersURL);
 					}
 				}]

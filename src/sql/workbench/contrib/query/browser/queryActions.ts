@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/queryActions';
@@ -117,8 +117,10 @@ export async function openNewQuery(accessor: ServicesAccessor, profile?: IConnec
 	const queryEditorService = accessor.get(IQueryEditorService);
 	const objectExplorerService = accessor.get(IObjectExplorerService);
 	const connectionManagementService = accessor.get(IConnectionManagementService);
+	const logService = accessor.get(ILogService);
 	if (!profile) {
-		profile = getCurrentGlobalConnection(objectExplorerService, connectionManagementService, editorService);
+		logService.trace('openNewQuery: Profile not received, retrieving current global connection.');
+		profile = getCurrentGlobalConnection(objectExplorerService, connectionManagementService, editorService, logService);
 	}
 	const editorInput = await queryEditorService.newSqlEditor({ initialContent: initialContent }, profile?.providerName);
 	// Connect our editor to the input connection
@@ -131,6 +133,8 @@ export async function openNewQuery(accessor: ServicesAccessor, profile?: IConnec
 	};
 	if (profile) {
 		await connectionManagementService.connect(profile, editorInput.uri, options);
+	} else {
+		logService.trace('queryActions.openNewQuery: No connection profile found to connect.');
 	}
 }
 

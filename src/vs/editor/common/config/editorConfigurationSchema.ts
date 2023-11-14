@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { diffEditorDefaultOptions } from 'vs/editor/common/config/diffEditor';
@@ -244,7 +244,7 @@ const editorConfiguration: IConfigurationNode = {
 		},
 		'diffEditor.experimental.useVersion2': {
 			type: 'boolean',
-			default: true,
+			default: false, // {{SQL CARBON EDIT}} default experimental setting to false. Schema compare is broken when set to true
 			description: nls.localize('useVersion2', "Controls whether the diff editor uses the new or the old implementation."),
 			tags: ['experimental'],
 		},

@@ -139,19 +139,6 @@ steps:
     displayName: Install SAW Extensions
     condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'), ne(variables['VSCODE_ARCH'], 'arm64'))
 
-  - powershell: |
-      # Install AGC specific extensions
-      $ErrorActionPreference = "Stop"
-      $tempFilePath = (New-TemporaryFile).FullName
-      $zipFilePath = $tempFilePath + ".zip"
-      $extensionUri = "$(agc-extensions-uri)"
-      $adsExtensionPath = "$(agent.builddirectory)\azuredatastudio-win32-x64\resources\app\extensions"
-      Invoke-WebRequest -Uri $extensionUri -OutFile $tempFilePath
-      Move-Item $tempFilePath $zipFilePath
-      Expand-Archive $zipFilePath -DestinationPath $adsExtensionPath
-    displayName: Install AGC Extensions
-    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'agc'), ne(variables['VSCODE_ARCH'], 'arm64'))
-
   # - powershell: | @anthonydresser unit tests timeout never existing the node process
   #     . build/azure-pipelines/win32/exec.ps1
   #     $ErrorActionPreference = "Stop"
@@ -191,27 +178,7 @@ steps:
     inputs:
       ConnectedServiceName: 'Code Signing'
       FolderPath: '$(agent.builddirectory)/azuredatastudio-win32-$(VSCODE_ARCH)'
-      Pattern: |
-        *.exe
-        *.node
-        !**/node_modules/**/*
-        resources/app/node_modules.asar.unpacked/*.dll
-        d3dcompiler_47.dll
-        vulkan-1.dll
-        libGLESv2.dll
-        ffmpeg.dll
-        libEGL.dll
-        Microsoft.SqlTools.Hosting.dll
-        Microsoft.SqlTools.ResourceProvider.Core.dll
-        Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll
-        MicrosoftSqlToolsCredentials.dll
-        MicrosoftSqlToolsServiceLayer.dll
-        MicrosoftSqlToolsSqlCore.dll
-        Newtonsoft.Json.dll,SqlSerializationService.dll
-        SqlToolsResourceProviderService.dll
-        Microsoft.SqlServer.*.dll
-        Microsoft.Data.Tools.Sql.BatchParser.dll
-      useMinimatch: true
+      Pattern: '*.exe,*.node,resources/app/node_modules.asar.unpacked/*.dll,d3dcompiler_47.dll,vulkan-1.dll,libGLESv2.dll,ffmpeg.dll,libEGL.dll,Microsoft.SqlTools.Hosting.dll,Microsoft.SqlTools.ResourceProvider.Core.dll,Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll,MicrosoftSqlToolsCredentials.dll,MicrosoftSqlToolsServiceLayer.dll,Newtonsoft.Json.dll,SqlSerializationService.dll,SqlToolsResourceProviderService.dll,Microsoft.SqlServer.*.dll,Microsoft.Data.Tools.Sql.BatchParser.dll'
       signConfigType: inlineSignParams
       inlineOperation: |
         [

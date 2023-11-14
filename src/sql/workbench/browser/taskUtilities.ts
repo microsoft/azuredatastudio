@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -8,6 +8,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { DashboardInput } from 'sql/workbench/browser/editor/profiler/dashboardInput';
+import { ILogService } from 'vs/platform/log/common/log';
 
 /**
  * Get the current global connection, which is the connection from the active editor, unless OE
@@ -17,9 +18,14 @@ import { DashboardInput } from 'sql/workbench/browser/editor/profiler/dashboardI
  * @param objectExplorerService
  * @param connectionManagementService
  * @param workbenchEditorService
+ * @param logService
  * @param topLevelOnly If true, only return top-level (i.e. connected) Object Explorer connections instead of database connections when appropriate
 */
-export function getCurrentGlobalConnection(objectExplorerService: IObjectExplorerService, connectionManagementService: IConnectionManagementService, workbenchEditorService: IEditorService, topLevelOnly: boolean = false): IConnectionProfile | undefined {
+export function getCurrentGlobalConnection(objectExplorerService: IObjectExplorerService,
+	connectionManagementService: IConnectionManagementService,
+	workbenchEditorService: IEditorService,
+	logService: ILogService,
+	topLevelOnly: boolean = false): IConnectionProfile | undefined {
 	let connection: IConnectionProfile | undefined;
 	// object Explorer Connection
 	let objectExplorerSelection = objectExplorerService.getSelectedProfileAndDatabase();
@@ -36,6 +42,8 @@ export function getCurrentGlobalConnection(objectExplorerService: IObjectExplore
 		if (objectExplorerService.isFocused()) {
 			return connection;
 		}
+	} else {
+		logService.trace('getCurrentGlobalConnection: Object Explorer selection is undefined, finding connection from active editor.');
 	}
 
 	let activeInput = workbenchEditorService.activeEditor;
@@ -47,6 +55,8 @@ export function getCurrentGlobalConnection(objectExplorerService: IObjectExplore
 			// editor Connection
 			connection = connectionManagementService.getConnectionProfile(activeInput.resource.toString(true));
 		}
+	} else {
+		logService.warn('getCurrentGlobalConnection: No active editor found.');
 	}
 
 	return connection;

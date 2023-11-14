@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -9,7 +9,7 @@ import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultM
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl, DatabaseFileGroupsPropertiesDocUrl, QueryStorePropertiesDocUrl } from '../constants';
-import { Database, DatabaseFile, DatabaseScopedConfigurationsInfo, DatabaseViewInfo, FileGrowthType, FileGroup, FileGroupType } from '../interfaces';
+import { Database, DatabaseFile, DatabaseScopedConfigurationsInfo, DatabaseViewInfo, FileGrowthType, FileGroup, FileGroupType, FileStreamEffectiveLevel } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
 import { DatabaseFileDialog } from './databaseFileDialog';
@@ -17,8 +17,7 @@ import * as vscode from 'vscode';
 
 const MAXDOP_Max_Limit = 32767;
 const PAUSED_RESUMABLE_INDEX_Max_Limit = 71582;
-const DscTableRowLength = 15;
-const Dialog_Width = '750px';
+const DscTableRowLength = 20;
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
@@ -123,7 +122,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		options.width = Dialog_Width;
 		super(objectManagementService, options);
 	}
 
@@ -705,6 +703,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				isEnabled = false;
 			}
 		}
+		else if (table === this.filestreamFilegroupsTable && this.filestreamFilegroupsTable.selectedRows?.length === 1) {
+			// Disable remove button when server filestream access level is disabled.
+			if (!this.serverFilestreamEnabled) {
+				isEnabled = false;
+			}
+		}
 		return isEnabled;
 	}
 
@@ -869,7 +873,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		this.filestreamFilegroupNameContainer = await this.getFilegroupNameGroup(this.filestreamFilegroupsTable, FileGroupType.FileStreamDataFileGroup);
 		const addButtonComponent: DialogButton = {
 			buttonAriaLabel: localizedConstants.AddFilegroupText,
-			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.filestreamFilegroupsTable)
+			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.filestreamFilegroupsTable),
+			enabled: this.serverFilestreamEnabled
 		};
 		const removeButtonComponent: DialogButton = {
 			buttonAriaLabel: localizedConstants.RemoveButton,
@@ -1166,8 +1171,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				data.push([
 					fileGroup.name,
 					filesCount,
-					{ checked: fileGroup.isReadOnly, enabled: filesCount > 0 },
-					fileGroup.isDefault
+					{ checked: fileGroup.isReadOnly, enabled: filesCount > 0 && this.serverFilestreamEnabled },
+					{ checked: fileGroup.isDefault, enabled: this.serverFilestreamEnabled },
 				]);
 			} else if (fileGroup.type === FileGroupType.MemoryOptimizedDataFileGroup && fileGroup.type === filegroupType) {
 				data.push([
@@ -1178,6 +1183,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		});
 
 		return data;
+	}
+
+	/**
+	 * Gets the server filestream enabled state
+	 * @returns true if the server filestream access level is not null and not disabled
+	 */
+	private get serverFilestreamEnabled(): boolean {
+		return this.viewInfo.serverFilestreamAccessLevel !== null && this.viewInfo.serverFilestreamAccessLevel !== FileStreamEffectiveLevel.Disabled;
 	}
 	//#endregion
 

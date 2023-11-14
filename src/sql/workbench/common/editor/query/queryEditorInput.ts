@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -24,7 +24,7 @@ import { IServerContextualizationService } from 'sql/workbench/services/contextu
 
 const MAX_SIZE = 13;
 
-function trimTitle(title: string): string {
+export function trimTitle(title: string): string {
 	const length = title.length;
 	const diff = length - MAX_SIZE;
 
