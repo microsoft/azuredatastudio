@@ -16,6 +16,7 @@ export const providerId = 'SqlMigration';
 export const extensionConfigSectionName = 'sqlMigration';
 export const sqlConfigSectionName = 'sql';
 export const configLogDebugInfo = 'logDebugInfo';
+export const importAssessmentKey = "ImportAssessment";
 export function serviceCrashMessage(error: string): string {
 	return localize('serviceCrashMessage', "Migration service component could not start. {0}", error);
 }

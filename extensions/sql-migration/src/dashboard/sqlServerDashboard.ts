@@ -544,14 +544,15 @@ export class DashboardWidget {
 					this.stateModel.savedInfo = savedInfo;
 					this.stateModel.serverName = serverName;
 
-					if (savedInfo.closedPage === Page.ImportAssessment) {
-						await this.clearSavedInfo(serverName);
-						if (savedInfo.serverAssessment !== null) {
-							this.stateModel._assessmentResults = savedInfo.serverAssessment;
+					const importSavedInfo = this.checkSavedInfo(loc.importAssessmentKey);
+					if (importSavedInfo && importSavedInfo.closedPage === Page.ImportAssessment) {
+						await this.clearSavedInfo(loc.importAssessmentKey);
+						if (importSavedInfo.serverAssessment !== null) {
+							this.stateModel._assessmentResults = importSavedInfo.serverAssessment;
 							await this.stateModel.loadSavedInfo();
 
-							serverName = savedInfo.serverAssessment?.issues[0]?.serverName ??
-								savedInfo.serverAssessment?.databaseAssessments[0]?.issues[0]?.serverName;
+							serverName = importSavedInfo.serverAssessment?.issues[0]?.serverName ??
+								importSavedInfo.serverAssessment?.databaseAssessments[0]?.issues[0]?.serverName;
 							this.stateModel.serverName = serverName;
 						}
 

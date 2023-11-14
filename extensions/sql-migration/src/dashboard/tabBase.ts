@@ -162,9 +162,8 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 						const assessmentReportJson = fs.readFileSync(filepath, 'utf-8');
 						const assessmentReport = JSON.parse(assessmentReportJson);
 
-						const serverName = (await getSourceConnectionProfile()).serverName;
 						const saveInfo = parseAssessmentReport(assessmentReport);
-						await this.context.globalState.update(`${this.mementoToken}.${serverName}`, saveInfo);
+						await this.context.globalState.update(`${this.mementoToken}.${loc.importAssessmentKey}`, saveInfo);
 					} catch (err) {
 						void vscode.window.showInformationMessage(`Selected invalid format import file: ${filepath}`);
 					}
