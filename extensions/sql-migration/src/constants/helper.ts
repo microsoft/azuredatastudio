@@ -372,7 +372,7 @@ export function getMigrationType(migration: DatabaseMigration | undefined): stri
 	var enableData = migration?.properties?.sqlDataMigrationConfiguration?.enableDataMigration ?? false;
 	return enableSchema && enableData
 		? loc.SCHEMA_AND_DATA
-		: enableSchema ? loc.SCHEMA_ONLY : loc.DATA_ONLY
+		: enableSchema ? loc.SCHEMA_ONLY : loc.DATA_ONLY;
 }
 
 export function getSchemaMigrationStatus(migration: DatabaseMigration | undefined): string | undefined {

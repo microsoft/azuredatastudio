@@ -67,7 +67,7 @@ export class SchemaMigrationAssessmentDialog {
 				text: constants.SCHEMA_MIGRATION_ASSESSMENT_WARNING_MESSAGE,
 			};
 			dialog.okButton.hidden = true;
-			dialog.cancelButton.label = "Close";
+			dialog.cancelButton.label = constants.CLOSE;
 			dialog.cancelButton.position = 'left';
 			this._disposables.push(
 				dialog.cancelButton.onClick(

@@ -1747,7 +1747,7 @@ export const DEPLOYMENT_STARTED = localize('sql.migration.schema.script.deployme
 export const DEPLOYMENT_ENDED = localize('sql.migration.schema.script.deployment.ended', "Deployment ended");
 export const DEPLOYMENT_COUNT = localize('sql.migration.schema.script.deployment.count', "Deployment count");
 export const DEPLOYMENT_ERROR_COUNT = localize('sql.migration.schema.script.deployment.error.count', "Deployment error count");
-export const SCHEMA_MIGRATION_ASSESSMENT_WARNING_MESSAGE = localize('sql.migration.schema.assessment.warning.message', "The detected issues shown below might fail the schema migration. Some of them might be entirely unsupported and the others might be partially supported in Azure SQL Database. \nTherefore, please review the assessment results and make sure all of the issues will not fail the schema migration.\nHowever, it is allowed to proceed the schema migration and DMS will migrate the objects as possible as it can.");
+export const SCHEMA_MIGRATION_ASSESSMENT_WARNING_MESSAGE = localize('sql.migration.schema.assessment.warning.message', "The detected issues shown below might fail the schema migration. Some of them might be entirely unsupported and the others might be partially supported in Azure SQL Database. \nTherefore, please review the assessment results and make sure all of the issues will not fail the schema migration.\nHowever, it is allowed to proceed the schema migration and Azure Database Migration Service will migrate the objects as possible as it can.");
 
 export const SchemaMigrationFailedRulesLookup: LookupTable<string | undefined> = {
 	["ComputeClause"]: localize('sql.migration.schema.rule.compute', 'COMPUTE'),
