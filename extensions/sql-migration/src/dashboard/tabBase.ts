@@ -13,7 +13,6 @@ import { DashboardStatusBar } from './DashboardStatusBar';
 import { ShowStatusMessageDialog } from '../dialog/generic/genericDialogs';
 import * as utils from '../api/utils';
 import * as fs from 'fs';
-import { getSourceConnectionProfile } from '../api/sqlUtils';
 import { parseAssessmentReport } from '../dialog/assessment/assessmentUtils';
 import { HelpAndSupportDialog } from '../dialog/help/helpAndSupportDialog';
 
@@ -165,7 +164,7 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 						const saveInfo = parseAssessmentReport(assessmentReport);
 						await this.context.globalState.update(`${this.mementoToken}.${loc.importAssessmentKey}`, saveInfo);
 					} catch (err) {
-						void vscode.window.showInformationMessage(`Selected invalid format import file: ${filepath}`);
+						void vscode.window.showErrorMessage(err.message);
 					}
 
 					const actionId = MenuCommands.StartMigration;
