@@ -17,7 +17,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 
 /**
- * Connection status bar showing the current global connection
+ * Handles showing the status bar item for the current global connection
  */
 export class ConnectionStatusbarItem extends Disposable implements IWorkbenchContribution {
 
