@@ -2418,63 +2418,6 @@
 					"flags": ""
 				},
 				{
-					"extensionId": "52",
-					"extensionName": "plan-explorer",
-					"displayName": "SentryOne Plan Explorer",
-					"shortDescription": "Simplify query analysis and tuning",
-					"publisher": {
-						"displayName": "SentryOne",
-						"publisherId": "SentryOne",
-						"publisherName": "SentryOne"
-					},
-					"versions": [
-						{
-							"version": "0.9.8",
-							"lastUpdated": "10/19/2020",
-							"assetUri": "",
-							"fallbackAssetUri": "fallbackAssetUri",
-							"files": [
-								{
-									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://www.sentryone.com/products/sentryone-plan-explorer-extension-azure-data-studio"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/plan-explorer/0.9.8/s1logo.png"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/plan-explorer/0.9.8/README.md"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://www.sentryone.com/eula"
-								}
-							],
-							"properties": [
-								{
-									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
-									"value": ""
-								},
-								{
-									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": "*"
-								},
-								{
-									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.8.0"
-								},
-								{
-									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://extensions.sentryone.com/"
-								}
-							]
-						}
-					],
-					"statistics": [],
-					"flags": "preview"
-				},
-				{
 					"extensionId": "53",
 					"extensionName": "query-editor-boost",
 					"displayName": "Query Editor Boost",
@@ -5401,7 +5344,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 88
+							"count": 87
 						}
 					]
 				}
