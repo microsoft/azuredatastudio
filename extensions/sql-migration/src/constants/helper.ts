@@ -360,3 +360,26 @@ export function selectDatabasesFromList(selectedDbs: string[], databaseTableValu
 	}
 	return databaseTableValues;
 }
+
+export function getMigrationType(migration: DatabaseMigration | undefined): string {
+	// If MI or VM migration, the data type is schema + data
+	var targetType = getMigrationTargetTypeEnum(migration);
+	if (targetType === MigrationTargetType.SQLMI || targetType === MigrationTargetType.SQLVM) {
+		return loc.BACKUP_AND_RESTORE;
+	}
+
+	var enableSchema = migration?.properties?.sqlSchemaMigrationConfiguration?.enableSchemaMigration ?? false;
+	var enableData = migration?.properties?.sqlDataMigrationConfiguration?.enableDataMigration ?? false;
+	return enableSchema && enableData
+		? loc.SCHEMA_AND_DATA
+		: enableSchema ? loc.SCHEMA_ONLY : loc.DATA_ONLY;
+}
+
+export function getSchemaMigrationStatus(migration: DatabaseMigration | undefined): string | undefined {
+	return migration?.properties?.migrationStatusDetails?.sqlSchemaMigrationStatus?.status;
+}
+
+export function getSchemaMigrationStatusString(migration: DatabaseMigration | undefined): string {
+	const schemaMigrationStatus = getSchemaMigrationStatus(migration) ?? DefaultSettingValue;
+	return loc.SchemaMigrationStatusLookup[schemaMigrationStatus] ?? schemaMigrationStatus;
+}
