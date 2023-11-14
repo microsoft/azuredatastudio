@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
@@ -72,7 +72,7 @@ class NPSContribution implements IWorkbenchContribution {
 				label: nls.localize('takeSurvey', "Take Survey"),
 				run: () => {
 					// {{SQL Carbon Edit}} Pass context parameters in correct format to NPS Survey URL to gather the same in feedback metadata.
-					openerService.open(URI.parse(`${productService.npsSurveyUrl}?ctx=${encodeURIComponent(`{"ProductVersion":"${productService.version}","Platform":"${platform}","MachineId":"${telemetryService.machineId}"`)}`));
+					openerService.open(URI.parse(`${productService.npsSurveyUrl}?ctx=${encodeURIComponent(`{"ProductVersion":"${productService.version}","Platform":"${platform}","MachineId":"${telemetryService.machineId}"}`)}`));
 					storageService.store(IS_CANDIDATE_KEY, false, StorageScope.APPLICATION, StorageTarget.USER);
 					storageService.store(SKIP_VERSION_KEY, productService.version, StorageScope.APPLICATION, StorageTarget.USER);
 				}

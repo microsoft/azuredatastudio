@@ -10,6 +10,7 @@
 	"contents": {
 		"package": {
 			"config.markdown.math.enabled": "組み込みのマークダウン プレビューでの数式のレンダリングを有効/無効にします。",
+			"config.markdown.math.macros": "カスタム マクロのコレクションです。各マクロはキーと値のペアであり、キーは新しいコマンド名、値はマクロの展開形です。",
 			"description": "ノートブックのマークダウンに数式サポートを追加します。",
 			"displayName": "Markdown 数式"
 		}

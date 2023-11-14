@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/restoreDialog';
@@ -618,7 +618,7 @@ export class RestoreDialog extends Modal {
 
 	public enableRestoreButton(enabled: boolean): void {
 		this.spinner = false;
-		if (this._engineEdition !== DatabaseEngineEdition.SqlDataWarehouse && this._engineEdition !== DatabaseEngineEdition.SqlOnDemand && this.viewModel.databases.includes(this._targetDatabaseInputBox.value)) {
+		if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance && this.viewModel.databases.includes(this._targetDatabaseInputBox.value)) {
 			this._restoreButton!.enabled = false;
 			this._scriptButton!.enabled = false;
 		}
@@ -888,7 +888,7 @@ export class RestoreDialog extends Modal {
 		this._urlInputBox.value = '';
 		this._targetDatabaseInputBox.value = '';
 		let title;
-		if (this._engineEdition !== DatabaseEngineEdition.SqlDataWarehouse && this._engineEdition !== DatabaseEngineEdition.SqlOnDemand) {
+		if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance) {
 			this._restoreFromSelectBox.setOptions([this._urlTitle]);
 			title = this._urlTitle;
 			// to fetch databases

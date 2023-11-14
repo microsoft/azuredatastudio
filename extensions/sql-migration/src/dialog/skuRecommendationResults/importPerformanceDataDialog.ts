@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -98,7 +98,8 @@ export class ImportPerformanceDataDialog {
 		}).component();
 
 		this._disposables.push(this._importButton.onDidClick(async () => {
-			await this.execute();
+			await this.skuRecommendationPage.startCardLoading();
+			void this.execute();
 			this._creationEvent.emit('done');
 		}));
 
@@ -202,7 +203,7 @@ export class ImportPerformanceDataDialog {
 			.component();
 
 		this._openExistingFolderInput = _view.modelBuilder.inputBox().withProps({
-			placeHolder: constants.IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FILE,
+			placeHolder: constants.IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FOLDER,
 			readOnly: true,
 			height: 24,
 			width: 222,

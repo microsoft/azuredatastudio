@@ -32,7 +32,9 @@
 			"customEditor.imagePreview.displayName": "이미지 미리 보기",
 			"customEditor.videoPreview.displayName": "비디오 미리 보기",
 			"description": "이미지, 오디오 및 비디오에 대한 VS Code 기본 제공 미리 보기를 제공합니다.",
-			"displayName": "미디어 미리 보기"
+			"displayName": "미디어 미리 보기",
+			"videoPreviewerAutoPlay": "자동으로 음소거 시 비디오 재생을 시작합니다.",
+			"videoPreviewerLoop": "비디오를 자동으로 반복합니다."
 		}
 	}
 }

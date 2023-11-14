@@ -26,7 +26,8 @@
 			"Your Code: {0}/The {0} will be a code, e.g. 123-456": "Ваш код: {0}",
 			"device code": "код устройства",
 			"local server": "локальный сервер",
-			"personal access token": "личный маркер доступа"
+			"personal access token": "личный маркер доступа",
+			"url handler": "обработчик URL-адресов"
 		},
 		"package": {
 			"description": "Поставщик проверки подлинности GitHub",

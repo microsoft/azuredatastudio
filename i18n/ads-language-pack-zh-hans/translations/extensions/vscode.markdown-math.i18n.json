@@ -10,6 +10,7 @@
 	"contents": {
 		"package": {
 			"config.markdown.math.enabled": "在内置 Markdown 预览中启用/禁用呈现数学。",
+			"config.markdown.math.macros": "自定义宏的集合。每个宏都是键值对，其中键是新的命令名称，值是宏的扩展。",
 			"description": "在笔记本中向 Markdown 添加数学支持。",
 			"displayName": "Markdown 数学"
 		}

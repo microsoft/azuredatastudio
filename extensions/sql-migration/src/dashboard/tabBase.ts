@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -15,6 +15,7 @@ import * as utils from '../api/utils';
 import * as fs from 'fs';
 import { getSourceConnectionProfile } from '../api/sqlUtils';
 import { parseAssessmentReport } from '../dialog/assessment/assessmentUtils';
+import { HelpAndSupportDialog } from '../dialog/help/helpAndSupportDialog';
 
 export const EmptySettingValue = '-';
 
@@ -179,23 +180,23 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 		return importMigrationButton;
 	}
 
-	protected createNewSupportRequestButton(): azdata.ButtonComponent {
-		const newSupportRequestButton = this.view.modelBuilder.button()
+	protected createNewHelpAndSupportButton(): azdata.ButtonComponent {
+		const newHelpAndSupportButton = this.view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
-				label: loc.DESKTOP_SUPPORT_BUTTON_LABEL,
-				description: loc.DESKTOP_SUPPORT_BUTTON_DESCRIPTION,
+				label: loc.DESKTOP_HELP_SUPPORT_BUTTON_LABEL,
+				description: loc.DESKTOP_HELP_SUPPORT_BUTTON_DESCRIPTION,
 				height: 24,
 				iconHeight: 24,
 				iconWidth: 24,
 				iconPath: IconPathHelper.newSupportRequest,
 			}).component();
 		this.disposables.push(
-			newSupportRequestButton.onDidClick(async () => {
-				await vscode.env.openExternal(vscode.Uri.parse(
-					`https://portal.azure.com/#blade/Microsoft_Azure_Support/HelpAndSupportBlade/newsupportrequest`));
+			newHelpAndSupportButton.onDidClick(async () => {
+				const helpAndSupportDialog = new HelpAndSupportDialog();
+				await helpAndSupportDialog.openDialog();
 			}));
-		return newSupportRequestButton;
+		return newHelpAndSupportButton;
 	}
 
 	protected createFeedbackButton(): azdata.ButtonComponent {

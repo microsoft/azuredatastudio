@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 export const aliasStrings = {
@@ -81,7 +81,6 @@ export const aliasStrings = {
 		'f1902e6bba725c6d3fcf51683aabc4686fb2a0f0dd682e1d6a9adf32fa0441d9': "Commit Changes on \"{0}\"",
 		'2a8cf21232f60e18a2463520f642e8744cbb02e52bf28da24679207e4302b447': "Commit Changes to New Branch",
 		'cb039e43bfd1824728db88aee47282a1362819ca8ccbfec5b311ee5af0e89760': "Commit Hash",
-		'ed1fdf6e6ca057297a99375eca0f051f9ffbec49a1767e2126918b24e1350dff': "Commit Staged Changes",
 		'26306d203c4a6f1a77f32cd065d7d11593ba0c7a9b5c52c188b98f22b620941f': "Commit message",
 		'853333402637451d6aa3b25ece807151fc432e65654ef1a92683c08d2f469a08': "Commit operation was cancelled due to empty commit message.",
 		'c561966032532f5cb4e661520907ce9195227eab5a7a8502ed432c65d2cec33c': "Commit to New Branch & Push Changes",
@@ -215,7 +214,6 @@ export const aliasStrings = {
 		'25202086021659225a6b0065ed7ea55875f99c94859e62037b4e00bf1aead47b': "Replace Local Tag(s)",
 		'79b6a575a54e574a842c9e02e87858cb7596b721ae632a41755f20726c9aa23f': "Restore file",
 		'7e420ff8a2ebf63aa024db900f0707a6d4f457c8048f6cc72523b2f709e8e0f1': "Restore files",
-		'e98f3fe796a6bb3a6a887b34998889dc6aad09782c4abf35f15e75aa0a1c32d5': "Save All & Commit",
 		'73bd1493a71408520de7d84d0c500708f92ae677a49fe1cec7350d5363f1088e': "Save All & Stash",
 		'037c1c212912fcec15b3d4126ce0e79c0593c0f74cf8668451ca698b7bc52475': "Select a branch or tag to checkout",
 		'be8e59066232b90b3820f1ad5bafd5d609e5d3ab42d30fb11a27c7e6cd8e2448': "Select a branch to checkout in detached mode",
@@ -316,6 +314,13 @@ export const aliasStrings = {
 		'24cf0fac66cc6a565ec23f5b2b9d58f2c8606cb7313b2591836da1f8d0a53993': "{0} characters left in current line",
 		'8de94f809d2ce26a9db6bd5c9e3fe247254b40c6888ad3044050a147374dbd91': "{0} characters over {1} in current line",
 		'93264f176451ecdd4985efc6ce3e65eb7759381031de21dcdf8809bc3e90e810': "{0} ↔ {1}",
-		'86b933c7292229ebcd6fc4977d94683a09568745f08b5eff0ddf6249ca56a11d': "{0}\\n\\nThis is IRREVERSIBLE, your current working set will be FOREVER LOST."
+		'86b933c7292229ebcd6fc4977d94683a09568745f08b5eff0ddf6249ca56a11d': "{0}\\n\\nThis is IRREVERSIBLE, your current working set will be FOREVER LOST.",
+		'975dd75001ae0d7c535f15e85326be3fc636a908ef77dcd64931d0564b64c7f5': "Enables the following features: {0}",
+		'43cfba061c66b48d18654d4630284c8f93f76fd551a761506e76d04100be78d2': "Pick a repository to reopen",
+		'382638de5d12f729cec7910b1bb7998999342f9ab710360306bd29bdd8d89ca3': "Reopen Closed Repositories",
+		'9a67de1b5740e2d935f5bab0d89233b2b75a777a7ea3b57c7e53ac29427c91c6': "Save All & Commit Changes",
+		'dce9960e3b2a3c0c30e66c7e1a3ec396a86650a7acb8fd3cedf74196356deb54': "Type Changed",
+		'06d2d2cf7b10db10195c834f0403e5802aa68f6551afec39fdc6fb549ca73302': "{0} (Type changed)",
+		'34f8bd615c01255a5815e862d415a991324737482a7d66c874f16a10427897a0': "{0} Commit (Amend)"
 	}
 }

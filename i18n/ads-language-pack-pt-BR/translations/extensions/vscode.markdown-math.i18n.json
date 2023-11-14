@@ -10,6 +10,7 @@
 	"contents": {
 		"package": {
 			"config.markdown.math.enabled": "Habilitar/desabilitar a matemática da renderização da visualização interna do Markdown.",
+			"config.markdown.math.macros": "Uma coleção de macros personalizadas. Cada macro é um par chave-valor em que a chave é um novo nome de comando e o valor é a expansão da macro.",
 			"description": "Adiciona suporte matemático ao Markdown em notebooks.",
 			"displayName": "Markdown de matemática"
 		}

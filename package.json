@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
-  "version": "1.47.0",
-  "distro": "d146f84ae415cdb64ed001d44e33729a1ca79b4c",
+  "version": "1.48.0",
+  "distro": "c7516ffaf758f77c4c9c621f2ec650550714afff",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -275,8 +275,6 @@
   },
   "resolutions": {
     "elliptic": "^6.5.3",
-    "nwmatcher": "^1.4.4",
-    "http-proxy-agent": "^5.0.0",
-    "https-proxy-agent": "^5.0.0"
+    "nwmatcher": "^1.4.4"
   }
 }

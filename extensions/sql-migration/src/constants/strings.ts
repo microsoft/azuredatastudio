@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
@@ -196,6 +196,7 @@ export const VIEW_SELECT_BUTTON_LABEL = localize('sql.migration.view.select.butt
 export function TOTAL_DATABASES_SELECTED(selectedDbCount: number, totalDbCount: number): string {
 	return localize('total.databases.selected', "{0} of {1} databases selected", selectedDbCount, totalDbCount);
 }
+export const SELECT_SKIP_ASSESSMENT_CHECK_TO_CONTINUE = localize('sql.migration.select.skip.assessment.check.to.continue', "To continue, check skip assessment option.");
 export const SELECT_TARGET_TO_CONTINUE = localize('sql.migration.select.target.to.continue', "To continue, select a target.");
 export const SELECT_DATABASE_TO_MIGRATE = localize('sql.migration.select.database.to.migrate', "Select the databases to migrate.");
 export const ASSESSMENT_COMPLETED = (serverName: string): string => {
@@ -243,7 +244,7 @@ export const RESTART_PERFORMANCE_COLLECTION = localize('sql.migration.sku.restar
 export const IMPORT_PERFORMANCE_DATA = localize('sql.migration.sku.import.performance.data', "Import performance data");
 export const IMPORT_PERFORMANCE_DATA_DIALOG_DESCRIPTION = localize('sql.migration.sku.import.performance.data.dialog.description', "Import this data file from an existing folder, if you have already collected it using Data Migration Assistant.");
 export const IMPORT_PERFORMANCE_DATA_DIALOG_HELPER_MESSAGE = localize('sql.migration.sku.import.performance.data.dialog.helper.message', "Select a folder on your local drive");
-export const IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FILE = localize('sql.migration.sku.import.performance.data.dialog.open.file', "Select a file");
+export const IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FOLDER = localize('sql.migration.sku.import.performance.data.dialog.open.folder', "Select a folder");
 // allow-any-unicode-next-line
 export const AZURE_RECOMMENDATION_CARD_NOT_ENABLED = localize('sql.migration.sku.card.azureRecommendation.notEnabled', "Azure recommendation is not available. Click 'Start data collection' button above to get started.");
 export const AZURE_RECOMMENDATION_CARD_IN_PROGRESS = localize('sql.migration.sku.card.azureRecommendation.inProgress', "Azure recommendation will be displayed once data collection is complete.");
@@ -254,7 +255,7 @@ export const AZURE_RECOMMENDATION_STATUS_STOPPED = localize('sql.migration.sku.a
 export function AZURE_RECOMMENDATION_STATUS_AUTO_REFRESH_TIMER(mins: number): string {
 	return localize('sql.migration.sku.azureRecommendation.status.autoRefreshTimer', "Time before next SKU recommendation update: {0} minute(s).", mins.toFixed(0));
 }
-export const AZURE_RECOMMENDATION_STATUS_MANUAL_REFRESH_TIMER = localize('sql.migration.sku.azureRecommendation.status.manualRefreshTimer', "Click on 'Refresh SKU' for updated recommendations.");
+export const AZURE_RECOMMENDATION_STATUS_MANUAL_REFRESH_TIMER = localize('sql.migration.sku.azureRecommendation.status.manualRefreshTimer', "Click on 'Refresh SKU recommendation' for updated recommendations.");
 export const AZURE_RECOMMENDATION_STATUS_DATA_IMPORTED = localize('sql.migration.sku.azureRecommendation.status.imported', "Azure recommendation has been applied using the provided data. Import or collect additional data to refine the recommendation.");
 export const AZURE_RECOMMENDATION_TOOLTIP_NOT_STARTED = localize('sql.migration.sku.azureRecommendation.tooltip.notStarted', "Click the button below to import or collect database performance data.");
 export const AZURE_RECOMMENDATION_TOOLTIP_IN_PROGRESS = localize('sql.migration.sku.azureRecommendation.tooltip.inProgress', "Running the performance collection for a longer period of time helps ensure a more accurate recommendation.");
@@ -1522,12 +1523,21 @@ export const DESKTOP_IMPORT_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migrati
 export const DESKTOP_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.migration.description', 'Migrate to Azure SQL');
 export const DESKTOP_LOGIN_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.button.login.migration.label', 'New login migration (PREVIEW)');
 export const DESKTOP_LOGIN_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.login.migration.description', 'Migrate logins to Azure SQL');
-export const DESKTOP_SUPPORT_BUTTON_LABEL = localize('sql.migration.tab.button.support.label', 'New support request');
-export const DESKTOP_SUPPORT_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.support.description', 'New support request');
+export const DESKTOP_HELP_SUPPORT_BUTTON_LABEL = localize('sql.migration.tab.button.help.support.label', 'Help + Support');
+export const DESKTOP_HELP_SUPPORT_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.help.support.description', 'Help + Support');
 export const DESKTOP_FEEDBACK_BUTTON_LABEL = localize('sql.migration.tab.button.feedback.label', 'Feedback');
 export const DESKTOP_FEEDBACK_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.feedback.description', 'Feedback');
 export const DESKTOP_DASHBOARD_TAB_TITLE = localize('sql.migration.tab.dashboard.title', 'Dashboard');
 export const DESKTOP_MIGRATIONS_TAB_TITLE = localize('sql.migration.tab.migrations.title', 'Migrations');
+export const HELP_SUPPORT_TITLE = localize('sql.migration.help.support.title', 'Help + Support');
+export const SUPPORT_RESOURCES_TITLE = localize('sql.migration.support.resources.title', 'Support resources');
+export const SUPPORT_RESOURCES_DESCRIPTION = localize('sql.migration.support.resources.description', 'Explore documentation');
+export const SUPPORT_REQUEST_TITLE = localize('sql.migration.support.request.title', 'Support request');
+export const SUPPORT_REQUEST_DESCRIPTION = localize('sql.migration.support.request.descrption', 'Create a support request');
+export const SUPPORT_REQUEST_NOTE = localize('sql.migration.support.request.note', 'To receive assistance from Microsoft customer support, please log a service request on Service Hub at aka.ms/servicehub.');
+export const COMMUNITY_SUPPORT_TITLE = localize('sql.migration.community.support.title', 'Community support')
+export const COMMUNITY_SUPPORT_DESCRIPTION = localize('sql.migration.community.support.description', 'Connect with Microsoft Community');
+export const COMMUNITY_SUPPORT_NOTE = localize('sql.migration.community.support.note', 'You can post your question with the Microsoft community support through the Q&A channel.');
 
 // dashboard tab
 export const DASHBOARD_HELP_LINK_MIGRATE_USING_ADS = localize('sql.migration.dashboard.help.link.migrateUsingADS', 'Migrate databases using Azure Data Studio');

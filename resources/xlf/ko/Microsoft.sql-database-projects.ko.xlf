@@ -728,10 +728,6 @@
         <source xml:lang="en">Location</source>
         <target state="translated">위치</target>
       </trans-unit>
-      <trans-unit id="edgeEulaAgreementTitle">
-        <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
-        <target state="translated">Microsoft Azure SQL Edge 사용권 계약</target>
-      </trans-unit>
       <trans-unit id="eulaAgreementTitle">
         <source xml:lang="en">Microsoft SQL Server License Agreement</source>
         <target state="translated">Microsoft SQL Server 라이선스 계약</target>
@@ -1351,10 +1347,6 @@
       <trans-unit id="updatingProjectFromDatabase">
         <source xml:lang="en">Updating {0} from {1}...</source>
         <target state="translated">{1}의 {0}을(를) 업데이트하는 중...</target>
-      </trans-unit>
-      <trans-unit id="dockerImagesPlaceHolder">
-        <source xml:lang="en">Use {0} on local arm64/Apple Silicon</source>
-        <target state="translated">로컬 arm64/Apple Silicon에서 {0} 사용</target>
       </trans-unit>
       <trans-unit id="userSelectionCancelled">
         <source xml:lang="en">User has cancelled selection for how to run autorest.</source>

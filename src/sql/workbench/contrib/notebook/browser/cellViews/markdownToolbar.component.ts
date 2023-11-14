@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./markdownToolbar';
 import * as DOM from 'vs/base/browser/dom';
@@ -265,7 +265,6 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 					if (originalImageName !== attachmentName) {
 						imageCalloutResult.insertEscapedMarkdown = `![${attachmentName}](attachment:${attachmentName.replace(/\s/g, '')})`;
 					}
-					await insertFormattedMarkdown(imageCalloutResult.insertEscapedMarkdown, this.getCellEditorControl());
 				}
 				await insertFormattedMarkdown(imageCalloutResult.insertEscapedMarkdown, this.getCellEditorControl());
 			}

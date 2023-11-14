@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -295,10 +295,9 @@ export class InstanceSummary {
 
 				if (this.migrationStateModel.tdeMigrationConfig.hasTdeEnabledDatabases()) {
 					//Set the text when there are encrypted databases.
+					const tdeMsg = (this.migrationStateModel.tdeMigrationConfig.getAppliedConfigDialogSetting() === ConfigDialogSetting.ExportCertificates) ? constants.TDE_WIZARD_MSG_TDE : constants.TDE_WIZARD_MSG_MANUAL;
+					this._tdeDatabaseSelectedHelperText.value = constants.TDE_MSG_DATABASES_SELECTED(this.migrationStateModel.tdeMigrationConfig.getTdeEnabledDatabasesCount(), tdeMsg);
 
-					if (!this.migrationStateModel.tdeMigrationConfig.shownBefore()) {
-						await this._tdeConfigurationDialog.openDialog();
-					}
 				} else {
 					this._tdeDatabaseSelectedHelperText.value = constants.TDE_WIZARD_MSG_EMPTY;
 				}

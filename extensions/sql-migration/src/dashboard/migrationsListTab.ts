@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -151,7 +151,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 			<azdata.ToolbarComponent>{ component: this.createNewMigrationButton(), toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.createNewLoginMigrationButton(), toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.createImportMigrationButton(), toolbarSeparatorAfter: true },
-			<azdata.ToolbarComponent>{ component: this.createNewSupportRequestButton() },
+			<azdata.ToolbarComponent>{ component: this.createNewHelpAndSupportButton() },
 			<azdata.ToolbarComponent>{ component: this.createFeedbackButton(), toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this._refreshLoader },
 		]);

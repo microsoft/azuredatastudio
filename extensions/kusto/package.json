@@ -18,6 +18,7 @@
   "typings": "./src/kusto",
   "scripts": {
     "compile": "gulp compile-extension:kusto-client",
+    "postinstall": "node ./build/postinstall.js",
     "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-kusto ./syntaxes/kusto.tmLanguage"
   },
 	"capabilities": {
@@ -43,6 +44,11 @@
           "dark": "resources/dark/open_notebook_inverse.svg",
           "light": "resources/light/open_notebook.svg"
         }
+      },
+      {
+        "command": "kusto.showLogFile",
+        "category": "Kusto",
+        "title": "%title.showLogFile%"
       }
     ],
     "languages": [
@@ -140,6 +146,17 @@
             "Information",
             "Verbose"
           ]
+        },
+        "kusto.trace.server": {
+          "type": "string",
+          "scope": "window",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "%kusto.tracingServer%"
         }
       }
     },

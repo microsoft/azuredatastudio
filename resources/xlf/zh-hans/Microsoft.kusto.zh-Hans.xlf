@@ -138,10 +138,6 @@
         <source xml:lang="en">Authentication type</source>
         <target state="translated">身份验证类型</target>
       </trans-unit>
-      <trans-unit id="kusto.connectionOptions.authType.categoryValues.azureMFA">
-        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory - 支持 MFA 的通用目录</target>
-      </trans-unit>
       <trans-unit id="kusto.provider.displayName">
         <source xml:lang="en">Azure Data Explorer (Kusto)</source>
         <target state="translated">Azure 数据资源管理器(Kusto)</target>
@@ -209,6 +205,10 @@
       <trans-unit id="kusto.connectionOptions.serverName.description">
         <source xml:lang="en">Kusto cluster name</source>
         <target state="translated">Kusto 群集名称</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.authType.categoryValues.azureMFA">
+        <source xml:lang="en">Microsoft Entra ID - Universal with MFA support</source>
+        <target state="translated">Microsoft Entra ID - 具有 MFA 支持的通用</target>
       </trans-unit>
       <trans-unit id="objectsListProperties.name">
         <source xml:lang="en">Name</source>
