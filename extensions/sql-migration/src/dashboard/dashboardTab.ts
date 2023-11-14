@@ -64,11 +64,13 @@ export class DashboardTab extends TabBase<DashboardTab> {
 	}
 
 	public async create(
+		context: vscode.ExtensionContext,
 		view: azdata.ModelView,
 		openMigrationsFcn: (status: AdsMigrationStatus) => Promise<void>,
 		serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>,
 		statusBar: DashboardStatusBar): Promise<DashboardTab> {
 
+		this.context = context;
 		this.view = view;
 		this.openMigrationsFcn = openMigrationsFcn;
 		this.serviceContextChangedEvent = serviceContextChangedEvent;

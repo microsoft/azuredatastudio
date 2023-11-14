@@ -47,10 +47,7 @@ export function parseAssessmentReport(assessmentReport: any): any {
 				break;
 			}
 			default: {
-				if (assessmentReport.TargetPlatform.startsWith("SqlServer")) {
-					saveInfo.migrationTargetType = MigrationTargetType.SQLDB;
-				}
-				saveInfo.migrationTargetType = MigrationTargetType.SQLDB;
+				throw new Error('Unsupported type');
 			}
 		}
 
