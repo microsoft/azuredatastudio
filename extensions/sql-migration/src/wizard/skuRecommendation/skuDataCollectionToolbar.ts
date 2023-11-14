@@ -23,6 +23,11 @@ import { SKURecommendationPage } from './skuRecommendationPage';
 import { ImportPerformanceDataDialog } from '../../dialog/skuRecommendationResults/importPerformanceDataDialog';
 import { SkuEditParametersDialog } from '../../dialog/skuRecommendationResults/skuEditParametersDialog';
 
+// Extension Settings
+export const sqlRecommendationConfigurationKey = 'azureRecommendation';
+export const dataCollectionPathKey = 'dataCollectionPath';
+export const relativeDefaultPerfDataPath = '\\AppData\\Roaming\\azuredatastudio\\PerfData';
+
 export class SkuDataCollectionToolbar implements vscode.Disposable {
 	private _refreshButtonSelectionDropdown!: azdata.DropDownComponent;
 	private _startPerformanceCollectionButton!: azdata.ButtonComponent;
@@ -36,8 +41,7 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 	private _disposables: vscode.Disposable[] = [];
 
 	constructor(private skuRecommendationPage: SKURecommendationPage, public wizard: azdata.window.Wizard, private migrationStateModel: MigrationStateModel) {
-		// TODO - Recheck later if we want to keep this path only. For now this is decided.
-		this._defaultPathForStartDataCollection = path.join(utils.getUserHome() ?? "", "\\AppData\\Roaming\\azuredatastudio\\PerfData");
+		this._defaultPathForStartDataCollection = this.getDefaultPath();
 	}
 
 	public createToolbar(view: azdata.ModelView): azdata.ToolbarContainer {
@@ -141,6 +145,17 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 
 			// Default path is selected or no option is selected.
 			if (!selectedOption || selectedOption === defaultPathOption) {
+
+				const extensionSettingsUserPath: string = vscode.workspace.getConfiguration(sqlRecommendationConfigurationKey)[dataCollectionPathKey];
+
+				if (extensionSettingsUserPath !== "") {
+					// Case 1: Global Settings - If path exists
+					if (fs.existsSync(extensionSettingsUserPath)) {
+						this._defaultPathForStartDataCollection = extensionSettingsUserPath;
+					}
+				}
+
+				//If invalid path provided or no path provided in Extension settings - Use default path set in the code.
 				// If default path does not exist, create one.
 				if (!fs.existsSync(this._defaultPathForStartDataCollection)) {
 					fs.mkdirSync(this._defaultPathForStartDataCollection);
@@ -267,6 +282,10 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 			recommendationParametersButton.onDidClick(
 				async () => await skuEditParametersDialog.openDialog()));
 		return recommendationParametersButton;
+	}
+
+	public getDefaultPath(): string {
+		return path.join(utils.getUserHome() ?? "", relativeDefaultPerfDataPath);
 	}
 
 	private async executeDataCollection() {
