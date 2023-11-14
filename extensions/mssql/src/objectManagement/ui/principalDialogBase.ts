@@ -184,6 +184,11 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends SecurityPrincip
 			});
 			const data = this.getSecurableTableData();
 			await this.setTableData(this.securableTable, data);
+		} else {
+			this.dialogObject.message = {
+				text: localizedConstants.NoSecurableObjectsFoundInfoMessage,
+				level: azdata.window.MessageLevel.Information
+			};
 		}
 		await button.focus();
 	}

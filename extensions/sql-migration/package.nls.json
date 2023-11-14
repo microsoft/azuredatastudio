@@ -17,5 +17,6 @@
 	"copy-migration-menu": "Copy migration details",
 	"cancel-migration-menu": "Cancel migration",
 	"delete-migration-menu": "Delete migration",
-	"retry-migration-menu": "Retry migration"
+	"retry-migration-menu": "Retry migration",
+	"data-collection-path-description": "Default path to store collected performance data for SKU recommendations."
 }
