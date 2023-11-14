@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import * as mssql from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 
@@ -186,7 +185,10 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends SecurityPrincip
 			const data = this.getSecurableTableData();
 			await this.setTableData(this.securableTable, data);
 		} else {
-			await vscode.window.showInformationMessage(localizedConstants.SchemaIsEmptyInfoMessage);
+			this.dialogObject.message = {
+				text: localizedConstants.NoSecurableObjectsFoundInfoMessage,
+				level: azdata.window.MessageLevel.Information
+			};
 		}
 		await button.focus();
 	}

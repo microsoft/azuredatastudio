@@ -57,7 +57,7 @@ export const labelSelectFolder = localize('objectManagement.labelSelectFolder', 
 export const DataFileLabel = localize('objectManagement.dataFileLabel', "Data");
 export const LogFileLabel = localize('objectManagement.logFileLabel', "Log");
 export const BackButtonLabel = localize('objectManagement.backButtonLabel', "Back");
-export const SchemaIsEmptyInfoMessage: string = localize('objectManagement.schemaIsEmptyInfoMessage', "The selected schema does not contain any objects.");
+export const NoSecurableObjectsFoundInfoMessage: string = localize('objectManagement.noSecurableObjectsFoundInfoMessage', "No securable objects could be found for the specified selection.");
 
 export function ExplicitPermissionsTableLabelSelected(name: string): string { return localize('objectManagement.explicitPermissionsTableLabelSelected', "Explicit permissions for: {0}", name); }
 export function EffectivePermissionsTableLabelSelected(name: string): string { return localize('objectManagement.effectivePermissionsTableLabelSelected', "Effective permissions for: {0}", name); }
