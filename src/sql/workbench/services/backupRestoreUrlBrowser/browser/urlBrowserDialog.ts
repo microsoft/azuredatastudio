@@ -215,7 +215,7 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 
 	private setAccountSelectorBoxOptions(accounts: Account[]) {
 		this._accounts = accounts.filter(account => !account.isStale);
-		const accountDisplayNames: string[] = this._accounts.map(account => account.displayInfo.displayName);
+		const accountDisplayNames: string[] = this._accounts.map(account => account.displayInfo.displayName).sort();
 		this._accountSelectorBox.setOptions(accountDisplayNames);
 		this._accountSelectorBox.select(0);
 		if (this._accounts.length === 0) {
@@ -262,7 +262,7 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 
 	private setSubscriptionsSelectorBoxOptions(subscriptions: azureResource.AzureResourceSubscription[]) {
 		this._subscriptions = subscriptions;
-		const subscriptionDisplayNames: string[] = subscriptions.map(subscription => subscription.name);
+		const subscriptionDisplayNames: string[] = subscriptions.map(subscription => subscription.name).sort();
 		this._subscriptionSelectorBox.setOptions(subscriptionDisplayNames);
 		this._subscriptionSelectorBox.select(0);
 		if (this._subscriptions.length === 0) {
@@ -314,7 +314,7 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 
 	private setBlobContainersSelectorBoxOptions(blobContainers: azureResource.BlobContainer[]) {
 		this._blobContainers = blobContainers;
-		const blobContainersDisplayNames: string[] = this._blobContainers.map(blobContainer => blobContainer.name);
+		const blobContainersDisplayNames: string[] = this._blobContainers.map(blobContainer => blobContainer.name).sort();
 		this._blobContainerSelectorBox.setOptions(blobContainersDisplayNames);
 		this._blobContainerSelectorBox.select(0);
 		if (this._blobContainers.length === 0) {
@@ -344,7 +344,7 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 
 	private setBackupFilesOptions(blobs: azureResource.Blob[]) {
 		this._backupFiles = blobs;
-		const backupFilesDisplayNames: string[] = this._backupFiles.map(backupFile => backupFile.name);
+		const backupFilesDisplayNames: string[] = this._backupFiles.map(backupFile => backupFile.name).sort();
 		this._backupFileSelectorBox.setOptions(backupFilesDisplayNames);
 		this._backupFileSelectorBox.select(0);
 		if (this._backupFiles.length === 0) {
