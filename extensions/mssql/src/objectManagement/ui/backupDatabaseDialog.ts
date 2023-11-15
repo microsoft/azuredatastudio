@@ -107,7 +107,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			}
 		}
 
-		let defaultName = this.getDefaultBackupName(backupTypes[0]);
+		let defaultName = this.getDefaultBackupName();
 		this._backupSetNameInput = this.createInputBox(() => undefined, {
 			ariaLabel: defaultName,
 			inputType: 'text',
@@ -311,22 +311,26 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	private async onAddFilesButtonClicked(): Promise<void> {
 		try {
 			let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, this._defaultBackupFolderPath, this._fileFilters);
-			if (filePath) {
-				if (this._backupFilePaths.includes(filePath)) {
-					this.dialogObject.message = {
-						text: loc.PathAlreadyAddedError,
-						level: azdata.window.MessageLevel.Error
-					}
-				} else {
-					this._backupFilePaths.push(filePath);
-					await this.updateTableData();
-				}
-			}
+			await this.addNewFilePath(filePath);
 		} catch (error) {
 			this.dialogObject.message = {
 				text: getErrorMessage(error),
 				level: azdata.window.MessageLevel.Error
 			};
+		}
+	}
+
+	private async addNewFilePath(filePath: string | undefined): Promise<void> {
+		if (filePath) {
+			if (this._backupFilePaths.includes(filePath)) {
+				this.dialogObject.message = {
+					text: loc.PathAlreadyAddedError,
+					level: azdata.window.MessageLevel.Error
+				}
+			} else {
+				this._backupFilePaths.push(filePath);
+				await this.updateTableData();
+			}
 		}
 	}
 
@@ -350,7 +354,9 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	private async onBrowseUrlButtonClicked(): Promise<void> {
-
+		let defaultBackupName = `${this.getDefaultBackupName()}.bak`;
+		let backupPath = await azdata.window.openBackupUrlBrowserDialog(this.options.connectionUri, this._defaultBackupFolderPath, false, defaultBackupName);
+		await this.addNewFilePath(backupPath);
 	}
 
 	public override async generateScript(): Promise<string> {
@@ -382,7 +388,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		return options;
 	}
 
-	private getDefaultBackupName(backupType: string): string {
+	private getDefaultBackupName(): string {
 		let d: Date = new Date();
 		let dateTimeSuffix: string = `-${d.getFullYear()}${d.getMonth() + 1}${d.getDate()}-${d.getHours()}-${d.getMinutes()}-${d.getSeconds()}`;
 		let defaultBackupFileName = `${this.objectInfo.name}${dateTimeSuffix}`;
