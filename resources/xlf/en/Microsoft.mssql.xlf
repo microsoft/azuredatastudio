@@ -782,6 +782,9 @@
     <trans-unit id="objectManagement.doDatabaseFilesError">
       <source xml:lang="en">No database files were specified to attach to the server.</source>
     </trans-unit>
+    <trans-unit id="objectManagement.noSecurableObjectsFoundInfoMessage">
+      <source xml:lang="en">No securable objects could be found for the specified selection.</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.noneText">
       <source xml:lang="en">None</source>
     </trans-unit>
