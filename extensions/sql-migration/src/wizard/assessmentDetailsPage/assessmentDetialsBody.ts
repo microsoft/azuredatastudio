@@ -15,6 +15,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { DatabaseSummary } from './databaseSummary';
 import { IssueSummary } from './issueSummary';
 import { SqlMigrationAssessmentResultItem } from '../../service/contracts';
+import { IssueCategory } from '../../constants/helper';
 
 // Class that defines ui for body section of assessment result page
 export class AssessmentDetailsBody {
@@ -29,8 +30,9 @@ export class AssessmentDetailsBody {
 	private _activeIssues!: SqlMigrationAssessmentResultItem[];
 
 	constructor(public migrationStateModel: MigrationStateModel,
-		public wizard: azdata.window.Wizard) {
-		this._treeComponent = new TreeComponent(wizard);
+		public wizard: azdata.window.Wizard,
+		readonly: boolean = false) {
+		this._treeComponent = new TreeComponent(wizard, readonly);
 		this._instanceSummary = new InstanceSummary(migrationStateModel);
 	}
 
@@ -177,12 +179,7 @@ export class AssessmentDetailsBody {
 		// when database is selected
 		this._disposables.push(this._treeComponent.databaseTable.onRowSelected(async (e) => {
 			_isInstanceSummarySelected = false;
-			if (this.migrationStateModel?._targetType === MigrationTargetType.SQLMI ||
-				this.migrationStateModel?._targetType === MigrationTargetType.SQLDB) {
-				this._activeIssues = this.migrationStateModel._assessmentResults?.databaseAssessments[e.row].issues.filter(i => i.appliesToMigrationTargetPlatform === this.migrationStateModel?._targetType);
-			} else {
-				this._activeIssues = [];
-			}
+			this._activeIssues = this.migrationStateModel._assessmentResults?.databaseAssessments[e.row].issues.filter(i => i.appliesToMigrationTargetPlatform === this.migrationStateModel?._targetType);
 			await instanceSummary.updateCssStyles({
 				'display': 'none'
 			});
@@ -258,12 +255,26 @@ export class AssessmentDetailsBody {
 					return {
 						id: index.toString(),
 						label: v.checkId,
-						icon: v.databaseRestoreFails ? IconPathHelper.error : undefined,
+						icon: v.issueCategory === IssueCategory.Issue ? IconPathHelper.error : IconPathHelper.warning,
 						ariaLabel: v.databaseRestoreFails ? constants.BLOCKING_ISSUE_ARIA_LABEL(v.checkId) : v.checkId,
 					};
 				});
 
-			this._warningsOrIssuesListSection.options = assessmentResults;
+			let uniqueLabels = new Set<string>();
+			let uniqueOptions = new Map<string, azdata.ListViewOption>();
+
+			// loop through the assessmentResults array and add the labels and options to the set and map
+			for (let result of assessmentResults) {
+				if (!uniqueLabels.has(result.label)) {
+					uniqueLabels.add(result.label);
+					uniqueOptions.set(result.label, result);
+				}
+			}
+
+			// create a new array of ListViewOption objects from the map values
+			let uniqueAssessmentResults: azdata.ListViewOption[] = Array.from(uniqueOptions.values());
+
+			this._warningsOrIssuesListSection.options = uniqueAssessmentResults;
 		}
 		else {
 			this._warningsOrIssuesListSection.options = [];

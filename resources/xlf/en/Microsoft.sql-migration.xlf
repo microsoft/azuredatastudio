@@ -541,6 +541,9 @@
     <trans-unit id="sql.login.migration.collecting.target.logins.failed">
       <source xml:lang="en">Collecting target login failed with error code {0}</source>
     </trans-unit>
+    <trans-unit id="sql.migration.community.support.title">
+      <source xml:lang="en">Community support</source>
+    </trans-unit>
     <trans-unit id="sql.migration.data.uploaded.info">
       <source xml:lang="en">Comparison of the actual amount of data read from the source and the actual amount of data uploaded to the target.</source>
     </trans-unit>
@@ -570,6 +573,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.connection.label">
       <source xml:lang="en">Connect</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.community.support.description">
+      <source xml:lang="en">Connect with Microsoft Community</source>
     </trans-unit>
     <trans-unit id="sql.migration.wizard.target.connection.error">
       <source xml:lang="en">Connection error: {0}</source>
@@ -630,6 +636,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.services.dialog.title">
       <source xml:lang="en">Create Azure Database Migration Service</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.support.request.descrption">
+      <source xml:lang="en">Create a support request</source>
     </trans-unit>
     <trans-unit id="sql.migration.create.new">
       <source xml:lang="en">Create new</source>
@@ -949,6 +958,9 @@
     <trans-unit id="sql.login.migration.establish.user.mappings.failed">
       <source xml:lang="en">Establishing user mappings failed</source>
     </trans-unit>
+    <trans-unit id="sql.migration.support.resources.description">
+      <source xml:lang="en">Explore documentation</source>
+    </trans-unit>
     <trans-unit id="sql.migration.tde.wizard.optionads">
       <source xml:lang="en">Export my certificates and private keys to the target.</source>
     </trans-unit>
@@ -1065,6 +1077,15 @@
     </trans-unit>
     <trans-unit id="sql.migration.table.selection.status.column">
       <source xml:lang="en">Has rows</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.help.support.title">
+      <source xml:lang="en">Help + Support</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tab.button.help.support.description">
+      <source xml:lang="en">Help + Support</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tab.button.help.support.label">
+      <source xml:lang="en">Help + Support</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.title">
       <source xml:lang="en">Help articles and video links</source>
@@ -1482,12 +1503,6 @@
     </trans-unit>
     <trans-unit id="sql.migration.tab.button.migration.label">
       <source xml:lang="en">New migration</source>
-    </trans-unit>
-    <trans-unit id="sql.migration.tab.button.support.description">
-      <source xml:lang="en">New support request</source>
-    </trans-unit>
-    <trans-unit id="sql.migration.tab.button.support.label">
-      <source xml:lang="en">New support request</source>
     </trans-unit>
     <trans-unit id="sql.migration.newSupportRequest">
       <source xml:lang="en">New support request</source>
@@ -2335,6 +2350,12 @@
     <trans-unit id="sql.migration.summary.title">
       <source xml:lang="en">Summary</source>
     </trans-unit>
+    <trans-unit id="sql.migration.support.request.title">
+      <source xml:lang="en">Support request</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.support.resources.title">
+      <source xml:lang="en">Support resources</source>
+    </trans-unit>
     <trans-unit id="sql.migration.tde.migrate.required">
       <source xml:lang="en">TDE certificate migration must be successful before continuing.</source>
     </trans-unit>
@@ -2578,6 +2599,9 @@
     <trans-unit id="sql.migration.select.azure.mi.db.count.under.threshold">
       <source xml:lang="en">To proceed, press Select button</source>
     </trans-unit>
+    <trans-unit id="sql.migration.support.request.note">
+      <source xml:lang="en">To receive assistance from Microsoft customer support, please log a service request on Service Hub at aka.ms/servicehub.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.total.findings.label">
       <source xml:lang="en">Total findings: {0}</source>
     </trans-unit>
@@ -2766,6 +2790,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.sku.azureRecommendation.description2">
       <source xml:lang="en">You can also choose to select this data from an existing folder, if you have already collected it previously.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.community.support.note">
+      <source xml:lang="en">You can post your question with the Microsoft community support through the Q&amp;A channel.</source>
     </trans-unit>
     <trans-unit id="sql.migration.tde.msg.tde">
       <source xml:lang="en">You have given Azure Data Studio access to migrate the encryption certificates and database.</source>
