@@ -5276,7 +5276,7 @@
 					"extensionId": "104",
 					"extensionName": "azuredatastudio-oracle-extension-pack",
 					"displayName": "Database Migration Service Pack for Oracle",
-					"shortDescription": "Provides seamless assessment, conversion, and data migration to Azure Database PaaS service, eliminating any potential challenges during the migration process",
+					"shortDescription": "Provides seamless assessment and conversion to Azure Database PaaS service, eliminating any potential challenges during the process",
 					"publisher": {
 						"displayName": "Microsoft",
 						"publisherId": "Microsoft",
@@ -5284,30 +5284,30 @@
 					},
 					"versions": [
 						{
-							"version": "1.1.4",
-							"lastUpdated": "10/19/2023",
+							"version": "1.1.5",
+							"lastUpdated": "11/15/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.4/azuredatastudio-oracle-extension-pack-1.1.4.vsix"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.5/azuredatastudio-oracle-extension-pack-1.1.5.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.4/extension.png"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.5/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.4/README.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.5/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.4/package.json"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.5/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.4/LICENSE.html"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle-extension-pack/1.1.5/LICENSE.html"
 								}
 							],
 							"properties": [
@@ -5317,7 +5317,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.ExtensionPack",
-									"value": "Microsoft.azuredatastudio-dma-oracle,microsoft.dsct-oracle-to-ms-sql,microsoft.oracle-datamigration"
+									"value": "Microsoft.azuredatastudio-dma-oracle,microsoft.dsct-oracle-to-ms-sql"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
