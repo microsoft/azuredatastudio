@@ -2083,6 +2083,8 @@ declare module 'azdata' {
 		 * @returns The path of the file chosen from the dialog, and undefined if the dialog is closed without selecting anything.
 		 */
 		export function openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: FileFilters[], showFoldersOnly?: boolean): Thenable<string | undefined>;
+
+		export function openBackupUrlBrowserDialog(connectionUri: string, storageUrl: string, isRestoreDialog: boolean, defaultBackupName: string): Thenable<string | undefined>;
 	}
 
 	export interface FileBrowserProvider extends DataProvider {
