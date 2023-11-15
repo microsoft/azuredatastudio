@@ -288,7 +288,7 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 
 	private setStorageAccountSelectorBoxOptions(storageAccounts: azureResource.AzureGraphResource[]) {
 		this._storageAccounts = storageAccounts;
-		const storageAccountDisplayNames: string[] = this._storageAccounts.map(storageAccount => storageAccount.name);
+		const storageAccountDisplayNames: string[] = this._storageAccounts.map(storageAccount => storageAccount.name).sort();
 		this._storageAccountSelectorBox.setOptions(storageAccountDisplayNames);
 		this._storageAccountSelectorBox.select(0);
 		if (storageAccounts.length === 0) {
