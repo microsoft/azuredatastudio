@@ -494,8 +494,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[], showFoldersOnly?: boolean): Thenable<string | undefined> {
 					return extHostWindow.$openServerFileBrowserDialog(connectionUri, targetPath, fileFilters, showFoldersOnly);
 				},
-				openBackupUrlBrowserDialog(connectionUri: string, storageUrl: string, isRestoreDialog: boolean, defaultBackupName: string): Thenable<string | undefined> {
-					return extHostWindow.$openBackupUrlBrowserDialog(connectionUri, storageUrl, isRestoreDialog, defaultBackupName);
+				openBackupUrlBrowserDialog(connectionUri: string, isRestoreDialog: boolean, defaultBackupName: string): Thenable<string | undefined> {
+					return extHostWindow.$openBackupUrlBrowserDialog(connectionUri, isRestoreDialog, defaultBackupName);
 				}
 			};
 

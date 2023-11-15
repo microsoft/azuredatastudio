@@ -20,9 +20,6 @@ export class BackupRestoreUrlBrowserDialogService implements IBackupRestoreUrlBr
 	}
 
 	public showDialog(ownerUri: string,
-		expandPath: string,
-		fileFilters: [{ label: string, filters: string[] }],
-		fileValidationServiceType: string,
 		isWide: boolean,
 		isRestoreDialog: boolean,
 		defaultBackupName: string
@@ -31,7 +28,7 @@ export class BackupRestoreUrlBrowserDialogService implements IBackupRestoreUrlBr
 		backupRestoreUrlBrowserDialog.render();
 
 		backupRestoreUrlBrowserDialog.setWide(isWide);
-		backupRestoreUrlBrowserDialog.open(ownerUri, expandPath, fileFilters, fileValidationServiceType);
+		backupRestoreUrlBrowserDialog.open(ownerUri);
 		return backupRestoreUrlBrowserDialog.onOk;
 	}
 }

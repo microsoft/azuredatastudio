@@ -354,11 +354,7 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 		}
 	}
 
-	public open(ownerUri: string,
-		expandPath: string,
-		fileFilters: [{ label: string, filters: string[] }],
-		fileValidationServiceType: string,
-	): void {
+	public open(ownerUri: string): void {
 		this._ownerUri = ownerUri;
 		this.enableOkButton();
 		this.enableCreateCredentialsButton();

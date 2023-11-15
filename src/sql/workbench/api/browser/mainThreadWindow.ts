@@ -7,8 +7,6 @@ import type * as azdata from 'azdata';
 import { MainThreadWindowShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
-import * as validationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
-import * as restoreConstants from 'sql/workbench/services/restore/common/constants';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtHostContext, extHostNamedCustomer } from 'vs/workbench/services/extensions/common/extHostCustomers';
@@ -38,8 +36,7 @@ export class MainThreadWindow extends Disposable implements MainThreadWindowShap
 		return await completion;
 	}
 
-	public async $openBackupUrlBrowserDialog(connectionUri: string, storageUrl: string, isRestoreDialog: boolean, defaultBackupName: string): Promise<string | undefined> {
-		let validationType = isRestoreDialog ? validationConstants.restore : validationConstants.backup;
-		return this._urlBrowserDialogService.showDialog(connectionUri, storageUrl, restoreConstants.fileFiltersSet, validationType, isRestoreDialog, isRestoreDialog, defaultBackupName);
+	public async $openBackupUrlBrowserDialog(connectionUri: string, isRestoreDialog: boolean, defaultBackupName: string): Promise<string | undefined> {
+		return this._urlBrowserDialogService.showDialog(connectionUri, isRestoreDialog, isRestoreDialog, isRestoreDialog ? '' : defaultBackupName);
 	}
 }

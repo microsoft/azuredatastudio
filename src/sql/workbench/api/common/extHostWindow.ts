@@ -21,7 +21,7 @@ export class ExtHostWindow implements ExtHostWindowShape {
 		return this._proxy.$openServerFileBrowserDialog(connectionUri, targetPath, fileFilters, showFoldersOnly);
 	}
 
-	$openBackupUrlBrowserDialog(connectionUri: string, storageUrl: string, isRestoreDialog: boolean, defaultBackupName: string): Promise<string | undefined> {
-		return this._proxy.$openBackupUrlBrowserDialog(connectionUri, storageUrl, isRestoreDialog, defaultBackupName);
+	$openBackupUrlBrowserDialog(connectionUri: string, isRestoreDialog: boolean, defaultBackupName: string): Promise<string | undefined> {
+		return this._proxy.$openBackupUrlBrowserDialog(connectionUri, isRestoreDialog, defaultBackupName);
 	}
 }
