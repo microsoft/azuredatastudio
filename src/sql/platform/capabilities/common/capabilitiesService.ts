@@ -121,6 +121,11 @@ export interface ConnectionProviderProperties {
 	 * Otherwise ADS will handle the copy request on the UI side.
 	 */
 	supportCopyResultsToClipboard?: boolean;
+
+	/**
+	 * The name to display in the UI for the id value used to identify connections in the server. Defaults to PID if not specified.
+	 */
+	serverConnectionIdName?: string;
 }
 
 export interface ProviderFeatures {

@@ -372,6 +372,9 @@ export class QueryManagementService implements IQueryManagementService {
 
 	public onQueryComplete(result: azdata.QueryExecuteCompleteNotificationResult): void {
 		this._notify(result.ownerUri, (runner: QueryRunner) => {
+			if (result.serverConnectionId) {
+				runner.handleServerConnId(result.serverConnectionId);
+			}
 			runner.handleQueryComplete(result.batchSummaries.map(s => ({ ...s, range: selectionDataToRange(s.selection) })));
 		});
 	}
