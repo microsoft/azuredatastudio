@@ -525,7 +525,7 @@
   },
   "dependencies": {
     "@microsoft/ads-extension-telemetry": "^3.0.1",
-    "axios": "^0.27.2",
+    "axios": "^1.6.0",
     "linux-release-info": "^2.0.0",
     "promisify-child-process": "^3.1.1",
     "semver": "^7.5.2",
