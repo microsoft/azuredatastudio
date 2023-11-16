@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { ICellValue, IQueryMessage, ResultSetSubset } from 'sql/workbench/services/query/common/query';
+import { ServerConnID, ICellValue, IQueryMessage, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
@@ -82,6 +82,7 @@ export interface IQueryModelService {
 	onRunQueryUpdate: Event<string>;
 	onRunQueryComplete: Event<string>;
 	onQueryEvent: Event<IQueryEvent>;
+	onConnectionIdUpdated: Event<ServerConnID>;
 
 	// Edit Data Functions
 	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit?: number, queryString?: string): void;

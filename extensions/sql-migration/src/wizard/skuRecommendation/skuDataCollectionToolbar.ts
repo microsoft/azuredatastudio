@@ -23,8 +23,14 @@ import { SKURecommendationPage } from './skuRecommendationPage';
 import { ImportPerformanceDataDialog } from '../../dialog/skuRecommendationResults/importPerformanceDataDialog';
 import { SkuEditParametersDialog } from '../../dialog/skuRecommendationResults/skuEditParametersDialog';
 
+// Extension Settings
+export const sqlRecommendationConfigurationKey = 'azureRecommendation';
+export const dataCollectionPathKey = 'dataCollectionPath';
+export const relativeDefaultPerfDataPath = '\\AppData\\Roaming\\azuredatastudio\\PerfData';
+
 export class SkuDataCollectionToolbar implements vscode.Disposable {
-	private _refreshButtonSelectionDropdown!: azdata.DropDownComponent;
+	private _refreshAssessmentButton!: azdata.ButtonComponent;
+	private _refreshSkuButton!: azdata.ButtonComponent;
 	private _startPerformanceCollectionButton!: azdata.ButtonComponent;
 	private _restartPerformanceCollectionButton!: azdata.ButtonComponent;
 	private _stopPerformanceCollectionButton!: azdata.ButtonComponent;
@@ -36,13 +42,14 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 	private _disposables: vscode.Disposable[] = [];
 
 	constructor(private skuRecommendationPage: SKURecommendationPage, public wizard: azdata.window.Wizard, private migrationStateModel: MigrationStateModel) {
-		// TODO - Recheck later if we want to keep this path only. For now this is decided.
-		this._defaultPathForStartDataCollection = path.join(utils.getUserHome() ?? "", "\\AppData\\Roaming\\azuredatastudio\\PerfData");
+		this._defaultPathForStartDataCollection = this.getDefaultPath();
 	}
 
 	public createToolbar(view: azdata.ModelView): azdata.ToolbarContainer {
 		const toolbar = view.modelBuilder.toolbarContainer();
 
+		this._refreshAssessmentButton = this.createRefreshAssessmentButton(view);
+		this._refreshSkuButton = this.createRefreshSkuButton(view);
 		this._startPerformanceCollectionButton = this.createStartPerformanceCollectionButton(view);
 		this._restartPerformanceCollectionButton = this.createRestartPerformanceCollectionButton(view);
 		this._stopPerformanceCollectionButton = this.createStopPerformanceCollectionButton(view);
@@ -50,11 +57,12 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		this._recommendationParametersButton = this.createRecommendationParametersButton(view);
 
 		toolbar.addToolbarItems([
-			<azdata.ToolbarComponent>{ component: this.createRefreshButtonSelectionDropDown(view), toolbarSeparatorAfter: true },
+			<azdata.ToolbarComponent>{ component: this._refreshAssessmentButton, toolbarSeparatorAfter: true },
+			<azdata.ToolbarComponent>{ component: this._refreshSkuButton, toolbarSeparatorAfter: false },
 			<azdata.ToolbarComponent>{ component: this._startPerformanceCollectionButton, toolbarSeparatorAfter: false },
 			<azdata.ToolbarComponent>{ component: this._restartPerformanceCollectionButton, toolbarSeparatorAfter: false },
 			<azdata.ToolbarComponent>{ component: this._stopPerformanceCollectionButton, toolbarSeparatorAfter: false },
-			<azdata.ToolbarComponent>{ component: this._importPerformanceDataButton, toolbarSeparatorAfter: true },
+			<azdata.ToolbarComponent>{ component: this._importPerformanceDataButton, toolbarSeparatorAfter: false },
 			<azdata.ToolbarComponent>{ component: this._recommendationParametersButton, toolbarSeparatorAfter: false },
 		]);
 
@@ -64,54 +72,47 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		return toolbar.component();
 	}
 
-	private createRefreshButtonSelectionDropDown(view: azdata.ModelView): azdata.FlexContainer {
-		const container = view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'display': 'flex',
-				'flex-direction': 'row',
-			}
-		}).component();
+	private createRefreshAssessmentButton(view: azdata.ModelView): azdata.ButtonComponent {
+		const refreshAssessmentButton = view.modelBuilder.button()
+			.withProps({
+				buttonType: azdata.ButtonType.Normal,
+				label: constants.REFRESH_ASSESSMENT_LABEL,
+				height: 36,
+				iconHeight: 16,
+				iconWidth: 16,
+				iconPath: IconPathHelper.refresh,
+				CSSStyles: {
+					...styles.TOOLBAR_CSS
+				}
+			}).component();
 
-		const refreshAssessmentOption = constants.REFRESH_ASSESSMENT_LABEL;
-		const refreshSKUOption = constants.REFRESH_SKU_LABEL;
-
-		const refreshDropdownImage = view.modelBuilder.image().withProps({
-			iconPath: IconPathHelper.refresh,
-			iconHeight: 16,
-			iconWidth: 16,
-			height: 16,
-			CSSStyles: {
-				'width': '16px',
-				'padding': '8px',
-				'margin': '4px',
-			},
-		}).component();
-
-		this._refreshButtonSelectionDropdown = view.modelBuilder.dropDown().withProps({
-			ariaLabel: constants.AZURE_SQL_TARGET,
-			placeholder: constants.REFRESH,
-			values: [refreshAssessmentOption],
-			editable: true,
-			fireOnTextChange: true,
-			CSSStyles: {
-				'margin': '0',
-				'padding-top': '5px'
-			},
-		}).component();
-
-		this._disposables.push(this._refreshButtonSelectionDropdown.onValueChanged(async (value) => {
-			if (value === refreshAssessmentOption) {
-				this._refreshButtonSelectionDropdown.value = constants.REFRESH;
-				await this.skuRecommendationPage.refreshAssessment();
-			}
-			else if (value === refreshSKUOption) {
-				this._refreshButtonSelectionDropdown.value = constants.REFRESH;
-				await this.skuRecommendationPage.refreshAzureRecommendation();
-			}
+		this._disposables.push(refreshAssessmentButton.onDidClick(async () => {
+			await this.skuRecommendationPage.refreshAssessment();
 		}));
 
-		container.addItems([refreshDropdownImage, this._refreshButtonSelectionDropdown]);
-		return container;
+		return refreshAssessmentButton;
+	}
+
+	private createRefreshSkuButton(view: azdata.ModelView): azdata.ButtonComponent {
+		const refreshSkuButton = view.modelBuilder.button()
+			.withProps({
+				buttonType: azdata.ButtonType.Normal,
+				label: constants.REFRESH_SKU_LABEL,
+				height: 36,
+				iconHeight: 16,
+				iconWidth: 16,
+				iconPath: IconPathHelper.refresh,
+				CSSStyles: {
+					...styles.TOOLBAR_CSS
+				}
+			}).component();
+
+		refreshSkuButton.enabled = false;
+		this._disposables.push(refreshSkuButton.onDidClick(async () => {
+			await this.skuRecommendationPage.refreshAzureRecommendation();
+		}));
+
+		return refreshSkuButton;
 	}
 
 	private createStartPerformanceCollectionButton(view: azdata.ModelView): azdata.ButtonComponent {
@@ -141,6 +142,17 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 
 			// Default path is selected or no option is selected.
 			if (!selectedOption || selectedOption === defaultPathOption) {
+
+				const extensionSettingsUserPath: string = vscode.workspace.getConfiguration(sqlRecommendationConfigurationKey)[dataCollectionPathKey];
+
+				if (extensionSettingsUserPath !== "") {
+					// Case 1: Global Settings - If path exists
+					if (fs.existsSync(extensionSettingsUserPath)) {
+						this._defaultPathForStartDataCollection = extensionSettingsUserPath;
+					}
+				}
+
+				//If invalid path provided or no path provided in Extension settings - Use default path set in the code.
 				// If default path does not exist, create one.
 				if (!fs.existsSync(this._defaultPathForStartDataCollection)) {
 					fs.mkdirSync(this._defaultPathForStartDataCollection);
@@ -269,6 +281,10 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 		return recommendationParametersButton;
 	}
 
+	public getDefaultPath(): string {
+		return path.join(utils.getUserHome() ?? "", relativeDefaultPerfDataPath);
+	}
+
 	private async executeDataCollection() {
 		await this.migrationStateModel.startPerfDataCollection(
 			this.migrationStateModel._skuRecommendationPerformanceLocation,
@@ -282,32 +298,23 @@ export class SkuDataCollectionToolbar implements vscode.Disposable {
 	}
 
 	public async _setToolbarState(): Promise<void> {
-		const refreshAssessmentOption = constants.REFRESH_ASSESSMENT_LABEL;
-		const refreshSKUOption = constants.REFRESH_SKU_LABEL;
-
 		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
 			case PerformanceDataSourceOptions.CollectData: {
 				if (this.migrationStateModel.performanceCollectionInProgress()) {
-					this._refreshButtonSelectionDropdown.values = [refreshAssessmentOption, refreshSKUOption];
+					this._refreshSkuButton.enabled = true;
 					this._importPerformanceDataButton.enabled = false;
 					this._stopPerformanceCollectionButton.enabled = true;
 					this._restartPerformanceCollectionButton.enabled = false;
 					this._startPerformanceCollectionButton.enabled = false;
 				}
 				else if (this.migrationStateModel.performanceCollectionStopped()) {
-					this._refreshButtonSelectionDropdown.values = [refreshAssessmentOption, refreshSKUOption];
+					this._refreshSkuButton.enabled = true;
 					this._importPerformanceDataButton.enabled = false;
 					this._stopPerformanceCollectionButton.enabled = false;
 
 					await this._startPerformanceCollectionButton.updateCssStyles({ 'display': 'none' });
 					await this._restartPerformanceCollectionButton.updateCssStyles({ 'display': 'inline' });
 					this._restartPerformanceCollectionButton.enabled = true;
-				}
-				break;
-			}
-			case PerformanceDataSourceOptions.OpenExisting: {
-				if (utils.hasRecommendations(this.migrationStateModel)) {
-					this._refreshButtonSelectionDropdown.values = [refreshAssessmentOption, refreshSKUOption];
 				}
 				break;
 			}

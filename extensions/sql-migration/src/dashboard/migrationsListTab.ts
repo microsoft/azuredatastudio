@@ -9,7 +9,7 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { getCurrentMigrations, getSelectedServiceStatus } from '../models/migrationLocalStorage';
 import * as loc from '../constants/strings';
 import { filterMigrations, getMigrationDuration, getMigrationStatusImage, getMigrationStatusWithErrors, getMigrationTime, MenuCommands } from '../api/utils';
-import { getMigrationTargetType, getMigrationMode, canCancelMigration, canCutoverMigration, canDeleteMigration, canRetryMigration } from '../constants/helper';
+import { getMigrationTargetType, getMigrationMode, canCancelMigration, canCutoverMigration, canDeleteMigration, canRetryMigration, getMigrationType } from '../constants/helper';
 import { DatabaseMigration, getMigrationErrors, getResourceName } from '../api/azure';
 import { logError, TelemetryViews } from '../telemetry';
 import { SelectMigrationServiceDialog } from '../dialog/selectMigrationService/selectMigrationServiceDialog';
@@ -24,6 +24,7 @@ const TableColumns = {
 	sourceServer: 'sourceServer',
 	status: 'status',
 	mode: 'mode',
+	type: 'type',
 	targetType: 'targetType',
 	targetDatabse: 'targetDatabase',
 	targetServer: 'TargetServer',
@@ -150,6 +151,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 		toolbar.addToolbarItems([
 			<azdata.ToolbarComponent>{ component: this.createNewMigrationButton(), toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.createNewLoginMigrationButton(), toolbarSeparatorAfter: true },
+			<azdata.ToolbarComponent>{ component: this.createImportMigrationButton(), toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.createNewHelpAndSupportButton() },
 			<azdata.ToolbarComponent>{ component: this.createFeedbackButton(), toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this._refreshLoader },
@@ -252,6 +254,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 					<azdata.CategoryValue>{ name: TableColumns.sourceServer, displayName: loc.SRC_SERVER },
 					<azdata.CategoryValue>{ name: TableColumns.status, displayName: loc.STATUS_COLUMN },
 					<azdata.CategoryValue>{ name: TableColumns.mode, displayName: loc.MIGRATION_MODE },
+					<azdata.CategoryValue>{ name: TableColumns.type, displayName: loc.MIGRATION_TYPE },
 					<azdata.CategoryValue>{ name: TableColumns.targetType, displayName: loc.AZURE_SQL_TARGET },
 					<azdata.CategoryValue>{ name: TableColumns.targetDatabse, displayName: loc.TARGET_DATABASE_COLUMN },
 					<azdata.CategoryValue>{ name: TableColumns.targetServer, displayName: loc.TARGET_SERVER_COLUMN },
@@ -346,6 +349,13 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						getMigrationMode(m2),
 						sortDir));
 				return;
+			case TableColumns.type:
+				migrations.sort(
+					(m1, m2) => this.stringCompare(
+						getMigrationType(m1),
+						getMigrationType(m2),
+						sortDir));
+				return;
 			case TableColumns.targetType:
 				migrations.sort(
 					(m1, m2) => this.stringCompare(
@@ -427,6 +437,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						role: 'button'
 					},															// statue
 					getMigrationMode(migration),								// mode
+					getMigrationType(migration),                                // type
 					getMigrationTargetType(migration),							// targetType
 					getResourceName(migration.id),								// targetDatabase
 					getResourceName(migration.properties.scope),				// targetServer
@@ -504,6 +515,15 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						width: 120,
 						type: azdata.ColumnType.text,
 						toolTip: loc.MIGRATION_MODE_TOOL_TIP,
+					},
+					{
+						cssClass: rowCssStyles,
+						headerCssClass: headerCssStyles,
+						name: loc.MIGRATION_TYPE,
+						value: 'type',
+						width: 120,
+						type: azdata.ColumnType.text,
+						toolTip: loc.MIGRATION_TYPE_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,

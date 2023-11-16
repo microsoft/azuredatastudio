@@ -712,7 +712,7 @@
         },
         {
           "command": "mssql.backupDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && mssql:engineedition != 11 && config.workbench.enablePreviewFeatures && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && engineEdition != 8 && engineEdition != 11 && config.workbench.enablePreviewFeatures && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
           "group": "1_objectManagement@3"
         },
         {
@@ -738,7 +738,7 @@
         },
         {
           "command": "mssql.objectProperties",
-          "when": "connectionProvider == MSSQL && serverInfo && !isCloud && nodeType =~ /^(Database|Server)$/ && mssql:engineedition != 11 && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && serverInfo && !isCloud && nodeType =~ /^(Database|Server)$/ && engineEdition != 11 && config.workbench.enablePreviewFeatures",
           "group": "z_objectexplorer@3"
         },
         {
@@ -1024,6 +1024,7 @@
     "connectionProvider": {
       "providerId": "MSSQL",
       "displayName": "%mssql.provider.displayName%",
+      "serverConnectionIdName": "%mssql.provider.serverProcessId%",
       "useFullOptions": true,
       "isExecutionPlanProvider": true,
       "supportCopyResultsToClipboard": true,

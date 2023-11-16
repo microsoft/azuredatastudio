@@ -47,6 +47,8 @@ export class AssessmentDetailsHeader {
 		return this._headerCardsContainer;
 	}
 
+	constructor(public migrationStateModel: MigrationStateModel, private _readonly: boolean = false) { }
+
 	// function that creates the component for header section of assessment details page.
 	public createAssessmentDetailsHeader(view: azdata.ModelView): azdata.Component {
 		this._view = view;
@@ -67,16 +69,17 @@ export class AssessmentDetailsHeader {
 		}).component();
 
 		// List of card labels displayed in header section of Assessment details page.
-		const assessmentHeaderLabels = [
-			{
+		const assessmentHeaderLabels = [];
+		if (!this._readonly) {
+			assessmentHeaderLabels.push({
 				title: constants.RECOMMENDED_CONFIGURATION
-			},
-			{
-				title: constants.DATABASES_ASSESSED_LABEL
-			},
-			{
-				title: constants.MIGRATION_TIME_LABEL
-			}];
+			})
+		}
+		assessmentHeaderLabels.push({
+			title: constants.DATABASES_ASSESSED_LABEL
+		}, {
+			title: constants.MIGRATION_TIME_LABEL
+		});
 
 		// create individual card component for each property in above list
 		this._headerCardsContainer.addItems(assessmentHeaderLabels.map(l => this.createCard(l)));
@@ -165,22 +168,24 @@ export class AssessmentDetailsHeader {
 		// this value is populated to handle the case when user selects a target type and want to resume later.
 		this._targetSelectionDropdown.value = this.getTargetTypeBasedOnModel(migrationStateModel._targetType);
 
-		const recommendedConfigurations = await utils.getRecommendedConfiguration(migrationStateModel._targetType, migrationStateModel);
-		let configurationValue = recommendedConfigurations[0] ?? "--";
-
-		if (migrationStateModel._targetType === MigrationTargetType.SQLVM && recommendedConfigurations?.length > 1) {
-			configurationValue = recommendedConfigurations[0] + "\n" + recommendedConfigurations[1];
-		}
-		const assessmentHeaderValues = [
-			{
+		const assessmentHeaderValues: { value: string | string[] | undefined; }[] = [];
+		if (!this._readonly) {
+			const recommendedConfigurations = await utils.getRecommendedConfiguration(migrationStateModel._targetType, migrationStateModel);
+			let configurationValue = recommendedConfigurations[0] ?? "--";
+			if (migrationStateModel._targetType === MigrationTargetType.SQLVM && recommendedConfigurations?.length > 1) {
+				configurationValue = recommendedConfigurations[0] + "\n" + recommendedConfigurations[1];
+			}
+			assessmentHeaderValues.push({
 				value: configurationValue
-			},
+			})
+		}
+		assessmentHeaderValues.push(
 			{
-				value: String(migrationStateModel?._assessedDatabaseList.length)
+				value: String(migrationStateModel._assessmentResults?.databaseAssessments?.length)
 			},
 			{
 				value: String(migrationStateModel._assessmentResults.databaseAssessments.filter((db) => db.issues.filter(issue => issue.appliesToMigrationTargetPlatform === migrationStateModel._targetType && issue.issueCategory === IssueCategory.Issue)?.length === 0)?.length)
-			}];
+			});
 
 		// iterating over each value container and filling it with the corresponding text.
 		let index = 0;
@@ -190,6 +195,31 @@ export class AssessmentDetailsHeader {
 
 	// function that create target selection dropdown
 	private createTargetTypeContainer(): azdata.FlexContainer {
+		let targetTypes = [constants.SUMMARY_SQLDB_TYPE, constants.SUMMARY_MI_TYPE, constants.SUMMARY_VM_TYPE];
+		if (this._readonly) {
+			const targetPlatforms = new Set<string>();
+			const issues = this.migrationStateModel._assessmentResults?.issues;
+			issues.forEach((issue) => {
+				targetPlatforms.add(issue.appliesToMigrationTargetPlatform);
+			});
+
+			for (let i = 0; i < this.migrationStateModel._assessmentResults?.databaseAssessments.length; i++) {
+				const issues = this.migrationStateModel._assessmentResults?.databaseAssessments[i].issues;
+				issues.forEach((issue) => {
+					targetPlatforms.add(issue.appliesToMigrationTargetPlatform);
+				});
+			}
+
+			targetTypes = Array.from(targetPlatforms).sort().map(v => {
+				switch (v) {
+					case MigrationTargetType.SQLDB: return constants.SUMMARY_SQLDB_TYPE;
+					case MigrationTargetType.SQLMI: return constants.SUMMARY_MI_TYPE;
+					case MigrationTargetType.SQLVM: return constants.SUMMARY_VM_TYPE;
+					default: return v.toString();
+				}
+			});
+		}
+
 		const targetTypeContainer = this._view.modelBuilder.flexContainer().component();
 
 		const selectLabel = this._view.modelBuilder.text().withProps({
@@ -202,7 +232,7 @@ export class AssessmentDetailsHeader {
 		this._targetSelectionDropdown = this._view.modelBuilder.dropDown().withProps({
 			ariaLabel: constants.AZURE_SQL_TARGET,
 			placeholder: constants.SELECT_TARGET_LABEL,
-			values: [constants.SUMMARY_SQLDB_TYPE, constants.SUMMARY_MI_TYPE, constants.SUMMARY_VM_TYPE],
+			values: targetTypes,
 			width: 250,
 			editable: true,
 			CSSStyles: {

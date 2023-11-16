@@ -517,6 +517,20 @@ declare module 'azdata' {
 		export function getNonDefaultOptions(profile: IConnectionProfile): Thenable<string>;
 	}
 
+	export interface ConnectionInfoSummary {
+		/**
+		 * ID used to identify the connection on the server, if available.
+		 */
+		serverConnectionId?: string | undefined;
+	}
+
+	export interface QueryExecuteCompleteNotificationResult {
+		/**
+		 * ID used to identify the connection used to run the query on the server, if available.
+		 */
+		serverConnectionId?: string | undefined;
+	}
+
 	/*
 	 * Add optional per-OS default value.
 	 */
