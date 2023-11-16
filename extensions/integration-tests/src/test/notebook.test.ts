@@ -82,9 +82,9 @@ suite('Notebook integration test suite', function () {
 
 		// When running all cells below a cell, ensure that current cell and cells after have output
 		await runCells(notebook, undefined, true, notebook.document.cells[1]);
-		assert(notebook.document.cells[0].contents.outputs.length === 0, `Expected length: '0', Actual: '${notebook.document.cells[0].contents.outputs.length}'`);
-		assert(notebook.document.cells[1].contents.outputs.length === 3, `Expected length: '3', Actual: '${notebook.document.cells[1].contents.outputs.length}'`);
-		assert(notebook.document.cells[2].contents.outputs.length === 3, `Expected length: '3', Actual: '${notebook.document.cells[2].contents.outputs.length}'`);
+		assert.strictEqual(notebook.document.cells[0].contents.outputs.length, 0, `Expected length: '0', Actual: '${notebook.document.cells[0].contents.outputs.length}'`);
+		assert.strictEqual(notebook.document.cells[1].contents.outputs.length, 3, `Expected length: '3', Actual: '${notebook.document.cells[1].contents.outputs.length}'`);
+		assert.strictEqual(notebook.document.cells[2].contents.outputs.length, 3, `Expected length: '3', Actual: '${notebook.document.cells[2].contents.outputs.length}'`);
 	});
 
 	test('Clear cell output - SQL notebook', async function () {
@@ -129,7 +129,7 @@ suite('Notebook integration test suite', function () {
 		// We need to give back the thread or the event won't have been drained.
 		// This is consistent with VSCode APIs, so keeping as-is
 		await sleep(100);
-		assert(notebook.document.isDirty === false, 'Notebook should not be dirty after initial save');
+		assert.strictEqual(notebook.document.isDirty, false, 'Notebook should not be dirty after initial save');
 
 		// And when I edit again, should become dirty
 		let edited = await notebook.edit(builder => {
@@ -190,8 +190,8 @@ suite('Notebook integration test suite', function () {
 			assert(notebook.document.kernelSpec.name === 'SQL', `Expected first kernel name: SQL, Actual: ${notebook.document.kernelSpec.name}`);
 
 			let kernelChanged = await notebook.changeKernel(pythonKernelSpec);
-			assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
-			assert(kernelChanged && notebook.document.kernelSpec.name === 'python3', `Expected second kernel name: python3, Actual: ${notebook.document.kernelSpec.name}`);
+			assert.strictEqual(notebook.document.providerId, 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
+			assert.strictEqual(kernelChanged && notebook.document.kernelSpec.name, 'python3', `Expected second kernel name: python3, Actual: ${notebook.document.kernelSpec.name}`);
 
 			kernelChanged = await notebook.changeKernel(sqlKernelSpec);
 			assert(notebook.document.providerId === 'sql', `Expected providerId to be sql, Actual: ${notebook.document.providerId}`);
@@ -205,8 +205,8 @@ suite('Notebook integration test suite', function () {
 			assert(notebook.document.kernelSpec.name === 'python3', `Expected first kernel name: python3, Actual: ${notebook.document.kernelSpec.name}`);
 
 			let kernelChanged = await notebook.changeKernel(sqlKernelSpec);
-			assert(notebook.document.providerId === 'sql', `Expected providerId to be sql, Actual: ${notebook.document.providerId}`);
-			assert(kernelChanged && notebook.document.kernelSpec.name === 'SQL', `Expected second kernel name: SQL, Actual: ${notebook.document.kernelSpec.name}`);
+			assert.strictEqual(notebook.document.providerId, 'sql', `Expected providerId to be sql, Actual: ${notebook.document.providerId}`);
+			assert.strictEqual(kernelChanged && notebook.document.kernelSpec.name, 'SQL', `Expected second kernel name: SQL, Actual: ${notebook.document.kernelSpec.name}`);
 
 			kernelChanged = await notebook.changeKernel(pythonKernelSpec);
 			assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
@@ -221,7 +221,7 @@ suite('Notebook integration test suite', function () {
 
 			let kernelChanged = await notebook.changeKernel(powershellKernelSpec);
 			assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
-			assert(kernelChanged && notebook.document.kernelSpec.name === 'powershell', `Expected second kernel name: powershell, Actual: ${notebook.document.kernelSpec.name}`);
+			assert.strictEqual(kernelChanged && notebook.document.kernelSpec.name, 'powershell', `Expected second kernel name: powershell, Actual: ${notebook.document.kernelSpec.name}`);
 
 			kernelChanged = await notebook.changeKernel(pythonKernelSpec);
 			assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
