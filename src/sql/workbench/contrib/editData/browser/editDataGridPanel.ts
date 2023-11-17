@@ -632,6 +632,14 @@ export class EditDataGridPanel extends GridParentComponent {
 				this.isInNullRow = true;
 		}
 
+		if (e.shiftKey && e.keyCode === KeyCode.Tab) {
+			//TODO handle for first cell.
+		}
+
+		if (e.keyCode === KeyCode.Tab) {
+			//TODO handle for last cell.
+		}
+
 		return handled;
 	}
 
