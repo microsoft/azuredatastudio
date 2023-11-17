@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { timeout } from 'vs/base/common/async';
@@ -274,7 +274,7 @@ export class SQLiteStorageDatabase implements IStorageDatabase {
 			try {
 				await Promises.unlink(path);
 				try {
-					await Promises.rename(this.toBackupPath(path), path);
+					await Promises.rename(this.toBackupPath(path), path, false /* no retry */);
 				} catch (error) {
 					// ignore
 				}

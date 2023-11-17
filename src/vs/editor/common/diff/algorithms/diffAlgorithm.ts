@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { BugIndicatingError } from 'vs/base/common/errors';
@@ -49,6 +49,13 @@ export class SequenceDiff {
 	public join(other: SequenceDiff): SequenceDiff {
 		return new SequenceDiff(this.seq1Range.join(other.seq1Range), this.seq2Range.join(other.seq2Range));
 	}
+
+	public delta(offset: number): SequenceDiff {
+		if (offset === 0) {
+			return this;
+		}
+		return new SequenceDiff(this.seq1Range.delta(offset), this.seq2Range.delta(offset));
+	}
 }
 
 export interface ISequence {
@@ -61,6 +68,13 @@ export interface ISequence {
 	 * Must not be negative.
 	*/
 	getBoundaryScore?(length: number): number;
+
+	/**
+	 * For line sequences, getElement returns a number representing trimmed lines.
+	 * This however checks equality for the original lines.
+	 * It prevents shifting to less matching lines.
+	 */
+	isStronglyEqual(offset1: number, offset2: number): boolean;
 }
 
 export interface ITimeout {

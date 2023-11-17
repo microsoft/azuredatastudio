@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as nls from 'vscode-nls';
 import { SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
@@ -1076,8 +1076,9 @@ export class ProfilerFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		const onProfilerEventsAvailableEventEmitter = this.registerNotificationEmitter(contracts.ProfilerEventsAvailableNotification.type);
 		let registerOnSessionEventsAvailable = (handler: (response: azdata.ProfilerSessionEvents) => any): void => {
-			client.onNotification(contracts.ProfilerEventsAvailableNotification.type, (params: contracts.ProfilerEventsAvailableParams) => {
+			onProfilerEventsAvailableEventEmitter.event(params => {
 				handler(<azdata.ProfilerSessionEvents>{
 					sessionId: params.ownerUri,
 					events: params.events,
@@ -1086,24 +1087,25 @@ export class ProfilerFeature extends SqlOpsFeature<undefined> {
 			});
 		};
 
-
+		const onProfilerSessionStoppedEventEmitter = this.registerNotificationEmitter(contracts.ProfilerSessionStoppedNotification.type);
 		let registerOnSessionStopped = (handler: (response: azdata.ProfilerSessionStoppedParams) => any): void => {
-			client.onNotification(contracts.ProfilerSessionStoppedNotification.type, (params: contracts.ProfilerSessionStoppedParams) => {
+			onProfilerSessionStoppedEventEmitter.event(params => {
 				handler(<azdata.ProfilerSessionStoppedParams>{
 					ownerUri: params.ownerUri,
 					sessionId: params.sessionId
 				});
-			});
+			})
 		};
 
+		const onProfilerSessionCreatedEventEmitter = this.registerNotificationEmitter(contracts.ProfilerSessionCreatedNotification.type);
 		let registerOnProfilerSessionCreated = (handler: (response: azdata.ProfilerSessionCreatedParams) => any): void => {
-			client.onNotification(contracts.ProfilerSessionCreatedNotification.type, (params: contracts.ProfilerSessionCreatedParams) => {
+			onProfilerSessionCreatedEventEmitter.event(params => {
 				handler(<azdata.ProfilerSessionCreatedParams>{
 					ownerUri: params.ownerUri,
 					sessionName: params.sessionName,
 					templateName: params.templateName
 				});
-			});
+			})
 		};
 
 

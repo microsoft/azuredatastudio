@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ILogService } from 'vs/platform/log/common/log';
@@ -67,11 +67,11 @@ class PerformanceError extends Error {
 	readonly selfTime: number;
 
 	constructor(data: SampleData) {
-		super('[PerfSampleError]');
+		super(`PerfSampleError: by ${data.source} in ${data.sample.location}`);
 		this.name = 'PerfSampleError';
 		this.selfTime = data.sample.selfTime;
 
 		const trace = [data.sample.absLocation, ...data.sample.caller.map(c => c.absLocation)];
-		this.stack = `${this.message} by ${data.source} in ${data.sample.location}\n\t at ${trace.join('\n\t at ')}`;
+		this.stack = `\n\t at ${trace.join('\n\t at ')}`;
 	}
 }

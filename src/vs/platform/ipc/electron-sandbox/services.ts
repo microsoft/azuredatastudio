@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IChannel, ProxyChannel } from 'vs/base/parts/ipc/common/ipc';
@@ -63,6 +63,20 @@ export function registerMainProcessRemoteService<T>(id: ServiceIdentifier<T>, ch
 export const ISharedProcessService = createDecorator<ISharedProcessService>('sharedProcessService');
 
 export interface ISharedProcessService extends IRemoteService {
+
+	/**
+	 * Allows to create a `MessagePort` connection between the
+	 * shared process and the renderer process.
+	 *
+	 * Use this only when you need raw IPC to the shared process
+	 * via `postMessage` and `on('message')` of special data structures
+	 * like typed arrays.
+	 *
+	 * Callers have to call `port.start()` after having installed
+	 * listeners to enable the data flow.
+	 */
+	createRawConnection(): Promise<MessagePort>;
+
 	notifyRestored(): void;
 }
 

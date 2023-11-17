@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 declare module 'vscode' {
@@ -1734,6 +1734,11 @@ declare module 'vscode' {
 		 * the default is {@link QuickPickItemKind.Default}.
 		 */
 		kind?: QuickPickItemKind;
+
+		/**
+		 * The icon path or {@link ThemeIcon} for the QuickPickItem.
+		 */
+		iconPath?: Uri | { light: Uri; dark: Uri } | ThemeIcon;
 
 		/**
 		 * A human-readable string which is rendered less prominent in the same line. Supports rendering of
@@ -4147,6 +4152,26 @@ declare module 'vscode' {
 		 * signaled by returning `undefined`, `null`, or an empty array.
 		 */
 		provideDocumentRangeFormattingEdits(document: TextDocument, range: Range, options: FormattingOptions, token: CancellationToken): ProviderResult<TextEdit[]>;
+
+
+		/**
+		 * Provide formatting edits for multiple ranges in a document.
+		 *
+		 * This function is optional but allows a formatter to perform faster when formatting only modified ranges or when
+		 * formatting a large number of selections.
+		 *
+		 * The given ranges are hints and providers can decide to format a smaller
+		 * or larger range. Often this is done by adjusting the start and end
+		 * of the range to full syntax nodes.
+		 *
+		 * @param document The document in which the command was invoked.
+		 * @param ranges The ranges which should be formatted.
+		 * @param options Options controlling formatting.
+		 * @param token A cancellation token.
+		 * @return A set of text edits or a thenable that resolves to such. The lack of a result can be
+		 * signaled by returning `undefined`, `null`, or an empty array.
+		 */
+		provideDocumentRangesFormattingEdits?(document: TextDocument, ranges: Range[], options: FormattingOptions, token: CancellationToken): ProviderResult<TextEdit[]>;
 	}
 
 	/**
@@ -7162,10 +7187,10 @@ declare module 'vscode' {
 		readonly extensionPath: string;
 
 		/**
-		 * Gets the extension's environment variable collection for this workspace, enabling changes
-		 * to be applied to terminal environment variables.
+		 * Gets the extension's global environment variable collection for this workspace, enabling changes to be
+		 * applied to terminal environment variables.
 		 */
-		readonly environmentVariableCollection: EnvironmentVariableCollection;
+		readonly environmentVariableCollection: GlobalEnvironmentVariableCollection;
 
 		/**
 		 * Get the absolute path of a resource contained in the extension.
@@ -10394,6 +10419,44 @@ declare module 'vscode' {
 		* An optional interface to implement drag and drop in the tree view.
 		*/
 		dragAndDropController?: TreeDragAndDropController<T>;
+
+		/**
+		 * By default, when the children of a tree item have already been fetched, child checkboxes are automatically managed based on the checked state of the parent tree item.
+		 * If the tree item is collapsed by default (meaning that the children haven't yet been fetched) then child checkboxes will not be updated.
+		 * To override this behavior and manage child and parent checkbox state in the extension, set this to `true`.
+		 *
+		 * Examples where {@link TreeViewOptions.manageCheckboxStateManually} is false, the default behavior:
+		 *
+		 * 1. A tree item is checked, then its children are fetched. The children will be checked.
+		 *
+		 * 2. A tree item's parent is checked. The tree item and all of it's siblings will be checked.
+		 *   - [ ] Parent
+		 *     - [ ] Child 1
+		 *     - [ ] Child 2
+		 *   When the user checks Parent, the tree will look like this:
+		 *   - [x] Parent
+		 *     - [x] Child 1
+		 *     - [x] Child 2
+		 *
+		 * 3. A tree item and all of it's siblings are checked. The parent will be checked.
+		 *   - [ ] Parent
+		 *     - [ ] Child 1
+		 *     - [ ] Child 2
+		 *   When the user checks Child 1 and Child 2, the tree will look like this:
+		 *   - [x] Parent
+		 *     - [x] Child 1
+		 *     - [x] Child 2
+		 *
+		 * 4. A tree item is unchecked. The parent will be unchecked.
+		 *   - [x] Parent
+		 *     - [x] Child 1
+		 *     - [x] Child 2
+		 *   When the user unchecks Child 1, the tree will look like this:
+		 *   - [ ] Parent
+		 *     - [ ] Child 1
+		 *     - [x] Child 2
+		 */
+		manageCheckboxStateManually?: boolean;
 	}
 
 	/**
@@ -10611,6 +10674,16 @@ declare module 'vscode' {
 	}
 
 	/**
+	 * An event describing the change in a tree item's checkbox state.
+	 */
+	export interface TreeCheckboxChangeEvent<T> {
+		/**
+		* The items that were checked or unchecked.
+		*/
+		readonly items: ReadonlyArray<[T, TreeItemCheckboxState]>;
+	}
+
+	/**
 	 * Represents a Tree view
 	 */
 	export interface TreeView<T> extends Disposable {
@@ -10644,6 +10717,11 @@ declare module 'vscode' {
 		 * Event that is fired when {@link TreeView.visible visibility} has changed
 		 */
 		readonly onDidChangeVisibility: Event<TreeViewVisibilityChangeEvent>;
+
+		/**
+		* An event to signal that an element or root has either been checked or unchecked.
+		*/
+		readonly onDidChangeCheckboxState: Event<TreeCheckboxChangeEvent<T>>;
 
 		/**
 		 * An optional human-readable message that will be rendered in the view.
@@ -10827,6 +10905,12 @@ declare module 'vscode' {
 		accessibilityInformation?: AccessibilityInformation;
 
 		/**
+		 * {@link TreeItemCheckboxState TreeItemCheckboxState} of the tree item.
+		 * {@link TreeDataProvider.onDidChangeTreeData onDidChangeTreeData} should be fired when {@link TreeItem.checkboxState checkboxState} changes.
+		 */
+		checkboxState?: TreeItemCheckboxState | { readonly state: TreeItemCheckboxState; readonly tooltip?: string; readonly accessibilityInformation?: AccessibilityInformation };
+
+		/**
 		 * @param label A human-readable string describing this item
 		 * @param collapsibleState {@link TreeItemCollapsibleState} of the tree item. Default is {@link TreeItemCollapsibleState.None}
 		 */
@@ -10872,6 +10956,20 @@ declare module 'vscode' {
 		 * first is the inclusive start index and the second the exclusive end index
 		 */
 		highlights?: [number, number][];
+	}
+
+	/**
+	* Checkbox state of the tree item
+	*/
+	export enum TreeItemCheckboxState {
+		/**
+		 * Determines an item is unchecked
+		 */
+		Unchecked = 0,
+		/**
+		 * Determines an item is checked
+		 */
+		Checked = 1
 	}
 
 	/**
@@ -11239,6 +11337,23 @@ declare module 'vscode' {
 	}
 
 	/**
+	 * Options applied to the mutator.
+	 */
+	export interface EnvironmentVariableMutatorOptions {
+		/**
+		 * Apply to the environment just before the process is created. Defaults to false.
+		 */
+		applyAtProcessCreation?: boolean;
+
+		/**
+		 * Apply to the environment in the shell integration script. Note that this _will not_ apply
+		 * the mutator if shell integration is disabled or not working for some reason. Defaults to
+		 * false.
+		 */
+		applyAtShellIntegration?: boolean;
+	}
+
+	/**
 	 * A type of mutation and its value to be applied to an environment variable.
 	 */
 	export interface EnvironmentVariableMutator {
@@ -11251,6 +11366,11 @@ declare module 'vscode' {
 		 * The value to use for the variable.
 		 */
 		readonly value: string;
+
+		/**
+		 * Options applied to the mutator.
+		 */
+		readonly options: EnvironmentVariableMutatorOptions;
 	}
 
 	/**
@@ -11267,6 +11387,12 @@ declare module 'vscode' {
 		persistent: boolean;
 
 		/**
+		 * A description for the environment variable collection, this will be used to describe the
+		 * changes in the UI.
+		 */
+		description: string | MarkdownString | undefined;
+
+		/**
 		 * Replace an environment variable with a value.
 		 *
 		 * Note that an extension can only make a single change to any one variable, so this will
@@ -11274,8 +11400,10 @@ declare module 'vscode' {
 		 *
 		 * @param variable The variable to replace.
 		 * @param value The value to replace the variable with.
+		 * @param options Options applied to the mutator, when no options are provided this will
+		 * default to `{ applyAtProcessCreation: true }`.
 		 */
-		replace(variable: string, value: string): void;
+		replace(variable: string, value: string, options?: EnvironmentVariableMutatorOptions): void;
 
 		/**
 		 * Append a value to an environment variable.
@@ -11285,8 +11413,10 @@ declare module 'vscode' {
 		 *
 		 * @param variable The variable to append to.
 		 * @param value The value to append to the variable.
+		 * @param options Options applied to the mutator, when no options are provided this will
+		 * default to `{ applyAtProcessCreation: true }`.
 		 */
-		append(variable: string, value: string): void;
+		append(variable: string, value: string, options?: EnvironmentVariableMutatorOptions): void;
 
 		/**
 		 * Prepend a value to an environment variable.
@@ -11296,8 +11426,10 @@ declare module 'vscode' {
 		 *
 		 * @param variable The variable to prepend.
 		 * @param value The value to prepend to the variable.
+		 * @param options Options applied to the mutator, when no options are provided this will
+		 * default to `{ applyAtProcessCreation: true }`.
 		 */
-		prepend(variable: string, value: string): void;
+		prepend(variable: string, value: string, options?: EnvironmentVariableMutatorOptions): void;
 
 		/**
 		 * Gets the mutator that this collection applies to a variable, if any.
@@ -11325,6 +11457,39 @@ declare module 'vscode' {
 		 * Clears all mutators from this collection.
 		 */
 		clear(): void;
+	}
+
+	/**
+	 * A collection of mutations that an extension can apply to a process environment. Applies to all scopes.
+	 */
+	export interface GlobalEnvironmentVariableCollection extends EnvironmentVariableCollection {
+		/**
+		 * Gets scope-specific environment variable collection for the extension. This enables alterations to
+		 * terminal environment variables solely within the designated scope, and is applied in addition to (and
+		 * after) the global collection.
+		 *
+		 * Each object obtained through this method is isolated and does not impact objects for other scopes,
+		 * including the global collection.
+		 *
+		 * @param scope The scope to which the environment variable collection applies to.
+		 *
+		 * If a scope parameter is omitted, collection applicable to all relevant scopes for that parameter is
+		 * returned. For instance, if the 'workspaceFolder' parameter is not specified, the collection that applies
+		 * across all workspace folders will be returned.
+		 *
+		 * @return Environment variable collection for the passed in scope.
+		 */
+		getScoped(scope: EnvironmentVariableScope): EnvironmentVariableCollection;
+	}
+
+	/**
+	 * The scope object to which the environment variable collection applies.
+	 */
+	export interface EnvironmentVariableScope {
+		/**
+		 * Any specific workspace folder to get collection for.
+		 */
+		workspaceFolder?: WorkspaceFolder;
 	}
 
 	/**
@@ -15898,7 +16063,7 @@ declare module 'vscode' {
 		 * @param id The unique identifier of the provider.
 		 * @param label The human-readable name of the provider.
 		 * @param provider The authentication provider provider.
-		 * @params options Additional options for the provider.
+		 * @param options Additional options for the provider.
 		 * @return A {@link Disposable} that unregisters this provider when being disposed.
 		 */
 		export function registerAuthenticationProvider(id: string, label: string, provider: AuthenticationProvider, options?: AuthenticationProviderOptions): Disposable;
@@ -16221,6 +16386,24 @@ declare module 'vscode' {
 		 * @param uri URI this TestItem is associated with. May be a file or directory.
 		 */
 		createTestItem(id: string, label: string, uri?: Uri): TestItem;
+
+		/**
+		 * Marks an item's results as being outdated. This is commonly called when
+		 * code or configuration changes and previous results should no longer
+		 * be considered relevant. The same logic used to mark results as outdated
+		 * may be used to drive {@link TestRunRequest.continuous continuous test runs}.
+		 *
+		 * If an item is passed to this method, test results for the item and all of
+		 * its children will be marked as outdated. If no item is passed, then all
+		 * test owned by the TestController will be marked as outdated.
+		 *
+		 * Any test runs started before the moment this method is called, including
+		 * runs which may still be ongoing, will be marked as outdated and deprioritized
+		 * in the editor's UI.
+		 *
+		 * @param item Item to mark as outdated. If undefined, all the controller's items are marked outdated.
+		 */
+		invalidateTestResults(items?: TestItem | readonly TestItem[]): void;
 
 		/**
 		 * Unregisters the test controller, disposing of its associated tests

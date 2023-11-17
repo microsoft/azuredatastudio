@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ServicesAccessor } from 'vs/editor/browser/editorExtensions';
@@ -76,5 +76,5 @@ export function registerChatCopyActions() {
 
 function stringifyItem(item: IChatRequestViewModel | IChatResponseViewModel): string {
 	return isRequestVM(item) ?
-		`${item.username}: ${item.messageText}` : `${item.username}: ${item.response.value}`;
+		`${item.username}: ${item.messageText}` : `${item.username}: ${item.response.asString()}`;
 }

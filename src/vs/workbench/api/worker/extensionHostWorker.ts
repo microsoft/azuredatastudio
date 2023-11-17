@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IMessagePassingProtocol } from 'vs/base/parts/ipc/common/ipc';
@@ -158,12 +158,6 @@ const hostUtil = new class implements IHostUtils {
 	public readonly pid = undefined;
 	exit(_code?: number | undefined): void {
 		nativeClose();
-	}
-	async exists(_path: string): Promise<boolean> {
-		return true;
-	}
-	async realpath(path: string): Promise<string> {
-		return path;
 	}
 };
 

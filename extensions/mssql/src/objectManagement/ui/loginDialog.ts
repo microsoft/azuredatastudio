@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
@@ -13,12 +13,12 @@ import { isValidSQLPassword } from '../utils';
 import { DefaultMaxTableRowCount } from '../../ui/dialogBase';
 import { PrincipalDialogBase } from './principalDialogBase';
 import { AuthenticationType, Login, LoginViewInfo } from '../interfaces';
+import { isUndefinedOrNull } from '../../types';
 
 export class LoginDialog extends PrincipalDialogBase<Login, LoginViewInfo> {
 	private generalSection: azdata.GroupContainer;
 	private sqlAuthSection: azdata.GroupContainer;
 	private serverRoleSection: azdata.GroupContainer;
-	private advancedSection: azdata.GroupContainer;
 	private nameInput: azdata.InputBoxComponent;
 	private authTypeDropdown: azdata.DropDownComponent;
 	private passwordInput: azdata.InputBoxComponent;
@@ -97,16 +97,15 @@ export class LoginDialog extends PrincipalDialogBase<Login, LoginViewInfo> {
 
 		this.initializeServerRolesSection();
 		sections.push(this.serverRoleSection);
-		sections.push(this.securableSection);
-
-		if (this.viewInfo.supportAdvancedOptions) {
-			this.initializeAdvancedSection();
-			sections.push(this.advancedSection);
+		if (this.options.isNewObject || !isUndefinedOrNull(this.objectInfo.securablePermissions)) {
+			sections.push(this.securableSection);
 		}
+
 		this.formContainer.addItems(sections, this.getSectionItemLayout());
 	}
 
 	private initializeGeneralSection(): void {
+		const items: azdata.Component[] = [];
 		this.nameInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.name = newValue;
 		}, {
@@ -115,8 +114,9 @@ export class LoginDialog extends PrincipalDialogBase<Login, LoginViewInfo> {
 			enabled: this.options.isNewObject,
 			value: this.objectInfo.name
 		});
-
 		const nameContainer = this.createLabelInputContainer(objectManagementLoc.NameText, this.nameInput);
+		items.push(nameContainer);
+
 		this.authTypeDropdown = this.createDropdown(objectManagementLoc.AuthTypeText,
 			async (newValue) => {
 				this.objectInfo.authenticationType = objectManagementLoc.getAuthenticationTypeByDisplayName(newValue);
@@ -125,13 +125,34 @@ export class LoginDialog extends PrincipalDialogBase<Login, LoginViewInfo> {
 			this.viewInfo.authenticationTypes.map(authType => objectManagementLoc.getAuthenticationTypeDisplayName(authType)),
 			objectManagementLoc.getAuthenticationTypeDisplayName(this.objectInfo.authenticationType),
 			this.options.isNewObject);
-
 		const authTypeContainer = this.createLabelInputContainer(objectManagementLoc.AuthTypeText, this.authTypeDropdown);
+		items.push(authTypeContainer);
 
 		this.enabledCheckbox = this.createCheckbox(objectManagementLoc.EnabledText, async (checked) => {
 			this.objectInfo.isEnabled = checked;
 		}, this.objectInfo.isEnabled);
-		this.generalSection = this.createGroup(objectManagementLoc.GeneralSectionHeader, [nameContainer, authTypeContainer, this.enabledCheckbox], false);
+		items.push(this.enabledCheckbox);
+
+		if (this.viewInfo.supportAdvancedOptions) {
+			this.defaultDatabaseDropdown = this.createDropdown(objectManagementLoc.DefaultDatabaseText, async (newValue) => {
+				this.objectInfo.defaultDatabase = newValue;
+			}, this.viewInfo.databases, this.objectInfo.defaultDatabase);
+			const defaultDatabaseContainer = this.createLabelInputContainer(objectManagementLoc.DefaultDatabaseText, this.defaultDatabaseDropdown);
+			items.push(defaultDatabaseContainer);
+
+			this.defaultLanguageDropdown = this.createDropdown(objectManagementLoc.DefaultLanguageText, async (newValue) => {
+				this.objectInfo.defaultLanguage = newValue;
+			}, this.viewInfo.languages, this.objectInfo.defaultLanguage);
+			const defaultLanguageContainer = this.createLabelInputContainer(objectManagementLoc.DefaultLanguageText, this.defaultLanguageDropdown);
+			items.push(defaultLanguageContainer);
+
+			this.connectPermissionCheckbox = this.createCheckbox(objectManagementLoc.PermissionToConnectText, async (checked) => {
+				this.objectInfo.connectPermission = checked;
+			}, this.objectInfo.connectPermission);
+			items.push(this.connectPermissionCheckbox);
+		}
+
+		this.generalSection = this.createGroup(objectManagementLoc.GeneralSectionHeader, items, false);
 	}
 
 	private initializeSqlAuthSection(): void {
@@ -205,28 +226,6 @@ export class LoginDialog extends PrincipalDialogBase<Login, LoginViewInfo> {
 
 	private isPasswordChanged(): boolean {
 		return this.objectInfo.password !== this.originalObjectInfo.password
-	}
-
-	private initializeAdvancedSection(): void {
-		const items: azdata.Component[] = [];
-		if (this.viewInfo.supportAdvancedOptions) {
-			this.defaultDatabaseDropdown = this.createDropdown(objectManagementLoc.DefaultDatabaseText, async (newValue) => {
-				this.objectInfo.defaultDatabase = newValue;
-			}, this.viewInfo.databases, this.objectInfo.defaultDatabase);
-			const defaultDatabaseContainer = this.createLabelInputContainer(objectManagementLoc.DefaultDatabaseText, this.defaultDatabaseDropdown);
-
-			this.defaultLanguageDropdown = this.createDropdown(objectManagementLoc.DefaultLanguageText, async (newValue) => {
-				this.objectInfo.defaultLanguage = newValue;
-			}, this.viewInfo.languages, this.objectInfo.defaultLanguage);
-			const defaultLanguageContainer = this.createLabelInputContainer(objectManagementLoc.DefaultLanguageText, this.defaultLanguageDropdown);
-
-			this.connectPermissionCheckbox = this.createCheckbox(objectManagementLoc.PermissionToConnectText, async (checked) => {
-				this.objectInfo.connectPermission = checked;
-			}, this.objectInfo.connectPermission);
-			items.push(defaultDatabaseContainer, defaultLanguageContainer, this.connectPermissionCheckbox);
-		}
-
-		this.advancedSection = this.createGroup(objectManagementLoc.AdvancedSectionHeader, items, true, true);
 	}
 
 	private initializeServerRolesSection(): void {

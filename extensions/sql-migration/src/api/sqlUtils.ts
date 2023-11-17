@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -123,6 +123,8 @@ export interface TargetDatabaseInfo {
 	isReadOnly: boolean;
 	sourceTables: Map<string, TableInfo>;
 	targetTables: Map<string, TableInfo>;
+	enableSchemaMigration: boolean;
+	hasMissingTables: boolean;
 }
 
 export interface LoginTableInfo {
@@ -370,6 +372,10 @@ export async function collectTargetDatabaseInfo(
 				isReadOnly: getSqlBoolean(row[7]),
 				sourceTables: new Map(),
 				targetTables: new Map(),
+				enableSchemaMigration: false,
+				// Default as true so that the initial text is 'Not selected'
+				// in the schema column
+				hasMissingTables: true
 			};
 		}) ?? [];
 	}

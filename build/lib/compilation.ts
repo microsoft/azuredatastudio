@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -105,9 +105,9 @@ function createCompile(src: string, build: boolean, emitError: boolean, transpil
 	return pipeline;
 }
 
-export function transpileTask(src: string, out: string, swc: boolean): () => NodeJS.ReadWriteStream {
+export function transpileTask(src: string, out: string, swc: boolean): task.StreamTask {
 
-	return function () {
+	const task = () => {
 
 		const transpile = createCompile(src, false, true, { swc });
 		const srcPipe = gulp.src(`${src}/**`, { base: `${src}` });
@@ -116,11 +116,14 @@ export function transpileTask(src: string, out: string, swc: boolean): () => Nod
 			.pipe(transpile())
 			.pipe(gulp.dest(out));
 	};
+
+	task.taskName = `transpile-${path.basename(src)}`;
+	return task;
 }
 
-export function compileTask(src: string, out: string, build: boolean, options: { disableMangle?: boolean } = {}): () => NodeJS.ReadWriteStream {
+export function compileTask(src: string, out: string, build: boolean, options: { disableMangle?: boolean } = {}): task.StreamTask {
 
-	return function () {
+	const task = () => {
 
 		options.disableMangle = true; // {{SQL CARBON EDIT}} - disable mangling
 
@@ -163,11 +166,14 @@ export function compileTask(src: string, out: string, build: boolean, options: {
 			.pipe(compile())
 			.pipe(gulp.dest(out));
 	};
+
+	task.taskName = `compile-${path.basename(src)}`;
+	return task;
 }
 
-export function watchTask(out: string, build: boolean): () => NodeJS.ReadWriteStream {
+export function watchTask(out: string, build: boolean): task.StreamTask {
 
-	return function () {
+	const task = () => {
 		const compile = createCompile('src', build, false, false);
 
 		const src = gulp.src('src/**', { base: 'src' });
@@ -181,6 +187,8 @@ export function watchTask(out: string, build: boolean): () => NodeJS.ReadWriteSt
 			.pipe(util.incremental(compile, src, true))
 			.pipe(gulp.dest(out));
 	};
+	task.taskName = `watch-${path.basename(out)}`;
+	return task;
 }
 
 const REPO_SRC_FOLDER = path.join(__dirname, '../../src');
@@ -300,7 +308,7 @@ function generateApiProposalNames() {
 			const contents = [
 				'/*---------------------------------------------------------------------------------------------',
 				' *  Copyright (c) Microsoft Corporation. All rights reserved.',
-				' *  Licensed under the Source EULA. See License.txt in the project root for license information.',
+				' *  Licensed under the MIT License. See License.txt in the project root for license information.',
 				' *--------------------------------------------------------------------------------------------*/',
 				'',
 				'// THIS IS A GENERATED FILE. DO NOT EDIT DIRECTLY.',

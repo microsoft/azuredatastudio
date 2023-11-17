@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -9,7 +9,7 @@ import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { TableDesignerComponentInput } from 'sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import * as azdata from 'azdata';
-import { GroupIdentifier, IRevertOptions, ISaveOptions } from 'vs/workbench/common/editor';
+import { GroupIdentifier, IRevertOptions, ISaveOptions, Verbosity } from 'vs/workbench/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { Schemas } from 'sql/base/common/schemas';
@@ -25,6 +25,7 @@ export class TableDesignerInput extends EditorInput {
 	public static ID: string = 'workbench.editorinputs.tableDesignerInput';
 	private _designerComponentInput: TableDesignerComponentInput;
 	private _title: string;
+	private _additionalDetails: string = '';
 	private _name: string;
 	private _tableIcon: azdata.designers.TableIcon;
 	private _tableIconMap: Map<TableIcon, string> = new Map<TableIcon, string>([
@@ -80,8 +81,17 @@ export class TableDesignerInput extends EditorInput {
 		return this._name;
 	}
 
-	override getTitle(): string {
-		return this._title;
+	override getTitle(verbosity?: Verbosity): string {
+		switch (verbosity) {
+			case Verbosity.LONG:
+				// Used by tabsTitleControl as the tooltip hover.
+				return this._additionalDetails + this._title.substring(this._title.lastIndexOf(' - '));
+			default:
+			case Verbosity.SHORT:
+			case Verbosity.MEDIUM:
+				// Used for header title by tabsTitleControl.
+				return this._title;
+		}
 	}
 
 	override isDirty(): boolean {
@@ -119,6 +129,10 @@ export class TableDesignerInput extends EditorInput {
 	private setEditorLabel(): void {
 		this._name = this._designerComponentInput.tableInfo.title;
 		this._title = this._designerComponentInput.tableInfo.tooltip;
+		let addlDetails = this._designerComponentInput.tableInfo.additionalInfo
+		if (addlDetails) {
+			this._additionalDetails = addlDetails;
+		}
 		this._onDidChangeLabel.fire();
 	}
 }

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 use async_trait::async_trait;
 use std::{marker::PhantomData, sync::Arc};
@@ -63,7 +63,7 @@ impl<T: Clone> BarrierOpener<T> {
 /// and is thereafter permanently closed. It can contain a value.
 pub fn new_barrier<T>() -> (Barrier<T>, BarrierOpener<T>)
 where
-	T: Copy,
+	T: Clone,
 {
 	let (closed_tx, closed_rx) = watch::channel(None);
 	(Barrier(closed_rx), BarrierOpener(Arc::new(closed_tx)))

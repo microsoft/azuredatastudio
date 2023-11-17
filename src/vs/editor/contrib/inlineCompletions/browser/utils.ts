@@ -1,11 +1,11 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { BugIndicatingError } from 'vs/base/common/errors';
 import { DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
-import { IObservable, autorun } from 'vs/base/common/observable';
+import { IObservable, autorunOpts } from 'vs/base/common/observable';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { Position } from 'vs/editor/common/core/position';
 import { IRange, Range } from 'vs/editor/common/core/range';
@@ -67,12 +67,17 @@ export class ColumnRange {
 	toRange(lineNumber: number): Range {
 		return new Range(lineNumber, this.startColumn, lineNumber, this.endColumnExclusive);
 	}
+
+	equals(other: ColumnRange): boolean {
+		return this.startColumn === other.startColumn
+			&& this.endColumnExclusive === other.endColumnExclusive;
+	}
 }
 
 export function applyObservableDecorations(editor: ICodeEditor, decorations: IObservable<IModelDeltaDecoration[]>): IDisposable {
 	const d = new DisposableStore();
 	const decorationsCollection = editor.createDecorationsCollection();
-	d.add(autorun(`Apply decorations from ${decorations.debugName}`, reader => {
+	d.add(autorunOpts({ debugName: () => `Apply decorations from ${decorations.debugName}` }, reader => {
 		const d = decorations.read(reader);
 		decorationsCollection.set(d);
 	}));

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable, DisposableStore, IDisposable, MutableDisposable } from 'vs/base/common/lifecycle';
@@ -167,7 +167,7 @@ export class KernelStatus extends Disposable implements IWorkbenchContribution {
 					text: nls.localize('kernel.select.label', "Select Kernel"),
 					ariaLabel: nls.localize('kernel.select.label', "Select Kernel"),
 					command: SELECT_KERNEL_ID,
-					backgroundColor: { id: 'statusBarItem.prominentBackground' }
+					kind: 'prominent'
 				},
 				SELECT_KERNEL_ID,
 				StatusbarAlignment.RIGHT,

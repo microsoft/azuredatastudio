@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -20,11 +20,11 @@ import { equals, coalesce } from 'vs/base/common/arrays';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { MarkdownString, ViewBadge, DataTransfer } from 'vs/workbench/api/common/extHostTypeConverters';
-import { IMarkdownString } from 'vs/base/common/htmlContent';
+import { IMarkdownString, isMarkdownString } from 'vs/base/common/htmlContent';
 import { CancellationToken, CancellationTokenSource } from 'vs/base/common/cancellation';
-import { checkProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
 import { ITreeViewsDnDService, TreeViewsDnDService } from 'vs/editor/common/services/treeViewsDnd';
 import { IAccessibilityInformation } from 'vs/platform/accessibility/common/accessibility';
+import { checkProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
 
 // {{SQL CARBON EDIT}}
 import * as azdata from 'azdata';
@@ -81,6 +81,24 @@ export class ExtHostTreeViews implements ExtHostTreeViewsShape {
 		});
 	}
 
+	// {{SQL CARBON EDIT}} - START - Define $setSelection and $setFocus
+	$setSelection(treeViewId: string, treeItemHandles: string[]): void {
+		const treeView = this.treeViews.get(treeViewId);
+		if (!treeView) {
+			throw new NoTreeViewError(treeViewId);
+		}
+		treeView.setSelection(treeItemHandles);
+	}
+
+	$setFocus(treeViewId: string, treeItemHandles: string) {
+		const treeView = this.treeViews.get(treeViewId);
+		if (!treeView) {
+			throw new NoTreeViewError(treeViewId);
+		}
+		treeView.setFocus(treeItemHandles);
+	}
+	// {{SQL CARBON EDIT}} - END
+
 	registerTreeDataProvider<T>(id: string, treeDataProvider: vscode.TreeDataProvider<T>, extension: IExtensionDescription): vscode.Disposable {
 		const treeView = this.createTreeView(id, { treeDataProvider }, extension);
 		return { dispose: () => treeView.dispose() };
@@ -95,21 +113,31 @@ export class ExtHostTreeViews implements ExtHostTreeViewsShape {
 		const hasHandleDrag = !!options.dragAndDropController?.handleDrag;
 		const hasHandleDrop = !!options.dragAndDropController?.handleDrop;
 		const treeView = this.createExtHostTreeView(viewId, options, extension);
-		const proxyOptions = { showCollapseAll: !!options.showCollapseAll, canSelectMany: !!options.canSelectMany, dropMimeTypes, dragMimeTypes, hasHandleDrag, hasHandleDrop, manuallyManageCheckboxes: !!options.manuallyManageCheckboxSelection };
+		const proxyOptions = { showCollapseAll: !!options.showCollapseAll, canSelectMany: !!options.canSelectMany, dropMimeTypes, dragMimeTypes, hasHandleDrag, hasHandleDrop, manuallyManageCheckboxes: !!options.manageCheckboxStateManually };
 		const registerPromise = this._proxy.$registerTreeViewDataProvider(viewId, proxyOptions);
-		return {
+		const view = {
 			get onDidCollapseElement() { return treeView.onDidCollapseElement; },
 			get onDidExpandElement() { return treeView.onDidExpandElement; },
 			get selection() { return treeView.selectedElements; },
 			get onDidChangeSelection() { return treeView.onDidChangeSelection; },
+			get activeItem() {
+				checkProposedApiEnabled(extension, 'treeViewActiveItem');
+				return treeView.focusedElement;
+			},
+			get onDidChangeActiveItem() {
+				checkProposedApiEnabled(extension, 'treeViewActiveItem');
+				return treeView.onDidChangeActiveItem;
+			},
 			get visible() { return treeView.visible; },
 			get onDidChangeVisibility() { return treeView.onDidChangeVisibility; },
 			get onDidChangeCheckboxState() {
-				checkProposedApiEnabled(extension, 'treeItemCheckbox');
 				return treeView.onDidChangeCheckboxState;
 			},
 			get message() { return treeView.message; },
-			set message(message: string) {
+			set message(message: string | vscode.MarkdownString) {
+				if (isMarkdownString(message)) {
+					checkProposedApiEnabled(extension, 'treeViewMarkdownMessage');
+				}
 				treeView.message = message;
 			},
 			get title() { return treeView.title; },
@@ -145,6 +173,7 @@ export class ExtHostTreeViews implements ExtHostTreeViewsShape {
 				treeView.dispose();
 			}
 		};
+		return view as vscode.TreeView<T>;
 	}
 
 	$getChildren(treeViewId: string, treeItemHandle?: string): Promise<ITreeItem[] | undefined> {
@@ -226,25 +255,20 @@ export class ExtHostTreeViews implements ExtHostTreeViewsShape {
 		treeView.setExpanded(treeItemHandle, expanded);
 	}
 
-	$setSelection(treeViewId: string, treeItemHandles: string[]): void {
+	$setSelectionAndFocus(treeViewId: string, selectedHandles: string[], focusedHandle: string) {
 		const treeView = this.treeViews.get(treeViewId);
 		if (!treeView) {
 			throw new NoTreeViewError(treeViewId);
 		}
-		treeView.setSelection(treeItemHandles);
-	}
-
-	$setFocus(treeViewId: string, treeItemHandles: string) {
-		const treeView = this.treeViews.get(treeViewId);
-		if (!treeView) {
-			throw new NoTreeViewError(treeViewId);
-		}
-		treeView.setFocus(treeItemHandles);
+		treeView.setSelectionAndFocus(selectedHandles, focusedHandle);
 	}
 
 	$setVisible(treeViewId: string, isVisible: boolean): void {
 		const treeView = this.treeViews.get(treeViewId);
 		if (!treeView) {
+			if (!isVisible) {
+				return;
+			}
 			throw new NoTreeViewError(treeViewId);
 		}
 		treeView.setVisible(isVisible);
@@ -319,6 +343,9 @@ export class ExtHostTreeView<T> extends Disposable {
 	private _onDidChangeSelection: Emitter<vscode.TreeViewSelectionChangeEvent<T>> = this._register(new Emitter<vscode.TreeViewSelectionChangeEvent<T>>());
 	readonly onDidChangeSelection: Event<vscode.TreeViewSelectionChangeEvent<T>> = this._onDidChangeSelection.event;
 
+	private _onDidChangeActiveItem: Emitter<vscode.TreeViewActiveItemChangeEvent<T>> = this._register(new Emitter<vscode.TreeViewActiveItemChangeEvent<T>>());
+	readonly onDidChangeActiveItem: Event<vscode.TreeViewActiveItemChangeEvent<T>> = this._onDidChangeActiveItem.event;
+
 	private _onDidChangeVisibility: Emitter<vscode.TreeViewVisibilityChangeEvent> = this._register(new Emitter<vscode.TreeViewVisibilityChangeEvent>());
 	readonly onDidChangeVisibility: Event<vscode.TreeViewVisibilityChangeEvent> = this._onDidChangeVisibility.event;
 
@@ -359,7 +386,7 @@ export class ExtHostTreeView<T> extends Disposable {
 		if (this.proxy) {
 			this.proxy.$registerTreeViewDataProvider(viewId, {
 				showCollapseAll: !!options.showCollapseAll, canSelectMany: !!options.canSelectMany, dropMimeTypes, dragMimeTypes, hasHandleDrag, hasHandleDrop,
-				manuallyManageCheckboxes: options.manuallyManageCheckboxSelection
+				manuallyManageCheckboxes: options.manageCheckboxStateManually
 			});
 		}
 		this.dndController = options.dragAndDropController;
@@ -398,7 +425,7 @@ export class ExtHostTreeView<T> extends Disposable {
 				});
 			}
 			if (message) {
-				this.proxy.$setMessage(this.viewId, this._message);
+				this.proxy.$setMessage(this.viewId, MarkdownString.fromStrict(this._message) ?? '');
 			}
 		}));
 	}
@@ -443,12 +470,12 @@ export class ExtHostTreeView<T> extends Disposable {
 		}
 	}
 
-	private _message: string = '';
-	get message(): string {
+	private _message: string | vscode.MarkdownString = '';
+	get message(): string | vscode.MarkdownString {
 		return this._message;
 	}
 
-	set message(message: string) {
+	set message(message: string | vscode.MarkdownString) {
 		this._message = message;
 		this._onDidChangeData.fire({ message: true, element: false });
 	}
@@ -499,6 +526,7 @@ export class ExtHostTreeView<T> extends Disposable {
 		}
 	}
 
+	// {{SQL CARBON EDIT}} - START - Define setSelection and setFocus
 	setSelection(treeItemHandles: TreeItemHandle[]): void {
 		if (!equals(this._selectedHandles, treeItemHandles)) {
 			this._selectedHandles = treeItemHandles;
@@ -509,6 +537,23 @@ export class ExtHostTreeView<T> extends Disposable {
 	setFocus(treeItemHandle: TreeItemHandle) {
 		this._focusedHandle = treeItemHandle;
 	}
+	// {{SQL CARBON EDIT}} - END
+
+	setSelectionAndFocus(selectedHandles: TreeItemHandle[], focusedHandle: string): void {
+		const changedSelection = !equals(this._selectedHandles, selectedHandles);
+		this._selectedHandles = selectedHandles;
+
+		const changedFocus = this._focusedHandle !== focusedHandle;
+		this._focusedHandle = focusedHandle;
+
+		if (changedSelection) {
+			this._onDidChangeSelection.fire(Object.freeze({ selection: this.selectedElements }));
+		}
+
+		if (changedFocus) {
+			this._onDidChangeActiveItem.fire(Object.freeze({ activeItem: this.focusedElement }));
+		}
+	}
 
 	setVisible(visible: boolean): void {
 		if (visible !== this._visible) {
@@ -518,7 +563,7 @@ export class ExtHostTreeView<T> extends Disposable {
 	}
 
 	async setCheckboxState(checkboxUpdates: CheckboxUpdate[]) {
-		type CheckboxUpdateWithItem = { extensionItem: NonNullable<T>; treeItem: vscode.TreeItem2; newState: TreeItemCheckboxState };
+		type CheckboxUpdateWithItem = { extensionItem: NonNullable<T>; treeItem: vscode.TreeItem; newState: TreeItemCheckboxState };
 		const items = (await Promise.all(checkboxUpdates.map(async checkboxUpdate => {
 			const extensionItem = this.getExtensionElement(checkboxUpdate.treeItemHandle);
 			if (extensionItem) {
@@ -631,7 +676,7 @@ export class ExtHostTreeView<T> extends Disposable {
 							return Promise.resolve(node);
 						}
 					}
-					throw new Error(`Cannot resolve tree item for element ${handle}`);
+					throw new Error(`Cannot resolve tree item for element ${handle} from extension ${this.extension.identifier.value}`);
 				}));
 	}
 
@@ -785,7 +830,7 @@ export class ExtHostTreeView<T> extends Disposable {
 		return command ? { ...this.commands.toInternal(command, disposable), originalId: command.command } : undefined;
 	}
 
-	private getCheckbox(extensionTreeItem: vscode.TreeItem2): ITreeItemCheckboxState | undefined {
+	private getCheckbox(extensionTreeItem: vscode.TreeItem): ITreeItemCheckboxState | undefined {
 		if (extensionTreeItem.checkboxState === undefined) {
 			return undefined;
 		}

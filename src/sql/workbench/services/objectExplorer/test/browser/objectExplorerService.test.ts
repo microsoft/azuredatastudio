@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
@@ -452,7 +452,7 @@ suite('SQL Object Explorer Service tests', () => {
 	});
 
 	test('getSelectedProfileAndDatabase returns the profile if it is selected', () => {
-		const serverTreeView = TypeMoq.Mock.ofInstance({ getSelection: () => undefined, onSelectionOrFocusChange: Event.None } as IServerTreeView);
+		const serverTreeView = TypeMoq.Mock.ofInstance({ tree: TypeMoq.It.isAny(), getSelection: () => undefined, onSelectionOrFocusChange: Event.None } as IServerTreeView);
 		serverTreeView.setup(x => x.getSelection()).returns(() => [connection]);
 		objectExplorerService.registerServerTreeView(serverTreeView.object);
 
@@ -462,7 +462,7 @@ suite('SQL Object Explorer Service tests', () => {
 	});
 
 	test('getSelectedProfileAndDatabase returns the profile but no database if children of a server are selected', () => {
-		const serverTreeView = TypeMoq.Mock.ofInstance({ getSelection: () => undefined, onSelectionOrFocusChange: Event.None } as IServerTreeView);
+		const serverTreeView = TypeMoq.Mock.ofInstance({ tree: TypeMoq.It.isAny(), getSelection: () => undefined, onSelectionOrFocusChange: Event.None } as IServerTreeView);
 		const databaseNode = new TreeNode(NodeType.Folder, '', 'Folder1', false, 'testServerName/Folder1', 'testServerName', '', '', undefined, undefined, undefined, undefined);
 		databaseNode.connection = connection;
 		serverTreeView.setup(x => x.getSelection()).returns(() => [databaseNode]);
@@ -474,7 +474,7 @@ suite('SQL Object Explorer Service tests', () => {
 	});
 
 	test('getSelectedProfileAndDatabase returns the profile and database if children of a database node are selected', () => {
-		const serverTreeView = TypeMoq.Mock.ofInstance({ getSelection: () => undefined, onSelectionOrFocusChange: Event.None } as IServerTreeView);
+		const serverTreeView = TypeMoq.Mock.ofInstance({ tree: TypeMoq.It.isAny(), getSelection: () => undefined, onSelectionOrFocusChange: Event.None } as IServerTreeView);
 		const databaseMetadata = {
 			metadataType: 0,
 			metadataTypeName: 'Database',
@@ -498,7 +498,7 @@ suite('SQL Object Explorer Service tests', () => {
 	});
 
 	test('getSelectedProfileAndDatabase returns undefined when there is no selection', () => {
-		const serverTreeView = TypeMoq.Mock.ofInstance({ getSelection: () => undefined, onSelectionOrFocusChange: Event.None } as IServerTreeView);
+		const serverTreeView = TypeMoq.Mock.ofInstance({ tree: TypeMoq.It.isAny(), getSelection: () => undefined, onSelectionOrFocusChange: Event.None } as IServerTreeView);
 		serverTreeView.setup(x => x.getSelection()).returns(() => []);
 		objectExplorerService.registerServerTreeView(serverTreeView.object);
 

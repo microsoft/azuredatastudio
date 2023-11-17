@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { strictEqual } from 'assert';
@@ -14,7 +14,7 @@ import { IEnvironmentVariableService } from 'vs/workbench/contrib/terminal/commo
 import { EnvironmentVariableService } from 'vs/workbench/contrib/terminal/common/environmentVariableService';
 import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
-import { ITerminalChildProcess } from 'vs/platform/terminal/common/terminal';
+import { IPtyHostLatencyMeasurement, ITerminalChildProcess } from 'vs/platform/terminal/common/terminal'; // {{SQL CARBON EDIT}}
 import { ITerminalProfileResolverService } from 'vs/workbench/contrib/terminal/common/terminal';
 import { ITerminalInstanceService } from 'vs/workbench/contrib/terminal/browser/terminal';
 import { DisposableStore } from 'vs/base/common/lifecycle';
@@ -46,11 +46,11 @@ class TestTerminalChildProcess implements ITerminalChildProcess {
 	shutdown(immediate: boolean): void { }
 	input(data: string): void { }
 	resize(cols: number, rows: number): void { }
+	clearBuffer(): void { }
 	acknowledgeDataEvent(charCount: number): void { }
 	async setUnicodeVersion(version: '6' | '11'): Promise<void> { }
 	async getInitialCwd(): Promise<string> { return ''; }
 	async getCwd(): Promise<string> { return ''; }
-	async getLatency(): Promise<number> { return 0; }
 	async processBinary(data: string): Promise<void> { }
 	refreshProperty(property: any): Promise<any> { return Promise.resolve(''); }
 }
@@ -58,6 +58,7 @@ class TestTerminalChildProcess implements ITerminalChildProcess {
 class TestTerminalInstanceService implements Partial<ITerminalInstanceService> {
 	getBackend() {
 		return {
+			getLatency: () => { return Promise.resolve([<IPtyHostLatencyMeasurement>{ label: '', latency: 0 }]); }, // {{SQL CARBON EDIT}} Test needs a mocked definition for getLatency
 			onPtyHostExit: Event.None,
 			onPtyHostUnresponsive: Event.None,
 			onPtyHostResponsive: Event.None,

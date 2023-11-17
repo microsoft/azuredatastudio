@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { isMacintosh } from 'vs/base/common/platform';
@@ -42,13 +42,13 @@ registerAction2(class ToggleQueryDetailsAction extends Action2 {
 			},
 		});
 	}
-	run(accessor: ServicesAccessor) {
+	run(accessor: ServicesAccessor, ...args: any[]) {
 		const contextService = accessor.get(IContextKeyService).getContext(document.activeElement);
 		if (contextService.getValue(SearchEditorConstants.InSearchEditor.serialize())) {
-			(accessor.get(IEditorService).activeEditorPane as SearchEditor).toggleQueryDetails();
+			(accessor.get(IEditorService).activeEditorPane as SearchEditor).toggleQueryDetails(args[0]?.show);
 		} else if (contextService.getValue(Constants.SearchViewFocusedKey.serialize())) {
 			const searchView = getSearchView(accessor.get(IViewsService));
-			assertIsDefined(searchView).toggleQueryDetails();
+			assertIsDefined(searchView).toggleQueryDetails(undefined, args[0]?.show);
 		}
 	}
 });

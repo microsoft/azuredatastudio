@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { InstantiationType, registerSingleton } from 'vs/platform/instantiation/common/extensions';
@@ -9,8 +9,8 @@ import { ExtHostTask } from 'vs/workbench/api/node/extHostTask';
 // import { ExtHostDebugService } from 'vs/workbench/api/node/extHostDebugService'; {{SQL CARBON EDIT}}
 import { NativeExtHostSearch } from 'vs/workbench/api/node/extHostSearch';
 import { ExtHostExtensionService } from 'vs/workbench/api/node/extHostExtensionService';
-import { ExtHostTunnelService } from 'vs/workbench/api/node/extHostTunnelService';
-// import { IExtHostDebugService } from 'vs/workbench/api/common/extHostDebugService'; {{SQL CARBON EDIT}}
+import { NodeExtHostTunnelService } from 'vs/workbench/api/node/extHostTunnelService';
+// import { IExtHostDebugService } from 'vs/workbench/api/common/extHostDebugService'; // {{SQL CARBON EDIT}}
 import { IExtHostExtensionService } from 'vs/workbench/api/common/extHostExtensionService';
 import { IExtHostSearch } from 'vs/workbench/api/common/extHostSearch';
 import { IExtHostTask } from 'vs/workbench/api/common/extHostTask';
@@ -24,6 +24,8 @@ import { NodeExtHostVariableResolverProviderService } from 'vs/workbench/api/nod
 import { IExtHostVariableResolverProvider } from 'vs/workbench/api/common/extHostVariableResolverService';
 import { ExtHostLogService } from 'vs/workbench/api/common/extHostLogService';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
+import { ISignService } from 'vs/platform/sign/common/sign';
+import { SignService } from 'vs/platform/sign/node/signService';
 
 // #########################################################################
 // ###                                                                   ###
@@ -34,11 +36,12 @@ import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 registerSingleton(IExtHostExtensionService, ExtHostExtensionService, InstantiationType.Eager);
 registerSingleton(ILoggerService, ExtHostLoggerService, InstantiationType.Delayed);
 registerSingleton(ILogService, new SyncDescriptor(ExtHostLogService, [false], true));
+registerSingleton(ISignService, SignService, InstantiationType.Delayed);
 registerSingleton(IExtensionStoragePaths, ExtensionStoragePaths, InstantiationType.Eager);
 
 // registerSingleton(IExtHostDebugService, ExtHostDebugService, InstantiationType.Eager); // {{SQL CARBON EDIT}} disable debugger
 registerSingleton(IExtHostSearch, NativeExtHostSearch, InstantiationType.Eager);
 registerSingleton(IExtHostTask, ExtHostTask, InstantiationType.Eager);
 registerSingleton(IExtHostTerminalService, ExtHostTerminalService, InstantiationType.Eager);
-registerSingleton(IExtHostTunnelService, ExtHostTunnelService, InstantiationType.Eager);
+registerSingleton(IExtHostTunnelService, NodeExtHostTunnelService, InstantiationType.Eager);
 registerSingleton(IExtHostVariableResolverProvider, NodeExtHostVariableResolverProviderService, InstantiationType.Eager);

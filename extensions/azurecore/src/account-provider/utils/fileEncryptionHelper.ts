@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as os from 'os';
@@ -87,19 +87,19 @@ export class FileEncryptionHelper {
 			if (resetOnError) {
 				// Reset IV/Keys if crypto cannot encrypt/decrypt data.
 				// This could be a possible case of corruption of expected iv/key combination
-				await this.clearEncryptionKeys();
-				await this.init();
+				await this.refreshEncryptionKeys();
 			}
 			// Throw error so cache file can be reset to empty.
 			throw new Error(`Decryption failed with error: ${ex}`);
 		}
 	}
 
-	public async clearEncryptionKeys(): Promise<void> {
+	public async refreshEncryptionKeys(): Promise<void> {
 		await this.deleteEncryptionKey(this._ivCredId);
 		await this.deleteEncryptionKey(this._keyCredId);
 		this._ivBuffer = undefined;
 		this._keyBuffer = undefined;
+		await this.init();
 	}
 
 	protected async readEncryptionKey(credentialId: string): Promise<string | undefined> {

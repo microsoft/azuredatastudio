@@ -201,7 +201,7 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.purgeQueryStoreDataMessage">
         <source xml:lang="en">Are you sure you want to purge the Query Store data from '{0}'?</source>
-        <target state="new">Are you sure you want to purge the Query Store data from '{0}'?</target>
+        <target state="translated">Rimuovere definitivamente i dati di Query Store da '{0}'?</target>
       </trans-unit>
       <trans-unit id="objectManagement.associatedDatabaseFiles">
         <source xml:lang="en">Associated Database Files</source>
@@ -224,8 +224,8 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <target state="translated">Allega database</target>
       </trans-unit>
       <trans-unit id="objectManagement.user.aadAuth">
-        <source xml:lang="en">Authenticate with Azure Active Directory</source>
-        <target state="translated">Esegui l'autenticazione con Azure Active Directory</target>
+        <source xml:lang="en">Authenticate with Microsoft Entra</source>
+        <target state="translated">Esegui autenticazione con Microsoft Entra</target>
       </trans-unit>
       <trans-unit id="objectManagement.user.sqlAuth">
         <source xml:lang="en">Authenticate with password</source>
@@ -275,13 +275,13 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <source xml:lang="en">Automatically set processor affinity mask for all processors</source>
         <target state="translated">Imposta automaticamente maschera di affinità processori per tutti i processori</target>
       </trans-unit>
-      <trans-unit id="objectManagement.login.aadAuthenticationType">
-        <source xml:lang="en">Azure Active Directory Authentication</source>
-        <target state="translated">Autenticazione di Azure Active Directory</target>
-      </trans-unit>
       <trans-unit id="objectManagement.azurePricingLink">
         <source xml:lang="en">Azure SQL Database pricing calculator</source>
         <target state="translated">Calcolatore prezzi database SQL di Azure</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backButtonLabel">
+        <source xml:lang="en">Back</source>
+        <target state="translated">Indietro</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.backupSectionHeader">
         <source xml:lang="en">Backup</source>
@@ -654,6 +654,10 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <source xml:lang="en">Filegroup</source>
         <target state="translated">Filegroup</target>
       </trans-unit>
+      <trans-unit id="objectManagement.filegroupsNameInput">
+        <source xml:lang="en">Filegroup Name</source>
+        <target state="translated">Nome filegroup</target>
+      </trans-unit>
       <trans-unit id="objectManagement.filegroupsSectionHeader">
         <source xml:lang="en">Filegroups</source>
         <target state="translated">Filegroup</target>
@@ -882,6 +886,10 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <source xml:lang="en">Memory Used By Memory Optimized Objects</source>
         <target state="translated">Memoria usata dagli oggetti con ottimizzazione per la memoria</target>
       </trans-unit>
+      <trans-unit id="objectManagement.login.aadAuthenticationType">
+        <source xml:lang="en">Microsoft Entra ID Authentication</source>
+        <target state="translated">Autenticazione di Microsoft Entra ID</target>
+      </trans-unit>
       <trans-unit id="objectManagement.minServerMemoryText">
         <source xml:lang="en">Minimum Server Memory (MB)</source>
         <target state="translated">Memoria minima del server (MB)</target>
@@ -889,6 +897,10 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
       <trans-unit id="objectManagement.databaseProperties.monitoringSectionText">
         <source xml:lang="en">Monitoring</source>
         <target state="translated">Monitoraggio</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.notAvailableText">
+        <source xml:lang="en">N/A</source>
+        <target state="translated">N/D</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.name">
         <source xml:lang="en">Name</source>
@@ -1044,7 +1056,7 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.purgeQueryDataButtonText">
         <source xml:lang="en">Purge Query Store Data</source>
-        <target state="new">Purge Query Store Data</target>
+        <target state="translated">Rimuovere definitivamente i dati di Query Store</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.databaseProperties.queryStoreTabHeader">
         <source xml:lang="en">Query Store</source>
@@ -1249,7 +1261,7 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.stateQueryThresholdInDaysText">
         <source xml:lang="en">State Query Threshold (Days)</source>
-        <target state="new">State Query Threshold (Days)</target>
+        <target state="translated">Soglia query dello stato (giorni)</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.statisticsCollectionInterval">
         <source xml:lang="en">Statistics Collection Interval</source>
@@ -1335,6 +1347,10 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
       <trans-unit id="objectManagement.databaseProperties.valueForSecondaryColumnHeader">
         <source xml:lang="en">Value for Secondary</source>
         <target state="translated">Valore per il secondario</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.locksValidation">
+        <source xml:lang="en">Value should be greater than {0}. Choose 0 for default settings.</source>
+        <target state="translated">Il valore deve essere maggiore di {0}. Scegliere 0 per le impostazioni predefinite.</target>
       </trans-unit>
       <trans-unit id="objectManagement.versionText">
         <source xml:lang="en">Version</source>
@@ -1598,13 +1614,13 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <source xml:lang="en">Associate schemas to JSON files in the current project</source>
         <target state="translated">Associa schemi a file JSON nel progetto corrente</target>
       </trans-unit>
-      <trans-unit id="title.attachDatabase">
-        <source xml:lang="en">Attach (Preview)</source>
-        <target state="translated">Collega (anteprima)</target>
-      </trans-unit>
       <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
         <source xml:lang="en">Attach DB filename</source>
         <target state="translated">Collega nome file del database</target>
+      </trans-unit>
+      <trans-unit id="title.attachDatabase">
+        <source xml:lang="en">Attach Database (Preview)</source>
+        <target state="translated">Collega database (anteprima)</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
         <source xml:lang="en">Attestation URL</source>
@@ -1618,10 +1634,6 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <source xml:lang="en">Authentication type</source>
         <target state="translated">Tipo di autenticazione</target>
       </trans-unit>
-      <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
-        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory - Universale con supporto MFA</target>
-      </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS">
         <source xml:lang="en">Azure Attestation</source>
         <target state="translated">Attestazione di Azure</target>
@@ -1629,6 +1641,10 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
       <trans-unit id="title.changeNotebookConnection">
         <source xml:lang="en">Change SQL Notebook Connection</source>
         <target state="translated">Modifica connessione notebook SQL</target>
+      </trans-unit>
+      <trans-unit id="mssql.connection.clearPooledConnections">
+        <source xml:lang="en">Clear Pooled Connections</source>
+        <target state="translated">Cancella connessioni in pool</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.commandTimeout.displayName">
         <source xml:lang="en">Command timeout</source>
@@ -1695,8 +1711,8 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <target state="translated">Progettazione</target>
       </trans-unit>
       <trans-unit id="title.detachDatabase">
-        <source xml:lang="en">Detach (Preview)</source>
-        <target state="translated">Scollega (anteprima)</target>
+        <source xml:lang="en">Detach Database (Preview)</source>
+        <target state="translated">Scollega database (anteprima)</target>
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.disableGroupBySchema">
         <source xml:lang="en">Disable Group By Schema</source>
@@ -1811,8 +1827,8 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <target state="translated">Abilitato</target>
       </trans-unit>
       <trans-unit id="mssql.enableConnectionPooling">
-        <source xml:lang="en">Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed. To clear pooled connections, run the command: 'SQL Server: Clear Pooled Connections'</source>
-        <target state="new">Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed. To clear pooled connections, run the command: 'SQL Server: Clear Pooled Connections'</target>
+        <source xml:lang="en">Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed. To clear pooled connections, run the command: 'MSSQL: Clear Pooled Connections'</source>
+        <target state="translated">Abilita il pool di connessioni nelle connessioni MSSQL per migliorare le prestazioni complessive della connettività di Azure Data Studio. Questa opzione è abilitata per impostazione predefinita. È necessario riavviare Azure Data Studio quando il valore viene modificato. Per cancellare le connessioni in pool, eseguire il comando: 'MSSQL: Cancella connessioni in pool'</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.description">
         <source xml:lang="en">Enables or disables Always Encrypted for the connection</source>
@@ -1938,6 +1954,10 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
         <target state="translated">Numero massimo di file meno recenti da rimuovere all'avvio per cui è scaduto il tempo impostato con mssql.logRetentionMinutes. I file che non vengono rimossi a causa di questa limitazione verranno rimossi al successivo avvio di Azure Data Studio.</target>
       </trans-unit>
+      <trans-unit id="mssql.parallelMessageProcessingLimit">
+        <source xml:lang="en">Maximum number of requests that should be handled in parallel by the backend SQL Tools Service. This brings performance benefits to MSSQL queries and connections. This limit is applicable only when `MSSQL: Parallel Message Processing` is enabled. The default value is 100, and can be adjusted as needed as per OS support. Azure Data Studio is required to be relaunched when the value is changed.</source>
+        <target state="translated">Numero massimo di richieste che devono essere gestite in parallelo dal servizio strumenti SQL di back-end. Ciò offre vantaggi a livello di prestazioni per le query e le connessioni MSSQL. Questo limite è applicabile solo quando è abilitato 'MSSQL: Parallel Message Processing'. Il valore predefinito è 100 e può essere modificato secondo le necessità in base al supporto del sistema operativo. È necessario riavviare Azure Data Studio quando il valore viene modificato.</target>
+      </trans-unit>
       <trans-unit id="mssql.query.setRowCount">
         <source xml:lang="en">Maximum number of rows to return before the server stops processing your query.</source>
         <target state="translated">Numero massimo di righe da restituire prima che il server arresti l'elaborazione della query.</target>
@@ -1945,6 +1965,10 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
       <trans-unit id="mssql.query.textSize">
         <source xml:lang="en">Maximum size of text and ntext data returned from a SELECT statement</source>
         <target state="translated">Dimensioni massime dei dati di tipo text e ntext restituiti da un'istruzione SELECT</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
+        <source xml:lang="en">Microsoft Entra ID - Universal with MFA support</source>
+        <target state="translated">ID Microsoft Entra - Universale con supporto MFA</target>
       </trans-unit>
       <trans-unit id="mssql.provider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>
@@ -1978,17 +2002,33 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <source xml:lang="en">Name of the SQL Server instance</source>
         <target state="translated">Nome dell'istanza di SQL Server</target>
       </trans-unit>
-      <trans-unit id="title.newObject">
-        <source xml:lang="en">New (Preview)</source>
-        <target state="translated">Nuovo (anteprima)</target>
+      <trans-unit id="title.newApplicationRole">
+        <source xml:lang="en">New Application Role (Preview)</source>
+        <target state="translated">Nuovo ruolo applicazione (anteprima)</target>
       </trans-unit>
       <trans-unit id="title.newDatabase">
         <source xml:lang="en">New Database (Preview)</source>
         <target state="translated">Nuovo database (anteprima)</target>
       </trans-unit>
+      <trans-unit id="title.newDatabaseRole">
+        <source xml:lang="en">New Database Role (Preview)</source>
+        <target state="translated">Nuovo ruolo del database (anteprima)</target>
+      </trans-unit>
+      <trans-unit id="title.newLogin">
+        <source xml:lang="en">New Login (Preview)</source>
+        <target state="translated">Nuovo account di accesso (anteprima)</target>
+      </trans-unit>
+      <trans-unit id="title.newServerRole">
+        <source xml:lang="en">New Server Role (Preview)</source>
+        <target state="translated">Nuovo ruolo server (anteprima)</target>
+      </trans-unit>
       <trans-unit id="title.newTable">
         <source xml:lang="en">New Table</source>
         <target state="translated">Nuova tabella</target>
+      </trans-unit>
+      <trans-unit id="title.newUser">
+        <source xml:lang="en">New User (Preview)</source>
+        <target state="translated">Nuovo utente (anteprima)</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None">
         <source xml:lang="en">None</source>
@@ -2069,10 +2109,6 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
       <trans-unit id="mssql.connectionOptions.authType.categoryValues.sqlLogin">
         <source xml:lang="en">SQL Login</source>
         <target state="translated">Account di accesso SQL</target>
-      </trans-unit>
-      <trans-unit id="mssql.connection.clearPooledConnections">
-        <source xml:lang="en">SQL Server: Clear Pooled Connections</source>
-        <target state="new">SQL Server: Clear Pooled Connections</target>
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.disableGroupBySchemaTitle">
         <source xml:lang="en">SQL Server: Disable Group By Schema</source>
@@ -2294,6 +2330,10 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
         <target state="translated">Se è true, l'oggetto connessione viene prelevato dal pool appropriato oppure, se necessario, viene creato e aggiunto al pool appropriato</target>
       </trans-unit>
+      <trans-unit id="mssql.parallelMessageProcessing">
+        <source xml:lang="en">Whether the requests to the backend SQL Tools Service should be handled in parallel. This brings performance benefits to MSSQL queries and connections. The default value is true. Azure Data Studio is required to be relaunched when the value is changed.</source>
+        <target state="translated">Indica se le richieste al servizio strumenti SQL di back-end devono essere gestite in parallelo. Ciò offre vantaggi a livello di prestazioni per le query e le connessioni MSSQL. Il valore predefinito è true. È necessario riavviare Azure Data Studio quando il valore viene modificato.</target>
+      </trans-unit>
       <trans-unit id="mssql.tableDesigner.allowDisableAndReenableDdlTriggers">
         <source xml:lang="en">Whether to allow table designer to disable and re-enable DDL triggers during publish</source>
         <target state="translated">Indica se consentire a Progettazione tabelle di disabilitare e riabilitare i trigger DDL durante la pubblicazione</target>
@@ -2309,10 +2349,6 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
       <trans-unit id="mssql.connectionOptions.workstationId.displayName">
         <source xml:lang="en">Workstation Id</source>
         <target state="translated">ID workstation</target>
-      </trans-unit>
-      <trans-unit id="mssql.parallelMessageProcessing">
-        <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</source>
-        <target state="translated">[Experimental] Indica se le richieste al servizio strumenti di SQL devono essere gestite in parallelo. Questa funzionalità è stata introdotta per individuare i problemi che potrebbero verificarsi durante la gestione di tutte le richieste in parallelo. Il valore predefinito è false. Il riavvio di Azure Data Studio è obbligatorio quando il valore viene modificato.</target>
       </trans-unit>
       <trans-unit id="mssql.ignorePlatformWarning">
         <source xml:lang="en">[Optional] Do not show unsupported platform warnings</source>
@@ -2332,7 +2368,7 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.placeholder">
         <source xml:lang="en">e.g. servername,port</source>
-        <target state="new">e.g. servername,port</target>
+        <target state="translated">es. nomeserver,porta</target>
       </trans-unit>
       <trans-unit id="mssql.format.placeCommasBeforeNextStatement">
         <source xml:lang="en">should commas be placed at the beginning of each statement in a list e.g. ', mycolumn2' instead of at the end e.g. 'mycolumn1,'</source>

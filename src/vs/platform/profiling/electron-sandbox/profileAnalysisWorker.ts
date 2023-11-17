@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { basename } from 'vs/base/common/path';
@@ -10,7 +10,6 @@ import { IRequestHandler } from 'vs/base/common/worker/simpleWorker';
 import { IV8Profile, Utils } from 'vs/platform/profiling/common/profiling';
 import { IProfileModel, BottomUpSample, buildModel, BottomUpNode, processNode, CdpCallFrame } from 'vs/platform/profiling/common/profilingModel';
 import { BottomUpAnalysis, IProfileAnalysisWorker, ProfilingOutput } from 'vs/platform/profiling/electron-sandbox/profileAnalysisWorkerService';
-
 
 export function create(): IRequestHandler {
 	return new ProfileAnalysisWorker();

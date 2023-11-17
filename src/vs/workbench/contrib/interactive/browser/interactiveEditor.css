@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 .interactive-editor .input-cell-container:focus-within .input-editor-container .monaco-editor {
@@ -17,5 +17,5 @@
 
 .interactive-editor .input-cell-container .monaco-editor-background,
 .interactive-editor .input-cell-container .margin-view-overlays {
-	background-color: var(--vscode-notebook-cellEditorBackground, --vscode-editor-background);
+	background-color: var(--vscode-notebook-cellEditorBackground, var(--vscode-editor-background));
 }

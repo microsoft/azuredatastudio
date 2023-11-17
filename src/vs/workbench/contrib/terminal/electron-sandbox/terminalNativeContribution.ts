@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ipcRenderer } from 'vs/base/parts/sandbox/electron-sandbox/globals';
@@ -29,9 +29,7 @@ export class TerminalNativeContribution extends Disposable implements IWorkbench
 		this._register(nativeHostService.onDidResumeOS(() => this._onOsResume()));
 
 		this._terminalService.setNativeDelegate({
-			getWindowCount: () => nativeHostService.getWindowCount(),
-			openDevTools: () => nativeHostService.openDevTools(),
-			toggleDevTools: () => nativeHostService.toggleDevTools()
+			getWindowCount: () => nativeHostService.getWindowCount()
 		});
 
 		const connection = remoteAgentService.getConnection();

@@ -1,11 +1,11 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { Uri, ThemeIcon } from 'vscode';
+import { Uri, ThemeIcon, TreeItemCheckboxState } from 'vscode';
 
 export enum TreeCheckboxState {
 	Intermediate = 0,
@@ -271,11 +271,11 @@ export abstract class CheckboxTreeNode implements azdata.TreeComponentItem {
 		}
 	}
 
-	public get checkboxState(): TreeCheckboxState {
+	public get checkboxState(): TreeItemCheckboxState {
 		if (this.checked === undefined) {
-			return TreeCheckboxState.Intermediate;
+			return TreeItemCheckboxState.Unchecked;
 		} else {
-			return this.checked ? TreeCheckboxState.Checked : TreeCheckboxState.Unchecked;
+			return this.checked ? TreeItemCheckboxState.Checked : TreeItemCheckboxState.Unchecked;
 		}
 	}
 

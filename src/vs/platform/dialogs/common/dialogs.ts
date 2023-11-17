@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Event } from 'vs/base/common/event';
@@ -143,7 +143,7 @@ export interface IPromptWithDefaultCancel<T> extends IPrompt<T> {
 export interface IPromptResult<T> extends ICheckboxResult {
 
 	/**
-	 * The result of the `IPromptButton`` that was pressed or `undefined` if none.
+	 * The result of the `IPromptButton` that was pressed or `undefined` if none.
 	 */
 	readonly result?: T;
 }
@@ -545,6 +545,13 @@ export interface IFileDialogService {
 	 * Shows a save file dialog and save the file at the chosen file URI.
 	 */
 	pickFileToSave(defaultUri: URI, availableFileSystems?: string[]): Promise<URI | undefined>;
+
+	/**
+	 * The preferred folder path to open the dialog at.
+	 * @param schemeFilter The scheme of the file path. If no filter given, the scheme of the current window is used.
+	 * Falls back to user home in the absence of a setting.
+	 */
+	preferredHome(schemeFilter?: string): Promise<URI>;
 
 	/**
 	 * Shows a save file dialog and returns the chosen file URI.

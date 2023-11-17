@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IAction, Action, Separator } from 'vs/base/common/actions';
@@ -14,6 +14,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { isNative } from 'vs/base/common/platform';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { StandardMouseEvent } from 'vs/base/browser/mouseEvent';
 
 export class TextInputActionsProvider extends Disposable implements IWorkbenchContribution {
 
@@ -90,8 +91,10 @@ export class TextInputActionsProvider extends Disposable implements IWorkbenchCo
 
 		EventHelper.stop(e, true);
 
+		const event = new StandardMouseEvent(e);
+
 		this.contextMenuService.showContextMenu({
-			getAnchor: () => e,
+			getAnchor: () => event,
 			getActions: () => this.textInputActions,
 			getActionsContext: () => target,
 		});

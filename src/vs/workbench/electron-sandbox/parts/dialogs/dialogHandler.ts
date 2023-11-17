@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -12,6 +12,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { INativeHostService } from 'vs/platform/native/common/native';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { process } from 'vs/base/parts/sandbox/electron-sandbox/globals';
+import { aboutDetail } from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}} Imports about detail localized string for ADS about dialog
 
 export class NativeDialogHandler extends AbstractDialogHandler {
 
@@ -77,8 +78,23 @@ export class NativeDialogHandler extends AbstractDialogHandler {
 		const osProps = await this.nativeHostService.getOSProperties();
 
 		const detailString = (useAgo: boolean): string => {
+			// {{SQL CARBON EDIT}} - BEGIN - Removing Electron Build ID from detail string
+			/*
 			return localize({ key: 'aboutDetail', comment: ['Electron, Chromium, Node.js and V8 are product names that need no translation'] },
-				"Version: {0}\nCommit: {1}\nDate: {2}\nVS Code: {8}\nElectron: {3}\nChromium: {4}\nNode.js: {5}\nV8: {6}\nOS: {7}",
+				"Version: {0}\nCommit: {1}\nDate: {2}\nElectron: {3}\nElectronBuildId: {4}\nChromium: {5}\nNode.js: {6}\nV8: {7}\nOS: {8}",
+				version,
+				this.productService.commit || 'Unknown',
+				this.productService.date ? `${this.productService.date}${useAgo ? ' (' + fromNow(new Date(this.productService.date), true) + ')' : ''}` : 'Unknown',
+				process.versions['electron'],
+				process.versions['microsoft-build'],
+				process.versions['chrome'],
+				process.versions['node'],
+				process.versions['v8'],
+				`${osProps.type} ${osProps.arch} ${osProps.release}${isLinuxSnap ? ' snap' : ''}`,
+				this.productService.vscodeVersion  // {{SQL CARBON EDIT}} - add vscode version
+			);
+			*/
+			return aboutDetail(
 				version,
 				this.productService.commit || 'Unknown',
 				this.productService.date ? `${this.productService.date}${useAgo ? ' (' + fromNow(new Date(this.productService.date), true) + ')' : ''}` : 'Unknown',
@@ -89,6 +105,7 @@ export class NativeDialogHandler extends AbstractDialogHandler {
 				`${osProps.type} ${osProps.arch} ${osProps.release}${isLinuxSnap ? ' snap' : ''}`,
 				this.productService.vscodeVersion  // {{SQL CARBON EDIT}} - add vscode version
 			);
+			// {{SQL CARBON EDIT}} - END - New localized string doesn't include Electron Build ID since it shows up as undefined
 		};
 
 		const detail = detailString(true);

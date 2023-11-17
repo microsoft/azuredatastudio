@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { AddressInfo, createServer } from 'net';
@@ -65,7 +65,7 @@ export class ElectronExtensionHostDebugBroadcastChannel<TContext> extends Extens
 				}
 			};
 
-			const onMessage = (_event: Event, method: string, params: unknown, sessionId?: string) =>
+			const onMessage = (_event: Electron.Event, method: string, params: unknown, sessionId?: string) =>
 				writeMessage(({ method, params, sessionId }));
 
 			win.on('close', () => {

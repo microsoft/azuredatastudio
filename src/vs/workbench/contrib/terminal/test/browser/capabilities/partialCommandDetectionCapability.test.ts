@@ -1,12 +1,13 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { deepStrictEqual } from 'assert';
 import { PartialCommandDetectionCapability } from 'vs/platform/terminal/common/capabilities/partialCommandDetectionCapability';
-import { IMarker, Terminal } from 'xterm';
+import type { IMarker, Terminal } from 'xterm';
 import { IXtermCore } from 'vs/workbench/contrib/terminal/browser/xterm-private';
+import { importAMDNodeModule } from 'vs/amdX';
 import { writeP } from 'vs/workbench/contrib/terminal/browser/terminalTestHelpers';
 
 interface TestTerminal extends Terminal {
@@ -23,8 +24,10 @@ suite('PartialCommandDetectionCapability', () => {
 		deepStrictEqual(addEvents.map(e => e.line), expectedLines);
 	}
 
-	setup(() => {
-		xterm = new Terminal({ allowProposedApi: true, cols: 80 }) as TestTerminal;
+	setup(async () => {
+		const TerminalCtor = (await importAMDNodeModule<typeof import('xterm')>('xterm', 'lib/xterm.js')).Terminal;
+
+		xterm = new TerminalCtor({ allowProposedApi: true, cols: 80 }) as TestTerminal;
 		capability = new PartialCommandDetectionCapability(xterm);
 		addEvents = [];
 		capability.onCommandFinished(e => addEvents.push(e));

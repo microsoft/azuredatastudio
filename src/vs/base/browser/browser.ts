@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Emitter, Event } from 'vs/base/common/event';
@@ -16,7 +16,7 @@ class WindowManager {
 	public getZoomLevel(): number {
 		return this._zoomLevel;
 	}
-	public setZoomLevel(zoomLevel: number, isTrusted: boolean): void {
+	public setZoomLevel(zoomLevel: number): void {
 		if (this._zoomLevel === zoomLevel) {
 			return;
 		}
@@ -159,8 +159,8 @@ export function addMatchMediaChangeListener(query: string | MediaQueryList, call
 export const PixelRatio = new PixelRatioFacade();
 
 /** A zoom index, e.g. 1, 2, 3 */
-export function setZoomLevel(zoomLevel: number, isTrusted: boolean): void {
-	WindowManager.INSTANCE.setZoomLevel(zoomLevel, isTrusted);
+export function setZoomLevel(zoomLevel: number): void {
+	WindowManager.INSTANCE.setZoomLevel(zoomLevel);
 }
 export function getZoomLevel(): number {
 	return WindowManager.INSTANCE.getZoomLevel();

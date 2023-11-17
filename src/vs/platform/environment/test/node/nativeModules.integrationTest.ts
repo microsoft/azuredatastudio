@@ -1,18 +1,23 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
 import { isLinux, isWindows } from 'vs/base/common/platform';
 import { flakySuite } from 'vs/base/test/common/testUtils';
-import { Encryption } from 'vs/platform/encryption/node/encryptionMainService';
+import { Encryption } from 'vs/platform/encryption/node/encryptionMainService'; // {{SQL CARBON EDIT}} Remove vscode-encrypt in a post-1.47 release https://github.com/microsoft/azuredatastudio/issues/24737
 
 function testErrorMessage(module: string): string {
 	return `Unable to load "${module}" dependency. It was probably not compiled for the right operating system architecture or had missing build tools.`;
 }
 
 flakySuite('Native Modules (all platforms)', () => {
+
+	test('kerberos', async () => {
+		const kerberos = await import('kerberos');
+		assert.ok(typeof kerberos.initializeClient === 'function', testErrorMessage('kerberos'));
+	});
 
 	test('native-is-elevated', async () => {
 		const isElevated = await import('native-is-elevated');
@@ -56,6 +61,7 @@ flakySuite('Native Modules (all platforms)', () => {
 		assert.ok(typeof sqlite3.Database === 'function', testErrorMessage('@vscode/sqlite3'));
 	});
 
+	// {{SQL CARBON EDIT}} Remove vscode-encrypt in a post-1.47 release https://github.com/microsoft/azuredatastudio/issues/24737
 	test('vscode-encrypt', async () => {
 		try {
 			const vscodeEncrypt: Encryption = globalThis._VSCODE_NODE_MODULES['vscode-encrypt'];

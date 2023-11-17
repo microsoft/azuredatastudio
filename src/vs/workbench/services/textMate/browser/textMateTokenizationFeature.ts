@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
@@ -11,7 +11,7 @@ export const ITextMateTokenizationService = createDecorator<ITextMateTokenizatio
 export interface ITextMateTokenizationService {
 	readonly _serviceBrand: undefined;
 
-	createGrammar(languageId: string): Promise<IGrammar | null>;
+	createTokenizer(languageId: string): Promise<IGrammar | null>;
 
 	startDebugMode(printFn: (str: string) => void, onStop: () => void): void;
 }

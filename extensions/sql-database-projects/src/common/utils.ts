@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import type * as azdataType from 'azdata';
@@ -836,5 +836,11 @@ export async function ensureFileExists(absoluteFilePath: string, contents?: stri
 		if (!await exists(absoluteFilePath)) {
 			throw new Error(constants.noFileExist(absoluteFilePath));
 		}
+	}
+}
+
+export function throwIfFailed(result: azdataType.ResultStatus | vscodeMssql.ResultStatus): void {
+	if (!result.success) {
+		throw new Error(constants.errorPrefix(result.errorMessage));
 	}
 }

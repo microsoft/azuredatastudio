@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { app, BrowserWindow, BrowserWindowConstructorOptions, Display, Event as ElectronEvent, nativeImage, NativeImage, Rectangle, screen, SegmentedControlSegment, systemPreferences, TouchBar, TouchBarSegmentedControl } from 'electron';
@@ -1108,7 +1108,11 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 		// macOS: traffic lights
 		else if (isMacintosh && options.height !== undefined) {
 			const verticalOffset = (options.height - 15) / 2; // 15px is the height of the traffic lights
-			this._win.setTrafficLightPosition({ x: verticalOffset, y: verticalOffset });
+			if (!verticalOffset) {
+				this._win.setWindowButtonPosition(null);
+			} else {
+				this._win.setWindowButtonPosition({ x: verticalOffset, y: verticalOffset });
+			}
 		}
 	}
 

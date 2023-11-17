@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 use super::errors::{wrap, WrappedError};
 use super::io::ReportCopyProgress;
@@ -88,8 +88,13 @@ where
 			use std::io::Read;
 			use std::os::unix::ffi::OsStringExt;
 
-			if matches!(file.unix_mode(), Some(mode) if mode & (S_IFLNK as u32) == (S_IFLNK as u32))
-			{
+			#[cfg(target_os = "macos")]
+			const S_IFLINK_32: u32 = S_IFLNK as u32;
+
+			#[cfg(target_os = "linux")]
+			const S_IFLINK_32: u32 = S_IFLNK;
+
+			if matches!(file.unix_mode(), Some(mode) if mode & S_IFLINK_32 == S_IFLINK_32) {
 				let mut link_to = Vec::new();
 				file.read_to_end(&mut link_to).map_err(|e| {
 					wrap(

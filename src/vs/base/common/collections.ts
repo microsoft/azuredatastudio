@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 /**
@@ -141,5 +141,13 @@ export class SetMap<K, V> {
 		}
 
 		values.forEach(fn);
+	}
+
+	get(key: K): ReadonlySet<V> {
+		const values = this.map.get(key);
+		if (!values) {
+			return new Set<V>();
+		}
+		return values;
 	}
 }

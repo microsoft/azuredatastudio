@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Emitter, Event } from 'vs/base/common/event';
@@ -104,6 +104,11 @@ export class TextResourceConfigurationService extends Disposable implements ITex
 			return this.configurationService.getValue<T>({ resource, overrideIdentifier: language });
 		}
 		return this.configurationService.getValue<T>(section, { resource, overrideIdentifier: language });
+	}
+
+	inspect<T>(resource: URI | undefined, position: IPosition | null, section: string): IConfigurationValue<Readonly<T>> {
+		const language = resource ? this.getLanguage(resource, position) : undefined;
+		return this.configurationService.inspect<T>(section, { resource, overrideIdentifier: language });
 	}
 
 	private getLanguage(resource: URI, position: IPosition | null): string | null {

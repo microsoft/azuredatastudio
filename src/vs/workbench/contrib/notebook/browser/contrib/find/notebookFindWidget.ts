@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as DOM from 'vs/base/browser/dom';
@@ -187,7 +187,7 @@ class NotebookFindWidget extends SimpleFindReplaceWidget implements INotebookEdi
 			const replacePattern = this.replacePattern;
 			const replaceString = replacePattern.buildReplaceString(match.matches, this._state.preserveCase);
 
-			const viewModel = this._notebookEditor._getViewModel();
+			const viewModel = this._notebookEditor.getViewModel();
 			viewModel.replaceOne(cell, match.range, replaceString).then(() => {
 				this._progressBar.stop();
 			});
@@ -215,7 +215,7 @@ class NotebookFindWidget extends SimpleFindReplaceWidget implements INotebookEdi
 			});
 		});
 
-		const viewModel = this._notebookEditor._getViewModel();
+		const viewModel = this._notebookEditor.getViewModel();
 		viewModel.replaceAll(this._findModel.findMatches, replaceStrings).then(() => {
 			this._progressBar.stop();
 		});

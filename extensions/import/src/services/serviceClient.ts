@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
@@ -93,7 +93,7 @@ export class ServiceClient {
 	private generateServerOptions(executablePath: string, context: vscode.ExtensionContext): ServerOptions {
 		let launchArgs = [];
 		launchArgs.push('--log-dir');
-		let logFileLocation = context.logPath;
+		let logFileLocation = context.logUri.fsPath;
 		launchArgs.push(logFileLocation);
 		let config = vscode.workspace.getConfiguration(Constants.extensionConfigSectionName);
 		if (config) {

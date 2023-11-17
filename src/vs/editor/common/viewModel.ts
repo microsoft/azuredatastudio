@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IScrollPosition, Scrollable } from 'vs/base/common/scrollable';
@@ -114,6 +114,7 @@ export interface IViewLayout {
 	validateScrollPosition(scrollPosition: INewScrollPosition): IScrollPosition;
 
 	setMaxLineWidth(maxLineWidth: number): void;
+	setOverlayWidgetsMinWidth(overlayWidgetsMinWidth: number): void;
 
 	getLinesViewportData(): IPartialViewLinesViewportData;
 	getLinesViewportDataAtScrollTop(scrollTop: number): IPartialViewLinesViewportData;
@@ -210,7 +211,11 @@ export interface ICoordinatesConverter {
 	validateViewRange(viewRange: Range, expectedModelRange: Range): Range;
 
 	// Model -> View conversion and related methods
-	convertModelPositionToViewPosition(modelPosition: Position, affinity?: PositionAffinity): Position;
+	/**
+	 * @param allowZeroLineNumber Should it return 0 when there are hidden lines at the top and the position is in the hidden area?
+	 * @param belowHiddenRanges When the model position is in a hidden area, should it return the first view position after or before?
+	 */
+	convertModelPositionToViewPosition(modelPosition: Position, affinity?: PositionAffinity, allowZeroLineNumber?: boolean, belowHiddenRanges?: boolean): Position;
 	/**
 	 * @param affinity Only has an effect if the range is empty.
 	*/

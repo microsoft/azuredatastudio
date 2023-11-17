@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/gridPanel';
@@ -60,6 +60,7 @@ import { IComponentContextService } from 'sql/workbench/services/componentContex
 import { GridRange } from 'sql/base/common/gridRange';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { defaultTableFilterStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { parseString as parseXMLString } from 'xml2js';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -443,8 +444,16 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 					? localize('xmlShowplan', "XML Showplan")
 					: escape(c.columnName),
 				field: i.toString(),
-				formatter: c.isXml ? hyperLinkFormatter : (row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string | { text: string, addClasses: string } => {
-					return queryResultTextFormatter(this.gridConfig.showJsonAsLink, row, cell, value, columnDef, dataContext);
+				formatter: c.isXml || c.isJson ? hyperLinkFormatter : (row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string | { text: string, addClasses: string } => {
+					if (isXmlCell(value)) {
+						this.resultSet.columnInfo[i].isXml = true;
+						return hyperLinkFormatter(row, cell, value, columnDef, dataContext);
+					} else if (this.gridConfig.showJsonAsLink && isJsonCell(value)) {
+						this.resultSet.columnInfo[i].isJson = true;
+						return hyperLinkFormatter(row, cell, value, columnDef, dataContext);
+					} else {
+						return textFormatter(row, cell, value, columnDef, dataContext, (DBCellValue.isDBCellValue(value) && value.isNull) ? NULL_CELL_CSS_CLASS : undefined);
+					}
 				},
 				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined
 			};
@@ -890,7 +899,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 					}
 				}
 				const content = value.displayValue;
-				const input = this.untitledEditorService.create({ languageId: column.isXml ? 'xml' : 'json', initialValue: content });
+				const input = this.untitledEditorService.create({ languageId: column.isXml ? 'xml' : column.isJson ? 'json' : 'txt', initialValue: content });
 				await input.resolve();
 				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
 				input.setDirty(false);
@@ -1162,10 +1171,12 @@ function isJsonCell(value: ICellValue): boolean {
 	return !!(value && !value.isNull && value.displayValue?.match(IsJsonRegex));
 }
 
-function queryResultTextFormatter(showJsonAsLink: boolean, row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string | { text: string, addClasses: string } {
-	if (showJsonAsLink && isJsonCell(value)) {
-		return hyperLinkFormatter(row, cell, value, columnDef, dataContext);
-	} else {
-		return textFormatter(row, cell, value, columnDef, dataContext, (DBCellValue.isDBCellValue(value) && value.isNull) ? NULL_CELL_CSS_CLASS : undefined);
+function isXmlCell(value: ICellValue): boolean {
+	let isXML = false;
+	if (value && !value.isNull && value.displayValue.trim() !== '') {
+		parseXMLString(value.displayValue, (err, _) => {
+			isXML = err === null;
+		});
 	}
+	return isXML;
 }

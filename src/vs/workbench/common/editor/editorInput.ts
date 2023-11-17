@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Emitter } from 'vs/base/common/event';
@@ -10,6 +10,7 @@ import { firstOrDefault } from 'vs/base/common/arrays';
 import { EditorInputCapabilities, Verbosity, GroupIdentifier, ISaveOptions, IRevertOptions, IMoveResult, IEditorDescriptor, IEditorPane, IUntypedEditorInput, EditorResourceAccessor, AbstractEditorInput, isEditorInput, IEditorIdentifier } from 'vs/workbench/common/editor';
 import { isEqual } from 'vs/base/common/resources';
 import { ConfirmResult } from 'vs/platform/dialogs/common/dialogs';
+import { IMarkdownString } from 'vs/base/common/htmlContent';
 
 export interface IEditorCloseHandler {
 
@@ -124,6 +125,10 @@ export abstract class EditorInput extends AbstractEditorInput {
 		return (this.capabilities & capability) !== 0;
 	}
 
+	isReadonly(): boolean | IMarkdownString {
+		return this.hasCapability(EditorInputCapabilities.Readonly);
+	}
+
 	/**
 	 * Returns the display name of this input.
 	 */
@@ -178,6 +183,13 @@ export abstract class EditorInput extends AbstractEditorInput {
 	 */
 	isDirty(): boolean {
 		return false;
+	}
+
+	/**
+	 * Returns if the input has unsaved changes.
+	 */
+	isModified(): boolean {
+		return this.isDirty();
 	}
 
 	/**

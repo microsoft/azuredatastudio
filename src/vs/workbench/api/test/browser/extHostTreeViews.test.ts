@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -50,6 +50,7 @@ suite.skip('ExtHostTreeView', function () { // {{SQL CARBON EDIT}} Skip suite
 	let tree: { [key: string]: any };
 	let labels: { [key: string]: string };
 	let nodes: { [key: string]: { key: string } };
+	let instantiationService: TestInstantiationService;
 
 	setup(() => {
 		tree = {
@@ -70,7 +71,7 @@ suite.skip('ExtHostTreeView', function () { // {{SQL CARBON EDIT}} Skip suite
 		// Use IInstantiationService to get typechecking when instantiating
 		let inst: IInstantiationService;
 		{
-			const instantiationService = new TestInstantiationService();
+			instantiationService = new TestInstantiationService();
 			inst = instantiationService;
 		}
 
@@ -92,6 +93,10 @@ suite.skip('ExtHostTreeView', function () { // {{SQL CARBON EDIT}} Skip suite
 		testObject.createTreeView('testNodeWithHighlightsTreeProvider', { treeDataProvider: aNodeWithHighlightedLabelTreeDataProvider() }, extensionsDescription);
 
 		return loadCompleteTree('testNodeTreeProvider');
+	});
+
+	teardown(() => {
+		instantiationService.dispose();
 	});
 
 	test('construct node tree', () => {

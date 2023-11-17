@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -66,6 +66,9 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 		if (treeView) {
 			treeView.onNodeSelectedChanged(handles);
 		}
+	}
+
+	$setSelectionAndFocus(treeViewId: string, selectionHandles: string[], focusHandle: string): void {
 	}
 
 	$setExpanded(treeViewId: string, treeItemHandle: string, expanded: boolean): void {

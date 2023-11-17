@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
@@ -110,6 +110,21 @@ export class ExternalTerminalContribution implements IWorkbenchContribution {
 						nls.localize('terminal.explorerKind.both', "Use the other two together.")
 					],
 					description: nls.localize('explorer.openInTerminalKind', "When opening a file from the Explorer in a terminal, determines what kind of terminal will be launched"),
+					default: 'integrated'
+				},
+				'terminal.sourceControlRepositoriesKind': {
+					type: 'string',
+					enum: [
+						'integrated',
+						'external',
+						'both'
+					],
+					enumDescriptions: [
+						nls.localize('terminal.sourceControlRepositoriesKind.integrated', "Use VS Code's integrated terminal."),
+						nls.localize('terminal.sourceControlRepositoriesKind.external', "Use the configured external terminal."),
+						nls.localize('terminal.sourceControlRepositoriesKind.both', "Use the other two together.")
+					],
+					description: nls.localize('sourceControlRepositories.openInTerminalKind', "When opening a repository from the Source Control Repositories view in a terminal, determines what kind of terminal will be launched"),
 					default: 'integrated'
 				},
 				'terminal.external.windowsExec': {

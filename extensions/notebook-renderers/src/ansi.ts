@@ -1,11 +1,10 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { RGBA, Color } from './color';
 import { ansiColorIdentifiers } from './colorMap';
-import { ttPolicy } from './htmlHelper';
 import { linkify } from './linkify';
 
 
@@ -396,14 +395,9 @@ function appendStylizedStringToContainer(
 
 	let container = document.createElement('span');
 
-	if (trustHtml) {
-		const trustedHtml = ttPolicy?.createHTML(stringContent) ?? stringContent;
-		container.innerHTML = trustedHtml as string;
-	}
-
 	if (container.childElementCount === 0) {
 		// plain text
-		container = linkify(stringContent, true, workspaceFolder);
+		container = linkify(stringContent, true, workspaceFolder, trustHtml);
 	}
 
 	container.className = cssClasses.join(' ');

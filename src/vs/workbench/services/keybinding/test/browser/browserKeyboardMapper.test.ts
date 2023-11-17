@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
 import 'vs/workbench/services/keybinding/browser/keyboardLayouts/en.darwin';
@@ -35,13 +35,22 @@ class TestKeyboardMapperFactory extends BrowserKeyboardMapperFactoryBase {
 }
 
 suite('keyboard layout loader', () => {
-	const instantiationService: TestInstantiationService = new TestInstantiationService();
-	const notitifcationService = instantiationService.stub(INotificationService, new TestNotificationService());
-	const storageService = instantiationService.stub(IStorageService, new TestStorageService());
-	const configurationService = instantiationService.stub(IConfigurationService, new TestConfigurationService());
+	let instantiationService: TestInstantiationService;
+	let instance: TestKeyboardMapperFactory;
 
-	const commandService = instantiationService.stub(ICommandService, {});
-	const instance = new TestKeyboardMapperFactory(configurationService, notitifcationService, storageService, commandService);
+	setup(() => {
+		instantiationService = new TestInstantiationService();
+		const notitifcationService = instantiationService.stub(INotificationService, new TestNotificationService());
+		const storageService = instantiationService.stub(IStorageService, new TestStorageService());
+		const configurationService = instantiationService.stub(IConfigurationService, new TestConfigurationService());
+
+		const commandService = instantiationService.stub(ICommandService, {});
+		instance = new TestKeyboardMapperFactory(configurationService, notitifcationService, storageService, commandService);
+	});
+
+	teardown(() => {
+		instantiationService.dispose();
+	});
 
 	test('load default US keyboard layout', () => {
 		assert.notStrictEqual(instance.activeKeyboardLayout, null);

@@ -1,5 +1,5 @@
 /*
-The Source EULA (MIT)
+The MIT License (MIT)
 
 Copyright (c) 2017 Dom Christie
 

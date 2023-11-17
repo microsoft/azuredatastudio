@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 // This is the place for API experiments and proposal.
@@ -508,6 +508,27 @@ declare module 'azdata' {
 		 * @returns The new password that is returned from the operation or undefined if unsuccessful.
 		 */
 		export function openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined>;
+
+		/**
+		 * Gets the non default options of the connection profile.
+		 * @param profile The connection profile to get the options for.
+		 * @returns The string key containing the non default options (if any) for the profile.
+		 */
+		export function getNonDefaultOptions(profile: IConnectionProfile): Thenable<string>;
+	}
+
+	export interface ConnectionInfoSummary {
+		/**
+		 * ID used to identify the connection on the server, if available.
+		 */
+		serverConnectionId?: string | undefined;
+	}
+
+	export interface QueryExecuteCompleteNotificationResult {
+		/**
+		 * ID used to identify the connection used to run the query on the server, if available.
+		 */
+		serverConnectionId?: string | undefined;
 	}
 
 	/*
@@ -968,11 +989,11 @@ declare module 'azdata' {
 		 */
 		export interface TableInfo {
 			/**
-			 * Used as the table designer editor's tab header text.
+			 * Used as the table designer editor's tab header text (as well as the base value of the tooltip).
 			 */
 			title: string;
 			/**
-			 * Used as the table designer editor's tab header hover text.
+			 * Used as the table designer editor's tab header name text.
 			 */
 			tooltip: string;
 			/**
@@ -992,6 +1013,10 @@ declare module 'azdata' {
 			 * table icon.
 			 */
 			tableIcon?: TableIcon;
+			/**
+			 * Additional information for tooltip on hover displaying the full information of the connection.
+			 */
+			additionalInfo?: string;
 		}
 
 		/**
@@ -2532,5 +2557,27 @@ declare module 'azdata' {
 		 * If undefined, the size of the model view container is used
 		 */
 		splitViewSize?: number | string | undefined;
+	}
+
+	export interface SaveResultsRequestParams {
+		/**
+		 * Whether to freeze the header row when saving as Excel.
+		 */
+		freezeHeaderRow?: boolean | undefined;
+
+		/**
+		 * Whether to bold the header row when saving as Excel.
+		 */
+		boldHeaderRow?: boolean | undefined;
+
+		/**
+		 * Whether to enable auto filter on the header row when saving as Excel.
+		 */
+		autoFilterHeaderRow?: boolean | undefined;
+
+		/**
+		 * Whether to auto size columns when saving as Excel.
+		 */
+		autoSizeColumns?: boolean | undefined;
 	}
 }

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { h } from 'vs/base/browser/dom';
@@ -113,7 +113,8 @@ export function createSelectionsAutorun(
 	codeEditorView: CodeEditorView,
 	translateRange: (baseRange: Range, viewModel: MergeEditorViewModel) => Range
 ): IDisposable {
-	const selections = derived('selections', reader => {
+	const selections = derived(reader => {
+		/** @description selections */
 		const viewModel = codeEditorView.viewModel.read(reader);
 		if (!viewModel) {
 			return [];
@@ -125,7 +126,8 @@ export function createSelectionsAutorun(
 		return baseRange.rangesInBase.map(r => translateRange(r, viewModel));
 	});
 
-	return autorun('set selections', (reader) => {
+	return autorun(reader => {
+		/** @description set selections */
 		const ranges = selections.read(reader);
 		if (ranges.length === 0) {
 			return;

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ExtHostConnectionManagementShape, MainThreadConnectionManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
@@ -76,6 +76,10 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 
 	public $openChangePasswordDialog(profile: azdata.IConnectionProfile): Thenable<string | undefined> {
 		return this._proxy.$openChangePasswordDialog(profile);
+	}
+
+	$getNonDefaultOptions(profile: azdata.IConnectionProfile): Thenable<string> {
+		return this._proxy.$getNonDefaultOptions(profile);
 	}
 
 	public $listDatabases(connectionId: string): Thenable<string[]> {

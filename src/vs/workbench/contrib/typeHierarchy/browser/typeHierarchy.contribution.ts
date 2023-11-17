@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
@@ -172,7 +172,7 @@ class TypeHierarchyController implements IEditorContribution {
 registerEditorContribution(TypeHierarchyController.Id, TypeHierarchyController, EditorContributionInstantiation.Eager); // eager because it needs to define a context key
 
 // Peek
-registerAction2(class extends EditorAction2 {
+registerAction2(class PeekTypeHierarchyAction extends EditorAction2 {
 
 	constructor() {
 		super({
@@ -190,7 +190,8 @@ registerAction2(class extends EditorAction2 {
 			precondition: ContextKeyExpr.and(
 				_ctxHasTypeHierarchyProvider,
 				PeekContext.notInPeekEditor
-			)
+			),
+			f1: true
 		});
 	}
 

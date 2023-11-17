@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 interface ICSSPluginConfig {
@@ -9,6 +9,8 @@ interface ICSSPluginConfig {
 
 /**
  * Invoked by the loader at run-time
+ *
+ * @skipMangle
  */
 export function load(name: string, req: AMDLoader.IRelativeRequire, load: AMDLoader.IPluginLoadCallback, config: AMDLoader.IConfigurationOptions | { isBuild?: boolean }): void { // {{SQL CARBON EDIT}} Added type to config
 	config = config || {};

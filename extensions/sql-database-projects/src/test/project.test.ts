@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as should from 'should';
@@ -1016,7 +1016,7 @@ describe('Project: properties', function (): void {
 			throw new Error('Should not have succeeded.');
 		} catch (e) {
 			(e.message).should.startWith('Error: Invalid value for Database Schema Provider:');
-			(e.message).should.endWith('expected to be in the form Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider');
+			(e.message).should.endWith('expected to be in the form \'Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider\'.');
 		}
 	});
 

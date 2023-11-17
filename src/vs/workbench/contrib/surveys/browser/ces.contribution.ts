@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
@@ -98,7 +98,7 @@ class CESContribution extends Disposable implements IWorkbenchContribution {
 					this.skipSurvey();
 				}
 			}, {
-				label: nls.localize('remindLater', "Remind Me later"),
+				label: nls.localize('remindLater', "Remind Me Later"),
 				run: () => {
 					sendTelemetry('remindLater');
 					this.storageService.store(REMIND_LATER_DATE_KEY, new Date().toUTCString(), StorageScope.APPLICATION, StorageTarget.USER);
