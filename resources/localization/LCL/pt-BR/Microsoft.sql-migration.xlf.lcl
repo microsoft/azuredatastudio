@@ -1804,6 +1804,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.community.support.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connect with Microsoft Community]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Conecte-se com a Microsoft Community]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1820,7 +1823,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Community support]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Suporte da comunidade]]></Val>
+            <Val><![CDATA[Suporte da Comunidade]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
