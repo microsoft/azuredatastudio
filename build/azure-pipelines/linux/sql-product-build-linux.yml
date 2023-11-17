@@ -219,8 +219,8 @@ steps:
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     inputs:
       ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(Build.SourcesDirectory)/.build/linux/deb'
-      Pattern: '*.deb'
+      FolderPath: '$(Build.SourcesDirectory)/.build/linux'
+      Pattern: 'deb/*.deb, rpm/*.rpm'
       signConfigType: inlineSignParams
       inlineOperation: |
         [
@@ -233,27 +233,7 @@ steps:
           }
         ]
       SessionTimeout: 120
-    displayName: 'Signing deb'
-    condition: and(succeeded(), eq(variables['signed'], true))
-
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-    inputs:
-      ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(Build.SourcesDirectory)/.build/linux/rpm'
-      Pattern: '*.rpm'
-      signConfigType: inlineSignParams
-      inlineOperation: |
-        [
-          {
-            "KeyCode": "CP-450778-Pgp",
-            "OperationSetCode": "LinuxSign",
-            "Parameters": {},
-            "ToolName": "sign",
-            "ToolVersion": "1.0"
-          }
-        ]
-      SessionTimeout: 120
-    displayName: 'Signing rpm'
+    displayName: 'Signing deb and rpm'
     condition: and(succeeded(), eq(variables['signed'], true))
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
