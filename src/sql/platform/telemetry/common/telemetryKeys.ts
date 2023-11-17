@@ -89,6 +89,7 @@ export const enum TelemetryAction {
 	DeleteConnection = 'DeleteConnection',
 	DeleteEditRow = 'DeleteEditRow',
 	DeleteServerGroup = 'DeleteServerGroup',
+	EditRowRevert = 'EditRowRevert',
 	EditCellSelect = 'EditCellSelect',
 	EditCellEnd = 'EditCellEnd',
 	EditCopyResult = 'EditCopyResult',

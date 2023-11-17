@@ -666,6 +666,9 @@ export class EditDataGridPanel extends GridParentComponent {
 	private async revertCurrentRow(isPressRevert?: boolean): Promise<void> {
 		this.rowRevertInProgress = true;
 		let currentNewRowIndex = this.dataSet.totalRows - 2;
+		this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditRowRevert)
+			.withAdditionalProperties({ currentNewRow: currentNewRowIndex, currentRow: this.currentCell.row })
+			.send();
 		if (this.newRowVisible && this.currentCell.row === currentNewRowIndex) {
 			// revert our last new row
 			this.removingNewRow = true;
