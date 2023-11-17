@@ -225,23 +225,11 @@ steps:
       inlineOperation: |
         [
           {
-            "keyCode": "CP-233016",
-            "operationSetCode": "OpcSign",
-            "parameters": [
-              {
-                "parameterName": "FileDigest",
-                "parameterValue": "/fd \"SHA256\""
-              }
-            ],
-            "toolName": "sign",
-            "toolVersion": "1.0"
-          },
-          {
-            "keyCode": "CP-233016",
-            "operationSetCode": "OpcVerify",
-            "parameters": [],
-            "toolName": "sign",
-            "toolVersion": "1.0"
+            "KeyCode": "CP-450778-Pgp",
+            "OperationCode": "LinuxSign",
+            "Parameters": {},
+            "ToolName": "sign",
+            "ToolVersion": "1.0"
           }
         ]
       SessionTimeout: 120
@@ -257,23 +245,11 @@ steps:
       inlineOperation: |
         [
           {
-            "keyCode": "CP-233016",
-            "operationSetCode": "OpcSign",
-            "parameters": [
-              {
-                "parameterName": "FileDigest",
-                "parameterValue": "/fd \"SHA256\""
-              }
-            ],
-            "toolName": "sign",
-            "toolVersion": "1.0"
-          },
-          {
-            "keyCode": "CP-233016",
-            "operationSetCode": "OpcVerify",
-            "parameters": [],
-            "toolName": "sign",
-            "toolVersion": "1.0"
+            "KeyCode": "CP-450778-Pgp",
+            "OperationSetCode": "LinuxSign",
+            "Parameters": {},
+            "ToolName": "sign",
+            "ToolVersion": "1.0"
           }
         ]
       SessionTimeout: 120
