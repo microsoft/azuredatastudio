@@ -1804,6 +1804,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.community.support.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connect with Microsoft Community]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Entra in contatto con la community Microsoft]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

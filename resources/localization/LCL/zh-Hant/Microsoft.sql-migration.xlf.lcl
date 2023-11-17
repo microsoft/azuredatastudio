@@ -1804,6 +1804,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.community.support.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connect with Microsoft Community]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[連結 Microsoft 社群]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3428,7 +3431,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Help + Support]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[說明 + 支援]]></Val>
+            <Val><![CDATA[說明與支援]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -8084,7 +8087,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Help + Support]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[說明 + 支援]]></Val>
+            <Val><![CDATA[說明與支援]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -8093,7 +8096,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Help + Support]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[說明 + 支援]]></Val>
+            <Val><![CDATA[說明與支援]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
