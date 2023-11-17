@@ -579,6 +579,7 @@ export const TARGET_SUBSCRIPTION_INFO = localize('sql.migration.sku.subscription
 export const TARGET_LOCATION_INFO = localize('sql.migration.sku.location', "Azure region for your Azure SQL target. Only regions that contain a target eligible for migration will be shown.");
 export const TARGET_RESOURCE_GROUP_INFO = localize('sql.migration.sku.resource_group', "Resource group for your Azure SQL target. Only resource groups that contain a target eligible for migration will be shown.");
 export const TARGET_RESOURCE_INFO = localize('sql.migration.sku.resource', "Your Azure SQL target resource name");
+export const TARGET_RESOURCE_PORT_INFO = localize('sql.migration.sku.resource.port', "Your Azure SQL target resource port number");
 
 // DMS tooltip
 export const DMS_SUBSCRIPTION_INFO = localize('sql.migration.dms.subscription', "Subscription name for your Azure Database Migration Service");
@@ -711,10 +712,12 @@ export function STORAGE_ACCOUNT_CONNECTIVITY_WARNING(targetServer: string, datab
 
 export const TARGET_TABLE_NOT_EMPTY = localize('sql.migration.target.table.not.empty', "Target table is not empty.");
 export const TARGET_TABLE_MISSING = localize('sql.migration.target.table.missing', "Target table does not exist");
-export const TARGET_USERNAME_LAbEL = localize('sql.migration.username.label', "Target user name");
+export const TARGET_USERNAME_LABEL = localize('sql.migration.username.label', "Target user name");
 export const TARGET_USERNAME_PLACEHOLDER = localize('sql.migration.username.placeholder', "Enter the target user name");
-export const TARGET_PASSWORD_LAbEL = localize('sql.migration.password.label', "Target password");
+export const TARGET_PASSWORD_LABEL = localize('sql.migration.password.label', "Target password");
 export const TARGET_PASSWORD_PLACEHOLDER = localize('sql.migration.password.placeholder', "Enter the target password");
+export const TARGET_PORT_LABEL = localize('sql.migration.port.label', "Port");
+export const TARGET_PORT_PLACEHOLDER = localize('sql.migration.port.placeholder', "Enter the target port");
 export const TARGET_CONNECTION_LABEL = localize('sql.migration.connection.label', "Connect");
 export const MAP_SOURCE_TARGET_HEADING = localize('sql.migration.map.target.heading', "Map selected source databases to target databases for migration");
 export const MAP_SOURCE_TARGET_DESCRIPTION = localize('sql.migration.map.target.description', "Select the target database where you would like to migrate your source database to.  You can choose a target database for only one source database.");
