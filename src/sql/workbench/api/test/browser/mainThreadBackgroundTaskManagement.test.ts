@@ -54,6 +54,7 @@ suite('MainThreadBackgroundTaskManagement Tests', () => {
 		taskService.setup(x => x.onTaskComplete).returns(() => onTaskComplete.event);
 
 		mainThreadBackgroundTaskManagement = new MainThreadBackgroundTaskManagement(mainContext, taskService.object);
+		onTaskComplete.dispose();
 	});
 
 	test('RegisterTask should successfully create background task', () => {
