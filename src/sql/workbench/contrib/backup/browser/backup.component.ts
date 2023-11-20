@@ -540,20 +540,22 @@ export class BackupComponent extends AngularDisposable {
 			if (this._allowFileBackup && this._allowUrlBackup) {
 				this.toUrlCheckBox.enable();
 			}
-			if (this._allowUrlBackup) {
-				this.toUrlCheckBox.checked = true;
-				this.copyOnlyCheckBox.checked = true;
-			}
+
 			if (this._allowFileBackup) {
+				this.toUrlCheckBox.checked = false;
+				this.copyOnlyCheckBox.checked = false;
 				this.backupTypeSelectBox!.enable();
 				this.backupRetainDaysBox!.enable();
 				this.copyOnlyCheckBox!.enable();
-
 				this.disableMedia = false;
 			} else {
-				this.backupRetainDaysBox!.enable();
+				this.toUrlCheckBox.checked = true;
+				this.copyOnlyCheckBox.checked = true;
+				this.backupRetainDaysBox!.disable();
+				this.backupTypeSelectBox!.disable();
 				this.copyOnlyCheckBox!.disable();
-				this.disableMedia = false;
+				this.toUrlCheckBox.disable();
+				this.disableMedia = true;
 			}
 			this.onChangeToUrl();
 
