@@ -137,7 +137,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 				this._truncateLogButton.enabled = false;
 				this._backupLogTailButton.enabled = false;
 			}
-		}, backupTypes, backupTypes[0], false);
+		}, backupTypes, backupTypes[0], !this.useUrlMode);
 		let backupContainer = this.createLabelInputContainer(loc.BackupTypeLabel, this._backupTypeDropdown);
 		components.push(backupContainer);
 
@@ -149,7 +149,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, label => {
 			let isUrl = label === loc.BackupUrlLabel;
 			return this.toggleBackupDestination(isUrl);
-		}, backupDestinations, defaultDest, false);
+		}, backupDestinations, defaultDest, !this.useUrlMode);
 		let backupDestContainer = this.createLabelInputContainer(loc.BackupToLabel, this._backupDestDropdown);
 		components.push(backupDestContainer);
 
