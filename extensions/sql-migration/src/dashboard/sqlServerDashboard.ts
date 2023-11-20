@@ -551,6 +551,7 @@ export class DashboardWidget {
 						await this.clearSavedInfo(loc.importAssessmentKey);
 						if (importSavedInfo.serverAssessment !== null) {
 							this.stateModel._assessmentResults = importSavedInfo.serverAssessment;
+							this.stateModel.savedInfo = importSavedInfo;
 							await this.stateModel.loadSavedInfo();
 
 							serverName = importSavedInfo.serverAssessment?.issues[0]?.serverName ??
