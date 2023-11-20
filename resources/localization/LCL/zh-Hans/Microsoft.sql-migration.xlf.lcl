@@ -5810,7 +5810,7 @@
         <Str Cat="Text">
           <Val><![CDATA[COMPUTE]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[COMPUTE]]></Val>
+            <Val><![CDATA[计算]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
