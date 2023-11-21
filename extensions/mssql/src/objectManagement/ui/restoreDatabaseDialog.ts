@@ -19,6 +19,8 @@ import { TaskExecutionMode } from 'azdata';
 const Dialog_Width = '1150px';
 const RestoreInputsWidth = DefaultInputWidth + 650;
 const RestoreTablesWidth = DefaultTableWidth + 650;
+const SelectFolderInputWidth = DefaultInputWidth + 600
+const SelectFolderButtonWidth = 25;
 
 export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// restore diaog tabs
@@ -47,7 +49,11 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	private tailLogBackupFile: azdata.InputBoxComponent;
 	private restoreFrom: azdata.DropDownComponent;
 	private dataFileFolder: azdata.InputBoxComponent;
+	private dataFileFolderButton: azdata.ButtonComponent;
+	private dataFileFolderContainer: azdata.FlexContainer;
 	private logFileFolder: azdata.InputBoxComponent;
+	private logFileFolderButton: azdata.ButtonComponent;
+	private logFileFolderContainer: azdata.FlexContainer;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		options.width = Dialog_Width;
@@ -221,8 +227,8 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			width: RestoreInputsWidth - 30,
 			placeHolder: localizedConstants.BackupFolderPathTitle
 		});
-		this.backupFilePathButton = this.createButton('...', '...', async () => { await this.createFileBrowser() });
-		this.backupFilePathButton.width = 25;
+		this.backupFilePathButton = this.createButton('...', '...', async () => { await this.createBackupFileBrowser() });
+		this.backupFilePathButton.width = SelectFolderButtonWidth;
 		this.backupFilePathContainer = this.createLabelInputContainer(localizedConstants.BackupFilePathText, this.backupFilePathInput);
 		this.backupFilePathContainer.addItems([this.backupFilePathButton], { flex: '10 0 auto' });
 		this.backupFilePathContainer.display = 'none';
@@ -395,13 +401,24 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	}
 
 	/**
-	 * Creates a file browser and sets the path to the filePath
+	 * Creates a file browser and sets the path to the backup filePath
 	 */
-	private async createFileBrowser(): Promise<void> {
+	private async createBackupFileBrowser(): Promise<void> {
 		let backupFolder = await this.objectManagementService.getBackupFolder(this.options.connectionUri);
 		let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, backupFolder, [{ label: localizedConstants.allFiles, filters: ['*.bak'] }]);
 		if (filePath?.length > 0) {
 			this.backupFilePathInput.value = filePath;
+		}
+	}
+
+	/**
+	 * Creates a file browser and sets the path to the data folder Path
+	 */
+	private async createDataFileBrowser(input: azdata.InputBoxComponent): Promise<void> {
+		let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
+		let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, [{ label: localizedConstants.allFiles, filters: [] }], true);
+		if (filePath?.length > 0) {
+			input.value = filePath;
 		}
 	}
 
@@ -481,7 +498,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		// Relocate all files
 		this.relocateAllFiles = this.createCheckbox(localizedConstants.RelocateAllFilesText, async (checked) => {
 			this.objectInfo.restorePlanResponse.planDetails.relocateDbFiles.currentValue = checked;
-			this.dataFileFolder.enabled = this.logFileFolder.enabled = checked;
+			this.dataFileFolder.enabled
+				= this.logFileFolder.enabled
+				= this.dataFileFolderButton.enabled
+				= this.logFileFolderButton.enabled = checked;
 		}, this.objectInfo.restorePlanResponse.planDetails.relocateDbFiles.defaultValue, !this.objectInfo.restorePlanResponse.planDetails.relocateDbFiles.isReadOnly);
 		containers.push(this.relocateAllFiles);
 
@@ -493,11 +513,15 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			inputType: 'text',
 			enabled: false,
 			value: this.objectInfo.restorePlanResponse.planDetails.dataFileFolder.defaultValue,
-			width: RestoreInputsWidth - 20
+			width: SelectFolderInputWidth
 		});
-		const dataDileFolderContainer = this.createLabelInputContainer(localizedConstants.DataFileFolderText, this.dataFileFolder);
-		dataDileFolderContainer.CSSStyles = { 'margin-left': '20px' };
-		containers.push(dataDileFolderContainer);
+		this.dataFileFolderButton = this.createButton('...', '...', async () => { await this.createDataFileBrowser(this.dataFileFolder) });
+		this.dataFileFolderButton.width = SelectFolderButtonWidth;
+		this.dataFileFolderButton.enabled = false;
+		this.dataFileFolderContainer = this.createLabelInputContainer(localizedConstants.DataFileFolderText, this.dataFileFolder);
+		this.dataFileFolderContainer.addItems([this.dataFileFolderButton], { flex: '10 0 auto' });
+		this.dataFileFolderContainer.CSSStyles = { 'margin-left': '20px' };
+		containers.push(this.dataFileFolderContainer);
 
 		// Log file folder
 		this.logFileFolder = this.createInputBox(async (newValue) => {
@@ -507,11 +531,15 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			inputType: 'text',
 			enabled: false,
 			value: this.objectInfo.restorePlanResponse.planDetails.logFileFolder.defaultValue,
-			width: RestoreInputsWidth - 20
+			width: SelectFolderInputWidth
 		});
-		const logFileFolderContainer = this.createLabelInputContainer(localizedConstants.LogFileFolderText, this.logFileFolder);
-		logFileFolderContainer.CSSStyles = { 'margin-left': '20px' };
-		containers.push(logFileFolderContainer);
+		this.logFileFolderButton = this.createButton('...', '...', async () => { await this.createDataFileBrowser(this.logFileFolder) });
+		this.logFileFolderButton.width = SelectFolderButtonWidth;
+		this.logFileFolderButton.enabled = false;
+		this.logFileFolderContainer = this.createLabelInputContainer(localizedConstants.LogFileFolderText, this.logFileFolder);
+		this.logFileFolderContainer.addItems([this.logFileFolderButton], { flex: '10 0 auto' });
+		this.logFileFolderContainer.CSSStyles = { 'margin-left': '20px' };
+		containers.push(this.logFileFolderContainer);
 
 		return this.createGroup(localizedConstants.RestoreDatabaseFilesAsText, containers, true);
 	}
