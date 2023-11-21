@@ -424,7 +424,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			selectedFiles: undefined,
 			backupsetName: this._backupSetNameInput.value,
 			selectedFileGroup: undefined,
-			backupPathDevices: this.getBackupTypePairs(deviceType, backupDestPaths),
+			backupPathDevices: this.getBackupMediaTypePairs(backupDestPaths),
 			isCopyOnly: this._copyBackupCheckbox.checked,
 
 			// Get advanced options
@@ -464,16 +464,17 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		return backupType;
 	}
 
-	private getBackupDeviceType(): number {
+	private getBackupDeviceType(): PhysicalDeviceType {
 		return this.useUrlMode ? PhysicalDeviceType.Url : PhysicalDeviceType.Disk;
 	}
 
-	private getBackupTypePairs(deviceType: number, filePaths: string[]): { [path: string]: number } {
-		let pathDeviceMap: { [path: string]: number } = {};
+	private getBackupMediaTypePairs(filePaths: string[]): { [path: string]: MediaDeviceType } {
+		let mediaType = this.useUrlMode ? MediaDeviceType.Url : MediaDeviceType.File;
+		let pathMediaMap: { [path: string]: number } = {};
 		filePaths.forEach(path => {
-			pathDeviceMap[path] = deviceType;
+			pathMediaMap[path] = mediaType;
 		});
-		return pathDeviceMap;
+		return pathMediaMap;
 	}
 }
 
@@ -484,7 +485,10 @@ const aes192 = 'AES 192';
 const aes256 = 'AES 256';
 const tripleDES = 'Triple DES';
 
-enum PhysicalDeviceType {
+/**
+ * Backup physical device type: https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.backupdevicetype
+ */
+export enum PhysicalDeviceType {
 	Disk = 2,
 	FloppyA = 3,
 	FloppyB = 4,
@@ -493,4 +497,16 @@ enum PhysicalDeviceType {
 	CDRom = 7,
 	Url = 9,
 	Unknown = 100
+}
+
+/**
+ * Backup media device type: https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.devicetype
+ */
+export enum MediaDeviceType {
+	LogicalDevice = 0,
+	Tape = 1,
+	File = 2,
+	Pipe = 3,
+	VirtualDevice = 4,
+	Url = 5
 }
