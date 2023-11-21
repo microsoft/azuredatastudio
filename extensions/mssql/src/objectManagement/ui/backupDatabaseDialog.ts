@@ -149,7 +149,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, label => {
 			let isUrl = label === loc.BackupUrlLabel;
 			return this.toggleBackupDestination(isUrl);
-		}, backupDestinations, defaultDest, !this.useUrlMode);
+		}, backupDestinations, defaultDest, false);
 		let backupDestContainer = this.createLabelInputContainer(loc.BackupToLabel, this._backupDestDropdown);
 		components.push(backupDestContainer);
 
