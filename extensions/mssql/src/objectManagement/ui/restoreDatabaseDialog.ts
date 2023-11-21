@@ -8,12 +8,10 @@ import * as loc from '../localizedConstants';
 import * as localizedConstants from '../localizedConstants';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { DefaultInputWidth, DefaultMaxTableRowCount, DefaultMinTableRowCount, DefaultTableWidth, getTableHeight } from '../../ui/dialogBase';
-import { Database, DatabaseFileInfo, DatabaseViewInfo, RestoreDatabaseFileInfo } from '../interfaces';
+import { Database, DatabaseViewInfo } from '../interfaces';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
-import { RestoreParams } from '../../contracts';
 import { RestoreDatabaseFilesTabDocUrl, RestoreDatabaseGeneralTabDocUrl, RestoreDatabaseOptionsTabDocUrl } from '../constants';
 import { isUndefinedOrNull } from '../../types';
-import { TaskExecutionMode } from 'azdata';
 
 
 const Dialog_Width = '1150px';
@@ -31,6 +29,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	private readonly generalTabId: string = 'restoreGeneralDatabaseId';
 	private readonly filesTabId: string = 'restoreFilesDatabaseId';
 	private readonly optionsTabId: string = 'restoreOptionsDatabaseId';
+	private restoreProvider: azdata.RestoreProvider;
 	private backupFilePathInput: azdata.InputBoxComponent;
 	private backupFilePathContainer: azdata.FlexContainer;
 	private backupFilePathButton: azdata.ButtonComponent;
@@ -58,6 +57,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		options.width = Dialog_Width;
 		super(objectManagementService, options, loc.RestoreDatabaseDialogTitle(options.database), 'RestoreDatabase');
+		this.restoreProvider = azdata.dataprotocol.getProvider<azdata.RestoreProvider>('MSSQL', azdata.DataProviderType.RestoreProvider);
 		this.dialogObject.okButton.label = localizedConstants.RestoreText;
 	}
 
@@ -147,7 +147,8 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	 */
 	public override async generateScript(): Promise<string> {
 		let restoreInfo = this.createRestoreInfo();
-		let response = await this.objectManagementService.restoreDatabase(restoreInfo, TaskExecutionMode.script);
+		restoreInfo.taskExecutionMode = azdata.TaskExecutionMode.script;
+		let response = await this.restoreProvider.restore(this.options.connectionUri, restoreInfo);
 		if (!isUndefinedOrNull(response.errorMessage)) {
 			throw new Error(response.errorMessage);
 		}
@@ -160,7 +161,8 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	 */
 	public override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
 		let restoreInfo = this.createRestoreInfo();
-		let response = await this.objectManagementService.restoreDatabase(restoreInfo, TaskExecutionMode.execute);
+		restoreInfo.taskExecutionMode = azdata.TaskExecutionMode.execute;
+		let response = await this.restoreProvider.restore(this.options.connectionUri, restoreInfo);
 		if (!isUndefinedOrNull(response.errorMessage)) {
 			throw new Error(response.errorMessage);
 		}
@@ -170,7 +172,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	 * Prepares and return restore params to restore a database
 	 * @returns Restore params
 	 */
-	private createRestoreInfo(): RestoreParams {
+	private createRestoreInfo(): azdata.RestoreInfo {
 		const isRestoreFromBackupFile = this.restoreFrom.value === localizedConstants.RestoreFromBackupFileOptionText;
 		let options: { [key: string]: any } = {};
 		Object.entries(this.objectInfo.restorePlanResponse.planDetails).forEach(([key, value]) => {
@@ -184,12 +186,11 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		options.overwriteTargetDatabase = false;
 		options.selectedBackupSets = this.objectInfo.restorePlanResponse.backupSetsToRestore?.filter(a => a.isSelected).map(a => a.id);
 
-		const restoreParams: RestoreParams = {
-			ownerUri: this.options.connectionUri,
+		const restoreInfo: azdata.RestoreInfo = {
 			options: options
 		};
 
-		return restoreParams;
+		return restoreInfo;
 	}
 
 	//#region General Tab
@@ -214,7 +215,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			this.dialogObject.loading = true;
 			// Get the new restore plan for the selected file
 			const restorePlanInfo = this.setRestoreOption(this.backupFilePathInput);
-			const restorePlan = await this.objectManagementService.getRestorePlan(restorePlanInfo);
+			const restorePlan = await this.restoreProvider.getRestorePlan(this.options.connectionUri, restorePlanInfo);
 
 			// Update the dailog values with the new restore plan
 			await this.updateRestoreDialog(restorePlan);
@@ -240,7 +241,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			this.dialogObject.loading = true;
 			// Get the new restore plan for the selected source database
 			const restorePlanInfo = this.setRestoreOption(this.restoreDatabase);
-			const restorePlan = await this.objectManagementService.getRestorePlan(restorePlanInfo);
+			const restorePlan = await this.restoreProvider.getRestorePlan(this.options.connectionUri, restorePlanInfo);
 
 			// Update the dailog values with the new restore plan
 			await this.updateRestoreDialog(restorePlan);
@@ -379,7 +380,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	 * @param fileInfo database file info object
 	 * @returns data view object
 	 */
-	private convertRestorePlanObjectToDataView(fileInfo: DatabaseFileInfo): any[] {
+	private convertRestorePlanObjectToDataView(fileInfo: azdata.DatabaseFileInfo): any[] {
 		return [
 			fileInfo.isSelected, //Restore
 			fileInfo.properties[0].propertyValueDisplayName, //Name
@@ -426,24 +427,22 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	 * Prepares the restore params to get restore plan for the selected source database
 	 * @returns restore params
 	 */
-	private setRestoreOption(inputType: azdata.DropDownComponent | azdata.InputBoxComponent): RestoreParams {
+	private setRestoreOption(inputType: azdata.DropDownComponent | azdata.InputBoxComponent): azdata.RestoreInfo {
 		let options = {
-			ownerUri: this.options.connectionUri,
 			targetDatabaseName: this.objectInfo.restorePlanResponse.planDetails.targetDatabaseName.currentValue,
 			sourceDatabaseName: inputType === this.restoreDatabase ? this.objectInfo.restorePlanResponse.planDetails.sourceDatabaseName.currentValue : null,
 			relocateDbFiles: this.objectInfo.restorePlanResponse.planDetails.relocateDbFiles.currentValue,
 			readHeaderFromMedia: inputType === this.restoreDatabase ? false : true,
-			taskExecutionMode: azdata.TaskExecutionMode.execute,
 			overwriteTargetDatabase: true,
 			backupFilePaths: inputType === this.backupFilePathInput ? this.backupFilePathInput.value : null
 		};
 
-		const restoreParams: RestoreParams = {
-			ownerUri: this.options.connectionUri,
+		const restoreInfo: azdata.RestoreInfo = {
+			taskExecutionMode: azdata.TaskExecutionMode.execute,
 			options: options
 		};
 
-		return restoreParams;
+		return restoreInfo;
 	}
 
 	/**
@@ -578,7 +577,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	 * @param fileInfo restore database file info object
 	 * @returns data view object
 	 */
-	private convertToRestoreDbTableDataView(fileInfo: RestoreDatabaseFileInfo): any[] {
+	private convertToRestoreDbTableDataView(fileInfo: azdata.RestoreDatabaseFileInfo): any[] {
 		return [
 			fileInfo.logicalFileName,
 			fileInfo.fileType,

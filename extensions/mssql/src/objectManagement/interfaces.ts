@@ -2,6 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
+import * as azdata from 'azdata';
 import { ObjectManagement } from 'mssql';
 
 /**
@@ -459,7 +461,7 @@ export interface Database extends ObjectManagement.SqlObject {
 	files?: DatabaseFile[];
 	filegroups?: FileGroup[];
 	queryStoreOptions?: QueryStoreOptions;
-	restorePlanResponse?: RestorePlanResponse;
+	restorePlanResponse?: azdata.RestorePlanResponse;
 	backupEncryptors?: BackupEncryptor[];
 }
 
@@ -516,44 +518,6 @@ export interface RestoreDatabaseInfo {
 export interface CategoryValue {
 	displayName: string;
 	name: string;
-}
-
-export interface RestorePlanResponse {
-	sessionId: string;
-	backupSetsToRestore: DatabaseFileInfo[];
-	canRestore: boolean;
-	errorMessage?: string | undefined;
-	dbFiles: RestoreDatabaseFileInfo[];
-	databaseNamesFromBackupSets: string[];
-	planDetails: { [key: string]: RestorePlanDetailInfo };
-}
-
-export interface DatabaseFileInfo {
-	properties: LocalizedPropertyInfo[];
-	id: string;
-	isSelected: boolean;
-}
-
-export interface RestorePlanDetailInfo {
-	name: string;
-	currentValue: any;
-	isReadOnly: boolean;
-	isVisible: boolean;
-	defaultValue: any;
-}
-
-export interface LocalizedPropertyInfo {
-	propertyName: string;
-	propertyValue: string;
-	propertyDisplayName: string;
-	propertyValueDisplayName: string;
-}
-
-export interface RestoreDatabaseFileInfo {
-	fileType: string;
-	logicalFileName: string;
-	originalFileName: string;
-	restoreAsFileName: string;
 }
 
 export interface QueryStoreCapturePolicyOptions {
