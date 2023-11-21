@@ -157,6 +157,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			});
 			let browseUrlButton = this.createButton(loc.BrowseText, loc.BrowseText, () => this.onBrowseUrlButtonClicked());
 			browseUrlButton.width = DefaultButtonWidth;
+			await browseUrlButton.updateCssStyles({ 'margin-left': '0px' });
 			let urlInputGroup = this.createGroup(loc.BackupToUrlLabel, [this._backupUrlInput, browseUrlButton], false);
 			components.push(urlInputGroup);
 		} else {
