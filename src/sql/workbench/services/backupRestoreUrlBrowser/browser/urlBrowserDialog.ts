@@ -214,8 +214,8 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 	}
 
 	private setAccountSelectorBoxOptions(accounts: Account[]) {
-		this._accounts = accounts.filter(account => !account.isStale);
-		const accountDisplayNames: string[] = this._accounts.map(account => account.displayInfo.displayName).sort();
+		this._accounts = accounts.filter(account => !account.isStale).sort((a, b) => a.displayInfo.displayName.localeCompare(b.displayInfo.displayName));
+		const accountDisplayNames: string[] = this._accounts.map(account => account.displayInfo.displayName);
 		this._accountSelectorBox.setOptions(accountDisplayNames);
 		this._accountSelectorBox.select(0);
 		if (this._accounts.length === 0) {
@@ -261,8 +261,8 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 	}
 
 	private setSubscriptionsSelectorBoxOptions(subscriptions: azureResource.AzureResourceSubscription[]) {
-		this._subscriptions = subscriptions;
-		const subscriptionDisplayNames: string[] = subscriptions.map(subscription => subscription.name).sort();
+		this._subscriptions = subscriptions.sort((a, b) => a.name.localeCompare(b.name));
+		const subscriptionDisplayNames: string[] = this._subscriptions.map(subscription => subscription.name);
 		this._subscriptionSelectorBox.setOptions(subscriptionDisplayNames);
 		this._subscriptionSelectorBox.select(0);
 		if (this._subscriptions.length === 0) {
@@ -287,8 +287,8 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 	}
 
 	private setStorageAccountSelectorBoxOptions(storageAccounts: azureResource.AzureGraphResource[]) {
-		this._storageAccounts = storageAccounts;
-		const storageAccountDisplayNames: string[] = this._storageAccounts.map(storageAccount => storageAccount.name).sort();
+		this._storageAccounts = storageAccounts.sort((a, b) => a.name.localeCompare(b.name));
+		const storageAccountDisplayNames: string[] = this._storageAccounts.map(storageAccount => storageAccount.name);
 		this._storageAccountSelectorBox.setOptions(storageAccountDisplayNames);
 		this._storageAccountSelectorBox.select(0);
 		if (storageAccounts.length === 0) {
@@ -313,8 +313,8 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 	}
 
 	private setBlobContainersSelectorBoxOptions(blobContainers: azureResource.BlobContainer[]) {
-		this._blobContainers = blobContainers;
-		const blobContainersDisplayNames: string[] = this._blobContainers.map(blobContainer => blobContainer.name).sort();
+		this._blobContainers = blobContainers.sort((a, b) => a.name.localeCompare(b.name));
+		const blobContainersDisplayNames: string[] = this._blobContainers.map(blobContainer => blobContainer.name);
 		this._blobContainerSelectorBox.setOptions(blobContainersDisplayNames);
 		this._blobContainerSelectorBox.select(0);
 		if (this._blobContainers.length === 0) {
@@ -343,8 +343,8 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 	}
 
 	private setBackupFilesOptions(blobs: azureResource.Blob[]) {
-		this._backupFiles = blobs;
-		const backupFilesDisplayNames: string[] = this._backupFiles.map(backupFile => backupFile.name).sort();
+		this._backupFiles = blobs.sort((a, b) => a.name.localeCompare(b.name));
+		const backupFilesDisplayNames: string[] = this._backupFiles.map(backupFile => backupFile.name);
 		this._backupFileSelectorBox.setOptions(backupFilesDisplayNames);
 		this._backupFileSelectorBox.select(0);
 		if (this._backupFiles.length === 0) {
