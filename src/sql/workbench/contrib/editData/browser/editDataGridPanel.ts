@@ -632,12 +632,13 @@ export class EditDataGridPanel extends GridParentComponent {
 				this.isInNullRow = true;
 		}
 
-		if (e.shiftKey && e.keyCode === KeyCode.Tab) {
-			//TODO handle for first cell.
-		}
-
 		if (e.keyCode === KeyCode.Tab) {
-			//TODO handle for last cell.
+			if (e.shiftKey && this.isFirstCell(this.currentCell.row, this.currentCell.column)) {
+				//TODO - Submit the cell here.
+			}
+			else if (this.isLastCell(this.currentCell.row, this.currentCell.column)) {
+				//TODO - Submit the cell here.
+			}
 		}
 
 		return handled;
@@ -801,6 +802,22 @@ export class EditDataGridPanel extends GridParentComponent {
 			return (row === this.dataSet.totalRows - 1);
 		}
 		return false;
+	}
+
+	private isLastColumn(col: number): boolean {
+		if (this.dataSet) {
+			// Last column is always at index (total columns - 1)
+			return (col === this.dataSet.columnDefinitions.length - 1);
+		}
+		return false;
+	}
+
+	private isLastCell(row: number, col: number) {
+		return this.isNullRow(row) && this.isLastColumn(col);
+	}
+
+	private isFirstCell(row: number, col: number) {
+		return row === 0 && col === 1;
 	}
 
 	// Adds CSS classes to slickgrid cells to indicate a dirty state
