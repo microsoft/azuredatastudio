@@ -1179,12 +1179,6 @@ declare module 'mssql' {
 		databaseFilePaths: string[];
 		owner: string;
 	}
-
-	export interface RestoreParams extends azdata.RestoreInfo {
-		ownerUri: string;
-	}
-	export interface RestorePlanResponse extends azdata.RestorePlanResponse {
-	}
 	//#endregion
 
 	//#region --- Query Store

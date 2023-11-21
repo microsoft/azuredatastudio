@@ -1697,10 +1697,6 @@ export namespace GetBackupFolderRequest {
 	export const type = new RequestType<GetBackupFolderRequestParams, string, void, void>('admin/getbackupfolder');
 }
 
-export interface RestoreParams extends azdata.RestoreInfo {
-	ownerUri: string;
-}
-
 export interface BackupDatabaseRequestParams {
 	ownerUri: string;
 	backupInfo: mssql.BackupInfo;
