@@ -1741,6 +1741,9 @@
     <trans-unit id="mssql.connectionOptions.serverName.displayName">
       <source xml:lang="en">Server</source>
     </trans-unit>
+    <trans-unit id="mssql.provider.serverProcessId">
+      <source xml:lang="en">Server Process ID</source>
+    </trans-unit>
     <trans-unit id="mssql.query.displayBitAsNumber">
       <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as &apos;true&apos; or &apos;false&apos;</source>
     </trans-unit>
