@@ -166,7 +166,6 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 
 	// function to execute when user changes target type for the selected databases.
 	private async executeChange(newTargetType: string): Promise<void> {
-		await this._body.treeComponent.initialize(this.migrationStateModel);
 		const selectedDbs = this._body.treeComponent.selectedDbs();
 		switch (newTargetType) {
 			case MigrationTargetType.SQLMI:
