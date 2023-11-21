@@ -465,10 +465,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	private getBackupDeviceType(): number {
-		if (this._backupDestDropdown.value === loc.BackupUrlLabel) {
-			return PhysicalDeviceType.Url;
-		}
-		return PhysicalDeviceType.Disk;
+		return this.useUrlMode ? PhysicalDeviceType.Url : PhysicalDeviceType.Disk;
 	}
 
 	private getBackupTypePairs(deviceType: number, filePaths: string[]): { [path: string]: number } {
