@@ -90,8 +90,11 @@ export class EditDataGridPanel extends GridParentComponent {
 	// Prevent the tab focus from doing any damage to the table while a row is being reverted.
 	private rowRevertInProgress: boolean
 
-	// Manually submit the cell after edit end if it's the null row.
+	// Manually submit the cell after edit end if it's the null row
 	private isInNullRow: boolean;
+
+	// Mark when enter is pressed, so that we can move to the next cell when enter is pressed in the nul row.
+	private isEnterPressNull: boolean;
 
 	// Edit Data functions
 	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
@@ -213,9 +216,39 @@ export class EditDataGridPanel extends GridParentComponent {
 			// which fails, as we haven't added the new row yet).
 			if (self.isInNullRow) {
 				self.submitCurrentCellChange((result: EditUpdateCellResult) => {
-					self.table.grid.navigateDown();
+					if (self.isEnterPressNull) {
+						self.table.grid.navigateDown();
+						self.isEnterPressNull = false;
+					}
+					else {
+						self.isInNullRow = false;
+						self.dataService.commitEdit().then(result => {
+							// Committing was successful, clean the grid
+							self.setGridClean();
+							self.rowIdMappings = {};
+							self.newRowVisible = false;
+							return Promise.resolve();
+						}, error => {
+							self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditCellSelectError)
+								.withAdditionalProperties({ error: error })
+								.send();
+							// Committing failed, jump back to the last selected cell
+							this.cellSubmitInProgress = true;
+							this.updateEnabledState(true);
+							this.cellSubmitInProgress = false;
+							this.lastClickedCell = { row: self.currentCell.row, column: self.currentCell.column };
+							self.focusCell(self.currentCell.row, self.currentCell.column);
+							return Promise.reject(null);
+						});
+					}
 				},
 					(error: any) => {
+						if (self.isEnterPressNull) {
+							self.isEnterPressNull = false;
+						}
+						else {
+							self.isInNullRow = false;
+						}
 						self.notificationService.error(error);
 						self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditCellEndError)
 							.withAdditionalProperties({ error: error })
@@ -628,16 +661,16 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 
 		if (e.keyCode === KeyCode.Enter) {
-			if (this.isNullRow(this.currentCell.row))
+			if (this.isNullRow(this.currentCell.row)) {
+				this.isEnterPressNull = true;
 				this.isInNullRow = true;
+			}
 		}
 
 		if (e.keyCode === KeyCode.Tab) {
-			if (e.shiftKey && this.isFirstCell(this.currentCell.row, this.currentCell.column)) {
-				//TODO - Submit the cell here.
-			}
-			else if (this.isLastCell(this.currentCell.row, this.currentCell.column)) {
-				//TODO - Submit the cell here.
+			if ((e.shiftKey && this.isFirstCell(this.currentCell.row, this.currentCell.column))
+				|| this.isLastCell(this.currentCell.row, this.currentCell.column)) {
+				this.isInNullRow = true;
 			}
 		}
 
@@ -952,6 +985,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				gridObject._grid.getEditorLock().commitCurrentEdit();
 				this.submitCurrentCellChange((result: EditUpdateCellResult) => {
 					self.setCellDirtyState(self.currentCell.row, self.currentCell.column, result.cell.isDirty);
+					self.setRowDirtyState(this.currentCell.row, result.isRowDirty);
 				}, (error: any) => {
 					self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditSaveViewError)
 						.withAdditionalProperties({ error: error })
