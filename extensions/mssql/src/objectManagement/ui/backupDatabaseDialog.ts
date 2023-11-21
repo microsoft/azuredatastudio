@@ -146,10 +146,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 		const backupDestinations = [loc.BackupDiskLabel, loc.BackupUrlLabel];
 		let defaultDest = this.useUrlMode ? backupDestinations[1] : backupDestinations[0];
-		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, label => {
-			let isUrl = label === loc.BackupUrlLabel;
-			return this.toggleBackupDestination(isUrl);
-		}, backupDestinations, defaultDest, false);
+		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, () => undefined, backupDestinations, defaultDest, false);
 		let backupDestContainer = this.createLabelInputContainer(loc.BackupToLabel, this._backupDestDropdown);
 		components.push(backupDestContainer);
 
@@ -477,14 +474,6 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			pathDeviceMap[path] = deviceType;
 		});
 		return pathDeviceMap;
-	}
-
-	private async toggleBackupDestination(useUrlMode: boolean): Promise<void> {
-		if (useUrlMode) {
-
-		} else {
-
-		}
 	}
 }
 
