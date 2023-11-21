@@ -846,7 +846,7 @@ export interface MainThreadWorkspaceShape {
 
 export interface MainThreadWindowShape {
 	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[], showFoldersOnly?: boolean): Promise<string | undefined>;
-	$openBackupUrlBrowserDialog(connectionUri: string, isRestoreDialog: boolean, defaultBackupName: string): Promise<string | undefined>;
+	$openBackupUrlBrowserDialog(connectionUri: string, defaultBackupName: string, isRestore: boolean): Promise<string | undefined>;
 }
 
 export interface MainThreadBackgroundTaskManagementShape extends IDisposable {

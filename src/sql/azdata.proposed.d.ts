@@ -2098,7 +2098,7 @@ declare module 'azdata' {
 		 */
 		export function openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: FileFilters[], showFoldersOnly?: boolean): Thenable<string | undefined>;
 
-		export function openBackupUrlBrowserDialog(connectionUri: string, isRestoreDialog: boolean, defaultBackupName: string): Thenable<string | undefined>;
+		export function openBackupUrlBrowserDialog(connectionUri: string, defaultBackupName: string, isRestore: boolean): Thenable<string | undefined>;
 	}
 
 	export interface FileBrowserProvider extends DataProvider {
