@@ -187,7 +187,7 @@ steps:
     version: 5.0.x
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
-- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+- task: EsrpCodeSigning@3
   inputs:
     ConnectedServiceName: 'Code Signing'
     FolderPath: '$(Build.SourcesDirectory)/.build'

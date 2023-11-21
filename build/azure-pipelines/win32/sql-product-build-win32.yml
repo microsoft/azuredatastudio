@@ -173,7 +173,7 @@ steps:
     displayName: Run core integration tests (arm64)
     condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['VSCODE_ARCH'], 'arm64')))
 
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  - task: EsrpCodeSigning@3
     displayName: 'Sign out code'
     inputs:
       ConnectedServiceName: 'Code Signing'
@@ -236,7 +236,7 @@ steps:
       exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-archive" }
     displayName: Archive & User & System setup
 
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  - task: EsrpCodeSigning@3
     displayName: 'Sign installers'
     inputs:
       ConnectedServiceName: 'Code Signing'

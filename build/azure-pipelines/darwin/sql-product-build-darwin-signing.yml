@@ -24,7 +24,7 @@ steps:
       version: 2.1.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  - task: EsrpCodeSigning@3
     displayName: 'ESRP CodeSigning'
     inputs:
       ConnectedServiceName: 'Code Signing'
@@ -51,7 +51,7 @@ steps:
     displayName: Clean Archive
     condition: and(succeeded(), eq(variables['signed'], true))
 
-  - task: EsrpCodeSigning@1
+  - task: EsrpCodeSigning@3
     displayName: 'ESRP Notarization'
     inputs:
       ConnectedServiceName: 'Code Signing'
