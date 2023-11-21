@@ -1213,6 +1213,12 @@
     <trans-unit id="sql.migration.import">
       <source xml:lang="en">Import</source>
     </trans-unit>
+    <trans-unit id="sql.migration.tab.import.migration.label">
+      <source xml:lang="en">Import assessment</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.tab.import.migration.description">
+      <source xml:lang="en">Import assessment to Azure SQL</source>
+    </trans-unit>
     <trans-unit id="sql.migration.sku.import.performance.data">
       <source xml:lang="en">Import performance data</source>
     </trans-unit>
@@ -1332,6 +1338,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.wizard.account.add.button.label">
       <source xml:lang="en">Link account</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.load.assessment.report">
+      <source xml:lang="en">Load assessment report</source>
     </trans-unit>
     <trans-unit id="sql.migration.service.container.loading.help">
       <source xml:lang="en">Loading Migration Services</source>
@@ -2768,7 +2777,7 @@
       <source xml:lang="en">To proceed, press Select button</source>
     </trans-unit>
     <trans-unit id="sql.migration.support.request.note">
-      <source xml:lang="en">To receive assistance from Microsoft customer support, please log a service request on Service Hub at aka.ms/servicehub.</source>
+      <source xml:lang="en">To receive assistance from Microsoft customer support, please submit a support request.</source>
     </trans-unit>
     <trans-unit id="sql.migration.total.findings.label">
       <source xml:lang="en">Total findings: {0}</source>

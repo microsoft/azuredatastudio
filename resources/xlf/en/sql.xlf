@@ -1743,8 +1743,15 @@ Default Skipped Commands:
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/connection/browser/connectionStatus" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="status.connection.baseTooltip">
+      <source xml:lang="en">Server: {0}
+Database: {1}</source>
+    </trans-unit>
     <trans-unit id="status.connection.status">
       <source xml:lang="en">Connection Status</source>
+    </trans-unit>
+    <trans-unit id="status.connection.tooltipLogin">
+      <source xml:lang="en">Login: {0}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/connection/common/connectionProviderExtension" source-language="en" datatype="plaintext"><body>
