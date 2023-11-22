@@ -180,13 +180,6 @@ steps:
     yarn gulp vscode-linux-x64-build-rpm
   displayName: Build Rpm
 
-- task: UseDotNet@2
-  displayName: 'Install .NET SDK for signing'
-  inputs:
-    packageType: sdk
-    version: 6.0.x
-    installationPath: $(Agent.ToolsDirectory)/dotnet
-
 - task: EsrpCodeSigning@3
   inputs:
     ConnectedServiceName: 'Code Signing'

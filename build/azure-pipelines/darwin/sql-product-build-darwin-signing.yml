@@ -17,13 +17,6 @@ steps:
       mv azuredatastudio-darwin-$(VSCODE_ARCH)-unsigned.zip azuredatastudio-darwin-$(VSCODE_ARCH).zip
     displayName: 'Rename the file'
 
-  - task: UseDotNet@2
-    displayName: 'Install .NET SDK for signing'
-    inputs:
-      packageType: sdk
-      version: 6.0.x
-      installationPath: $(Agent.ToolsDirectory)/dotnet
-
   - task: EsrpCodeSigning@3
     displayName: 'ESRP CodeSigning'
     inputs:
