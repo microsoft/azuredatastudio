@@ -55,7 +55,7 @@ export class AccountViewModel {
 		try {
 			let accounts = await this.getAccountsForProviders();
 			if (this._authenticationService) {
-				const sessionAccounts = await this.getAccountsForSessions();
+				const sessionAccounts = await this.getAccountForSessions();
 				accounts = accounts.concat(sessionAccounts);
 			}
 
@@ -84,20 +84,18 @@ export class AccountViewModel {
 		return accounts;
 	}
 
-	private async getAccountsForSessions(): Promise<AccountProviderAddedEventParams[]> {
+	private async getAccountForSessions(): Promise<AccountProviderAddedEventParams[]> {
 		const sessionAccounts: AccountProviderAddedEventParams[] = [];
 		const providerIds = this._authenticationService.getProviderIds();
 
 		for (const providerId of providerIds) {
-			const providerAccounts: azdata.Account[] = [];
-
 			const sessions = await this._authenticationService.getSessions(providerId);
-			sessions.forEach(session => {
-				providerAccounts.push({
+			const accounts = sessions.map(session => {
+				return ({
 					key: { providerId: providerId, accountId: session.account.id } as azdata.AccountKey,
 					displayInfo: { contextualDisplayName: providerId, displayName: session.account.label, userId: session.account.label } as azdata.AccountDisplayInfo,
 					isStale: false,
-				} as azdata.Account);
+				}) as azdata.Account;
 			});
 
 			const sessionAccount: AccountProviderAddedEventParams = {
@@ -105,7 +103,7 @@ export class AccountViewModel {
 					id: providerId,
 					displayName: providerId
 				},
-				initialAccounts: providerAccounts
+				initialAccounts: accounts
 			};
 			sessionAccounts.push(sessionAccount);
 		}
