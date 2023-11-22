@@ -168,11 +168,9 @@ export class GitHubCopilotSignOutAction extends Action {
 	}
 
 	public override async run(): Promise<void> {
-		const providers = this.authenticationService.getProviderIds();
-		for (const providerId of providers) {
-			const allSessions = await this.authenticationService.getSessions(providerId);
-			const sessionsForAccount = allSessions.filter(s => s.account.label === this._account.displayInfo.userId);
-			await this.authenticationService.removeAccountSessions(providerId, this._account.displayInfo.userId, sessionsForAccount);
-		}
+		const providerId = this._account.key.providerId;
+		const allSessions = await this.authenticationService.getSessions(providerId);
+		const sessionsForAccount = allSessions.filter(s => s.account.label === this._account.displayInfo.userId);
+		await this.authenticationService.removeAccountSessions(providerId, this._account.displayInfo.userId, sessionsForAccount);
 	}
 }
