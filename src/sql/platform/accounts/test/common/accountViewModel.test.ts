@@ -64,7 +64,7 @@ suite('Account Management Dialog ViewModel Tests', () => {
 	test('Construction - Events are properly defined', () => {
 		// If: I create an account viewmodel
 		let mockAccountManagementService = getMockAccountManagementService(false, false);
-		let vm = new AccountViewModel(mockAccountManagementService.object, new NullLogService());
+		let vm = new AccountViewModel(mockAccountManagementService.object, new NullLogService(), undefined);
 
 		// Then:
 		// ... All the events for the view models should be properly initialized
@@ -196,7 +196,7 @@ function getViewModel(
 	evRemove: EventVerifierSingle<azdata.AccountProviderMetadata>,
 	evUpdate: EventVerifierSingle<UpdateAccountListEventParams>
 ): AccountViewModel {
-	let vm = new AccountViewModel(ams, new NullLogService());
+	let vm = new AccountViewModel(ams, new NullLogService(), undefined);
 	vm.addProviderEvent(evAdd.eventHandler);
 	vm.removeProviderEvent(evRemove.eventHandler);
 	vm.updateAccountListEvent(evUpdate.eventHandler);

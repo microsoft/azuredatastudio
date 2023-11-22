@@ -48,7 +48,6 @@ import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinne
 import { Tenant, TenantListDelegate, TenantListRenderer } from 'sql/workbench/services/accountManagement/browser/tenantListRenderer';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
-import { IAuthenticationService } from 'vs/workbench/services/authentication/common/authentication';
 
 export const VIEWLET_ID = 'workbench.view.accountpanel';
 
@@ -164,8 +163,7 @@ export class AccountDialog extends Modal {
 		@INotificationService private _notificationService: INotificationService,
 		@IOpenerService protected readonly openerService: IOpenerService,
 		@ITelemetryService private readonly vstelemetryService: ITelemetryService,
-		@IAccountManagementService private readonly _accountManagementService: IAccountManagementService,
-		@IAuthenticationService private readonly _authenticationService: IAuthenticationService
+		@IAccountManagementService private readonly _accountManagementService: IAccountManagementService
 	) {
 		super(
 			localize('linkedAccounts', "Linked accounts"),
@@ -195,37 +193,7 @@ export class AccountDialog extends Modal {
 				for (const addedProvider of addedProviders) {
 					this.addProvider(addedProvider);
 				}
-			})
-			.then(async () => {
-				await this.addGitHubCopilotProvider();
 			});
-	}
-
-	private async addGitHubCopilotProvider(): Promise<void> {
-		const providers = this._authenticationService.getProviderIds();
-		for (const providerId of providers) {
-			if (providerId === 'github') {
-				const copilotAccounts: azdata.Account[] = [];
-
-				const allSessions = await this._authenticationService.getSessions(providerId);
-				for (const session of allSessions) {
-					copilotAccounts.push({
-						key: { providerId: 'github', accountId: session.account.id } as azdata.AccountKey,
-						displayInfo: { contextualDisplayName: 'GitHub Copilot', displayName: session.account.label, userId: session.account.label, accountType: 'work_school' } as azdata.AccountDisplayInfo,
-						isStale: false,
-					} as azdata.Account);
-				}
-
-				const gitHubCopilotProvider: AccountProviderAddedEventParams = {
-					addedProvider: {
-						id: 'github',
-						displayName: 'GitHub'
-					},
-					initialAccounts: copilotAccounts
-				};
-				this.addProvider(gitHubCopilotProvider);
-			}
-		}
 	}
 
 	// MODAL OVERRIDE METHODS //////////////////////////////////////////////
