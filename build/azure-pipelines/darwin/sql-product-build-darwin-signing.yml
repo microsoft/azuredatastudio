@@ -18,10 +18,10 @@ steps:
     displayName: 'Rename the file'
 
   - task: UseDotNet@2
-    displayName: 'Install .NET Core sdk for signing'
+    displayName: 'Install .NET SDK for signing'
     inputs:
       packageType: sdk
-      version: 2.1.x
+      version: 6.0.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: EsrpCodeSigning@3
