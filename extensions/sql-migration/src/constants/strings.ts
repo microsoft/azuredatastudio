@@ -579,7 +579,7 @@ export const TARGET_SUBSCRIPTION_INFO = localize('sql.migration.sku.subscription
 export const TARGET_LOCATION_INFO = localize('sql.migration.sku.location', "Azure region for your Azure SQL target. Only regions that contain a target eligible for migration will be shown.");
 export const TARGET_RESOURCE_GROUP_INFO = localize('sql.migration.sku.resource_group', "Resource group for your Azure SQL target. Only resource groups that contain a target eligible for migration will be shown.");
 export const TARGET_RESOURCE_INFO = localize('sql.migration.sku.resource', "Your Azure SQL target resource name");
-export const TARGET_RESOURCE_PORT_INFO = localize('sql.migration.sku.resource.port', "Your Azure SQL target resource port number");
+export const TARGET_RESOURCE_PORT_INFO = localize('sql.migration.sku.resource.port', "Your Azure SQL target resource port number : 0 - 65535");
 
 // DMS tooltip
 export const DMS_SUBSCRIPTION_INFO = localize('sql.migration.dms.subscription', "Subscription name for your Azure Database Migration Service");
