@@ -60,7 +60,6 @@ import { IComponentContextService } from 'sql/workbench/services/componentContex
 import { GridRange } from 'sql/base/common/gridRange';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { defaultTableFilterStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
-import { DOMParser } from '@xmldom/xmldom';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -983,6 +982,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 		try {
 			if (value && !value.isNull && value.displayValue.trim() !== '') {
 				var parser = new DOMParser();
+				// Script elements if any are not evaluated during parsing
 				var doc = parser.parseFromString(value.displayValue, 'text/xml');
 				isXML = doc.documentElement.tagName !== 'parsererror';
 			}
