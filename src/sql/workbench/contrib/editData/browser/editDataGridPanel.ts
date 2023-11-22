@@ -224,24 +224,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					else {
 						// we are leaving focus off grid via tab, we need to commit the results.
 						self.needsCellPreSubmit = false;
-						self.dataService.commitEdit().then(result => {
-							// Committing was successful, clean the grid
-							self.setGridClean();
-							self.rowIdMappings = {};
-							self.newRowVisible = false;
-							return Promise.resolve();
-						}, error => {
-							self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditCellSelectError)
-								.withAdditionalProperties({ error: error })
-								.send();
-							// Committing failed, jump back to the last selected cell
-							this.cellSubmitInProgress = true;
-							this.updateEnabledState(true);
-							this.cellSubmitInProgress = false;
-							this.lastClickedCell = { row: self.currentCell.row, column: self.currentCell.column };
-							self.focusCell(self.currentCell.row, self.currentCell.column);
-							return Promise.reject(null);
-						});
+						self.afterSubmitCommitEdit();
 					}
 				},
 					(error: any) => {
@@ -441,26 +424,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		if (this.currentCell.row !== row) {
 			// We're changing row, commit the changes
-			cellSelectTasks = cellSelectTasks.then(() => {
-				return self.dataService.commitEdit().then(result => {
-					// Committing was successful, clean the grid
-					self.setGridClean();
-					self.rowIdMappings = {};
-					self.newRowVisible = false;
-					return Promise.resolve();
-				}, error => {
-					self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditCellSelectError)
-						.withAdditionalProperties({ error: error })
-						.send();
-					// Committing failed, jump back to the last selected cell
-					this.cellSubmitInProgress = true;
-					this.updateEnabledState(true);
-					this.cellSubmitInProgress = false;
-					this.lastClickedCell = { row: self.currentCell.row, column: self.currentCell.column };
-					self.focusCell(self.currentCell.row, self.currentCell.column);
-					return Promise.reject(null);
-				});
-			});
+			cellSelectTasks = cellSelectTasks.then(() => self.afterSubmitCommitEdit());
 		}
 
 		// At the end of a successful cell select, update the currently selected cell
@@ -474,6 +438,30 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		// Cap off any failed promises, since they'll be handled
 		cellSelectTasks.catch(() => {
+		});
+	}
+
+	/**
+	 * Commits the submitted cell and does necessary actions afterwards.
+	 */
+	private afterSubmitCommitEdit(): Thenable<void> {
+		return this.dataService.commitEdit().then(result => {
+			// Committing was successful, clean the grid
+			this.setGridClean();
+			this.rowIdMappings = {};
+			this.newRowVisible = false;
+			return Promise.resolve();
+		}, error => {
+			this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.SubmitCommitError)
+				.withAdditionalProperties({ error: error })
+				.send();
+			// Committing failed, jump back to the last selected cell
+			this.cellSubmitInProgress = true;
+			this.updateEnabledState(true);
+			this.cellSubmitInProgress = false;
+			this.lastClickedCell = { row: this.currentCell.row, column: this.currentCell.column };
+			this.focusCell(this.currentCell.row, this.currentCell.column);
+			return Promise.reject(null);
 		});
 	}
 

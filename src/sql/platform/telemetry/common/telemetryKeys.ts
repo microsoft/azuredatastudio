@@ -58,6 +58,7 @@ export const enum TelemetryError {
 	DatabaseConnectionError = 'DatabaseConnectionError',
 	EditCellEndError = 'EditCellEndError',
 	EditCellSelectError = 'EditCellSelectError',
+	SubmitCommitError = 'SubmitCommitError',
 	EditSaveViewError = 'EditSaveViewError',
 	ObjectExplorerExpandError = 'ObjectExplorerExpandError',
 	AddAzureAccountError = 'AddAzureAccountError',
