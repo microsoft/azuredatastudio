@@ -755,9 +755,6 @@ export class BackupComponent extends AngularDisposable {
 
 	private onAddUrlClick(): void {
 		this.backupRestoreUrlBrowserDialogService.showDialog(this._uri!,
-			this.defaultNewBackupFolder!,
-			fileFiltersSet,
-			FileValidationConstants.backup,
 			false,
 			false,
 			this.getDefaultBackupFileName()).then(url => this.handleUrlPathAdded(url));
