@@ -26,7 +26,7 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 	private _body;
 	private _disposables: vscode.Disposable[] = [];
 	private static readonly _assessmentReportName: string = 'SqlAssessmentReport.json';
-	private _previousTargetTypeUndefined: boolean = false;
+	private _previousTargetTypeUndefined: boolean = true;
 
 	constructor(
 		wizard: azdata.window.Wizard,
