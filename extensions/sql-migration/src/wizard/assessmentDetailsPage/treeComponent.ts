@@ -12,6 +12,7 @@ import { MigrationStateModel } from '../../models/stateMachine';
 import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
 import { selectDatabasesFromList } from '../../constants/helper';
 import { getSourceConnectionProfile } from '../../api/sqlUtils';
+import { SqlMigrationAssessmentResultItem } from '../../service/contracts';
 
 const AZURE_SQL_MI_DB_COUNT_THRESHOLD = 100;
 
@@ -269,7 +270,7 @@ export class TreeComponent {
 		let instanceTableValues: azdata.DeclarativeTableCellValue[][] = [];
 		this._databaseTableValues = [];
 		this._dbNames = this.model._databasesForAssessment;
-		this._serverName = (await getSourceConnectionProfile()).serverName;
+		this._serverName = this.model.serverName ?? (await getSourceConnectionProfile()).serverName;
 
 		// pre-select the entire list
 		const selectedDbs = this._dbNames.filter(db => this.model._databasesForMigration.includes(db));
@@ -317,7 +318,7 @@ export class TreeComponent {
 					style: styleLeft
 				},
 				{
-					value: this.model._assessmentResults?.issues?.filter(issue => issue.appliesToMigrationTargetPlatform === this.model._targetType).length,
+					value: this.getUniqueIssuesBasedOnCheckId(this.model._assessmentResults?.issues)?.filter(issue => issue.appliesToMigrationTargetPlatform === this.model._targetType).length,
 					style: styleRight
 				}
 			]];
@@ -342,7 +343,7 @@ export class TreeComponent {
 						style: styleLeft
 					},
 					{
-						value: db.issues.filter(v => v.appliesToMigrationTargetPlatform === this.model._targetType)?.length,
+						value: this.getUniqueIssuesBasedOnCheckId(db.issues)?.filter(v => v.appliesToMigrationTargetPlatform === this.model._targetType)?.length,
 						style: styleRight
 					}
 				]);
@@ -358,6 +359,19 @@ export class TreeComponent {
 
 	private createIconTextCell(icon: IconPath, text: string): string {
 		return text;
+	}
+
+	// function that return list of unique issues based on checkId
+	private getUniqueIssuesBasedOnCheckId(issues: SqlMigrationAssessmentResultItem[]): SqlMigrationAssessmentResultItem[] {
+		let distinctIssues: SqlMigrationAssessmentResultItem[] = [];
+		let distinctCheckIds: string[] = [];
+		issues.forEach((issue) => {
+			if (!distinctCheckIds.includes(issue.checkId)) {
+				distinctCheckIds.push(issue.checkId);
+				distinctIssues.push(issue);
+			}
+		});
+		return distinctIssues;
 	}
 
 }
