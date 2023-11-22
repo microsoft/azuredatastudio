@@ -478,8 +478,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 }
 
-// const maxDevices: number = 64;
-
+// Encryption algorithms
 const aes128 = 'AES 128';
 const aes192 = 'AES 192';
 const aes256 = 'AES 256';
@@ -488,7 +487,7 @@ const tripleDES = 'Triple DES';
 /**
  * Backup physical device type: https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.backupdevicetype
  */
-export enum PhysicalDeviceType {
+enum PhysicalDeviceType {
 	Disk = 2,
 	FloppyA = 3,
 	FloppyB = 4,
@@ -502,7 +501,7 @@ export enum PhysicalDeviceType {
 /**
  * Backup media device type: https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.devicetype
  */
-export enum MediaDeviceType {
+enum MediaDeviceType {
 	LogicalDevice = 0,
 	Tape = 1,
 	File = 2,
