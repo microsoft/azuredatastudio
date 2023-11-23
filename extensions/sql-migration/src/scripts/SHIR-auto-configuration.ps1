@@ -39,21 +39,29 @@ $Global:LatestIRVersion = [Version]"5.35.8686.1"
 $Global:MinRequiredNuGetVersion = [Version]"2.8.5.201"
 
 # Log file path
-$Global:Logfile = [System.IO.Path]::Combine($env:USERPROFILE, "shir", "shir-$timeStamp.log")
+$Global:Logfile = Join-Path $env:USERPROFILE "shir/shir-$timeStamp.log"
 
 # Guid used to create a script lock (to disable concurrent script instances)
 $Global:InstallationLockGUID = $MyInvocation.MyCommand.Name
 
 ################################### Main Script Block ##################################
 $main = {
+	Write-OutputAndLog "Script ID: $($Global:ScriptId)`nDescription: This script automatically configures SHIR on a Windows machine including downloading, installing Integration runtime, and configuring IR with DMS."
 	$isFirstInstance = $false
 	# Create a new Stopwatch object
 	$stopwatch = New-Object System.Diagnostics.Stopwatch
 	# Start the stopwatch
 	$stopwatch.Start()
 
+	# Create a log file
 	try {
 		New-Item -ItemType File -Path $Global:Logfile -Force | Out-Null
+	}
+	catch {
+		$Global:Logfile = $null
+	}
+
+	try {
 		# Create a lock file so that only one instance of script can run at a time
 		$isFirstInstance = Lock-ScriptInstance
 		if ($isFirstInstance) {
@@ -61,8 +69,7 @@ $main = {
 		}
 	}
 	catch {
-		Write-ErrorAndLog -exception $_.Exception
-		Write-ErrorAndLog "The script could not configure SHIR due to an internal exception. Please try again."
+		Write-ErrorAndLog "The script could not configure self-hosted integration runtime due to an internal exception. Please try again. `nError: $($_.Exception.Message)"
 	}
 	finally {
 		# Only allow the first running instance to unlock the script
@@ -74,24 +81,26 @@ $main = {
 
 		# Write the total time taken
 		Write-OutputAndLog ("Total time taken: {0}" -f $stopwatch.Elapsed)
-		Write-OutputAndLog ("Log file generated: " + $Global:Logfile)
+		if ($null -ne $Global:Logfile) {
+			Write-OutputAndLog ("Log file generated: " + $Global:Logfile)
+		}
 	}
 }
 
-################################### Download, install and configure IR ##################################
+################################### Download, Install and Configure IR ##################################
 Function Install-IR {
 	Write-OutputAndLog "Checking if Integration Runtime is already installed on this machine..."
 	$installedIRVersion = Get-InstalledShirVersion
 
 	if ($null -ne $installedIRVersion) {
-		Write-OutputAndLog "Found Integration Runtime installed on the machine."
+		Write-OutputAndLog "Integration Runtime found: Version $installedIRVersion is installed on the machine."
 
 		# Perform validation checks for installed IR
 		if ($installedIRVersion -ne $Global:LatestIRVersion) {
-			Write-ErrorAndLog "Installed Integration Runtime does not meet the checks for configuring. Please read the documentation for more information."
+			Write-ErrorAndLog "Installed Integration Runtime's version $($installedIRVersion) does not meet the version $($Global:LatestIRVersion) or above required for configuring. "
 			return
 		}
-		Write-OutputAndLog "Installed Integration Runtime meets the requirements for configuring."
+		Write-OutputAndLog "The installed Integration Runtime satisfies all requirements for successful configuration."
 
 		if (-not (Test-InternetConnectivity)) {
 			return
@@ -122,31 +131,6 @@ Function Install-IR {
 	}
 }
 
-Function Get-LogFilePath {
-	<#
-    .DESCRIPTION
-    Creates the log file path inside the user profile and returns the path.
-
-    .OUTPUTS
-    Log file path
-    #>
-
-	# Get the current user's home directory using the environment variable USERPROFILE
-	$home_dir = $env:USERPROFILE
-
-	# Create the .shir folder inside the home directory using the Join-Path cmdlet
-	$shir_dir = Join-Path $home_dir "shir"
-	New-Item -ItemType Directory -Path $shir_dir -Force
-
-	# Create the logs.txt file inside the .shir folder using the New-Item cmdlet
-	$logs_file = Join-Path $shir_dir "logs.txt"
-	New-Item -ItemType File -Path $logs_file -Force
-
-	Write-OutputAndLog ("Log file generated: " + $logs_file)
-
-	return $logs_file
-}
-
 ################################### Pre-installation checks ##################################
 Function Test-CanInstallIR {
 	<#
@@ -158,13 +142,13 @@ Function Test-CanInstallIR {
     #>
 	try {
 		if (-not [Environment]::Is64BitOperatingSystem) {
-			throw "Pre-requisite not met - OS is not 64 bits."
+			throw "Prerequisites are not met. 64-bit operating system is required."
 		}
 		if (-not (Test-DotNetVersion)) {
-			throw "Pre-requisite not met - Dotnet version is lesser than 4.7.2"
+			throw "Prerequisites are not met. Dotnet version 4.7.2 or later is required."
 		}
 		if ([string]::IsNullOrWhitespace($AuthKey1) -and [string]::IsNullOrWhitespace($AuthKey2)) {
-			throw "You need to provide atleast one authentication key."
+			throw "Minimum one authentication key is required."
 		}
 	}
 	catch {
@@ -178,6 +162,7 @@ Function Test-DotNetVersion {
 	<#
     .DESCRIPTION
     Checks if installed .NET Framework version >= 4.7.2.
+    https://learn.microsoft.com/en-us/purview/manage-integration-runtimes
     https://learn.microsoft.com/en-us/dotnet/framework/migration-guide/how-to-determine-which-versions-are-installed
 
     .OUTPUTS
@@ -302,13 +287,13 @@ Function Write-ErrorAndLog {
 	)
 
 	if ($null -ne $message) {
-		$logLine = ("{0}: ERROR: " -f (Get-Date).ToString("yyyy-MM-dd HH:mm:ss.fff")) + $message
+		$logLine = ("{0}: ERROR: {1} `n{2}" -f ((Get-Date).ToString("yyyy-MM-dd HH:mm:ss.fff")), $message, "For more information, refer documentation (aka.ms/single-click-SHIR).")
 		Write-Host $logLine -ForegroundColor Red
 		Write-LogFile -message $logLine
 	}
 
 	if ($null -ne $exception) {
-		$logLine = "{0}:ERROR:{1}" -f (Get-Date).ToString("yyyy-MM-dd HH:mm:ss.fff"), ($exception.ToString())
+		$logLine = "{0}: ERROR: {1} `n{2}" -f ((Get-Date).ToString("yyyy-MM-dd HH:mm:ss.fff"), ($exception.ToString()), "For more information, refer documentation (aka.ms/single-click-SHIR).")
 		Write-Host $logLine -ForegroundColor Red
 		Write-LogFile -message $logLine
 	}
@@ -376,20 +361,25 @@ Function Get-Package {
 		if (Test-Path -Path $packagePath) {
 			# Package already exists, force download
 			Remove-Item -Path $packagePath | Out-Null
-			Write-OutputAndLog "Removed cached package from $downloadFolder."
+			Write-OutputAndLog "Successfully removed the cached package from the directory: $downloadFolder."
 		}
 
 		if (-not (Test-Path -Path $downloadFolder)) {
 			# If folder does not exists then create
 			New-Item $downloadFolder -ItemType Directory | Out-Null
-			Write-OutputAndLog "Created folder $downloadFolder."
+			Write-OutputAndLog "Successfully created the directory: $downloadFolder."
 		}
 
 		Write-OutputAndLog "Downloading from url $url..."
 		Write-OutputAndLog "Downloading $packageName package..."
+
+		$stopwatch = New-Object System.Diagnostics.Stopwatch
+		$stopwatch.Start()
 		Invoke-WebRequest -Uri $url -OutFile $packagePath
+		$stopwatch.Stop()
+
 		Write-OutputAndLog "Package $packageName downloaded at $downloadFolder."
-		Write-OutputAndLog ('Downloaded {0} bytes.' -f (Get-Item $packagePath).length)
+		Write-OutputAndLog ("Downloaded {0} bytes in {1}." -f (Get-Item $packagePath).length, $stopwatch.Elapsed)
 	}
 	else {
 		# Display message that file already exists
@@ -415,17 +405,16 @@ Function Test-InternetConnectivity {
 	)
 
 	try {
-		Write-OutputAndLog "Checking for internet connection..."
 		$response = Invoke-WebRequest -Uri $Url -UseBasicParsing -ErrorAction SilentlyContinue
 		if ($null -ne $response) {
-			Write-OutputAndLog "Internet is connected."
+			Write-OutputAndLog "Checking for internet connection... Completed."
 			return $true
 		}
-		Write-ErrorAndLog "Internet is not available on the machine and its a requirement for the execution of the script."
+		Write-ErrorAndLog "Prerequisites are not met. Internet connectivity is required on the machine."
 		return $false
 	}
 	catch {
-		Write-ErrorAndLog "Internet is not available on the machine and its a requirement for the execution of the script."
+		Write-ErrorAndLog "Prerequisites are not met. Internet connectivity is required on the machine."
 		return $false
 	}
 }
@@ -437,7 +426,7 @@ Function Test-AdminAccess {
     Checks if the user executing this script has admin access.
 
     .OUTPUTS
-    [bool]: true if user executing the script has admin access else false.
+    [bool]: True if user executing the script has admin access else false.
     #>
 	$currentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
 	return $currentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
@@ -466,11 +455,11 @@ Function Install-MsiPackage {
 
 	try {
 		# Check if the installation is already done
-		Write-OutputAndLog "Checking existing $packageName package installation..."
+		Write-OutputAndLog "Checking existing installation of $packageName package..."
 		try {
 			$isPackageInstalled = & $installationVerificationCallback -ErrorAction SilentlyContinue
 			if ($null -ne $isPackageInstalled -and $isPackageInstalled -eq $true) {
-				Write-OutputAndLog "$packageName package is already installed."
+				Write-OutputAndLog "$packageName package is installed."
 				return $true
 			}
 			else {
@@ -482,36 +471,37 @@ Function Install-MsiPackage {
 			return $false
 		}
 
-		# add necessary arguments to install quietly with no UI
-		# for no UI /qn, basic UI /qb, reduced UI /qr, full UI /qf
+		# Add necessary arguments to install quietly with no UI
+		# For no UI /qn, basic UI /qb, reduced UI /qr, full UI /qf
 		$argsx = @('/i', $packagePath, '/quiet', '/qb')
 
-		# execute installation process
-		Write-OutputAndLog "Starting $packageName package installation..."
+		# Execute installation process
+		Write-OutputAndLog "Installing $packageName package..."
+
+		$stopwatch = New-Object System.Diagnostics.Stopwatch
+		$stopwatch.Start()
 		$process = Start-Process msiexec -Wait -NoNewWindow -ErrorAction SilentlyContinue -ArgumentList $argsx
-		Write-OutputAndLog ("MSI Installation process exited with code: " + $process.ExitCode)
-		# after installation update the environment variable for the powershell session
-		$env:Path = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine)
+		$stopwatch.Stop()
+
+		Write-OutputAndLog "MSI Installation process exited with code: $($process.ExitCode)"
+		Write-OutputAndLog "Installation completed in $($stopwatch.Elapsed)."
+
+		# No installation verification callback provided
+		if ([string]::IsNullOrWhiteSpace($installationVerificationCallback.ToString())) {
+			return $true
+		}
 
 		# Verifying the installation
-		Write-OutputAndLog "Verifying $packageName package installation..."
+		Write-OutputAndLog "Verifying $packageName installation..."
 		try {
-			$installationResult = & $installationVerificationCallback -ErrorAction SilentlyContinue
-			if ($null -ne $installationResult -and $installationResult -eq $true) {
-				Write-OutputAndLog "$packageName package installed sucessfully."
+			$installationResult = & $installationVerificationCallback
+			if ($installationResult -eq $true) {
+				Write-OutputAndLog "$packageName installation verification successful."
 				return $true
-			}
-			else {
-				Write-OutputAndLog "Failed to verify $packageName installation."
-				return $false
 			}
 		}
 		catch {
-			Write-ErrorAndLog -exception $_.Exception
-			# Only throw the error incase there is a valid verification command
-			if (-not [string]::IsNullOrEmpty($installationVerificationCallback.ToString())) {
-				Write-ErrorAndLog "Installation Error: Installation of package $packageName failed verification"
-			}
+			Write-OutputAndLog "Failed to verify $packageName installation. Check for errors. Error: $($_.Exception.Message)"
 			return $false
 		}
 	}
@@ -540,22 +530,28 @@ Function Register-IntegrationRuntime {
 	)
 
 	if ([string]::IsNullOrWhitespace($AuthKey1) -and [string]::IsNullOrWhitespace($AuthKey2)) {
-		Write-ErrorAndLog "You need to provide atleast one authentication key to configure SHIR."
+		Write-ErrorAndLog "Minimum one authentication key is required."
 		return
 	}
 
 	$azDataMigrationModule = Get-Module -ListAvailable -Name Az.DataMigration
 
-	if (-not $azDataMigrationModule) {
-		# Install the NugetProvider for Az.DataMigration
-		$nuget = Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue
+	try {
+		if (-not $azDataMigrationModule) {
+			# Install the NugetProvider for Az.DataMigration
+			$nuget = Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue
 
-		if ($null -eq $nuget -or $nuget.Version -lt $Global:MinRequiredNuGetVersion) {
-			Install-PackageProvider -Name NuGet -MinimumVersion $Global:MinRequiredNuGetVersion -Force
+			if ($null -eq $nuget -or $nuget.Version -lt $Global:MinRequiredNuGetVersion) {
+				Install-PackageProvider -Name NuGet -MinimumVersion $Global:MinRequiredNuGetVersion -Force
+			}
+
+			# Install the Az.DataMigration module
+			Install-Module -Name Az.DataMigration -Force
 		}
-
-		# Install the Az.DataMigration module
-		Install-Module -Name Az.DataMigration -Force
+	}
+	catch {
+		Write-ErrorAndLog -exception $_.Exception
+		return
 	}
 
 	# Try the first authentication key
@@ -590,9 +586,9 @@ if (-not (Test-AdminAccess)) {
 	if ($AdminPriv) {
 		Write-ErrorAndLog -exception "Failed to gain admin privileges."
 	}
-	# Gain admin access if script is executed in a without admin privileges by prompting the user
+	# Gain admin access by prompting the user, if the script is executed without admin privileges.
 	else {
-		$commandLineArgs = "-noprofile -noexit -executionpolicy unrestricted -file $($MyInvocation.MyCommand.Definition) -admin-priv"
+		$commandLineArgs = "-noprofile -noexit -executionpolicy bypass -file $($MyInvocation.MyCommand.Definition) -admin-priv"
 
 		if (-not [string]::IsNullOrWhitespace($AuthKey1)) {
 			$commandLineArgs += " -authKey1 $AuthKey1"
