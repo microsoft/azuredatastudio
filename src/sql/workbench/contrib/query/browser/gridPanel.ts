@@ -984,7 +984,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 				var parser = new DOMParser();
 				// Script elements if any are not evaluated during parsing
 				var doc = parser.parseFromString(value.displayValue, 'text/xml');
-				isXML = doc.documentElement.tagName !== 'parsererror';
+				// For non-xmls, parsererror element is present in body element.
+				var parserErrors = doc.body?.getElementsByTagName('parsererror') ?? [];
+				isXML = parserErrors?.length === 0;
 			}
 		} catch (e) {
 			// Ignore errors when parsing cell content, log and continue
