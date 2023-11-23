@@ -4075,6 +4075,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.load.assessment.report" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Load assessment report]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[載入評定報表]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.load.migration.list.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error loading migrations list]]></Val>
@@ -8526,10 +8535,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.support.request.note" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[To receive assistance from Microsoft customer support, please log a service request on Service Hub at aka.ms/servicehub.]]></Val>
+          <Val><![CDATA[To receive assistance from Microsoft customer support, please submit a support request.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[若要獲得 Microsoft 客戶支援的協助，請在 aka.ms/servicehub 的服務中心上記錄服務要求。]]></Val>
+            <Val><![CDATA[若要收到 Microsoft 客戶支援的協助，請提交支援要求。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[To receive assistance from Microsoft customer support, please log a service request on Service Hub at aka.ms/servicehub.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8637,6 +8649,24 @@
           <Val><![CDATA[Dashboard]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[儀表板]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tab.import.migration.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Import assessment to Azure SQL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[將評定匯入 Azure SQL]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tab.import.migration.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Import assessment]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[匯入評定]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
