@@ -394,6 +394,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 					stateMachine._targetServerInstance.id,
 					stateMachine._targetUserName,
 					stateMachine._targetPassword,
+					stateMachine._targetPort,
 					stateMachine.isWindowsAuthMigrationSupported));
 				stateMachine._loginMigrationModel.collectedTargetLogins = true;
 				stateMachine._loginMigrationModel.loginsOnTarget = targetLogins;
