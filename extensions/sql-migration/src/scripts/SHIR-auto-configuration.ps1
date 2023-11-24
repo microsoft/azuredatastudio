@@ -82,7 +82,7 @@ $main = {
 		$stopwatch.Stop()
 
 		# Write the total time taken
-		Write-OutputAndLog ("Total time taken: {0}" -f $stopwatch.Elapsed.ToString("hh\:mm\:ss\.ff"))
+		Write-OutputAndLog ("Total time taken: {0}" -f $stopwatch.Elapsed.ToString("hh\h\:mm\m\:ss\s"))
 		if ($null -ne $Global:Logfile) {
 			Write-OutputAndLog ("Log file generated: " + $Global:Logfile)
 		}
@@ -384,7 +384,7 @@ Function Get-Package {
 		$stopwatch.Stop()
 
 		Write-OutputAndLog "Package $packageName downloaded at $downloadFolder."
-		Write-OutputAndLog ("Downloaded {0} bytes in {1}." -f (Get-Item $packagePath).length, $stopwatch.Elapsed.ToString("hh\:mm\:ss\.ff"))
+		Write-OutputAndLog ("Downloaded {0} bytes in {1}." -f (Get-Item $packagePath).length, $stopwatch.Elapsed.ToString("hh\h\:mm\m\:ss\s"))
 	}
 	else {
 		# Display message that file already exists
@@ -489,7 +489,7 @@ Function Install-MsiPackage {
 		$stopwatch.Stop()
 
 		Write-OutputAndLog "MSI Installation process exited with code: $($process.ExitCode)"
-		Write-OutputAndLog "Installation completed in $($stopwatch.Elapsed.ToString("hh\:mm\:ss\.ff"))."
+		Write-OutputAndLog "Installation completed in $($stopwatch.Elapsed.ToString("hh\h\:mm\m\:ss\s"))."
 
 		# No installation verification callback provided
 		if ([string]::IsNullOrWhiteSpace($installationVerificationCallback.ToString())) {
@@ -552,7 +552,7 @@ Function Register-IntegrationRuntime {
 				$stopwatch.Start()
 				Install-PackageProvider -Name NuGet -MinimumVersion $Global:MinRequiredNuGetVersion -Force
 				$stopwatch.Stop()
-				Write-OutputAndLog "Installation completed in $($stopwatch.Elapsed.ToString("hh\:mm\:ss\.ff"))."
+				Write-OutputAndLog "Installation completed in $($stopwatch.Elapsed.ToString("hh\h\:mm\m\:ss\s"))."
 			}
 
 			# Install the Az.DataMigration module
@@ -561,7 +561,7 @@ Function Register-IntegrationRuntime {
 			$stopwatch.Start()
 			Install-Module -Name Az.DataMigration -Force
 			$stopwatch.Stop()
-			Write-OutputAndLog "Installation completed in $($stopwatch.Elapsed.ToString("hh\:mm\:ss\.ff"))."
+			Write-OutputAndLog "Installation completed in $($stopwatch.Elapsed.ToString("hh\h\:mm\m\:ss\s"))."
 		}
 	}
 	catch {
