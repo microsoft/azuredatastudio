@@ -46,7 +46,6 @@ $Global:InstallationLockGUID = $MyInvocation.MyCommand.Name
 
 ################################### Main Script Block ##################################
 $main = {
-	Write-OutputAndLog "Script ID: $($Global:ScriptId)`nDescription: This script automatically configures SHIR on a Windows machine including downloading, installing Integration runtime, and configuring IR with DMS."
 	$isFirstInstance = $false
 	# Create a new Stopwatch object
 	$stopwatch = New-Object System.Diagnostics.Stopwatch
@@ -58,10 +57,13 @@ $main = {
 		New-Item -ItemType File -Path $Global:Logfile -Force | Out-Null
 	}
 	catch {
+		Write-Host "Failed to create log file at $Global:Logfile.`nError: $($_.Exception.Message)" -ForegroundColor Red
 		$Global:Logfile = $null
 	}
 
 	try {
+		Write-OutputAndLog "Script ID: $($Global:ScriptId)`nDescription: This script automatically configures SHIR on a Windows machine including downloading, installing Integration runtime, and configuring IR with DMS."
+
 		# Create a lock file so that only one instance of script can run at a time
 		$isFirstInstance = Lock-ScriptInstance
 		if ($isFirstInstance) {
@@ -80,10 +82,12 @@ $main = {
 		$stopwatch.Stop()
 
 		# Write the total time taken
-		Write-OutputAndLog ("Total time taken: {0}" -f $stopwatch.Elapsed)
+		Write-OutputAndLog ("Total time taken: {0}" -f $stopwatch.Elapsed.ToString("hh\:mm\:ss\.ff"))
 		if ($null -ne $Global:Logfile) {
 			Write-OutputAndLog ("Log file generated: " + $Global:Logfile)
 		}
+		Write-Host "Press Enter to continue..."
+		$null = Read-Host
 	}
 }
 
@@ -97,7 +101,7 @@ Function Install-IR {
 
 		# Perform validation checks for installed IR
 		if ($installedIRVersion -ne $Global:LatestIRVersion) {
-			Write-ErrorAndLog "Installed Integration Runtime's version $($installedIRVersion) does not meet the version $($Global:LatestIRVersion) or above required for configuring. "
+			Write-ErrorAndLog "Installed Integration Runtime's version $($installedIRVersion) does not meet the version $($Global:LatestIRVersion) or above required for configuring."
 			return
 		}
 		Write-OutputAndLog "The installed Integration Runtime satisfies all requirements for successful configuration."
@@ -145,7 +149,7 @@ Function Test-CanInstallIR {
 			throw "Prerequisites are not met. 64-bit operating system is required."
 		}
 		if (-not (Test-DotNetVersion)) {
-			throw "Prerequisites are not met. Dotnet version 4.7.2 or later is required."
+			throw "Prerequisites are not met. Dotnet version 4.7.2 or later is required. Please download the supported version from: https://dotnet.microsoft.com/en-us/download/dotnet-framework."
 		}
 		if ([string]::IsNullOrWhitespace($AuthKey1) -and [string]::IsNullOrWhitespace($AuthKey2)) {
 			throw "Minimum one authentication key is required."
@@ -194,6 +198,7 @@ Function Lock-ScriptInstance {
     .DESCRIPTION
     The function creates a lock file so that only one instance of the script can run at a time.
     Return false if already another powershell console has the lock using the script id, else true.
+	Using file based locking since it is simpler, and does not have PowerShell version compatibility issues.
 
     .OUTPUTS
     [bool] True if locking was successful else false.
@@ -379,7 +384,7 @@ Function Get-Package {
 		$stopwatch.Stop()
 
 		Write-OutputAndLog "Package $packageName downloaded at $downloadFolder."
-		Write-OutputAndLog ("Downloaded {0} bytes in {1}." -f (Get-Item $packagePath).length, $stopwatch.Elapsed)
+		Write-OutputAndLog ("Downloaded {0} bytes in {1}." -f (Get-Item $packagePath).length, $stopwatch.Elapsed.ToString("hh\:mm\:ss\.ff"))
 	}
 	else {
 		# Display message that file already exists
@@ -459,7 +464,7 @@ Function Install-MsiPackage {
 		try {
 			$isPackageInstalled = & $installationVerificationCallback -ErrorAction SilentlyContinue
 			if ($null -ne $isPackageInstalled -and $isPackageInstalled -eq $true) {
-				Write-OutputAndLog "$packageName package is installed."
+				Write-OutputAndLog "$packageName package is already installed."
 				return $true
 			}
 			else {
@@ -484,7 +489,7 @@ Function Install-MsiPackage {
 		$stopwatch.Stop()
 
 		Write-OutputAndLog "MSI Installation process exited with code: $($process.ExitCode)"
-		Write-OutputAndLog "Installation completed in $($stopwatch.Elapsed)."
+		Write-OutputAndLog "Installation completed in $($stopwatch.Elapsed.ToString("hh\:mm\:ss\.ff"))."
 
 		# No installation verification callback provided
 		if ([string]::IsNullOrWhiteSpace($installationVerificationCallback.ToString())) {
@@ -501,7 +506,7 @@ Function Install-MsiPackage {
 			}
 		}
 		catch {
-			Write-OutputAndLog "Failed to verify $packageName installation. Check for errors. Error: $($_.Exception.Message)"
+			Write-ErrorAndLog "Failed to verify $packageName installation. Check for errors. Error: $($_.Exception.Message)"
 			return $false
 		}
 	}
@@ -542,11 +547,21 @@ Function Register-IntegrationRuntime {
 			$nuget = Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue
 
 			if ($null -eq $nuget -or $nuget.Version -lt $Global:MinRequiredNuGetVersion) {
+				Write-OutputAndLog "Installing NuGet Package Provider..."
+				$stopwatch = New-Object System.Diagnostics.Stopwatch
+				$stopwatch.Start()
 				Install-PackageProvider -Name NuGet -MinimumVersion $Global:MinRequiredNuGetVersion -Force
+				$stopwatch.Stop()
+				Write-OutputAndLog "Installation completed in $($stopwatch.Elapsed.ToString("hh\:mm\:ss\.ff"))."
 			}
 
 			# Install the Az.DataMigration module
+			Write-OutputAndLog "Installing Az.DataMigration Module..."
+			$stopwatch = New-Object System.Diagnostics.Stopwatch
+			$stopwatch.Start()
 			Install-Module -Name Az.DataMigration -Force
+			$stopwatch.Stop()
+			Write-OutputAndLog "Installation completed in $($stopwatch.Elapsed.ToString("hh\:mm\:ss\.ff"))."
 		}
 	}
 	catch {
@@ -588,7 +603,7 @@ if (-not (Test-AdminAccess)) {
 	}
 	# Gain admin access by prompting the user, if the script is executed without admin privileges.
 	else {
-		$commandLineArgs = "-noprofile -noexit -executionpolicy bypass -file $($MyInvocation.MyCommand.Definition) -admin-priv"
+		$commandLineArgs = "-noprofile -noexit -executionpolicy unrestricted -file $($MyInvocation.MyCommand.Definition) -admin-priv"
 
 		if (-not [string]::IsNullOrWhitespace($AuthKey1)) {
 			$commandLineArgs += " -authKey1 $AuthKey1"
