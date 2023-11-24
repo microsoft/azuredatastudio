@@ -954,8 +954,10 @@ export class ExtHostTreeView<T> extends Disposable {
 
 	// {{ SQL Carbon Edit}} This method is used to update node in cache, after children are added.
 	private updateNodeInCache(node: TreeNode): void {
-		var element = this.elements.get(node.item.handle);
-		this.nodes.set(element, node);
+		const element = this.elements.get(node.item.handle);
+		if (element) {
+			this.nodes.set(element, node);
+		}
 	}
 
 	private updateNodeCache(element: T, newNode: TreeNode, existing: TreeNode, parentNode: TreeNode | Root): void {
