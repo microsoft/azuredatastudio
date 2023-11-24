@@ -150,7 +150,7 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 				.then(treeNode => i)));
 	}
 
-	public refreshElements(elements: T[]): void {
+	protected refreshElements(elements: T[]): void {
 		const hasRoot = elements.some(element => !element);
 		if (hasRoot) {
 			this.clearAll(); // clear cache

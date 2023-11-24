@@ -1032,6 +1032,7 @@ export class ExtHostTreeView<T> extends Disposable {
 		}
 	}
 
+	// {{SQL CARBON EDIT}} Make method protected
 	protected clearAll(): void {
 		this.roots = undefined;
 		this.elements.clear();
