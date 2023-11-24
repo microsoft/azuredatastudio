@@ -716,9 +716,6 @@ export class RestoreDialog extends Modal {
 
 	private onUrlBrowserRequested(): void {
 		this.backupRestoreUrlBrowserDialogService.showDialog(this._ownerUri!,
-			this.viewModel.defaultBackupFolder!,
-			fileFiltersSet,
-			FileValidationConstants.restore,
 			true,
 			true,
 			'')

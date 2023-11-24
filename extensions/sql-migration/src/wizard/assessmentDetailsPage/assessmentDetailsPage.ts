@@ -26,6 +26,7 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 	private _body;
 	private _disposables: vscode.Disposable[] = [];
 	private static readonly _assessmentReportName: string = 'SqlAssessmentReport.json';
+	private _previousTargetTypeUndefined: boolean = true;
 
 	constructor(
 		wizard: azdata.window.Wizard,
@@ -125,6 +126,7 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 		this.wizard.customButtons[2].hidden = false;
 		if (this.migrationStateModel._targetType === undefined) {
 			await this.shouldNoTargetSelectionDisplayAsync(true);
+			this._previousTargetTypeUndefined = true;
 		}
 		else {
 			await this.executeChange(this.migrationStateModel._targetType);
@@ -166,8 +168,13 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 
 	// function to execute when user changes target type for the selected databases.
 	private async executeChange(newTargetType: string): Promise<void> {
-		await this._body.treeComponent.initialize(this.migrationStateModel);
-		const selectedDbs = this._body.treeComponent.selectedDbs();
+		let selectedDbs = this._body.treeComponent.selectedDbs();
+
+		// This condition is handled to select all the databases chosen for assessment by default(when page opens for the first time) to migrate as well.
+		if (this._previousTargetTypeUndefined) {
+			selectedDbs = this.migrationStateModel._databasesForAssessment;
+			this._previousTargetTypeUndefined = false;
+		}
 		switch (newTargetType) {
 			case MigrationTargetType.SQLMI:
 				this.didUpdateDatabasesForMigration(this.migrationStateModel._miDbs, selectedDbs);
