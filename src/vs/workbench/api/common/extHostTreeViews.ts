@@ -798,8 +798,6 @@ export class ExtHostTreeView<T> extends Disposable {
 				return asPromise(() => this.dataProvider.getTreeItem(extElement))
 					.then(extTreeItem => {
 						if (extTreeItem) {
-							// {{ SQL CARBON EDIT }} To fix Azure tree view refresh error, delete existing element before creating new one based on it.
-							this.elements.delete(existing.item.handle);
 							const newNode = this.createTreeNode(extElement, extTreeItem, existing.parent);
 							this.updateNodeCache(extElement, newNode, existing, existing.parent);
 							existing.dispose();
@@ -954,6 +952,12 @@ export class ExtHostTreeView<T> extends Disposable {
 		this.nodes.set(element, node);
 	}
 
+	// {{ SQL Carbon Edit}} This method is used to update node in cache, after children are added.
+	private updateNodeInCache(node: TreeNode): void {
+		var element = this.elements.get(node.item.handle);
+		this.nodes.set(element, node);
+	}
+
 	private updateNodeCache(element: T, newNode: TreeNode, existing: TreeNode, parentNode: TreeNode | Root): void {
 		// Remove from the cache
 		this.elements.delete(newNode.item.handle);
@@ -979,6 +983,9 @@ export class ExtHostTreeView<T> extends Disposable {
 				parentNode.children = [];
 			}
 			parentNode.children.push(node);
+			// {{ SQL Carbon Edit }} Update Node in cache to make sure children are available when refreshing nodes later.
+			// This fixes issues during Refresh of Azure tree account nodes.
+			this.updateNodeInCache(parentNode);
 		} else {
 			if (!this.roots) {
 				this.roots = [];
