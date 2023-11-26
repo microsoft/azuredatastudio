@@ -89,11 +89,13 @@ export class AccountViewModel {
 		const providerIds = this._authenticationService.getProviderIds();
 
 		for (const providerId of providerIds) {
+			const displayName = this._authenticationService.getLabel(providerId);
+
 			const sessions = await this._authenticationService.getSessions(providerId);
 			const accounts = sessions.map(session => {
 				return ({
 					key: { providerId: providerId, accountId: session.account.id } as azdata.AccountKey,
-					displayInfo: { contextualDisplayName: providerId, displayName: session.account.label, userId: session.account.label } as azdata.AccountDisplayInfo,
+					displayInfo: { contextualDisplayName: displayName, displayName: session.account.label, userId: session.account.label } as azdata.AccountDisplayInfo,
 					isStale: false,
 				}) as azdata.Account;
 			});
@@ -101,7 +103,7 @@ export class AccountViewModel {
 			const sessionAccount: AccountProviderAddedEventParams = {
 				addedProvider: {
 					id: providerId,
-					displayName: providerId
+					displayName: displayName
 				},
 				initialAccounts: accounts
 			};
