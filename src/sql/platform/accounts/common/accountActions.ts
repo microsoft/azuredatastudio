@@ -170,7 +170,7 @@ export class GitHubCopilotSignOutAction extends Action {
 	}
 
 	public override async run(): Promise<void> {
-		const removeAccount = async () => {
+		const updateAccountList = async () => {
 			// try {
 			// 	await this._accountManagementService.updateAccountList(this._account)
 			// } catch (err) {
@@ -184,6 +184,6 @@ export class GitHubCopilotSignOutAction extends Action {
 		const providerId = this._account.key.providerId;
 		const allSessions = await this.authenticationService.getSessions(providerId);
 		const sessionsForAccount = allSessions.filter(s => s.account.label === this._account.displayInfo.userId);
-		await this.authenticationService.removeAccountSessions(providerId, this._account.displayInfo.userId, sessionsForAccount, removeAccount);
+		await this.authenticationService.removeAccountSessions(providerId, this._account.displayInfo.userId, sessionsForAccount, updateAccountList);
 	}
 }
