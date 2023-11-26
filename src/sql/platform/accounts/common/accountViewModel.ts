@@ -90,12 +90,13 @@ export class AccountViewModel {
 
 		for (const providerId of providerIds) {
 			const displayName = this._authenticationService.getLabel(providerId);
+			const accountType = providerId === 'github' ? 'github' : 'microsoft'; // TODO: Find a better default account icon.
 
 			const sessions = await this._authenticationService.getSessions(providerId);
 			const accounts = sessions.map(session => {
 				return ({
 					key: { providerId: providerId, accountId: session.account.id } as azdata.AccountKey,
-					displayInfo: { contextualDisplayName: displayName, displayName: session.account.label, userId: session.account.label } as azdata.AccountDisplayInfo,
+					displayInfo: { contextualDisplayName: displayName, accountType: accountType, displayName: session.account.label, userId: session.account.label } as azdata.AccountDisplayInfo,
 					isStale: false,
 				}) as azdata.Account;
 			});
