@@ -400,6 +400,14 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	/**
+	 * Updates the account list for a provider.
+	 * @param provider Provider to update the account list for
+	 */
+	public updateAccountList(provider: AccountProviderWithMetadata): void {
+		this.fireAccountListUpdate(provider, false);
+	}
+
+	/**
 	 * Removes all registered accounts
 	 */
 	public async removeAccounts(): Promise<boolean> {
