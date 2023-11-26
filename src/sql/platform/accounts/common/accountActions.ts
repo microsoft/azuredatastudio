@@ -162,8 +162,7 @@ export class GitHubCopilotSignOutAction extends Action {
 
 	constructor(
 		private _account: azdata.Account,
-		// @IAccountManagementService private _accountManagementService: IAccountManagementService,
-		// @INotificationService private _notificationService: INotificationService,
+		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@IAuthenticationService private readonly authenticationService: IAuthenticationService
 	) {
 		super(GitHubCopilotSignOutAction.ID, GitHubCopilotSignOutAction.LABEL, 'remove-account-action codicon remove');
@@ -171,14 +170,7 @@ export class GitHubCopilotSignOutAction extends Action {
 
 	public override async run(): Promise<void> {
 		const updateAccountList = async () => {
-			// try {
-			// 	await this._accountManagementService.updateAccountList(this._account)
-			// } catch (err) {
-			// 	this._notificationService.notify({
-			// 		severity: Severity.Error,
-			// 		message: localize('removeAccountFailed', "Failed to remove account after signing out")
-			// 	});
-			// }
+			await this._accountManagementService.updateAccountList(this._account)
 		};
 
 		const providerId = this._account.key.providerId;
