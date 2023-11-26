@@ -781,10 +781,10 @@ export class AuthenticationService extends Disposable implements IAuthentication
 		}
 	}
 
-	async removeAccountSessions(id: string, accountName: string, sessions: AuthenticationSession[]): Promise<void> {
+	async removeAccountSessions(id: string, accountName: string, sessions: AuthenticationSession[], removeAccount: () => Promise<void> | undefined = undefined): Promise<void> { // {{SQL CARBON EDIT}} - Added removeAccount delegate to update accounts pane after session sign out
 		const authProvider = this._authenticationProviders.get(id);
 		if (authProvider) {
-			return authProvider.removeAccountSessions(accountName, sessions);
+			return authProvider.removeAccountSessions(accountName, sessions, removeAccount); // {{SQL CARBON EDIT}} - Added removeAccount delegate to update accounts pane after session sign out
 		} else {
 			throw new Error(`No authentication provider '${id}' is currently registered.`);
 		}
