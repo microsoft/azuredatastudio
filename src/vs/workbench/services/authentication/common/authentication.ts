@@ -71,7 +71,7 @@ export interface IAuthenticationService {
 	removeSession(providerId: string, sessionId: string): Promise<void>;
 
 	manageTrustedExtensionsForAccount(providerId: string, accountName: string): Promise<void>;
-	removeAccountSessions(providerId: string, accountName: string, sessions: AuthenticationSession[], removeAccount: () => Promise<void> | undefined): Promise<void>; // {{SQL CARBON EDIT}} - Added removeAccount delegate to update the accounts pane
+	removeAccountSessions(providerId: string, accountName: string, sessions: AuthenticationSession[]): Promise<void>;
 }
 
 export interface IAuthenticationProviderCreateSessionOptions {
@@ -84,7 +84,7 @@ export interface IAuthenticationProvider {
 	readonly supportsMultipleAccounts: boolean;
 	dispose(): void;
 	manageTrustedExtensions(accountName: string): void;
-	removeAccountSessions(accountName: string, sessions: AuthenticationSession[], removeAccount: () => Promise<void> | undefined): Promise<void>; // {{SQL CARBON EDIT}} - Added removeAccount delegate to update the accounts pane
+	removeAccountSessions(accountName: string, sessions: AuthenticationSession[]): Promise<void>;
 	getSessions(scopes?: string[]): Promise<readonly AuthenticationSession[]>;
 	createSession(scopes: string[], options: IAuthenticationProviderCreateSessionOptions): Promise<AuthenticationSession>;
 	removeSession(sessionId: string): Promise<void>;

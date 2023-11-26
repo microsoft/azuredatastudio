@@ -96,7 +96,7 @@ export class MainThreadAuthenticationProvider extends Disposable implements IAut
 		quickPick.show();
 	}
 
-	async removeAccountSessions(accountName: string, sessions: AuthenticationSession[], removeAccount: () => Promise<void> | undefined): Promise<void> { // {{SQL CARBON EDIT}} - Remove account delegate to remove an account when the user chooses to sign out.
+	async removeAccountSessions(accountName: string, sessions: AuthenticationSession[]): Promise<void> {
 		const accountUsages = readAccountUsages(this.storageService, this.id, accountName);
 
 		const { confirmed } = await this.dialogService.confirm({
@@ -112,12 +112,6 @@ export class MainThreadAuthenticationProvider extends Disposable implements IAut
 			await Promise.all(removeSessionPromises);
 			removeAccountUsage(this.storageService, this.id, accountName);
 			this.storageService.remove(`${this.id}-${accountName}`, StorageScope.APPLICATION);
-
-			// {{SQL CARBON EDIT}} - BEGIN - Invoking removeAccount delegate if a callback definition is defined.
-			if (removeAccount) {
-				await removeAccount();
-			}
-			// {{SQL CARBON EDIT}} - END
 		}
 	}
 
