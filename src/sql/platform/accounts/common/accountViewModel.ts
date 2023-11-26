@@ -81,7 +81,7 @@ export class AccountViewModel {
 				return undefined;
 			}
 		}));
-		return accounts;
+		return accounts ?? [];
 	}
 
 	private async getAccountForSessions(): Promise<AccountProviderAddedEventParams[]> {
