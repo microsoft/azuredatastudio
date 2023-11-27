@@ -194,10 +194,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						errors.push(constants.VM_NOT_READY_POWER_STATE_ERROR(targetVm.name));
 					}
 
-					// validate IaaS extension mode
-					if (targetVm.properties.sqlManagement.toLowerCase() !== 'Full'.toLowerCase()) {
-						errors.push(constants.VM_NOT_READY_IAAS_EXTENSION_ERROR(targetVm.name, targetVm.properties.sqlManagement));
-					}
 					break;
 				case MigrationTargetType.SQLDB:
 					const targetSqlDB = this.migrationStateModel._targetServerInstance as AzureSqlDatabaseServer;
