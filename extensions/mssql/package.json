@@ -707,7 +707,7 @@
         },
         {
           "command": "mssql.restoreDatabase",
-          "when": "connectionProvider == MSSQL && !isCloud && mssql:engineedition != 11 && nodeType && nodeType == Database && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
+          "when": "connectionProvider == MSSQL && !isCloud && engineEdition != 11 && nodeType == Database && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
           "group": "1_objectManagement@3"
         },
         {

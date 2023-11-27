@@ -21,7 +21,7 @@ const SelectFolderInputWidth = DefaultInputWidth + 600
 const SelectFolderButtonWidth = 25;
 
 export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
-	// restore diaog tabs
+	// restore dialog tabs
 	private generalTab: azdata.Tab;
 	private filesTab: azdata.Tab;
 	private optionsTab: azdata.Tab;
@@ -62,7 +62,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	}
 
 	protected override get helpUrl(): string {
-		return this.getRestoreDialogDocUrl();
+		return this.RestoreDialogDocUrl;
 	}
 
 	protected override get saveChangesTaskLabel(): string {
@@ -73,7 +73,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		return this.objectInfo.restorePlanResponse.backupSetsToRestore?.filter(plan => plan.isSelected === true).length > 0;
 	}
 
-	private getRestoreDialogDocUrl(): string {
+	private get RestoreDialogDocUrl(): string {
 		let helpUrl = '';
 		switch (this.activeTabId) {
 			case this.generalTabId:
@@ -169,7 +169,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	}
 
 	/**
-	 * Prepares and return restore params to restore a database
+	 * Prepares and returns restore params to restore a database
 	 * @returns Restore params
 	 */
 	private createRestoreInfo(): azdata.RestoreInfo {
@@ -482,7 +482,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		this.leaveSourceDB.checked = restorePlan.planDetails.tailLogWithNoRecovery.defaultValue;
 		this.leaveSourceDB.enabled = !restorePlan.planDetails.tailLogWithNoRecovery.isReadOnly;
 
-		// REset Tail-log backup file
+		// Reset Tail-log backup file
 		await this.tailLogBackupFile.updateProperty('value', restorePlan.planDetails.tailLogBackupFile.defaultValue);
 
 		// Server connection
@@ -609,7 +609,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		}, this.objectInfo.restorePlanResponse.planDetails.setRestrictedUser.defaultValue);
 		containers.push(this.restrictAccessToRestoredDB);
 
-		//Recovery state
+		// Recovery state
 		let recoveryState = this.createDropdown(localizedConstants.RecoveryStateText, async (newValue) => {
 			this.toggleRestoreOptionsOnRecoveryStateOptions(newValue as string);
 			this.objectInfo.restorePlanResponse.planDetails.recoveryState.currentValue = this.viewInfo.restoreDatabaseInfo.recoveryStateOptions.find(a => a.displayName === newValue).name as string;
@@ -618,7 +618,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			, true, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.RecoveryStateText, recoveryState));
 
-		//Stand by file
+		// Stand by file
 		const props: azdata.InputBoxProperties = {
 			ariaLabel: localizedConstants.StandbyFileText,
 			required: false,

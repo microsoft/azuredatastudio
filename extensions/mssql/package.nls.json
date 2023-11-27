@@ -200,5 +200,5 @@
 	"title.detachDatabase": "Detach Database (Preview)",
 	"title.attachDatabase": "Attach Database (Preview)",
 	"title.backupDatabase": "Backup Database (Preview)",
-	"title.restoreDatabase": "Restore (Preview)"
+	"title.restoreDatabase": "Restore Database (Preview)"
 }
