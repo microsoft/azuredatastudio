@@ -489,7 +489,7 @@ async function handleRestoreDatabase(context: azdata.ObjectExplorerContext, serv
 			objectType: context.nodeInfo!.nodeType
 		}).send();
 		console.error(err);
-		await vscode.window.showErrorMessage(objectManagementLoc.OpenRestoreDatabaseDialogError(getErrorMessage(err)));
+		void vscode.window.showErrorMessage(objectManagementLoc.OpenRestoreDatabaseDialogError(getErrorMessage(err)));
 	}
 }
 
