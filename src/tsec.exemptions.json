@@ -33,7 +33,9 @@
 	],
 	"ban-domparser-parsefromstring": [
 		"vs/base/browser/markdownRenderer.ts",
-		"vs/base/test/browser/markdownRenderer.test.ts"
+		"vs/base/test/browser/markdownRenderer.test.ts",
+		// {{SQL CARBON EDIT}} Add our exemption
+		"sql/workbench/contrib/query/browser/gridPanel.ts"
 	],
 	"ban-element-setattribute": [
 		"**/*.ts"

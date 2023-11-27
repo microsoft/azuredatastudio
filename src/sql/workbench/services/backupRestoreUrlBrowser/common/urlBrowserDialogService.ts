@@ -12,9 +12,6 @@ export interface IBackupRestoreUrlBrowserDialogService {
 	 * Show url browser dialog
 	 */
 	showDialog(ownerUri: string,
-		expandPath: string,
-		fileFilters: { label: string, filters: string[] }[],
-		fileValidationServiceType: string,
 		isWide: boolean,
 		isRestoreDialog: boolean,
 		defaultBackupName: string): Promise<string>;

@@ -203,6 +203,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _targetServerName!: string;
 	public _targetUserName!: string;
 	public _targetPassword!: string;
+	public _targetPort!: string;
 	public _sourceTargetMapping: Map<string, TargetDatabaseInfo | undefined> = new Map();
 
 	public _sqlMigrationServiceSubscription!: azurecore.azureResource.AzureResourceSubscription;
@@ -256,6 +257,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public readonly _numberOfPerformanceDataQueryIterations = 19;
 	public readonly _defaultDataPointStartTime = '1900-01-01 00:00:00';
 	public readonly _defaultDataPointEndTime = '2200-01-01 00:00:00';
+	public readonly _sqlMiEndpointSuffix = "database.windows.net";
 	public readonly _recommendationTargetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
 
 	public refreshPerfDataCollectionFrequency = this._performanceDataQueryIntervalInSeconds * 1000;
@@ -1410,11 +1412,24 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._targetType === MigrationTargetType.SQLMI;
 	}
 
+	/**
+	 * The function sets the MI target server name
+	 */
+	private setMiTargetServerName(): void {
+		// Public endpoint format : <mi_name>.public.<dns_zone>.database.windows.net
+		// Private endpoint format : <mi_name>.<dns-zone>.database.windows.net
+		const sqlMi = this._targetServerInstance as SqlManagedInstance;
+		const sqlMiName = sqlMi.name;
+		const sqlMiPublicEndpointIdentifier = sqlMi.properties.publicDataEndpointEnabled ? ".public" : "";
+		const sqlMiDnsZone = sqlMi.properties.dnsZone;
+		this._targetServerName = sqlMiName + sqlMiPublicEndpointIdentifier + "." +
+			sqlMiDnsZone + "." + this._sqlMiEndpointSuffix;
+	}
+
 	public setTargetServerName(): void {
 		switch (this._targetType) {
 			case MigrationTargetType.SQLMI:
-				const sqlMi = this._targetServerInstance as SqlManagedInstance;
-				this._targetServerName = sqlMi.properties.fullyQualifiedDomainName;
+				this.setMiTargetServerName();
 				break;
 			case MigrationTargetType.SQLDB:
 				const sqlDb = this._targetServerInstance as AzureSqlDatabaseServer;
