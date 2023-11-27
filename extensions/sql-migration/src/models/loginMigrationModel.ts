@@ -326,6 +326,7 @@ export class LoginMigrationModel {
 			stateMachine._targetServerInstance.id,
 			stateMachine._targetUserName,
 			stateMachine._targetPassword,
+			stateMachine._targetPort,
 			// for login migration, connect to target Azure SQL with true/true
 			// to-do: take as input from the user, should be true/false for DB/MI but true/true for VM
 			true /* encryptConnection */,

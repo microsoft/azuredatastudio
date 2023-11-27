@@ -273,6 +273,7 @@ export const BackupExpirationLabel = localize('objectManagement.backupExpiration
 export const AddBackupFileAriaLabel = localize('objectManagement.addBackupFileText', "Add backup files");
 export const RemoveBackupFileAriaLabel = localize('objectManagement.removeBackupFileText', "Remove backup file");
 export const BackupFilesLabel = localize('objectManagement.backupFilesLabel', "Backup Files");
+export const BackupToUrlLabel = localize('objectManagement.backupToUrlLabel', "Backup URL");
 export const BackupNameLabel = localize('objectManagement.backupNameLabel', "Backup set name");
 export const BackupRecoveryLabel = localize('objectManagement.backupRecoveryLabel', "Recovery model");
 export const BackupTypeLabel = localize('objectManagement.backupTypeLabel', "Backup type");
