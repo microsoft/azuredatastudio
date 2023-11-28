@@ -810,11 +810,15 @@ export class RestoreDialog extends Modal {
 			this._databaseDropdown.value = '';
 			this.viewModel.deviceType = MediaDeviceType.Url;
 		}
-		if (!this._panel.contains(this._fileTab.identifier)) {
-			this._panel.pushTab(this._fileTab);
-		}
-		if (!this._panel.contains(this._optionsTab.identifier)) {
-			this._panel.pushTab(this._optionsTab);
+
+		if (this._engineEdition !== DatabaseEngineEdition.SqlManagedInstance) {
+			// hide file and option tabs for SQL MI
+			if (!this._panel.contains(this._fileTab.identifier)) {
+				this._panel.pushTab(this._fileTab);
+			}
+			if (!this._panel.contains(this._optionsTab.identifier)) {
+				this._panel.pushTab(this._optionsTab);
+			}
 		}
 		this.resetRestoreContent();
 	}
