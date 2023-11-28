@@ -394,8 +394,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private async createModel(model: IConnectionProfile): Promise<ConnectionProfile | undefined> {
 		const defaultProvider = this.getDefaultProviderName();
 		// Handle unsupported provider
-		if (this._model?.providerName && !this._capabilitiesService.providers[this._model.providerName]) {
-			const installed = await this._connectionManagementService.handleUnsupportedProvider(this._model.providerName);
+		if (model?.providerName && !this._capabilitiesService.providers[model.providerName]) {
+			const installed = await this._connectionManagementService.handleUnsupportedProvider(model.providerName);
 			if (!installed) {
 				// User cancelled install prompt so exit early since we won't be able to connect
 				return undefined;
@@ -506,7 +506,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[this._currentProviderType]);
 
 		const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections(params.providers);
-		await this._connectionDialog.open(recentConnections.length > 0);
+		await this._connectionDialog.open(recentConnections?.length > 0);
 		this.uiController.focusOnOpen();
 	}
 

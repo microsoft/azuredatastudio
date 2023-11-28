@@ -12,7 +12,6 @@ import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionT
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ipcRenderer as ipc } from 'electron';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -59,7 +58,6 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
 		@IEnvironmentService environmentService: INativeEnvironmentService,
 		@IEditorService private readonly _editorService: IEditorService,
-		@ICommandService private readonly _commandService: ICommandService,
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
 		@INotificationService private readonly _notificationService: INotificationService,
 		@ILogService private readonly logService: ILogService,
@@ -104,15 +102,13 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		let connectedContext: azdata.ConnectedContext = undefined;
 
 		if (args) {
-			if (this._commandService) {
-				commandName = args.command;
-			}
+			commandName = args.command ?? Command.connect; // Use connect by default.
 			if (args.server) {
 				profile = await this.readProfileFromArgs(args);
 			}
 		}
 		let showConnectDialogOnStartup: boolean = this._configurationService.getValue('workbench.showConnectDialogOnStartup');
-		if (showConnectDialogOnStartup && !commandName && !profile && !this._connectionManagementService.hasRegisteredServers()) {
+		if (showConnectDialogOnStartup && !args.command && !profile && !this._connectionManagementService.hasRegisteredServers()) {
 			// prompt the user for a new connection on startup if no profiles are registered
 			await this._connectionManagementService.showConnectionDialog(undefined, {
 				showDashboard: true,
@@ -141,7 +137,8 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 				this._notificationService.status(localize('runningCommandLabel', "Running command: {0}", commandName), { hideAfter: 2500 });
 			}
 			await this.runCommandHandler(commandName, args);
-		} else if (connectedContext) {
+		}
+		if (connectedContext) {
 			// If we were given a file and it was opened with the sql editor,
 			// we want to connect the given profile to to it.
 			// If more than one file was passed, only show the connection dialog error on one of them.
@@ -198,21 +195,20 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	public async handleConnect(args: NativeParsedArgs): Promise<boolean> {
 		try {
 			if (!args.server) {
-				this._notificationService.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
+				this._notificationService?.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
 				return true;
 			}
 			let isOpenOk = await this.confirmConnect(args);
 			if (isOpenOk) {
 				const connectionProfile = await this.readProfileFromArgs(args);
-				await this._connectionManagementService.connect(connectionProfile, undefined, {
-					saveTheConnection: true,
-					showDashboard: true,
-					showConnectionDialogOnError: true,
-					showFirewallRuleOnError: true
-				});
+				try {
+					await this._connectionManagementService.connectIfNotConnected(connectionProfile, args.showDashboard ? 'dashboard' : 'connection', true);
+				} catch (err) {
+					this.logService.warn('Failed to connect due to error: ' + getErrorMessage(err));
+				}
 			}
 		} catch (err) {
-			this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
+			this._notificationService?.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
 		}
 		// Handled either way
 		return true;
@@ -224,7 +220,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	public async handleOpenConnectionDialog(args: NativeParsedArgs): Promise<boolean> {
 		try {
 			if (!args.server) {
-				this._notificationService.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
+				this._notificationService?.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
 				return true;
 			}
 			let isOpenOk = await this.confirmConnect(args);
@@ -241,7 +237,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 				showFirewallRuleOnError: true
 			}, connectionProfile);
 		} catch (err) {
-			this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
+			this._notificationService?.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
 		}
 		return true;
 	}
@@ -287,10 +283,6 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	}
 
 	private async readProfileFromArgs(args: NativeParsedArgs): Promise<IConnectionProfile | undefined> {
-		let profile = new ConnectionProfile(this._capabilitiesService, null);
-		// We want connection store to use any matching password it finds
-		profile.savePassword = true;
-
 		// Handle unsupported provider first thing before setting default provider.
 		if (args.provider && !this._capabilitiesService.providers[args.provider]) {
 			const installed = await this._connectionManagementService.handleUnsupportedProvider(args.provider);
@@ -299,6 +291,10 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 				return undefined;
 			}
 		}
+
+		let profile = new ConnectionProfile(this._capabilitiesService, null);
+		// We want connection store to use any matching password it finds
+		profile.savePassword = true;
 
 		profile.providerName = args.provider ?? Constants.mssqlProviderName;
 		profile.serverName = args.server;
