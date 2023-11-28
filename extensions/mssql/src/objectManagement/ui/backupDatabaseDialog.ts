@@ -363,7 +363,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let backupInfo = this.createBackupInfo();
 		let response = await this.objectManagementService.backupDatabase(this.options.connectionUri, backupInfo, TaskExecutionMode.script);
 		if (!response.result) {
-			throw new Error('Script operation failed.');
+			throw new Error(loc.ScriptingFailedError);
 		}
 		// The backup call will open its own query window, so don't return any script here.
 		return undefined;
@@ -373,7 +373,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let backupInfo = this.createBackupInfo();
 		let response = await this.objectManagementService.backupDatabase(this.options.connectionUri, backupInfo, TaskExecutionMode.execute);
 		if (!response.result) {
-			throw new Error('Backup operation failed.');
+			throw new Error(loc.BackupFailedError);
 		}
 	}
 
