@@ -952,7 +952,7 @@ export class ExtHostTreeView<T> extends Disposable {
 		this.nodes.set(element, node);
 	}
 
-	// {{ SQL Carbon Edit}} This method is used to update node in cache, after children are added.
+	// {{SQL CARBON EDIT}} This method is used to update node in cache, after children are added.
 	private updateNodeInCache(node: TreeNode): void {
 		const element = this.elements.get(node.item.handle);
 		if (element) {
@@ -985,8 +985,8 @@ export class ExtHostTreeView<T> extends Disposable {
 				parentNode.children = [];
 			}
 			parentNode.children.push(node);
-			// {{ SQL Carbon Edit }} Update Node in cache to make sure children are available when refreshing nodes later.
-			// This fixes issues during Refresh of Azure tree account nodes.
+			// {{SQL CARBON EDIT}} Update Node in cache to make sure children are available in cache when refreshing nodes later.
+			// This will ensure the children get cleared during refresh, and prevent duplicate items from being added.
 			this.updateNodeInCache(parentNode);
 		} else {
 			if (!this.roots) {
