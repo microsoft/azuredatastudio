@@ -7,7 +7,6 @@ import { ApplicationRoleViewInfo, AuthenticationType, DatabaseRoleViewInfo, Data
 import * as Utils from '../utils';
 import * as constants from '../constants';
 import * as contracts from '../contracts';
-
 import { BaseService, ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
 import { ObjectManagement, IObjectManagementService, DatabaseFileData, BackupInfo } from 'mssql';
 import { ClientCapabilities } from 'vscode-languageclient';
