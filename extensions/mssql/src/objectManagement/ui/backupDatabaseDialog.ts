@@ -23,7 +23,9 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	private _copyBackupCheckbox: azdata.CheckBoxComponent;
 	private _backupDestDropdown: azdata.DropDownComponent;
 	private _backupFilesTable: azdata.TableComponent;
+	private _filesTableButtonContainer: azdata.FlexContainer;
 	private _backupUrlInput: azdata.InputBoxComponent;
+	private _urlInputGroup: azdata.GroupContainer;
 
 	private _existingMediaButton: azdata.RadioButtonComponent;
 	private _appendExistingMediaButton: azdata.RadioButtonComponent;
@@ -49,6 +51,8 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	private _defaultBackupFolderPath: string;
 	private _defaultBackupPathSeparator: string;
 	private _encryptorOptions: string[];
+
+	private _oldDestMode: string;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		// Increase dialog width since there are a lot of indented controls in the backup dialog
@@ -144,38 +148,48 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		this._copyBackupCheckbox = this.createCheckbox(loc.BackupCopyLabel, () => undefined, this.useUrlMode, !this.useUrlMode);
 		components.push(this._copyBackupCheckbox);
 
+		// Managed instance only supports URL mode, so lock the dest dropdown in that case
+		let backupDestEnabled = !this.viewInfo.isManagedInstance;
 		const backupDestinations = [loc.BackupDiskLabel, loc.BackupUrlLabel];
 		let defaultDest = this.useUrlMode ? backupDestinations[1] : backupDestinations[0];
-		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, () => undefined, backupDestinations, defaultDest, false);
+		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, newValue => this.toggleBackupDestMode(newValue), backupDestinations, defaultDest, backupDestEnabled);
 		let backupDestContainer = this.createLabelInputContainer(loc.BackupToLabel, this._backupDestDropdown);
 		components.push(backupDestContainer);
 
-		if (this.useUrlMode) {
-			this._backupUrlInput = this.createInputBox(() => undefined, {
-				inputType: 'text',
-				width: DefaultLongInputWidth
-			});
-			let browseUrlButton = this.createButton(loc.BrowseText, loc.BrowseText, () => this.onBrowseUrlButtonClicked());
-			browseUrlButton.width = DefaultButtonWidth;
-			await browseUrlButton.updateCssStyles({ 'margin-left': '0px' });
-			let urlInputGroup = this.createGroup(loc.BackupToUrlLabel, [this._backupUrlInput, browseUrlButton], false);
-			components.push(urlInputGroup);
-		} else {
-			let defaultPath = `${this._defaultBackupFolderPath}${this._defaultBackupPathSeparator}${defaultName}.bak`;
-			this._backupFilePaths.push(defaultPath);
-			this._backupFilesTable = this.createTable(loc.BackupFilesLabel, [loc.BackupFilesLabel], [[defaultPath]]);
-			components.push(this._backupFilesTable);
+		// URL input box for Backup to URL mode
+		this._backupUrlInput = this.createInputBox(() => undefined, {
+			inputType: 'text',
+			width: DefaultLongInputWidth
+		});
+		let browseUrlButton = this.createButton(loc.BrowseText, loc.BrowseText, () => this.onBrowseUrlButtonClicked());
+		browseUrlButton.width = DefaultButtonWidth;
+		await browseUrlButton.updateCssStyles({ 'margin-left': '0px' });
+		this._urlInputGroup = this.createGroup(loc.BackupToUrlLabel, [this._backupUrlInput, browseUrlButton], false);
+		components.push(this._urlInputGroup);
 
-			let addButton: DialogButton = {
-				buttonAriaLabel: loc.AddBackupFileAriaLabel,
-				buttonHandler: async () => await this.onAddFilesButtonClicked()
-			};
-			let removeButton: DialogButton = {
-				buttonAriaLabel: loc.RemoveBackupFileAriaLabel,
-				buttonHandler: async () => await this.onRemoveFilesButtonClicked()
-			};
-			const buttonContainer = this.addButtonsForTable(this._backupFilesTable, addButton, removeButton);
-			components.push(buttonContainer);
+		// Files table and associated buttons for Backup to Disk mode
+		let defaultPath = `${this._defaultBackupFolderPath}${this._defaultBackupPathSeparator}${defaultName}.bak`;
+		this._backupFilePaths.push(defaultPath);
+		this._backupFilesTable = this.createTable(loc.BackupFilesLabel, [loc.BackupFilesLabel], [[defaultPath]]);
+		components.push(this._backupFilesTable);
+
+		let addButton: DialogButton = {
+			buttonAriaLabel: loc.AddBackupFileAriaLabel,
+			buttonHandler: async () => await this.onAddFilesButtonClicked()
+		};
+		let removeButton: DialogButton = {
+			buttonAriaLabel: loc.RemoveBackupFileAriaLabel,
+			buttonHandler: async () => await this.onRemoveFilesButtonClicked()
+		};
+		this._filesTableButtonContainer = this.addButtonsForTable(this._backupFilesTable, addButton, removeButton);
+		components.push(this._filesTableButtonContainer);
+
+		// Hide URL input or Files table depending on backup destination mode
+		if (this.useUrlMode) {
+			this._backupFilesTable.display = 'none';
+			this._filesTableButtonContainer.display = 'none';
+		} else {
+			this._urlInputGroup.display = 'none';
 		}
 
 		return this.createGroup(loc.GeneralSectionHeader, components, false);
@@ -475,6 +489,41 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			pathMediaMap[path] = mediaType;
 		});
 		return pathMediaMap;
+	}
+
+	private async toggleBackupDestMode(destMode: string): Promise<void> {
+		if (!this._oldDestMode || this._oldDestMode !== destMode) {
+			this._oldDestMode = destMode;
+			let useUrlMode = destMode === loc.BackupUrlLabel;
+
+			this._backupTypeDropdown.enabled = !useUrlMode;
+			this._copyBackupCheckbox.enabled = !useUrlMode;
+
+			this._existingMediaButton.enabled = !useUrlMode;
+			this._newMediaButton.enabled = !useUrlMode;
+
+			let useExistingMedia = this._existingMediaButton.checked;
+
+			this._appendExistingMediaButton.enabled = useExistingMedia && !useUrlMode;
+			this._overwriteExistingMediaButton.enabled = useExistingMedia && !useUrlMode;
+
+			this._mediaNameInput.enabled = !useExistingMedia && !useUrlMode;
+			this._mediaDescriptionInput.enabled = !useExistingMedia && !useUrlMode;
+
+			this._encryptCheckbox.enabled = !useUrlMode && this.encryptionSupported;
+
+			if (useUrlMode) {
+				this._urlInputGroup.display = 'flex';
+
+				this._backupFilesTable.display = 'none';
+				this._filesTableButtonContainer.display = 'none';
+			} else {
+				this._urlInputGroup.display = 'none';
+
+				this._backupFilesTable.display = 'flex';
+				this._filesTableButtonContainer.display = 'flex';
+			}
+		}
 	}
 }
 
