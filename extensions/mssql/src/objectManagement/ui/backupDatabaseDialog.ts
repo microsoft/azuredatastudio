@@ -185,9 +185,9 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			buttonAriaLabel: loc.RemoveBackupFileAriaLabel,
 			buttonHandler: async () => await this.onRemoveFilesButtonClicked()
 		};
-		let tableButtonContainer = this.addButtonsForTable(this._backupFilesTable, addButton, removeButton);
+		let buttonContainer = this.addButtonsForTable(this._backupFilesTable, addButton, removeButton);
 
-		this._filesTableContainer = this.modelView.modelBuilder.flexContainer().withItems([this._backupFilesTable, tableButtonContainer]).component();
+		this._filesTableContainer = this.modelView.modelBuilder.flexContainer().withItems([this._backupFilesTable, buttonContainer]).component();
 		await this._filesTableContainer.updateCssStyles({ 'flex-flow': 'column' });
 		components.push(this._filesTableContainer);
 
