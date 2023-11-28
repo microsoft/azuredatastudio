@@ -2,6 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
+import * as azdata from 'azdata';
 import { ObjectManagement } from 'mssql';
 
 /**
@@ -459,6 +461,7 @@ export interface Database extends ObjectManagement.SqlObject {
 	files?: DatabaseFile[];
 	filegroups?: FileGroup[];
 	queryStoreOptions?: QueryStoreOptions;
+	restorePlanResponse?: azdata.RestorePlanResponse;
 	backupEncryptors?: BackupEncryptor[];
 }
 
@@ -489,6 +492,7 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	sizeBasedCleanupModeOptions?: string[];
 	staleThresholdOptions?: string[];
 	serverFilestreamAccessLevel?: FileStreamEffectiveLevel;
+	restoreDatabaseInfo?: RestoreDatabaseInfo;
 }
 
 export interface QueryStoreOptions {
@@ -503,6 +507,17 @@ export interface QueryStoreOptions {
 	waitStatisticsCaptureMode?: string;
 	capturePolicyOptions?: QueryStoreCapturePolicyOptions;
 	currentStorageSizeInMB: number;
+}
+
+export interface RestoreDatabaseInfo {
+	sourceDatabaseNames: string[];
+	targetDatabaseNames: string[];
+	recoveryStateOptions: CategoryValue[];
+}
+
+export interface CategoryValue {
+	displayName: string;
+	name: string;
 }
 
 export interface QueryStoreCapturePolicyOptions {
