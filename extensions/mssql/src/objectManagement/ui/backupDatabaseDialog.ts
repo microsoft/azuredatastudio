@@ -23,9 +23,9 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	private _copyBackupCheckbox: azdata.CheckBoxComponent;
 	private _backupDestDropdown: azdata.DropDownComponent;
 	private _backupFilesTable: azdata.TableComponent;
-	private _filesTableButtonContainer: azdata.FlexContainer;
+	private _filesTableContainer: azdata.FlexContainer;
 	private _backupUrlInput: azdata.InputBoxComponent;
-	private _urlInputGroup: azdata.GroupContainer;
+	private _urlInputContainer: azdata.FlexContainer;
 
 	private _existingMediaButton: azdata.RadioButtonComponent;
 	private _appendExistingMediaButton: azdata.RadioButtonComponent;
@@ -164,14 +164,16 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let browseUrlButton = this.createButton(loc.BrowseText, loc.BrowseText, () => this.onBrowseUrlButtonClicked());
 		browseUrlButton.width = DefaultButtonWidth;
 		await browseUrlButton.updateCssStyles({ 'margin-left': '0px' });
-		this._urlInputGroup = this.createGroup(loc.BackupToUrlLabel, [this._backupUrlInput, browseUrlButton], false);
-		components.push(this._urlInputGroup);
+		let urlInputGroup = this.createGroup(loc.BackupToUrlLabel, [this._backupUrlInput, browseUrlButton], false);
+
+		this._urlInputContainer = this.modelView.modelBuilder.flexContainer().withItems([urlInputGroup]).component();
+		await this._urlInputContainer.updateCssStyles({ 'flex-flow': 'column' });
+		components.push(this._urlInputContainer);
 
 		// Files table and associated buttons for Backup to Disk mode
 		let defaultPath = `${this._defaultBackupFolderPath}${this._defaultBackupPathSeparator}${defaultName}.bak`;
 		this._backupFilePaths.push(defaultPath);
 		this._backupFilesTable = this.createTable(loc.BackupFilesLabel, [loc.BackupFilesLabel], [[defaultPath]]);
-		components.push(this._backupFilesTable);
 
 		let addButton: DialogButton = {
 			buttonAriaLabel: loc.AddBackupFileAriaLabel,
@@ -181,15 +183,17 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			buttonAriaLabel: loc.RemoveBackupFileAriaLabel,
 			buttonHandler: async () => await this.onRemoveFilesButtonClicked()
 		};
-		this._filesTableButtonContainer = this.addButtonsForTable(this._backupFilesTable, addButton, removeButton);
-		components.push(this._filesTableButtonContainer);
+		let tableButtonContainer = this.addButtonsForTable(this._backupFilesTable, addButton, removeButton);
+
+		this._filesTableContainer = this.modelView.modelBuilder.flexContainer().withItems([this._backupFilesTable, tableButtonContainer]).component();
+		await this._filesTableContainer.updateCssStyles({ 'flex-flow': 'column' });
+		components.push(this._filesTableContainer);
 
 		// Hide URL input or Files table depending on backup destination mode
 		if (this.useUrlMode) {
-			this._backupFilesTable.display = 'none';
-			this._filesTableButtonContainer.display = 'none';
+			this._filesTableContainer.display = 'none';
 		} else {
-			this._urlInputGroup.display = 'none';
+			this._urlInputContainer.display = 'none';
 		}
 
 		return this.createGroup(loc.GeneralSectionHeader, components, false);
@@ -516,15 +520,11 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			this._encryptCheckbox.enabled = !useUrlMode && this.encryptionSupported;
 
 			if (useUrlMode) {
-				this._urlInputGroup.display = 'flex';
-
-				this._backupFilesTable.display = 'none';
-				this._filesTableButtonContainer.display = 'none';
+				this._urlInputContainer.display = 'flex';
+				this._filesTableContainer.display = 'none';
 			} else {
-				this._urlInputGroup.display = 'none';
-
-				this._backupFilesTable.display = 'flex';
-				this._filesTableButtonContainer.display = 'flex';
+				this._urlInputContainer.display = 'none';
+				this._filesTableContainer.display = 'flex';
 			}
 		}
 	}
