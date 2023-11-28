@@ -383,7 +383,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	private async updateModelServerCapabilities(model: IConnectionProfile) {
 		this._model = await this.createModel(model);
-		if (this._model.providerName) {
+		if (this._model?.providerName) {
 			this._currentProviderType = this._model.providerName;
 			if (this._connectionDialog) {
 				this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[this._currentProviderType]);
@@ -391,8 +391,16 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 	}
 
-	private async createModel(model: IConnectionProfile): Promise<ConnectionProfile> {
+	private async createModel(model: IConnectionProfile): Promise<ConnectionProfile | undefined> {
 		const defaultProvider = this.getDefaultProviderName();
+		// Handle unsupported provider
+		if (this._model?.providerName && !this._capabilitiesService.providers[this._model.providerName]) {
+			const installed = await this._connectionManagementService.handleUnsupportedProvider(this._model.providerName);
+			if (!installed) {
+				// User cancelled install prompt so exit early since we won't be able to connect
+				return undefined;
+			}
+		}
 		let providerName = model ? model.providerName : defaultProvider;
 		providerName = providerName ? providerName : defaultProvider;
 		if (model && !model.providerName) {

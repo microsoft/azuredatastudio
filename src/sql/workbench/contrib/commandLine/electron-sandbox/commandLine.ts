@@ -31,9 +31,12 @@ import { IEnvironmentService, INativeEnvironmentService } from 'vs/platform/envi
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 
 //#region decorators
+enum Command {
+	connect = 'connect',
+	openConnectionDialog = 'openConnectionDialog'
+}
 
-type PathHandler = (uri: URI) => Promise<boolean>;
-
+type PathHandler = (args: NativeParsedArgs) => Promise<boolean>;
 const pathMappings: { [key: string]: PathHandler } = {};
 
 interface PathHandlerOptions {
@@ -98,13 +101,14 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	public async processCommandLine(args: NativeParsedArgs): Promise<void> {
 		let profile: IConnectionProfile = undefined;
 		let commandName = undefined;
+		let connectedContext: azdata.ConnectedContext = undefined;
+
 		if (args) {
 			if (this._commandService) {
 				commandName = args.command;
 			}
-
 			if (args.server) {
-				profile = this.readProfileFromArgs(args);
+				profile = await this.readProfileFromArgs(args);
 			}
 		}
 		let showConnectDialogOnStartup: boolean = this._configurationService.getValue('workbench.showConnectDialogOnStartup');
@@ -118,36 +122,25 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 			});
 			return;
 		}
-		let connectedContext: azdata.ConnectedContext = undefined;
-		if (profile) {
-			if (profile.providerName && !this._capabilitiesService.providers[profile.providerName]) {
-				const installed = await this._connectionManagementService.handleUnsupportedProvider(profile.providerName);
-				if (!installed) {
-					// User cancelled install prompt so exit early since we won't be able to connect
-					return;
-				}
-				// Recreate the profile here now that we have our provider registered so that we get the correct
-				// option names. See https://github.com/microsoft/azuredatastudio/issues/20773 for details about the issue
-				profile = this.readProfileFromArgs(args);
-			}
-			if (this._notificationService) {
-				this._notificationService.status(localize('connectingLabel', "Connecting: {0}", profile.serverName), { hideAfter: 2500 });
-			}
-			try {
-				await this._connectionManagementService.connectIfNotConnected(profile, args.showDashboard ? 'dashboard' : 'connection', true);
-				// Before sending to extensions, we should a) serialize to IConnectionProfile or things will fail,
-				// and b) use the latest version of the profile from the service so most fields are filled in.
-				let updatedProfile = this._connectionManagementService.getConnectionProfileById(profile.id);
-				connectedContext = { connectionProfile: new ConnectionProfile(this._capabilitiesService, updatedProfile).toIConnectionProfile() };
-			} catch (err) {
-				this.logService.warn('Failed to connect due to error: ' + getErrorMessage(err));
-			}
-		}
 		if (commandName) {
+			if (profile && commandName === Command.connect) {
+				if (this._notificationService) {
+					this._notificationService.status(localize('connectingLabel', "Connecting: {0}", profile.serverName), { hideAfter: 2500 });
+				}
+				try {
+					await this._connectionManagementService.connectIfNotConnected(profile, args.showDashboard ? 'dashboard' : 'connection', true);
+					// Before sending to extensions, we should a) serialize to IConnectionProfile or things will fail,
+					// and b) use the latest version of the profile from the service so most fields are filled in.
+					let updatedProfile = this._connectionManagementService.getConnectionProfileById(profile.id);
+					connectedContext = { connectionProfile: new ConnectionProfile(this._capabilitiesService, updatedProfile).toIConnectionProfile() };
+				} catch (err) {
+					this.logService.warn('Failed to connect due to error: ' + getErrorMessage(err));
+				}
+			}
 			if (this._notificationService) {
 				this._notificationService.status(localize('runningCommandLabel', "Running command: {0}", commandName), { hideAfter: 2500 });
 			}
-			await this._commandService.executeCommand(commandName, connectedContext);
+			await this.runCommandHandler(commandName, args);
 		} else if (connectedContext) {
 			// If we were given a file and it was opened with the sql editor,
 			// we want to connect the given profile to to it.
@@ -171,17 +164,17 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		}
 	}
 
+	/**
+	 * Handles user provided URL to initiate command handler for supported commands.
+	 * @param uri User provided URL in format: azuredatastudio://{command}?{option1}={value1}&{option2}={value2}...
+	 * @returns True if URL was opened successfully, false otherwise
+	 * @throws Error if invalid URL handler used.
+	 */
 	public async handleURL(uri: URI): Promise<boolean> {
 		let key = uri.authority;
+		let args = this.parseProtocolArgs(uri);
 
-		let method = pathMappings[key];
-
-		if (!method) {
-			return false;
-		}
-		method = method.bind(this);
-		const result = await method(uri);
-
+		const result = await this.runCommandHandler(key, args);
 		if (typeof result !== 'boolean') {
 			throw new Error('Invalid URL Handler used in commandLine code.');
 		}
@@ -189,19 +182,34 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		return result;
 	}
 
+	private async runCommandHandler(key: string, args: NativeParsedArgs) {
+		let method = pathMappings[key];
+
+		if (!method) {
+			return false;
+		}
+		method = method.bind(this);
+		return await method(args);
+	}
+
 	@pathHandler({
-		path: 'connect'
+		path: Command.connect
 	})
-	public async handleConnect(uri: URI): Promise<boolean> {
+	public async handleConnect(args: NativeParsedArgs): Promise<boolean> {
 		try {
-			let args = this.parseProtocolArgs(uri);
 			if (!args.server) {
 				this._notificationService.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
 				return true;
 			}
 			let isOpenOk = await this.confirmConnect(args);
 			if (isOpenOk) {
-				await this.processCommandLine(args);
+				const connectionProfile = await this.readProfileFromArgs(args);
+				await this._connectionManagementService.connect(connectionProfile, undefined, {
+					saveTheConnection: true,
+					showDashboard: true,
+					showConnectionDialogOnError: true,
+					showFirewallRuleOnError: true
+				});
 			}
 		} catch (err) {
 			this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
@@ -211,11 +219,10 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	}
 
 	@pathHandler({
-		path: 'openConnectionDialog'
+		path: Command.openConnectionDialog
 	})
-	public async handleOpenConnectionDialog(uri: URI): Promise<boolean> {
+	public async handleOpenConnectionDialog(args: NativeParsedArgs): Promise<boolean> {
 		try {
-			let args = this.parseProtocolArgs(uri);
 			if (!args.server) {
 				this._notificationService.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
 				return true;
@@ -226,7 +233,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 				return true;
 			}
 
-			const connectionProfile = this.readProfileFromArgs(args);
+			const connectionProfile = await this.readProfileFromArgs(args);
 			await this._connectionManagementService.showConnectionDialog(undefined, {
 				saveTheConnection: true,
 				showDashboard: true,
@@ -279,10 +286,20 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		}
 	}
 
-	private readProfileFromArgs(args: NativeParsedArgs) {
+	private async readProfileFromArgs(args: NativeParsedArgs): Promise<IConnectionProfile | undefined> {
 		let profile = new ConnectionProfile(this._capabilitiesService, null);
 		// We want connection store to use any matching password it finds
 		profile.savePassword = true;
+
+		// Handle unsupported provider first thing before setting default provider.
+		if (args.provider && !this._capabilitiesService.providers[args.provider]) {
+			const installed = await this._connectionManagementService.handleUnsupportedProvider(args.provider);
+			if (!installed) {
+				// User cancelled install prompt so exit early since we won't be able to connect
+				return undefined;
+			}
+		}
+
 		profile.providerName = args.provider ?? Constants.mssqlProviderName;
 		profile.serverName = args.server;
 		profile.databaseName = args.database ?? '';
