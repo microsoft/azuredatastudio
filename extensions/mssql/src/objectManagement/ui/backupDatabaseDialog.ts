@@ -152,10 +152,9 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		components.push(this._copyBackupCheckbox);
 
 		// Managed instance only supports URL mode, so lock the dest dropdown in that case
-		let backupDestEnabled = !this.viewInfo.isManagedInstance;
 		const backupDestinations = [loc.BackupDiskLabel, loc.BackupUrlLabel];
 		let defaultDest = isManaged ? backupDestinations[1] : backupDestinations[0];
-		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, newValue => this.toggleBackupDestMode(newValue), backupDestinations, defaultDest, backupDestEnabled);
+		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, newValue => this.toggleBackupDestMode(newValue), backupDestinations, defaultDest, !isManaged);
 		let backupDestContainer = this.createLabelInputContainer(loc.BackupToLabel, this._backupDestDropdown);
 		components.push(backupDestContainer);
 
