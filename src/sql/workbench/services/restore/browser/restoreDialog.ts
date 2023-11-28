@@ -60,6 +60,7 @@ interface FileListElement {
 }
 
 const LocalizedStrings = {
+	FROM_URL: localize('restore.fromUrl', "Restore from URL"),
 	BACKURL: localize('backupUrl', "Backup URL"),
 	BACKFILEPATH: localize('backupFilePath', "Backup file path"),
 	TARGETDATABASE: localize('targetDatabase', "Target database")
@@ -617,7 +618,7 @@ export class RestoreDialog extends Modal {
 
 	public enableRestoreButton(enabled: boolean): void {
 		this.spinner = false;
-		if (this._engineEdition !== DatabaseEngineEdition.SqlDataWarehouse && this._engineEdition !== DatabaseEngineEdition.SqlOnDemand && this.viewModel.databases.includes(this._targetDatabaseInputBox.value)) {
+		if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance && this.viewModel.databases.includes(this._targetDatabaseInputBox.value)) {
 			this._restoreButton!.enabled = false;
 			this._scriptButton!.enabled = false;
 		}
@@ -867,7 +868,7 @@ export class RestoreDialog extends Modal {
 
 	private resetDialog(): void {
 		this.hideError();
-		if (this._engineEdition !== DatabaseEngineEdition.SqlDataWarehouse && this._engineEdition !== DatabaseEngineEdition.SqlOnDemand) {
+		if (this._engineEdition !== DatabaseEngineEdition.SqlManagedInstance) {
 			this._restoreFromSelectBox!.selectWithOptionName(this._databaseTitle);
 			this.onRestoreFromChanged(this._databaseTitle);
 		}
