@@ -26,8 +26,8 @@ export class AccountViewModel {
 	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> { return this._updateAccountListEmitter.event; }
 
 	constructor(
-		@IAccountManagementService private _accountManagementService: IAccountManagementService,
-		@ILogService private _logService: ILogService,
+		@IAccountManagementService private readonly _accountManagementService: IAccountManagementService,
+		@ILogService private readonly _logService: ILogService,
 		@IAuthenticationService private readonly _authenticationService: IAuthenticationService
 	) {
 		// Create our event emitters
@@ -81,7 +81,8 @@ export class AccountViewModel {
 				return undefined;
 			}
 		}));
-		return accounts ?? [];
+
+		return accounts.filter(account => !!account);
 	}
 
 	private async getAccountForSessions(): Promise<AccountProviderAddedEventParams[]> {

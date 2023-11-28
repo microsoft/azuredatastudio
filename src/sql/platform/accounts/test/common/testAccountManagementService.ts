@@ -63,7 +63,7 @@ export class TestAccountManagementService implements IAccountManagementService {
 		return Promise.resolve('');
 	}
 
-	updateAccountList(provider: azdata.Account): Promise<void> {
+	updateAccountListAuthSessions(provider: azdata.Account): Promise<void> {
 		return Promise.resolve();
 	}
 

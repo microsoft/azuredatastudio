@@ -96,7 +96,7 @@ export class MainThreadAuthenticationProvider extends Disposable implements IAut
 		quickPick.show();
 	}
 
-	async removeAccountSessions(accountName: string, sessions: AuthenticationSession[], updateAccontList: () => Promise<void> | undefined): Promise<void> { // {{SQL CARBON EDIT}} - Added updateAccountList to update account list after signout or account removal.
+	async removeAccountSessions(accountName: string, sessions: AuthenticationSession[], updateAccountList: () => Promise<void> | undefined): Promise<void> { // {{SQL CARBON EDIT}} - Added updateAccountList to update account list after signout or account removal.
 		const accountUsages = readAccountUsages(this.storageService, this.id, accountName);
 
 		const { confirmed } = await this.dialogService.confirm({
@@ -114,8 +114,8 @@ export class MainThreadAuthenticationProvider extends Disposable implements IAut
 			this.storageService.remove(`${this.id}-${accountName}`, StorageScope.APPLICATION);
 
 			// {{SQL CARBON EDIT}} - BEGIN - Invoking updateAccountList delegate if a callback definition is defined.
-			if (updateAccontList) {
-				await updateAccontList();
+			if (updateAccountList) {
+				await updateAccountList();
 			}
 			// {{SQL CARBON EDIT}} - END
 		}

@@ -57,14 +57,14 @@ export class AccountManagementService implements IAccountManagementService {
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
-		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IStorageService private _storageService: IStorageService,
-		@IClipboardService private _clipboardService: IClipboardService,
-		@IOpenerService private _openerService: IOpenerService,
+		@IInstantiationService private readonly _instantiationService: IInstantiationService,
+		@IStorageService private readonly _storageService: IStorageService,
+		@IClipboardService private readonly _clipboardService: IClipboardService,
+		@IOpenerService private readonly _openerService: IOpenerService,
 		@ILogService private readonly _logService: ILogService,
 		@INotificationService private readonly _notificationService: INotificationService,
-		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
-		@IQuickInputService private _quickInputService: IQuickInputService,
+		@IAdsTelemetryService private readonly _telemetryService: IAdsTelemetryService,
+		@IQuickInputService private readonly _quickInputService: IQuickInputService,
 		@IAuthenticationService private readonly _authenticationService: IAuthenticationService
 	) {
 		this._mementoContext = new Memento(AccountManagementService.ACCOUNT_MEMENTO, this._storageService);
@@ -402,10 +402,11 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	/**
-	 * Updates the account list for a provider.
-	 * @param provider Provider to update the account list for
+	 * Updates the auth sessions that appear in the account for a provider. This method does not
+	 * handle account management sessions.
+	 * @param account The account to update the account list for
 	 */
-	public async updateAccountList(account: azdata.Account): Promise<void> {
+	public async updateAccountListAuthSessions(account: azdata.Account): Promise<void> {
 		const sessions = await this._authenticationService.getSessions(account.key.providerId);
 		const accounts = sessions.map(session => {
 			return ({
