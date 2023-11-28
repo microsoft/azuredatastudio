@@ -102,6 +102,9 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	private async initializeGeneralSection(): Promise<azdata.GroupContainer> {
+		// Managed instance only supports URL mode, so disable unusable fields
+		let isManaged = this.viewInfo.isManagedInstance;
+
 		let components: azdata.Component[] = [];
 		const backupTypes = [loc.BackupFull];
 		if (this.objectInfo.name !== 'master') {
@@ -141,17 +144,17 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 				this._truncateLogButton.enabled = false;
 				this._backupLogTailButton.enabled = false;
 			}
-		}, backupTypes, backupTypes[0], !this.useUrlMode);
+		}, backupTypes, backupTypes[0], !isManaged);
 		let backupContainer = this.createLabelInputContainer(loc.BackupTypeLabel, this._backupTypeDropdown);
 		components.push(backupContainer);
 
-		this._copyBackupCheckbox = this.createCheckbox(loc.BackupCopyLabel, () => undefined, this.useUrlMode, !this.useUrlMode);
+		this._copyBackupCheckbox = this.createCheckbox(loc.BackupCopyLabel, () => undefined, isManaged, !isManaged);
 		components.push(this._copyBackupCheckbox);
 
 		// Managed instance only supports URL mode, so lock the dest dropdown in that case
 		let backupDestEnabled = !this.viewInfo.isManagedInstance;
 		const backupDestinations = [loc.BackupDiskLabel, loc.BackupUrlLabel];
-		let defaultDest = this.useUrlMode ? backupDestinations[1] : backupDestinations[0];
+		let defaultDest = isManaged ? backupDestinations[1] : backupDestinations[0];
 		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, newValue => this.toggleBackupDestMode(newValue), backupDestinations, defaultDest, backupDestEnabled);
 		let backupDestContainer = this.createLabelInputContainer(loc.BackupToLabel, this._backupDestDropdown);
 		components.push(backupDestContainer);
@@ -275,10 +278,8 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		this._backupLogTailButton = this.createRadioButton(loc.BackupLogTail, transactionGroupId, false, () => undefined, false);
 		transactionComponents.push(this._backupLogTailButton);
 
-		if (!this.useUrlMode) {
-			let transactionDescription = this.modelView.modelBuilder.text().withProps({ value: loc.TransactionLogNotice }).component();
-			transactionComponents.push(transactionDescription);
-		}
+		let transactionDescription = this.modelView.modelBuilder.text().withProps({ value: loc.TransactionLogNotice }).component();
+		transactionComponents.push(transactionDescription);
 
 		let transactionGroup = this.createGroup(loc.BackupTransactionLog, transactionComponents, false);
 
@@ -503,22 +504,17 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			this._oldDestMode = destMode;
 			let useUrlMode = destMode === loc.BackupUrlLabel;
 
-			this._backupTypeDropdown.enabled = !useUrlMode;
-			this._copyBackupCheckbox.enabled = !useUrlMode;
-
+			// Media fields are disabled in URL mode and enabled for Disk mode
 			this._existingMediaButton.enabled = !useUrlMode;
 			this._newMediaButton.enabled = !useUrlMode;
 
 			let useExistingMedia = this._existingMediaButton.checked;
-
 			this._appendExistingMediaButton.enabled = useExistingMedia && !useUrlMode;
 			this._overwriteExistingMediaButton.enabled = useExistingMedia && !useUrlMode;
-
 			this._mediaNameInput.enabled = !useExistingMedia && !useUrlMode;
 			this._mediaDescriptionInput.enabled = !useExistingMedia && !useUrlMode;
 
-			this._encryptCheckbox.enabled = !useUrlMode && this.encryptionSupported;
-
+			// Show URL input or Files table depending on the selected mode
 			if (useUrlMode) {
 				this._urlInputContainer.display = 'flex';
 				this._filesTableContainer.display = 'none';
