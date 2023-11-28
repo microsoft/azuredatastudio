@@ -60,7 +60,6 @@ interface FileListElement {
 }
 
 const LocalizedStrings = {
-	FROM_URL: localize('restore.fromUrl', "Restore from URL"),
 	BACKURL: localize('backupUrl', "Backup URL"),
 	BACKFILEPATH: localize('backupFilePath', "Backup file path"),
 	TARGETDATABASE: localize('targetDatabase', "Target database")
