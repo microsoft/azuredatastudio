@@ -1182,6 +1182,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		let columnDefinitionChanges = changes['columnDefinitions'];
 		let activeCell: Slick.Cell | undefined = undefined;
 		let hasGridStructureChanges = false;
+		let lastCellTab = false;
 		let wasEditing = this.table ? !!this.table.grid.getCellEditor() : false;
 
 		if (this.table) {
@@ -1194,6 +1195,12 @@ export class EditDataGridPanel extends GridParentComponent {
 				// Get the last selected cell as the active cell as a backup.
 				activeCell = this.table.grid.getActiveCell();
 			}
+		}
+
+		// Prevent cell selection after user has tabbed out of the grid.
+		// After cell update, last cell is on row at the end, need to index by 1.
+		if (activeCell && this.isLastCell((activeCell.row + 1), activeCell.cell) && !this.isEnterPressNull && this.needsCellPreSubmit) {
+			lastCellTab = true;
 		}
 
 		if (columnDefinitionChanges && !equals(columnDefinitionChanges.previousValue, columnDefinitionChanges.currentValue)) {
@@ -1227,9 +1234,13 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 
 		if (hasGridStructureChanges) {
-			if (activeCell) {
+			if (activeCell && !lastCellTab) {
 				this.table.grid.setActiveCell(activeCell.row, activeCell.cell);
 			} else {
+				if (activeCell && lastCellTab) {
+					// Scroll to new row after we submitted the cell during a tab submit + exit.
+					this.table.grid.scrollRowIntoView(activeCell.row + 1);
+				}
 				this.table.grid.resetActiveCell();
 			}
 		}
