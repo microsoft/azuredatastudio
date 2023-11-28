@@ -253,6 +253,9 @@
     <trans-unit id="objectManagement.backupRedundancyLabel">
       <source xml:lang="en">Backup Storage Redundancy</source>
     </trans-unit>
+    <trans-unit id="objectManagement.backupToUrlLabel">
+      <source xml:lang="en">Backup URL</source>
+    </trans-unit>
     <trans-unit id="objectManagement.backupAndRestoreText">
       <source xml:lang="en">Backup and Restore</source>
     </trans-unit>
