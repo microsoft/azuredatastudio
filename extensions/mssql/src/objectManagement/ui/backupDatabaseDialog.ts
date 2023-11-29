@@ -52,7 +52,11 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	private _defaultBackupPathSeparator: string;
 	private _encryptorOptions: string[];
 
-	private _oldDestMode: string;
+	/**
+	 * Keeps track of the previous Backup Destination so that we don't reload controls
+	 * unnecessarily when the user clicks on the same value in the Destination dropdown.
+	 */
+	private _oldDestination: string;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		// Increase dialog width since there are a lot of indented controls in the backup dialog
@@ -154,7 +158,8 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		// Managed instance only supports URL mode, so lock the dest dropdown in that case
 		const backupDestinations = [loc.BackupDiskLabel, loc.BackupUrlLabel];
 		let defaultDest = isManaged ? backupDestinations[1] : backupDestinations[0];
-		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, newValue => this.toggleBackupDestMode(newValue), backupDestinations, defaultDest, !isManaged);
+		this._oldDestination = defaultDest;
+		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, newValue => this.toggleBackupDestination(newValue), backupDestinations, defaultDest, !isManaged);
 		let backupDestContainer = this.createLabelInputContainer(loc.BackupToLabel, this._backupDestDropdown);
 		components.push(backupDestContainer);
 
@@ -495,10 +500,13 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		return pathMediaMap;
 	}
 
-	private async toggleBackupDestMode(destMode: string): Promise<void> {
-		if (!this._oldDestMode || this._oldDestMode !== destMode) {
-			this._oldDestMode = destMode;
-			let useUrlMode = destMode === loc.BackupUrlLabel;
+	/**
+	 * Toggles the dialog between using Disk or a storage URL as the backup destination.
+	 */
+	private async toggleBackupDestination(destination: string): Promise<void> {
+		if (!this._oldDestination || this._oldDestination !== destination) {
+			this._oldDestination = destination;
+			let useUrlMode = destination === loc.BackupUrlLabel;
 
 			// Media fields are disabled in URL mode and enabled for Disk mode
 			this._existingMediaButton.enabled = !useUrlMode;
