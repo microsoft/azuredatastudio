@@ -88,7 +88,7 @@ export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<Tre
 			this.accounts = await azdata.accounts.getAllAccounts();
 			// System has been initialized
 			this.setSystemInitialized();
-			this._onDidChangeTreeData.fire(undefined);
+			this.notifyNodeChanged(undefined);
 		} catch (err) {
 			// Skip for now, we can assume that the accounts changed event will eventually notify instead
 			Logger.error('loadAccounts failed with the following error: {0}', err.message ?? err);
@@ -116,7 +116,7 @@ export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<Tre
 			}
 		}
 
-		this._onDidChangeTreeData.fire(node);
+		this.notifyNodeChanged(node);
 	}
 
 	public getTreeItem(element: TreeNode): vscode.TreeItem | Thenable<vscode.TreeItem> {
