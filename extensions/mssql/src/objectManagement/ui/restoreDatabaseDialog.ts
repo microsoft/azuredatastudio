@@ -12,6 +12,8 @@ import { Database, DatabaseViewInfo } from '../interfaces';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { RestoreDatabaseFilesTabDocUrl, RestoreDatabaseGeneralTabDocUrl, RestoreDatabaseOptionsTabDocUrl } from '../constants';
 import { isUndefinedOrNull } from '../../types';
+import { MediaDeviceType } from '../utils';
+
 
 
 const Dialog_Width = '1150px';
@@ -191,6 +193,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		options.readHeaderFromMedia = isRestoreFromBackupFile ? true : false;
 		options.overwriteTargetDatabase = false;
 		options.selectedBackupSets = this.objectInfo.restorePlanResponse?.backupSetsToRestore?.filter(a => a.isSelected).map(a => a.id);
+		options.deviceType = this.getRestoreMediaDeviceType();
 
 		const restoreInfo: azdata.RestoreInfo = {
 			options: options
@@ -266,11 +269,11 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 	private initializeDestinationSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
-
+		const isManaged = this.viewInfo.isManagedInstance;
 		// target database
 		let targetDatabase = this.createDropdown(localizedConstants.TargetDatabaseText, async (newValue) => {
 			this.objectInfo.restorePlanResponse.planDetails.targetDatabaseName.currentValue = newValue;
-		}, this.viewInfo.restoreDatabaseInfo.targetDatabaseNames, this.objectInfo.restorePlanResponse?.planDetails.targetDatabaseName.currentValue, true, RestoreInputsWidth, true, true);
+		}, this.viewInfo.restoreDatabaseInfo.targetDatabaseNames, isManaged ? this.objectInfo.name : this.objectInfo.restorePlanResponse?.planDetails.targetDatabaseName.currentValue, true, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.TargetDatabaseText, targetDatabase));
 
 		// restore to
@@ -436,7 +439,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	}
 
 	/**
-	 * Creates a file browser and sets the path to the bakcup url Path
+	 * Creates a file browser and sets the path to the backup url Path
 	 */
 	private async createBackupUrlFileBrowser(): Promise<void> {
 		let backupPath = await azdata.window.openBackupUrlBrowserDialog(this.options.connectionUri, '', true);
@@ -446,17 +449,26 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	}
 
 	/**
+	 * Gets current media devide type for database/backupFile or URL types
+	 * @returns Media device type
+	 */
+	private getRestoreMediaDeviceType(): MediaDeviceType {
+		return this.viewInfo.isManagedInstance ? MediaDeviceType.Url : MediaDeviceType.File;
+	}
+
+	/**
 	 * Prepares the restore params to get restore plan for the selected source database
 	 * @returns restore params
 	 */
 	private setRestoreOption(inputType: azdata.DropDownComponent | azdata.InputBoxComponent): azdata.RestoreInfo {
 		let options = {
-			targetDatabaseName: this.objectInfo.restorePlanResponse.planDetails.targetDatabaseName.currentValue,
-			sourceDatabaseName: inputType === this.restoreDatabase ? this.objectInfo.restorePlanResponse.planDetails.sourceDatabaseName.currentValue : null,
-			relocateDbFiles: this.objectInfo.restorePlanResponse.planDetails.relocateDbFiles.currentValue,
+			targetDatabaseName: this.objectInfo.restorePlanResponse?.planDetails.targetDatabaseName.currentValue,
+			sourceDatabaseName: inputType === this.restoreDatabase ? this.objectInfo.restorePlanResponse?.planDetails.sourceDatabaseName.currentValue : null,
+			relocateDbFiles: this.objectInfo.restorePlanResponse?.planDetails.relocateDbFiles.currentValue,
 			readHeaderFromMedia: inputType === this.restoreDatabase ? false : true,
 			overwriteTargetDatabase: true,
-			backupFilePaths: inputType === this.backupFilePathInput ? this.backupFilePathInput.value : null
+			backupFilePaths: inputType === this.backupFilePathInput ? this.backupFilePathInput.value : null,
+			deviceType: this.getRestoreMediaDeviceType()
 		};
 
 		const restoreInfo: azdata.RestoreInfo = {
@@ -480,36 +492,41 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		});
 		await this.setTableData(this.restorePlanTable, restoreTableNewdata, DefaultMaxTableRowCount);
 
-		// Update Restore Database Files table
-		var restoreDatabaseTableNewdata = restorePlan.dbFiles?.map(plan => {
-			return this.convertToRestoreDbTableDataView(plan);
-		});
-		await this.setTableData(this.restoreDatabaseTable, restoreDatabaseTableNewdata, DefaultMaxTableRowCount);
-
-		// Reset Relocate all files checkbox
-		this.relocateAllFiles.checked = restorePlan.planDetails.relocateDbFiles.defaultValue;
-		this.relocateAllFiles.enabled = !restorePlan.planDetails.relocateDbFiles.isReadOnly;
-
 		// Reset Restore to
 		await this.restoreTo.updateProperty('value', restorePlan.planDetails.lastBackupTaken.currentValue);
 
-		// Reset Stanby
-		await this.standByFileInput.updateProperty('value', restorePlan.planDetails.standbyFile.defaultValue);
+		if (!this.viewInfo.isManagedInstance) {
+			// Update Restore Database Files table
+			var restoreDatabaseTableNewdata = restorePlan.dbFiles?.map(plan => {
+				return this.convertToRestoreDbTableDataView(plan);
+			});
+			await this.setTableData(this.restoreDatabaseTable, restoreDatabaseTableNewdata, DefaultMaxTableRowCount);
 
-		// Reset tail-log backup checkbox
-		this.takeTailLogBackup.checked = restorePlan.planDetails.backupTailLog.defaultValue;
-		this.takeTailLogBackup.enabled = !restorePlan.planDetails.backupTailLog.isReadOnly;
+			// Reset Relocate all files checkbox
+			this.relocateAllFiles.checked = restorePlan.planDetails.relocateDbFiles.defaultValue;
+			this.relocateAllFiles.enabled = !restorePlan.planDetails.relocateDbFiles.isReadOnly;
 
-		// Reset leave source db checkbox
-		this.leaveSourceDB.checked = restorePlan.planDetails.tailLogWithNoRecovery.defaultValue;
-		this.leaveSourceDB.enabled = !restorePlan.planDetails.tailLogWithNoRecovery.isReadOnly;
+			// Reset Restore to
+			await this.restoreTo.updateProperty('value', restorePlan.planDetails.lastBackupTaken.currentValue);
 
-		// Reset Tail-log backup file
-		await this.tailLogBackupFile.updateProperty('value', restorePlan.planDetails.tailLogBackupFile.defaultValue);
+			// Reset Stanby
+			await this.standByFileInput.updateProperty('value', restorePlan.planDetails.standbyFile.defaultValue);
 
-		// Server connection
-		this.closeExistingConnections.checked = restorePlan.planDetails.closeExistingConnections.defaultValue;
-		this.closeExistingConnections.enabled = !restorePlan.planDetails.closeExistingConnections.isReadOnly;
+			// Reset tail-log backup checkbox
+			this.takeTailLogBackup.checked = restorePlan.planDetails.backupTailLog.defaultValue;
+			this.takeTailLogBackup.enabled = !restorePlan.planDetails.backupTailLog.isReadOnly;
+
+			// Reset leave source db checkbox
+			this.leaveSourceDB.checked = restorePlan.planDetails.tailLogWithNoRecovery.defaultValue;
+			this.leaveSourceDB.enabled = !restorePlan.planDetails.tailLogWithNoRecovery.isReadOnly;
+
+			// Reset Tail-log backup file
+			await this.tailLogBackupFile.updateProperty('value', restorePlan.planDetails.tailLogBackupFile.defaultValue);
+
+			// Server connection
+			this.closeExistingConnections.checked = restorePlan.planDetails.closeExistingConnections.defaultValue;
+			this.closeExistingConnections.enabled = !restorePlan.planDetails.closeExistingConnections.isReadOnly;
+		}
 	}
 	//#endregion
 

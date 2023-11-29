@@ -13,6 +13,7 @@ import { DefaultButtonWidth, DefaultInputWidth, DefaultLongInputWidth, DefaultMi
 import { isUndefinedOrNull } from '../../types';
 import { TaskExecutionMode } from 'azdata';
 import { getErrorMessage } from '../../utils';
+import { PhysicalDeviceType, MediaDeviceType } from '../utils';
 
 export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private readonly _fileFilters: azdata.window.FileFilters[] = [{ label: loc.BackupFilesLabel, filters: ['*.bak', '*.tm'] }];
@@ -483,29 +484,3 @@ const aes128 = 'AES 128';
 const aes192 = 'AES 192';
 const aes256 = 'AES 256';
 const tripleDES = 'Triple DES';
-
-/**
- * Backup physical device type: https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.backupdevicetype
- */
-enum PhysicalDeviceType {
-	Disk = 2,
-	FloppyA = 3,
-	FloppyB = 4,
-	Tape = 5,
-	Pipe = 6,
-	CDRom = 7,
-	Url = 9,
-	Unknown = 100
-}
-
-/**
- * Backup media device type: https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.devicetype
- */
-enum MediaDeviceType {
-	LogicalDevice = 0,
-	Tape = 1,
-	File = 2,
-	Pipe = 3,
-	VirtualDevice = 4,
-	Url = 5
-}
