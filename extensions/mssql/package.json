@@ -143,6 +143,11 @@
         "title": "%title.attachDatabase%"
       },
       {
+        "command": "mssql.restoreDatabase",
+        "category": "MSSQL",
+        "title": "%title.restoreDatabase%"
+      },
+      {
         "command": "mssql.backupDatabase",
         "category": "MSSQL",
         "title": "%title.backupDatabase%"
@@ -597,6 +602,10 @@
           "when": "false"
         },
         {
+          "command": "mssql.restoreDatabase",
+          "when": "false"
+        },
+        {
           "command": "mssql.backupDatabase",
           "when": "false"
         },
@@ -697,8 +706,13 @@
           "group": "1_objectManagement@2"
         },
         {
+          "command": "mssql.restoreDatabase",
+          "when": "connectionProvider == MSSQL && !isCloud && engineEdition != 11 && nodeType == Database && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
+          "group": "1_objectManagement@3"
+        },
+        {
           "command": "mssql.backupDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && engineEdition != 8 && engineEdition != 11 && config.workbench.enablePreviewFeatures && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && engineEdition != 11 && config.workbench.enablePreviewFeatures && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
           "group": "1_objectManagement@3"
         },
         {

@@ -11,6 +11,8 @@ import { IconPathHelper } from '../iconHelper';
 
 export const DefaultLabelWidth = 150;
 export const DefaultInputWidth = 300;
+export const DefaultLongInputWidth = 440;
+export const DefaultButtonWidth = 100;
 export const DefaultColumnCheckboxWidth = 150;
 export const DefaultTableWidth = DefaultInputWidth + DefaultLabelWidth;
 export const DefaultMaxTableRowCount = 10;

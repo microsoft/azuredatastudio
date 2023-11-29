@@ -49,24 +49,24 @@ export class ImportAssessmentDialog {
 							...styles.PAGE_TITLE_CSS,
 							'margin': '0px 15px 0px 15px'
 						},
-						value: constants.ASSESSMENT_RESULTS_PAGE_HEADER
+						value: constants.IMPORT_ASSESSMENT_PAGE_HEADER
 					}).component();
 
 					const headerSection = this._header.createAssessmentDetailsHeader(view);
 
 					this._bodySection = await this._body.createAssessmentDetailsBodyAsync(view);
 
-					await this.shouldNoTargetSelectionDisplayAsync(this.model._targetType === undefined);
-
-					if (this.model._targetType !== undefined) {
-						await this._header.populateAssessmentDetailsHeader(this.model);
-						await this._body.populateAssessmentBodyAsync();
+					if (this.model._targetType === undefined) {
+						// by default set the target type to SQLMI
+						this.model._targetType = MigrationTargetType.SQLMI;
 					}
+					await this.displayAssessmentAsync();
+					await this._header.populateAssessmentDetailsHeader(this.model);
+					await this._body.populateAssessmentBodyAsync();
 
 					this._disposables.push(this._header.targetTypeDropdown.onValueChanged(async (value) => {
 						if (value) {
 							const selectedTargetType = this.getTargetTypeBasedOnSelection(value);
-							await this.shouldNoTargetSelectionDisplayAsync(false);
 							this.model._targetType = selectedTargetType;
 							await this._header.populateAssessmentDetailsHeader(this.model);
 							await this._body.populateAssessmentBodyAsync();
@@ -123,17 +123,10 @@ export class ImportAssessmentDialog {
 		}
 	}
 
-	private async shouldNoTargetSelectionDisplayAsync(visible: boolean) {
-		if (visible) {
-			await utils.updateControlDisplay(this._bodySection, false);
-			await utils.updateControlDisplay(this._header.headerCardsContainer, false);
-			await utils.updateControlDisplay(this._header.noTargetSelectedContainer, true, 'flex');
-		}
-		else {
-			await utils.updateControlDisplay(this._header.noTargetSelectedContainer, false);
-			await utils.updateControlDisplay(this._bodySection, true, 'flex');
-			await utils.updateControlDisplay(this._header.headerCardsContainer, true, 'flex');
-		}
+	private async displayAssessmentAsync() {
+		await utils.updateControlDisplay(this._header.noTargetSelectedContainer, false);
+		await utils.updateControlDisplay(this._bodySection, true, 'flex');
+		await utils.updateControlDisplay(this._header.headerCardsContainer, true, 'flex');
 	}
 
 	private getTargetTypeBasedOnSelection(targetType: string): MigrationTargetType {

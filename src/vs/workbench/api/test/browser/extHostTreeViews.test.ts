@@ -22,7 +22,7 @@ import { nullExtensionDescription as extensionsDescription } from 'vs/workbench/
 import { runWithFakedTimers } from 'vs/base/test/common/timeTravelScheduler';
 import { IExtHostTelemetry } from 'vs/workbench/api/common/extHostTelemetry';
 
-suite.skip('ExtHostTreeView', function () { // {{SQL CARBON EDIT}} Skip suite
+suite('ExtHostTreeView', function () {
 
 	class RecordingShape extends mock<MainThreadTreeViewsShape>() {
 

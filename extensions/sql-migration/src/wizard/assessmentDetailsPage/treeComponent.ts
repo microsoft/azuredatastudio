@@ -12,6 +12,7 @@ import { MigrationStateModel } from '../../models/stateMachine';
 import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
 import { selectDatabasesFromList } from '../../constants/helper';
 import { getSourceConnectionProfile } from '../../api/sqlUtils';
+import { SqlMigrationAssessmentResultItem } from '../../service/contracts';
 
 const AZURE_SQL_MI_DB_COUNT_THRESHOLD = 100;
 
@@ -57,9 +58,9 @@ export class TreeComponent {
 	private _dbNames!: string[];
 	private _databaseCount!: azdata.TextComponent;
 	private _disposables: vscode.Disposable[] = [];
-	private _model!: MigrationStateModel;
 
-	constructor(public wizard: azdata.window.Wizard, private _readOnly: boolean = false) { }
+	constructor(public wizard: azdata.window.Wizard,
+		public model: MigrationStateModel, private _readOnly: boolean = false) { }
 
 	public get instanceTable() {
 		return this._instanceTable;
@@ -219,7 +220,8 @@ export class TreeComponent {
 		).component();
 
 		this._disposables.push(this._databaseTable.onDataChanged(async () => {
-			await this.updateValuesOnSelectionAsync(this._model);
+			await this.updateValuesOnSelectionAsync(this.model);
+			this.model._databasesForMigration = this.selectedDbs();
 		}));
 
 		const tableContainer = this._view.modelBuilder.divContainer().withItems([this._databaseTable]).withProps({
@@ -264,17 +266,16 @@ export class TreeComponent {
 	}
 
 	// populates tree component values.
-	public async initialize(migrationStateModel: MigrationStateModel): Promise<void> {
-		this._model = migrationStateModel;
+	public async initialize(): Promise<void> {
 		let instanceTableValues: azdata.DeclarativeTableCellValue[][] = [];
 		this._databaseTableValues = [];
-		this._dbNames = migrationStateModel._databasesForAssessment;
-		this._serverName = (await getSourceConnectionProfile()).serverName;
+		this._dbNames = this.model._databasesForAssessment;
+		this._serverName = this.model.serverName ?? (await getSourceConnectionProfile()).serverName;
 
 		// pre-select the entire list
-		const selectedDbs = this._dbNames.filter(db => migrationStateModel._databasesForAssessment.includes(db));
+		const selectedDbs = this._dbNames.filter(db => this.model._databasesForMigration.includes(db));
 
-		if (migrationStateModel._targetType === MigrationTargetType.SQLVM || !migrationStateModel._assessmentResults) {
+		if (this.model._targetType === MigrationTargetType.SQLVM || !this.model._assessmentResults) {
 			instanceTableValues = [[
 				{
 					value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
@@ -303,7 +304,7 @@ export class TreeComponent {
 			});
 		} else {
 
-			if (!this._readOnly && migrationStateModel._targetType === MigrationTargetType.SQLMI && selectedDbs?.length > AZURE_SQL_MI_DB_COUNT_THRESHOLD) {
+			if (!this._readOnly && this.model._targetType === MigrationTargetType.SQLMI && selectedDbs?.length > AZURE_SQL_MI_DB_COUNT_THRESHOLD) {
 				this.wizard.nextButton.enabled = false;
 				this.wizard.message = {
 					level: azdata.window.MessageLevel.Error,
@@ -317,18 +318,18 @@ export class TreeComponent {
 					style: styleLeft
 				},
 				{
-					value: migrationStateModel._assessmentResults?.issues?.filter(issue => issue.appliesToMigrationTargetPlatform === migrationStateModel._targetType).length,
+					value: this.getUniqueIssuesBasedOnCheckId(this.model._assessmentResults?.issues)?.filter(issue => issue.appliesToMigrationTargetPlatform === this.model._targetType).length,
 					style: styleRight
 				}
 			]];
-			migrationStateModel._assessmentResults?.databaseAssessments
+			this.model._assessmentResults?.databaseAssessments
 				.sort((db1, db2) => db2.issues?.length - db1.issues?.length);
 
 			// Reset the dbName list so that it is in sync with the table
-			this._dbNames = migrationStateModel._assessmentResults?.databaseAssessments.map(da => da.name);
-			migrationStateModel._assessmentResults?.databaseAssessments.forEach((db) => {
+			this._dbNames = this.model._assessmentResults?.databaseAssessments.map(da => da.name);
+			this.model._assessmentResults?.databaseAssessments.forEach((db) => {
 				let selectable = true;
-				if (db.issues.find(issue => issue.databaseRestoreFails && issue.appliesToMigrationTargetPlatform === migrationStateModel._targetType)) {
+				if (db.issues.find(issue => issue.databaseRestoreFails && issue.appliesToMigrationTargetPlatform === this.model._targetType)) {
 					selectable = false;
 				}
 				this._databaseTableValues.push([
@@ -342,7 +343,7 @@ export class TreeComponent {
 						style: styleLeft
 					},
 					{
-						value: db.issues.filter(v => v.appliesToMigrationTargetPlatform === migrationStateModel._targetType)?.length,
+						value: this.getUniqueIssuesBasedOnCheckId(db.issues)?.filter(v => v.appliesToMigrationTargetPlatform === this.model._targetType)?.length,
 						style: styleRight
 					}
 				]);
@@ -350,14 +351,27 @@ export class TreeComponent {
 		}
 		await this._instanceTable.setDataValues(instanceTableValues);
 
-		this._databaseTableValues = selectDatabasesFromList(migrationStateModel._databasesForMigration, this._databaseTableValues);
+		this._databaseTableValues = selectDatabasesFromList(this.model._databasesForMigration, this._databaseTableValues);
 		await this._databaseTable.setDataValues(this._databaseTableValues);
-		await this.updateValuesOnSelectionAsync(migrationStateModel);
-		this._databaseCount.value = constants.DATABASES(0, migrationStateModel._databasesForAssessment?.length);
+		await this.updateValuesOnSelectionAsync(this.model);
+		this._databaseCount.value = constants.DATABASES(selectedDbs.length, this.model._databasesForAssessment?.length);
 	}
 
 	private createIconTextCell(icon: IconPath, text: string): string {
 		return text;
+	}
+
+	// function that return list of unique issues based on checkId
+	private getUniqueIssuesBasedOnCheckId(issues: SqlMigrationAssessmentResultItem[]): SqlMigrationAssessmentResultItem[] {
+		let distinctIssues: SqlMigrationAssessmentResultItem[] = [];
+		let distinctCheckIds: string[] = [];
+		issues.forEach((issue) => {
+			if (!distinctCheckIds.includes(issue.checkId)) {
+				distinctCheckIds.push(issue.checkId);
+				distinctIssues.push(issue);
+			}
+		});
+		return distinctIssues;
 	}
 
 }
