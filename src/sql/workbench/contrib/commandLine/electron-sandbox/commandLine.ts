@@ -205,7 +205,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	public async handleConnect(args: NativeParsedArgs): Promise<boolean> {
 		try {
 			if (!args.server) {
-				this._notificationService?.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
+				this._notificationService.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
 				return true;
 			}
 			let isOpenOk = await this.confirmConnect(args);
@@ -223,7 +223,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 				}
 			}
 		} catch (err) {
-			this._notificationService?.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
+			this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
 		}
 		// Handled either way
 		return true;
@@ -235,7 +235,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	public async handleOpenConnectionDialog(args: NativeParsedArgs): Promise<boolean> {
 		try {
 			if (!args.server) {
-				this._notificationService?.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
+				this._notificationService.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
 				return true;
 			}
 			let isOpenOk = await this.confirmConnect(args);
@@ -252,7 +252,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 				showFirewallRuleOnError: true
 			}, connectionProfile);
 		} catch (err) {
-			this._notificationService?.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
+			this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
 		}
 		return true;
 	}
