@@ -142,8 +142,10 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 				this._notificationService.status(localize('runningCommandLabel', "Running command: {0}", commandName), { hideAfter: 2500 });
 			}
 			if (commandName === Command.connect || commandName === Command.openConnectionDialog) {
-				this.runCommandHandler(commandName, args);
+				// Run handlers for 'connect' and 'openConnectionDialog' commands.
+				await this.runCommandHandler(commandName, args);
 			} else {
+				// Execute other commands via commandService.
 				await this._commandService.executeCommand(commandName, connectedContext);
 			}
 		} else if (connectedContext) {
