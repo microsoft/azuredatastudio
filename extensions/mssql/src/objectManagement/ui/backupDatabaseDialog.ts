@@ -496,10 +496,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	private async toggleBackupDestMode(destMode: string): Promise<void> {
-		if (!this._oldDestMode) {
-			// First call happens when dropdown is created, so just set the initial value here
-			this._oldDestMode = destMode;
-		} else if (this._oldDestMode !== destMode) {
+		if (!this._oldDestMode || this._oldDestMode !== destMode) {
 			this._oldDestMode = destMode;
 			let useUrlMode = destMode === loc.BackupUrlLabel;
 
