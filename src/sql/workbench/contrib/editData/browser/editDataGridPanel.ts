@@ -212,7 +212,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			self.currentEditCellValue = event.item[event.cell];
 
 			// Handle cases where we need to submit the cell immmediately (such as enter in new row or tabbing out of the grid)
-			if (self.needsCellPreSubmit) {
+			if (self.needsCellPreSubmit && !this.cellSubmitInProgress) {
 				self.submitCurrentCellChange((result: EditUpdateCellResult) => {
 					if (self.isEnterPressNull) {
 						// In case the last row is entered in, we need to wait to get the cell value after edit end
@@ -232,6 +232,11 @@ export class EditDataGridPanel extends GridParentComponent {
 							self.isEnterPressNull = false;
 						}
 						else {
+							this.cellSubmitInProgress = true;
+							this.updateEnabledState(true);
+							this.cellSubmitInProgress = false;
+							this.lastClickedCell = { row: self.currentCell.row, column: self.currentCell.column };
+							self.focusCell(self.currentCell.row, self.currentCell.column, true);
 							self.needsCellPreSubmit = false;
 						}
 						self.notificationService.error(error);
