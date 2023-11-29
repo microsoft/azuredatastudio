@@ -322,15 +322,9 @@ export class EditDataGridPanel extends GridParentComponent {
 					if (gridData && gridData !== this.oldGridData) {
 						this.oldGridData = gridData;
 					}
-					if (this.needsCellPreSubmit) {
-						this.needsCellPreSubmit = false;
-					}
 					return gridData;
 				}
 				else {
-					if (this.needsCellPreSubmit) {
-						this.needsCellPreSubmit = false;
-					}
 					this.logService.error('Grid data is nonexistent, using last known good grid');
 					return this.oldGridData;
 				}
@@ -387,7 +381,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (row === undefined || column === undefined || this.cellSubmitInProgress || this.cellRevertInProgress || this.rowRevertInProgress) {
 			return;
 		}
-
 
 		// get the cell we have just immediately clicked (to set as the new active cell in handleChanges).
 		this.lastClickedCell = { row, column };
@@ -659,7 +652,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		if (e.keyCode === KeyCode.Tab) {
 			if ((e.shiftKey && this.isFirstCell(this.currentCell.row, this.currentCell.column))
-				|| this.isLastCell(this.currentCell.row, this.currentCell.column)) {
+				|| (!e.shiftKey && this.isLastCell(this.currentCell.row, this.currentCell.column))) {
 				this.needsCellPreSubmit = true;
 			}
 		}
