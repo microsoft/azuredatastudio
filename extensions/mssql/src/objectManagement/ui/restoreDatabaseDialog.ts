@@ -55,6 +55,8 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	private logFileFolder: azdata.InputBoxComponent;
 	private logFileFolderButton: azdata.ButtonComponent;
 	private logFileFolderContainer: azdata.FlexContainer;
+	private targetDatabase: azdata.DropDownComponent;
+	private isManaged: boolean;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		options.width = Dialog_Width;
@@ -95,8 +97,6 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 	protected async initializeUI(): Promise<void> {
 		const tabs: azdata.Tab[] = [];
-		const isManaged = this.viewInfo.isManagedInstance;
-
 		this.generalTab = {
 			title: localizedConstants.GeneralSectionHeader,
 			id: this.generalTabId,
@@ -108,7 +108,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		};
 		tabs.push(this.generalTab);
 
-		if (!isManaged) {
+		if (!this.isManaged) {
 			this.filesTab = {
 				title: localizedConstants.FilesSectionHeader,
 				id: this.filesTabId,
@@ -120,7 +120,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			tabs.push(this.filesTab);
 		}
 
-		if (!isManaged) {
+		if (!this.isManaged) {
 			this.optionsTab = {
 				title: localizedConstants.OptionsSectionHeader,
 				id: this.optionsTabId,
@@ -147,6 +147,20 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 				this.activeTabId = tabId;
 			}));
 		this.formContainer.addItem(propertiesTabbedPannel);
+	}
+
+	/**
+	 * Validates the input by custom validations
+	 * @returns error messages
+	 */
+	protected override async validateInput(): Promise<string[]> {
+		const errors = await super.validateInput();
+
+		// Managed instance doesn't support restoring on the existing database
+		if (this.isManaged && this.viewInfo.restoreDatabaseInfo.targetDatabaseNames.includes(this.targetDatabase.value.toString())) {
+			errors.push(localizedConstants.DatabaseAlreadyExists(this.targetDatabase.value.toString()));
+		}
+		return errors;
 	}
 
 	/**
@@ -189,8 +203,8 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			}
 		});
 		options.sessionId = this.objectInfo.restorePlanResponse.sessionId;
-		options.backupFilePaths = isRestoreFromBackupFile ? this.backupFilePathInput.value : null;
-		options.readHeaderFromMedia = isRestoreFromBackupFile ? true : false;
+		options.backupFilePaths = this.isManaged || isRestoreFromBackupFile ? this.backupFilePathInput.value : null;
+		options.readHeaderFromMedia = this.isManaged || isRestoreFromBackupFile ? true : false;
 		options.overwriteTargetDatabase = false;
 		options.selectedBackupSets = this.objectInfo.restorePlanResponse?.backupSetsToRestore?.filter(a => a.isSelected).map(a => a.id);
 		options.deviceType = this.getRestoreMediaDeviceType();
@@ -208,10 +222,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		this.objectInfo.name = this.options.database;
 
 		// Managed instance only supports URL mode, so disable unusable fields
-		let isManaged = this.viewInfo.isManagedInstance;
+		this.isManaged = this.viewInfo.isManagedInstance;
 
 		// Restore from
-		const restoreFromDdOptions = isManaged ? [localizedConstants.RestoreFromUrlText] : [localizedConstants.RestoreFromDatabaseOptionText, localizedConstants.RestoreFromBackupFileOptionText];
+		const restoreFromDdOptions = this.isManaged ? [localizedConstants.RestoreFromUrlText] : [localizedConstants.RestoreFromDatabaseOptionText, localizedConstants.RestoreFromBackupFileOptionText];
 		this.restoreFrom = this.createDropdown(localizedConstants.RestoreFromText, async (newValue) => {
 			if (newValue === localizedConstants.RestoreFromBackupFileOptionText) {
 				this.backupFilePathContainer.display = 'inline-flex';
@@ -220,7 +234,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 				this.backupFilePathContainer.display = 'none';
 				this.restoreDatabase.enabled = true;
 			}
-		}, restoreFromDdOptions, restoreFromDdOptions[0], !isManaged, RestoreInputsWidth, true, true);
+		}, restoreFromDdOptions, restoreFromDdOptions[0], !this.isManaged, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.RestoreFromText, this.restoreFrom));
 
 		// Backup file path
@@ -241,15 +255,15 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			width: RestoreInputsWidth - 30,
 			placeHolder: localizedConstants.BackupFolderPathTitle
 		});
-		this.backupFilePathButton = this.createButton('...', '...', async () => { isManaged ? await this.createBackupUrlFileBrowser() : await this.createBackupFileBrowser() });
+		this.backupFilePathButton = this.createButton('...', '...', async () => { this.isManaged ? await this.createBackupUrlFileBrowser() : await this.createBackupFileBrowser() });
 		this.backupFilePathButton.width = SelectFolderButtonWidth;
 		this.backupFilePathContainer = this.createLabelInputContainer(localizedConstants.BackupFilePathText, this.backupFilePathInput);
 		this.backupFilePathContainer.addItems([this.backupFilePathButton], { flex: '10 0 auto' });
-		this.backupFilePathContainer.display = isManaged ? 'inline-flex' : 'none';
+		this.backupFilePathContainer.display = this.isManaged ? 'inline-flex' : 'none';
 		containers.push(this.backupFilePathContainer);
 
 		// source Database
-		if (!isManaged) {
+		if (!this.isManaged) {
 			this.restoreDatabase = this.createDropdown(localizedConstants.DatabaseText, async (newValue) => {
 				this.objectInfo.restorePlanResponse.planDetails.sourceDatabaseName.currentValue = newValue;
 				this.dialogObject.loading = true;
@@ -269,12 +283,13 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 	private initializeDestinationSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
-		const isManaged = this.viewInfo.isManagedInstance;
 		// target database
-		let targetDatabase = this.createDropdown(localizedConstants.TargetDatabaseText, async (newValue) => {
-			this.objectInfo.restorePlanResponse.planDetails.targetDatabaseName.currentValue = newValue;
-		}, this.viewInfo.restoreDatabaseInfo.targetDatabaseNames, isManaged ? this.objectInfo.name : this.objectInfo.restorePlanResponse?.planDetails.targetDatabaseName.currentValue, true, RestoreInputsWidth, true, true);
-		containers.push(this.createLabelInputContainer(localizedConstants.TargetDatabaseText, targetDatabase));
+		this.targetDatabase = this.createDropdown(localizedConstants.TargetDatabaseText, async (newValue) => {
+			if (!this.isManaged) {
+				this.objectInfo.restorePlanResponse.planDetails.targetDatabaseName.currentValue = newValue;
+			}
+		}, this.viewInfo.restoreDatabaseInfo.targetDatabaseNames, this.objectInfo.restorePlanResponse?.planDetails.targetDatabaseName.currentValue, true, RestoreInputsWidth, true, false);
+		containers.push(this.createLabelInputContainer(localizedConstants.TargetDatabaseText, this.targetDatabase));
 
 		// restore to
 		const props: azdata.InputBoxProperties = {
@@ -453,7 +468,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	 * @returns Media device type
 	 */
 	private getRestoreMediaDeviceType(): MediaDeviceType {
-		return this.viewInfo.isManagedInstance ? MediaDeviceType.Url : MediaDeviceType.File;
+		return this.isManaged ? MediaDeviceType.Url : MediaDeviceType.File;
 	}
 
 	/**
@@ -495,7 +510,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		// Reset Restore to
 		await this.restoreTo.updateProperty('value', restorePlan.planDetails.lastBackupTaken.currentValue);
 
-		if (!this.viewInfo.isManagedInstance) {
+		if (!this.isManaged) {
 			// Update Restore Database Files table
 			var restoreDatabaseTableNewdata = restorePlan.dbFiles?.map(plan => {
 				return this.convertToRestoreDbTableDataView(plan);

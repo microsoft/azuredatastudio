@@ -375,6 +375,8 @@ export const ExpirationText = localize('objectManagement.restoreDatabase.restore
 export const LogicalFileNameText = localize('objectManagement.restoreDatabase.restorePlan.logicalFileNameText', "Logical File Name");
 export const OriginalFileNameText = localize('objectManagement.restoreDatabase.restorePlan.originalFileNameText', "Original File Name");
 export const RestoreAsText = localize('objectManagement.restoreDatabase.restorePlan.restoreAsText', "Restore As");
+export const DatabaseAlreadyExists = (dbName: string) => localize('objectManagement.restoreDatabase', "Database '{0}' already exists. Choose a different database name.", dbName);
+
 
 // User
 export const UserTypeText = localize('objectManagement.user.type', "Type");
