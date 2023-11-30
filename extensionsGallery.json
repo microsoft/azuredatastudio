@@ -5163,7 +5163,7 @@
 						"fallbackAssetUri": "fallbackAssetUri",
 						"files": [
 							{
-								"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+								"assetType": "Microsoft.SQLOps.DownloadPage",
 								"source": "https://raw.githubusercontent.com/will-hinson/ads-black-theme/main/packages/black-0.0.1.vsix"
 							},
 							{
