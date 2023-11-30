@@ -499,7 +499,7 @@ export class InsightsDialogView extends Modal {
 
 		let cellData = element[this._bottomColumns[cell.cell].id];
 
-		return { profile: undefined, cellData };
+		return { connectionProfile: undefined, cellData };
 	}
 
 	private _enableTaskButtons(val: boolean): void {
