@@ -150,7 +150,7 @@ export class BookTocManager implements IBookTocManager {
 		}
 
 		for (const [key, value] of this.tocFiles.entries()) {
-			const yamlFile = await yaml.safeLoad(value);
+			const yamlFile = yaml.safeLoad(value);
 			await fs.writeFile(key, yaml.safeDump(yamlFile, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
 		}
 	}
@@ -192,7 +192,7 @@ export class BookTocManager implements IBookTocManager {
 	*/
 	async updateTOC(version: BookVersion, tocPath: string, findSection?: JupyterBookSection, addSection?: JupyterBookSection): Promise<void> {
 		const tocFile = await fs.readFile(tocPath, 'utf8');
-		this.tableofContents = yaml.safeLoad(tocFile);
+		this.tableofContents = yaml.safeLoad(tocFile) as JupyterBookSection[];
 		if (!this.tocFiles.has(tocPath)) {
 			this.tocFiles.set(tocPath, tocFile);
 		}

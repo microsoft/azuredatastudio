@@ -23,7 +23,9 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	private _copyBackupCheckbox: azdata.CheckBoxComponent;
 	private _backupDestDropdown: azdata.DropDownComponent;
 	private _backupFilesTable: azdata.TableComponent;
+	private _filesTableContainer: azdata.FlexContainer;
 	private _backupUrlInput: azdata.InputBoxComponent;
+	private _urlInputContainer: azdata.FlexContainer;
 
 	private _existingMediaButton: azdata.RadioButtonComponent;
 	private _appendExistingMediaButton: azdata.RadioButtonComponent;
@@ -49,6 +51,12 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	private _defaultBackupFolderPath: string;
 	private _defaultBackupPathSeparator: string;
 	private _encryptorOptions: string[];
+
+	/**
+	 * Keeps track of the previous Backup Destination so that we don't reload controls
+	 * unnecessarily when the user clicks on the same value in the Destination dropdown.
+	 */
+	private _oldDestination: string;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		// Increase dialog width since there are a lot of indented controls in the backup dialog
@@ -98,6 +106,9 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	private async initializeGeneralSection(): Promise<azdata.GroupContainer> {
+		// Managed instance only supports URL mode, so disable unusable fields
+		let isManaged = this.viewInfo.isManagedInstance;
+
 		let components: azdata.Component[] = [];
 		const backupTypes = [loc.BackupFull];
 		if (this.objectInfo.name !== 'master') {
@@ -137,45 +148,59 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 				this._truncateLogButton.enabled = false;
 				this._backupLogTailButton.enabled = false;
 			}
-		}, backupTypes, backupTypes[0], !this.useUrlMode);
+		}, backupTypes, backupTypes[0], !isManaged);
 		let backupContainer = this.createLabelInputContainer(loc.BackupTypeLabel, this._backupTypeDropdown);
 		components.push(backupContainer);
 
-		this._copyBackupCheckbox = this.createCheckbox(loc.BackupCopyLabel, () => undefined, this.useUrlMode, !this.useUrlMode);
+		this._copyBackupCheckbox = this.createCheckbox(loc.BackupCopyLabel, () => undefined, isManaged, !isManaged);
 		components.push(this._copyBackupCheckbox);
 
+		// Managed instance only supports URL mode, so lock the dest dropdown in that case
 		const backupDestinations = [loc.BackupDiskLabel, loc.BackupUrlLabel];
-		let defaultDest = this.useUrlMode ? backupDestinations[1] : backupDestinations[0];
-		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, () => undefined, backupDestinations, defaultDest, false);
+		let defaultDest = isManaged ? backupDestinations[1] : backupDestinations[0];
+		this._oldDestination = defaultDest;
+		this._backupDestDropdown = this.createDropdown(loc.BackupToLabel, newValue => this.toggleBackupDestination(newValue), backupDestinations, defaultDest, !isManaged);
 		let backupDestContainer = this.createLabelInputContainer(loc.BackupToLabel, this._backupDestDropdown);
 		components.push(backupDestContainer);
 
-		if (this.useUrlMode) {
-			this._backupUrlInput = this.createInputBox(() => undefined, {
-				inputType: 'text',
-				width: DefaultLongInputWidth
-			});
-			let browseUrlButton = this.createButton(loc.BrowseText, loc.BrowseText, () => this.onBrowseUrlButtonClicked());
-			browseUrlButton.width = DefaultButtonWidth;
-			await browseUrlButton.updateCssStyles({ 'margin-left': '0px' });
-			let urlInputGroup = this.createGroup(loc.BackupToUrlLabel, [this._backupUrlInput, browseUrlButton], false);
-			components.push(urlInputGroup);
-		} else {
-			let defaultPath = `${this._defaultBackupFolderPath}${this._defaultBackupPathSeparator}${defaultName}.bak`;
-			this._backupFilePaths.push(defaultPath);
-			this._backupFilesTable = this.createTable(loc.BackupFilesLabel, [loc.BackupFilesLabel], [[defaultPath]]);
-			components.push(this._backupFilesTable);
+		// URL input box for Backup to URL mode
+		this._backupUrlInput = this.createInputBox(() => undefined, {
+			inputType: 'text',
+			width: DefaultLongInputWidth
+		});
+		let browseUrlButton = this.createButton(loc.BrowseText, loc.BrowseText, () => this.onBrowseUrlButtonClicked());
+		browseUrlButton.width = DefaultButtonWidth;
+		await browseUrlButton.updateCssStyles({ 'margin-left': '0px' });
+		let urlInputGroup = this.createGroup(loc.BackupToUrlLabel, [this._backupUrlInput, browseUrlButton], false);
 
-			let addButton: DialogButton = {
-				buttonAriaLabel: loc.AddBackupFileAriaLabel,
-				buttonHandler: async () => await this.onAddFilesButtonClicked()
-			};
-			let removeButton: DialogButton = {
-				buttonAriaLabel: loc.RemoveBackupFileAriaLabel,
-				buttonHandler: async () => await this.onRemoveFilesButtonClicked()
-			};
-			const buttonContainer = this.addButtonsForTable(this._backupFilesTable, addButton, removeButton);
-			components.push(buttonContainer);
+		this._urlInputContainer = this.modelView.modelBuilder.flexContainer().withItems([urlInputGroup]).component();
+		await this._urlInputContainer.updateCssStyles({ 'flex-flow': 'column' });
+		components.push(this._urlInputContainer);
+
+		// Files table and associated buttons for Backup to Disk mode
+		let defaultPath = `${this._defaultBackupFolderPath}${this._defaultBackupPathSeparator}${defaultName}.bak`;
+		this._backupFilePaths.push(defaultPath);
+		this._backupFilesTable = this.createTable(loc.BackupFilesLabel, [loc.BackupFilesLabel], [[defaultPath]]);
+
+		let addButton: DialogButton = {
+			buttonAriaLabel: loc.AddBackupFileAriaLabel,
+			buttonHandler: async () => await this.onAddFilesButtonClicked()
+		};
+		let removeButton: DialogButton = {
+			buttonAriaLabel: loc.RemoveBackupFileAriaLabel,
+			buttonHandler: async () => await this.onRemoveFilesButtonClicked()
+		};
+		let buttonContainer = this.addButtonsForTable(this._backupFilesTable, addButton, removeButton);
+
+		this._filesTableContainer = this.modelView.modelBuilder.flexContainer().withItems([this._backupFilesTable, buttonContainer]).component();
+		await this._filesTableContainer.updateCssStyles({ 'flex-flow': 'column' });
+		components.push(this._filesTableContainer);
+
+		// Hide URL input or Files table depending on backup destination mode
+		if (this.useUrlMode) {
+			this._filesTableContainer.display = 'none';
+		} else {
+			this._urlInputContainer.display = 'none';
 		}
 
 		return this.createGroup(loc.GeneralSectionHeader, components, false);
@@ -257,10 +282,8 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		this._backupLogTailButton = this.createRadioButton(loc.BackupLogTail, transactionGroupId, false, () => undefined, false);
 		transactionComponents.push(this._backupLogTailButton);
 
-		if (!this.useUrlMode) {
-			let transactionDescription = this.modelView.modelBuilder.text().withProps({ value: loc.TransactionLogNotice }).component();
-			transactionComponents.push(transactionDescription);
-		}
+		let transactionDescription = this.modelView.modelBuilder.text().withProps({ value: loc.TransactionLogNotice }).component();
+		transactionComponents.push(transactionDescription);
 
 		let transactionGroup = this.createGroup(loc.BackupTransactionLog, transactionComponents, false);
 
@@ -363,7 +386,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let backupInfo = this.createBackupInfo();
 		let response = await this.objectManagementService.backupDatabase(this.options.connectionUri, backupInfo, TaskExecutionMode.script);
 		if (!response.result) {
-			throw new Error('Script operation failed.');
+			throw new Error(loc.ScriptingFailedError);
 		}
 		// The backup call will open its own query window, so don't return any script here.
 		return undefined;
@@ -373,7 +396,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let backupInfo = this.createBackupInfo();
 		let response = await this.objectManagementService.backupDatabase(this.options.connectionUri, backupInfo, TaskExecutionMode.execute);
 		if (!response.result) {
-			throw new Error('Backup operation failed.');
+			throw new Error(loc.BackupFailedError);
 		}
 	}
 
@@ -475,6 +498,35 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			pathMediaMap[path] = mediaType;
 		});
 		return pathMediaMap;
+	}
+
+	/**
+	 * Toggles the dialog between using Disk or a storage URL as the backup destination.
+	 */
+	private async toggleBackupDestination(destination: string): Promise<void> {
+		if (!this._oldDestination || this._oldDestination !== destination) {
+			this._oldDestination = destination;
+			let useUrlMode = destination === loc.BackupUrlLabel;
+
+			// Media fields are disabled in URL mode and enabled for Disk mode
+			this._existingMediaButton.enabled = !useUrlMode;
+			this._newMediaButton.enabled = !useUrlMode;
+
+			let useExistingMedia = this._existingMediaButton.checked;
+			this._appendExistingMediaButton.enabled = useExistingMedia && !useUrlMode;
+			this._overwriteExistingMediaButton.enabled = useExistingMedia && !useUrlMode;
+			this._mediaNameInput.enabled = !useExistingMedia && !useUrlMode;
+			this._mediaDescriptionInput.enabled = !useExistingMedia && !useUrlMode;
+
+			// Show URL input or Files table depending on the selected mode
+			if (useUrlMode) {
+				this._urlInputContainer.display = 'flex';
+				this._filesTableContainer.display = 'none';
+			} else {
+				this._urlInputContainer.display = 'none';
+				this._filesTableContainer.display = 'flex';
+			}
+		}
 	}
 }
 
