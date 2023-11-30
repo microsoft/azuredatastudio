@@ -328,6 +328,23 @@ suite('ConnectionDialogService tests', () => {
 		assert(called, 'fillInConnectionInputs was not called as expected.');
 	});
 
+	test('handleFillInConnectionInputs prompts user for unsupported provider', async () => {
+		connectionProfile.providerName = 'MySQL';
+
+		mockWidget.setup(x => x.fillInConnectionInputs(TypeMoq.It.isAny()))
+			.returns(() => { })
+			.verifiable(TypeMoq.Times.once());
+		mockConnectionManagementService.setup(x => x.handleUnsupportedProvider('MySQL'))
+			.returns(() => TypeMoq.It.isAny())
+			.verifiable(TypeMoq.Times.once());
+
+		await (connectionDialogService as any).handleFillInConnectionInputs(connectionProfile);
+
+		// Verify All
+		mockConnectionManagementService.verifyAll();
+		mockWidget.verifyAll();
+	});
+
 	test('handleOnConnect calls connectAndSaveProfile when called with profile', async () => {
 		let called = false;
 		mockConnectionManagementService.setup(x => x.connectAndSaveProfile(TypeMoq.It.isAny(), TypeMoq.It.isAnyString(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {

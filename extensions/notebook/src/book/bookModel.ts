@@ -183,7 +183,7 @@ export class BookModel {
 		if (this._tableOfContentsPath) {
 			try {
 				let fileContents = await fsPromises.readFile(this._configPath, 'utf-8');
-				const config = yaml.safeLoad(fileContents.toString());
+				const config = yaml.safeLoad(fileContents.toString()) as JupyterBookSection;
 				fileContents = await fsPromises.readFile(this._tableOfContentsPath, 'utf-8');
 				let tableOfContents: any = yaml.safeLoad(fileContents.toString());
 				const parsedTOC: IJupyterBookToc = { sections: this.parseJupyterSections(this._bookVersion, tableOfContents) };
