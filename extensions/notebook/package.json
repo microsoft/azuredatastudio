@@ -691,7 +691,7 @@
     "@types/request": "^2.48.1",
     "@types/rimraf": "^2.0.2",
     "@types/sinon": "^9.0.4",
-    "@types/tar": "^4.0.3",
+    "@types/tar": "^6.1.10",
     "@types/uuid": "^3.4.5",
     "assert": "^1.4.1",
     "mocha": "^9.2.2",

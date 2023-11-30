@@ -438,13 +438,6 @@
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-5.1.2.tgz#07508b45797cb81ec3f273011b054cd0755eddca"
   integrity sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==
 
-"@types/minipass@*":
-  version "3.3.5"
-  resolved "https://registry.yarnpkg.com/@types/minipass/-/minipass-3.3.5.tgz#ba65aaae3fe7318520bd4a40bc71c53fc8826e45"
-  integrity sha512-M2BLHQdEmDmH671h0GIlOQQJrgezd1vNqq7PVj1VOsHZ2uQQb4iPiQIl0SlMdhxZPUsLIfEklmeEHXg8DJRewA==
-  dependencies:
-    minipass "*"
-
 "@types/mocha@^7.0.2":
   version "7.0.2"
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-7.0.2.tgz#b17f16cf933597e10d6d78eae3251e692ce8b0ce"
@@ -492,13 +485,13 @@
   resolved "https://registry.yarnpkg.com/@types/sinonjs__fake-timers/-/sinonjs__fake-timers-8.1.5.tgz#5fd3592ff10c1e9695d377020c033116cc2889f2"
   integrity sha512-mQkU2jY8jJEF7YHjHvsQO8+3ughTL1mcnn96igfhONmR+fUPSKIkefQYpSe8bsly2Ep7oQbn/6VG5/9/0qcArQ==
 
-"@types/tar@^4.0.3":
-  version "4.0.5"
-  resolved "https://registry.yarnpkg.com/@types/tar/-/tar-4.0.5.tgz#5f953f183e36a15c6ce3f336568f6051b7b183f3"
-  integrity sha512-cgwPhNEabHaZcYIy5xeMtux2EmYBitfqEceBUi2t5+ETy4dW6kswt6WX4+HqLeiiKOo42EXbGiDmVJ2x+vi37Q==
+"@types/tar@^6.1.10":
+  version "6.1.10"
+  resolved "https://registry.yarnpkg.com/@types/tar/-/tar-6.1.10.tgz#10b0e12129f4af5909af82a055837116ab06f860"
+  integrity sha512-60ZO+W0tRKJ3ggdzJKp75xKVlNogKYMqGvr2bMH/+k3T0BagfYTnbmVDFMJB1BFttz6yRgP5MDGP27eh7brrqw==
   dependencies:
-    "@types/minipass" "*"
     "@types/node" "*"
+    minipass "^4.0.0"
 
 "@types/tough-cookie@*":
   version "4.0.5"
@@ -1563,17 +1556,17 @@ minimist@~1.2.0:
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
 
-minipass@*:
-  version "7.0.4"
-  resolved "https://registry.yarnpkg.com/minipass/-/minipass-7.0.4.tgz#dbce03740f50a4786ba994c1fb908844d27b038c"
-  integrity sha512-jYofLM5Dam9279rdkWzqHozUo4ybjdZmCsDHePy5V/PbBcVMiSZR97gmAy45aqi8CK1lG2ECd356FU86avfwUQ==
-
 minipass@^3.0.0:
   version "3.3.6"
   resolved "https://registry.yarnpkg.com/minipass/-/minipass-3.3.6.tgz#7bba384db3a1520d18c9c0e5251c3444e95dd94a"
   integrity sha512-DxiNidxSEK+tHG6zOIklvNOwm3hvCrbUrdtzY74U6HKTJxvIDfOUL5W5P2Ghd3DTkhhKPYGqeNUIh5qcM4YBfw==
   dependencies:
     yallist "^4.0.0"
+
+minipass@^4.0.0:
+  version "4.2.8"
+  resolved "https://registry.yarnpkg.com/minipass/-/minipass-4.2.8.tgz#f0010f64393ecfc1d1ccb5f582bcaf45f48e1a3a"
+  integrity sha512-fNzuVyifolSLFL4NzpF+wEF4qrgqaaKX0haXPQEdQ7NKAN+WecoKMHV09YcuL/DHxrUsYQOK3MiuDf7Ip2OXfQ==
 
 minipass@^5.0.0:
   version "5.0.0"
