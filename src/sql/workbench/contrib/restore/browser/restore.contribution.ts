@@ -77,7 +77,7 @@ const ExplorerRestoreActionID = 'explorer.restore';
 CommandsRegistry.registerCommand(ExplorerRestoreActionID, async (accessor, context: ManageActionContext) => {
 	const commandService = accessor.get(ICommandService);
 	const connectionService = accessor.get(IConnectionManagementService);
-	let profile = await connectionService.fixProfile(context.profile);
+	let profile = await connectionService.fixProfile(context.connectionProfile);
 	return commandService.executeCommand(RestoreAction.ID, profile);
 });
 

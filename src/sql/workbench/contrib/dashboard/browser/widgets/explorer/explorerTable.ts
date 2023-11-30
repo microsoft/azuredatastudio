@@ -132,11 +132,11 @@ export class ExplorerTable extends Disposable {
 		if (dataContext instanceof ObjectMetadataWrapper) {
 			context = {
 				object: dataContext,
-				profile: this.bootStrapService.connectionManagementService.connectionInfo.connectionProfile
+				connectionProfile: this.bootStrapService.connectionManagementService.connectionInfo.connectionProfile
 			};
 		} else {
 			context = {
-				profile: dataContext.toIConnectionProfile(),
+				connectionProfile: dataContext.toIConnectionProfile(),
 				uri: this.bootStrapService.getUnderlyingUri()
 			};
 		}

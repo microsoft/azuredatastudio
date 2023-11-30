@@ -9,7 +9,7 @@ import { IAngularEventingService, AngularEventType } from 'sql/platform/angularE
 import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { Task } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 
-import { ObjectMetadata } from 'azdata';
+import * as azdata from 'azdata';
 
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
@@ -20,9 +20,13 @@ import { IAccountManagementService } from 'sql/platform/accounts/common/interfac
 import { ILogService } from 'vs/platform/log/common/log';
 import { IInsightsConfig } from 'sql/platform/extensions/common/extensions';
 
-export interface BaseActionContext {
-	object?: ObjectMetadata;
-	profile?: IConnectionProfile;
+export interface BaseActionContext extends azdata.ConnectedContext {
+	object?: azdata.ObjectMetadata;
+	/**
+	 * Override connectionProfile from ConnectedContext
+	 * with IConnectionProfile type
+	 */
+	connectionProfile?: IConnectionProfile | undefined;
 }
 
 export interface InsightActionContext extends BaseActionContext {
@@ -46,8 +50,8 @@ export class ManageAction extends Action {
 	}
 
 	override async run(actionContext: ManageActionContext): Promise<void> {
-		if (actionContext.profile) {
-			await this._connectionManagementService.connect(actionContext.profile, actionContext.uri, { showDashboard: true, saveTheConnection: false, showConnectionDialogOnError: false, showFirewallRuleOnError: true });
+		if (actionContext.connectionProfile) {
+			await this._connectionManagementService.connect(actionContext.connectionProfile, actionContext.uri, { showDashboard: true, saveTheConnection: false, showConnectionDialogOnError: false, showFirewallRuleOnError: true });
 			this._angularEventingService.sendAngularEvent(actionContext.uri, AngularEventType.NAV_DATABASE);
 		}
 	}
@@ -65,8 +69,8 @@ export class InsightAction extends Action {
 	}
 
 	override async run(actionContext: InsightActionContext): Promise<void> {
-		if (actionContext.profile) {
-			await this._insightsDialogService.show(actionContext.insight, actionContext.profile);
+		if (actionContext.connectionProfile) {
+			await this._insightsDialogService.show(actionContext.insight, actionContext.connectionProfile);
 		}
 	}
 }

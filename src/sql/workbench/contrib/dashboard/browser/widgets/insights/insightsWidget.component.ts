@@ -142,7 +142,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			this._intervalTimer = new IntervalTimer();
 			this._register(this._intervalTimer);
 			this._intervalTimer.cancelAndSet(() => {
-				const autoRefresh = getWidgetAutoRefreshState(this.insightConfig.id, this.actionsContext.profile.id);
+				const autoRefresh = getWidgetAutoRefreshState(this.insightConfig.id, this.actionsContext.connectionProfile.id);
 				this.updateAutoRefreshStatus(autoRefresh);
 				if (!autoRefresh) {
 					return;

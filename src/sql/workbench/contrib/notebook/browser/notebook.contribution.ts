@@ -29,7 +29,7 @@ import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
-import { ConnectedContext, nb } from 'azdata';
+import { nb } from 'azdata';
 import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
 import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
@@ -159,8 +159,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 const ExplorerNotebookActionID = 'explorer.notebook';
 CommandsRegistry.registerCommand(ExplorerNotebookActionID, (accessor, context: ManageActionContext) => {
 	const instantiationService = accessor.get(IInstantiationService);
-	const connectedContext: ConnectedContext = { connectionProfile: context.profile };
-	instantiationService.createInstance(NewNotebookAction).run(accessor, { connectionProfile: connectedContext.connectionProfile, isConnectionNode: false, nodeInfo: undefined });
+	instantiationService.createInstance(NewNotebookAction).run(accessor, { connectionProfile: context.connectionProfile, isConnectionNode: false, nodeInfo: undefined });
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {

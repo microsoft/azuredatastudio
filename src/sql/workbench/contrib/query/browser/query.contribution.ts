@@ -93,7 +93,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 const ExplorerNewQueryActionID = 'explorer.query';
 CommandsRegistry.registerCommand(ExplorerNewQueryActionID, (accessor, context: ManageActionContext) => {
 	const commandService = accessor.get(ICommandService);
-	return commandService.executeCommand(NewQueryTask.ID, context.profile);
+	return commandService.executeCommand(NewQueryTask.ID, context.connectionProfile);
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {

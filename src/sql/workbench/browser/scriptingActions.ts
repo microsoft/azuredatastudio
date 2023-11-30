@@ -29,8 +29,8 @@ export class ScriptSelectAction extends Action {
 
 	public override async run(actionContext: BaseActionContext): Promise<void> {
 		await scriptSelect(
-			actionContext.profile!,
-			actionContext.object!,
+			actionContext.connectionProfile,
+			actionContext.object,
 			this._connectionManagementService,
 			this._queryEditorService,
 			this._scriptingService,
@@ -55,8 +55,8 @@ export class ScriptExecuteAction extends Action {
 
 	public override async run(actionContext: BaseActionContext): Promise<void> {
 		await script(
-			actionContext.profile!,
-			actionContext.object!,
+			actionContext.connectionProfile,
+			actionContext.object,
 			this._connectionManagementService,
 			this._queryEditorService,
 			this._scriptingService,
@@ -82,8 +82,8 @@ export class ScriptAlterAction extends Action {
 
 	public override async run(actionContext: BaseActionContext): Promise<void> {
 		await script(
-			actionContext.profile!,
-			actionContext.object!,
+			actionContext.connectionProfile,
+			actionContext.object,
 			this._connectionManagementService,
 			this._queryEditorService,
 			this._scriptingService,
@@ -109,8 +109,8 @@ export class EditDataAction extends Action {
 
 	public override async run(actionContext: BaseActionContext): Promise<void> {
 		await scriptEditSelect(
-			actionContext.profile!,
-			actionContext.object!,
+			actionContext.connectionProfile,
+			actionContext.object,
 			this._connectionManagementService,
 			this._queryEditorService,
 			this._scriptingService,
@@ -135,8 +135,8 @@ export class ScriptCreateAction extends Action {
 
 	public override async run(actionContext: BaseActionContext): Promise<void> {
 		await script(
-			actionContext.profile!,
-			actionContext.object!,
+			actionContext.connectionProfile,
+			actionContext.object,
 			this._connectionManagementService,
 			this._queryEditorService,
 			this._scriptingService,
@@ -162,8 +162,8 @@ export class ScriptDeleteAction extends Action {
 
 	public override async run(actionContext: BaseActionContext): Promise<void> {
 		await script(
-			actionContext.profile!,
-			actionContext.object!,
+			actionContext.connectionProfile,
+			actionContext.object,
 			this._connectionManagementService,
 			this._queryEditorService,
 			this._scriptingService,

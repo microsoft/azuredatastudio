@@ -53,7 +53,7 @@ CommandsRegistry.registerCommand({
 			let payload = await connectionService.fixProfile(args.$treeItem.payload);
 			const profile = new ConnectionProfile(capabilitiesService, payload);
 			const baseContext: BaseActionContext = {
-				profile: profile,
+				connectionProfile: profile,
 				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
 			};
 			const scriptCreateAction = new ScriptCreateAction(ScriptCreateAction.ID, ScriptCreateAction.LABEL,
@@ -79,7 +79,7 @@ CommandsRegistry.registerCommand({
 			let payload = await connectionService.fixProfile(args.$treeItem.payload);
 			const profile = new ConnectionProfile(capabilitiesService, payload);
 			const baseContext: BaseActionContext = {
-				profile: profile,
+				connectionProfile: profile,
 				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
 			};
 			const scriptDeleteAction = new ScriptDeleteAction(ScriptDeleteAction.ID, ScriptDeleteAction.LABEL,
@@ -105,7 +105,7 @@ CommandsRegistry.registerCommand({
 			let payload = await connectionService.fixProfile(args.$treeItem.payload);
 			const profile = new ConnectionProfile(capabilitiesService, payload);
 			const baseContext: BaseActionContext = {
-				profile: profile,
+				connectionProfile: profile,
 				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
 			};
 			const scriptSelectAction = new ScriptSelectAction(ScriptSelectAction.ID, ScriptSelectAction.LABEL,
@@ -131,7 +131,7 @@ CommandsRegistry.registerCommand({
 			let payload = await connectionService.fixProfile(args.$treeItem.payload);
 			const profile = new ConnectionProfile(capabilitiesService, payload);
 			const baseContext: BaseActionContext = {
-				profile: profile,
+				connectionProfile: profile,
 				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
 			};
 			const scriptExecuteAction = new ScriptExecuteAction(ScriptExecuteAction.ID, ScriptExecuteAction.LABEL,
@@ -157,7 +157,7 @@ CommandsRegistry.registerCommand({
 			let payload = await connectionService.fixProfile(args.$treeItem.payload);
 			const profile = new ConnectionProfile(capabilitiesService, payload);
 			const baseContext: BaseActionContext = {
-				profile: profile,
+				connectionProfile: profile,
 				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
 			};
 			const scriptAlterAction = new ScriptAlterAction(ScriptAlterAction.ID, ScriptAlterAction.LABEL,
@@ -183,7 +183,7 @@ CommandsRegistry.registerCommand({
 			let payload = await connectionService.fixProfile(args.$treeItem.payload);
 			const profile = new ConnectionProfile(capabilitiesService, payload);
 			const baseContext: BaseActionContext = {
-				profile: profile,
+				connectionProfile: profile,
 				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
 			};
 			const editDataAction = new EditDataAction(EditDataAction.ID, EditDataAction.LABEL,

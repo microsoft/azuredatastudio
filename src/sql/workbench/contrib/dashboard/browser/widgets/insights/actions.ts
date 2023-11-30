@@ -36,7 +36,7 @@ export class RunInsightQueryAction extends Action {
 		} else {
 			return;
 		}
-		await this.instantiationService.invokeFunction(openNewQuery, context.profile, queryString,
+		await this.instantiationService.invokeFunction(openNewQuery, context.connectionProfile, queryString,
 			RunQueryOnConnectionMode.executeQuery);
 	}
 }
