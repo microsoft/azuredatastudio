@@ -122,7 +122,8 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 			return;
 		}
 		let connectedContext: azdata.ConnectedContext = undefined;
-		if (profile) {
+		// Need not connect when opening connection dialog explicitly.
+		if (profile && commandName !== Command.openConnectionDialog) {
 			if (this._notificationService) {
 				this._notificationService.status(localize('connectingLabel', "Connecting: {0}", profile.serverName), { hideAfter: 2500 });
 			}

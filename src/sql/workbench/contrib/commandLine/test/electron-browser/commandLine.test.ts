@@ -181,6 +181,31 @@ suite('commandLineService tests', () => {
 		connectionManagementService.verifyAll();
 	});
 
+	test('processCommandLine does not connect if opening connection dialog', async () => {
+		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
+			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
+		const commandService: TypeMoq.Mock<ICommandService> = TypeMoq.Mock.ofType<ICommandService>(TestCommandService);
+		const dialogService = new TestDialogService({ confirmed: true });
+		const args = new TestParsedArgs();
+		args.command = 'openConnectionDialog';
+		args.server = 'myserver';
+
+		connectionManagementService.setup((c) => c.showConnectionDialog(undefined,
+			TypeMoq.It.is<IConnectionCompletionOptions>(i => i.saveTheConnection && i.showConnectionDialogOnError && i.showDashboard && i.showFirewallRuleOnError),
+			TypeMoq.It.isAny()))
+			.verifiable(TypeMoq.Times.once());
+
+		connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => TypeMoq.It.isAny());
+		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => false);
+		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+			.verifiable(TypeMoq.Times.never());
+		const configurationService = getConfigurationServiceMock(false);
+		let contribution = getCommandLineContribution(connectionManagementService.object, configurationService.object, _capabilitiesService, commandService.object, undefined, _logService, dialogService, _notificationService);
+
+		await contribution.processCommandLine(args);
+		connectionManagementService.verifyAll();
+	});
+
 	test('processCommandLine prompts user to handle unsupported providers', async () => {
 		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
 			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
