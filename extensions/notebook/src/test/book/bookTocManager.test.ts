@@ -149,7 +149,7 @@ describe('BookTocManagerTests', function () {
 			should(listFiles.length).be.equal(7);
 		});
 
-		it ('should create a table of contents with sections if folder contains subfolders', async () => {
+		it('should create a table of contents with sections if folder contains subfolders', async () => {
 			await fs.writeFile(path.join(root2FolderPath, subfolder, subfolder2, notebooks[4]), '');
 			await fs.writeFile(path.join(root2FolderPath, subfolder, subfolder2, notebooks[5]), '');
 
@@ -183,7 +183,7 @@ describe('BookTocManagerTests', function () {
 			{
 				title: 'Subfolder2',
 				file: path.posix.join(path.posix.sep, subfolder, subfolder2, 'notebook4'),
-				sections : expectedSubSections
+				sections: expectedSubSections
 			}];
 
 			const index = bookTocManager.tableofContents.findIndex(entry => entry.file === path.posix.join(path.posix.sep, subfolder, 'index'));
@@ -508,7 +508,7 @@ describe('BookTocManagerTests', function () {
 				});
 
 				it('Remove notebook from book', async () => {
-					let toc: JupyterBookSection[] = yaml.safeLoad((await fs.promises.readFile(notebook5.tableOfContentsPath)).toString());
+					let toc: JupyterBookSection[] = yaml.safeLoad((await fs.promises.readFile(notebook5.tableOfContentsPath)).toString()) as JupyterBookSection[];
 					let notebookInToc = toc.some(section => {
 						if (section.title === 'Notebook 5' && section.file === path.posix.join(path.posix.sep, 'notebook5')) {
 							return true;
@@ -519,7 +519,7 @@ describe('BookTocManagerTests', function () {
 					bookTocManager = new BookTocManager(sourceBookModel);
 					await bookTocManager.removeNotebook(notebook5);
 					const listFiles = await fs.promises.readdir(run.sourceBook.contentFolder);
-					toc = yaml.safeLoad((await fs.promises.readFile(notebook5.tableOfContentsPath)).toString());
+					toc = yaml.safeLoad((await fs.promises.readFile(notebook5.tableOfContentsPath)).toString()) as JupyterBookSection[];
 					notebookInToc = toc.some(section => {
 						if (section.title === 'Notebook 5' && section.file === path.posix.join(path.posix.sep, 'notebook5')) {
 							return true;
@@ -576,10 +576,10 @@ describe('BookTocManagerTests', function () {
 					bookTocManager = new BookTocManager(sourceBookModel);
 					const fileBasename = `addSectionTest-${generateGuid()}`;
 					const sectionTitle = 'Section Test';
-					const testFilePath = path.join(run.sectionA.contentFolder, 'sectionA', sectionTitle,fileBasename).concat(FileExtension.Markdown);
+					const testFilePath = path.join(run.sectionA.contentFolder, 'sectionA', sectionTitle, fileBasename).concat(FileExtension.Markdown);
 					const pathDetails = new TocEntryPathHandler(testFilePath, run.sourceBook.root, sectionTitle);
 					await bookTocManager.addNewTocEntry(pathDetails, sectionA, true);
-					let toc: JupyterBookSection[] = yaml.safeLoad((await fs.promises.readFile(run.sourceBook.tocPath)).toString());
+					let toc: JupyterBookSection[] = yaml.safeLoad((await fs.promises.readFile(run.sourceBook.tocPath)).toString()) as JupyterBookSection[];
 					const sectionAIndex = toc.findIndex(entry => entry.title === sectionA.title);
 					let newSectionIndex = -1;
 					let newSection = undefined;
