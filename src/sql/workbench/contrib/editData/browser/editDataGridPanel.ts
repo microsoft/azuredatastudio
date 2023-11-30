@@ -90,11 +90,8 @@ export class EditDataGridPanel extends GridParentComponent {
 	// Prevent the tab focus from doing any damage to the table while a row is being reverted.
 	private rowRevertInProgress: boolean
 
-	// Manually submit the cell after edit end if needed.
-	private needsCellPreSubmit: boolean;
-
-	// Mark when enter is pressed, so that we can move to the next cell when enter is pressed in the nul row.
-	private isEnterPressNull: boolean;
+	// Manually submit the cell after edit end if it's the null row.
+	private isInNullRow: boolean;
 
 	// Edit Data functions
 	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
@@ -211,34 +208,14 @@ export class EditDataGridPanel extends GridParentComponent {
 			// Store the value that was set
 			self.currentEditCellValue = event.item[event.cell];
 
-			// Handle cases where we need to submit the cell immmediately (such as enter in new row or tabbing out of the grid)
-			if (self.needsCellPreSubmit && !this.cellSubmitInProgress) {
+			// In case the last row is entered in, we need to wait to get the cell value after edit end
+			// so that we can add a row, submit the value and move down. (SlickGrid tries to go down immediately
+			// which fails, as we haven't added the new row yet).
+			if (self.isInNullRow) {
 				self.submitCurrentCellChange((result: EditUpdateCellResult) => {
-					if (self.isEnterPressNull) {
-						// In case the last row is entered in, we need to wait to get the cell value after edit end
-						// so that we can add a row, submit the value and move down. (SlickGrid tries to go down immediately
-						// which fails, as we haven't added the new row yet).
-						self.table.grid.navigateDown();
-						self.isEnterPressNull = false;
-					}
-					else {
-						// we are leaving focus off grid via tab, we need to commit the results.
-						self.needsCellPreSubmit = false;
-						self.afterSubmitCommitEdit();
-					}
+					self.table.grid.navigateDown();
 				},
 					(error: any) => {
-						if (self.isEnterPressNull) {
-							self.isEnterPressNull = false;
-						}
-						else {
-							this.cellSubmitInProgress = true;
-							this.updateEnabledState(true);
-							this.cellSubmitInProgress = false;
-							this.lastClickedCell = { row: self.currentCell.row, column: self.currentCell.column };
-							self.focusCell(self.currentCell.row, self.currentCell.column, true);
-							self.needsCellPreSubmit = false;
-						}
 						self.notificationService.error(error);
 						self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditCellEndError)
 							.withAdditionalProperties({ error: error })
@@ -298,7 +275,7 @@ export class EditDataGridPanel extends GridParentComponent {
 						// Since it is currently impossible to add empty strings via edit data
 						// this must mean the empty strings on the newly added row are null values.
 						let isNewlyAddedRow = false;
-						if (this.needsCellPreSubmit && (counter === (count - 2))) {
+						if (this.isInNullRow && (counter === (count - 2))) {
 							isNewlyAddedRow = true;
 						}
 						let dataWithSchema = {};
@@ -327,9 +304,15 @@ export class EditDataGridPanel extends GridParentComponent {
 					if (gridData && gridData !== this.oldGridData) {
 						this.oldGridData = gridData;
 					}
+					if (this.isInNullRow) {
+						this.isInNullRow = false;
+					}
 					return gridData;
 				}
 				else {
+					if (this.isInNullRow) {
+						this.isInNullRow = false;
+					}
 					this.logService.error('Grid data is nonexistent, using last known good grid');
 					return this.oldGridData;
 				}
@@ -422,7 +405,26 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		if (this.currentCell.row !== row) {
 			// We're changing row, commit the changes
-			cellSelectTasks = cellSelectTasks.then(() => self.afterSubmitCommitEdit());
+			cellSelectTasks = cellSelectTasks.then(() => {
+				return this.dataService.commitEdit().then(result => {
+					// Committing was successful, clean the grid
+					this.setGridClean();
+					this.rowIdMappings = {};
+					this.newRowVisible = false;
+					return Promise.resolve();
+				}, error => {
+					this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.SubmitCommitError)
+						.withAdditionalProperties({ error: error })
+						.send();
+					// Committing failed, jump back to the last selected cell
+					this.cellSubmitInProgress = true;
+					this.updateEnabledState(true);
+					this.cellSubmitInProgress = false;
+					this.lastClickedCell = { row: this.currentCell.row, column: this.currentCell.column };
+					this.focusCell(this.currentCell.row, this.currentCell.column);
+					return Promise.reject(null);
+				});
+			});
 		}
 
 		// At the end of a successful cell select, update the currently selected cell
@@ -436,30 +438,6 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		// Cap off any failed promises, since they'll be handled
 		cellSelectTasks.catch(() => {
-		});
-	}
-
-	/**
-	 * Commits the submitted cell and does necessary actions afterwards.
-	 */
-	private afterSubmitCommitEdit(): Thenable<void> {
-		return this.dataService.commitEdit().then(result => {
-			// Committing was successful, clean the grid
-			this.setGridClean();
-			this.rowIdMappings = {};
-			this.newRowVisible = false;
-			return Promise.resolve();
-		}, error => {
-			this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.SubmitCommitError)
-				.withAdditionalProperties({ error: error })
-				.send();
-			// Committing failed, jump back to the last selected cell
-			this.cellSubmitInProgress = true;
-			this.updateEnabledState(true);
-			this.cellSubmitInProgress = false;
-			this.lastClickedCell = { row: this.currentCell.row, column: this.currentCell.column };
-			this.focusCell(this.currentCell.row, this.currentCell.column);
-			return Promise.reject(null);
 		});
 	}
 
@@ -648,18 +626,8 @@ export class EditDataGridPanel extends GridParentComponent {
 			handled = true;
 		}
 
-		if (e.keyCode === KeyCode.Enter) {
-			if (this.isNullRow(this.currentCell.row)) {
-				this.isEnterPressNull = true;
-				this.needsCellPreSubmit = true;
-			}
-		}
-
-		if (e.keyCode === KeyCode.Tab) {
-			if ((e.shiftKey && this.isFirstCell(this.currentCell.row, this.currentCell.column))
-				|| (!e.shiftKey && this.isLastCell(this.currentCell.row, this.currentCell.column))) {
-				this.needsCellPreSubmit = true;
-			}
+		if (e.keyCode === KeyCode.Enter && this.isNullRow(this.currentCell.row)) {
+			this.isInNullRow = true;
 		}
 
 		return handled;
@@ -823,22 +791,6 @@ export class EditDataGridPanel extends GridParentComponent {
 			return (row === this.dataSet.totalRows - 1);
 		}
 		return false;
-	}
-
-	private isLastColumn(col: number): boolean {
-		if (this.dataSet) {
-			// Last column is always at index (total columns - 1)
-			return (col === this.dataSet.columnDefinitions.length - 1);
-		}
-		return false;
-	}
-
-	private isLastCell(row: number, col: number) {
-		return this.isNullRow(row) && this.isLastColumn(col);
-	}
-
-	private isFirstCell(row: number, col: number) {
-		return row === 0 && col === 1;
 	}
 
 	// Adds CSS classes to slickgrid cells to indicate a dirty state
@@ -1180,7 +1132,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		let columnDefinitionChanges = changes['columnDefinitions'];
 		let activeCell: Slick.Cell | undefined = undefined;
 		let hasGridStructureChanges = false;
-		let lastCellTab = false;
 		let wasEditing = this.table ? !!this.table.grid.getCellEditor() : false;
 
 		if (this.table) {
@@ -1193,12 +1144,6 @@ export class EditDataGridPanel extends GridParentComponent {
 				// Get the last selected cell as the active cell as a backup.
 				activeCell = this.table.grid.getActiveCell();
 			}
-		}
-
-		// Prevent cell selection after user has tabbed out of the grid.
-		// After cell update, last cell is on row at the end, need to index by 1.
-		if (activeCell && this.isLastCell((activeCell.row + 1), activeCell.cell) && !this.isEnterPressNull && this.needsCellPreSubmit) {
-			lastCellTab = true;
 		}
 
 		if (columnDefinitionChanges && !equals(columnDefinitionChanges.previousValue, columnDefinitionChanges.currentValue)) {
@@ -1232,13 +1177,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 
 		if (hasGridStructureChanges) {
-			if (activeCell && !lastCellTab) {
+			if (activeCell) {
 				this.table.grid.setActiveCell(activeCell.row, activeCell.cell);
 			} else {
-				if (activeCell && lastCellTab) {
-					// Scroll to new row after we submitted the cell during a tab submit + exit.
-					this.table.grid.scrollRowIntoView(activeCell.row + 1);
-				}
 				this.table.grid.resetActiveCell();
 			}
 		}
