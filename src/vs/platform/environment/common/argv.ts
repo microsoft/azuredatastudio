@@ -142,7 +142,7 @@ export interface NativeParsedArgs {
 	authenticationType?: string
 	/**
 	 * Operation to perform:
-	 * accepted values: connect, openConnectionDialog
+	 * accepted values: connect (default), openConnectionDialog or Id of a command supported by Azure Data Studio.
 	 */
 	command?: string;
 	/**
