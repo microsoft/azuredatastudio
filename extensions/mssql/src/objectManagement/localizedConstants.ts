@@ -308,6 +308,8 @@ export const CompressBackup = localize('objectManagement.compressBackup', "Compr
 export const DontCompressBackup = localize('objectManagement.dontCompressBackup', "Do not compress backup");
 export const RecoveryModelSimple = localize('objectManagement.recoveryModelSimple', "Simple");
 export const PathAlreadyAddedError = localize('objectManagement.pathAlreadyAddedError', "Provided path has already been added to the files list.");
+export const ScriptingFailedError = localize('objectManagement.scriptingFailedError', "Script operation failed.");
+export const BackupFailedError = localize('objectManagement.backupFailedError', "Backup operation failed.");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");
@@ -329,7 +331,7 @@ export const SQLAuthenticationTypeDisplayText = localize('objectManagement.login
 export const AADAuthenticationTypeDisplayText = localize('objectManagement.login.aadAuthenticationType', "Microsoft Entra ID Authentication");
 export const OldPasswordCannotBeEmptyError = localize('objectManagement.login.oldPasswordCannotBeEmptyError', "Old password cannot be empty.");
 
-//Restore Database
+// Restore Database
 export const RestoreFromText = localize('objectManagement.restoreDatabase.restoreFromText', "Restore from");
 export const BackupFilePathText = localize('objectManagement.restoreDatabase.backupFilePathText', "Backup file path");
 export const DatabaseText = localize('objectManagement.restoreDatabase.databaseText', "Database");

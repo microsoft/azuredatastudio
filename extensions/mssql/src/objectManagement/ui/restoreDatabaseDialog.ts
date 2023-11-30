@@ -66,7 +66,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	}
 
 	protected override get helpUrl(): string {
-		return this.RestoreDialogDocUrl;
+		return this.restoreDialogDocUrl;
 	}
 
 	protected override get saveChangesTaskLabel(): string {
@@ -77,7 +77,11 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		return this.objectInfo.restorePlanResponse?.backupSetsToRestore?.filter(plan => plan.isSelected === true).length > 0;
 	}
 
-	private get RestoreDialogDocUrl(): string {
+	protected override get opensEditorSeparately(): boolean {
+		return true;
+	}
+
+	private get restoreDialogDocUrl(): string {
 		let helpUrl = '';
 		switch (this.activeTabId) {
 			case this.generalTabId:

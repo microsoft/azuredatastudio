@@ -535,6 +535,9 @@
     <trans-unit id="sql.migration.sku.azureRecommendation.chooseMethod.instructions">
       <source xml:lang="en">Choose how you want to provide performance data</source>
     </trans-unit>
+    <trans-unit id="sql.migration.import.assessment.header">
+      <source xml:lang="en">Choose target platform and view assessment results.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.assessment.results.header">
       <source xml:lang="en">Choose target platform, view assessment results and select database(s) for migration.</source>
     </trans-unit>
@@ -993,6 +996,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.password.placeholder">
       <source xml:lang="en">Enter the target password</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.port.placeholder">
+      <source xml:lang="en">Enter the target port</source>
     </trans-unit>
     <trans-unit id="sql.migration.username.placeholder">
       <source xml:lang="en">Enter the target user name</source>
@@ -1815,6 +1821,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.service.selection.location.msg">
       <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.port.label">
+      <source xml:lang="en">Port</source>
     </trans-unit>
     <trans-unit id="sql.migration.status.prefetchobjects">
       <source xml:lang="en">Prefetch objects</source>
@@ -2988,6 +2997,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.sku.resource">
       <source xml:lang="en">Your Azure SQL target resource name</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.sku.resource.port">
+      <source xml:lang="en">Your Azure SQL target resource port number : 0 - 65535</source>
     </trans-unit>
     <trans-unit id="sql.migration.pre.req.4">
       <source xml:lang="en">Your database backup location details, either a network file share or an Azure Blob Storage container (not required for Azure SQL Database targets).</source>
