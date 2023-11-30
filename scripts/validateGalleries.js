@@ -428,6 +428,7 @@ const allowedHosts = [
     'https://raw.githubusercontent.com/'
 ];
 
+// The set of "trusted" publishers that we allow direct VSIX installs for in the gallery
 const allowedPublishersForVSIXAssets = [
     'microsoft',
     'msrvida',
