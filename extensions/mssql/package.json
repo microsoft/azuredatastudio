@@ -145,12 +145,20 @@
       {
         "command": "mssql.restoreDatabase",
         "category": "MSSQL",
-        "title": "%title.restoreDatabase%"
+        "title": "%title.restoreDatabase%",
+        "icon": {
+          "dark": "resources/restore.svg",
+          "light": "resources/restore.svg"
+        }
       },
       {
         "command": "mssql.backupDatabase",
         "category": "MSSQL",
-        "title": "%title.backupDatabase%"
+        "title": "%title.backupDatabase%",
+        "icon": {
+          "dark": "resources/backup.svg",
+          "light": "resources/backup.svg"
+        }
       },
       {
         "command": "mssql.enableGroupBySchema",
@@ -842,6 +850,16 @@
           "command": "mssql.disableGroupBySchemaTitle",
           "when": "view == dataExplorer.servers && config.mssql.objectExplorer.groupBySchema",
           "group": "navigation@5"
+        }
+      ],
+      "dashboard/toolbar": [
+        {
+          "command": "mssql.backupDatabase",
+          "when": "true"
+        },
+        {
+          "command": "mssql.restoreDatabase",
+          "when": "true"
         }
       ]
     },
