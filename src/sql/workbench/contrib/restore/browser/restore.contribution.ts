@@ -21,8 +21,6 @@ import { ServerInfoContextKey } from 'sql/workbench/services/connection/common/s
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 
-new RestoreAction().registerTask();
-
 const DE_RESTORE_COMMAND_ID = 'dataExplorer.restore';
 // Restore
 CommandsRegistry.registerCommand({

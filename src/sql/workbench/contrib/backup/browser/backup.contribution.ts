@@ -22,8 +22,6 @@ import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiati
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 
-new BackupAction().registerTask();
-
 // data explorer
 const DE_BACKUP_COMMAND_ID = 'dataExplorer.backup';
 CommandsRegistry.registerCommand({
