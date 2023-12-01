@@ -2104,7 +2104,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Backup URL]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Резервный URL-адрес]]></Val>
+            <Val><![CDATA[URL-адрес резервной копии]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
