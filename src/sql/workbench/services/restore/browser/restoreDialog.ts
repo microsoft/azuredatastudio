@@ -113,7 +113,7 @@ export class RestoreDialog extends Modal {
 
 	private readonly _takeTaillogBackupOption = 'backupTailLog';
 	private readonly _tailLogWithNoRecoveryOption = 'tailLogWithNoRecovery';
-	private readonly _tailLogBackupFileOption = 'tailLogBackupFile';
+	private _tailLogBackupFileOption = 'tailLogBackupFile';
 
 	private readonly _closeExistingConnectionsOption = 'closeExistingConnections';
 
@@ -756,6 +756,11 @@ export class RestoreDialog extends Modal {
 	private onUrlPathChanged(urlPath: string): void {
 		this.viewModel.filePath = urlPath;
 		this.viewModel.selectedBackupSets = undefined;
+		this.updateRestoreOption({
+			optionName: 'tailLogBackupFile',
+			value: urlPath,
+			isReadOnly: false
+		})
 		this.validateRestore(true);
 	}
 
