@@ -28,6 +28,7 @@ import { DropDatabaseDialog } from './ui/dropDatabaseDialog';
 import { AttachDatabaseDialog } from './ui/attachDatabaseDialog';
 import { RestoreDatabaseDialog } from './ui/restoreDatabaseDialog';
 import { BackupDatabaseDialog } from './ui/backupDatabaseDialog';
+import { IConnectionProfile } from 'azdata';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
@@ -69,13 +70,21 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 		await handleAttachDatabase(context, service);
 	}));
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.backupDatabase', async (context: azdata.ObjectExplorerContext) => {
-		await handleBackupDatabase(context, service);
+		await handleBackupDatabaseCmd(context, service);
+	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.restoreDatabase', async (context: azdata.ObjectExplorerContext) => {
+		await handleRestoreDatabaseCmd(context, service);
 	}));
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.dropDatabase', async (context: azdata.ObjectExplorerContext) => {
 		await handleDropDatabase(context, service);
 	}));
-	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.restoreDatabase', async (context: azdata.ObjectExplorerContext) => {
-		await handleRestoreDatabase(context, service);
+
+	// Database dashboard buttons
+	appContext.extensionContext.subscriptions.push(azdata.tasks.registerTask('mssql.backupDatabase', async (profile: azdata.IConnectionProfile) => {
+		await handleBackupDatabaseTask(profile, service);
+	}));
+	appContext.extensionContext.subscriptions.push(azdata.tasks.registerTask('mssql.restoreDatabase', async (profile: azdata.IConnectionProfile) => {
+		await handleRestoreDatabaseTask(profile, service);
 	}));
 }
 
@@ -383,42 +392,115 @@ async function handleAttachDatabase(context: azdata.ObjectExplorerContext, servi
 	}
 }
 
-async function handleBackupDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
-	const connectionUri = await getConnectionUri(context);
-	if (!connectionUri) {
-		return;
-	}
-	const object = await getObjectInfoForContext(context);
+async function handleBackupDatabase(options: ObjectManagementDialogOptions, service: IObjectManagementService): Promise<void> {
 	try {
-		if (object.type !== ObjectManagement.NodeType.Database) {
-			throw new Error(objectManagementLoc.NotSupportedError(ObjectManagement.NodeType.Database));
-		}
-		const options: ObjectManagementDialogOptions = {
-			connectionUri: connectionUri,
-			isNewObject: false,
-			database: object.name,
-			objectType: object.type,
-			objectName: object.name,
-			parentUrn: object.parentUrn,
-			objectUrn: object.urn,
-			objectExplorerContext: context
-		};
 		const dialog = new BackupDatabaseDialog(service, options);
 		const startTime = Date.now();
 		await dialog.open();
 		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenBackupDatabaseDialog, {
-			objectType: object.type
+			objectType: options.objectType
 		}, {
 			elapsedTimeMs: Date.now() - startTime
 		});
 	}
 	catch (err) {
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenBackupDatabaseDialog, err).withAdditionalProperties({
-			objectType: object.type
+			objectType: options.objectType
 		}).send();
 		console.error(err);
 		await vscode.window.showErrorMessage(objectManagementLoc.OpenBackupDatabaseDialogError(getErrorMessage(err)));
 	}
+}
+
+async function handleBackupDatabaseCmd(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+	const object = await getObjectInfoForContext(context);
+	if (object.type !== ObjectManagement.NodeType.Database) {
+		throw new Error(objectManagementLoc.NotSupportedError(ObjectManagement.NodeType.Database));
+	}
+	const connectionUri = await getConnectionUri(context);
+	if (!connectionUri) {
+		return;
+	}
+	const options: ObjectManagementDialogOptions = {
+		connectionUri: connectionUri,
+		isNewObject: false,
+		database: object.name,
+		objectType: object.type,
+		objectName: object.name,
+		parentUrn: object.parentUrn,
+		objectUrn: object.urn,
+		objectExplorerContext: context
+	};
+	await handleBackupDatabase(options, service);
+}
+
+async function handleBackupDatabaseTask(profile: azdata.IConnectionProfile, service: IObjectManagementService): Promise<void> {
+	let connectionUri = await azdata.connection.getUriForConnection(profile.id);
+	const options: ObjectManagementDialogOptions = {
+		connectionUri: connectionUri,
+		isNewObject: false,
+		database: profile.databaseName,
+		objectType: ObjectManagement.NodeType.Database,
+		objectName: profile.databaseName,
+		parentUrn: undefined,
+		objectUrn: undefined,
+		objectExplorerContext: undefined
+	};
+	await handleBackupDatabase(options, service);
+}
+
+async function handleRestoreDatabase(options: ObjectManagementDialogOptions, service: IObjectManagementService): Promise<void> {
+	try {
+		const dialog = new RestoreDatabaseDialog(service, options);
+		const startTime = Date.now();
+		await dialog.open();
+		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenRestoreDatabaseDialog, {
+			objectType: ObjectManagement.NodeType.Database
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
+	}
+	catch (err) {
+		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenRestoreDatabaseDialog, err).withAdditionalProperties({
+			objectType: options.objectType
+		}).send();
+		console.error(err);
+		void vscode.window.showErrorMessage(objectManagementLoc.OpenRestoreDatabaseDialogError(getErrorMessage(err)));
+	}
+}
+
+async function handleRestoreDatabaseCmd(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+	const connectionUri = await getConnectionUri(context);
+	if (!connectionUri) {
+		return;
+	}
+
+	const parentUrn = await getParentUrn(context);
+	const options: ObjectManagementDialogOptions = {
+		connectionUri: connectionUri,
+		isNewObject: false,
+		database: context.connectionProfile!.databaseName!,
+		objectType: ObjectManagement.NodeType.Database,
+		objectName: '',
+		parentUrn: parentUrn,
+		objectExplorerContext: context
+	};
+	await handleRestoreDatabase(options, service)
+}
+
+async function handleRestoreDatabaseTask(profile: IConnectionProfile, service: IObjectManagementService): Promise<void> {
+	let connectionUri = await azdata.connection.getUriForConnection(profile.id);
+	const options: ObjectManagementDialogOptions = {
+		connectionUri: connectionUri,
+		isNewObject: false,
+		database: profile.databaseName,
+		objectType: ObjectManagement.NodeType.Database,
+		objectName: profile.databaseName,
+		parentUrn: undefined,
+		objectUrn: undefined,
+		objectExplorerContext: undefined
+	};
+	await handleRestoreDatabase(options, service)
 }
 
 async function handleDropDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
@@ -456,40 +538,6 @@ async function handleDropDatabase(context: azdata.ObjectExplorerContext, service
 		}).send();
 		console.error(err);
 		await vscode.window.showErrorMessage(objectManagementLoc.OpenDropDatabaseDialogError(getErrorMessage(err)));
-	}
-}
-
-async function handleRestoreDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
-	const connectionUri = await getConnectionUri(context);
-	if (!connectionUri) {
-		return;
-	}
-	try {
-		const parentUrn = await getParentUrn(context);
-		const options: ObjectManagementDialogOptions = {
-			connectionUri: connectionUri,
-			isNewObject: true,
-			database: context.connectionProfile!.databaseName!,
-			objectType: ObjectManagement.NodeType.Database,
-			objectName: '',
-			parentUrn: parentUrn,
-			objectExplorerContext: context
-		};
-		const dialog = new RestoreDatabaseDialog(service, options);
-		const startTime = Date.now();
-		await dialog.open();
-		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenRestoreDatabaseDialog, {
-			objectType: ObjectManagement.NodeType.Database
-		}, {
-			elapsedTimeMs: Date.now() - startTime
-		});
-	}
-	catch (err) {
-		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenRestoreDatabaseDialog, err).withAdditionalProperties({
-			objectType: context.nodeInfo!.nodeType
-		}).send();
-		console.error(err);
-		void vscode.window.showErrorMessage(objectManagementLoc.OpenRestoreDatabaseDialogError(getErrorMessage(err)));
 	}
 }
 
