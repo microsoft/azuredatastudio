@@ -200,7 +200,7 @@ export class ChangeMaxRowsActionItem extends Disposable implements IActionViewIt
 		this.container.blur();
 	}
 
-	private _refreshOptions(databaseIndex?: number): void {
+	private _refreshOptions(): void {
 		this.selectBox.setOptions(this._options, this._currentOptionsIndex);
 	}
 

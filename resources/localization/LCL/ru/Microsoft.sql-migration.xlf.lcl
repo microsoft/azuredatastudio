@@ -3571,6 +3571,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.import.assessment.header" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Choose target platform and view assessment results.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите целевую платформу и просмотрите результаты оценки.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5023,6 +5026,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.port.placeholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter the target port]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Укажите целевой порт]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7393,6 +7399,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.resource.port" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Your Azure SQL target resource port number : 0 - 65535]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Номер вашего целевого ресурса порта Azure SQL: 0–65535]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
