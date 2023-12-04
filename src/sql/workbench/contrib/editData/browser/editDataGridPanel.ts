@@ -217,7 +217,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				},
 					(error: any) => {
 						self.notificationService.error(error);
-						self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditCellEndError)
+						self.telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditCellEndError)
 							.withAdditionalProperties({ error: error })
 							.send();
 					}).catch(onUnexpectedError);
@@ -391,7 +391,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				return Promise.resolve();
 			},
 			(error) => {
-				self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditCellSelectError)
+				self.telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditCellSelectError)
 					.withAdditionalProperties({ error: error })
 					.send();
 				// Cell update failed, jump back to the last cell we were on
@@ -413,7 +413,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					this.newRowVisible = false;
 					return Promise.resolve();
 				}, error => {
-					this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.SubmitCommitError)
+					this.telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.SubmitCommitError)
 						.withAdditionalProperties({ error: error })
 						.send();
 					// Committing failed, jump back to the last selected cell
@@ -928,7 +928,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					self.setCellDirtyState(self.currentCell.row, self.currentCell.column, result.cell.isDirty);
 					self.setRowDirtyState(this.currentCell.row, result.isRowDirty);
 				}, (error: any) => {
-					self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditSaveViewError)
+					self.telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditSaveViewError)
 						.withAdditionalProperties({ error: error })
 						.send();
 					self.notificationService.error(error);
