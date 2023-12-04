@@ -80,10 +80,10 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	}));
 
 	// Database dashboard buttons
-	appContext.extensionContext.subscriptions.push(azdata.tasks.registerTask('mssql.backupDatabase', async (profile: azdata.IConnectionProfile) => {
+	appContext.extensionContext.subscriptions.push(azdata.tasks.registerTask('mssql.backupDatabaseTask', async (profile: azdata.IConnectionProfile) => {
 		await handleBackupDatabaseTask(profile, service);
 	}));
-	appContext.extensionContext.subscriptions.push(azdata.tasks.registerTask('mssql.restoreDatabase', async (profile: azdata.IConnectionProfile) => {
+	appContext.extensionContext.subscriptions.push(azdata.tasks.registerTask('mssql.restoreDatabaseTask', async (profile: azdata.IConnectionProfile) => {
 		await handleRestoreDatabaseTask(profile, service);
 	}));
 }
