@@ -428,6 +428,15 @@ const allowedHosts = [
     'https://raw.githubusercontent.com/'
 ];
 
+// The set of "trusted" publishers that we allow direct VSIX installs for in the gallery
+const allowedPublishersForVSIXAssets = [
+    'microsoft',
+    'msrvida',
+    'jocapc',
+    'mongodb',
+    'github'
+]
+
 /**
  * Validate an IRawGalleryExtensionFile object
  * Will also validate that the source URL provided is valid, and if it's a direct VSIX link that the
@@ -455,6 +464,9 @@ async function validateExtensionFile(galleryFilePath, extensionName, extensionJs
 
     // Validate the source URL
     if (extensionFileJson.assetType === MICROSOFT_VISUALSTUDIO_SERVICES_VSIXPACKAGE) {
+        if (!allowedPublishersForVSIXAssets.includes(extensionJson.publisher.publisherId.toLowerCase())) {
+            throw new Error(`${galleryFilePath} - ${extensionName} - ${MICROSOFT_VISUALSTUDIO_SERVICES_VSIXPACKAGE} assets are only allowed for trusted (Microsoft or 1st party) extensions. External extensions must use the ${MICROSOFT_SQLOPS_DOWNLOADPAGE} asset type. This should be a URL to either a download page, or a direct download link to the VSIX`);
+        }
         const downloadVsixPath = path.join(DOWNLOADED_EXT_DIR, path.basename(galleryFilePath, '.json'), `${extensionName}.vsix`);
         // Download VSIX into temp download location
         try {
