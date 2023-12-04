@@ -626,8 +626,9 @@ export class EditDataGridPanel extends GridParentComponent {
 			handled = true;
 		}
 
-		if (e.keyCode === KeyCode.Enter && this.isNullRow(this.currentCell.row)) {
-			this.isInNullRow = true;
+		if (e.keyCode === KeyCode.Enter) {
+			if (this.isNullRow(this.currentCell.row))
+				this.isInNullRow = true;
 		}
 
 		return handled;
