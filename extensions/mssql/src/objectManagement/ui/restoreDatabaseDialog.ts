@@ -230,9 +230,9 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		this.isManagedInstance = this.viewInfo.isManagedInstance;
 
 		// Restore from
-		const restoreFromDropdownOptions = this.isManagedInstance ? [localizedConstants.RestoreFromUrlText] : [localizedConstants.RestoreFromDatabaseOptionText, localizedConstants.RestoreFromBackupFileOptionText];
+		const restoreFromDropdownOptions = this.isManagedInstance ? [localizedConstants.RestoreFromUrlText] : [localizedConstants.RestoreFromDatabaseOptionText, localizedConstants.RestoreFromBackupFileOptionText, localizedConstants.RestoreFromUrlText];
 		this.restoreFrom = this.createDropdown(localizedConstants.RestoreFromText, async (newValue) => {
-			if (newValue === localizedConstants.RestoreFromBackupFileOptionText) {
+			if (newValue === localizedConstants.RestoreFromBackupFileOptionText || newValue === localizedConstants.RestoreFromUrlText) {
 				this.backupFilePathContainer.display = 'inline-flex';
 				this.restoreDatabase.enabled = false;
 			} else if (newValue === localizedConstants.RestoreFromDatabaseOptionText) {
@@ -260,7 +260,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			width: RestoreInputsWidth - 30,
 			placeHolder: localizedConstants.BackupFolderPathTitle
 		});
-		this.backupFilePathButton = this.createButton('...', '...', async () => { this.isManagedInstance ? await this.createBackupUrlFileBrowser() : await this.createBackupFileBrowser() });
+		this.backupFilePathButton = this.createButton('...', '...', async () => {
+			this.restoreFrom.value === localizedConstants.RestoreFromUrlText
+				? await this.createBackupUrlFileBrowser() : await this.createBackupFileBrowser()
+		});
 		this.backupFilePathButton.width = SelectFolderButtonWidth;
 		this.backupFilePathContainer = this.createLabelInputContainer(localizedConstants.BackupFilePathText, this.backupFilePathInput);
 		this.backupFilePathContainer.addItems([this.backupFilePathButton], { flex: '10 0 auto' });
@@ -477,7 +480,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	 * @returns Media device type
 	 */
 	private getRestoreMediaDeviceType(): MediaDeviceType {
-		return this.isManagedInstance ? MediaDeviceType.Url : MediaDeviceType.File;
+		return this.restoreFrom.value === localizedConstants.RestoreFromUrlText ? MediaDeviceType.Url : MediaDeviceType.File;
 	}
 
 	/**
@@ -511,10 +514,11 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		this.objectInfo.restorePlanResponse = restorePlan;
 
 		// Update Source database name
-		if (this.isManagedInstance) {
+		// If restoring from URL, cannot select any other database as source, but can select different database when restoring from a database
+		if (this.restoreFrom.value === localizedConstants.RestoreFromUrlText) {
 			await this.restoreDatabase.updateProperties({
-				values: [restorePlan.planDetails.sourceDatabaseName.currentValue],
-				value: restorePlan.planDetails.sourceDatabaseName.currentValue
+				values: [restorePlan.planDetails?.sourceDatabaseName?.currentValue],
+				value: restorePlan.planDetails?.sourceDatabaseName?.currentValue
 			});
 		}
 
