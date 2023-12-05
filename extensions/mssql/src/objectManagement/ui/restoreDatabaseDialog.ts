@@ -239,19 +239,13 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 				this.backupFilePathContainer.display = 'none';
 				this.restoreDatabase.enabled = true;
 			}
+			await this.updateNewRestorePlanToDialog();
 		}, restoreFromDropdownOptions, restoreFromDropdownOptions[0], !this.isManagedInstance, RestoreInputsWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.RestoreFromText, this.restoreFrom));
 
 		// Backup file path
-		this.backupFilePathInput = this.createInputBox(async () => {
-			this.dialogObject.loading = true;
-			// Get the new restore plan for the selected file
-			const restorePlanInfo = this.setRestoreOption(this.backupFilePathInput);
-			const restorePlan = await this.restoreProvider.getRestorePlan(this.options.connectionUri, restorePlanInfo);
-
-			// Update the dailog values with the new restore plan
-			await this.updateRestoreDialog(restorePlan);
-			this.dialogObject.loading = false;
+		this.backupFilePathInput = this.createInputBox(async (newValue) => {
+			await this.updateNewRestorePlanToDialog();
 		}, {
 			ariaLabel: localizedConstants.BackupFilePathText,
 			inputType: 'text',
@@ -272,17 +266,12 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 		// source Database
 		this.restoreDatabase = this.isManagedInstance ?
-			this.createDropdown(localizedConstants.DatabaseText, async (newValue) => { }, [], '', false, RestoreInputsWidth - 20, false, false)
+			this.createDropdown(localizedConstants.DatabaseText, async () => { }, [], '', false, RestoreInputsWidth - 20, false, false)
 			: this.createDropdown(localizedConstants.DatabaseText, async (newValue) => {
-				this.objectInfo.restorePlanResponse.planDetails.sourceDatabaseName.currentValue = newValue;
-				this.dialogObject.loading = true;
-				// Get the new restore plan for the selected source database
-				const restorePlanInfo = this.setRestoreOption(this.restoreDatabase);
-				const restorePlan = await this.restoreProvider.getRestorePlan(this.options.connectionUri, restorePlanInfo);
-
-				// Update the dailog values with the new restore plan
-				await this.updateRestoreDialog(restorePlan);
-				this.dialogObject.loading = false;
+				if (this.restoreFrom.value !== localizedConstants.RestoreFromUrlText) {
+					this.objectInfo.restorePlanResponse.planDetails.sourceDatabaseName.currentValue = newValue;
+					await this.updateNewRestorePlanToDialog();
+				}
 			}, this.viewInfo.restoreDatabaseInfo.sourceDatabaseNames, this.objectInfo.restorePlanResponse.planDetails.sourceDatabaseName.currentValue, true, RestoreInputsWidth, false);
 		const restoreDatabaseContainer = this.createLabelInputContainer(localizedConstants.DatabaseText, this.restoreDatabase);
 		restoreDatabaseContainer.CSSStyles = { 'margin-left': this.isManagedInstance ? '20px' : '0px' };
@@ -484,17 +473,32 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	}
 
 	/**
+	 * Get the new restore plan and updates the dialog properties
+	 */
+	private async updateNewRestorePlanToDialog(): Promise<void> {
+		this.dialogObject.loading = true;
+		// Get the new restore plan for the selected file
+		const restorePlanInfo = this.setRestoreOption();
+		const restorePlan = await this.restoreProvider.getRestorePlan(this.options.connectionUri, restorePlanInfo);
+
+		// Update the dailog values with the new restore plan
+		await this.updateRestoreDialog(restorePlan);
+		this.dialogObject.loading = false;
+	}
+
+	/**
 	 * Prepares the restore params to get restore plan for the selected source database
 	 * @returns restore params
 	 */
-	private setRestoreOption(inputType: azdata.DropDownComponent | azdata.InputBoxComponent): azdata.RestoreInfo {
+	private setRestoreOption(): azdata.RestoreInfo {
+		const restoreFromDatabase = this.restoreFrom.value === localizedConstants.RestoreFromDatabaseOptionText;
 		let options = {
-			targetDatabaseName: this.objectInfo.restorePlanResponse?.planDetails.targetDatabaseName.currentValue,
-			sourceDatabaseName: inputType === this.restoreDatabase ? this.objectInfo.restorePlanResponse?.planDetails.sourceDatabaseName.currentValue : null,
-			relocateDbFiles: this.objectInfo.restorePlanResponse?.planDetails.relocateDbFiles.currentValue,
-			readHeaderFromMedia: inputType === this.restoreDatabase ? false : true,
+			targetDatabaseName: this.objectInfo.restorePlanResponse?.planDetails?.targetDatabaseName?.currentValue,
+			sourceDatabaseName: restoreFromDatabase ? this.objectInfo.restorePlanResponse?.planDetails?.sourceDatabaseName?.currentValue : null,
+			relocateDbFiles: this.objectInfo.restorePlanResponse?.planDetails?.relocateDbFiles?.currentValue,
+			readHeaderFromMedia: restoreFromDatabase ? false : true,
 			overwriteTargetDatabase: true,
-			backupFilePaths: inputType === this.backupFilePathInput ? this.backupFilePathInput.value : null,
+			backupFilePaths: restoreFromDatabase ? null : this.backupFilePathInput.value,
 			deviceType: this.getRestoreMediaDeviceType()
 		};
 
@@ -515,7 +519,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 		// Update Source database name
 		// If restoring from URL, cannot select any other database as source, but can select different database when restoring from a database
-		if (this.restoreFrom.value === localizedConstants.RestoreFromUrlText) {
+		if (this.restoreFrom.value === localizedConstants.RestoreFromUrlText && restorePlan.canRestore) {
 			await this.restoreDatabase.updateProperties({
 				values: [restorePlan.planDetails?.sourceDatabaseName?.currentValue],
 				value: restorePlan.planDetails?.sourceDatabaseName?.currentValue
