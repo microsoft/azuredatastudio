@@ -565,12 +565,6 @@ import 'sql/workbench/browser/modelComponents/modelViewEditor.contribution';
 // notebooks
 import 'sql/workbench/contrib/notebook/browser/notebook.contribution';
 
-// backup
-import 'sql/workbench/contrib/backup/browser/backup.contribution';
-
-//restore
-import 'sql/workbench/contrib/restore/browser/restore.contribution';
-
 // Scripting
 import 'sql/workbench/contrib/scripting/browser/scripting.contribution';
 
