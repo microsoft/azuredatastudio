@@ -194,10 +194,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						errors.push(constants.VM_NOT_READY_POWER_STATE_ERROR(targetVm.name));
 					}
 
-					// validate IaaS extension mode
-					if (targetVm.properties.sqlManagement.toLowerCase() !== 'Full'.toLowerCase()) {
-						errors.push(constants.VM_NOT_READY_IAAS_EXTENSION_ERROR(targetVm.name, targetVm.properties.sqlManagement));
-					}
 					break;
 				case MigrationTargetType.SQLDB:
 					const targetSqlDB = this.migrationStateModel._targetServerInstance as AzureSqlDatabaseServer;
@@ -504,7 +500,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		// target user name
 		const targetUserNameLabel = this._view.modelBuilder.text()
 			.withProps({
-				value: constants.TARGET_USERNAME_LAbEL,
+				value: constants.TARGET_USERNAME_LABEL,
 				requiredIndicator: true,
 				CSSStyles: { ...styles.LABEL_CSS, 'margin-top': '-1em' }
 			}).component();
@@ -527,7 +523,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		// target password
 		const targetPasswordLabel = this._view.modelBuilder.text()
 			.withProps({
-				value: constants.TARGET_PASSWORD_LAbEL,
+				value: constants.TARGET_PASSWORD_LABEL,
 				requiredIndicator: true,
 				title: '',
 				CSSStyles: { ...styles.LABEL_CSS, 'margin-top': '-1em' }

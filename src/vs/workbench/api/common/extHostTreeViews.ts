@@ -311,7 +311,7 @@ export interface TreeNode extends IDisposable { // {{SQL CARBON EDIT}} export in
 	disposableStore: DisposableStore;
 }
 
-// {{SQL CARBON EDIT}}
+// {{SQL CARBON EDIT}} Export class
 export class ExtHostTreeView<T> extends Disposable {
 
 	private static readonly LABEL_HANDLE_PREFIX = '0';
@@ -322,7 +322,7 @@ export class ExtHostTreeView<T> extends Disposable {
 
 	private roots: TreeNode[] | undefined = undefined;
 	private elements: Map<TreeItemHandle, T> = new Map<TreeItemHandle, T>();
-	// {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}} Make protected
 	protected nodes: Map<T, TreeNode> = new Map<T, TreeNode>();
 
 	private _visible: boolean = false;
@@ -377,7 +377,7 @@ export class ExtHostTreeView<T> extends Disposable {
 		this.dataProvider = options.treeDataProvider;
 		this.dndController = options.dragAndDropController;
 
-		// {{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}} Register TreeView Data Provider
 		const dropMimeTypes = options.dragAndDropController?.dropMimeTypes ?? [];
 		const dragMimeTypes = options.dragAndDropController?.dragMimeTypes ?? [];
 		const hasHandleDrag = !!options.dragAndDropController?.handleDrag;
@@ -636,7 +636,8 @@ export class ExtHostTreeView<T> extends Disposable {
 		return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 	}
 
-	protected resolveUnknownParentChain(element: T): Promise<TreeNode[]> { // {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}} Make method protected
+	protected resolveUnknownParentChain(element: T): Promise<TreeNode[]> {
 		return this.resolveParent(element)
 			.then((parent) => {
 				if (!parent) {
@@ -659,7 +660,7 @@ export class ExtHostTreeView<T> extends Disposable {
 		return asPromise(() => this.dataProvider.getParent!(element));
 	}
 
-	// {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}} Make method protected
 	protected resolveTreeNode(element: T, parent?: TreeNode): Promise<TreeNode> {
 		const node = this.nodes.get(element);
 		if (node) {
@@ -741,7 +742,7 @@ export class ExtHostTreeView<T> extends Disposable {
 		return Promise.resolve(undefined);
 	}
 
-	// {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}} Make method protected
 	protected getHandlesToRefresh(elements: T[]): TreeItemHandle[] {
 		const elementsToUpdate = new Set<TreeItemHandle>();
 		const elementNodes = elements.map(element => this.nodes.get(element));
@@ -774,7 +775,7 @@ export class ExtHostTreeView<T> extends Disposable {
 		return handlesToUpdate;
 	}
 
-	// {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}} Make method protected
 	protected refreshHandles(itemHandles: TreeItemHandle[]): Promise<void> {
 		const itemsToRefresh: { [treeItemHandle: string]: ITreeItem } = {};
 		return Promise.all(itemHandles.map(treeItemHandle =>
@@ -787,7 +788,7 @@ export class ExtHostTreeView<T> extends Disposable {
 			.then(() => Object.keys(itemsToRefresh).length ? this.proxy.$refresh(this.viewId, itemsToRefresh) : undefined);
 	}
 
-	// {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}} Make method protected
 	protected refreshNode(treeItemHandle: TreeItemHandle): Promise<TreeNode | null> {
 		const extElement = this.getExtensionElement(treeItemHandle);
 		if (extElement) {
@@ -951,8 +952,15 @@ export class ExtHostTreeView<T> extends Disposable {
 		this.nodes.set(element, node);
 	}
 
-	// {{SQL CARBON EDIT}}
-	protected updateNodeCache(element: T, newNode: TreeNode, existing: TreeNode, parentNode: TreeNode | Root): void {
+	// {{SQL CARBON EDIT}} This method is used to update node in cache, after children are added.
+	private updateNodeInCache(node: TreeNode): void {
+		const element = this.elements.get(node.item.handle);
+		if (element) {
+			this.nodes.set(element, node);
+		}
+	}
+
+	private updateNodeCache(element: T, newNode: TreeNode, existing: TreeNode, parentNode: TreeNode | Root): void {
 		// Remove from the cache
 		this.elements.delete(newNode.item.handle);
 		this.nodes.delete(element);
@@ -977,6 +985,9 @@ export class ExtHostTreeView<T> extends Disposable {
 				parentNode.children = [];
 			}
 			parentNode.children.push(node);
+			// {{SQL CARBON EDIT}} Update Node in cache to make sure children are available in cache when refreshing nodes later.
+			// This will ensure the children get cleared during refresh, and prevent duplicate items from being added.
+			this.updateNodeInCache(parentNode);
 		} else {
 			if (!this.roots) {
 				this.roots = [];
@@ -1021,7 +1032,8 @@ export class ExtHostTreeView<T> extends Disposable {
 		}
 	}
 
-	protected clearAll(): void { // {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}} Make method protected
+	protected clearAll(): void {
 		this.roots = undefined;
 		this.elements.clear();
 		this.nodes.forEach(node => node.dispose());

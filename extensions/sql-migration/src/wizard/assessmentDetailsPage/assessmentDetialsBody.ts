@@ -32,7 +32,7 @@ export class AssessmentDetailsBody {
 	constructor(public migrationStateModel: MigrationStateModel,
 		public wizard: azdata.window.Wizard,
 		readonly: boolean = false) {
-		this._treeComponent = new TreeComponent(wizard, readonly);
+		this._treeComponent = new TreeComponent(wizard, migrationStateModel, readonly);
 		this._instanceSummary = new InstanceSummary(migrationStateModel);
 	}
 
@@ -71,7 +71,7 @@ export class AssessmentDetailsBody {
 
 	// function to populate data for body section
 	public async populateAssessmentBodyAsync(): Promise<void> {
-		await this._treeComponent.initialize(this.migrationStateModel);
+		await this._treeComponent.initialize();
 		this._activeIssues = this.migrationStateModel._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this.migrationStateModel?._targetType);
 		await this.refreshResultsAsync();
 		await this._instanceSummary.populateInstanceSummaryContainerAsync();

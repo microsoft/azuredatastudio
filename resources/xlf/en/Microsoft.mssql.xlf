@@ -136,6 +136,10 @@
       <source xml:lang="en">An error occurred while opening the properties dialog for {0}: {1}. {2}</source>
       <note>{0} object type, {1}: object name, {2}: error message.</note>
     </trans-unit>
+    <trans-unit id="objectManagement.openRestoreDatabaseDialogError">
+      <source xml:lang="en">An error occurred while opening the restore database dialog. {0}</source>
+      <note>{0}: error message.</note>
+    </trans-unit>
     <trans-unit id="objectManagement.refreshOEError">
       <source xml:lang="en">An error occurred while refreshing the object explorer. {0}</source>
       <note>{0}: error message.</note>
@@ -253,6 +257,9 @@
     <trans-unit id="objectManagement.backupRedundancyLabel">
       <source xml:lang="en">Backup Storage Redundancy</source>
     </trans-unit>
+    <trans-unit id="objectManagement.backupToUrlLabel">
+      <source xml:lang="en">Backup URL</source>
+    </trans-unit>
     <trans-unit id="objectManagement.backupAndRestoreText">
       <source xml:lang="en">Backup and Restore</source>
     </trans-unit>
@@ -262,6 +269,15 @@
     <trans-unit id="objectManagement.backupDatabaseOperationName">
       <source xml:lang="en">Backup database &apos;{0}&apos;</source>
       <note>{0}: object name.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restoreFromBackupFileOptionText">
+      <source xml:lang="en">Backup file</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.backupFilePathText">
+      <source xml:lang="en">Backup file path</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupFailedError">
+      <source xml:lang="en">Backup operation failed.</source>
     </trans-unit>
     <trans-unit id="objectManagement.backupNameLabel">
       <source xml:lang="en">Backup set name</source>
@@ -296,14 +312,23 @@
     <trans-unit id="objectManagement.needToRestartServer">
       <source xml:lang="en">Changes require server restart in order to be effective</source>
     </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restorePlan.checkpointLSNText">
+      <source xml:lang="en">Checkpoint LSN</source>
+    </trans-unit>
     <trans-unit id="objectManagement.closeConnections">
       <source xml:lang="en">Close existing connections</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.closeExistingConnectionText">
+      <source xml:lang="en">Close existing connections to destination database</source>
     </trans-unit>
     <trans-unit id="objectManagement.collationLabel">
       <source xml:lang="en">Collation</source>
     </trans-unit>
     <trans-unit id="objectManagement.compatibilityLevelLabel">
       <source xml:lang="en">Compatibility Level</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restorePlan.componentText">
+      <source xml:lang="en">Component</source>
     </trans-unit>
     <trans-unit id="objectManagement.compressBackupText">
       <source xml:lang="en">Compress Backup</source>
@@ -363,6 +388,9 @@
     <trans-unit id="objectManagement.dataFileLabel">
       <source xml:lang="en">Data</source>
     </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.dataFileFolderText">
+      <source xml:lang="en">Data File Folder</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.dataFlushIntervalInMinutesText">
       <source xml:lang="en">Data Flush Interval (Minutes)</source>
     </trans-unit>
@@ -370,6 +398,12 @@
       <source xml:lang="en">DataFile &apos;{0}&apos; could not be added to the collection, because it already exists.</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.databaseSectionHeader">
+      <source xml:lang="en">Database</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restoreFromDatabaseOptionText">
+      <source xml:lang="en">Database</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.databaseText">
       <source xml:lang="en">Database</source>
     </trans-unit>
     <trans-unit id="objectManagement.DatabaseDisplayNameInTitle">
@@ -440,6 +474,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.denyColumnHeader">
       <source xml:lang="en">Deny</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.DestinationSectionText">
+      <source xml:lang="en">Destination</source>
     </trans-unit>
     <trans-unit id="objectManagement.detachButtonLabel">
       <source xml:lang="en">Detach</source>
@@ -527,6 +564,9 @@
     <trans-unit id="objectManagement.databaseProperties.executionCountText">
       <source xml:lang="en">Execution Count</source>
     </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restorePlan.expirationText">
+      <source xml:lang="en">Expiration</source>
+    </trans-unit>
     <trans-unit id="objectManagement.backupExpiration">
       <source xml:lang="en">Expiration</source>
     </trans-unit>
@@ -590,8 +630,17 @@
     <trans-unit id="objectManagement.findText">
       <source xml:lang="en">Find</source>
     </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restorePlan.FinishDateText">
+      <source xml:lang="en">Finish Date</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restorePlan.firstLSNText">
+      <source xml:lang="en">First LSN</source>
+    </trans-unit>
     <trans-unit id="objectManagement.backupFull">
       <source xml:lang="en">Full</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restorePlan.FullLSNText">
+      <source xml:lang="en">Full LSN</source>
     </trans-unit>
     <trans-unit id="objectManagement.fullTextUpgradeOptionLabel">
       <source xml:lang="en">Full-Text Upgrade Option</source>
@@ -647,6 +696,12 @@
     <trans-unit id="objectManagement.lastDatabaseLogBackup">
       <source xml:lang="en">Last Database Log Backup</source>
     </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restorePlan.lastLSNText">
+      <source xml:lang="en">Last LSN</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.leaveSourceDBText">
+      <source xml:lang="en">Leave source database in the restoring state (WITH NORECOVERY)</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.ledgerSectionHeader">
       <source xml:lang="en">Ledger</source>
     </trans-unit>
@@ -670,6 +725,12 @@
     </trans-unit>
     <trans-unit id="objectManagement.logFileLabel">
       <source xml:lang="en">Log</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.logFileFolderText">
+      <source xml:lang="en">Log File Folder</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restorePlan.logicalFileNameText">
+      <source xml:lang="en">Logical File Name</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.logicalNameText">
       <source xml:lang="en">Logical Name</source>
@@ -782,6 +843,9 @@
     <trans-unit id="objectManagement.doDatabaseFilesError">
       <source xml:lang="en">No database files were specified to attach to the server.</source>
     </trans-unit>
+    <trans-unit id="objectManagement.noSecurableObjectsFoundInfoMessage">
+      <source xml:lang="en">No securable objects could be found for the specified selection.</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.noneText">
       <source xml:lang="en">None</source>
     </trans-unit>
@@ -821,11 +885,17 @@
     <trans-unit id="objectManagement.optimizeAdHocWorkloadsLabel">
       <source xml:lang="en">Optimize Ad Hoc Workloads</source>
     </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restorePlan.originalFileNameText">
+      <source xml:lang="en">Original File Name</source>
+    </trans-unit>
     <trans-unit id="objectManagement.overwriteExistingBackups">
       <source xml:lang="en">Overwrite all existing backup sets</source>
     </trans-unit>
     <trans-unit id="objectManagement.backupOverwriteMedia">
       <source xml:lang="en">Overwrite media</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.overwriteTheExistingDatabaseText">
+      <source xml:lang="en">Overwrite the existing database (WITH REPLACE)</source>
     </trans-unit>
     <trans-unit id="objectManagement.user.ownedSchemasLabel">
       <source xml:lang="en">Owned Schemas</source>
@@ -868,6 +938,15 @@
     </trans-unit>
     <trans-unit id="objectManagement.platform">
       <source xml:lang="en">Platform</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.backupFolderPathTitle">
+      <source xml:lang="en">Please enter one or more file paths separated by commas</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restorePlan.positionText">
+      <source xml:lang="en">Position</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.preserveReplicationSettingsText">
+      <source xml:lang="en">Preserve the replication settings (WITH KEEP_REPLICATION)</source>
     </trans-unit>
     <trans-unit id="objectManagement.processorColumn">
       <source xml:lang="en">Processor</source>
@@ -926,11 +1005,17 @@
     <trans-unit id="objectManagement.recoveryModelLabel">
       <source xml:lang="en">Recovery Model</source>
     </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.recoveryStateText">
+      <source xml:lang="en">Recovery State</source>
+    </trans-unit>
     <trans-unit id="objectManagement.backupRecoveryLabel">
       <source xml:lang="en">Recovery model</source>
     </trans-unit>
     <trans-unit id="objectManagement.backupReliability">
       <source xml:lang="en">Reliability</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.relocateAllFilesText">
+      <source xml:lang="en">Relocate All Files</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.removeButton">
       <source xml:lang="en">Remove</source>
@@ -954,8 +1039,42 @@
     <trans-unit id="objectManagement.reservedStorageSizeInMB">
       <source xml:lang="en">Reserved Storage Size (MB)</source>
     </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restorePlan.restoreText">
+      <source xml:lang="en">Restore</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restorePlan.restoreAsText">
+      <source xml:lang="en">Restore As</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabaseDialogTitle">
+      <source xml:lang="en">Restore Database - {0} (Preview)</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restoreOptionsText">
+      <source xml:lang="en">Restore Options</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabaseOperationName">
+      <source xml:lang="en">Restore database &apos;{0}&apos;</source>
+      <note>{0}: object name.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restoreDatabaseFileDetailsText">
+      <source xml:lang="en">Restore database file Details</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restoreDatabaseFilesAsText">
+      <source xml:lang="en">Restore database files as</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restoreFromText">
+      <source xml:lang="en">Restore from</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.RestorePlanSectionText">
+      <source xml:lang="en">Restore plan</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restoreToText">
+      <source xml:lang="en">Restore to</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.restrictAccessText">
       <source xml:lang="en">Restrict Access</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restrictAccessToRestoredDBText">
+      <source xml:lang="en">Restrict access to the restored database (WITH RESTRICTED_USER)</source>
     </trans-unit>
     <trans-unit id="objectManagement.rootDirectory">
       <source xml:lang="en">Root Directory</source>
@@ -980,6 +1099,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.schemaLabel">
       <source xml:lang="en">Schema</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.scriptingFailedError">
+      <source xml:lang="en">Script operation failed.</source>
     </trans-unit>
     <trans-unit id="objectManagement.SearchTextLabel">
       <source xml:lang="en">Search Text</source>
@@ -1011,6 +1133,9 @@
     <trans-unit id="objectManagement.serverRole.SelectOwnerDialogTitle">
       <source xml:lang="en">Select Server Role Owner</source>
     </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restorePlan.serverText">
+      <source xml:lang="en">Server</source>
+    </trans-unit>
     <trans-unit id="objectManagement.ServerDisplayName">
       <source xml:lang="en">Server</source>
     </trans-unit>
@@ -1028,6 +1153,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.serverAuthenticationText">
       <source xml:lang="en">Server authentication</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restoreServerConnectionsOptionsText">
+      <source xml:lang="en">Server connections</source>
     </trans-unit>
     <trans-unit id="objectManagement.serviceTier">
       <source xml:lang="en">Service Tier</source>
@@ -1047,6 +1175,9 @@
     <trans-unit id="objectManagement.databaseProperties.sizeBasedCleanupModeText">
       <source xml:lang="en">Size Based Cleanup Mode</source>
     </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.SourceSectionText">
+      <source xml:lang="en">Source</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.spaceAvailable">
       <source xml:lang="en">Space Available</source>
     </trans-unit>
@@ -1058,6 +1189,12 @@
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.staleThresholdText">
       <source xml:lang="en">Stale Threshold</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.standbyFileText">
+      <source xml:lang="en">Standby file</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restorePlan.startDateText">
+      <source xml:lang="en">Start Date</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.stateSectionHeader">
       <source xml:lang="en">State</source>
@@ -1077,8 +1214,20 @@
     <trans-unit id="objectManagement.successfulLoginsOnlyText">
       <source xml:lang="en">Successful logins only</source>
     </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.tailLogBackupFileText">
+      <source xml:lang="en">Tail Log Backup File</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restoreTailLogBackupOptionsText">
+      <source xml:lang="en">Tail-log backup</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.takeTailLogBackupBeforeRestoreText">
+      <source xml:lang="en">Take tail-log backup before restore</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.targetRecoveryTimeInSecondsText">
       <source xml:lang="en">Target Recovery Time (Seconds)</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.targetDatabaseText">
+      <source xml:lang="en">Target database</source>
     </trans-unit>
     <trans-unit id="objectManagement.collationNotValidError">
       <source xml:lang="en">The selected collation &apos;{0}&apos; is not valid. Please choose a different collation.</source>
@@ -1105,6 +1254,9 @@
       <source xml:lang="en">Two Digit Year Cutoff</source>
     </trans-unit>
     <trans-unit id="objectManagement.user.type">
+      <source xml:lang="en">Type</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restorePlan.typeText">
       <source xml:lang="en">Type</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseFileType">
@@ -1134,6 +1286,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.UserTypeDisplayNameInTitle">
       <source xml:lang="en">User</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restorePlan.userNameText">
+      <source xml:lang="en">User Name</source>
     </trans-unit>
     <trans-unit id="objectManagement.login.mustChangePasswordLabel">
       <source xml:lang="en">User must change password at next login</source>
@@ -1714,6 +1869,9 @@
     <trans-unit id="mssql.connectionOptions.replication.displayName">
       <source xml:lang="en">Replication</source>
     </trans-unit>
+    <trans-unit id="title.restoreDatabase">
+      <source xml:lang="en">Restore Database (Preview)</source>
+    </trans-unit>
     <trans-unit id="mssql.connectionOptions.authType.categoryValues.sqlLogin">
       <source xml:lang="en">SQL Login</source>
     </trans-unit>
@@ -1737,6 +1895,9 @@
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.serverName.displayName">
       <source xml:lang="en">Server</source>
+    </trans-unit>
+    <trans-unit id="mssql.provider.serverProcessId">
+      <source xml:lang="en">Server Process ID</source>
     </trans-unit>
     <trans-unit id="mssql.query.displayBitAsNumber">
       <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as &apos;true&apos; or &apos;false&apos;</source>

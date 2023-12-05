@@ -23,6 +23,11 @@ steps:
     inputs:
       versionSpec: "1.x"
 
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.11.x'
+      addToPath: true
+
   - task: AzureKeyVault@1
     displayName: 'Azure Key Vault: Get Secrets'
     inputs:

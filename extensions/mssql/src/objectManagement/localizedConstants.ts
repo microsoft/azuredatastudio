@@ -148,6 +148,20 @@ export function BackupDatabaseOperationDisplayName(objectName: string): string {
 	}, "Backup database '{0}'", objectName);
 }
 
+export function OpenRestoreDatabaseDialogError(error: string): string {
+	return localize({
+		key: 'objectManagement.openRestoreDatabaseDialogError',
+		comment: ['{0}: error message.']
+	}, "An error occurred while opening the restore database dialog. {0}", error);
+}
+
+export function RestoreDatabaseOperationDisplayName(objectName: string): string {
+	return localize({
+		key: 'objectManagement.restoreDatabaseOperationName',
+		comment: ['{0}: object name.']
+	}, "Restore database '{0}'", objectName);
+}
+
 export function OpenObjectPropertiesDialogError(objectType: string, objectName: string, error: string): string {
 	return localize({
 		key: 'objectManagement.openObjectPropertiesDialogError',
@@ -221,6 +235,7 @@ export const EditionText = localize('objectManagement.editionLabel', "Edition");
 export const MaxSizeText = localize('objectManagement.maxSizeLabel', "Max Size");
 export const AzurePricingLinkText = localize('objectManagement.azurePricingLink', "Azure SQL Database pricing calculator");
 export const DetachDatabaseDialogTitle = (dbName: string) => localize('objectManagement.detachDatabaseDialogTitle', "Detach Database - {0} (Preview)", dbName);
+export const RestoreDatabaseDialogTitle = (dbName: string) => localize('objectManagement.restoreDatabaseDialogTitle', "Restore Database - {0} (Preview)", dbName);
 export const DetachDropConnections = localize('objectManagement.detachDropConnections', "Drop connnections");
 export const DetachUpdateStatistics = localize('objectManagement.detachUpdateStatistics', "Update statistics");
 export const DatabaseFilesLabel = localize('objectManagement.databaseFiles', "Database Files");
@@ -258,6 +273,7 @@ export const BackupExpirationLabel = localize('objectManagement.backupExpiration
 export const AddBackupFileAriaLabel = localize('objectManagement.addBackupFileText', "Add backup files");
 export const RemoveBackupFileAriaLabel = localize('objectManagement.removeBackupFileText', "Remove backup file");
 export const BackupFilesLabel = localize('objectManagement.backupFilesLabel', "Backup Files");
+export const BackupToUrlLabel = localize('objectManagement.backupToUrlLabel', "Backup URL");
 export const BackupNameLabel = localize('objectManagement.backupNameLabel', "Backup set name");
 export const BackupRecoveryLabel = localize('objectManagement.backupRecoveryLabel', "Recovery model");
 export const BackupTypeLabel = localize('objectManagement.backupTypeLabel', "Backup type");
@@ -292,6 +308,8 @@ export const CompressBackup = localize('objectManagement.compressBackup', "Compr
 export const DontCompressBackup = localize('objectManagement.dontCompressBackup', "Do not compress backup");
 export const RecoveryModelSimple = localize('objectManagement.recoveryModelSimple', "Simple");
 export const PathAlreadyAddedError = localize('objectManagement.pathAlreadyAddedError', "Provided path has already been added to the files list.");
+export const ScriptingFailedError = localize('objectManagement.scriptingFailedError', "Script operation failed.");
+export const BackupFailedError = localize('objectManagement.backupFailedError', "Backup operation failed.");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");
@@ -312,6 +330,52 @@ export const WindowsAuthenticationTypeDisplayText = localize('objectManagement.l
 export const SQLAuthenticationTypeDisplayText = localize('objectManagement.login.sqlAuthenticationType', "SQL Authentication");
 export const AADAuthenticationTypeDisplayText = localize('objectManagement.login.aadAuthenticationType', "Microsoft Entra ID Authentication");
 export const OldPasswordCannotBeEmptyError = localize('objectManagement.login.oldPasswordCannotBeEmptyError', "Old password cannot be empty.");
+
+// Restore Database
+export const RestoreFromText = localize('objectManagement.restoreDatabase.restoreFromText', "Restore from");
+export const BackupFilePathText = localize('objectManagement.restoreDatabase.backupFilePathText', "Backup file path");
+export const DatabaseText = localize('objectManagement.restoreDatabase.databaseText', "Database");
+export const TargetDatabaseText = localize('objectManagement.restoreDatabase.targetDatabaseText', "Target database");
+export const RestoreToText = localize('objectManagement.restoreDatabase.restoreToText', "Restore to");
+export const SourceSectionText = localize('objectManagement.restoreDatabase.SourceSectionText', "Source");
+export const DestinationSectionText = localize('objectManagement.restoreDatabase.DestinationSectionText', "Destination");
+export const RestorePlanSectionText = localize('objectManagement.restoreDatabase.RestorePlanSectionText', "Restore plan");
+export const RestoreFromBackupFileOptionText = localize('objectManagement.restoreDatabase.restoreFromBackupFileOptionText', "Backup file");
+export const RestoreFromDatabaseOptionText = localize('objectManagement.restoreDatabase.restoreFromDatabaseOptionText', "Database");
+export const BackupFolderPathTitle = localize('objectManagement.restoreDatabase.backupFolderPathTitle', "Please enter one or more file paths separated by commas");
+export const RestoreDatabaseFilesAsText = localize('objectManagement.restoreDatabase.restoreDatabaseFilesAsText', "Restore database files as");
+export const RestoreDatabaseFileDetailsText = localize('objectManagement.restoreDatabase.restoreDatabaseFileDetailsText', "Restore database file Details");
+export const RestoreOptionsText = localize('objectManagement.restoreDatabase.restoreOptionsText', "Restore Options");
+export const RestoreTailLogBackupText = localize('objectManagement.restoreDatabase.restoreTailLogBackupOptionsText', "Tail-log backup");
+export const RestoreServerConnectionsOptionsText = localize('objectManagement.restoreDatabase.restoreServerConnectionsOptionsText', "Server connections");
+export const RelocateAllFilesText = localize('objectManagement.restoreDatabase.relocateAllFilesText', "Relocate All Files");
+export const DataFileFolderText = localize('objectManagement.restoreDatabase.dataFileFolderText', "Data File Folder");
+export const LogFileFolderText = localize('objectManagement.restoreDatabase.logFileFolderText', "Log File Folder");
+export const OverwriteTheExistingDatabaseText = localize('objectManagement.restoreDatabase.overwriteTheExistingDatabaseText', "Overwrite the existing database (WITH REPLACE)");
+export const PreserveReplicationSettingsText = localize('objectManagement.restoreDatabase.preserveReplicationSettingsText', "Preserve the replication settings (WITH KEEP_REPLICATION)");
+export const RestrictAccessToRestoredDBText = localize('objectManagement.restoreDatabase.restrictAccessToRestoredDBText', "Restrict access to the restored database (WITH RESTRICTED_USER)");
+export const RecoveryStateText = localize('objectManagement.restoreDatabase.recoveryStateText', "Recovery State");
+export const StandbyFileText = localize('objectManagement.restoreDatabase.standbyFileText', "Standby file");
+export const TakeTailLogBackupBeforeRestoreText = localize('objectManagement.restoreDatabase.takeTailLogBackupBeforeRestoreText', "Take tail-log backup before restore");
+export const LeaveSourceDBText = localize('objectManagement.restoreDatabase.leaveSourceDBText', "Leave source database in the restoring state (WITH NORECOVERY)");
+export const TailLogBackupFileText = localize('objectManagement.restoreDatabase.tailLogBackupFileText', "Tail Log Backup File");
+export const CloseExistingConnectionText = localize('objectManagement.restoreDatabase.closeExistingConnectionText', "Close existing connections to destination database");
+export const RestoreText = localize('objectManagement.restoreDatabase.restorePlan.restoreText', "Restore");
+export const ComponentText = localize('objectManagement.restoreDatabase.restorePlan.componentText', "Component");
+export const TypeText = localize('objectManagement.restoreDatabase.restorePlan.typeText', "Type");
+export const ServerText = localize('objectManagement.restoreDatabase.restorePlan.serverText', "Server");
+export const PositionText = localize('objectManagement.restoreDatabase.restorePlan.positionText', "Position");
+export const FirstLSNText = localize('objectManagement.restoreDatabase.restorePlan.firstLSNText', "First LSN");
+export const LastLSNText = localize('objectManagement.restoreDatabase.restorePlan.lastLSNText', "Last LSN");
+export const CheckpointLSNText = localize('objectManagement.restoreDatabase.restorePlan.checkpointLSNText', "Checkpoint LSN");
+export const FullLSNText = localize('objectManagement.restoreDatabase.restorePlan.FullLSNText', "Full LSN");
+export const StartDateText = localize('objectManagement.restoreDatabase.restorePlan.startDateText', "Start Date");
+export const FinishDateText = localize('objectManagement.restoreDatabase.restorePlan.FinishDateText', "Finish Date");
+export const UserNameText = localize('objectManagement.restoreDatabase.restorePlan.userNameText', "User Name");
+export const ExpirationText = localize('objectManagement.restoreDatabase.restorePlan.expirationText', "Expiration");
+export const LogicalFileNameText = localize('objectManagement.restoreDatabase.restorePlan.logicalFileNameText', "Logical File Name");
+export const OriginalFileNameText = localize('objectManagement.restoreDatabase.restorePlan.originalFileNameText', "Original File Name");
+export const RestoreAsText = localize('objectManagement.restoreDatabase.restorePlan.restoreAsText', "Restore As");
 
 // User
 export const UserTypeText = localize('objectManagement.user.type', "Type");

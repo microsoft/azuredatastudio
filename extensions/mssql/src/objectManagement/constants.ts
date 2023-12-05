@@ -39,12 +39,17 @@ export const DetachDatabaseDocUrl = 'https://go.microsoft.com/fwlink/?linkid=224
 export const AttachDatabaseDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/attach-a-database#to-attach-a-database';
 export const BackupDatabaseDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/backup-transact-sql';
 export const DatabaseGeneralPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-general-page';
-export const DatabaseOptionsPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-options-page'
+export const DatabaseOptionsPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-options-page';
 export const DropDatabaseDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/drop-database-transact-sql';
-export const DatabaseScopedConfigurationPropertiesDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/alter-database-scoped-configuration-transact-sql'
-export const QueryStorePropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-query-store-page'
-export const DatabaseFilesPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-files-page'
-export const DatabaseFileGroupsPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-filegroups-page'
+export const DatabaseScopedConfigurationPropertiesDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/alter-database-scoped-configuration-transact-sql';
+export const QueryStorePropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-query-store-page';
+export const DatabaseFilesPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-files-page';
+export const DatabaseFileGroupsPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-filegroups-page';
+
+// Restore database help links
+export const RestoreDatabaseGeneralTabDocUrl = 'https://learn.microsoft.com/sql/relational-databases/backup-restore/restore-database-general-page'
+export const RestoreDatabaseFilesTabDocUrl = 'https://learn.microsoft.com/sql/relational-databases/backup-restore/restore-database-files-page'
+export const RestoreDatabaseOptionsTabDocUrl = 'https://learn.microsoft.com/sql/relational-databases/backup-restore/restore-database-options-page'
 
 export const enum TelemetryActions {
 	CreateObject = 'CreateObject',
@@ -58,7 +63,9 @@ export const enum TelemetryActions {
 	OpenBackupDatabaseDialog = 'OpenBackupDatabaseDialog',
 	OpenDropDatabaseDialog = 'OpenDropDatabaseDialog',
 	AttachDatabase = 'AttachDatabase',
-	DetachDatabase = 'DetachDatabase'
+	DetachDatabase = 'DetachDatabase',
+	OpenRestoreDatabaseDialog = 'OpenRestoreDatabaseDialog',
+	RestoreDatabase = 'RestoreDatabase'
 }
 
 export const ObjectManagementViewName = 'ObjectManagement';

@@ -111,8 +111,8 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 
 export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 
-	private _onNodeCheckedChanged = new Emitter<azdata.NodeCheckedEventParameters<T>>();
-	private _onChangeSelection = new Emitter<vscode.TreeViewSelectionChangeEvent<T>>();
+	private _onNodeCheckedChanged = this._register(new Emitter<azdata.NodeCheckedEventParameters<T>>());
+	private _onChangeSelection = this._register(new Emitter<vscode.TreeViewSelectionChangeEvent<T>>());
 	public readonly NodeCheckedChanged: vscode.Event<azdata.NodeCheckedEventParameters<T>> = this._onNodeCheckedChanged.event;
 	public readonly ChangeSelection: vscode.Event<vscode.TreeViewSelectionChangeEvent<T>> = this._onChangeSelection.event;
 	constructor(

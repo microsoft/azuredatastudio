@@ -207,6 +207,48 @@ function getSqlDbConnectionProfile(
 	};
 }
 
+/**
+ * This function returns the Target Connection profile with port
+ * @param serverName Target server name
+ * @param azureResourceId Azure resource Id
+ * @param userName Target username
+ * @param password Target password
+ * @param port Target port
+ * @param encryptConnection Encrypt connection
+ * @param trustServerCert Trust server certificate
+ * @returns Target Connection Profile
+ */
+export function getTargetConnectionProfileWithPort(
+	serverName: string,
+	azureResourceId: string,
+	userName: string,
+	password: string,
+	port: string,
+	encryptConnection: boolean,
+	trustServerCert: boolean): azdata.IConnectionProfile {
+
+	let targetConnectionProfile = getTargetConnectionProfile(
+		serverName,
+		azureResourceId,
+		userName,
+		password,
+		encryptConnection,
+		trustServerCert);
+
+	targetConnectionProfile.options.port = port;
+	return targetConnectionProfile
+}
+
+/**
+ * This function returns the Target Connection profile
+ * @param serverName Target server name
+ * @param azureResourceId Azure resource Id
+ * @param userName Target username
+ * @param password Target password
+ * @param encryptConnection Encrypt connection
+ * @param trustServerCert Trust server certificate
+ * @returns Target Connection Profile
+ */
 export function getTargetConnectionProfile(
 	serverName: string,
 	azureResourceId: string,
@@ -255,14 +297,16 @@ export async function getTargetConnectionString(
 	azureResourceId: string,
 	username: string,
 	password: string,
+	port: string,
 	encryptConnection: boolean,
 	trustServerCertificate: boolean): Promise<string> {
 
-	const connectionProfile = getTargetConnectionProfile(
+	const connectionProfile = getTargetConnectionProfileWithPort(
 		serverName,
 		azureResourceId,
 		username,
 		password,
+		port,
 		encryptConnection,
 		trustServerCertificate);
 
@@ -470,13 +514,15 @@ export async function collectTargetLogins(
 	azureResourceId: string,
 	userName: string,
 	password: string,
+	port: string,
 	includeWindowsAuth: boolean = true): Promise<string[]> {
 
-	const connectionProfile = getTargetConnectionProfile(
+	const connectionProfile = getTargetConnectionProfileWithPort(
 		serverName,
 		azureResourceId,
 		userName,
 		password,
+		port,
 		// for login migration, connect to target Azure SQL with true/true
 		// to-do: take as input from the user, should be true/false for DB/MI but true/true for VM
 		true /* encryptConnection */,

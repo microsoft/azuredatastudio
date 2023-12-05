@@ -264,6 +264,11 @@ suite('MainThreadModelViewDialog Tests', () => {
 
 		// Verify that the correct button click notifications were sent to the proxy
 		assert.deepStrictEqual(pressedHandles, [button1Handle, button2Handle, okButtonHandle, cancelButtonHandle, button2Handle, cancelButtonHandle, button1Handle, okButtonHandle]);
+
+		okEmitter.dispose();
+		cancelEmitter.dispose();
+		button1Emitter.dispose();
+		button2Emitter.dispose();
 	});
 
 	test('Creating a wizard and calling open on it causes a wizard with correct pages and buttons to open', () => {

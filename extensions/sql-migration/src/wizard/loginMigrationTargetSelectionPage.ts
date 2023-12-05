@@ -37,11 +37,17 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private _azureResourceDropdown!: azdata.DropDownComponent;
 	private _resourceSelectionContainer!: azdata.FlexContainer;
 	private _resourceAuthenticationContainer!: azdata.FlexContainer;
+	private _targetPortLabel!: azdata.TextComponent;
 	private _targetUserNameInputBox!: azdata.InputBoxComponent;
 	private _targetPasswordInputBox!: azdata.InputBoxComponent;
+	private _targetPortInputBox!: azdata.InputBoxComponent;
 	private _testConectionButton!: azdata.ButtonComponent;
 	private _connectionResultsInfoBox!: azdata.InfoBoxComponent;
 	private _migrationTargetPlatform!: MigrationTargetType;
+
+	private readonly _defaultSqlPort: string = "1433";
+	// setting this value to true as we are setting a valid default SQL port
+	private _isPortValid: boolean = true;
 
 	constructor(
 		wizard: azdata.window.Wizard,
@@ -122,7 +128,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
 			}
-			if (!this.migrationStateModel._targetServerInstance || !this.migrationStateModel._targetUserName || !this.migrationStateModel._targetPassword) {
+			if (!this.migrationStateModel._targetServerInstance || !this.migrationStateModel._targetUserName || !this.migrationStateModel._targetPassword || !this.migrationStateModel._targetPort) {
 				this.wizard.message = {
 					text: constants.SELECT_DATABASE_TO_CONTINUE,
 					level: azdata.window.MessageLevel.Error
@@ -348,6 +354,9 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				azureSqlTargetTypeLabel,
 				this._azureSqlTargetTypeDropdown
 			])
+			.withProps({
+				CSSStyles: { 'margin-bottom': '-1em' },
+			})
 			.component();
 		return flexContainer;
 	}
@@ -406,6 +415,9 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				azureAccountLabel,
 				this._azureAccountsDropdown,
 				linkAccountButton])
+			.withProps({
+				CSSStyles: { 'margin-bottom': '-2em' },
+			})
 			.component();
 	}
 
@@ -536,7 +548,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 		// target user name
 		const targetUserNameLabel = this._view.modelBuilder.text()
 			.withProps({
-				value: constants.TARGET_USERNAME_LAbEL,
+				value: constants.TARGET_USERNAME_LABEL,
 				requiredIndicator: true,
 				CSSStyles: { ...styles.LABEL_CSS, 'margin-top': '-1em' }
 			}).component();
@@ -563,7 +575,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 		// target password
 		const targetPasswordLabel = this._view.modelBuilder.text()
 			.withProps({
-				value: constants.TARGET_PASSWORD_LAbEL,
+				value: constants.TARGET_PASSWORD_LABEL,
 				requiredIndicator: true,
 				title: '',
 				CSSStyles: { ...styles.LABEL_CSS, 'margin-top': '-1em' }
@@ -616,9 +628,10 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				const targetDatabaseServer = this.migrationStateModel._targetServerInstance;
 				const userName = this.migrationStateModel._targetUserName;
 				const password = this.migrationStateModel._targetPassword;
+				const port = this.migrationStateModel._targetPort;
 				const loginsOnTarget: string[] = [];
 				let connectionSuccessful = false;
-				if (targetDatabaseServer && userName && password) {
+				if (targetDatabaseServer && userName && password && port) {
 					try {
 						connectionButtonLoadingContainer.loading = true;
 						await utils.updateControlDisplay(this._connectionResultsInfoBox, false);
@@ -629,6 +642,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 								targetDatabaseServer.id,
 								userName,
 								password,
+								port,
 								this.migrationStateModel.isWindowsAuthMigrationSupported));
 						this.migrationStateModel._loginMigrationModel.collectedTargetLogins = true;
 						this.migrationStateModel._loginMigrationModel.loginsOnTarget = loginsOnTarget;
@@ -681,7 +695,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				alignContent: 'center',
 				alignItems: 'center',
 			})
-			.withProps({ CSSStyles: { 'margin': '15px 0 0 0' } })
+			.withProps({ CSSStyles: { 'margin': '10px 0 0 0' } })
 			.component();
 
 		return this._view.modelBuilder.flexContainer()
@@ -692,7 +706,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				this._targetPasswordInputBox,
 				connectionContainer])
 			.withLayout({ flexFlow: 'column' })
-			.withProps({ CSSStyles: { 'margin': '15px 0 0 0' } })
+			.withProps({ CSSStyles: { 'margin': '5px 0 0 0' } })
 			.component();
 	}
 
@@ -863,23 +877,84 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				}
 			}));
 
+		// Target port
+		this._targetPortLabel = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.TARGET_PORT_LABEL,
+				description: constants.TARGET_RESOURCE_PORT_INFO,
+				requiredIndicator: true,
+				CSSStyles: { ...styles.LABEL_CSS, 'margin-top': '-1em' }
+			}).component();
+
+		this._targetPortInputBox = this._view.modelBuilder.inputBox()
+			.withProps({
+				width: '300px',
+				inputType: 'text',
+				placeHolder: constants.TARGET_PORT_PLACEHOLDER,
+				value: this._defaultSqlPort,
+				required: true,
+				CSSStyles: { 'margin-top': '-1em' },
+			})
+			.withValidation((inputBox) => {
+				let value = inputBox.value ?? "";
+				this._validatePort(value);
+				return this._isPortValid;
+			})
+			.component();
+
+		this._disposables.push(
+			this._targetPortInputBox.onTextChanged(
+				(value: string) => {
+					this.migrationStateModel._targetPort = value ?? "";
+					this._updateConnectionButtonState();
+				}));
+
+		this._disposables.push(
+			this._targetPortInputBox.onValidityChanged(
+				valid => this._updateConnectionButtonState()));
+
 		return this._view.modelBuilder.flexContainer()
 			.withItems([
 				this._azureResourceGroupLabel,
 				this._azureResourceGroupDropdown,
 				this._azureResourceDropdownLabel,
-				this._azureResourceDropdown])
+				this._azureResourceDropdown,
+				this._targetPortLabel,
+				this._targetPortInputBox,])
 			.withLayout({ flexFlow: 'column' })
 			.component();
 	}
 
+	/**
+	 * The function validates the port number
+	 * @param port Port number
+	 */
+	private _validatePort(port: string): void {
+		// check if port is empty
+		if (port === "") {
+			this._isPortValid = false;
+			return;
+		}
+
+		// Check if the port is a number, port is an integer and port is in the range of 0 to 65535
+		let portNumber = Number(port);
+		if (isNaN(portNumber) || !Number.isInteger(portNumber) || portNumber < 0 || portNumber > 65535) {
+			this._isPortValid = false;
+			return;
+		}
+
+		// If all the checks pass, the port is valid
+		this._isPortValid = true;
+	}
+
 	private _updateConnectionButtonState(): void {
 		const targetDatabaseServer = (this._azureResourceDropdown.value as azdata.CategoryValue)?.name ?? '';
-		const userName = this._targetUserNameInputBox.value ?? '';
-		const password = this._targetPasswordInputBox.value ?? '';
+		const userName = this.migrationStateModel._targetUserName ?? '';
+		const password = this.migrationStateModel._targetPassword ?? '';
 		this._testConectionButton.enabled = targetDatabaseServer.length > 0
 			&& userName.length > 0
-			&& password.length > 0;
+			&& password.length > 0
+			&& this._isPortValid;
 	}
 
 	private async populateAzureAccountsDropdown(): Promise<void> {

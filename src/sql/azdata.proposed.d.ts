@@ -517,6 +517,20 @@ declare module 'azdata' {
 		export function getNonDefaultOptions(profile: IConnectionProfile): Thenable<string>;
 	}
 
+	export interface ConnectionInfoSummary {
+		/**
+		 * ID used to identify the connection on the server, if available.
+		 */
+		serverConnectionId?: string | undefined;
+	}
+
+	export interface QueryExecuteCompleteNotificationResult {
+		/**
+		 * ID used to identify the connection used to run the query on the server, if available.
+		 */
+		serverConnectionId?: string | undefined;
+	}
+
 	/*
 	 * Add optional per-OS default value.
 	 */
@@ -2083,6 +2097,15 @@ declare module 'azdata' {
 		 * @returns The path of the file chosen from the dialog, and undefined if the dialog is closed without selecting anything.
 		 */
 		export function openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: FileFilters[], showFoldersOnly?: boolean): Thenable<string | undefined>;
+
+		/**
+		 * Opens a dialog to select a file from a blob storage account to use for backing up a database.
+		 * @param connectionUri The URI of the connection to the target server.
+		 * @param defaultBackupName The default backup file name to search for.
+		 * @param isRestore Whether to pick a file to use for a restore operation, rather than a backup operation.
+		 * @returns The URL for the blob storage file chosen from the dialog, and undefined if the dialog is closed without selecting anything.
+		 */
+		export function openBackupUrlBrowserDialog(connectionUri: string, defaultBackupName: string, isRestore: boolean): Thenable<string | undefined>;
 	}
 
 	export interface FileBrowserProvider extends DataProvider {

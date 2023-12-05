@@ -80,6 +80,7 @@
 	"cloud.serverProperties.serverVersion": "Version",
 	"cloud.serverProperties.serverEdition": "Type",
 	"mssql.provider.displayName": "Microsoft SQL Server",
+	"mssql.provider.serverProcessId": "Server Process ID",
 	"mssql.connectionOptions.connectionName.displayName": "Name (optional)",
 	"mssql.connectionOptions.connectionName.description": "Custom name of the connection",
 	"mssql.connectionOptions.serverName.displayName": "Server",
@@ -198,5 +199,6 @@
 	"title.renameObject": "Rename (Preview)",
 	"title.detachDatabase": "Detach Database (Preview)",
 	"title.attachDatabase": "Attach Database (Preview)",
-	"title.backupDatabase": "Backup Database (Preview)"
+	"title.backupDatabase": "Backup Database (Preview)",
+	"title.restoreDatabase": "Restore Database (Preview)"
 }
