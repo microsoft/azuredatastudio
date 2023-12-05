@@ -40,8 +40,16 @@ import { localize } from 'vs/nls';
 import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ServerInfo } from 'azdata';
+import { IConnectionProfile } from 'azdata';
 
 const cellWithNullCharMessage = localize('editData.cellWithNullCharMessage', "This cell contains the Unicode null character which is currently not supported for editing.");
+
+interface ConnInfo {
+	profile: IConnectionProfile;
+	serverInfo: ServerInfo;
+}
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -110,6 +118,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	};
 
 	constructor(
+		uri: string,
 		dataService: DataService,
 		onSaveViewState: Event<void>,
 		onRestoreViewState: Event<void>,
@@ -125,11 +134,13 @@ export class EditDataGridPanel extends GridParentComponent {
 		@ILogService logService: ILogService,
 		@IAccessibilityService private accessibilityService: IAccessibilityService,
 		@IQuickInputService private quickInputService: IQuickInputService,
+		@IConnectionManagementService private connectionManagementService: IConnectionManagementService
 	) {
 		super(contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, logService, telemetryService);
 		this.nativeElement = document.createElement('div');
 		this.nativeElement.className = 'editDataGridPanel';
 		this.nativeElement.classList.add('slickgridContainer');
+		this.uri = uri;
 		this.dataService = dataService;
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
 		onRestoreViewState(() => this.restoreViewState());
@@ -199,8 +210,11 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.onActiveCellChanged = this.onCellSelect;
 
 		this.onCellEditEnd = (event: Slick.OnCellChangeEventArgs<any>): void => {
+			let connInfo: ConnInfo = this.getConnectionInfo();
 			self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditCellEnd)
 				.withAdditionalProperties({ eventRow: event.row, eventCol: event.cell, eventValue: event.item[event.cell] })
+				.withConnectionInfo(connInfo.profile)
+				.withServerInfo(connInfo.serverInfo)
 				.send();
 			if (self.currentEditCellValue !== event.item[event.cell]) {
 				self.currentCell.isDirty = true;
@@ -532,6 +546,12 @@ export class EditDataGridPanel extends GridParentComponent {
 	 */
 	onScroll(scrollTop): void {
 		this.refreshGrid();
+	}
+
+	private getConnectionInfo(): ConnInfo {
+		let profile = this.connectionManagementService.getConnectionProfile(this.uri);
+		let info = this.connectionManagementService.getServerInfo(profile.id);
+		return { profile: profile, serverInfo: info };
 	}
 
 	/**

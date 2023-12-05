@@ -20,6 +20,7 @@ import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IEditorModel, IEditorOptions } from 'vs/platform/editor/common/editor';
 import { Verbosity } from 'vs/workbench/common/editor';
 import { trimTitle } from 'sql/workbench/common/editor/query/queryEditorInput';
+import { IConnectionProfile } from 'azdata';
 
 /**
  * Input for the EditDataEditor.
@@ -173,7 +174,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	public onConnectCanceled(): void {
 	}
 
-	public onConnectSuccess(params?: INewConnectionParams): void {
+	public onConnectSuccess(params?: INewConnectionParams, profile?: IConnectionProfile): void {
 		let rowLimit: number | undefined = undefined;
 		let queryString: string | undefined = undefined;
 		if (this._useQueryFilter) {

@@ -50,6 +50,9 @@ export abstract class GridParentComponent extends Disposable {
 	// tslint:enable
 
 	// FIELDS
+	// URI for retrieving profile information
+	protected uri: string;
+
 	// Service for interaction with the IQueryModel
 	protected dataService: DataService;
 	protected actionProvider: actions.GridActionProvider;
