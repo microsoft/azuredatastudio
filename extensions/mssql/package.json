@@ -873,11 +873,11 @@
       "dashboard/toolbar": [
         {
           "command": "mssql.backupDatabaseTask",
-          "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11 && config.workbench.enablePreviewFeatures"
+          "when": "dashboardContext == 'database' && connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11 && config.workbench.enablePreviewFeatures"
         },
         {
           "command": "mssql.restoreDatabaseTask",
-          "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11 && config.workbench.enablePreviewFeatures"
+          "when": "dashboardContext == 'database' && connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11 && config.workbench.enablePreviewFeatures"
         }
       ]
     },
