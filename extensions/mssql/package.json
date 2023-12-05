@@ -733,12 +733,12 @@
         },
         {
           "command": "mssql.restoreDatabase",
-          "when": "connectionProvider == MSSQL && !isCloud && engineEdition != 11 && nodeType == Database && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && engineEdition != 11 && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@3"
         },
         {
           "command": "mssql.backupDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && engineEdition != 11 && config.workbench.enablePreviewFeatures && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && engineEdition != 11 && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@3"
         },
         {
@@ -873,11 +873,11 @@
       "dashboard/toolbar": [
         {
           "command": "mssql.backupDatabaseTask",
-          "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11"
+          "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11 && config.workbench.enablePreviewFeatures"
         },
         {
           "command": "mssql.restoreDatabaseTask",
-          "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11"
+          "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11 && config.workbench.enablePreviewFeatures"
         }
       ]
     },
