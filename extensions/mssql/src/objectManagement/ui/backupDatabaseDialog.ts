@@ -13,7 +13,7 @@ import { DefaultButtonWidth, DefaultInputWidth, DefaultLongInputWidth, DefaultMi
 import { isUndefinedOrNull } from '../../types';
 import { TaskExecutionMode } from 'azdata';
 import { getErrorMessage } from '../../utils';
-import { PhysicalDeviceType, MediaDeviceType } from '../utils';
+import { PhysicalDeviceType, MediaDeviceType } from '../constants';
 
 export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private readonly _fileFilters: azdata.window.FileFilters[] = [{ label: loc.BackupFilesLabel, filters: ['*.bak', '*.tm'] }];
