@@ -113,7 +113,7 @@ export class RestoreDialog extends Modal {
 
 	private readonly _takeTaillogBackupOption = 'backupTailLog';
 	private readonly _tailLogWithNoRecoveryOption = 'tailLogWithNoRecovery';
-	private _tailLogBackupFileOption = 'tailLogBackupFile';
+	private readonly _tailLogBackupFileOption = 'tailLogBackupFile';
 
 	private readonly _closeExistingConnectionsOption = 'closeExistingConnections';
 
@@ -756,14 +756,6 @@ export class RestoreDialog extends Modal {
 	private onUrlPathChanged(urlPath: string): void {
 		this.viewModel.filePath = urlPath;
 		this.viewModel.selectedBackupSets = undefined;
-		if (this._engineEdition !== DatabaseEngineEdition.SqlManagedInstance) {
-			//update tail log backup file for sql server restore
-			this.updateRestoreOption({
-				optionName: 'tailLogBackupFile',
-				value: urlPath,
-				isReadOnly: false
-			})
-		}
 		this.validateRestore(true);
 	}
 
