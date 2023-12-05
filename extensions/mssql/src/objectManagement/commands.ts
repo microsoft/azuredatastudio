@@ -449,6 +449,44 @@ async function handleBackupDatabaseTask(profile: azdata.IConnectionProfile, serv
 	await handleBackupDatabase(options, service);
 }
 
+async function handleDropDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+	const connectionUri = await getConnectionUri(context);
+	if (!connectionUri) {
+		return;
+	}
+	const object = await getObjectInfoForContext(context);
+	try {
+		if (object.type !== ObjectManagement.NodeType.Database) {
+			throw new Error(objectManagementLoc.NotSupportedError(ObjectManagement.NodeType.Database));
+		}
+		const options: ObjectManagementDialogOptions = {
+			connectionUri: connectionUri,
+			isNewObject: false,
+			database: object.name,
+			objectType: object.type,
+			objectName: object.name,
+			parentUrn: object.parentUrn,
+			objectUrn: object.urn,
+			objectExplorerContext: context
+		};
+		const dialog = new DropDatabaseDialog(service, options);
+		const startTime = Date.now();
+		await dialog.open();
+		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenDropDatabaseDialog, {
+			objectType: object.type
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
+	}
+	catch (err) {
+		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenDropDatabaseDialog, err).withAdditionalProperties({
+			objectType: object.type
+		}).send();
+		console.error(err);
+		await vscode.window.showErrorMessage(objectManagementLoc.OpenDropDatabaseDialogError(getErrorMessage(err)));
+	}
+}
+
 async function handleRestoreDatabase(options: ObjectManagementDialogOptions, service: IObjectManagementService): Promise<void> {
 	try {
 		const dialog = new RestoreDatabaseDialog(service, options);
@@ -501,44 +539,6 @@ async function handleRestoreDatabaseTask(profile: IConnectionProfile, service: I
 		objectExplorerContext: undefined
 	};
 	await handleRestoreDatabase(options, service)
-}
-
-async function handleDropDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
-	const connectionUri = await getConnectionUri(context);
-	if (!connectionUri) {
-		return;
-	}
-	const object = await getObjectInfoForContext(context);
-	try {
-		if (object.type !== ObjectManagement.NodeType.Database) {
-			throw new Error(objectManagementLoc.NotSupportedError(ObjectManagement.NodeType.Database));
-		}
-		const options: ObjectManagementDialogOptions = {
-			connectionUri: connectionUri,
-			isNewObject: false,
-			database: object.name,
-			objectType: object.type,
-			objectName: object.name,
-			parentUrn: object.parentUrn,
-			objectUrn: object.urn,
-			objectExplorerContext: context
-		};
-		const dialog = new DropDatabaseDialog(service, options);
-		const startTime = Date.now();
-		await dialog.open();
-		TelemetryReporter.sendTelemetryEvent(TelemetryActions.OpenDropDatabaseDialog, {
-			objectType: object.type
-		}, {
-			elapsedTimeMs: Date.now() - startTime
-		});
-	}
-	catch (err) {
-		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenDropDatabaseDialog, err).withAdditionalProperties({
-			objectType: object.type
-		}).send();
-		console.error(err);
-		await vscode.window.showErrorMessage(objectManagementLoc.OpenDropDatabaseDialogError(getErrorMessage(err)));
-	}
 }
 
 function getDialog(service: IObjectManagementService, dialogOptions: ObjectManagementDialogOptions): ObjectManagementDialogBase<ObjectManagement.SqlObject, ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
