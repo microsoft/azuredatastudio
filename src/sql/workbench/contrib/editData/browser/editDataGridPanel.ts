@@ -982,7 +982,6 @@ export class EditDataGridPanel extends GridParentComponent {
 					self.setCellDirtyState(self.currentCell.row, self.currentCell.column, result.cell.isDirty);
 					self.setRowDirtyState(this.currentCell.row, result.isRowDirty);
 				}, (error: any) => {
-					self.notificationService.error(error);
 					self.telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditSaveViewError)
 						.withConnectionInfo(connInfo.profile)
 						.withServerInfo(connInfo.serverInfo)
