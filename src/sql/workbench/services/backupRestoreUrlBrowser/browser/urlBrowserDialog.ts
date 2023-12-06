@@ -26,25 +26,12 @@ import { Account } from 'azdata';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
 import { azureResource } from 'azurecore';
-import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobService';
 import { Link } from 'vs/platform/opener/browser/link';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { Deferred } from 'sql/base/common/promise';
-import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
-
-/**
- * This function adds one year to the current date and returns it in the UTC format.
- * It's used to pass an expiration date argument to the create shared access signature RPC.
- * It returns the date in the UTC format for locale time zone independence.
- * @returns next year's UTC date
- */
-function nextYear(): string {
-	const today = new Date();
-	const nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
-	return nextYear.toUTCString();
-}
 
 export class BackupRestoreUrlBrowserDialog extends Modal {
 
@@ -58,15 +45,12 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 	private _selectedBlobContainer: azureResource.BlobContainer;
 	private _backupFiles: azureResource.Blob[];
 
-	private _ownerUri: string;
 	private _body: HTMLElement;
 	private _accountSelectorBox: SelectBox;
 	private _tenantSelectorBox: SelectBox;
 	private _subscriptionSelectorBox: SelectBox;
 	private _storageAccountSelectorBox: SelectBox;
 	private _blobContainerSelectorBox: SelectBox;
-	private _sasInputBox: InputBox;
-	private _sasButton: Button;
 	private _backupFileInputBox: InputBox;
 	private _backupFileSelectorBox: SelectBox;
 	private _okButton: Button;
@@ -87,7 +71,6 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@IAzureAccountService private _azureAccountService: IAzureAccountService,
-		@IAzureBlobService private _blobService: IAzureBlobService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(title, TelemetryKeys.ModalDialogName.UrlBrowser, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'flyout', hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
@@ -171,25 +154,7 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 		let blobContainerSelector = DialogHelper.appendRow(tableContainer, blobContainerLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(blobContainerSelector, this._blobContainerSelectorBox);
 
-
-		let sharedAccessSignatureLabel = localize('backupRestoreUrlBrowserDialog.sharedAccessSignature', "Shared access signature generated");
-		let sasInput = DialogHelper.appendRow(tableContainer, sharedAccessSignatureLabel, 'url-input-label', 'url-input-box', null, true);
-		this._sasInputBox = this._register(new InputBox(sasInput, this._contextViewService, {
-			flexibleHeight: true,
-			inputBoxStyles: defaultInputBoxStyles
-		}));
-		this._sasInputBox.disable();
-		this._register(this._sasInputBox.onDidChange(() => this.enableOkButton()));
-
-		let sasButtonContainer = DialogHelper.appendRow(tableContainer, '', 'url-input-label', 'url-input-box');
-		let sasButtonLabel = localize('backupRestoreUrlBrowserDialog.sharedAccessSignatureButton', "Create Credentials");
-		this._sasButton = this._register(new Button(sasButtonContainer, { title: sasButtonLabel, ...defaultButtonStyles }));
-		this._sasButton.label = sasButtonLabel;
-		this._sasButton.title = sasButtonLabel;
-		this._register(this._sasButton.onDidClick(e => this.generateSharedAccessSignature()));
-
 		let backupFileLabel = localize('backupRestoreUrlBrowserDialog.backupFile', "Backup file");
-
 		if (this._restoreDialog) {
 			this._backupFileSelectorBox = this._register(new SelectBox([], '', defaultSelectBoxStyles, this._contextViewService, null, { ariaLabel: backupFileLabel }));
 			let backupFileSelector = DialogHelper.appendRow(tableContainer, backupFileLabel, 'url-input-label', 'url-input-box', null, true);
@@ -325,7 +290,6 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 	}
 
 	private onBlobContainersSelectorBoxChanged(checkedBlobContainer: number) {
-		this._sasInputBox.value = '';
 		if (this._restoreDialog) {
 			if (this._blobContainers.length !== 0) {
 				this._selectedBlobContainer = this._blobContainers[checkedBlobContainer];
@@ -339,7 +303,6 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 				this.setBackupFilesOptions([]);
 			}
 		}
-		this.enableCreateCredentialsButton();
 	}
 
 	private setBackupFilesOptions(blobs: azureResource.Blob[]) {
@@ -355,34 +318,15 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 	}
 
 	public open(ownerUri: string): void {
-		this._ownerUri = ownerUri;
 		this.enableOkButton();
-		this.enableCreateCredentialsButton();
 		this.show();
 	}
 
-	/* enter key */
-	protected override onAccept() {
-		let selectedValue = this._sasInputBox.value;
-		if (this._okButton.enabled === true && selectedValue !== '') {
-			this.ok();
-		}
-	}
-
-
 	private enableOkButton() {
-		if (strings.isFalsyOrWhitespace(this._blobContainerSelectorBox.value) || strings.isFalsyOrWhitespace(this._sasInputBox.value) || (this._restoreDialog && strings.isFalsyOrWhitespace(this._blobContainerSelectorBox.value)) || (!this._restoreDialog && strings.isFalsyOrWhitespace(this._backupFileInputBox.value))) {
+		if (strings.isFalsyOrWhitespace(this._blobContainerSelectorBox.value) || (this._restoreDialog && strings.isFalsyOrWhitespace(this._blobContainerSelectorBox.value)) || (!this._restoreDialog && strings.isFalsyOrWhitespace(this._backupFileInputBox.value))) {
 			this._okButton.enabled = false;
 		} else {
 			this._okButton.enabled = true;
-		}
-	}
-
-	private enableCreateCredentialsButton() {
-		if (strings.isFalsyOrWhitespace(this._blobContainerSelectorBox.label)) {
-			this._sasButton.enabled = false;
-		} else {
-			this._sasButton.enabled = true;
 		}
 	}
 
@@ -400,17 +344,6 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 
 	private close(hideReason: HideReason = 'close'): void {
 		this.hide(hideReason);
-	}
-
-	private async generateSharedAccessSignature() {
-		this.spinner = true;
-		const blobContainerUri = `https://${this._storageAccountSelectorBox.value}.blob${this._selectedAccount.properties.providerSettings.settings.azureStorageResource.endpointSuffix}/${this._blobContainerSelectorBox.value}`;
-		const getStorageAccountAccessKeyResult = await this._azureAccountService.getStorageAccountAccessKey(this._selectedAccount, this._selectedSubscription, this._selectedStorageAccount);
-		const key1 = getStorageAccountAccessKeyResult.keyName1;
-		const createSasResult = await this._blobService.createSas(this._ownerUri, blobContainerUri, key1, this._selectedStorageAccount.name, nextYear());
-		const sas = createSasResult.sharedAccessSignature;
-		this._sasInputBox.value = sas;
-		this.spinner = false;
 	}
 
 	private registerListeners(): void {
@@ -433,7 +366,6 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 
 
 	private registerThemeStylers(): void {
-		this._register(this._sasButton);
 		this._register(this._okButton);
 		this._register(this._cancelButton);
 	}
