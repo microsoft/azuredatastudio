@@ -1340,6 +1340,9 @@
         <Item ItemId=";(...) or" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[An error occurred while opening the restore database dialog. {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[データベースの復元ダイアログを開いているときにエラーが発生しました。{0}]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1350,7 +1353,7 @@
           <Str Cat="Text">
             <Val><![CDATA[Destination]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[ターゲット]]></Val>
+              <Val><![CDATA[宛先]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -1409,6 +1412,9 @@
         <Item ItemId=";(...) gConnectionText" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Close existing connections to destination database]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[接続先データベースへの既存の接続を閉じる]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1418,6 +1424,9 @@
         <Item ItemId=";(...) erText" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Data File Folder]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[データ ファイル フォルダー]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1427,6 +1436,9 @@
         <Item ItemId=";(...) BText" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Leave source database in the restoring state (WITH NORECOVERY)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[ソース データベースを復元中の状態にしておく (WITH NORECOVERY)]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1436,6 +1448,9 @@
         <Item ItemId=";(...) rText" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Log File Folder]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[ログ ファイルのフォルダー]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1445,6 +1460,9 @@
         <Item ItemId=";(...) ExistingDatabaseText" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Overwrite the existing database (WITH REPLACE)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[既存のデータベースを上書きする (WITH REPLACE)]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1454,6 +1472,9 @@
         <Item ItemId=";(...) icationSettingsText" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Preserve the replication settings (WITH KEEP_REPLICATION)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[レプリケーションの設定を保存する (WITH KEEP_REPLICATION)]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1463,6 +1484,9 @@
         <Item ItemId=";(...) eText" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Recovery State]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[復旧状態]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1472,6 +1496,9 @@
         <Item ItemId=";(...) ilesText" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Relocate All Files]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[すべてのファイルの再配置]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1481,6 +1508,9 @@
         <Item ItemId=";(...) aseFileDetailsText" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Restore database file Details]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[データベース ファイルの詳細を復元する]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1548,7 +1578,7 @@
           <Str Cat="Text">
             <Val><![CDATA[Finish Date]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[完了日]]></Val>
+              <Val><![CDATA[終了日]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -1706,6 +1736,9 @@
         <Item ItemId=";(...) ogBackupOptionsText" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Tail-log backup]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[ログ末尾のバックアップ]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1715,6 +1748,9 @@
         <Item ItemId=";(...) ssToRestoredDBText" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Restrict access to the restored database (WITH RESTRICTED_USER)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[復元するデータベースへのアクセスを制限する (WITH RESTRICTED_USER)]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1724,6 +1760,9 @@
         <Item ItemId=";(...) ext" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Standby file]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[スタンバイ ファイル]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1733,6 +1772,9 @@
         <Item ItemId=";(...) pFileText" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Tail Log Backup File]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[ログ末尾バックアップ ファイル]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1742,6 +1784,9 @@
         <Item ItemId=";(...) ackupBeforeRestoreText" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Take tail-log backup before restore]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[復元の前にログ末尾のバックアップを実行する]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -4074,12 +4119,18 @@
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.restoreDatabaseDialogTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Restore Database - {0} (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[データベースの復元 - {0} (プレビュー)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.restoreDatabaseOperationName" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Restore database '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[データベース '{0}' を復元する]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4113,6 +4164,9 @@
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.scriptingFailedError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Script operation failed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[スクリプト操作に失敗しました。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6516,6 +6570,9 @@
       <Item ItemId=";extensions/Microsoft.mssql/package.title.restoreDatabase" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Restore Database (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[データベースの復元 (プレビュー)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

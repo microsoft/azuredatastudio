@@ -218,7 +218,6 @@ export class RestoreDialog extends Modal {
 		this._browseUrlButton.label = browseLabel;
 		this._browseUrlButton.setWidth('50px');
 
-
 		this._restoreFromBackupFileElement = DOM.$('.backup-file-path');
 		DOM.hide(this._restoreFromBackupFileElement);
 		const errorMessage = localize('missingBackupFilePathError', "Backup file path is required.");
@@ -783,12 +782,6 @@ export class RestoreDialog extends Modal {
 			DOM.hide(this._restoreFromUrlElement);
 			DOM.show(this._targetDatabaseElement!);
 			DOM.hide(this._targetDatabaseInputElement!);
-			if (!this._panel.contains(this._fileTab.identifier)) {
-				this._panel.pushTab(this._fileTab);
-			}
-			if (!this._panel.contains(this._optionsTab.identifier)) {
-				this._panel.pushTab(this._optionsTab);
-			}
 			this.viewModel.deviceType = MediaDeviceType.File;
 		} else if (selectedRestoreFrom === this._databaseTitle) {
 			this._sourceDatabaseSelectBox.enable();
@@ -799,12 +792,6 @@ export class RestoreDialog extends Modal {
 			DOM.hide(this._restoreFromUrlElement);
 			DOM.show(this._targetDatabaseElement!);
 			DOM.hide(this._targetDatabaseInputElement!);
-			if (!this._panel.contains(this._fileTab.identifier)) {
-				this._panel.pushTab(this._fileTab);
-			}
-			if (!this._panel.contains(this._optionsTab.identifier)) {
-				this._panel.pushTab(this._optionsTab);
-			}
 			this.viewModel.deviceType = MediaDeviceType.File;
 		} else if (selectedRestoreFrom === this._urlTitle) {
 			this.viewModel.onRestoreFromChanged(true);
@@ -818,6 +805,16 @@ export class RestoreDialog extends Modal {
 			this._panel.removeTab(this._optionsTab.identifier);
 			this._databaseDropdown.value = '';
 			this.viewModel.deviceType = MediaDeviceType.Url;
+		}
+
+		if (this._engineEdition !== DatabaseEngineEdition.SqlManagedInstance) {
+			// hide file and option tabs for SQL MI
+			if (!this._panel.contains(this._fileTab.identifier)) {
+				this._panel.pushTab(this._fileTab);
+			}
+			if (!this._panel.contains(this._optionsTab.identifier)) {
+				this._panel.pushTab(this._optionsTab);
+			}
 		}
 		this.resetRestoreContent();
 	}
@@ -892,7 +889,7 @@ export class RestoreDialog extends Modal {
 			this._onDatabaseListFocused.fire();
 			this._restoreFromSelectBox.disable();
 		} else {
-			this._restoreFromSelectBox.setOptions([this._databaseTitle, this._backupFileTitle]);
+			this._restoreFromSelectBox.setOptions([this._databaseTitle, this._backupFileTitle, this._urlTitle]);
 			title = this._databaseTitle;
 			this._restoreFromSelectBox.enable();
 		}
