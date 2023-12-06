@@ -57,6 +57,8 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	private logFileFolderContainer: azdata.FlexContainer;
 	private targetDatabase: azdata.DropDownComponent;
 	private isManagedInstance: boolean;
+	private backupFilePath: string = '';
+	private backupURLPath: string = '';
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		options.width = Dialog_Width;
@@ -235,12 +237,13 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			if (newValue === localizedConstants.RestoreFromBackupFileOptionText || newValue === localizedConstants.RestoreFromUrlText) {
 				this.backupFilePathContainer.display = 'inline-flex';
 				this.restoreDatabase.enabled = false;
+				this.backupFilePathInput.value = newValue === localizedConstants.RestoreFromUrlText ? this.backupURLPath : this.backupFilePath;
 			} else if (newValue === localizedConstants.RestoreFromDatabaseOptionText) {
 				this.backupFilePathContainer.display = 'none';
 				this.restoreDatabase.enabled = true;
 			}
 			await this.updateNewRestorePlanToDialog();
-		}, restoreFromDropdownOptions, restoreFromDropdownOptions[0], !this.isManagedInstance, RestoreInputsWidth, true, true);
+		}, restoreFromDropdownOptions, restoreFromDropdownOptions[0], !this.isManagedInstance, RestoreInputsWidth);
 		containers.push(this.createLabelInputContainer(localizedConstants.RestoreFromText, this.restoreFrom));
 
 		// Backup file path
@@ -439,7 +442,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		let backupFolder = await this.objectManagementService.getBackupFolder(this.options.connectionUri);
 		let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, backupFolder, [{ label: localizedConstants.allFiles, filters: ['*.bak'] }]);
 		if (filePath?.length > 0) {
-			this.backupFilePathInput.value = filePath;
+			this.backupFilePathInput.value = this.backupFilePath = filePath;
 		}
 	}
 
@@ -460,7 +463,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	private async createBackupUrlFileBrowser(): Promise<void> {
 		let backupPath = await azdata.window.openBackupUrlBrowserDialog(this.options.connectionUri, '', true);
 		if (backupPath && !backupPath.includes('undefined')) {
-			this.backupFilePathInput.value = backupPath;
+			this.backupFilePathInput.value = this.backupURLPath = backupPath;
 		}
 	}
 
