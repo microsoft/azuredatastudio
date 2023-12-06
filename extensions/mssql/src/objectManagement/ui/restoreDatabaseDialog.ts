@@ -124,9 +124,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 				], false)
 			};
 			tabs.push(this.filesTab);
-		}
-
-		if (!this.isManagedInstance) {
+			
 			this.optionsTab = {
 				title: localizedConstants.OptionsSectionHeader,
 				id: this.optionsTabId,
