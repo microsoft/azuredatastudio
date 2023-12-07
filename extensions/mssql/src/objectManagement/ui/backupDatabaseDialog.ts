@@ -376,7 +376,7 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	private async onBrowseUrlButtonClicked(): Promise<void> {
 		let defaultBackupName = `${this.getDefaultBackupName()}.bak`;
-		let backupPath = await azdata.window.openBackupUrlBrowserDialog(this.options.connectionUri, defaultBackupName, false);
+		let backupPath = await azdata.window.openBackupUrlBrowserDialog(defaultBackupName, false);
 		if (backupPath) {
 			this._backupUrlInput.value = backupPath;
 		}

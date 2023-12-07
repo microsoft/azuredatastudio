@@ -2100,12 +2100,11 @@ declare module 'azdata' {
 
 		/**
 		 * Opens a dialog to select a file from a blob storage account to use for backing up a database.
-		 * @param connectionUri The URI of the connection to the target server.
 		 * @param defaultBackupName The default backup file name to search for.
 		 * @param isRestore Whether to pick a file to use for a restore operation, rather than a backup operation.
 		 * @returns The URL for the blob storage file chosen from the dialog, and undefined if the dialog is closed without selecting anything.
 		 */
-		export function openBackupUrlBrowserDialog(connectionUri: string, defaultBackupName: string, isRestore: boolean): Thenable<string | undefined>;
+		export function openBackupUrlBrowserDialog(defaultBackupName: string, isRestore: boolean): Thenable<string | undefined>;
 	}
 
 	export interface FileBrowserProvider extends DataProvider {

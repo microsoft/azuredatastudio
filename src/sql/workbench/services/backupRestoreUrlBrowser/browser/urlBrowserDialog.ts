@@ -317,7 +317,7 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 		}
 	}
 
-	public open(ownerUri: string): void {
+	public open(): void {
 		this.enableOkButton();
 		this.show();
 	}

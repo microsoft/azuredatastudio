@@ -715,8 +715,7 @@ export class RestoreDialog extends Modal {
 	}
 
 	private onUrlBrowserRequested(): void {
-		this.backupRestoreUrlBrowserDialogService.showDialog(this._ownerUri!,
-			true,
+		this.backupRestoreUrlBrowserDialogService.showDialog(true,
 			true,
 			'')
 			.then(url => this._urlInputBox!.value = url);

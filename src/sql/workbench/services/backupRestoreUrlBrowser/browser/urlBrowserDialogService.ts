@@ -19,8 +19,7 @@ export class BackupRestoreUrlBrowserDialogService implements IBackupRestoreUrlBr
 	) {
 	}
 
-	public showDialog(ownerUri: string,
-		isWide: boolean,
+	public showDialog(isWide: boolean,
 		isRestoreDialog: boolean,
 		defaultBackupName: string
 	): Promise<string> {
@@ -28,7 +27,7 @@ export class BackupRestoreUrlBrowserDialogService implements IBackupRestoreUrlBr
 		backupRestoreUrlBrowserDialog.render();
 
 		backupRestoreUrlBrowserDialog.setWide(isWide);
-		backupRestoreUrlBrowserDialog.open(ownerUri);
+		backupRestoreUrlBrowserDialog.open();
 		return backupRestoreUrlBrowserDialog.onOk;
 	}
 }

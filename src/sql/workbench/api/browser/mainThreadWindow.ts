@@ -36,7 +36,7 @@ export class MainThreadWindow extends Disposable implements MainThreadWindowShap
 		return await completion;
 	}
 
-	public async $openBackupUrlBrowserDialog(connectionUri: string, defaultBackupName: string, isRestore: boolean): Promise<string | undefined> {
-		return this._urlBrowserDialogService.showDialog(connectionUri, isRestore, isRestore, isRestore ? '' : defaultBackupName);
+	public async $openBackupUrlBrowserDialog(defaultBackupName: string, isRestore: boolean): Promise<string | undefined> {
+		return this._urlBrowserDialogService.showDialog(isRestore, isRestore, isRestore ? '' : defaultBackupName);
 	}
 }
