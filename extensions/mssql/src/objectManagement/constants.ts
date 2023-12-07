@@ -69,3 +69,29 @@ export const enum TelemetryActions {
 }
 
 export const ObjectManagementViewName = 'ObjectManagement';
+
+/**
+ * Backup media device type: https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.devicetype
+ */
+export enum MediaDeviceType {
+	LogicalDevice = 0,
+	Tape = 1,
+	File = 2,
+	Pipe = 3,
+	VirtualDevice = 4,
+	Url = 5
+}
+
+/**
+ * Backup physical device type: https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.backupdevicetype
+ */
+export enum PhysicalDeviceType {
+	Disk = 2,
+	FloppyA = 3,
+	FloppyB = 4,
+	Tape = 5,
+	Pipe = 6,
+	CDRom = 7,
+	Url = 9,
+	Unknown = 100
+}

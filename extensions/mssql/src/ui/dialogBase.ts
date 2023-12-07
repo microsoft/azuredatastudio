@@ -267,7 +267,7 @@ export abstract class DialogBase<DialogResult> {
 	protected async setTableData(table: azdata.TableComponent, data: any[][], maxRowCount: number = DefaultMaxTableRowCount): Promise<void> {
 		await table.updateProperties({
 			data: data,
-			height: getTableHeight(data.length, DefaultMinTableRowCount, maxRowCount)
+			height: getTableHeight(data?.length, DefaultMinTableRowCount, maxRowCount)
 		});
 	}
 
