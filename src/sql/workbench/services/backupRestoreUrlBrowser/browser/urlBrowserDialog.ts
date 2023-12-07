@@ -322,6 +322,13 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 		this.show();
 	}
 
+	/* enter key */
+	protected override onAccept() {
+		if (this._okButton.enabled) {
+			this.ok();
+		}
+	}
+
 	private enableOkButton() {
 		if (strings.isFalsyOrWhitespace(this._blobContainerSelectorBox.value) || (this._restoreDialog && strings.isFalsyOrWhitespace(this._blobContainerSelectorBox.value)) || (!this._restoreDialog && strings.isFalsyOrWhitespace(this._backupFileInputBox.value))) {
 			this._okButton.enabled = false;
