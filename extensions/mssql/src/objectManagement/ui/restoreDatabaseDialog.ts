@@ -200,6 +200,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	 */
 	private createRestoreInfo(): azdata.RestoreInfo {
 		const isRestoreFromBackupFile = this.restoreFrom.value === localizedConstants.RestoreFromBackupFileOptionText;
+		const isRestoreFromDatabase = this.restoreFrom.value === localizedConstants.RestoreFromDatabaseOptionText;
 		let options: { [key: string]: any } = {};
 		Object.entries(this.objectInfo.restorePlanResponse?.planDetails).forEach(([key, value]) => {
 			if (value !== null && value.currentValue !== undefined) {
@@ -207,7 +208,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			}
 		});
 		options.sessionId = this.objectInfo.restorePlanResponse.sessionId;
-		options.backupFilePaths = this.isManagedInstance || isRestoreFromBackupFile ? this.backupFilePathInput.value : null;
+		options.backupFilePaths = this.isManagedInstance || !isRestoreFromDatabase ? this.backupFilePathInput.value : null;
 		options.readHeaderFromMedia = this.isManagedInstance || isRestoreFromBackupFile ? true : false;
 		options.overwriteTargetDatabase = false;
 		options.selectedBackupSets = this.objectInfo.restorePlanResponse?.backupSetsToRestore?.filter(a => a.isSelected).map(a => a.id);
@@ -520,7 +521,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 		// Update Source database name
 		// If restoring from URL, cannot select any other database as source, but can select different database when restoring from a database
-		if (this.restoreFrom.value === localizedConstants.RestoreFromUrlText && restorePlan.canRestore) {
+		if (this.restoreFrom.value !== localizedConstants.RestoreFromDatabaseOptionText && restorePlan.canRestore) {
 			await this.restoreDatabase.updateProperties({
 				values: [restorePlan.planDetails?.sourceDatabaseName?.currentValue],
 				value: restorePlan.planDetails?.sourceDatabaseName?.currentValue
