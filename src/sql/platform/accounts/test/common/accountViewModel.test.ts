@@ -12,6 +12,7 @@ import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 's
 import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
 import { EventVerifierSingle } from 'sql/base/test/common/event';
 import { NullLogService } from 'vs/platform/log/common/log';
+import { TestAuthenticationService } from 'sql/platform/accounts/test/common/testAuthenticationService';
 
 // SUITE STATE /////////////////////////////////////////////////////////////
 let mockAddProviderEmitter: Emitter<AccountProviderAddedEventParams>;
@@ -64,7 +65,8 @@ suite('Account Management Dialog ViewModel Tests', () => {
 	test('Construction - Events are properly defined', () => {
 		// If: I create an account viewmodel
 		let mockAccountManagementService = getMockAccountManagementService(false, false);
-		let vm = new AccountViewModel(mockAccountManagementService.object, new NullLogService(), undefined);
+		let mockAuthenticationService = getMockAuthenticationService();
+		let vm = new AccountViewModel(mockAccountManagementService.object, new NullLogService(), mockAuthenticationService.object);
 
 		// Then:
 		// ... All the events for the view models should be properly initialized
@@ -188,6 +190,15 @@ function getMockAccountManagementService(resolveProviders: boolean, resolveAccou
 		.returns(() => mockUpdateAccountEmitter.event);
 
 	return mockAccountManagementService;
+}
+
+function getMockAuthenticationService(): TypeMoq.Mock<TestAuthenticationService> {
+	let mockAuthenticationService = TypeMoq.Mock.ofType(TestAuthenticationService);
+
+	mockAuthenticationService.setup(x => x.getProviderIds())
+		.returns(() => []);
+
+	return mockAuthenticationService;
 }
 
 function getViewModel(

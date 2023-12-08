@@ -54,10 +54,8 @@ export class AccountViewModel {
 		// 3) Build parameters to add a provider and return it
 		try {
 			let accounts = await this.getAccountsForProviders();
-			if (this._authenticationService) {
-				const sessionAccounts = await this.getAccountForSessions();
-				accounts = accounts.concat(sessionAccounts);
-			}
+			const sessionAccounts = await this.getAccountForSessions();
+			accounts = accounts.concat(sessionAccounts);
 
 			return coalesce(accounts);
 		} catch (err) {
