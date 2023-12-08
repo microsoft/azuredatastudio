@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { localize } from 'vs/nls';
@@ -17,11 +17,9 @@ import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplo
 import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
 import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 
-const restoreAction = new RestoreAction();
-restoreAction.registerTask();
+new RestoreAction().registerTask();
 
 const DE_RESTORE_COMMAND_ID = 'dataExplorer.restore';
 // Restore
@@ -29,9 +27,10 @@ CommandsRegistry.registerCommand({
 	id: DE_RESTORE_COMMAND_ID,
 	handler: async (accessor, args: TreeViewItemHandleArg) => {
 		if (args.$treeItem?.payload) {
-			const capabilitiesService = accessor.get(ICapabilitiesService);
-			let convertedProfile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-			await restoreAction.runTask(accessor, convertedProfile);
+			const commandService = accessor.get(ICommandService);
+			const connectionService = accessor.get(IConnectionManagementService);
+			let payload = await connectionService.fixProfile(args.$treeItem.payload);
+			return commandService.executeCommand(RestoreAction.ID, payload);
 		}
 	}
 });
@@ -52,9 +51,10 @@ const OE_RESTORE_COMMAND_ID = 'objectExplorer.restore';
 CommandsRegistry.registerCommand({
 	id: OE_RESTORE_COMMAND_ID,
 	handler: async (accessor, args: ObjectExplorerActionsContext) => {
-		const capabilitiesService = accessor.get(ICapabilitiesService);
-		let convertedProfile = new ConnectionProfile(capabilitiesService, args.connectionProfile);
-		await restoreAction.runTask(accessor, convertedProfile);
+		const commandService = accessor.get(ICommandService);
+		const connectionService = accessor.get(IConnectionManagementService);
+		let profile = await connectionService.fixProfile(args.connectionProfile);
+		return commandService.executeCommand(RestoreAction.ID, profile);
 	}
 });
 
@@ -70,9 +70,10 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 
 const ExplorerRestoreActionID = 'explorer.restore';
 CommandsRegistry.registerCommand(ExplorerRestoreActionID, async (accessor, context: ManageActionContext) => {
-	const capabilitiesService = accessor.get(ICapabilitiesService);
-	let convertedProfile = new ConnectionProfile(capabilitiesService, context.profile);
-	await restoreAction.runTask(accessor, convertedProfile);
+	const commandService = accessor.get(ICommandService);
+	const connectionService = accessor.get(IConnectionManagementService);
+	let profile = await connectionService.fixProfile(context.profile);
+	return commandService.executeCommand(RestoreAction.ID, profile);
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {

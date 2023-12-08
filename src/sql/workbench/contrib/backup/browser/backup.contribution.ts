@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import { BackupAction } from 'sql/workbench/contrib/backup/browser/backupActions';
 import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
@@ -14,14 +14,13 @@ import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { pgsqlProviderName } from 'sql/platform/connection/common/constants';
 import { localize } from 'vs/nls';
+import { OEAction } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
 import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
+import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 
-const backupAction = new BackupAction();
-backupAction.registerTask();
+new BackupAction().registerTask();
 
 // data explorer
 const DE_BACKUP_COMMAND_ID = 'dataExplorer.backup';
@@ -29,9 +28,10 @@ CommandsRegistry.registerCommand({
 	id: DE_BACKUP_COMMAND_ID,
 	handler: async (accessor, args: TreeViewItemHandleArg) => {
 		if (args.$treeItem?.payload) {
-			const capabilitiesService = accessor.get(ICapabilitiesService);
-			let convertedProfile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-			backupAction.runTask(accessor, convertedProfile);
+			const commandService = accessor.get(ICommandService);
+			const connectionService = accessor.get(IConnectionManagementService);
+			let payload = await connectionService.fixProfile(args.$treeItem.payload);
+			return commandService.executeCommand(BackupAction.ID, payload);
 		}
 	}
 });
@@ -50,10 +50,9 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 const OE_BACKUP_COMMAND_ID = 'objectExplorer.backup';
 CommandsRegistry.registerCommand({
 	id: OE_BACKUP_COMMAND_ID,
-	handler: async (accessor, args: ObjectExplorerActionsContext) => {
-		const capabilitiesService = accessor.get(ICapabilitiesService);
-		let convertedProfile = new ConnectionProfile(capabilitiesService, args.connectionProfile);
-		await backupAction.runTask(accessor, convertedProfile);
+	handler: (accessor: ServicesAccessor, actionContext: any) => {
+		const instantiationService = accessor.get(IInstantiationService);
+		return instantiationService.createInstance(OEAction, BackupAction.ID, BackupAction.LABEL).run(actionContext);
 	}
 });
 
@@ -70,9 +69,10 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 // dashboard explorer
 const ExplorerBackUpActionID = 'explorer.backup';
 CommandsRegistry.registerCommand(ExplorerBackUpActionID, async (accessor, context: ManageActionContext) => {
-	const capabilitiesService = accessor.get(ICapabilitiesService);
-	let convertedProfile = new ConnectionProfile(capabilitiesService, context.profile);
-	await backupAction.runTask(accessor, convertedProfile);
+	const commandService = accessor.get(ICommandService);
+	const connectionService = accessor.get(IConnectionManagementService);
+	let profile = await connectionService.fixProfile(context.profile);
+	return commandService.executeCommand(BackupAction.ID, profile);
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
