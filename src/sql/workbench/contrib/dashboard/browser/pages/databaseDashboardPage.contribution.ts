@@ -100,8 +100,8 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 				'tasks-widget': [
 					NewQueryTask.ID,
 					NewNotebookTask.ID,
-					{ name: 'backup', when: 'connectionProvider == \'MSSQL\' && !mssql:iscloud && mssql:engineedition != 11 || connectionProvider == \'PGSQL\'' },
-					{ name: 'restore', when: 'connectionProvider == \'MSSQL\' && !mssql:iscloud && mssql:engineedition != 11 || connectionProvider == \'PGSQL\'' }
+					{ name: 'backup', when: 'connectionProvider == \'PGSQL\'' },
+					{ name: 'restore', when: 'connectionProvider == \'PGSQL\'' }
 				]
 			}
 		},
