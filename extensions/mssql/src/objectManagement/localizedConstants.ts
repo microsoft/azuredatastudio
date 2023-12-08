@@ -342,6 +342,7 @@ export const DestinationSectionText = localize('objectManagement.restoreDatabase
 export const RestorePlanSectionText = localize('objectManagement.restoreDatabase.RestorePlanSectionText', "Restore plan");
 export const RestoreFromBackupFileOptionText = localize('objectManagement.restoreDatabase.restoreFromBackupFileOptionText', "Backup file");
 export const RestoreFromDatabaseOptionText = localize('objectManagement.restoreDatabase.restoreFromDatabaseOptionText', "Database");
+export const RestoreFromUrlText = localize('objectManagement.restoreDatabase.restoreFromUrlText', "URL");
 export const BackupFolderPathTitle = localize('objectManagement.restoreDatabase.backupFolderPathTitle', "Please enter one or more file paths separated by commas");
 export const RestoreDatabaseFilesAsText = localize('objectManagement.restoreDatabase.restoreDatabaseFilesAsText', "Restore database files as");
 export const RestoreDatabaseFileDetailsText = localize('objectManagement.restoreDatabase.restoreDatabaseFileDetailsText', "Restore database file Details");
@@ -376,6 +377,8 @@ export const ExpirationText = localize('objectManagement.restoreDatabase.restore
 export const LogicalFileNameText = localize('objectManagement.restoreDatabase.restorePlan.logicalFileNameText', "Logical File Name");
 export const OriginalFileNameText = localize('objectManagement.restoreDatabase.restorePlan.originalFileNameText', "Original File Name");
 export const RestoreAsText = localize('objectManagement.restoreDatabase.restorePlan.restoreAsText', "Restore As");
+export const DatabaseAlreadyExists = (dbName: string) => localize('objectManagement.restoreDatabase', "Database '{0}' already exists. Choose a different database name.", dbName);
+
 
 // User
 export const UserTypeText = localize('objectManagement.user.type', "Type");

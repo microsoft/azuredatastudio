@@ -1766,6 +1766,7 @@ export const SchemaMigrationFailedRulesLookup: LookupTable<string | undefined> =
 	["MSDTCTransactSQL"]: localize('sql.migration.schema.msdtctransactsql', 'BEGIN DISTRIBUTED TRANSACTION'),
 	["DisableDefCNSTCHK"]: localize('sql.migration.schema.disabledefcnstchk', 'DISABLE_DEF_CNST_CHK'),
 	["FastFirstRowHint"]: localize('sql.migration.schema.fastfirstrow', 'FASTFIRSTROW'),
+	["RAISERROR"]: localize('sql.migration.schema.raiserror', 'RAISERROR'),
 	default: undefined
 };
 export const SCHEMA_MIGRATION_COLUMN_LABLE = localize('sql.migration.schema.migration.column.label', "Schema migration");
