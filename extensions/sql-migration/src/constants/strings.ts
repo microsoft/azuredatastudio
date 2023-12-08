@@ -93,7 +93,7 @@ export const DATABASE_FOR_ASSESSMENT_DESCRIPTION = localize('sql.migration.datab
 export const XEVENTS_ASSESSMENT_TITLE = localize('sql.migration.database.assessment.xevents.title', "Assess extended event sessions");
 export const XEVENTS_ASSESSMENT_DESCRIPTION = localize('sql.migration.database.assessment.xevents.description', "For the selected databases, optionally provide extended event session files to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer. {0}");
 export const XEVENTS_ASSESSMENT_HELPLINK = localize('sql.migration.database.assessment.xevents.link', "Learn more");
-export const XEVENTS_ASSESSMENT_OPEN_FOLDER = localize('sql.migration.database.assessment.xevents.instructions', "Select a folder where extended events session files (.xel and .xem) are stored.");
+export const XEVENTS_ASSESSMENT_OPEN_FOLDER = localize('sql.migration.database.assessment.xevents.instructions', "Select a folder where extended events session files (.xel and .xem) are stored");
 
 // Assessment results
 export const ASSESSMENT_RESULTS_PAGE_TITLE = localize('sql.migration.assessment.results.title', "Target platform & assessment results");
