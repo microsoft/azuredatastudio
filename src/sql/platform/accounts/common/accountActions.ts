@@ -169,8 +169,12 @@ export class GitHubCopilotSignOutAction extends Action {
 
 	public override async run(): Promise<void> {
 		const updateAccountListAuthSessions = async () => {
-			await this._accountManagementService.updateAccountListAuthSessions(this._account);
+			// await this._accountManagementService.updateAccountListAuthSessions(this._account);
 		};
+
+		this.authenticationService.onDidChangeSessions(async () => {
+			await this._accountManagementService.updateAccountListAuthSessions(this._account);
+		});
 
 		const providerId = this._account.key.providerId;
 		const allSessions = await this.authenticationService.getSessions(providerId);
