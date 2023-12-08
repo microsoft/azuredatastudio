@@ -16,10 +16,9 @@ import { pgsqlProviderName } from 'sql/platform/connection/common/constants';
 import { localize } from 'vs/nls';
 import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
 import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
-import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 
 const backupAction = new BackupAction();
 backupAction.registerTask();
@@ -30,10 +29,8 @@ CommandsRegistry.registerCommand({
 	id: DE_BACKUP_COMMAND_ID,
 	handler: async (accessor, args: TreeViewItemHandleArg) => {
 		if (args.$treeItem?.payload) {
-			const connectionService = accessor.get(IConnectionManagementService);
 			const capabilitiesService = accessor.get(ICapabilitiesService);
-			let profile = await connectionService.fixProfile(args.$treeItem.payload);
-			let convertedProfile = new ConnectionProfile(capabilitiesService, profile);
+			let convertedProfile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
 			backupAction.runTask(accessor, convertedProfile);
 		}
 	}
@@ -53,8 +50,10 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 const OE_BACKUP_COMMAND_ID = 'objectExplorer.backup';
 CommandsRegistry.registerCommand({
 	id: OE_BACKUP_COMMAND_ID,
-	handler: (accessor: ServicesAccessor, actionContext: any) => {
-		backupAction.runTask(accessor);
+	handler: async (accessor, args: ObjectExplorerActionsContext) => {
+		const capabilitiesService = accessor.get(ICapabilitiesService);
+		let convertedProfile = new ConnectionProfile(capabilitiesService, args.connectionProfile);
+		await backupAction.runTask(accessor, convertedProfile);
 	}
 });
 
@@ -71,11 +70,9 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 // dashboard explorer
 const ExplorerBackUpActionID = 'explorer.backup';
 CommandsRegistry.registerCommand(ExplorerBackUpActionID, async (accessor, context: ManageActionContext) => {
-	const connectionService = accessor.get(IConnectionManagementService);
 	const capabilitiesService = accessor.get(ICapabilitiesService);
-	let profile = await connectionService.fixProfile(context.profile);
-	let convertedProfile = new ConnectionProfile(capabilitiesService, profile);
-	backupAction.runTask(accessor, convertedProfile);
+	let convertedProfile = new ConnectionProfile(capabilitiesService, context.profile);
+	await backupAction.runTask(accessor, convertedProfile);
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {

@@ -17,7 +17,6 @@ import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplo
 import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
 import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
@@ -30,11 +29,9 @@ CommandsRegistry.registerCommand({
 	id: DE_RESTORE_COMMAND_ID,
 	handler: async (accessor, args: TreeViewItemHandleArg) => {
 		if (args.$treeItem?.payload) {
-			const connectionService = accessor.get(IConnectionManagementService);
 			const capabilitiesService = accessor.get(ICapabilitiesService);
-			let profile = await connectionService.fixProfile(args.$treeItem.payload);
-			let convertedProfile = new ConnectionProfile(capabilitiesService, profile);
-			restoreAction.runTask(accessor, convertedProfile);
+			let convertedProfile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
+			await restoreAction.runTask(accessor, convertedProfile);
 		}
 	}
 });
@@ -55,11 +52,9 @@ const OE_RESTORE_COMMAND_ID = 'objectExplorer.restore';
 CommandsRegistry.registerCommand({
 	id: OE_RESTORE_COMMAND_ID,
 	handler: async (accessor, args: ObjectExplorerActionsContext) => {
-		const connectionService = accessor.get(IConnectionManagementService);
 		const capabilitiesService = accessor.get(ICapabilitiesService);
-		let profile = await connectionService.fixProfile(args.connectionProfile);
-		let convertedProfile = new ConnectionProfile(capabilitiesService, profile);
-		restoreAction.runTask(accessor, convertedProfile);
+		let convertedProfile = new ConnectionProfile(capabilitiesService, args.connectionProfile);
+		await restoreAction.runTask(accessor, convertedProfile);
 	}
 });
 
@@ -75,11 +70,9 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 
 const ExplorerRestoreActionID = 'explorer.restore';
 CommandsRegistry.registerCommand(ExplorerRestoreActionID, async (accessor, context: ManageActionContext) => {
-	const connectionService = accessor.get(IConnectionManagementService);
 	const capabilitiesService = accessor.get(ICapabilitiesService);
-	let profile = await connectionService.fixProfile(context.profile);
-	let convertedProfile = new ConnectionProfile(capabilitiesService, profile);
-	restoreAction.runTask(accessor, convertedProfile);
+	let convertedProfile = new ConnectionProfile(capabilitiesService, context.profile);
+	await restoreAction.runTask(accessor, convertedProfile);
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
