@@ -354,7 +354,7 @@ export class AccountsActivityActionViewItem extends MenuActivityActionViewItem {
 					const signOutAction = disposables.add(new Action('signOut', localize('signOut', "Sign Out"), undefined, true, async () => {
 						const allSessions = await this.authenticationService.getSessions(providerId);
 						const sessionsForAccount = allSessions.filter(s => s.account.id === account.id);
-						return await this.authenticationService.removeAccountSessions(providerId, account.label, sessionsForAccount, undefined); // {{SQL CARBON EDIT}} - Explicitly making removeAccount delegate a no-op operation
+						return await this.authenticationService.removeAccountSessions(providerId, account.label, sessionsForAccount);
 					}));
 					providerSubMenuActions.push(signOutAction);
 				}

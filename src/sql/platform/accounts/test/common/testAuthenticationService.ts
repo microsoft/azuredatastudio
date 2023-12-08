@@ -98,7 +98,7 @@ export class TestAuthenticationService implements IAuthenticationService {
 		return Promise.resolve();
 	}
 
-	removeAccountSessions(providerId: string, accountName: string, sessions: AuthenticationSession[], updateAccountList: () => Promise<void>): Promise<void> {
+	removeAccountSessions(providerId: string, accountName: string, sessions: AuthenticationSession[]): Promise<void> {
 		return Promise.resolve();
 	}
 
