@@ -24,7 +24,7 @@ export interface ObjectManagementDialogOptions extends ScriptableDialogOptions {
 	database?: string;
 	objectType: ObjectManagement.NodeType;
 	isNewObject: boolean;
-	parentUrn: string;
+	parentUrn?: string;
 	objectUrn?: string;
 	objectName?: string;
 }

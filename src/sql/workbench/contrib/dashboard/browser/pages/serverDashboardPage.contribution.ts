@@ -82,7 +82,7 @@ const defaultVal = [
 			'tasks-widget': [
 				NewQueryTask.ID,
 				NewNotebookTask.ID,
-				{ name: 'restore', when: 'connectionProvider == \'MSSQL\' && !mssql:iscloud && mssql:engineedition != 11 || connectionProvider == \'PGSQL\'' }]
+				{ name: 'restore', when: 'connectionProvider == \'PGSQL\'' }]
 		},
 		gridItemConfig: {
 			sizex: 1,

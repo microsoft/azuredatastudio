@@ -153,6 +153,24 @@
         "title": "%title.backupDatabase%"
       },
       {
+        "command": "mssql.restoreDatabaseTask",
+        "category": "MSSQL",
+        "title": "%title.restoreDatabase%",
+        "icon": {
+          "dark": "resources/restore.svg",
+          "light": "resources/restore.svg"
+        }
+      },
+      {
+        "command": "mssql.backupDatabaseTask",
+        "category": "MSSQL",
+        "title": "%title.backupDatabase%",
+        "icon": {
+          "dark": "resources/backup.svg",
+          "light": "resources/backup.svg"
+        }
+      },
+      {
         "command": "mssql.enableGroupBySchema",
         "category": "MSSQL",
         "title": "%mssql.objectExplorer.enableGroupBySchema%",
@@ -610,6 +628,14 @@
           "when": "false"
         },
         {
+          "command": "mssql.restoreDatabaseTask",
+          "when": "false"
+        },
+        {
+          "command": "mssql.backupDatabaseTask",
+          "when": "false"
+        },
+        {
           "command": "mssql.enableGroupBySchemaTitle",
           "when": "false"
         },
@@ -707,12 +733,12 @@
         },
         {
           "command": "mssql.restoreDatabase",
-          "when": "connectionProvider == MSSQL && !isCloud && engineEdition != 11 && nodeType == Database && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && engineEdition != 11 && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@3"
         },
         {
           "command": "mssql.backupDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && engineEdition != 11 && config.workbench.enablePreviewFeatures && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && engineEdition != 11 && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@3"
         },
         {
@@ -842,6 +868,16 @@
           "command": "mssql.disableGroupBySchemaTitle",
           "when": "view == dataExplorer.servers && config.mssql.objectExplorer.groupBySchema",
           "group": "navigation@5"
+        }
+      ],
+      "dashboard/toolbar": [
+        {
+          "command": "mssql.backupDatabaseTask",
+          "when": "dashboardContext == 'database' && connectionProvider == 'MSSQL' && mssql:iscloud != true && mssql:engineedition != 11 && config.workbench.enablePreviewFeatures"
+        },
+        {
+          "command": "mssql.restoreDatabaseTask",
+          "when": "dashboardContext == 'database' && connectionProvider == 'MSSQL' && mssql:iscloud != true && mssql:engineedition != 11 && config.workbench.enablePreviewFeatures"
         }
       ]
     },

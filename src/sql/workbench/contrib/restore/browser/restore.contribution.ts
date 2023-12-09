@@ -9,7 +9,7 @@ import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { localize } from 'vs/nls';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/mssqlNodeContext';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { pgsqlProviderName } from 'sql/platform/connection/common/constants';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { RestoreAction } from 'sql/workbench/contrib/restore/browser/restoreActions';
 import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
@@ -17,8 +17,6 @@ import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplo
 import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
 import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
-import { ServerInfoContextKey } from 'sql/workbench/services/connection/common/serverInfoContextKey';
-import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 
 new RestoreAction().registerTask();
@@ -45,9 +43,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: DE_RESTORE_COMMAND_ID,
 		title: localize('restore', "Restore")
 	},
-	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
-		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database), MssqlNodeContext.IsCloud.toNegated(),
-		MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
+	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(pgsqlProviderName), MssqlNodeContext.NodeType.isEqualTo(NodeType.Database))
 });
 
 // oe
@@ -69,8 +65,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		id: OE_RESTORE_COMMAND_ID,
 		title: localize('backup', "Restore")
 	},
-	when: ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo(NodeType.Database), ConnectionContextKey.Provider.isEqualTo(mssqlProviderName),
-		ServerInfoContextKey.IsCloud.toNegated(), ServerInfoContextKey.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
+	when: ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo(NodeType.Database), ConnectionContextKey.Provider.isEqualTo(pgsqlProviderName))
 });
 
 const ExplorerRestoreActionID = 'explorer.restore';
@@ -86,7 +81,6 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 		id: ExplorerRestoreActionID,
 		title: RestoreAction.LABEL
 	},
-	when: ContextKeyExpr.and(ItemContextKey.ItemType.isEqualTo('database'), ItemContextKey.ConnectionProvider.isEqualTo('mssql'),
-		ItemContextKey.IsCloud.toNegated(), ItemContextKey.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
+	when: ContextKeyExpr.and(ItemContextKey.ItemType.isEqualTo('database'), ItemContextKey.ConnectionProvider.isEqualTo('pgsql')),
 	order: 2
 });
