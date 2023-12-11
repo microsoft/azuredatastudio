@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ServerProvider, IConfig, Events, LogLevel } from '@microsoft/ads-service-downloader';
@@ -35,7 +35,7 @@ export class AzureMonitorServer {
 			const installationStart = Date.now();
 			const path = await this.download(context);
 			const installationComplete = Date.now();
-			let serverOptions = generateServerOptions(context.extensionContext.logPath, path);
+			let serverOptions = generateServerOptions(context.extensionContext.logUri.fsPath, path);
 			let clientOptions = getClientOptions(context);
 			this.client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
 			const processStart = Date.now();

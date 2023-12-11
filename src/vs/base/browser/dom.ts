@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as browser from 'vs/base/browser/browser';
@@ -15,7 +15,6 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { Disposable, DisposableStore, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { FileAccess, RemoteAuthorities, Schemas } from 'vs/base/common/network';
 import * as platform from 'vs/base/common/platform';
-import { withNullAsUndefined } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 
 export function clearNode(node: HTMLElement): void {
@@ -1284,7 +1283,7 @@ export function triggerUpload(): Promise<FileList | undefined> {
 
 		// Resolve once the input event has fired once
 		event.Event.once(event.Event.fromDOMEventEmitter(input, 'input'))(() => {
-			resolve(withNullAsUndefined(input.files));
+			resolve(input.files ?? undefined);
 		});
 
 		input.click();

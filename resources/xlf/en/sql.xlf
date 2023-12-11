@@ -150,6 +150,18 @@
     <trans-unit id="ReinstallAction.successReload">
       <source xml:lang="en">Please reload Azure Data Studio to complete reinstalling the extension {0}.</source>
     </trans-unit>
+    <trans-unit id="aboutDetail">
+      <source xml:lang="en">Version: {0}
+Commit: {1}
+Date: {2}
+VS Code: {3}
+Electron: {4}
+Chromium: {5}
+Node.js: {6}
+V8: {7}
+OS: {8}</source>
+      <note>Electron, Chromium, Node.js and V8 are product names that need no translation</note>
+    </trans-unit>
     <trans-unit id="activateLanguagePack">
       <source xml:lang="en">In order to use Azure Data Studio in {0}, Azure Data Studio needs to restart.</source>
     </trans-unit>
@@ -167,6 +179,10 @@
     </trans-unit>
     <trans-unit id="azuredatastudio.installTooltip">
       <source xml:lang="en">Install this extension</source>
+    </trans-unit>
+    <trans-unit id="azuredatastudio.themeUpdatedNotification">
+      <source xml:lang="en">Azure Data Studio now ships with a new default theme '{0}'. If you prefer, you can switch back to the old theme or try one of the many other color themes available.</source>
+      <note>{0} is the name of the new default theme</note>
     </trans-unit>
     <trans-unit id="connectionDialogBrowseTree.context">
       <source xml:lang="en">The connection dialog's browse tree context menu</source>
@@ -225,6 +241,10 @@
     </trans-unit>
     <trans-unit id="newQuery">
       <source xml:lang="en">New Query</source>
+    </trans-unit>
+    <trans-unit id="newThemeNotification">
+      <source xml:lang="en">Azure Data Studio now ships with a new default theme '{0}'. Do you want to give it a try?</source>
+      <note>{0} is the name of the new default theme</note>
     </trans-unit>
     <trans-unit id="notebook.cellTitle">
       <source xml:lang="en">The notebook cell title menu</source>
@@ -936,11 +956,18 @@ Default Skipped Commands:
     <trans-unit id="profiler.sessionStopped">
       <source xml:lang="en">XEvent Profiler Session stopped unexpectedly on the server {0}.</source>
     </trans-unit>
+    <trans-unit id="profilerInput.connDetails">
+      <source xml:lang="en">Connection Details: </source>
+    </trans-unit>
     <trans-unit id="profilerInput.notConnected">
       <source xml:lang="en">Not connected</source>
     </trans-unit>
     <trans-unit id="profilerInput.profiler">
       <source xml:lang="en">Profiler</source>
+    </trans-unit>
+    <trans-unit id="profilerInput.sessionName">
+      <source xml:lang="en">: Session Name: {0}
+</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/editor/resourceViewer/resourceViewerInput" source-language="en" datatype="plaintext"><body>
@@ -1716,8 +1743,15 @@ Default Skipped Commands:
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/connection/browser/connectionStatus" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="status.connection.baseTooltip">
+      <source xml:lang="en">Server: {0}
+Database: {1}</source>
+    </trans-unit>
     <trans-unit id="status.connection.status">
       <source xml:lang="en">Connection Status</source>
+    </trans-unit>
+    <trans-unit id="status.connection.tooltipLogin">
+      <source xml:lang="en">Login: {0}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/connection/common/connectionProviderExtension" source-language="en" datatype="plaintext"><body>
@@ -1894,6 +1928,9 @@ Default Skipped Commands:
     </trans-unit>
     <trans-unit id="dashboard.generalTabGroupHeader">
       <source xml:lang="en">General</source>
+    </trans-unit>
+    <trans-unit id="dashboard.tabLoadingError">
+      <source xml:lang="en">Error loading tab {0}</source>
     </trans-unit>
     <trans-unit id="home">
       <source xml:lang="en">Home</source>
@@ -4619,6 +4656,18 @@ Error: {1}</source>
     <trans-unit id="queryEditor.results.saveAsCsv.textIdentifier">
       <source xml:lang="en">Character used for enclosing text fields when saving results as CSV</source>
     </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsExcel.autoFilterHeaderRow">
+      <source xml:lang="en">When true, enable auto filtering on the header row when saving results as an Excel file</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsExcel.autoSizeColumns">
+      <source xml:lang="en">When true, attempt to automatically size columns when saving results as an Excel file</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsExcel.boldHeaderRow">
+      <source xml:lang="en">When true, make the header row bold when saving results as an Excel file</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsExcel.freezeHeaderRow">
+      <source xml:lang="en">When true, freeze the header row when saving results as an Excel file</source>
+    </trans-unit>
     <trans-unit id="queryEditor.results.saveAsExcel.includeHeaders">
       <source xml:lang="en">When true, column headers are included when saving results as an Excel file</source>
     </trans-unit>
@@ -5914,8 +5963,8 @@ Error Message: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/fileBrowser/browser/fileBrowserDialog" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="fileBrowser.discard">
-      <source xml:lang="en">Discard</source>
+    <trans-unit id="fileBrowser.back">
+      <source xml:lang="en">Back</source>
     </trans-unit>
     <trans-unit id="fileBrowser.ok">
       <source xml:lang="en">OK</source>
@@ -6586,9 +6635,6 @@ Error Message: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/query/common/queryManagement" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="queryManagement.noQueryRunnerForUri">
-      <source xml:lang="en">Could not find Query Runner for uri: {0}</source>
-    </trans-unit>
     <trans-unit id="queryManagement.uriAlreadyHasQueryRunner">
       <source xml:lang="en">Uri: {0} unexpectedly already has a query runner.</source>
     </trans-unit>

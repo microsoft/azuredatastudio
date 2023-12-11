@@ -32,7 +32,9 @@
 			"customEditor.imagePreview.displayName": "影像預覽",
 			"customEditor.videoPreview.displayName": "影片預覽",
 			"description": "提供影像、音訊和影片的 VS Code 內建預覽",
-			"displayName": "媒體預覽"
+			"displayName": "媒體預覽",
+			"videoPreviewerAutoPlay": "在靜音時自動開始播放影片。",
+			"videoPreviewerLoop": "自動再次重複播放影片。"
 		}
 	}
 }

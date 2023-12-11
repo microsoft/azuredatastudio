@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
@@ -92,21 +92,24 @@ async function main(buildDir?: string): Promise<void> {
 			'-insert',
 			'NSAppleEventsUsageDescription',
 			'-string',
-			'An application in Visual Studio Code wants to use AppleScript.',
+			// ${{SQL CARBON EDIT}} Update application name to Azure Data Studio
+			'An application in Azure Data Studio wants to use AppleScript.',
 			`${infoPlistPath}`
 		]);
 		await spawn('plutil', [
 			'-replace',
 			'NSMicrophoneUsageDescription',
 			'-string',
-			'An application in Visual Studio Code wants to use the Microphone.',
+			// ${{SQL CARBON EDIT}} Update application name to Azure Data Studio
+			'An application in Azure Data Studio wants to use the Microphone.',
 			`${infoPlistPath}`
 		]);
 		await spawn('plutil', [
 			'-replace',
 			'NSCameraUsageDescription',
 			'-string',
-			'An application in Visual Studio Code wants to use the Camera.',
+			// ${{SQL CARBON EDIT}} Update application name to Azure Data Studio
+			'An application in Azure Data Studio wants to use the Camera.',
 			`${infoPlistPath}`
 		]);
 	}

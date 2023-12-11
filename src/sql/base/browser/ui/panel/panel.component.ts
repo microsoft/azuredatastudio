@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import {
@@ -209,6 +209,10 @@ export class PanelComponent extends Disposable {
 			}
 
 			if (foundTab) {
+				// Don't do anything if the tab is loading
+				if (foundTab.loading) {
+					return;
+				}
 				const tab = foundTab;
 				// since we need to compare identifiers in this next step we are going to go through and make sure all tabs have one
 				this._tabs.forEach(i => {

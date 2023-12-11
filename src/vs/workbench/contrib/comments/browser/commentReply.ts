@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as dom from 'vs/base/browser/dom';
@@ -152,6 +152,15 @@ export class CommentReply<T extends IRange | ICellRange> extends Disposable {
 		this.commentEditor.focus();
 	}
 
+	public expandReplyAreaAndFocusCommentEditor() {
+		this.expandReplyArea();
+		this.commentEditor.focus();
+	}
+
+	public isCommentEditorFocused(): boolean {
+		return this.commentEditor.hasWidgetFocus();
+	}
+
 	public getCommentModel() {
 		return this.commentEditor.getModel()!;
 	}
@@ -165,7 +174,7 @@ export class CommentReply<T extends IRange | ICellRange> extends Disposable {
 	}
 
 	async submitComment(): Promise<void> {
-		this._commentFormActions?.triggerDefaultAction();
+		return this._commentFormActions?.triggerDefaultAction();
 	}
 
 	setCommentEditorDecorations() {
@@ -311,6 +320,7 @@ export class CommentReply<T extends IRange | ICellRange> extends Disposable {
 
 	private hideReplyArea() {
 		this.commentEditor.getDomNode()!.style.outline = '';
+		this.commentEditor.setValue('');
 		this._pendingComment = '';
 		this.form.classList.remove('expand');
 		this._error.textContent = '';

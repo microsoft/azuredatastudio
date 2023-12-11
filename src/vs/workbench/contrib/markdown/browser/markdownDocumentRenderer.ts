@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { hookDomPurifyHrefAndSrcSanitizer, basicMarkupHtmlTags } from 'vs/base/browser/dom';
@@ -141,6 +141,18 @@ pre code {
 .vscode-dark hr,
 .vscode-dark td {
 	border-color: rgba(255, 255, 255, 0.18);
+}
+
+@media (forced-colors: active) and (prefers-color-scheme: light){
+	body {
+		forced-color-adjust: none;
+	}
+}
+
+@media (forced-colors: active) and (prefers-color-scheme: dark){
+	body {
+		forced-color-adjust: none;
+	}
 }
 `;
 

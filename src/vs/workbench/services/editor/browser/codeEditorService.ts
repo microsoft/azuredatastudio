@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ICodeEditor, isCodeEditor, isDiffEditor, isCompositeEditor, getCodeEditor } from 'vs/editor/browser/editorBrowser';
@@ -25,8 +25,8 @@ export class CodeEditorService extends AbstractCodeEditorService {
 	) {
 		super(themeService);
 
-		this.registerCodeEditorOpenHandler(this.doOpenCodeEditor.bind(this));
-		this.registerCodeEditorOpenHandler(this.doOpenCodeEditorFromDiff.bind(this));
+		this._register(this.registerCodeEditorOpenHandler(this.doOpenCodeEditor.bind(this)));
+		this._register(this.registerCodeEditorOpenHandler(this.doOpenCodeEditorFromDiff.bind(this)));
 	}
 
 	getActiveCodeEditor(): ICodeEditor | null {

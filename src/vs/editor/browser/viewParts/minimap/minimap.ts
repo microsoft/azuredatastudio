@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./minimap';
@@ -377,7 +377,7 @@ class MinimapLayout {
 			const partialLine = (scrollTop - viewportStartLineNumberVerticalOffset) / lineHeight;
 
 			let sliderTopAligned: number;
-			if (scrollTop > options.paddingTop) {
+			if (scrollTop >= options.paddingTop) {
 				sliderTopAligned = (viewportStartLineNumber - startLineNumber + topPaddingLineCount + partialLine) * minimapLineHeight / pixelRatio;
 			} else {
 				sliderTopAligned = (scrollTop / options.paddingTop) * (topPaddingLineCount + partialLine) * minimapLineHeight / pixelRatio;

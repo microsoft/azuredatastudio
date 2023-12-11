@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ObjectTree } from 'vs/base/browser/ui/tree/objectTree';
@@ -89,7 +89,7 @@ class ByLabelTreeSorter implements ITreeSorter<TestExplorerTreeElement> {
 			}
 		}
 
-		return (a.sortText || a.label).localeCompare(b.sortText || b.label);
+		return (a.test.item.sortText || a.test.item.label).localeCompare(b.test.item.sortText || b.test.item.label);
 	}
 }
 
@@ -120,7 +120,7 @@ export class TestTreeTestHarness<T extends ITestTreeProjection = ITestTreeProjec
 			onDidProcessDiff: this.onDiff.event,
 		} as any));
 		const sorter = new ByLabelTreeSorter();
-		this.tree = this._register(new TestObjectTree(t => 'label' in t ? t.label : t.message.toString(), sorter));
+		this.tree = this._register(new TestObjectTree(t => 'test' in t ? t.test.item.label : t.message.toString(), sorter));
 		this._register(this.tree.onDidChangeCollapseState(evt => {
 			if (evt.node.element instanceof TestItemTreeElement) {
 				this.projection.expandElement(evt.node.element, evt.deep ? Infinity : 0);

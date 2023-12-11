@@ -76,6 +76,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.kusto/dist/kustoServer.entryExtractedChannelMsg" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Extracted {0} ({1}/{2})]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[추출된 {0}({1}/{2})]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.kusto/dist/kustoServer.failedToStartServiceErrorMsg" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to start {0}]]></Val>
@@ -330,10 +339,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.kusto/package.kusto.connectionOptions.authType.categoryValues.azureMFA" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Active Directory - Universal with MFA support]]></Val>
+          <Val><![CDATA[Microsoft Entra ID - Universal with MFA support]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Active Directory - MFA가 지원되는 유니버설]]></Val>
+            <Val><![CDATA[Microsoft Entra ID - MFA 지원으로 유니버설]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Active Directory - Universal with MFA support]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -661,6 +673,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.kusto/package.kusto.tracingServer" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[[Optional]5D; Traces the communication between Azure Data Studio and Kusto Tools Service to the Kusto Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[[선택 사항]5D; kusto Tools Service 출력 채널에 대한 Azure Data Studio 및 Kusto Tools Service 간의 통신을 추적합니다. 경고: 자세한 정보 로깅을 사용하는 경우 중요한 정보가 포함될 수 있습니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.kusto/package.notebook.command.new" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Notebook]]></Val>
@@ -693,6 +714,15 @@
           <Val><![CDATA[Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[이름]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.kusto/package.title.showLogFile" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Show Log File]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[로그 파일 표시]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

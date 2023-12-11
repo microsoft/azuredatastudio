@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
 import * as sinon from 'sinon';
@@ -141,6 +141,7 @@ suite('ExtensionEnablementService Test', () => {
 
 	teardown(() => {
 		(<ExtensionEnablementService>testObject).dispose();
+		instantiationService.dispose();
 	});
 
 	test('test disable an extension globally', async () => {

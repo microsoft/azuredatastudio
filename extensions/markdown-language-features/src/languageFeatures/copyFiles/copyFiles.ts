@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as picomatch from 'picomatch';
 import * as vscode from 'vscode';
@@ -81,10 +81,10 @@ export class NewFilePathGenerator {
 }
 
 function getDesiredNewFilePath(config: CopyFileConfiguration, document: vscode.TextDocument, file: vscode.DataTransferFile): vscode.Uri {
-	const docUri = getParentDocumentUri(document);
+	const docUri = getParentDocumentUri(document.uri);
 	for (const [rawGlob, rawDest] of Object.entries(config.destination)) {
 		for (const glob of parseGlob(rawGlob)) {
-			if (picomatch.isMatch(docUri.path, glob)) {
+			if (picomatch.isMatch(docUri.path, glob, { dot: true })) {
 				return resolveCopyDestination(docUri, file.name, rawDest, uri => vscode.workspace.getWorkspaceFolder(uri)?.uri);
 			}
 		}

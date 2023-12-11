@@ -1,13 +1,12 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { addDisposableListener, Dimension, EventType, findParentWithClass } from 'vs/base/browser/dom';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { Emitter } from 'vs/base/common/event';
 import { DisposableStore, IDisposable, MutableDisposable, toDisposable } from 'vs/base/common/lifecycle';
-import { withNullAsUndefined } from 'vs/base/common/types';
 import { MenuId } from 'vs/platform/actions/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -20,7 +19,7 @@ import { IProgressService } from 'vs/platform/progress/common/progress';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { ViewPane } from 'vs/workbench/browser/parts/views/viewPane';
+import { ViewPane, ViewPaneShowActions } from 'vs/workbench/browser/parts/views/viewPane';
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { Memento, MementoObject } from 'vs/workbench/common/memento';
 import { IViewBadge, IViewDescriptorService, IViewsService } from 'vs/workbench/common/views';
@@ -84,7 +83,7 @@ export class WebviewViewPane extends ViewPane {
 		@IWebviewService private readonly webviewService: IWebviewService,
 		@IWebviewViewService private readonly webviewViewService: IWebviewViewService,
 	) {
-		super({ ...options, titleMenuId: MenuId.ViewTitle }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
+		super({ ...options, titleMenuId: MenuId.ViewTitle, showActions: ViewPaneShowActions.WhenExpanded }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
 		this.extensionId = options.fromExtensionId;
 		this.defaultTitle = this.title;
 
@@ -301,6 +300,6 @@ export class WebviewViewPane extends ViewPane {
 	}
 
 	private findRootContainer(container: HTMLElement): HTMLElement | undefined {
-		return withNullAsUndefined(findParentWithClass(container, 'monaco-scrollable-element'));
+		return findParentWithClass(container, 'monaco-scrollable-element') ?? undefined;
 	}
 }

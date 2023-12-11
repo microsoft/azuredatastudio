@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { MainContext, MainThreadLanguagesShape, IMainContext, ExtHostLanguagesShape } from './extHost.protocol';
@@ -101,10 +101,17 @@ export class ExtHostLanguages implements ExtHostLanguagesShape {
 			busy: false
 		};
 
+
 		let soonHandle: IDisposable | undefined;
 		const commandDisposables = new DisposableStore();
 		const updateAsync = () => {
 			soonHandle?.dispose();
+
+			if (!ids.has(fullyQualifiedId)) {
+				console.warn(`LanguageStatusItem (${id}) from ${extension.identifier.value} has been disposed and CANNOT be updated anymore`);
+				return; // disposed in the meantime
+			}
+
 			soonHandle = disposableTimeout(() => {
 				commandDisposables.clear();
 				this._proxy.$setLanguageStatus(handle, {

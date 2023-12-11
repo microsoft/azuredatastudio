@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { groupBy } from 'vs/base/common/collections';
@@ -742,6 +742,8 @@ export class NotebookViewModel extends Disposable implements EditorFoldingStateD
 			const cell = this.getCellByHandle(itemDelta.handle);
 			const deleted = deletesByHandle[itemDelta.handle] ?? [];
 			delete deletesByHandle[itemDelta.handle];
+			deleted.forEach(id => this._statusBarItemIdToCellMap.delete(id));
+
 			const ret = cell?.deltaCellStatusBarItems(deleted, itemDelta.items) || [];
 			ret.forEach(id => {
 				this._statusBarItemIdToCellMap.set(id, itemDelta.handle);
@@ -755,6 +757,7 @@ export class NotebookViewModel extends Disposable implements EditorFoldingStateD
 			const ids = deletesByHandle[handle];
 			const cell = this.getCellByHandle(handle);
 			cell?.deltaCellStatusBarItems(ids, []);
+			ids.forEach(id => this._statusBarItemIdToCellMap.delete(id));
 		}
 
 		return result;

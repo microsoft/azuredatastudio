@@ -1,18 +1,18 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
 import { Emitter } from 'vs/base/common/event';
-import { HierarchicalByLocationProjection } from 'vs/workbench/contrib/testing/browser/explorerProjections/hierarchalByLocation';
+import { TreeProjection } from 'vs/workbench/contrib/testing/browser/explorerProjections/treeProjection';
 import { TestId } from 'vs/workbench/contrib/testing/common/testId';
 import { TestResultItemChange, TestResultItemChangeReason } from 'vs/workbench/contrib/testing/common/testResult';
 import { TestDiffOpType, TestItemExpandState, TestResultItem, TestResultState } from 'vs/workbench/contrib/testing/common/testTypes';
 import { TestTreeTestHarness } from 'vs/workbench/contrib/testing/test/browser/testObjectTree';
 import { TestTestItem } from 'vs/workbench/contrib/testing/test/common/testStubs';
 
-class TestHierarchicalByLocationProjection extends HierarchicalByLocationProjection {
+class TestHierarchicalByLocationProjection extends TreeProjection {
 }
 
 suite('Workbench - Testing Explorer Hierarchal by Location Projection', () => {

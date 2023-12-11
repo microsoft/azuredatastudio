@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { CancellationToken } from 'vs/base/common/cancellation';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { StopWatch } from 'vs/base/common/stopwatch';
@@ -20,6 +21,8 @@ export class WorkerBasedDocumentDiffProvider implements IDocumentDiffProvider, I
 	private diffAlgorithm: DiffAlgorithmName | IDocumentDiffProvider = 'advanced';
 	private diffAlgorithmOnDidChangeSubscription: IDisposable | undefined = undefined;
 
+	private static readonly diffCache = new Map<string, { result: IDocumentDiff; context: string }>();
+
 	constructor(
 		options: IWorkerBasedDocumentDiffProviderOptions,
 		@IEditorWorkerService private readonly editorWorkerService: IEditorWorkerService,
@@ -32,18 +35,27 @@ export class WorkerBasedDocumentDiffProvider implements IDocumentDiffProvider, I
 		this.diffAlgorithmOnDidChangeSubscription?.dispose();
 	}
 
-	async computeDiff(original: ITextModel, modified: ITextModel, options: IDocumentDiffProviderOptions): Promise<IDocumentDiff> {
+	async computeDiff(original: ITextModel, modified: ITextModel, options: IDocumentDiffProviderOptions, cancellationToken: CancellationToken): Promise<IDocumentDiff> {
 		if (typeof this.diffAlgorithm !== 'string') {
-			return this.diffAlgorithm.computeDiff(original, modified, options);
+			return this.diffAlgorithm.computeDiff(original, modified, options, cancellationToken);
 		}
 
 		// This significantly speeds up the case when the original file is empty
 		if (original.getLineCount() === 1 && original.getLineMaxColumn(1) === 1) {
+			if (modified.getLineCount() === 1 && modified.getLineMaxColumn(1) === 1) {
+				return {
+					changes: [],
+					identical: true,
+					quitEarly: false,
+					moves: [],
+				};
+			}
+
 			return {
 				changes: [
 					new LineRangeMapping(
-						new LineRange(1, 1),
-						new LineRange(1, modified.getLineCount()),
+						new LineRange(1, 2),
+						new LineRange(1, modified.getLineCount() + 1),
 						[
 							new RangeMapping(
 								original.getFullModelRange(),
@@ -54,32 +66,59 @@ export class WorkerBasedDocumentDiffProvider implements IDocumentDiffProvider, I
 				],
 				identical: false,
 				quitEarly: false,
+				moves: [],
 			};
 		}
 
-		const sw = StopWatch.create(true);
+		const uriKey = JSON.stringify([original.uri.toString(), modified.uri.toString()]);
+		const context = JSON.stringify([original.id, modified.id, original.getAlternativeVersionId(), modified.getAlternativeVersionId(), JSON.stringify(options)]);
+		const c = WorkerBasedDocumentDiffProvider.diffCache.get(uriKey);
+		if (c && c.context === context) {
+			return c.result;
+		}
+
+		const sw = StopWatch.create();
 		const result = await this.editorWorkerService.computeDiff(original.uri, modified.uri, options, this.diffAlgorithm);
 		const timeMs = sw.elapsed();
 
 		this.telemetryService.publicLog2<{
 			timeMs: number;
 			timedOut: boolean;
+			detectedMoves: number;
 		}, {
 			owner: 'hediet';
 
 			timeMs: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; isMeasurement: true; comment: 'To understand if the new diff algorithm is slower/faster than the old one' };
 			timedOut: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; isMeasurement: true; comment: 'To understand how often the new diff algorithm times out' };
+			detectedMoves: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; isMeasurement: true; comment: 'To understand how often the new diff algorithm detects moves' };
 
 			comment: 'This event gives insight about the performance of the new diff algorithm.';
 		}>('diffEditor.computeDiff', {
 			timeMs,
 			timedOut: result?.quitEarly ?? true,
+			detectedMoves: options.computeMoves ? (result?.moves.length ?? 0) : -1,
 		});
+
+		if (cancellationToken.isCancellationRequested) {
+			// Text models might be disposed!
+			return {
+				changes: [],
+				identical: false,
+				quitEarly: true,
+				moves: [],
+			};
+		}
 
 		if (!result) {
 			throw new Error('no diff result available');
 		}
 
+		// max 10 items in cache
+		if (WorkerBasedDocumentDiffProvider.diffCache.size > 10) {
+			WorkerBasedDocumentDiffProvider.diffCache.delete(WorkerBasedDocumentDiffProvider.diffCache.keys().next().value);
+		}
+
+		WorkerBasedDocumentDiffProvider.diffCache.set(uriKey, { result, context });
 		return result;
 	}
 

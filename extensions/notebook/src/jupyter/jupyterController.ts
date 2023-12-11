@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
@@ -155,21 +155,26 @@ export class JupyterController {
 	}
 
 	public async doManagePackages(options?: ManagePackageDialogOptions | vscode.Uri): Promise<void> {
-		try {
-			if (!options || options instanceof vscode.Uri) {
-				options = {
-					defaultLocation: constants.localhostName,
-					defaultProviderId: LocalPipPackageManageProvider.ProviderId
-				};
-			}
-			let model = new ManagePackagesDialogModel(this._jupyterInstallation, this._packageManageProviders, options);
+		// Handle the edge case where python is installed and then deleted manually from the user settings.
+		if (!JupyterServerInstallation.isPythonInstalled()) {
+			await vscode.window.showErrorMessage(localize('pythonNotSetup', "Python is not currently configured for notebooks. The 'Configure Python for Notebooks' command must be run before being able to manage notebook packages."));
+		} else {
+			try {
+				if (!options || options instanceof vscode.Uri) {
+					options = {
+						defaultLocation: constants.localhostName,
+						defaultProviderId: LocalPipPackageManageProvider.ProviderId
+					};
+				}
+				let model = new ManagePackagesDialogModel(this._jupyterInstallation, this._packageManageProviders, options);
 
-			await model.init();
-			let packagesDialog = new ManagePackagesDialog(model, this.extensionContext);
-			packagesDialog.showDialog();
-		} catch (error) {
-			let message = utils.getErrorMessage(error);
-			void vscode.window.showErrorMessage(message);
+				await model.init();
+				let packagesDialog = new ManagePackagesDialog(model, this.extensionContext);
+				packagesDialog.showDialog();
+			} catch (error) {
+				let message = utils.getErrorMessage(error);
+				await vscode.window.showErrorMessage(message);
+			}
 		}
 	}
 

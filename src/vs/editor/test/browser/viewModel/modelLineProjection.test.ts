@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -921,7 +921,7 @@ suite('SplitLinesCollection', () => {
 				})),
 				[
 					{ inlineDecorations: [{ startOffset: 8, endOffset: 23 }] },
-					{ inlineDecorations: [{ startOffset: 4, endOffset: 42 }] },
+					{ inlineDecorations: [{ startOffset: 4, endOffset: 30 }] },
 					{ inlineDecorations: [{ startOffset: 4, endOffset: 16 }] },
 					{ inlineDecorations: undefined },
 					{ inlineDecorations: undefined },

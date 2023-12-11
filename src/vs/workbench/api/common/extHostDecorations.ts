@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import type * as vscode from 'vscode';
@@ -106,7 +106,7 @@ export class ExtHostDecorations implements ExtHostDecorationsShape {
 					}
 					result[id] = <DecorationData>[data.propagate, data.tooltip, data.badge, data.color];
 				} catch (e) {
-					this._logService.warn(`INVALID decoration from extension '${extensionId}': ${e}`);
+					this._logService.warn(`INVALID decoration from extension '${extensionId.identifier.value}': ${e}`);
 				}
 			} catch (err) {
 				this._logService.error(err);

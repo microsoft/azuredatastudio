@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { createApiFactoryAndRegisterActors } from 'sql/workbench/api/common/sqlExtHost.api.impl'; // {{SQL CARBON EDIT}} replace with ours
@@ -83,7 +83,7 @@ export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 		const fullSource = `${source}\n//# sourceURL=${sourceURL}`;
 		let initFn: Function;
 		try {
-			initFn = new Function('module', 'exports', 'require', fullSource);
+			initFn = new Function('module', 'exports', 'require', fullSource); // CodeQL [SM01632] js/eval-call there is no alternative until we move to ESM
 		} catch (err) {
 			if (extensionId) {
 				console.error(`Loading code for extension ${extensionId} failed: ${err.message}`);

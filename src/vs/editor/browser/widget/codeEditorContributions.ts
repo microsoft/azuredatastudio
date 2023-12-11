@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { runWhenIdle } from 'vs/base/common/async';
@@ -10,6 +10,7 @@ import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { EditorContributionInstantiation, IEditorContributionDescription } from 'vs/editor/browser/editorExtensions';
 import { IEditorContribution } from 'vs/editor/common/editorCommon';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import './diffEditor.contribution';
 
 export class CodeEditorContributions extends Disposable {
 

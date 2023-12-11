@@ -1,10 +1,9 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Schemas } from 'vs/base/common/network';
-import { withNullAsUndefined } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import 'vs/css!./media/searchEditor';
 import { ICodeEditor, isDiffEditor } from 'vs/editor/browser/editorBrowser';
@@ -108,7 +107,7 @@ export const openNewSearchEditor =
 		const workspaceContextService = accessor.get(IWorkspaceContextService);
 		const historyService = accessor.get(IHistoryService);
 		const activeWorkspaceRootUri = historyService.getLastActiveWorkspaceRoot(Schemas.file);
-		const lastActiveWorkspaceRoot = activeWorkspaceRootUri ? withNullAsUndefined(workspaceContextService.getWorkspaceFolder(activeWorkspaceRootUri)) : undefined;
+		const lastActiveWorkspaceRoot = activeWorkspaceRootUri ? workspaceContextService.getWorkspaceFolder(activeWorkspaceRootUri) ?? undefined : undefined;
 
 
 		const activeEditorControl = editorService.activeTextEditorControl;

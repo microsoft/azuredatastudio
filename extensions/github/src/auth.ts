@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { AuthenticationSession, authentication, window } from 'vscode';
@@ -59,10 +59,10 @@ export function getOctokit(): Promise<Octokit> {
 
 let _octokitGraphql: Promise<graphql> | undefined;
 
-export async function getOctokitGraphql(silent = false): Promise<graphql> {
+export async function getOctokitGraphql(): Promise<graphql> {
 	if (!_octokitGraphql) {
 		try {
-			const session = await authentication.getSession('github', scopes, { silent });
+			const session = await authentication.getSession('github', scopes, { silent: true });
 
 			if (!session) {
 				throw new AuthenticationError('No GitHub authentication session available.');

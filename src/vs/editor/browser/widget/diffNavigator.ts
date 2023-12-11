@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'vs/base/common/assert';
@@ -10,7 +10,7 @@ import * as objects from 'vs/base/common/objects';
 import { IDiffEditor } from 'vs/editor/browser/editorBrowser';
 import { ICursorPositionChangedEvent } from 'vs/editor/common/cursorEvents';
 import { Range } from 'vs/editor/common/core/range';
-import { ILineChange } from 'vs/editor/common/diff/smartLinesDiffComputer';
+import { ILineChange } from 'vs/editor/common/diff/legacyLinesDiffComputer';
 import { ScrollType } from 'vs/editor/common/editorCommon';
 import { AudioCue, IAudioCueService } from 'vs/platform/audioCues/browser/audioCueService';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
@@ -224,11 +224,11 @@ export class DiffNavigator extends Disposable implements IDiffNavigator {
 		}
 		const insertedOrModified = modifiedEditor.getLineDecorations(lineNumber).find(l => l.options.className === 'line-insert');
 		if (insertedOrModified) {
-			this._audioCueService.playAudioCue(AudioCue.diffLineModified, true);
+			this._audioCueService.playAudioCue(AudioCue.diffLineModified, { allowManyInParallel: true });
 		} else if (jumpToChange) {
 			// The modified editor does not include deleted lines, but when
 			// we are moved to the area where lines were deleted, play this cue
-			this._audioCueService.playAudioCue(AudioCue.diffLineDeleted, true);
+			this._audioCueService.playAudioCue(AudioCue.diffLineDeleted, { allowManyInParallel: true });
 		} else {
 			return;
 		}

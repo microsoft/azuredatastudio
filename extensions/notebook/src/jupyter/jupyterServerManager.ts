@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { nb } from 'azdata';
@@ -14,7 +14,6 @@ import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as utils from '../common/utils';
 import { IServerInstance } from './common';
 import { PerFolderServerInstance, IInstanceOptions } from './serverInstance';
-import { CommandContext, BuiltInCommands } from '../common/constants';
 
 export interface IServerManagerOptions {
 	documentPath: string;
@@ -105,7 +104,6 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 	private async doStartServer(kernelSpec: nb.IKernelSpec): Promise<IServerInstance> { // We can't find or create servers until the installation is complete
 		let installation = this.options.jupyterInstallation;
 		await installation.promptForPythonInstall(kernelSpec.display_name);
-		void vscode.commands.executeCommand(BuiltInCommands.SetContext, CommandContext.NotebookPythonInstalled, true);
 
 		// Calculate the path to use as the notebook-dir for Jupyter based on the path of the uri of the
 		// notebook to open. This will be the workspace folder if the notebook uri is inside a workspace

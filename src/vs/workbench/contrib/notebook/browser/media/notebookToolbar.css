@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 .monaco-workbench .notebookOverlay .notebook-toolbar-container {
@@ -38,6 +38,18 @@
 	border-radius: 5px;
 	font-size: 13px;
 	height: 22px;
+}
+
+.monaco-workbench .notebookOverlay .notebook-toolbar-container .notebook-toolbar-left .monaco-action-bar li a[tabindex="0"]:focus {
+	outline: none !important;
+}
+
+.monaco-workbench .notebookOverlay .notebook-toolbar-container .notebook-toolbar-left .monaco-action-bar li:has(a:focus) {
+	outline-width: 1px;
+	outline-style: solid;
+	outline-offset: -1px;
+	outline-color: var(--vscode-focusBorder);
+	opacity: 1;
 }
 
 .monaco-workbench .notebookOverlay .notebook-toolbar-container .notebook-toolbar-left .monaco-action-bar .action-item .action-label.separator {

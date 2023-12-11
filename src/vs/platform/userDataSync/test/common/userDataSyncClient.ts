@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { bufferToStream, VSBuffer } from 'vs/base/common/buffer';
@@ -52,7 +52,7 @@ export class UserDataSyncClient extends Disposable {
 
 	constructor(readonly testServer: UserDataSyncTestServer = new UserDataSyncTestServer()) {
 		super();
-		this.instantiationService = new TestInstantiationService();
+		this.instantiationService = this._register(new TestInstantiationService());
 	}
 
 	async setUp(empty: boolean = false): Promise<void> {

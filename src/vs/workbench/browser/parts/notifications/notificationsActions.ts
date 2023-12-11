@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/notificationsActions';
@@ -133,7 +133,7 @@ export class CollapseNotificationAction extends Action {
 export class ConfigureNotificationAction extends Action {
 
 	static readonly ID = 'workbench.action.configureNotification';
-	static readonly LABEL = localize('configureNotification', "Configure Notification");
+	static readonly LABEL = localize('configureNotification', "More Actions...");
 
 	constructor(
 		id: string,

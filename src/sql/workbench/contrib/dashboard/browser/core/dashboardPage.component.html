@@ -1,7 +1,7 @@
 <!--
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
 <panel class="dashboard-panel" (onTabChange)="handleTabChange($event)" (onTabClose)="handleTabClose($event)"
@@ -10,7 +10,7 @@
 	</div>
 	<div [style.height]="getContentAreaHeight()" [style.overflow]="containerOverflowStyle">
 		<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize"
-			[identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions" [type]="tab.type"
+			[identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions" [type]="tab.type" [loading]="tab.loading"
 			[iconClass]="tab.iconClass">
 			<ng-template>
 				<dashboard-home-container *ngIf="tab.id === 'homeTab'; else not_home" [properties]="propertiesWidget" [tab]="tab">

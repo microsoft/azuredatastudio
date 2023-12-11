@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -90,6 +90,18 @@ export const ValidationErrorCodes = {
 	// TODO: adding other error codes for troubleshooting
 	SqlInfoValidationFailed: '2056'
 };
+
+// Color codes for Graph
+export const ColorCodes = {
+	NotReadyState_Red: "#E00B1C",
+	ReadyState_Green: "#57A300",
+	ReadyWithWarningState_Amber: "#DB7500"
+}
+
+export const IssueCategory = {
+	Issue: "Issue",
+	Warning: "Warning"
+}
 
 const _dateFormatter = new Intl.DateTimeFormat(
 	undefined, {
@@ -347,4 +359,27 @@ export function selectDatabasesFromList(selectedDbs: string[], databaseTableValu
 		}
 	}
 	return databaseTableValues;
+}
+
+export function getMigrationType(migration: DatabaseMigration | undefined): string {
+	// If MI or VM migration, the data type is schema + data
+	var targetType = getMigrationTargetTypeEnum(migration);
+	if (targetType === MigrationTargetType.SQLMI || targetType === MigrationTargetType.SQLVM) {
+		return loc.BACKUP_AND_RESTORE;
+	}
+
+	var enableSchema = migration?.properties?.sqlSchemaMigrationConfiguration?.enableSchemaMigration ?? false;
+	var enableData = migration?.properties?.sqlDataMigrationConfiguration?.enableDataMigration ?? false;
+	return enableSchema && enableData
+		? loc.SCHEMA_AND_DATA
+		: enableSchema ? loc.SCHEMA_ONLY : loc.DATA_ONLY;
+}
+
+export function getSchemaMigrationStatus(migration: DatabaseMigration | undefined): string | undefined {
+	return migration?.properties?.migrationStatusDetails?.sqlSchemaMigrationStatus?.status;
+}
+
+export function getSchemaMigrationStatusString(migration: DatabaseMigration | undefined): string {
+	const schemaMigrationStatus = getSchemaMigrationStatus(migration) ?? DefaultSettingValue;
+	return loc.SchemaMigrationStatusLookup[schemaMigrationStatus] ?? schemaMigrationStatus;
 }

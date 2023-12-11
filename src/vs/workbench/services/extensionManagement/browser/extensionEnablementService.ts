@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -264,7 +264,7 @@ export class ExtensionEnablementService extends Disposable implements IWorkbench
 
 				const index = extensionsToEnable.findIndex(e => areSameExtensions(e.identifier, extension.identifier));
 
-				// Extension is not aded to the disablement list so add it
+				// Extension is not added to the disablement list so add it
 				if (index === -1) {
 					extensionsToEnable.push(extension);
 				}

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
@@ -35,6 +35,7 @@ import { TasksInitializer } from 'vs/platform/userDataSync/common/tasksSync';
 import { IUserDataProfilesService } from 'vs/platform/userDataProfile/common/userDataProfile';
 import { IBrowserWorkbenchEnvironmentService } from 'vs/workbench/services/environment/browser/environmentService';
 import { IUserDataInitializer } from 'vs/workbench/services/userData/browser/userDataInit';
+import { ISecretStorageService } from 'vs/platform/secrets/common/secrets';
 
 export class UserDataSyncInitializer implements IUserDataInitializer {
 
@@ -46,6 +47,7 @@ export class UserDataSyncInitializer implements IUserDataInitializer {
 
 	constructor(
 		@IBrowserWorkbenchEnvironmentService private readonly environmentService: IBrowserWorkbenchEnvironmentService,
+		@ISecretStorageService private readonly secretStorageService: ISecretStorageService,
 		@ICredentialsService private readonly credentialsService: ICredentialsService,
 		@IUserDataSyncStoreManagementService private readonly userDataSyncStoreManagementService: IUserDataSyncStoreManagementService,
 		@IFileService private readonly fileService: IFileService,
@@ -90,7 +92,7 @@ export class UserDataSyncInitializer implements IUserDataInitializer {
 
 					let authenticationSession;
 					try {
-						authenticationSession = await getCurrentAuthenticationSessionInfo(this.credentialsService, this.productService);
+						authenticationSession = await getCurrentAuthenticationSessionInfo(this.credentialsService, this.secretStorageService, this.productService);
 					} catch (error) {
 						this.logService.error(error);
 					}

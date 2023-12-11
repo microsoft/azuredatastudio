@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as childProcess from 'child_process';
@@ -50,6 +50,10 @@ export function executeBufferedCommand(cmd: string, options: childProcess.ExecOp
 			child.stderr.on('data', data => { outputDataChunk(data, outputChannel, '    stderr: '); });
 		}
 	});
+}
+
+export function executeBufferedCommandSync(cmd: string, options: childProcess.ExecOptions): string {
+	return childProcess.execSync(cmd, options).toString();
 }
 
 export function executeStreamedCommand(cmd: string, options: childProcess.SpawnOptions, outputChannel?: vscode.OutputChannel): Thenable<void> {

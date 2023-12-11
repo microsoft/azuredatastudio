@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
@@ -95,16 +95,17 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 		includePreviewSkus: boolean,
 		databaseAllowList: string[]): Promise<contracts.SkuRecommendationResult | undefined> {
 		let params: contracts.SqlMigrationSkuRecommendationsParams = {
-			dataFolder,
-			perfQueryIntervalInSec,
-			targetPlatforms,
-			targetSqlInstance,
-			targetPercentile,
-			scalingFactor,
-			startTime,
-			endTime,
-			includePreviewSkus,
-			databaseAllowList
+			dataFolder: dataFolder,
+			perfQueryIntervalInSec: perfQueryIntervalInSec,
+			targetPlatforms: targetPlatforms,
+			targetSqlInstance: targetSqlInstance,
+			targetPercentile: targetPercentile,
+			scalingFactor: scalingFactor,
+			startTime: startTime,
+			endTime: endTime,
+			includePreviewSkus: includePreviewSkus,
+			databaseAllowList: databaseAllowList,
+			isPremiumSSDV2Enabled: true,
 		};
 
 		try {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as loc from './localizedConstants';
@@ -10,19 +10,12 @@ import * as constants from './constants';
 
 import { AzureRegion, azureResource } from 'azurecore';
 import { AppContext } from './appContext';
-import { HttpClient } from './account-provider/auths/httpClient';
-import { parse } from 'url';
-import { getProxyAgentOptions } from './proxy';
-import { HttpsProxyAgentOptions } from 'https-proxy-agent';
 import { ProviderSettings, ProviderSettingsJson, SettingIds } from './account-provider/interfaces';
 import { AzureResource } from 'azdata';
 import { Logger } from './utils/Logger';
 import { TelemetryAction, TelemetryReporter, TelemetryViews } from './telemetry';
 
 const localize = nls.loadMessageBundle();
-const configProxy = 'proxy';
-const configProxyStrictSSL = 'proxyStrictSSL';
-const configProxyAuthorization = 'proxyAuthorization';
 
 /**
  * Converts a region value (@see AzureRegion) into the localized Display Name
@@ -143,28 +136,6 @@ export function getResourceTypeDisplayName(type: string): string {
 			return loc.azureArcPostgresServer;
 	}
 	return type;
-}
-
-function getHttpConfiguration(): vscode.WorkspaceConfiguration {
-	return vscode.workspace.getConfiguration(constants.httpConfigSectionName);
-}
-
-/**
- * Gets tenants to be ignored.
- * @returns Tenants configured in ignore list
- */
-export function getTenantIgnoreList(): string[] {
-	const configuration = vscode.workspace.getConfiguration(constants.AzureTenantConfigSection);
-	return configuration.get(constants.Filter) ?? [];
-}
-
-/**
- * Updates tenant ignore list in global settings.
- * @param tenantIgnoreList Tenants to be configured in ignore list
- */
-export async function updateTenantIgnoreList(tenantIgnoreList: string[]): Promise<void> {
-	const configuration = vscode.workspace.getConfiguration(constants.AzureTenantConfigSection);
-	await configuration.update(constants.Filter, tenantIgnoreList, vscode.ConfigurationTarget.Global);
 }
 
 export function updateCustomCloudProviderSettings(defaultSettings: ProviderSettings[]): ProviderSettings[] {
@@ -301,25 +272,6 @@ export interface IPackageInfo {
 	name: string;
 	version: string;
 	aiKey: string;
-}
-
-export function getProxyEnabledHttpClient(): HttpClient {
-	const proxy = <string>getHttpConfiguration().get(configProxy);
-	const strictSSL = getHttpConfiguration().get(configProxyStrictSSL, true);
-	const authorization = getHttpConfiguration().get(configProxyAuthorization);
-
-	const url = parse(proxy);
-	let agentOptions = getProxyAgentOptions(url, proxy, strictSSL);
-
-	if (authorization && url.protocol === 'https:') {
-		let httpsAgentOptions = agentOptions as HttpsProxyAgentOptions;
-		httpsAgentOptions!.headers = Object.assign(httpsAgentOptions!.headers || {}, {
-			'Proxy-Authorization': authorization
-		});
-		agentOptions = httpsAgentOptions;
-	}
-
-	return new HttpClient(proxy, agentOptions);
 }
 
 /**

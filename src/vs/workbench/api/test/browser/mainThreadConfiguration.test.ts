@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -57,6 +57,10 @@ suite('MainThreadConfiguration', function () {
 		instantiationService.stub(IEnvironmentService, {
 			isBuilt: false
 		});
+	});
+
+	teardown(() => {
+		instantiationService.dispose();
 	});
 
 	test('update resource configuration without configuration target defaults to workspace in multi root workspace when no resource is provided', function () {

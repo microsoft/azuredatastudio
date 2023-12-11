@@ -1,7 +1,14 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
+// ESM-comment-begin
+export const isESM = false;
+// ESM-comment-end
+// ESM-uncomment-begin
+// export const isESM = true;
+// ESM-uncomment-end
 
 export abstract class LoaderStats {
 	abstract get amdLoad(): [string, number][];
@@ -41,7 +48,7 @@ export abstract class LoaderStats {
 		}
 
 		let stats: readonly LoaderEvent[] = [];
-		if (typeof require.getStats === 'function') {
+		if (typeof require === 'function' && typeof require.getStats === 'function') {
 			stats = require.getStats().slice(0).sort((a, b) => a.timestamp - b.timestamp);
 		}
 

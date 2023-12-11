@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as eslint from 'eslint';
@@ -180,8 +180,9 @@ export = new class implements eslint.Rule.RuleModule {
 			const restrictions = (typeof option.restrictions === 'string' ? [option.restrictions] : option.restrictions).slice(0);
 
 			if (targetIsVS) {
-				// Always add "vs/nls"
+				// Always add "vs/nls" and "vs/amdX"
 				restrictions.push('vs/nls');
+				restrictions.push('vs/amdX'); // TODO@jrieken remove after ESM is real
 			}
 
 			if (targetIsVS && option.layer) {

@@ -1448,10 +1448,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/managePackagesDialog.managePackages.dialogName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Manage Packages]]></Val>
+          <Val><![CDATA[Manage Notebook Packages]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[패키지 관리]]></Val>
+            <Val><![CDATA[Notebook 패키지 관리]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Manage Packages]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1496,6 +1499,15 @@
           <Val><![CDATA[Notebooks]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[전자 필기장]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterController.pythonNotSetup" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Python is not currently configured for notebooks. The 'Configure Python for Notebooks' command must be run before being able to manage notebook packages.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Python이 현재 Notebook에 대해 구성되어 있지 않습니다. Notebook 패키지를 관리하려면 먼저 'Notebook용 Python 구성' 명령을 실행해야 합니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2282,10 +2294,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.notebook/package.title.managePackages" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Manage Packages]]></Val>
+          <Val><![CDATA[Manage Notebook Packages]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[패키지 관리]]></Val>
+            <Val><![CDATA[Notebook 패키지 관리]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Manage Packages]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

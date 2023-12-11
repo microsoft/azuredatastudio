@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 // AMD2ESM mirgation relevant
@@ -18,6 +18,8 @@ declare global {
 		net: typeof import('net');
 		os: typeof import('os');
 		module: typeof import('module');
+		fs: typeof import('fs'),
+		vm: typeof import('vm'),
 		['native-watchdog']: typeof import('native-watchdog')
 		perf_hooks: typeof import('perf_hooks');
 

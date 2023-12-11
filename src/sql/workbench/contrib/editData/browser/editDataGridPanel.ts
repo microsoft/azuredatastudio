@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/editData';
@@ -232,10 +232,12 @@ export class EditDataGridPanel extends GridParentComponent {
 				// If a cell is not edited and retrieved direct from the SQL server, it would be in the form of a DBCellValue.
 				// We use the DBCellValue's cleaned displayValue as the text value.
 				returnVal = this.replaceLinebreaks(value.displayValue);
+				returnVal = returnVal.trim();
 			}
 			else if (typeof value === 'string') {
 				// Once a cell has been edited, the cell value will no longer be a DBCellValue until refresh.
 				returnVal = this.replaceLinebreaks(value);
+				returnVal = returnVal.trim();
 			}
 			return returnVal;
 		};
@@ -590,7 +592,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		let handled: boolean = false;
 
 		if (e.keyCode === KeyCode.Escape) {
-			this.revertCurrentRow().catch(onUnexpectedError);
+			this.revertCurrentRow(true).catch(onUnexpectedError);
 			handled = true;
 		}
 		if (e.ctrlKey && e.keyCode === KeyCode.Digit0) {
@@ -601,8 +603,9 @@ export class EditDataGridPanel extends GridParentComponent {
 			handled = true;
 		}
 
-		if (e.keyCode === KeyCode.Enter && this.isNullRow(this.currentCell.row)) {
-			this.isInNullRow = true;
+		if (e.keyCode === KeyCode.Enter) {
+			if (this.isNullRow(this.currentCell.row))
+				this.isInNullRow = true;
 		}
 
 		return handled;
@@ -628,7 +631,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
 
-	private async revertCurrentRow(): Promise<void> {
+	private async revertCurrentRow(isPressRevert?: boolean): Promise<void> {
 		this.rowRevertInProgress = true;
 		let currentNewRowIndex = this.dataSet.totalRows - 2;
 		if (this.newRowVisible && this.currentCell.row === currentNewRowIndex) {
@@ -647,6 +650,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				document.execCommand('insertText', false, this.lastEnteredString);
 			}
 			this.newRowVisible = false;
+			this.rowRevertInProgress = false;
 
 		} else {
 			try {
@@ -661,14 +665,18 @@ export class EditDataGridPanel extends GridParentComponent {
 				//
 				this.dirtyCells = [];
 				let row = this.currentCell.row;
-				this.resetCurrentCell();
 
 				if (row !== undefined) {
 					this.dataSet.dataRows.resetWindowsAroundIndex(row);
 				}
+
+				if (isPressRevert) {
+					this.resetCurrentCell();
+					this.table.grid.resetActiveCell();
+				}
+				this.rowRevertInProgress = false;
 			}
 		}
-		this.rowRevertInProgress = false;
 	}
 
 	private async revertCurrentCell(): Promise<void> {
@@ -841,9 +849,10 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.gridDataProvider = new AsyncDataProvider(this.dataSet.dataRows);
 		// refresh results view
 		return this.refreshGrid().then(() => {
-			// Set focus to the row index column of the removed row if the current selection is in the removed row
+			// Set focus to the replacement row if its deleted in the selection
 			if (this.currentCell.row === row && !this.removingNewRow) {
-				this.focusCell(row, 1);
+				this.setCurrentCell(this.currentCell.row, this.currentCell.column);
+				this.focusCell(this.currentCell.row, this.currentCell.column);
 			}
 			this.removingNewRow = false;
 		});
@@ -1041,8 +1050,8 @@ export class EditDataGridPanel extends GridParentComponent {
 				let colIndex = self.getColumnIndex(this._args.column.name);
 				let dataLength: number = self.dataSet.dataRows.getLength();
 
-				// If this is not the "new row" at the very bottom
-				if (activeRow !== dataLength) {
+				// Make sure active row does not exceed the current data length.
+				if (activeRow < dataLength) {
 					currentRow[colIndex] = state;
 					this._textEditor.applyValue(item, state);
 				}

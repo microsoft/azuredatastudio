@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
 import * as sinon from 'sinon';
@@ -292,6 +292,7 @@ suite('TelemetryService', () => {
 
 		errorTelemetry.dispose();
 		service.dispose();
+		sinon.restore();
 	}));
 
 	test.skip('Error Telemetry removes PII from filename with spaces', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
@@ -314,6 +315,7 @@ suite('TelemetryService', () => {
 
 		errorTelemetry.dispose();
 		service.dispose();
+		sinon.restore();
 	}));
 
 	test.skip('Uncaught Error Telemetry removes PII from filename', sinonTestFn(function (this: any) { // {{SQL CARBON EDIT}} skip test
@@ -342,6 +344,7 @@ suite('TelemetryService', () => {
 
 		errorTelemetry.dispose();
 		service.dispose();
+		sinon.restore();
 	}));
 
 	test.skip('Unexpected Error Telemetry removes PII', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
@@ -398,6 +401,7 @@ suite('TelemetryService', () => {
 
 		errorTelemetry.dispose();
 		service.dispose();
+		sinon.restore();
 	}));
 
 	test.skip('Unexpected Error Telemetry removes PII but preserves Code file path', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
@@ -465,6 +469,7 @@ suite('TelemetryService', () => {
 
 		errorTelemetry.dispose();
 		service.dispose();
+		sinon.restore();
 	}));
 
 	test.skip('Unexpected Error Telemetry removes PII but preserves Code file path with node modules', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
@@ -559,6 +564,7 @@ suite('TelemetryService', () => {
 
 		errorTelemetry.dispose();
 		service.dispose();
+		sinon.restore();
 	}));
 
 	test.skip('Unexpected Error Telemetry removes PII but preserves Missing Model error message', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
@@ -623,6 +629,7 @@ suite('TelemetryService', () => {
 
 		errorTelemetry.dispose();
 		service.dispose();
+		sinon.restore();
 	}));
 
 	test.skip('Unexpected Error Telemetry removes PII but preserves No Such File error message', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
@@ -690,6 +697,7 @@ suite('TelemetryService', () => {
 
 			errorTelemetry.dispose();
 			service.dispose();
+			sinon.restore();
 		} finally {
 			Errors.setUnexpectedErrorHandler(origErrorHandler);
 		}

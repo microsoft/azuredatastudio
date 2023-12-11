@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -233,7 +233,7 @@ function packageTask(sourceFolderName, destinationFolderName) {
 
 const compileWebExtensionsBuildTask = task.define('compile-web-extensions-build', task.series(
 	task.define('clean-web-extensions-build', util.rimraf('.build/web/extensions')),
-	task.define('bundle-web-extensions-build', () => extensions.packageLocalExtensionsStream(true).pipe(gulp.dest('.build/web'))),
+	task.define('bundle-web-extensions-build', () => extensions.packageLocalExtensionsStream(true, false).pipe(gulp.dest('.build/web'))),
 	task.define('bundle-marketplace-web-extensions-build', () => extensions.packageMarketplaceExtensionsStream(true).pipe(gulp.dest('.build/web'))),
 	task.define('bundle-web-extension-media-build', () => extensions.buildExtensionMedia(false, '.build/web/extensions')),
 ));

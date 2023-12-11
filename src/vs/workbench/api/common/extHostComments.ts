@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { asPromise } from 'vs/base/common/async';
@@ -20,7 +20,7 @@ import type * as vscode from 'vscode';
 import { ExtHostCommentsShape, IMainContext, MainContext, CommentThreadChanges, CommentChanges } from './extHost.protocol';
 import { ExtHostCommands } from './extHostCommands';
 import { checkProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
-import { withNullAsUndefined } from 'vs/base/common/types';
+import { withNullAsUndefined } from 'vs/base/common/types'; // {{SQL CARBON EDIT}}
 
 type ProviderHandle = number;
 
@@ -207,7 +207,7 @@ export function createExtHostComments(mainContext: IMainContext, commands: ExtHo
 						fileComments: rangesResult.fileComments || false
 					};
 				} else {
-					ranges = <any>withNullAsUndefined(rangesResult);
+					ranges = <any>withNullAsUndefined(rangesResult); // {{SQL CARBON EDIT}}
 				}
 				return ranges;
 			}).then(ranges => {

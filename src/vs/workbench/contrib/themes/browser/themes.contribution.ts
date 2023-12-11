@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -44,6 +44,7 @@ import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storag
 import { isWeb } from 'vs/base/common/platform';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
+import { getNewThemeNotification, getThemeUpdatedNotification } from 'sql/base/common/locConstants';
 
 export const manageExtensionIcon = registerIcon('theme-selection-manage-extension', Codicon.gear, localize('manageExtensionIcon', 'Icon for the \'Manage\' action in the theme selection quick pick.'));
 
@@ -768,7 +769,8 @@ class DefaultThemeUpdatedNotificationContribution implements IWorkbenchContribut
 			];
 			await this._notificationService.prompt(
 				Severity.Info,
-				localize({ key: 'themeUpdatedNotification', comment: ['{0} is the name of the new default theme'] }, "Visual Studio Code now ships with a new default theme '{0}'. If you prefer, you can switch back to the old theme or try one of the many other color themes available.", newTheme.label),
+				// {{SQL CARBON EDIT}} Update application name to Azure Data Studio, use custom localized string.
+				getThemeUpdatedNotification(newTheme.label),
 				choices,
 				{
 					onCancel: () => this._writeTelemetry('cancel')
@@ -796,7 +798,8 @@ class DefaultThemeUpdatedNotificationContribution implements IWorkbenchContribut
 			}];
 			await this._notificationService.prompt(
 				Severity.Info,
-				localize({ key: 'newThemeNotification', comment: ['{0} is the name of the new default theme'] }, "Visual Studio Code now ships with a new default theme '{0}'. Do you want to give it a try?", theme.label),
+				// {{SQL CARBON EDIT}} Update application name to Azure Data Studio, use custom localized string.
+				getNewThemeNotification(theme.label),
 				choices,
 				{ onCancel: () => this._writeTelemetry('cancel') }
 			);

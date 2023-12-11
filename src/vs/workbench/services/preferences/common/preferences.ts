@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IStringDictionary } from 'vs/base/common/collections';
@@ -138,8 +138,9 @@ export interface IFilterResult {
  */
 export enum SettingMatchType {
 	None = 0,
-	WholeWordMatch = 1 << 0,
-	KeyMatch = 1 << 1
+	RemoteMatch = 1 << 0,
+	WholeWordMatch = 1 << 1,
+	KeyMatch = 1 << 2
 }
 
 export interface ISettingMatch {

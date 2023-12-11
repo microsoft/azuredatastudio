@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { LayoutPriority, Orientation, Sizing, SplitView } from 'vs/base/browser/ui/splitview/splitview';
@@ -403,6 +403,9 @@ export class TerminalTabbedView extends Disposable {
 			}
 			if (!this._cancelContextMenu) {
 				const emptyList = this._tabList.getFocus().length === 0;
+				if (!emptyList) {
+					this._terminalGroupService.lastAccessedMenu = 'tab-list';
+				}
 				openContextMenu(event, this._parentElement, emptyList ? this._tabsListEmptyMenu : this._tabsListMenu, this._contextMenuService, emptyList ? this._getTabActions() : undefined);
 			}
 			event.preventDefault();

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { URI, UriComponents } from 'vs/base/common/uri';
@@ -9,7 +9,7 @@ import { Action2, MenuId, MenuRegistry } from 'vs/platform/actions/common/action
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
-import { getNotebookEditorFromEditorPane, IActiveNotebookEditor, ICellViewModel, cellRangeToViewCells } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { getNotebookEditorFromEditorPane, IActiveNotebookEditor, ICellViewModel, cellRangeToViewCells, ICellOutputViewModel } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { INTERACTIVE_WINDOW_IS_ACTIVE_EDITOR, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_IS_ACTIVE_EDITOR, NOTEBOOK_KERNEL_COUNT, NOTEBOOK_KERNEL_SOURCE_COUNT } from 'vs/workbench/contrib/notebook/common/notebookContextKeys';
 import { ICellRange, isICellRange } from 'vs/workbench/contrib/notebook/common/notebookRange';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -68,6 +68,10 @@ export interface INotebookCommandContext extends INotebookActionContext {
 
 export interface INotebookCellActionContext extends INotebookActionContext {
 	cell: ICellViewModel;
+}
+
+export interface INotebookOutputActionContext extends INotebookCellActionContext {
+	outputViewModel: ICellOutputViewModel;
 }
 
 export function getContextFromActiveEditor(editorService: IEditorService): INotebookActionContext | undefined {

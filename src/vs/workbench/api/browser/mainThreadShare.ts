@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
@@ -31,7 +31,8 @@ export class MainThreadShare implements MainThreadShareShape {
 			selector,
 			priority,
 			provideShare: async (item: IShareableItem) => {
-				return URI.revive(await this.proxy.$provideShare(handle, item, new CancellationTokenSource().token));
+				const result = await this.proxy.$provideShare(handle, item, new CancellationTokenSource().token);
+				return typeof result === 'string' ? result : URI.revive(result);
 			}
 		};
 		this.providers.set(handle, provider);

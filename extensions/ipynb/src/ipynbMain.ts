@@ -1,9 +1,10 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import * as azdata from 'azdata'; // {{SQL CARBON EDIT}}
 import { NotebookSerializer } from './notebookSerializer';
 import { ensureAllNewCellsHaveCellIds } from './cellIdService';
 import { notebookImagePasteSetup } from './notebookImagePaste';
@@ -43,6 +44,18 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	} as vscode.NotebookDocumentContentOptions));
 
+	context.subscriptions.push(vscode.workspace.registerNotebookSerializer('interactive', serializer, {
+		transientOutputs: false,
+		transientCellMetadata: {
+			breakpointMargin: true,
+			custom: false,
+			attachments: false
+		},
+		cellContentMetadata: {
+			attachments: true
+		}
+	} as vscode.NotebookDocumentContentOptions));
+
 	vscode.languages.registerCodeLensProvider({ pattern: '**/*.ipynb' }, {
 		provideCodeLenses: (document) => {
 			if (
@@ -58,21 +71,27 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(vscode.commands.registerCommand('ipynb.newUntitledIpynb', async () => {
-		const language = 'python';
-		const cell = new vscode.NotebookCellData(vscode.NotebookCellKind.Code, '', language);
-		const data = new vscode.NotebookData([cell]);
-		data.metadata = {
-			custom: {
-				cells: [],
-				metadata: {
-					orig_nbformat: 4
-				},
-				nbformat: 4,
-				nbformat_minor: 2
-			}
-		};
-		const doc = await vscode.workspace.openNotebookDocument('jupyter-notebook', data);
-		await vscode.window.showNotebookDocument(doc);
+		// {{SQL CARBON EDIT}} Open new notebooks using the default ADS notebook viewer if VSCode notebooks aren't enabled.
+		let useVSCodeNotebooks = vscode.workspace.getConfiguration('workbench')?.get<boolean>('useVSCodeNotebooks');
+		if (useVSCodeNotebooks) {
+			const language = 'python';
+			const cell = new vscode.NotebookCellData(vscode.NotebookCellKind.Code, '', language);
+			const data = new vscode.NotebookData([cell]);
+			data.metadata = {
+				custom: {
+					cells: [],
+					metadata: {
+						orig_nbformat: 4
+					},
+					nbformat: 4,
+					nbformat_minor: 2
+				}
+			};
+			const doc = await vscode.workspace.openNotebookDocument('jupyter-notebook', data);
+			await vscode.window.showNotebookDocument(doc);
+		} else {
+			await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
+		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('ipynb.openIpynbInNotebookEditor', async (uri: vscode.Uri) => {

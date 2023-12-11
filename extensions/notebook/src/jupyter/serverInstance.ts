@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
@@ -142,6 +142,30 @@ export class PerFolderServerInstance implements IServerInstance {
 		}
 	}
 
+	private stopSync(): void {
+		try {
+			this._isStopping = true;
+			if (this.baseDir) {
+				let exists = fs.pathExistsSync(this.baseDir);
+				if (exists) {
+					fs.removeSync(this.baseDir);
+				}
+			}
+			if (this._isStarted) {
+				let install = this.options.install;
+				let stopCommand = `"${install.pythonExecutable}" "${this.notebookScriptPath}" stop ${this._port}`;
+				utils.executeBufferedCommandSync(stopCommand, install.execOptions);
+			}
+		} catch (error) {
+			// For now, we don't care as this is non-critical
+			this.notify(this.options.install, localize('serverStopError', "Error stopping Notebook Server: {0}", utils.getErrorMessage(error)));
+		} finally {
+			this._isStarted = false;
+			ensureProcessEnded(this.childProcess);
+			this.handleConnectionClosed();
+		}
+	}
+
 	private async configureJupyter(): Promise<void> {
 		this.createInstanceFolders();
 		let resourcesFolder = path.join(this.options.install.extensionPath, 'resources', constants.jupyterConfigRootFolder);
@@ -269,7 +293,9 @@ export class PerFolderServerInstance implements IServerInstance {
 		this.childProcess.addListener('error', this.handleConnectionError);
 		this.childProcess.addListener('exit', this.handleConnectionClosed);
 
-		process.addListener('exit', this.stop);
+		// Have to use the synchronous Stop callback for Exit events since it's required in the Node.JS docs: https://nodejs.org/api/process.html#event-exit
+		// The process exits immediately after calling the Stop callback, so if execution is yielded with an await, then any code after that isn't run.
+		process.addListener('exit', this.stopSync);
 
 		// TODO #897 covers serializing stdout and stderr to a location where we can read from so that user can see if they run into trouble
 	}

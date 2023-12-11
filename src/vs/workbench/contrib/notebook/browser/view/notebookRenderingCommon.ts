@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { FastDomNode } from 'vs/base/browser/fastDomNode';
@@ -43,6 +43,7 @@ export interface INotebookCellList {
 	length: number;
 	rowsContainer: HTMLElement;
 	scrollableElement: HTMLElement;
+	ariaLabel: string;
 	readonly onDidRemoveOutputs: Event<readonly ICellOutputViewModel[]>;
 	readonly onDidHideOutputs: Event<readonly ICellOutputViewModel[]>;
 	readonly onDidRemoveCellsFromView: Event<readonly ICellViewModel[]>;
@@ -53,6 +54,8 @@ export interface INotebookCellList {
 	attachViewModel(viewModel: NotebookViewModel): void;
 	attachWebview(element: HTMLElement): void;
 	clear(): void;
+	getCellViewScrollTop(cell: ICellViewModel): number;
+	getCellViewScrollBottom(cell: ICellViewModel): number;
 	getViewIndex(cell: ICellViewModel): number | undefined;
 	getViewIndex2(modelIndex: number): number | undefined;
 	getModelIndex(cell: CellViewModel): number | undefined;
@@ -71,7 +74,6 @@ export interface INotebookCellList {
 	setHiddenAreas(_ranges: ICellRange[], triggerViewUpdate: boolean): boolean;
 	domElementOfElement(element: ICellViewModel): HTMLElement | null;
 	focusView(): void;
-	getAbsoluteTopOfElement(element: ICellViewModel): number;
 	triggerScrollFromMouseWheelEvent(browserEvent: IMouseWheelEvent): void;
 	updateElementHeight2(element: ICellViewModel, size: number, anchorElementIndex?: number | null): void;
 	domFocus(): void;
@@ -112,3 +114,5 @@ export interface CodeCellRenderTemplate extends BaseCellRenderTemplate {
 	focusSinkElement: HTMLElement;
 	editor: ICodeEditor;
 }
+
+

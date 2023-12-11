@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { CharCode } from 'vs/base/common/charCode';
@@ -12,12 +12,16 @@ import { SelectionRange, SelectionRangeProvider } from 'vs/editor/common/languag
 
 export class WordSelectionRangeProvider implements SelectionRangeProvider {
 
+	constructor(private readonly selectSubwords = true) { }
+
 	provideSelectionRanges(model: ITextModel, positions: Position[]): SelectionRange[][] {
 		const result: SelectionRange[][] = [];
 		for (const position of positions) {
 			const bucket: SelectionRange[] = [];
 			result.push(bucket);
-			this._addInWordRanges(bucket, model, position);
+			if (this.selectSubwords) {
+				this._addInWordRanges(bucket, model, position);
+			}
 			this._addWordRanges(bucket, model, position);
 			this._addWhitespaceLine(bucket, model, position);
 			bucket.push({ range: model.getFullModelRange() });

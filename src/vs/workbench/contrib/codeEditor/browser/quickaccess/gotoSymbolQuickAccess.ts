@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -273,7 +273,15 @@ Registry.as<IQuickAccessRegistry>(QuickaccessExtensions.Quickaccess).registerQui
 	contextKey: 'inFileSymbolsPicker',
 	placeholder: localize('gotoSymbolQuickAccessPlaceholder', "Type the name of a symbol to go to."),
 	helpEntries: [
-		{ description: localize('gotoSymbolQuickAccess', "Go to Symbol in Editor"), prefix: AbstractGotoSymbolQuickAccessProvider.PREFIX, commandId: GotoSymbolAction.ID },
-		{ description: localize('gotoSymbolByCategoryQuickAccess', "Go to Symbol in Editor by Category"), prefix: AbstractGotoSymbolQuickAccessProvider.PREFIX_BY_CATEGORY }
+		{
+			description: localize('gotoSymbolQuickAccess', "Go to Symbol in Editor"),
+			prefix: AbstractGotoSymbolQuickAccessProvider.PREFIX,
+			commandId: GotoSymbolAction.ID,
+			commandCenterOrder: 40
+		},
+		{
+			description: localize('gotoSymbolByCategoryQuickAccess', "Go to Symbol in Editor by Category"),
+			prefix: AbstractGotoSymbolQuickAccessProvider.PREFIX_BY_CATEGORY
+		}
 	]
 });

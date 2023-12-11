@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
 import { Event } from 'vs/base/common/event';
@@ -93,6 +93,7 @@ suite('TelemetryLogAdapter', () => {
 		const testObject = new TelemetryLogAppender(new NullLogService(), testLoggerService, testInstantiationService.stub(IEnvironmentService, {}), testInstantiationService.stub(IProductService, {}));
 		testObject.log('testEvent', { hello: 'world', isTrue: true, numberBetween1And3: 2 });
 		assert.strictEqual(testLoggerService.createLogger().logs.length, 2);
+		testInstantiationService.dispose();
 	});
 
 	test('Log Telemetry if log level is trace', async () => {
@@ -108,5 +109,6 @@ suite('TelemetryLogAdapter', () => {
 				isTrue: 1, numberBetween1And3: 2
 			}
 		}]));
+		testInstantiationService.dispose();
 	});
 });

@@ -1,12 +1,11 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { TernarySearchTree } from 'vs/base/common/ternarySearchTree';
 import { IExtensionHostProfile, IExtensionService, ProfileSegmentId, ProfileSession } from 'vs/workbench/services/extensions/common/extensions';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { withNullAsUndefined } from 'vs/base/common/types';
 import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { IV8InspectProfilingService, IV8Profile, IV8ProfileNode } from 'vs/platform/profiling/common/profiling';
@@ -104,7 +103,7 @@ export class ExtensionHostProfiler {
 					distilledIds.push(currSegmentId);
 					distilledDeltas.push(currSegmentTime);
 				}
-				currSegmentId = withNullAsUndefined(segmentId);
+				currSegmentId = segmentId ?? undefined;
 				currSegmentTime = 0;
 			}
 			currSegmentTime += timeDeltas[i];

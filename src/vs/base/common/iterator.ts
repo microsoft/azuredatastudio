@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 export namespace Iterable {
@@ -47,7 +47,7 @@ export namespace Iterable {
 		return false;
 	}
 
-	export function find<T, R extends T>(iterable: Iterable<T>, predicate: (t: T) => t is R): T | undefined;
+	export function find<T, R extends T>(iterable: Iterable<T>, predicate: (t: T) => t is R): R | undefined;
 	export function find<T>(iterable: Iterable<T>, predicate: (t: T) => boolean): T | undefined;
 	export function find<T>(iterable: Iterable<T>, predicate: (t: T) => boolean): T | undefined {
 		for (const element of iterable) {

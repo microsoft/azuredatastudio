@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
@@ -61,17 +61,7 @@ export async function getPublishToDockerSettings(project: ISqlProject): Promise<
 		return undefined;
 	}
 
-	const baseImages = uiUtils.getDockerBaseImages(target);
-	const baseImage = await vscode.window.showQuickPick(
-		baseImages.map(x => x.displayName),
-		{ title: constants.selectBaseImage(name), ignoreFocusOut: true, placeHolder: uiUtils.getDockerImagePlaceHolder(target) });
-
-	// Return when user hits escape
-	if (!baseImage) {
-		return undefined;
-	}
-
-	const imageInfo = baseImages.find(x => x.displayName === baseImage);
+	const imageInfo = uiUtils.getDockerBaseImage(target);
 
 	if (!imageInfo) {
 		return undefined;

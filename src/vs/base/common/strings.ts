@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { LRUCachedFunction } from 'vs/base/common/cache';
@@ -215,17 +215,6 @@ export function regExpLeadsToEndlessLoop(regexp: RegExp): boolean {
 	// (e.g. ends in an endless loop) it will match an empty string.
 	const match = regexp.exec('');
 	return !!(match && regexp.lastIndex === 0);
-}
-
-export function regExpContainsBackreference(regexpValue: string): boolean {
-	return !!regexpValue.match(/([^\\]|^)(\\\\)*\\\d+/);
-}
-
-export function regExpFlags(regexp: RegExp): string {
-	return (regexp.global ? 'g' : '')
-		+ (regexp.ignoreCase ? 'i' : '')
-		+ (regexp.multiline ? 'm' : '')
-		+ ((regexp as any /* standalone editor compilation */).unicode ? 'u' : '');
 }
 
 export function splitLines(str: string): string[] {

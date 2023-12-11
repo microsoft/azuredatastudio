@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 //@ts-check
@@ -21,7 +21,8 @@ module.exports = withBrowserDefaults({
 			'uuid': path.resolve(__dirname, 'node_modules/uuid/dist/esm-browser/index.js'),
 			'./node/authServer': path.resolve(__dirname, 'src/browser/authServer'),
 			'./node/crypto': path.resolve(__dirname, 'src/browser/crypto'),
-			'./node/fetch': path.resolve(__dirname, 'src/browser/fetch')
+			'./node/fetch': path.resolve(__dirname, 'src/browser/fetch'),
+			'./node/buffer': path.resolve(__dirname, 'src/browser/buffer'),
 		}
 	}
 });

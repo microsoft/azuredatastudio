@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable, dispose, IDisposable } from 'vs/base/common/lifecycle';
@@ -44,7 +44,8 @@ export class CommentThreadRangeDecorator extends Disposable {
 			description: CommentThreadRangeDecorator.description,
 			isWholeLine: false,
 			zIndex: 20,
-			className: 'comment-thread-range'
+			className: 'comment-thread-range',
+			shouldFillLineOnLineBreak: true
 		};
 
 		this.decorationOptions = ModelDecorationOptions.createDynamic(decorationOptions);
@@ -53,7 +54,8 @@ export class CommentThreadRangeDecorator extends Disposable {
 			description: CommentThreadRangeDecorator.description,
 			isWholeLine: false,
 			zIndex: 20,
-			className: 'comment-thread-range-current'
+			className: 'comment-thread-range-current',
+			shouldFillLineOnLineBreak: true
 		};
 
 		this.activeDecorationOptions = ModelDecorationOptions.createDynamic(activeDecorationOptions);

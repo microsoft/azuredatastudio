@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IMarkdownString } from 'vs/base/common/htmlContent';
 import { IDisposable, IReference } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { ITextModel, ITextSnapshot } from 'vs/editor/common/model';
@@ -55,7 +56,7 @@ export interface ITextEditorModel extends IEditorModel {
 	/**
 	 * Signals if this model is readonly or not.
 	 */
-	isReadonly(): boolean;
+	isReadonly(): boolean | IMarkdownString;
 
 	/**
 	 * The language id of the text model if known.

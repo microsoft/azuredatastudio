@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Event } from 'vs/base/common/event';
@@ -181,6 +181,15 @@ export interface IWorkingCopy extends IWorkingCopyIdentifier {
 
 
 	//#region Save / Backup
+
+	/**
+	 * The delay in milliseconds to wait before triggering
+	 * a backup after the content of the model has changed.
+	 *
+	 * If not configured, a sensible default will be taken
+	 * based on user settings.
+	 */
+	readonly backupDelay?: number;
 
 	/**
 	 * The workbench may call this method often after it receives

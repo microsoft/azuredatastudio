@@ -126,10 +126,6 @@
         <source xml:lang="en">Authentication type</source>
         <target state="translated">인증 유형</target>
       </trans-unit>
-      <trans-unit id="cms.connectionOptions.authType.categoryValues.azureMFA">
-        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory - MFA가 지원되는 유니버설</target>
-      </trans-unit>
       <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS">
         <source xml:lang="en">Azure Attestation</source>
         <target state="translated">Azure Attestation</target>
@@ -301,6 +297,10 @@
       <trans-unit id="cms.logFilesRemovalLimit">
         <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
         <target state="translated">시작 시 제거하려고 하며 mssql.logRetentionMinutes가 만료된 이전 파일의 최대 수입니다. 이 제한으로 인해 정리되지 않은 파일은 다음에 Azure Data Studio를 시작할 때 정리됩니다.</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.authType.categoryValues.azureMFA">
+        <source xml:lang="en">Microsoft Entra ID - Universal with MFA support</source>
+        <target state="translated">Microsoft Entra ID - MFA 지원으로 유니버설</target>
       </trans-unit>
       <trans-unit id="cms.provider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>

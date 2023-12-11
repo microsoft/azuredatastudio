@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
@@ -37,7 +37,8 @@ function main() {
 		const productionDependencies: { name: string, path: string, version: string }[] = deps.getProductionDependencies(root);
 		const productionDependenciesSrc = productionDependencies.map(d => path.relative(root, d.path)).map(d => `./${d}/**/*.map`);
 		const nodeModules = vfs.src(productionDependenciesSrc, { base: '.' })
-			.pipe(util.cleanNodeModules(path.join(root, 'build', '.moduleignore')));
+			.pipe(util.cleanNodeModules(path.join(root, 'build', '.moduleignore')))
+			.pipe(util.cleanNodeModules(path.join(root, 'build', `.moduleignore.${process.platform}`)));
 		sources.push(nodeModules);
 
 		const extensionsOut = vfs.src(['.build/extensions/**/*.js.map', '!**/node_modules/**'], { base: '.build' });

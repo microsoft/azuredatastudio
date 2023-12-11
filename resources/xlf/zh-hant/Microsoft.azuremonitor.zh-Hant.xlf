@@ -138,10 +138,6 @@
         <source xml:lang="en">Authentication type</source>
         <target state="translated">驗證類型</target>
       </trans-unit>
-      <trans-unit id="azuremonitor.connectionProperties.authType.categoryValues.azureMFA">
-        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory - MFA 通用支援</target>
-      </trans-unit>
       <trans-unit id="azuremonitor.displayName">
         <source xml:lang="en">Azure Monitor Logs</source>
         <target state="translated">Azure 監視器記錄</target>
@@ -173,6 +169,10 @@
       <trans-unit id="azuremonitor.connectionProperties.metadataPooling.label">
         <source xml:lang="en">Metadata Pooling</source>
         <target state="translated">中繼資料共用</target>
+      </trans-unit>
+      <trans-unit id="azuremonitor.connectionProperties.authType.categoryValues.azureMFA">
+        <source xml:lang="en">Microsoft Entra ID - Universal with MFA support</source>
+        <target state="translated">Microsoft Entra ID - 通用與 MFA 支援</target>
       </trans-unit>
       <trans-unit id="azuremonitor.objectsListProperties.name">
         <source xml:lang="en">Name</source>
