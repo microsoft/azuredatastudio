@@ -230,7 +230,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					self.table.grid.navigateDown();
 				},
 					(error: any) => {
-						self.notificationService.error(error);
+						self.notificationService.error(localize('editData.newRowSubmitError', `An error occurred while submitting data to new row: <{0}>`, error));
 						self.telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditCellEndError)
 							.withConnectionInfo(connInfo.profile)
 							.withServerInfo(connInfo.serverInfo)
@@ -415,7 +415,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				return Promise.resolve();
 			},
 			(error) => {
-				self.notificationService.error(error);
+				self.notificationService.error(localize('editData.generalSubmitError', `An error occurred while submitting cell change: <{0}>`, error));
 				self.telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditCellSelectError)
 					.withConnectionInfo(connInfo.profile)
 					.withServerInfo(connInfo.serverInfo)
@@ -566,19 +566,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		let profile = this.connectionManagementService.getConnectionProfile(this.uri);
 		let info = this.connectionManagementService.getServerInfo(profile.id);
 		return { profile: profile, serverInfo: info };
-	}
-
-	private gridSelectionToString(inputArray: Slick.Range[]): string {
-		let result = '';
-		if (inputArray) {
-			for (let i = 0; i < inputArray.length; i++) {
-				if (result !== '') {
-					result += ' - '
-				}
-				result += inputArray[i].toString();
-			}
-		}
-		return result;
 	}
 
 	/**
@@ -965,9 +952,8 @@ export class EditDataGridPanel extends GridParentComponent {
 				scrollLeft: viewport.scrollLeft
 			};
 			let connInfo: ConnInfo = this.getConnectionInfo();
-			let gridSelectionString = this.gridSelectionToString(this.savedViewState.gridSelections);
 			this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditSaveViewState)
-				.withAdditionalProperties({ gridSelections: gridSelectionString, scrollLeft: this.savedViewState.scrollLeft, scrollTop: this.savedViewState.scrollTop })
+				.withAdditionalProperties({ scrollLeft: this.savedViewState.scrollLeft, scrollTop: this.savedViewState.scrollTop })
 				.withConnectionInfo(connInfo.profile)
 				.withServerInfo(connInfo.serverInfo)
 				.send();
@@ -982,7 +968,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					self.setCellDirtyState(self.currentCell.row, self.currentCell.column, result.cell.isDirty);
 					self.setRowDirtyState(this.currentCell.row, result.isRowDirty);
 				}, (error: any) => {
-					self.notificationService.error(error);
+					self.notificationService.error(localize('editData.saveViewSubmitError', `An error occurred while saving local uncommitted changes: <{0}>`, error));
 					self.telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditSaveViewError)
 						.withConnectionInfo(connInfo.profile)
 						.withServerInfo(connInfo.serverInfo)
@@ -995,9 +981,8 @@ export class EditDataGridPanel extends GridParentComponent {
 	private restoreViewState(): void {
 		if (this.savedViewState) {
 			let connInfo: ConnInfo = this.getConnectionInfo();
-			let gridSelectionString = this.gridSelectionToString(this.savedViewState.gridSelections);
 			this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditRestoreViewState)
-				.withAdditionalProperties({ gridSelections: gridSelectionString, scrollLeft: this.savedViewState.scrollLeft, scrollTop: this.savedViewState.scrollTop })
+				.withAdditionalProperties({ scrollLeft: this.savedViewState.scrollLeft, scrollTop: this.savedViewState.scrollTop })
 				.withConnectionInfo(connInfo.profile)
 				.withServerInfo(connInfo.serverInfo)
 				.send();

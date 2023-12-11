@@ -91,7 +91,7 @@ class SaveResultAction extends Action {
 			TelemetryKeys.TelemetryView.EditDataEditor,
 			TelemetryKeys.TelemetryAction.EditSaveResult
 		).withAdditionalProperties({
-			batchIndex: gridInfo.batchIndex, resultSetNumber: gridInfo.resultSetNumber, selection: gridInfo.selection, format: this.format
+			batchIndex: gridInfo.batchIndex, resultSetNumber: gridInfo.resultSetNumber, format: this.format
 		}).send();
 		this.dataService.sendSaveRequest({
 			batchIndex: gridInfo.batchIndex,
@@ -126,7 +126,7 @@ class CopyResultAction extends Action {
 			TelemetryKeys.TelemetryView.EditDataEditor,
 			TelemetryKeys.TelemetryAction.EditCopyResult
 		).withAdditionalProperties({
-			batchIndex: gridInfo.batchIndex, resultSetNumber: gridInfo.resultSetNumber, selection: gridInfo.selection, includeHeader: includeHeader
+			batchIndex: gridInfo.batchIndex, resultSetNumber: gridInfo.resultSetNumber, includeHeader: includeHeader
 		}).send();
 		this.dataService.copyResults(gridInfo.selection, gridInfo.batchIndex, gridInfo.resultSetNumber, includeHeader);
 	}
