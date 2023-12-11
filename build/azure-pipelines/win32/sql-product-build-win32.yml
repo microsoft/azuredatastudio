@@ -16,7 +16,7 @@ steps:
     inputs:
       azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
       KeyVaultName: ado-secrets
-      SecretsFilter: 'github-distro-mixin-password,standalone-extensions-uri'
+      SecretsFilter: 'github-distro-mixin-password,standalone-extensions-uri,esrp-pki,esrp-aad-username,esrp-aad-password'
     displayName: 'Azure Key Vault: Get Secrets'
 
   - task: DownloadPipelineArtifact@2
@@ -248,13 +248,48 @@ steps:
       MaxRetryAttempts: 20
     condition: and(succeeded(), eq(variables['signed'], true))
 
+  - task: UseDotNet@2
+    displayName: 'Install .NET 6.x for ESRP signing'
+    inputs:
+      version: 6.x
+    condition: and(succeeded(), eq(variables['signed'], true))
+
+  - task: EsrpClientTool@1
+    displayName: Download ESRPClient
+    condition: and(succeeded(), eq(variables['signed'], true))
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      $EsrpClientTool = (gci -directory -filter EsrpClientTool_* $(Agent.RootDirectory)\_tasks | Select-Object -last 1).FullName
+      $EsrpCliZip = (gci -recurse -filter esrpcli.*.zip $EsrpClientTool | Select-Object -last 1).FullName
+      mkdir -p $(Agent.TempDirectory)\esrpcli
+      Expand-Archive -Path $EsrpCliZip -DestinationPath $(Agent.TempDirectory)\esrpcli
+      $EsrpCliDllPath = (gci -recurse -filter esrpcli.dll $(Agent.TempDirectory)\esrpcli | Select-Object -last 1).FullName
+      echo "##vso[task.setvariable variable=EsrpCliDllPath]$EsrpCliDllPath"
+    displayName: Find ESRP CLI
+    condition: and(succeeded(), eq(variables['signed'], true))
+
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
       exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-user-setup" }
       exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-system-setup" }
       exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-archive" }
-    displayName: Archive & User & System setup
+    displayName: Archive & User & System setup (Unsigned)
+    condition: and(succeeded(), eq(variables['signed'], false))
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      $env:ESRPPKI = "$(ESRP-PKI)"
+      $env:ESRPAADUsername = "$(esrp-aad-username)"
+      $env:ESRPAADPassword = "$(esrp-aad-password)"
+      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-user-setup" --sign }
+      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-system-setup" --sign }
+      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-archive" --sign }
+    displayName: Archive & User & System setup (Signed)
+    condition: and(succeeded(), eq(variables['signed'], true))
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'Sign installers'
