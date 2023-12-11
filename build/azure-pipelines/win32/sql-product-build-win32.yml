@@ -229,8 +229,10 @@ steps:
     condition: and(succeeded(), eq(variables['signed'], true))
 
   - task: UseDotNet@2
+    displayName: 'Install .NET 6.x for ESRP signing'
     inputs:
       version: 6.x
+    condition: and(succeeded(), eq(variables['signed'], true))
 
   - task: EsrpClientTool@1
     displayName: Download ESRPClient
