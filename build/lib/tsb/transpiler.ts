@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as swc from '@swc/core';
@@ -376,12 +376,15 @@ export class SwcTranspiler implements ITranspiler {
 				tsx: false,
 				decorators: true
 			},
-			target: 'es2020',
+			target: 'es2022',
 			loose: false,
 			minify: {
 				compress: false,
 				mangle: false
-			}
+			},
+			transform: {
+				useDefineForClassFields: false,
+			},
 		},
 		module: {
 			type: 'amd',

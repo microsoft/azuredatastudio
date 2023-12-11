@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
-import { DetachDatabaseDocUrl } from '../constants';
+import { DetachDatabaseDocUrl, TelemetryActions } from '../constants';
 import * as loc from '../localizedConstants';
 
 export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
@@ -48,12 +48,16 @@ export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		return DetachDatabaseDocUrl;
 	}
 
+	protected override get actionName(): string {
+		return TelemetryActions.DetachDatabase;
+	}
+
 	protected override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
-		await this.objectManagementService.detachDatabase(this.options.connectionUri, this.options.database, this.options.objectUrn, this._dropConnections, this._updateStatistics, false);
+		await this.objectManagementService.detachDatabase(this.options.connectionUri, this.options.database, this._dropConnections, this._updateStatistics, false);
 	}
 
 	protected override async generateScript(): Promise<string> {
-		return await this.objectManagementService.detachDatabase(this.options.connectionUri, this.options.database, this.options.objectUrn, this._dropConnections, this._updateStatistics, true);
+		return await this.objectManagementService.detachDatabase(this.options.connectionUri, this.options.database, this._dropConnections, this._updateStatistics, true);
 	}
 
 	protected override async validateInput(): Promise<string[]> {

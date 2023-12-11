@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./overlayWidgets';
@@ -92,16 +92,19 @@ export class ViewOverlayWidgets extends ViewPart {
 		this._domNode.appendChild(domNode);
 
 		this.setShouldRender();
+		this._updateMaxMinWidth();
 	}
 
 	public setWidgetPosition(widget: IOverlayWidget, preference: OverlayWidgetPositionPreference | null): boolean {
 		const widgetData = this._widgets[widget.getId()];
 		if (widgetData.preference === preference) {
+			this._updateMaxMinWidth();
 			return false;
 		}
 
 		widgetData.preference = preference;
 		this.setShouldRender();
+		this._updateMaxMinWidth();
 
 		return true;
 	}
@@ -115,7 +118,22 @@ export class ViewOverlayWidgets extends ViewPart {
 
 			domNode.parentNode!.removeChild(domNode);
 			this.setShouldRender();
+			this._updateMaxMinWidth();
 		}
+	}
+
+	private _updateMaxMinWidth(): void {
+		let maxMinWidth = 0;
+		const keys = Object.keys(this._widgets);
+		for (let i = 0, len = keys.length; i < len; i++) {
+			const widgetId = keys[i];
+			const widget = this._widgets[widgetId];
+			const widgetMinWidthInPx = widget.widget.getMinContentWidthInPx?.();
+			if (typeof widgetMinWidthInPx !== 'undefined') {
+				maxMinWidth = Math.max(maxMinWidth, widgetMinWidthInPx);
+			}
+		}
+		this._context.viewLayout.setOverlayWidgetsMinWidth(maxMinWidth);
 	}
 
 	private _renderWidget(widgetData: IWidgetData): void {

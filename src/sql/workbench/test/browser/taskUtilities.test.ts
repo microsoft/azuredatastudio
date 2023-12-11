@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -12,6 +12,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TestEditorInput, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
+import { NullLogService } from 'vs/platform/log/common/log';
 
 suite('TaskUtilities', function () {
 	test('getCurrentGlobalConnection returns the selected OE server if a server or one of its children is selected', () => {
@@ -27,7 +28,7 @@ suite('TaskUtilities', function () {
 		mockConnectionManagementService.setup(x => x.isProfileConnected(TypeMoq.It.is(profile => profile === expectedProfile))).returns(() => true);
 
 		// If I call getCurrentGlobalConnection, it should return the expected server profile
-		let actualProfile = TaskUtilities.getCurrentGlobalConnection(mockObjectExplorerService.object, mockConnectionManagementService.object, mockWorkbenchEditorService.object);
+		let actualProfile = TaskUtilities.getCurrentGlobalConnection(mockObjectExplorerService.object, mockConnectionManagementService.object, mockWorkbenchEditorService.object, new NullLogService());
 		assert.strictEqual(actualProfile, expectedProfile);
 	});
 
@@ -45,7 +46,7 @@ suite('TaskUtilities', function () {
 		mockConnectionManagementService.setup(x => x.isProfileConnected(TypeMoq.It.is(profile => profile === serverProfile))).returns(() => true);
 
 		// If I call getCurrentGlobalConnection, it should return the expected database profile
-		let actualProfile = TaskUtilities.getCurrentGlobalConnection(mockObjectExplorerService.object, mockConnectionManagementService.object, mockWorkbenchEditorService.object);
+		let actualProfile = TaskUtilities.getCurrentGlobalConnection(mockObjectExplorerService.object, mockConnectionManagementService.object, mockWorkbenchEditorService.object, new NullLogService());
 		assert.strictEqual(actualProfile.databaseName, dbName);
 		assert.notStrictEqual(actualProfile.id, serverProfile.id);
 		// Other connection attributes still match
@@ -77,7 +78,7 @@ suite('TaskUtilities', function () {
 		mockConnectionManagementService.setup(x => x.getConnectionProfile(tabConnectionUri.toString(true))).returns(() => tabProfile);
 
 		// If I call getCurrentGlobalConnection, it should return the expected profile from the active tab
-		let actualProfile = TaskUtilities.getCurrentGlobalConnection(mockObjectExplorerService.object, mockConnectionManagementService.object, mockWorkbenchEditorService.object);
+		let actualProfile = TaskUtilities.getCurrentGlobalConnection(mockObjectExplorerService.object, mockConnectionManagementService.object, mockWorkbenchEditorService.object, new NullLogService());
 		assert.strictEqual(actualProfile.databaseName, connectionProfile2.databaseName);
 		assert.strictEqual(actualProfile.authenticationType, connectionProfile2.authenticationType);
 		assert.strictEqual(actualProfile.password, connectionProfile2.password);
@@ -98,7 +99,7 @@ suite('TaskUtilities', function () {
 		mockConnectionManagementService.setup(x => x.isProfileConnected(TypeMoq.It.is(profile => profile === oeProfile))).returns(() => true);
 
 		// If I call getCurrentGlobalConnection, it should return the expected profile from OE
-		let actualProfile = TaskUtilities.getCurrentGlobalConnection(mockObjectExplorerService.object, mockConnectionManagementService.object, mockWorkbenchEditorService.object);
+		let actualProfile = TaskUtilities.getCurrentGlobalConnection(mockObjectExplorerService.object, mockConnectionManagementService.object, mockWorkbenchEditorService.object, new NullLogService());
 		assert.strictEqual(actualProfile, oeProfile);
 	});
 });

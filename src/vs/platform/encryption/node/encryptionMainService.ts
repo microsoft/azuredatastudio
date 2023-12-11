@@ -1,10 +1,12 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ICommonEncryptionService } from 'vs/platform/encryption/common/encryptionService';
 import { ILogService } from 'vs/platform/log/common/log';
+
+// {{SQL CARBON EDIT}} Remove vscode-encrypt in a post-1.47 release https://github.com/microsoft/azuredatastudio/issues/24737
 
 export interface Encryption {
 	encrypt(salt: string, value: string): Promise<string>;
@@ -50,6 +52,15 @@ export class EncryptionMainService implements ICommonEncryptionService {
 		} catch (e) {
 			this.logService.error(e);
 			return value;
+		}
+	}
+
+	async isEncryptionAvailable(): Promise<boolean> {
+		try {
+			await this.encryption();
+			return true;
+		} catch (e) {
+			return false;
 		}
 	}
 }

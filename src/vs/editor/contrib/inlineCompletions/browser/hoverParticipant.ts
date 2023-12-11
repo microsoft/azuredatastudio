@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as dom from 'vs/base/browser/dom';
@@ -103,7 +103,7 @@ export class InlineCompletionsHoverParticipant implements IEditorHoverParticipan
 			comment: 'This event tracks whenever an inline completion hover is shown.';
 		}>('inlineCompletionHover.shown');
 
-		if (this.accessibilityService.isScreenReaderOptimized()) {
+		if (this.accessibilityService.isScreenReaderOptimized() && !this._editor.getOption(EditorOption.screenReaderAnnounceInlineSuggestion)) {
 			this.renderScreenReaderText(context, part, disposableStore);
 		}
 
@@ -139,7 +139,8 @@ export class InlineCompletionsHoverParticipant implements IEditorHoverParticipan
 			hoverContentsElement.replaceChildren(renderedContents.element);
 		};
 
-		disposableStore.add(autorun('update hover', (reader) => {
+		disposableStore.add(autorun(reader => {
+			/** @description update hover */
 			const ghostText = part.controller.model.read(reader)?.ghostText.read(reader);
 			if (ghostText) {
 				const lineText = this._editor.getModel()!.getLineContent(ghostText.lineNumber);

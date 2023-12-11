@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IProfilerController } from 'sql/workbench/contrib/profiler/common/interfaces';
@@ -90,7 +90,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		this._overlay.className = 'overlayWidgets';
 		this._overlay.style.width = '100%';
 		this._overlay.style.zIndex = '4';
-		this._overlay.style.paddingTop = '50px';
+		this._overlay.style.top = '50px';
 		parent.appendChild(this._overlay);
 
 		this._profilerTable = new Table(parent, this._accessibilityService, this._quickInputService, defaultTableStyles, {

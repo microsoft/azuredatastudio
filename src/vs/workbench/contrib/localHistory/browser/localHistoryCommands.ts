@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -14,7 +14,7 @@ import { API_OPEN_DIFF_EDITOR_COMMAND_ID } from 'vs/workbench/browser/parts/edit
 import { LocalHistoryFileSystemProvider } from 'vs/workbench/contrib/localHistory/browser/localHistoryFileSystemProvider';
 import { ContextKeyExpr, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { ServicesAccessor } from 'vs/editor/browser/editorExtensions';
-import { registerAction2, Action2, MenuId } from 'vs/platform/actions/common/actions';
+import { registerAction2, Action2, MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import { basename, basenameOrAuthority, dirname } from 'vs/base/common/resources';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { EditorResourceAccessor, SaveSourceRegistry, SideBySideEditor } from 'vs/workbench/common/editor';
@@ -401,6 +401,8 @@ registerAction2(class extends Action2 {
 		return openEntry(selectedItem.entry, editorService);
 	}
 });
+
+MenuRegistry.appendMenuItem(MenuId.TimelineTitle, { command: { id: 'workbench.action.localHistory.restoreViaPicker', title: { value: localize('localHistory.restoreViaPickerMenu', "Local History: Find Entry to Restore..."), original: 'Local History: Find Entry to Restore...' } }, group: 'submenu', order: 1 });
 
 //#endregion
 

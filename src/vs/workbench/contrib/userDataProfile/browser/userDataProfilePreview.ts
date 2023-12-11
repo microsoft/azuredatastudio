@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { getErrorMessage } from 'vs/base/common/errors';
@@ -20,7 +20,7 @@ export class UserDataProfilePreviewContribution extends Disposable implements IW
 	) {
 		super();
 		if (environmentService.options?.profileToPreview) {
-			userDataProfileImportExportService.importProfile(URI.revive(environmentService.options.profileToPreview), { preview: true })
+			userDataProfileImportExportService.importProfile(URI.revive(environmentService.options.profileToPreview), { mode: 'both' })
 				.then(null, error => logService.error('Error while previewing the profile', getErrorMessage(error)));
 		}
 	}

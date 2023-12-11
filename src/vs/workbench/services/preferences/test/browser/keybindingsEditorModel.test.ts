@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -46,6 +46,10 @@ suite('KeybindingsEditorModel', () => {
 		testObject = instantiationService.createInstance(KeybindingsEditorModel, OS);
 
 		CommandsRegistry.registerCommand('command_without_keybinding', () => { });
+	});
+
+	teardown(() => {
+		instantiationService.dispose();
 	});
 
 	test('fetch returns default keybindings', async () => {

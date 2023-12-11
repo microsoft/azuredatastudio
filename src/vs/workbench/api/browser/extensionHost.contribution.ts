@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IWorkbenchContribution, IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
@@ -19,6 +19,9 @@ import { StatusBarItemsExtensionPoint } from 'vs/workbench/api/browser/statusBar
 // --- mainThread participants
 import './mainThreadLocalization';
 import './mainThreadBulkEdits';
+import './mainThreadChatProvider';
+import './mainThreadChatSlashCommands';
+import './mainThreadChatVariables';
 import './mainThreadCodeInsets';
 import './mainThreadCLICommands';
 import './mainThreadClipboard';
@@ -73,7 +76,7 @@ import './mainThreadNotebookDocumentsAndEditors';
 import './mainThreadNotebookRenderers';
 import './mainThreadNotebookSaveParticipant';
 import './mainThreadInteractive';
-import './mainThreadInteractiveEditor';
+import './mainThreadInlineChat';
 import './mainThreadChat';
 import './mainThreadTask';
 import './mainThreadLabelService';
@@ -84,7 +87,8 @@ import './mainThreadTesting';
 import './mainThreadSecretState';
 import './mainThreadShare';
 import './mainThreadProfilContentHandlers';
-import './mainThreadSemanticSimilarity';
+import './mainThreadAiRelatedInformation';
+import './mainThreadAiEmbeddingVector';
 import './mainThreadIssueReporter';
 
 export class ExtensionPoints implements IWorkbenchContribution {

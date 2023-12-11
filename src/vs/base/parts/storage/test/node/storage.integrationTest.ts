@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { deepStrictEqual, ok, strictEqual } from 'assert';
@@ -59,8 +59,8 @@ flakySuite('Storage Library', function () {
 			deepStrictEqual(storage.getObject('foo', { 'bar': 'baz' }), { 'bar': 'baz' });
 
 			let changes = new Set<string>();
-			storage.onDidChangeStorage(key => {
-				changes.add(key);
+			storage.onDidChangeStorage(e => {
+				changes.add(e.key);
 			});
 
 			await storage.whenFlushed(); // returns immediately when no pending updates
@@ -149,8 +149,8 @@ flakySuite('Storage Library', function () {
 			const storage = new Storage(database);
 
 			const changes = new Set<string>();
-			storage.onDidChangeStorage(key => {
-				changes.add(key);
+			storage.onDidChangeStorage(e => {
+				changes.add(e.key);
 			});
 
 			await storage.init();
@@ -272,8 +272,8 @@ flakySuite('Storage Library', function () {
 			await storage.init();
 
 			let changes = new Set<string>();
-			storage.onDidChangeStorage(key => {
-				changes.add(key);
+			storage.onDidChangeStorage(e => {
+				changes.add(e.key);
 			});
 
 			const set1Promise = storage.set('foo', 'bar1');

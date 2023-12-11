@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
@@ -62,4 +62,9 @@ export interface ConnectionManagementInfo {
 	 * Owner uri assigned to the connection
 	 */
 	ownerUri: string;
+
+	/**
+	 * ID used to identify the connection on the server, if available.
+	 */
+	serverConnectionId?: string;
 }

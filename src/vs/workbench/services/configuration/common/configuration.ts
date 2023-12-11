@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
@@ -86,6 +86,14 @@ export interface IWorkbenchConfigurationService extends IConfigurationService {
 	 * @param arg workspace Identifier
 	 */
 	initialize(arg: IAnyWorkspaceIdentifier): Promise<void>;
+
+	/**
+	 * Returns true if the setting can be applied for all profiles otherwise false.
+	 * @param setting
+	 */
+	isSettingAppliedForAllProfiles(setting: string): boolean;
 }
 
 export const TASKS_DEFAULT = '{\n\t\"version\": \"2.0.0\",\n\t\"tasks\": []\n}';
+
+export const APPLY_ALL_PROFILES_SETTING = 'workbench.settings.applyToAllProfiles';

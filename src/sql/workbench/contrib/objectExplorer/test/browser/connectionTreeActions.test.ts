@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as TypeMoq from 'typemoq';
@@ -37,7 +37,7 @@ import { TestConfigurationService } from 'sql/platform/connection/test/common/te
 import { ServerTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/serverTreeDataSource';
 import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
-import { ConsoleLogger } from 'vs/platform/log/common/log';
+import { ConsoleLogger, NullLogService } from 'vs/platform/log/common/log';
 import { TestAccessibilityService } from 'vs/platform/accessibility/test/common/testAccessibilityService';
 import { TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -152,6 +152,10 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 
 		const viewsService = new class implements IViewsService {
+			getFocusedViewName(): string {
+				throw new Error('Method not implemented.');
+			}
+			onDidChangeFocusedView: Event<void>;
 			getActiveViewPaneContainerWithId(viewContainerId: string): IViewPaneContainer {
 				throw new Error('Method not implemented.');
 			}
@@ -204,7 +208,8 @@ suite('SQL Connection Tree Action tests', () => {
 			capabilitiesService,
 			instantiationService.object,
 			objectExplorerService.object,
-			viewsService);
+			viewsService,
+			new NullLogService());
 
 		let actionContext = new ObjectExplorerActionsContext();
 		actionContext.connectionProfile = connection;
@@ -250,7 +255,8 @@ suite('SQL Connection Tree Action tests', () => {
 			capabilitiesService,
 			instantiationService.object,
 			objectExplorerService.object,
-			undefined);
+			undefined,
+			new NullLogService());
 
 		let actionContext = new ObjectExplorerActionsContext();
 		actionContext.connectionProfile = connection.toIConnectionProfile();

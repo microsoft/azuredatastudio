@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -115,6 +115,11 @@ suite('searchNotebookHelpers', () => {
 		);
 
 	});
+
+	teardown(() => {
+		instantiationService.dispose();
+	});
+
 	suite('notebookEditorMatchesToTextSearchResults', () => {
 
 		function assertRangesEqual(actual: ISearchRange | ISearchRange[], expected: ISearchRange[]) {
@@ -200,10 +205,10 @@ suite('searchNotebookHelpers', () => {
 				type: QueryType.Text, folderQueries: [{ folder: createFileUriFromPathFromRoot() }], contentPattern: {
 					pattern: ''
 				}
-			}, searchModel.searchResult, searchModel, null);
+			}, searchModel.searchResult, searchModel.searchResult, null);
 			return instantiationService.createInstance(FileMatch, {
 				pattern: ''
-			}, undefined, undefined, folderMatch, rawMatch, null);
+			}, undefined, undefined, folderMatch, rawMatch, null, '');
 		}
 	});
 });

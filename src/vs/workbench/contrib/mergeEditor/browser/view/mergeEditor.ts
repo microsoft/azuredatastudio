@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Dimension, reset } from 'vs/base/browser/dom';
@@ -238,6 +238,7 @@ export class MergeEditor extends AbstractTextEditor<IMergeEditorViewState> {
 		// Set the view zones before restoring view state!
 		// Otherwise scrolling will be off
 		this._sessionDisposables.add(autorunWithStore((reader, store) => {
+			/** @description update alignment view zones */
 			const baseView = this.baseView.read(reader);
 
 			this.inputResultView.editor.changeViewZones(resultViewZoneAccessor => {
@@ -283,7 +284,7 @@ export class MergeEditor extends AbstractTextEditor<IMergeEditorViewState> {
 			});
 
 			this.scrollSynchronizer.updateScrolling();
-		}, 'update alignment view zones'));
+		}));
 
 		const viewState = this.loadEditorViewState(input, context);
 		if (viewState) {
@@ -550,7 +551,8 @@ export class MergeEditor extends AbstractTextEditor<IMergeEditorViewState> {
 						this.viewModel
 					)
 				);
-				this.baseViewDisposables.add(autorun('Update base view options', reader => {
+				this.baseViewDisposables.add(autorun(reader => {
+					/** @description Update base view options */
 					const options = this.baseViewOptions.read(reader);
 					if (options) {
 						baseView.updateOptions(options);

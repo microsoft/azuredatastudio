@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -2263,6 +2263,11 @@ abstract class AbstractCreateEditorGroupAction extends Action2 {
 
 	override async run(accessor: ServicesAccessor): Promise<void> {
 		const editorGroupService = accessor.get(IEditorGroupsService);
+
+		// We intentionally do not want the new group to be focussed so that
+		// a user can have keyboard focus e.g. in a tree/list, open a new
+		// editor group that is active and then arrow-up/down in the tree/list
+		// to pick an editor to open in that group
 
 		editorGroupService.addGroup(editorGroupService.activeGroup, this.direction, { activate: true });
 	}

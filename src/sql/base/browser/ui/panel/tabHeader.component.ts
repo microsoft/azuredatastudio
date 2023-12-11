@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/tabHeader';
@@ -19,7 +19,7 @@ import { CloseTabAction } from 'sql/base/browser/ui/panel/tabActions';
 @Component({
 	selector: 'tab-header',
 	template: `
-		<div #actionHeader role="tab" [attr.aria-selected]="tab.selected" [attr.aria-label]="tab.title" class="tab-header" style="flex: 0 0; flex-direction: row;" [class.selected]="tab.selected" [attr.tabindex] = "_tabIndex" (click)="selectTab(tab)" (keyup)="onKey($event)">
+		<div #actionHeader role="tab" [attr.aria-selected]="tab.selected" [class.selected]="tab.selected" [class.loading]="tab.loading" [attr.aria-busy]="tab.loading" [attr.aria-label]="tab.title" class="tab-header" style="flex: 0 0; flex-direction: row;" [class.selected]="tab.selected" [attr.tabindex] = "_tabIndex" (click)="selectTab(tab)" (keyup)="onKey($event)">
 			<div class="tab" role="presentation">
 				<a #tabIcon *ngIf="showIcon && tab.iconClass" class="tabIcon codicon icon {{tab.iconClass}}"></a>
 				<a class="tabLabel" [class.selected]="tab.selected" [title]="tab.title" #tabLabel>{{tab.title}}</a>
@@ -32,6 +32,7 @@ export class TabHeaderComponent extends Disposable implements AfterContentInit, 
 	@Input() public tab!: TabComponent;
 	@Input() public showIcon?: boolean;
 	@Input() public selected?: boolean;
+	@Input() public loading?: boolean;
 	@Output() public onSelectTab: EventEmitter<TabComponent> = new EventEmitter<TabComponent>();
 	@Output() public onCloseTab: EventEmitter<TabComponent> = new EventEmitter<TabComponent>();
 	@Output() public onFocusTab: EventEmitter<TabComponent> = new EventEmitter<TabComponent>();

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { SaveResultsRequestParams } from 'azdata';
@@ -258,6 +258,18 @@ export class ResultSerializer {
 		if (saveConfig) {
 			if (saveConfig.includeHeaders !== undefined) {
 				saveResultsParams.includeHeaders = saveConfig.includeHeaders;
+			}
+			if (saveConfig.freezeHeaderRow !== undefined) {
+				saveResultsParams.freezeHeaderRow = saveConfig.freezeHeaderRow;
+			}
+			if (saveConfig.boldHeaderRow !== undefined) {
+				saveResultsParams.boldHeaderRow = saveConfig.boldHeaderRow;
+			}
+			if (saveConfig.autoFilterHeaderRow !== undefined) {
+				saveResultsParams.autoFilterHeaderRow = saveConfig.autoFilterHeaderRow;
+			}
+			if (saveConfig.autoSizeColumns !== undefined) {
+				saveResultsParams.autoSizeColumns = saveConfig.autoSizeColumns;
 			}
 		}
 

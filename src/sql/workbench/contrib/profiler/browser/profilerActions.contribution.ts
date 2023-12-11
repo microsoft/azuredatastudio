@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
@@ -20,6 +20,7 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IFileService } from 'vs/platform/files/common/files';
+import { ILogService } from 'vs/platform/log/common/log';
 
 CommandsRegistry.registerCommand({
 	id: 'profiler.newProfiler',
@@ -31,6 +32,7 @@ CommandsRegistry.registerCommand({
 		let objectExplorerService: IObjectExplorerService = accessor.get(IObjectExplorerService);
 		let connectionDialogService: IConnectionDialogService = accessor.get(IConnectionDialogService);
 		let capabilitiesService: ICapabilitiesService = accessor.get(ICapabilitiesService);
+		let logService: ILogService = accessor.get(ILogService);
 
 		// If a context is available if invoked from the context menu, we will use the connection profiler of the server node
 		if (args[0]?.connectionProfile) {
@@ -42,7 +44,7 @@ CommandsRegistry.registerCommand({
 		}
 		else {
 			// No context available, we will try to get the current global active connection
-			connectionProfile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionService, editorService) as ConnectionProfile;
+			connectionProfile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionService, editorService, logService) as ConnectionProfile;
 		}
 
 		let promise;
@@ -57,7 +59,7 @@ CommandsRegistry.registerCommand({
 
 		return promise.then(() => {
 			if (!connectionProfile) {
-				connectionProfile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionService, editorService) as ConnectionProfile;
+				connectionProfile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionService, editorService, logService) as ConnectionProfile;
 			}
 
 			if (connectionProfile && connectionProfile.providerName === mssqlProviderName) {

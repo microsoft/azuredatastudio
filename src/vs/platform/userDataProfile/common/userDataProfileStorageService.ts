@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable, MutableDisposable, isDisposable } from 'vs/base/common/lifecycle';
@@ -108,9 +108,7 @@ export abstract class AbstractUserDataProfileStorageService extends Disposable i
 	}
 
 	private writeItems(storageService: IStorageService, items: Map<string, string | undefined | null>, target: StorageTarget): void {
-		for (const [key, value] of items) {
-			storageService.store(key, value, StorageScope.PROFILE, target);
-		}
+		storageService.storeAll(Array.from(items.entries()).map(([key, value]) => ({ key, value, scope: StorageScope.PROFILE, target })), true);
 	}
 
 	protected async closeAndDispose(storageDatabase: IStorageDatabase): Promise<void> {

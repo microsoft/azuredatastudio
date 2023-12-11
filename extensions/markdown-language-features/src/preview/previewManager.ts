@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
@@ -145,6 +145,15 @@ export class MarkdownPreviewManager extends Disposable implements vscode.Webview
 
 	public get activePreviewResourceColumn() {
 		return this._activePreview?.resourceColumn;
+	}
+
+	public findPreview(resource: vscode.Uri): IManagedMarkdownPreview | undefined {
+		for (const preview of [...this._dynamicPreviews, ...this._staticPreviews]) {
+			if (preview.resource.fsPath === resource.fsPath) {
+				return preview;
+			}
+		}
+		return undefined;
 	}
 
 	public toggleLock() {

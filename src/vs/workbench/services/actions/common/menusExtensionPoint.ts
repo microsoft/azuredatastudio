@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -152,6 +152,18 @@ const apiMenus: IAPIMenu[] = [
 		supportsSubmenus: false
 	},
 	{
+		key: 'terminal/context',
+		id: MenuId.TerminalInstanceContext,
+		description: localize('menus.terminalContext', "The terminal context menu"),
+		proposed: 'terminalContextMenu'
+	},
+	{
+		key: 'terminal/title/context',
+		id: MenuId.TerminalTabContext,
+		description: localize('menus.terminalTabContext', "The terminal tabs context menu"),
+		proposed: 'terminalContextMenu'
+	},
+	{
 		key: 'view/title',
 		id: MenuId.ViewTitle,
 		description: localize('view.viewTitle', "The contributed view title menu")
@@ -250,6 +262,16 @@ const apiMenus: IAPIMenu[] = [
 		key: 'testing/item/gutter',
 		id: MenuId.TestItemGutter,
 		description: localize('testing.item.gutter.title', "The menu for a gutter decoration for a test item"),
+	},
+	{
+		key: 'testing/message/context',
+		id: MenuId.TestMessageContext,
+		description: localize('testing.message.context.title', "A prominent button overlaying editor content where the message is displayed"),
+	},
+	{
+		key: 'testing/message/content',
+		id: MenuId.TestMessageContent,
+		description: localize('testing.message.content.title', "Context menu for the message in the results tree"),
 	},
 	{
 		key: 'extension/context',

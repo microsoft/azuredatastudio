@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { VSBuffer } from 'vs/base/common/buffer';
@@ -92,6 +92,16 @@ export class TestingContentProvider implements IWorkbenchContribution, ITextMode
 			case TestUriType.ResultActualOutput: {
 				const message = test.tasks[parsed.taskIndex].messages[parsed.messageIndex];
 				if (message?.type === TestMessageType.Error) { text = message.actual; }
+				break;
+			}
+			case TestUriType.TestOutput: {
+				text = '';
+				const output = result.tasks[parsed.taskIndex].output;
+				for (const message of test.tasks[parsed.taskIndex].messages) {
+					if (message.type === TestMessageType.Output) {
+						text += removeAnsiEscapeCodes(output.getRange(message.offset, message.length).toString());
+					}
+				}
 				break;
 			}
 			case TestUriType.ResultExpectedOutput: {

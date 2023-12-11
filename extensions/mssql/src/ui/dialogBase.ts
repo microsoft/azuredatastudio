@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -11,6 +11,8 @@ import { IconPathHelper } from '../iconHelper';
 
 export const DefaultLabelWidth = 150;
 export const DefaultInputWidth = 300;
+export const DefaultLongInputWidth = 440;
+export const DefaultButtonWidth = 100;
 export const DefaultColumnCheckboxWidth = 150;
 export const DefaultTableWidth = DefaultInputWidth + DefaultLabelWidth;
 export const DefaultMaxTableRowCount = 10;
@@ -140,7 +142,14 @@ export abstract class DialogBase<DialogResult> {
 			const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth - 40, value: label, requiredIndicator: required, CSSStyles: { 'padding-right': '10px' } }).component();
 			container = this.modelView.modelBuilder.flexContainer().withItems([labelComponent, ...component], { CSSStyles: { 'margin-right': '5px', 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 		} else {
-			const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth, value: label, requiredIndicator: required, CSSStyles: { 'padding-right': '10px' } }).component();
+			let props: azdata.TextComponentProperties;
+			if (required) {
+				props = { width: DefaultLabelWidth, value: label, requiredIndicator: required };
+			} else {
+				// The required label adds extra padding to the text component, so we need to modify the width and the padding of optional labels to fix the misalignment.
+				props = { width: DefaultLabelWidth - 10, value: label, requiredIndicator: required, CSSStyles: { 'padding-right': '10px' } };
+			}
+			const labelComponent = this.modelView.modelBuilder.text().withProps(props).component();
 			container = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent], { flex: '0 0 auto' }).component();
 			container.addItem(component, { flex: '1 1 auto' });
 		}
@@ -186,6 +195,7 @@ export abstract class DialogBase<DialogResult> {
 		properties.inputType = properties.inputType ?? 'text';
 		properties.value = properties.value ?? '';
 		properties.enabled = properties.enabled ?? true;
+		properties.required = properties.required;
 		const inputbox = this.modelView.modelBuilder.inputBox().withProps(properties);
 		if (customValidation) {
 			inputbox.withValidation(customValidation);
@@ -257,7 +267,7 @@ export abstract class DialogBase<DialogResult> {
 	protected async setTableData(table: azdata.TableComponent, data: any[][], maxRowCount: number = DefaultMaxTableRowCount): Promise<void> {
 		await table.updateProperties({
 			data: data,
-			height: getTableHeight(data.length, DefaultMinTableRowCount, maxRowCount)
+			height: getTableHeight(data?.length, DefaultMinTableRowCount, maxRowCount)
 		});
 	}
 

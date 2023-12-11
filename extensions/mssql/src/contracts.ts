@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { NotificationType, RequestType } from 'vscode-languageclient';
@@ -9,6 +9,7 @@ import * as azdata from 'azdata';
 import { ConnectParams } from 'dataprotocol-client/lib/protocol';
 import * as mssql from 'mssql';
 import { DatabaseFileData } from 'mssql';
+import { BackupResponse } from 'azdata';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
 
@@ -1649,7 +1650,6 @@ export namespace SearchObjectRequest {
 export interface DetachDatabaseRequestParams {
 	connectionUri: string;
 	database: string;
-	objectUrn: string;
 	dropConnections: boolean;
 	updateStatistics: boolean;
 	generateScript: boolean;
@@ -1662,7 +1662,6 @@ export namespace DetachDatabaseRequest {
 export interface DropDatabaseRequestParams {
 	connectionUri: string;
 	database: string;
-	objectUrn: string;
 	dropConnections: boolean;
 	deleteBackupHistory: boolean;
 	generateScript: boolean;
@@ -1690,6 +1689,24 @@ export namespace GetDataFolderRequest {
 	export const type = new RequestType<GetDataFolderRequestParams, string, void, void>('admin/getdatafolder');
 }
 
+export interface GetBackupFolderRequestParams {
+	connectionUri: string;
+}
+
+export namespace GetBackupFolderRequest {
+	export const type = new RequestType<GetBackupFolderRequestParams, string, void, void>('admin/getbackupfolder');
+}
+
+export interface BackupDatabaseRequestParams {
+	ownerUri: string;
+	backupInfo: mssql.BackupInfo;
+	taskExecutionMode: azdata.TaskExecutionMode;
+}
+
+export namespace BackupDatabaseRequest {
+	export const type = new RequestType<BackupDatabaseRequestParams, BackupResponse, void, void>('backup/backup');
+}
+
 export interface GetAssociatedFilesRequestParams {
 	connectionUri: string;
 	primaryFilePath: string;
@@ -1700,13 +1717,12 @@ export namespace GetAssociatedFilesRequest {
 }
 
 export namespace PurgeQueryStoreDataRequest {
-	export const type = new RequestType<purgeQueryStoreDataRequestParams, void, void, void>('objectManagement/purgeQueryStoreData');
+	export const type = new RequestType<PurgeQueryStoreDataRequestParams, void, void, void>('objectManagement/purgeQueryStoreData');
 }
 
-export interface purgeQueryStoreDataRequestParams {
+export interface PurgeQueryStoreDataRequestParams {
 	connectionUri: string;
 	database: string;
-	objectUrn: string;
 }
 
 // ------------------------------- < Object Management > ------------------------------------

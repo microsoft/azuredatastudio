@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { SqlTargetPlatform } from 'sqldbproj';
@@ -41,15 +41,6 @@ export function getAgreementDisplayText(agreementInfo: AgreementInfo): string {
  */
 export function getPublishServerName(target: string): string {
 	return target === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure) ? constants.AzureSqlServerName : constants.SqlServerName;
-}
-
-/**
- * Returns the docker image place holder based on the target version
- */
-export function getDockerImagePlaceHolder(target: string): string {
-	return target === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure) ?
-		constants.dockerImagesPlaceHolder(constants.AzureSqlDbLiteDockerImageName) :
-		constants.dockerImagesPlaceHolder(SqlTargetPlatform.sqlEdge);
 }
 
 /**
@@ -109,13 +100,13 @@ export async function getImageTags(imageInfo: DockerImageInfo, target: string, d
 }
 
 /**
- * Returns the list of base images for given target version
+ * Returns the base image for given target version
  * @param target
- * @returns list of image info
+ * @returns image info
  */
-export function getDockerBaseImages(target: string): DockerImageInfo[] {
+export function getDockerBaseImage(target: string): DockerImageInfo {
 	if (target === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure)) {
-		return [{
+		return {
 			name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}`,
 			displayName: constants.AzureSqlDbFullDockerImageName,
 			agreementInfo: {
@@ -126,45 +117,20 @@ export function getDockerBaseImages(target: string): DockerImageInfo[] {
 			},
 			tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.sqlServerDockerRepository}/tags/list`,
 			defaultTag: constants.dockerImageDefaultTag
-		}, {
-			name: `${constants.sqlServerDockerRegistry}/${constants.azureSqlEdgeDockerRepository}`,
-			displayName: constants.AzureSqlDbLiteDockerImageName,
+		};
+	} else {
+		return {
+			name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}`,
+			displayName: constants.SqlServerDockerImageName,
 			agreementInfo: {
 				link: {
-					text: constants.edgeEulaAgreementTitle,
-					url: constants.sqlServerEdgeEulaLink,
+					text: constants.eulaAgreementTitle,
+					url: constants.sqlServerEulaLink,
 				}
 			},
-			tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.azureSqlEdgeDockerRepository}/tags/list`,
+			tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.sqlServerDockerRepository}/tags/list`,
 			defaultTag: constants.dockerImageDefaultTag
-		}];
-	} else {
-		return [
-			{
-				name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}`,
-				displayName: constants.SqlServerDockerImageName,
-				agreementInfo: {
-					link: {
-						text: constants.eulaAgreementTitle,
-						url: constants.sqlServerEulaLink,
-					}
-				},
-				tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.sqlServerDockerRepository}/tags/list`,
-				defaultTag: constants.dockerImageDefaultTag
-			},
-			{
-				name: `${constants.sqlServerDockerRegistry}/${constants.azureSqlEdgeDockerRepository}`,
-				displayName: SqlTargetPlatform.sqlEdge,
-				agreementInfo: {
-					link: {
-						text: constants.edgeEulaAgreementTitle,
-						url: constants.sqlServerEdgeEulaLink,
-					}
-				},
-				tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.azureSqlEdgeDockerRepository}/tags/list`,
-				defaultTag: constants.dockerImageDefaultTag
-			},
-		];
+		};
 	}
 }
 

@@ -201,7 +201,7 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.purgeQueryStoreDataMessage">
         <source xml:lang="en">Are you sure you want to purge the Query Store data from '{0}'?</source>
-        <target state="new">Are you sure you want to purge the Query Store data from '{0}'?</target>
+        <target state="translated">是否确实要从“{0}”中清除查询存储数据?</target>
       </trans-unit>
       <trans-unit id="objectManagement.associatedDatabaseFiles">
         <source xml:lang="en">Associated Database Files</source>
@@ -224,8 +224,8 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">附加数据库</target>
       </trans-unit>
       <trans-unit id="objectManagement.user.aadAuth">
-        <source xml:lang="en">Authenticate with Azure Active Directory</source>
-        <target state="translated">通过 Azure Active Directory 进行身份验证</target>
+        <source xml:lang="en">Authenticate with Microsoft Entra</source>
+        <target state="translated">使用 Microsoft Entra 进行身份验证</target>
       </trans-unit>
       <trans-unit id="objectManagement.user.sqlAuth">
         <source xml:lang="en">Authenticate with password</source>
@@ -275,13 +275,13 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Automatically set processor affinity mask for all processors</source>
         <target state="translated">自动设置所有处理器的处理器关联掩码</target>
       </trans-unit>
-      <trans-unit id="objectManagement.login.aadAuthenticationType">
-        <source xml:lang="en">Azure Active Directory Authentication</source>
-        <target state="translated">Azure Active Directory 身份验证</target>
-      </trans-unit>
       <trans-unit id="objectManagement.azurePricingLink">
         <source xml:lang="en">Azure SQL Database pricing calculator</source>
         <target state="translated">Azure SQL 数据库定价计算器</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backButtonLabel">
+        <source xml:lang="en">Back</source>
+        <target state="translated">上一步</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.backupSectionHeader">
         <source xml:lang="en">Backup</source>
@@ -654,6 +654,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Filegroup</source>
         <target state="translated">文件组</target>
       </trans-unit>
+      <trans-unit id="objectManagement.filegroupsNameInput">
+        <source xml:lang="en">Filegroup Name</source>
+        <target state="translated">文件组名称</target>
+      </trans-unit>
       <trans-unit id="objectManagement.filegroupsSectionHeader">
         <source xml:lang="en">Filegroups</source>
         <target state="translated">文件组</target>
@@ -882,6 +886,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Memory Used By Memory Optimized Objects</source>
         <target state="translated">内存优化对象使用的内存</target>
       </trans-unit>
+      <trans-unit id="objectManagement.login.aadAuthenticationType">
+        <source xml:lang="en">Microsoft Entra ID Authentication</source>
+        <target state="translated">Microsoft Entra ID 身份验证</target>
+      </trans-unit>
       <trans-unit id="objectManagement.minServerMemoryText">
         <source xml:lang="en">Minimum Server Memory (MB)</source>
         <target state="translated">最小服务器内存(MB)</target>
@@ -889,6 +897,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.databaseProperties.monitoringSectionText">
         <source xml:lang="en">Monitoring</source>
         <target state="translated">监视</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.notAvailableText">
+        <source xml:lang="en">N/A</source>
+        <target state="translated">不适用</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.name">
         <source xml:lang="en">Name</source>
@@ -1044,7 +1056,7 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.purgeQueryDataButtonText">
         <source xml:lang="en">Purge Query Store Data</source>
-        <target state="new">Purge Query Store Data</target>
+        <target state="translated">清除查询存储数据</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.databaseProperties.queryStoreTabHeader">
         <source xml:lang="en">Query Store</source>
@@ -1249,7 +1261,7 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.stateQueryThresholdInDaysText">
         <source xml:lang="en">State Query Threshold (Days)</source>
-        <target state="new">State Query Threshold (Days)</target>
+        <target state="translated">状态查询阈值(天)</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.statisticsCollectionInterval">
         <source xml:lang="en">Statistics Collection Interval</source>
@@ -1335,6 +1347,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.databaseProperties.valueForSecondaryColumnHeader">
         <source xml:lang="en">Value for Secondary</source>
         <target state="translated">辅助数据库的值</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.locksValidation">
+        <source xml:lang="en">Value should be greater than {0}. Choose 0 for default settings.</source>
+        <target state="translated">值应大于 {0}。为默认设置选择 0。</target>
       </trans-unit>
       <trans-unit id="objectManagement.versionText">
         <source xml:lang="en">Version</source>
@@ -1598,13 +1614,13 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Associate schemas to JSON files in the current project</source>
         <target state="translated">将架构关联到当前项目中的 JSON 文件</target>
       </trans-unit>
-      <trans-unit id="title.attachDatabase">
-        <source xml:lang="en">Attach (Preview)</source>
-        <target state="translated">附加(预览)</target>
-      </trans-unit>
       <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
         <source xml:lang="en">Attach DB filename</source>
         <target state="translated">附加 DB 文件名</target>
+      </trans-unit>
+      <trans-unit id="title.attachDatabase">
+        <source xml:lang="en">Attach Database (Preview)</source>
+        <target state="translated">附加数据库(预览版)</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
         <source xml:lang="en">Attestation URL</source>
@@ -1618,10 +1634,6 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Authentication type</source>
         <target state="translated">身份验证类型</target>
       </trans-unit>
-      <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
-        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory - 支持 MFA 的通用目录</target>
-      </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS">
         <source xml:lang="en">Azure Attestation</source>
         <target state="translated">Azure 证明</target>
@@ -1629,6 +1641,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="title.changeNotebookConnection">
         <source xml:lang="en">Change SQL Notebook Connection</source>
         <target state="translated">更改 SQL 笔记本连接</target>
+      </trans-unit>
+      <trans-unit id="mssql.connection.clearPooledConnections">
+        <source xml:lang="en">Clear Pooled Connections</source>
+        <target state="translated">清除共用连接</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.commandTimeout.displayName">
         <source xml:lang="en">Command timeout</source>
@@ -1695,8 +1711,8 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">设计</target>
       </trans-unit>
       <trans-unit id="title.detachDatabase">
-        <source xml:lang="en">Detach (Preview)</source>
-        <target state="translated">拆离 (预览)</target>
+        <source xml:lang="en">Detach Database (Preview)</source>
+        <target state="translated">拆离数据库(预览版)</target>
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.disableGroupBySchema">
         <source xml:lang="en">Disable Group By Schema</source>
@@ -1811,8 +1827,8 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">已启用</target>
       </trans-unit>
       <trans-unit id="mssql.enableConnectionPooling">
-        <source xml:lang="en">Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed. To clear pooled connections, run the command: 'SQL Server: Clear Pooled Connections'</source>
-        <target state="new">Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed. To clear pooled connections, run the command: 'SQL Server: Clear Pooled Connections'</target>
+        <source xml:lang="en">Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed. To clear pooled connections, run the command: 'MSSQL: Clear Pooled Connections'</source>
+        <target state="translated">在 MSSQL 连接上启用连接池，以提高 Azure Data Studio 连接的整体性能。默认启用此设置。更改值时，需要重新启动 Azure Data Studio。若要清除共用连接，请运行以下命令:“MSSQL: Clear Pooled Connections”</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.description">
         <source xml:lang="en">Enables or disables Always Encrypted for the connection</source>
@@ -1938,6 +1954,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
         <target state="translated">启动时要删除的已超过 mssql.logRetentionMinutes 的旧文件的最大数量。将在下次启动 Azure Data Studio 时清理由于此限制而未清理的文件。</target>
       </trans-unit>
+      <trans-unit id="mssql.parallelMessageProcessingLimit">
+        <source xml:lang="en">Maximum number of requests that should be handled in parallel by the backend SQL Tools Service. This brings performance benefits to MSSQL queries and connections. This limit is applicable only when `MSSQL: Parallel Message Processing` is enabled. The default value is 100, and can be adjusted as needed as per OS support. Azure Data Studio is required to be relaunched when the value is changed.</source>
+        <target state="translated">后端 SQL 工具服务应并行处理的最大请求数。这会为 MSSQL 查询和连接带来性能优势。仅当启用了`MSSQL: Parallel Message Processing`时，此限制才适用。默认值为 100，可以根据 OS 支持根据需要进行调整。更改值时，需要重新启动 Azure Data Studio。</target>
+      </trans-unit>
       <trans-unit id="mssql.query.setRowCount">
         <source xml:lang="en">Maximum number of rows to return before the server stops processing your query.</source>
         <target state="translated">在服务器停止处理查询之前要返回的最大行数。</target>
@@ -1945,6 +1965,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="mssql.query.textSize">
         <source xml:lang="en">Maximum size of text and ntext data returned from a SELECT statement</source>
         <target state="translated">从 SELECT 语句返回的 text 和 ntext 数据的大小上限</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
+        <source xml:lang="en">Microsoft Entra ID - Universal with MFA support</source>
+        <target state="translated">Microsoft Entra ID - 具有 MFA 支持的通用</target>
       </trans-unit>
       <trans-unit id="mssql.provider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>
@@ -1978,17 +2002,33 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Name of the SQL Server instance</source>
         <target state="translated">SQL Server 实例的名称</target>
       </trans-unit>
-      <trans-unit id="title.newObject">
-        <source xml:lang="en">New (Preview)</source>
-        <target state="translated">新建 (预览)</target>
+      <trans-unit id="title.newApplicationRole">
+        <source xml:lang="en">New Application Role (Preview)</source>
+        <target state="translated">新应用程序角色(预览版)</target>
       </trans-unit>
       <trans-unit id="title.newDatabase">
         <source xml:lang="en">New Database (Preview)</source>
         <target state="translated">新建数据库 (预览版)</target>
       </trans-unit>
+      <trans-unit id="title.newDatabaseRole">
+        <source xml:lang="en">New Database Role (Preview)</source>
+        <target state="translated">新数据库角色(预览版)</target>
+      </trans-unit>
+      <trans-unit id="title.newLogin">
+        <source xml:lang="en">New Login (Preview)</source>
+        <target state="translated">新登录(预览版)</target>
+      </trans-unit>
+      <trans-unit id="title.newServerRole">
+        <source xml:lang="en">New Server Role (Preview)</source>
+        <target state="translated">新服务器角色(预览版)</target>
+      </trans-unit>
       <trans-unit id="title.newTable">
         <source xml:lang="en">New Table</source>
         <target state="translated">新建表</target>
+      </trans-unit>
+      <trans-unit id="title.newUser">
+        <source xml:lang="en">New User (Preview)</source>
+        <target state="translated">新用户(预览版)</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None">
         <source xml:lang="en">None</source>
@@ -2069,10 +2109,6 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="mssql.connectionOptions.authType.categoryValues.sqlLogin">
         <source xml:lang="en">SQL Login</source>
         <target state="translated">SQL 登录</target>
-      </trans-unit>
-      <trans-unit id="mssql.connection.clearPooledConnections">
-        <source xml:lang="en">SQL Server: Clear Pooled Connections</source>
-        <target state="new">SQL Server: Clear Pooled Connections</target>
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.disableGroupBySchemaTitle">
         <source xml:lang="en">SQL Server: Disable Group By Schema</source>
@@ -2294,6 +2330,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
         <target state="translated">为 true 时，从相应的池中取出连接对象，或根据需要创建连接对象并将其添加到相应的池中</target>
       </trans-unit>
+      <trans-unit id="mssql.parallelMessageProcessing">
+        <source xml:lang="en">Whether the requests to the backend SQL Tools Service should be handled in parallel. This brings performance benefits to MSSQL queries and connections. The default value is true. Azure Data Studio is required to be relaunched when the value is changed.</source>
+        <target state="translated">是否应并行处理对后端 SQL 工具服务的请求。这会为 MSSQL 查询和连接带来性能优势。默认值为 true。更改值时，需要重新启动 Azure Data Studio。</target>
+      </trans-unit>
       <trans-unit id="mssql.tableDesigner.allowDisableAndReenableDdlTriggers">
         <source xml:lang="en">Whether to allow table designer to disable and re-enable DDL triggers during publish</source>
         <target state="translated">是否允许表设计器在发布期间禁用和重新启用 DDL 触发器</target>
@@ -2309,10 +2349,6 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="mssql.connectionOptions.workstationId.displayName">
         <source xml:lang="en">Workstation Id</source>
         <target state="translated">工作站 ID</target>
-      </trans-unit>
-      <trans-unit id="mssql.parallelMessageProcessing">
-        <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</source>
-        <target state="translated">[试验性] 是否应并行处理对 SQL 工具服务的请求。引入此方法的目的是发现并行处理所有请求时可能存在的问题。默认值为 false。更改此值后，需要重新启动 Azure Data Studio。</target>
       </trans-unit>
       <trans-unit id="mssql.ignorePlatformWarning">
         <source xml:lang="en">[Optional] Do not show unsupported platform warnings</source>
@@ -2332,7 +2368,7 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.placeholder">
         <source xml:lang="en">e.g. servername,port</source>
-        <target state="new">e.g. servername,port</target>
+        <target state="translated">例如服务器名、端口</target>
       </trans-unit>
       <trans-unit id="mssql.format.placeCommasBeforeNextStatement">
         <source xml:lang="en">should commas be placed at the beginning of each statement in a list e.g. ', mycolumn2' instead of at the end e.g. 'mycolumn1,'</source>

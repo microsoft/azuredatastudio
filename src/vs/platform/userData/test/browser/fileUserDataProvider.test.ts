@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -311,10 +311,10 @@ suite('FileUserDataProvider - Watching', () => {
 	const rootFileResource = joinPath(ROOT, 'User');
 	const rootUserDataResource = rootFileResource.with({ scheme: Schemas.vscodeUserData });
 
-	const fileEventEmitter: Emitter<readonly IFileChange[]> = new Emitter<readonly IFileChange[]>();
-	disposables.add(fileEventEmitter);
+	let fileEventEmitter: Emitter<readonly IFileChange[]>;
 
 	setup(() => {
+		fileEventEmitter = disposables.add(new Emitter<readonly IFileChange[]>());
 		testObject = disposables.add(new FileUserDataProvider(rootFileResource.scheme, new TestFileSystemProvider(fileEventEmitter.event), Schemas.vscodeUserData, new NullLogService()));
 	});
 

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ClientSecretCredential } from '@azure/identity';
@@ -67,7 +67,9 @@ async function main(force: boolean): Promise<void> {
 
 const [, , force] = process.argv;
 
-main(force === 'true').then(() => {
+console.log(process.argv);
+
+main(/^true$/i.test(force)).then(() => {
 	console.log('Build successfully released');
 	process.exit(0);
 }, err => {

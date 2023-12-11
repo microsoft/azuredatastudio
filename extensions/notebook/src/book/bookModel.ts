@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
@@ -183,7 +183,7 @@ export class BookModel {
 		if (this._tableOfContentsPath) {
 			try {
 				let fileContents = await fsPromises.readFile(this._configPath, 'utf-8');
-				const config = yaml.safeLoad(fileContents.toString());
+				const config = yaml.safeLoad(fileContents.toString()) as JupyterBookSection;
 				fileContents = await fsPromises.readFile(this._tableOfContentsPath, 'utf-8');
 				let tableOfContents: any = yaml.safeLoad(fileContents.toString());
 				const parsedTOC: IJupyterBookToc = { sections: this.parseJupyterSections(this._bookVersion, tableOfContents) };

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as browser from 'vs/base/browser/browser';
@@ -46,7 +46,7 @@ export class NotebookOverviewRuler extends Themable {
 	}
 
 	private _render(ctx: CanvasRenderingContext2D, width: number, height: number, scrollHeight: number, ratio: number) {
-		const viewModel = this.notebookEditor._getViewModel();
+		const viewModel = this.notebookEditor.getViewModel();
 		const fontInfo = this.notebookEditor.getLayoutInfo().fontInfo;
 		const laneWidth = width / this._lanes;
 

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Event } from 'vs/base/common/event';
@@ -50,6 +50,8 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 export class TestSharedProcessService implements ISharedProcessService {
 
 	declare readonly _serviceBrand: undefined;
+
+	createRawConnection(): never { throw new Error('Not Implemented'); }
 
 	getChannel(channelName: string): any { return undefined; }
 
@@ -107,6 +109,7 @@ export class TestNativeHostService implements INativeHostService {
 	async setRepresentedFilename(path: string): Promise<void> { }
 	async isAdmin(): Promise<boolean> { return false; }
 	async writeElevated(source: URI, target: URI): Promise<void> { }
+	async isRunningUnderARM64Translation(): Promise<boolean> { return false; }
 	async getOSProperties(): Promise<IOSProperties> { return Object.create(null); }
 	async getOSStatistics(): Promise<IOSStatistics> { return Object.create(null); }
 	async getOSVirtualMachineHint(): Promise<number> { return 0; }

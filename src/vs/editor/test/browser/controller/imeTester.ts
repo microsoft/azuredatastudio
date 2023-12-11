@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ITextAreaInputHost, TextAreaInput, TextAreaWrapper } from 'vs/editor/browser/controller/textAreaInput';
@@ -121,7 +121,12 @@ function doCreateTest(description: string, inputStr: string, expectedStr: string
 		}
 	};
 
-	const handler = new TextAreaInput(textAreaInputHost, new TextAreaWrapper(input), platform.OS, browser);
+	const handler = new TextAreaInput(textAreaInputHost, new TextAreaWrapper(input), platform.OS, {
+		isAndroid: browser.isAndroid,
+		isFirefox: browser.isFirefox,
+		isChrome: browser.isChrome,
+		isSafari: browser.isSafari,
+	});
 
 	const output = document.createElement('pre');
 	output.className = 'output';

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { CancelablePromise, createCancelablePromise, TimeoutTimer } from 'vs/base/common/async';
@@ -145,7 +145,7 @@ export class CodeActionModel extends Disposable {
 	private readonly _onDidChangeState = this._register(new Emitter<CodeActionsState.State>());
 	public readonly onDidChangeState = this._onDidChangeState.event;
 
-	#isDisposed = false;
+	private _disposed = false;
 
 	constructor(
 		private readonly _editor: ICodeEditor,
@@ -165,17 +165,17 @@ export class CodeActionModel extends Disposable {
 	}
 
 	override dispose(): void {
-		if (this.#isDisposed) {
+		if (this._disposed) {
 			return;
 		}
-		this.#isDisposed = true;
+		this._disposed = true;
 
 		super.dispose();
 		this.setState(CodeActionsState.Empty, true);
 	}
 
 	private _update(): void {
-		if (this.#isDisposed) {
+		if (this._disposed) {
 			return;
 		}
 
@@ -226,7 +226,7 @@ export class CodeActionModel extends Disposable {
 
 		this._state = newState;
 
-		if (!skipNotify && !this.#isDisposed) {
+		if (!skipNotify && !this._disposed) {
 			this._onDidChangeState.fire(newState);
 		}
 	}

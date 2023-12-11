@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/menubarControl';
@@ -32,7 +32,7 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { isFullscreen } from 'vs/base/browser/browser';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { BrowserFeatures } from 'vs/base/browser/canIUse';
-import { KeyCode } from 'vs/base/common/keyCodes';
+import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { IsMacNativeContext, IsWebContext } from 'vs/platform/contextkey/common/contextkeys';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -449,7 +449,7 @@ export class CustomMenubarControl extends MenubarControl {
 						id: `workbench.actions.menubar.focus`,
 						title: { value: localize('focusMenu', "Focus Application Menu"), original: 'Focus Application Menu' },
 						keybinding: {
-							primary: KeyCode.F10,
+							primary: KeyMod.Alt | KeyCode.F10,
 							weight: KeybindingWeight.WorkbenchContrib,
 							when: IsWebContext
 						},
@@ -468,9 +468,6 @@ export class CustomMenubarControl extends MenubarControl {
 		const state = this.updateService.state;
 
 		switch (state.type) {
-			case StateType.Uninitialized:
-				return null;
-
 			case StateType.Idle:
 				return new Action('update.check', localize({ key: 'checkForUpdates', comment: ['&& denotes a mnemonic'] }, "Check for &&Updates..."), undefined, true, () =>
 					this.updateService.checkForUpdates(true));
@@ -495,6 +492,9 @@ export class CustomMenubarControl extends MenubarControl {
 			case StateType.Ready:
 				return new Action('update.restart', localize({ key: 'restartToUpdate', comment: ['&& denotes a mnemonic'] }, "Restart to &&Update"), undefined, true, () =>
 					this.updateService.quitAndInstall());
+
+			default:
+				return null;
 		}
 	}
 

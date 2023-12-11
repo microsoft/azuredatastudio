@@ -1,13 +1,13 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { DatabaseFileData, IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
-import { AttachDatabaseDocUrl } from '../constants';
+import { AttachDatabaseDocUrl, TelemetryActions } from '../constants';
 import * as loc from '../localizedConstants';
 import { RemoveText } from '../../ui/localizedConstants';
 import { DefaultMinTableRowCount, DialogButton, getTableHeight } from '../../ui/dialogBase';
@@ -176,6 +176,10 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	protected override get helpUrl(): string {
 		return AttachDatabaseDocUrl;
+	}
+
+	protected override get actionName(): string {
+		return TelemetryActions.AttachDatabase;
 	}
 
 	protected override async validateInput(): Promise<string[]> {

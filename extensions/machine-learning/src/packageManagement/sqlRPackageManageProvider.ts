@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
@@ -71,7 +71,7 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 
 		if (connection) {
 			connectionParts.push(utils.getKeyValueString('driver', `"${constants.supportedODBCDriver}"`));
-			let server = connection.serverName.replace('\\', '\\\\');
+			let server = connection.serverName.replace(/\\/g, '\\\\');
 			if (databaseName) {
 				connectionParts.push(utils.getKeyValueString('database', `"${databaseName}"`));
 			}

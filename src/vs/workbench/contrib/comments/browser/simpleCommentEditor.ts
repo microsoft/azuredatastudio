@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
@@ -104,7 +104,8 @@ export class SimpleCommentEditor extends CodeEditorWidget {
 				enabled: false
 			},
 			autoClosingBrackets: configurationService.getValue('editor.autoClosingBrackets'),
-			quickSuggestions: false
+			quickSuggestions: false,
+			accessibilitySupport: configurationService.getValue<'auto' | 'off' | 'on'>('editor.accessibilitySupport'),
 		};
 	}
 }

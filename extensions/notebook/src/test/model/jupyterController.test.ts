@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -19,10 +19,8 @@ describe('Jupyter Controller', function () {
 	let appContext = new AppContext(mockExtensionContext);
 	let controller: JupyterController;
 	let connection: azdata.connection.ConnectionProfile = new azdata.connection.ConnectionProfile();
-	let showErrorMessageSpy: sinon.SinonSpy;
 
 	this.beforeEach(() => {
-		showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 		sinon.stub(azdata.connection, 'getCurrentConnection').returns(Promise.resolve(connection));
 		sinon.stub(azdata.tasks, 'registerTask');
 		sinon.stub(vscode.commands, 'registerCommand');
@@ -60,17 +58,6 @@ describe('Jupyter Controller', function () {
 	it('should should get defaultConnection() successfully', async () => {
 		let defaultConnection = await controller.getDefaultConnection();
 		should(defaultConnection).deepEqual(connection, 'getDefaultConnection() did not return expected result');
-	});
-
-	it('should show error message for doManagePackages before activation', async () => {
-		await controller.doManagePackages();
-		should(showErrorMessageSpy.calledOnce).be.true('showErrorMessage should be called');
-	});
-
-	it('should not show error message for doManagePackages after activation', async () => {
-		await controller.activate();
-		await controller.doManagePackages();
-		should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not be called');
 	});
 
 	it('Returns expected values from notebook provider', async () => {

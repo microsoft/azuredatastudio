@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
@@ -12,9 +12,6 @@ export interface IBackupRestoreUrlBrowserDialogService {
 	 * Show url browser dialog
 	 */
 	showDialog(ownerUri: string,
-		expandPath: string,
-		fileFilters: { label: string, filters: string[] }[],
-		fileValidationServiceType: string,
 		isWide: boolean,
 		isRestoreDialog: boolean,
 		defaultBackupName: string): Promise<string>;

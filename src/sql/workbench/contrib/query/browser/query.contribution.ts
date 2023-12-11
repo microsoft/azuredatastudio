@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -257,6 +257,26 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'type': 'boolean',
 			'description': localize('queryEditor.results.saveAsExcel.includeHeaders', "When true, column headers are included when saving results as an Excel file"),
 			'default': true
+		},
+		'queryEditor.results.saveAsExcel.freezeHeaderRow': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.saveAsExcel.freezeHeaderRow', "When true, freeze the header row when saving results as an Excel file"),
+			'default': false
+		},
+		'queryEditor.results.saveAsExcel.autoFilterHeaderRow': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.saveAsExcel.autoFilterHeaderRow', "When true, enable auto filtering on the header row when saving results as an Excel file"),
+			'default': false
+		},
+		'queryEditor.results.saveAsExcel.autoSizeColumns': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.saveAsExcel.autoSizeColumns', "When true, attempt to automatically size columns when saving results as an Excel file"),
+			'default': false
+		},
+		'queryEditor.results.saveAsExcel.boldHeaderRow': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.saveAsExcel.boldHeaderRow', "When true, make the header row bold when saving results as an Excel file"),
+			'default': false
 		},
 		'queryEditor.results.saveAsCsv.encoding': {
 			'type': 'string',

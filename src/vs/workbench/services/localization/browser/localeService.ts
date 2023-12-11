@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -28,7 +28,7 @@ export class WebLocaleService implements ILocaleService {
 
 	async setLocale(languagePackItem: ILanguagePackItem, _skipDialog = false): Promise<void> {
 		const locale = languagePackItem.id;
-		if (locale === Language.value() || (!locale && Language.value() === navigator.language)) {
+		if (locale === Language.value() || (!locale && Language.value() === navigator.language.toLowerCase())) {
 			return;
 		}
 		if (locale) {
@@ -57,7 +57,7 @@ export class WebLocaleService implements ILocaleService {
 		window.localStorage.removeItem(WebLocaleService._LOCAL_STORAGE_LOCALE_KEY);
 		window.localStorage.removeItem(WebLocaleService._LOCAL_STORAGE_EXTENSION_ID_KEY);
 
-		if (Language.value() === navigator.language) {
+		if (Language.value() === navigator.language.toLowerCase()) {
 			return;
 		}
 

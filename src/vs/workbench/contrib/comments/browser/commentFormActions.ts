@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Button } from 'vs/base/browser/ui/button/button';
@@ -56,7 +56,7 @@ export class CommentFormActions implements IDisposable {
 			const lastAction = this._actions[0];
 
 			if (lastAction.enabled) {
-				this.actionHandler(lastAction);
+				return this.actionHandler(lastAction);
 			}
 		}
 	}

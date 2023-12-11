@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 interface BaseMessage {
@@ -65,9 +65,16 @@ export namespace ToWebviewMessage {
 		readonly content: string;
 	}
 
+	export interface CopyImageContent extends BaseMessage {
+		readonly type: 'copyImage';
+		readonly source: string;
+		readonly id: string;
+	}
+
 	export type Type =
 		| OnDidChangeTextEditorSelection
 		| UpdateView
 		| UpdateContent
+		| CopyImageContent
 		;
 }

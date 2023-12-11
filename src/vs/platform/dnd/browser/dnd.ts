@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { DataTransfers } from 'vs/base/browser/dnd';
@@ -12,7 +12,6 @@ import { ResourceMap } from 'vs/base/common/map';
 import { parse } from 'vs/base/common/marshalling';
 import { Schemas } from 'vs/base/common/network';
 import { isWeb } from 'vs/base/common/platform';
-import { withNullAsUndefined } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
@@ -269,7 +268,7 @@ export async function extractFileListData(accessor: ServicesAccessor, files: Fil
 
 			reader.onload = async event => {
 				const name = file.name;
-				const loadResult = withNullAsUndefined(event.target?.result);
+				const loadResult = event.target?.result ?? undefined;
 				if (typeof name !== 'string' || typeof loadResult === 'undefined') {
 					result.complete(undefined);
 					return;

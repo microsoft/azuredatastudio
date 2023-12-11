@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { isFalsyOrEmpty } from 'vs/base/common/arrays';
@@ -464,7 +464,26 @@ const newCommands: ApiCommand[] = [
 			new ApiCommandArgument('value', 'The context key value', () => true, v => v),
 		],
 		ApiCommandResult.Void
-	)
+	),
+	// --- mapped edits
+	new ApiCommand(
+		'vscode.executeMappedEditsProvider', '_executeMappedEditsProvider', 'Execute Mapped Edits Provider',
+		[
+			ApiCommandArgument.Uri,
+			ApiCommandArgument.StringArray,
+			new ApiCommandArgument(
+				'MappedEditsContext',
+				'Mapped Edits Context',
+				(v: unknown) => typeConverters.MappedEditsContext.is(v),
+				(v: vscode.MappedEditsContext) => typeConverters.MappedEditsContext.from(v)
+			)
+		],
+		new ApiCommandResult<IWorkspaceEditDto | null, vscode.WorkspaceEdit | null>(
+			'A promise that resolves to a workspace edit or null',
+			(value) => {
+				return value ? typeConverters.WorkspaceEdit.to(value) : null;
+			})
+	),
 ];
 
 //#endregion

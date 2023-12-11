@@ -1,7 +1,7 @@
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: "16.x"
+      versionSpec: "18.15.0"
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
@@ -9,7 +9,7 @@ steps:
 
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '3.x'
+      versionSpec: '3.11.x'
       addToPath: true
 
   - task: AzureKeyVault@1
@@ -40,6 +40,10 @@ steps:
       exec { git config --global http.postBuffer 524288000 }
       exec { git config --global https.postBuffer 524288000 }
     displayName: Prepare tooling
+
+  - task: CodeQL3000Init@0
+    displayName: CodeQL Initialize
+    condition: eq(variables['Codeql.enabled'], 'True')
 
   - powershell: |
       git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
@@ -169,32 +173,12 @@ steps:
     displayName: Run core integration tests (arm64)
     condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['VSCODE_ARCH'], 'arm64')))
 
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  - task: EsrpCodeSigning@3
     displayName: 'Sign out code'
     inputs:
       ConnectedServiceName: 'Code Signing'
       FolderPath: '$(agent.builddirectory)/azuredatastudio-win32-$(VSCODE_ARCH)'
-      Pattern: |
-        *.exe
-        *.node
-        !**/node_modules/**/*
-        resources/app/node_modules.asar.unpacked/*.dll
-        d3dcompiler_47.dll
-        vulkan-1.dll
-        libGLESv2.dll
-        ffmpeg.dll
-        libEGL.dll
-        Microsoft.SqlTools.Hosting.dll
-        Microsoft.SqlTools.ResourceProvider.Core.dll
-        Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll
-        MicrosoftSqlToolsCredentials.dll
-        MicrosoftSqlToolsServiceLayer.dll
-        MicrosoftSqlToolsSqlCore.dll
-        Newtonsoft.Json.dll,SqlSerializationService.dll
-        SqlToolsResourceProviderService.dll
-        Microsoft.SqlServer.*.dll
-        Microsoft.Data.Tools.Sql.BatchParser.dll
-      useMinimatch: true
+      Pattern: '*.exe,*.node,resources/app/node_modules.asar.unpacked/*.dll,d3dcompiler_47.dll,vulkan-1.dll,libGLESv2.dll,ffmpeg.dll,libEGL.dll,Microsoft.SqlTools.Hosting.dll,Microsoft.SqlTools.ResourceProvider.Core.dll,Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll,MicrosoftSqlToolsCredentials.dll,MicrosoftSqlToolsServiceLayer.dll,Newtonsoft.Json.dll,SqlSerializationService.dll,SqlToolsResourceProviderService.dll,Microsoft.SqlServer.*.dll,Microsoft.Data.Tools.Sql.BatchParser.dll'
       signConfigType: inlineSignParams
       inlineOperation: |
         [
@@ -252,7 +236,7 @@ steps:
       exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-archive" }
     displayName: Archive & User & System setup
 
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  - task: EsrpCodeSigning@3
     displayName: 'Sign installers'
     inputs:
       ConnectedServiceName: 'Code Signing'
@@ -343,6 +327,10 @@ steps:
       failTaskOnFailedTests: true
     continueOnError: true
     condition: and(succeededOrFailed(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
+
+  - task: CodeQL3000Finalize@0
+    displayName: CodeQL Finalize
+    condition: eq(variables['Codeql.enabled'], 'True')
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Detection'

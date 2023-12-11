@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -19,9 +19,13 @@ const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
 const extensionConfigSectionName = 'mssql';
 const configLogDebugInfo = 'logDebugInfo';
 const parallelMessageProcessingConfig = 'parallelMessageProcessing';
+const parallelMessageProcessingLimitConfig = 'parallelMessageProcessingLimit';
 const enableSqlAuthenticationProviderConfig = 'enableSqlAuthenticationProvider';
 const enableConnectionPoolingConfig = 'enableConnectionPooling';
 const tableDesignerPreloadConfig = 'tableDesigner.preloadDatabaseModel';
+const httpConfig = 'http';
+const configProxy = 'proxy';
+const configProxyStrictSSL = 'proxyStrictSSL';
 
 /**
  *
@@ -85,6 +89,19 @@ export function getConfigLogRetentionSeconds(): number | undefined {
 	}
 }
 
+export function getHttpProxyUrl(): string | undefined {
+	let config = getConfiguration(httpConfig);
+	if (config) {
+		return config[configProxy];
+	} return undefined;
+}
+
+export function getHttpProxyStrictSSL(): boolean {
+	let config = getConfiguration(httpConfig);
+	if (config) {
+		return config.get<boolean>(configProxyStrictSSL, true); // true by default
+	} return true; // true by default.
+}
 /**
  * The tracing level defined in the package.json
  */
@@ -134,17 +151,27 @@ export function setConfigPreloadDatabaseModel(enable: boolean): void {
 
 /**
  * Retrieves configuration `mssql:parallelMessageProcessing` from settings file.
- * @returns true if setting is enabled in ADS or running ADS in dev mode.
+ * @returns true if setting is enabled in ADS (enabled by default).
  */
 export function getParallelMessageProcessingConfig(): boolean {
 	const config = getConfiguration();
 	if (!config) {
-		return false;
+		return true; // default value
 	}
-	const setting = config.inspect(parallelMessageProcessingConfig);
-	return (azdata.env.quality === azdata.env.AppQuality.dev && setting?.globalValue === undefined && setting?.workspaceValue === undefined) ? true : config[parallelMessageProcessingConfig];
+	return config[parallelMessageProcessingConfig];
 }
 
+/**
+ * Retrieves configuration `mssql:parallelMessageProcessingLimit` from settings file.
+ * @returns max number of parallel messages that are allowed to be processed by backend service, 100 by default.
+ */
+export function getParallelMessageProcessingLimitConfig(): number {
+	const config = getConfiguration();
+	if (!config) {
+		return 100; // default value
+	}
+	return config[parallelMessageProcessingLimitConfig];
+}
 /**
  * Retrieves configuration `mssql:enableSqlAuthenticationProvider` from settings file.
  * @returns true if setting is enabled in ADS, false otherwise.
@@ -202,6 +229,15 @@ export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileNa
 	}
 	// Always enable autoflush so that log entries are written immediately to disk, otherwise we can end up with partial logs
 	launchArgs.push('--autoflush-log');
+
+	let httpProxy = getHttpProxyUrl();
+	if (httpProxy) {
+		launchArgs.push('--http-proxy-url');
+		launchArgs.push(httpProxy);
+		if (getHttpProxyStrictSSL()) {
+			launchArgs.push('--http-proxy-strict-ssl')
+		}
+	}
 	return launchArgs;
 }
 

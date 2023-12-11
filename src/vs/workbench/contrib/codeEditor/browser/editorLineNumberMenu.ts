@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IAction, Separator } from 'vs/base/common/actions';
@@ -77,7 +77,6 @@ export class EditorLineNumberContextMenu extends Disposable implements IEditorCo
 			return;
 		}
 
-		const anchor = { x: e.event.posx, y: e.event.posy };
 		const lineNumber = e.target.position.lineNumber;
 
 		const contextKeyService = this.contextKeyService.createOverlay([['editorLineNumber', lineNumber]]);
@@ -122,7 +121,7 @@ export class EditorLineNumberContextMenu extends Disposable implements IEditorCo
 			}
 
 			this.contextMenuService.showContextMenu({
-				getAnchor: () => anchor,
+				getAnchor: () => e.event,
 				getActions: () => Separator.join(...allActions.map((a) => a[1])),
 				onHide: () => menu.dispose(),
 			});

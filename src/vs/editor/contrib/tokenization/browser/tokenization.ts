@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { StopWatch } from 'vs/base/common/stopwatch';
@@ -24,7 +24,7 @@ class ForceRetokenizeAction extends EditorAction {
 		}
 		const model = editor.getModel();
 		model.tokenization.resetTokenization();
-		const sw = new StopWatch(true);
+		const sw = new StopWatch();
 		model.tokenization.forceTokenization(model.getLineCount());
 		sw.stop();
 		console.log(`tokenization took ${sw.elapsed()}`);

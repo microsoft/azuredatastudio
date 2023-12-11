@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { window, InputBoxOptions, Uri, Disposable, workspace, QuickPickOptions, l10n } from 'vscode';
@@ -17,6 +17,8 @@ export class Askpass implements IIPCHandler, ITerminalEnvironmentProvider {
 	private disposable: IDisposable = EmptyDisposable;
 	private cache = new Map<string, Credentials>();
 	private credentialsProviders = new Set<CredentialsProvider>();
+
+	readonly featureDescription = 'git auth provider';
 
 	constructor(private ipc?: IIPCServer) {
 		if (ipc) {

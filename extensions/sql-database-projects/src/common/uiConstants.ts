@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 // CSS Styles
@@ -24,10 +24,10 @@ export namespace cssStyles {
 	export const addDatabaseReferenceInputboxWidth = '220px';
 
 	export const createProjectFromDatabaseLabelWidth = '110px';
-	export const createProjectFromDatabaseTextboxWidth = '310px';
+	export const createProjectFromDatabaseTextboxWidth = '300px';
 
 	export const updateProjectFromDatabaseLabelWidth = '110px';
-	export const updateProjectFromDatabaseTextboxWidth = '310px';
+	export const updateProjectFromDatabaseTextboxWidth = '300px';
 
 	// font-styles
 	export namespace fontStyle {

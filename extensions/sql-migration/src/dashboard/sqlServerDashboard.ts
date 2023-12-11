@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -18,17 +18,18 @@ import { MigrationCutoverDialogModel } from '../dialog/migrationCutover/migratio
 import { RestartMigrationDialog } from '../dialog/restartMigration/restartMigrationDialog';
 import { SqlMigrationServiceDetailsDialog } from '../dialog/sqlMigrationService/sqlMigrationServiceDetailsDialog';
 import { MigrationLocalStorage } from '../models/migrationLocalStorage';
-import { MigrationStateModel, SavedInfo } from '../models/stateMachine';
+import { MigrationStateModel, Page, SavedInfo } from '../models/stateMachine';
 import { logError, TelemetryViews } from '../telemetry';
 import { WizardController } from '../wizard/wizardController';
 import { DashboardStatusBar, ErrorEvent } from './DashboardStatusBar';
-import { DashboardTab } from './dashboardTab';
+import { DashboardTab, DashboardTabId } from './dashboardTab';
 import { MigrationsTab, MigrationsTabId } from './migrationsTab';
 import { AdsMigrationStatus, MigrationDetailsEvent, ServiceContextChangeEvent } from './tabBase';
 import { migrationServiceProvider } from '../service/provider';
 import { ApiType, SqlMigrationService } from '../service/features';
 import { getSourceConnectionId, getSourceConnectionProfile } from '../api/sqlUtils';
 import { openRetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDialog';
+import { ImportAssessmentDialog } from '../dialog/assessment/importAssessmentDialog';
 
 export interface MenuCommandArgs {
 	connectionId: string,
@@ -107,6 +108,7 @@ export class DashboardWidget {
 			};
 
 			const dashboardTab = await new DashboardTab().create(
+				this._context,
 				view,
 				async (filter: AdsMigrationStatus) => await openMigrationFcn(filter),
 				this._onServiceContextChanged,
@@ -137,8 +139,10 @@ export class DashboardWidget {
 			disposables.push(
 				tabs.onTabChanged(async tabId => {
 					await this.clearError(await getSourceConnectionId());
-					if (tabId === MigrationsTabId && !migrationsTabInitialized) {
-						migrationsTabInitialized = true;
+					if (tabId === MigrationsTabId) {
+						await this._migrationsTab.refresh();
+					} else if (tabId === DashboardTabId) {
+						await dashboardTab.refresh();
 						await this._migrationsTab.refresh();
 					}
 				}));
@@ -531,20 +535,40 @@ export class DashboardWidget {
 			if (migrationService) {
 				this.stateModel = new MigrationStateModel(this._context, migrationService);
 				this._context.subscriptions.push(this.stateModel);
+
+				const wizardController = new WizardController(
+					this._context,
+					this.stateModel,
+					this._onServiceContextChanged);
+
 				const savedInfo = this.checkSavedInfo(serverName);
 				if (savedInfo) {
 					this.stateModel.savedInfo = savedInfo;
 					this.stateModel.serverName = serverName;
-					const savedAssessmentDialog = new SavedAssessmentDialog(
-						this._context,
-						this.stateModel,
-						this._onServiceContextChanged);
-					await savedAssessmentDialog.openDialog();
+
+					const importSavedInfo = this.checkSavedInfo(loc.importAssessmentKey);
+					if (importSavedInfo && importSavedInfo.closedPage === Page.ImportAssessment) {
+						await this.clearSavedInfo(loc.importAssessmentKey);
+						if (importSavedInfo.serverAssessment !== null) {
+							this.stateModel._assessmentResults = importSavedInfo.serverAssessment;
+							this.stateModel.savedInfo = importSavedInfo;
+							await this.stateModel.loadSavedInfo();
+
+							serverName = importSavedInfo.serverAssessment?.issues[0]?.serverName ??
+								importSavedInfo.serverAssessment?.databaseAssessments[0]?.issues[0]?.serverName;
+							this.stateModel.serverName = serverName;
+						}
+
+						const importAssessmentDialog = new ImportAssessmentDialog('ownerUri', this.stateModel, serverName);
+						await importAssessmentDialog.openDialog();
+					} else {
+						const savedAssessmentDialog = new SavedAssessmentDialog(
+							this._context,
+							this.stateModel,
+							this._onServiceContextChanged);
+						await savedAssessmentDialog.openDialog();
+					}
 				} else {
-					const wizardController = new WizardController(
-						this._context,
-						this.stateModel,
-						this._onServiceContextChanged);
 					await wizardController.openWizard();
 				}
 			}
@@ -578,6 +602,10 @@ export class DashboardWidget {
 
 	private checkSavedInfo(serverName: string): SavedInfo | undefined {
 		return this._context.globalState.get<SavedInfo>(`${this.stateModel.mementoString}.${serverName}`);
+	}
+
+	private async clearSavedInfo(serverName: string) {
+		await this._context.globalState.update(`${this.stateModel.mementoString}.${serverName}`, {});
 	}
 
 	public async launchNewSupportRequest(): Promise<void> {

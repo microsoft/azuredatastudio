@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { MultiStepResult, MultiStepState } from '../dialog/generic/multiStepStatusDialog';
@@ -326,6 +326,7 @@ export class LoginMigrationModel {
 			stateMachine._targetServerInstance.id,
 			stateMachine._targetUserName,
 			stateMachine._targetPassword,
+			stateMachine._targetPort,
 			// for login migration, connect to target Azure SQL with true/true
 			// to-do: take as input from the user, should be true/false for DB/MI but true/true for VM
 			true /* encryptConnection */,

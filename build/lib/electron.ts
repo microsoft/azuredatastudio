@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
@@ -91,8 +91,11 @@ function darwinBundleDocumentType(extensions: string[], icon: string, nameOrSuff
 // 	});
 // }
 
+const { electronVersion, msBuildId } = util.getElectronVersion();
+
 export const config = {
-	version: product.electronRepository ? '22.5.7' : util.getElectronVersion(),
+	version: electronVersion,
+	tag: product.electronRepository ? `v${electronVersion}-${msBuildId}` : undefined,
 	productAppName: product.nameLong,
 	companyName: 'Microsoft Corporation',
 	copyright: 'Copyright (C) 2023 Microsoft. All rights reserved',
@@ -114,7 +117,9 @@ export const config = {
 	linuxExecutableName: product.applicationName,
 	winIcon: 'resources/win32/code.ico',
 	token: process.env['GITHUB_TOKEN'],
-	repo: product.electronRepository || undefined
+	repo: product.electronRepository || undefined,
+	validateChecksum: true,
+	checksumFile: path.join(root, 'build', 'checksums', 'electron.txt'),
 };
 
 function getElectron(arch: string): () => NodeJS.ReadWriteStream {
@@ -137,8 +142,8 @@ function getElectron(arch: string): () => NodeJS.ReadWriteStream {
 	};
 }
 
-async function main(arch = process.arch): Promise<void> {
-	const version = product.electronRepository ? '22.5.7' : util.getElectronVersion();
+async function main(arch: string = process.arch): Promise<void> {
+	const version = electronVersion;
 	const electronPath = path.join(root, '.build', 'electron');
 	const versionFile = path.join(electronPath, 'version');
 	const isUpToDate = fs.existsSync(versionFile) && fs.readFileSync(versionFile, 'utf8') === `${version}`;

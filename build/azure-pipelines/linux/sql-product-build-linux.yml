@@ -4,7 +4,7 @@ parameters:
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: "16.x"
+      versionSpec: "18.15.0"
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
@@ -25,6 +25,8 @@ steps:
   - script: |
       set -e
       tar -xzf $(Pipeline.Workspace)/compilation.tar.gz
+      # delete tar.gz after it's been extracted to clear up the space
+      rm $(Pipeline.Workspace)/compilation.tar.gz
     displayName: Extract compilation output
 
   - script: |
@@ -182,23 +184,55 @@ steps:
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
+        set -e
+        yarn gulp vscode-linux-x64-prepare-deb
+    displayName: Prepare deb package
+    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
+
+  - script: |
       set -e
       yarn gulp vscode-linux-x64-build-deb
-    displayName: Build Deb
+    displayName: Build deb package
+    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
+
+  - script: |
+        set -e
+        yarn gulp vscode-linux-x64-prepare-rpm
+    displayName: Prepare rpm package
     condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
       set -e
       yarn gulp vscode-linux-x64-build-rpm
-    displayName: Build Rpm
+    displayName: Build rpm package
     condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - task: UseDotNet@2
-    displayName: 'Install .NET Core sdk for signing'
+    displayName: 'Install .NET SDK for signing'
     inputs:
       packageType: sdk
-      version: 5.0.x
+      version: 6.0.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
+
+  - task: EsrpCodeSigning@3
+    inputs:
+      ConnectedServiceName: 'Code Signing'
+      FolderPath: '$(Build.SourcesDirectory)/.build/linux'
+      Pattern: 'deb/*.deb, rpm/*.rpm'
+      signConfigType: inlineSignParams
+      inlineOperation: |
+        [
+          {
+            "KeyCode": "CP-500207-Pgp",
+            "OperationCode": "LinuxSign",
+            "Parameters": {},
+            "ToolName": "sign",
+            "ToolVersion": "1.0"
+          }
+        ]
+      SessionTimeout: 120
+    displayName: 'Signing deb and rpm'
+    condition: and(succeeded(), eq(variables['signed'], true))
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     inputs:

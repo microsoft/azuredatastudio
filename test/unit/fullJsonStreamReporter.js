@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 const { constants } = require('mocha/lib/runner');
@@ -37,6 +37,7 @@ module.exports = class FullJsonStreamReporter extends BaseRunner {
 			test.expected = err.expected;
 			test.actualJSON = err.actualJSON;
 			test.expectedJSON = err.expectedJSON;
+			test.snapshotPath = err.snapshotPath;
 			test.err = err.message;
 			test.stack = err.stack || null;
 			writeEvent(['fail', test]);

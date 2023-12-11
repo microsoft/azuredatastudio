@@ -1,16 +1,16 @@
 name: CI
 
-on: workflow_dispatch
-
-# on:
-#   push:
-#     branches:
-#       - main
-#       - release/*
-#   pull_request:
-#     branches:
-#       - main
-#       - release/*
+# {{SQL CARBON EDIT}} Enable CI on push/pull_requests
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - release/*
+  pull_request:
+    branches:
+      - main
+      - release/*
 
 jobs:
   windows:
@@ -22,53 +22,48 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
-
+          node-version: 18.15
       - uses: actions/setup-python@v4
         with:
-          python-version: "2.x"
+          python-version: "3.11.x"
 
-      # {{SQL CARBON EDIT}} Skip caching for now
-      # - name: Compute node modules cache key
-      #   id: nodeModulesCacheKey
-      #   run: echo "::set-output name=value::$(node build/azure-pipelines/common/computeNodeModulesCacheKey.js)"
-      # - name: Cache node_modules archive
-      #   id: cacheNodeModules
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ".build/node_modules_cache"
-      #     key: "${{ runner.os }}-cacheNodeModulesArchive-${{ steps.nodeModulesCacheKey.outputs.value }}"
-      # - name: Extract node_modules archive
-      #   if: ${{ steps.cacheNodeModules.outputs.cache-hit == 'true' }}
-      #   run: 7z.exe x .build/node_modules_cache/cache.7z -aos
-      # - name: Get yarn cache directory path
-      #   id: yarnCacheDirPath
-      #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-      #   run: echo "::set-output name=dir::$(yarn cache dir)"
-      # - name: Cache yarn directory
-      #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ${{ steps.yarnCacheDirPath.outputs.dir }}
-      #     key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
-      #     restore-keys: ${{ runner.os }}-yarnCacheDir-
+      - name: Compute node modules cache key
+        id: nodeModulesCacheKey
+        run: echo "value=$(node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js)" >> $ENV:GITHUB_OUTPUT
+      - name: Cache node modules
+        id: cacheNodeModules
+        uses: actions/cache@v3
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-cacheNodeModules20-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-cacheNodeModules20-
+      - name: Get yarn cache directory path
+        id: yarnCacheDirPath
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        run: echo "dir=$(yarn cache dir)" >> $ENV:GITHUB_OUTPUT
+      - name: Cache yarn directory
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarnCacheDirPath.outputs.dir }}
+          key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-yarnCacheDir-
 
       - name: Execute yarn
-        # if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }} {{SQL CARBON EDIT}} Skipping caching for now
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
           ELECTRON_SKIP_BINARY_DOWNLOAD: 1
         run: yarn --frozen-lockfile --network-timeout 180000
-      # - name: Create node_modules archive {{SQL CARBON EDIT}} Skip caching for now
-      #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-      #   run: |
-      #     mkdir -Force .build
-      #     node build/azure-pipelines/common/listNodeModules.js .build/node_modules_list.txt
-      #     mkdir -Force .build/node_modules_cache
-      #     7z.exe a .build/node_modules_cache/cache.7z -mx3 `@.build/node_modules_list.txt
+      - name: Create node_modules archive
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        run: |
+          mkdir -Force .build
+          node build/azure-pipelines/common/listNodeModules.js .build/node_modules_list.txt
+          mkdir -Force .build/node_modules_cache
+          7z.exe a .build/node_modules_cache/cache.7z -mx3 `@.build/node_modules_list.txt
 
       - name: Compile and Download
         run: yarn npm-run-all --max_old_space_size=4095 -lp compile "electron x64" # {{SQL CARBON EDIT}} Remove unused options playwright-install download-builtin-extensions
@@ -91,44 +86,50 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.15
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11.x"
 
       # TODO: rename azure-pipelines/linux/xvfb.init to github-actions
       - name: Setup Build Environment
         run: |
           sudo apt-get update
-          sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 libgbm1 libkrb5-dev # {{SQL CARBON EDIT}} add kerberos dep
+          sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libkrb5-dev libxss1 dbus xvfb libgtk-3-0 libgbm1
           sudo cp build/azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
           sudo chmod +x /etc/init.d/xvfb
           sudo update-rc.d xvfb defaults
           sudo service xvfb start
 
-      - uses: actions/setup-node@v3
+      - name: Compute node modules cache key
+        id: nodeModulesCacheKey
+        # {{ SQL Carbon Edit}} Use sql-computeNodeModulesCacheKey
+        run: echo "value=$(node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js)" >> $GITHUB_OUTPUT
+      - name: Cache node modules
+        id: cacheNodeModules
+        uses: actions/cache@v3
         with:
-          node-version: 16
-      # {{SQL CARBON EDIT}} Skip caching for now
-      # - name: Compute node modules cache key
-      #   id: nodeModulesCacheKey
-      #   run: echo "::set-output name=value::$(node build/azure-pipelines/common/computeNodeModulesCacheKey.js)"
-      # - name: Cache node modules
-      #   id: cacheNodeModules
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: "**/node_modules"
-      #     key: ${{ runner.os }}-cacheNodeModules14-${{ steps.nodeModulesCacheKey.outputs.value }}
-      #     restore-keys: ${{ runner.os }}-cacheNodeModules14-
-      # - name: Get yarn cache directory path
-      #   id: yarnCacheDirPath
-      #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-      #   run: echo "::set-output name=dir::$(yarn cache dir)"
-      # - name: Cache yarn directory
-      #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ${{ steps.yarnCacheDirPath.outputs.dir }}
-      #     key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
-      #     restore-keys: ${{ runner.os }}-yarnCacheDir-
+          path: "**/node_modules"
+          key: ${{ runner.os }}-cacheNodeModules20-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-cacheNodeModules20-
+      - name: Get yarn cache directory path
+        id: yarnCacheDirPath
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+      - name: Cache yarn directory
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarnCacheDirPath.outputs.dir }}
+          key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-yarnCacheDir-
+      - name: Install libkrb5-dev
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        run: sudo apt install -y libkrb5-dev
       - name: Execute yarn
-        # if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }} {{SQL CARBON EDIT}} Skip caching for now
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
           ELECTRON_SKIP_BINARY_DOWNLOAD: 1
@@ -174,35 +175,36 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
-
-      # {{SQL CARBON EDIT}} Skip caching for now
-      # - name: Compute node modules cache key
-      #   id: nodeModulesCacheKey
-      #   run: echo "::set-output name=value::$(node build/azure-pipelines/common/computeNodeModulesCacheKey.js)"
-      # - name: Cache node modules
-      #   id: cacheNodeModules
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: "**/node_modules"
-      #     key: ${{ runner.os }}-cacheNodeModules14-${{ steps.nodeModulesCacheKey.outputs.value }}
-      #     restore-keys: ${{ runner.os }}-cacheNodeModules14-
-      # - name: Get yarn cache directory path
-      #   id: yarnCacheDirPath
-      #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-      #   run: echo "::set-output name=dir::$(yarn cache dir)"
-      # - name: Cache yarn directory
-      #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ${{ steps.yarnCacheDirPath.outputs.dir }}
-      #     key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
-      #     restore-keys: ${{ runner.os }}-yarnCacheDir-
+          node-version: 18.15
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11.x"
+      - name: Compute node modules cache key
+        id: nodeModulesCacheKey
+        # {{ SQL Carbon Edit}} Use sql-computeNodeModulesCacheKey
+        run: echo "value=$(node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js)" >> $GITHUB_OUTPUT
+      - name: Cache node modules
+        id: cacheNodeModules
+        uses: actions/cache@v3
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-cacheNodeModules20-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-cacheNodeModules20-
+      - name: Get yarn cache directory path
+        id: yarnCacheDirPath
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+      - name: Cache yarn directory
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarnCacheDirPath.outputs.dir }}
+          key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-yarnCacheDir-
       - name: Execute yarn
-        # if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }} {{SQL CARBON EDIT}} Skip caching for now
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
           ELECTRON_SKIP_BINARY_DOWNLOAD: 1
@@ -237,14 +239,14 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18.15
 
       - name: Compute node modules cache key
         id: nodeModulesCacheKey
-        run: echo "::set-output name=value::$(node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js)"
+        # {{ SQL Carbon Edit}} Use sql-computeNodeModulesCacheKey
+        run: echo "value=$(node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js)" >> $GITHUB_OUTPUT
       - name: Cache node modules
         id: cacheNodeModules
         uses: actions/cache@v3
@@ -255,7 +257,7 @@ jobs:
       - name: Get yarn cache directory path
         id: yarnCacheDirPath
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
       - name: Cache yarn directory
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
         uses: actions/cache@v3

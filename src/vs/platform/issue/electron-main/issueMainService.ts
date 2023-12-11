@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { BrowserWindow, BrowserWindowConstructorOptions, contentTracing, Display, IpcMainEvent, screen } from 'electron';
@@ -24,7 +24,6 @@ import { IIPCObjectUrl, IProtocolMainService } from 'vs/platform/protocol/electr
 import { zoomLevelToZoomFactor } from 'vs/platform/window/common/window';
 import { IWindowState } from 'vs/platform/window/electron-main/window';
 import { randomPath } from 'vs/base/common/extpath';
-import { withNullAsUndefined } from 'vs/base/common/types';
 import { IStateService } from 'vs/platform/state/node/state';
 import { UtilityProcess } from 'vs/platform/utilityProcess/electron-main/utilityProcess';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
@@ -286,7 +285,7 @@ export class IssueMainService implements IIssueMainService {
 			message: localize('trace.message', "Successfully created the trace file"),
 			detail: localize('trace.detail', "Please create an issue and manually attach the following file:\n{0}", path),
 			buttons: [localize({ key: 'trace.ok', comment: ['&& denotes a mnemonic'] }, "&&OK")],
-		}, withNullAsUndefined(BrowserWindow.getFocusedWindow()));
+		}, BrowserWindow.getFocusedWindow() ?? undefined);
 
 		// Show item in explorer
 		this.nativeHostMainService.showItemInFolder(undefined, path);

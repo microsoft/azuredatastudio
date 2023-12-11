@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { CancellationToken } from 'vs/base/common/cancellation';
@@ -12,6 +12,8 @@ import { ViewBadge } from 'vs/workbench/api/common/extHostTypeConverters';
 import type * as vscode from 'vscode';
 import * as extHostProtocol from './extHost.protocol';
 import * as extHostTypes from './extHostTypes';
+
+/* eslint-disable local/code-no-native-private */
 
 class ExtHostWebviewView extends Disposable implements vscode.WebviewView {
 

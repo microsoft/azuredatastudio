@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { RunOnceScheduler } from 'vs/base/common/async';
@@ -429,6 +429,7 @@ export class UnicodeHighlighterHoverParticipant implements IEditorHoverParticipa
 		}
 
 		const result: MarkdownHover[] = [];
+		const existedReason = new Set<string>();
 		let index = 300;
 		for (const d of lineDecorations) {
 
@@ -479,6 +480,11 @@ export class UnicodeHighlighterHoverParticipant implements IEditorHoverParticipa
 					);
 					break;
 			}
+
+			if (existedReason.has(reason)) {
+				continue;
+			}
+			existedReason.add(reason);
 
 			const adjustSettingsArgs: ShowExcludeOptionsArgs = {
 				codePoint: codePoint,

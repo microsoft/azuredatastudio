@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 extern crate dirs;
@@ -187,6 +187,14 @@ impl LauncherPaths {
 		))
 	}
 
+	/// Lockfile for port forwarding
+	pub fn forwarding_lockfile(&self) -> PathBuf {
+		self.root.join(format!(
+			"forwarding-{}.lock",
+			VSCODE_CLI_QUALITY.unwrap_or("oss")
+		))
+	}
+
 	/// Suggested path for tunnel service logs, when using file logs
 	pub fn service_log_file(&self) -> PathBuf {
 		self.root.join("tunnel-service.log")
@@ -204,4 +212,10 @@ impl LauncherPaths {
 			)
 		})
 	}
+
+	/// Suggested path for web server storage
+	pub fn web_server_storage(&self) -> PathBuf {
+		self.root.join("serve-web")
+	}
+
 }

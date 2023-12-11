@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -46,6 +46,10 @@ suite('ExternalUriOpenerService', () => {
 		instantiationService.stub(IOpenerService, {
 			registerExternalOpener: () => { return Disposable.None; }
 		});
+	});
+
+	teardown(() => {
+		instantiationService.dispose();
 	});
 
 	test('Should not open if there are no openers', async () => {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { basename, extUri } from 'vs/base/common/resources';
@@ -11,7 +11,6 @@ import { isNonEmptyArray, flatten } from 'vs/base/common/arrays';
 import { ResourceMap } from 'vs/base/common/map';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Hasher } from 'vs/base/common/hash';
-import { withUndefinedAsNull } from 'vs/base/common/types';
 import { splitLines } from 'vs/base/common/strings';
 import { IMatch } from 'vs/base/common/filters';
 import { unsupportedSchemas } from 'vs/platform/markers/common/markerService';
@@ -183,7 +182,7 @@ export class MarkersModel {
 	}
 
 	getResourceMarkers(resource: URI): ResourceMarkers | null {
-		return withUndefinedAsNull(this.resourcesByUri.get(extUri.getComparisonKey(resource, true)));
+		return this.resourcesByUri.get(extUri.getComparisonKey(resource, true)) ?? null;
 	}
 
 	setResourceMarkers(resourcesMarkers: [URI, IMarker[]][]): void {

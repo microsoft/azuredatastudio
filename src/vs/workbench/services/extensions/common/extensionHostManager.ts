@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Barrier, IntervalTimer } from 'vs/base/common/async';
@@ -229,7 +229,7 @@ class ExtensionHostManager extends Disposable implements IExtensionHostManager {
 
 		let sum = 0;
 		for (let i = 0; i < COUNT; i++) {
-			const sw = StopWatch.create(true);
+			const sw = StopWatch.create();
 			await proxy.test_latency(i);
 			sw.stop();
 			sum += sw.elapsed();
@@ -249,7 +249,7 @@ class ExtensionHostManager extends Disposable implements IExtensionHostManager {
 		for (let i = 0; i < buff.byteLength; i++) {
 			buff.writeUInt8(i, value);
 		}
-		const sw = StopWatch.create(true);
+		const sw = StopWatch.create();
 		await proxy.test_up(buff);
 		sw.stop();
 		return ExtensionHostManager._convert(SIZE, sw.elapsed());
@@ -258,7 +258,7 @@ class ExtensionHostManager extends Disposable implements IExtensionHostManager {
 	private async _measureDown(proxy: IExtensionHostProxy): Promise<number> {
 		const SIZE = 10 * 1024 * 1024; // 10MB
 
-		const sw = StopWatch.create(true);
+		const sw = StopWatch.create();
 		await proxy.test_down(SIZE);
 		sw.stop();
 		return ExtensionHostManager._convert(SIZE, sw.elapsed());

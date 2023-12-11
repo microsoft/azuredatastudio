@@ -1,17 +1,18 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
 import { LanguagesRegistry } from 'vs/editor/common/services/languagesRegistry';
-// import { LanguageService } from 'vs/editor/common/services/languageServiceImpl';
 
 /**
  * This function is called before test running and also again at the end of test running
  * and can be used to add assertions. e.g. that registries are empty, etc.
  *
  * !! This is called directly by the testing framework.
+ *
+ * @skipMangle
  */
 export function assertCleanState(): void {
 	// If this test fails, it is a clear indication that
