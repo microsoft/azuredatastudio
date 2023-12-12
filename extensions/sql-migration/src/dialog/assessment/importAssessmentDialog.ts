@@ -13,6 +13,7 @@ import { SqlMigrationImpactedObjectInfo } from '../../service/contracts';
 import { AssessmentDetailsBody } from '../../wizard/assessmentDetailsPage/assessmentDetialsBody';
 import { AssessmentDetailsHeader } from '../../wizard/assessmentDetailsPage/assessmentDetailsHeader';
 import { MigrationTargetType } from '../../api/utils';
+import { TelemetryAction, TelemetryViews, sendSqlMigrationActionEvent } from '../../telemetry';
 
 export type Issues = {
 	description: string,
@@ -87,6 +88,12 @@ export class ImportAssessmentDialog {
 						]).withProps({
 							CSSStyles: { 'padding-top': '0' }
 						}).component();
+
+					sendSqlMigrationActionEvent(
+						TelemetryViews.ImportAssessmentDialog,
+						TelemetryAction.ImportAssessmentSuccess,
+						{}, {}
+					);
 
 					this._disposables.push(view.onClosed(e => {
 						this._disposables.forEach(
