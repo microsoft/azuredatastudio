@@ -1867,6 +1867,9 @@
     <trans-unit id="sql.migration.field.label.queued.files">
       <source xml:lang="en">Queued files</source>
     </trans-unit>
+    <trans-unit id="sql.migration.schema.raiserror">
+      <source xml:lang="en">RAISERROR</source>
+    </trans-unit>
     <trans-unit id="sql.migration.sku.recommended.configuration.summary.label.caps">
       <source xml:lang="en">RECOMMENDED CONFIGURATION</source>
     </trans-unit>
