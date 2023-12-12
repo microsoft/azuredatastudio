@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
@@ -29,10 +29,7 @@ export class CosmosDbNoSqlTreeDataProvider extends ResourceTreeDataProviderBase<
 		return {
 			id: `${AzureResourcePrefixes.cosmosdb}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
 			label: `${databaseServer.name} (CosmosDB NoSql API)`,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/cosmosdb_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/cosmosdb.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/cosmosDb.svg'),
 			collapsibleState: TreeItemCollapsibleState.None,
 			contextValue: AzureResourceItemType.cosmosDBNoSqlAccount,
 			payload: {
@@ -58,16 +55,13 @@ export class CosmosDbNoSqlTreeDataProvider extends ResourceTreeDataProviderBase<
 		};
 	}
 
-	public async getRootChildren(): Promise<azdata.TreeItem[]> {
-		return [{
+	public async getRootChild(): Promise<azdata.TreeItem> {
+		return {
 			id: CosmosDbNoSqlTreeDataProvider.CONTAINER_ID,
 			label: CosmosDbNoSqlTreeDataProvider.CONTAINER_LABEL,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/cosmosDb.svg'),
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer
-		}];
+		};
 	}
 }
