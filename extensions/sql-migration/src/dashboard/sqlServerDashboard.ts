@@ -19,7 +19,7 @@ import { RestartMigrationDialog } from '../dialog/restartMigration/restartMigrat
 import { SqlMigrationServiceDetailsDialog } from '../dialog/sqlMigrationService/sqlMigrationServiceDetailsDialog';
 import { MigrationLocalStorage } from '../models/migrationLocalStorage';
 import { MigrationStateModel, Page, SavedInfo } from '../models/stateMachine';
-import { logError, TelemetryViews } from '../telemetry';
+import { logError, TelemetryAction, TelemetryViews } from '../telemetry';
 import { WizardController } from '../wizard/wizardController';
 import { DashboardStatusBar, ErrorEvent } from './DashboardStatusBar';
 import { DashboardTab, DashboardTabId } from './dashboardTab';
@@ -548,19 +548,23 @@ export class DashboardWidget {
 
 					const importSavedInfo = this.checkSavedInfo(loc.importAssessmentKey);
 					if (importSavedInfo && importSavedInfo.closedPage === Page.ImportAssessment) {
-						await this.clearSavedInfo(loc.importAssessmentKey);
-						if (importSavedInfo.serverAssessment !== null) {
-							this.stateModel._assessmentResults = importSavedInfo.serverAssessment;
-							this.stateModel.savedInfo = importSavedInfo;
-							await this.stateModel.loadSavedInfo();
+						try {
+							await this.clearSavedInfo(loc.importAssessmentKey);
+							if (importSavedInfo.serverAssessment !== null) {
+								this.stateModel._assessmentResults = importSavedInfo.serverAssessment;
+								this.stateModel.savedInfo = importSavedInfo;
+								await this.stateModel.loadSavedInfo();
 
-							serverName = importSavedInfo.serverAssessment?.issues[0]?.serverName ??
-								importSavedInfo.serverAssessment?.databaseAssessments[0]?.issues[0]?.serverName;
-							this.stateModel.serverName = serverName;
+								serverName = importSavedInfo.serverAssessment?.issues[0]?.serverName ??
+									importSavedInfo.serverAssessment?.databaseAssessments[0]?.issues[0]?.serverName;
+								this.stateModel.serverName = serverName;
+							}
+
+							const importAssessmentDialog = new ImportAssessmentDialog('ownerUri', this.stateModel, serverName);
+							await importAssessmentDialog.openDialog();
+						} catch (err) {
+							logError(TelemetryViews.MigrationsTab, TelemetryAction.ImportAssessmentFailed, err);
 						}
-
-						const importAssessmentDialog = new ImportAssessmentDialog('ownerUri', this.stateModel, serverName);
-						await importAssessmentDialog.openDialog();
 					} else {
 						const savedAssessmentDialog = new SavedAssessmentDialog(
 							this._context,

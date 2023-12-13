@@ -15,6 +15,7 @@ import * as utils from '../api/utils';
 import * as fs from 'fs';
 import { parseAssessmentReport } from '../dialog/assessment/assessmentUtils';
 import { HelpAndSupportDialog } from '../dialog/help/helpAndSupportDialog';
+import { TelemetryAction, TelemetryViews, logError } from '../telemetry';
 
 export const EmptySettingValue = '-';
 
@@ -164,6 +165,7 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 						const saveInfo = parseAssessmentReport(assessmentReport);
 						await this.context.globalState.update(`${this.mementoToken}.${loc.importAssessmentKey}`, saveInfo);
 					} catch (err) {
+						logError(TelemetryViews.DashboardTab, TelemetryAction.ImportAssessmentFailed, err);
 						void vscode.window.showErrorMessage(err.message);
 					}
 
