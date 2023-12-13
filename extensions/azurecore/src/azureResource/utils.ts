@@ -9,6 +9,7 @@ import * as nls from 'vscode-nls';
 import * as Constants from '../constants';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
+import { ProxySettings } from '@azure/core-http';
 import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult, GetBlobsResult, GetStorageAccountAccessKeyResult, AzureAccount, azureResource, AzureAccountProviderMetadata } from 'azurecore';
 import { EOL } from 'os';
 import { AppContext } from '../appContext';
@@ -628,7 +629,7 @@ export async function getStorageAccountAccessKey(account: AzureAccount, subscrip
 	};
 }
 
-export async function getBlobs(account: AzureAccount, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, containerName: string, ignoreErrors: boolean): Promise<GetBlobsResult> {
+export async function getBlobs(account: AzureAccount, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, containerName: string, ignoreErrors: boolean, proxyUrl: string | undefined): Promise<GetBlobsResult> {
 	const result: GetBlobsResult = { blobs: [], errors: [] };
 	const storageKeys = await getStorageAccountAccessKey(account, subscription, storageAccount, ignoreErrors);
 	if (!ignoreErrors) {
@@ -640,7 +641,10 @@ export async function getBlobs(account: AzureAccount, subscription: azureResourc
 		const sharedKeyCredential = new StorageSharedKeyCredential(storageAccount.name, storageKeys.keyName1);
 		const blobServiceClient = new BlobServiceClient(
 			`https://${storageAccount.name}.blob${account.properties.providerSettings.settings.azureStorageResource.endpointSuffix}`,
-			sharedKeyCredential
+			sharedKeyCredential,
+			{
+				proxyOptions: getProxyOptionsBlobService(proxyUrl)
+			}
 		);
 		const containerClient = blobServiceClient.getContainerClient(containerName);
 		for await (const blob of containerClient.listBlobsFlat()) {
@@ -666,3 +670,17 @@ export function getProviderMetadataForAccount(account: AzureAccount): AzureAccou
 
 	return provider.metadata;
 }
+
+export function getProxyOptionsBlobService(proxyUrl: string | undefined): ProxySettings | undefined {
+	if (proxyUrl) {
+		const proxyEndpoint = new URL(proxyUrl);
+		return {
+			host: proxyEndpoint.host,
+			port: Number.parseInt(proxyEndpoint.port) ?? NaN,
+			username: proxyEndpoint.username,
+			password: proxyEndpoint.password
+		}
+	}
+	return undefined;
+}
+

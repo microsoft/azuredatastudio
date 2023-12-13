@@ -83,7 +83,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 
 	}
 	updatePiiLoggingLevel();
-
+	let proxyUrl: string | undefined = vscode.workspace.getConfiguration(Constants.HttpConfigSection).get(Constants.Proxy);
 	let eventEmitter: vscode.EventEmitter<azurecore.CacheEncryptionKeys>;
 	// Create the provider service and activate
 	let providerService = await initAzureAccountProvider(extensionContext, storagePath).catch((err) => Logger.error(err));
@@ -186,7 +186,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			storageAccount: azurecore.azureResource.AzureGraphResource,
 			containerName: string,
 			ignoreErrors: boolean): Promise<azurecore.GetBlobsResult> {
-			return azureResourceUtils.getBlobs(account, subscription, storageAccount, containerName, ignoreErrors);
+			return azureResourceUtils.getBlobs(account, subscription, storageAccount, containerName, ignoreErrors, proxyUrl);
 		},
 		createResourceGroup(account: azurecore.AzureAccount,
 			subscription: azurecore.azureResource.AzureResourceSubscription,
@@ -285,3 +285,4 @@ function updatePiiLoggingLevel(): void {
 	const piiLogging: boolean = vscode.workspace.getConfiguration(Constants.AzureSection).get('piiLogging', false);
 	Logger.piiLogging = piiLogging;
 }
+
