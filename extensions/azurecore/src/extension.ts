@@ -83,7 +83,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 
 	}
 	updatePiiLoggingLevel();
-	let proxyUrl: string | undefined = vscode.workspace.getConfiguration(Constants.HttpConfigSection).get(Constants.Proxy);
+	const proxyUrl: string | undefined = vscode.workspace.getConfiguration(Constants.HttpConfigSection).get(Constants.Proxy);
 	let eventEmitter: vscode.EventEmitter<azurecore.CacheEncryptionKeys>;
 	// Create the provider service and activate
 	let providerService = await initAzureAccountProvider(extensionContext, storagePath).catch((err) => Logger.error(err));
