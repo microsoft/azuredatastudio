@@ -16,7 +16,7 @@ import * as azdata from 'azdata';
 
 export class CosmosDbNoSqlTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, DbServerGraphData> {
 	private static readonly CONTAINER_ID = 'azure.resource.providers.databaseServer.treeDataProvider.cosmosDbNoSqlContainer';
-	private static readonly CONTAINER_LABEL = localize('azure.resource.providers.databaseServer.treeDataProvider.cosmosDbNoSqlContainerLabel', "CosmosDB NoSql API");
+	private static readonly CONTAINER_LABEL = localize('azure.resource.providers.databaseServer.treeDataProvider.cosmosDbNoSqlContainerLabel', "Azure CosmosDB for NoSQL");
 
 	public constructor(
 		databaseServerService: azureResource.IAzureResourceService,
@@ -28,7 +28,7 @@ export class CosmosDbNoSqlTreeDataProvider extends ResourceTreeDataProviderBase<
 	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: azdata.Account): azdata.TreeItem {
 		return {
 			id: `${AzureResourcePrefixes.cosmosdb}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
-			label: `${databaseServer.name} (CosmosDB NoSql API)`,
+			label: this.browseConnectionMode ? `${databaseServer.name} (${CosmosDbNoSqlTreeDataProvider.CONTAINER_LABEL}, ${databaseServer.subscription.name})` : `${databaseServer.name}`,
 			iconPath: this._extensionContext.asAbsolutePath('resources/cosmosDb.svg'),
 			collapsibleState: TreeItemCollapsibleState.None,
 			contextValue: AzureResourceItemType.cosmosDBNoSqlAccount,
