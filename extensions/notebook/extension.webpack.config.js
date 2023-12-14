@@ -23,8 +23,11 @@ const yarnrcPath = path.join(__dirname, '.yarnrc');
 if (fs.existsSync(yarnrcPath)) {
 	const yarnrc = fs.readFileSync(yarnrcPath).toString();
 	const properties = yarnrc.split(/\r?\n/).map(r => r.split(' '));
-	if (properties.find(r => r[0] === 'runtime')[1] === '"node"') {
-		externals['ws'] = 'commonjs ws';
+	const runtime = properties.find(r => r && r[0] === 'runtime');
+	if (runtime) {
+		if (runtime[1] === '"node"') {
+			externals['ws'] = 'commonjs ws';
+		}
 	}
 }
 
