@@ -143,6 +143,7 @@ export class TableMigrationSelectionDialog {
 					});
 				} else if (this._availableTablesSelectionMap.size === 0) {
 					// Full schema missing on the target
+					this._schemaMigrationCheckBox.enabled = true;
 					await this._schemaMigrationInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
 						text: constants.FULL_SCHEMA_MISSING_ON_TARGET,
 						style: "warning",
@@ -152,6 +153,7 @@ export class TableMigrationSelectionDialog {
 					});
 				} else if (this._missingTablesSelectionMap.size > 0 || hasMissingUnavailableTables) {
 					// Partial schema found on the target
+					this._schemaMigrationCheckBox.enabled = true;
 					await this._schemaMigrationInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
 						text: constants.PARTIAL_SCHEMA_ON_TARGET,
 						style: "warning",
@@ -182,7 +184,6 @@ export class TableMigrationSelectionDialog {
 			};
 		} finally {
 			this._refreshLoader.loading = false;
-			this._schemaMigrationCheckBox.enabled = true;
 			await this._dataMigrationHeader.updateProperty("description", constants.DATA_MIGRATION_INFO);
 			await updateControlDisplay(this._availableTablesSelectionTable, true, 'flex');
 			await updateControlDisplay(this._missingTablesSelectionTable, true, 'flex');
@@ -720,7 +721,7 @@ export class TableMigrationSelectionDialog {
 			})
 
 			targetDatabaseInfo.hasMissingTables = this._hasMissingTables;
-			targetDatabaseInfo.enableSchemaMigration = selectedRowsFromMissingTable.length > 0;
+			targetDatabaseInfo.enableSchemaMigration = this._schemaMigrationCheckBox.checked ?? selectedRowsFromMissingTable.length > 0;
 			this._model._sourceTargetMapping.set(this._sourceDatabaseName, targetDatabaseInfo);
 		}
 		await this._onSaveCallback();
