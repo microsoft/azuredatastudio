@@ -84,7 +84,17 @@ export function isSqlManagedInstance(instance: any): instance is SqlManagedInsta
 
 export async function getAvailableManagedInstanceProducts(account: azdata.Account, subscription: Subscription): Promise<SqlManagedInstance[]> {
 	const api = await getAzureCoreAPI();
+	console.log(` ** api.getSqlManagedInstances sub name: ${subscription.name} sub id: ${subscription.id}`);
 	const result = await api.getSqlManagedInstances(account, [subscription], false);
+	console.log(` ** api.getSqlManagedInstances result.resources: ${result?.resources?.length ?? 0}`);
+
+	result?.resources?.forEach(mi => {
+		console.log(` ** result.resources mi.subId: ${mi.subscriptionId}`);
+		console.log(` ** result.resources mi.id: ${mi.id}`);
+		console.log(` ** result.resources mi.name: ${mi.name}`);
+		console.log(` ** result.resources mi.location: ${mi.location}`);
+	});
+
 	sortResourceArrayByName(result.resources);
 	return result.resources;
 }

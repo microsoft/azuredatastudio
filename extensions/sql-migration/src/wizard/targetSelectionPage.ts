@@ -429,9 +429,17 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}).component();
 		this._disposables.push(
 			this._azureSubscriptionDropdown.onValueChanged(async (value) => {
+				console.log(` ** _azureSubscriptionDropdown.onValueChanged value: ${value}`);
+
 				if (value && value !== 'undefined' && value !== constants.NO_SUBSCRIPTIONS_FOUND) {
+
 					const selectedSubscription = this.migrationStateModel._subscriptions?.find(
 						subscription => `${subscription.name} - ${subscription.id}` === value);
+
+					console.log(` ** _azureSubscriptionDropdown.onValueChanged selected sub id: [${selectedSubscription?.id}]`);
+					console.log(` ** _azureSubscriptionDropdown.onValueChanged selected sub name: [${selectedSubscription?.name}]`);
+					console.log(` ** _azureSubscriptionDropdown.onValueChanged selected sub tenant: [${selectedSubscription?.tenant}]`);
+
 					this.migrationStateModel._targetSubscription = (selectedSubscription)
 						? utils.deepClone(selectedSubscription)!
 						: undefined!;
@@ -1000,6 +1008,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			this._azureLocationDropdown.loading = true;
 			switch (this.migrationStateModel._targetType) {
 				case MigrationTargetType.SQLMI:
+					console.log(` ** populateLocationDropdown SQLMI`);
 					this.migrationStateModel._targetManagedInstances = await utils.getManagedInstances(
 						this.migrationStateModel._azureAccount,
 						this.migrationStateModel._targetSubscription);

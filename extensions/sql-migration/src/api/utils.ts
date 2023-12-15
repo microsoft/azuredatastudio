@@ -655,10 +655,14 @@ export async function getAllResourceGroups(account?: Account, subscription?: azu
 }
 
 export async function getManagedInstances(account?: Account, subscription?: azureResource.AzureResourceSubscription): Promise<azureResource.AzureSqlManagedInstance[]> {
+
 	let managedInstances: azureResource.AzureSqlManagedInstance[] = [];
 	try {
 		if (account && subscription) {
+			console.log(` ** getManagedInstances for sub id: ${subscription.id}`);
+			console.log(` ** getManagedInstances for sub name: ${subscription.name}`);
 			managedInstances = await azure.getAvailableManagedInstanceProducts(account, subscription);
+			console.log(` ** getManagedInstances managedInstances: ${managedInstances?.length}`);
 		}
 	} catch (e) {
 		logError(TelemetryViews.Utils, 'utils.getManagedInstances', e);
