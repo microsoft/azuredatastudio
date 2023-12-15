@@ -5397,6 +5397,63 @@
 					],
 					"statistics": [],
 					"flags": ""
+				},
+				{
+					"extensionId": "106",
+					"extensionName": "pieces-azure-data-studio",
+					"displayName": "Pieces for Azure Data Studio",
+					"shortDescription": "Use a personalized contextual copilot in Pieces in Azure Data Studio.",
+					"publisher": {
+						"displayName": "MeshIntelligentTechnologiesInc",
+						"publisherId": "MeshIntelligentTechnologiesInc",
+						"publisherName": "MeshIntelligentTechnologiesInc"
+					},
+					"versions": [
+						{
+							"version": "1.0.0",
+							"lastUpdated": "12/15/2023",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": " https://builds.pieces.app/stages/staging/plugin_vscode/ads-vsix/download"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://storage.googleapis.com/pieces_static_resources/azuredatastudio/pieces_blk_icon.svg"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://storage.googleapis.com/pieces_static_resources/azuredatastudio/readme.ads.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://storage.googleapis.com/pieces_static_resources/azuredatastudio/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://storage.googleapis.com/pieces_static_resources/azuredatastudio/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
@@ -5405,7 +5462,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 88
+							"count": 89
 						}
 					]
 				}

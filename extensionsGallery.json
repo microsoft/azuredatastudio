@@ -5332,7 +5332,6 @@
 				"statistics": [],
 				"flags": ""
 			},
-
 			{
 					"extensionId": "106",
 					"extensionName": "pieces-azure-data-studio",
@@ -5383,14 +5382,13 @@
 								{
 									"key": "Microsoft.AzDataEngine",
 									"value": "*"
-								},
+								}
 							]
 						}
 					],
 					"statistics": [],
 					"flags": ""
-				},
-				
+				}
 			],
 			"resultMetadata": [
 				{
@@ -5398,7 +5396,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 87
+							"count": 88
 						}
 					]
 				}
