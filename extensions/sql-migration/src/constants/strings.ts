@@ -1784,7 +1784,7 @@ export function MISSING_TARGET_TABLES_COUNT(missingCount: number): string {
 export function UNAVAILABLE_SOURCE_TABLES_COUNT(unavailableCount: number): string {
 	return localize('sql.migration.table.unavailable.count', "Unavailable for data migration ({0})", formatNumber(unavailableCount));
 }
-export const MISSING_TABLES_HEADING = localize('sql.migration.missing.tables.heading', 'All of tables below are missing on target. To migrate the data in these tables select the migrate schema option above.');
+export const MISSING_TABLES_HEADING = localize('sql.migration.missing.tables.heading', 'All of tables below are missing on target. To migrate the data in these tables, select the migrate schema option above. If the migration schema option is selected and no tables are selected, migrate schema only.');
 export const UNAVAILABLE_SOURCE_TABLES_HEADING = localize('sql.migration.unavailable.source.tables.heading', 'All of tables below are empty. No table is available to select for data migration. But if they do not exist on target, schema migration is available.');
 export const DATABASE_MISSING_TABLES = localize('sql.migration.database.missing.tables', "0 tables on source database found on target database. To migrate the data in the tables select the migrate schema option above.");
 export const MIGRATION_TYPE_TOOL_TIP = localize('sql.migration.database.migration.migration.type.tool.tip', "Migration type includes: Schema only migration, Data only migration, Schema and data migration.");
