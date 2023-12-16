@@ -22,6 +22,7 @@ export class TableMigrationSelectionDialog {
 	private _refreshButton!: azdata.ButtonComponent;
 	private _schemaMigrationCheckBox!: azdata.CheckBoxComponent;
 	private _schemaMigrationInfoBox!: azdata.InfoBoxComponent;
+	private _dataMigrationHeader!: azdata.TextComponent;
 	private _filterInputBox!: azdata.InputBoxComponent;
 	private _availableTablesSelectionTable!: azdata.TableComponent;
 	private _missingTablesSelectionTable!: azdata.TableComponent;
@@ -142,6 +143,7 @@ export class TableMigrationSelectionDialog {
 					});
 				} else if (this._availableTablesSelectionMap.size === 0) {
 					// Full schema missing on the target
+					this._schemaMigrationCheckBox.enabled = true;
 					await this._schemaMigrationInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
 						text: constants.FULL_SCHEMA_MISSING_ON_TARGET,
 						style: "warning",
@@ -151,6 +153,7 @@ export class TableMigrationSelectionDialog {
 					});
 				} else if (this._missingTablesSelectionMap.size > 0 || hasMissingUnavailableTables) {
 					// Partial schema found on the target
+					this._schemaMigrationCheckBox.enabled = true;
 					await this._schemaMigrationInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
 						text: constants.PARTIAL_SCHEMA_ON_TARGET,
 						style: "warning",
@@ -181,6 +184,7 @@ export class TableMigrationSelectionDialog {
 			};
 		} finally {
 			this._refreshLoader.loading = false;
+			await this._dataMigrationHeader.updateProperty("description", constants.DATA_MIGRATION_INFO);
 			await updateControlDisplay(this._availableTablesSelectionTable, true, 'flex');
 			await updateControlDisplay(this._missingTablesSelectionTable, true, 'flex');
 			await updateControlDisplay(this._unavailableSourceTablesTable, true, 'flex');
@@ -219,6 +223,7 @@ export class TableMigrationSelectionDialog {
 
 		this._schemaMigrationCheckBox = view.modelBuilder.checkBox()
 			.withProps({
+				enabled: false,
 				checked: false,
 				label: constants.SCHEMA_MIGRATION_CHECKBOX_INFO,
 			}).component();
@@ -262,9 +267,8 @@ export class TableMigrationSelectionDialog {
 		)
 
 		// Data migration component
-		const dataMigrationHeader = view.modelBuilder.text()
+		this._dataMigrationHeader = view.modelBuilder.text()
 			.withProps({
-				description: constants.DATA_MIGRATION_INFO,
 				value: constants.DATA_MIGRATION_HEADER,
 				requiredIndicator: true,
 				CSSStyles: { ...styles.SECTION_HEADER_CSS, 'margin-top': '4px' }
@@ -288,7 +292,7 @@ export class TableMigrationSelectionDialog {
 		return view.modelBuilder
 			.flexContainer()
 			.withLayout({ flexFlow: 'column' })
-			.withItems([schemaMigrationHeader, this._schemaMigrationCheckBox, this._schemaMigrationInfoBox, dataMigrationHeader, this._tabs])
+			.withItems([schemaMigrationHeader, this._schemaMigrationCheckBox, this._schemaMigrationInfoBox, this._dataMigrationHeader, this._tabs])
 			.component();
 	}
 
@@ -610,6 +614,12 @@ export class TableMigrationSelectionDialog {
 		this._disposables.push(
 			table.onRowSelected(
 				async e => {
+					if (!(this._schemaMigrationCheckBox.checked ?? false) &&
+						(this._missingTablesSelectionTable.selectedRows?.length ?? 0) > 0) {
+						// If user selects missing table directly without selecting "Migrate schema to target" option,
+						// check schema migration checkbox automatically.
+						this._schemaMigrationCheckBox.checked = true;
+					}
 					this._updateRowSelection();
 				}));
 
@@ -711,6 +721,7 @@ export class TableMigrationSelectionDialog {
 			})
 
 			targetDatabaseInfo.hasMissingTables = this._hasMissingTables;
+			targetDatabaseInfo.enableSchemaMigration = this._schemaMigrationCheckBox.checked ?? selectedRowsFromMissingTable.length > 0;
 			this._model._sourceTargetMapping.set(this._sourceDatabaseName, targetDatabaseInfo);
 		}
 		await this._onSaveCallback();

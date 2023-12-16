@@ -1725,8 +1725,8 @@ export function TDE_COMPLETED_STATUS(completed: number, total: number): string {
 }
 
 // Schema migration
-export const FULL_SCHEMA_MISSING_ON_TARGET = localize('sql.migration.schema.full.missing', "No schema was found on target. This option must be selected to migrate this database.");
-export const PARTIAL_SCHEMA_ON_TARGET = localize('sql.migration.schema.partial.missing', "Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected.");
+export const FULL_SCHEMA_MISSING_ON_TARGET = localize('sql.migration.schema.full.missing', "No schema was found on target. This option must be selected to migrate this database. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration. No tables selected will migrate missing schema only.");
+export const PARTIAL_SCHEMA_ON_TARGET = localize('sql.migration.schema.partial.missing', "Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.  No tables selected will migrate missing schema only.");
 export const FULL_SCHEMA_ON_TARGET = localize('sql.migration.schema.no.missing', "Schema was found on target. Schema migration is not required.");
 export const ALL_SOURCE_TABLES_EMPTY = localize('sql.migration.all.source.tables.empty', "All of source tables are empty. No table is available to select for data migration. But they are available for schema migration if they do not exist on target.");
 export const SCHEMA_MIGRATION_INFO = localize('sql.migration.schema.migration.info', "Select this option to migrate missing tables on your Azure SQL target");
@@ -1754,7 +1754,6 @@ export const DEPLOYMENT_ENDED = localize('sql.migration.schema.script.deployment
 export const DEPLOYMENT_COUNT = localize('sql.migration.schema.script.deployment.count', "Deployment count");
 export const DEPLOYMENT_ERROR_COUNT = localize('sql.migration.schema.script.deployment.error.count', "Deployment error count");
 export const SCHEMA_MIGRATION_ASSESSMENT_WARNING_MESSAGE = localize('sql.migration.schema.assessment.warning.message', "The detected issues shown below might fail the schema migration. Some of them might be entirely unsupported and the others might be partially supported in Azure SQL Database. \nTherefore, please review the assessment results and make sure all of the issues will not fail the schema migration.\nHowever, it is allowed to proceed the schema migration and Azure Database Migration Service will migrate the objects as possible as it can.");
-
 export const SchemaMigrationFailedRulesLookup: LookupTable<string | undefined> = {
 	["ComputeClause"]: localize('sql.migration.schema.rule.compute', 'COMPUTE'),
 	["CrossDatabaseReferences"]: localize('sql.migration.schema.rule.crossdatabasereferences', 'CROSS DATABASE REFERENCE'),
@@ -1784,7 +1783,7 @@ export function MISSING_TARGET_TABLES_COUNT(missingCount: number): string {
 export function UNAVAILABLE_SOURCE_TABLES_COUNT(unavailableCount: number): string {
 	return localize('sql.migration.table.unavailable.count', "Unavailable for data migration ({0})", formatNumber(unavailableCount));
 }
-export const MISSING_TABLES_HEADING = localize('sql.migration.missing.tables.heading', 'All of tables below are missing on target. To migrate the data in these tables select the migrate schema option above.');
+export const MISSING_TABLES_HEADING = localize('sql.migration.missing.tables.heading', 'All of tables below are missing on target. To migrate the data in these tables, select the migrate schema option above.');
 export const UNAVAILABLE_SOURCE_TABLES_HEADING = localize('sql.migration.unavailable.source.tables.heading', 'All of tables below are empty. No table is available to select for data migration. But if they do not exist on target, schema migration is available.');
 export const DATABASE_MISSING_TABLES = localize('sql.migration.database.missing.tables', "0 tables on source database found on target database. To migrate the data in the tables select the migrate schema option above.");
 export const MIGRATION_TYPE_TOOL_TIP = localize('sql.migration.database.migration.migration.type.tool.tip', "Migration type includes: Schema only migration, Data only migration, Schema and data migration.");
