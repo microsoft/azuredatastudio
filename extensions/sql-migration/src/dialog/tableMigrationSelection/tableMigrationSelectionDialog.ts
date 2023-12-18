@@ -7,12 +7,13 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
-import { AzureSqlDatabaseServer } from '../../api/azure';
-import { collectSourceDatabaseTableInfo, collectTargetDatabaseTableInfo, TableInfo } from '../../api/sqlUtils';
-import { MigrationStateModel } from '../../models/stateMachine';
+import { AzureSqlDatabaseServer, getIrNodes, getResourceName } from '../../api/azure';
+import { collectSourceDatabaseTableInfo, collectTargetDatabaseTableInfo, getActiveIrVersions, isSchemaMigrationSupportedByActiveNodes, SchemaMigrationRequiredIntegrationRuntimeMinimumVersion, TableInfo } from '../../api/sqlUtils';
+import { MigrationSourceAuthenticationType, MigrationStateModel } from '../../models/stateMachine';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { Tab } from 'azdata';
 import { updateControlDisplay } from '../../api/utils';
+import { EOL } from 'os';
 
 const DialogName = 'TableMigrationSelection';
 
@@ -130,7 +131,38 @@ export class TableMigrationSelectionDialog {
 				this._unavailableTableCount = this._unavailableTablesMap.size;
 				const hasMissingUnavailableTables = Array.from(this._unavailableTablesMap.values()).find(t => this._targetTableMap.get(t.tableName) === undefined) !== undefined;
 				this._hasMissingTables = this._missingTableCount > 0 || hasMissingUnavailableTables;
-				if (this._unavailableTableCount === sourceTableList.length) {
+
+				// Every time open the dialog, collect the latest nodes
+				const irNodes = await getIrNodes(
+					this._model._azureAccount,
+					this._model._sqlMigrationServiceSubscription,
+					getResourceName(this._model._resourceGroup.id),
+					this._model._location.name,
+					this._model._sqlMigrationService!.name);
+				const isSchemaMigrationSupportedByVersion = isSchemaMigrationSupportedByActiveNodes(irNodes);
+				this._model.isSchemaMigrationSupported = isSchemaMigrationSupportedByVersion && this._model._authenticationType === MigrationSourceAuthenticationType.Sql;
+
+				if (!this._model.isSchemaMigrationSupported) {
+					// The current IR(s) version or Windows auth don't support schema migration
+					var errors: string[] = [];
+					this._schemaMigrationCheckBox.enabled = false;
+					this._schemaMigrationCheckBox.checked = false;
+					if (!isSchemaMigrationSupportedByVersion) {
+						const irVersions = getActiveIrVersions(irNodes);
+						errors.push(constants.SCHEMA_MIGRATION_UPDATE_IR_VERSION_ERROR_MESSAGE(SchemaMigrationRequiredIntegrationRuntimeMinimumVersion, irVersions))
+					}
+					if (this._model._authenticationType === MigrationSourceAuthenticationType.Integrated) {
+						errors.push(constants.SCHEMA_MIGRATION_WINDOWS_AUTH_ERROR_MESSAGE);
+					}
+
+					await this._schemaMigrationInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
+						text: errors.join(EOL),
+						style: "error",
+						width: '600px',
+						CSSStyles: { ...styles.BODY_CSS, 'margin': '5px 0 0 0' },
+						isClickable: true
+					});
+				} else if (this._unavailableTableCount === sourceTableList.length) {
 					// All of source tables are empty. No table is not available to select for data migration.
 					// Check if anyone of unavailable tables exist in target. If not, it is available for schema migration.
 					this._schemaMigrationCheckBox.enabled = hasMissingUnavailableTables;
@@ -190,7 +222,6 @@ export class TableMigrationSelectionDialog {
 			await updateControlDisplay(this._unavailableSourceTablesTable, true, 'flex');
 			await this._loadControls();
 			this._updateTabs();
-
 		}
 	}
 
@@ -333,10 +364,14 @@ export class TableMigrationSelectionDialog {
 		// Missing tables on target
 		this._missingTablesSelectionMap.forEach(sourceTable => {
 			const tableStatus = '--';
-			missingData.push([
-				sourceTable.selectedForMigration,
-				sourceTable.tableName,
-				tableStatus]);
+			missingData.push(this._model.isSchemaMigrationSupported
+				? [
+					sourceTable.selectedForMigration,
+					sourceTable.tableName,
+					tableStatus]
+				: [
+					sourceTable.tableName,
+					tableStatus]);
 			if (sourceTable.selectedForMigration) {
 				missingSelectedItems.push(missingTableRow);
 			}
@@ -574,56 +609,77 @@ export class TableMigrationSelectionDialog {
 
 	private _createMissingTablesTable(view: azdata.ModelView): azdata.TableComponent {
 		const cssClass = 'no-borders';
-		const table = view.modelBuilder.table()
-			.withProps({
-				data: [],
-				width: 550,
-				height: '600px',
-				display: 'flex',
-				forceFitColumns: azdata.ColumnSizingMode.ForceFit,
-				columns: [
-					<azdata.CheckboxColumn>{
-						value: '',
-						width: 10,
-						type: azdata.ColumnType.checkBox,
-						action: azdata.ActionOnCellCheckboxCheck.selectRow,
-						resizable: false,
-						cssClass: cssClass,
-						headerCssClass: cssClass,
-					},
-					{
-						name: constants.TABLE_SELECTION_TABLENAME_COLUMN,
-						value: 'tableName',
-						type: azdata.ColumnType.text,
-						width: 285,
-						cssClass: cssClass,
-						headerCssClass: cssClass,
-					},
-					{
-						name: constants.TABLE_SELECTION_HASROWS_COLUMN,
-						value: 'hasRows',
-						type: azdata.ColumnType.text,
-						width: 255,
-						cssClass: cssClass,
-						headerCssClass: cssClass,
-					}]
-			})
-			.withValidation(() => true)
-			.component();
+		const commonColumns = [{
+			name: constants.TABLE_SELECTION_TABLENAME_COLUMN,
+			value: 'tableName',
+			type: azdata.ColumnType.text,
+			width: 285,
+			cssClass: cssClass,
+			headerCssClass: cssClass,
+		},
+		{
+			name: constants.TABLE_SELECTION_HASROWS_COLUMN,
+			value: 'hasRows',
+			type: azdata.ColumnType.text,
+			width: 255,
+			cssClass: cssClass,
+			headerCssClass: cssClass,
+		}];
 
-		this._disposables.push(
-			table.onRowSelected(
-				async e => {
-					if (!(this._schemaMigrationCheckBox.checked ?? false) &&
-						(this._missingTablesSelectionTable.selectedRows?.length ?? 0) > 0) {
-						// If user selects missing table directly without selecting "Migrate schema to target" option,
-						// check schema migration checkbox automatically.
-						this._schemaMigrationCheckBox.checked = true;
-					}
-					this._updateRowSelection();
-				}));
+		if (this._model.isSchemaMigrationSupported) {
+			const table = view.modelBuilder.table()
+				.withProps({
+					data: [],
+					width: 550,
+					height: '600px',
+					display: 'flex',
+					forceFitColumns: azdata.ColumnSizingMode.ForceFit,
+					columns: [
+						<azdata.CheckboxColumn>{
+							value: '',
+							width: 10,
+							type: azdata.ColumnType.checkBox,
+							action: azdata.ActionOnCellCheckboxCheck.selectRow,
+							resizable: false,
+							cssClass: cssClass,
+							headerCssClass: cssClass,
+						},
+						commonColumns[0],
+						commonColumns[1]
+					]
+				})
+				.withValidation(() => true)
+				.component();
 
-		return table;
+			this._disposables.push(
+				table.onRowSelected(
+					async e => {
+						if (!(this._schemaMigrationCheckBox.checked ?? false) &&
+							(this._missingTablesSelectionTable.selectedRows?.length ?? 0) > 0) {
+							// If user selects missing table directly without selecting "Migrate schema to target" option,
+							// check schema migration checkbox automatically.
+							this._schemaMigrationCheckBox.checked = true;
+						}
+						this._updateRowSelection();
+					}));
+
+			return table;
+		} else {
+			return view.modelBuilder.table()
+				.withProps({
+					data: [],
+					width: 550,
+					height: '600px',
+					display: 'flex',
+					forceFitColumns: azdata.ColumnSizingMode.ForceFit,
+					columns: [
+						commonColumns[0],
+						commonColumns[1]
+					]
+				})
+				.withValidation(() => true)
+				.component();
+		}
 	}
 
 	private _createUnavailableTablesTable(view: azdata.ModelView): azdata.TableComponent {
@@ -722,6 +778,7 @@ export class TableMigrationSelectionDialog {
 
 			targetDatabaseInfo.hasMissingTables = this._hasMissingTables;
 			targetDatabaseInfo.enableSchemaMigration = this._schemaMigrationCheckBox.checked ?? selectedRowsFromMissingTable.length > 0;
+			targetDatabaseInfo.isSchemaMigrationSupported = this._model.isSchemaMigrationSupported;
 			this._model._sourceTargetMapping.set(this._sourceDatabaseName, targetDatabaseInfo);
 		}
 		await this._onSaveCallback();

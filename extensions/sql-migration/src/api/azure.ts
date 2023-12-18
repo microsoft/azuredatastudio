@@ -533,6 +533,10 @@ export async function getSqlMigrationServiceMonitoringData(account: azdata.Accou
 	return response.response!.data;
 }
 
+export async function getIrNodes(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationService: string): Promise<IntegrationRuntimeNode[]> {
+	return (await getSqlMigrationServiceMonitoringData(account, subscription, resourceGroupName, regionName, sqlMigrationService)).nodes;
+}
+
 export async function startDatabaseMigration(
 	account: azdata.Account,
 	subscription: Subscription,
@@ -919,7 +923,9 @@ export interface IntegrationRuntimeNode {
 	cpuUtilization: number,
 	nodeName: string
 	receivedBytes: number
-	sentBytes: number
+	sentBytes: number,
+	status: string,
+	version: string
 }
 
 export interface StartDatabaseMigrationRequest {

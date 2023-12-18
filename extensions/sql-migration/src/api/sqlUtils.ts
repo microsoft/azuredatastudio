@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { azureResource } from 'azurecore';
-import { AzureSqlDatabase, AzureSqlDatabaseServer, SqlManagedInstance, SqlVMServer, StorageAccount, Subscription } from './azure';
+import { AzureSqlDatabase, AzureSqlDatabaseServer, IntegrationRuntimeNode, SqlManagedInstance, SqlVMServer, StorageAccount, Subscription } from './azure';
 import { generateGuid, MigrationTargetType } from './utils';
 import * as utils from '../api/utils';
 import { TelemetryAction, TelemetryViews, logError } from '../telemetry';
@@ -125,6 +125,7 @@ export interface TargetDatabaseInfo {
 	targetTables: Map<string, TableInfo>;
 	enableSchemaMigration: boolean;
 	hasMissingTables: boolean;
+	isSchemaMigrationSupported: boolean;
 }
 
 export interface LoginTableInfo {
@@ -132,6 +133,20 @@ export interface LoginTableInfo {
 	loginType: string;
 	defaultDatabaseName: string;
 	status: string;
+}
+
+export const SchemaMigrationRequiredIntegrationRuntimeMinimumVersion: IntegrationRuntimeVersionInfo = {
+	major: "5",
+	minor: "37",
+	build: "8686",
+	revision: "1"
+}
+
+export interface IntegrationRuntimeVersionInfo {
+	major: string;
+	minor: string;
+	build: string;
+	revision: string;
 }
 
 export async function getSourceConnectionProfile(): Promise<azdata.connection.ConnectionProfile> {
@@ -419,7 +434,9 @@ export async function collectTargetDatabaseInfo(
 				enableSchemaMigration: false,
 				// Default as true so that the initial text is 'Not selected'
 				// in the schema column
-				hasMissingTables: true
+				hasMissingTables: true,
+				// Default as true. Assume that the active IR node is latest version.
+				isSchemaMigrationSupported: true
 			};
 		}) ?? [];
 	}
@@ -640,4 +657,30 @@ export async function canTargetConnectToStorageAccount(
 	}
 
 	return enabledFromAllNetworks || enabledFromWhitelistedVNet || enabledFromPrivateEndpoint;
+}
+
+export function getActiveIrVersions(irNodes: IntegrationRuntimeNode[]): IntegrationRuntimeVersionInfo[] {
+	var irVersions: IntegrationRuntimeVersionInfo[] = [];
+	irNodes.forEach(node => {
+		if (node.status === constants.ONLINE) {
+			const version = node.version.split(".");
+			irVersions.push({ major: version[0], minor: version[1], build: version[2], revision: version[3] });
+		}
+	})
+	return irVersions;
+}
+
+export function isSchemaMigrationSupportedByActiveNodes(irNodes: IntegrationRuntimeNode[]): boolean {
+	const irVersions = getActiveIrVersions(irNodes);
+	return irVersions.some(v => isSchemaMigrationSupportedByVersion(v));
+}
+
+export function isSchemaMigrationSupportedByVersion(version: IntegrationRuntimeVersionInfo): boolean {
+	return version.major > SchemaMigrationRequiredIntegrationRuntimeMinimumVersion.major ||
+		(version.major === SchemaMigrationRequiredIntegrationRuntimeMinimumVersion.major && version.minor >= SchemaMigrationRequiredIntegrationRuntimeMinimumVersion.minor);
+}
+
+export function areVersionsSame(irVersions: IntegrationRuntimeVersionInfo[]): boolean {
+	const versions = irVersions.map(v => `${v.major}.${v.minor}.${v.build}.${v.revision}`);
+	return versions.filter((n, i) => versions.indexOf(n) === i).length === 1;
 }

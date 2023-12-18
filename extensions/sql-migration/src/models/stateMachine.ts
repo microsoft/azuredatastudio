@@ -278,6 +278,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public tdeMigrationConfig: TdeMigrationModel = new TdeMigrationModel();
 
+	public isSchemaMigrationSupported: boolean = true;
+
 	private _stateChangeEventEmitter = new vscode.EventEmitter<StateChangeEvent>();
 	private _currentState: State;
 	private _gatheringInformationError: string | undefined;
