@@ -137,7 +137,7 @@ export interface LoginTableInfo {
 
 export const SchemaMigrationRequiredIntegrationRuntimeMinimumVersion: IntegrationRuntimeVersionInfo = {
 	major: "5",
-	minor: "37",
+	minor: "35",
 	build: "8686",
 	revision: "1"
 }
