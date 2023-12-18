@@ -9,6 +9,7 @@ import { MigrationSourceAuthenticationType } from '../models/stateMachine';
 import { BackupTypeCodes, formatNumber, InternalManagedDatabaseRestoreDetailsBackupSetStatusCodes, InternalManagedDatabaseRestoreDetailsStatusCodes, ParallelCopyTypeCodes, PipelineStatusCodes } from './helper';
 import { ValidationError } from '../api/azure';
 import { AzureManagedDiskType, ErrorModel } from '../service/contracts';
+import { IntegrationRuntimeVersionInfo } from '../api/sqlUtils';
 const localize = nls.loadMessageBundle();
 
 export const serviceName = 'Sql Migration Service';
@@ -667,7 +668,8 @@ export const DATABASE_BACKUP_MIGRATION_MODE_LABEL = localize('sql.migration.data
 export const DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION = localize('sql.migration.database.migration.mode.description', "To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.");
 export const DATABASE_TABLE_SELECTION_LABEL = localize('sql.migration.database.table.selection.label', "Table selection");
 export const DATABASE_TABLE_SELECTION_DESCRIPTION = localize('sql.migration.database.table.selection.description', "For each database below, click Edit to select the tables to migrate from source to target. Then, before clicking Next, validate the provided configuration by clicking 'Run validation'.");
-export const DATABASE_SCHEMA_MIGRATION_HELP = localize('sql.migration.database.schema.migration.help', "Ensure to migrate the database schema from source to target before starting the migration by using the Database Schema Migration feature (Public Preview) or {0} or the {1} in Azure Data Studio before selecting the list of tables to migrate.");
+export const DATABASE_SCHEMA_MIGRATION_HELP = localize('sql.migration.database.schema.migration.help', "Ensure to migrate the database schema from source to target before starting the migration by using the Database Schema Migration feature ({0}) or {1} or the {2} in Azure Data Studio before selecting the list of tables to migrate.");
+export const DATABASE_SCHEMA_MIGRATION_PUBLIC_PREVIEW = localize('sql.migration.database.schema.migration.public.preview', "Public Preview");
 export const DATABASE_SCHEMA_MIGRATION_DACPAC_EXTENSION = localize('sql.migration.database.schema.migration.dacpac', "SQL Server dacpac extension");
 export const DATABASE_SCHEMA_MIGRATION_PROJECTS_EXTENSION = localize('sql.migration.database.schema.migration.project', "SQL Database Projects extension");
 
@@ -1802,3 +1804,25 @@ export const SchemaMigrationStatusLookup: LookupTable<string | undefined> = {
 	[MigrationState.CompletedWithError]: localize('sql.migration.status.completedwitherrors', 'Completed with errors'),
 	default: undefined
 };
+export function SCHEMA_MIGRATION_UPDATE_IR_VERSION_ERROR_MESSAGE(minIrVersion: IntegrationRuntimeVersionInfo, irVersions: IntegrationRuntimeVersionInfo[]): string {
+	const irVersionStrings: string[] = irVersions.map(v => `${v.major}.${v.minor}.${v.build}.${v.revision}`);
+	return localize(
+		'sql.schema.migration.update.ir.version.error',
+		"Schema migration requires an Integration Runtime version of [{0}] or higher. The current node version(s) are: [{1}]. Please install a newer version of the Integration Runtime to enable schema migration support.",
+		minIrVersion.major + "." + minIrVersion.minor,
+		irVersionStrings.join(", ")
+	);
+}
+export function SQLDB_MIGRATION_DIFFERENT_IR_VERSION_ERROR_MESSAGE(irVersions: IntegrationRuntimeVersionInfo[]): string {
+	const irVersionStrings: string[] = irVersions.map(v => `${v.major}.${v.minor}.${v.build}.${v.revision}`);
+	return localize(
+		'sql.migration.different.ir.version.error',
+		"Integration Runtime versions [{0}] are not the same. Please have the same version of Integration Runtime across all nodes for consistency and optimal performance.",
+		irVersionStrings.join(", ")
+	);
+}
+export const SCHEMA_MIGRATION_WINDOWS_AUTH_ERROR_MESSAGE = localize('sql.schema.migration.windows.auth.error', "Schema migration is not currently supported for connectivity to source instance using Windows Authentication. Please use SQL Authentication to enable schema migration support.");
+export const SCHEMA_MIGRATION_INFORMATION_MESSAGE = localize(
+	'sql.schema.migration.information',
+	"Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [5.35.8686.1] or higher. Schema migration is not currently supported for connections to source instance using Windows Authentication. Please use SQL Authentication.",
+);
