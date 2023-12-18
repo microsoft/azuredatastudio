@@ -8,6 +8,8 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { EditDataEditor } from 'sql/workbench/contrib/editData/browser/editDataEditor';
 import * as nls from 'vs/nls';
 import * as dom from 'vs/base/browser/dom';
@@ -135,7 +137,6 @@ export class ChangeMaxRowsAction extends EditDataAction {
 	}
 
 	public override run(): Promise<void> {
-
 		return Promise.resolve(null);
 	}
 }
@@ -223,7 +224,8 @@ export class ShowQueryPaneAction extends EditDataAction {
 	private readonly closeSqlLabel = nls.localize('editData.hideSql', "Hide SQL Pane");
 
 	constructor(editor: EditDataEditor,
-		@IConnectionManagementService _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService _connectionManagementService: IConnectionManagementService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		super(editor, ShowQueryPaneAction.ID, ShowQueryPaneAction.EnabledClass, _connectionManagementService);
 		this.label = this.showSqlLabel;
@@ -243,6 +245,12 @@ export class ShowQueryPaneAction extends EditDataAction {
 
 	public override run(): Promise<void> {
 		this.editor.toggleQueryPane();
+		this._telemetryService.createActionEvent(
+			TelemetryKeys.TelemetryView.EditDataEditor,
+			TelemetryKeys.TelemetryAction.ShowQueryPaneAction
+		).withAdditionalProperties({
+			queryPaneEnabled: this.queryPaneEnabled
+		}).send();
 		this.updateLabel(this.editor.queryPaneEnabled());
 		return Promise.resolve(null);
 	}

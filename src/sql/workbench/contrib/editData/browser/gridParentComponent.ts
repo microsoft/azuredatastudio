@@ -30,7 +30,8 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { ResolvedKeybinding } from 'vs/base/common/keybindings';
-
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 export abstract class GridParentComponent extends Disposable {
 	// CONSTANTS
@@ -49,6 +50,9 @@ export abstract class GridParentComponent extends Disposable {
 	// tslint:enable
 
 	// FIELDS
+	// URI for retrieving profile information
+	protected uri: string;
+
 	// Service for interaction with the IQueryModel
 	protected dataService: DataService;
 	protected actionProvider: actions.GridActionProvider;
@@ -90,7 +94,8 @@ export abstract class GridParentComponent extends Disposable {
 		@IConfigurationService protected configurationService: IConfigurationService,
 		@IClipboardService protected clipboardService: IClipboardService,
 		@IQueryEditorService protected queryEditorService: IQueryEditorService,
-		@ILogService protected logService: ILogService
+		@ILogService protected logService: ILogService,
+		@IAdsTelemetryService protected telemetryService: IAdsTelemetryService
 	) {
 		super();
 	}
@@ -422,6 +427,9 @@ export abstract class GridParentComponent extends Disposable {
 	protected onGridSelectAll(): (gridIndex: number) => void {
 		let self = this;
 		return (gridIndex: number) => {
+			self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditGridSelectAll)
+				.withAdditionalProperties({ gridIndex: gridIndex })
+				.send();
 			self.activeGrid = gridIndex;
 			let grid = self.table;
 			grid.setActiveCell(0, 1);

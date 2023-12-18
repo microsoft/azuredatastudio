@@ -38,8 +38,18 @@ import { IAccessibilityService } from 'vs/platform/accessibility/common/accessib
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { localize } from 'vs/nls';
 import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ServerInfo } from 'azdata';
+import { IConnectionProfile } from 'azdata';
 
 const cellWithNullCharMessage = localize('editData.cellWithNullCharMessage', "This cell contains the Unicode null character which is currently not supported for editing.");
+
+interface ConnInfo {
+	profile: IConnectionProfile;
+	serverInfo: ServerInfo;
+}
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -108,6 +118,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	};
 
 	constructor(
+		uri: string,
 		dataService: DataService,
 		onSaveViewState: Event<void>,
 		onRestoreViewState: Event<void>,
@@ -119,14 +130,17 @@ export class EditDataGridPanel extends GridParentComponent {
 		@IConfigurationService configurationService: IConfigurationService,
 		@IClipboardService clipboardService: IClipboardService,
 		@IQueryEditorService queryEditorService: IQueryEditorService,
+		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@ILogService logService: ILogService,
 		@IAccessibilityService private accessibilityService: IAccessibilityService,
-		@IQuickInputService private quickInputService: IQuickInputService
+		@IQuickInputService private quickInputService: IQuickInputService,
+		@IConnectionManagementService private connectionManagementService: IConnectionManagementService
 	) {
-		super(contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, logService);
+		super(contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, logService, telemetryService);
 		this.nativeElement = document.createElement('div');
 		this.nativeElement.className = 'editDataGridPanel';
 		this.nativeElement.classList.add('slickgridContainer');
+		this.uri = uri;
 		this.dataService = dataService;
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
 		onRestoreViewState(() => this.restoreViewState());
@@ -196,6 +210,12 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.onActiveCellChanged = this.onCellSelect;
 
 		this.onCellEditEnd = (event: Slick.OnCellChangeEventArgs<any>): void => {
+			let connInfo: ConnInfo = self.getConnectionInfo();
+			self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditCellEnd)
+				.withAdditionalProperties({ eventRow: event.row, eventCol: event.cell })
+				.withConnectionInfo(connInfo.profile)
+				.withServerInfo(connInfo.serverInfo)
+				.send();
 			if (self.currentEditCellValue !== event.item[event.cell]) {
 				self.currentCell.isDirty = true;
 			}
@@ -210,7 +230,11 @@ export class EditDataGridPanel extends GridParentComponent {
 					self.table.grid.navigateDown();
 				},
 					(error: any) => {
-						self.notificationService.error(error);
+						self.notificationService.error(localize('editData.newRowSubmitError', `An error occurred while submitting data to new row: <{0}>`, error));
+						self.telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditCellEndError)
+							.withConnectionInfo(connInfo.profile)
+							.withServerInfo(connInfo.serverInfo)
+							.send();
 					}).catch(onUnexpectedError);
 			}
 		};
@@ -314,6 +338,12 @@ export class EditDataGridPanel extends GridParentComponent {
 	onDeleteRow(): (index: number) => void {
 		const self = this;
 		return (index: number): void => {
+			let connInfo: ConnInfo = self.getConnectionInfo();
+			self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.DeleteEditRow)
+				.withAdditionalProperties({ rowIndex: index })
+				.withConnectionInfo(connInfo.profile)
+				.withServerInfo(connInfo.serverInfo)
+				.send();
 			// If the user is deleting a new row that hasn't been committed yet then use the revert code
 			if (self.newRowVisible && index === self.dataSet.dataRows.getLength() - 2) {
 				self.revertCurrentRow().catch(onUnexpectedError);
@@ -335,6 +365,12 @@ export class EditDataGridPanel extends GridParentComponent {
 	onRevertRow(): () => void {
 		const self = this;
 		return (): void => {
+			let connInfo: ConnInfo = self.getConnectionInfo();
+			self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.RevertEditCurrentRow)
+				.withAdditionalProperties({ currentRow: self.currentCell.row })
+				.withConnectionInfo(connInfo.profile)
+				.withServerInfo(connInfo.serverInfo)
+				.send();
 			self.revertCurrentRow().catch(onUnexpectedError);
 		};
 	}
@@ -343,6 +379,12 @@ export class EditDataGridPanel extends GridParentComponent {
 		let self = this;
 		let row = event.row;
 		let column = event.cell;
+		let connInfo: ConnInfo = self.getConnectionInfo();
+		self.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditCellSelect)
+			.withAdditionalProperties({ selectedRow: event.row, selectedColumn: event.cell })
+			.withConnectionInfo(connInfo.profile)
+			.withServerInfo(connInfo.serverInfo)
+			.send();
 
 		// Skip processing if the newly selected cell is undefined or we don't have column
 		// definition for the column (ie, the selection was reset)
@@ -351,7 +393,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (row === undefined || column === undefined || this.cellSubmitInProgress || this.cellRevertInProgress || this.rowRevertInProgress) {
 			return;
 		}
-
 
 		// get the cell we have just immediately clicked (to set as the new active cell in handleChanges).
 		this.lastClickedCell = { row, column };
@@ -374,6 +415,11 @@ export class EditDataGridPanel extends GridParentComponent {
 				return Promise.resolve();
 			},
 			(error) => {
+				self.notificationService.error(localize('editData.generalSubmitError', `An error occurred while submitting cell change: <{0}>`, error));
+				self.telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditCellSelectError)
+					.withConnectionInfo(connInfo.profile)
+					.withServerInfo(connInfo.serverInfo)
+					.send();
 				// Cell update failed, jump back to the last cell we were on
 				this.cellSubmitInProgress = true;
 				this.updateEnabledState(true);
@@ -386,19 +432,24 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (this.currentCell.row !== row) {
 			// We're changing row, commit the changes
 			cellSelectTasks = cellSelectTasks.then(() => {
-				return self.dataService.commitEdit().then(result => {
+				return this.dataService.commitEdit().then(result => {
 					// Committing was successful, clean the grid
-					self.setGridClean();
-					self.rowIdMappings = {};
-					self.newRowVisible = false;
+					this.setGridClean();
+					this.rowIdMappings = {};
+					this.newRowVisible = false;
 					return Promise.resolve();
 				}, error => {
+					this.notificationService.error(error);
+					this.telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.SubmitCommitError)
+						.withConnectionInfo(connInfo.profile)
+						.withServerInfo(connInfo.serverInfo)
+						.send();
 					// Committing failed, jump back to the last selected cell
 					this.cellSubmitInProgress = true;
 					this.updateEnabledState(true);
 					this.cellSubmitInProgress = false;
-					this.lastClickedCell = { row: self.currentCell.row, column: self.currentCell.column };
-					self.focusCell(self.currentCell.row, self.currentCell.column);
+					this.lastClickedCell = { row: this.currentCell.row, column: this.currentCell.column };
+					this.focusCell(this.currentCell.row, this.currentCell.column);
 					return Promise.reject(null);
 				});
 			});
@@ -509,6 +560,12 @@ export class EditDataGridPanel extends GridParentComponent {
 	 */
 	onScroll(scrollTop): void {
 		this.refreshGrid();
+	}
+
+	private getConnectionInfo(): ConnInfo {
+		let profile = this.connectionManagementService.getConnectionProfile(this.uri);
+		let info = this.connectionManagementService.getServerInfo(profile.id);
+		return { profile: profile, serverInfo: info };
 	}
 
 	/**
@@ -634,6 +691,12 @@ export class EditDataGridPanel extends GridParentComponent {
 	private async revertCurrentRow(isPressRevert?: boolean): Promise<void> {
 		this.rowRevertInProgress = true;
 		let currentNewRowIndex = this.dataSet.totalRows - 2;
+		let connInfo: ConnInfo = this.getConnectionInfo();
+		this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditRowRevert)
+			.withAdditionalProperties({ currentNewRow: currentNewRowIndex, currentRow: this.currentCell.row })
+			.withConnectionInfo(connInfo.profile)
+			.withServerInfo(connInfo.serverInfo)
+			.send();
 		if (this.newRowVisible && this.currentCell.row === currentNewRowIndex) {
 			// revert our last new row
 			this.removingNewRow = true;
@@ -888,6 +951,12 @@ export class EditDataGridPanel extends GridParentComponent {
 				scrollTop: viewport.scrollTop,
 				scrollLeft: viewport.scrollLeft
 			};
+			let connInfo: ConnInfo = this.getConnectionInfo();
+			this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditSaveViewState)
+				.withAdditionalProperties({ scrollLeft: this.savedViewState.scrollLeft, scrollTop: this.savedViewState.scrollTop })
+				.withConnectionInfo(connInfo.profile)
+				.withServerInfo(connInfo.serverInfo)
+				.send();
 
 			// Save the cell that is currently being edited.
 			// Note: This is only updating the data in tools service, not saving the change to database.
@@ -897,8 +966,13 @@ export class EditDataGridPanel extends GridParentComponent {
 				gridObject._grid.getEditorLock().commitCurrentEdit();
 				this.submitCurrentCellChange((result: EditUpdateCellResult) => {
 					self.setCellDirtyState(self.currentCell.row, self.currentCell.column, result.cell.isDirty);
+					self.setRowDirtyState(this.currentCell.row, result.isRowDirty);
 				}, (error: any) => {
-					self.notificationService.error(error);
+					self.notificationService.error(localize('editData.saveViewSubmitError', `An error occurred while saving local uncommitted changes: <{0}>`, error));
+					self.telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryError.EditSaveViewError)
+						.withConnectionInfo(connInfo.profile)
+						.withServerInfo(connInfo.serverInfo)
+						.send();
 				}).catch(onUnexpectedError);
 			}
 		}
@@ -906,6 +980,12 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private restoreViewState(): void {
 		if (this.savedViewState) {
+			let connInfo: ConnInfo = this.getConnectionInfo();
+			this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.EditDataGrid, TelemetryKeys.TelemetryAction.EditRestoreViewState)
+				.withAdditionalProperties({ scrollLeft: this.savedViewState.scrollLeft, scrollTop: this.savedViewState.scrollTop })
+				.withConnectionInfo(connInfo.profile)
+				.withServerInfo(connInfo.serverInfo)
+				.send();
 			// Row selections are undefined in original slickgrid, removed for no purpose
 			let viewport = ((this.table as any)._grid.getCanvasNode() as HTMLElement).parentElement;
 			viewport.scrollLeft = this.savedViewState.scrollLeft;

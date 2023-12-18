@@ -11,6 +11,8 @@ import { IAction, Action } from 'vs/base/common/actions';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 export const GRID_SAVECSV_ID = 'grid.saveAsCsv';
 export const GRID_SAVEJSON_ID = 'grid.saveAsJson';
@@ -78,12 +80,19 @@ class SaveResultAction extends Action {
 		id: string,
 		label: string,
 		private format: SaveFormat,
-		private dataService: DataService
+		private dataService: DataService,
+		@IAdsTelemetryService private telemetryService: IAdsTelemetryService
 	) {
 		super(id, label);
 	}
 
 	public override async run(gridInfo: IGridInfo): Promise<void> {
+		this.telemetryService.createActionEvent(
+			TelemetryKeys.TelemetryView.EditDataEditor,
+			TelemetryKeys.TelemetryAction.EditSaveResult
+		).withAdditionalProperties({
+			batchIndex: gridInfo.batchIndex, resultSetNumber: gridInfo.resultSetNumber, format: this.format
+		}).send();
 		this.dataService.sendSaveRequest({
 			batchIndex: gridInfo.batchIndex,
 			resultSetNumber: gridInfo.resultSetNumber,
@@ -105,13 +114,20 @@ class CopyResultAction extends Action {
 		label: string,
 		private copyHeader: boolean,
 		private dataService: DataService,
-		@IConfigurationService private configurationService: IConfigurationService
+		@IConfigurationService private configurationService: IConfigurationService,
+		@IAdsTelemetryService private telemetryService: IAdsTelemetryService
 	) {
 		super(id, label);
 	}
 
 	public override async run(gridInfo: IGridInfo): Promise<void> {
 		const includeHeader = this.configurationService.getValue<boolean>('queryEditor.results.copyIncludeHeaders') || this.copyHeader;
+		this.telemetryService.createActionEvent(
+			TelemetryKeys.TelemetryView.EditDataEditor,
+			TelemetryKeys.TelemetryAction.EditCopyResult
+		).withAdditionalProperties({
+			batchIndex: gridInfo.batchIndex, resultSetNumber: gridInfo.resultSetNumber, includeHeader: includeHeader
+		}).send();
 		this.dataService.copyResults(gridInfo.selection, gridInfo.batchIndex, gridInfo.resultSetNumber, includeHeader);
 	}
 }
@@ -123,12 +139,19 @@ class SelectAllGridAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private selectAllCallback: (index: number) => void
+		private selectAllCallback: (index: number) => void,
+		@IAdsTelemetryService private telemetryService: IAdsTelemetryService
 	) {
 		super(id, label);
 	}
 
 	public override async run(gridInfo: IGridInfo): Promise<void> {
+		this.telemetryService.createActionEvent(
+			TelemetryKeys.TelemetryView.EditDataEditor,
+			TelemetryKeys.TelemetryAction.EditSelectAllGrid
+		).withAdditionalProperties({
+			gridIndex: gridInfo.gridIndex
+		}).send();
 		this.selectAllCallback(gridInfo.gridIndex);
 	}
 }
