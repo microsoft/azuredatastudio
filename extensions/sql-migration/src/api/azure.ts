@@ -872,6 +872,8 @@ export function getMigrationErrors(migration: DatabaseMigration): string {
 		errors.push(migration.properties.migrationStatusWarnings?.restoreBlockingReason);
 		errors.push(...migration.properties.migrationStatusDetails?.listOfCopyProgressDetails?.flatMap(cp => cp.errors) ?? []);
 		errors.push(...migration.properties.migrationStatusDetails?.sqlSchemaMigrationStatus?.sqlSchemaCopyErrors ?? []);
+		errors.push(...migration.properties.migrationStatusDetails?.sqlSchemaMigrationStatus.scriptGeneration?.errors ?? []);
+		errors.push(...migration.properties.migrationStatusDetails?.sqlSchemaMigrationStatus?.scriptDeployment?.errors ?? []);
 	}
 
 	// remove undefined and duplicate error entries
