@@ -2545,6 +2545,15 @@ Database: {1}</source>
     <trans-unit id="editData.cellWithNullCharMessage">
       <source xml:lang="en">This cell contains the Unicode null character which is currently not supported for editing.</source>
     </trans-unit>
+    <trans-unit id="editData.generalSubmitError">
+      <source xml:lang="en">An error occurred while submitting cell change: &lt;{0}&gt;</source>
+    </trans-unit>
+    <trans-unit id="editData.newRowSubmitError">
+      <source xml:lang="en">An error occurred while submitting data to new row: &lt;{0}&gt;</source>
+    </trans-unit>
+    <trans-unit id="editData.saveViewSubmitError">
+      <source xml:lang="en">An error occurred while saving local uncommitted changes: &lt;{0}&gt;</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/editData/browser/gridActions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="copySelection">
