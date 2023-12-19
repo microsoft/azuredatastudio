@@ -871,9 +871,7 @@ export function getMigrationErrors(migration: DatabaseMigration): string {
 		errors.push(migration.properties.migrationStatusWarnings?.completeRestoreErrorMessage);
 		errors.push(migration.properties.migrationStatusWarnings?.restoreBlockingReason);
 		errors.push(...migration.properties.migrationStatusDetails?.listOfCopyProgressDetails?.flatMap(cp => cp.errors) ?? []);
-		errors.push(...migration.properties.migrationStatusDetails?.sqlSchemaMigrationStatus?.sqlSchemaCopyErrors ?? []);
-		errors.push(...migration.properties.migrationStatusDetails?.sqlSchemaMigrationStatus.scriptGeneration?.errors ?? []);
-		errors.push(...migration.properties.migrationStatusDetails?.sqlSchemaMigrationStatus?.scriptDeployment?.errors ?? []);
+		errors.push(...migration.properties.migrationStatusDetails?.sqlSchemaMigrationStatus?.errors ?? []);
 	}
 
 	// remove undefined and duplicate error entries
@@ -1157,7 +1155,7 @@ export interface CopyProgressDetail {
 }
 
 export interface SqlSchemaMigrationStatus {
-	sqlSchemaCopyErrors: string[];
+	errors: string[];
 	status: 'CollectionCompleted' | 'PrefetchObjects' | 'GetDependency' | 'ScriptObjects' | 'ScriptViewIndexes' | 'ScriptOwnership' | 'GeneratingScript' | 'GeneratingScriptCompleted' | 'DeployingSchema' | 'DeploymentCompleted' | 'Completed' | 'CompletedWithError';
 	objectsCollection: ObjectsCollection;
 	scriptGeneration: ScriptGeneration;
