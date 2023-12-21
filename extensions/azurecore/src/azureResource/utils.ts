@@ -23,7 +23,9 @@ import { TenantIgnoredError } from '../utils/TenantIgnoredError';
 import { AzureMonitorResourceService } from './providers/azuremonitor/azuremonitorService';
 import { AzureMonitorTreeDataProvider } from './providers/azuremonitor/azuremonitorTreeDataProvider';
 import { CosmosDbMongoService } from './providers/cosmosdb/mongo/cosmosDbMongoService';
+import { CosmosDbNoSqlService } from './providers/cosmosdb/nosql/cosmosDbNoSqlService';
 import { CosmosDbMongoTreeDataProvider } from './providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider';
+import { CosmosDbNoSqlTreeDataProvider } from './providers/cosmosdb/nosql/cosmosDbNoSqlTreeDataProvider';
 import { AzureResourceDatabaseService } from './providers/database/databaseService';
 import { AzureResourceDatabaseTreeDataProvider } from './providers/database/databaseTreeDataProvider';
 import { AzureResourceDatabaseServerService } from './providers/databaseServer/databaseServerService';
@@ -266,6 +268,7 @@ export function getAllResourceProviders(extensionContext: vscode.ExtensionContex
 	const providers: azureResource.IAzureResourceProvider[] = [
 		new ResourceProvider(Constants.AZURE_MONITOR_PROVIDER_ID, new AzureMonitorTreeDataProvider(new AzureMonitorResourceService(), extensionContext)),
 		new ResourceProvider(Constants.COSMOSDB_MONGO_PROVIDER_ID, new CosmosDbMongoTreeDataProvider(new CosmosDbMongoService(), extensionContext)),
+		new ResourceProvider(Constants.COSMOSDB_NOSQL_PROVIDER_ID, new CosmosDbNoSqlTreeDataProvider(new CosmosDbNoSqlService(), extensionContext)),
 		new ResourceProvider(Constants.COSMOSDB_POSTGRES_PROVIDER_ID, new CosmosDbPostgresTreeDataProvider(new CosmosDbPostgresService(), extensionContext)),
 		new ResourceProvider(Constants.DATABASE_PROVIDER_ID, new AzureResourceDatabaseTreeDataProvider(new AzureResourceDatabaseService(), extensionContext)),
 		new ResourceProvider(Constants.DATABASE_SERVER_PROVIDER_ID, new AzureResourceDatabaseServerTreeDataProvider(new AzureResourceDatabaseServerService(), extensionContext)),

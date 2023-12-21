@@ -163,6 +163,7 @@ export enum Platform {
 /////////////// Azure Resource provider Ids
 export const AZURE_MONITOR_PROVIDER_ID = 'azure.resource.providers.azureMonitor';
 export const COSMOSDB_MONGO_PROVIDER_ID = 'azure.resource.providers.cosmosDbMongo';
+export const COSMOSDB_NOSQL_PROVIDER_ID = 'azure.resource.providers.cosmosDbNoSql';
 export const COSMOSDB_POSTGRES_PROVIDER_ID = 'azure.resource.providers.cosmosDbPostgres';
 export const DATABASE_PROVIDER_ID = 'azure.resource.providers.database';
 export const DATABASE_SERVER_PROVIDER_ID = 'azure.resource.providers.databaseServer';

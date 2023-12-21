@@ -10,11 +10,11 @@ import { azureResource, AzureAccount } from 'azurecore';
 import { UniversalGraphData, IAzureResourceServerService, IAzureResourceDbService } from '../../interfaces';
 import { where } from '../queryStringConstants';
 import * as nls from 'vscode-nls';
-import { AzureResourcePrefixes, ResourceCategory, analyticsKind, mongoDbKind } from '../../constants';
+import { AzureResourcePrefixes, ResourceCategory, analyticsKind, cosmosDbNoSqlKind, mongoDbKind } from '../../constants';
 import {
 	COSMOSDB_MONGO_PROVIDER_ID, DATABASE_PROVIDER_ID, DATABASE_SERVER_PROVIDER_ID, KUSTO_PROVIDER_ID, AZURE_MONITOR_PROVIDER_ID,
 	MYSQL_FLEXIBLE_SERVER_PROVIDER_ID, POSTGRES_SERVER_PROVIDER_ID, POSTGRES_ARC_SERVER_PROVIDER_ID,
-	SQLINSTANCE_PROVIDER_ID, SQLINSTANCE_ARC_PROVIDER_ID, SYNAPSE_SQL_POOL_PROVIDER_ID, SYNAPSE_WORKSPACE_PROVIDER_ID, COSMOSDB_POSTGRES_PROVIDER_ID, POSTGRES_FLEXIBLE_SERVER_PROVIDER_ID
+	SQLINSTANCE_PROVIDER_ID, SQLINSTANCE_ARC_PROVIDER_ID, SYNAPSE_SQL_POOL_PROVIDER_ID, SYNAPSE_WORKSPACE_PROVIDER_ID, POSTGRES_FLEXIBLE_SERVER_PROVIDER_ID, COSMOSDB_NOSQL_PROVIDER_ID, COSMOSDB_POSTGRES_PROVIDER_ID
 } from '../../../constants';
 import { Logger } from '../../../utils/Logger';
 
@@ -81,6 +81,8 @@ export class AzureResourceUniversalService implements azureResource.IAzureResour
 		[provider: azureResource.IAzureResourceTreeDataProvider, category: ResourceCategory] {
 		if ((type === azureResource.AzureResourceType.cosmosDbAccount && kind === mongoDbKind) || type === azureResource.AzureResourceType.cosmosDbMongoCluster) {
 			return [this.getRegisteredTreeDataProviderInstance(COSMOSDB_MONGO_PROVIDER_ID), ResourceCategory.Server];
+		} else if ((type === azureResource.AzureResourceType.cosmosDbAccount && kind === cosmosDbNoSqlKind)) {
+			return [this.getRegisteredTreeDataProviderInstance(COSMOSDB_NOSQL_PROVIDER_ID), ResourceCategory.Server];
 		} else if (type === azureResource.AzureResourceType.postgresServerGroup || type === azureResource.AzureResourceType.postgresServerGroupv2) {
 			return [this.getRegisteredTreeDataProviderInstance(COSMOSDB_POSTGRES_PROVIDER_ID), ResourceCategory.Server];
 		} else if (type === azureResource.AzureResourceType.sqlDatabase || type === azureResource.AzureResourceType.sqlSynapseSqlDatabase) {

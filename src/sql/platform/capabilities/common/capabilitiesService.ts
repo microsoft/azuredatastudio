@@ -31,6 +31,7 @@ export const ConnectionProviderAndExtensionMap = new Map<string, string>([
 	['KUSTO', 'microsoft.kusto'],
 	['LOGANALYTICS', 'microsoft.azuremonitor'],
 	['COSMOSDB_MONGO', 'microsoft.azure-cosmosdb-ads-extension'],
+	['COSMOSDB_NOSQL', 'microsoft.azure-cosmosdb-ads-extension'],
 	['MySQL', 'microsoft.azuredatastudio-mysql']
 ]);
 
