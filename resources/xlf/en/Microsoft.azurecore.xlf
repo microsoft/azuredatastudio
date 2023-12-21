@@ -125,6 +125,11 @@
       <source xml:lang="en">Azure CosmosDB for MongoDB</source>
     </trans-unit>
   </body></file>
+  <file original="extensions/Microsoft.azurecore/dist/azureResource/providers/cosmosdb/nosql/cosmosDbNoSqlTreeDataProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.cosmosDbNoSqlContainerLabel">
+      <source xml:lang="en">Azure CosmosDB for NoSQL</source>
+    </trans-unit>
+  </body></file>
   <file original="extensions/Microsoft.azurecore/dist/azureResource/providers/cosmosdb/postgres/cosmosDbPostgresTreeDataProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.cosmosDbPostgresContainerLabel">
       <source xml:lang="en">Azure CosmosDB for PostgreSQL Cluster</source>
