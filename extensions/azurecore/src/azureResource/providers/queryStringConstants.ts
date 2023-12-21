@@ -79,6 +79,11 @@ export const cosmosMongoDbQuery = `(type == "${azureResource.AzureResourceType.c
 export const cosmosPostgresDbQuery = `type == "${azureResource.AzureResourceType.postgresServerGroup}" or type == "${azureResource.AzureResourceType.postgresServerGroupv2}"`;
 
 /**
+ * Lists all Cosmos DB for NoSQL accounts
+ */
+export const cosmosNoSqlQuery = `type == "${azureResource.AzureResourceType.cosmosDbAccount}" and kind == "${Constants.cosmosDbNoSqlKind}"`;
+
+/**
  * Lists all Log Analytics workspaces
  */
 export const logAnalyticsQuery = `type == "${azureResource.AzureResourceType.logAnalytics}"`;
