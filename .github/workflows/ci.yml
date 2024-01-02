@@ -19,7 +19,13 @@ jobs:
       CHILD_CONCURRENCY: "1"
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.15
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11.x"
 
       - uses: actions/setup-node@v2
         with:
@@ -88,7 +94,13 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v2.2.0
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.15
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11.x"
 
       # TODO: rename azure-pipelines/linux/xvfb.init to github-actions
       - name: Setup Build Environment
@@ -100,31 +112,31 @@ jobs:
           sudo update-rc.d xvfb defaults
           sudo service xvfb start
 
-      - uses: actions/setup-node@v2
+      - name: Compute node modules cache key
+        id: nodeModulesCacheKey
+        # {{ SQL Carbon Edit}} Use sql-computeNodeModulesCacheKey
+        run: echo "value=$(node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js)" >> $GITHUB_OUTPUT
+      - name: Cache node modules
+        id: cacheNodeModules
+        uses: actions/cache@v3
         with:
-          node-version: 16
-      # {{SQL CARBON EDIT}} Skip caching for now
-      # - name: Compute node modules cache key
-      #   id: nodeModulesCacheKey
-      #   run: echo "::set-output name=value::$(node build/azure-pipelines/common/computeNodeModulesCacheKey.js)"
-      # - name: Cache node modules
-      #   id: cacheNodeModules
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: "**/node_modules"
-      #     key: ${{ runner.os }}-cacheNodeModules14-${{ steps.nodeModulesCacheKey.outputs.value }}
-      #     restore-keys: ${{ runner.os }}-cacheNodeModules14-
-      # - name: Get yarn cache directory path
-      #   id: yarnCacheDirPath
-      #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-      #   run: echo "::set-output name=dir::$(yarn cache dir)"
-      # - name: Cache yarn directory
-      #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: ${{ steps.yarnCacheDirPath.outputs.dir }}
-      #     key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
-      #     restore-keys: ${{ runner.os }}-yarnCacheDir-
+          path: "**/node_modules"
+          key: ${{ runner.os }}-cacheNodeModules20-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-cacheNodeModules20-
+      - name: Get yarn cache directory path
+        id: yarnCacheDirPath
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+      - name: Cache yarn directory
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarnCacheDirPath.outputs.dir }}
+          key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-yarnCacheDir-
+      - name: Install libkrb5-dev
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        run: sudo apt install -y libkrb5-dev
       - name: Execute yarn
         # if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }} {{SQL CARBON EDIT}} Skip caching for now
         env:
@@ -171,9 +183,31 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v2.2.0
-
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.15
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11.x"
+      - name: Compute node modules cache key
+        id: nodeModulesCacheKey
+        # {{ SQL Carbon Edit}} Use sql-computeNodeModulesCacheKey
+        run: echo "value=$(node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js)" >> $GITHUB_OUTPUT
+      - name: Cache node modules
+        id: cacheNodeModules
+        uses: actions/cache@v3
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-cacheNodeModules20-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-cacheNodeModules20-
+      - name: Get yarn cache directory path
+        id: yarnCacheDirPath
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+      - name: Cache yarn directory
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        uses: actions/cache@v3
         with:
           node-version: 16
 
@@ -234,11 +268,13 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18.15
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11.x"
 
       - name: Compute node modules cache key
         id: nodeModulesCacheKey
