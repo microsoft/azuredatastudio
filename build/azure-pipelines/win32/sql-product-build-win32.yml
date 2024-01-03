@@ -155,7 +155,7 @@ steps:
   #   displayName: Run core integration tests
   #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  - task: EsrpCodeSigning@3
     displayName: 'Sign out code'
     inputs:
       ConnectedServiceName: 'Code Signing'
@@ -272,7 +272,7 @@ steps:
     displayName: Archive & User & System setup (Signed)
     condition: and(succeeded(), eq(variables['signed'], true))
 
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  - task: EsrpCodeSigning@3
     displayName: 'Sign installers'
     inputs:
       ConnectedServiceName: 'Code Signing'
