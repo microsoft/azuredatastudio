@@ -670,6 +670,11 @@ export function getActiveIrVersions(irNodes: IntegrationRuntimeNode[]): Integrat
 	return irVersions;
 }
 
+export function getActiveIrVersionsNotSupportingWinAuth(irNodes: IntegrationRuntimeNode[]): IntegrationRuntimeVersionInfo[] {
+	var irVersions = getActiveIrVersions(irNodes);
+	return irVersions.filter(v => v.major < "5" || (v.major === "5" && v.minor < "37" && v.minor >= "35"));
+}
+
 export function isSchemaMigrationSupportedByActiveNodes(irNodes: IntegrationRuntimeNode[]): boolean {
 	const irVersions = getActiveIrVersions(irNodes);
 	return irVersions.some(v => isSchemaMigrationSupportedByVersion(v));

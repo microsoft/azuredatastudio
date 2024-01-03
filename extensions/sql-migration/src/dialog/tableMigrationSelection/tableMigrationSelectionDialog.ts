@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
 import { AzureSqlDatabaseServer, getIrNodes, getResourceName } from '../../api/azure';
-import { collectSourceDatabaseTableInfo, collectTargetDatabaseTableInfo, getActiveIrVersions, isSchemaMigrationSupportedByActiveNodes, SchemaMigrationRequiredIntegrationRuntimeMinimumVersion, TableInfo } from '../../api/sqlUtils';
+import { collectSourceDatabaseTableInfo, collectTargetDatabaseTableInfo, getActiveIrVersions, getActiveIrVersionsNotSupportingWinAuth, isSchemaMigrationSupportedByActiveNodes, SchemaMigrationRequiredIntegrationRuntimeMinimumVersion, TableInfo } from '../../api/sqlUtils';
 import { MigrationSourceAuthenticationType, MigrationStateModel } from '../../models/stateMachine';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { Tab } from 'azdata';
@@ -140,7 +140,9 @@ export class TableMigrationSelectionDialog {
 					this._model._location.name,
 					this._model._sqlMigrationService!.name);
 				const isSchemaMigrationSupportedByVersion = isSchemaMigrationSupportedByActiveNodes(irNodes);
-				this._model.isSchemaMigrationSupported = isSchemaMigrationSupportedByVersion && this._model._authenticationType === MigrationSourceAuthenticationType.Sql;
+				const irVersionsNotSupportingWinAuth = getActiveIrVersionsNotSupportingWinAuth(irNodes);
+				const isSchemaMigrationSupportedByWinAuth = this._model._authenticationType === MigrationSourceAuthenticationType.Integrated && irVersionsNotSupportingWinAuth.length === 0;
+				this._model.isSchemaMigrationSupported = isSchemaMigrationSupportedByVersion && (this._model._authenticationType !== MigrationSourceAuthenticationType.Integrated || isSchemaMigrationSupportedByWinAuth);
 
 				if (!this._model.isSchemaMigrationSupported) {
 					// The current IR(s) version or Windows auth don't support schema migration
@@ -151,8 +153,8 @@ export class TableMigrationSelectionDialog {
 						const irVersions = getActiveIrVersions(irNodes);
 						errors.push(constants.SCHEMA_MIGRATION_UPDATE_IR_VERSION_ERROR_MESSAGE(SchemaMigrationRequiredIntegrationRuntimeMinimumVersion, irVersions))
 					}
-					if (this._model._authenticationType === MigrationSourceAuthenticationType.Integrated) {
-						errors.push(constants.SCHEMA_MIGRATION_WINDOWS_AUTH_ERROR_MESSAGE);
+					if (!isSchemaMigrationSupportedByWinAuth) {
+						errors.push(constants.SCHEMA_MIGRATION_WINDOWS_AUTH_ERROR_MESSAGE(irVersionsNotSupportingWinAuth));
 					}
 
 					await this._schemaMigrationInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
