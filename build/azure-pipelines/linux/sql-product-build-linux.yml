@@ -232,9 +232,9 @@ steps:
         ]
       SessionTimeout: 120
     displayName: 'Signing deb and rpm'
-    condition: and(succeeded(), eq(variables['signed'], true))
+    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'), eq(variables['signed'], true))
 
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  - task: EsrpCodeSigning@3
     inputs:
       ConnectedServiceName: 'Code Signing'
       FolderPath: '$(Build.SourcesDirectory)/.build'
