@@ -5294,19 +5294,19 @@
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-								"source": "https://raw.githubusercontent.com/catppuccin/vscode/main/assets/icon.png"
+								"source": "https://raw.githubusercontent.com/catppuccin/vscode/v3.8.0/assets/icon.png"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-								"source": "https://raw.githubusercontent.com/catppuccin/vscode/main/README.md"
+								"source": "https://raw.githubusercontent.com/catppuccin/vscode/v3.8.0/README.md"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Code.Manifest",
-								"source": "https://raw.githubusercontent.com/catppuccin/vscode/main/package.json"
+								"source": "https://raw.githubusercontent.com/catppuccin/vscode/v3.8.0/package.json"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Content.License",
-								"source": "https://raw.githubusercontent.com/catppuccin/vscode/main/LICENSE"
+								"source": "https://raw.githubusercontent.com/catppuccin/vscode/v3.8.0/LICENSE"
 							}
 						],
 						"properties": [
