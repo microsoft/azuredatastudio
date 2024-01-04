@@ -113,6 +113,7 @@ steps:
       exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-inno-updater" }
     displayName: Build
     env:
+      GITHUB_TOKEN: $(github-distro-mixin-password)
       VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
 
   - task: UniversalPackages@0
