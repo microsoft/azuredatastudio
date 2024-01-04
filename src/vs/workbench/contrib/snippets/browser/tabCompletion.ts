@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { KeyCode } from 'vs/base/common/keyCodes';
@@ -132,6 +132,7 @@ export class TabCompletionController implements IEditorContribution {
 		} else {
 			this._hasSnippets.set(true);
 			this._completionProvider = {
+				_debugDisplayName: 'tabCompletion',
 				dispose: () => {
 					registration.dispose();
 				},

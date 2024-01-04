@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -78,7 +78,7 @@ suite('FileDialogService', function () {
 
 	setup(async function () {
 		disposables = new DisposableStore();
-		instantiationService = <TestInstantiationService>workbenchInstantiationService(undefined, disposables);
+		disposables.add(instantiationService = <TestInstantiationService>workbenchInstantiationService(undefined, disposables));
 		const configurationService = new TestConfigurationService();
 		await configurationService.setUserConfiguration('files', { simpleDialog: { enable: true } });
 		instantiationService.stub(IConfigurationService, configurationService);

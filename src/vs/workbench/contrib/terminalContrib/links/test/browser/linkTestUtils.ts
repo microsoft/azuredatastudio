@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { deepStrictEqual } from 'assert';
 import { ITerminalLinkDetector, TerminalLinkType } from 'vs/workbench/contrib/terminalContrib/links/browser/links';
 import { URI } from 'vs/base/common/uri';
-import { IBufferLine } from 'xterm';
+import type { IBufferLine } from 'xterm';
 
 export async function assertLinkHelper(
 	text: string,
@@ -18,6 +18,10 @@ export async function assertLinkHelper(
 
 	// Write the text and wait for the parser to finish
 	await new Promise<void>(r => detector.xterm.write(text, r));
+	const textSplit = text.split('\r\n');
+	const lastLineIndex = textSplit.filter((e, i) => i !== textSplit.length - 1).reduce((p, c) => {
+		return p + Math.max(Math.ceil(c.length / 80), 1);
+	}, 0);
 
 	// Ensure all links are provided
 	const lines: IBufferLine[] = [];
@@ -25,7 +29,8 @@ export async function assertLinkHelper(
 		lines.push(detector.xterm.buffer.active.getLine(i)!);
 	}
 
-	const actualLinks = (await detector.detect(lines, 0, detector.xterm.buffer.active.cursorY)).map(e => {
+	// Detect links always on the last line with content
+	const actualLinks = (await detector.detect(lines, lastLineIndex, detector.xterm.buffer.active.cursorY)).map(e => {
 		return {
 			link: e.uri?.toString() ?? e.text,
 			type: expectedType,

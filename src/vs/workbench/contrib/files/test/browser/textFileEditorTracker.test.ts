@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -77,6 +77,7 @@ suite('Files - TextFileEditorTracker', () => {
 		instantiationService.stub(IWorkspaceTrustRequestService, new TestWorkspaceTrustRequestService(false));
 
 		const editorService: EditorService = instantiationService.createInstance(EditorService);
+		disposables.add(editorService);
 		instantiationService.stub(IEditorService, editorService);
 
 		const accessor = instantiationService.createInstance(TestServiceAccessor);
@@ -93,6 +94,7 @@ suite('Files - TextFileEditorTracker', () => {
 		const resource = toResource.call(this, '/path/index.txt');
 
 		const model = await accessor.textFileService.files.resolve(resource) as IResolvedTextFileEditorModel;
+		disposables.add(model);
 
 		model.textEditorModel.setValue('Super Good');
 		assert.strictEqual(snapshotToString(model.createSnapshot()!), 'Super Good');
@@ -141,6 +143,7 @@ suite('Files - TextFileEditorTracker', () => {
 		}
 
 		const model = await accessor.textFileService.files.resolve(resource) as IResolvedTextFileEditorModel;
+		disposables.add(model);
 
 		model.textEditorModel.setValue('Super Good');
 

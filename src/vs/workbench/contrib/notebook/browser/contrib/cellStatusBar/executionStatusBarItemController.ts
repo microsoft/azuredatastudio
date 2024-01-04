@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { disposableTimeout, RunOnceScheduler } from 'vs/base/common/async';
@@ -58,7 +58,7 @@ export class NotebookStatusBarController extends Disposable {
 	}
 
 	private _updateVisibleCells(e: ICellVisibilityChangeEvent): void {
-		const vm = this._notebookEditor._getViewModel();
+		const vm = this._notebookEditor.getViewModel();
 		if (!vm) {
 			return;
 		}
@@ -321,7 +321,7 @@ class TimerCellStatusBarItem extends Disposable {
 		return <INotebookCellStatusBarItem>{
 			text: formatCellDuration(duration, false),
 			alignment: CellStatusbarAlignment.Left,
-			priority: Number.MAX_SAFE_INTEGER - 1,
+			priority: Number.MAX_SAFE_INTEGER - 5,
 			tooltip
 		};
 	}

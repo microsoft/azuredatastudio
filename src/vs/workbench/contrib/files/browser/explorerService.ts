@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Event } from 'vs/base/common/event';
@@ -26,6 +26,7 @@ import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IExpression } from 'vs/base/common/glob';
 import { ResourceGlobMatcher } from 'vs/workbench/common/resources';
 import { IFilesConfigurationService } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 export const UNDO_REDO_SOURCE = new UndoRedoSource();
 
@@ -54,7 +55,8 @@ export class ExplorerService implements IExplorerService {
 		@IBulkEditService private readonly bulkEditService: IBulkEditService,
 		@IProgressService private readonly progressService: IProgressService,
 		@IHostService hostService: IHostService,
-		@IFilesConfigurationService private readonly filesConfigurationService: IFilesConfigurationService
+		@IFilesConfigurationService private readonly filesConfigurationService: IFilesConfigurationService,
+		@ITelemetryService private readonly telemetryService: ITelemetryService
 	) {
 		this.config = this.configurationService.getValue('explorer');
 
@@ -228,7 +230,52 @@ export class ExplorerService implements IExplorerService {
 			this.editable = { stat, data };
 		}
 		const isEditing = this.isEditable(stat);
-		await this.view.setEditable(stat, isEditing);
+		try {
+			await this.view.setEditable(stat, isEditing);
+		} catch {
+			const parent = stat.parent;
+			type ExplorerViewEditableErrorData = {
+				parentIsDirectory: boolean | undefined;
+				isDirectory: boolean | undefined;
+				isReadonly: boolean | undefined;
+				parentIsReadonly: boolean | undefined;
+				parentIsExcluded: boolean | undefined;
+				isExcluded: boolean | undefined;
+				parentIsRoot: boolean | undefined;
+				isRoot: boolean | undefined;
+				parentHasNests: boolean | undefined;
+				hasNests: boolean | undefined;
+			};
+			type ExplorerViewEditableErrorClassification = {
+				owner: 'lramos15';
+				comment: 'Helps gain a broard understanding of why users are unable to edit files in the explorer';
+				parentIsDirectory: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; isMeasurement: true; comment: 'Whether the parent of the editable element is a directory' };
+				isDirectory: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; isMeasurement: true; comment: 'Whether the editable element is a directory' };
+				isReadonly: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; isMeasurement: true; comment: 'Whether the editable element is readonly' };
+				parentIsReadonly: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; isMeasurement: true; comment: 'Whether the parent of the editable element is readonly' };
+				parentIsExcluded: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; isMeasurement: true; comment: 'Whether the parent of the editable element is excluded from being shown in the explorer' };
+				isExcluded: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; isMeasurement: true; comment: 'Whether the editable element is excluded from being shown in the explorer' };
+				parentIsRoot: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; isMeasurement: true; comment: 'Whether the parent of the editable element is a root' };
+				isRoot: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; isMeasurement: true; comment: 'Whether the editable element is a root' };
+				parentHasNests: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; isMeasurement: true; comment: 'Whether the parent of the editable element has nested children' };
+				hasNests: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; isMeasurement: true; comment: 'Whether the editable element has nested children' };
+			};
+			const errorData = {
+				parentIsDirectory: parent?.isDirectory,
+				isDirectory: stat.isDirectory,
+				isReadonly: !!stat.isReadonly,
+				parentIsReadonly: !!parent?.isReadonly,
+				parentIsExcluded: parent?.isExcluded,
+				isExcluded: stat.isExcluded,
+				parentIsRoot: parent?.isRoot,
+				isRoot: stat.isRoot,
+				parentHasNests: parent?.hasNests,
+				hasNests: stat.hasNests,
+			};
+			this.telemetryService.publicLogError2<ExplorerViewEditableErrorData, ExplorerViewEditableErrorClassification>('explorerView.setEditableError', errorData);
+			return;
+		}
+
 
 		if (!this.editable && this.fileChangeEvents.length && !this.onFileChangesScheduler.isScheduled()) {
 			this.onFileChangesScheduler.schedule();

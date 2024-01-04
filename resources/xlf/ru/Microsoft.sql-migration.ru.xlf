@@ -94,6 +94,10 @@
         <source xml:lang="en">A time-out was encountered while validating a resource connection. Learn more: https://aka.ms/dms-migrations-troubleshooting.</source>
         <target state="translated">Превышено время ожидания при проверке подключения к ресурсу. Подробнее: https://aka.ms/dms-migrations-troubleshooting.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.assessment.results.summary.label.caps">
+        <source xml:lang="en">ASSESSMENT RESULTS</source>
+        <target state="translated">РЕЗУЛЬТАТЫ ОЦЕНКИ</target>
+      </trans-unit>
       <trans-unit id="sql.migration.active.backup.files">
         <source xml:lang="en">Active backup files</source>
         <target state="translated">Активные файлы резервных копий</target>
@@ -222,10 +226,6 @@
         <source xml:lang="en">An error occurred while restarting the migration.</source>
         <target state="translated">Произошла ошибка при перезапуске миграции.</target>
       </trans-unit>
-      <trans-unit id="sql.migration.starting.migration.error">
-        <source xml:lang="en">An error occurred while starting the certificate migration: '{0}'</source>
-        <target state="translated">Произошла ошибка при запуске миграции сертификатов: "{0}"</target>
-      </trans-unit>
       <trans-unit id="sql.migration.wizard.login.error.title">
         <source xml:lang="en">An error occurred while trying to get {0} login information.</source>
         <target state="translated">Произошла ошибка при попытке получения сведений об учетных данных {0}.</target>
@@ -266,6 +266,14 @@
         <source xml:lang="en">Assess extended event sessions</source>
         <target state="translated">Оценка расширенных сеансов событий</target>
       </trans-unit>
+      <trans-unit id="sql.migration.assessed.dbs.label">
+        <source xml:lang="en">Assessed databases: {0}</source>
+        <target state="translated">Оцениваемые базы данных: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.assessment.findings.label">
+        <source xml:lang="en">Assessment findings</source>
+        <target state="translated">Результаты оценки</target>
+      </trans-unit>
       <trans-unit id="sql.migration.assessment.in.progress">
         <source xml:lang="en">Assessment in progress</source>
         <target state="translated">Оценка выполняется</target>
@@ -274,10 +282,6 @@
         <source xml:lang="en">Assessment results</source>
         <target state="translated">Результаты оценки</target>
       </trans-unit>
-      <trans-unit id="sql.migration.assessment.results.and.recommendations.title">
-        <source xml:lang="en">Assessment results and recommendations</source>
-        <target state="translated">Результаты оценки и рекомендации</target>
-      </trans-unit>
       <trans-unit id="sql.migration.no.results">
         <source xml:lang="en">Assessment results are unavailable.</source>
         <target state="translated">Результаты оценки недоступны.</target>
@@ -285,6 +289,18 @@
       <trans-unit id="sql.migration.assessment">
         <source xml:lang="en">Assessment results for '{0}'</source>
         <target state="translated">Результаты оценки для «{0}»</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.assessment.results.summary.label.description">
+        <source xml:lang="en">Assessment results shows the migration readiness of the database(s)</source>
+        <target state="translated">Результаты оценки показывают готовность базы данных к миграции.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.assessment.summary.title">
+        <source xml:lang="en">Assessment summary</source>
+        <target state="translated">Сводка по оценке</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.assessment.summary.and.recommendations.title">
+        <source xml:lang="en">Assessment summary and SKU recommendations</source>
+        <target state="translated">Сводка по оценке и рекомендации по SKU</target>
       </trans-unit>
       <trans-unit id="sql.migration.authKeys.header">
         <source xml:lang="en">Authentication key</source>
@@ -309,18 +325,6 @@
       <trans-unit id="sql.migration.authentication.type">
         <source xml:lang="en">Authentication type</source>
         <target state="translated">Тип проверки подлинности</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.azure.tenant">
-        <source xml:lang="en">Azure AD tenant</source>
-        <target state="translated">Клиент Azure AD</target>
-      </trans-unit>
-      <trans-unit id="sql.login.migration.enter.AAD.domain.name.to.continue">
-        <source xml:lang="en">Azure Active Directory (AAD) Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).</source>
-        <target state="translated">Для переноса имени входа Windows требуется доменное имя Azure Active Directory (AAD). Введите доменное имя AAD или отмените выбор имен входа Windows.</target>
-      </trans-unit>
-      <trans-unit id="sql.login.migration.aad.domain.name.input.box.label">
-        <source xml:lang="en">Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)</source>
-        <target state="translated">Доменное имя Azure Active Directory (требуется только для того, чтобы перенести имена входа для проверки подлинности Windows)</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.link.dmsGuide">
         <source xml:lang="en">Azure Database Migration Guides</source>
@@ -403,8 +407,8 @@ See below for registration instructions.</source>
         <target state="translated">База данных SQL Azure</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.sqldb.card.title">
-        <source xml:lang="en">Azure SQL Database</source>
-        <target state="translated">База данных SQL Azure</target>
+        <source xml:lang="en">Azure SQL Database (PaaS)</source>
+        <target state="translated">База данных SQL Azure (PaaS)</target>
       </trans-unit>
       <trans-unit id="sql.migration.azure.sql.database">
         <source xml:lang="en">Azure SQL Database Server</source>
@@ -427,8 +431,8 @@ See below for registration instructions.</source>
         <target state="translated">Управляемый экземпляр SQL Azure</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.mi.card.title">
-        <source xml:lang="en">Azure SQL Managed Instance</source>
-        <target state="translated">Управляемый экземпляр SQL Azure</target>
+        <source xml:lang="en">Azure SQL Managed Instance (PaaS)</source>
+        <target state="translated">Управляемый экземпляр SQL Azure (PaaS)</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.title">
         <source xml:lang="en">Azure SQL Migration</source>
@@ -479,8 +483,8 @@ See below for registration instructions.</source>
         <target state="translated">Рекомендация Azure применена с использованием предоставленных данных. Импортируйте или соберите дополнительные данные для уточнения рекомендации.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.card.azureRecommendation.notEnabled">
-        <source xml:lang="en">Azure recommendation is not available. Click “Get Azure recommendation” button below</source>
-        <target state="translated">Рекомендация Azure недоступна. Нажмите кнопку \"Получить рекомендацию Azure\" ниже</target>
+        <source xml:lang="en">Azure recommendation is not available. Click 'Start data collection' button above to get started.</source>
+        <target state="translated">Рекомендация Azure недоступна. Чтобы начать, щелкните кнопку "Начать сбор данных" выше.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.description">
         <source xml:lang="en">Azure recommendation requires performance data of SQL server instance to provide target recommendation. Enable performance data collection to receive the target recommendation for the databases you want to migrate. The longer this will be enabled the better the recommendation. You can disable performance data collection at any time.</source>
@@ -550,9 +554,17 @@ See below for registration instructions.</source>
         <source xml:lang="en">Blocked</source>
         <target state="translated">Заблокировано</target>
       </trans-unit>
+      <trans-unit id="sql.migration.ready">
+        <source xml:lang="en">Blockers</source>
+        <target state="translated">Блокировщики</target>
+      </trans-unit>
       <trans-unit id="sql.migration.issue.aria.label">
         <source xml:lang="en">Blocking Issue: {0}</source>
         <target state="translated">Блокирующая проблема: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.issues.label">
+        <source xml:lang="en">Blocking issues</source>
+        <target state="translated">Блокирующие проблемы</target>
       </trans-unit>
       <trans-unit id="sql.migration.browse">
         <source xml:lang="en">Browse</source>
@@ -626,6 +638,10 @@ See below for registration instructions.</source>
         <source xml:lang="en">Certificate migration</source>
         <target state="translated">Миграция сертификатов</target>
       </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.group.title">
+        <source xml:lang="en">Certificate validations</source>
+        <target state="translated">Проверки сертификатов</target>
+      </trans-unit>
       <trans-unit id="sql.migration.validation.dialog.title">
         <source xml:lang="en">Certificates Migration</source>
         <target state="translated">Миграция сертификатов</target>
@@ -658,21 +674,21 @@ See below for registration instructions.</source>
         <source xml:lang="en">Change scale factor if you want the Azure recommendation to be a percentage larger or smaller than you current workload.</source>
         <target state="translated">Измените масштаб, если хотите, чтобы рекомендация Azure была в процентах относительно текущей рабочей нагрузки.</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.azureRecommendation.status.manualRefreshTimer">
-        <source xml:lang="en">Check back periodically for updated recommendations by pressing the 'Refresh recommendation' button.</source>
-        <target state="translated">Периодически проверяйте наличие обновленных рекомендаций, нажав кнопку \"Обновить рекомендацию\".</target>
-      </trans-unit>
       <trans-unit id="sql.migration.wizard.sku.assessment.error.bypass">
         <source xml:lang="en">Check this option to skip assessment and continue the migration.</source>
         <target state="translated">Установите этот флажок, чтобы пропустить оценку и продолжить миграцию.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.data.collection.choose.path">
+        <source xml:lang="en">Choose a path...</source>
+        <target state="translated">Выбрать путь...</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.chooseMethod.instructions">
         <source xml:lang="en">Choose how you want to provide performance data</source>
         <target state="translated">Выберите способ предоставления данных производительности</target>
       </trans-unit>
-      <trans-unit id="sql.migration.wizard.sku.choose_a_target">
-        <source xml:lang="en">Choose your Azure SQL target</source>
-        <target state="translated">Выберите целевой объект Azure SQL</target>
+      <trans-unit id="sql.migration.assessment.results.header">
+        <source xml:lang="en">Choose target platform, view assessment results and select database(s) for migration.</source>
+        <target state="translated">Выберите целевую платформу, просмотрите результаты оценки и выберите базы данных для миграции.</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.service.delete.label">
         <source xml:lang="en">Clear</source>
@@ -681,6 +697,10 @@ See below for registration instructions.</source>
       <trans-unit id="sql.migration.clear">
         <source xml:lang="en">Clear</source>
         <target state="translated">Очистить</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.status.manualRefreshTimer">
+        <source xml:lang="en">Click on 'Refresh SKU' for updated recommendations.</source>
+        <target state="translated">Щелкните "Обновить SKU" для получения обновленных рекомендаций.</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.prompt">
         <source xml:lang="en">Click on SQL Server instance or any of the databases on the left to view its details.</source>
@@ -875,12 +895,12 @@ See below for registration instructions.</source>
         <target state="translated">Сбор данных для рекомендаций Azure остановлен.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.status.inProgress">
-        <source xml:lang="en">Data collection in progress. Generating initial recommendations...</source>
-        <target state="translated">Выполняется сбор данных. Создание начальных рекомендаций…</target>
+        <source xml:lang="en">Data collection is in progress. </source>
+        <target state="translated">Выполняется сбор данных. </target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.status.refining">
-        <source xml:lang="en">Data collection still in progress. Refining existing recommendations...</source>
-        <target state="translated">Сбор данных все еще выполняется. Уточнение существующих рекомендаций…</target>
+        <source xml:lang="en">Data collection still in progress. </source>
+        <target state="translated">Сбор данных все еще выполняется. </target>
       </trans-unit>
       <trans-unit id="sql.migration.copy.throughput.info">
         <source xml:lang="en">Data movement throughput achieved during the migration of your database backups to Azure. This is the rate of data transfer, calculated by data read divided by duration of backups migration to Azure.</source>
@@ -930,6 +950,10 @@ See below for registration instructions.</source>
         <source xml:lang="en">Database Migration Service authentication keys</source>
         <target state="translated">Ключи проверки подлинности Database Migration Service</target>
       </trans-unit>
+      <trans-unit id="sql.migration.database.issues.summary">
+        <source xml:lang="en">Database assessment issues summary</source>
+        <target state="translated">Сводка по проблемам с оценкой баз данных</target>
+      </trans-unit>
       <trans-unit id="sql.migration.wizard.target.source.collation.error">
         <source xml:lang="en">Database mapping error (Error code: {0}) was found between '{1}' and '{2}' databases. The source database collation '{3}' does not match the target database collation '{4}'. Please select or re-create a target database with the same collation as the source database.</source>
         <target state="translated">Обнаружена ошибка сопоставления между базами данных "{1}" и "{2}" (код ошибки: {0}). Параметры сортировки базы данных-источника "{3}" не совпадают с параметрами сортировки целевой базы "{4}". Выберите или повторно создайте целевую базу данных с такими же параметрами сортировки, как у источника.</target>
@@ -970,6 +994,14 @@ See below for registration instructions.</source>
         <source xml:lang="en">Database to be migrated</source>
         <target state="translated">База данных для миграции</target>
       </trans-unit>
+      <trans-unit id="sql.migration.db.readiness.section.title">
+        <source xml:lang="en">Database {0} migration readiness</source>
+        <target state="translated">Готовность баз данных {0} к миграции</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.assessed.label">
+        <source xml:lang="en">Database(s) assessed</source>
+        <target state="translated">Оценено баз данных</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tde.migrate.column.databases">
         <source xml:lang="en">Databases</source>
         <target state="translated">Базы данных</target>
@@ -1006,13 +1038,25 @@ See below for registration instructions.</source>
         <source xml:lang="en">Default database</source>
         <target state="translated">База данных по умолчанию</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.data.collection.default.path">
+        <source xml:lang="en">Default path</source>
+        <target state="translated">Путь по умолчанию</target>
+      </trans-unit>
       <trans-unit id="sql.migration.delete.migration">
         <source xml:lang="en">Delete migration</source>
         <target state="translated">Удалить миграцию</target>
       </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.description">
+        <source xml:lang="en">Description</source>
+        <target state="translated">Описание</target>
+      </trans-unit>
       <trans-unit id="sql.migration.description">
         <source xml:lang="en">Description</source>
         <target state="translated">Описание</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.details.title">
+        <source xml:lang="en">Details</source>
+        <target state="translated">Сведения</target>
       </trans-unit>
       <trans-unit id="sql.migration.details.copied">
         <source xml:lang="en">Details copied</source>
@@ -1106,6 +1150,10 @@ See below for registration instructions.</source>
         <source xml:lang="en">Encrypted database selected.</source>
         <target state="translated">Выбрана база данных с шифрованием.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.encryption.label">
+        <source xml:lang="en">Encryption</source>
+        <target state="translated">Шифрование</target>
+      </trans-unit>
       <trans-unit id="sql.migration.database.already.exists.vm.info">
         <source xml:lang="en">Ensure that the provided database name(s) do not already exist on the target SQL Server on Azure Virtual Machine.</source>
         <target state="translated">Убедитесь, что базы данных с указанными именами еще не существуют на целевом сервере SQL Server виртуальной машины Azure.</target>
@@ -1182,6 +1230,10 @@ See below for registration instructions.</source>
         <source xml:lang="en">Enter the target user name</source>
         <target state="translated">Введите имя пользователя целевого объекта</target>
       </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.error">
+        <source xml:lang="en">Error</source>
+        <target state="translated">Ошибка</target>
+      </trans-unit>
       <trans-unit id="sql.migration.error">
         <source xml:lang="en">Error</source>
         <target state="translated">Ошибка</target>
@@ -1217,6 +1269,10 @@ See below for registration instructions.</source>
         <target state="translated">Произошли ошибки при сборе данных производительности для сервера "{0}". Если эти проблемы не устранены, попробуйте перезапустить процесс сбора данных:
 
 {1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.select.azure.mi.db.count.threshold.exceeds.error">
+        <source xml:lang="en">Error: Azure SQL Managed Instance supports maximum {0} user databases per instance. Select {0} or less database(s) to proceed further.</source>
+        <target state="translated">Ошибка: Управляемый экземпляр SQL Azure поддерживает не более {0} баз данных на экземпляр. Выберите {0} или меньше баз данных, чтобы продолжить.</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.migrate.server.roles.and.set.permissions">
         <source xml:lang="en">Establishing user mappings completed.
@@ -1322,6 +1378,14 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Filter the migration list by Database Migration Service</source>
         <target state="translated">Фильтрация списка миграции по Database Migration Service</target>
       </trans-unit>
+      <trans-unit id="sql.migration.findings.label">
+        <source xml:lang="en">Findings</source>
+        <target state="translated">Результаты</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.severity.findings.label">
+        <source xml:lang="en">Findings by severity</source>
+        <target state="translated">Результаты по степени серьезности</target>
+      </trans-unit>
       <trans-unit id="sql.migration.finish.time">
         <source xml:lang="en">Finish time</source>
         <target state="translated">Время завершения</target>
@@ -1369,6 +1433,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.sku.get.recommendation">
         <source xml:lang="en">Get Azure recommendation</source>
         <target state="translated">Получить рекомендацию Azure</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.recommended.configuration.summary.label.description">
+        <source xml:lang="en">Get the right-sized SKU recommendations for Azure SQL Targets.</source>
+        <target state="translated">Получите рекомендации по SKU подходящего размера для целевых объектов Azure SQL.</target>
       </trans-unit>
       <trans-unit id="sql.migration.table.selection.status.column">
         <source xml:lang="en">Has rows</source>
@@ -1418,9 +1486,29 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Impacted objects</source>
         <target state="translated">Затронутые объекты</target>
       </trans-unit>
+      <trans-unit id="sql.migration.import">
+        <source xml:lang="en">Import</source>
+        <target state="translated">Импорт</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.import.performance.data">
+        <source xml:lang="en">Import performance data</source>
+        <target state="translated">Импорт данных производительности</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.import.performance.data.dialog.description">
+        <source xml:lang="en">Import this data file from an existing folder, if you have already collected it using Data Migration Assistant.</source>
+        <target state="translated">Импортируйте этот файл данных из существующей папки, если вы уже собрали его с помощью Помощника по миграции данных.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.database.migration.migration.mode.tool.tip">
         <source xml:lang="en">In Azure Database Migration Service, you can migrate your databases offline or while they are online. In an offline migration, application downtime starts when the migration starts. To limit downtime to the time it takes you to cut over to the new environment after the migration, use an online migration.</source>
         <target state="translated">В Azure Database Migration Service вы можете перенести базы данных в автономном режиме или при их подключении к сети. При автономной миграции время простоя приложения начинается при запуске миграции. Чтобы ограничить время простоя временем, необходимым для перехода в новую среду после миграции, используйте миграцию по сети.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.requirements.message">
+        <source xml:lang="en">In order for certificate migration to succeed, you must meet all of the requirements listed below.
+
+Click "Run validation" to check that requirements are met.</source>
+        <target state="translated">Чтобы миграция сертификата была успешной, необходимо выполнить все требования, указанные ниже.
+
+Нажмите "Запустить проверку", чтобы проверить выполнение требований.</target>
       </trans-unit>
       <trans-unit id="sql.migration.copy.status.inprogress">
         <source xml:lang="en">In progress</source>
@@ -1437,10 +1525,6 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.login.migration.status.in.progress">
         <source xml:lang="en">In progress</source>
         <target state="translated">Выполняется</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.sku.azureRecommendation.status.autoRefreshTimer">
-        <source xml:lang="en">Initial recommendations will automatically refresh in approximately {0} minute(s).</source>
-        <target state="translated">Начальные рекомендации будут автоматически обновлены примерно через {0} мин.</target>
       </trans-unit>
       <trans-unit id="sql.migration.restore.status.initializing">
         <source xml:lang="en">Initializing</source>
@@ -1481,6 +1565,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.issues.count">
         <source xml:lang="en">Issues ({0})</source>
         <target state="translated">Проблемы ({0})</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.severity.issues.label">
+        <source xml:lang="en">Issues by severity</source>
+        <target state="translated">Проблемы по степени серьезности</target>
       </trans-unit>
       <trans-unit id="sql.migration.key1.label">
         <source xml:lang="en">Key 1</source>
@@ -1654,6 +1742,18 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Memory requirement</source>
         <target state="translated">Требования к памяти</target>
       </trans-unit>
+      <trans-unit id="sql.login.migration.aad.domain.name.input.box.label">
+        <source xml:lang="en">Microsoft Entra ID Domain Name (only required to migrate Windows Authenication Logins)</source>
+        <target state="translated">Доменное имя Microsoft Entra ID (требуется только для того, чтобы перенести имена входа для проверки подлинности Windows)</target>
+      </trans-unit>
+      <trans-unit id="sql.login.migration.enter.AAD.domain.name.to.continue">
+        <source xml:lang="en">Microsoft Entra ID Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).</source>
+        <target state="translated">Для переноса имени входа Windows требуется доменное имя Microsoft Entra ID. Введите доменное имя AAD или отмените выбор имен входа Windows.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.azure.tenant">
+        <source xml:lang="en">Microsoft Entra tenant</source>
+        <target state="translated">Клиент Microsoft Entra</target>
+      </trans-unit>
       <trans-unit id="sql.migration.start.login.migration.button">
         <source xml:lang="en">Migrate</source>
         <target state="translated">Мигрировать</target>
@@ -1770,6 +1870,14 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Migration mode</source>
         <target state="translated">Режим миграции</target>
       </trans-unit>
+      <trans-unit id="sql.migration.migration.readiness.label">
+        <source xml:lang="en">Migration readiness</source>
+        <target state="translated">Готовность к миграции</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.readiness.section.title">
+        <source xml:lang="en">Migration readiness of assessed databases in the server instance</source>
+        <target state="translated">Готовность оцененных баз данных к миграции в экземпляре сервера</target>
+      </trans-unit>
       <trans-unit id="serviceCrashMessage">
         <source xml:lang="en">Migration service component could not start. {0}</source>
         <target state="translated">Не удалось запустить компонент службы миграции. {0}</target>
@@ -1849,6 +1957,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.name.label">
         <source xml:lang="en">Names:</source>
         <target state="translated">Имена:</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.needs.review">
+        <source xml:lang="en">Needs review</source>
+        <target state="translated">Требуется проверка</target>
       </trans-unit>
       <trans-unit id="sql.migration.tde.wizard.network.share.label">
         <source xml:lang="en">Network path for certificate</source>
@@ -1994,6 +2106,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">No subscriptions found.</source>
         <target state="translated">Подписки не найдены.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.select.target.label">
+        <source xml:lang="en">No target selected. Select target to view the assessment summary.</source>
+        <target state="translated">Цель не выбрана. Выберите целевой объект, чтобы просмотреть сводку оценки.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.no.virtualMachine.found">
         <source xml:lang="en">No virtual machines found.</source>
         <target state="translated">Виртуальные машины не найдены</target>
@@ -2018,6 +2134,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Not applicable</source>
         <target state="translated">Неприменимо</target>
       </trans-unit>
+      <trans-unit id="sql.migration.not.ready">
+        <source xml:lang="en">Not ready</source>
+        <target state="translated">Не готово</target>
+      </trans-unit>
       <trans-unit id="sql.migration.restore.status.not.started">
         <source xml:lang="en">Not started</source>
         <target state="translated">Не запущено</target>
@@ -2025,10 +2145,6 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.login.migration.steps.not.started">
         <source xml:lang="en">Not started</source>
         <target state="translated">Не запущено</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.wizard.sku.choose_a_target.help">
-        <source xml:lang="en">Not sure which Azure SQL target is right for you? Learn more</source>
-        <target state="translated">Не знаете, какой целевой объект Azure SQL вам нужен? Дополнительные сведения</target>
       </trans-unit>
       <trans-unit id="sql.migration.backup.file.number.of.stripes">
         <source xml:lang="en">Number of stripes</source>
@@ -2079,6 +2195,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <target state="translated">Пароль</target>
       </trans-unit>
       <trans-unit id="sql.migration.state.pending">
+        <source xml:lang="en">Pending</source>
+        <target state="translated">Ожидание</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.status.pending">
         <source xml:lang="en">Pending</source>
         <target state="translated">Ожидание</target>
       </trans-unit>
@@ -2138,6 +2258,14 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
         <target state="translated">Прежде чем продолжить, выберите расположение файлов резервной копии базы данных.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsd">
+        <source xml:lang="en">Premium SSD</source>
+        <target state="translated">SSD (цен. категория "Премиум")</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsdV2">
+        <source xml:lang="en">Premium SSD v2</source>
+        <target state="translated">SSD (цен. категория "Премиум") версии 2</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.azureConfiguration.premiumSeries">
         <source xml:lang="en">Premium-series</source>
         <target state="translated">Серия Premium</target>
@@ -2182,6 +2310,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Queued files</source>
         <target state="translated">Файлы в очереди</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.recommended.configuration.summary.label.caps">
+        <source xml:lang="en">RECOMMENDED CONFIGURATION</source>
+        <target state="translated">РЕКОМЕНДУЕМАЯ КОНФИГУРАЦИЯ</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.targetStorageConfiguration.caching.readOnly">
         <source xml:lang="en">Read-only</source>
         <target state="translated">Только для чтения</target>
@@ -2193,6 +2325,14 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.status.readyforcutover">
         <source xml:lang="en">Ready for cutover</source>
         <target state="translated">Готово к прямой миграции</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.migration.time.label">
+        <source xml:lang="en">Ready for migration</source>
+        <target state="translated">Готово к миграции</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.ready.warn">
+        <source xml:lang="en">Ready with warnings</source>
+        <target state="translated">Готово с предупреждениями</target>
       </trans-unit>
       <trans-unit id="sql.migration.copy.status.rebuildingindexes">
         <source xml:lang="en">Rebuilding indexes</source>
@@ -2246,7 +2386,11 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Refresh</source>
         <target state="translated">Обновить</target>
       </trans-unit>
-      <trans-unit id="sql.migration.refresh.assessment.button.label">
+      <trans-unit id="sql.migration.refresh.sku.label">
+        <source xml:lang="en">Refresh SKU recommendations</source>
+        <target state="translated">Обновить рекомендации по SKU</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.refresh.assessment.label">
         <source xml:lang="en">Refresh assessment</source>
         <target state="translated">Обновить оценку</target>
       </trans-unit>
@@ -2394,11 +2538,19 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Run migration workflow again</source>
         <target state="translated">Снова запустить рабочий процесс миграции</target>
       </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.run.validation">
+        <source xml:lang="en">Run validation</source>
+        <target state="translated">Запустить проверку</target>
+      </trans-unit>
       <trans-unit id="sql.migration.run.validation">
         <source xml:lang="en">Run validation</source>
         <target state="translated">Запустить проверку</target>
       </trans-unit>
       <trans-unit id="sql.migration.state.running">
+        <source xml:lang="en">Running</source>
+        <target state="translated">Выполняется</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.running">
         <source xml:lang="en">Running</source>
         <target state="translated">Выполняется</target>
       </trans-unit>
@@ -2451,8 +2603,8 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <target state="translated">SQL Server на виртуальной машине Azure</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.vm.card.title">
-        <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
-        <target state="translated">SQL Server на виртуальной машине Azure</target>
+        <source xml:lang="en">SQL Server on Azure Virtual Machine (IaaS)</source>
+        <target state="translated">SQL Server на виртуальной машине Azure (IaaS)</target>
       </trans-unit>
       <trans-unit id="sql.migration.azure.sql.database.virtual.machine">
         <source xml:lang="en">SQL Server on Azure Virtual Machines</source>
@@ -2534,6 +2686,14 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Select a blob container value first.</source>
         <target state="translated">Сначала выберите значение контейнера больших двоичных объектов.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.import.performance.data.dialog.open.file">
+        <source xml:lang="en">Select a file</source>
+        <target state="translated">Выберите файл</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.import.performance.data.dialog.helper.message">
+        <source xml:lang="en">Select a folder on your local drive</source>
+        <target state="translated">Выберите папку на локальном диске</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.collectDataSelectFolder.instructions">
         <source xml:lang="en">Select a folder on your local drive where performance data will be saved</source>
         <target state="translated">Выберите папку на локальном диске, где будут сохранены данные производительности</target>
@@ -2575,8 +2735,8 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <target state="translated">Выберите целевую базу данных</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.service.select.migration.target">
-        <source xml:lang="en">Select a target server.</source>
-        <target state="translated">Выберите целевой сервер.</target>
+        <source xml:lang="en">Select a target server</source>
+        <target state="translated">Выберите целевой сервер</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.service.select.a.tenant">
         <source xml:lang="en">Select a tenant</source>
@@ -2617,6 +2777,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.select.service.select.target.type.">
         <source xml:lang="en">Select target Azure SQL Type</source>
         <target state="translated">Выберите целевой тип Azure SQL</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.no.target.selected.label">
+        <source xml:lang="en">Select target type</source>
+        <target state="translated">Выберите тип целевого объекта</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.assessment.description">
         <source xml:lang="en">Select the databases that you want to assess for migration to Azure SQL.</source>
@@ -2665,6 +2829,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.server">
         <source xml:lang="en">Server</source>
         <target state="translated">Сервер</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.instance.finding.summary">
+        <source xml:lang="en">Server instance assessment findings summary</source>
+        <target state="translated">Сводка результатов оценки экземпляра сервера</target>
       </trans-unit>
       <trans-unit id="sql.migration.details.serverobjects.label">
         <source xml:lang="en">Server objects</source>
@@ -2770,6 +2938,14 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Source version</source>
         <target state="translated">Исходная версия</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.standardHdd">
+        <source xml:lang="en">Standard HDD</source>
+        <target state="translated">HDD (цен. категория "Стандартный")</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.StandardSsd">
+        <source xml:lang="en">Standard SSD</source>
+        <target state="translated">SSD (цен. категория "Стандартный")</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.start">
         <source xml:lang="en">Start</source>
         <target state="translated">Запустить</target>
@@ -2777,6 +2953,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.start.session">
         <source xml:lang="en">Start a new session</source>
         <target state="translated">Начать новый сеанс</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.start.performance.collection">
+        <source xml:lang="en">Start data collection</source>
+        <target state="translated">Начать сбор данных</target>
       </trans-unit>
       <trans-unit id="sql.migration.start.migration.button">
         <source xml:lang="en">Start migration</source>
@@ -2914,6 +3094,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Succeeded</source>
         <target state="translated">Выполнено</target>
       </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.status.succeeded">
+        <source xml:lang="en">Succeeded</source>
+        <target state="translated">Успешно</target>
+      </trans-unit>
       <trans-unit id="sql.migration.copy.status.succeeded">
         <source xml:lang="en">Succeeded</source>
         <target state="translated">Успешно</target>
@@ -2947,6 +3131,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <target state="translated">Отчет о рекомендациях успешно сохранен в {0}.</target>
       </trans-unit>
       <trans-unit id="sql.migration.summary.page.title">
+        <source xml:lang="en">Summary</source>
+        <target state="translated">Сводка</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.summary.title">
         <source xml:lang="en">Summary</source>
         <target state="translated">Сводка</target>
       </trans-unit>
@@ -3042,6 +3230,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Target platform</source>
         <target state="translated">Целевая платформа</target>
       </trans-unit>
+      <trans-unit id="sql.migration.assessment.results.title">
+        <source xml:lang="en">Target platform &amp; assessment results</source>
+        <target state="translated">Целевая платформа и результаты оценки</target>
+      </trans-unit>
       <trans-unit id="sql.migration.target.server">
         <source xml:lang="en">Target server</source>
         <target state="translated">Целевой сервер</target>
@@ -3102,6 +3294,14 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">The cutover process cannot start until all the migrations are done. To return the latest file status, refresh your browser window.</source>
         <target state="translated">Процесс прямой миграции не может быть запущен, пока не будут завершены все процессы миграции. Чтобы узнать о последнем состоянии файла, обновите окно браузера.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.non.readiness.description">
+        <source xml:lang="en">The database is ready to migrate with {0} warnings.</source>
+        <target state="translated">База данных готова к миграции с {0} предупреждениями.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.readiness.description">
+        <source xml:lang="en">The database is ready to migrate.</source>
+        <target state="translated">База данных готова к миграции.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.database.migration.duration.tool.tip">
         <source xml:lang="en">The duration of the migration</source>
         <target state="translated">Длительность миграции</target>
@@ -3109,6 +3309,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.database.migration.finish.time.tool.tip">
         <source xml:lang="en">The fininish time for the migration</source>
         <target state="translated">Время окончания миграции</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.starting.migration.error">
+        <source xml:lang="en">The following error has occurred while starting the certificate migration: '{0}'</source>
+        <target state="translated">Произошла следующая ошибка при запуске миграции сертификатов: "{0}"</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.error.not.ready">
         <source xml:lang="en">The following error occurred while retrieving registration information for Azure Database Migration Service '{0}'. Please click refresh and try again. Error: '{1}'.</source>
@@ -3150,9 +3354,17 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Things you need before starting your Azure SQL migration:</source>
         <target state="translated">Что необходимо перед началом миграции Azure SQL:</target>
       </trans-unit>
+      <trans-unit id="sql.migration.encryption.description">
+        <source xml:lang="en">This database is encrypted using Transparent Data Encryption (TDE). You need to migrate certificates before you can migrate this database.</source>
+        <target state="translated">Эта база данных зашифрована с использованием прозрачного шифрования данных (TDE). Перед переносом этой базы данных необходимо перенести сертификаты.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.assessments.blocking.issue">
         <source xml:lang="en">This is a blocking issue that will prevent the database migration from succeeding.</source>
         <target state="translated">Это блокирующая проблема, которая препятствует успешному выполнению миграции базы данных.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.status.autoRefreshTimer">
+        <source xml:lang="en">Time before next SKU recommendation update: {0} minute(s).</source>
+        <target state="translated">Время до следующего обновления рекомендации SKU: {0} мин.</target>
       </trans-unit>
       <trans-unit id="sql.migration.missing.targetPassword.error">
         <source xml:lang="en">To continue, enter a valid target password.</source>
@@ -3242,6 +3454,18 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.</source>
         <target state="translated">Чтобы выполнить миграцию в целевую базу данных Azure SQL, выберите режим миграции в соответствии с требованиями к простою.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.select.azure.mi.db.count.under.threshold">
+        <source xml:lang="en">To proceed, press Select button</source>
+        <target state="translated">Чтобы продолжить, нажмите кнопку "Выбрать"</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.total.findings.label">
+        <source xml:lang="en">Total findings: {0}</source>
+        <target state="translated">Всего результатов: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.total.issues.label">
+        <source xml:lang="en">Total issues found: {0}</source>
+        <target state="translated">Всего найденных проблем: {0}</target>
+      </trans-unit>
       <trans-unit id="sql.migration.details.serverobjects.all.tables.label">
         <source xml:lang="en">Total tables</source>
         <target state="translated">Всего таблиц</target>
@@ -3249,6 +3473,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.restore.backuptype.transactionlog">
         <source xml:lang="en">Transaction log</source>
         <target state="translated">Журнал транзакций</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.troubleshooting.tips">
+        <source xml:lang="en">Troubleshooting tips</source>
+        <target state="translated">Советы по устранению неполадок</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.link.mi">
         <source xml:lang="en">Tutorial:  Migrate to Azure SQL Managed Instance (online)</source>
@@ -3274,9 +3502,17 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Type: {0}</source>
         <target state="translated">Тип: {0}</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.UltraSsd">
+        <source xml:lang="en">Ultra SSD</source>
+        <target state="translated">SSD (цен. категория "Ультра")</target>
+      </trans-unit>
       <trans-unit id="sql.migration.restore.backuptype.unknown">
         <source xml:lang="en">Unknown</source>
         <target state="translated">Неизвестно</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.unknown">
+        <source xml:lang="en">Unknown disk type</source>
+        <target state="translated">Неизвестный тип диска</target>
       </trans-unit>
       <trans-unit id="sql.migration.field.label.unrestorable.files">
         <source xml:lang="en">Unrestorable files</source>
@@ -3325,6 +3561,10 @@ Establishing user mappings.</source>
       <trans-unit id="sql.migration.starting.login.failed">
         <source xml:lang="en">Validating and migrating logins failed</source>
         <target state="translated">Сбой проверки и миграции учетных данных</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tde.validation.title">
+        <source xml:lang="en">Validation</source>
+        <target state="translated">Проверка</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.camceled">
         <source xml:lang="en">Validation check canceled</source>
@@ -3389,6 +3629,10 @@ Establishing user mappings.</source>
       <trans-unit id="sql.migration.sku.recommended.value">
         <source xml:lang="en">Value</source>
         <target state="translated">Значение</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.assessment.summary.and.sku.for.targets.label">
+        <source xml:lang="en">View assessment summary and SKU recommendations for Azure SQL targets</source>
+        <target state="translated">Просмотр сводки оценки и рекомендаций по SKU для целевых объектов Azure SQL</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.viewDetails">
         <source xml:lang="en">View details</source>
@@ -3458,6 +3702,10 @@ This may take some time.</source>
         <source xml:lang="en">When uploading database backups to your blob container, ensure that backup files from different databases are stored in separate folders. Only the root of the container and folders at most one level deep are supported.</source>
         <target state="translated">При отправке резервных копий баз данных в контейнер BLOB-объектов убедитесь, что файлы резервных копий из разных баз данных хранятся в отдельных папках. Поддерживается только корень контейнера и папок глубиной не более одного уровня.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.data.collection.popup.message.label">
+        <source xml:lang="en">Where do you want to save collected data?</source>
+        <target state="translated">Где вы хотите сохранить собранные данные?</target>
+      </trans-unit>
       <trans-unit id="sql.migration.network.share.windows.user.label">
         <source xml:lang="en">Windows user account with read access to the network share location</source>
         <target state="translated">Учетная запись пользователя Windows с доступом на чтение сетевой папки</target>
@@ -3509,6 +3757,18 @@ This may take some time.</source>
       <trans-unit id="sql.login.migration.get.connection.string">
         <source xml:lang="en">data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;</source>
         <target state="translated">data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.sku.error.message">
+        <source xml:lang="en">message: {0}</source>
+        <target state="translated">сообщение: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.sku.assessment.error.with.info">
+        <source xml:lang="en">message: {0}{1}errorSummary: {2}{3}possibleCauses: {4}}{5}guidance: {6}{7}errorId: {8}</source>
+        <target state="translated">сообщение: {0}{1}errorSummary: {2}{3}possibleCauses: {4}}{5}руководство: {6}{7}errorId: {8}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.sku.assessment.error.with.stack">
+        <source xml:lang="en">message: {0}{1}stack: {2}</source>
+        <target state="translated">сообщение: {0}{1}стек: {2}</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.value">
         <source xml:lang="en">{0}</source>
@@ -3675,8 +3935,12 @@ This may take some time.</source>
         <target state="translated">{0} сек</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureConfiguration.storage">
-        <source xml:lang="en">{0} x {1}</source>
-        <target state="translated">{0} x {1}</target>
+        <source xml:lang="en">{0} x {1} </source>
+        <target state="translated">{0} x {1} </target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.disk">
+        <source xml:lang="en">{0} {1}GB ({2} IOPS, {3} MB/s)</source>
+        <target state="translated">{0} {1} ГБ ({2} операций ввода-вывода в секунду, {3} МБ/с)</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.percentage">
         <source xml:lang="en">{0}%</source>

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { timeout } from 'vs/base/common/async';
@@ -80,7 +80,8 @@ export class GhostTextContext extends Disposable {
 	constructor(model: InlineCompletionsModel, private readonly editor: ITestCodeEditor) {
 		super();
 
-		this._register(autorun('update', reader => {
+		this._register(autorun(reader => {
+			/** @description update */
 			const ghostText = model.ghostText.read(reader);
 			let view: string | undefined;
 			if (ghostText) {

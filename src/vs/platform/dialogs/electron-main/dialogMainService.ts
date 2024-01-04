@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { BrowserWindow, dialog, FileFilter, MessageBoxOptions, MessageBoxReturnValue, OpenDialogOptions, OpenDialogReturnValue, SaveDialogOptions, SaveDialogReturnValue } from 'electron';
@@ -10,7 +10,6 @@ import { mnemonicButtonLabel } from 'vs/base/common/labels';
 import { Disposable, dispose, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { normalizeNFC } from 'vs/base/common/normalization';
 import { isMacintosh } from 'vs/base/common/platform';
-import { withNullAsUndefined } from 'vs/base/common/types';
 import { Promises } from 'vs/base/node/pfs';
 import { localize } from 'vs/nls';
 import { INativeOpenDialogOptions, massageMessageBoxOptions } from 'vs/platform/dialogs/common/dialogs';
@@ -106,7 +105,7 @@ export class DialogMainService implements IDialogMainService {
 		}
 
 		// Show Dialog
-		const result = await this.showOpenDialog(dialogOptions, withNullAsUndefined(window || BrowserWindow.getFocusedWindow()));
+		const result = await this.showOpenDialog(dialogOptions, (window || BrowserWindow.getFocusedWindow()) ?? undefined);
 		if (result && result.filePaths && result.filePaths.length > 0) {
 			return result.filePaths;
 		}

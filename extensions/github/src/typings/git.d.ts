@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Uri, Event, Disposable, ProviderResult, Command } from 'vscode';
@@ -79,6 +79,7 @@ export const enum Status {
 	IGNORED,
 	INTENT_TO_ADD,
 	INTENT_TO_RENAME,
+	TYPE_CHANGED,
 
 	ADDED_BY_US,
 	ADDED_BY_THEM,

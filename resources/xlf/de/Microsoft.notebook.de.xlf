@@ -625,8 +625,8 @@ Die Datei wurde in "{2}" umbenannt, um einen Datenverlust zu verhindern.</target
         <target state="translated">Schließen</target>
       </trans-unit>
       <trans-unit id="managePackages.dialogName">
-        <source xml:lang="en">Manage Packages</source>
-        <target state="translated">Pakete verwalten</target>
+        <source xml:lang="en">Manage Notebook Packages</source>
+        <target state="translated">Notebookpakete verwalten</target>
       </trans-unit>
     </body>
   </file>
@@ -659,6 +659,10 @@ Die Datei wurde in "{2}" umbenannt, um einen Datenverlust zu verhindern.</target
       <trans-unit id="unsupportedFileType">
         <source xml:lang="en">Only .ipynb Notebooks are supported</source>
         <target state="translated">Es werden nur IPYNB-Notebooks unterstützt.</target>
+      </trans-unit>
+      <trans-unit id="pythonNotSetup">
+        <source xml:lang="en">Python is not currently configured for notebooks. The 'Configure Python for Notebooks' command must be run before being able to manage notebook packages.</source>
+        <target state="translated">Python ist derzeit nicht für Notebooks konfiguriert. Der Befehl "Python für Notebooks konfigurieren" muss ausgeführt werden, bevor Notebookpakete verwaltet werden können.</target>
       </trans-unit>
     </body>
   </file>
@@ -957,8 +961,8 @@ Die Datei wurde in "{2}" umbenannt, um einen Datenverlust zu verhindern.</target
         <target state="translated">Lokaler Pfad zur Python-Installation, die von Notebooks verwendet wird.</target>
       </trans-unit>
       <trans-unit id="title.managePackages">
-        <source xml:lang="en">Manage Packages</source>
-        <target state="translated">Pakete verwalten</target>
+        <source xml:lang="en">Manage Notebook Packages</source>
+        <target state="translated">Notebookpakete verwalten</target>
       </trans-unit>
       <trans-unit id="notebook.maxBookSearchDepth.description">
         <source xml:lang="en">Maximum depth of subdirectories to search for Books (Enter 0 for infinite)</source>

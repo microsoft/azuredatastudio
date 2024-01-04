@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { globals, INodeProcess, isMacintosh, isWindows } from 'vs/base/common/platform';
@@ -48,6 +48,8 @@ else {
  * environments.
  *
  * Note: in web, this property is hardcoded to be `/`.
+ *
+ * @skipMangle
  */
 export const cwd = safeProcess.cwd;
 

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
@@ -14,6 +14,7 @@ import { RefreshPreviewCommand } from './refreshPreview';
 import { ReloadPlugins } from './reloadPlugins';
 import { RenderDocument } from './renderDocument';
 import { ShowLockedPreviewToSideCommand, ShowPreviewCommand, ShowPreviewToSideCommand } from './showPreview';
+import { CopyImageCommand } from './copyImage';
 import { ShowPreviewSecuritySelectorCommand } from './showPreviewSecuritySelector';
 import { ShowSourceCommand } from './showSource';
 import { ToggleLockCommand } from './toggleLock';
@@ -27,6 +28,7 @@ export function registerMarkdownCommands(
 ): vscode.Disposable {
 	const previewSecuritySelector = new PreviewSecuritySelector(cspArbiter, previewManager);
 
+	commandManager.register(new CopyImageCommand(previewManager));
 	commandManager.register(new ShowPreviewCommand(previewManager, telemetryReporter));
 	commandManager.register(new ShowPreviewToSideCommand(previewManager, telemetryReporter));
 	commandManager.register(new ShowLockedPreviewToSideCommand(previewManager, telemetryReporter));

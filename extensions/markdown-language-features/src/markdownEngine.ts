@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import type MarkdownIt = require('markdown-it');
@@ -114,6 +114,7 @@ export class MarkdownItEngine implements IMdParser {
 		_contributionProvider.onContributionsChanged(() => {
 			// Markdown plugin contributions may have changed
 			this._md = undefined;
+			this._tokenCache.clean();
 		});
 	}
 

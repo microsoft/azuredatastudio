@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Command, Disposable, Event, EventEmitter, SourceControlActionButton, Uri, workspace, l10n } from 'vscode';
@@ -126,7 +126,7 @@ export class ActionButtonCommand {
 		const commandGroups: Command[][] = [];
 		for (const commands of this.postCommitCommandCenter.getSecondaryCommands()) {
 			commandGroups.push(commands.map(c => {
-				return { command: 'git.commit', title: c.title, tooltip: c.tooltip, arguments: c.arguments };
+				return { command: c.command, title: c.title, tooltip: c.tooltip, arguments: c.arguments };
 			}));
 		}
 

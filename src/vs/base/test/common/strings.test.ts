@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
 import * as strings from 'vs/base/common/strings';
@@ -263,22 +263,6 @@ suite('Strings', () => {
 		assert(regExpWithFlags.global);
 		assert(!regExpWithFlags.ignoreCase);
 		assert(regExpWithFlags.multiline);
-	});
-
-	test('regExpContainsBackreference', () => {
-		assert(strings.regExpContainsBackreference('foo \\5 bar'));
-		assert(strings.regExpContainsBackreference('\\2'));
-		assert(strings.regExpContainsBackreference('(\\d)(\\n)(\\1)'));
-		assert(strings.regExpContainsBackreference('(A).*?\\1'));
-		assert(strings.regExpContainsBackreference('\\\\\\1'));
-		assert(strings.regExpContainsBackreference('foo \\\\\\1'));
-
-		assert(!strings.regExpContainsBackreference(''));
-		assert(!strings.regExpContainsBackreference('\\\\1'));
-		assert(!strings.regExpContainsBackreference('foo \\\\1'));
-		assert(!strings.regExpContainsBackreference('(A).*?\\\\1'));
-		assert(!strings.regExpContainsBackreference('foo \\d1 bar'));
-		assert(!strings.regExpContainsBackreference('123'));
 	});
 
 	test('getLeadingWhitespace', () => {

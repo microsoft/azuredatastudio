@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { streamToBuffer } from 'vs/base/common/buffer';
@@ -138,7 +138,7 @@ function registerProxyConfigurations(scope: ConfigurationScope): void {
 		properties: {
 			'http.proxy': {
 				type: 'string',
-				pattern: '^(https?|socks5?)://([^:]*(:[^@]*)?@)?([^:]+|\\[[:0-9a-fA-F]+\\])(:\\d+)?/?$|^$',
+				pattern: '^(https?|socks|socks4a?|socks5h?)://([^:]*(:[^@]*)?@)?([^:]+|\\[[:0-9a-fA-F]+\\])(:\\d+)?/?$|^$',
 				markdownDescription: localize('proxy', "The proxy setting to use. If not set, will be inherited from the `http_proxy` and `https_proxy` environment variables."),
 				restricted: true
 			},
@@ -146,6 +146,11 @@ function registerProxyConfigurations(scope: ConfigurationScope): void {
 				type: 'boolean',
 				default: true,
 				description: localize('strictSSL', "Controls whether the proxy server certificate should be verified against the list of supplied CAs."),
+				restricted: true
+			},
+			'http.proxyKerberosServicePrincipal': {
+				type: 'string',
+				markdownDescription: localize('proxyKerberosServicePrincipal', "Overrides the principal service name for Kerberos authentication with the HTTP proxy. A default based on the proxy hostname is used when this is not set."),
 				restricted: true
 			},
 			'http.proxyAuthorization': {

@@ -1,10 +1,11 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { CancellationToken } from 'vs/base/common/cancellation';
 import { Event } from 'vs/base/common/event';
-import { LineRangeMapping } from 'vs/editor/common/diff/linesDiffComputer';
+import { LineRangeMapping, MovedText } from 'vs/editor/common/diff/linesDiffComputer';
 import { ITextModel } from 'vs/editor/common/model';
 
 /**
@@ -14,7 +15,7 @@ export interface IDocumentDiffProvider {
 	/**
 	 * Computes the diff between the text models `original` and `modified`.
 	 */
-	computeDiff(original: ITextModel, modified: ITextModel, options: IDocumentDiffProviderOptions): Promise<IDocumentDiff>;
+	computeDiff(original: ITextModel, modified: ITextModel, options: IDocumentDiffProviderOptions, cancellationToken: CancellationToken): Promise<IDocumentDiff>;
 
 	/**
 	 * Is fired when settings of the diff algorithm change that could alter the result of the diffing computation.
@@ -36,6 +37,11 @@ export interface IDocumentDiffProviderOptions {
 	 * A diff computation should throw if it takes longer than this value.
 	 */
 	maxComputationTimeMs: number;
+
+	/**
+	 * If set, the diff computation should compute moves in addition to insertions and deletions.
+	 */
+	computeMoves: boolean;
 }
 
 /**
@@ -55,5 +61,11 @@ export interface IDocumentDiff {
 	/**
 	 * Maps all modified line ranges in the original to the corresponding line ranges in the modified text model.
 	 */
-	readonly changes: LineRangeMapping[];
+	readonly changes: readonly LineRangeMapping[];
+
+	/**
+	 * Sorted by original line ranges.
+	 * The original line ranges and the modified line ranges must be disjoint (but can be touching).
+	 */
+	readonly moves: readonly MovedText[];
 }

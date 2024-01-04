@@ -1,11 +1,11 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
 import { azureResource } from 'azurecore';
-import { AzureSqlDatabase, AzureSqlDatabaseServer, SqlManagedInstance, SqlVMServer, StorageAccount, Subscription } from './azure';
+import { AzureSqlDatabase, AzureSqlDatabaseServer, IntegrationRuntimeNode, SqlManagedInstance, SqlVMServer, StorageAccount, Subscription } from './azure';
 import { generateGuid, MigrationTargetType } from './utils';
 import * as utils from '../api/utils';
 import { TelemetryAction, TelemetryViews, logError } from '../telemetry';
@@ -123,6 +123,9 @@ export interface TargetDatabaseInfo {
 	isReadOnly: boolean;
 	sourceTables: Map<string, TableInfo>;
 	targetTables: Map<string, TableInfo>;
+	enableSchemaMigration: boolean;
+	hasMissingTables: boolean;
+	isSchemaMigrationSupported: boolean;
 }
 
 export interface LoginTableInfo {
@@ -130,6 +133,20 @@ export interface LoginTableInfo {
 	loginType: string;
 	defaultDatabaseName: string;
 	status: string;
+}
+
+export const SchemaMigrationRequiredIntegrationRuntimeMinimumVersion: IntegrationRuntimeVersionInfo = {
+	major: "5",
+	minor: "35",
+	build: "8686",
+	revision: "1"
+}
+
+export interface IntegrationRuntimeVersionInfo {
+	major: string;
+	minor: string;
+	build: string;
+	revision: string;
 }
 
 export async function getSourceConnectionProfile(): Promise<azdata.connection.ConnectionProfile> {
@@ -205,6 +222,48 @@ function getSqlDbConnectionProfile(
 	};
 }
 
+/**
+ * This function returns the Target Connection profile with port
+ * @param serverName Target server name
+ * @param azureResourceId Azure resource Id
+ * @param userName Target username
+ * @param password Target password
+ * @param port Target port
+ * @param encryptConnection Encrypt connection
+ * @param trustServerCert Trust server certificate
+ * @returns Target Connection Profile
+ */
+export function getTargetConnectionProfileWithPort(
+	serverName: string,
+	azureResourceId: string,
+	userName: string,
+	password: string,
+	port: string,
+	encryptConnection: boolean,
+	trustServerCert: boolean): azdata.IConnectionProfile {
+
+	let targetConnectionProfile = getTargetConnectionProfile(
+		serverName,
+		azureResourceId,
+		userName,
+		password,
+		encryptConnection,
+		trustServerCert);
+
+	targetConnectionProfile.options.port = port;
+	return targetConnectionProfile
+}
+
+/**
+ * This function returns the Target Connection profile
+ * @param serverName Target server name
+ * @param azureResourceId Azure resource Id
+ * @param userName Target username
+ * @param password Target password
+ * @param encryptConnection Encrypt connection
+ * @param trustServerCert Trust server certificate
+ * @returns Target Connection Profile
+ */
 export function getTargetConnectionProfile(
 	serverName: string,
 	azureResourceId: string,
@@ -253,14 +312,16 @@ export async function getTargetConnectionString(
 	azureResourceId: string,
 	username: string,
 	password: string,
+	port: string,
 	encryptConnection: boolean,
 	trustServerCertificate: boolean): Promise<string> {
 
-	const connectionProfile = getTargetConnectionProfile(
+	const connectionProfile = getTargetConnectionProfileWithPort(
 		serverName,
 		azureResourceId,
 		username,
 		password,
+		port,
 		encryptConnection,
 		trustServerCertificate);
 
@@ -370,6 +431,12 @@ export async function collectTargetDatabaseInfo(
 				isReadOnly: getSqlBoolean(row[7]),
 				sourceTables: new Map(),
 				targetTables: new Map(),
+				enableSchemaMigration: false,
+				// Default as true so that the initial text is 'Not selected'
+				// in the schema column
+				hasMissingTables: true,
+				// Default as true. Assume that the active IR node is latest version.
+				isSchemaMigrationSupported: true
 			};
 		}) ?? [];
 	}
@@ -464,13 +531,15 @@ export async function collectTargetLogins(
 	azureResourceId: string,
 	userName: string,
 	password: string,
+	port: string,
 	includeWindowsAuth: boolean = true): Promise<string[]> {
 
-	const connectionProfile = getTargetConnectionProfile(
+	const connectionProfile = getTargetConnectionProfileWithPort(
 		serverName,
 		azureResourceId,
 		userName,
 		password,
+		port,
 		// for login migration, connect to target Azure SQL with true/true
 		// to-do: take as input from the user, should be true/false for DB/MI but true/true for VM
 		true /* encryptConnection */,
@@ -588,4 +657,30 @@ export async function canTargetConnectToStorageAccount(
 	}
 
 	return enabledFromAllNetworks || enabledFromWhitelistedVNet || enabledFromPrivateEndpoint;
+}
+
+export function getActiveIrVersions(irNodes: IntegrationRuntimeNode[]): IntegrationRuntimeVersionInfo[] {
+	var irVersions: IntegrationRuntimeVersionInfo[] = [];
+	irNodes.forEach(node => {
+		if (node.status === constants.ONLINE) {
+			const version = node.version.split(".");
+			irVersions.push({ major: version[0], minor: version[1], build: version[2], revision: version[3] });
+		}
+	})
+	return irVersions;
+}
+
+export function isSchemaMigrationSupportedByActiveNodes(irNodes: IntegrationRuntimeNode[]): boolean {
+	const irVersions = getActiveIrVersions(irNodes);
+	return irVersions.some(v => isSchemaMigrationSupportedByVersion(v));
+}
+
+export function isSchemaMigrationSupportedByVersion(version: IntegrationRuntimeVersionInfo): boolean {
+	return version.major > SchemaMigrationRequiredIntegrationRuntimeMinimumVersion.major ||
+		(version.major === SchemaMigrationRequiredIntegrationRuntimeMinimumVersion.major && version.minor >= SchemaMigrationRequiredIntegrationRuntimeMinimumVersion.minor);
+}
+
+export function areVersionsSame(irVersions: IntegrationRuntimeVersionInfo[]): boolean {
+	const versions = irVersions.map(v => `${v.major}.${v.minor}.${v.build}.${v.revision}`);
+	return versions.filter((n, i) => versions.indexOf(n) === i).length === 1;
 }

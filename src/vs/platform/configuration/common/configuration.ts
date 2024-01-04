@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Event } from 'vs/base/common/event';
@@ -97,6 +97,15 @@ export interface IConfigurationValue<T> {
 	readonly policy?: { value?: T };
 
 	readonly overrideIdentifiers?: string[];
+}
+
+export function isConfigured<T>(configValue: IConfigurationValue<T>): configValue is IConfigurationValue<T> & { value: T } {
+	return configValue.applicationValue !== undefined ||
+		configValue.userValue !== undefined ||
+		configValue.userLocalValue !== undefined ||
+		configValue.userRemoteValue !== undefined ||
+		configValue.workspaceValue !== undefined ||
+		configValue.workspaceFolderValue !== undefined;
 }
 
 export interface IConfigurationUpdateOptions {

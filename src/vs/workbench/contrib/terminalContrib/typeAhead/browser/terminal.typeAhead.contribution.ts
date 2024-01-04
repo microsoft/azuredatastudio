@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { DisposableStore, toDisposable } from 'vs/base/common/lifecycle';
@@ -12,7 +12,7 @@ import { registerTerminalContribution } from 'vs/workbench/contrib/terminal/brow
 import { TerminalWidgetManager } from 'vs/workbench/contrib/terminal/browser/widgets/widgetManager';
 import { TypeAheadAddon } from 'vs/workbench/contrib/terminalContrib/typeAhead/browser/terminalTypeAheadAddon';
 import { ITerminalConfiguration, ITerminalProcessManager, TERMINAL_CONFIG_SECTION } from 'vs/workbench/contrib/terminal/common/terminal';
-import { Terminal as RawXtermTerminal } from 'xterm';
+import type { Terminal as RawXtermTerminal } from 'xterm';
 
 class TerminalTypeAheadContribution extends DisposableStore implements ITerminalContribution {
 	static readonly ID = 'terminal.typeAhead';

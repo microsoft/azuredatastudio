@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as nativeWatchdog from 'native-watchdog';
@@ -382,8 +382,8 @@ async function startExtensionHostProcess(): Promise<void> {
 		declare readonly _serviceBrand: undefined;
 		public readonly pid = process.pid;
 		exit(code: number) { nativeExit(code); }
-		exists(path: string) { return Promises.exists(path); }
-		realpath(path: string) { return realpath(path); }
+		fsExists(path: string) { return Promises.exists(path); }
+		fsRealpath(path: string) { return realpath(path); }
 	};
 
 	// Attempt to load uri transformer

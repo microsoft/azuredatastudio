@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 /**
@@ -10,5 +10,5 @@
  * supported in JSON.
  * @param content the content to strip comments from
  * @returns the content without comments
- */
+*/
 export function stripComments(content: string): string;

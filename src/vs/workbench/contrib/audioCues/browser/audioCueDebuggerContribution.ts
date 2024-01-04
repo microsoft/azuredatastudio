@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 // {{SQL CARBON EDIT}} - turn off audio cues for debugger
@@ -20,11 +20,12 @@ export class AudioCueLineDebuggerContribution {
 	// ) {
 	// 	super();
 
-	// 	const isEnabled = observableFromEvent(
+	// const isEnabled = observableFromEvent(
 	// 		audioCueService.onEnabledChanged(AudioCue.onDebugBreak),
 	// 		() => audioCueService.isEnabled(AudioCue.onDebugBreak)
 	// 	);
 	// 	this._register(autorunWithStore((reader, store) => {
+	// 		/** @description subscribe to debug sessions */
 	// 		if (!isEnabled.read(reader)) {
 	// 			return;
 	// 		}
@@ -46,14 +47,13 @@ export class AudioCueLineDebuggerContribution {
 	// 			sessionDisposables.delete(session);
 	// 		}));
 
-	// 		debugService
-	// 			.getModel()
-	// 			.getSessions()
-	// 			.forEach((session) =>
-	// 				sessionDisposables.set(session, this.handleSession(session))
-	// 			);
-
-	// 	}, 'subscribe to debug sessions'));
+	//		debugService
+	//			.getModel()
+	//			.getSessions()
+	//			.forEach((session) =>
+	//				sessionDisposables.set(session, this.handleSession(session))
+	//			);
+	//	}));
 	// }
 
 	// private handleSession(session: IDebugSession): IDisposable {

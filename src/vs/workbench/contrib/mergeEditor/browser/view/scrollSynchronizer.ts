@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -142,6 +142,7 @@ export class ScrollSynchronizer extends Disposable {
 
 		this._store.add(
 			autorunWithStore((reader, store) => {
+				/** @description set baseViewEditor.onDidScrollChange */
 				const baseView = this.baseView.read(reader);
 				if (baseView) {
 					store.add(baseView.editor.onDidScrollChange(
@@ -172,7 +173,7 @@ export class ScrollSynchronizer extends Disposable {
 						})
 					));
 				}
-			}, 'set baseViewEditor.onDidScrollChange')
+			})
 		);
 	}
 

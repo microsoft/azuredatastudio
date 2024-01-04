@@ -1,6 +1,6 @@
 # ---------------------------------------------------------------------------------------------
 #   Copyright (c) Microsoft Corporation. All rights reserved.
-#   Licensed under the Source EULA. See License.txt in the project root for license information.
+#   Licensed under the MIT License. See License.txt in the project root for license information.
 # ---------------------------------------------------------------------------------------------
 
 # Prevent installing more than once per session
@@ -120,7 +120,12 @@ if (Get-Module -Name PSReadLine) {
 }
 
 # Set IsWindows property
-[Console]::Write("$([char]0x1b)]633;P;IsWindows=$($IsWindows)`a")
+if ($PSVersionTable.PSVersion -lt "6.0") {
+	# Windows PowerShell is only available on Windows
+	[Console]::Write("$([char]0x1b)]633;P;IsWindows=$true`a")
+} else {
+	[Console]::Write("$([char]0x1b)]633;P;IsWindows=$IsWindows`a")
+}
 
 # Set always on key handlers which map to default VS Code keybindings
 function Set-MappedKeyHandler {

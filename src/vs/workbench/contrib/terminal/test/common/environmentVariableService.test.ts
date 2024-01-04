@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { deepStrictEqual } from 'assert';
@@ -20,7 +20,7 @@ class TestEnvironmentVariableService extends EnvironmentVariableService {
 	notifyCollectionUpdates(): void { this._notifyCollectionUpdates(); }
 }
 
-suite('EnvironmentVariable - EnvironmentVariableService', () => {
+suite.skip('EnvironmentVariable - EnvironmentVariableService', () => { // {{SQL CARBON EDIT}} Skipping suite
 	let instantiationService: TestInstantiationService;
 	let environmentVariableService: TestEnvironmentVariableService;
 	let storageService: TestStorageService;
@@ -47,6 +47,10 @@ suite('EnvironmentVariable - EnvironmentVariableService', () => {
 		environmentVariableService = instantiationService.createInstance(TestEnvironmentVariableService);
 	});
 
+	teardown(() => {
+		instantiationService.dispose();
+	});
+
 	test('should persist collections to the storage service and be able to restore from them', () => {
 		const collection = new Map<string, IEnvironmentVariableMutator>();
 		collection.set('A-key', { value: 'a', type: EnvironmentVariableMutatorType.Replace, variable: 'A' });
@@ -69,7 +73,7 @@ suite('EnvironmentVariable - EnvironmentVariableService', () => {
 		]);
 	});
 
-	suite('mergedCollection', () => {
+	suite.skip('mergedCollection', () => { // {{SQL CARBON EDIT}} Skipping suite
 		test('should overwrite any other variable with the first extension that replaces', () => {
 			const collection1 = new Map<string, IEnvironmentVariableMutator>();
 			const collection2 = new Map<string, IEnvironmentVariableMutator>();

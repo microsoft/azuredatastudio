@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -26,6 +26,8 @@ import { SerializableObjectWithBuffers } from 'vs/workbench/services/extensions/
 import { TestRPCProtocol } from 'vs/workbench/api/test/common/testRPCProtocol';
 import { mock } from 'vs/workbench/test/common/workbenchTestServices';
 import { IExtHostTelemetry } from 'vs/workbench/api/common/extHostTelemetry';
+import { ExtHostConsumerFileSystem } from 'vs/workbench/api/common/extHostFileSystemConsumer';
+import { ExtHostFileSystemInfo } from 'vs/workbench/api/common/extHostFileSystemInfo';
 
 suite.skip('NotebookKernel', function () { // {{SQL CARBON EDIT}} Skip failing VS Notebook tests since we don't use their stuff
 
@@ -37,6 +39,7 @@ suite.skip('NotebookKernel', function () { // {{SQL CARBON EDIT}} Skip failing V
 	let extHostNotebooks: ExtHostNotebookController;
 	let extHostNotebookDocuments: ExtHostNotebookDocuments;
 	let extHostCommands: ExtHostCommands;
+	let extHostConsumerFileSystem: ExtHostConsumerFileSystem;
 
 	const notebookUri = URI.parse('test:///notebook.file');
 	const kernelData = new Map<number, INotebookKernelDto2>();
@@ -94,7 +97,8 @@ suite.skip('NotebookKernel', function () { // {{SQL CARBON EDIT}} Skip failing V
 				return true;
 			}
 		});
-		extHostNotebooks = new ExtHostNotebookController(rpcProtocol, extHostCommands, extHostDocumentsAndEditors, extHostDocuments);
+		extHostConsumerFileSystem = new ExtHostConsumerFileSystem(rpcProtocol, new ExtHostFileSystemInfo());
+		extHostNotebooks = new ExtHostNotebookController(rpcProtocol, extHostCommands, extHostDocumentsAndEditors, extHostDocuments, extHostConsumerFileSystem);
 
 		extHostNotebookDocuments = new ExtHostNotebookDocuments(extHostNotebooks);
 

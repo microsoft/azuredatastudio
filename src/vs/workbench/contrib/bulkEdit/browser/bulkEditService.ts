@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { CancellationToken } from 'vs/base/common/cancellation';
@@ -8,7 +8,7 @@ import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { LinkedList } from 'vs/base/common/linkedList';
 import { ResourceMap, ResourceSet } from 'vs/base/common/map';
 import { URI } from 'vs/base/common/uri';
-import { ICodeEditor, isCodeEditor } from 'vs/editor/browser/editorBrowser';
+import { ICodeEditor, isCodeEditor, isDiffEditor } from 'vs/editor/browser/editorBrowser';
 import { IBulkEditOptions, IBulkEditPreviewHandler, IBulkEditResult, IBulkEditService, ResourceEdit, ResourceFileEdit, ResourceTextEdit } from 'vs/editor/browser/services/bulkEditService';
 import { EditorOption } from 'vs/editor/common/config/editorOptions';
 import { WorkspaceEdit } from 'vs/editor/common/languages';
@@ -197,6 +197,8 @@ export class BulkEditService implements IBulkEditService {
 			const candidate = this._editorService.activeTextEditorControl;
 			if (isCodeEditor(candidate)) {
 				codeEditor = candidate;
+			} else if (isDiffEditor(candidate)) {
+				codeEditor = candidate.getModifiedEditor();
 			}
 		}
 

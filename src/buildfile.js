@@ -1,11 +1,11 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 /**
  * @param {string} name
- * @param {string[]} exclude
+ * @param {string[]=} exclude
  */
 function createModuleDescription(name, exclude) {
 
@@ -53,7 +53,7 @@ exports.workerProfileAnalysis = [createEditorWorkerModuleDescription('vs/platfor
 
 exports.workbenchDesktop = [
 	createEditorWorkerModuleDescription('vs/workbench/contrib/output/common/outputLinkComputer'),
-	createEditorWorkerModuleDescription('vs/workbench/services/textMate/browser/worker/textMate.worker'),
+	createEditorWorkerModuleDescription('vs/workbench/services/textMate/browser/backgroundTokenization/worker/textMateTokenizationWorker.worker'),
 	createModuleDescription('vs/workbench/contrib/debug/node/telemetryApp'),
 	createModuleDescription('vs/platform/files/node/watcher/watcherMain'),
 	createModuleDescription('vs/platform/terminal/node/ptyHostMain'),
@@ -62,7 +62,7 @@ exports.workbenchDesktop = [
 
 exports.workbenchWeb = [
 	createEditorWorkerModuleDescription('vs/workbench/contrib/output/common/outputLinkComputer'),
-	createEditorWorkerModuleDescription('vs/workbench/services/textMate/browser/worker/textMate.worker'),
+	createEditorWorkerModuleDescription('vs/workbench/services/textMate/browser/backgroundTokenization/worker/textMateTokenizationWorker.worker'),
 	createModuleDescription('vs/code/browser/workbench/workbench', ['vs/workbench/workbench.web.main'])
 ];
 

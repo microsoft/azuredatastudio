@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 .editor-instance#workbench\.editor\.settings2:focus {
@@ -491,6 +491,9 @@
 
 .settings-editor > .settings-body .settings-tree-container .setting-item-contents .setting-item-markdown * {
 	margin: 0px;
+}
+.settings-editor > .settings-body .settings-tree-container .setting-item-contents .setting-item-markdown *:not(:last-child) {
+	margin-bottom: 8px;
 }
 
 .settings-editor > .settings-body .settings-tree-container .setting-item-contents .edit-in-settings-button {

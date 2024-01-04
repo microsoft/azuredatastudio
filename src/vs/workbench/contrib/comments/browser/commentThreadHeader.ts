@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as dom from 'vs/base/browser/dom';
@@ -21,6 +21,7 @@ import { ThemeIcon } from 'vs/base/common/themables';
 import { CommentMenus } from 'vs/workbench/contrib/comments/browser/commentMenus';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { MarshalledId } from 'vs/base/common/marshallingIds';
+import { StandardMouseEvent } from 'vs/base/browser/mouseEvent';
 
 const collapseIcon = registerIcon('review-comment-collapse', Codicon.chevronUp, nls.localize('collapseIcon', 'Icon to collapse a review comment.'));
 const COLLAPSE_ACTION_CLASS = 'expand-review-action ' + ThemeIcon.asClassName(collapseIcon);
@@ -116,8 +117,9 @@ export class CommentThreadHeader<T = IRange> extends Disposable {
 		if (!actions.length) {
 			return;
 		}
+		const event = new StandardMouseEvent(e);
 		this._contextMenuService.showContextMenu({
-			getAnchor: () => e,
+			getAnchor: () => event,
 			getActions: () => actions,
 			actionRunner: new ActionRunner(),
 			getActionsContext: () => {

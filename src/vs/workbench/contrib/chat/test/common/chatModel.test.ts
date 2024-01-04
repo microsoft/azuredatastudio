@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -19,7 +19,7 @@ suite('ChatModel', () => {
 	let instantiationService: TestInstantiationService;
 
 	suiteSetup(async () => {
-		instantiationService = new TestInstantiationService();
+		instantiationService = testDisposables.add(new TestInstantiationService());
 		instantiationService.stub(IStorageService, new TestStorageService());
 		instantiationService.stub(ILogService, new NullLogService());
 		instantiationService.stub(IExtensionService, new TestExtensionService());

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/gridPanel';
@@ -443,8 +443,16 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 					? localize('xmlShowplan', "XML Showplan")
 					: escape(c.columnName),
 				field: i.toString(),
-				formatter: c.isXml ? hyperLinkFormatter : (row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string | { text: string, addClasses: string } => {
-					return queryResultTextFormatter(this.gridConfig.showJsonAsLink, row, cell, value, columnDef, dataContext);
+				formatter: c.isXml || c.isJson ? hyperLinkFormatter : (row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string | { text: string, addClasses: string } => {
+					if (this.isXmlCell(value)) {
+						this.resultSet.columnInfo[i].isXml = true;
+						return hyperLinkFormatter(row, cell, value, columnDef, dataContext);
+					} else if (this.gridConfig.showJsonAsLink && this.isJsonCell(value)) {
+						this.resultSet.columnInfo[i].isJson = true;
+						return hyperLinkFormatter(row, cell, value, columnDef, dataContext);
+					} else {
+						return textFormatter(row, cell, value, columnDef, dataContext, (DBCellValue.isDBCellValue(value) && value.isNull) ? NULL_CELL_CSS_CLASS : undefined);
+					}
 				},
 				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined
 			};
@@ -875,7 +883,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 		if (column) {
 			const subset = await this.getRowData(event.cell.row, 1);
 			const value = subset[0][event.cell.cell - 1];
-			if (column.isXml || (this.gridConfig.showJsonAsLink && isJsonCell(value))) {
+			if (column.isXml || (this.gridConfig.showJsonAsLink && this.isJsonCell(value))) {
 				if (column.isXml && this.providerId) {
 					const result = await this.executionPlanService.isExecutionPlan(this.providerId, value.displayValue);
 					if (result.isExecutionPlan) {
@@ -890,7 +898,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 					}
 				}
 				const content = value.displayValue;
-				const input = this.untitledEditorService.create({ languageId: column.isXml ? 'xml' : 'json', initialValue: content });
+				const input = this.untitledEditorService.create({ languageId: column.isXml ? 'xml' : column.isJson ? 'json' : 'txt', initialValue: content });
 				await input.resolve();
 				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
 				input.setDirty(false);
@@ -963,6 +971,28 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML)
 		];
+	}
+
+	private isJsonCell(value: ICellValue): boolean {
+		return !!(value && !value.isNull && value.displayValue?.match(IsJsonRegex));
+	}
+
+	private isXmlCell(value: ICellValue): boolean {
+		let isXML = false;
+		try {
+			if (value && !value.isNull && value.displayValue.trim() !== '') {
+				var parser = new DOMParser();
+				// Script elements if any are not evaluated during parsing
+				var doc = parser.parseFromString(value.displayValue, 'text/xml');
+				// For non-xmls, parsererror element is present in body element.
+				var parserErrors = doc.body?.getElementsByTagName('parsererror') ?? [];
+				isXML = parserErrors?.length === 0;
+			}
+		} catch (e) {
+			// Ignore errors when parsing cell content, log and continue
+			this.logService.debug(`An error occurred when parsing data as XML: ${e}`);
+		}
+		return isXML;
 	}
 
 	protected abstract getContextActions(): IAction[];
@@ -1155,17 +1185,5 @@ class GridTable<T> extends GridTableBase<T> {
 
 	protected getContextActions(): IAction[] {
 		return [];
-	}
-}
-
-function isJsonCell(value: ICellValue): boolean {
-	return !!(value && !value.isNull && value.displayValue?.match(IsJsonRegex));
-}
-
-function queryResultTextFormatter(showJsonAsLink: boolean, row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string | { text: string, addClasses: string } {
-	if (showJsonAsLink && isJsonCell(value)) {
-		return hyperLinkFormatter(row, cell, value, columnDef, dataContext);
-	} else {
-		return textFormatter(row, cell, value, columnDef, dataContext, (DBCellValue.isDBCellValue(value) && value.isNull) ? NULL_CELL_CSS_CLASS : undefined);
 	}
 }

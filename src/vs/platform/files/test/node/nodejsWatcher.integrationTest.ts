@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { tmpdir } from 'os';
@@ -252,7 +252,7 @@ import { FileAccess } from 'vs/base/common/network';
 
 		// Move file
 		changeFuture = awaitEvent(watcher, filePath, FileChangeType.DELETED);
-		await Promises.move(filePath, `${filePath}-moved`);
+		await Promises.rename(filePath, `${filePath}-moved`);
 		await changeFuture;
 	});
 

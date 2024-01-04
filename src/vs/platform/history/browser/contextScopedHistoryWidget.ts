@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IHistoryNavigationWidget } from 'vs/base/browser/history';
@@ -113,6 +113,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	when: ContextKeyExpr.and(
 		ContextKeyExpr.has(HistoryNavigationWidgetFocusContext),
 		ContextKeyExpr.equals(HistoryNavigationBackwardsEnablementContext, true),
+		ContextKeyExpr.not('isComposing'),
 		historyNavigationVisible.isEqualTo(false),
 	),
 	primary: KeyCode.UpArrow,
@@ -128,6 +129,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	when: ContextKeyExpr.and(
 		ContextKeyExpr.has(HistoryNavigationWidgetFocusContext),
 		ContextKeyExpr.equals(HistoryNavigationForwardsEnablementContext, true),
+		ContextKeyExpr.not('isComposing'),
 		historyNavigationVisible.isEqualTo(false),
 	),
 	primary: KeyCode.DownArrow,

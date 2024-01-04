@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -286,8 +286,13 @@ export class NotebookProviderInfoStore extends Disposable {
 			throw new Error(`notebook type '${info.id}' ALREADY EXISTS`);
 		}
 		this._contributedEditors.set(info.id, info);
-		const editorRegistration = this._registerContributionPoint(info);
-		this._contributedEditorDisposables.add(editorRegistration);
+		let editorRegistration: IDisposable | undefined;
+
+		// built-in notebook providers contribute their own editors
+		if (info.extension) {
+			editorRegistration = this._registerContributionPoint(info);
+			this._contributedEditorDisposables.add(editorRegistration);
+		}
 
 		const mementoObject = this._memento.getMemento(StorageScope.PROFILE, StorageTarget.MACHINE);
 		mementoObject[NotebookProviderInfoStore.CUSTOM_EDITORS_ENTRY_ID] = Array.from(this._contributedEditors.values());
@@ -297,7 +302,7 @@ export class NotebookProviderInfoStore extends Disposable {
 			const mementoObject = this._memento.getMemento(StorageScope.PROFILE, StorageTarget.MACHINE);
 			mementoObject[NotebookProviderInfoStore.CUSTOM_EDITORS_ENTRY_ID] = Array.from(this._contributedEditors.values());
 			this._memento.saveMemento();
-			editorRegistration.dispose();
+			editorRegistration?.dispose();
 			this._contributedEditors.delete(info.id);
 		});
 	}
@@ -649,7 +654,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			providerDisplayName: data.providerDisplayName,
 			exclusive: data.exclusive,
 			priority: RegisteredEditorPriority.default,
-			selectors: [],
+			selectors: []
 		});
 
 		info.update({ selectors: data.filenamePattern });

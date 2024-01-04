@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { isWindows } from 'vs/base/common/platform';
@@ -14,7 +14,9 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import { INotebookEditorService } from 'vs/workbench/contrib/notebook/browser/services/notebookEditorService';
 import { NotebookEditorWidgetService } from 'vs/workbench/contrib/notebook/browser/services/notebookEditorServiceImpl';
+import { SearchResult } from 'vs/workbench/contrib/search/browser/searchModel';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IFileMatch } from 'vs/workbench/services/search/common/search';
 import { TestEditorGroupsService } from 'vs/workbench/test/browser/workbenchTestServices';
 
 export function createFileUriFromPathFromRoot(path?: string): URI {
@@ -38,8 +40,6 @@ export function getRootName(): string {
 	}
 }
 
-
-
 export function stubModelService(instantiationService: TestInstantiationService): IModelService {
 	instantiationService.stub(IThemeService, new TestThemeService());
 	const config = new TestConfigurationService();
@@ -51,4 +51,8 @@ export function stubModelService(instantiationService: TestInstantiationService)
 export function stubNotebookEditorService(instantiationService: TestInstantiationService): INotebookEditorService {
 	instantiationService.stub(IEditorGroupsService, new TestEditorGroupsService());
 	return instantiationService.createInstance(NotebookEditorWidgetService);
+}
+
+export function addToSearchResult(searchResult: SearchResult, allRaw: IFileMatch[], searchInstanceID = '') {
+	searchResult.add(allRaw, searchInstanceID);
 }

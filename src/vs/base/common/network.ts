@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as errors from 'vs/base/common/errors';
@@ -55,6 +55,8 @@ export namespace Schemas {
 
 	export const vscodeRemoteResource = 'vscode-remote-resource';
 
+	export const vscodeManagedRemoteResource = 'vscode-managed-remote-resource';
+
 	export const vscodeUserData = 'vscode-userdata';
 
 	export const vscodeCustomEditor = 'vscode-custom-editor';
@@ -62,7 +64,6 @@ export namespace Schemas {
 	export const vscodeNotebookCell = 'vscode-notebook-cell';
 	export const vscodeNotebookCellMetadata = 'vscode-notebook-cell-metadata';
 	export const vscodeNotebookCellOutput = 'vscode-notebook-cell-output';
-	export const vscodeInteractive = 'vscode-interactive';
 	export const vscodeInteractiveInput = 'vscode-interactive-input';
 
 	export const vscodeSettings = 'vscode-settings';

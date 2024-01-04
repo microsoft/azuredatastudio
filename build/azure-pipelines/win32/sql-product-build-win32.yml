@@ -1,7 +1,7 @@
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: "16.x"
+      versionSpec: "18.15.0"
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
@@ -16,7 +16,7 @@ steps:
     inputs:
       azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
       KeyVaultName: ado-secrets
-      SecretsFilter: 'github-distro-mixin-password,standalone-extensions-uri'
+      SecretsFilter: 'github-distro-mixin-password,standalone-extensions-uri,esrp-pki,esrp-aad-username,esrp-aad-password'
     displayName: 'Azure Key Vault: Get Secrets'
 
   - task: DownloadPipelineArtifact@2
@@ -50,13 +50,6 @@ steps:
       git fetch distro
       git merge $(node -p "require('./package.json').distro")
     displayName: Merge distro
-
-  - powershell: |
-      git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
-      git fetch distro
-      git merge ab87de2203e5a9d8377a74725dc6e2258de6da79
-    condition: eq(variables['VSCODE_QUALITY'], 'agc')
-    displayName: Merge AGC endpoints
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
@@ -146,19 +139,6 @@ steps:
     displayName: Install SAW Extensions
     condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'), ne(variables['VSCODE_ARCH'], 'arm64'))
 
-  - powershell: |
-      # Install AGC specific extensions
-      $ErrorActionPreference = "Stop"
-      $tempFilePath = (New-TemporaryFile).FullName
-      $zipFilePath = $tempFilePath + ".zip"
-      $extensionUri = "$(agc-extensions-uri)"
-      $adsExtensionPath = "$(agent.builddirectory)\azuredatastudio-win32-x64\resources\app\extensions"
-      Invoke-WebRequest -Uri $extensionUri -OutFile $tempFilePath
-      Move-Item $tempFilePath $zipFilePath
-      Expand-Archive $zipFilePath -DestinationPath $adsExtensionPath
-    displayName: Install AGC Extensions
-    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'agc'), ne(variables['VSCODE_ARCH'], 'arm64'))
-
   # - powershell: | @anthonydresser unit tests timeout never existing the node process
   #     . build/azure-pipelines/win32/exec.ps1
   #     $ErrorActionPreference = "Stop"
@@ -193,32 +173,12 @@ steps:
     displayName: Run core integration tests (arm64)
     condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['VSCODE_ARCH'], 'arm64')))
 
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  - task: EsrpCodeSigning@3
     displayName: 'Sign out code'
     inputs:
       ConnectedServiceName: 'Code Signing'
       FolderPath: '$(agent.builddirectory)/azuredatastudio-win32-$(VSCODE_ARCH)'
-      Pattern: |
-        *.exe
-        *.node
-        !**/node_modules/**/*
-        resources/app/node_modules.asar.unpacked/*.dll
-        d3dcompiler_47.dll
-        vulkan-1.dll
-        libGLESv2.dll
-        ffmpeg.dll
-        libEGL.dll
-        Microsoft.SqlTools.Hosting.dll
-        Microsoft.SqlTools.ResourceProvider.Core.dll
-        Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll
-        MicrosoftSqlToolsCredentials.dll
-        MicrosoftSqlToolsServiceLayer.dll
-        MicrosoftSqlToolsSqlCore.dll
-        Newtonsoft.Json.dll,SqlSerializationService.dll
-        SqlToolsResourceProviderService.dll
-        Microsoft.SqlServer.*.dll
-        Microsoft.Data.Tools.Sql.BatchParser.dll
-      useMinimatch: true
+      Pattern: '*.exe,*.node,resources/app/node_modules.asar.unpacked/*.dll,d3dcompiler_47.dll,vulkan-1.dll,libGLESv2.dll,ffmpeg.dll,libEGL.dll,Microsoft.SqlTools.Hosting.dll,Microsoft.SqlTools.ResourceProvider.Core.dll,Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll,MicrosoftSqlToolsCredentials.dll,MicrosoftSqlToolsServiceLayer.dll,Newtonsoft.Json.dll,SqlSerializationService.dll,SqlToolsResourceProviderService.dll,Microsoft.SqlServer.*.dll,Microsoft.Data.Tools.Sql.BatchParser.dll'
       signConfigType: inlineSignParams
       inlineOperation: |
         [
@@ -268,15 +228,50 @@ steps:
       MaxRetryAttempts: 20
     condition: and(succeeded(), eq(variables['signed'], true))
 
+  - task: UseDotNet@2
+    displayName: 'Install .NET 6.x for ESRP signing'
+    inputs:
+      version: 6.x
+    condition: and(succeeded(), eq(variables['signed'], true))
+
+  - task: EsrpClientTool@1
+    displayName: Download ESRPClient
+    condition: and(succeeded(), eq(variables['signed'], true))
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      $EsrpClientTool = (gci -directory -filter EsrpClientTool_* $(Agent.RootDirectory)\_tasks | Select-Object -last 1).FullName
+      $EsrpCliZip = (gci -recurse -filter esrpcli.*.zip $EsrpClientTool | Select-Object -last 1).FullName
+      mkdir -p $(Agent.TempDirectory)\esrpcli
+      Expand-Archive -Path $EsrpCliZip -DestinationPath $(Agent.TempDirectory)\esrpcli
+      $EsrpCliDllPath = (gci -recurse -filter esrpcli.dll $(Agent.TempDirectory)\esrpcli | Select-Object -last 1).FullName
+      echo "##vso[task.setvariable variable=EsrpCliDllPath]$EsrpCliDllPath"
+    displayName: Find ESRP CLI
+    condition: and(succeeded(), eq(variables['signed'], true))
+
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
       exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-user-setup" }
       exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-system-setup" }
       exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-archive" }
-    displayName: Archive & User & System setup
+    displayName: Archive & User & System setup (Unsigned)
+    condition: and(succeeded(), eq(variables['signed'], false))
 
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      $env:ESRPPKI = "$(ESRP-PKI)"
+      $env:ESRPAADUsername = "$(esrp-aad-username)"
+      $env:ESRPAADPassword = "$(esrp-aad-password)"
+      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-user-setup" --sign }
+      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-system-setup" --sign }
+      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-archive" --sign }
+    displayName: Archive & User & System setup (Signed)
+    condition: and(succeeded(), eq(variables['signed'], true))
+
+  - task: EsrpCodeSigning@3
     displayName: 'Sign installers'
     inputs:
       ConnectedServiceName: 'Code Signing'

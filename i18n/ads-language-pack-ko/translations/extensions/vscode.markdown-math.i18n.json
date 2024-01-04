@@ -10,6 +10,7 @@
 	"contents": {
 		"package": {
 			"config.markdown.math.enabled": "기본 제공 Markdown 미리 보기에서 렌더링 수학을 사용하거나 사용하지 않도록 설정합니다.",
+			"config.markdown.math.macros": "사용자 지정 매크로의 컬렉션입니다. 각 매크로는 키-값 쌍으로, 키는 새 명령 이름이고 값은 매크로의 확장입니다.",
 			"description": "전자 필기장의 Markdown에 수학 지원을 추가합니다.",
 			"displayName": "Markdown 수학"
 		}

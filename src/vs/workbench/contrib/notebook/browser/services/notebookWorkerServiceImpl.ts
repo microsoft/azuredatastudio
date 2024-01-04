@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable, DisposableStore, dispose, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
@@ -33,6 +33,12 @@ export class NotebookEditorWorkerServiceImpl extends Disposable implements INote
 	computeDiff(original: URI, modified: URI): Promise<INotebookDiffResult> {
 		return this._workerManager.withWorker().then(client => {
 			return client.computeDiff(original, modified);
+		});
+	}
+
+	canPromptRecommendation(model: URI): Promise<boolean> {
+		return this._workerManager.withWorker().then(client => {
+			return client.canPromptRecommendation(model);
 		});
 	}
 }
@@ -215,6 +221,12 @@ class NotebookWorkerClient extends Disposable {
 	computeDiff(original: URI, modified: URI) {
 		return this._withSyncedResources([original, modified]).then(proxy => {
 			return proxy.computeDiff(original.toString(), modified.toString());
+		});
+	}
+
+	canPromptRecommendation(modelUri: URI) {
+		return this._withSyncedResources([modelUri]).then(proxy => {
+			return proxy.canPromptRecommendation(modelUri.toString());
 		});
 	}
 

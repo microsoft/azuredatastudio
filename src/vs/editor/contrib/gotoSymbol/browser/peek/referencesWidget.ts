@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as dom from 'vs/base/browser/dom';
@@ -305,7 +305,7 @@ export class ReferenceWidget extends peekView.PeekViewWidget {
 				useShadows: true,
 				verticalHasArrows: false,
 				horizontalHasArrows: false,
-				alwaysConsumeMouseWheel: false
+				alwaysConsumeMouseWheel: true
 			},
 			overviewRulerLanes: 2,
 			fixedOverflowWidgets: true,

@@ -10,6 +10,7 @@
 	"contents": {
 		"package": {
 			"config.markdown.math.enabled": "Aktivieren/Deaktivieren der Renderingberechnung in der integrierten Markdownvorschau.",
+			"config.markdown.math.macros": "Eine Auflistung benutzerdefinierter Makros. Jedes Makro ist ein Schlüssel-Wert-Paar, bei dem der Schlüssel ein neuer Befehlsname und der Wert die Erweiterung des Makros ist.",
 			"description": "Fügt Markdown in Notebooks mathematische Unterstützung hinzu.",
 			"displayName": "Markdown Math"
 		}

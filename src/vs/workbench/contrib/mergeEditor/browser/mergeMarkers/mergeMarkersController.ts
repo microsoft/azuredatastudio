@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { h } from 'vs/base/browser/dom';
@@ -87,7 +87,8 @@ export class MergeMarkersController extends Disposable {
 				updateWidth();
 
 
-				this.disposableStore.add(autorun('update classname', reader => {
+				this.disposableStore.add(autorun(reader => {
+					/** @description update classname */
 					const vm = this.mergeEditorViewModel.read(reader);
 					if (!vm) {
 						return;

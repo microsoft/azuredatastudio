@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import AdsTelemetryReporter, { TelemetryEventMeasures, TelemetryEventProperties } from '@microsoft/ads-extension-telemetry';
@@ -46,6 +46,7 @@ export enum TelemetryViews {
 	TdeConfigurationDialog = 'TdeConfigurationDialog',
 	TdeMigrationDialog = 'TdeMigrationDialog',
 	ValidIrDialog = 'validIrDialog',
+	ImportAssessmentDialog = 'ImportAssessmentDialog',
 }
 
 export enum TelemetryAction {
@@ -83,7 +84,9 @@ export enum TelemetryAction {
 	TdeMigrationClientException = 'TdeMigrationClientException',
 	TdeConfigurationUseADS = 'TdeConfigurationUseADS',
 	TdeConfigurationAlreadyMigrated = 'TdeConfigurationAlreadyMigrated',
-	TdeConfigurationCancelled = 'TdeConfigurationCancelled'
+	TdeConfigurationCancelled = 'TdeConfigurationCancelled',
+	ImportAssessmentSuccess = 'ImportAssessmentSuccess',
+	ImportAssessmentFailed = 'ImportAssessmentFailed'
 }
 
 export function logError(telemetryView: TelemetryViews, err: string, error: any): void {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { NewNotebookTask } from 'sql/workbench/contrib/notebook/browser/notebookActions';
@@ -100,8 +100,8 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 				'tasks-widget': [
 					NewQueryTask.ID,
 					NewNotebookTask.ID,
-					{ name: 'backup', when: 'connectionProvider == \'MSSQL\' && !mssql:iscloud && mssql:engineedition != 11 || connectionProvider == \'PGSQL\'' },
-					{ name: 'restore', when: 'connectionProvider == \'MSSQL\' && !mssql:iscloud && mssql:engineedition != 11 || connectionProvider == \'PGSQL\'' }
+					{ name: 'backup', when: 'connectionProvider == \'PGSQL\'' },
+					{ name: 'restore', when: 'connectionProvider == \'PGSQL\'' }
 				]
 			}
 		},

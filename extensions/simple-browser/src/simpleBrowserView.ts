@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
@@ -165,7 +165,7 @@ export class SimpleBrowserView extends Disposable {
 				</header>
 				<div class="content">
 					<div class="iframe-focused-alert">${vscode.l10n.t("Focus Lock")}</div>
-					<iframe sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+					<iframe sandbox="allow-scripts allow-forms allow-same-origin allow-downloads"></iframe>
 				</div>
 
 				<script src="${mainJs}" nonce="${nonce}"></script>

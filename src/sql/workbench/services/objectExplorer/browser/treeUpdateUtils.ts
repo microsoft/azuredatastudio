@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
@@ -110,10 +110,10 @@ export class TreeUpdateUtils {
 			let selectedElement: any = elementToSelect;
 			let targetsToExpand: any[];
 
-			// Focus
-			tree.domFocus();
-
 			if (tree) {
+				// Focus
+				tree.domFocus();
+
 				let selection = tree.getSelection();
 				if (!selectedElement) {
 					if (selection && selection.length === 1) {
@@ -124,25 +124,25 @@ export class TreeUpdateUtils {
 				if (selectedElement && targetsToExpand.indexOf(selectedElement) === -1) {
 					targetsToExpand.push(selectedElement);
 				}
-			}
 
-			let treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
-			if (treeInput) {
-				const originalInput = tree.getInput();
-				if (treeInput !== originalInput) {
-					return tree.setInput(treeInput).then(async () => {
-						if (originalInput && isDisposable(originalInput)) {
-							originalInput.dispose();
-						}
-						// Make sure to expand all folders that where expanded in the previous session
-						if (targetsToExpand) {
-							await tree.expandAll(targetsToExpand);
-						}
-						if (selectedElement) {
-							tree.setFocus(selectedElement);
-						}
-						tree.getFocus();
-					}, onUnexpectedError);
+				let treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
+				if (treeInput) {
+					const originalInput = tree.getInput();
+					if (treeInput !== originalInput) {
+						return tree.setInput(treeInput).then(async () => {
+							if (originalInput && isDisposable(originalInput)) {
+								originalInput.dispose();
+							}
+							// Make sure to expand all folders that where expanded in the previous session
+							if (targetsToExpand) {
+								await tree.expandAll(targetsToExpand);
+							}
+							if (selectedElement) {
+								tree.setFocus(selectedElement);
+							}
+							tree.getFocus();
+						}, onUnexpectedError);
+					}
 				}
 			}
 		}

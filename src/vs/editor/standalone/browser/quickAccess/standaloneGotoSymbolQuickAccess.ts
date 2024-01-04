@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/base/browser/ui/codicons/codiconStyles'; // The codicon symbol styles are defined here and must be loaded
@@ -9,7 +9,6 @@ import { AbstractGotoSymbolQuickAccessProvider } from 'vs/editor/contrib/quickAc
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IQuickAccessRegistry, Extensions } from 'vs/platform/quickinput/common/quickAccess';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
-import { withNullAsUndefined } from 'vs/base/common/types';
 import { QuickOutlineNLS } from 'vs/editor/common/standaloneStrings';
 import { Event } from 'vs/base/common/event';
 import { EditorAction, registerEditorAction } from 'vs/editor/browser/editorExtensions';
@@ -34,7 +33,7 @@ export class StandaloneGotoSymbolQuickAccessProvider extends AbstractGotoSymbolQ
 	}
 
 	protected get activeTextEditorControl() {
-		return withNullAsUndefined(this.editorService.getFocusedCodeEditor());
+		return this.editorService.getFocusedCodeEditor() ?? undefined;
 	}
 }
 

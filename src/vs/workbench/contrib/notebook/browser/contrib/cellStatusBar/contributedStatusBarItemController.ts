@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { disposableTimeout, Throttler } from 'vs/base/common/async';
@@ -47,7 +47,7 @@ export class ContributedStatusBarItemController extends Disposable implements IN
 		added: ICellViewModel[];
 		removed: { handle: number }[];
 	}): void {
-		const vm = this._notebookEditor._getViewModel();
+		const vm = this._notebookEditor.getViewModel();
 		if (!vm) {
 			return;
 		}
@@ -77,7 +77,7 @@ class CellStatusBarHelper extends Disposable {
 
 	private _activeToken: CancellationTokenSource | undefined;
 
-	private readonly _updateThrottler = new Throttler();
+	private readonly _updateThrottler = this._register(new Throttler());
 
 	constructor(
 		private readonly _notebookViewModel: INotebookViewModel,

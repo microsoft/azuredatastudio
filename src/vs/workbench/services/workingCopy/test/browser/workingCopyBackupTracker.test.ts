@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -146,16 +146,16 @@ suite('WorkingCopyBackupTracker (browser)', function () {
 
 		class TestBackupWorkingCopy extends TestWorkingCopy {
 
-			backupDelay = 0;
-
 			constructor(resource: URI) {
 				super(resource);
 
 				accessor.workingCopyService.registerWorkingCopy(this);
 			}
 
+			readonly backupDelay = 10;
+
 			override async backup(token: CancellationToken): Promise<IWorkingCopyBackup> {
-				await timeout(this.backupDelay);
+				await timeout(0);
 
 				return {};
 			}

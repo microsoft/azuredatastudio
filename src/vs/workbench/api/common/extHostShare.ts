@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import type * as vscode from 'vscode';
@@ -23,9 +23,9 @@ export class ExtHostShare implements ExtHostShareShape {
 		this.proxy = mainContext.getProxy(MainContext.MainThreadShare);
 	}
 
-	async $provideShare(handle: number, shareableItem: IShareableItemDto, token: CancellationToken): Promise<UriComponents | undefined> {
+	async $provideShare(handle: number, shareableItem: IShareableItemDto, token: CancellationToken): Promise<UriComponents | string | undefined> {
 		const provider = this.providers.get(handle);
-		const result = await provider?.provideShare({ selection: Range.to(shareableItem.range), resourceUri: URI.revive(shareableItem.resourceUri) }, token);
+		const result = await provider?.provideShare({ selection: Range.to(shareableItem.selection), resourceUri: URI.revive(shareableItem.resourceUri) }, token);
 		return result ?? undefined;
 	}
 

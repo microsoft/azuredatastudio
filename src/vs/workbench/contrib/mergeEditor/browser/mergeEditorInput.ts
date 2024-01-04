@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { assertFn } from 'vs/base/common/assert';
@@ -106,7 +106,8 @@ export class MergeEditorInput extends AbstractTextResourceEditorInput implements
 			}));
 			this._inputModel = inputModel;
 
-			this._register(autorun('fire dirty event', (reader) => {
+			this._register(autorun(reader => {
+				/** @description fire dirty event */
 				inputModel.isDirty.read(reader);
 				this._onDidChangeDirty.fire();
 			}));

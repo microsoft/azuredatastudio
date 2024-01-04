@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import {
@@ -383,7 +383,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	private async updateModelServerCapabilities(model: IConnectionProfile) {
 		this._model = await this.createModel(model);
-		if (this._model.providerName) {
+		if (this._model?.providerName) {
 			this._currentProviderType = this._model.providerName;
 			if (this._connectionDialog) {
 				this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[this._currentProviderType]);
@@ -391,8 +391,16 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 	}
 
-	private async createModel(model: IConnectionProfile): Promise<ConnectionProfile> {
+	private async createModel(model: IConnectionProfile): Promise<ConnectionProfile | undefined> {
 		const defaultProvider = this.getDefaultProviderName();
+		// Handle unsupported provider
+		if (model?.providerName && !this._capabilitiesService.providers[model.providerName]) {
+			const installed = await this._connectionManagementService.handleUnsupportedProvider(model.providerName);
+			if (!installed) {
+				// User cancelled install prompt so exit early since we won't be able to connect
+				return undefined;
+			}
+		}
 		let providerName = model ? model.providerName : defaultProvider;
 		providerName = providerName ? providerName : defaultProvider;
 		if (model && !model.providerName) {
@@ -498,7 +506,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[this._currentProviderType]);
 
 		const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections(params.providers);
-		await this._connectionDialog.open(recentConnections.length > 0);
+		await this._connectionDialog.open(recentConnections?.length > 0);
 		this.uiController.focusOnOpen();
 	}
 

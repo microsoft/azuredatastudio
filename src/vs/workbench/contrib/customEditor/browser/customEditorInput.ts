@@ -1,9 +1,10 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { VSBuffer } from 'vs/base/common/buffer';
+import { IMarkdownString } from 'vs/base/common/htmlContent';
 import { IReference } from 'vs/base/common/lifecycle';
 import { Schemas } from 'vs/base/common/network';
 import { basename } from 'vs/base/common/path';
@@ -249,6 +250,13 @@ export class CustomEditorInput extends LazilyResolvedWebviewEditorInput {
 
 	public override copy(): EditorInput {
 		return CustomEditorInput.create(this.instantiationService, this.resource, this.viewType, this.group, this.webview.options);
+	}
+
+	public override isReadonly(): boolean | IMarkdownString {
+		if (!this._modelRef) {
+			return this.filesConfigurationService.isReadonly(this.resource);
+		}
+		return this._modelRef.object.isReadonly();
 	}
 
 	public override isDirty(): boolean {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
@@ -22,7 +22,6 @@ import { MemoryDatabase } from '../utils/memoryDatabase';
 import { Logger } from '../../utils/Logger';
 import { AzureAuthError } from './azureAuthError';
 import { AccountInfo, AuthError, AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
-import { getTenantIgnoreList, updateTenantIgnoreList } from '../../utils';
 import { errorToPromptFailedResult } from './networkUtils';
 import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
 import { isErrorResponseBodyWithError } from '../../azureResource/utils';
@@ -116,14 +115,22 @@ export abstract class AzureAuth implements vscode.Disposable {
 					canceled: false
 				};
 			}
+			// Initial login will always fetch token for ARM resource
 			const token: Token = {
-				token: result.response.accessToken,
 				key: result.response.account.homeAccountId,
+				token: result.response.accessToken,
 				tokenType: result.response.tokenType,
-				expiresOn: result.response.expiresOn!.getTime() / 1000
+				expiresOn: result.response.expiresOn!.getTime() / 1000,
+				tenantId: result.response.tenantId,
+				resource: 0
 			};
 			const tokenClaims = <TokenClaims>result.response.idTokenClaims;
 			const account = await this.hydrateAccount(token, tokenClaims);
+			try {
+				await this.msalCacheProvider.writeTokenToLocalCache(token);
+			} catch (ex) {
+				Logger.error(`Error writing token to local cache: ${ex}`);
+			}
 			loginComplete?.resolve();
 			return account;
 		} catch (ex) {
@@ -322,13 +329,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 		if (!tenant.displayName && !tenant.id) {
 			throw new Error('Tenant did not have display name or id');
 		}
-		const tenantIgnoreList = getTenantIgnoreList();
-
-		// The user wants to ignore this tenant.
-		if (tenantIgnoreList.includes(tenant.id)) {
-			Logger.info(`Tenant ${tenant.id} found in the ignore list, authentication will not be attempted.`);
-			return false;
-		}
 
 		interface ConsentMessageItem extends vscode.MessageItem {
 			booleanResult: boolean;
@@ -346,43 +346,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 			booleanResult: false
 		};
 
-		const cancelAndAuthenticate: ConsentMessageItem = {
-			title: localize('azurecore.consentDialog.authenticate', "Cancel and Authenticate"),
-			isCloseAffordance: true,
-			booleanResult: true
-		};
-
-		const dontAskAgainItem: ConsentMessageItem = {
-			title: localize('azurecore.consentDialog.ignore', "Ignore Tenant"),
-			booleanResult: false,
-			action: async (tenantId: string) => {
-				return await confirmIgnoreTenantDialog();
-			}
-		};
-
-		const confirmIgnoreTenantItem: ConsentMessageItem = {
-			title: localize('azurecore.confirmIgnoreTenantDialog.confirm', "Confirm"),
-			booleanResult: false,
-			action: async (tenantId: string) => {
-				tenantIgnoreList.push(tenantId);
-				await updateTenantIgnoreList(tenantIgnoreList);
-				return false;
-			}
-
-		};
-		const confirmIgnoreTenantDialog = async () => {
-			const confirmMessage = localize('azurecore.confirmIgnoreTenantDialog.body', "Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. \n\nTo allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.\n\nDo you wish to proceed?", tenant.displayName, tenant.id, Constants.AzureTenantConfigFilterSetting);
-			let confirmation = await vscode.window.showInformationMessage(confirmMessage, { modal: true }, cancelAndAuthenticate, confirmIgnoreTenantItem);
-
-			if (confirmation?.action) {
-				await confirmation.action(tenant.id);
-			}
-
-			return confirmation?.booleanResult || false;
-		}
-
 		const messageBody = localize('azurecore.consentDialog.body', "Your tenant {0} ({1}) requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.", tenant.displayName, tenant.id, resource.endpoint);
-		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem, dontAskAgainItem);
+		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem);
 
 		let response = false;
 		if (result?.action) {
@@ -513,7 +478,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		await this.msalCacheProvider.unlinkCacheFiles();
 
 		// Delete Encryption Keys
-		await this.msalCacheProvider.clearCacheEncryptionKeys();
+		await this.msalCacheProvider.refreshCacheEncryptionKeys();
 	}
 
 	public async clearCredentials(account: azdata.AccountKey): Promise<void> {

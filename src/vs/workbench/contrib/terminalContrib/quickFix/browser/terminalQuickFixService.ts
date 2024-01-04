@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Emitter } from 'vs/base/common/event';
@@ -138,6 +138,14 @@ const quickFixExtensionPoint = ExtensionsRegistry.registerExtensionPoint<ITermin
 					enumDescriptions: [
 						'The command exited with an exit code of zero.',
 						'The command exited with a non-zero exit code.'
+					]
+				},
+				kind: {
+					description: localize('vscode.extension.contributes.terminalQuickFixes.kind', "The kind of the resulting quick fix. This changes how the quick fix is presented. Defaults to {0}.", '`"fix"`'),
+					enum: ['default', 'explain'],
+					enumDescriptions: [
+						'A high confidence quick fix.',
+						'An explanation of the problem.'
 					]
 				}
 			},

@@ -1,13 +1,11 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ErrorNoTelemetry } from 'vs/base/common/errors';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ILogService } from 'vs/platform/log/common/log';
-import { INotificationService } from 'vs/platform/notification/common/notification';
-import { IStorageService } from 'vs/platform/storage/common/storage';
+import { ITerminalLogService } from 'vs/platform/terminal/common/terminal';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { ITerminalInstanceService } from 'vs/workbench/contrib/terminal/browser/terminal';
 import { BaseTerminalProfileResolverService } from 'vs/workbench/contrib/terminal/browser/terminalProfileResolverService';
@@ -22,12 +20,10 @@ export class ElectronTerminalProfileResolverService extends BaseTerminalProfileR
 		@IConfigurationResolverService configurationResolverService: IConfigurationResolverService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IHistoryService historyService: IHistoryService,
-		@ILogService logService: ILogService,
+		@ITerminalLogService logService: ITerminalLogService,
 		@IWorkspaceContextService workspaceContextService: IWorkspaceContextService,
 		@ITerminalProfileService terminalProfileService: ITerminalProfileService,
 		@IRemoteAgentService remoteAgentService: IRemoteAgentService,
-		@IStorageService storageService: IStorageService,
-		@INotificationService notificationService: INotificationService,
 		@ITerminalInstanceService terminalInstanceService: ITerminalInstanceService
 	) {
 		super(
@@ -53,9 +49,7 @@ export class ElectronTerminalProfileResolverService extends BaseTerminalProfileR
 			logService,
 			terminalProfileService,
 			workspaceContextService,
-			remoteAgentService,
-			storageService,
-			notificationService
+			remoteAgentService
 		);
 	}
 }

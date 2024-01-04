@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Event } from 'vs/base/common/event';
@@ -87,6 +87,12 @@ export interface IHostService {
 	 * Attempt to close the active window.
 	 */
 	close(): Promise<void>;
+
+	/**
+	 * Execute an asynchronous `expectedShutdownTask`. While this task is
+	 * in progress, attempts to quit the application will not be vetoed with a dialog.
+	 */
+	withExpectedShutdown<T>(expectedShutdownTask: () => Promise<T>): Promise<T>;
 
 	//#endregion
 }

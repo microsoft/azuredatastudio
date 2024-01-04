@@ -1,15 +1,16 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ServerProvider, IConfig, Events, LogLevel } from '@microsoft/ads-service-downloader';
-import { ServerOptions, TransportKind } from 'vscode-languageclient';
+import { RevealOutputChannelOn, ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as path from 'path';
-import { getCommonLaunchArgsAndCleanupOldLogFiles } from './utils';
+import { TracingLevel, getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel } from './utils';
 import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, SerializationFeature, AccountFeature } from './features';
@@ -22,6 +23,15 @@ const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 
+// The mapping between KQL log level and the service downloader log level.
+const LogLevelMapping: { [key: string]: number } = {
+	[TracingLevel.All]: LogLevel.Verbose,
+	[TracingLevel.Critical]: LogLevel.Critical,
+	[TracingLevel.Error]: LogLevel.Error,
+	[TracingLevel.Information]: LogLevel.Information,
+	[TracingLevel.Verbose]: LogLevel.Verbose,
+	[TracingLevel.Warning]: LogLevel.Warning
+};
 export class KustoServer {
 
 	private client!: SqlOpsDataClient;
@@ -33,9 +43,10 @@ export class KustoServer {
 			const installationStart = Date.now();
 			const path = await this.download(context);
 			const installationComplete = Date.now();
-			let serverOptions = generateServerOptions(context.extensionContext.logPath, path);
+			let serverOptions = generateServerOptions(context.extensionContext.logUri.fsPath, path);
 			let clientOptions = getClientOptions(context);
-			this.client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions); // TodoKusto: Update constant
+			// IMPORTANT: 'kusto' must match the prefix name of configuration: 'kusto.tracingServer'.
+			this.client = new SqlOpsDataClient('kusto', Constants.serviceName, serverOptions, clientOptions);
 			const processStart = Date.now();
 			const clientReadyPromise = this.client.onReady().then(() => {
 				const processEnd = Date.now();
@@ -66,7 +77,8 @@ export class KustoServer {
 	}
 
 	private async download(context: AppContext): Promise<string> {
-		const rawConfig = await fs.readFile(path.join(context.extensionContext.extensionPath, 'config.json')); // TodoKusto: Update config.json to refer to the right exe
+		const configDir = context.extensionContext.extensionPath;
+		const rawConfig = await fs.readFile(path.join(configDir, 'config.json'));
 		this.config = JSON.parse(rawConfig.toString())!;
 		this.config.installDirectory = path.join(__dirname, this.config.installDirectory);
 		this.config.proxy = vscode.workspace.getConfiguration('http').get<string>('proxy')!;
@@ -120,13 +132,16 @@ function generateHandleServerProviderEvent() {
 				outputChannel.appendLine('');
 				outputChannel.appendLine(localize('downloadServiceDoneChannelMsg', "Downloaded {0}", Constants.serviceName));
 				break;
-			case Events.LOG_EMITTED:
-				if (args[0] >= LogLevel.Warning) {
-					outputChannel.appendLine(args[1]);
-				}
+			case Events.ENTRY_EXTRACTED:
+				outputChannel.appendLine(localize('entryExtractedChannelMsg', "Extracted {0} ({1}/{2})", args[0], args[1], args[2]));
 				break;
-			default:
-				console.error(`Unknown event from Server Provider ${e}`);
+			case Events.LOG_EMITTED:
+				const configuredLevel: number | undefined = LogLevelMapping[getConfigTracingLevel()];
+				const logLevel = args[0] as LogLevel;
+				const message = args[1] as string;
+				if (configuredLevel !== undefined && logLevel >= configuredLevel) {
+					outputChannel.appendLine(message);
+				}
 				break;
 		}
 	};
@@ -134,7 +149,7 @@ function generateHandleServerProviderEvent() {
 
 function getClientOptions(context: AppContext): ClientOptions {
 	return {
-		documentSelector: ['kusto'],		// TodoKusto: This should be same as the language id in package.json. See if we can surface that better later.
+		documentSelector: ['kusto'],
 		synchronize: {
 			configurationSection: Constants.extensionConfigSectionName
 		},
@@ -147,28 +162,8 @@ function getClientOptions(context: AppContext): ClientOptions {
 			AccountFeature,
 			SerializationFeature
 		],
-		outputChannel: new CustomOutputChannel()
+		outputChannel: outputChannel,
+		// Automatically reveal the output channel only in dev mode, so that the users are not impacted and issues can still be caught during development.
+		revealOutputChannelOn: azdata.env.quality === azdata.env.AppQuality.dev ? RevealOutputChannelOn.Error : RevealOutputChannelOn.Never
 	};
-}
-
-class CustomOutputChannel implements vscode.OutputChannel {
-	name!: string;
-	append(value: string): void {
-		console.log(value);
-	}
-	appendLine(value: string): void {
-		console.log(value);
-	}
-	clear(): void {
-	}
-	show(preserveFocus?: boolean): void;
-	show(column?: vscode.ViewColumn, preserveFocus?: boolean): void;
-	show(column?: any, preserveFocus?: any) {
-	}
-	hide(): void {
-	}
-	dispose(): void {
-	}
-	replace(_value: string): void {
-	}
 }

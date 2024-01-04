@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -100,6 +100,25 @@ export function getThemeUpdatedNotification(label: string): string {
 }
 export function getNewThemeNotification(label: string): string {
 	return localize({ key: 'newThemeNotification', comment: ['{0} is the name of the new default theme'] }, "Azure Data Studio now ships with a new default theme '{0}'. Do you want to give it a try?", label);
+}
+
+//#endregion
+
+//#region VS Code About Dialog
+
+export function aboutDetail(productVersion: string, commit: string, date: string, electronVersion: string, chromeVersion: string, nodeVersion: string, v8: string, osProps: string, vscodeVersion: string): string {
+	return localize({ key: 'aboutDetail', comment: ['Electron, Chromium, Node.js and V8 are product names that need no translation'] },
+		"Version: {0}\nCommit: {1}\nDate: {2}\nVS Code: {3}\nElectron: {4}\nChromium: {5}\nNode.js: {6}\nV8: {7}\nOS: {8}",
+		productVersion,
+		commit,
+		date,
+		vscodeVersion,
+		electronVersion,
+		chromeVersion,
+		nodeVersion,
+		v8,
+		osProps
+	);
 }
 
 //#endregion

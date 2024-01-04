@@ -1,13 +1,13 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { AzureResourceItemType, AzureResourcePrefixes, cosmosDBProvider } from '../../../constants';
+import { AzureResourceItemType, AzureResourcePrefixes, cosmosDBMongoProvider } from '../../../constants';
 import { AzureResourceMongoDatabaseServer } from './cosmosDbMongoService';
 import { generateGuid } from '../../../utils';
 import { DbServerGraphData, GraphData } from '../../../interfaces';
@@ -43,7 +43,7 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: cosmosDBProvider,
+				providerName: cosmosDBMongoProvider,
 				saveProfile: false,
 				options: {
 					isServer: databaseServer.isServer,
@@ -53,7 +53,7 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 				azureResourceId: databaseServer.id,
 				azurePortalEndpoint: (account.properties as AzureAccountProperties).providerSettings.settings.portalEndpoint
 			},
-			childProvider: cosmosDBProvider,
+			childProvider: cosmosDBMongoProvider,
 			type: azdata.ExtensionNodeType.Server
 		};
 	}

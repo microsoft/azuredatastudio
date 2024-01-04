@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -394,6 +394,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 					stateMachine._targetServerInstance.id,
 					stateMachine._targetUserName,
 					stateMachine._targetPassword,
+					stateMachine._targetPort,
 					stateMachine.isWindowsAuthMigrationSupported));
 				stateMachine._loginMigrationModel.collectedTargetLogins = true;
 				stateMachine._loginMigrationModel.loginsOnTarget = targetLogins;

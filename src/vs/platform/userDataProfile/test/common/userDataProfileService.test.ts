@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -176,6 +176,63 @@ suite('UserDataProfileService (Common)', () => {
 		assert.deepStrictEqual(testObject.profiles[1].shortName, 'short changed');
 		assert.deepStrictEqual(!!testObject.profiles[1].isTransient, false);
 		assert.deepStrictEqual(testObject.profiles[1].id, profile.id);
+	});
+
+	test('profile using default profile for settings', async () => {
+		const profile = await testObject.createNamedProfile('name', { useDefaultFlags: { settings: true } });
+
+		assert.strictEqual(profile.isDefault, false);
+		assert.deepStrictEqual(profile.useDefaultFlags, { settings: true });
+		assert.strictEqual(profile.settingsResource.toString(), testObject.defaultProfile.settingsResource.toString());
+	});
+
+	test('profile using default profile for keybindings', async () => {
+		const profile = await testObject.createNamedProfile('name', { useDefaultFlags: { keybindings: true } });
+
+		assert.strictEqual(profile.isDefault, false);
+		assert.deepStrictEqual(profile.useDefaultFlags, { keybindings: true });
+		assert.strictEqual(profile.keybindingsResource.toString(), testObject.defaultProfile.keybindingsResource.toString());
+	});
+
+	test('profile using default profile for snippets', async () => {
+		const profile = await testObject.createNamedProfile('name', { useDefaultFlags: { snippets: true } });
+
+		assert.strictEqual(profile.isDefault, false);
+		assert.deepStrictEqual(profile.useDefaultFlags, { snippets: true });
+		assert.strictEqual(profile.snippetsHome.toString(), testObject.defaultProfile.snippetsHome.toString());
+	});
+
+	test('profile using default profile for tasks', async () => {
+		const profile = await testObject.createNamedProfile('name', { useDefaultFlags: { tasks: true } });
+
+		assert.strictEqual(profile.isDefault, false);
+		assert.deepStrictEqual(profile.useDefaultFlags, { tasks: true });
+		assert.strictEqual(profile.tasksResource.toString(), testObject.defaultProfile.tasksResource.toString());
+	});
+
+	test('profile using default profile for global state', async () => {
+		const profile = await testObject.createNamedProfile('name', { useDefaultFlags: { globalState: true } });
+
+		assert.strictEqual(profile.isDefault, false);
+		assert.deepStrictEqual(profile.useDefaultFlags, { globalState: true });
+		assert.strictEqual(profile.globalStorageHome.toString(), testObject.defaultProfile.globalStorageHome.toString());
+	});
+
+	test('profile using default profile for extensions', async () => {
+		const profile = await testObject.createNamedProfile('name', { useDefaultFlags: { extensions: true } });
+
+		assert.strictEqual(profile.isDefault, false);
+		assert.deepStrictEqual(profile.useDefaultFlags, { extensions: true });
+		assert.strictEqual(profile.extensionsResource.toString(), testObject.defaultProfile.extensionsResource.toString());
+	});
+
+	test('update profile using default profile for keybindings', async () => {
+		let profile = await testObject.createNamedProfile('name');
+		profile = await testObject.updateProfile(profile, { useDefaultFlags: { keybindings: true } });
+
+		assert.strictEqual(profile.isDefault, false);
+		assert.deepStrictEqual(profile.useDefaultFlags, { keybindings: true });
+		assert.strictEqual(profile.keybindingsResource.toString(), testObject.defaultProfile.keybindingsResource.toString());
 	});
 
 });

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -157,7 +157,7 @@ flakySuite('TextSearch-integration', function () {
 			contentPattern: { pattern: 'e' }
 		};
 
-		return doSearchTest(config, 781);
+		return doSearchTest(config, 785);
 	});
 
 	test('Text: e (with excludes)', () => {
@@ -167,7 +167,7 @@ flakySuite('TextSearch-integration', function () {
 			excludePattern: { '**/examples': true }
 		};
 
-		return doSearchTest(config, 387);
+		return doSearchTest(config, 391);
 	});
 
 	test('Text: e (with includes)', () => {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { generateUuid } from 'vs/base/common/uuid';
@@ -125,10 +125,6 @@ export class GettingStartedDetailsRenderer {
 			</body>
 			<script nonce="${nonce}">
 				const vscode = acquireVsCodeApi();
-
-				window.addEventListener('unload', event => {
-					vscode.postMessage('unloaded');
-				});
 
 				document.querySelectorAll('[when-checked]').forEach(el => {
 					el.addEventListener('click', () => {

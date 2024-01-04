@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
@@ -18,14 +18,16 @@ import { AzureResourceErrorMessageUtil, equals } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { AzureAccount } from 'azurecore';
 
-export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
+export class AzureResourceTreeProvider extends vscode.Disposable implements vscode.TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
 	public isSystemInitialized: boolean = false;
-
 	private accounts: AzureAccount[] = [];
 	private _onDidChangeTreeData = new vscode.EventEmitter<TreeNode | undefined>();
 	private loadingAccountsPromise: Promise<void> | undefined;
 
 	public constructor(private readonly appContext: AppContext) {
+		super(() => {
+			this._onDidChangeTreeData.dispose();
+		});
 		azdata.accounts.onDidChangeAccounts(async (e: azdata.DidChangeAccountsParams) => {
 			// This event sends it per provider, we need to make sure we get all the azure related accounts
 			let accounts = await azdata.accounts.getAllAccounts();
@@ -73,7 +75,7 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 			this.accounts = await azdata.accounts.getAllAccounts();
 			// System has been initialized
 			this.setSystemInitialized();
-			this._onDidChangeTreeData.fire(undefined);
+			this.notifyNodeChanged(undefined);
 		} catch (err) {
 			// Skip for now, we can assume that the accounts changed event will eventually notify instead
 			this.isSystemInitialized = false;
@@ -99,7 +101,7 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 				node.clearCache();
 			}
 		}
-		this._onDidChangeTreeData.fire(node);
+		this.notifyNodeChanged(node);
 	}
 
 	public getTreeItem(element: TreeNode): vscode.TreeItem | Thenable<vscode.TreeItem> {

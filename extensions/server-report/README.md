@@ -65,4 +65,4 @@ Run the following commands sequentially in the context of this directory:
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-Licensed under the [Source EULA](https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt).
+Licensed under the [MIT License](https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt).

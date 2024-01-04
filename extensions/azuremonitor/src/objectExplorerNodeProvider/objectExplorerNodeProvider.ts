@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -85,8 +85,8 @@ export class AzureMonitorObjectExplorerNodeProvider extends ProviderBase impleme
 		return Promise.resolve(response);
 	}
 
-	registerOnExpandCompleted(handler: (response: azdata.ObjectExplorerExpandInfo) => any): void {
-		this.expandCompleteEmitter.event(handler);
+	registerOnExpandCompleted(handler: (response: azdata.ObjectExplorerExpandInfo) => any): vscode.Disposable {
+		return this.expandCompleteEmitter.event(handler);
 	}
 
 	notifyNodeChanged(node: TreeNode): void {

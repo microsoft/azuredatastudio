@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as loc from './localizedConstants';
@@ -136,24 +136,6 @@ export function getResourceTypeDisplayName(type: string): string {
 			return loc.azureArcPostgresServer;
 	}
 	return type;
-}
-
-/**
- * Gets tenants to be ignored.
- * @returns Tenants configured in ignore list
- */
-export function getTenantIgnoreList(): string[] {
-	const configuration = vscode.workspace.getConfiguration(constants.AzureTenantConfigSection);
-	return configuration.get(constants.Filter) ?? [];
-}
-
-/**
- * Updates tenant ignore list in global settings.
- * @param tenantIgnoreList Tenants to be configured in ignore list
- */
-export async function updateTenantIgnoreList(tenantIgnoreList: string[]): Promise<void> {
-	const configuration = vscode.workspace.getConfiguration(constants.AzureTenantConfigSection);
-	await configuration.update(constants.Filter, tenantIgnoreList, vscode.ConfigurationTarget.Global);
 }
 
 export function updateCustomCloudProviderSettings(defaultSettings: ProviderSettings[]): ProviderSettings[] {

@@ -625,8 +625,8 @@
         <target state="translated">닫기</target>
       </trans-unit>
       <trans-unit id="managePackages.dialogName">
-        <source xml:lang="en">Manage Packages</source>
-        <target state="translated">패키지 관리</target>
+        <source xml:lang="en">Manage Notebook Packages</source>
+        <target state="translated">Notebook 패키지 관리</target>
       </trans-unit>
     </body>
   </file>
@@ -659,6 +659,10 @@
       <trans-unit id="unsupportedFileType">
         <source xml:lang="en">Only .ipynb Notebooks are supported</source>
         <target state="translated">.ipynb Notebook만 지원됩니다.</target>
+      </trans-unit>
+      <trans-unit id="pythonNotSetup">
+        <source xml:lang="en">Python is not currently configured for notebooks. The 'Configure Python for Notebooks' command must be run before being able to manage notebook packages.</source>
+        <target state="translated">Python이 현재 Notebook에 대해 구성되어 있지 않습니다. Notebook 패키지를 관리하려면 먼저 'Notebook용 Python 구성' 명령을 실행해야 합니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -957,8 +961,8 @@
         <target state="translated">Notebook에서 사용하는 python 설치의 로컬 경로입니다.</target>
       </trans-unit>
       <trans-unit id="title.managePackages">
-        <source xml:lang="en">Manage Packages</source>
-        <target state="translated">패키지 관리</target>
+        <source xml:lang="en">Manage Notebook Packages</source>
+        <target state="translated">Notebook 패키지 관리</target>
       </trans-unit>
       <trans-unit id="notebook.maxBookSearchDepth.description">
         <source xml:lang="en">Maximum depth of subdirectories to search for Books (Enter 0 for infinite)</source>

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 /**
@@ -190,19 +190,14 @@ export function validateConstraint(arg: unknown, constraint: TypeConstraint | un
 	}
 }
 
+// {{SQL CARBON EDIT}} - START - Defining withNullAsUndefined
 /**
  * Converts null to undefined, passes all other values through.
  */
 export function withNullAsUndefined<T>(x: T | null): T | undefined {
 	return x === null ? undefined : x;
 }
-
-/**
- * Converts undefined to null, passes all other values through.
- */
-export function withUndefinedAsNull<T>(x: T | undefined): T | null {
-	return typeof x === 'undefined' ? null : x;
-}
+// {{SQL CARBON EDIT}} - END
 
 type AddFirstParameterToFunction<T, TargetFunctionsReturnType, FirstParameter> = T extends (...args: any[]) => TargetFunctionsReturnType ?
 	// Function: add param to function
@@ -225,6 +220,10 @@ export type AddFirstParameterToFunctions<Target, TargetFunctionsReturnType, Firs
  */
 export type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> & U[keyof U];
 
+/**
+ * Only picks the non-optional properties of a type.
+ */
+export type OmitOptional<T> = { [K in keyof T as T[K] extends Required<T>[K] ? K : never]: T[K] };
 
 /**
  * A type that removed readonly-less from all properties of `T`

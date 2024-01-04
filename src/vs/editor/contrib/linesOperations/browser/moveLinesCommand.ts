@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as strings from 'vs/base/common/strings';
@@ -117,7 +117,7 @@ export class MoveLinesCommand implements ICommand {
 						const oldIndentation = strings.getLeadingWhitespace(model.getLineContent(movingLineNumber));
 						const newSpaceCnt = movingLineMatchResult + indentUtils.getSpaceCnt(oldIndentation, tabSize);
 						const newIndentation = indentUtils.generateIndent(newSpaceCnt, tabSize, insertSpaces);
-						insertingText = newIndentation + this.trimLeft(movingLineText);
+						insertingText = newIndentation + this.trimStart(movingLineText);
 					} else {
 						// no enter rule matches, let's check indentatin rules then.
 						virtualModel.getLineContent = (lineNumber: number) => {
@@ -141,7 +141,7 @@ export class MoveLinesCommand implements ICommand {
 							const oldSpaceCnt = indentUtils.getSpaceCnt(oldIndentation, tabSize);
 							if (newSpaceCnt !== oldSpaceCnt) {
 								const newIndentation = indentUtils.generateIndent(newSpaceCnt, tabSize, insertSpaces);
-								insertingText = newIndentation + this.trimLeft(movingLineText);
+								insertingText = newIndentation + this.trimStart(movingLineText);
 							}
 						}
 					}
@@ -272,7 +272,7 @@ export class MoveLinesCommand implements ICommand {
 				enterPrefix = indentConverter.unshiftIndent(enter.indentation) + enter.appendText;
 			}
 			const movingLineText = model.getLineContent(line);
-			if (this.trimLeft(movingLineText).indexOf(this.trimLeft(enterPrefix)) >= 0) {
+			if (this.trimStart(movingLineText).indexOf(this.trimStart(enterPrefix)) >= 0) {
 				const oldIndentation = strings.getLeadingWhitespace(model.getLineContent(line));
 				let newIndentation = strings.getLeadingWhitespace(enterPrefix);
 				const indentMetadataOfMovelingLine = getIndentMetadata(model, line, this._languageConfigurationService);
@@ -354,7 +354,7 @@ export class MoveLinesCommand implements ICommand {
 		return this.parseEnterResult(model, indentConverter, tabSize, line, enter);
 	}
 
-	private trimLeft(str: string) {
+	private trimStart(str: string) {
 		return str.replace(/^\s+/, '');
 	}
 

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IQueryManagementService, QueryCancelResult, ExecutionPlanOptions } from 'sql/workbench/services/query/common/queryManagement';
@@ -31,6 +31,7 @@ import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CancellationToken } from 'vs/base/common/cancellation';
+import { ServerConnID } from 'sql/workbench/services/query/common/query';
 
 /*
 * Query Runner class which handles running a query, reports the results to the content manager,
@@ -81,6 +82,9 @@ export default class QueryRunner extends Disposable {
 
 	private readonly _onVisualize = this._register(new Emitter<ResultSetSummary>());
 	public readonly onVisualize = this._onVisualize.event;
+
+	private readonly _onConnectionIdUpdated = this._register(new Emitter<ServerConnID>());
+	public readonly onConnectionIdUpdated = this._onConnectionIdUpdated.event;
 
 	private _queryStartTime?: Date;
 	public get queryStartTime(): Date | undefined {
@@ -274,6 +278,17 @@ export default class QueryRunner extends Disposable {
 
 		this._onQueryEnd.fire(timeStamp);
 		this._onMessage.fire([message]);
+	}
+
+	/**
+	 * Used to update the Server Connection ID of the current connection as assigned by the server after query complete.
+	 */
+	public handleServerConnId(id: string): void {
+		let idEvent: ServerConnID = {
+			uri: this.uri,
+			connId: id,
+		}
+		this._onConnectionIdUpdated.fire(idEvent);
 	}
 
 	/**
