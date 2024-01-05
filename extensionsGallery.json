@@ -3918,14 +3918,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.7.1",
-							"lastUpdated": "10/13/2023",
+							"version": "0.7.2",
+							"lastUpdated": "01/05/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/ernstc/SqlDataInspector/releases/tag/0.7.1"
+									"source": "https://github.com/ernstc/SqlDataInspector/releases/tag/0.7.2"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
