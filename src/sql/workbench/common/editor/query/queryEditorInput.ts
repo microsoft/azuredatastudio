@@ -271,6 +271,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	// Called to get the tooltip of the tab
 	public override getTitle(verbosity?: Verbosity): string {
 		let profile = this.connectionManagementService.getConnectionProfile(this.uri);
+		let info = this.connectionManagementService.getConnectionInfo(this.uri);
 		let fullTitle = '';
 		if (profile) {
 			let additionalOptions = this.connectionManagementService.getNonDefaultOptions(profile);
@@ -284,6 +285,11 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			fullTitle += ` (${profile.userName || profile.authenticationType})`;
 
 			fullTitle += additionalOptions;
+
+			if (info && info.serverConnectionId) {
+				// Add server info to query editor in case if it's available
+				fullTitle += ` ${localize('queryEditorInput.serverConnectionId', "Server Connection Process ID: {0}", info.serverConnectionId)}`
+			}
 		}
 		else {
 			fullTitle = this.getName(true);
