@@ -5351,7 +5351,7 @@
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": " https://builds.pieces.app/stages/staging/plugin_vscode/ads-vsix/download"
+									"source": "https://builds.pieces.app/stages/staging/plugin_vscode/ads-vsix/download"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
