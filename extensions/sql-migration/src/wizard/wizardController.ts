@@ -175,24 +175,12 @@ export class WizardController {
 
 		this._disposables.push(
 			customCancelButton.onClick(async () => {
-				const cancelFeedbackDialog = new CancelFeedbackDialog(this._wizardObject);
+				const cancelFeedbackDialog = new CancelFeedbackDialog(this._wizardObject, this._model);
+				// TODO - Remove hardcoed values and bring this value from each wizard page as parameter.
 				const cancelReasonList: string[] = ["Target not ready", "Missing information"]; // Fix: Provide an argument to the element access expression
 				cancelFeedbackDialog.updateCancelReasonsList(cancelReasonList); // Fix: Use the element access expression with an argument
 				await cancelFeedbackDialog.openDialog();
 			}));
-
-		// this._disposables.push(
-		// 	this._wizardObject.cancelButton.onClick(e => {
-		// 		sendSqlMigrationActionEvent(
-		// 			TelemetryViews.SqlMigrationWizard,
-		// 			TelemetryAction.PageButtonClick,
-		// 			{
-		// 				...getTelemetryProps(this._model),
-		// 				'buttonPressed': TelemetryAction.Cancel,
-		// 				'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
-		// 			},
-		// 			{});
-		// 	}));
 
 		this._disposables.push(
 			this._wizardObject.doneButton.onClick(async (e) => {
@@ -263,6 +251,7 @@ export class WizardController {
 
 		await Promise.all(wizardSetupPromises);
 
+		// TODO - Do we want to add dialog for login migration wizard?
 		this._disposables.push(
 			this._wizardObject.cancelButton.onClick(e => {
 				// TODO AKMA: add dialog prompting confirmation of cancel if migration is in progress

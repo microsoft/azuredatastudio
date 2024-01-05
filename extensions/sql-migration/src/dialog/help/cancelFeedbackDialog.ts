@@ -7,6 +7,8 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as styles from '../../constants/styles';
 import { EventEmitter } from 'stream';
+import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, getTelemetryProps } from '../../telemetry';
+import { MigrationStateModel } from '../../models/stateMachine';
 
 export class CancelFeedbackDialog {
 	private dialog!: azdata.window.Dialog;
@@ -20,7 +22,10 @@ export class CancelFeedbackDialog {
 	private _view!: azdata.ModelView;
 	private _cancelReasonsList: string[] = [];
 
-	constructor(private wizardObject: azdata.window.Wizard) {
+	private _cancellationReasonSelected: string = '';
+
+	// TODO - Update all the string with localised strings
+	constructor(private wizardObject: azdata.window.Wizard, private migrationStateModel: MigrationStateModel) {
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
@@ -36,6 +41,18 @@ export class CancelFeedbackDialog {
 						dialog.okButton.onClick(
 							async (e) => {
 								await this.wizardObject.close();
+
+								sendSqlMigrationActionEvent(
+									TelemetryViews.LoginMigrationWizard,
+									TelemetryAction.PageButtonClick,
+									{
+										...getTelemetryProps(this.migrationStateModel),
+										'buttonPressed': TelemetryAction.Cancel,
+										'pageTitle': this.wizardObject.pages[this.wizardObject.currentPage].title,
+										// TODO - Add the other reason textbox value
+										'cancellationReason': this._cancellationReasonSelected
+									},
+									{});
 							}));
 
 					this._disposables.push(
@@ -69,13 +86,7 @@ export class CancelFeedbackDialog {
 				'normal',
 				'below',
 				false,
-				true,
-				// <azdata.window.IDialogProperties>{
-				// 	height: 100,
-				// 	width: 100,
-				// 	xPos: 100,
-				// 	yPos: 100
-				// }
+				true
 			);
 
 			const promise = this.initializeDialog(this.dialog);
@@ -124,6 +135,7 @@ export class CancelFeedbackDialog {
 	private createCancelReasonsContainer(_view: azdata.ModelView): void {
 		const cancelReasonDescription = _view.modelBuilder.text().withProps({
 			value: "Please take a moment to tell us the reason for canceling the migration. This will help us improve the experience.",
+			// TODO - Take out all the styles to styles.ts
 			CSSStyles: {
 				'font-size': '13px',
 				'line-height': '18px',
@@ -166,7 +178,7 @@ export class CancelFeedbackDialog {
 		this._disposables.push(
 			cancelReasonRadioButton.onDidChangeCheckedState(checked => {
 				if (checked) {
-					// TODO- Telemetry
+					this._cancellationReasonSelected = buttonLabelText;
 				}
 			}));
 
