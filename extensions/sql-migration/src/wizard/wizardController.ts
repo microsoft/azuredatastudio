@@ -23,6 +23,7 @@ import { azureResource } from 'azurecore';
 import { ServiceContextChangeEvent } from '../dashboard/tabBase';
 import { getSourceConnectionProfile } from '../api/sqlUtils';
 import { AssessmentDetailsPage } from './assessmentDetailsPage/assessmentDetailsPage';
+import { CancelFeedbackDialog } from '../dialog/help/cancelFeedbackDialog';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
@@ -60,8 +61,9 @@ export class WizardController {
 		this._wizardObject.doneButton.secondary = false;
 		this._wizardObject.backButton.position = 'left';
 		this._wizardObject.backButton.secondary = true;
-		this._wizardObject.cancelButton.position = 'left';
-		this._wizardObject.cancelButton.secondary = true;
+		this._wizardObject.cancelButton.hidden = true;
+		// this._wizardObject.cancelButton.position = 'left';
+		// this._wizardObject.cancelButton.secondary = true;
 
 		const saveAndCloseButton = azdata.window.createButton(
 			loc.SAVE_AND_CLOSE,
@@ -86,7 +88,12 @@ export class WizardController {
 		saveAssessmentButton.secondary = true;
 		saveAssessmentButton.hidden = true;
 
-		this._wizardObject.customButtons = [validateButton, tdeMigrateButton, saveAssessmentButton, saveAndCloseButton];
+		const customCancelButton = azdata.window.createButton(
+			'Cancel',
+			'right');
+		customCancelButton.secondary = true;
+
+		this._wizardObject.customButtons = [validateButton, tdeMigrateButton, saveAssessmentButton, saveAndCloseButton, customCancelButton];
 		const databaseSelectorPage = new DatabaseSelectorPage(this._wizardObject, stateModel);
 		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
 		const assessmentDetailsPage = new AssessmentDetailsPage(this._wizardObject, stateModel);
@@ -167,17 +174,25 @@ export class WizardController {
 			}));
 
 		this._disposables.push(
-			this._wizardObject.cancelButton.onClick(e => {
-				sendSqlMigrationActionEvent(
-					TelemetryViews.SqlMigrationWizard,
-					TelemetryAction.PageButtonClick,
-					{
-						...getTelemetryProps(this._model),
-						'buttonPressed': TelemetryAction.Cancel,
-						'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
-					},
-					{});
+			customCancelButton.onClick(async () => {
+				const cancelFeedbackDialog = new CancelFeedbackDialog(this._wizardObject);
+				const cancelReasonList: string[] = ["Target not ready", "Missing information"]; // Fix: Provide an argument to the element access expression
+				cancelFeedbackDialog.updateCancelReasonsList(cancelReasonList); // Fix: Use the element access expression with an argument
+				await cancelFeedbackDialog.openDialog();
 			}));
+
+		// this._disposables.push(
+		// 	this._wizardObject.cancelButton.onClick(e => {
+		// 		sendSqlMigrationActionEvent(
+		// 			TelemetryViews.SqlMigrationWizard,
+		// 			TelemetryAction.PageButtonClick,
+		// 			{
+		// 				...getTelemetryProps(this._model),
+		// 				'buttonPressed': TelemetryAction.Cancel,
+		// 				'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
+		// 			},
+		// 			{});
+		// 	}));
 
 		this._disposables.push(
 			this._wizardObject.doneButton.onClick(async (e) => {

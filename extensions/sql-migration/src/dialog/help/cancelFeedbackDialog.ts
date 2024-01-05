@@ -20,6 +20,9 @@ export class CancelFeedbackDialog {
 	private _view!: azdata.ModelView;
 	private _cancelReasonsList: string[] = [];
 
+	constructor(private wizardObject: azdata.window.Wizard) {
+	}
+
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			dialog.registerContent(async (view) => {
@@ -28,6 +31,12 @@ export class CancelFeedbackDialog {
 					const flex = this.createContainer(view);
 
 					await view.initializeModel(flex);
+
+					this._disposables.push(
+						dialog.okButton.onClick(
+							async (e) => {
+								await this.wizardObject.close();
+							}));
 
 					this._disposables.push(
 						view.onClosed(e =>
@@ -157,7 +166,7 @@ export class CancelFeedbackDialog {
 		this._disposables.push(
 			cancelReasonRadioButton.onDidChangeCheckedState(checked => {
 				if (checked) {
-					// TODO: Add telemetry
+					// TODO- Telemetry
 				}
 			}));
 
