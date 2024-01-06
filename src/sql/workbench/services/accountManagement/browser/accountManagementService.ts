@@ -29,6 +29,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { TelemetryAction, TelemetryError, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 import { Iterable } from 'vs/base/common/iterator';
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
+import { IAuthenticationService } from 'vs/workbench/services/authentication/common/authentication';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -56,14 +57,15 @@ export class AccountManagementService implements IAccountManagementService {
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
-		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IStorageService private _storageService: IStorageService,
-		@IClipboardService private _clipboardService: IClipboardService,
-		@IOpenerService private _openerService: IOpenerService,
+		@IInstantiationService private readonly _instantiationService: IInstantiationService,
+		@IStorageService private readonly _storageService: IStorageService,
+		@IClipboardService private readonly _clipboardService: IClipboardService,
+		@IOpenerService private readonly _openerService: IOpenerService,
 		@ILogService private readonly _logService: ILogService,
 		@INotificationService private readonly _notificationService: INotificationService,
-		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
-		@IQuickInputService private _quickInputService: IQuickInputService
+		@IAdsTelemetryService private readonly _telemetryService: IAdsTelemetryService,
+		@IQuickInputService private readonly _quickInputService: IQuickInputService,
+		@IAuthenticationService private readonly _authenticationService: IAuthenticationService
 	) {
 		this._mementoContext = new Memento(AccountManagementService.ACCOUNT_MEMENTO, this._storageService);
 		const mementoObj = this._mementoContext.getMemento(StorageScope.APPLICATION, StorageTarget.MACHINE);
@@ -397,6 +399,28 @@ export class AccountManagementService implements IAccountManagementService {
 			}
 			return result;
 		});
+	}
+
+	/**
+	 * Updates the auth sessions that appear in the account for a provider. This method does not
+	 * handle account management sessions.
+	 * @param account The account to update the account list for
+	 */
+	public async updateAccountListAuthSessions(account: azdata.Account): Promise<void> {
+		const sessions = await this._authenticationService.getSessions(account.key.providerId);
+		const accounts = sessions.map(session => {
+			return ({
+				key: { providerId: account.key.providerId, accountId: session.account.id } as azdata.AccountKey,
+				displayInfo: { contextualDisplayName: account.displayInfo.contextualDisplayName, accountType: account.displayInfo.accountType, displayName: session.account.label, userId: session.account.label } as azdata.AccountDisplayInfo,
+				isStale: false,
+			}) as azdata.Account;
+		});
+		const provider: AccountProviderWithMetadata = {
+			metadata: { id: account.key.providerId, displayName: account.displayInfo.displayName } as azdata.AccountProviderMetadata,
+			provider: undefined,
+			accounts: accounts
+		};
+		this.fireAccountListUpdate(provider, false);
 	}
 
 	/**

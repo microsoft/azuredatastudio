@@ -12,6 +12,7 @@ import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 's
 import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
 import { EventVerifierSingle } from 'sql/base/test/common/event';
 import { NullLogService } from 'vs/platform/log/common/log';
+import { TestAuthenticationService } from 'sql/platform/accounts/test/common/testAuthenticationService';
 
 // SUITE STATE /////////////////////////////////////////////////////////////
 let mockAddProviderEmitter: Emitter<AccountProviderAddedEventParams>;
@@ -64,7 +65,8 @@ suite('Account Management Dialog ViewModel Tests', () => {
 	test('Construction - Events are properly defined', () => {
 		// If: I create an account viewmodel
 		let mockAccountManagementService = getMockAccountManagementService(false, false);
-		let vm = new AccountViewModel(mockAccountManagementService.object, new NullLogService());
+		let mockAuthenticationService = getMockAuthenticationService();
+		let vm = new AccountViewModel(mockAccountManagementService.object, new NullLogService(), mockAuthenticationService.object);
 
 		// Then:
 		// ... All the events for the view models should be properly initialized
@@ -95,10 +97,11 @@ suite('Account Management Dialog ViewModel Tests', () => {
 	test('Initialize - Success', () => {
 		// Setup: Create a viewmodel with event handlers
 		let mockAccountManagementService = getMockAccountManagementService(true, true);
+		let mockAuthenticationService = getMockAuthenticationService();
 		let evAddProvider = new EventVerifierSingle<AccountProviderAddedEventParams>();
 		let evRemoveProvider = new EventVerifierSingle<azdata.AccountProviderMetadata>();
 		let evUpdateAccounts = new EventVerifierSingle<UpdateAccountListEventParams>();
-		let vm = getViewModel(mockAccountManagementService.object, evAddProvider, evRemoveProvider, evUpdateAccounts);
+		let vm = getViewModel(mockAccountManagementService.object, mockAuthenticationService.object, evAddProvider, evRemoveProvider, evUpdateAccounts);
 
 		// If: I initialize the view model
 		return vm.initialize()
@@ -122,10 +125,11 @@ suite('Account Management Dialog ViewModel Tests', () => {
 	test('Initialize - Get providers fails', () => {
 		// Setup: Create a mock account management service that rejects looking up providers
 		let mockAccountManagementService = getMockAccountManagementService(false, true);
+		let mockAuthenticationService = getMockAuthenticationService();
 		let evAddProvider = new EventVerifierSingle<AccountProviderAddedEventParams>();
 		let evRemoveProvider = new EventVerifierSingle<azdata.AccountProviderMetadata>();
 		let evUpdateAccounts = new EventVerifierSingle<UpdateAccountListEventParams>();
-		let vm = getViewModel(mockAccountManagementService.object, evAddProvider, evRemoveProvider, evUpdateAccounts);
+		let vm = getViewModel(mockAccountManagementService.object, mockAuthenticationService.object, evAddProvider, evRemoveProvider, evUpdateAccounts);
 
 		// If: I initialize the view model
 		return vm.initialize()
@@ -147,10 +151,11 @@ suite('Account Management Dialog ViewModel Tests', () => {
 	test.skip('Initialize - Get accounts fails', () => { // @anthonydresser I don't understand this test, it says get accounts fails, but then assumes there will be accounts in the results...
 		// Setup: Create a mock account management service that rejects the promise
 		let mockAccountManagementService = getMockAccountManagementService(true, false);
+		let mockAuthenticationService = getMockAuthenticationService();
 		let evAddProvider = new EventVerifierSingle<AccountProviderAddedEventParams>();
 		let evRemoveProvider = new EventVerifierSingle<azdata.AccountProviderMetadata>();
 		let evUpdateAccounts = new EventVerifierSingle<UpdateAccountListEventParams>();
-		let vm = getViewModel(mockAccountManagementService.object, evAddProvider, evRemoveProvider, evUpdateAccounts);
+		let vm = getViewModel(mockAccountManagementService.object, mockAuthenticationService.object, evAddProvider, evRemoveProvider, evUpdateAccounts);
 
 		// If: I initialize the view model
 		return vm.initialize()
@@ -190,13 +195,23 @@ function getMockAccountManagementService(resolveProviders: boolean, resolveAccou
 	return mockAccountManagementService;
 }
 
+function getMockAuthenticationService(): TypeMoq.Mock<TestAuthenticationService> {
+	let mockAuthenticationService = TypeMoq.Mock.ofType(TestAuthenticationService);
+
+	mockAuthenticationService.setup(x => x.getProviderIds())
+		.returns(() => []);
+
+	return mockAuthenticationService;
+}
+
 function getViewModel(
 	ams: TestAccountManagementService,
+	testAuthenticationService: TestAuthenticationService,
 	evAdd: EventVerifierSingle<AccountProviderAddedEventParams>,
 	evRemove: EventVerifierSingle<azdata.AccountProviderMetadata>,
 	evUpdate: EventVerifierSingle<UpdateAccountListEventParams>
 ): AccountViewModel {
-	let vm = new AccountViewModel(ams, new NullLogService());
+	let vm = new AccountViewModel(ams, new NullLogService(), testAuthenticationService);
 	vm.addProviderEvent(evAdd.eventHandler);
 	vm.removeProviderEvent(evRemove.eventHandler);
 	vm.updateAccountListEvent(evUpdate.eventHandler);

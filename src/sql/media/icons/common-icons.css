@@ -13,6 +13,16 @@
 	background-image: url("settings_inverse.svg");
 }
 
+.vs .codicon.github,
+.hc-light .codicon.github {
+	background-image: url("github-mark.svg");
+}
+
+.vs-dark .codicon.github,
+.hc-black .codicon.github {
+	background-image: url("github-mark-white.svg");
+}
+
 .vs .codicon.backup,
 .hc-light .codicon.backup,
 .vs-dark .codicon.backup,

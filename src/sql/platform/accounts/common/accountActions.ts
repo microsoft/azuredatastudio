@@ -13,6 +13,7 @@ import { IDialogService, IConfirmation } from 'vs/platform/dialogs/common/dialog
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IAuthenticationService } from 'vs/workbench/services/authentication/common/authentication';
 
 /**
  * Actions to add a new account
@@ -148,5 +149,32 @@ export class RefreshAccountAction extends Action {
 			const errorMessage = localize('NoAccountToRefresh', "There is no account to refresh");
 			throw new Error(errorMessage);
 		}
+	}
+}
+
+/**
+ * Action to sign out of GitHub Copilot account
+ */
+export class GitHubCopilotSignOutAction extends Action {
+	public static ID = 'account.github.copilot.sign.out';
+	public static LABEL = localize('githubCopilotSignOut', "Sign out of GitHub Copilot");
+
+	constructor(
+		private _account: azdata.Account,
+		@IAccountManagementService private readonly _accountManagementService: IAccountManagementService,
+		@IAuthenticationService private readonly authenticationService: IAuthenticationService
+	) {
+		super(GitHubCopilotSignOutAction.ID, GitHubCopilotSignOutAction.LABEL, 'remove-account-action codicon remove');
+	}
+
+	public override async run(): Promise<void> {
+		this.authenticationService.onDidChangeSessions(async () => {
+			await this._accountManagementService.updateAccountListAuthSessions(this._account);
+		});
+
+		const providerId = this._account.key.providerId;
+		const allSessions = await this.authenticationService.getSessions(providerId);
+		const sessionsForAccount = allSessions.filter(s => s.account.label === this._account.displayInfo.userId);
+		await this.authenticationService.removeAccountSessions(providerId, this._account.displayInfo.userId, sessionsForAccount);
 	}
 }
