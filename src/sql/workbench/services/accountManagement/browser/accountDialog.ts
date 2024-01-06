@@ -163,7 +163,7 @@ export class AccountDialog extends Modal {
 		@INotificationService private _notificationService: INotificationService,
 		@IOpenerService protected readonly openerService: IOpenerService,
 		@ITelemetryService private readonly vstelemetryService: ITelemetryService,
-		@IAccountManagementService private readonly _accountManagementService: IAccountManagementService,
+		@IAccountManagementService private readonly _accountManagementService: IAccountManagementService
 	) {
 		super(
 			localize('linkedAccounts', "Linked accounts"),

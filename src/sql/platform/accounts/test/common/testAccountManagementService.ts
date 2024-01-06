@@ -63,6 +63,10 @@ export class TestAccountManagementService implements IAccountManagementService {
 		return Promise.resolve('');
 	}
 
+	updateAccountListAuthSessions(provider: azdata.Account): Promise<void> {
+		return Promise.resolve();
+	}
+
 	removeAccount(accountKey: azdata.AccountKey): Promise<boolean> {
 		throw new Error('Method not implemented');
 	}

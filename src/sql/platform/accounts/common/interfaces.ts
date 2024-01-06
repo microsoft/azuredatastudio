@@ -30,6 +30,7 @@ export interface IAccountManagementService {
 	removeAccount(accountKey: azdata.AccountKey): Promise<boolean>;
 	removeAccounts(): Promise<boolean>;
 	refreshAccount(account: azdata.Account): Promise<azdata.Account>;
+	updateAccountListAuthSessions(account: azdata.Account): Promise<void>;
 
 	// UI METHODS //////////////////////////////////////////////////////////
 	openAccountListDialog(): Promise<void>;
