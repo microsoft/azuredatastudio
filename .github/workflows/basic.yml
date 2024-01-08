@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18.15
+          node-version: 16
       - uses: actions/setup-python@v4
         with:
           python-version: "3.11.x"
@@ -86,7 +86,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18.15
+          node-version: 16
       - uses: actions/setup-python@v4
         with:
           python-version: "3.11.x"
