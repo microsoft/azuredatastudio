@@ -27,14 +27,6 @@ jobs:
         with:
           python-version: "3.11.x"
 
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-
-      - uses: actions/setup-python@v2
-        with:
-          python-version: "2.x"
-
       # {{SQL CARBON EDIT}} Skip caching for now
       # - name: Compute node modules cache key
       #   id: nodeModulesCacheKey
