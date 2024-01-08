@@ -243,11 +243,6 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			let info = this.connectionManagementService.getConnectionInfo(this.uri);
 			let title = '';
 
-			if (info?.serverConnectionId) {
-				// Add server info to query editor in case if it's available
-				title += `(${info.serverConnectionId}) `;
-			}
-
 			if (this._description && this._description !== '') {
 				title = this._description + ' ';
 			}
@@ -266,7 +261,10 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			} else {
 				title += localize('disconnected', "disconnected");
 			}
-			return this.text.getName() + (longForm ? (' - ' + title) : ` - ${trimTitle(title)}`);
+
+			let normalTitle = this.text.getName() + (longForm ? (' - ' + title) : ` - ${trimTitle(title)}`);
+			let fullTitle = info?.serverConnectionId ? `(${info.serverConnectionId}) ` + normalTitle : normalTitle;
+			return fullTitle;
 		} else {
 			return this.text.getName();
 		}
