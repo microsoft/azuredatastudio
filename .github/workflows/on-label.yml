@@ -7,6 +7,9 @@ jobs:
   processLabelAction:
     name: Process Label Action
     runs-on: ubuntu-latest
+    permissions:
+      repository-projects: read
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - name: Process Label Action
