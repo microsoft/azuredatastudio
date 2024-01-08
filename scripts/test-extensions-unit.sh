@@ -52,7 +52,6 @@ else
 				compile-extension:mssql \
 				compile-extension:notebook \
 				compile-extension:query-history \
-				compile-extension:query-store \
 				compile-extension:resource-deployment \
 				compile-extension:schema-compare \
 				compile-extension:sql-bindings \
@@ -156,11 +155,6 @@ echo ******************************************
 echo *** starting query-history tests ***
 echo ******************************************
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/query-history --extensionTestsPath=$ROOT/extensions/query-history/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
-
-echo ********************************************
-echo *** starting query-store tests ***
-echo ********************************************
-"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/query-store --extensionTestsPath=$ROOT/extensions/query-store/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo ******************************************
 echo *** starting resource deployment tests ***

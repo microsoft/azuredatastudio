@@ -18,7 +18,6 @@
 /extensions/sql-database-projects/ @Benjin @kisantia
 /extensions/sql-migration @AkshayMata @raymondtruong @brian-harris @junierch @siyangMicrosoft
 /extensions/mssql/config.json @Charles-Gagnon @alanrenmsft @kburtram
-/extensions/query-store/ @kisantia @Benjin @SakshiS-harma
 
 /src/sql/*.d.ts @alanrenmsft @Charles-Gagnon
 /src/sql/workbench/browser/modelComponents @Charles-Gagnon @alanrenmsft
