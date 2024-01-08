@@ -24,7 +24,6 @@ const extensionList = [
 	//'mssql',
 	'notebook',
 	'query-history',
-	'query-store',
 	'resource-deployment',
 	'schema-compare',
 	'sql-bindings',
