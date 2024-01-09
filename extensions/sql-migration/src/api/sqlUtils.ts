@@ -137,8 +137,8 @@ export interface LoginTableInfo {
 
 export const SchemaMigrationRequiredIntegrationRuntimeMinimumVersion: IntegrationRuntimeVersionInfo = {
 	major: "5",
-	minor: "35",
-	build: "8686",
+	minor: "37",
+	build: "8762",
 	revision: "1"
 }
 
@@ -670,9 +670,26 @@ export function getActiveIrVersions(irNodes: IntegrationRuntimeNode[]): Integrat
 	return irVersions;
 }
 
-export function getActiveIrVersionsNotSupportingWinAuth(irNodes: IntegrationRuntimeNode[]): IntegrationRuntimeVersionInfo[] {
+export function getActiveIrVersionsSupportingSchemaMigration(irNodes: IntegrationRuntimeNode[]): IntegrationRuntimeVersionInfo[] {
 	var irVersions = getActiveIrVersions(irNodes);
-	return irVersions.filter(v => v.major < "5" || (v.major === "5" && v.minor < "37" && v.minor >= "35"));
+	var irVersionsSupportingSchema: IntegrationRuntimeVersionInfo[] = [];
+	irVersions.forEach(version => {
+		if (isSchemaMigrationSupportedByVersion(version)) {
+			irVersionsSupportingSchema.push(version);
+		}
+	})
+	return irVersionsSupportingSchema;
+}
+
+export function getActiveIrVersionsNotSupportingSchemaMigration(irNodes: IntegrationRuntimeNode[]): IntegrationRuntimeVersionInfo[] {
+	var irVersions = getActiveIrVersions(irNodes);
+	var irVersionsNotSupportingSchema: IntegrationRuntimeVersionInfo[] = [];
+	irVersions.forEach(version => {
+		if (!isSchemaMigrationSupportedByVersion(version)) {
+			irVersionsNotSupportingSchema.push(version);
+		}
+	})
+	return irVersionsNotSupportingSchema;
 }
 
 export function isSchemaMigrationSupportedByActiveNodes(irNodes: IntegrationRuntimeNode[]): boolean {

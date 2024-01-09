@@ -1727,8 +1727,8 @@ export function TDE_COMPLETED_STATUS(completed: number, total: number): string {
 }
 
 // Schema migration
-export const FULL_SCHEMA_MISSING_ON_TARGET = localize('sql.migration.schema.full.missing', "No schema was found on target. This option must be selected to migrate this database. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration. No tables selected will migrate missing schema only.");
-export const PARTIAL_SCHEMA_ON_TARGET = localize('sql.migration.schema.partial.missing', "Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.  No tables selected will migrate missing schema only.");
+export const FULL_SCHEMA_MISSING_ON_TARGET = localize('sql.migration.schema.full.missing', "No schema was found on target. This option must be selected to migrate this database. No tables selected will migrate missing schema only.");
+export const PARTIAL_SCHEMA_ON_TARGET = localize('sql.migration.schema.partial.missing', "Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. No tables selected will migrate missing schema only.");
 export const FULL_SCHEMA_ON_TARGET = localize('sql.migration.schema.no.missing', "Schema was found on target. Schema migration is not required.");
 export const ALL_SOURCE_TABLES_EMPTY = localize('sql.migration.all.source.tables.empty', "All of source tables are empty. No table is available to select for data migration. But they are available for schema migration if they do not exist on target.");
 export const SCHEMA_MIGRATION_INFO = localize('sql.migration.schema.migration.info', "Select this option to migrate missing tables on your Azure SQL target");
@@ -1821,15 +1821,7 @@ export function SQLDB_MIGRATION_DIFFERENT_IR_VERSION_ERROR_MESSAGE(irVersions: I
 		irVersionStrings.join(", ")
 	);
 }
-export function SCHEMA_MIGRATION_WINDOWS_AUTH_ERROR_MESSAGE(irVersions: IntegrationRuntimeVersionInfo[]): string {
-	const irVersionStrings: string[] = irVersions.map(v => `${v.major}.${v.minor}.${v.build}.${v.revision}`);
-	return localize(
-		'sql.schema.migration.windows.auth.error',
-		"The current node version(s) [{0}] are not currently supported for connection to source on-premises SQL server instance using Windows Authentication. Please use SQL Authentication or upgrade Integration Rumtime node version to [5.7] or higher to enable schema migration support.",
-		irVersionStrings.join(", ")
-	);
-}
 export const SCHEMA_MIGRATION_INFORMATION_MESSAGE = localize(
 	'sql.schema.migration.information',
-	"Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [5.35.8686.1] or higher. Schema migration supports Windows Authentication to connect on-premises SQL server instance since Integration Runtime version of [5.37] or higher. We recommend using Integration Runtime with version (5.37) or higher to support the latest features like Windows authentication, including bug fixes.",
+	"Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [5.37.8762.1] or higher. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.",
 );

@@ -18,7 +18,7 @@ import { logError, TelemetryViews } from '../telemetry';
 import * as styles from '../constants/styles';
 import { TableMigrationSelectionDialog } from '../dialog/tableMigrationSelection/tableMigrationSelectionDialog';
 import { ValidateIrDialog } from '../dialog/validationResults/validateIrDialog';
-import { areVersionsSame, canTargetConnectToStorageAccount, getActiveIrVersions, getActiveIrVersionsNotSupportingWinAuth, getSourceConnectionCredentials, getSourceConnectionProfile, getSourceConnectionQueryProvider, getSourceConnectionUri, isSchemaMigrationSupportedByActiveNodes, SchemaMigrationRequiredIntegrationRuntimeMinimumVersion, TargetDatabaseInfo } from '../api/sqlUtils';
+import { areVersionsSame, canTargetConnectToStorageAccount, getActiveIrVersions, getActiveIrVersionsNotSupportingSchemaMigration, getActiveIrVersionsSupportingSchemaMigration, getSourceConnectionCredentials, getSourceConnectionProfile, getSourceConnectionQueryProvider, getSourceConnectionUri, SchemaMigrationRequiredIntegrationRuntimeMinimumVersion, TargetDatabaseInfo } from '../api/sqlUtils';
 import { SchemaMigrationAssessmentDialog } from '../dialog/tableMigrationSelection/schemaMigrationAssessmentDialog';
 
 const WIZARD_TABLE_COLUMN_WIDTH = '200px';
@@ -851,7 +851,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		this.wizard.customButtons[VALIDATE_IR_CUSTOM_BUTTON_INDEX].hidden = !this.migrationStateModel.isIrMigration;
 		if (this.migrationStateModel._targetType === MigrationTargetType.SQLDB && !this.migrationStateModel.refreshDatabaseBackupPage) {
-			await this._checkIfSchemaMigrationIsSupported();
+			await this._validateIrVersions();
 		}
 		await this._updatePageControlsVisibility();
 
@@ -869,7 +869,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				if (isSqlDbTarget) {
 					this.wizardPage.title = constants.DATABASE_TABLE_SELECTION_LABEL;
 					this.wizardPage.description = constants.DATABASE_TABLE_SELECTION_LABEL;
-					await this._checkIfSchemaMigrationIsSupported();
+					await this._validateIrVersions();
 					await this._loadTableData();
 				}
 
@@ -1729,7 +1729,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._disposables.push(
 			this._refreshButton.onDidClick(
 				async e => {
-					await this._checkIfSchemaMigrationIsSupported();
+					await this._validateIrVersions();
 					await this._loadTableData()
 				}));
 
@@ -1913,9 +1913,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		}
 	}
 
-	private async _checkIfSchemaMigrationIsSupported(): Promise<void> {
+	private async _validateIrVersions(): Promise<void> {
 		this._sqlDbWarnings.length = 0;
-		// Check if schema migration is supported
+		// Check if schema migration is supported and if multiple IR nodes versions are different.
 		const irNodes = await getIrNodes(
 			this.migrationStateModel._azureAccount,
 			this.migrationStateModel._sqlMigrationServiceSubscription,
@@ -1923,22 +1923,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this.migrationStateModel._location.name,
 			this.migrationStateModel._sqlMigrationService!.name);
 		const irVersions = getActiveIrVersions(irNodes);
-		const isSchemaMigrationSupportedByVersions = isSchemaMigrationSupportedByActiveNodes(irNodes);
-		const irVersionsNotSupportingWinAuth = getActiveIrVersionsNotSupportingWinAuth(irNodes);
-		const isSchemaMigrationSupportedByWinAuth = this.migrationStateModel._authenticationType === MigrationSourceAuthenticationType.Integrated && irVersionsNotSupportingWinAuth.length === 0
-		this.migrationStateModel.isSchemaMigrationSupported = isSchemaMigrationSupportedByVersions &&
-			(this.migrationStateModel._authenticationType !== MigrationSourceAuthenticationType.Integrated || isSchemaMigrationSupportedByWinAuth);
+		const irVersionsSupportingSchemaMigration = getActiveIrVersionsSupportingSchemaMigration(irNodes);
+		this.migrationStateModel.isSchemaMigrationSupported = irVersionsSupportingSchemaMigration.length > 0;
 
-		// Check if current IR node(s) support schema migration or Windows login is supported
+		// Check if current IR node(s) support schema migration is supported
 		if (!this.migrationStateModel.isSchemaMigrationSupported) {
-			if (!isSchemaMigrationSupportedByVersions) {
-				this._sqlDbWarnings.push(constants.SCHEMA_MIGRATION_UPDATE_IR_VERSION_ERROR_MESSAGE(SchemaMigrationRequiredIntegrationRuntimeMinimumVersion, irVersions));
-			}
-
-			// Check if source is using Windows authentication.
-			if (!isSchemaMigrationSupportedByWinAuth) {
-				this._sqlDbWarnings.push(constants.SCHEMA_MIGRATION_WINDOWS_AUTH_ERROR_MESSAGE(irVersionsNotSupportingWinAuth));
-			}
+			const irVersionsNotSupportingSchemaMigration = getActiveIrVersionsNotSupportingSchemaMigration(irNodes);
+			this._sqlDbWarnings.push(constants.SCHEMA_MIGRATION_UPDATE_IR_VERSION_ERROR_MESSAGE(SchemaMigrationRequiredIntegrationRuntimeMinimumVersion, irVersionsNotSupportingSchemaMigration));
 		}
 
 		// Check if multiple IR nodes have different versions.
