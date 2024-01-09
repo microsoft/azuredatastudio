@@ -5355,19 +5355,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/pieces-app/documentation/main/docs/assets/pfd_logo.png"
+									"source": "https://raw.githubusercontent.com/pieces-app/documentation/ffe5010dcbb30d01dffba3daaddf03d1c96dc6d5/docs/assets/pfd_logo.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/pieces-app/documentation/main/docs/assets/_azuredatastudio_out/readme.ads.md"
+									"source": "https://raw.githubusercontent.com/pieces-app/documentation/ffe5010dcbb30d01dffba3daaddf03d1c96dc6d5/docs/assets/_azuredatastudio_out/readme.ads.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/pieces-app/documentation/main/docs/assets/_azuredatastudio_out/package.json"
+									"source": "https://raw.githubusercontent.com/pieces-app/documentation/ffe5010dcbb30d01dffba3daaddf03d1c96dc6d5/docs/assets/_azuredatastudio_out/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/pieces-app/documentation/main/docs/assets/_azuredatastudio_out/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/pieces-app/documentation/ffe5010dcbb30d01dffba3daaddf03d1c96dc6d5/docs/assets/_azuredatastudio_out/LICENSE.txt"
 								}
 							],
 							"properties": [
