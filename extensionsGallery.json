@@ -5351,11 +5351,11 @@
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": " https://builds.pieces.app/stages/staging/plugin_vscode/ads-vsix/download"
+									"source": "https://builds.pieces.app/stages/staging/plugin_vscode/ads-vsix/download"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/pieces-app/documentation/main/docs/assets/_azuredatastudio_out/pieces_blk_icon.svg"
+									"source": "https://raw.githubusercontent.com/pieces-app/documentation/main/docs/assets/pfd_logo.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
