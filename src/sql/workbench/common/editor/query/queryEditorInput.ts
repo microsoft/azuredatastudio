@@ -240,10 +240,18 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public override getName(longForm?: boolean): string {
 		if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').showConnectionInfoInTitle) {
 			let profile = this.connectionManagementService.getConnectionProfile(this.uri);
+			let info = this.connectionManagementService.getConnectionInfo(this.uri);
 			let title = '';
-			if (this._description && this._description !== '') {
-				title = this._description + ' ';
+
+			if (info?.serverConnectionId) {
+				// Add server info to query editor in case if it's available
+				title += `(${info.serverConnectionId}) `;
 			}
+
+			if (this._description && this._description !== '') {
+				title += this._description + ' ';
+			}
+
 			if (profile) {
 				if (profile.connectionName) {
 					title += `${profile.connectionName}`;
@@ -258,6 +266,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			} else {
 				title += localize('disconnected', "disconnected");
 			}
+
 			return this.text.getName() + (longForm ? (' - ' + title) : ` - ${trimTitle(title)}`);
 		} else {
 			return this.text.getName();
@@ -271,12 +280,20 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	// Called to get the tooltip of the tab
 	public override getTitle(verbosity?: Verbosity): string {
 		let profile = this.connectionManagementService.getConnectionProfile(this.uri);
+		let info = this.connectionManagementService.getConnectionInfo(this.uri);
 		let fullTitle = '';
+
+		if (info?.serverConnectionId) {
+			// Add server info to query editor in case if it's available
+			fullTitle += `(${info.serverConnectionId}) `;
+		}
+
+		if (this._description && this._description !== '') {
+			fullTitle += this._description + ' ';
+		}
+
 		if (profile) {
 			let additionalOptions = this.connectionManagementService.getNonDefaultOptions(profile);
-			if (this._description && this._description !== '') {
-				fullTitle = this._description + ' ';
-			}
 			fullTitle += `${profile.serverName}`;
 			if (profile.databaseName) {
 				fullTitle += `.${profile.databaseName}`;
