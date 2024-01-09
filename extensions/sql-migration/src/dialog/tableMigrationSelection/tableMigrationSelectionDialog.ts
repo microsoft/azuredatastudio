@@ -13,7 +13,6 @@ import { MigrationStateModel } from '../../models/stateMachine';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { Tab } from 'azdata';
 import { updateControlDisplay } from '../../api/utils';
-import { EOL } from 'os';
 
 const DialogName = 'TableMigrationSelection';
 
