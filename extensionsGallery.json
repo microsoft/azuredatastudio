@@ -3918,14 +3918,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.7.1",
-							"lastUpdated": "10/13/2023",
+							"version": "0.7.2",
+							"lastUpdated": "01/05/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/ernstc/SqlDataInspector/releases/tag/0.7.1"
+									"source": "https://github.com/ernstc/SqlDataInspector/releases/tag/0.7.2"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4337,34 +4337,34 @@
 					},
 					"versions": [
 						{
-							"version": "1.0.2",
-							"lastUpdated": "10/23/2023",
+							"version": "1.1.0",
+							"lastUpdated": "01/09/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23292.2/dsct-oracle-to-ms-sql-1.0.2.vsix"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23363.1/dsct-oracle-to-ms-sql-1.1.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23292.2/dsctIcon.png"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23363.1/dsctIcon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23292.2/README.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23363.1/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23292.2/CHANGELOG.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23363.1/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23292.2/package.json"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23363.1/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23292.2/LICENSE.htm"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23363.1/LICENSE.htm"
 								}
 							],
 							"properties": [
@@ -5294,19 +5294,19 @@
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-								"source": "https://raw.githubusercontent.com/catppuccin/vscode/main/assets/icon.png"
+								"source": "https://raw.githubusercontent.com/catppuccin/vscode/v3.8.0/assets/icon.png"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-								"source": "https://raw.githubusercontent.com/catppuccin/vscode/main/README.md"
+								"source": "https://raw.githubusercontent.com/catppuccin/vscode/v3.8.0/README.md"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Code.Manifest",
-								"source": "https://raw.githubusercontent.com/catppuccin/vscode/main/package.json"
+								"source": "https://raw.githubusercontent.com/catppuccin/vscode/v3.8.0/package.json"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Content.License",
-								"source": "https://raw.githubusercontent.com/catppuccin/vscode/main/LICENSE"
+								"source": "https://raw.githubusercontent.com/catppuccin/vscode/v3.8.0/LICENSE"
 							}
 						],
 						"properties": [
@@ -5331,7 +5331,64 @@
 				],
 				"statistics": [],
 				"flags": ""
-			}
+			},
+			{
+					"extensionId": "106",
+					"extensionName": "pieces-azure-data-studio",
+					"displayName": "Pieces for Azure Data Studio",
+					"shortDescription": "Use a personalized contextual copilot in Pieces in Azure Data Studio.",
+					"publisher": {
+						"displayName": "MeshIntelligentTechnologiesInc",
+						"publisherId": "MeshIntelligentTechnologiesInc",
+						"publisherName": "MeshIntelligentTechnologiesInc"
+					},
+					"versions": [
+						{
+							"version": "1.0.0",
+							"lastUpdated": "12/15/2023",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://builds.pieces.app/stages/staging/plugin_vscode/ads-vsix/download"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/pieces-app/documentation/ffe5010dcbb30d01dffba3daaddf03d1c96dc6d5/docs/assets/pfd_logo.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/pieces-app/documentation/ffe5010dcbb30d01dffba3daaddf03d1c96dc6d5/docs/assets/_azuredatastudio_out/readme.ads.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/pieces-app/documentation/ffe5010dcbb30d01dffba3daaddf03d1c96dc6d5/docs/assets/_azuredatastudio_out/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/pieces-app/documentation/ffe5010dcbb30d01dffba3daaddf03d1c96dc6d5/docs/assets/_azuredatastudio_out/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
+				}
 			],
 			"resultMetadata": [
 				{
@@ -5339,7 +5396,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 87
+							"count": 88
 						}
 					]
 				}

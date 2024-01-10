@@ -363,6 +363,10 @@ async function validateHasRequiredAssets(galleryFilePath, extensionName, publish
         throw new Error(`${galleryFilePath} - ${extensionName} - Must have an icon file`);
     }
 
+    if (iconFile && !iconFile.source.toLowerCase().endsWith('png')) {
+        throw new Error(`${galleryFilePath} - ${extensionName} - Icon must be a PNG file`);
+    }
+
     // Details
     const detailsFile = filesJson.find(file => file.assetType === 'Microsoft.VisualStudio.Services.Content.Details');
     if (!detailsFile) {
