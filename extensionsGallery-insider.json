@@ -746,14 +746,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.5.6",
-							"lastUpdated": "8/14/2023",
+							"version": "1.6.0",
+							"lastUpdated": "1/10/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-1.5.6.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-1.6.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2730,14 +2730,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.13.2",
-							"lastUpdated": "3/8/2023",
+							"version": "1.14.0",
+							"lastUpdated": "1/10/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/datavirtualization-1.13.2.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/datavirtualization-1.14.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
