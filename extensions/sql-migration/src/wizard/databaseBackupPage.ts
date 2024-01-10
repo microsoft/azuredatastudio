@@ -11,7 +11,7 @@ import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, NetworkContainerType, NetworkShare, StateChangeEvent, ValidateIrState, ValidationResult } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
+import { WIZARD_INPUT_COMPONENT_WIDTH, WizardController } from './wizardController';
 import * as utils from '../api/utils';
 import { MigrationTargetType } from '../api/utils';
 import { logError, TelemetryViews } from '../telemetry';
@@ -744,6 +744,11 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		WizardController.cancelReasonsList([
+			constants.WIZARD_CANCEL_REASON_BACKUP_LOCATION_NOT_READY,
+			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER
+		]);
+
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;

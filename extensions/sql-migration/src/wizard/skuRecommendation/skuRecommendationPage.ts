@@ -20,7 +20,7 @@ import { MigrationTargetType } from '../../api/utils';
 import { logError, TelemetryViews } from '../../telemetry';
 import { getSourceConnectionProfile } from '../../api/sqlUtils';
 import { IssueCategory } from '../../constants/helper';
-
+import { WizardController } from '../wizardController';
 
 export class SKURecommendationPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -578,6 +578,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		WizardController.cancelReasonsList([
+			constants.WIZARD_CANCEL_REASON_TAKING_LONGER,
+			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER
+		]);
+
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = { text: '' };
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {

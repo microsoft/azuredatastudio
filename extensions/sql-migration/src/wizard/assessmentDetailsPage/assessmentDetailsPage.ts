@@ -16,6 +16,7 @@ import { EOL } from 'os';
 import * as fs from 'fs';
 import path = require('path');
 import * as utils from '../../api/utils';
+import { WizardController } from '../wizardController';
 
 // Class where assessment details page is defined
 export class AssessmentDetailsPage extends MigrationWizardPage {
@@ -103,6 +104,11 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		WizardController.cancelReasonsList([
+			constants.WIZARD_CANCEL_REASON_SOURCE_DB_NOT_READY,
+			constants.WIZARD_CANCEL_REASON_NEED_TO_ANALYSE_FINDINGS
+		]);
+
 		this.wizard.registerNavigationValidator(async (pageChangeInfo) => {
 			this.wizard.message = { text: '' };
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {

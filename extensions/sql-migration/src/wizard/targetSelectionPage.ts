@@ -10,7 +10,7 @@ import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
-import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
+import { WIZARD_INPUT_COMPONENT_WIDTH, WizardController } from './wizardController';
 import * as utils from '../api/utils';
 import { MigrationTargetType } from '../api/utils';
 import { azureResource } from 'azurecore';
@@ -113,6 +113,11 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		WizardController.cancelReasonsList([
+			constants.WIZARD_CANCEL_REASON_TARGET_NOT_READY,
+			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER
+		]);
+
 		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].hidden = !this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates();
 		this._updateNextButton();
 		this._updateTdeMigrationButtonStatus();

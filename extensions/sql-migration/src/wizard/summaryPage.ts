@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationMode, MigrationStateModel, NetworkContainerType, NetworkShare, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
-import { createHeadingTextComponent, createInformationRow, createLabelTextComponent } from './wizardController';
+import { WizardController, createHeadingTextComponent, createInformationRow, createLabelTextComponent } from './wizardController';
 import { getResourceGroupFromId } from '../api/azure';
 import { TargetDatabaseSummaryDialog } from '../dialog/targetDatabaseSummary/targetDatabaseSummaryDialog';
 import * as styles from '../constants/styles';
@@ -41,6 +41,11 @@ export class SummaryPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		WizardController.cancelReasonsList([
+			constants.WIZARD_CANCEL_REASON_WAIT_FOR_MIGRATION_WINDOW,
+			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER
+		]);
+
 		this.wizard.registerNavigationValidator(pageChangeInfo => true);
 
 		const targetDatabaseSummary = new TargetDatabaseSummaryDialog(this.migrationStateModel);

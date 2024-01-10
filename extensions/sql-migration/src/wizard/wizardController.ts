@@ -29,6 +29,8 @@ export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
 	private _wizardObject!: azdata.window.Wizard;
 	private _disposables: vscode.Disposable[] = [];
+	private static _cancelReasonsList: string[];
+
 	constructor(
 		private readonly extensionContext: vscode.ExtensionContext,
 		private readonly _model: MigrationStateModel,
@@ -176,9 +178,7 @@ export class WizardController {
 		this._disposables.push(
 			customCancelButton.onClick(async () => {
 				const cancelFeedbackDialog = new CancelFeedbackDialog(this._wizardObject, this._model);
-				// TODO - Remove hardcoed values and bring this value from each wizard page as parameter.
-				const cancelReasonList: string[] = ["Target not ready", "Missing information"]; // Fix: Provide an argument to the element access expression
-				cancelFeedbackDialog.updateCancelReasonsList(cancelReasonList); // Fix: Use the element access expression with an argument
+				cancelFeedbackDialog.updateCancelReasonsList(WizardController._cancelReasonsList); // Fix: Use the element access expression with an argument
 				await cancelFeedbackDialog.openDialog();
 			}));
 
@@ -279,6 +279,10 @@ export class WizardController {
 					},
 					{});
 			}));
+	}
+
+	public static cancelReasonsList(cancelReasons: string[]): void {
+		WizardController._cancelReasonsList = cancelReasons;
 	}
 
 	private async updateServiceContext(
