@@ -554,7 +554,7 @@ export function SQL_TARGET_SOURCE_COLLATION_NOT_SAME(
 		targetDatabaseCollation);
 }
 
-export const SQL_MIGRATION_TROUBLESHOOTING_LINK = localize('sql.migration.wizard.troubleshooting', 'Learn more: https://aka.ms/dms-migrations-troubleshooting.');
+export const SQL_MIGRATION_TROUBLESHOOTING_LINK = localize('sql.migration.wizard.troubleshooting', 'See link for more troubleshooting steps: https://aka.ms/dms-migrations-troubleshooting.');
 
 // Managed Instance
 export const AZURE_SQL_DATABASE_MANAGED_INSTANCE = localize('sql.migration.azure.sql.database.managed.instance', "Azure SQL Managed Instance");
