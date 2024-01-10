@@ -9,7 +9,7 @@ import { MigrationSourceAuthenticationType } from '../models/stateMachine';
 import { BackupTypeCodes, formatNumber, InternalManagedDatabaseRestoreDetailsBackupSetStatusCodes, InternalManagedDatabaseRestoreDetailsStatusCodes, ParallelCopyTypeCodes, PipelineStatusCodes } from './helper';
 import { ValidationError } from '../api/azure';
 import { AzureManagedDiskType, ErrorModel } from '../service/contracts';
-import { IntegrationRuntimeVersionInfo } from '../api/sqlUtils';
+import { IntegrationRuntimeVersionInfo, SchemaMigrationRequiredIntegrationRuntimeMinimumVersion } from '../api/sqlUtils';
 const localize = nls.loadMessageBundle();
 
 export const serviceName = 'Sql Migration Service';
@@ -1823,5 +1823,6 @@ export function SQLDB_MIGRATION_DIFFERENT_IR_VERSION_ERROR_MESSAGE(irVersions: I
 }
 export const SCHEMA_MIGRATION_INFORMATION_MESSAGE = localize(
 	'sql.schema.migration.information',
-	"Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [5.37.8762.1] or higher. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.",
+	"Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [{1}] or higher. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.",
 );
+export const MIN_IR_VERSION_SUPPORT_SCHEMA_MIGRATION = localize('sql.schema.migration.min.version', `${SchemaMigrationRequiredIntegrationRuntimeMinimumVersion.major}.${SchemaMigrationRequiredIntegrationRuntimeMinimumVersion.minor}.${SchemaMigrationRequiredIntegrationRuntimeMinimumVersion.build}.${SchemaMigrationRequiredIntegrationRuntimeMinimumVersion.revision}`);

@@ -859,7 +859,7 @@ export function getBlobContainerId(resourceGroupId: string, storageAccountName: 
 }
 
 export function getMigrationErrors(migration: DatabaseMigration): string {
-	const errors = [];
+	var errors = [];
 
 	if (migration?.properties) {
 		errors.push(migration.properties.provisioningError);
@@ -875,9 +875,14 @@ export function getMigrationErrors(migration: DatabaseMigration): string {
 	}
 
 	// remove undefined and duplicate error entries
-	return errors
+	var combinedError = errors
 		.filter((e, i, arr) => e !== undefined && i === arr.indexOf(e))
 		.join(EOL);
+	if (combinedError !== undefined && combinedError !== "") {
+		combinedError = combinedError.concat(constants.SQL_MIGRATION_TROUBLESHOOTING_LINK);
+	}
+
+	return combinedError;
 }
 
 export interface SqlMigrationServiceProperties {
