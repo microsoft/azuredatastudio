@@ -2,7 +2,7 @@
   "name": "datavirtualization",
   "displayName": "%title.datavirtualization%",
   "description": "%config.extensionDescription%",
-  "version": "1.13.2",
+  "version": "1.14.0",
   "publisher": "Microsoft",
   "icon": "resources/extension.png",
   "aiKey": "29a207bb14f84905966a8f22524cb730-25407f35-11b6-4d4e-8114-ab9e843cb52f-7380",
