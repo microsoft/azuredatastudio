@@ -12,7 +12,6 @@ import { MigrationStateModel } from '../../models/stateMachine';
 
 export class CancelFeedbackDialog {
 	private dialog!: azdata.window.Dialog;
-	private cancellationReasonsGroup!: azdata.GroupContainer;
 
 	private _disposables: vscode.Disposable[] = [];
 
@@ -20,9 +19,10 @@ export class CancelFeedbackDialog {
 	private _isOpen: boolean = false;
 
 	private _view!: azdata.ModelView;
-	private _cancelReasonsList: string[] = [];
 
-	private _cancellationReasonSelected: string = '';
+	private _cancelReasonsList: string[] = [];
+	private _cancellationReasonSelected: string = 'No reason selected';
+	private _othersReasonInputBoxContainer!: azdata.FlexContainer;
 
 	// TODO - Update all the string with localised strings
 	constructor(private wizardObject: azdata.window.Wizard, private migrationStateModel: MigrationStateModel) {
@@ -49,7 +49,6 @@ export class CancelFeedbackDialog {
 										...getTelemetryProps(this.migrationStateModel),
 										'buttonPressed': TelemetryAction.Cancel,
 										'pageTitle': this.wizardObject.pages[this.wizardObject.currentPage].title,
-										// TODO - Add the other reason textbox value
 										'cancellationReason': this._cancellationReasonSelected
 									},
 									{});
@@ -82,7 +81,7 @@ export class CancelFeedbackDialog {
 			this.dialog = azdata.window.createModelViewDialog(
 				'',
 				'cancelMigration',
-				450,
+				381,
 				'normal',
 				'below',
 				false,
@@ -100,7 +99,8 @@ export class CancelFeedbackDialog {
 			CSSStyles: {
 				'margin': '20px',
 				'flex-direction': 'column',
-				'gap': '20px'
+				'gap': '20px',
+				'display': 'flex'
 			}
 		}).component();
 
@@ -126,13 +126,13 @@ export class CancelFeedbackDialog {
 		container.addItems([
 			headingLabel,
 			description,
-			this.cancellationReasonsGroup
+			this.createCancelReasonsContainer(_view)
 		]);
 
 		return container;
 	}
 
-	private createCancelReasonsContainer(_view: azdata.ModelView): void {
+	private createCancelReasonsContainer(_view: azdata.ModelView): azdata.GroupContainer {
 		const cancelReasonDescription = _view.modelBuilder.text().withProps({
 			value: "Please take a moment to tell us the reason for canceling the migration. This will help us improve the experience.",
 			// TODO - Take out all the styles to styles.ts
@@ -145,12 +145,17 @@ export class CancelFeedbackDialog {
 		}).component();
 
 		const cancellationReasonsGroupList: azdata.Component[] = [];
+
 		cancellationReasonsGroupList.push(cancelReasonDescription);
 		this._cancelReasonsList.forEach((cancelReason) => {
-			cancellationReasonsGroupList.push(this.createCancelReasonRadioButton(this._view, cancelReason));
+			cancellationReasonsGroupList.push(this.createSpecificReasonRadioButton(this._view, cancelReason));
 		});
+		cancellationReasonsGroupList.push(this.createOthersReasonRadioButton(this._view));
 
-		this.cancellationReasonsGroup = _view.modelBuilder.groupContainer()
+		this.createOthersInputBoxContainer(this._view);
+		cancellationReasonsGroupList.push(this._othersReasonInputBoxContainer);
+
+		const cancellationReasonsGroup = _view.modelBuilder.groupContainer()
 			.withLayout({
 				header: "Reason for canceling migration",
 				collapsible: true,
@@ -158,9 +163,11 @@ export class CancelFeedbackDialog {
 			}).withItems(
 				cancellationReasonsGroupList
 			).component();
+
+		return cancellationReasonsGroup;
 	}
 
-	private createCancelReasonRadioButton(view: azdata.ModelView, buttonLabelText: string): azdata.RadioButtonComponent {
+	private createSpecificReasonRadioButton(view: azdata.ModelView, buttonLabelText: string): azdata.RadioButtonComponent {
 		const buttonGroup = 'resumeMigration';
 		const cancelReasonRadioButton = view.modelBuilder.radioButton()
 			.withProps({
@@ -183,6 +190,64 @@ export class CancelFeedbackDialog {
 			}));
 
 		return cancelReasonRadioButton;
+	}
+
+	private createOthersReasonRadioButton(view: azdata.ModelView): azdata.RadioButtonComponent {
+		const buttonGroup = 'resumeMigration';
+		const cancelReasonRadioButton = view.modelBuilder.radioButton()
+			.withProps({
+				label: 'Others',
+				name: buttonGroup,
+				CSSStyles: {
+					'font-size': '13px',
+					'line-height': '18px',
+					'font-weight': '400',
+					'margin': '0px',
+				},
+				checked: false
+			}).component();
+
+		this._disposables.push(
+			cancelReasonRadioButton.onDidChangeCheckedState(async checked => {
+				if (checked) {
+					await this._othersReasonInputBoxContainer.updateCssStyles({
+						'display': 'flex'
+					});
+					this._cancellationReasonSelected = 'No Reason Selected';
+				} else {
+					await this._othersReasonInputBoxContainer.updateCssStyles({
+						'display': 'none'
+					});
+				}
+			}));
+
+		return cancelReasonRadioButton;
+	}
+
+	private createOthersInputBoxContainer(_view: azdata.ModelView): void {
+		const othersReasonInputBox = this._view.modelBuilder.inputBox()
+			.withProps({
+				inputType: 'text',
+				placeHolder: "If you selected others, please write a short note.",
+				height: 60,
+				multiline: true,
+				display: 'inline-block',
+				CSSStyles: {
+					'margin': '0px 0px 0px 20px',
+					'overflow': 'hidden auto',
+				}
+			}).component();
+
+		this._disposables.push(
+			othersReasonInputBox.onTextChanged(value => this._cancellationReasonSelected = value));
+
+		this._othersReasonInputBoxContainer = _view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'margin': '0px',
+				'flex-direction': 'column',
+				'display': 'none'
+			}
+		}).withItems([othersReasonInputBox]).component();
 	}
 
 	public updateCancelReasonsList(cancelReasonsList: string[]): void {
