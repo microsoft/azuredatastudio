@@ -1826,6 +1826,4 @@ export const SCHEMA_MIGRATION_INFORMATION_MESSAGE = localize(
 	'sql.schema.migration.information',
 	"Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [{1}] or higher. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.",
 );
-export function MIN_IR_VERSION_SUPPORT_SCHEMA_MIGRATION(minIrVersion: IntegrationRuntimeVersionInfo): string {
-	return localize('sql.schema.migration.min.version', minIrVersion.major + "." + minIrVersion.minor + "." + minIrVersion.build + "." + minIrVersion.revision);
-}
+export const MIN_IR_VERSION_SUPPORT_SCHEMA_MIGRATION = localize('sql.schema.migration.min.version', "5.37.8767.4");
