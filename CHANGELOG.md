@@ -1,5 +1,38 @@
 # Change Log
 
+## November 2023 Hotfix 1
+
+Azure Data Studio 1.47.1 is the latest general availability (GA) release.
+
+- Release number: 1.47.1
+- Release date: January 10, 2024
+
+### Bug fixes in 1.47.1
+
+| New Item | Details |
+| --- | --- |
+| Query Editor | Fixed query results with blank string interpreted as XML |
+| Shell | Fixed not all installation files signed |
+| Security | Update to [Microsoft.Data.SqlClient 5.1.3](https://github.com/dotnet/SqlClient/blob/main/release-notes/5.1/5.1.3.md) that patches [CVE-2024-0056](https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-0056) |
+
+### Known issues in 1.47.1
+
+ New Item | Details | Workaround |
+| --- | --- | --- |
+| Installation | Azure Data Studio installation fails on RHEL 8 | Use RHEL 9, or manually install glibc-2.29 and add it to the Library Path and then re-install ADS |
+
+For a list of the current known issues, visit the [issues list on GitHub](https://github.com/microsoft/azuredatastudio/issues?q=is%3Aissue).
+
+## Security Hotfix for ADS with BDC Support - Version 1.41.3
+* Release date: January 10, 2024
+* Release status: General Availability
+
+### Bug fixes in 1.41.3
+
+| New Item | Details |
+| --- | --- |
+| Security | Update to [Microsoft.Data.SqlClient 5.1.3](https://github.com/dotnet/SqlClient/blob/main/release-notes/5.1/5.1.3.md) that patches [CVE-2024-0056](https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-0056) |
+
 ## November 2023
 
 Azure Data Studio 1.47.0 is the latest general availability (GA) release.
@@ -55,14 +88,6 @@ Azure Data Studio 1.47.0 is the latest general availability (GA) release.
 | SQL Project | Fixed issue where database project fails to build with syntax error when including a database scoped credential object |
 
 For details about the issues addressed in the November 2023 release, visit the [November 2023 Release on GitHub](https://github.com/microsoft/azuredatastudio/milestone/105?closed=1).
-
-#### Known issues in 1.47.0
-
- New Item | Details | Workaround |
-| --- | --- | --- |
-| Installation | Azure Data Studio installation fails on RHEL 8 | Use RHEL 9, or manually install glibc-2.29 and add it to the Library Path and then re-install ADS |
-
-For a list of the current known issues, visit the [issues list on GitHub](https://github.com/microsoft/azuredatastudio/issues?q=is%3Aissue).
 
 ## September 2023 (Hotfix 1)
 
