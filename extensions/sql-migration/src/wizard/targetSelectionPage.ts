@@ -15,7 +15,7 @@ import * as utils from '../api/utils';
 import { MigrationTargetType } from '../api/utils';
 import { azureResource } from 'azurecore';
 import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/azure';
-import { collectTargetDatabaseInfo, SchemaMigrationRequiredIntegrationRuntimeMinimumVersion, TargetDatabaseInfo } from '../api/sqlUtils';
+import { collectTargetDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
 import { ValidationErrorCodes } from '../constants/helper';
 import { TdeMigrationDialog } from '../dialog/tdeConfiguration/tdeMigrationDialog';
