@@ -2827,8 +2827,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.schema.migration.help" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ensure to migrate the database schema from source to target before starting the migration by using the Database Schema Migration feature ({0}) or {1} or the {2} in Azure Data Studio before selecting the list of tables to migrate.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[마이그레이션할 테이블 목록을 선택하기 전에 데이터베이스 스키마 마이그레이션 기능(공개 미리 보기)이나 {0} 또는 Azure Data Studio의 {1}을(를) 사용하여 마이그레이션을 시작하기 전에 원본에서 대상으로 데이터베이스 스키마를 마이그레이션해야 합니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[마이그레이션할 테이블 목록을 선택하기 전에 데이터베이스 스키마 마이그레이션 기능({0})이나 {1} 또는 Azure Data Studio의 {2}을(를) 사용하여 마이그레이션을 시작하기 전에 원본에서 대상으로 데이터베이스 스키마를 마이그레이션해야 합니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Ensure to migrate the database schema from source to target before starting the migration by using the Database Schema Migration feature (Public Preview) or {0} or the {1} in Azure Data Studio before selecting the list of tables to migrate.]]></Val>
@@ -4294,7 +4294,7 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.missing.tables.heading" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[All of tables below are missing on target. To migrate the data in these tables, select the migrate schema option above.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[아래 테이블이 모두 대상에 없습니다. 이러한 테이블의 데이터를 마이그레이션하려면 위의 스키마 마이그레이션 옵션을 선택하세요.]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -5758,8 +5758,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.schema.full.missing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration. No tables selected will migrate missing schema only.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[대상에 스키마가 없습니다. 이 데이터베이스를 마이그레이션하려면 이 옵션을 선택해야 합니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[대상에 스키마가 없습니다. 이 데이터베이스를 마이그레이션하려면 이 옵션을 선택해야 합니다. 스키마 배포는 데이터베이스 개체를 배포하기 위해 최선을 다합니다. 스키마 배포 오류로 인해 데이터 마이그레이션이 방해되지는 않습니다. 선택한 테이블이 없으면 누락된 스키마만 마이그레이션됩니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database.]]></Val>
@@ -5860,8 +5860,8 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.schema.partial.missing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.  No tables selected will migrate missing schema only.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[대상에 스키마가 없습니다. 이 옵션을 선택하지 않으면 일부 테이블이 비활성화되어 마이그레이션할 수 없습니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[대상에 스키마가 없습니다. 일부 테이블이 사용하지 않도록 설정되어 있으며 이 옵션을 선택하지 않으면 마이그레이션할 수 없습니다. 스키마 배포는 데이터베이스 개체를 배포하기 위해 최선을 다합니다. 스키마 배포 오류로 인해 데이터 마이그레이션이 방해되지는 않습니다.  선택한 테이블이 없으면 누락된 스키마만 마이그레이션됩니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected.]]></Val>
@@ -10279,6 +10279,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.schema.migration.information" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [5.35.8686.1]5D; or higher. Schema migration is not currently supported for connections to source instance using Windows Authentication. Please use SQL Authentication.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[스키마 마이그레이션의 {0}/6단계를 진행 중입니다. [5.35.8686.1]5D; 이상의 Integration Runtime 버전이 필요합니다. 스키마 마이그레이션은 현재 Windows 인증을 사용하여 원본 인스턴스에 연결하는 데 지원되지 않습니다. SQL 인증을 사용하세요.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10294,6 +10297,9 @@
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.schema.migration.windows.auth.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Schema migration is not currently supported for connectivity to source instance using Windows Authentication. Please use SQL Authentication to enable schema migration support.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[스키마 마이그레이션은 현재 Windows 인증을 사용하여 원본 인스턴스에 연결할 수 없습니다. SQL 인증을 사용하여 스키마 마이그레이션 지원을 사용하세요.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
