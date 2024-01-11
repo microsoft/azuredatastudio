@@ -1,5 +1,37 @@
 # Change Log
 
+## Security Hotfix for ADS with BDC Support - Version 1.41.3
+* Release date: January 10, 2024
+* Release status: General Availability
+
+### Bug fixes in 1.41.3
+
+| New Item | Details |
+| --- | --- |
+| Security | Update to [Microsoft.Data.SqlClient 5.1.3](https://github.com/dotnet/SqlClient/blob/main/release-notes/5.1/5.1.3.md) that patches [CVE-2024-0056](https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-0056) |
+
+## Version 1.41.2
+* Release date: February 10, 2023
+* Release status: General Availability
+
+### Bug fixes in 1.41.2
+
+| New Item | Details |
+| --- | --- |
+| Connection | Fixed a regression blocking connections to sovereign Azure clouds |
+| Query Editor | Fixed a regression causing the Output window to display on each query execution |
+
+## Version 1.41.1
+* Release date: January 30, 2023
+* Release status: General Availability
+
+### Bug fixes in 1.41.1
+
+| New Item | Details |
+| --- | --- |
+| Connection | Fixed a bug causing incorrect Azure account tenant selection when connecting to server through Azure view |
+| Object Explorer | Fixed a regression causing Object Explorer to not show database objects for Azure SQL DB Basic SLO |
+
 ## Version 1.41.0
 * Release date: January 25, 2023
 * Release status: General Availability
