@@ -38,6 +38,10 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 		contracts.SqlMigrationStopPerfDataCollectionRequest.type,
 		contracts.StartLoginMigrationRequest.type,
 		contracts.ValidateLoginMigrationRequest.type,
+		contracts.ValidateSysAdminPermissionRequest.type,
+		contracts.ValidateUserMappingRequest.type,
+		contracts.ValidateAADDomainNameRequest.type,
+		contracts.ValidateLoginEligibilityRequest.type,
 		contracts.MigrateLoginsRequest.type,
 		contracts.EstablishUserMappingRequest.type,
 		contracts.MigrateServerRolesAndSetPermissionsRequest.type,
@@ -210,6 +214,98 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 		}
 		catch (e) {
 			this._client.logFailedRequest(contracts.ValidateLoginMigrationRequest.type, e);
+		}
+
+		return undefined;
+	}
+
+	async validateSysAdminPermission(
+		sourceConnectionString: string,
+		targetConnectionString: string,
+		loginList: string[],
+		aadDomainName: string): Promise<contracts.StartLoginMigrationPreValidationResult | undefined> {
+		let params: contracts.StartLoginMigrationsParams = {
+			sourceConnectionString,
+			targetConnectionString,
+			loginList,
+			aadDomainName
+		};
+
+		try {
+			return this._client.sendRequest(contracts.ValidateSysAdminPermissionRequest.type, params);
+
+		}
+		catch (e) {
+			this._client.logFailedRequest(contracts.ValidateSysAdminPermissionRequest.type, e);
+		}
+
+		return undefined;
+	}
+
+	async validateUserMapping(
+		sourceConnectionString: string,
+		targetConnectionString: string,
+		loginList: string[],
+		aadDomainName: string): Promise<contracts.StartLoginMigrationPreValidationResult | undefined> {
+		let params: contracts.StartLoginMigrationsParams = {
+			sourceConnectionString,
+			targetConnectionString,
+			loginList,
+			aadDomainName
+		};
+
+		try {
+			return this._client.sendRequest(contracts.ValidateUserMappingRequest.type, params);
+
+		}
+		catch (e) {
+			this._client.logFailedRequest(contracts.ValidateUserMappingRequest.type, e);
+		}
+
+		return undefined;
+	}
+
+	async validateAADDomainName(
+		sourceConnectionString: string,
+		targetConnectionString: string,
+		loginList: string[],
+		aadDomainName: string): Promise<contracts.StartLoginMigrationPreValidationResult | undefined> {
+		let params: contracts.StartLoginMigrationsParams = {
+			sourceConnectionString,
+			targetConnectionString,
+			loginList,
+			aadDomainName
+		};
+
+		try {
+			return this._client.sendRequest(contracts.ValidateAADDomainNameRequest.type, params);
+
+		}
+		catch (e) {
+			this._client.logFailedRequest(contracts.ValidateAADDomainNameRequest.type, e);
+		}
+
+		return undefined;
+	}
+
+	async validateLoginEligibility(
+		sourceConnectionString: string,
+		targetConnectionString: string,
+		loginList: string[],
+		aadDomainName: string): Promise<contracts.StartLoginMigrationPreValidationResult | undefined> {
+		let params: contracts.StartLoginMigrationsParams = {
+			sourceConnectionString,
+			targetConnectionString,
+			loginList,
+			aadDomainName
+		};
+
+		try {
+			return this._client.sendRequest(contracts.ValidateLoginEligibilityRequest.type, params);
+
+		}
+		catch (e) {
+			this._client.logFailedRequest(contracts.ValidateLoginEligibilityRequest.type, e);
 		}
 
 		return undefined;
