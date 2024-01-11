@@ -869,6 +869,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				if (isSqlDbTarget) {
 					this.wizardPage.title = constants.DATABASE_TABLE_SELECTION_LABEL;
 					this.wizardPage.description = constants.DATABASE_TABLE_SELECTION_LABEL;
+					await this._validateIrVersions();
 					await this._loadTableData();
 				}
 
@@ -1727,7 +1728,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.component();
 		this._disposables.push(
 			this._refreshButton.onDidClick(
-				async e => await this._loadTableData()));
+				async e => {
+					await this._validateIrVersions();
+					await this._loadTableData();
+				}));
 
 		this._refreshLoading = this._view.modelBuilder.loadingComponent()
 			.withItem(this._refreshButton)
@@ -1844,11 +1848,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	private async _loadTableData(): Promise<void> {
 		this._refreshLoading.loading = true;
-		this.wizard.message = { text: '' };
 		const data: any[][] = [];
-
-		// Check if schema migration is supported
-		await this._validateIrVersions();
+		if (this._sqlDbWarnings.length === 0) {
+			this.wizard.message = { text: '' };
+		}
 
 		// Get source target mapping table
 		this.migrationStateModel._sourceTargetMapping.forEach((targetDatabaseInfo, sourceDatabaseName) => {
@@ -1933,6 +1936,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		if (!areVersionsSame(irVersions)) {
 			this._sqlDbWarnings.push(constants.SQLDB_MIGRATION_DIFFERENT_IR_VERSION_ERROR_MESSAGE(irVersions));
 		}
+
 		if (this._sqlDbWarnings.length > 0) {
 			this.wizard.message = {
 				text: this._sqlDbWarnings.join(EOL),
