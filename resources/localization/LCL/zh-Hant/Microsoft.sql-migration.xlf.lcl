@@ -2826,12 +2826,12 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.schema.migration.help" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Ensure to migrate the database schema from source to target before starting the migration by using the Database Schema Migration feature (Public Preview) or {0} or the {1} in Azure Data Studio before selecting the list of tables to migrate.]]></Val>
+          <Val><![CDATA[Ensure to migrate the database schema from source to target before starting the migration by using the Database Schema Migration feature ({0}) or {1} or the {2} in Azure Data Studio before selecting the list of tables to migrate.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[請在選取要移轉的資料表清單之前，確保先使用資料庫結構描述移轉功能 (公開預覽) 或 {0} 或 Azure Data Studio 中的 {1}，將資料庫結構描述從來源移轉至目標。]]></Val>
+            <Val><![CDATA[請在選取要移轉的資料表清單之前，確保先使用資料庫結構描述移轉功能 ({0})、{1} 或 Azure Data Studio 中的 {2}，將資料庫結構描述從來源移轉至目標。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Make sure to migrate the database schema from source to target by using the {0} or the {1} in Azure Data Studio before selecting the list of tables to migrate.]]></Val>
+            <Val><![CDATA[Ensure to migrate the database schema from source to target before starting the migration by using the Database Schema Migration feature (Public Preview) or {0} or the {1} in Azure Data Studio before selecting the list of tables to migrate.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -2841,6 +2841,15 @@
           <Val><![CDATA[SQL Database Projects extension]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[SQL Database 專案延伸模組]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.schema.migration.public.preview" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Public Preview]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[公開預覽版]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3123,6 +3132,15 @@
           <Val><![CDATA[Details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[詳細資料]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.different.ir.version.error" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Integration Runtime versions [{0}]5D; are not the same. Please have the same version of Integration Runtime across all nodes for consistency and optimal performance.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Integration Runtime 版本 [{0}]5D; 不同。請在所有節點上使用相同版本的 Integration Runtime，以取得一致性和最佳效能。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4275,10 +4293,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.missing.tables.heading" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[All of tables below are missing on target. To migrate the data in these tables select the migrate schema option above.]]></Val>
+          <Val><![CDATA[All of tables below are missing on target. To migrate the data in these tables, select the migrate schema option above.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[目標上遺漏下列所有資料表。若要移轉這些資料表中的資料，請選取上方的 [移轉結構描述]5D; 選項。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[All of tables below are missing on target. To migrate the data in these tables select the migrate schema option above.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5736,10 +5757,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.schema.full.missing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database.]]></Val>
+          <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration. No tables selected will migrate missing schema only.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[在目標上找不到結構描述。必須選取此選項，才能移轉此資料庫。]]></Val>
+            <Val><![CDATA[在目標上找不到結構描述。必須選取此選項，才能移轉此資料庫。結構描述部署會盡力部署資料庫物件。結構描述部署錯誤將不會防止資料移轉。沒有選取的資料表只會移轉遺失的結構描述。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5835,10 +5859,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.schema.partial.missing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected.]]></Val>
+          <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.  No tables selected will migrate missing schema only.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[目標上遺漏結構描述。某些資料表已停用，除非選取此選項，否則無法移轉。]]></Val>
+            <Val><![CDATA[目標上遺漏結構描述。某些資料表已停用，除非選取此選項，否則無法移轉。結構描述部署會盡力部署資料庫物件。結構描述部署錯誤將不會防止資料移轉。沒有選取的資料表只會移轉遺失的結構描述。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10245,6 +10272,33 @@
           <Val><![CDATA[The migration failed with the following errors:]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[移轉失敗，發生下列錯誤:]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.schema.migration.information" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [5.35.8686.1]5D; or higher. Schema migration is not currently supported for connections to source instance using Windows Authentication. Please use SQL Authentication.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[結構描述移轉在步驟 6 的 {0} 中進行。其需要 Integration Runtime 版本的 [5.35.8686.1]5D; 或更新版本。使用 Windows 驗證與來源執行個體的連線目前不支援結構描述移轉。請使用 SQL 驗證。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.schema.migration.update.ir.version.error" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Schema migration requires an Integration Runtime version of [{0}]5D; or higher. The current node version(s) are: [{1}]5D;. Please install a newer version of the Integration Runtime to enable schema migration support.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[結構描述移轉需要 Integration Runtime 版本 [{0}]5D; 或更新的版本。目前的節點版本為: [{1}]5D;。請安裝較新版本的 Integration Runtime，以啟用結構描述移轉支援。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.schema.migration.windows.auth.error" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Schema migration is not currently supported for connectivity to source instance using Windows Authentication. Please use SQL Authentication to enable schema migration support.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[使用 Windows 驗證與來源執行個體的連線能力目前不支援結構描述移轉。請使用 SQL 驗證來啟用結構描述移轉支援。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
