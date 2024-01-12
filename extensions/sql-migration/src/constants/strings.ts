@@ -554,7 +554,7 @@ export function SQL_TARGET_SOURCE_COLLATION_NOT_SAME(
 		targetDatabaseCollation);
 }
 
-export const SQL_MIGRATION_TROUBLESHOOTING_LINK = localize('sql.migration.wizard.troubleshooting', 'Learn more: https://aka.ms/dms-migrations-troubleshooting.');
+export const SQL_MIGRATION_TROUBLESHOOTING_LINK = localize('sql.migration.wizard.troubleshooting', 'See link for more troubleshooting steps: https://aka.ms/dms-migrations-troubleshooting.');
 
 // Managed Instance
 export const AZURE_SQL_DATABASE_MANAGED_INSTANCE = localize('sql.migration.azure.sql.database.managed.instance', "Azure SQL Managed Instance");
@@ -1727,8 +1727,8 @@ export function TDE_COMPLETED_STATUS(completed: number, total: number): string {
 }
 
 // Schema migration
-export const FULL_SCHEMA_MISSING_ON_TARGET = localize('sql.migration.schema.full.missing', "No schema was found on target. This option must be selected to migrate this database. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration. No tables selected will migrate missing schema only.");
-export const PARTIAL_SCHEMA_ON_TARGET = localize('sql.migration.schema.partial.missing', "Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.  No tables selected will migrate missing schema only.");
+export const FULL_SCHEMA_MISSING_ON_TARGET = localize('sql.migration.schema.full.missing', "No schema was found on target. This option must be selected to migrate this database. No tables selected will migrate missing schema only.");
+export const PARTIAL_SCHEMA_ON_TARGET = localize('sql.migration.schema.partial.missing', "Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. No tables selected will migrate missing schema only.");
 export const FULL_SCHEMA_ON_TARGET = localize('sql.migration.schema.no.missing', "Schema was found on target. Schema migration is not required.");
 export const ALL_SOURCE_TABLES_EMPTY = localize('sql.migration.all.source.tables.empty', "All of source tables are empty. No table is available to select for data migration. But they are available for schema migration if they do not exist on target.");
 export const SCHEMA_MIGRATION_INFO = localize('sql.migration.schema.migration.info', "Select this option to migrate missing tables on your Azure SQL target");
@@ -1824,5 +1824,6 @@ export function SQLDB_MIGRATION_DIFFERENT_IR_VERSION_ERROR_MESSAGE(irVersions: I
 export const SCHEMA_MIGRATION_WINDOWS_AUTH_ERROR_MESSAGE = localize('sql.schema.migration.windows.auth.error', "Schema migration is not currently supported for connectivity to source instance using Windows Authentication. Please use SQL Authentication to enable schema migration support.");
 export const SCHEMA_MIGRATION_INFORMATION_MESSAGE = localize(
 	'sql.schema.migration.information',
-	"Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [5.35.8686.1] or higher. Schema migration is not currently supported for connections to source instance using Windows Authentication. Please use SQL Authentication.",
+	"Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [{1}] or higher. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.",
 );
+export const MIN_IR_VERSION_SUPPORT_SCHEMA_MIGRATION = localize('sql.schema.migration.min.version', "5.37.8767.4");
