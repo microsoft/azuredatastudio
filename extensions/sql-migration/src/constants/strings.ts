@@ -409,6 +409,10 @@ export function TIME_IN_MINUTES(val: number): number {
 }
 
 // Wizard Page Cancellation Dialog
+export const CANCEL_FEEDBACK_DIALOG_TITLE = localize('sql.migration.cancel.feedback.dialog.title', "Cancel migration");
+export const CANCEL_FEEDBACK_DIALOG_DESCRIPTION = localize('sql.migration.cancel.feedback.dialog.description', "Do you want to cancel migration ? Your unsaved changes will be discarded.");
+export const CANCEL_FEEDBACK_REASON_CONTAINER_TITLE = localize('sql.migration.cancel.feedback.reason.container.title', "Reason for canceling migration");
+export const CANCEL_FEEDBACK_REASON_CONTAINER_DESCRIPTION = localize('sql.migration.cancel.feedback.reason.container.description', "Please take a moment to tell us the reason for canceling the migration. This will help us improve the experience.");
 export const WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER = localize('sql.migration.wizard.cancel.reason.continue.with.migration.later', "Continue with Migration later");
 export const WIZARD_CANCEL_REASON_CHANGE_SOURCE = localize('sql.migration.wizard.cancel.reason.change.source', "Change source");
 export const WIZARD_CANCEL_REASON_TAKING_LONGER = localize('sql.migration.wizard.cancel.reason.taking.longer', "Taking longer");

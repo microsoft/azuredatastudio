@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as styles from '../../constants/styles';
 import { EventEmitter } from 'stream';
+import * as constants from '../../constants/strings';
 
 export class CancelFeedbackDialog {
 	private dialog!: azdata.window.Dialog;
@@ -19,12 +20,11 @@ export class CancelFeedbackDialog {
 	private _view!: azdata.ModelView;
 
 	private _cancelReasonsList: string[] = [];
-	private _cancellationReasonSelected: string = 'No reason selected';
+	private _cancellationReasonSelected: string = constants.CANCEL_FEEDBACK_NO_REASON_SELECTED;
 	private _othersReasonInputBoxContainer!: azdata.FlexContainer;
 
 	private _callback!: (isCancelled: boolean, cancellationReason: string) => Promise<void>;
 
-	// TODO - Update all the string with localised strings
 	constructor() {
 	}
 
@@ -95,14 +95,14 @@ export class CancelFeedbackDialog {
 		}).component();
 
 		const headingLabel = _view.modelBuilder.text().withProps({
-			value: "Cancel Migration",
+			value: constants.CANCEL_FEEDBACK_DIALOG_TITLE,
 			CSSStyles: {
 				...styles.PAGE_TITLE_CSS,
 				'margin': '20px 0px 0px 0px'
 			}
 		}).component();
 		const description = _view.modelBuilder.text().withProps({
-			value: "Do you want to cancel migration? Your unsaved changes will be discarded.",
+			value: constants.CANCEL_FEEDBACK_DIALOG_DESCRIPTION,
 			CSSStyles: {
 				...styles.SUBTITLE_LABEL_CSS,
 				'margin': '0px'
@@ -122,8 +122,7 @@ export class CancelFeedbackDialog {
 
 	private createCancelReasonsContainer(_view: azdata.ModelView): azdata.GroupContainer {
 		const cancelReasonDescription = _view.modelBuilder.text().withProps({
-			value: "Please take a moment to tell us the reason for canceling the migration. This will help us improve the experience.",
-			// TODO - Take out all the styles to styles.ts
+			value: constants.CANCEL_FEEDBACK_REASON_CONTAINER_DESCRIPTION,
 			CSSStyles: {
 				...styles.SUBTITLE_LABEL_CSS,
 				'margin': '0px 0px 0px 10px'
@@ -143,7 +142,7 @@ export class CancelFeedbackDialog {
 
 		const cancellationReasonsGroup = _view.modelBuilder.groupContainer()
 			.withLayout({
-				header: "Reason for canceling migration",
+				header: constants.CANCEL_FEEDBACK_REASON_CONTAINER_TITLE,
 				collapsible: true,
 				collapsed: true
 			}).withItems(
@@ -197,7 +196,7 @@ export class CancelFeedbackDialog {
 					await this._othersReasonInputBoxContainer.updateCssStyles({
 						'display': 'flex'
 					});
-					this._cancellationReasonSelected = 'No Reason Selected';
+					this._cancellationReasonSelected = constants.CANCEL_FEEDBACK_NO_REASON_SELECTED;
 				} else {
 					await this._othersReasonInputBoxContainer.updateCssStyles({
 						'display': 'none'
@@ -212,7 +211,7 @@ export class CancelFeedbackDialog {
 		const othersReasonInputBox = this._view.modelBuilder.inputBox()
 			.withProps({
 				inputType: 'text',
-				placeHolder: "If you selected others, please write a short note.",
+				placeHolder: constants.WIZARD_CANCEL_REASON_OTHERS_INPUT_BOX_NOTE,
 				height: 60,
 				multiline: true,
 				display: 'inline-block',
