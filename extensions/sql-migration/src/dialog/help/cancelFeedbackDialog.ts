@@ -7,8 +7,6 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as styles from '../../constants/styles';
 import { EventEmitter } from 'stream';
-import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, getTelemetryProps } from '../../telemetry';
-import { MigrationStateModel } from '../../models/stateMachine';
 
 export class CancelFeedbackDialog {
 	private dialog!: azdata.window.Dialog;
@@ -24,8 +22,10 @@ export class CancelFeedbackDialog {
 	private _cancellationReasonSelected: string = 'No reason selected';
 	private _othersReasonInputBoxContainer!: azdata.FlexContainer;
 
+	private _callback!: (isCancelled: boolean, cancellationReason: string) => Promise<void>;
+
 	// TODO - Update all the string with localised strings
-	constructor(private wizardObject: azdata.window.Wizard, private migrationStateModel: MigrationStateModel) {
+	constructor() {
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
@@ -40,18 +40,7 @@ export class CancelFeedbackDialog {
 					this._disposables.push(
 						dialog.okButton.onClick(
 							async (e) => {
-								await this.wizardObject.close();
-
-								sendSqlMigrationActionEvent(
-									TelemetryViews.LoginMigrationWizard,
-									TelemetryAction.PageButtonClick,
-									{
-										...getTelemetryProps(this.migrationStateModel),
-										'buttonPressed': TelemetryAction.Cancel,
-										'pageTitle': this.wizardObject.pages[this.wizardObject.currentPage].title,
-										'cancellationReason': this._cancellationReasonSelected
-									},
-									{});
+								await this._callback(true, this._cancellationReasonSelected);
 							}));
 
 					this._disposables.push(
@@ -74,13 +63,14 @@ export class CancelFeedbackDialog {
 		});
 	}
 
-	public async openDialog(dialogName?: string) {
+	public async openDialog(callback: (result: boolean, cancellationReason: string) => Promise<void>) {
 		if (!this._isOpen) {
 			this._isOpen = true;
+			this._callback = callback;
 
 			this.dialog = azdata.window.createModelViewDialog(
 				'',
-				'cancelMigration',
+				'cancelFeedbackDialog',
 				381,
 				'normal',
 				'below',

@@ -177,9 +177,13 @@ export class WizardController {
 
 		this._disposables.push(
 			customCancelButton.onClick(async () => {
-				const cancelFeedbackDialog = new CancelFeedbackDialog(this._wizardObject, this._model);
+				const cancelFeedbackDialog = new CancelFeedbackDialog();
 				cancelFeedbackDialog.updateCancelReasonsList(WizardController._cancelReasonsList); // Fix: Use the element access expression with an argument
-				await cancelFeedbackDialog.openDialog();
+				await cancelFeedbackDialog.openDialog(async (isCancelled: boolean, cancellationReason: string) => {
+					if (isCancelled) {
+						await this.cancelWizardAndLogTelemetry(cancellationReason);
+					}
+				});
 			}));
 
 		this._disposables.push(
@@ -279,6 +283,21 @@ export class WizardController {
 					},
 					{});
 			}));
+	}
+
+	private async cancelWizardAndLogTelemetry(cancellationReason: string): Promise<void> {
+		await this._wizardObject.close();
+
+		sendSqlMigrationActionEvent(
+			TelemetryViews.LoginMigrationWizard,
+			TelemetryAction.PageButtonClick,
+			{
+				...getTelemetryProps(this._model),
+				'buttonPressed': TelemetryAction.Cancel,
+				'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title,
+				'cancellationReason': cancellationReason
+			},
+			{});
 	}
 
 	public static cancelReasonsList(cancelReasons: string[]): void {
