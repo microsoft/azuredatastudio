@@ -87,7 +87,7 @@ export class CancelFeedbackDialog {
 	private createContainer(_view: azdata.ModelView): azdata.FlexContainer {
 		const container = _view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
-				'margin': '20px',
+				'margin': '0px 30px 0px 30px',
 				'flex-direction': 'column',
 				'gap': '20px',
 				'display': 'flex'
@@ -98,16 +98,14 @@ export class CancelFeedbackDialog {
 			value: "Cancel Migration",
 			CSSStyles: {
 				...styles.PAGE_TITLE_CSS,
-				'margin': '0px',
+				'margin': '20px 0px 0px 0px'
 			}
 		}).component();
 		const description = _view.modelBuilder.text().withProps({
 			value: "Do you want to cancel migration? Your unsaved changes will be discarded.",
 			CSSStyles: {
-				'font-size': '13px',
-				'line-height': '18px',
-				'font-weight': '400',
-				'margin': '0px',
+				...styles.SUBTITLE_LABEL_CSS,
+				'margin': '0px'
 			}
 		}).component();
 
@@ -127,10 +125,8 @@ export class CancelFeedbackDialog {
 			value: "Please take a moment to tell us the reason for canceling the migration. This will help us improve the experience.",
 			// TODO - Take out all the styles to styles.ts
 			CSSStyles: {
-				'font-size': '13px',
-				'line-height': '18px',
-				'font-weight': '400',
-				'margin': '0px',
+				...styles.SUBTITLE_LABEL_CSS,
+				'margin': '0px 0px 0px 10px'
 			}
 		}).component();
 
@@ -158,7 +154,7 @@ export class CancelFeedbackDialog {
 	}
 
 	private createSpecificReasonRadioButton(view: azdata.ModelView, buttonLabelText: string): azdata.RadioButtonComponent {
-		const buttonGroup = 'resumeMigration';
+		const buttonGroup = 'cancelMigrationButtonGroup';
 		const cancelReasonRadioButton = view.modelBuilder.radioButton()
 			.withProps({
 				label: buttonLabelText,
@@ -167,7 +163,7 @@ export class CancelFeedbackDialog {
 					'font-size': '13px',
 					'line-height': '18px',
 					'font-weight': '400',
-					'margin': '0px',
+					'margin': '0px 0px 0px 9px',
 				},
 				checked: false
 			}).component();
@@ -183,16 +179,14 @@ export class CancelFeedbackDialog {
 	}
 
 	private createOthersReasonRadioButton(view: azdata.ModelView): azdata.RadioButtonComponent {
-		const buttonGroup = 'resumeMigration';
+		const buttonGroup = 'cancelMigrationButtonGroup';
 		const cancelReasonRadioButton = view.modelBuilder.radioButton()
 			.withProps({
 				label: 'Others',
 				name: buttonGroup,
 				CSSStyles: {
-					'font-size': '13px',
-					'line-height': '18px',
-					'font-weight': '400',
-					'margin': '0px',
+					...styles.SUBTITLE_LABEL_CSS,
+					'margin': '0px 0px 0px 9px'
 				},
 				checked: false
 			}).component();
@@ -223,8 +217,9 @@ export class CancelFeedbackDialog {
 				multiline: true,
 				display: 'inline-block',
 				CSSStyles: {
-					'margin': '0px 0px 0px 20px',
-					'overflow': 'hidden auto',
+					...styles.SUBTITLE_LABEL_CSS,
+					'margin': '0px 0px 0px 29px',
+					'overflow': 'hidden auto'
 				}
 			}).component();
 
