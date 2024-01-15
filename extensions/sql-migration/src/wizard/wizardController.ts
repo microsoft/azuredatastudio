@@ -29,7 +29,7 @@ export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
 	private _wizardObject!: azdata.window.Wizard;
 	private _disposables: vscode.Disposable[] = [];
-	private static _cancelReasonsList: string[];
+	private _cancelReasonsList!: string[];
 
 	constructor(
 		private readonly extensionContext: vscode.ExtensionContext,
@@ -96,13 +96,13 @@ export class WizardController {
 		customCancelButton.secondary = true;
 
 		this._wizardObject.customButtons = [validateButton, tdeMigrateButton, saveAssessmentButton, saveAndCloseButton, customCancelButton];
-		const databaseSelectorPage = new DatabaseSelectorPage(this._wizardObject, stateModel);
-		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
-		const assessmentDetailsPage = new AssessmentDetailsPage(this._wizardObject, stateModel);
-		const targetSelectionPage = new TargetSelectionPage(this._wizardObject, stateModel);
-		const integrationRuntimePage = new IntergrationRuntimePage(this._wizardObject, stateModel);
-		const databaseBackupPage = new DatabaseBackupPage(this._wizardObject, stateModel);
-		const summaryPage = new SummaryPage(this._wizardObject, stateModel);
+		const databaseSelectorPage = new DatabaseSelectorPage(this._wizardObject, stateModel, this);
+		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel, this);
+		const assessmentDetailsPage = new AssessmentDetailsPage(this._wizardObject, stateModel, this);
+		const targetSelectionPage = new TargetSelectionPage(this._wizardObject, stateModel, this);
+		const integrationRuntimePage = new IntergrationRuntimePage(this._wizardObject, stateModel, this);
+		const databaseBackupPage = new DatabaseBackupPage(this._wizardObject, stateModel, this);
+		const summaryPage = new SummaryPage(this._wizardObject, stateModel, this);
 
 		const pages: MigrationWizardPage[] = [
 			databaseSelectorPage,
@@ -178,7 +178,7 @@ export class WizardController {
 		this._disposables.push(
 			customCancelButton.onClick(async () => {
 				const cancelFeedbackDialog = new CancelFeedbackDialog();
-				cancelFeedbackDialog.updateCancelReasonsList(WizardController._cancelReasonsList); // Fix: Use the element access expression with an argument
+				cancelFeedbackDialog.updateCancelReasonsList(this._cancelReasonsList); // Fix: Use the element access expression with an argument
 				await cancelFeedbackDialog.openDialog(async (isCancelled: boolean, cancellationReason: string) => {
 					if (isCancelled) {
 						await this.cancelWizardAndLogTelemetry(cancellationReason);
@@ -300,8 +300,8 @@ export class WizardController {
 			{});
 	}
 
-	public static cancelReasonsList(cancelReasons: string[]): void {
-		WizardController._cancelReasonsList = cancelReasons;
+	public cancelReasonsList(cancelReasons: string[]): void {
+		this._cancelReasonsList = cancelReasons;
 	}
 
 	private async updateServiceContext(

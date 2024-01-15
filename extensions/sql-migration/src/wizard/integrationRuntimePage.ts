@@ -37,7 +37,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _originalMigrationMode!: MigrationMode;
 	private _disposables: vscode.Disposable[] = [];
 
-	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
+	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel, private wizardController: WizardController) {
 		super(wizard, azdata.window.createWizardPage(constants.IR_PAGE_TITLE), migrationStateModel);
 		this.migrationStateModel._databaseBackup.migrationMode =
 			this.migrationStateModel._databaseBackup.migrationMode ||
@@ -207,7 +207,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		WizardController.cancelReasonsList([
+		this.wizardController.cancelReasonsList([
 			constants.WIZARD_CANCEL_REASON_DMS_SERVICE_OR_IR_NOT_READY,
 			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER
 		]);

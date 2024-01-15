@@ -31,7 +31,8 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 
 	constructor(
 		wizard: azdata.window.Wizard,
-		migrationStateModel: MigrationStateModel) {
+		migrationStateModel: MigrationStateModel,
+		private wizardController: WizardController) {
 		super(
 			wizard,
 			azdata.window.createWizardPage(constants.ASSESSMENT_RESULTS_PAGE_TITLE),
@@ -104,7 +105,7 @@ export class AssessmentDetailsPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		WizardController.cancelReasonsList([
+		this.wizardController.cancelReasonsList([
 			constants.WIZARD_CANCEL_REASON_SOURCE_DB_NOT_READY,
 			constants.WIZARD_CANCEL_REASON_NEED_TO_ANALYSE_FINDINGS
 		]);

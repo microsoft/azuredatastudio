@@ -19,7 +19,7 @@ export class SummaryPage extends MigrationWizardPage {
 	private _flexContainer!: azdata.FlexContainer;
 	private _disposables: vscode.Disposable[] = [];
 
-	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
+	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel, private wizardController: WizardController) {
 		super(wizard, azdata.window.createWizardPage(constants.SUMMARY_PAGE_TITLE), migrationStateModel);
 	}
 
@@ -41,7 +41,7 @@ export class SummaryPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		WizardController.cancelReasonsList([
+		this.wizardController.cancelReasonsList([
 			constants.WIZARD_CANCEL_REASON_WAIT_FOR_MIGRATION_WINDOW,
 			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER
 		]);

@@ -83,7 +83,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _migrationTableSection!: azdata.FlexContainer;
 	private _sqlDbWarnings: string[] = [];
 
-	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
+	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel, private wizardController: WizardController) {
 		super(wizard, azdata.window.createWizardPage(constants.DATA_SOURCE_CONFIGURATION_PAGE_TITLE), migrationStateModel);
 	}
 
@@ -744,7 +744,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		WizardController.cancelReasonsList([
+		this.wizardController.cancelReasonsList([
 			constants.WIZARD_CANCEL_REASON_BACKUP_LOCATION_NOT_READY,
 			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER
 		]);

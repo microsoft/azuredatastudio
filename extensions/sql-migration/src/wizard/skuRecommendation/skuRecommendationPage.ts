@@ -56,7 +56,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _skipAssessmentValid: boolean = false;
 
 
-	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
+	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel, private wizardController: WizardController) {
 		super(wizard, azdata.window.createWizardPage(constants.ASSESSMENT_SUMMARY_AND_RECOMMENDATIONS_PAGE_TITLE), migrationStateModel);
 	}
 
@@ -578,7 +578,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		WizardController.cancelReasonsList([
+		this.wizardController.cancelReasonsList([
 			constants.WIZARD_CANCEL_REASON_TAKING_LONGER,
 			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER
 		]);
