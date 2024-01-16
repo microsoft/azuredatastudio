@@ -2021,7 +2021,6 @@ declare module 'azdata' {
 		dateLastModified: string;
 		createDate: string;
 		providerName: string;
-		url?: string;
 		secret?: string;
 	}
 

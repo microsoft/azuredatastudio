@@ -500,7 +500,6 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 		const credentialInfo: azdata.CredentialInfo = {
 			secret: `${result.accessKey}:${result.secretKey}`,
-			url: result.s3Url.toString(),
 			identity: 'S3 Access Key',
 			name: result.s3Url.toString(),
 			createDate: undefined,
