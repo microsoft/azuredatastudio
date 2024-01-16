@@ -602,7 +602,7 @@ export const fileGroupsNameInput = localize('objectManagement.filegroupsNameInpu
 
 // S3 credentials
 export const AddS3CredentialsDialogTitle = localize('objectManagement.addS3CredentialsDialogTitle', "Add S3 Credentials");
-export const S3UrlLabel = localize('objectManagement.s3UrlLabel', "S3 Url");
+export const S3UrlLabel = localize('objectManagement.s3UrlLabel', "S3 URL");
 export const SecretKeyText = localize('objectManagement.secretKey', "Secret Key");
 export const AccessKeyText = localize('objectManagement.accessKey', "Access Key");
 export const InvalidS3UrlError = localize('objectManagement.InvalidS3UrlError', "Invalid S3 URL");
