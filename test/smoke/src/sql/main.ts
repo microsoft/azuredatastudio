@@ -43,7 +43,7 @@ const sqliteUrl = `https://github.com/Microsoft/azuredatastudio-sqlite/releases/
 
 export async function setup(app: ApplicationOptions): Promise<void> {
 	console.log('*** Downloading test extensions');
-	const releaseVersion = '1.18.0';
+	const releaseVersion = '1.19.0';
 	const requestUrl = sqliteUrl.replace(RELEASE_VERSION, releaseVersion).replace(PLATFORM, process.platform).replace(RUNTIME, getRuntime(app.web || app.remote || false)).replace(VERSION, getVersion(app.web || app.remote || false));
 	const zip = await fetch(requestUrl);
 	if (!zip) {
