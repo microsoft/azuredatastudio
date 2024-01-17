@@ -642,6 +642,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS, 'margin': '5px 0 0 0' },
 				links: [
 					{ text: constants.DATABASE_SCHEMA_MIGRATION_PUBLIC_PREVIEW, url: 'https://techcommunity.microsoft.com/t5/microsoft-data-migration-blog/public-preview-schema-migration-for-target-azure-sql-db/ba-p/3990463' },
+					{ text: constants.MIN_IR_VERSION_SUPPORT_SCHEMA_MIGRATION, url: 'https://www.microsoft.com/en-my/download/details.aspx?id=39717' },
 				]
 			}).component();
 		this._azureResourceTable = this._createResourceTable();

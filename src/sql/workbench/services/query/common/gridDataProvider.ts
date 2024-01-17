@@ -133,7 +133,7 @@ export async function copySelectionToClipboard(clipboardService: IClipboardServi
 		const getMessageText = (): string => {
 			return nls.localize('gridDataProvider.loadingRowsInProgress', "Loading the rows to be copied ({0}/{1})...", processedRows, rowCount);
 		};
-		let resultString = '';
+		let headerString = '';
 		if (includeHeaders) {
 			const headers: string[] = [];
 			columnRanges.forEach(range => {
@@ -142,7 +142,7 @@ export async function copySelectionToClipboard(clipboardService: IClipboardServi
 					toCell: range.end
 				}));
 			});
-			resultString = Array.from(headers.values()).join(valueSeparator).concat(eol);
+			headerString = Array.from(headers.values()).join(valueSeparator).concat(eol);
 		}
 
 		const rowValues: string[] = [];
@@ -176,10 +176,22 @@ export async function copySelectionToClipboard(clipboardService: IClipboardServi
 			});
 		}
 		if (!cancellationTokenSource.token.isCancellationRequested) {
-			resultString += rowValues.reduce(
-				(prevVal, currVal, idx) => prevVal + (idx > 0 && (!prevVal?.endsWith(eol) || !shouldSkipNewLineAfterTrailingLineBreak) ? eol : '') + currVal,
-			);
-			await clipboardService.writeText(resultString);
+			const resultParts: string[] = [];
+			if (includeHeaders)
+				resultParts.push(headerString);
+
+			if (rowValues.length > 0) {
+				let prevVal = rowValues[0];
+				resultParts.push(prevVal);
+
+				for (let i = 1; i < rowValues.length; i++) {
+					const currVal = rowValues[i];
+					resultParts.push((!prevVal?.endsWith(eol) || !shouldSkipNewLineAfterTrailingLineBreak ? eol : '') + currVal);
+					prevVal = currVal;
+				}
+			}
+
+			await clipboardService.writeText(resultParts.join(""));
 		}
 	}, cancellationTokenSource);
 }

@@ -8,12 +8,11 @@ import * as vscode from 'vscode';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
 import { AzureSqlDatabaseServer, getIrNodes, getResourceName } from '../../api/azure';
-import { collectSourceDatabaseTableInfo, collectTargetDatabaseTableInfo, getActiveIrVersions, isSchemaMigrationSupportedByActiveNodes, SchemaMigrationRequiredIntegrationRuntimeMinimumVersion, TableInfo } from '../../api/sqlUtils';
-import { MigrationSourceAuthenticationType, MigrationStateModel } from '../../models/stateMachine';
+import { collectSourceDatabaseTableInfo, collectTargetDatabaseTableInfo, getActiveIrVersionsNotSupportingSchemaMigration, getActiveIrVersionsSupportingSchemaMigration, SchemaMigrationRequiredIntegrationRuntimeMinimumVersion, TableInfo } from '../../api/sqlUtils';
+import { MigrationStateModel } from '../../models/stateMachine';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { Tab } from 'azdata';
 import { updateControlDisplay } from '../../api/utils';
-import { EOL } from 'os';
 
 const DialogName = 'TableMigrationSelection';
 
@@ -139,25 +138,17 @@ export class TableMigrationSelectionDialog {
 					getResourceName(this._model._resourceGroup.id),
 					this._model._location.name,
 					this._model._sqlMigrationService!.name);
-				const isSchemaMigrationSupportedByVersion = isSchemaMigrationSupportedByActiveNodes(irNodes);
-				this._model.isSchemaMigrationSupported = isSchemaMigrationSupportedByVersion && this._model._authenticationType === MigrationSourceAuthenticationType.Sql;
+				const irVersionsSupportingSchemaMigration = getActiveIrVersionsSupportingSchemaMigration(irNodes);
+				this._model.isSchemaMigrationSupported = irVersionsSupportingSchemaMigration.length > 0;
 
 				if (!this._model.isSchemaMigrationSupported) {
 					// The current IR(s) version or Windows auth don't support schema migration
-					var errors: string[] = [];
 					this._schemaMigrationCheckBox.enabled = false;
 					this._schemaMigrationCheckBox.checked = false;
-					if (!isSchemaMigrationSupportedByVersion) {
-						const irVersions = getActiveIrVersions(irNodes);
-						errors.push(constants.SCHEMA_MIGRATION_UPDATE_IR_VERSION_ERROR_MESSAGE(SchemaMigrationRequiredIntegrationRuntimeMinimumVersion, irVersions))
-					}
-					if (this._model._authenticationType === MigrationSourceAuthenticationType.Integrated) {
-						errors.push(constants.SCHEMA_MIGRATION_WINDOWS_AUTH_ERROR_MESSAGE);
-					}
-
+					const irVersionsNotSupportingSchemaMigration = getActiveIrVersionsNotSupportingSchemaMigration(irNodes);
 					await this._schemaMigrationInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
-						text: errors.join(EOL),
-						style: "error",
+						text: constants.SCHEMA_MIGRATION_UPDATE_IR_VERSION_ERROR_MESSAGE(SchemaMigrationRequiredIntegrationRuntimeMinimumVersion, irVersionsNotSupportingSchemaMigration),
+						style: "warning",
 						width: '600px',
 						CSSStyles: { ...styles.BODY_CSS, 'margin': '5px 0 0 0' },
 						isClickable: true

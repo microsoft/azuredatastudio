@@ -28,6 +28,8 @@ steps:
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
       exec { tar -xf $(Pipeline.Workspace)/compilation.tar.gz }
+      # Delete compiled tarball now that we've extracted the files since it takes up a lot of space
+      exec { rm $(Pipeline.Workspace)/compilation.tar.gz }
     displayName: Extract compilation output
 
   - powershell: |
@@ -113,6 +115,7 @@ steps:
       exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-inno-updater" }
     displayName: Build
     env:
+      GITHUB_TOKEN: $(github-distro-mixin-password)
       VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
 
   - task: UniversalPackages@0
