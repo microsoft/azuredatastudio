@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { createHash } from 'crypto';
@@ -171,7 +171,7 @@ class LanguagePacksCache extends Disposable {
 		if (languagePack) {
 			const md5 = createHash('md5');
 			for (const extension of languagePack.extensions) {
-				md5.update(extension.extensionIdentifier.uuid || extension.extensionIdentifier.id).update(extension.version);
+				md5.update(extension.extensionIdentifier.uuid || extension.extensionIdentifier.id).update(extension.version); // CodeQL [SM01510] The extension UUID is not sensitive info and is not manually created by a user
 			}
 			languagePack.hash = md5.digest('hex');
 		}

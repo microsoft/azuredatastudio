@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
@@ -33,8 +33,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	}
 
 	// ensure our log path exists
-	if (!(await Utils.exists(context.logPath))) {
-		await fs.mkdir(context.logPath);
+	if (!(await Utils.exists(context.logUri.fsPath))) {
+		await fs.mkdir(context.logUri.fsPath);
 	}
 
 	let appContext = new AppContext(context);
@@ -64,7 +64,7 @@ function registerLogCommand(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('kusto.showLogFile', async () => {
 		const choice = await vscode.window.showQuickPick(logFiles);
 		if (choice) {
-			const document = await vscode.workspace.openTextDocument(vscode.Uri.file(path.join(context.logPath, choice)));
+			const document = await vscode.workspace.openTextDocument(vscode.Uri.file(path.join(context.logUri.fsPath, choice)));
 			if (document) {
 				vscode.window.showTextDocument(document);
 			}

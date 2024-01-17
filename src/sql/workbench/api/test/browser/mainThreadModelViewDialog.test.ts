@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -264,6 +264,11 @@ suite('MainThreadModelViewDialog Tests', () => {
 
 		// Verify that the correct button click notifications were sent to the proxy
 		assert.deepStrictEqual(pressedHandles, [button1Handle, button2Handle, okButtonHandle, cancelButtonHandle, button2Handle, cancelButtonHandle, button1Handle, okButtonHandle]);
+
+		okEmitter.dispose();
+		cancelEmitter.dispose();
+		button1Emitter.dispose();
+		button2Emitter.dispose();
 	});
 
 	test('Creating a wizard and calling open on it causes a wizard with correct pages and buttons to open', () => {

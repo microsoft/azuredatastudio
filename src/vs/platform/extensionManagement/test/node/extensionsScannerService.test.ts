@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
 import { VSBuffer } from 'vs/base/common/buffer';
@@ -60,7 +60,7 @@ suite.skip('NativeExtensionsScanerService Test', () => { // {{SQL CARBON EDIT}} 
 
 	setup(async () => {
 		translations = {};
-		instantiationService = new TestInstantiationService();
+		instantiationService = disposables.add(new TestInstantiationService());
 		const logService = new NullLogService();
 		const fileService = disposables.add(new FileService(logService));
 		const fileSystemProvider = disposables.add(new InMemoryFileSystemProvider());

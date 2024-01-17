@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { window, Account, accounts, CategoryValue, DropDownComponent, IconPath, DisplayType, Component, ModelView, DeclarativeTableComponent, DeclarativeDataType, FlexContainer } from 'azdata';
@@ -12,10 +12,12 @@ import { azureResource, Tenant } from 'azurecore';
 import * as constants from '../constants/strings';
 import { logError, TelemetryViews } from '../telemetry';
 import { AdsMigrationStatus } from '../dashboard/tabBase';
-import { getMigrationMode, getMigrationStatus, getMigrationTargetType, hasRestoreBlockingReason, PipelineStatusCodes } from '../constants/helper';
+import { getMigrationMode, getMigrationStatus, getSchemaMigrationStatus, getMigrationType, getMigrationTargetType, hasRestoreBlockingReason, PipelineStatusCodes } from '../constants/helper';
 import * as os from 'os';
 import * as styles from '../constants/styles';
 import { SqlMigrationService, getSqlMigrationServiceAuthKeys, regenerateSqlMigrationServiceAuthKey } from './azure';
+import { MigrationStateModel } from '../models/stateMachine';
+import * as contracts from '../service/contracts';
 
 export type TargetServerType = azure.SqlVMServer | azureResource.AzureSqlManagedInstance | azure.AzureSqlDatabaseServer;
 
@@ -178,6 +180,7 @@ export function filterMigrations(databaseMigrations: azure.DatabaseMigration[], 
 				|| migration.properties.sourceDatabaseName?.toLowerCase().includes(filter)
 				|| getMigrationStatus(migration)?.toLowerCase().includes(filter)
 				|| getMigrationMode(migration)?.toLowerCase().includes(filter)
+				|| getMigrationType(migration)?.toLocaleLowerCase().includes(filter)
 				|| getMigrationTargetType(migration)?.toLowerCase().includes(filter)
 				|| azure.getResourceName(migration.properties.scope)?.toLowerCase().includes(filter)
 				|| azure.getResourceName(migration.id)?.toLowerCase().includes(filter)
@@ -396,6 +399,93 @@ export function getMigrationStatusImage(migration: azure.DatabaseMigration): Ico
 		case constants.MigrationState.Failed:
 		default:
 			return IconPathHelper.error;
+	}
+}
+
+export function getSchemaMigrationStatusImage(migration: azure.DatabaseMigration): IconPath {
+	const status = getSchemaMigrationStatus(migration);
+	switch (status) {
+		case constants.MigrationState.CollectionCompleted:
+		case constants.MigrationState.PrefetchObjects:
+		case constants.MigrationState.GetDependency:
+		case constants.MigrationState.ScriptObjects:
+		case constants.MigrationState.ScriptViewIndexes:
+		case constants.MigrationState.ScriptOwnership:
+		case constants.MigrationState.GeneratingScript:
+		case constants.MigrationState.DeployingSchema:
+		case constants.MigrationState.GeneratingScriptCompleted:
+		case constants.MigrationState.DeploymentCompleted:
+			return IconPathHelper.inProgressMigration;
+		case constants.MigrationState.Completed:
+			return IconPathHelper.completedMigration;
+		case constants.MigrationState.Failed:
+		case constants.MigrationState.CompletedWithError:
+			return IconPathHelper.error;
+		default:
+			return IconPathHelper.notStartedMigration;
+	}
+}
+
+export function getObjectsCollectionStatusImage(migration: azure.DatabaseMigration): IconPath {
+	const status = getSchemaMigrationStatus(migration);
+	switch (status) {
+		case constants.MigrationState.CollectionCompleted:
+		case constants.MigrationState.PrefetchObjects:
+		case constants.MigrationState.GetDependency:
+		case constants.MigrationState.ScriptObjects:
+		case constants.MigrationState.ScriptViewIndexes:
+		case constants.MigrationState.ScriptOwnership:
+		case constants.MigrationState.GeneratingScript:
+		case constants.MigrationState.GeneratingScriptCompleted:
+		case constants.MigrationState.DeployingSchema:
+		case constants.MigrationState.DeploymentCompleted:
+		case constants.MigrationState.Completed:
+		case constants.MigrationState.CompletedWithError:
+			return IconPathHelper.completedMigration;
+		default:
+			return IconPathHelper.notStartedMigration;
+	}
+}
+
+export function getScriptGenerationStatusImage(migration: azure.DatabaseMigration): IconPath {
+	var scriptGeneration = migration?.properties.migrationStatusDetails?.sqlSchemaMigrationStatus?.scriptGeneration ?? undefined;
+	var errors = scriptGeneration === undefined ? [] : scriptGeneration.errors ?? [];
+
+	const status = getSchemaMigrationStatus(migration);
+	switch (status) {
+		case constants.MigrationState.PrefetchObjects:
+		case constants.MigrationState.GetDependency:
+		case constants.MigrationState.ScriptObjects:
+		case constants.MigrationState.ScriptViewIndexes:
+		case constants.MigrationState.ScriptOwnership:
+		case constants.MigrationState.GeneratingScript:
+			return IconPathHelper.inProgressMigration;
+		case constants.MigrationState.Completed:
+		case constants.MigrationState.CompletedWithError:
+		case constants.MigrationState.GeneratingScriptCompleted:
+		case constants.MigrationState.DeployingSchema:
+		case constants.MigrationState.DeploymentCompleted:
+			return errors.length > 0 ? IconPathHelper.error : IconPathHelper.completedMigration;
+		default:
+			return IconPathHelper.notStartedMigration;
+	}
+}
+
+export function getScriptDeploymentStatusImage(migration: azure.DatabaseMigration): IconPath {
+	var scriptDeployment = migration?.properties.migrationStatusDetails?.sqlSchemaMigrationStatus?.scriptDeployment ?? undefined;
+	var errors = scriptDeployment === undefined ? [] : scriptDeployment.errors ?? [];
+
+	const status = getSchemaMigrationStatus(migration);
+	switch (status) {
+		case constants.MigrationState.DeployingSchema:
+			return IconPathHelper.inProgressMigration;
+		case constants.MigrationState.Completed:
+		case constants.MigrationState.DeploymentCompleted:
+			return IconPathHelper.completedMigration;
+		case constants.MigrationState.CompletedWithError:
+			return errors.length > 0 ? IconPathHelper.error : IconPathHelper.completedMigration;
+		default:
+			return IconPathHelper.notStartedMigration;
 	}
 }
 
@@ -949,7 +1039,7 @@ export async function isAdmin(): Promise<boolean> {
 		if (isWindows()) {
 			isAdmin = (await import('native-is-elevated'))();
 		} else {
-			isAdmin = process.getuid() === 0;
+			isAdmin = process.getuid?.() === 0;
 		}
 	} catch (e) {
 		//Ignore error and return false;
@@ -1168,4 +1258,93 @@ export function createRegistrationInstructions(view: ModelView, testConnectionBu
 export async function clearDropDown(dropDown: DropDownComponent): Promise<void> {
 	await dropDown.updateProperty('value', undefined);
 	await dropDown.updateProperty('values', []);
+}
+
+export async function getRecommendedConfiguration(targetType: MigrationTargetType, model: MigrationStateModel): Promise<string[]> {
+
+	if (!hasRecommendations(model)) {
+		return [];
+	}
+	let recommendation;
+	switch (targetType) {
+		case MigrationTargetType.SQLVM:
+			// elastic model currently doesn't support SQL VM, so show the baseline model results regardless of user preference
+			recommendation = model._skuRecommendationResults.recommendations?.sqlVmRecommendationResults[0];
+
+			// result returned but no SKU recommended
+			if (!recommendation?.targetSku) {
+				return [constants.SKU_RECOMMENDATION_NO_RECOMMENDATION];
+			}
+			else {
+				const vmConfiguration = constants.VM_CONFIGURATION(
+					recommendation.targetSku.virtualMachineSize!.sizeName,
+					recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
+
+				return [vmConfiguration];
+			}
+		case MigrationTargetType.SQLDB:
+			const recommendations = model._skuEnableElastic
+				? model._skuRecommendationResults.recommendations!.elasticSqlDbRecommendationResults
+				: model._skuRecommendationResults.recommendations!.sqlDbRecommendationResults;
+			const successfulRecommendationsCount = recommendations.filter(r => r.targetSku !== null)?.length ?? 0;
+			return [constants.RECOMMENDATIONS_AVAILABLE(successfulRecommendationsCount)];
+		case MigrationTargetType.SQLMI:
+			if (model._skuEnableElastic) {
+				recommendation = model._skuRecommendationResults.recommendations?.elasticSqlMiRecommendationResults[0];
+			} else {
+				recommendation = model._skuRecommendationResults.recommendations?.sqlMiRecommendationResults[0];
+			}
+
+			// result returned but no SKU recommended
+			if (!recommendation?.targetSku) {
+				return [constants.SKU_RECOMMENDATION_NO_RECOMMENDATION];
+			}
+			else {
+				const serviceTier = recommendation.targetSku.category?.sqlServiceTier === contracts.AzureSqlPaaSServiceTier.GeneralPurpose
+					? constants.GENERAL_PURPOSE
+					: constants.BUSINESS_CRITICAL;
+				const hardwareType = recommendation.targetSku.category?.hardwareType === contracts.AzureSqlPaaSHardwareType.Gen5
+					? constants.GEN5
+					: recommendation.targetSku.category?.hardwareType === contracts.AzureSqlPaaSHardwareType.PremiumSeries
+						? constants.PREMIUM_SERIES
+						: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
+
+				return [constants.MI_CONFIGURATION_PREVIEW(
+					hardwareType,
+					serviceTier,
+					recommendation.targetSku.computeSize!,
+					recommendation.targetSku.storageMaxSizeInMb! / 1024)];
+			}
+	}
+}
+
+// Return true if Recommendations are ready and does not  have errors.
+export function hasRecommendations(model: MigrationStateModel): boolean {
+	return model._skuRecommendationResults?.recommendations
+		&& !model._skuRecommendationResults?.recommendationError
+		? true
+		: false;
+}
+
+export async function clearDropDownWithLoading(dropDown: DropDownComponent): Promise<void> {
+	dropDown.loading = true;
+	await dropDown.updateProperty('value', undefined);
+	await dropDown.updateProperty('values', []);
+}
+
+export async function promptUserForFile(filters: { [name: string]: string[] }): Promise<string> {
+	const options: vscode.OpenDialogOptions = {
+		defaultUri: vscode.Uri.file(getUserHome()!),
+		canSelectFiles: true,
+		canSelectFolders: false,
+		canSelectMany: false,
+		filters: filters,
+	};
+
+	const fileUris = await vscode.window.showOpenDialog(options);
+	if (fileUris && fileUris.length > 0 && fileUris[0]) {
+		return fileUris[0].fsPath;
+	}
+
+	return '';
 }

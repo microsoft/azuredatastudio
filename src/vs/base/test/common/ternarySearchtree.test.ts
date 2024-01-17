@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -961,7 +961,7 @@ suite.skip('TST, perf', function () {
 	function perfTest(name: string, callback: Function) {
 		test(name, function () {
 			if (_profile) { console.profile(name); }
-			const sw = new StopWatch(true);
+			const sw = new StopWatch();
 			callback();
 			console.log(name, sw.elapsed());
 			if (_profile) { console.profileEnd(); }

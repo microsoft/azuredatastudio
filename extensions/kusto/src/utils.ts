@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 //TODO: This is the same file from mssql. Move this into a common place.
@@ -44,13 +44,25 @@ export function getConfigLogRetentionSeconds(): number | undefined {
 	}
 }
 
-export function getConfigTracingLevel(): string | undefined {
+/**
+ * The tracing level defined in the package.json
+ */
+export enum TracingLevel {
+	All = 'All',
+	Off = 'Off',
+	Critical = 'Critical',
+	Error = 'Error',
+	Warning = 'Warning',
+	Information = 'Information',
+	Verbose = 'Verbose'
+}
+
+export function getConfigTracingLevel(): TracingLevel {
 	let config = getConfiguration();
 	if (config) {
 		return config[configTracingLevel];
-	}
-	else {
-		return undefined;
+	} else {
+		return TracingLevel.Critical;
 	}
 }
 

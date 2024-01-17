@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
@@ -326,6 +326,23 @@ suite('ConnectionDialogService tests', () => {
 		assert.strictEqual(returnedModel._groupName, 'testGroup');
 		await delay(200);
 		assert(called, 'fillInConnectionInputs was not called as expected.');
+	});
+
+	test('handleFillInConnectionInputs prompts user for unsupported provider', async () => {
+		connectionProfile.providerName = 'MySQL';
+
+		mockWidget.setup(x => x.fillInConnectionInputs(TypeMoq.It.isAny()))
+			.returns(() => { })
+			.verifiable(TypeMoq.Times.once());
+		mockConnectionManagementService.setup(x => x.handleUnsupportedProvider('MySQL'))
+			.returns(() => TypeMoq.It.isAny())
+			.verifiable(TypeMoq.Times.once());
+
+		await (connectionDialogService as any).handleFillInConnectionInputs(connectionProfile);
+
+		// Verify All
+		mockConnectionManagementService.verifyAll();
+		mockWidget.verifyAll();
 	});
 
 	test('handleOnConnect calls connectAndSaveProfile when called with profile', async () => {

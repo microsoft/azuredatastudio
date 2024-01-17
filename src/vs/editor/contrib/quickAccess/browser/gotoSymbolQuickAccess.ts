@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { DeferredPromise } from 'vs/base/common/async';
@@ -14,7 +14,7 @@ import { format, trim } from 'vs/base/common/strings';
 import { IRange, Range } from 'vs/editor/common/core/range';
 import { ScrollType } from 'vs/editor/common/editorCommon';
 import { ITextModel } from 'vs/editor/common/model';
-import { DocumentSymbol, SymbolKind, SymbolKinds, SymbolTag } from 'vs/editor/common/languages';
+import { DocumentSymbol, SymbolKind, SymbolKinds, SymbolTag, getAriaLabelForSymbol } from 'vs/editor/common/languages';
 import { IOutlineModelService } from 'vs/editor/contrib/documentSymbols/browser/outlineModel';
 import { AbstractEditorNavigationQuickAccessProvider, IEditorNavigationQuickAccessOptions, IQuickAccessTextEditorContext } from 'vs/editor/contrib/quickAccess/browser/editorNavigationQuickAccess';
 import { localize } from 'vs/nls';
@@ -316,7 +316,7 @@ export abstract class AbstractGotoSymbolQuickAccessProvider extends AbstractEdit
 				kind: symbol.kind,
 				score: symbolScore,
 				label: symbolLabelWithIcon,
-				ariaLabel: symbolLabel,
+				ariaLabel: getAriaLabelForSymbol(symbol.name, symbol.kind),
 				description: containerLabel,
 				highlights: deprecated ? undefined : {
 					label: symbolMatches,

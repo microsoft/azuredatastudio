@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { escape } from 'vs/base/common/strings';
@@ -15,11 +15,11 @@ const reviewGuidanceLabel = localize( // intentionally not escaped because of it
 	{
 		key: 'reviewGuidanceLabel',
 		comment: [
-			'{Locked="<a href=\"https://github.com/microsoft/vscode/wiki/Submitting-Bugs-and-Suggestions\" target=\"_blank\">"}',
+			'{Locked="<a href=\"https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions\" target=\"_blank\">"}', // {{SQL CARBON EDIT}} - Update link to Azure Data Studio submitting bugs and suggestions wiki
 			'{Locked="</a>"}'
 		]
 	},
-	'Before you report an issue here please <a href="https://github.com/microsoft/vscode/wiki/Submitting-Bugs-and-Suggestions" target="_blank">review the guidance we provide</a>.'
+	'Before you report an issue here please <a href="https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions" target="_blank">review the guidance we provide</a>.' // {{SQL CARBON EDIT}} - Update link to Azure Data Studio submitting bugs and suggestions wiki
 );
 
 export default (): string => `

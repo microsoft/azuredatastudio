@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { groupBy } from 'vs/base/common/arrays';
@@ -77,11 +77,11 @@ export class TestService extends Disposable implements ITestService {
 	/**
 	 * @inheritdoc
 	 */
-	public readonly showInlineOutput = MutableObservableValue.stored(new StoredValue<boolean>({
+	public readonly showInlineOutput = MutableObservableValue.stored(this._register(new StoredValue<boolean>({
 		key: 'inlineTestOutputVisible',
 		scope: StorageScope.WORKSPACE,
 		target: StorageTarget.USER
-	}, this.storage), true);
+	}, this.storage)), true);
 
 	constructor(
 		@IContextKeyService contextKeyService: IContextKeyService,

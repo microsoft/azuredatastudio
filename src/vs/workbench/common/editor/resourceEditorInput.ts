@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Verbosity, EditorInputWithPreferredResource, EditorInputCapabilities } from 'vs/workbench/common/editor';
@@ -10,6 +10,7 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { dirname, isEqual } from 'vs/base/common/resources';
 import { IFilesConfigurationService } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
+import { IMarkdownString } from 'vs/base/common/htmlContent';
 
 /**
  * The base class for all editor inputs that open resources.
@@ -173,5 +174,9 @@ export abstract class AbstractResourceEditorInput extends EditorInput implements
 			case Verbosity.MEDIUM:
 				return this.mediumTitle;
 		}
+	}
+
+	override isReadonly(): boolean | IMarkdownString {
+		return this.filesConfigurationService.isReadonly(this.resource);
 	}
 }

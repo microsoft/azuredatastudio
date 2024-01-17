@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/extensionsViewlet';
@@ -12,7 +12,7 @@ import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { Disposable, MutableDisposable } from 'vs/base/common/lifecycle';
 import { Event } from 'vs/base/common/event';
 import { Action } from 'vs/base/common/actions';
-import { append, $, Dimension, hide, show, DragAndDropObserver } from 'vs/base/browser/dom';
+import { append, $, Dimension, hide, show, DragAndDropObserver, trackFocus } from 'vs/base/browser/dom';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -62,6 +62,7 @@ import { extname } from 'vs/base/common/resources';
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { ILocalizedString } from 'vs/platform/action/common/action';
+import { registerNavigableContainer } from 'vs/workbench/browser/actions/widgetNavigationCommands';
 
 export const DefaultViewsContext = new RawContextKey<boolean>('defaultExtensionViews', true);
 export const ExtensionsSortByContext = new RawContextKey<string>('extensionsSortByValue', '');
@@ -626,6 +627,22 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 		}));
 
 		super.create(append(this.root, $('.extensions')));
+
+		const focusTracker = this._register(trackFocus(this.root));
+		const isSearchBoxFocused = () => this.searchBox?.inputWidget.hasWidgetFocus();
+		this._register(registerNavigableContainer({
+			focusNotifiers: [focusTracker],
+			focusNextWidget: () => {
+				if (isSearchBoxFocused()) {
+					this.focusListView();
+				}
+			},
+			focusPreviousWidget: () => {
+				if (!isSearchBoxFocused()) {
+					this.searchBox?.focus();
+				}
+			}
+		}));
 	}
 
 	override focus(): void {
@@ -748,13 +765,19 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 		}
 	}
 
-	private count(): number {
-		return this.panes.reduce((count, view) => (<ExtensionsListView>view).count() + count, 0);
+	private getFirstExpandedPane(): ExtensionsListView | undefined {
+		for (const pane of this.panes) {
+			if (pane.isExpanded() && pane instanceof ExtensionsListView) {
+				return pane;
+			}
+		}
+		return undefined;
 	}
 
 	private focusListView(): void {
-		if (this.count() > 0) {
-			this.panes[0].focus();
+		const pane = this.getFirstExpandedPane();
+		if (pane && pane.count() > 0) {
+			pane.focus();
 		}
 	}
 

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { range } from 'vs/base/common/arrays';
@@ -108,7 +108,7 @@ export interface IPagedListOptions<T> {
 	readonly mouseSupport?: boolean;
 	readonly horizontalScrolling?: boolean;
 	readonly scrollByPage?: boolean;
-	readonly additionalScrollHeight?: number;
+	readonly paddingBottom?: number;
 }
 
 function fromPagedListOptions<T>(modelProvider: () => IPagedModel<T>, options: IPagedListOptions<T>): IListOptions<number> {

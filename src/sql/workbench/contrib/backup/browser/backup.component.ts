@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/backupDialog';
@@ -162,6 +162,8 @@ export class BackupComponent extends AngularDisposable {
 
 	private _uri?: string;
 	private _engineEdition?: number;
+	private _allowFileBackup: boolean = false;
+	private _allowUrlBackup: boolean = false;
 
 	private connection?: IConnectionProfile;
 	private databaseName?: string;
@@ -486,6 +488,13 @@ export class BackupComponent extends AngularDisposable {
 		this.selectedInitOption = this.existingMediaOptions[0];
 		this.backupTypeOptions = [];
 
+		if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance) {
+			this._allowUrlBackup = true;
+		} else if (this._engineEdition !== DatabaseEngineEdition.SqlDataWarehouse && this._engineEdition !== DatabaseEngineEdition.SqlOnDemand) {
+			this._allowUrlBackup = true;
+			this._allowFileBackup = true;
+		}
+
 		if (isMetadataPopulated) {
 			this.enableBackupButton();
 
@@ -528,20 +537,25 @@ export class BackupComponent extends AngularDisposable {
 			this.recoveryBox!.disable();
 			this.mediaNameBox!.disable();
 			this.mediaDescriptionBox!.disable();
-			if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance) {
-				this.toUrlCheckBox.checked = true;
-				this.copyOnlyCheckBox.checked = true;
-				this.backupTypeSelectBox!.disable();
-				this.copyOnlyCheckBox!.disable();
-				this.backupRetainDaysBox!.disable();
-				this.disableMedia = true;
-			} else {
+			if (this._allowFileBackup && this._allowUrlBackup) {
+				this.toUrlCheckBox.enable();
+			}
+
+			if (this._allowFileBackup) {
 				this.toUrlCheckBox.checked = false;
 				this.copyOnlyCheckBox.checked = false;
+				this.backupTypeSelectBox!.enable();
 				this.backupRetainDaysBox!.enable();
 				this.copyOnlyCheckBox!.enable();
-				this.backupTypeSelectBox!.enable();
 				this.disableMedia = false;
+			} else {
+				this.toUrlCheckBox.checked = true;
+				this.copyOnlyCheckBox.checked = true;
+				this.backupRetainDaysBox!.disable();
+				this.backupTypeSelectBox!.disable();
+				this.copyOnlyCheckBox!.disable();
+				this.toUrlCheckBox.disable();
+				this.disableMedia = true;
 			}
 			this.onChangeToUrl();
 
@@ -569,7 +583,9 @@ export class BackupComponent extends AngularDisposable {
 			for (let i in this.backupPathTypePairs) {
 				pathlist.push({ text: i });
 			}
-			this.setDefaultBackupPaths();
+			if (Object.keys(this.backupPathTypePairs).length === 0) {
+				this.setDefaultBackupPaths();
+			}
 			this.pathListBox!.setOptions(pathlist, 0);
 		}
 	}
@@ -739,9 +755,6 @@ export class BackupComponent extends AngularDisposable {
 
 	private onAddUrlClick(): void {
 		this.backupRestoreUrlBrowserDialogService.showDialog(this._uri!,
-			this.defaultNewBackupFolder!,
-			fileFiltersSet,
-			FileValidationConstants.backup,
 			false,
 			false,
 			this.getDefaultBackupFileName()).then(url => this.handleUrlPathAdded(url));

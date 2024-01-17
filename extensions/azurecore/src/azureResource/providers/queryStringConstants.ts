@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { azureResource } from 'azurecore';
@@ -77,6 +77,11 @@ export const cosmosMongoDbQuery = `(type == "${azureResource.AzureResourceType.c
  * Lists all Cosmos DB for MongoDB accounts
  */
 export const cosmosPostgresDbQuery = `type == "${azureResource.AzureResourceType.postgresServerGroup}" or type == "${azureResource.AzureResourceType.postgresServerGroupv2}"`;
+
+/**
+ * Lists all Cosmos DB for NoSQL accounts
+ */
+export const cosmosNoSqlQuery = `type == "${azureResource.AzureResourceType.cosmosDbAccount}" and kind == "${Constants.cosmosDbNoSqlKind}"`;
 
 /**
  * Lists all Log Analytics workspaces

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { addDisposableListener, Dimension, DragAndDropObserver, EventType, isAncestor } from 'vs/base/browser/dom';
@@ -577,9 +577,8 @@ export class ViewPaneContainer extends Component implements IViewPaneContainer {
 		event.stopPropagation();
 		event.preventDefault();
 
-		const anchor: { x: number; y: number } = { x: event.posx, y: event.posy };
 		this.contextMenuService.showContextMenu({
-			getAnchor: () => anchor,
+			getAnchor: () => event,
 			getActions: () => this.menuActions?.getContextMenuActions() ?? []
 		});
 	}
@@ -743,9 +742,8 @@ export class ViewPaneContainer extends Component implements IViewPaneContainer {
 
 		const actions: IAction[] = viewPane.menuActions.getContextMenuActions();
 
-		const anchor: { x: number; y: number } = { x: event.posx, y: event.posy };
 		this.contextMenuService.showContextMenu({
-			getAnchor: () => anchor,
+			getAnchor: () => event,
 			getActions: () => actions
 		});
 	}

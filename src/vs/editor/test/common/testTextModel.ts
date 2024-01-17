@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
@@ -32,6 +32,8 @@ import { PLAINTEXT_LANGUAGE_ID } from 'vs/editor/common/languages/modesRegistry'
 import { ILanguageFeatureDebounceService, LanguageFeatureDebounceService } from 'vs/editor/common/services/languageFeatureDebounce';
 import { ILanguageFeaturesService } from 'vs/editor/common/services/languageFeatures';
 import { LanguageFeaturesService } from 'vs/editor/common/services/languageFeaturesService';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { mock } from 'vs/base/test/common/mock';
 
 class TestTextModel extends TextModel {
 	public registerDisposable(disposable: IDisposable): void {
@@ -96,6 +98,10 @@ export function createModelServices(disposables: DisposableStore, services: Serv
 		[ITextResourcePropertiesService, TestTextResourcePropertiesService],
 		[IThemeService, TestThemeService],
 		[ILogService, NullLogService],
+		[IEnvironmentService, new class extends mock<IEnvironmentService>() {
+			override isBuilt: boolean = true;
+			override isExtensionDevelopment: boolean = false;
+		}],
 		[ILanguageFeatureDebounceService, LanguageFeatureDebounceService],
 		[ILanguageFeaturesService, LanguageFeaturesService],
 		[IModelService, ModelService],

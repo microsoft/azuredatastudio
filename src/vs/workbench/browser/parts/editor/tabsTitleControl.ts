@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/tabstitlecontrol';
 import { isMacintosh, isWindows } from 'vs/base/common/platform';
 import { shorten } from 'vs/base/common/labels';
-import { EditorResourceAccessor, GroupIdentifier, Verbosity, IEditorPartOptions, SideBySideEditor, EditorInputCapabilities, IUntypedEditorInput } from 'vs/workbench/common/editor'; // {{SQL CARBON EDIT}} - remove unused
+import { EditorResourceAccessor, GroupIdentifier, Verbosity, IEditorPartOptions, SideBySideEditor, EditorInputCapabilities, IUntypedEditorInput, preventEditorClose, EditorCloseMethod } from 'vs/workbench/common/editor'; // {{SQL CARBON EDIT}} - Remove unused imports
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { computeEditorAriaLabel } from 'vs/workbench/browser/editor';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -54,6 +54,7 @@ import { UNLOCK_GROUP_COMMAND_ID } from 'vs/workbench/browser/parts/editor/edito
 import { StandardMouseEvent } from 'vs/base/browser/mouseEvent';
 import { ITreeViewsDnDService } from 'vs/editor/common/services/treeViewsDndService';
 import { DraggedTreeItemsIdentifier } from 'vs/editor/common/services/treeViewsDnd';
+import { IEditorResolverService } from 'vs/workbench/services/editor/common/editorResolverService';
 
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query'; // {{SQL CARBON EDIT}}
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService'; // {{SQL CARBON EDIT}}
@@ -154,9 +155,10 @@ export class TabsTitleControl extends TitleControl {
 		@IQueryEditorService private readonly queryEditorService: IQueryEditorService, // {{SQL CARBON EDIT}}
 		@IPathService private readonly pathService: IPathService,
 		@IEditorGroupsService private readonly editorGroupService: IEditorGroupsService,
-		@ITreeViewsDnDService private readonly treeViewsDragAndDropService: ITreeViewsDnDService
+		@ITreeViewsDnDService private readonly treeViewsDragAndDropService: ITreeViewsDnDService,
+		@IEditorResolverService editorResolverService: IEditorResolverService
 	) {
-		super(parent, accessor, group, contextMenuService, instantiationService, contextKeyService, keybindingService, notificationService, menuService, quickInputService, themeService, configurationService, fileService);
+		super(parent, accessor, group, contextMenuService, instantiationService, contextKeyService, keybindingService, notificationService, menuService, quickInputService, themeService, configurationService, fileService, editorResolverService);
 
 		// Resolve the correct path library for the OS we are on
 		// If we are connected to remote, this accounts for the
@@ -186,7 +188,7 @@ export class TabsTitleControl extends TitleControl {
 		this.updateTabSizing(false);
 
 		// Tabs Scrollbar
-		this.tabsScrollbar = this._register(this.createTabsScrollbar(this.tabsContainer));
+		this.tabsScrollbar = this.createTabsScrollbar(this.tabsContainer);
 		this.tabsAndActionsContainer.appendChild(this.tabsScrollbar.getDomNode());
 
 		// Tabs Container listeners
@@ -208,19 +210,19 @@ export class TabsTitleControl extends TitleControl {
 	}
 
 	private createTabsScrollbar(scrollable: HTMLElement): ScrollableElement {
-		const tabsScrollbar = new ScrollableElement(scrollable, {
+		const tabsScrollbar = this._register(new ScrollableElement(scrollable, {
 			horizontal: ScrollbarVisibility.Auto,
 			horizontalScrollbarSize: this.getTabsScrollbarSizing(),
 			vertical: ScrollbarVisibility.Hidden,
 			scrollYToX: true,
 			useShadows: false
-		});
+		}));
 
-		tabsScrollbar.onScroll(e => {
+		this._register(tabsScrollbar.onScroll(e => {
 			if (e.scrollLeftChanged) {
 				scrollable.scrollLeft = e.scrollLeft;
 			}
-		});
+		}));
 
 		return tabsScrollbar;
 	}
@@ -238,6 +240,7 @@ export class TabsTitleControl extends TitleControl {
 
 		const options = this.accessor.partOptions;
 		if (options.tabSizing === 'fixed') {
+			tabsContainer.style.setProperty('--tab-sizing-fixed-min-width', `${options.tabSizingFixedMinWidth}px`);
 			tabsContainer.style.setProperty('--tab-sizing-fixed-max-width', `${options.tabSizingFixedMaxWidth}px`);
 
 			// For https://github.com/microsoft/vscode/issues/40290 we want to
@@ -253,6 +256,7 @@ export class TabsTitleControl extends TitleControl {
 				this.updateTabsFixedWidth(false);
 			}));
 		} else if (fromEvent) {
+			tabsContainer.style.removeProperty('--tab-sizing-fixed-min-width');
 			tabsContainer.style.removeProperty('--tab-sizing-fixed-max-width');
 			this.updateTabsFixedWidth(false);
 		}
@@ -465,10 +469,9 @@ export class TabsTitleControl extends TitleControl {
 			EventHelper.stop(e);
 
 			// Find target anchor
-			let anchor: HTMLElement | { x: number; y: number } = tabsContainer;
+			let anchor: HTMLElement | StandardMouseEvent = tabsContainer;
 			if (e instanceof MouseEvent) {
-				const event = new StandardMouseEvent(e);
-				anchor = { x: event.posx, y: event.posy };
+				anchor = new StandardMouseEvent(e);
 			}
 
 			// Show it
@@ -736,6 +739,7 @@ export class TabsTitleControl extends TitleControl {
 
 		// Update tabs sizing
 		if (
+			oldOptions.tabSizingFixedMinWidth !== newOptions.tabSizingFixedMinWidth ||
 			oldOptions.tabSizingFixedMaxWidth !== newOptions.tabSizingFixedMaxWidth ||
 			oldOptions.tabSizing !== newOptions.tabSizing
 		) {
@@ -858,10 +862,10 @@ export class TabsTitleControl extends TitleControl {
 			}
 
 			// Open tabs editor
-			const input = this.group.getEditorByIndex(index);
-			if (input) {
+			const editor = this.group.getEditorByIndex(index);
+			if (editor) {
 				// Even if focus is preserved make sure to activate the group.
-				this.group.openEditor(input, { preserveFocus, activation: EditorActivation.ACTIVATE });
+				this.group.openEditor(editor, { preserveFocus, activation: EditorActivation.ACTIVATE });
 			}
 
 			return undefined;
@@ -870,9 +874,9 @@ export class TabsTitleControl extends TitleControl {
 		const showContextMenu = (e: Event) => {
 			EventHelper.stop(e);
 
-			const input = this.group.getEditorByIndex(index);
-			if (input) {
-				this.onContextMenu(input, e, tab);
+			const editor = this.group.getEditorByIndex(index);
+			if (editor) {
+				this.onContextMenu(editor, e, tab);
 			}
 		};
 
@@ -896,6 +900,11 @@ export class TabsTitleControl extends TitleControl {
 		disposables.add(addDisposableListener(tab, EventType.AUXCLICK, e => {
 			if (e.button === 1 /* Middle Button*/) {
 				EventHelper.stop(e, true /* for https://github.com/microsoft/vscode/issues/56715 */);
+
+				const editor = this.group.getEditorByIndex(index);
+				if (editor && preventEditorClose(this.group, editor, EditorCloseMethod.MOUSE, this.accessor.partOptions)) {
+					return;
+				}
 
 				this.blockRevealActiveTabOnce();
 				this.closeEditorAction.run({ groupId: this.group.id, editorIndex: index });
@@ -923,9 +932,9 @@ export class TabsTitleControl extends TitleControl {
 			// Run action on Enter/Space
 			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 				handled = true;
-				const input = this.group.getEditorByIndex(index);
-				if (input) {
-					this.group.openEditor(input);
+				const editor = this.group.getEditorByIndex(index);
+				if (editor) {
+					this.group.openEditor(editor);
 				}
 			}
 
@@ -971,7 +980,9 @@ export class TabsTitleControl extends TitleControl {
 
 				const editor = this.group.getEditorByIndex(index);
 				if (editor && this.group.isPinned(editor)) {
-					this.accessor.arrangeGroups(GroupsArrangement.TOGGLE, this.group);
+					if (this.accessor.partOptions.doubleClickTabToToggleEditorGroupSizes) {
+						this.accessor.arrangeGroups(GroupsArrangement.TOGGLE, this.group);
+					}
 				} else {
 					this.group.pinEditor(editor);
 				}
@@ -982,9 +993,9 @@ export class TabsTitleControl extends TitleControl {
 		disposables.add(addDisposableListener(tab, EventType.CONTEXT_MENU, e => {
 			EventHelper.stop(e, true);
 
-			const input = this.group.getEditorByIndex(index);
-			if (input) {
-				this.onContextMenu(input, e, tab);
+			const editor = this.group.getEditorByIndex(index);
+			if (editor) {
+				this.onContextMenu(editor, e, tab);
 			}
 		}, true /* use capture to fix https://github.com/microsoft/vscode/issues/19145 */));
 
@@ -2113,6 +2124,10 @@ registerThemingParticipant((theme, collector) => {
 			.monaco-workbench .part.editor > .content .editor-group-container.active > .title .tabs-container > .tab.active:hover  {
 				outline: 1px solid;
 				outline-offset: -5px;
+			}
+
+			.monaco-workbench .part.editor > .content .editor-group-container.active > .title .tabs-container > .tab.active:focus {
+				outline-style: dashed;
 			}
 
 			.monaco-workbench .part.editor > .content .editor-group-container > .title .tabs-container > .tab.active {

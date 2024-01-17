@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { VSBuffer } from 'vs/base/common/buffer';
@@ -19,7 +19,7 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 import { IFileService } from 'vs/platform/files/common/files';
 import { ILogService } from 'vs/platform/log/common/log';
 import { getServiceMachineId } from 'vs/platform/externalServices/common/serviceMachineId';
-import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
+import { IStorageEntry, IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IUriIdentityService } from 'vs/platform/uriIdentity/common/uriIdentity';
 import { AbstractInitializer, AbstractSynchroniser, getSyncResourceLogLabel, IAcceptResult, IMergeResult, IResourcePreview, isSyncData } from 'vs/platform/userDataSync/common/abstractSynchronizer';
@@ -440,9 +440,11 @@ export class GlobalStateInitializer extends AbstractInitializer {
 		}
 
 		if (Object.keys(storage).length) {
+			const storageEntries: Array<IStorageEntry> = [];
 			for (const key of Object.keys(storage)) {
-				this.storageService.store(key, storage[key], StorageScope.PROFILE, StorageTarget.USER);
+				storageEntries.push({ key, value: storage[key], scope: StorageScope.PROFILE, target: StorageTarget.USER });
 			}
+			this.storageService.storeAll(storageEntries, true);
 		}
 	}
 

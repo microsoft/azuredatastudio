@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Code } from './code';
@@ -13,8 +13,7 @@ export const enum StatusBarElement {
 	INDENTATION_STATUS = 4,
 	ENCODING_STATUS = 5,
 	EOL_STATUS = 6,
-	LANGUAGE_STATUS = 7,
-	FEEDBACK_ICON = 8
+	LANGUAGE_STATUS = 7
 }
 
 export class StatusBar {
@@ -58,8 +57,6 @@ export class StatusBar {
 				return `.statusbar-item[id="status.editor.eol"]`;
 			case StatusBarElement.LANGUAGE_STATUS:
 				return `.statusbar-item[id="status.editor.mode"]`;
-			case StatusBarElement.FEEDBACK_ICON:
-				return `.statusbar-item[id="status.feedback"]`;
 			default:
 				throw new Error(element);
 		}

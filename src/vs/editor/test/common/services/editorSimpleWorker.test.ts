@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -149,7 +149,7 @@ suite('EditorSimpleWorker', () => {
 		const smallerEdits = await worker.computeHumanReadableDiff(
 			model.uri.toString(),
 			edits,
-			{ ignoreTrimWhitespace: false, maxComputationTimeMs: 0 }
+			{ ignoreTrimWhitespace: false, maxComputationTimeMs: 0, computeMoves: false }
 		);
 
 		const t1 = applyEdits(model.getValue(), edits);

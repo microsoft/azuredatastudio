@@ -1,13 +1,12 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { AbstractGotoLineQuickAccessProvider } from 'vs/editor/contrib/quickAccess/browser/gotoLineQuickAccess';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IQuickAccessRegistry, Extensions } from 'vs/platform/quickinput/common/quickAccess';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
-import { withNullAsUndefined } from 'vs/base/common/types';
 import { GoToLineNLS } from 'vs/editor/common/standaloneStrings';
 import { Event } from 'vs/base/common/event';
 import { EditorAction, registerEditorAction, ServicesAccessor } from 'vs/editor/browser/editorExtensions';
@@ -25,7 +24,7 @@ export class StandaloneGotoLineQuickAccessProvider extends AbstractGotoLineQuick
 	}
 
 	protected get activeTextEditorControl() {
-		return withNullAsUndefined(this.editorService.getFocusedCodeEditor());
+		return this.editorService.getFocusedCodeEditor() ?? undefined;
 	}
 }
 

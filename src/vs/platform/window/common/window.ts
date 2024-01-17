@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IStringDictionary } from 'vs/base/common/collections';
@@ -174,11 +174,6 @@ export function useWindowControlsOverlay(configurationService: IConfigurationSer
 		return false; // only supported when title bar is custom
 	}
 
-	const configuredUseWindowControlsOverlay = configurationService.getValue<boolean | undefined>('window.experimental.windowControlsOverlay.enabled');
-	if (typeof configuredUseWindowControlsOverlay === 'boolean') {
-		return configuredUseWindowControlsOverlay;
-	}
-
 	// Default to true.
 	return true;
 }
@@ -273,6 +268,7 @@ export interface IWindowConfiguration {
 export interface IOSConfiguration {
 	readonly release: string;
 	readonly hostname: string;
+	readonly arch: string;
 }
 
 export interface INativeWindowConfiguration extends IWindowConfiguration, NativeParsedArgs, ISandboxConfiguration {

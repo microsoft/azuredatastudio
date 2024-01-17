@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
@@ -728,6 +728,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return result;
 	}
 
+	public getNonDefaultOptions(profile: interfaces.IConnectionProfile): string {
+		let convProfile = new ConnectionProfile(this._capabilitiesService, profile);
+		let nonDefOptions = convProfile.getNonDefaultOptionsString();
+		return nonDefOptions.replace('(', '[').replace(')', ']');
+	}
+
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {
 		let connectionManagementInfo = this._connectionStatusManager.findConnection(uri);
 		if (!connectionManagementInfo) {
@@ -1290,6 +1296,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				this._connectionStatusManager.updateDatabaseName(info);
 			}
 			connection.serverInfo = info.serverInfo;
+			connection.serverConnectionId = info.serverConnectionId;
 			connection.extensionTimer.stop();
 
 			connection.connectHandler(true);
@@ -1613,6 +1620,20 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	public getConnectionInfo(fileUri: string): ConnectionManagementInfo | undefined {
 		return this._connectionStatusManager.isConnected(fileUri) ? this._connectionStatusManager.findConnection(fileUri) : undefined;
+	}
+
+	/**
+	 * Updates the connection info for an editor uri with a new server connection id.
+	 * This is done as the id may have changed on the server side after a restart.
+	 */
+	public updateServerConnectionId(editorUri: string, newId: string): boolean {
+		let newInfo: ConnectionManagementInfo = this.getConnectionInfo(editorUri);
+		let isDifferent: boolean = false;
+		if (newInfo && newInfo.serverConnectionId !== newId) {
+			isDifferent = true;
+			newInfo.serverConnectionId = newId;
+		}
+		return isDifferent;
 	}
 
 	public async listDatabases(connectionUri: string): Promise<azdata.ListDatabasesResult | undefined> {

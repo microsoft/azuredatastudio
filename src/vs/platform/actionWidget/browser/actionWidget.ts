@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as dom from 'vs/base/browser/dom';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -17,7 +17,13 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { InstantiationType, registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { createDecorator, IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { inputActiveOptionBackground, registerColor } from 'vs/platform/theme/common/colorRegistry';
 
+registerColor(
+	'actionBar.toggledBackground',
+	{ dark: inputActiveOptionBackground, light: inputActiveOptionBackground, hcDark: inputActiveOptionBackground, hcLight: inputActiveOptionBackground, },
+	localize('actionBar.toggledBackground', 'Background color for toggled action items in action bar.')
+);
 
 const ActionWidgetContextKeys = {
 	Visible: new RawContextKey<boolean>('codeActionMenuVisible', false, localize('codeActionMenuVisible', "Whether the action widget list is visible"))

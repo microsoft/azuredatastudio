@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/editorstatus';
@@ -8,12 +8,12 @@ import { localize } from 'vs/nls';
 import { runAtThisOrScheduleAtNextAnimationFrame } from 'vs/base/browser/dom';
 import { format, compare, splitLines } from 'vs/base/common/strings';
 import { extname, basename, isEqual } from 'vs/base/common/resources';
-import { areFunctions, assertIsDefined, withNullAsUndefined, withUndefinedAsNull } from 'vs/base/common/types';
+import { areFunctions, assertIsDefined } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import { Action } from 'vs/base/common/actions';
 import { Language } from 'vs/base/common/platform';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { IFileEditorInput, EditorResourceAccessor, IEditorPane, SideBySideEditor, EditorInputCapabilities } from 'vs/workbench/common/editor';
+import { IFileEditorInput, EditorResourceAccessor, IEditorPane, SideBySideEditor } from 'vs/workbench/common/editor';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { Disposable, MutableDisposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
@@ -47,8 +47,6 @@ import { Event } from 'vs/base/common/event';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment, IStatusbarEntry } from 'vs/workbench/services/statusbar/browser/statusbar';
 import { IMarker, IMarkerService, MarkerSeverity, IMarkerData } from 'vs/platform/markers/common/markers';
-import { STATUS_BAR_PROMINENT_ITEM_BACKGROUND, STATUS_BAR_PROMINENT_ITEM_FOREGROUND } from 'vs/workbench/common/theme';
-import { themeColorFromId } from 'vs/platform/theme/common/themeService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { SideBySideEditorInput } from 'vs/workbench/common/editor/sideBySideEditorInput';
 import { AutomaticLanguageDetectionLikelyWrongClassification, AutomaticLanguageDetectionLikelyWrongId, IAutomaticLanguageDetectionLikelyWrongData, ILanguageDetectionService } from 'vs/workbench/services/languageDetection/common/languageDetectionWorkerService';
@@ -343,7 +341,7 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 			return this.quickInputService.pick([{ label: localize('noEditor', "No text editor active at this time") }]);
 		}
 
-		if (this.editorService.activeEditor?.hasCapability(EditorInputCapabilities.Readonly)) {
+		if (this.editorService.activeEditor?.isReadonly()) {
 			return this.quickInputService.pick([{ label: localize('noWritableCodeEditor', "The active code editor is read-only.") }]);
 		}
 
@@ -384,8 +382,7 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 					ariaLabel: text,
 					tooltip: localize('disableTabMode', "Disable Accessibility Mode"),
 					command: 'editor.action.toggleTabFocusMode',
-					backgroundColor: themeColorFromId(STATUS_BAR_PROMINENT_ITEM_BACKGROUND),
-					color: themeColorFromId(STATUS_BAR_PROMINENT_ITEM_FOREGROUND)
+					kind: 'prominent'
 				}, 'status.editor.tabFocusMode', StatusbarAlignment.RIGHT, 100.7);
 			}
 		} else {
@@ -403,8 +400,7 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 					ariaLabel: text,
 					tooltip: localize('disableColumnSelectionMode', "Disable Column Selection Mode"),
 					command: 'editor.action.toggleColumnSelection',
-					backgroundColor: themeColorFromId(STATUS_BAR_PROMINENT_ITEM_BACKGROUND),
-					color: themeColorFromId(STATUS_BAR_PROMINENT_ITEM_FOREGROUND)
+					kind: 'prominent'
 				}, 'status.editor.columnSelectionMode', StatusbarAlignment.RIGHT, 100.8);
 			}
 		} else {
@@ -582,7 +578,7 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 	private updateStatusBar(): void {
 		const activeInput = this.editorService.activeEditor;
 		const activeEditorPane = this.editorService.activeEditorPane;
-		const activeCodeEditor = activeEditorPane ? withNullAsUndefined(getCodeEditor(activeEditorPane.getControl())) : undefined;
+		const activeCodeEditor = activeEditorPane ? getCodeEditor(activeEditorPane.getControl()) ?? undefined : undefined;
 
 		// Update all states
 		this.onColumnSelectionModeChange(activeCodeEditor);
@@ -689,7 +685,7 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 			const textModel = editorWidget.getModel();
 			if (textModel) {
 				const languageId = textModel.getLanguageId();
-				info.languageId = withNullAsUndefined(this.languageService.getLanguageName(languageId));
+				info.languageId = this.languageService.getLanguageName(languageId) ?? undefined;
 			}
 		}
 
@@ -820,7 +816,7 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 		if (activeEditorPane) {
 			const activeResource = EditorResourceAccessor.getCanonicalUri(activeEditorPane.input, { supportSideBySide: SideBySideEditor.PRIMARY });
 			if (activeResource && isEqual(activeResource, resource)) {
-				const activeCodeEditor = withNullAsUndefined(getCodeEditor(activeEditorPane.getControl()));
+				const activeCodeEditor = getCodeEditor(activeEditorPane.getControl()) ?? undefined;
 
 				return this.onEncodingChange(activeEditorPane, activeCodeEditor); // only update if the encoding changed for the active resource
 			}
@@ -1039,7 +1035,7 @@ export class ChangeLanguageAction extends Action2 {
 		let currentLanguageId: string | undefined;
 		if (textModel) {
 			currentLanguageId = textModel.getLanguageId();
-			currentLanguageName = withNullAsUndefined(languageService.getLanguageName(currentLanguageId));
+			currentLanguageName = languageService.getLanguageName(currentLanguageId) ?? undefined;
 		}
 
 		let hasLanguageSupport = !!resource;
@@ -1113,7 +1109,7 @@ export class ChangeLanguageAction extends Action2 {
 
 		// User decided to configure settings for current language
 		if (pick === configureLanguageSettings) {
-			preferencesService.openUserSettings({ jsonEditor: true, revealSetting: { key: `[${withUndefinedAsNull(currentLanguageId)}]`, edit: true } });
+			preferencesService.openUserSettings({ jsonEditor: true, revealSetting: { key: `[${currentLanguageId ?? null}]`, edit: true } });
 			return;
 		}
 
@@ -1131,7 +1127,7 @@ export class ChangeLanguageAction extends Action2 {
 						const resource = EditorResourceAccessor.getOriginalUri(activeEditor, { supportSideBySide: SideBySideEditor.PRIMARY });
 						if (resource) {
 							// Detect languages since we are in an untitled file
-							let languageId: string | undefined = withNullAsUndefined(languageService.guessLanguageIdByFilepathOrFirstLine(resource, textModel.getLineContent(1)));
+							let languageId: string | undefined = languageService.guessLanguageIdByFilepathOrFirstLine(resource, textModel.getLineContent(1)) ?? undefined;
 							if (!languageId || languageId === 'unknown') {
 								detectedLanguage = await languageDetectionService.detectLanguage(resource);
 								languageId = detectedLanguage;
@@ -1275,7 +1271,7 @@ export class ChangeEOLAction extends Action2 {
 			return;
 		}
 
-		if (editorService.activeEditor?.hasCapability(EditorInputCapabilities.Readonly)) {
+		if (editorService.activeEditor?.isReadonly()) {
 			await quickInputService.pick([{ label: localize('noWritableCodeEditor', "The active code editor is read-only.") }]);
 			return;
 		}
@@ -1292,7 +1288,7 @@ export class ChangeEOLAction extends Action2 {
 		const eol = await quickInputService.pick(EOLOptions, { placeHolder: localize('pickEndOfLine', "Select End of Line Sequence"), activeItem: EOLOptions[selectedIndex] });
 		if (eol) {
 			const activeCodeEditor = getCodeEditor(editorService.activeTextEditorControl);
-			if (activeCodeEditor?.hasModel() && !editorService.activeEditor?.hasCapability(EditorInputCapabilities.Readonly)) {
+			if (activeCodeEditor?.hasModel() && !editorService.activeEditor?.isReadonly()) {
 				textModel = activeCodeEditor.getModel();
 				textModel.pushStackElement();
 				textModel.pushEOL(eol.eol);
@@ -1357,7 +1353,7 @@ export class ChangeEncodingAction extends Action2 {
 		let action: IQuickPickItem | undefined;
 		if (encodingSupport instanceof UntitledTextEditorInput) {
 			action = saveWithEncodingPick;
-		} else if (activeEditorPane.input.hasCapability(EditorInputCapabilities.Readonly)) {
+		} else if (activeEditorPane.input.isReadonly()) {
 			action = reopenWithEncodingPick;
 		} else {
 			action = await quickInputService.pick([reopenWithEncodingPick, saveWithEncodingPick], { placeHolder: localize('pickAction', "Select Action"), matchOnDetail: true });
@@ -1382,7 +1378,7 @@ export class ChangeEncodingAction extends Action2 {
 
 		const isReopenWithEncoding = (action === reopenWithEncodingPick);
 
-		const configuredEncoding = textResourceConfigurationService.getValue(withNullAsUndefined(resource), 'files.encoding');
+		const configuredEncoding = textResourceConfigurationService.getValue(resource ?? undefined, 'files.encoding');
 
 		let directMatchIndex: number | undefined;
 		let aliasMatchIndex: number | undefined;

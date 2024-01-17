@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -367,7 +367,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	primary: KeyMod.Alt | KeyCode.UpArrow
 });
 
-CommandsRegistry.registerCommand('scm.openInTerminal', async (accessor, provider: ISCMProvider) => {
+CommandsRegistry.registerCommand('scm.openInIntegratedTerminal', async (accessor, provider: ISCMProvider) => {
 	if (!provider || !provider.rootUri) {
 		return;
 	}
@@ -376,13 +376,31 @@ CommandsRegistry.registerCommand('scm.openInTerminal', async (accessor, provider
 	await commandService.executeCommand('openInIntegratedTerminal', provider.rootUri);
 });
 
+CommandsRegistry.registerCommand('scm.openInTerminal', async (accessor, provider: ISCMProvider) => {
+	if (!provider || !provider.rootUri) {
+		return;
+	}
+
+	const commandService = accessor.get(ICommandService);
+	await commandService.executeCommand('openInTerminal', provider.rootUri);
+});
+
 MenuRegistry.appendMenuItem(MenuId.SCMSourceControl, {
 	group: '100_end',
 	command: {
 		id: 'scm.openInTerminal',
-		title: localize('open in terminal', "Open In Terminal")
+		title: localize('open in external terminal', "Open in External Terminal")
 	},
-	when: ContextKeyExpr.equals('scmProviderHasRootUri', true)
+	when: ContextKeyExpr.and(ContextKeyExpr.equals('scmProviderHasRootUri', true), ContextKeyExpr.or(ContextKeyExpr.equals('config.terminal.sourceControlRepositoriesKind', 'external'), ContextKeyExpr.equals('config.terminal.sourceControlRepositoriesKind', 'both')))
+});
+
+MenuRegistry.appendMenuItem(MenuId.SCMSourceControl, {
+	group: '100_end',
+	command: {
+		id: 'scm.openInIntegratedTerminal',
+		title: localize('open in integrated terminal', "Open in Integrated Terminal")
+	},
+	when: ContextKeyExpr.and(ContextKeyExpr.equals('scmProviderHasRootUri', true), ContextKeyExpr.or(ContextKeyExpr.equals('config.terminal.sourceControlRepositoriesKind', 'integrated'), ContextKeyExpr.equals('config.terminal.sourceControlRepositoriesKind', 'both')))
 });
 
 registerSingleton(ISCMService, SCMService, InstantiationType.Delayed);

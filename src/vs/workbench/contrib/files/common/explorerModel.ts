@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { URI } from 'vs/base/common/uri';
@@ -21,6 +21,7 @@ import { ExplorerFileNestingTrie } from 'vs/workbench/contrib/files/common/explo
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { assertIsDefined } from 'vs/base/common/types';
 import { IFilesConfigurationService } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
+import { IMarkdownString } from 'vs/base/common/htmlContent';
 
 export class ExplorerModel implements IDisposable {
 
@@ -148,7 +149,7 @@ export class ExplorerItem {
 		return !!this._isDirectory;
 	}
 
-	get isReadonly(): boolean {
+	get isReadonly(): boolean | IMarkdownString {
 		return this.filesConfigService.isReadonly(this.resource, { resource: this.resource, name: this.name, readonly: this._readonly, locked: this._locked });
 	}
 

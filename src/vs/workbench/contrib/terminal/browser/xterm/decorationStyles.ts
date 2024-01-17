@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as dom from 'vs/base/browser/dom';
@@ -29,8 +29,7 @@ export const enum DecorationSelector {
 	Codicon = 'codicon',
 	XtermDecoration = 'xterm-decoration',
 	OverviewRuler = '.xterm-decoration-overview-ruler',
-	QuickFix = 'quick-fix',
-	LightBulb = 'codicon-light-bulb'
+	QuickFix = 'quick-fix'
 }
 
 export class TerminalDecorationHoverManager extends Disposable {

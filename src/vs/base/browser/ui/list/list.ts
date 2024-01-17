@@ -1,10 +1,11 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IDragAndDropData } from 'vs/base/browser/dnd';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { GestureEvent } from 'vs/base/browser/touch';
 
 export interface IListVirtualDelegate<T> {
@@ -61,7 +62,7 @@ export interface IListContextMenuEvent<T> {
 	readonly browserEvent: UIEvent;
 	readonly element: T | undefined;
 	readonly index: number | undefined;
-	readonly anchor: HTMLElement | { readonly x: number; readonly y: number };
+	readonly anchor: HTMLElement | IMouseEvent;
 }
 
 export interface IIdentityProvider<T> {

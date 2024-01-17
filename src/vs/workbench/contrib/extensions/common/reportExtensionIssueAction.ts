@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
@@ -25,7 +25,7 @@ export class ReportExtensionIssueAction extends Action {
 
 	override async run(): Promise<void> {
 		await this.issueService.openReporter({
-			extensionId: this.extension.id,
+			extensionId: this.extension.identifier.value,
 		});
 	}
 }

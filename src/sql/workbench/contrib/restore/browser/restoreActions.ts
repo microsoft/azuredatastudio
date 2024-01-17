@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -18,6 +18,7 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES } from 'sql/workbench/common/constants';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export function showRestore(accessor: ServicesAccessor, connection: IConnectionProfile): Promise<void> {
 	const restoreDialogService = accessor.get(IRestoreDialogController);
@@ -56,7 +57,8 @@ export class RestoreAction extends Task {
 		if (!profile) {
 			const objectExplorerService = accessor.get<IObjectExplorerService>(IObjectExplorerService);
 			const workbenchEditorService = accessor.get<IEditorService>(IEditorService);
-			profile = getCurrentGlobalConnection(objectExplorerService, connectionManagementService, workbenchEditorService);
+			const logService = accessor.get<ILogService>(ILogService);
+			profile = getCurrentGlobalConnection(objectExplorerService, connectionManagementService, workbenchEditorService, logService);
 		}
 		if (profile) {
 			const serverInfo = connectionManagementService.getServerInfo(profile.id);

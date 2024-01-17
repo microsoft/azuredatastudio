@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
@@ -11,6 +11,11 @@ import { getSelectedServiceStatus } from '../models/migrationLocalStorage';
 import { MenuCommands, SqlMigrationExtensionId } from '../api/utils';
 import { DashboardStatusBar } from './DashboardStatusBar';
 import { ShowStatusMessageDialog } from '../dialog/generic/genericDialogs';
+import * as utils from '../api/utils';
+import * as fs from 'fs';
+import { parseAssessmentReport } from '../dialog/assessment/assessmentUtils';
+import { HelpAndSupportDialog } from '../dialog/help/helpAndSupportDialog';
+import { TelemetryAction, TelemetryViews, logError } from '../telemetry';
 
 export const EmptySettingValue = '-';
 
@@ -45,6 +50,8 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 	protected openMigrationsFcn!: (status: AdsMigrationStatus) => Promise<void>;
 	protected serviceContextChangedEvent!: vscode.EventEmitter<ServiceContextChangeEvent>;
 	protected statusBar!: DashboardStatusBar;
+
+	private mementoToken: string = 'sqlMigration.assessmentResults';
 
 	protected abstract initialize(view: azdata.ModelView): Promise<void>;
 
@@ -136,23 +143,60 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 		return newMigrationButton;
 	}
 
-	protected createNewSupportRequestButton(): azdata.ButtonComponent {
-		const newSupportRequestButton = this.view.modelBuilder.button()
+	protected createImportMigrationButton(): azdata.ButtonComponent {
+		const importMigrationButton = this.view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
-				label: loc.DESKTOP_SUPPORT_BUTTON_LABEL,
-				description: loc.DESKTOP_SUPPORT_BUTTON_DESCRIPTION,
+				label: loc.DESKTOP_IMPORT_MIGRATION_BUTTON_LABEL,
+				description: loc.DESKTOP_IMPORT_MIGRATION_BUTTON_DESCRIPTION,
+				height: 24,
+				iconHeight: 24,
+				iconWidth: 24,
+				iconPath: IconPathHelper.addNew,
+			}).component();
+		this.disposables.push(
+			importMigrationButton.onDidClick(async () => {
+				const filepath = await utils.promptUserForFile({ 'Json (*.json)': ['json'] });
+				if (filepath) {
+					try {
+						const assessmentReportJson = fs.readFileSync(filepath, 'utf-8');
+						const assessmentReport = JSON.parse(assessmentReportJson);
+
+						const saveInfo = parseAssessmentReport(assessmentReport);
+						await this.context.globalState.update(`${this.mementoToken}.${loc.importAssessmentKey}`, saveInfo);
+					} catch (err) {
+						logError(TelemetryViews.DashboardTab, TelemetryAction.ImportAssessmentFailed, err);
+						void vscode.window.showErrorMessage(err.message);
+					}
+
+					const actionId = MenuCommands.StartMigration;
+					const args = {
+						extensionId: SqlMigrationExtensionId,
+						issueTitle: loc.DASHBOARD_MIGRATE_TASK_BUTTON_TITLE,
+					};
+					await vscode.commands.executeCommand(actionId, args);
+				}
+			}));
+		return importMigrationButton;
+	}
+
+	protected createNewHelpAndSupportButton(): azdata.ButtonComponent {
+		const newHelpAndSupportButton = this.view.modelBuilder.button()
+			.withProps({
+				buttonType: azdata.ButtonType.Normal,
+				label: loc.DESKTOP_HELP_SUPPORT_BUTTON_LABEL,
+				description: loc.DESKTOP_HELP_SUPPORT_BUTTON_DESCRIPTION,
 				height: 24,
 				iconHeight: 24,
 				iconWidth: 24,
 				iconPath: IconPathHelper.newSupportRequest,
 			}).component();
 		this.disposables.push(
-			newSupportRequestButton.onDidClick(async () => {
-				await vscode.env.openExternal(vscode.Uri.parse(
-					`https://portal.azure.com/#blade/Microsoft_Azure_Support/HelpAndSupportBlade/newsupportrequest`));
+			newHelpAndSupportButton.onDidClick(async () => {
+				const helpAndSupportDialog = new HelpAndSupportDialog();
+				await helpAndSupportDialog.openDialog();
 			}));
-		return newSupportRequestButton;
+		return newHelpAndSupportButton;
 	}
 
 	protected createFeedbackButton(): azdata.ButtonComponent {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -72,7 +72,11 @@ export class WebviewPortMappingManager implements IDisposable {
 		if (existing) {
 			return existing;
 		}
-		const tunnel = await this.tunnelService.openTunnel({ getAddress: async () => remoteAuthority }, undefined, remotePort);
+		const tunnelOrError = await this.tunnelService.openTunnel({ getAddress: async () => remoteAuthority }, undefined, remotePort);
+		let tunnel: RemoteTunnel | undefined;
+		if (typeof tunnelOrError === 'string') {
+			tunnel = undefined;
+		}
 		if (tunnel) {
 			this._tunnels.set(remotePort, tunnel);
 		}

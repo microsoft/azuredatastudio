@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/restoreDialog';
@@ -217,7 +217,6 @@ export class RestoreDialog extends Modal {
 		this._browseUrlButton = this._register(new Button(DOM.append(urlBrowseContainer, DOM.$('.file-browser')), { secondary: true, ...defaultButtonStyles }));
 		this._browseUrlButton.label = browseLabel;
 		this._browseUrlButton.setWidth('50px');
-
 
 		this._restoreFromBackupFileElement = DOM.$('.backup-file-path');
 		DOM.hide(this._restoreFromBackupFileElement);
@@ -716,9 +715,6 @@ export class RestoreDialog extends Modal {
 
 	private onUrlBrowserRequested(): void {
 		this.backupRestoreUrlBrowserDialogService.showDialog(this._ownerUri!,
-			this.viewModel.defaultBackupFolder!,
-			fileFiltersSet,
-			FileValidationConstants.restore,
 			true,
 			true,
 			'')
@@ -786,12 +782,6 @@ export class RestoreDialog extends Modal {
 			DOM.hide(this._restoreFromUrlElement);
 			DOM.show(this._targetDatabaseElement!);
 			DOM.hide(this._targetDatabaseInputElement!);
-			if (!this._panel.contains(this._fileTab.identifier)) {
-				this._panel.pushTab(this._fileTab);
-			}
-			if (!this._panel.contains(this._optionsTab.identifier)) {
-				this._panel.pushTab(this._optionsTab);
-			}
 			this.viewModel.deviceType = MediaDeviceType.File;
 		} else if (selectedRestoreFrom === this._databaseTitle) {
 			this._sourceDatabaseSelectBox.enable();
@@ -802,12 +792,6 @@ export class RestoreDialog extends Modal {
 			DOM.hide(this._restoreFromUrlElement);
 			DOM.show(this._targetDatabaseElement!);
 			DOM.hide(this._targetDatabaseInputElement!);
-			if (!this._panel.contains(this._fileTab.identifier)) {
-				this._panel.pushTab(this._fileTab);
-			}
-			if (!this._panel.contains(this._optionsTab.identifier)) {
-				this._panel.pushTab(this._optionsTab);
-			}
 			this.viewModel.deviceType = MediaDeviceType.File;
 		} else if (selectedRestoreFrom === this._urlTitle) {
 			this.viewModel.onRestoreFromChanged(true);
@@ -821,6 +805,16 @@ export class RestoreDialog extends Modal {
 			this._panel.removeTab(this._optionsTab.identifier);
 			this._databaseDropdown.value = '';
 			this.viewModel.deviceType = MediaDeviceType.Url;
+		}
+
+		if (this._engineEdition !== DatabaseEngineEdition.SqlManagedInstance) {
+			// hide file and option tabs for SQL MI
+			if (!this._panel.contains(this._fileTab.identifier)) {
+				this._panel.pushTab(this._fileTab);
+			}
+			if (!this._panel.contains(this._optionsTab.identifier)) {
+				this._panel.pushTab(this._optionsTab);
+			}
 		}
 		this.resetRestoreContent();
 	}
@@ -895,7 +889,7 @@ export class RestoreDialog extends Modal {
 			this._onDatabaseListFocused.fire();
 			this._restoreFromSelectBox.disable();
 		} else {
-			this._restoreFromSelectBox.setOptions([this._databaseTitle, this._backupFileTitle]);
+			this._restoreFromSelectBox.setOptions([this._databaseTitle, this._backupFileTitle, this._urlTitle]);
 			title = this._databaseTitle;
 			this._restoreFromSelectBox.enable();
 		}

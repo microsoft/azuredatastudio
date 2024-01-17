@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { URI } from 'vs/base/common/uri';
@@ -9,7 +9,6 @@ import { IQuickDiffService, QuickDiff, QuickDiffProvider } from 'vs/workbench/co
 import { isEqualOrParent } from 'vs/base/common/resources';
 import { score } from 'vs/editor/common/languageSelector';
 import { Emitter } from 'vs/base/common/event';
-import { withNullAsUndefined } from 'vs/base/common/types';
 import { IUriIdentityService } from 'vs/platform/uriIdentity/common/uriIdentity';
 
 function createProviderComparer(uri: URI): (a: QuickDiffProvider, b: QuickDiffProvider) => number {
@@ -71,7 +70,7 @@ export class QuickDiffService extends Disposable implements IQuickDiffService {
 		const diffs = await Promise.all(providers.map(async provider => {
 			const scoreValue = provider.selector ? score(provider.selector, uri, language, isSynchronized, undefined, undefined) : 10;
 			const diff: Partial<QuickDiff> = {
-				originalResource: scoreValue > 0 ? withNullAsUndefined(await provider.getOriginalResource(uri)) : undefined,
+				originalResource: scoreValue > 0 ? await provider.getOriginalResource(uri) ?? undefined : undefined,
 				label: provider.label,
 				isSCM: provider.isSCM
 			};

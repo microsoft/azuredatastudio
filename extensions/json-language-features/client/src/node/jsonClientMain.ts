@@ -1,9 +1,9 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionContext, OutputChannel, window, workspace, l10n } from 'vscode';
+import { ExtensionContext, OutputChannel, window, workspace, l10n, env } from 'vscode';
 import { startClient, LanguageClientConstructor, SchemaRequestService, languageServerDescription } from '../jsonClient';
 import { ServerOptions, TransportKind, LanguageClientOptions, LanguageClient, BaseLanguageClient } from 'vscode-languageclient/node';
 
@@ -129,7 +129,10 @@ async function getSchemaRequestService(context: ExtensionContext, log: Log): Pro
 	const isXHRResponse = (error: any): error is XHRResponse => typeof error?.status === 'number';
 
 	const request = async (uri: string, etag?: string): Promise<string> => {
-		const headers: Headers = { 'Accept-Encoding': 'gzip, deflate' };
+		const headers: Headers = {
+			'Accept-Encoding': 'gzip, deflate',
+			'User-Agent': `${env.appName} (${env.appHost})`
+		};
 		if (etag) {
 			headers['If-None-Match'] = etag;
 		}

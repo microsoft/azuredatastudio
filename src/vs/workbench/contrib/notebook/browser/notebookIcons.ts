@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Codicon } from 'vs/base/common/codicons';
@@ -31,6 +31,7 @@ export const openAsTextIcon = registerIcon('notebook-open-as-text', Codicon.file
 export const revertIcon = registerIcon('notebook-revert', Codicon.discard, localize('revertIcon', 'Icon to revert in notebook editors.'));
 export const renderOutputIcon = registerIcon('notebook-render-output', Codicon.preview, localize('renderOutputIcon', 'Icon to render output in diff editor.'));
 export const mimetypeIcon = registerIcon('notebook-mimetype', Codicon.code, localize('mimetypeIcon', 'Icon for a mime type in notebook editors.'));
+export const copyIcon = registerIcon('notebook-copy', Codicon.copy, localize('copyIcon', 'Icon to copy content to clipboard'));
 
 export const previousChangeIcon = registerIcon('notebook-diff-editor-previous-change', Codicon.arrowUp, localize('previousChangeIcon', 'Icon for the previous change action in the diff editor.'));
 export const nextChangeIcon = registerIcon('notebook-diff-editor-next-change', Codicon.arrowDown, localize('nextChangeIcon', 'Icon for the next change action in the diff editor.'));

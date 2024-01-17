@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as aria from 'vs/base/browser/ui/aria/aria';
@@ -120,7 +120,7 @@ export class DebugService implements IDebugService {
 		this.disposables.add(this.adapterManager);
 		this.configurationManager = this.instantiationService.createInstance(ConfigurationManager, this.adapterManager);
 		this.disposables.add(this.configurationManager);
-		this.debugStorage = this.instantiationService.createInstance(DebugStorage);
+		this.debugStorage = this.disposables.add(this.instantiationService.createInstance(DebugStorage));
 
 		this.chosenEnvironments = this.debugStorage.loadChosenEnvironments();
 

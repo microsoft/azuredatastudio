@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Code } from '../code';
@@ -9,7 +9,7 @@ import { Dialog } from './dialog';
 const ADD_REMOTE_BOOK_DIALOG_TITLE = 'New Jupyter Book (Preview)';
 
 // The option inputs for this dialog are dynamically generated based on previous selections, so in order to ensure
-// that the option we want to select exists we wait on the option element to be created first and then select it. 
+// that the option we want to select exists we wait on the option element to be created first and then select it.
 const LOCATION_SELECT_SELECTOR = '.modal .modal-body .select-container select[aria-label="Location"]';
 const LOCATION_OPTION_SELECTOR = (option: string) => `${LOCATION_SELECT_SELECTOR} option[value="${option}"]`;
 const REPO_URL_INPUT_SELECTOR = '.modal .modal-body input[aria-label="Repository URL"]';

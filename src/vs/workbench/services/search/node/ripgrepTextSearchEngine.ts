@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as cp from 'child_process';
@@ -370,7 +370,7 @@ function getNumLinesAndLastNewlineLength(text: string): { numLines: number; last
 
 // exported for testing
 export function getRgArgs(query: TextSearchQuery, options: TextSearchOptions): string[] {
-	const args = ['--hidden'];
+	const args = ['--hidden', '--no-require-git'];
 	args.push(query.isCaseSensitive ? '--case-sensitive' : '--ignore-case');
 
 	const { doubleStarIncludes, otherIncludes } = groupBy(

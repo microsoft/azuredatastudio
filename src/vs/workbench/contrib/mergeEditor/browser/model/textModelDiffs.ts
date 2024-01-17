@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { compareBy, numberComparator } from 'vs/base/common/arrays';
@@ -36,7 +36,8 @@ export class TextModelDiffs extends Disposable {
 
 		const recomputeSignal = observableSignal('recompute');
 
-		this._register(autorun('Update diff state', reader => {
+		this._register(autorun(reader => {
+			/** @description Update diff state */
 			recomputeSignal.read(reader);
 			this.recompute(reader);
 		}));

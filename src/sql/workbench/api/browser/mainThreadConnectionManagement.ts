@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ExtHostConnectionManagementShape, MainThreadConnectionManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
@@ -19,6 +19,7 @@ import { IConnectionDialogService } from 'sql/workbench/services/connection/comm
 import { deepClone } from 'vs/base/common/objects';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadConnectionManagement)
 export class MainThreadConnectionManagement extends Disposable implements MainThreadConnectionManagementShape {
@@ -32,7 +33,8 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IEditorService private _workbenchEditorService: IEditorService,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@ILogService private _logService: ILogService
 	) {
 		super();
 		if (extHostContext) {
@@ -125,11 +127,11 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public $getCurrentConnection(): Thenable<azdata.connection.Connection> {
-		return Promise.resolve(this.convertConnection(TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._workbenchEditorService, true)));
+		return Promise.resolve(this.convertConnection(TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._workbenchEditorService, this._logService, true)));
 	}
 
 	public $getCurrentConnectionProfile(): Thenable<azdata.connection.ConnectionProfile> {
-		return Promise.resolve(this.convertToConnectionProfile(TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._workbenchEditorService, true)));
+		return Promise.resolve(this.convertToConnectionProfile(TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._workbenchEditorService, this._logService, true)));
 	}
 
 	public $getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
@@ -183,6 +185,11 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		// Need to have access to getOptionsKey, so recreate profile from details.
 		let convertedProfile = new ConnectionProfile(this._capabilitiesService, profile);
 		return this._connectionManagementService.openChangePasswordDialog(convertedProfile);
+	}
+
+	public $getNonDefaultOptions(profile: azdata.IConnectionProfile): Thenable<string> {
+		let convertedProfile = new ConnectionProfile(this._capabilitiesService, profile);
+		return Promise.resolve(this._connectionManagementService.getNonDefaultOptions(convertedProfile));
 	}
 
 	public async $listDatabases(connectionId: string): Promise<string[]> {

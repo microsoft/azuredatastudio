@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { assertFn, checkAdjacentItems } from 'vs/base/common/assert';
@@ -41,6 +41,7 @@ export class MergeDiffComputer implements IMergeDiffComputer {
 			{
 				ignoreTrimWhitespace: false,
 				maxComputationTimeMs: 0,
+				computeMoves: false,
 			},
 			diffAlgorithm,
 		);
@@ -64,6 +65,37 @@ export class MergeDiffComputer implements IMergeDiffComputer {
 		);
 
 		assertFn(() => {
+			for (const c of changes) {
+				const inputRange = c.inputRange;
+				const outputRange = c.outputRange;
+				const inputTextModel = c.inputTextModel;
+				const outputTextModel = c.outputTextModel;
+
+				for (const map of c.rangeMappings) {
+					let inputRangesValid = inputRange.startLineNumber - 1 <= map.inputRange.startLineNumber
+						&& map.inputRange.endLineNumber <= inputRange.endLineNumberExclusive;
+					if (inputRangesValid && map.inputRange.startLineNumber === inputRange.startLineNumber - 1) {
+						inputRangesValid = map.inputRange.endColumn >= inputTextModel.getLineMaxColumn(map.inputRange.startLineNumber);
+					}
+					if (inputRangesValid && map.inputRange.endLineNumber === inputRange.endLineNumberExclusive) {
+						inputRangesValid = map.inputRange.endColumn === 1;
+					}
+
+					let outputRangesValid = outputRange.startLineNumber - 1 <= map.outputRange.startLineNumber
+						&& map.outputRange.endLineNumber <= outputRange.endLineNumberExclusive;
+					if (outputRangesValid && map.outputRange.startLineNumber === outputRange.startLineNumber - 1) {
+						outputRangesValid = map.outputRange.endColumn >= outputTextModel.getLineMaxColumn(map.outputRange.endLineNumber);
+					}
+					if (outputRangesValid && map.outputRange.endLineNumber === outputRange.endLineNumberExclusive) {
+						outputRangesValid = map.outputRange.endColumn === 1;
+					}
+
+					if (!inputRangesValid || !outputRangesValid) {
+						return false;
+					}
+				}
+			}
+
 			return changes.length === 0 || (changes[0].inputRange.startLineNumber === changes[0].outputRange.startLineNumber &&
 				checkAdjacentItems(changes,
 					(m1, m2) => m2.inputRange.startLineNumber - m1.inputRange.endLineNumberExclusive === m2.outputRange.startLineNumber - m1.outputRange.endLineNumberExclusive &&

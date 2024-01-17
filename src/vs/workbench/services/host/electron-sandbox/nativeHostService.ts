@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Event } from 'vs/base/common/event';
@@ -133,6 +133,10 @@ class WorkbenchHostService extends Disposable implements IHostService {
 
 	close(): Promise<void> {
 		return this.nativeHostService.closeWindow();
+	}
+
+	async withExpectedShutdown<T>(expectedShutdownTask: () => Promise<T>): Promise<T> {
+		return await expectedShutdownTask();
 	}
 
 	//#endregion

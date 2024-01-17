@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 export const Account = 'account';
@@ -36,12 +36,6 @@ export const EnableArcFeaturesSection = 'enableArcFeatures';
 export const ServiceName = 'azuredatastudio';
 
 export const TenantSection = 'tenant';
-
-export const AzureTenantConfigSection = AzureSection + '.' + TenantSection + '.' + ConfigSection;
-
-export const Filter = 'filter';
-
-export const AzureTenantConfigFilterSetting = AzureTenantConfigSection + '.' + Filter;
 
 export const NoSystemKeyChainSection = 'noSystemKeychain';
 
@@ -169,6 +163,7 @@ export enum Platform {
 /////////////// Azure Resource provider Ids
 export const AZURE_MONITOR_PROVIDER_ID = 'azure.resource.providers.azureMonitor';
 export const COSMOSDB_MONGO_PROVIDER_ID = 'azure.resource.providers.cosmosDbMongo';
+export const COSMOSDB_NOSQL_PROVIDER_ID = 'azure.resource.providers.cosmosDbNoSql';
 export const COSMOSDB_POSTGRES_PROVIDER_ID = 'azure.resource.providers.cosmosDbPostgres';
 export const DATABASE_PROVIDER_ID = 'azure.resource.providers.database';
 export const DATABASE_SERVER_PROVIDER_ID = 'azure.resource.providers.databaseServer';

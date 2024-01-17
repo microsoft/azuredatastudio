@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { getDomNodePagePosition } from 'vs/base/browser/dom';
@@ -251,10 +251,11 @@ export class RunToCursorAction extends EditorAction {
 			id: RunToCursorAction.ID,
 			label: RunToCursorAction.LABEL,
 			alias: 'Debug: Run to Cursor',
-			precondition: ContextKeyExpr.and(CONTEXT_IN_DEBUG_MODE, PanelFocusContext.toNegated(), CONTEXT_DEBUG_STATE.isEqualTo('stopped'), EditorContextKeys.editorTextFocus),
+			precondition: ContextKeyExpr.and(CONTEXT_DEBUGGERS_AVAILABLE, PanelFocusContext.toNegated(), EditorContextKeys.editorTextFocus),
 			contextMenuOpts: {
 				group: 'debug',
-				order: 2
+				order: 2,
+				when: CONTEXT_IN_DEBUG_MODE
 			}
 		});
 	}

@@ -224,8 +224,8 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">Присоединение базы данных</target>
       </trans-unit>
       <trans-unit id="objectManagement.user.aadAuth">
-        <source xml:lang="en">Authenticate with Azure Active Directory</source>
-        <target state="translated">Проверить подлинность с помощью Azure Active Directory</target>
+        <source xml:lang="en">Authenticate with Microsoft Entra</source>
+        <target state="translated">Проверка подлинности с помощью Microsoft Entra</target>
       </trans-unit>
       <trans-unit id="objectManagement.user.sqlAuth">
         <source xml:lang="en">Authenticate with password</source>
@@ -275,13 +275,13 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Automatically set processor affinity mask for all processors</source>
         <target state="translated">Автоматически устанавливать маску привязки процессоров для всех процессоров.</target>
       </trans-unit>
-      <trans-unit id="objectManagement.login.aadAuthenticationType">
-        <source xml:lang="en">Azure Active Directory Authentication</source>
-        <target state="translated">Проверка подлинности Azure Active Directory</target>
-      </trans-unit>
       <trans-unit id="objectManagement.azurePricingLink">
         <source xml:lang="en">Azure SQL Database pricing calculator</source>
         <target state="translated">Калькулятор цен на базу данных SQL Azure</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backButtonLabel">
+        <source xml:lang="en">Back</source>
+        <target state="translated">Назад</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.backupSectionHeader">
         <source xml:lang="en">Backup</source>
@@ -654,6 +654,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Filegroup</source>
         <target state="translated">Группа файлов</target>
       </trans-unit>
+      <trans-unit id="objectManagement.filegroupsNameInput">
+        <source xml:lang="en">Filegroup Name</source>
+        <target state="translated">Имя файловой группы</target>
+      </trans-unit>
       <trans-unit id="objectManagement.filegroupsSectionHeader">
         <source xml:lang="en">Filegroups</source>
         <target state="translated">Файловые группы</target>
@@ -882,6 +886,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Memory Used By Memory Optimized Objects</source>
         <target state="translated">Память, используемая оптимизированными для обработки в памяти объектами</target>
       </trans-unit>
+      <trans-unit id="objectManagement.login.aadAuthenticationType">
+        <source xml:lang="en">Microsoft Entra ID Authentication</source>
+        <target state="translated">Проверка подлинности Microsoft Entra ID</target>
+      </trans-unit>
       <trans-unit id="objectManagement.minServerMemoryText">
         <source xml:lang="en">Minimum Server Memory (MB)</source>
         <target state="translated">Минимальный объем памяти сервера (МБ)</target>
@@ -889,6 +897,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.databaseProperties.monitoringSectionText">
         <source xml:lang="en">Monitoring</source>
         <target state="translated">Мониторинг</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.notAvailableText">
+        <source xml:lang="en">N/A</source>
+        <target state="translated">Нет данных</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.name">
         <source xml:lang="en">Name</source>
@@ -1336,6 +1348,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Value for Secondary</source>
         <target state="translated">Значение для получателя</target>
       </trans-unit>
+      <trans-unit id="objectManagement.locksValidation">
+        <source xml:lang="en">Value should be greater than {0}. Choose 0 for default settings.</source>
+        <target state="translated">Значение должно быть больше {0}. Выберите 0 для использования параметров по умолчанию.</target>
+      </trans-unit>
       <trans-unit id="objectManagement.versionText">
         <source xml:lang="en">Version</source>
         <target state="translated">Версия</target>
@@ -1598,13 +1614,13 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Associate schemas to JSON files in the current project</source>
         <target state="translated">Связь схем с JSON-файлами в текущем проекте</target>
       </trans-unit>
-      <trans-unit id="title.attachDatabase">
-        <source xml:lang="en">Attach (Preview)</source>
-        <target state="translated">Подключение (предварительная версия)</target>
-      </trans-unit>
       <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
         <source xml:lang="en">Attach DB filename</source>
         <target state="translated">Имя вложенного файла базы данных</target>
+      </trans-unit>
+      <trans-unit id="title.attachDatabase">
+        <source xml:lang="en">Attach Database (Preview)</source>
+        <target state="translated">Подключение базы данных (предварительная версия)</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
         <source xml:lang="en">Attestation URL</source>
@@ -1618,10 +1634,6 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Authentication type</source>
         <target state="translated">Тип проверки подлинности</target>
       </trans-unit>
-      <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
-        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory — универсальный с поддержкой MFA</target>
-      </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS">
         <source xml:lang="en">Azure Attestation</source>
         <target state="translated">Аттестация Azure</target>
@@ -1629,6 +1641,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="title.changeNotebookConnection">
         <source xml:lang="en">Change SQL Notebook Connection</source>
         <target state="translated">Изменить подключение к записной книжке SQL</target>
+      </trans-unit>
+      <trans-unit id="mssql.connection.clearPooledConnections">
+        <source xml:lang="en">Clear Pooled Connections</source>
+        <target state="translated">Очистить подключения в пулах</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.commandTimeout.displayName">
         <source xml:lang="en">Command timeout</source>
@@ -1695,8 +1711,8 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">Конструктор</target>
       </trans-unit>
       <trans-unit id="title.detachDatabase">
-        <source xml:lang="en">Detach (Preview)</source>
-        <target state="translated">Отсоединить (предварительная версия)</target>
+        <source xml:lang="en">Detach Database (Preview)</source>
+        <target state="translated">Окончательное удаление базы данных (предварительная версия)</target>
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.disableGroupBySchema">
         <source xml:lang="en">Disable Group By Schema</source>
@@ -1811,8 +1827,8 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">Включено</target>
       </trans-unit>
       <trans-unit id="mssql.enableConnectionPooling">
-        <source xml:lang="en">Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed. To clear pooled connections, run the command: 'SQL Server: Clear Pooled Connections'</source>
-        <target state="translated">Позволяет использовать пулы соединений для подключений MSSQL, чтобы повысить общую производительность подключения Azure Data Studio. Этот параметр включен по умолчанию. Необходимо перезапустить Azure Data Studio при смене значения. Чтобы очистить подключения в пуле, запустите команду: "SQL Server: Clear Pooled Connections"</target>
+        <source xml:lang="en">Enables connection pooling on MSSQL connections to improve overall performance of Azure Data Studio connectivity. This setting is enabled by default. Azure Data Studio is required to be relaunched when the value is changed. To clear pooled connections, run the command: 'MSSQL: Clear Pooled Connections'</source>
+        <target state="translated">Позволяет использовать пулы подключений для подключений MSSQL, чтобы повысить общую производительность подключения Azure Data Studio. Этот параметр включен по умолчанию. Azure Data Studio необходимо перезапустить при изменении значения. Чтобы очистить подключения в пулах, выполните команду "MSSQL: Clear Pooled Connections"</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.description">
         <source xml:lang="en">Enables or disables Always Encrypted for the connection</source>
@@ -1938,6 +1954,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
         <target state="translated">Максимальное число старых файлов, удаляемых при запуске, с истекшим сроком mssql.logRetentionMinutes. Файлы, которые не были очищены из-за этого ограничения, очищаются при следующем запуске Azure Data Studio.</target>
       </trans-unit>
+      <trans-unit id="mssql.parallelMessageProcessingLimit">
+        <source xml:lang="en">Maximum number of requests that should be handled in parallel by the backend SQL Tools Service. This brings performance benefits to MSSQL queries and connections. This limit is applicable only when `MSSQL: Parallel Message Processing` is enabled. The default value is 100, and can be adjusted as needed as per OS support. Azure Data Studio is required to be relaunched when the value is changed.</source>
+        <target state="translated">Максимальное число запросов, которые должны обрабатываться параллельно внутренней службой SQL Tools. Это повышает производительность запросов и соединений MSSQL. Это ограничение применимо, только если включена опция "MSSQL: параллельная обработка сообщений". Значение по умолчанию — 100, и его можно изменять по мере необходимости в соответствии с поддержкой ОС. Azure Data Studio необходимо перезапустить при изменении значения.</target>
+      </trans-unit>
       <trans-unit id="mssql.query.setRowCount">
         <source xml:lang="en">Maximum number of rows to return before the server stops processing your query.</source>
         <target state="translated">Максимальное число строк, которые будут возвращены перед тем, как сервер перестанет обрабатывать ваш запрос.</target>
@@ -1945,6 +1965,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="mssql.query.textSize">
         <source xml:lang="en">Maximum size of text and ntext data returned from a SELECT statement</source>
         <target state="translated">Максимальный размер текста и данных ntext, возвращаемых инструкцией SELECT</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
+        <source xml:lang="en">Microsoft Entra ID - Universal with MFA support</source>
+        <target state="translated">Microsoft Entra ID — универсальный с поддержкой MFA</target>
       </trans-unit>
       <trans-unit id="mssql.provider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>
@@ -1978,17 +2002,33 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Name of the SQL Server instance</source>
         <target state="translated">Имя экземпляра SQL Server</target>
       </trans-unit>
-      <trans-unit id="title.newObject">
-        <source xml:lang="en">New (Preview)</source>
-        <target state="translated">Новое (предварительная версия)</target>
+      <trans-unit id="title.newApplicationRole">
+        <source xml:lang="en">New Application Role (Preview)</source>
+        <target state="translated">Новая роль приложения (предварительная версия)</target>
       </trans-unit>
       <trans-unit id="title.newDatabase">
         <source xml:lang="en">New Database (Preview)</source>
         <target state="translated">Новая база данных (предварительная версия)</target>
       </trans-unit>
+      <trans-unit id="title.newDatabaseRole">
+        <source xml:lang="en">New Database Role (Preview)</source>
+        <target state="translated">Новая роль базы данных (предварительная версия)</target>
+      </trans-unit>
+      <trans-unit id="title.newLogin">
+        <source xml:lang="en">New Login (Preview)</source>
+        <target state="translated">Новый вход в систему (предварительная версия)</target>
+      </trans-unit>
+      <trans-unit id="title.newServerRole">
+        <source xml:lang="en">New Server Role (Preview)</source>
+        <target state="translated">Новая роль сервера (предварительная версия)</target>
+      </trans-unit>
       <trans-unit id="title.newTable">
         <source xml:lang="en">New Table</source>
         <target state="translated">Создать таблицу</target>
+      </trans-unit>
+      <trans-unit id="title.newUser">
+        <source xml:lang="en">New User (Preview)</source>
+        <target state="translated">Новый пользователь (предварительная версия)</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.None">
         <source xml:lang="en">None</source>
@@ -2069,10 +2109,6 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="mssql.connectionOptions.authType.categoryValues.sqlLogin">
         <source xml:lang="en">SQL Login</source>
         <target state="translated">Имя входа SQL</target>
-      </trans-unit>
-      <trans-unit id="mssql.connection.clearPooledConnections">
-        <source xml:lang="en">SQL Server: Clear Pooled Connections</source>
-        <target state="translated">SQL Server: очистка общих подключений</target>
       </trans-unit>
       <trans-unit id="mssql.objectExplorer.disableGroupBySchemaTitle">
         <source xml:lang="en">SQL Server: Disable Group By Schema</source>
@@ -2294,6 +2330,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
         <target state="translated">Если задано значение TRUE, объект соединения извлекается из соответствующего пула или при необходимости создается и добавляется в соответствующий пул</target>
       </trans-unit>
+      <trans-unit id="mssql.parallelMessageProcessing">
+        <source xml:lang="en">Whether the requests to the backend SQL Tools Service should be handled in parallel. This brings performance benefits to MSSQL queries and connections. The default value is true. Azure Data Studio is required to be relaunched when the value is changed.</source>
+        <target state="translated">Следует ли параллельно обрабатывать запросы к службе SQL Tools Это повышает производительность запросов и соединений MSSQL. Значение по умолчанию — ИСТИНА. Azure Data Studio необходимо перезапустить при изменении значения.</target>
+      </trans-unit>
       <trans-unit id="mssql.tableDesigner.allowDisableAndReenableDdlTriggers">
         <source xml:lang="en">Whether to allow table designer to disable and re-enable DDL triggers during publish</source>
         <target state="translated">Разрешить ли конструктору таблиц отключать и повторно включать триггеры DDL во время публикации</target>
@@ -2309,10 +2349,6 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="mssql.connectionOptions.workstationId.displayName">
         <source xml:lang="en">Workstation Id</source>
         <target state="translated">Идентификатор рабочей станции</target>
-      </trans-unit>
-      <trans-unit id="mssql.parallelMessageProcessing">
-        <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</source>
-        <target state="translated">[Экспериментальное] Следует ли обрабатывать запросы к службе SQL Tools Service одновременно. Этот параметр введен для обнаружения проблем, которые могут возникнуть при параллельной обработке всех запросов. Значение по умолчанию — false. При изменении значения требуется перезапуск Azure Data Studio.</target>
       </trans-unit>
       <trans-unit id="mssql.ignorePlatformWarning">
         <source xml:lang="en">[Optional] Do not show unsupported platform warnings</source>

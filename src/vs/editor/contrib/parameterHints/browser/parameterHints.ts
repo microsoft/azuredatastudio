@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
@@ -20,7 +20,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ParameterHintsWidget } from './parameterHintsWidget';
 
-class ParameterHintsController extends Disposable implements IEditorContribution {
+export class ParameterHintsController extends Disposable implements IEditorContribution {
 
 	public static readonly ID = 'editor.controller.parameterHints';
 

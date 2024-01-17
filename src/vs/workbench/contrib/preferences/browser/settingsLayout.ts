@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { isWindows } from 'vs/base/common/platform';
@@ -232,8 +232,8 @@ export const tocData: ITOCEntry<string> = {
 				},
 				{
 					id: 'features/chat',
-					label: localize('interactiveSession', 'Interactive Session'),
-					settings: ['chat.*', 'interactiveEditor.*']
+					label: localize('chat', 'Chat'),
+					settings: ['chat.*', 'inlineChat.*']
 				}
 			]
 		},

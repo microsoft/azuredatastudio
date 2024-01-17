@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/notificationsCenter';
@@ -78,7 +78,12 @@ export class NotificationsCenter extends Themable implements INotificationsCente
 	show(): void {
 		if (this._isVisible) {
 			const notificationsList = assertIsDefined(this.notificationsList);
-			notificationsList.show(true /* focus */);
+
+			// Make visible
+			notificationsList.show();
+
+			// Focus first
+			notificationsList.focusFirst();
 
 			return; // already visible
 		}

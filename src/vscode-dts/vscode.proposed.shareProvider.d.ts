@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 // https://github.com/microsoft/vscode/issues/176316 @joyceerhl
@@ -47,9 +47,10 @@ declare module 'vscode' {
 		 *
 		 * @param item Data about an item which can be shared.
 		 * @param token A cancellation token.
-		 * @returns An {@link Uri} which will be copied to the user's clipboard and presented in a confirmation dialog.
+		 * @returns A {@link Uri} representing an external link or sharing text. The provider result
+		 * will be copied to the user's clipboard and presented in a confirmation dialog.
 		 */
-		provideShare(item: ShareableItem, token: CancellationToken): ProviderResult<Uri>;
+		provideShare(item: ShareableItem, token: CancellationToken): ProviderResult<Uri | string>;
 	}
 
 	export namespace window {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ErrorNoTelemetry } from 'vs/base/common/errors';
@@ -91,7 +91,8 @@ export enum RemoteAuthorityResolverErrorCode {
 	Unknown = 'Unknown',
 	NotAvailable = 'NotAvailable',
 	TemporarilyNotAvailable = 'TemporarilyNotAvailable',
-	NoResolverFound = 'NoResolverFound'
+	NoResolverFound = 'NoResolverFound',
+	InvalidAuthority = 'InvalidAuthority'
 }
 
 export class RemoteAuthorityResolverError extends ErrorNoTelemetry {
@@ -106,6 +107,10 @@ export class RemoteAuthorityResolverError extends ErrorNoTelemetry {
 
 	public static isNoResolverFound(err: any): err is RemoteAuthorityResolverError {
 		return (err instanceof RemoteAuthorityResolverError) && err._code === RemoteAuthorityResolverErrorCode.NoResolverFound;
+	}
+
+	public static isInvalidAuthority(err: any): boolean {
+		return (err instanceof RemoteAuthorityResolverError) && err._code === RemoteAuthorityResolverErrorCode.InvalidAuthority;
 	}
 
 	public static isHandled(err: any): boolean {

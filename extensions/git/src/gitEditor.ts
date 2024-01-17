@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as path from 'path';
 import { TabInputText, Uri, window, workspace } from 'vscode';
@@ -16,6 +16,8 @@ export class GitEditor implements IIPCHandler, ITerminalEnvironmentProvider {
 
 	private env: { [key: string]: string };
 	private disposable: IDisposable = EmptyDisposable;
+
+	readonly featureDescription = 'git editor';
 
 	constructor(ipc?: IIPCServer) {
 		if (ipc) {

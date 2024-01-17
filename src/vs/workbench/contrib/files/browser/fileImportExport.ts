@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -715,7 +715,7 @@ export class FileDownload {
 				reject(canceled());
 			}));
 
-			disposables.add(listenStream(sourceStream, {
+			listenStream(sourceStream, {
 				onData: data => {
 					target.write(data.buffer);
 					this.reportProgress(contents.name, contents.size, data.byteLength, operation);
@@ -728,7 +728,7 @@ export class FileDownload {
 					disposables.dispose();
 					resolve();
 				}
-			}));
+			}, token);
 		});
 	}
 

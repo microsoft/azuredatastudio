@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
@@ -44,7 +44,7 @@ export class LargeFileOptimizationsWarner extends Disposable implements IEditorC
 						'Variable 0 will be a file name.'
 					]
 				},
-				"{0}: tokenization, wrapping and folding have been turned off for this large file in order to reduce memory usage and avoid freezing or crashing.",
+				"{0}: tokenization, wrapping, folding and sticky scroll have been turned off for this large file in order to reduce memory usage and avoid freezing or crashing.",
 				path.basename(model.uri.path)
 			);
 

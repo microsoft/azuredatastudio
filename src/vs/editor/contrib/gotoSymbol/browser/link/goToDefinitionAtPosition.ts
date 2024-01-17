@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -9,7 +9,6 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { MarkdownString } from 'vs/base/common/htmlContent';
 import { DisposableStore } from 'vs/base/common/lifecycle';
-import { withNullAsUndefined } from 'vs/base/common/types';
 import 'vs/css!./goToDefinitionAtPosition';
 import { CodeEditorStateFlag, EditorState } from 'vs/editor/contrib/editorState/browser/editorState';
 import { ICodeEditor, MouseTargetType } from 'vs/editor/browser/editorBrowser';
@@ -58,7 +57,7 @@ export class GotoDefinitionAtPositionEditorContribution implements IEditorContri
 		this.toUnhook.add(linkGesture);
 
 		this.toUnhook.add(linkGesture.onMouseMoveOrRelevantKeyDown(([mouseEvent, keyboardEvent]) => {
-			this.startFindDefinitionFromMouse(mouseEvent, withNullAsUndefined(keyboardEvent));
+			this.startFindDefinitionFromMouse(mouseEvent, keyboardEvent ?? undefined);
 		}));
 
 		this.toUnhook.add(linkGesture.onExecute((mouseEvent: ClickLinkMouseEvent) => {

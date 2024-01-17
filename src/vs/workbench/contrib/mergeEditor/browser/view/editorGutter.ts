@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { h, reset } from 'vs/base/browser/dom';
@@ -45,11 +45,12 @@ export class EditorGutter<T extends IGutterItemInfo = IGutterItemInfo> extends D
 		o.observe(this._domNode);
 		this._register(toDisposable(() => o.disconnect()));
 
-		this._register(autorun('update scroll decoration', (reader) => {
+		this._register(autorun(reader => {
+			/** @description update scroll decoration */
 			scrollDecoration.className = this.isScrollTopZero.read(reader) ? '' : 'scroll-decoration';
 		}));
 
-		this._register(autorun('EditorGutter.Render', (reader) => this.render(reader)));
+		this._register(autorun(reader => /** @description EditorGutter.Render */ this.render(reader)));
 	}
 
 	override dispose(): void {

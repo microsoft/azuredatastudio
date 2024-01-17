@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
@@ -35,6 +35,7 @@ export interface IDropdownMenuActionViewItemOptions extends IBaseActionViewItemO
 	readonly classNames?: string[] | string;
 	readonly anchorAlignmentProvider?: IAnchorAlignmentProvider;
 	readonly menuAsChild?: boolean;
+	readonly skipTelemetry?: boolean;
 }
 
 export class DropdownMenuActionViewItem extends BaseActionViewItem {
@@ -101,7 +102,8 @@ export class DropdownMenuActionViewItem extends BaseActionViewItem {
 			labelRenderer: labelRenderer,
 			menuAsChild: this.options.menuAsChild,
 			actions: isActionsArray ? this.menuActionsOrProvider as IAction[] : undefined,
-			actionProvider: isActionsArray ? undefined : this.menuActionsOrProvider as IActionProvider
+			actionProvider: isActionsArray ? undefined : this.menuActionsOrProvider as IActionProvider,
+			skipTelemetry: this.options.skipTelemetry
 		};
 
 		this.dropdownMenu = this._register(new DropdownMenu(container, options));

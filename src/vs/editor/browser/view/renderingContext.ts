@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Position } from 'vs/editor/common/core/position';
@@ -122,7 +122,11 @@ export class LineVisibleRanges {
 	constructor(
 		public readonly outsideRenderedLine: boolean,
 		public readonly lineNumber: number,
-		public readonly ranges: HorizontalRange[]
+		public readonly ranges: HorizontalRange[],
+		/**
+		 * Indicates if the requested range does not end in this line, but continues on the next line.
+		 */
+		public readonly continuesOnNextLine: boolean,
 	) { }
 }
 

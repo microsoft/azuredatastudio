@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 use std::{
@@ -73,6 +73,11 @@ impl ServiceManager for LaunchdService {
 		mut handle: impl 'static + super::ServiceContainer,
 	) -> Result<(), crate::util::errors::AnyError> {
 		handle.run_service(self.log, launcher_paths).await
+	}
+
+	async fn is_installed(&self) -> Result<bool, AnyError> {
+		let cmd = capture_command_and_check_status("launchctl", &["list"]).await?;
+		Ok(String::from_utf8_lossy(&cmd.stdout).contains(&get_service_label()))
 	}
 
 	async fn unregister(&self) -> Result<(), crate::util::errors::AnyError> {

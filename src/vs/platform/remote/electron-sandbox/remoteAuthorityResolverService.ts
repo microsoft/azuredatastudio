@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 //
 import { DeferredPromise } from 'vs/base/common/async';
@@ -12,6 +12,7 @@ import { URI } from 'vs/base/common/uri';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IRemoteAuthorityResolverService, IRemoteConnectionData, RemoteConnectionType, ResolvedAuthority, ResolvedOptions, ResolverResult } from 'vs/platform/remote/common/remoteAuthorityResolver';
 import { getRemoteServerRootPath } from 'vs/platform/remote/common/remoteHosts';
+import { ElectronRemoteResourceLoader } from 'vs/platform/remote/electron-sandbox/electronRemoteResourceLoader';
 
 export class RemoteAuthorityResolverService extends Disposable implements IRemoteAuthorityResolverService {
 
@@ -25,7 +26,7 @@ export class RemoteAuthorityResolverService extends Disposable implements IRemot
 	private readonly _canonicalURIRequests: Map<string, { input: URI; result: DeferredPromise<URI> }>;
 	private _canonicalURIProvider: ((uri: URI) => Promise<URI>) | null;
 
-	constructor(@IProductService productService: IProductService) {
+	constructor(@IProductService productService: IProductService, private readonly remoteResourceLoader: ElectronRemoteResourceLoader) {
 		super();
 		this._resolveAuthorityRequests = new Map<string, DeferredPromise<ResolverResult>>();
 		this._connectionTokens = new Map<string, string>();
@@ -81,8 +82,9 @@ export class RemoteAuthorityResolverService extends Disposable implements IRemot
 		if (this._resolveAuthorityRequests.has(resolvedAuthority.authority)) {
 			const request = this._resolveAuthorityRequests.get(resolvedAuthority.authority)!;
 			if (resolvedAuthority.connectTo.type === RemoteConnectionType.WebSocket) {
-				// todo@connor4312 need to implement some kind of loopback for ext host based messaging
 				RemoteAuthorities.set(resolvedAuthority.authority, resolvedAuthority.connectTo.host, resolvedAuthority.connectTo.port);
+			} else {
+				RemoteAuthorities.setDelegate(this.remoteResourceLoader.getResourceUriProvider());
 			}
 			if (resolvedAuthority.connectionToken) {
 				RemoteAuthorities.setConnectionToken(resolvedAuthority.authority, resolvedAuthority.connectionToken);

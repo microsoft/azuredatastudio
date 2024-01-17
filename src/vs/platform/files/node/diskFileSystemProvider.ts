@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
@@ -640,8 +640,8 @@ export class DiskFileSystemProvider extends AbstractDiskFileSystemProvider imple
 			// Validate the move operation can perform
 			await this.validateMoveCopy(from, to, 'move', opts.overwrite);
 
-			// Move
-			await Promises.move(fromFilePath, toFilePath);
+			// Rename
+			await Promises.rename(fromFilePath, toFilePath);
 		} catch (error) {
 
 			// Rewrite some typical errors that can happen especially around symlinks

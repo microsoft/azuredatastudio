@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { getZoomLevel, setZoomFactor, setZoomLevel } from 'vs/base/browser/browser';
@@ -14,10 +14,7 @@ import { zoomLevelToZoomFactor } from 'vs/platform/window/common/window';
 export function applyZoom(zoomLevel: number): void {
 	webFrame.setZoomLevel(zoomLevel);
 	setZoomFactor(zoomLevelToZoomFactor(zoomLevel));
-	// Cannot be trusted because the webFrame might take some time
-	// until it really applies the new zoom level
-	// See https://github.com/microsoft/vscode/issues/26151
-	setZoomLevel(zoomLevel, false /* isTrusted */);
+	setZoomLevel(zoomLevel);
 }
 
 export function zoomIn(): void {

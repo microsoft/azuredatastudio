@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IQuickPickSeparator } from 'vs/platform/quickinput/common/quickInput';
@@ -11,7 +11,6 @@ import { IDebugService } from 'vs/workbench/contrib/debug/common/debug';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { matchesFuzzy } from 'vs/base/common/filters';
-import { withNullAsUndefined } from 'vs/base/common/types';
 import { ADD_CONFIGURATION_ID, DEBUG_QUICK_ACCESS_PREFIX } from 'vs/workbench/contrib/debug/browser/debugCommands';
 import { debugConfigure, debugRemoveConfig } from 'vs/workbench/contrib/debug/browser/debugIcons';
 import { ThemeIcon } from 'vs/base/common/themables';
@@ -151,7 +150,7 @@ export class StartDebugQuickAccessProvider extends PickerQuickAccessProvider<IPi
 			picks.push({
 				label,
 				description: this.contextService.getWorkbenchState() === WorkbenchState.WORKSPACE ? launch.name : '',
-				highlights: { label: withNullAsUndefined(matchesFuzzy(filter, label, true)) },
+				highlights: { label: matchesFuzzy(filter, label, true) ?? undefined },
 				accept: () => this.commandService.executeCommand(ADD_CONFIGURATION_ID, launch.uri.toString())
 			});
 		}

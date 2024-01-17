@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { RunOnceScheduler } from 'vs/base/common/async';
@@ -8,7 +8,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { CellEditState, IInsetRenderOutput, INotebookEditor, INotebookEditorContribution, INotebookEditorDelegate, RenderOutputType } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { registerNotebookContribution } from 'vs/workbench/contrib/notebook/browser/notebookEditorExtensions';
-import { CodeCellViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/codeCellViewModel';
+import { CodeCellViewModel, outputDisplayLimit } from 'vs/workbench/contrib/notebook/browser/viewModel/codeCellViewModel';
 import { CellKind } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { cellRangesToIndexes } from 'vs/workbench/contrib/notebook/common/notebookRange';
 import { INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
@@ -86,7 +86,7 @@ class NotebookViewportContribution extends Disposable implements INotebookEditor
 		}
 
 		const outputs = viewCell.outputsViewModels;
-		for (const output of outputs) {
+		for (const output of outputs.slice(0, outputDisplayLimit)) {
 			const [mimeTypes, pick] = output.resolveMimeTypes(this._notebookEditor.textModel!, undefined);
 			if (!mimeTypes.find(mimeType => mimeType.isTrusted) || mimeTypes.length === 0) {
 				continue;

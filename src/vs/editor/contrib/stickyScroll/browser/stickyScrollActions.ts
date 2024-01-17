@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { KeyCode } from 'vs/base/common/keyCodes';
@@ -33,7 +33,7 @@ export class ToggleStickyScroll extends Action2 {
 			},
 			menu: [
 				{ id: MenuId.CommandPalette },
-				{ id: MenuId.MenubarViewMenu, group: '5_editor', order: 2 },
+				{ id: MenuId.MenubarAppearanceMenu, group: '4_editor', order: 3 },
 				{ id: MenuId.StickyScrollContext }
 			]
 		});

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Emitter, Event, PauseableEmitter } from 'vs/base/common/event';
@@ -22,6 +22,8 @@ import { INotebookService } from 'vs/workbench/contrib/notebook/common/notebookS
 import { BaseCellViewModel } from './baseCellViewModel';
 import { NotebookLayoutInfo } from 'vs/workbench/contrib/notebook/browser/notebookViewEvents';
 import { ICellExecutionStateChangedEvent } from 'vs/workbench/contrib/notebook/common/notebookExecutionStateService';
+
+export const outputDisplayLimit = 500;
 
 export class CodeCellViewModel extends BaseCellViewModel implements ICellViewModel {
 	readonly cellKind = CellKind.Code;

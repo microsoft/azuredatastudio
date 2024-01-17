@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
@@ -569,6 +569,12 @@ export const schema: IJSONSchema = {
 					'{Locked="vscode.l10n API"}'
 				]
 			}, 'The relative path to a folder containing localization (bundle.l10n.*.json) files. Must be specified if you are using the vscode.l10n API.')
+		},
+		pricing: {
+			type: 'string',
+			markdownDescription: nls.localize('vscode.extension.pricing', 'The pricing information for the extension. Can be Free (default) or Trial. For more details visit: https://code.visualstudio.com/api/working-with-extensions/publishing-extension#extension-pricing-label'),
+			enum: ['Free', 'Trial'],
+			default: 'Free'
 		}
 	}
 };

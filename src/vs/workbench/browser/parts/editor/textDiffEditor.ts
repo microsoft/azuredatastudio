@@ -1,15 +1,15 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
 import { deepClone } from 'vs/base/common/objects';
-import { isObject, assertIsDefined, withUndefinedAsNull, withNullAsUndefined } from 'vs/base/common/types';
+import { isObject, assertIsDefined } from 'vs/base/common/types';
 import { ICodeEditor, IDiffEditor } from 'vs/editor/browser/editorBrowser';
 import { IDiffEditorOptions, IEditorOptions as ICodeEditorOptions } from 'vs/editor/common/config/editorOptions';
 import { AbstractTextEditor, IEditorConfiguration } from 'vs/workbench/browser/parts/editor/textEditor';
-import { TEXT_DIFF_EDITOR_ID, IEditorFactoryRegistry, EditorExtensions, ITextDiffEditorPane, IEditorOpenContext, EditorInputCapabilities, isEditorInput, isTextEditorViewState, createTooLargeFileError } from 'vs/workbench/common/editor';
+import { TEXT_DIFF_EDITOR_ID, IEditorFactoryRegistry, EditorExtensions, ITextDiffEditorPane, IEditorOpenContext, isEditorInput, isTextEditorViewState, createTooLargeFileError } from 'vs/workbench/common/editor';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { applyTextEditorOptions } from 'vs/workbench/common/editor/editorOptions';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
@@ -140,7 +140,10 @@ export class TextDiffEditor extends AbstractTextEditor<IDiffEditorViewState> imp
 			// Set Editor Model
 			const control = assertIsDefined(this.diffEditorControl);
 			const resolvedDiffEditorModel = resolvedModel as TextDiffEditorModel;
-			control.setModel(withUndefinedAsNull(resolvedDiffEditorModel.textDiffEditorModel));
+
+			const vm = resolvedDiffEditorModel.textDiffEditorModel ? control.createViewModel(resolvedDiffEditorModel.textDiffEditorModel) : null;
+			await vm?.waitForDiff();
+			control.setModel(vm);
 
 			// Restore view state (unless provided by options)
 			let hasPreviousViewState = false;
@@ -164,7 +167,7 @@ export class TextDiffEditor extends AbstractTextEditor<IDiffEditorViewState> imp
 			// a resolved model might have more specific information about being
 			// readonly or not that the input did not have.
 			control.updateOptions({
-				readOnly: resolvedDiffEditorModel.modifiedModel?.isReadonly(),
+				...this.getReadonlyConfiguration(resolvedDiffEditorModel.modifiedModel?.isReadonly()),
 				originalEditable: !resolvedDiffEditorModel.originalModel?.isReadonly()
 			});
 
@@ -259,7 +262,7 @@ export class TextDiffEditor extends AbstractTextEditor<IDiffEditorViewState> imp
 			return true;
 		}
 
-		return e.affectsConfiguration(resource, 'diffEditor');
+		return e.affectsConfiguration(resource, 'diffEditor') || e.affectsConfiguration(resource, 'accessibility.verbosity.diffEditor');
 	}
 
 	protected override computeConfiguration(configuration: IEditorConfiguration): ICodeEditorOptions {
@@ -280,16 +283,17 @@ export class TextDiffEditor extends AbstractTextEditor<IDiffEditorViewState> imp
 			Object.assign(editorConfiguration, diffEditorConfiguration);
 		}
 
+		const verbose = configuration.accessibility?.verbosity?.diffEditor ?? false;
+		(editorConfiguration as IDiffEditorOptions).accessibilityVerbose = verbose;
+
 		return editorConfiguration;
 	}
 
 	protected override getConfigurationOverrides(): IDiffEditorOptions {
-		const readOnly = this.input instanceof DiffEditorInput && this.input.modified.hasCapability(EditorInputCapabilities.Readonly);
-
 		return {
 			...super.getConfigurationOverrides(),
-			readOnly,
-			originalEditable: this.input instanceof DiffEditorInput && !this.input.original.hasCapability(EditorInputCapabilities.Readonly),
+			...this.getReadonlyConfiguration(this.input?.isReadonly()),
+			originalEditable: this.input instanceof DiffEditorInput && !this.input.original.isReadonly(),
 			lineDecorationsWidth: '2ch'
 		};
 	}
@@ -297,8 +301,8 @@ export class TextDiffEditor extends AbstractTextEditor<IDiffEditorViewState> imp
 	protected override updateReadonly(input: EditorInput): void {
 		if (input instanceof DiffEditorInput) {
 			this.diffEditorControl?.updateOptions({
-				readOnly: input.hasCapability(EditorInputCapabilities.Readonly),
-				originalEditable: !input.original.hasCapability(EditorInputCapabilities.Readonly),
+				...this.getReadonlyConfiguration(input.isReadonly()),
+				originalEditable: !input.original.isReadonly(),
 			});
 		} else {
 			super.updateReadonly(input);
@@ -335,17 +339,24 @@ export class TextDiffEditor extends AbstractTextEditor<IDiffEditorViewState> imp
 	}
 
 	private logInputLifecycleTelemetry(duration: number, languageId: string | undefined): void {
+		let collapseUnchangedRegions = false;
+		if (this.diffEditorControl instanceof DiffEditorWidget2) {
+			collapseUnchangedRegions = this.diffEditorControl.collapseUnchangedRegions;
+		}
 		this.telemetryService.publicLog2<{
 			editorVisibleTimeMs: number;
 			languageId: string;
+			collapseUnchangedRegions: boolean;
 		}, {
 			owner: 'hediet';
 			editorVisibleTimeMs: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; isMeasurement: true; comment: 'Indicates the time the diff editor was visible to the user' };
 			languageId: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'Indicates for which language the diff editor was shown' };
+			collapseUnchangedRegions: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'Indicates whether unchanged regions were collapsed' };
 			comment: 'This event gives insight about how long the diff editor was visible to the user.';
 		}>('diffEditor.editorVisibleTime', {
 			editorVisibleTimeMs: duration,
 			languageId: languageId ?? '',
+			collapseUnchangedRegions,
 		});
 	}
 
@@ -402,7 +413,7 @@ export class TextDiffEditor extends AbstractTextEditor<IDiffEditorViewState> imp
 			return undefined; // prevent saving view state for a model that is not the expected one
 		}
 
-		return withNullAsUndefined(this.diffEditorControl.saveViewState());
+		return this.diffEditorControl.saveViewState() ?? undefined;
 	}
 
 	protected override toEditorViewStateResource(modelOrInput: IDiffEditorModel | EditorInput): URI | undefined {

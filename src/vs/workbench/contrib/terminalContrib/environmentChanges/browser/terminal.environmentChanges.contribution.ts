@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { URI } from 'vs/base/common/uri';
@@ -48,10 +48,23 @@ registerActiveInstanceAction({
 
 function describeEnvironmentChanges(collection: IMergedEnvironmentVariableCollection, scope: EnvironmentVariableScope | undefined): string {
 	let content = `# ${localize('envChanges', 'Terminal Environment Changes')}`;
+	const globalDescriptions = collection.getDescriptionMap(undefined);
+	const workspaceDescriptions = collection.getDescriptionMap(scope);
 	for (const [ext, coll] of collection.collections) {
 		content += `\n\n## ${localize('extension', 'Extension: {0}', ext)}`;
 		content += '\n';
-		for (const [_, mutator] of coll.map.entries()) {
+		const globalDescription = globalDescriptions.get(ext);
+		if (globalDescription) {
+			content += `\n${globalDescription}\n`;
+		}
+		const workspaceDescription = workspaceDescriptions.get(ext);
+		if (workspaceDescription) {
+			// Only show '(workspace)' suffix if there is already a description for the extension.
+			const workspaceSuffix = globalDescription ? ` (${localize('ScopedEnvironmentContributionInfo', 'workspace')})` : '';
+			content += `\n${workspaceDescription}${workspaceSuffix}\n`;
+		}
+
+		for (const mutator of coll.map.values()) {
 			if (filterScope(mutator, scope) === false) {
 				continue;
 			}

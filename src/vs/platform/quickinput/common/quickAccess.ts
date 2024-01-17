@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { coalesce } from 'vs/base/common/arrays';
@@ -125,6 +125,19 @@ export interface IQuickAccessProviderHelp {
 	 * The command to bring up this quick access provider.
 	 */
 	readonly commandId?: string;
+
+	/**
+	 * The order of help entries in the Command Center.
+	 * Lower values will be placed above higher values.
+	 * No value will hide this help entry from the Command Center.
+	 */
+	readonly commandCenterOrder?: number;
+
+	/**
+	 * An optional label to use for the Command Center entry. If not set
+	 * the description will be used instead.
+	 */
+	readonly commandCenterLabel?: string;
 }
 
 export interface IQuickAccessProviderDescriptor {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
@@ -260,6 +260,8 @@ export interface IConnectionManagementService {
 
 	getConnectionInfo(fileUri: string): ConnectionManagementInfo | undefined;
 
+	updateServerConnectionId(editorUri: string, newId: string): boolean;
+
 	getDefaultProviderId(): string | undefined;
 
 	getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string };
@@ -381,6 +383,13 @@ export interface IConnectionManagementService {
 	 * @returns the new valid password that is entered, or undefined if cancelled or errored.
 	 */
 	openChangePasswordDialog(profile: IConnectionProfile): Promise<string | undefined>;
+
+	/**
+	 * Launches the password change dialog.
+	 * @param profile The connection profile to retrieve the non default connection options from
+	 * @returns a string key containing the options that aren't default values.
+	 */
+	getNonDefaultOptions(profile: IConnectionProfile): string;
 }
 
 export enum RunQueryOnConnectionMode {

@@ -5,7 +5,7 @@
 	"dataFolderName": ".azuredatastudio",
 	"win32MutexName": "azuredatastudio",
 	"licenseName": "Microsoft EULA",
-	"licenseUrl": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/LICENSE.txt",
+	"licenseUrl": "https://aka.ms/ads-license",
 	"serverLicenseUrl": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/LICENSE.txt",
 	"serverGreeting": [],
 	"serverLicense": [],
@@ -37,6 +37,7 @@
 	"enableTelemetry": false,
 	"webviewContentExternalBaseUrlTemplate": "https://{{uuid}}.vscode-cdn.net/insider/3c8520fab514b9f56070214496b26ff68d1b1cb5/out/vs/workbench/contrib/webview/browser/pre/",
 	"npsSurveyUrl": "https://aka.ms/azuredatastudio-nps",
+	"electronRepository": "microsoft/azuredatastudio-release",
 	"aiConfig": {
 		"ariaKey": "29a207bb14f84905966a8f22524cb730-25407f35-11b6-4d4e-8114-ab9e843cb52f-7380"
 	},
@@ -47,7 +48,7 @@
 	"gettingStartedUrl": "https://go.microsoft.com/fwlink/?linkid=862039",
 	"releaseNotesUrl": "https://go.microsoft.com/fwlink/?linkid=875578",
 	"documentationUrl": "https://go.microsoft.com/fwlink/?linkid=862277",
-	"vscodeVersion": "1.79.2",
+	"vscodeVersion": "1.82.0",
 	"commit": "9ca6200018fc206d67a47229f991901a8a453781",
 	"date": "2017-12-15T12:00:00.000Z",
 	"recommendedExtensions": [

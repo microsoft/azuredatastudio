@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -222,7 +222,7 @@ suite('ExtensionService', () => {
 
 	setup(() => {
 		disposables = new DisposableStore();
-		instantiationService = createServices(disposables, [
+		disposables.add(instantiationService = createServices(disposables, [
 			// custom
 			[IExtensionService, MyTestExtensionService],
 			// default
@@ -246,7 +246,7 @@ suite('ExtensionService', () => {
 			[IUriIdentityService, UriIdentityService],
 			[IRemoteExtensionsScannerService, TestRemoteExtensionsScannerService],
 			[IRemoteAuthorityResolverService, RemoteAuthorityResolverService]
-		]);
+		]));
 		extService = <MyTestExtensionService>instantiationService.get(IExtensionService);
 	});
 

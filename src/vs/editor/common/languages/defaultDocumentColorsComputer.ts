@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { Color, HSLA } from 'vs/base/common/color';
 import { IPosition } from 'vs/editor/common/core/position';
@@ -101,7 +101,7 @@ function _findMatches(model: IDocumentColorComputerTarget | string, regex: RegEx
 function computeColors(model: IDocumentColorComputerTarget): IColorInformation[] {
 	const result: IColorInformation[] = [];
 	// Early validation for RGB and HSL
-	const initialValidationRegex = /\b(rgb|rgba|hsl|hsla)(\([0-9\s,.\%]*\))|(#)([A-Fa-f0-9]{6})\b|(#)([A-Fa-f0-9]{8})\b/gm;
+	const initialValidationRegex = /\b(rgb|rgba|hsl|hsla)(\([0-9\s,.\%]*\))|(#)([A-Fa-f0-9]{3})\b|(#)([A-Fa-f0-9]{4})\b|(#)([A-Fa-f0-9]{6})\b|(#)([A-Fa-f0-9]{8})\b/gm;
 	const initialValidationMatches = _findMatches(model, initialValidationRegex);
 
 	// Potential colors have been found, validate the parameters

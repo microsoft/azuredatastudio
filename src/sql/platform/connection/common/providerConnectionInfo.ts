@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { isString } from 'vs/base/common/types';
@@ -375,7 +375,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 	 * Also allows for getting the non default options for this profile. (this function is used for changing the title).
 	 * @param needSpecial include all the special options key besides connection name or password in case we have multiple
 	 * distinct connections sharing the same connection name (for connection trees mainly).
-	 * @param getNonDefault get only the non default options (for individual connections) to be used for identfying different properties
+	 * @param getNonDefault get only the non default options (for individual connections) to be used for identifying different properties
 	 * among connections sharing the same title.
 	 */
 	public getConnectionOptionsList(needSpecial: boolean, getNonDefault: boolean): azdata.ConnectionOption[] {
@@ -391,7 +391,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 					element.specialValueType !== ConnectionOptionSpecialType.password) {
 					if (getNonDefault) {
 						let value = this.getOptionValue(element.name);
-						if (value && value.toString().toLocaleLowerCase() !== element.defaultValue?.toLocaleLowerCase()) {
+						if (value && value.toString().toLocaleLowerCase() !== element.defaultValue?.toString().toLocaleLowerCase()) {
 							connectionOptions.push(element);
 						}
 					}

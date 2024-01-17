@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
@@ -284,7 +284,7 @@ namespace TaskSourceDTO {
 			scope = value.scope;
 		} else {
 			scope = TaskScope.Folder;
-			workspaceFolder = Types.withNullAsUndefined(workspace.getWorkspaceFolder(URI.revive(value.scope)));
+			workspaceFolder = workspace.getWorkspaceFolder(URI.revive(value.scope)) ?? undefined;
 		}
 		const result: IExtensionTaskSource = {
 			kind: TaskSourceKind.Extension,

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as dom from 'vs/base/browser/dom';
@@ -18,7 +18,6 @@ import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import * as env from 'vs/base/common/platform';
 import * as strings from 'vs/base/common/strings';
-import { withNullAsUndefined } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import * as network from 'vs/base/common/network';
 import 'vs/css!./media/searchview';
@@ -70,8 +69,8 @@ import { SearchWidget } from 'vs/workbench/contrib/search/browser/searchWidget';
 import * as Constants from 'vs/workbench/contrib/search/common/constants';
 import { IReplaceService } from 'vs/workbench/contrib/search/browser/replace';
 import { getOutOfWorkspaceEditorResources, SearchStateKey, SearchUIState } from 'vs/workbench/contrib/search/common/search';
-import { ISearchHistoryService, ISearchHistoryValues } from 'vs/workbench/contrib/search/common/searchHistoryService';
-import { FileMatch, FileMatchOrMatch, FolderMatch, FolderMatchWithResource, IChangeEvent, ISearchWorkbenchService, Match, MatchInNotebook, RenderableMatch, searchMatchComparer, SearchModel, SearchResult } from 'vs/workbench/contrib/search/browser/searchModel';
+import { ISearchHistoryService, ISearchHistoryValues, SearchHistoryService } from 'vs/workbench/contrib/search/common/searchHistoryService';
+import { FileMatch, FileMatchOrMatch, FolderMatch, FolderMatchWithResource, IChangeEvent, ISearchViewModelWorkbenchService, Match, MatchInNotebook, RenderableMatch, searchMatchComparer, SearchModel, SearchResult } from 'vs/workbench/contrib/search/browser/searchModel';
 import { createEditorFromSearchResult } from 'vs/workbench/contrib/searchEditor/browser/searchEditorActions';
 import { ACTIVE_GROUP, IEditorService, SIDE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { IPreferencesService, ISettingsEditorOptions } from 'vs/workbench/services/preferences/common/preferences';
@@ -177,8 +176,8 @@ export class SearchView extends ViewPane {
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IWorkspaceContextService protected readonly contextService: IWorkspaceContextService, // {{SQL CARBON EDIT}}
-		@ISearchWorkbenchService protected readonly searchWorkbenchService: ISearchWorkbenchService, // {{SQL CARBON EDIT}}
+		@IWorkspaceContextService protected readonly contextService: IWorkspaceContextService, // {{SQL CARBON EDIT}} - Added protected access specifier
+		@ISearchViewModelWorkbenchService protected readonly searchViewModelWorkbenchService: ISearchViewModelWorkbenchService, // {{SQL CARBON EDIT}} - Added protected access specifier
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IReplaceService protected readonly replaceService: IReplaceService, // {{SQL CARBON EDIT}}
 		@ITextFileService protected readonly textFileService: ITextFileService, // {{SQL CARBON EDIT}}
@@ -189,7 +188,7 @@ export class SearchView extends ViewPane {
 		@IMenuService protected readonly menuService: IMenuService,
 		@IAccessibilityService protected readonly accessibilityService: IAccessibilityService, // {{SQL CARBON EDIT}}
 		@IKeybindingService keybindingService: IKeybindingService,
-		@IStorageService storageService: IStorageService,
+		@IStorageService private readonly storageService: IStorageService,
 		@IOpenerService openerService: IOpenerService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@INotebookService private readonly notebookService: INotebookService,
@@ -240,7 +239,7 @@ export class SearchView extends ViewPane {
 			}
 		});
 
-		this.viewModel = this._register(this.searchWorkbenchService.searchModel);
+		this.viewModel = this._register(this.searchViewModelWorkbenchService.searchModel);
 		this.queryBuilder = this.instantiationService.createInstance(QueryBuilder);
 		this.memento = new Memento(this.id, storageService);
 		this.viewletState = this.memento.getMemento(StorageScope.WORKSPACE, StorageTarget.MACHINE);
@@ -261,6 +260,28 @@ export class SearchView extends ViewPane {
 		this.isTreeLayoutViewVisible = this.viewletState['view.treeLayout'] ?? (this.searchConfig.defaultViewMode === ViewMode.Tree);
 
 		this._refreshResultsScheduler = this._register(new RunOnceScheduler(this._updateResults.bind(this), 80));
+
+		// storage service listener for for roaming changes
+		this._register(this.storageService.onWillSaveState(() => {
+			this._saveSearchHistoryService();
+		}));
+
+		this._register(this.storageService.onDidChangeValue(StorageScope.WORKSPACE, SearchHistoryService.SEARCH_HISTORY_KEY, this._register(new DisposableStore()))(() => {
+			const restoredHistory = this.searchHistoryService.load();
+
+			if (restoredHistory.include) {
+				this.inputPatternIncludes.prependHistory(restoredHistory.include);
+			}
+			if (restoredHistory.exclude) {
+				this.inputPatternExcludes.prependHistory(restoredHistory.exclude);
+			}
+			if (restoredHistory.search) {
+				this.searchWidget.prependSearchHistory(restoredHistory.search);
+			}
+			if (restoredHistory.replace) {
+				this.searchWidget.prependReplaceHistory(restoredHistory.replace);
+			}
+		}));
 	}
 
 	get isTreeLayoutViewVisible(): boolean {
@@ -301,6 +322,34 @@ export class SearchView extends ViewPane {
 	private onDidChangeWorkbenchState(): void {
 		if (this.contextService.getWorkbenchState() !== WorkbenchState.EMPTY && this.searchWithoutFolderMessageElement) {
 			dom.hide(this.searchWithoutFolderMessageElement);
+		}
+	}
+
+	private refreshInputs() {
+		this.pauseSearching = true;
+		this.searchWidget.setValue(this.viewModel.searchResult.query?.contentPattern.pattern ?? '');
+		this.searchWidget.setReplaceAllActionState(false);
+		this.searchWidget.toggleReplace(true);
+		this.inputPatternIncludes.setOnlySearchInOpenEditors(this.viewModel.searchResult.query?.onlyOpenEditors || false);
+		this.inputPatternExcludes.setUseExcludesAndIgnoreFiles(!this.viewModel.searchResult.query?.userDisabledExcludesAndIgnoreFiles || true);
+		this.searchIncludePattern.setValue('');
+		this.searchExcludePattern.setValue('');
+		this.pauseSearching = false;
+	}
+
+	public async importSearchResult(searchModel: SearchModel): Promise<void> {
+		// experimental: used by the quick access search to overwrite a search result
+		searchModel.transferSearchResult(this.viewModel);
+
+		this.onSearchResultsChanged();
+		this.refreshInputs();
+
+		const collapseResults = this.searchConfig.collapseResults;
+		if (collapseResults !== 'alwaysCollapse' && this.viewModel.searchResult.matches().length === 1) {
+			const onlyMatch = this.viewModel.searchResult.matches()[0];
+			if (onlyMatch.count() < 50) {
+				this.tree.expand(onlyMatch);
+			}
 		}
 	}
 
@@ -416,7 +465,7 @@ export class SearchView extends ViewPane {
 			this.toggleQueryDetails(true, true, true);
 		}
 
-		this._register(this.viewModel.searchResult.onChange((event) => this.onSearchResultsChanged(event)));
+		this._register(this.viewModel.onSearchResultChanged((event) => this.onSearchResultsChanged(event)));
 
 		this._register(this.onDidChangeBodyVisibility(visible => this.onVisibilityChanged(visible)));
 
@@ -821,12 +870,12 @@ export class SearchView extends ViewPane {
 				overrideStyles: {
 					listBackground: this.getBackgroundColor()
 				},
-				additionalScrollHeight: SearchDelegate.ITEM_HEIGHT
+				paddingBottom: SearchDelegate.ITEM_HEIGHT
 			}));
 		this._register(this.tree.onContextMenu(e => this.onContextMenu(e)));
 		const updateHasSomeCollapsible = () => this.toggleCollapseStateDelayer.trigger(() => this.hasSomeCollapsibleResultKey.set(this.hasSomeCollapsible()));
 		updateHasSomeCollapsible();
-		this._register(this.viewModel.searchResult.onChange(() => updateHasSomeCollapsible()));
+		this._register(this.viewModel.onSearchResultChanged(() => updateHasSomeCollapsible()));
 		this._register(this.tree.onDidChangeCollapseState(() => updateHasSomeCollapsible()));
 
 		this._register(Event.debounce(this.tree.onDidOpen, (last, event) => event, DEBOUNCE_DELAY, true)(options => {
@@ -864,8 +913,8 @@ export class SearchView extends ViewPane {
 			}
 
 			let editable = false;
-			if (focus instanceof MatchInNotebook) {
-				editable = !focus.isWebviewMatch();
+			if (focus instanceof Match) {
+				editable = (focus instanceof MatchInNotebook) ? !focus.isWebviewMatch() : true;
 			} else if (focus instanceof FileMatch) {
 				editable = !focus.hasOnlyReadOnlyMatches();
 			} else if (focus instanceof FolderMatch) {
@@ -955,7 +1004,7 @@ export class SearchView extends ViewPane {
 			this.tree.setSelection([next], event);
 			this.tree.reveal(next);
 			const ariaLabel = this.treeAccessibilityProvider.getAriaLabel(next);
-			if (ariaLabel) { aria.alert(ariaLabel); }
+			if (ariaLabel) { aria.status(ariaLabel); }
 		}
 	}
 
@@ -998,7 +1047,7 @@ export class SearchView extends ViewPane {
 			this.tree.setSelection([prev], event);
 			this.tree.reveal(prev);
 			const ariaLabel = this.treeAccessibilityProvider.getAriaLabel(prev);
-			if (ariaLabel) { aria.alert(ariaLabel); }
+			if (ariaLabel) { aria.status(ariaLabel); }
 		}
 	}
 
@@ -1415,9 +1464,11 @@ export class SearchView extends ViewPane {
 		if (options.triggeredOnType && !this.searchConfig.searchOnType) { return; }
 
 		if (!this.pauseSearching) {
+
+			const delay = options.triggeredOnType ? options.delay : 0;
 			this.triggerQueryDelayer.trigger(() => {
 				this._onQueryChanged(options.preserveFocus, options.triggeredOnType);
-			}, options.delay);
+			}, delay);
 		}
 	}
 
@@ -1470,7 +1521,7 @@ export class SearchView extends ViewPane {
 		const options: ITextQueryBuilderOptions = {
 			_reason: 'searchView',
 			extraFileResources: this.instantiationService.invokeFunction(getOutOfWorkspaceEditorResources),
-			maxResults: withNullAsUndefined(this.searchConfig.maxResults),
+			maxResults: this.searchConfig.maxResults ?? undefined,
 			disregardIgnoreFiles: !useExcludesAndIgnoreFiles || undefined,
 			disregardExcludeSettings: !useExcludesAndIgnoreFiles || undefined,
 			onlyOpenEditors: onlySearchInOpenEditors,
@@ -1545,11 +1596,10 @@ export class SearchView extends ViewPane {
 
 
 	private _updateResults() {
+		if (this.state === SearchUIState.Idle) {
+			return;
+		}
 		try {
-			if (this.state === SearchUIState.Idle) {
-				return;
-			}
-
 			// Search result tree update
 			const fileCount = this.viewModel.searchResult.fileCount();
 			if (this._visibleMatches !== fileCount) {
@@ -1703,8 +1753,8 @@ export class SearchView extends ViewPane {
 
 		this.tree.setSelection([]);
 		this.tree.setFocus([]);
-		return this.viewModel.search(query)
-			.then(onComplete, onError);
+		const result = this.viewModel.search(query);
+		return result.asyncResults.then(onComplete, onError);
 	}
 
 	protected onOpenSettings(e: dom.EventLike): void { // {{SQL CARBON EDIT}} Increase visibility for overriding in Notebook search
@@ -1850,19 +1900,22 @@ export class SearchView extends ViewPane {
 	}
 
 	async open(element: FileMatchOrMatch, preserveFocus?: boolean, sideBySide?: boolean, pinned?: boolean, resourceInput?: URI): Promise<void> {
-		const selection = this.getSelectionFrom(element);
+		const selection = getEditorSelectionFromMatch(element, this.viewModel);
 		const oldParentMatches = element instanceof Match ? element.parent().matches() : [];
 		const resource = resourceInput ?? (element instanceof Match ? element.parent().resource : (<FileMatch>element).resource);
 		let editor: IEditorPane | undefined;
+
+		const options = {
+			preserveFocus,
+			pinned,
+			selection,
+			revealIfVisible: true,
+		};
+
 		try {
 			editor = await this.editorService.openEditor({
 				resource: resource,
-				options: {
-					preserveFocus,
-					pinned,
-					selection,
-					revealIfVisible: true
-				}
+				options,
 			}, sideBySide ? SIDE_GROUP : ACTIVE_GROUP);
 
 			const editorControl = editor?.getControl();
@@ -1893,16 +1946,15 @@ export class SearchView extends ViewPane {
 						await elemParent.updateMatchesForEditorWidget();
 
 						const matchIndex = oldParentMatches.findIndex(e => e.id() === element.id());
-						const matches = element.parent().matches();
+						const matches = elemParent.matches();
 						const match = matchIndex >= matches.length ? matches[matches.length - 1] : matches[matchIndex];
 
 						if (match instanceof MatchInNotebook) {
 							elemParent.showMatch(match);
-						}
-
-						if (!this.tree.getFocus().includes(match) || !this.tree.getSelection().includes(match)) {
-							this.tree.setSelection([match], getSelectionKeyboardEvent());
-							this.tree.setFocus([match]);
+							if (!this.tree.getFocus().includes(match) || !this.tree.getSelection().includes(match)) {
+								this.tree.setSelection([match], getSelectionKeyboardEvent());
+								this.tree.setFocus([match]);
+							}
 						}
 					}
 				}
@@ -1940,30 +1992,6 @@ export class SearchView extends ViewPane {
 			}
 			this.viewModel.searchResult.rangeHighlightDecorations.removeHighlightRange();
 		}, errors.onUnexpectedError);
-	}
-
-	private getSelectionFrom(element: FileMatchOrMatch): any {
-		let match: Match | null = null;
-		if (element instanceof Match) {
-			match = element;
-		}
-		if (element instanceof FileMatch && element.count() > 0) {
-			match = element.matches()[element.matches().length - 1];
-		}
-		if (match) {
-			const range = match.range();
-			if (this.viewModel.isReplaceActive() && !!this.viewModel.replaceString) {
-				const replaceString = match.replaceString;
-				return {
-					startLineNumber: range.startLineNumber,
-					startColumn: range.startColumn,
-					endLineNumber: range.startLineNumber,
-					endColumn: range.startColumn + replaceString.length
-				};
-			}
-			return range;
-		}
-		return undefined;
 	}
 
 	private onUntitledDidDispose(resource: URI): void {
@@ -2056,6 +2084,14 @@ export class SearchView extends ViewPane {
 		this.viewletState['view.treeLayout'] = this.isTreeLayoutViewVisible;
 		this.viewletState['query.replaceText'] = isReplaceShown && this.searchWidget.getReplaceValue();
 
+		this._saveSearchHistoryService();
+
+		this.memento.saveMemento();
+
+		super.saveState();
+	}
+
+	private _saveSearchHistoryService() {
 		const history: ISearchHistoryValues = Object.create(null);
 
 		const searchHistory = this.searchWidget.getSearchHistory();
@@ -2079,10 +2115,6 @@ export class SearchView extends ViewPane {
 		}
 
 		this.searchHistoryService.save(history);
-
-		this.memento.saveMemento();
-
-		super.saveState();
 	}
 
 	protected async retrieveFileStats(): Promise<void> { // {{SQL CARBON EDIT}}
@@ -2134,4 +2166,28 @@ export class SearchLinkButton extends Disposable { // {{SQL CARBON EDIT}} - expo
 			}
 		}));
 	}
+}
+
+export function getEditorSelectionFromMatch(element: FileMatchOrMatch, viewModel: SearchModel): any {
+	let match: Match | null = null;
+	if (element instanceof Match) {
+		match = element;
+	}
+	if (element instanceof FileMatch && element.count() > 0) {
+		match = element.matches()[element.matches().length - 1];
+	}
+	if (match) {
+		const range = match.range();
+		if (viewModel.isReplaceActive() && !!viewModel.replaceString) {
+			const replaceString = match.replaceString;
+			return {
+				startLineNumber: range.startLineNumber,
+				startColumn: range.startColumn,
+				endLineNumber: range.startLineNumber,
+				endColumn: range.startColumn + replaceString.length
+			};
+		}
+		return range;
+	}
+	return undefined;
 }

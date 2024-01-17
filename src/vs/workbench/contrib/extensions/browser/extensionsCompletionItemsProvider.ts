@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -24,6 +24,7 @@ export class ExtensionsCompletionItemsProvider extends Disposable implements IWo
 		super();
 
 		this._register(languageFeaturesService.completionProvider.register({ language: 'jsonc', pattern: '**/settings.json' }, {
+			_debugDisplayName: 'extensionsCompletionProvider',
 			provideCompletionItems: async (model: ITextModel, position: Position, _context: CompletionContext, token: CancellationToken): Promise<CompletionList> => {
 				const getWordRangeAtPosition = (model: ITextModel, position: Position): Range | null => {
 					const wordAtPosition = model.getWordAtPosition(position);

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -280,7 +280,7 @@ class CodeActionOnSaveParticipant implements IStoredFileWorkingCopySaveParticipa
 
 	private getActionsToRun(model: ITextModel, codeActionKind: CodeActionKind, excludes: readonly CodeActionKind[], progress: IProgress<CodeActionProvider>, token: CancellationToken) {
 		return getCodeActions(this.languageFeaturesService.codeActionProvider, model, model.getFullModelRange(), {
-			type: CodeActionTriggerType.Auto,
+			type: CodeActionTriggerType.Invoke,
 			triggerAction: CodeActionTriggerSource.OnSave,
 			filter: { include: codeActionKind, excludes: excludes, includeSourceActions: true },
 		}, progress, token);

@@ -2454,6 +2454,18 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.aboutDetail" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Version: {0}]D;]A;Commit: {1}]D;]A;Date: {2}]D;]A;VS Code: {3}]D;]A;Electron: {4}]D;]A;Chromium: {5}]D;]A;Node.js: {6}]D;]A;V8: {7}]D;]A;OS: {8}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Version : {0}]D;]A;Validation : {1}]D;]A;Date : {2}]D;]A;VS Code : {3}]D;]A;Électron : {4}]D;]A;Chrome : {5}]D;]A;Node.js : {6}]D;]A;V8 : {7}]D;]A;OS : {8}]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Version: {0}]D;]A;Commit: {1}]D;]A;Date: {2}]D;]A;Electron: {3}]D;]A;Chromium: {4}]D;]A;Node.js: {5}]D;]A;V8: {6}]D;]A;OS: {7}]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/base/common/locConstants.activateLanguagePack" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[In order to use Azure Data Studio in {0}, Azure Data Studio needs to restart.]]></Val>
@@ -4599,6 +4611,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/browser/editor/profiler/profilerInput.profilerInput.connDetails" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Connection Details: ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Détails de la connexion : ]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/browser/editor/profiler/profilerInput.profilerInput.notConnected" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Not connected]]></Val>
@@ -4613,6 +4634,15 @@
           <Val><![CDATA[Profiler]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Profiler]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/browser/editor/profiler/profilerInput.profilerInput.sessionName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[: Session Name: {0}]D;]A;]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[: Nom de session : {0}]D;]A;]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6666,11 +6696,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/connection/browser/connectionStatus.status.connection.baseTooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Server: {0}]D;]A;Database: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Serveur : {0}]D;]A;Base de données : {1}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/connection/browser/connectionStatus.status.connection.status" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connection Status]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[État de la connexion]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/connection/browser/connectionStatus.status.connection.tooltipLogin" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Login: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Connexion : {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6896,6 +6944,15 @@
           <Val><![CDATA[General]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Général]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/dashboard/browser/core/dashboardPage.component.dashboard.tabLoadingError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error loading tab {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Erreur de chargement de l'onglet {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13581,6 +13638,42 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.saveAsExcel.autoFilterHeaderRow" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[When true, enable auto filtering on the header row when saving results as an Excel file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Quand la valeur est true, activez le filtrage automatique sur la ligne d’en-tête lors de l’enregistrement des résultats dans un fichier Excel]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.saveAsExcel.autoSizeColumns" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[When true, attempt to automatically size columns when saving results as an Excel file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Quand la valeur est true, tentez de dimensionner automatiquement les colonnes lors de l’enregistrement des résultats dans un fichier Excel]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.saveAsExcel.boldHeaderRow" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[When true, make the header row bold when saving results as an Excel file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Quand la valeur est true, mettez en gras la ligne d’en-tête lors de l’enregistrement des résultats dans un fichier Excel]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.saveAsExcel.freezeHeaderRow" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[When true, freeze the header row when saving results as an Excel file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Quand la valeur est true, figez la ligne d’en-tête lors de l’enregistrement des résultats dans un fichier Excel]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.saveAsExcel.includeHeaders" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When true, column headers are included when saving results as an Excel file]]></Val>
@@ -16929,11 +17022,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/services/fileBrowser/browser/fileBrowserDialog.fileBrowser.discard" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/services/fileBrowser/browser/fileBrowserDialog.fileBrowser.back" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Discard]]></Val>
+          <Val><![CDATA[Back]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ignorer]]></Val>
+            <Val><![CDATA[Retour]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -18686,15 +18779,6 @@
           <Val><![CDATA[Copy completed notifications are now disabled. To re-enable, modify the setting: queryEditor.results.showCopyCompletedNotification]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[La copie des notifications terminées est maintenant désactivée. Pour réactiver, modifiez le paramètre : queryEditor.results.showCopyCompletedNotification]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/services/query/common/queryManagement.queryManagement.noQueryRunnerForUri" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Could not find Query Runner for uri: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Impossible de trouver Query Runner pour l’uri :{0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

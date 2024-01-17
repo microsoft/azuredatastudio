@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IDiffChange, LcsDiff } from 'vs/base/common/diff/diff';
@@ -70,10 +70,13 @@ export class SingleTextEdit {
 			const suggestionAddedIndentationLength = getLeadingWhitespace(edit.text).length;
 
 			const replacedIndentation = sourceLine.substring(edit.range.startColumn - 1, sourceIndentationLength);
-			const rangeThatDoesNotReplaceIndentation = Range.fromPositions(
-				edit.range.getStartPosition().delta(0, replacedIndentation.length),
-				edit.range.getEndPosition()
-			);
+
+			const [startPosition, endPosition] = [edit.range.getStartPosition(), edit.range.getEndPosition()];
+			const newStartPosition =
+				startPosition.column + replacedIndentation.length <= endPosition.column
+					? startPosition.delta(0, replacedIndentation.length)
+					: endPosition;
+			const rangeThatDoesNotReplaceIndentation = Range.fromPositions(newStartPosition, endPosition);
 
 			const suggestionWithoutIndentationChange =
 				edit.text.startsWith(replacedIndentation)

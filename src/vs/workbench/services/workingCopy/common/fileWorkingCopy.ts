@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -21,6 +21,18 @@ export interface IFileWorkingCopyModelFactory<M extends IFileWorkingCopyModel> {
 	 * @param token support for cancellation
 	 */
 	createModel(resource: URI, contents: VSBufferReadableStream, token: CancellationToken): Promise<M>;
+}
+
+export interface IFileWorkingCopyModelConfiguration {
+
+	/**
+	 * The delay in milliseconds to wait before triggering
+	 * a backup after the content of the model has changed.
+	 *
+	 * If not configured, a sensible default will be taken
+	 * based on user settings.
+	 */
+	readonly backupDelay?: number;
 }
 
 /**
@@ -49,6 +61,12 @@ export interface IFileWorkingCopyModel extends IDisposable {
 	 * An event emitted right before disposing the model.
 	 */
 	readonly onWillDispose: Event<void>;
+
+	/**
+	 * Optional additional configuration for the model that drives
+	 * some of the working copy behaviour.
+	 */
+	readonly configuration?: IFileWorkingCopyModelConfiguration;
 
 	/**
 	 * Snapshots the model's current content for writing. This must include

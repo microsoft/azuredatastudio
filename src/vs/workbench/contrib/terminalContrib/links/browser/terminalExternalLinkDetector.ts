@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ITerminalLinkDetector, ITerminalSimpleLink, OmitFirstArg } from 'vs/workbench/contrib/terminalContrib/links/browser/links';
 import { convertLinkRangeToBuffer, getXtermLineContent } from 'vs/workbench/contrib/terminalContrib/links/browser/terminalLinkHelpers';
 import { ITerminalExternalLinkProvider } from 'vs/workbench/contrib/terminal/browser/terminal';
-import { IBufferLine, Terminal } from 'xterm';
+import type { IBufferLine, Terminal } from 'xterm';
 
 export class TerminalExternalLinkDetector implements ITerminalLinkDetector {
 	readonly maxLinkLength = 2000;

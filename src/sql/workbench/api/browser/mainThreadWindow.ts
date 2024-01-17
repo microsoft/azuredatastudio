@@ -1,10 +1,11 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import type * as azdata from 'azdata';
 import { MainThreadWindowShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
@@ -15,7 +16,8 @@ export class MainThreadWindow extends Disposable implements MainThreadWindowShap
 
 	constructor(
 		extHostContext: IExtHostContext,
-		@IFileBrowserDialogController private _fileBrowserDialogService: IFileBrowserDialogController
+		@IFileBrowserDialogController private _fileBrowserDialogService: IFileBrowserDialogController,
+		@IBackupRestoreUrlBrowserDialogService private _urlBrowserDialogService: IBackupRestoreUrlBrowserDialogService
 	) {
 		super();
 	}
@@ -32,5 +34,9 @@ export class MainThreadWindow extends Disposable implements MainThreadWindowShap
 			}
 		});
 		return await completion;
+	}
+
+	public async $openBackupUrlBrowserDialog(connectionUri: string, defaultBackupName: string, isRestore: boolean): Promise<string | undefined> {
+		return this._urlBrowserDialogService.showDialog(connectionUri, isRestore, isRestore, isRestore ? '' : defaultBackupName);
 	}
 }

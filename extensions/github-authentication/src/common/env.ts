@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { Uri } from 'vscode';
 import { AuthProviderType } from '../github';
@@ -29,6 +29,10 @@ export function isSupportedClient(uri: Uri): boolean {
 export function isSupportedTarget(type: AuthProviderType, gheUri?: Uri): boolean {
 	return (
 		type === AuthProviderType.github ||
-		/\.ghe\.com$/.test(gheUri!.authority)
+		isHostedGitHubEnterprise(gheUri!)
 	);
+}
+
+export function isHostedGitHubEnterprise(uri: Uri): boolean {
+	return /\.ghe\.com$/.test(uri.authority);
 }

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
@@ -33,6 +33,18 @@ export function activate(context: vscode.ExtensionContext) {
 	const serializer = new NotebookSerializer(context);
 	ensureAllNewCellsHaveCellIds(context);
 	context.subscriptions.push(vscode.workspace.registerNotebookSerializer('jupyter-notebook', serializer, {
+		transientOutputs: false,
+		transientCellMetadata: {
+			breakpointMargin: true,
+			custom: false,
+			attachments: false
+		},
+		cellContentMetadata: {
+			attachments: true
+		}
+	} as vscode.NotebookDocumentContentOptions));
+
+	context.subscriptions.push(vscode.workspace.registerNotebookSerializer('interactive', serializer, {
 		transientOutputs: false,
 		transientCellMetadata: {
 			breakpointMargin: true,

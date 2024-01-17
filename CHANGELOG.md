@@ -1,5 +1,69 @@
 # Change Log
 
+## November 2023
+
+Azure Data Studio 1.47.0 is the latest general availability (GA) release.
+
+- Release number: 1.47.0
+- Release date: November 8, 2023
+ 
+ ### What's new in 1.47.0
+
+| New Item | Details |
+| --- | --- |
+| Connection | Improved visibility of advanced options in tabs and tooltips |
+| Database Properties | Implemented usability improvements to object properties dialogs |
+| Extensibility | Allow extensions to hook into provider events |
+| Extensibility | Improved charting capability |
+| General | Enabled `Mssql: Parallel Message Processing` by default to improve application performance when working with MSSQL connections. |
+| General | Added `Mssql: Parallel Message Processing Limit` with a default of 100 to control the number of threads used for parallel processing. |
+| General | Updated notifications so they close automatically upon task completion |
+| Notebooks | Updated version to 6.5.6 and removed traitlets v5.9.0 from required notebook dependencies |
+| Object Explorer | Added `Select Top 1000` menu option for the history table of a system-versioned temporal table |
+| Object Explorer | Usability improvements including added context menus |
+| Result Set | Added additional options for saving results to Excel |
+| Result Set | Added support to display formatted XML data when stored as a VARCHAR data type |
+| User Management | References to Azure Active Directory (Azure AD) have been updated to Microsoft Entra, see [Azure AD is Becoming Microsoft Entra ID](https://techcommunity.microsoft.com/t5/microsoft-entra-azure-ad-blog/azure-ad-is-becoming-microsoft-entra-id/ba-p/2520436) for details. |
+| VS Code Merge | Merges upstream improvements from VS Code 1.80, 1.81, and 1.82. These releases contained numerous new features as well as quality, performance, stability, and compliance enhancements. The full details can be reviewed in the VS Code release notes at: [Visual Studio Code June 2023](https://code.visualstudio.com/updates/v1_80), [Visual Studio Code July 2023](https://code.visualstudio.com/updates/v1_81), and [Visual Studio Code August 2023](https://code.visualstudio.com/updates/v1_82). |
+
+### Bug fixes in 1.47.0
+
+| New Item | Details |
+| --- | --- |
+| Authentication | Fixed error "multiple matching_tokens occurred when acquiring token." when authenticating to Azure resources |
+| Autocomplete | Fixed autocomplete suggests "abort" whenever new comment is begun |
+| Connection | Updated prefix for Clear Pooled Connections in the command palette to use the MSSQL prefix |
+| Connection | Fixed proxy setting values not being passed to backend SQL Tools Service |
+| Connection | Removed tenant filter config setting |
+| Extensibility | Fixed issue where server dashboard was loading before activation of extension completed |
+| Notebooks | Fixed issue where the Notebook Python process continued to run after Azure Data Studio is closed |
+| Notebooks | Fixed Jupyter Notebook entry in new file command under command palette does nothing |
+| Object Explorer | Fixed silent failure when attempting to open script files |
+| Object Explorer | Removed duplicate entry for Group By Schema from command palette |
+| Object Explorer | Addressed behavior where selecting Manage for an Azure SQL Database opened the dashboard for the logical server instead of the database |
+| Profiler Extension | Fixed issue where Profiler columns were not resizeable |
+| Profiler Extension | Resolved problem where selecting Ctrl + F in the Profiler extension did not bring up Find dialog |
+| Query Editor | Updated maximum value supported for `Query: Text Size` setting to fix results not being copied to the clipboard |
+| Query Editor | Fixed issue where query editor would not open due to initialization errors |
+| Query Editor | Fixed error "Cannot connect to the database due to invalid OwnerUri" after saving a new query file |
+| Query History Extension | Fixed error loading query history items |
+| Schema Compare | Fixed issue where schema compare does not show that it is running while doing a comparison |
+| Schema Compare | Fixed issue where Azure Data Studio stops responding after attempting to apply schema compare changes |
+| Shell | Shortened query tab titles for edit data |
+| Shell | Updated hyperlinks to use correct theming so they are visible when using dark theme |
+| Shell | Updated shell default behavior to not open any editor when `Show welcome page on startup` is not selected |
+| SQL Project | Fixed issue where database project fails to build with syntax error when including a database scoped credential object |
+
+For details about the issues addressed in the November 2023 release, visit the [November 2023 Release on GitHub](https://github.com/microsoft/azuredatastudio/milestone/105?closed=1).
+
+#### Known issues in 1.47.0
+
+ New Item | Details | Workaround |
+| --- | --- | --- |
+| Installation | Azure Data Studio installation fails on RHEL 8 | Use RHEL 9, or manually install glibc-2.29 and add it to the Library Path and then re-install ADS |
+
+For a list of the current known issues, visit the [issues list on GitHub](https://github.com/microsoft/azuredatastudio/issues?q=is%3Aissue).
+
 ## September 2023 (Hotfix 1)
 
 Azure Data Studio 1.46.1 is the latest general availability (GA) release.

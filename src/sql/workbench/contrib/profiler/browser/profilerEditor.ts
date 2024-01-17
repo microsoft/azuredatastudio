@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
@@ -12,7 +12,7 @@ import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IProfilerStateChangedEvent } from 'sql/workbench/common/editor/profiler/profilerState';
 import { ProfilerTableEditor, ProfilerTableViewState } from 'sql/workbench/contrib/profiler/browser/profilerTableEditor';
 import * as Actions from 'sql/workbench/contrib/profiler/browser/profilerActions';
-import { CONTEXT_PROFILER_EDITOR, PROFILER_TABLE_COMMAND_SEARCH } from 'sql/workbench/contrib/profiler/common/interfaces';
+import { PROFILER_TABLE_COMMAND_SEARCH } from 'sql/workbench/contrib/profiler/common/interfaces';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { textFormatter, slickGridDataItemColumnValueExtractor } from 'sql/base/browser/ui/table/formatters';
 import { ProfilerResourceEditor } from 'sql/workbench/contrib/profiler/browser/profilerResourceEditor';
@@ -26,7 +26,6 @@ import { DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
 import { Command } from 'vs/editor/browser/editorExtensions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
-import { ContextKeyExpr, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import * as types from 'vs/base/common/types';
 import { ColorScheme } from 'vs/platform/theme/common/theme';
@@ -56,6 +55,7 @@ import { IAccessibilityService } from 'vs/platform/accessibility/common/accessib
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { defaultSelectBoxStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { ActiveEditorContext } from 'vs/workbench/common/contextkeys';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {
@@ -140,8 +140,6 @@ export class ProfilerEditor extends EditorPane {
 	private _stateListener: IDisposable;
 	private _panelView: BasicView;
 
-	private _profilerEditorContextKey: IContextKey<boolean>;
-
 	private _viewTemplateSelector: SelectBox;
 	private _viewTemplates: Array<IProfilerViewTemplate>;
 	private _sessionSelector: SelectBox;
@@ -167,7 +165,6 @@ export class ProfilerEditor extends EditorPane {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IModelService private _modelService: IModelService,
 		@IProfilerService private _profilerService: IProfilerService,
-		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IEditorService editorService: IEditorService,
 		@IStorageService storageService: IStorageService,
@@ -179,7 +176,6 @@ export class ProfilerEditor extends EditorPane {
 		@IComponentContextService private readonly _componentContextService: IComponentContextService
 	) {
 		super(ProfilerEditor.ID, telemetryService, themeService, storageService);
-		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
 
 		if (editorGroupsService) {
 			// Add all the initial groups to be listened to
@@ -465,7 +461,6 @@ export class ProfilerEditor extends EditorPane {
 	public override setInput(input: ProfilerInput, options?: IEditorOptions): Promise<void> {
 		let savedViewState = this._savedTableViewStates.get(input);
 
-		this._profilerEditorContextKey.set(true);
 		if (input instanceof ProfilerInput && this.input !== undefined && input.matches(this.input)) {
 			if (savedViewState) {
 				this._profilerTableEditor.restoreViewState(savedViewState);
@@ -507,10 +502,6 @@ export class ProfilerEditor extends EditorPane {
 				this.input.setInitializerPhase(false);
 			}
 		});
-	}
-
-	public override clearInput(): void {
-		this._profilerEditorContextKey.set(false);
 	}
 
 	public toggleSearch(): void {
@@ -641,7 +632,6 @@ export class ProfilerEditor extends EditorPane {
 	}
 
 	public override focus() {
-		this._profilerEditorContextKey.set(true);
 		super.focus();
 		let savedViewState = this._savedTableViewStates.get(this.input);
 		if (savedViewState) {
@@ -675,7 +665,7 @@ class StartSearchProfilerTableCommand extends SettingsCommand {
 
 const command = new StartSearchProfilerTableCommand({
 	id: PROFILER_TABLE_COMMAND_SEARCH,
-	precondition: ContextKeyExpr.and(CONTEXT_PROFILER_EDITOR),
+	precondition: ActiveEditorContext.isEqualTo(ProfilerEditor.ID),
 	kbOpts: {
 		primary: KeyMod.CtrlCmd | KeyCode.KeyF,
 		weight: KeybindingWeight.EditorContrib

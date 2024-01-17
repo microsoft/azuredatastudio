@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { transformErrorForSerialization } from 'vs/base/common/errors';
@@ -558,6 +558,7 @@ export class SimpleWorkerServer<H extends object> {
 
 /**
  * Called on the worker side
+ * @skipMangle
  */
 export function create(postMessage: (msg: Message, transfer?: ArrayBuffer[]) => void): SimpleWorkerServer<any> {
 	return new SimpleWorkerServer(postMessage, null);

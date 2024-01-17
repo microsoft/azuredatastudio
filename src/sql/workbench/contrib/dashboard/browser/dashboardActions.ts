@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
@@ -21,6 +21,7 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 import { IViewsService } from 'vs/workbench/common/views';
 import { ConnectionViewletPanel } from 'sql/workbench/contrib/dataExplorer/browser/connectionViewletPanel';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export const DE_MANAGE_COMMAND_ID = 'dataExplorer.manage';
 
@@ -75,7 +76,8 @@ export class OEManageConnectionAction extends Action {
 		@ICapabilitiesService protected readonly _capabilitiesService: ICapabilitiesService,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@IObjectExplorerService private readonly _objectExplorerService: IObjectExplorerService,
-		@IViewsService private readonly _viewsService: IViewsService
+		@IViewsService private readonly _viewsService: IViewsService,
+		@ILogService private readonly _logService: ILogService
 	) {
 		super(id, label);
 	}
@@ -106,12 +108,13 @@ export class OEManageConnectionAction extends Action {
 			}
 		}
 		else if (!actionContext) {
-			const globalProfile = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService);
+			const globalProfile = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService, this._logService);
 			connectionProfile = globalProfile ? ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, globalProfile) : undefined;
 		}
 
 		if (!connectionProfile) {
 			// No valid connection (e.g. This was triggered without an active context to get the connection from) so just return early
+			this._logService.info('dashboardActions.doManage: No connection found to connect.');
 			return true;
 		}
 

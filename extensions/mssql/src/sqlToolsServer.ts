@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IConfig, Events, LogLevel } from '@microsoft/ads-service-downloader';
@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as path from 'path';
 import * as azurecore from 'azurecore';
-import { getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableConnectionPoolingConfig, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, logDebug, TracingLevel } from './utils';
+import { getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableConnectionPoolingConfig, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, getParallelMessageProcessingLimitConfig, logDebug, TracingLevel } from './utils';
 import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature/*, ServerContextualizationServiceFeature*/ } from './features'; // LEWISSANCHEZ TODO: Put back ServerContextualizationServiceFeature once ready.
@@ -61,8 +61,9 @@ export class SqlToolsServer {
 			const serverPath = await this.download(context);
 			this.installDirectory = path.dirname(serverPath);
 			const installationComplete = Date.now();
-			let serverOptions = generateServerOptions(context.extensionContext.logPath, serverPath);
+			let serverOptions = generateServerOptions(context.extensionContext.logUri.fsPath, serverPath);
 			let clientOptions = getClientOptions(context);
+			// IMPORTANT: 'mssql' must match the prefix name of configuration: 'mssql.trace.server'.
 			this.client = new SqlOpsDataClient('mssql', Constants.serviceName, serverOptions, clientOptions);
 			const processStart = Date.now();
 			const clientReadyPromise = this.client.onReady().then(() => {
@@ -143,7 +144,7 @@ export class SqlToolsServer {
 
 	private activateFeatures(context: AppContext): Promise<void> {
 		const credsStore = new CredentialStore(context, this.config);
-		const resourceProvider = new AzureResourceProvider(context.extensionContext.logPath, this.config);
+		const resourceProvider = new AzureResourceProvider(context.extensionContext.logUri.fsPath, this.config);
 		this.disposables.push(credsStore);
 		this.disposables.push(resourceProvider);
 		context.registerService(Constants.AzureBlobService, new AzureBlobService(this.client));
@@ -163,6 +164,9 @@ function generateServerOptions(logPath: string, executablePath: string): ServerO
 	const enableAsyncMessageProcessing = getParallelMessageProcessingConfig();
 	if (enableAsyncMessageProcessing) {
 		launchArgs.push('--parallel-message-processing');
+		const pmpLimit = getParallelMessageProcessingLimitConfig();
+		launchArgs.push('--parallel-message-processing-limit');
+		launchArgs.push(String(pmpLimit));
 	}
 	const enableSqlAuthenticationProvider = getEnableSqlAuthenticationProviderConfig();
 	if (enableSqlAuthenticationProvider === true) {

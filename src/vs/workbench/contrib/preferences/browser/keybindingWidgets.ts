@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/keybindings';
@@ -23,7 +23,6 @@ import { ICodeEditor, IOverlayWidget, IOverlayWidgetPosition } from 'vs/editor/b
 import { asCssVariable, editorWidgetBackground, editorWidgetForeground, widgetShadow } from 'vs/platform/theme/common/colorRegistry';
 import { ScrollType } from 'vs/editor/common/editorCommon';
 import { SearchWidget, SearchOptions } from 'vs/workbench/contrib/preferences/browser/preferencesWidgets';
-import { withNullAsUndefined } from 'vs/base/common/types';
 import { Promises, timeout } from 'vs/base/common/async';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { defaultInputBoxStyles, defaultKeybindingLabelStyles } from 'vs/platform/theme/browser/defaultStyles';
@@ -244,7 +243,7 @@ export class DefineKeybindingWidget extends Widget {
 		dom.clearNode(this._showExistingKeybindingsNode);
 
 		const firstLabel = new KeybindingLabel(this._outputNode, OS, defaultKeybindingLabelStyles);
-		firstLabel.set(withNullAsUndefined(this._chords?.[0]));
+		firstLabel.set(this._chords?.[0] ?? undefined);
 
 		if (this._chords) {
 			for (let i = 1; i < this._chords.length; i++) {

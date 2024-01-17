@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { deepStrictEqual, fail, strictEqual, ok } from 'assert';
@@ -54,6 +54,10 @@ suite('Terminal history', () => {
 			instantiationService.set(IStorageService, storageService);
 
 			history = instantiationService.createInstance(TerminalPersistedHistory<number>, 'test');
+		});
+
+		teardown(() => {
+			instantiationService.dispose();
 		});
 
 		test('should support adding items to the cache and respect LRU', () => {
@@ -151,8 +155,12 @@ suite('Terminal history', () => {
 			} as Pick<IRemoteAgentService, 'getConnection' | 'getEnvironment'>);
 		});
 
+		teardown(() => {
+			instantiationService.dispose();
+		});
+
 		if (!isWindows) {
-			suite('local', async () => {
+			suite('local', () => {
 				let originalEnvValues: { HOME: string | undefined };
 				setup(() => {
 					originalEnvValues = { HOME: env['HOME'] };
@@ -237,6 +245,10 @@ suite('Terminal history', () => {
 				async getEnvironment() { return remoteEnvironment; },
 				getConnection() { return remoteConnection; }
 			} as Pick<IRemoteAgentService, 'getConnection' | 'getEnvironment'>);
+		});
+
+		teardown(() => {
+			instantiationService.dispose();
 		});
 
 		if (!isWindows) {
@@ -328,7 +340,11 @@ suite('Terminal history', () => {
 			} as Pick<IRemoteAgentService, 'getConnection' | 'getEnvironment'>);
 		});
 
-		suite('local', async () => {
+		teardown(() => {
+			instantiationService.dispose();
+		});
+
+		suite('local', () => {
 			let originalEnvValues: { HOME: string | undefined; APPDATA: string | undefined };
 			setup(() => {
 				originalEnvValues = { HOME: env['HOME'], APPDATA: env['APPDATA'] };
@@ -431,6 +447,10 @@ suite('Terminal history', () => {
 				async getEnvironment() { return remoteEnvironment; },
 				getConnection() { return remoteConnection; }
 			} as Pick<IRemoteAgentService, 'getConnection' | 'getEnvironment'>);
+		});
+
+		teardown(() => {
+			instantiationService.dispose();
 		});
 
 		if (!isWindows) {

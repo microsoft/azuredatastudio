@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IChannel } from 'vs/base/parts/ipc/common/ipc';
@@ -64,12 +64,17 @@ export class NativeExtensionManagementService extends ProfileAwareExtensionManag
 		return { location, cleanup };
 	}
 
-	protected override async switchExtensionsProfile(previousProfileLocation: URI, currentProfileLocation: URI, preserveData: boolean | ExtensionIdentifier[]): Promise<DidChangeProfileEvent> {
-		if (!preserveData && this.nativeEnvironmentService.remoteAuthority) {
+	protected override async switchExtensionsProfile(previousProfileLocation: URI, currentProfileLocation: URI, preserveExtensions?: ExtensionIdentifier[]): Promise<DidChangeProfileEvent> {
+		if (this.nativeEnvironmentService.remoteAuthority) {
 			const previousInstalledExtensions = await this.getInstalled(ExtensionType.User, previousProfileLocation);
 			const resolverExtension = previousInstalledExtensions.find(e => isResolverExtension(e.manifest, this.nativeEnvironmentService.remoteAuthority));
-			preserveData = resolverExtension ? [new ExtensionIdentifier(resolverExtension.identifier.id)] : preserveData;
+			if (resolverExtension) {
+				if (!preserveExtensions) {
+					preserveExtensions = [];
+				}
+				preserveExtensions.push(new ExtensionIdentifier(resolverExtension.identifier.id));
+			}
 		}
-		return super.switchExtensionsProfile(previousProfileLocation, currentProfileLocation, preserveData);
+		return super.switchExtensionsProfile(previousProfileLocation, currentProfileLocation, preserveExtensions);
 	}
 }

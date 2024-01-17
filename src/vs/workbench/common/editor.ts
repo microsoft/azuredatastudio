@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -1095,8 +1095,10 @@ interface IEditorPartConfiguration {
 	highlightModifiedTabs?: boolean;
 	tabCloseButton?: 'left' | 'right' | 'off';
 	tabSizing?: 'fit' | 'shrink' | 'fixed';
+	tabSizingFixedMinWidth?: number;
 	tabSizingFixedMaxWidth?: number;
 	pinnedTabSizing?: 'normal' | 'compact' | 'shrink';
+	preventPinnedEditorClose?: PreventPinnedEditorClose;
 	titleScrollbarSizing?: 'default' | 'large';
 	focusRecentEditorAfterClose?: boolean;
 	showIcons?: boolean;
@@ -1113,9 +1115,10 @@ interface IEditorPartConfiguration {
 	labelFormat?: 'default' | 'short' | 'medium' | 'long';
 	restoreViewState?: boolean;
 	splitInGroupLayout?: 'vertical' | 'horizontal';
-	splitSizing?: 'split' | 'distribute';
+	splitSizing?: 'auto' | 'split' | 'distribute';
 	splitOnDragAndDrop?: boolean;
 	centeredLayoutFixedWidth?: boolean;
+	doubleClickTabToToggleEditorGroupSizes?: boolean;
 	limit?: {
 		enabled?: boolean;
 		excludeDirty?: boolean;
@@ -1336,6 +1339,28 @@ class EditorResourceAccessorImpl {
 
 		return undefined;
 	}
+}
+
+export type PreventPinnedEditorClose = 'keyboardAndMouse' | 'keyboard' | 'mouse' | 'never' | undefined;
+
+export enum EditorCloseMethod {
+	UNKNOWN,
+	KEYBOARD,
+	MOUSE
+}
+
+export function preventEditorClose(group: IEditorGroup, editor: EditorInput, method: EditorCloseMethod, configuration: IEditorPartConfiguration): boolean {
+	if (!group.isSticky(editor)) {
+		return false; // only interested in sticky editors
+	}
+
+	switch (configuration.preventPinnedEditorClose) {
+		case 'keyboardAndMouse': return method === EditorCloseMethod.MOUSE || method === EditorCloseMethod.KEYBOARD;
+		case 'mouse': return method === EditorCloseMethod.MOUSE;
+		case 'keyboard': return method === EditorCloseMethod.KEYBOARD;
+	}
+
+	return false;
 }
 
 export const EditorResourceAccessor = new EditorResourceAccessorImpl();
