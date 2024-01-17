@@ -9,6 +9,7 @@ import { IAccountManagementService } from 'sql/platform/accounts/common/interfac
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { coalesce } from 'vs/base/common/arrays';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IAuthenticationService } from 'vs/workbench/services/authentication/common/authentication';
 
 /**
  * View model for account dialog
@@ -24,7 +25,11 @@ export class AccountViewModel {
 	private _updateAccountListEmitter: Emitter<UpdateAccountListEventParams>;
 	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> { return this._updateAccountListEmitter.event; }
 
-	constructor(@IAccountManagementService private _accountManagementService: IAccountManagementService, @ILogService private _logService: ILogService) {
+	constructor(
+		@IAccountManagementService private readonly _accountManagementService: IAccountManagementService,
+		@ILogService private readonly _logService: ILogService,
+		@IAuthenticationService private readonly _authenticationService: IAuthenticationService
+	) {
 		// Create our event emitters
 		this._addProviderEmitter = new Emitter<AccountProviderAddedEventParams>();
 		this._removeProviderEmitter = new Emitter<azdata.AccountProviderMetadata>();
@@ -48,23 +53,63 @@ export class AccountViewModel {
 		// 2) For each provider, get the accounts
 		// 3) Build parameters to add a provider and return it
 		try {
-			const metadata = await this._accountManagementService.getAccountProviderMetadata();
-			const accounts = await Promise.all(metadata.map(async providerMetadata => {
-				try {
-					const accounts = await this._accountManagementService.getAccountsForProvider(providerMetadata.id);
-					return <AccountProviderAddedEventParams>{
-						addedProvider: providerMetadata,
-						initialAccounts: accounts
-					};
-				} catch (err) {
-					this._logService.warn(`Error getting accounts for provider ${providerMetadata.id} : ${err}`);
-					return undefined;
-				}
-			}));
+			let accounts = await this.getAccountsForProviders();
+			const sessionAccounts = await this.getAccountForSessions();
+			accounts = accounts.concat(sessionAccounts);
+
 			return coalesce(accounts);
 		} catch (err) {
 			this._logService.warn(`Error getting account provider metadata : ${err}`);
 			return [];
 		}
+	}
+
+	private async getAccountsForProviders(): Promise<AccountProviderAddedEventParams[]> {
+		const metadata = await this._accountManagementService.getAccountProviderMetadata();
+		const accounts = await Promise.all(metadata.map(async (providerMetadata) => {
+			try {
+				const accounts = await this._accountManagementService.getAccountsForProvider(providerMetadata.id);
+
+				return <AccountProviderAddedEventParams>{
+					addedProvider: providerMetadata,
+					initialAccounts: accounts
+				};
+			} catch (err) {
+				this._logService.warn(`Error getting accounts for provider ${providerMetadata.id} : ${err}`);
+				return undefined;
+			}
+		}));
+
+		return accounts.filter(account => !!account);
+	}
+
+	private async getAccountForSessions(): Promise<AccountProviderAddedEventParams[]> {
+		const sessionAccounts: AccountProviderAddedEventParams[] = [];
+		const providerIds = this._authenticationService.getProviderIds();
+
+		for (const providerId of providerIds) {
+			const displayName = this._authenticationService.getLabel(providerId);
+			const accountType = providerId === 'github' ? 'github' : 'microsoft'; // TODO: Find a better default account icon.
+
+			const sessions = await this._authenticationService.getSessions(providerId);
+			const accounts = sessions.map(session => {
+				return ({
+					key: { providerId: providerId, accountId: session.account.id } as azdata.AccountKey,
+					displayInfo: { contextualDisplayName: displayName, accountType: accountType, displayName: session.account.label, userId: session.account.label } as azdata.AccountDisplayInfo,
+					isStale: false,
+				}) as azdata.Account;
+			});
+
+			const sessionAccount: AccountProviderAddedEventParams = {
+				addedProvider: {
+					id: providerId,
+					displayName: displayName
+				},
+				initialAccounts: accounts
+			};
+			sessionAccounts.push(sessionAccount);
+		}
+
+		return sessionAccounts;
 	}
 }

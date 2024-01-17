@@ -45,7 +45,6 @@ const dirs = [
 	'extensions/notebook-renderers',
 	'extensions/profiler',
 	'extensions/query-history',
-	'extensions/query-store',
 	'extensions/resource-deployment',
 	'extensions/schema-compare',
 	'extensions/search-result',

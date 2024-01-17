@@ -101,6 +101,7 @@ steps:
       yarn gulp vscode-linux-x64-min-ci
     displayName: Build
     env:
+      GITHUB_TOKEN: $(github-distro-mixin-password)
       VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
 
   - script: |
@@ -125,6 +126,8 @@ steps:
       set -e
       DISPLAY=:10 ./scripts/test.sh --build --tfs "Unit Tests" --coverage
     displayName: Run core unit tests
+    env:
+      GITHUB_TOKEN: $(github-distro-mixin-password)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
@@ -138,6 +141,8 @@ steps:
       VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-x64" \
       DISPLAY=:10 ./scripts/test-integration.sh --build --tfs "Integration Tests"
     displayName: Run core integration tests
+    env:
+      GITHUB_TOKEN: $(github-distro-mixin-password)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
@@ -153,6 +158,8 @@ steps:
       DISPLAY=:10 ./scripts/test-extensions-unit.sh --build --tfs "Extension Unit Tests"
     displayName: Run Extension Unit Tests (Continue on Error)
     continueOnError: true
+    env:
+      GITHUB_TOKEN: $(github-distro-mixin-password)
     condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'false')))
 
   - script: |
@@ -167,6 +174,8 @@ steps:
       VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-x64" \
       DISPLAY=:10 ./scripts/test-extensions-unit.sh --build --tfs "Extension Unit Tests"
     displayName: Run Extension Unit Tests (Fail on Error)
+    env:
+      GITHUB_TOKEN: $(github-distro-mixin-password)
     condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'false')))
 
   - bash: |
@@ -232,9 +241,9 @@ steps:
         ]
       SessionTimeout: 120
     displayName: 'Signing deb and rpm'
-    condition: and(succeeded(), eq(variables['signed'], true))
+    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'), eq(variables['signed'], true))
 
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  - task: EsrpCodeSigning@3
     inputs:
       ConnectedServiceName: 'Code Signing'
       FolderPath: '$(Build.SourcesDirectory)/.build'

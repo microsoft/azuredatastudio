@@ -1,7 +1,7 @@
 {
 	"downloadUrl": "https://github.com/Microsoft/sqltoolsservice/releases/download/{#version#}/microsoft.sqltools.migration-{#fileName#}",
 	"useDefaultLinuxRuntime": true,
-	"version": "4.11.0.13",
+	"version": "4.11.0.17",
 	"downloadFileNames": {
 		"Windows_86": "win-x86-net7.0.zip",
 		"Windows": "win-x64-net7.0.zip",

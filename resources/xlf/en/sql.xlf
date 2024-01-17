@@ -458,6 +458,9 @@ Default Skipped Commands:
     <trans-unit id="confirmRemoveUserAccountMessage">
       <source xml:lang="en">Are you sure you want to remove '{0}'?</source>
     </trans-unit>
+    <trans-unit id="githubCopilotSignOut">
+      <source xml:lang="en">Sign out of GitHub Copilot</source>
+    </trans-unit>
     <trans-unit id="refreshAccount">
       <source xml:lang="en">Refresh your credentials</source>
     </trans-unit>
