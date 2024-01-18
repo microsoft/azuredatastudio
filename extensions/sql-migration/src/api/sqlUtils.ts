@@ -137,9 +137,9 @@ export interface LoginTableInfo {
 
 export const SchemaMigrationRequiredIntegrationRuntimeMinimumVersion: IntegrationRuntimeVersionInfo = {
 	major: "5",
-	minor: "35",
-	build: "8686",
-	revision: "1"
+	minor: "37",
+	build: "8767",
+	revision: "4"
 }
 
 export interface IntegrationRuntimeVersionInfo {
@@ -670,9 +670,26 @@ export function getActiveIrVersions(irNodes: IntegrationRuntimeNode[]): Integrat
 	return irVersions;
 }
 
-export function isSchemaMigrationSupportedByActiveNodes(irNodes: IntegrationRuntimeNode[]): boolean {
-	const irVersions = getActiveIrVersions(irNodes);
-	return irVersions.some(v => isSchemaMigrationSupportedByVersion(v));
+export function getActiveIrVersionsSupportingSchemaMigration(irNodes: IntegrationRuntimeNode[]): IntegrationRuntimeVersionInfo[] {
+	var irVersions = getActiveIrVersions(irNodes);
+	var irVersionsSupportingSchema: IntegrationRuntimeVersionInfo[] = [];
+	irVersions.forEach(version => {
+		if (isSchemaMigrationSupportedByVersion(version)) {
+			irVersionsSupportingSchema.push(version);
+		}
+	})
+	return irVersionsSupportingSchema;
+}
+
+export function getActiveIrVersionsNotSupportingSchemaMigration(irNodes: IntegrationRuntimeNode[]): IntegrationRuntimeVersionInfo[] {
+	var irVersions = getActiveIrVersions(irNodes);
+	var irVersionsNotSupportingSchema: IntegrationRuntimeVersionInfo[] = [];
+	irVersions.forEach(version => {
+		if (!isSchemaMigrationSupportedByVersion(version)) {
+			irVersionsNotSupportingSchema.push(version);
+		}
+	})
+	return irVersionsNotSupportingSchema;
 }
 
 export function isSchemaMigrationSupportedByVersion(version: IntegrationRuntimeVersionInfo): boolean {

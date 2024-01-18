@@ -460,6 +460,13 @@ export interface StartLoginMigrationsParams {
 	aadDomainName: string;
 }
 
+export enum LoginMigrationPreValidationStep {
+	SysAdminValidation = 0,
+	AADDomainNameValidation = 1,
+	UserMappingValidation = 2,
+	LoginEligibilityValidation = 3,
+}
+
 export enum LoginMigrationStep {
 	StartValidations = 0,
 	MigrateLogins = 1,
@@ -468,6 +475,12 @@ export enum LoginMigrationStep {
 	EstablishServerRoleMapping = 4,
 	SetLoginPermissions = 5,
 	SetServerRolePermissions = 6,
+}
+
+export interface StartLoginMigrationPreValidationResult {
+	exceptionMap: { [login: string]: any };
+	completedStep: LoginMigrationPreValidationStep;
+	elapsedTime: string;
 }
 
 export interface StartLoginMigrationResult {
@@ -482,6 +495,26 @@ export namespace StartLoginMigrationRequest {
 
 export namespace ValidateLoginMigrationRequest {
 	export const type = new RequestType<StartLoginMigrationsParams, StartLoginMigrationResult, void, void>('migration/validateloginmigration');
+}
+
+export namespace ValidateSysAdminPermissionRequest {
+	export const type =
+		new RequestType<StartLoginMigrationsParams, StartLoginMigrationPreValidationResult, void, void>("migration/validatesysadminpermission");
+}
+
+export namespace ValidateUserMappingRequest {
+	export const type =
+		new RequestType<StartLoginMigrationsParams, StartLoginMigrationPreValidationResult, void, void>("migration/validateusermapping");
+}
+
+export namespace ValidateAADDomainNameRequest {
+	export const type =
+		new RequestType<StartLoginMigrationsParams, StartLoginMigrationPreValidationResult, void, void>("migration/validateaaddomainname");
+}
+
+export namespace ValidateLoginEligibilityRequest {
+	export const type =
+		new RequestType<StartLoginMigrationsParams, StartLoginMigrationPreValidationResult, void, void>("migration/validatelogineligibility");
 }
 
 export namespace MigrateLoginsRequest {
@@ -509,6 +542,10 @@ export interface ISqlMigrationService {
 	refreshPerfDataCollection(lastRefreshedTime: Date): Promise<RefreshPerfDataCollectionResult | undefined>;
 	startLoginMigration(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
 	validateLoginMigration(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
+	validateSysAdminPermission(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationPreValidationResult | undefined>;
+	validateUserMapping(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationPreValidationResult | undefined>;
+	validateAADDomainName(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationPreValidationResult | undefined>;
+	validateLoginEligibility(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationPreValidationResult | undefined>;
 	migrateLogins(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
 	establishUserMapping(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
 	migrateServerRolesAndSetPermissions(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;

@@ -46,6 +46,9 @@
     <trans-unit id="sql.migration.cutover.step.3.network.share">
       <source xml:lang="en">3. Verify that all log backups have been restored on the target database. The &quot;Log backups pending restore&quot; value should be zero.</source>
     </trans-unit>
+    <trans-unit id="sql.schema.migration.min.version">
+      <source xml:lang="en">5.37.8767.4</source>
+    </trans-unit>
     <trans-unit id="sql.migration.bc.info">
       <source xml:lang="en">A SQL Managed Instance migration cutover to the Business Critical service tier can take significantly longer than General Purpose because three secondary replicas have to be seeded for Always On High Availability group. The duration of the operation depends on the size of the data. Seeding speed in 90% of cases is 220 GB/hour or higher.</source>
     </trans-unit>
@@ -1342,9 +1345,6 @@
     <trans-unit id="sql.migration.learn.more.prerequisites">
       <source xml:lang="en">Learn more about things you need before starting a migration.</source>
     </trans-unit>
-    <trans-unit id="sql.migration.wizard.troubleshooting">
-      <source xml:lang="en">Learn more: https://aka.ms/dms-migrations-troubleshooting.</source>
-    </trans-unit>
     <trans-unit id="sql.migration.wizard.account.add.button.label">
       <source xml:lang="en">Link account</source>
     </trans-unit>
@@ -1556,7 +1556,7 @@
       <source xml:lang="en">Missing on target ({0})</source>
     </trans-unit>
     <trans-unit id="sql.migration.schema.partial.missing">
-      <source xml:lang="en">Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.  No tables selected will migrate missing schema only.</source>
+      <source xml:lang="en">Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. No tables selected will migrate missing schema only.</source>
     </trans-unit>
     <trans-unit id="sql.migration.mode">
       <source xml:lang="en">Mode</source>
@@ -1691,7 +1691,7 @@
       <source xml:lang="en">No resource groups found.</source>
     </trans-unit>
     <trans-unit id="sql.migration.schema.full.missing">
-      <source xml:lang="en">No schema was found on target. This option must be selected to migrate this database. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration. No tables selected will migrate missing schema only.</source>
+      <source xml:lang="en">No schema was found on target. This option must be selected to migrate this database. No tables selected will migrate missing schema only.</source>
     </trans-unit>
     <trans-unit id="sql.migration.no.storageAccount.found">
       <source xml:lang="en">No storage accounts found.</source>
@@ -2135,7 +2135,7 @@
       <source xml:lang="en">Schema migration</source>
     </trans-unit>
     <trans-unit id="sql.schema.migration.information">
-      <source xml:lang="en">Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [5.35.8686.1] or higher. Schema migration is not currently supported for connections to source instance using Windows Authentication. Please use SQL Authentication.</source>
+      <source xml:lang="en">Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [{1}] or higher. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.</source>
     </trans-unit>
     <trans-unit id="sql.schema.migration.windows.auth.error">
       <source xml:lang="en">Schema migration is not currently supported for connectivity to source instance using Windows Authentication. Please use SQL Authentication to enable schema migration support.</source>
@@ -2184,6 +2184,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.restore.status.searching.backups">
       <source xml:lang="en">Searching backups</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.wizard.troubleshooting">
+      <source xml:lang="en">See link for more troubleshooting steps: https://aka.ms/dms-migrations-troubleshooting.</source>
     </trans-unit>
     <trans-unit id="sql.migration.select">
       <source xml:lang="en">Select</source>
