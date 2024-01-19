@@ -379,10 +379,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 
 		if (!isUndefinedOrNull(this.objectInfo.isLedgerDatabase)) {
-			let isLedgerDatabaseInput = this.createCheckbox(localizedConstants.IsLedgerDatabaseText, async () => {
-				this.objectInfo.isLedgerDatabase = isLedgerDatabaseInput.checked;
+			let ledgerCheckbox = this.createCheckbox(localizedConstants.IsLedgerDatabaseText, async () => {
+				this.objectInfo.isLedgerDatabase = ledgerCheckbox.checked;
 			}, this.objectInfo.isLedgerDatabase);
-			containers.push(isLedgerDatabaseInput);
+			containers.push(ledgerCheckbox);
 		}
 
 		return this.createGroup(localizedConstants.OptionsSectionHeader, containers, true, true);
