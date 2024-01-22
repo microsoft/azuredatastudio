@@ -5757,12 +5757,12 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.schema.full.missing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration. No tables selected will migrate missing schema only.]]></Val>
+          <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database. No tables selected will migrate missing schema only.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[No se encontró ningún esquema en el destino. Esta opción debe estar seleccionada para migrar esta base de datos. La implementación del esquema hará el mejor esfuerzo para implementar objetos de base de datos. Los errores de implementación de esquema no impedirán la migración de datos. Ninguna de las tablas seleccionadas migrará solo el esquema que falta.]]></Val>
+            <Val><![CDATA[No se encontró ningún esquema en el destino. Esta opción debe estar seleccionada para migrar esta base de datos. Ninguna de las tablas seleccionadas migrará solo el esquema que falta.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database.]]></Val>
+            <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration. No tables selected will migrate missing schema only.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -5859,12 +5859,12 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.schema.partial.missing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.  No tables selected will migrate missing schema only.]]></Val>
+          <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. No tables selected will migrate missing schema only.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Faltan esquemas en el destino. Algunas tablas están deshabilitadas y no se pueden migrar a menos que se seleccione esta opción. La implementación del esquema hará el mejor esfuerzo para implementar objetos de base de datos. Los errores de implementación de esquema no impedirán la migración de datos.  Ninguna de las tablas seleccionadas migrará solo el esquema que falta.]]></Val>
+            <Val><![CDATA[Faltan esquemas en el destino. Algunas tablas están deshabilitadas y no se pueden migrar a menos que se seleccione esta opción. Ninguna de las tablas seleccionadas migrará solo el esquema que falta.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected.]]></Val>
+            <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.  No tables selected will migrate missing schema only.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -10233,10 +10233,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.wizard.troubleshooting" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Learn more: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
+          <Val><![CDATA[See link for more troubleshooting steps: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Más información: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
+            <Val><![CDATA[Consulte el vínculo para obtener más pasos de solución de problemas: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Learn more: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10278,10 +10281,19 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.schema.migration.information" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [5.35.8686.1]5D; or higher. Schema migration is not currently supported for connections to source instance using Windows Authentication. Please use SQL Authentication.]]></Val>
+          <Val><![CDATA[Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [{1}]5D; or higher. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[La migración del esquema está en {0} en el paso 6. Requiere una versión Integration Runtime de [5.35.8686.1]5D; o posterior. Actualmente, no se admite la migración de esquemas para las conexiones para la instancia de origen que usan la autenticación de Windows. Use la autenticación de SQL.]]></Val>
+            <Val><![CDATA[La migración de esquemas se encuentra en {0} en el paso 6. Requiere una versión de Integration Runtime de [{1}]5D; o superior. La implementación del esquema hará el mejor esfuerzo para implementar objetos de base de datos. Los errores de implementación de esquema no impedirán la migración de datos.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [5.35.8686.1]5D; or higher. Schema migration is not currently supported for connections to source instance using Windows Authentication. Please use SQL Authentication.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.schema.migration.min.version" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[5.37.8767.4]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>

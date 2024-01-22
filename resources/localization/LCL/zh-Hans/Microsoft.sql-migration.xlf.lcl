@@ -5757,12 +5757,12 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.schema.full.missing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration. No tables selected will migrate missing schema only.]]></Val>
+          <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database. No tables selected will migrate missing schema only.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[在目标上找不到架构。必须选择此选项才能迁移此数据库。架构部署将尽力部署数据库对象。架构部署错误不会阻止数据迁移。未选择任何表将仅迁移缺少的架构。]]></Val>
+            <Val><![CDATA[在目标上找不到架构。必须选择此选项才能迁移此数据库。不选择任何表将仅迁移缺少的架构。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database.]]></Val>
+            <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration. No tables selected will migrate missing schema only.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -5859,12 +5859,12 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.schema.partial.missing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.  No tables selected will migrate missing schema only.]]></Val>
+          <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. No tables selected will migrate missing schema only.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[目标上缺少架构。某些表已禁用，无法迁移，除非选择此选项。架构部署将尽力部署数据库对象。架构部署错误不会阻止数据迁移。未选择任何表将仅迁移缺少的架构。]]></Val>
+            <Val><![CDATA[目标上缺少架构。除非选择此选项，否则会禁用某些表且无法迁移。不选择任何表将仅迁移缺少的架构。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected.]]></Val>
+            <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.  No tables selected will migrate missing schema only.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -10233,10 +10233,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.wizard.troubleshooting" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Learn more: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
+          <Val><![CDATA[See link for more troubleshooting steps: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[了解详细信息: https://aka.ms/dms-migrations-troubleshooting。]]></Val>
+            <Val><![CDATA[有关更多故障排除步骤，请参阅链接: https://aka.ms/dms-migrations-troubleshooting。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Learn more: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10278,10 +10281,19 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.schema.migration.information" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [5.35.8686.1]5D; or higher. Schema migration is not currently supported for connections to source instance using Windows Authentication. Please use SQL Authentication.]]></Val>
+          <Val><![CDATA[Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [{1}]5D; or higher. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[架构迁移位于步骤 6 的 {0} 中。它需要 [5.35.8686.1]5D; 或更高版本的 Integration Runtime。使用 Windows 身份验证的源实例连接当前不支持架构迁移。请使用 SQL 身份验证。]]></Val>
+            <Val><![CDATA[架构迁移位于步骤 6 的 {0} 中。它需要 [{1}]5D; 或更高版本的 Integration Runtime。架构部署将尽力部署数据库对象。架构部署错误不会阻止数据迁移。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [5.35.8686.1]5D; or higher. Schema migration is not currently supported for connections to source instance using Windows Authentication. Please use SQL Authentication.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.schema.migration.min.version" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[5.37.8767.4]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>
