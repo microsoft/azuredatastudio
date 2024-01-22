@@ -42,8 +42,8 @@ export class SummaryPage extends MigrationWizardPage {
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizardController.cancelReasonsList([
-			constants.WIZARD_CANCEL_REASON_WAIT_FOR_MIGRATION_WINDOW,
-			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER
+			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
+			constants.WIZARD_CANCEL_REASON_WAITING_FOR_DOWNTIME_WINDOW
 		]);
 
 		this.wizard.registerNavigationValidator(pageChangeInfo => true);

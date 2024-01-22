@@ -579,8 +579,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizardController.cancelReasonsList([
-			constants.WIZARD_CANCEL_REASON_TAKING_LONGER,
-			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER
+			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
+			constants.WIZARD_CANCEL_REASON_NEED_TO_EVALUATE_RCOMMENDED_SKU
 		]);
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {

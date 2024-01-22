@@ -115,8 +115,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizardController.cancelReasonsList([
-			constants.WIZARD_CANCEL_REASON_TARGET_NOT_READY,
-			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER
+			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
+			constants.WIZARD_CANCEL_REASON_AZURE_SQL_TARGET_NOT_READY
 		]);
 
 		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].hidden = !this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates();

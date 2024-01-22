@@ -416,15 +416,14 @@ export const CANCEL_FEEDBACK_REASON_CONTAINER_DESCRIPTION = localize('sql.migrat
 export const CANCEL_FEEDBACK_NO_REASON_SELECTED = localize('sql.migration.cancel.feedback.no.reason.selected', "No reason selected");
 export const WIZARD_CANCEL_REASON_OTHERS_INPUT_BOX_NOTE = localize('sql.migration.wizard.cancel.reason.others.input.box.note', "If you selected others, please write a short note.");
 export const WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER = localize('sql.migration.wizard.cancel.reason.continue.with.migration.later', "Continue with Migration later");
-export const WIZARD_CANCEL_REASON_CHANGE_SOURCE = localize('sql.migration.wizard.cancel.reason.change.source', "Change source");
-export const WIZARD_CANCEL_REASON_TAKING_LONGER = localize('sql.migration.wizard.cancel.reason.taking.longer', "Taking longer");
-export const WIZARD_CANCEL_REASON_SOURCE_DB_NOT_READY = localize('sql.migration.wizard.cancel.reason.source.db.not.ready', "Source DB not ready");
-export const WIZARD_CANCEL_REASON_NEED_TO_ANALYSE_FINDINGS = localize('sql.migration.wizard.cancel.reason.need.to.analyse.findings', "Need to analyse the findings");
-export const WIZARD_CANCEL_REASON_TARGET_NOT_READY = localize('sql.migration.wizard.cancel.reason.target.not.ready', "Target not ready");
-export const WIZARD_CANCEL_REASON_DMS_SERVICE_OR_IR_NOT_READY = localize('sql.migration.wizard.cancel.reason.dms.service.or.ir.not.ready', "DMS service / IR not ready");
+export const WIZARD_CANCEL_REASON_CHANGE_SOURCE_SQL_SERVER = localize('sql.migration.wizard.cancel.reason.change.source.sql.server', "Need to change source SQL server");
+export const WIZARD_CANCEL_REASON_MIGRATION_TAKING_LONGER = localize('sql.migration.wizard.cancel.reason.migration.taking.longer', "Migration taking longer or having issues");
+export const WIZARD_CANCEL_REASON_AZURE_SQL_TARGET_NOT_READY = localize('sql.migration.wizard.cancel.reason.source.azure.sql.target.not.ready', "Azure SQL Target not ready");
+export const WIZARD_CANCEL_REASON_NEED_TO_ANALYSE_FINDINGS = localize('sql.migration.wizard.cancel.reason.need.to.analyse.findings', "Need to analyse/fix the findings");
+export const WIZARD_CANCEL_REASON_NEED_TO_EVALUATE_RCOMMENDED_SKU = localize('sql.migration.wizard.cancel.reason.need.to.evaluate.recommended.sku', "Need to evaluate the recommended SKU");
+export const WIZARD_CANCEL_REASON_DMS_SERVICE_OR_IR_NOT_READY = localize('sql.migration.wizard.cancel.reason.dms.service.or.ir.not.ready', "DMS service / IR node not ready");
 export const WIZARD_CANCEL_REASON_BACKUP_LOCATION_NOT_READY = localize('sql.migration.wizard.cancel.reason.backup.location.not.ready', "Backup location not ready");
-export const WIZARD_CANCEL_REASON_WAIT_FOR_MIGRATION_WINDOW = localize('sql.migration.wizard.cancel.reason.wait.for.migration.window', "Wait for migration window");
-export const WIZARD_CANCEL_REASON_BACKUP_FILES_MISSING = localize('sql.migration.wizard.cancel.reason.backup.files.missing', "Backup files missing");
+export const WIZARD_CANCEL_REASON_WAITING_FOR_DOWNTIME_WINDOW = localize('sql.migration.wizard.cancel.reason.waiting.for.downtime.window', "Waiting for downtime window");
 
 // Login Migrations
 export function LOGIN_WIZARD_TITLE(instanceName: string): string {

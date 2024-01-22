@@ -208,8 +208,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizardController.cancelReasonsList([
-			constants.WIZARD_CANCEL_REASON_DMS_SERVICE_OR_IR_NOT_READY,
-			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER
+			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
+			constants.WIZARD_CANCEL_REASON_DMS_SERVICE_OR_IR_NOT_READY
 		]);
 
 		const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;

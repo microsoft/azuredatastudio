@@ -64,8 +64,6 @@ export class WizardController {
 		this._wizardObject.backButton.position = 'left';
 		this._wizardObject.backButton.secondary = true;
 		this._wizardObject.cancelButton.hidden = true;
-		// this._wizardObject.cancelButton.position = 'left';
-		// this._wizardObject.cancelButton.secondary = true;
 
 		const saveAndCloseButton = azdata.window.createButton(
 			loc.SAVE_AND_CLOSE,
@@ -91,7 +89,7 @@ export class WizardController {
 		saveAssessmentButton.hidden = true;
 
 		const customCancelButton = azdata.window.createButton(
-			'Cancel',
+			loc.CANCEL,
 			'right');
 		customCancelButton.secondary = true;
 
@@ -216,6 +214,15 @@ export class WizardController {
 
 		this._wizardObject.generateScriptButton.enabled = false;
 		this._wizardObject.generateScriptButton.hidden = true;
+		this._wizardObject.cancelButton.hidden = true;
+
+		const customCancelButton = azdata.window.createButton(
+			loc.CANCEL,
+			'right');
+		customCancelButton.secondary = true;
+		this._wizardObject.customButtons = [customCancelButton];
+
+
 		const targetSelectionPage = new LoginMigrationTargetSelectionPage(this._wizardObject, stateModel);
 		const loginSelectorPage = new LoginSelectorPage(this._wizardObject, stateModel);
 		const migrationStatusPage = new LoginMigrationStatusPage(this._wizardObject, stateModel);
@@ -255,20 +262,19 @@ export class WizardController {
 
 		await Promise.all(wizardSetupPromises);
 
-		// TODO - Do we want to add dialog for login migration wizard?
 		this._disposables.push(
-			this._wizardObject.cancelButton.onClick(e => {
-				// TODO AKMA: add dialog prompting confirmation of cancel if migration is in progress
-
-				sendSqlMigrationActionEvent(
-					TelemetryViews.LoginMigrationWizard,
-					TelemetryAction.PageButtonClick,
-					{
-						...getTelemetryProps(this._model),
-						'buttonPressed': TelemetryAction.Cancel,
-						'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
-					},
-					{});
+			customCancelButton.onClick(async () => {
+				const cancelFeedbackDialog = new CancelFeedbackDialog();
+				cancelFeedbackDialog.updateCancelReasonsList(this._cancelReasonsList); // Fix: Use the element access expression with an argument
+				this._cancelReasonsList = [
+					loc.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
+					loc.WIZARD_CANCEL_REASON_MIGRATION_TAKING_LONGER,
+				];
+				await cancelFeedbackDialog.openDialog(async (isCancelled: boolean, cancellationReason: string) => {
+					if (isCancelled) {
+						await this.cancelLoginWizardAndLogTelemetry(cancellationReason);
+					}
+				});
 			}));
 
 		this._disposables.push(
@@ -286,6 +292,21 @@ export class WizardController {
 	}
 
 	private async cancelWizardAndLogTelemetry(cancellationReason: string): Promise<void> {
+		await this._wizardObject.close();
+
+		sendSqlMigrationActionEvent(
+			TelemetryViews.LoginMigrationWizard,
+			TelemetryAction.PageButtonClick,
+			{
+				...getTelemetryProps(this._model),
+				'buttonPressed': TelemetryAction.Cancel,
+				'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title,
+				'cancellationReason': cancellationReason
+			},
+			{});
+	}
+
+	private async cancelLoginWizardAndLogTelemetry(cancellationReason: string): Promise<void> {
 		await this._wizardObject.close();
 
 		sendSqlMigrationActionEvent(

@@ -292,7 +292,7 @@ export class DashboardWidget {
 							const cancelFeedbackDialog = new CancelFeedbackDialog();
 							const cancelReasonsList: string[] = [
 								loc.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
-								loc.WIZARD_CANCEL_REASON_BACKUP_FILES_MISSING
+								loc.WIZARD_CANCEL_REASON_MIGRATION_TAKING_LONGER
 							];
 							cancelFeedbackDialog.updateCancelReasonsList(cancelReasonsList); // Fix: Use the element access expression with an argument
 							await cancelFeedbackDialog.openDialog(async (isCancelled: boolean, cancellationReason: string) => {

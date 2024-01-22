@@ -53,7 +53,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	public async onPageEnter(): Promise<void> {
 		this.wizardController.cancelReasonsList([
 			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
-			constants.WIZARD_CANCEL_REASON_CHANGE_SOURCE
+			constants.WIZARD_CANCEL_REASON_CHANGE_SOURCE_SQL_SERVER
 		]);
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
