@@ -424,6 +424,8 @@ export const WIZARD_CANCEL_REASON_NEED_TO_EVALUATE_RCOMMENDED_SKU = localize('sq
 export const WIZARD_CANCEL_REASON_DMS_SERVICE_OR_IR_NOT_READY = localize('sql.migration.wizard.cancel.reason.dms.service.or.ir.not.ready', "DMS service / IR node not ready");
 export const WIZARD_CANCEL_REASON_BACKUP_LOCATION_NOT_READY = localize('sql.migration.wizard.cancel.reason.backup.location.not.ready', "Backup location not ready");
 export const WIZARD_CANCEL_REASON_WAITING_FOR_DOWNTIME_WINDOW = localize('sql.migration.wizard.cancel.reason.waiting.for.downtime.window', "Waiting for downtime window");
+export const WIZARD_CANCEL_REASON_NEED_TO_REVIEW_TABLE_SELECTION = localize('sql.migration.wizard.cancel.reason.need.to.review.table.selection', "Need to review table selection");
+export const WIZARD_CANCEL_REASON_NEED_TO_REVIEW_LOGIN_SELECTION = localize('sql.migration.wizard.cancel.reason.need.to.review.login.selection', "Need to review login selection");
 
 // Login Migrations
 export function LOGIN_WIZARD_TITLE(instanceName: string): string {

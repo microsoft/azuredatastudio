@@ -744,10 +744,19 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		this.wizardController.cancelReasonsList([
-			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
-			constants.WIZARD_CANCEL_REASON_BACKUP_LOCATION_NOT_READY
-		]);
+		if (this.migrationStateModel._targetType === MigrationTargetType.SQLDB) {
+			this.wizardController.cancelReasonsList([
+				constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
+				constants.WIZARD_CANCEL_REASON_NEED_TO_REVIEW_TABLE_SELECTION
+			]);
+		}
+		else {
+			this.wizardController.cancelReasonsList([
+				constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
+				constants.WIZARD_CANCEL_REASON_BACKUP_LOCATION_NOT_READY
+			]);
+		}
+
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
