@@ -766,7 +766,7 @@ export class IssueReporter extends Disposable {
 			const description = localize('description', "Description"); // {{SQL CARBON EDIT}}  Declare variable to be used in labels and aria labels later
 			reset(descriptionTitle, description + ' ', $('span.required-input', undefined, '*')); // {{SQL CARBON EDIT}} use description variable
 			reset(descriptionSubtitle, localize('featureRequestDescription', "Please describe the feature you would like to see. We support GitHub-flavored Markdown. You will be able to edit your issue and add screenshots when we preview it on GitHub."));
-			descriptionTextArea.ariaLabel = localize('description', "Description"); // {{SQL CARBON EDIT}} set aria label
+			descriptionTextArea.ariaLabel = description; // {{SQL CARBON EDIT}} set aria label
 		}
 	}
 
