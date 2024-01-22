@@ -225,9 +225,9 @@ export class WizardController {
 		this._wizardObject.customButtons = [customCancelButton];
 
 
-		const targetSelectionPage = new LoginMigrationTargetSelectionPage(this._wizardObject, stateModel);
-		const loginSelectorPage = new LoginSelectorPage(this._wizardObject, stateModel);
-		const migrationStatusPage = new LoginMigrationStatusPage(this._wizardObject, stateModel);
+		const targetSelectionPage = new LoginMigrationTargetSelectionPage(this._wizardObject, stateModel, this);
+		const loginSelectorPage = new LoginSelectorPage(this._wizardObject, stateModel, this);
+		const migrationStatusPage = new LoginMigrationStatusPage(this._wizardObject, stateModel, this);
 
 		const pages: MigrationWizardPage[] = [
 			targetSelectionPage,
@@ -266,11 +266,6 @@ export class WizardController {
 
 		this._disposables.push(
 			customCancelButton.onClick(async () => {
-				this._cancelReasonsList = [
-					loc.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
-					loc.WIZARD_CANCEL_REASON_MIGRATION_TAKING_LONGER,
-				];
-
 				const cancelFeedbackDialog = new CancelFeedbackDialog();
 				cancelFeedbackDialog.updateCancelReasonsList(this._cancelReasonsList);
 

@@ -15,6 +15,7 @@ import { LoginMigrationStatusCodes } from '../constants/helper';
 import { MultiStepStatusDialog } from '../dialog/generic/multiStepStatusDialog';
 import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
 import { InternalServerError } from '../models/loginMigrationModel';
+import { WizardController } from './wizardController';
 
 export class LoginMigrationStatusPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -28,7 +29,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 	private _progressContainer!: azdata.FlexContainer;
 	private _migrationProgressDetails!: azdata.TextComponent;
 
-	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
+	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel, private wizardController: WizardController) {
 		super(wizard, azdata.window.createWizardPage(constants.LOGIN_MIGRATIONS_STATUS_PAGE_TITLE), migrationStateModel);
 	}
 
@@ -51,6 +52,11 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
+		this.wizardController.cancelReasonsList([
+			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
+			constants.WIZARD_CANCEL_REASON_MIGRATION_TAKING_LONGER
+		]);
+
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				this.wizard.message = {
