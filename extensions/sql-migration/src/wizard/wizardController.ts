@@ -214,6 +214,8 @@ export class WizardController {
 
 		this._wizardObject.generateScriptButton.enabled = false;
 		this._wizardObject.generateScriptButton.hidden = true;
+		this._wizardObject.nextButton.position = 'left';
+		this._wizardObject.nextButton.secondary = false;
 		this._wizardObject.cancelButton.hidden = true;
 
 		const customCancelButton = azdata.window.createButton(
@@ -264,12 +266,14 @@ export class WizardController {
 
 		this._disposables.push(
 			customCancelButton.onClick(async () => {
-				const cancelFeedbackDialog = new CancelFeedbackDialog();
-				cancelFeedbackDialog.updateCancelReasonsList(this._cancelReasonsList); // Fix: Use the element access expression with an argument
 				this._cancelReasonsList = [
 					loc.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
 					loc.WIZARD_CANCEL_REASON_MIGRATION_TAKING_LONGER,
 				];
+
+				const cancelFeedbackDialog = new CancelFeedbackDialog();
+				cancelFeedbackDialog.updateCancelReasonsList(this._cancelReasonsList);
+
 				await cancelFeedbackDialog.openDialog(async (isCancelled: boolean, cancellationReason: string) => {
 					if (isCancelled) {
 						await this.cancelLoginWizardAndLogTelemetry(cancellationReason);
