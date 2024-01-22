@@ -180,7 +180,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 			value: this.options.databaseFile.path,
 			width: DefaultInputWidth - 30
 		});
-		this.filePathButton = this.createButton('...', '...', async () => { await this.createFileBrowser() }, this.options.isNewFile);
+		this.filePathButton = this.createButton('...', localizedConstants.BrowseFilesLabel, async () => { await this.createFileBrowser() }, this.options.isNewFile);
 		this.filePathButton.width = 25;
 		this.pathContainer = this.createLabelInputContainer(localizedConstants.PathText, this.filePathTextBox);
 		this.pathContainer.addItems([this.filePathButton], { flex: '10 0 auto' });
