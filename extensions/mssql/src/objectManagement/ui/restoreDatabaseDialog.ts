@@ -256,7 +256,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			width: RestoreInputsWidth - 30,
 			placeHolder: localizedConstants.BackupFolderPathTitle
 		});
-		this.backupFilePathButton = this.createButton('...', '...', async () => {
+		this.backupFilePathButton = this.createButton('...', localizedConstants.BrowseFilesLabel, async () => {
 			this.restoreFrom.value === localizedConstants.RestoreFromUrlText
 				? await this.createBackupUrlFileBrowser() : await this.createBackupFileBrowser()
 		});
@@ -592,7 +592,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			value: this.objectInfo.restorePlanResponse.planDetails.dataFileFolder.defaultValue,
 			width: SelectFolderInputWidth
 		});
-		this.dataFileFolderButton = this.createButton('...', '...', async () => { await this.createDataFileBrowser(this.dataFileFolder) });
+		this.dataFileFolderButton = this.createButton('...', localizedConstants.BrowseFilesLabel, async () => { await this.createDataFileBrowser(this.dataFileFolder) });
 		this.dataFileFolderButton.width = SelectFolderButtonWidth;
 		this.dataFileFolderButton.enabled = false;
 		this.dataFileFolderContainer = this.createLabelInputContainer(localizedConstants.DataFileFolderText, this.dataFileFolder);
@@ -610,7 +610,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			value: this.objectInfo.restorePlanResponse.planDetails.logFileFolder.defaultValue,
 			width: SelectFolderInputWidth
 		});
-		this.logFileFolderButton = this.createButton('...', '...', async () => { await this.createDataFileBrowser(this.logFileFolder) });
+		this.logFileFolderButton = this.createButton('...', localizedConstants.BrowseFilesLabel, async () => { await this.createDataFileBrowser(this.logFileFolder) });
 		this.logFileFolderButton.width = SelectFolderButtonWidth;
 		this.logFileFolderButton.enabled = false;
 		this.logFileFolderContainer = this.createLabelInputContainer(localizedConstants.LogFileFolderText, this.logFileFolder);
