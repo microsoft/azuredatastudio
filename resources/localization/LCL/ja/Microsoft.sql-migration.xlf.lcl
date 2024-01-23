@@ -5757,12 +5757,12 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.schema.full.missing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration. No tables selected will migrate missing schema only.]]></Val>
+          <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database. No tables selected will migrate missing schema only.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ターゲットにスキーマが見つかりませんでした。このデータベースを移行するには、このオプションを選択する必要があります。スキーマのデプロイでは、データベース オブジェクトのデプロイに最善を尽くします。スキーマ デプロイ エラーが発生しても、データの移行が妨げられることはありません。テーブルが選択されていないと、不足しているスキーマのみが移行されます。]]></Val>
+            <Val><![CDATA[ターゲットにスキーマが見つかりませんでした。このデータベースを移行するには、このオプションを選択する必要があります。テーブルが選択されていないと、不足しているスキーマのみが移行されます。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database.]]></Val>
+            <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration. No tables selected will migrate missing schema only.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -5859,12 +5859,12 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.schema.partial.missing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.  No tables selected will migrate missing schema only.]]></Val>
+          <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. No tables selected will migrate missing schema only.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ターゲットにスキーマがありません。一部のテーブルは無効になっており、このオプションを選択しない限り移行できません。スキーマのデプロイでは、データベース オブジェクトのデプロイに最善を尽くします。スキーマ デプロイ エラーが発生しても、データの移行が妨げられることはありません。テーブルが選択されていないと、不足しているスキーマのみが移行されます。]]></Val>
+            <Val><![CDATA[ターゲットにスキーマがありません。一部のテーブルは無効になっており、このオプションを選択しない限り移行できません。テーブルが選択されていないと、不足しているスキーマのみが移行されます。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected.]]></Val>
+            <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.  No tables selected will migrate missing schema only.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -10233,10 +10233,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.wizard.troubleshooting" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Learn more: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
+          <Val><![CDATA[See link for more troubleshooting steps: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[詳細情報: https://aka.ms/dms-migrations-troubleshooting。]]></Val>
+            <Val><![CDATA[詳細なトラブルシューティング手順については、https://aka.ms/dms-migrations-troubleshooting のリンクを参照してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Learn more: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10278,10 +10281,19 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.schema.migration.information" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [5.35.8686.1]5D; or higher. Schema migration is not currently supported for connections to source instance using Windows Authentication. Please use SQL Authentication.]]></Val>
+          <Val><![CDATA[Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [{1}]5D; or higher. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[スキーマの移行は手順 6 の{0} で行います。Integration Runtime バージョン [5.35.8686.1]5D; 以降が必要です。スキーマの移行は、Windows 認証を使用するソース インスタンスへの接続では現在サポートされていません。SQL 認証を使用してください。]]></Val>
+            <Val><![CDATA[スキーマの移行は手順 6 の{0} で行います。Integration Runtime バージョン [{1}]5D; 以降が必要です。スキーマのデプロイでは、データベース オブジェクトのデプロイに最善を尽くします。スキーマ デプロイ エラーが発生しても、データの移行が妨げられることはありません。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [5.35.8686.1]5D; or higher. Schema migration is not currently supported for connections to source instance using Windows Authentication. Please use SQL Authentication.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.schema.migration.min.version" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[5.37.8767.4]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>
