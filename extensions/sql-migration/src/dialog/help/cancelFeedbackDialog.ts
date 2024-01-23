@@ -58,8 +58,8 @@ export class CancelFeedbackDialog {
 				}
 			});
 
-			dialog.okButton.label = "Yes";
-			dialog.cancelButton.label = "No";
+			dialog.okButton.label = constants.YES;
+			dialog.cancelButton.label = constants.NO;
 		});
 	}
 
@@ -212,6 +212,7 @@ export class CancelFeedbackDialog {
 			.withProps({
 				inputType: 'text',
 				placeHolder: constants.WIZARD_CANCEL_REASON_OTHERS_INPUT_BOX_NOTE,
+				maxLength: 100,
 				height: 60,
 				multiline: true,
 				display: 'inline-block',
