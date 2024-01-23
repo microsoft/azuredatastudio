@@ -497,7 +497,6 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		await dialog.open();
 		await dialog.waitForClose();
 		const result = dialog.dialogResult;
-
 		const credentialInfo: azdata.CredentialInfo = {
 			secret: `${result.accessKey}:${result.secretKey}`,
 			identity: 'S3 Access Key',

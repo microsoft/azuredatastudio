@@ -1714,6 +1714,7 @@
     }
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.490.0",
     "@microsoft/ads-extension-telemetry": "^3.0.1",
     "@microsoft/ads-service-downloader": "^1.2.1",
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#2.0.0",
