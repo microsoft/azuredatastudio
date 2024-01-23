@@ -7,7 +7,6 @@ import { localize } from 'vs/nls';
 
 // Contains vs strings that are non-native to vscode that need to be translated.
 
-export const issueReporterMainAzuredatastudio = localize('azuredatastudio', "Azure Data Studio");
 export const updateConfigContributionDefault = localize('default', "Enable automatic update checks. Azure Data Studio will check for updates automatically and periodically.");
 export const updateConfigContributionEnableWindowsBackgroundUpdates = localize('enableWindowsBackgroundUpdates', "Enable to download and install new Azure Data Studio Versions in the background on Windows");
 export const updateConfigContributionShowReleaseNotes = localize('showReleaseNotes', "Show Release Notes after an update. The Release Notes are opened in a new web browser window.");
@@ -68,6 +67,20 @@ export const terminalIntegratedEnvOsxDescription = localize('terminal.integrated
 export const terminalIntegratedEnvLinuxDescription = localize('terminal.integrated.env.linux', "Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on Linux. Set to `null` to delete the environment variable.")
 export const terminalIntegratedEnvWindowsDescription = localize('terminal.integrated.env.windows', "Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on Windows. Set to `null` to delete the environment variable.")
 export const terminalIntegratedInheritEnvDescription = localize('terminal.integrated.inheritEnv', "Whether new shells should inherit their environment from Azure Data Studio, which may source a login shell to ensure $PATH and other development variables are initialized. This has no effect on Windows.")
+
+//#region VS Code Issue Reporter
+export const issueReporterServiceAzuredatastudio = localize('azuredatastudio', "Azure Data Studio");
+export const issueReporterPageReviewGuidanceLabel = localize( // intentionally not escaped because of its embedded tags
+	{
+		key: 'reviewGuidanceLabel',
+		comment: [
+			'{Locked="<a href=\"https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions\" target=\"_blank\">"}', // {{SQL CARBON EDIT}} - Update link to Azure Data Studio submitting bugs and suggestions wiki
+			'{Locked="</a>"}'
+		]
+	},
+	'Before you report an issue here please <a href="https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions" target="_blank">review the guidance we provide</a>.' // {{SQL CARBON EDIT}} - Update link to Azure Data Studio submitting bugs and suggestions wiki
+);
+//#endregion
 
 //#region VS Code Notebook settings
 export const displayOrderDescription = localize('notebook.displayOrder.description', "Priority list for output mime types. (for VS Code Notebooks only)");
