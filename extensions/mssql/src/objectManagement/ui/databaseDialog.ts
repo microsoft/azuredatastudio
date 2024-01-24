@@ -14,6 +14,7 @@ import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
 import { DatabaseFileDialog } from './databaseFileDialog';
 import * as vscode from 'vscode';
+import { cssStyles } from '../../ui/uiConstants';
 
 const MAXDOP_Max_Limit = 32767;
 const PAUSED_RESUMABLE_INDEX_Max_Limit = 71582;
@@ -803,6 +804,32 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			CSSStyles: {
 				'margin-left': '10px'
 			}
+		}).component();
+		let tableComponent = this.modelView.modelBuilder.declarativeTable().withProps({
+			width: DefaultTableWidth,
+			columns: [
+				{
+					valueType: azdata.DeclarativeDataType.string,
+					width: '10%',
+					isReadOnly: true,
+					displayName: '',
+					headerCssStyles: cssStyles.optionsTableHeader,
+				},
+				{
+					valueType: azdata.DeclarativeDataType.string,
+					width: '10%',
+					isReadOnly: true,
+					displayName: '',
+					headerCssStyles: cssStyles.optionsTableHeader,
+				},
+				{
+					valueType: azdata.DeclarativeDataType.boolean,
+					width: '90%',
+					displayName: '',
+					isReadOnly: true,
+					headerCssStyles: cssStyles.optionsTableHeader,
+				}
+			],
 		}).component();
 		this.rowsFilegroupNameContainer = await this.getFilegroupNameGroup(this.rowsFilegroupsTable, FileGroupType.RowsFileGroup);
 		const addButtonComponent: DialogButton = {
