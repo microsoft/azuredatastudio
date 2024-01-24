@@ -344,7 +344,7 @@ export abstract class DialogBase<DialogResult> {
 		itemComparer: TableListItemComparer<T> = DefaultTableListItemComparer): any[][] {
 		return allItems.map(item => {
 			const idx = selectedItems.findIndex(i => itemComparer(i, item));
-			const stateColumnValue = { value: idx !== -1, enabled: enabledStateGetter(item), style: tableRow };
+			const stateColumnValue = { value: idx !== -1, enabled: enabledStateGetter(item), style: tableRow, ariaLabel: item };
 			return [stateColumnValue, ...rowValueGetter(item).map(item => { return { value: item, style: tableRow } })];
 		});
 	}
