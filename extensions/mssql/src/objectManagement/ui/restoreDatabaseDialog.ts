@@ -405,7 +405,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 				this.onFormFieldChange();
 			})
 		);
-		return this.createGroup(localizedConstants.SourceSectionText, [this.restorePlanTable], true);
+		return this.createGroup(localizedConstants.RestorePlanSectionText, [this.restorePlanTable], true);
 	}
 
 	/**
@@ -483,7 +483,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		const restorePlanInfo = this.setRestoreOption();
 		const restorePlan = await this.restoreProvider.getRestorePlan(this.options.connectionUri, restorePlanInfo);
 
-		// Update the dailog values with the new restore plan
+		// Update the dialog values with the new restore plan
 		await this.updateRestoreDialog(restorePlan);
 		this.dialogObject.loading = false;
 	}
