@@ -30,7 +30,7 @@ export class LoginDialog extends PrincipalDialogBase<Login, LoginViewInfo> {
 	private mustChangePasswordCheckbox: azdata.CheckBoxComponent;
 	private defaultDatabaseDropdown: azdata.DropDownComponent;
 	private defaultLanguageDropdown: azdata.DropDownComponent;
-	private serverRoleTable: azdata.TableComponent;
+	private serverRoleTable: azdata.DeclarativeTableComponent;
 	private connectPermissionCheckbox: azdata.CheckBoxComponent;
 	private enabledCheckbox: azdata.CheckBoxComponent;
 	private lockedOutCheckbox: azdata.CheckBoxComponent;
@@ -229,7 +229,7 @@ export class LoginDialog extends PrincipalDialogBase<Login, LoginViewInfo> {
 	}
 
 	private initializeServerRolesSection(): void {
-		this.serverRoleTable = this.createTableList(objectManagementLoc.ServerRoleSectionHeader,
+		this.serverRoleTable = this.createDeclarativeTableList(objectManagementLoc.ServerRoleSectionHeader,
 			[objectManagementLoc.ServerRoleTypeDisplayNameInTitle],
 			this.viewInfo.serverRoles,
 			this.objectInfo.serverRoles,
