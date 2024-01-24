@@ -135,7 +135,7 @@ export class TableMigrationSelectionDialog {
 				const irNodes = await getIrNodes(
 					this._model._azureAccount,
 					this._model._sqlMigrationServiceSubscription,
-					getResourceName(this._model._resourceGroup.id),
+					getResourceName(this._model._sqlMigrationServiceResourceGroup.id),
 					this._model._location.name,
 					this._model._sqlMigrationService!.name);
 				const irVersionsSupportingSchemaMigration = getActiveIrVersionsSupportingSchemaMigration(irNodes);
