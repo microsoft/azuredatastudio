@@ -521,8 +521,13 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		this.objectInfo.restorePlanResponse = restorePlan;
 
 		// Update Source database name
-		// If restoring from URL, cannot select any other database as source, but can select different database when restoring from a database
-		if (this.restoreFrom.value !== localizedConstants.RestoreFromDatabaseOptionText && restorePlan.canRestore) {
+		// If restoring from URL or File, cannot select any other database as source, but can select different database when restoring from a database
+		if (this.restoreFrom.value === localizedConstants.RestoreFromDatabaseOptionText) {
+			await this.restoreDatabase.updateProperties({
+				values: this.viewInfo.restoreDatabaseInfo.sourceDatabaseNames,
+				value: restorePlan.planDetails?.sourceDatabaseName?.currentValue
+			});
+		} else {
 			await this.restoreDatabase.updateProperties({
 				values: [restorePlan.planDetails?.sourceDatabaseName?.currentValue],
 				value: restorePlan.planDetails?.sourceDatabaseName?.currentValue
