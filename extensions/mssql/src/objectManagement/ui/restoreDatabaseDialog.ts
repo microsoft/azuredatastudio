@@ -272,6 +272,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			: this.createDropdown(localizedConstants.DatabaseText, async (newValue) => {
 				if (this.restoreFrom.value !== localizedConstants.RestoreFromUrlText) {
 					this.objectInfo.restorePlanResponse.planDetails.sourceDatabaseName.currentValue = newValue;
+					this.targetDatabase.value = newValue;
 					await this.updateNewRestorePlanToDialog();
 				}
 			}, this.viewInfo.restoreDatabaseInfo.sourceDatabaseNames, this.objectInfo.restorePlanResponse?.planDetails.sourceDatabaseName.currentValue, true, RestoreInputsWidth, false);
