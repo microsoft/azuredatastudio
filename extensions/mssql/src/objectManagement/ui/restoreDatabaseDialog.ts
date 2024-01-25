@@ -241,7 +241,6 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 				this.backupFilePathContainer.display = 'none';
 				this.restoreDatabase.enabled = true;
 			}
-			await this.updateNewRestorePlanToDialog();
 		}, restoreFromDropdownOptions, restoreFromDropdownOptions[0], !this.isManagedInstance, RestoreInputsWidth);
 		containers.push(this.createLabelInputContainer(localizedConstants.RestoreFromText, this.restoreFrom));
 
@@ -272,9 +271,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			: this.createDropdown(localizedConstants.DatabaseText, async (newValue) => {
 				if (this.restoreFrom.value !== localizedConstants.RestoreFromUrlText) {
 					this.objectInfo.restorePlanResponse.planDetails.sourceDatabaseName.currentValue = newValue;
+					this.targetDatabase.value = newValue;
 					await this.updateNewRestorePlanToDialog();
 				}
-			}, this.viewInfo.restoreDatabaseInfo.sourceDatabaseNames, this.objectInfo.restorePlanResponse.planDetails.sourceDatabaseName.currentValue, true, RestoreInputsWidth, false);
+			}, this.viewInfo.restoreDatabaseInfo.sourceDatabaseNames, this.options.database, true, RestoreInputsWidth, false);
 		const restoreDatabaseContainer = this.createLabelInputContainer(localizedConstants.DatabaseText, this.restoreDatabase);
 		restoreDatabaseContainer.CSSStyles = { 'margin-left': this.isManagedInstance ? '20px' : '0px' };
 		containers.push(restoreDatabaseContainer);
@@ -289,7 +289,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			if (this.objectInfo.restorePlanResponse !== null) {
 				this.objectInfo.restorePlanResponse.planDetails.targetDatabaseName.currentValue = newValue;
 			}
-		}, this.viewInfo.restoreDatabaseInfo.targetDatabaseNames, this.objectInfo.restorePlanResponse?.planDetails.targetDatabaseName.currentValue, true, RestoreInputsWidth, true, false);
+		}, this.viewInfo.restoreDatabaseInfo.targetDatabaseNames, this.options.database, true, RestoreInputsWidth, true, false);
 		this.targetDatabase.fireOnTextChange = true;
 		this.targetDatabase.required = true;
 		containers.push(this.createLabelInputContainer(this.isManagedInstance ? localizedConstants.DatabaseText : localizedConstants.TargetDatabaseText, this.targetDatabase));
@@ -374,9 +374,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 				value: localizedConstants.ExpirationText,
 				width: 60
 			}],
-			data: this.objectInfo.restorePlanResponse?.backupSetsToRestore?.map(plan => {
-				return this.convertRestorePlanObjectToDataView(plan);
-			}),
+			data: [],
 			height: getTableHeight(this.objectInfo.restorePlanResponse?.backupSetsToRestore?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
 			width: RestoreTablesWidth,
 			forceFitColumns: azdata.ColumnSizingMode.DataFit,
@@ -384,6 +382,14 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 				'margin-left': '10px'
 			}
 		}).component();
+
+		// Only show a restore plan if the restore dialog was opened from a database node
+		if (this.options.database) {
+			this.restorePlanTable.data = this.objectInfo.restorePlanResponse?.backupSetsToRestore?.map(plan => {
+				return this.convertRestorePlanObjectToDataView(plan);
+			});
+		}
+
 		this.disposables.push(
 			this.restorePlanTable.onCellAction(async (arg: azdata.ICheckboxCellActionEventArgs) => {
 				let backupSets = this.objectInfo.restorePlanResponse?.backupSetsToRestore;
