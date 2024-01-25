@@ -272,10 +272,9 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			: this.createDropdown(localizedConstants.DatabaseText, async (newValue) => {
 				if (this.restoreFrom.value !== localizedConstants.RestoreFromUrlText) {
 					this.objectInfo.restorePlanResponse.planDetails.sourceDatabaseName.currentValue = newValue;
-					this.targetDatabase.value = newValue;
 					await this.updateNewRestorePlanToDialog();
 				}
-			}, this.viewInfo.restoreDatabaseInfo.sourceDatabaseNames, this.objectInfo.restorePlanResponse.planDetails.sourceDatabaseName.currentValue, true, RestoreInputsWidth, false);
+			}, this.viewInfo.restoreDatabaseInfo.sourceDatabaseNames, this.objectInfo.restorePlanResponse?.planDetails.sourceDatabaseName.currentValue, true, RestoreInputsWidth, false);
 		const restoreDatabaseContainer = this.createLabelInputContainer(localizedConstants.DatabaseText, this.restoreDatabase);
 		restoreDatabaseContainer.CSSStyles = { 'margin-left': this.isManagedInstance ? '20px' : '0px' };
 		containers.push(restoreDatabaseContainer);
@@ -290,7 +289,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			if (this.objectInfo.restorePlanResponse !== null) {
 				this.objectInfo.restorePlanResponse.planDetails.targetDatabaseName.currentValue = newValue;
 			}
-		}, this.viewInfo.restoreDatabaseInfo.targetDatabaseNames, this.objectInfo.restorePlanResponse.planDetails.targetDatabaseName.currentValue, true, RestoreInputsWidth, true, false);
+		}, this.viewInfo.restoreDatabaseInfo.targetDatabaseNames, this.objectInfo.restorePlanResponse?.planDetails.targetDatabaseName.currentValue, true, RestoreInputsWidth, true, false);
 		this.targetDatabase.fireOnTextChange = true;
 		this.targetDatabase.required = true;
 		containers.push(this.createLabelInputContainer(this.isManagedInstance ? localizedConstants.DatabaseText : localizedConstants.TargetDatabaseText, this.targetDatabase));
