@@ -291,6 +291,9 @@
     <trans-unit id="objectManagement.bothFailedAndSuccessfulLoginsText">
       <source xml:lang="en">Both failed and successful logins</source>
     </trans-unit>
+    <trans-unit id="objectManagement.browseFilesLabel">
+      <source xml:lang="en">Browse files</source>
+    </trans-unit>
     <trans-unit id="objectManagement.browseForOwnerText">
       <source xml:lang="en">Browse for an owner</source>
     </trans-unit>

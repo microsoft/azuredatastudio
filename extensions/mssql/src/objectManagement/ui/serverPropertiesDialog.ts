@@ -350,7 +350,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.minServerMemoryInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.minServerMemory.value = +newValue;
 		}, minServerProps);
-		const minMemoryContainer = this.createLabelInputContainer(localizedConstants.minServerMemoryText, this.minServerMemoryInput);
+		const minMemoryContainer = this.createLabelInputContainer(localizedConstants.minServerMemoryText, this.minServerMemoryInput, true);
 
 		const maxServerProps: azdata.InputBoxProperties = {
 			ariaLabel: localizedConstants.maxServerMemoryText,
@@ -364,7 +364,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.maxServerMemoryInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.maxServerMemory.value = +newValue;
 		}, maxServerProps);
-		const maxMemoryContainer = this.createLabelInputContainer(localizedConstants.maxServerMemoryText, this.maxServerMemoryInput);
+		const maxMemoryContainer = this.createLabelInputContainer(localizedConstants.maxServerMemoryText, this.maxServerMemoryInput, true);
 
 		this.memorySection = this.createGroup('', [
 			minMemoryContainer,
@@ -625,7 +625,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 				this.shouldRestartServer = true;
 			}
 		}, isEnabled);
-		const dataLocationInputContainer = this.createLabelInputContainer(localizedConstants.dataLocationText, [this.dataLocationInput, dataLocationButton])
+		const dataLocationInputContainer = this.createLabelInputContainer(localizedConstants.dataLocationText, [this.dataLocationInput, dataLocationButton], true)
 
 		this.logLocationInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.logLocation = newValue;
@@ -643,7 +643,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 				this.shouldRestartServer = true;
 			}
 		}, isEnabled);
-		const logLocationInputContainer = this.createLabelInputContainer(localizedConstants.logLocationText, [this.logLocationInput, logLocationButton])
+		const logLocationInputContainer = this.createLabelInputContainer(localizedConstants.logLocationText, [this.logLocationInput, logLocationButton], true)
 
 		this.backupLocationInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.backupLocation = newValue;
@@ -655,7 +655,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 				this.objectInfo.backupLocation = newPath;
 			}
 		}, isEnabled);
-		const backupLocationInputContainer = this.createLabelInputContainer(localizedConstants.backupLocationText, [this.backupLocationInput, backupLocationButton])
+		const backupLocationInputContainer = this.createLabelInputContainer(localizedConstants.backupLocationText, [this.backupLocationInput, backupLocationButton], true)
 
 		const defaultLocationsContainer = this.createGroup(localizedConstants.defaultLocationsLabel, [
 			dataLocationInputContainer,
