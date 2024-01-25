@@ -746,14 +746,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.5.6",
-							"lastUpdated": "8/14/2023",
+							"version": "1.6.0",
+							"lastUpdated": "1/10/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-1.5.6.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-1.6.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1352,30 +1352,30 @@
 					},
 					"versions": [
 						{
-							"version": "2023.8.0",
-							"lastUpdated": "10/11/2023",
+							"version": "2024.0.0",
+							"lastUpdated": "01/17/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2023.8.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2024.0.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/media/PowerShell_Icon.png"
+									"source": "https://raw.githubusercontent.com/PowerShell/vscode-powershell/v2024.0.0/media/PowerShell_Icon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/docs/azure_data_studio/README_FOR_MARKETPLACE.md"
+									"source": "https://raw.githubusercontent.com/PowerShell/vscode-powershell/v2024.0.0/docs/azure_data_studio/README_FOR_MARKETPLACE.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/package.json"
+									"source": "https://raw.githubusercontent.com/PowerShell/vscode-powershell/v2024.0.0/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/PowerShell/vscode-powershell/v2024.0.0/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -1385,7 +1385,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": "^1.79.2"
+									"value": "^1.82.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -2730,14 +2730,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.13.2",
-							"lastUpdated": "3/8/2023",
+							"version": "1.14.0",
+							"lastUpdated": "1/10/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/datavirtualization-1.13.2.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/datavirtualization-1.14.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3979,14 +3979,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.5.1",
-							"lastUpdated": "11/22/2023",
+							"version": "1.5.2",
+							"lastUpdated": "01/23/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-1.5.1.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-1.5.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4528,14 +4528,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.4.0",
-							"lastUpdated": "12/11/2023",
+							"version": "0.4.1",
+							"lastUpdated": "1/10/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.4.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.4.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
