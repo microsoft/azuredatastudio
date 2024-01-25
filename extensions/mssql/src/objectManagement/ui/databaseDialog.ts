@@ -806,30 +806,49 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 		}).component();
 		let tableComponent = this.modelView.modelBuilder.declarativeTable().withProps({
-			width: '100%',
 			columns: [
 				{
 					valueType: azdata.DeclarativeDataType.string,
-					width: '10%',
+					width: 120,
 					isReadOnly: true,
 					displayName: '',
 					headerCssStyles: cssStyles.optionsTableHeader,
 				},
 				{
 					valueType: azdata.DeclarativeDataType.string,
-					width: '10%',
+					width: 60,
 					isReadOnly: true,
 					displayName: '',
 					headerCssStyles: cssStyles.optionsTableHeader,
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
-					width: '90%',
+					width: 80,
+					displayName: '',
+					isReadOnly: true,
+					headerCssStyles: cssStyles.optionsTableHeader,
+				},
+				{
+					valueType: azdata.DeclarativeDataType.boolean,
+					width: 80,
+					displayName: '',
+					isReadOnly: true,
+					headerCssStyles: cssStyles.optionsTableHeader,
+				},
+				{
+					valueType: azdata.DeclarativeDataType.boolean,
+					width: 110,
 					displayName: '',
 					isReadOnly: true,
 					headerCssStyles: cssStyles.optionsTableHeader,
 				}
 			],
+			width: DefaultTableWidth,
+			height: getTableHeight(data.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
+			dataValues: data,
+			CSSStyles: {
+				'margin-left': '10px'
+			}
 		}).component();
 		this.rowsFilegroupNameContainer = await this.getFilegroupNameGroup(this.rowsFilegroupsTable, FileGroupType.RowsFileGroup);
 		const addButtonComponent: DialogButton = {
@@ -1150,6 +1169,28 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	}
 
 	/**
+	 * Creates the group container for filegroups input section
+	 * @param table table component
+	 * @param filegroupType filegroup type
+	 * @returns filegroup name group container
+	 */
+	private async getFilegroupNameGroupDeclarative(table: azdata.DeclarativeTableComponent, filegroupType: FileGroupType): Promise<azdata.FlexContainer> {
+		const fgInput = this.getFilegroupNameInputDeclarative(table, filegroupType);
+		// if (table === this.rowsFilegroupsTable) {
+		// 	this.rowsFilegroupNameInput = fgInput;
+		// } else if (table === this.filestreamFilegroupsTable) {
+		// 	this.filestreamFilegroupNameInput = fgInput;
+		// } else if (table === this.memoryOptimizedFilegroupsTable) {
+		// 	this.memoryOptimizedFilegroupNameInput = fgInput;
+		// }
+
+		let fgInputGroupcontainer = this.createLabelInputContainer(localizedConstants.fileGroupsNameInput, [fgInput], false);
+		await fgInputGroupcontainer.updateCssStyles({ 'margin': '0px 0px -10px 10px' });
+		fgInputGroupcontainer.display = 'none';
+		return fgInputGroupcontainer;
+	}
+
+	/**
 	 * Creates input box for filegroup name
 	 * @param table table component
 	 * @param filegroupType filegroup type
@@ -1181,6 +1222,41 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			width: DefaultInputWidth
 		});
 	}
+
+	/**
+	 * Creates input box for filegroup name
+	 * @param table table component
+	 * @param filegroupType filegroup type
+	 * @returns Input component
+	 */
+	private getFilegroupNameInputDeclarative(table: azdata.DeclarativeTableComponent, filegroupType: FileGroupType): azdata.InputBoxComponent {
+		return this.createInputBox(async (value) => {
+			if (table.selectedRow !== - 1) {
+				let fg = null;
+				fg = this.rowDataFileGroupsTableRows[table.selectedRow];
+				// if (table === this.rowsFilegroupsTable) {
+				// 	fg = this.rowDataFileGroupsTableRows[table.selectedRows[0]];
+				// } else if (table === this.filestreamFilegroupsTable) {
+				// 	fg = this.filestreamDataFileGroupsTableRows[table.selectedRows[0]];
+				// } else if (table === this.memoryOptimizedFilegroupsTable) {
+				// 	fg = this.memoryoptimizedFileGroupsTableRows[table.selectedRows[0]];
+				// }
+				if (fg !== null && fg.id < 0) {
+					fg.name = value;
+					let data = this.getTableData(filegroupType);
+					await this.setTableData(table, data);
+					this.updateFileGroupsOptionsAndTableRows();
+				}
+			}
+		}, {
+			ariaLabel: localizedConstants.fileGroupsNameInput,
+			inputType: 'text',
+			enabled: true,
+			value: '',
+			width: DefaultInputWidth
+		});
+	}
+
 
 	/**
 	 * Converts the filegroup object to a data view object
