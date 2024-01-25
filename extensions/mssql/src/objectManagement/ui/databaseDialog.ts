@@ -806,7 +806,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 		}).component();
 		let tableComponent = this.modelView.modelBuilder.declarativeTable().withProps({
-			width: DefaultTableWidth,
+			width: '100%',
 			columns: [
 				{
 					valueType: azdata.DeclarativeDataType.string,
