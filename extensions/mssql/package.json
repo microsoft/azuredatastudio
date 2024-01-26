@@ -737,6 +737,11 @@
           "group": "1_objectManagement@3"
         },
         {
+          "command": "mssql.restoreDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && !isCloud && engineEdition != 11 && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@3"
+        },
+        {
           "command": "mssql.backupDatabase",
           "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && engineEdition != 11 && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@3"

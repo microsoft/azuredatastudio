@@ -62,7 +62,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		options.width = Dialog_Width;
-		super(objectManagementService, options, loc.RestoreDatabaseDialogTitle(options.database), 'RestoreDatabase');
+		super(objectManagementService, options, loc.RestoreDatabaseDialogTitle, 'RestoreDatabase');
 		this.restoreProvider = azdata.dataprotocol.getProvider<azdata.RestoreProvider>('MSSQL', azdata.DataProviderType.RestoreProvider);
 		this.dialogObject.okButton.label = localizedConstants.RestoreText;
 	}
@@ -225,7 +225,6 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	//#region General Tab
 	private initializeSourceSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
-		this.objectInfo.name = this.options.database;
 
 		// Managed instance only supports URL mode, so disable unusable fields
 		this.isManagedInstance = this.viewInfo.isManagedInstance;
@@ -272,9 +271,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			: this.createDropdown(localizedConstants.DatabaseText, async (newValue) => {
 				if (this.restoreFrom.value !== localizedConstants.RestoreFromUrlText) {
 					this.objectInfo.restorePlanResponse.planDetails.sourceDatabaseName.currentValue = newValue;
+					this.targetDatabase.value = newValue;
 					await this.updateNewRestorePlanToDialog();
 				}
-			}, this.viewInfo.restoreDatabaseInfo.sourceDatabaseNames, this.objectInfo.restorePlanResponse.planDetails.sourceDatabaseName.currentValue, true, RestoreInputsWidth, false);
+			}, this.viewInfo.restoreDatabaseInfo.sourceDatabaseNames, this.objectInfo.restorePlanResponse?.planDetails.sourceDatabaseName.currentValue, true, RestoreInputsWidth, false);
 		const restoreDatabaseContainer = this.createLabelInputContainer(localizedConstants.DatabaseText, this.restoreDatabase);
 		restoreDatabaseContainer.CSSStyles = { 'margin-left': this.isManagedInstance ? '20px' : '0px' };
 		containers.push(restoreDatabaseContainer);
@@ -289,6 +289,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			if (this.objectInfo.restorePlanResponse !== null) {
 				this.objectInfo.restorePlanResponse.planDetails.targetDatabaseName.currentValue = newValue;
 			}
+			this.objectInfo.name = newValue;
 		}, this.viewInfo.restoreDatabaseInfo.targetDatabaseNames, this.objectInfo.restorePlanResponse?.planDetails.targetDatabaseName.currentValue, true, RestoreInputsWidth, true, false);
 		this.targetDatabase.fireOnTextChange = true;
 		this.targetDatabase.required = true;
@@ -405,7 +406,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 				this.onFormFieldChange();
 			})
 		);
-		return this.createGroup(localizedConstants.SourceSectionText, [this.restorePlanTable], true);
+		return this.createGroup(localizedConstants.RestorePlanSectionText, [this.restorePlanTable], true);
 	}
 
 	/**
@@ -483,7 +484,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		const restorePlanInfo = this.setRestoreOption();
 		const restorePlan = await this.restoreProvider.getRestorePlan(this.options.connectionUri, restorePlanInfo);
 
-		// Update the dailog values with the new restore plan
+		// Update the dialog values with the new restore plan
 		await this.updateRestoreDialog(restorePlan);
 		this.dialogObject.loading = false;
 	}
@@ -520,8 +521,13 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		this.objectInfo.restorePlanResponse = restorePlan;
 
 		// Update Source database name
-		// If restoring from URL, cannot select any other database as source, but can select different database when restoring from a database
-		if (this.restoreFrom.value !== localizedConstants.RestoreFromDatabaseOptionText && restorePlan.canRestore) {
+		// If restoring from URL or File, cannot select any other database as source, but can select different database when restoring from a database
+		if (this.restoreFrom.value === localizedConstants.RestoreFromDatabaseOptionText) {
+			await this.restoreDatabase.updateProperties({
+				values: this.viewInfo.restoreDatabaseInfo.sourceDatabaseNames,
+				value: restorePlan.planDetails?.sourceDatabaseName?.currentValue
+			});
+		} else {
 			await this.restoreDatabase.updateProperties({
 				values: [restorePlan.planDetails?.sourceDatabaseName?.currentValue],
 				value: restorePlan.planDetails?.sourceDatabaseName?.currentValue
