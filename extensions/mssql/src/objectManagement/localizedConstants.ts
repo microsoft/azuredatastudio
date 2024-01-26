@@ -601,11 +601,15 @@ export const PurgeQueryStoreDataMessage = (databaseName: string) => localize('ob
 export const fileGroupsNameInput = localize('objectManagement.filegroupsNameInput', "Filegroup Name");
 
 // S3 credentials
-export const AddS3CredentialsDialogTitle = localize('objectManagement.addS3CredentialsDialogTitle', "Add S3 Credentials");
-export const S3UrlLabel = localize('objectManagement.s3UrlLabel', "S3 URL");
-export const SecretKeyText = localize('objectManagement.secretKey', "Secret Key");
-export const AccessKeyText = localize('objectManagement.accessKey', "Access Key");
-export const InvalidS3UrlError = localize('objectManagement.InvalidS3UrlError', "Invalid S3 URL");
+export const SelectS3BackupFileDialogTitle = localize('objectManagement.selectS3BackupFileDialogTitle', "Select S3 Storage Backup File");
+export const RegionSpecificEndpointText = localize('objectManagement.regionSpecificEndpointLabel', "Region-specific endpoint");
+export const SecretKeyText = localize('objectManagement.secretKeyLabel', "Secret Key");
+export const AccessKeyText = localize('objectManagement.accessKeyLabel', "Access Key");
+export const RegionText = localize('objectManagement.regionLabel', "Region");
+export const AddCredentialsText = localize('objectManagement.addCredentialsLabel', "Add Credentials");
+export const SelectS3BucketText = localize('objectManagement.SelectS3BucketLabel', "Select S3 Bucket");
+export const SelectBackupFileText = localize('objectManagement.SelectBackupFileLabel', "Select Backup File");
+export const InvalidS3UrlError = localize('objectManagement.InvalidS3UrlError', "Invalid S3 endpoint");
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {

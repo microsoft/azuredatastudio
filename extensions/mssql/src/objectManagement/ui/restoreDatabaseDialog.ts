@@ -493,21 +493,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	 * Creates a file browser and sets the path to the backup url Path
 	 */
 	private async createRestoreS3Url(): Promise<void> {
-		const dialog = new S3CredentialsDialog();
+		const dialog = new S3CredentialsDialog(this.objectManagementService, this.options.connectionUri);
 		await dialog.open();
-		await dialog.waitForClose();
-		const result = dialog.dialogResult;
-		const credentialInfo: azdata.CredentialInfo = {
-			secret: `${result.accessKey}:${result.secretKey}`,
-			identity: 'S3 Access Key',
-			name: result.s3Url.toString(),
-			createDate: undefined,
-			dateLastModified: undefined,
-			providerName: 'MSSQL',
-			id: undefined
-		}
-		await this.objectManagementService.createCredential(this.options.connectionUri, credentialInfo);
-		this.backupURLPath = result.s3Url.toString();
+		let result = await dialog.waitForClose()
+		this.backupURLPath = result.backupFilePath;
 		const options = this.backupFilePathInput.values.map(s => s.toString());
 		options.push(this.backupURLPath);
 		await this.backupFilePathInput.updateProperties({
