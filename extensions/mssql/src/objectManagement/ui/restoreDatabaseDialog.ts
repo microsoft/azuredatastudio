@@ -225,7 +225,6 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	//#region General Tab
 	private initializeSourceSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
-		this.objectInfo.name = this.options.database;
 
 		// Managed instance only supports URL mode, so disable unusable fields
 		this.isManagedInstance = this.viewInfo.isManagedInstance;
@@ -290,6 +289,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			if (this.objectInfo.restorePlanResponse !== null) {
 				this.objectInfo.restorePlanResponse.planDetails.targetDatabaseName.currentValue = newValue;
 			}
+			this.objectInfo.name = newValue;
 		}, this.viewInfo.restoreDatabaseInfo.targetDatabaseNames, this.objectInfo.restorePlanResponse?.planDetails.targetDatabaseName.currentValue, true, RestoreInputsWidth, true, false);
 		this.targetDatabase.fireOnTextChange = true;
 		this.targetDatabase.required = true;
