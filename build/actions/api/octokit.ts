@@ -311,7 +311,7 @@ export class OctoKitIssue extends OctoKit implements GitHubIssue {
 		)) {
 			const timelineEvents = event.data;
 			for (const timelineEvent of timelineEvents) {
-				if (timelineEvent.event === 'closed') {
+				if (timelineEvent.event === 'closed' && timelineEvent.created_at) {
 					closingCommit = {
 						hash: timelineEvent.commit_id ?? undefined,
 						timestamp: +new Date(timelineEvent.created_at),
