@@ -808,7 +808,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				'margin-left': '10px'
 			}
 		}).component();
-		let tableComponent = this.modelView.modelBuilder.declarativeTable().withProps({
+		this.rowsFilegroupsDeclarativeTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			columns: [
 				{
 					valueType: azdata.DeclarativeDataType.string,
@@ -854,10 +854,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 		}).component();
 		this.rowsFilegroupNameContainer = await this.getFilegroupNameGroup(this.rowsFilegroupsTable, FileGroupType.RowsFileGroup);
-		let rowsFilegroupNameDeclarativeContainer = await this.getFilegroupNameGroupDeclarative(tableComponent, FileGroupType.RowsFileGroup);
+		let rowsFilegroupNameDeclarativeContainer = await this.getFilegroupNameGroupDeclarative(this.rowsFilegroupsDeclarativeTable, FileGroupType.RowsFileGroup);
 		const addButtonComponent: DialogButton = {
 			buttonAriaLabel: localizedConstants.AddFilegroupText,
-			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.rowsFilegroupsTable)
+			buttonHandler: () => this.onAddDatabaseFileGroupsButtonClicked(this.rowsFilegroupsTable).then(() => this.onAddDatabaseFileGroupsButtonClickedDeclarative(this.rowsFilegroupsDeclarativeTable))
 		};
 		const removeButtonComponent: DialogButton = {
 			buttonAriaLabel: localizedConstants.RemoveButton,
@@ -865,6 +865,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		};
 		this.rowsFileGroupButtonContainer = this.addButtonsForTable(this.rowsFilegroupsTable, addButtonComponent, removeButtonComponent);
 		this.disposables.push(
+			this.rowsFilegroupsDeclarativeTable.onRowSelected(() => {
+				console.log('this was called with ' + this.rowsFilegroupsDeclarativeTable.selectedRow);
+			}),
 			this.rowsFilegroupsTable.onCellAction(async (arg: azdata.ICheckboxCellActionEventArgs) => {
 				let filegroup = this.rowDataFileGroupsTableRows[arg.row];
 				// Read-Only column
@@ -1133,6 +1136,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.updateFileGroupsOptionsAndTableRows();
 			await this.setTableData(table, newData, DefaultMaxTableRowCount);
 			//TODO, need to handle cell selection, currently declarative table does not have this functionality.
+			// Need to implement function that triggers row select manually.
 		}
 	}
 
