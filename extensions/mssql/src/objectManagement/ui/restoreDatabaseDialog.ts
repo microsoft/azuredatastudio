@@ -13,7 +13,7 @@ import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { RestoreDatabaseFilesTabDocUrl, RestoreDatabaseGeneralTabDocUrl, RestoreDatabaseOptionsTabDocUrl } from '../constants';
 import { isUndefinedOrNull } from '../../types';
 import { MediaDeviceType } from '../constants';
-import { S3CredentialsDialog } from './s3CredentialsDialog';
+import { S3AddBackupFileDialog } from './S3AddBackupFileDialog';
 
 const Dialog_Width = '1150px';
 const RestoreInputsWidth = DefaultInputWidth + 650;
@@ -493,7 +493,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	 * Creates a file browser and sets the path to the backup url Path
 	 */
 	private async createRestoreS3Url(): Promise<void> {
-		const dialog = new S3CredentialsDialog(this.objectManagementService, this.options.connectionUri);
+		const dialog = new S3AddBackupFileDialog(this.objectManagementService, this.options.connectionUri);
 		await dialog.open();
 		let result = await dialog.waitForClose()
 		this.backupURLPath = result.backupFilePath;

@@ -10,14 +10,14 @@ import { DefaultInputWidth, DialogBase } from '../../ui/dialogBase';
 import * as awsClient from '@aws-sdk/client-s3';
 import { IObjectManagementService } from 'mssql';
 
-export interface S3CredentialsDialogResult {
+export interface S3AddBackupFileDialogResult {
 	s3Url: vscode.Uri;
 	secretKey: string;
 	accessKey: string;
 	backupFilePath: string;
 }
 
-export class S3CredentialsDialog extends DialogBase<S3CredentialsDialogResult> {
+export class S3AddBackupFileDialog extends DialogBase<S3AddBackupFileDialogResult> {
 	private s3UrlInputBox: azdata.InputBoxComponent;
 	private secretKeyInputBox: azdata.InputBoxComponent;
 	private accessKeyInputBox: azdata.InputBoxComponent;
@@ -25,7 +25,7 @@ export class S3CredentialsDialog extends DialogBase<S3CredentialsDialogResult> {
 	private regionInputBox: azdata.InputBoxComponent;
 	private bucketDropdown: azdata.DropDownComponent;
 	private backupFilesDropdown: azdata.DropDownComponent;
-	private result: S3CredentialsDialogResult;
+	private result: S3AddBackupFileDialogResult;
 	private objectManagementService: IObjectManagementService;
 	private credentialInfo: azdata.CredentialInfo;
 	private connectionUri: string;
@@ -170,7 +170,7 @@ export class S3CredentialsDialog extends DialogBase<S3CredentialsDialogResult> {
 		this.credentialButton.enabled = (this.result.s3Url && this.result.accessKey && this.result.secretKey) !== undefined;
 	}
 
-	public override get dialogResult(): S3CredentialsDialogResult | undefined {
+	public override get dialogResult(): S3AddBackupFileDialogResult | undefined {
 		this.result.backupFilePath = `s3://${this.bucketDropdown.value}.s3.${this.regionInputBox.value}.amazonaws.com/${this.backupFilesDropdown.value}`;
 		return this.result;
 	}
