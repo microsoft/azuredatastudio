@@ -263,7 +263,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			await this.updateNewRestorePlanToDialog();
 		}, [''], localizedConstants.BackupFolderPathTitle, false, RestoreInputsWidth - 30, false, true)
 
-		this.backupFilePathButton = this.createButton('...', '...', async () => {
+		this.backupFilePathButton = this.createButton('...', localizedConstants.BrowseFilesLabel, async () => {
 			switch (this.restoreFrom.value) {
 				case localizedConstants.RestoreFromUrlText:
 					await this.createBackupUrlFileBrowser();
@@ -631,7 +631,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			value: this.objectInfo.restorePlanResponse.planDetails.dataFileFolder.defaultValue,
 			width: SelectFolderInputWidth
 		});
-		this.dataFileFolderButton = this.createButton('...', '...', async () => { await this.createDataFileBrowser(this.dataFileFolder) });
+		this.dataFileFolderButton = this.createButton('...', localizedConstants.BrowseFilesLabel, async () => { await this.createDataFileBrowser(this.dataFileFolder) });
 		this.dataFileFolderButton.width = SelectFolderButtonWidth;
 		this.dataFileFolderButton.enabled = false;
 		this.dataFileFolderContainer = this.createLabelInputContainer(localizedConstants.DataFileFolderText, this.dataFileFolder);
@@ -649,7 +649,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			value: this.objectInfo.restorePlanResponse.planDetails.logFileFolder.defaultValue,
 			width: SelectFolderInputWidth
 		});
-		this.logFileFolderButton = this.createButton('...', '...', async () => { await this.createDataFileBrowser(this.logFileFolder) });
+		this.logFileFolderButton = this.createButton('...', localizedConstants.BrowseFilesLabel, async () => { await this.createDataFileBrowser(this.logFileFolder) });
 		this.logFileFolderButton.width = SelectFolderButtonWidth;
 		this.logFileFolderButton.enabled = false;
 		this.logFileFolderContainer = this.createLabelInputContainer(localizedConstants.LogFileFolderText, this.logFileFolder);

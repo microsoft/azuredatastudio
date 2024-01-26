@@ -1919,7 +1919,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const irNodes = await getIrNodes(
 			this.migrationStateModel._azureAccount,
 			this.migrationStateModel._sqlMigrationServiceSubscription,
-			getResourceName(this.migrationStateModel._resourceGroup.id),
+			getResourceName(this.migrationStateModel._sqlMigrationServiceResourceGroup.id),
 			this.migrationStateModel._location.name,
 			this.migrationStateModel._sqlMigrationService!.name);
 		const irVersions = getActiveIrVersions(irNodes);
