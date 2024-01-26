@@ -5757,12 +5757,12 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.schema.full.missing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration. No tables selected will migrate missing schema only.]]></Val>
+          <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database. No tables selected will migrate missing schema only.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Aucun schéma n’a été trouvé dans la cible. Cette option doit être sélectionnée pour migrer cette base de données. Le déploiement de schéma permet de déployer des objets de base de données. Les erreurs de déploiement de schéma n’empêchent pas la migration des données. Aucune table sélectionnée ne migre le schéma manquant uniquement.]]></Val>
+            <Val><![CDATA[Désolé, aucun schéma n’a été trouvé dans la cible. Cette option doit être sélectionnée pour migrer cette base de données. Désolé, aucune table sélectionnée ne migre le schéma manquant uniquement.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database.]]></Val>
+            <Val><![CDATA[No schema was found on target. This option must be selected to migrate this database. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration. No tables selected will migrate missing schema only.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -5859,12 +5859,12 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.schema.partial.missing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.  No tables selected will migrate missing schema only.]]></Val>
+          <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. No tables selected will migrate missing schema only.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Schémas manquants dans la cible. Certaines tables sont désactivées et ne peuvent pas être migrées, sauf si cette option est sélectionnée. Le déploiement de schéma permet de déployer des objets de base de données. Les erreurs de déploiement de schéma n’empêchent pas la migration des données.  Aucune table sélectionnée ne migre le schéma manquant uniquement.]]></Val>
+            <Val><![CDATA[Schémas manquants dans la cible. Certaines tables sont désactivées et ne peuvent pas être migrées, sauf si cette option est sélectionnée. Désolé, aucune table sélectionnée ne migre le schéma manquant uniquement.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected.]]></Val>
+            <Val><![CDATA[Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.  No tables selected will migrate missing schema only.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -10233,10 +10233,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.wizard.troubleshooting" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Learn more: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
+          <Val><![CDATA[See link for more troubleshooting steps: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[En savoir plus : https://aka.ms/dms-migrations-troubleshooting.]]></Val>
+            <Val><![CDATA[Consultez le lien pour plus d’étapes de dépannage : https://aka.ms/dms-migrations-troubleshooting.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Learn more: https://aka.ms/dms-migrations-troubleshooting.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10278,10 +10281,19 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.schema.migration.information" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [5.35.8686.1]5D; or higher. Schema migration is not currently supported for connections to source instance using Windows Authentication. Please use SQL Authentication.]]></Val>
+          <Val><![CDATA[Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [{1}]5D; or higher. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[La migration de schéma est en {0} à l’étape 6. Elle nécessite une version Integration Runtime de [5.35.8686.1]5D; ou ultérieure. La migration de schéma n’est actuellement pas prise en charge pour les connexions à l’instance source utilisant l’Authentification Windows. Utilisez l’authentification SQL.]]></Val>
+            <Val><![CDATA[La migration de schéma est en {0} à l’étape 6. Elle nécessite une version Integration Runtime de [{1}]5D; ou ultérieure. Le déploiement de schéma permet de déployer des objets de base de données. Les erreurs de déploiement de schéma n’empêchent pas la migration des données.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [5.35.8686.1]5D; or higher. Schema migration is not currently supported for connections to source instance using Windows Authentication. Please use SQL Authentication.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.schema.migration.min.version" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[5.37.8767.4]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>

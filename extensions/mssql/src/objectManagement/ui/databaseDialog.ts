@@ -1147,7 +1147,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				}
 			}
 		}, {
-			ariaLabel: '',
+			ariaLabel: localizedConstants.fileGroupsNameInput,
 			inputType: 'text',
 			enabled: true,
 			value: '',

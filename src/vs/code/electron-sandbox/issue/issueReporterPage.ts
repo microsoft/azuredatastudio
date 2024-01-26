@@ -5,22 +5,14 @@
 
 import { escape } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
+import * as locConstants from 'sql/base/common/locConstants' // {SQL CARBON EDIT}
 
 const sendSystemInfoLabel = escape(localize('sendSystemInfo', "Include my system information"));
 const sendProcessInfoLabel = escape(localize('sendProcessInfo', "Include my currently running processes"));
 const sendWorkspaceInfoLabel = escape(localize('sendWorkspaceInfo', "Include my workspace metadata"));
 const sendExtensionsLabel = escape(localize('sendExtensions', "Include my enabled extensions"));
 const sendExperimentsLabel = escape(localize('sendExperiments', "Include A/B experiment info"));
-const reviewGuidanceLabel = localize( // intentionally not escaped because of its embedded tags
-	{
-		key: 'reviewGuidanceLabel',
-		comment: [
-			'{Locked="<a href=\"https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions\" target=\"_blank\">"}', // {{SQL CARBON EDIT}} - Update link to Azure Data Studio submitting bugs and suggestions wiki
-			'{Locked="</a>"}'
-		]
-	},
-	'Before you report an issue here please <a href="https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions" target="_blank">review the guidance we provide</a>.' // {{SQL CARBON EDIT}} - Update link to Azure Data Studio submitting bugs and suggestions wiki
-);
+const reviewGuidanceLabel = locConstants.issueReporterPageReviewGuidanceLabel // {SQL CARBON EDIT} - Need to translate separately with ADS link.
 const issueTypeLabel = escape(localize('issueTypeLabel', "This is a"));
 const issueSourceLabel = escape(localize('issueSourceLabel', "File on"));
 const issueExtensionLabel = escape(localize('chooseExtension', "Extension"));

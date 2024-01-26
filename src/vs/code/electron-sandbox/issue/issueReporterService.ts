@@ -20,7 +20,7 @@ import { normalizeGitHubUrl } from 'vs/platform/issue/common/issueReporterUtil';
 import { INativeHostService } from 'vs/platform/native/common/native';
 import { applyZoom, zoomIn, zoomOut } from 'vs/platform/window/electron-sandbox/window';
 import { CancellationError } from 'vs/base/common/errors';
-import { issueReporterMainAzuredatastudio } from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
+import { issueReporterServiceAzuredatastudio } from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 
 // GitHub has let us know that we could up our limit here to 8k. We chose 7500 to play it safe.
 // ref https://github.com/microsoft/vscode/issues/159191
@@ -666,7 +666,7 @@ export class IssueReporter extends Disposable {
 
 		sourceSelect.innerText = '';
 		sourceSelect.append(this.makeOption('', localize('selectSource', "Select source"), true));
-		sourceSelect.append(this.makeOption('azuredatastudio', issueReporterMainAzuredatastudio, false)); // {{SQL CARBON EDIT}} Update name
+		sourceSelect.append(this.makeOption('azuredatastudio', issueReporterServiceAzuredatastudio, false)); // {{SQL CARBON EDIT}} Update name
 		sourceSelect.append(this.makeOption('extension', localize('extension', "An extension"), false));
 		if (this.configuration.product.reportMarketplaceIssueUrl) {
 			sourceSelect.append(this.makeOption('marketplace', localize('marketplace', "Extensions marketplace"), false));
@@ -729,6 +729,8 @@ export class IssueReporter extends Disposable {
 			return;
 		}
 
+		const stepsToReproduce = localize('stepsToReproduce', "Steps to Reproduce"); // {{SQL CARBON EDIT}} Declare variable to be used in labels and aria labels later
+
 		if (issueType === IssueType.Bug) {
 			if (!fileOnMarketplace) {
 				show(blockContainer);
@@ -739,8 +741,9 @@ export class IssueReporter extends Disposable {
 				}
 			}
 
-			reset(descriptionTitle, localize('stepsToReproduce', "Steps to Reproduce") + ' ', $('span.required-input', undefined, '*'));
+			reset(descriptionTitle, stepsToReproduce + ' ', $('span.required-input', undefined, '*'));  // {{SQL CARBON EDIT}} use stepsToReproduce variable
 			reset(descriptionSubtitle, localize('bugDescription', "Share the steps needed to reliably reproduce the problem. Please include actual and expected results. We support GitHub-flavored Markdown. You will be able to edit your issue and add screenshots when we preview it on GitHub."));
+			descriptionTextArea.ariaLabel = stepsToReproduce; // {{SQL CARBON EDIT}} set aria label
 		} else if (issueType === IssueType.PerformanceIssue) {
 			if (!fileOnMarketplace) {
 				show(blockContainer);
@@ -756,11 +759,14 @@ export class IssueReporter extends Disposable {
 				show(extensionsBlock);
 			}
 
-			reset(descriptionTitle, localize('stepsToReproduce', "Steps to Reproduce") + ' ', $('span.required-input', undefined, '*'));
+			reset(descriptionTitle, stepsToReproduce + ' ', $('span.required-input', undefined, '*')); // {{SQL CARBON EDIT}} use stepsToReproduce variable
 			reset(descriptionSubtitle, localize('performanceIssueDesciption', "When did this performance issue happen? Does it occur on startup or after a specific series of actions? We support GitHub-flavored Markdown. You will be able to edit your issue and add screenshots when we preview it on GitHub."));
+			descriptionTextArea.ariaLabel = stepsToReproduce; // {{SQL CARBON EDIT}} set aria label
 		} else if (issueType === IssueType.FeatureRequest) {
-			reset(descriptionTitle, localize('description', "Description") + ' ', $('span.required-input', undefined, '*'));
+			const description = localize('description', "Description"); // {{SQL CARBON EDIT}}  Declare variable to be used in labels and aria labels later
+			reset(descriptionTitle, description + ' ', $('span.required-input', undefined, '*')); // {{SQL CARBON EDIT}} use description variable
 			reset(descriptionSubtitle, localize('featureRequestDescription', "Please describe the feature you would like to see. We support GitHub-flavored Markdown. You will be able to edit your issue and add screenshots when we preview it on GitHub."));
+			descriptionTextArea.ariaLabel = description; // {{SQL CARBON EDIT}} set aria label
 		}
 	}
 
