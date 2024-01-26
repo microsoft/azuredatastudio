@@ -3,12 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { debug } from '@actions/core'
+import { debug } from '@actions/core';
 import { getOctokit } from '@actions/github';
 import type { RequestError } from '@octokit/request-error';
-import { exec } from 'child_process'
-import { getInput, logRateLimit } from '../utils/utils'
-import { Comment, GitHub, GitHubIssue, Issue, Query, User } from './api'
+import { exec } from 'child_process';
+import { getInput, logRateLimit } from '../utils/utils';
+import { Comment, GitHub, GitHubIssue, Issue, Query, User } from './api';
+import { IssueGetResponse } from '../utils/OctokitTypings';
 
 export class OctoKit implements GitHub {
 	private _octokit: ReturnType<typeof getOctokit>;
@@ -70,7 +71,7 @@ export class OctoKit implements GitHub {
 	protected octokitIssueToIssue(issue: IssueGetResponse): Issue {
 		return {
 			author: { name: issue.user?.login ?? 'unkown', isGitHubApp: issue.user?.type === 'Bot' },
-			body: issue.body,
+			body: issue.body ?? '',
 			number: issue.number,
 			title: issue.title,
 			labels: issue.labels.map((label) => (typeof label === 'string' ? label : label.name ?? '')),
