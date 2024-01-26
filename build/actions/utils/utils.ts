@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as core from '@actions/core'
-import { context, GitHub } from '@actions/github'
+import { context, getOctokit } from '@actions/github'
 import axios from 'axios'
 import { OctoKitIssue } from '../api/octokit'
 import { Issue } from '../api/api'
@@ -58,7 +58,7 @@ export const daysAgoToHumanReadbleDate = (days: number) =>
 	new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().replace(/\.\d{3}\w$/, '')
 
 export const logRateLimit = async (token: string) => {
-	const usageData = (await new GitHub(token).rateLimit.get()).data.resources;
+	const usageData = (await getOctokit(token).rest.rateLimit.get()).data.resources;
 	(['core', 'graphql', 'search'] as const).forEach(async (category) => {
 		const usage = 1 - usageData[category].remaining / usageData[category].limit
 		const message = `Usage at ${usage} for ${category}`
