@@ -62,7 +62,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		options.width = Dialog_Width;
-		super(objectManagementService, options, loc.RestoreDatabaseDialogTitle(options.database), 'RestoreDatabase');
+		super(objectManagementService, options, loc.RestoreDatabaseDialogTitle, 'RestoreDatabase');
 		this.restoreProvider = azdata.dataprotocol.getProvider<azdata.RestoreProvider>('MSSQL', azdata.DataProviderType.RestoreProvider);
 		this.dialogObject.okButton.label = localizedConstants.RestoreText;
 	}
