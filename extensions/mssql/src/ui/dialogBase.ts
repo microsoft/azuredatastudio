@@ -20,6 +20,9 @@ export const DefaultMinTableRowCount = 1;
 const TableRowHeight = 25;
 const TableColumnHeaderHeight = 30;
 
+export const tableHeader = { 'border-color': '#ccc', 'color': '#666666', 'font-weight': 'normal' };
+export const tableRow = { 'border-color': '#ccc' };
+
 export function getTableHeight(rowCount: number, minRowCount: number = DefaultMinTableRowCount, maxRowCount: number = DefaultMaxTableRowCount): number {
 	return Math.min(Math.max(rowCount, minRowCount), maxRowCount) * TableRowHeight + TableColumnHeaderHeight;
 }
@@ -264,6 +267,55 @@ export abstract class DialogBase<DialogResult> {
 		return table;
 	}
 
+	protected createDeclarativeTableList<T>(ariaLabel: string,
+		columnNames: string[],
+		allItems: T[],
+		selectedItems: T[],
+		maxRowCount: number = DefaultMaxTableRowCount,
+		enabledStateGetter: TableListItemEnabledStateGetter<T> = DefaultTableListItemEnabledStateGetter,
+		rowValueGetter: TableListItemValueGetter<T> = DefaultTableListItemValueGetter,
+		itemComparer: TableListItemComparer<T> = DefaultTableListItemComparer): azdata.DeclarativeTableComponent {
+		const data = this.getDataForDeclarativeTableList(allItems, selectedItems, enabledStateGetter, rowValueGetter, itemComparer);
+		const declarativeTable = this.modelView.modelBuilder.declarativeTable().withProps(
+			{
+				ariaLabel: ariaLabel,
+				dataValues: data,
+				columns: [
+					{
+						displayName: uiLoc.SelectText,
+						valueType: azdata.DeclarativeDataType.boolean,
+						isReadOnly: false,
+						width: '20%',
+						headerCssStyles: { ...tableHeader, 'text-align': 'center' }
+					}, ...columnNames.map(name => {
+						return {
+							displayName: name,
+							valueType: azdata.DeclarativeDataType.string,
+							isReadOnly: true,
+							width: `${80 / columnNames.length - 1}%`,
+							headerCssStyles: { ...tableHeader, 'text-align': 'left' }
+						};
+					})
+				],
+				width: DefaultTableWidth,
+				height: getTableHeight(data.length, DefaultMinTableRowCount, maxRowCount)
+			}
+		).component();
+
+		this.disposables.push(declarativeTable.onDataChanged!((changedData) => {
+			const item = allItems[changedData.row];
+			const idx = selectedItems.findIndex(i => itemComparer(i, item));
+			if (changedData.value && idx === -1) {
+				selectedItems.push(item);
+			} else if (!changedData.value && idx !== -1) {
+				selectedItems.splice(idx, 1)
+			}
+			this.onFormFieldChange();
+		}));
+
+		return declarativeTable;
+	}
+
 	protected async setTableData(table: azdata.TableComponent, data: any[][], maxRowCount: number = DefaultMaxTableRowCount): Promise<void> {
 		await table.updateProperties({
 			data: data,
@@ -281,6 +333,19 @@ export abstract class DialogBase<DialogResult> {
 			const idx = selectedItems.findIndex(i => itemComparer(i, item));
 			const stateColumnValue = { checked: idx !== -1, enabled: enabledStateGetter(item) };
 			return [stateColumnValue, ...rowValueGetter(item)];
+		});
+	}
+
+	protected getDataForDeclarativeTableList<T>(
+		allItems: T[],
+		selectedItems: T[],
+		enabledStateGetter: TableListItemEnabledStateGetter<T> = DefaultTableListItemEnabledStateGetter,
+		rowValueGetter: TableListItemValueGetter<T> = DefaultTableListItemValueGetter,
+		itemComparer: TableListItemComparer<T> = DefaultTableListItemComparer): any[][] {
+		return allItems.map(item => {
+			const idx = selectedItems.findIndex(i => itemComparer(i, item));
+			const stateColumnValue = { value: idx !== -1, enabled: enabledStateGetter(item), style: tableRow, ariaLabel: item };
+			return [stateColumnValue, ...rowValueGetter(item).map(item => { return { value: item, style: tableRow } })];
 		});
 	}
 
