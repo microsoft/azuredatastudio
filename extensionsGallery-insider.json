@@ -5454,6 +5454,67 @@
 					],
 					"statistics": [],
 					"flags": ""
+				},
+				{
+					"extensionId": "107",
+					"extensionName": "cpfcnpjextension",
+					"displayName": "CPF / CNPJ Extension",
+					"shortDescription": "Azure Data Studio Extension to work on Brazilian documents formatting (CPF and CNPJ).",
+					"publisher": {
+						"displayName": "Eduardo C. Rocha",
+						"publisherId": "educroch",
+						"publisherName": "educroch"
+					},
+					"versions": [
+						{
+							"version": "1.0.0",
+							"lastUpdated": "27/01/2024",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/educroch/cpf-cnpj-ads-extension/releases/latest"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/educroch/cpf-cnpj-ads-extension/master/resources/imgs/logo.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/educroch/cpf-cnpj-ads-extension/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/educroch/cpf-cnpj-ads-extension/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/educroch/cpf-cnpj-ads-extension/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/educroch/cpf-cnpj-ads-extension"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
