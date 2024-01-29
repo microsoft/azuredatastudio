@@ -236,7 +236,7 @@ export const EditionText = localize('objectManagement.editionLabel', "Edition");
 export const MaxSizeText = localize('objectManagement.maxSizeLabel', "Max Size");
 export const AzurePricingLinkText = localize('objectManagement.azurePricingLink', "Azure SQL Database pricing calculator");
 export const DetachDatabaseDialogTitle = (dbName: string) => localize('objectManagement.detachDatabaseDialogTitle', "Detach Database - {0} (Preview)", dbName);
-export const RestoreDatabaseDialogTitle = (dbName: string) => localize('objectManagement.restoreDatabaseDialogTitle', "Restore Database - {0} (Preview)", dbName);
+export const RestoreDatabaseDialogTitle = localize('objectManagement.restoreDatabaseDialogTitle', "Restore Database (Preview)");
 export const DetachDropConnections = localize('objectManagement.detachDropConnections', "Drop connnections");
 export const DetachUpdateStatistics = localize('objectManagement.detachUpdateStatistics', "Update statistics");
 export const DatabaseFilesLabel = localize('objectManagement.databaseFiles', "Database Files");
