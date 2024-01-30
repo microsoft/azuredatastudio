@@ -818,44 +818,44 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					width: 120,
 					isReadOnly: false,
 					displayName: localizedConstants.NameText,
-					headerCssStyles: cssStyles.optionsTableHeader,
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'left' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.string,
 					width: 60,
 					isReadOnly: false,
 					displayName: localizedConstants.FilesText,
-					headerCssStyles: cssStyles.optionsTableHeader,
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'left' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 80,
 					displayName: localizedConstants.ReadOnlyText,
 					isReadOnly: false,
-					headerCssStyles: cssStyles.optionsTableHeader,
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'left' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 80,
 					displayName: localizedConstants.DefaultText,
 					isReadOnly: false,
-					headerCssStyles: cssStyles.optionsTableHeader,
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'left' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 110,
 					displayName: localizedConstants.AutogrowAllFilesText,
 					isReadOnly: false,
-					headerCssStyles: cssStyles.optionsTableHeader,
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'left' },
 				}
 			],
 			width: DefaultTableWidth,
 			height: getTableHeight(data.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
-			dataValues: data,
 			CSSStyles: {
 				'margin-left': '10px'
 			}
 		}).component();
+		this.rowsFilegroupsDeclarativeTable.data = data;
 		this.rowsFilegroupNameContainer = await this.getFilegroupNameGroup(this.rowsFilegroupsTable, FileGroupType.RowsFileGroup);
 		//this.rowsFilegroupNameDeclarativeContainer = await this.getFilegroupNameGroupDeclarative(this.rowsFilegroupsDeclarativeTable, FileGroupType.RowsFileGroup);
 		const addButtonComponent: DialogButton = {
@@ -902,7 +902,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				}
 			)
 		);
-		return this.createGroup(localizedConstants.RowsFileGroupsSectionText, [this.rowsFilegroupsTable, this.rowsFilegroupsDeclarativeTable, this.rowsFilegroupNameContainer, this.rowsFileGroupButtonContainer], true);
+		return this.createGroup(localizedConstants.RowsFileGroupsSectionText, [this.rowsFilegroupsDeclarativeTable, this.rowsFilegroupNameContainer, this.rowsFileGroupButtonContainer, this.rowsFilegroupsTable], true);
 	}
 
 	/**
