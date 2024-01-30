@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultMaxTableRowCount, getTableHeight, DialogButton } from '../../ui/dialogBase';
+import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultMaxTableRowCount, getTableHeight, DialogButton, tableRow, tableHeader } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl, DatabaseFileGroupsPropertiesDocUrl, QueryStorePropertiesDocUrl } from '../constants';
@@ -14,7 +14,6 @@ import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
 import { DatabaseFileDialog } from './databaseFileDialog';
 import * as vscode from 'vscode';
-import { cssStyles } from '../../ui/uiConstants';
 
 const MAXDOP_Max_Limit = 32767;
 const PAUSED_RESUMABLE_INDEX_Max_Limit = 71582;
@@ -676,8 +675,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private async updateFileGroupsTablesfileCount(fileType: string): Promise<void> {
 		if (fileType === localizedConstants.RowsDataFileType) {
 			let data = this.getTableData(FileGroupType.RowsFileGroup);
+			let declarativeData = this.getDeclarativeTableData(FileGroupType.RowsFileGroup);
 			await this.setTableData(this.rowsFilegroupsTable, data);
-			await this.setTableData(this.rowsFilegroupsDeclarativeTable, data);
+			await this.setTableData(this.rowsFilegroupsDeclarativeTable, declarativeData);
 		}
 		else if (fileType === localizedConstants.FilestreamFileType) {
 			let data = this.getTableData(FileGroupType.FileStreamDataFileGroup);
@@ -780,6 +780,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 */
 	private async initializeRowsFileGroupSection(): Promise<azdata.GroupContainer> {
 		const data = this.getTableData(FileGroupType.RowsFileGroup);
+		const declarativeData = this.getDeclarativeTableData(FileGroupType.RowsFileGroup);
 		this.rowsFilegroupsTable = this.modelView.modelBuilder.table().withProps({
 			columns: [{
 				type: azdata.ColumnType.text,
@@ -818,44 +819,44 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					width: 120,
 					isReadOnly: false,
 					displayName: localizedConstants.NameText,
-					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'left' },
+					headerCssStyles: { ...tableHeader, 'text-align': 'left' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.string,
 					width: 60,
-					isReadOnly: false,
+					isReadOnly: true,
 					displayName: localizedConstants.FilesText,
-					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'left' },
+					headerCssStyles: { ...tableHeader, 'text-align': 'left' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 80,
 					displayName: localizedConstants.ReadOnlyText,
 					isReadOnly: false,
-					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'left' },
+					headerCssStyles: { ...tableHeader, 'text-align': 'left' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 80,
 					displayName: localizedConstants.DefaultText,
 					isReadOnly: false,
-					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'left' },
+					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 110,
 					displayName: localizedConstants.AutogrowAllFilesText,
 					isReadOnly: false,
-					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'left' },
+					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
 				}
 			],
 			width: DefaultTableWidth,
-			height: getTableHeight(data.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
+			height: getTableHeight(declarativeData.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
 			CSSStyles: {
 				'margin-left': '10px'
 			}
 		}).component();
-		this.rowsFilegroupsDeclarativeTable.data = data;
+		this.rowsFilegroupsDeclarativeTable.data = declarativeData;
 		this.rowsFilegroupNameContainer = await this.getFilegroupNameGroup(this.rowsFilegroupsTable, FileGroupType.RowsFileGroup);
 		//this.rowsFilegroupNameDeclarativeContainer = await this.getFilegroupNameGroupDeclarative(this.rowsFilegroupsDeclarativeTable, FileGroupType.RowsFileGroup);
 		const addButtonComponent: DialogButton = {
@@ -1342,6 +1343,31 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				data.push([
 					fileGroup.name,
 					filesCount
+				]);
+			}
+		});
+
+		return data;
+	}
+
+	/**
+	 * Converts the filegroup object to a data view object
+	 * Note: Cannot change properties(Read-only, Default, Autogrow All files) of empty Rows data filegroups, the filegroup must contain at least one file
+	 * Note: Cannot change properties(Read-only) of empty Filestream data filegroups, the filegroup must contain at least one file
+	 * @param filegroupType filegroup type
+	 * @returns data view object
+	 */
+	private getDeclarativeTableData(filegroupType: FileGroupType): any[] {
+		let data: any[] = [];
+		this.objectInfo.filegroups?.map(fileGroup => {
+			const filesCount = this.objectInfo.files?.filter(file => file.fileGroup === fileGroup.name).length;
+			if (filegroupType === FileGroupType.RowsFileGroup && fileGroup.type === filegroupType) {
+				data.push([
+					{ value: fileGroup.name, style: tableRow },
+					{ value: filesCount, style: tableRow },
+					{ ariaLabel: localizedConstants.ReadOnlyText, value: fileGroup.isReadOnly, enabled: (fileGroup.name !== 'PRIMARY' && filesCount > 0), style: tableRow },
+					{ ariaLabel: localizedConstants.DefaultText, value: fileGroup.isDefault, enabled: filesCount > 0, style: tableRow },
+					{ ariaLabel: localizedConstants.AutogrowAllFilesText, value: fileGroup.autogrowAllFiles, enabled: filesCount > 0, style: tableRow }
 				]);
 			}
 		});
