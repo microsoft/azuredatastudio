@@ -232,6 +232,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		// Restore from
 		const restoreFromDropdownOptions = this.isManagedInstance ? [localizedConstants.RestoreFromUrlText, localizedConstants.RestoreFromS3UrlText] : [localizedConstants.RestoreFromDatabaseOptionText, localizedConstants.RestoreFromBackupFileOptionText, localizedConstants.RestoreFromUrlText, localizedConstants.RestoreFromS3UrlText];
 		this.restoreFrom = this.createDropdown(localizedConstants.RestoreFromText, async (newValue) => {
+			this.backupFilePath = this.backupURLPath = '';
 			if (newValue === localizedConstants.RestoreFromBackupFileOptionText || newValue === localizedConstants.RestoreFromUrlText) {
 				this.backupFilePathContainer.display = 'inline-flex';
 				this.restoreDatabase.enabled = false;

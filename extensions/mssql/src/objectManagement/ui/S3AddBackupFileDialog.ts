@@ -49,7 +49,7 @@ export class S3AddBackupFileDialog extends DialogBase<S3AddBackupFileDialogResul
 		this.connectionUri = connectionUri;
 
 		this.dialogObject.okButton.onClick(async () => {
-			this.result.backupFilePath = `s3://${this.bucketDropdown.value}.s3.${this.regionInputBox.value}.{server}.com/${this.backupFilesDropdown.value}`;
+			this.result.backupFilePath = `s3://${this.bucketDropdown.value}.s3.${this.regionInputBox.value}.amazonaws.com/${this.backupFilesDropdown.value}`;
 			this.credentialInfo = {
 				secret: `${this.result.accessKey}:${this.result.secretKey}`,
 				identity: 'S3 Access Key',
