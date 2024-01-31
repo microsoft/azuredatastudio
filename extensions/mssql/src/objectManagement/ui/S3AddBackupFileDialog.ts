@@ -43,23 +43,23 @@ export class S3AddBackupFileDialog extends DialogBase<S3AddBackupFileDialogResul
 		// Relabel Cancel button to Back, since clicking cancel on an inner dialog makes it seem like it would close the whole dialog overall
 		this.dialogObject.cancelButton.label = localizedConstants.BackButtonLabel;
 		this.dialogObject.okButton.label = localizedConstants.AddButton;
+		this.dialogObject.okButton.enabled = false;
 
 		this.objectManagementService = objectManagementService;
 		this.connectionUri = connectionUri;
 
 		this.dialogObject.okButton.onClick(async () => {
-			if (this.result.backupFilePath) {
-				this.credentialInfo = {
-					secret: `${this.result.accessKey}:${this.result.secretKey}`,
-					identity: 'S3 Access Key',
-					name: this.result.backupFilePath,
-					createDate: undefined,
-					dateLastModified: undefined,
-					providerName: 'MSSQL',
-					id: undefined
-				}
-				await this.objectManagementService.createCredential(this.connectionUri, this.credentialInfo);
+			this.result.backupFilePath = `s3://${this.bucketDropdown.value}.s3.${this.regionInputBox.value}.amazonaws.com/${this.backupFilesDropdown.value}`;
+			this.credentialInfo = {
+				secret: `${this.result.accessKey}:${this.result.secretKey}`,
+				identity: 'S3 Access Key',
+				name: this.result.backupFilePath,
+				createDate: undefined,
+				dateLastModified: undefined,
+				providerName: 'MSSQL',
+				id: undefined
 			}
+			await this.objectManagementService.createCredential(this.connectionUri, this.credentialInfo);
 		});
 	}
 
@@ -96,7 +96,6 @@ export class S3AddBackupFileDialog extends DialogBase<S3AddBackupFileDialogResul
 		this.credentialButton = this.createButton(localizedConstants.AddCredentialsText, localizedConstants.AddCredentialsText, async () => {
 			this.createS3Client();
 			await this.setBucketDropdown();
-
 		}, false, DefaultInputWidth);
 		const credentialButtonContainer = this.createLabelInputContainer(' ', this.credentialButton);
 
@@ -113,6 +112,8 @@ export class S3AddBackupFileDialog extends DialogBase<S3AddBackupFileDialogResul
 		const bucketContainer = this.createLabelInputContainer(localizedConstants.SelectS3BucketText, this.bucketDropdown, true);
 
 		this.backupFilesDropdown = this.createDropdown(localizedConstants.SelectBackupFileText, async () => {
+			// enable ok button once we have a backup file to restore
+			this.dialogObject.okButton.enabled = true;
 		}, [], '', false);
 		const backupFilesContainer = this.createLabelInputContainer(localizedConstants.SelectBackupFileText, this.backupFilesDropdown, true);
 
@@ -171,7 +172,6 @@ export class S3AddBackupFileDialog extends DialogBase<S3AddBackupFileDialogResul
 	}
 
 	public override get dialogResult(): S3AddBackupFileDialogResult | undefined {
-		this.result.backupFilePath = `s3://${this.bucketDropdown.value}.s3.${this.regionInputBox.value}.amazonaws.com/${this.backupFilesDropdown.value}`;
 		return this.result;
 	}
 }
