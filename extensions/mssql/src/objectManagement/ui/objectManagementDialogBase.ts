@@ -117,7 +117,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		if (this.startsTaskSeparately) {
 			await this.saveChangesAndRefresh();
 		} else {
-			this.dialogObject.registerOperation({
+			azdata.tasks.startBackgroundOperation({
 				displayName: this.saveChangesTaskLabel,
 				description: '',
 				isCancelable: false,
@@ -126,7 +126,8 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				}
 			});
 		}
-		return super.handleDialogClosed(reason);
+		let result = await super.handleDialogClosed(reason);
+		return result;
 	}
 
 	protected get viewInfo(): ViewInfoType {

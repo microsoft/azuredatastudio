@@ -99,7 +99,8 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			// only show message if user apply changes
 			await this.notifyServerRestart();
 		}
-		return super.handleDialogClosed(reason);
+		let result = await super.handleDialogClosed(reason);
+		return result;
 	}
 
 	protected override get helpUrl(): string {
