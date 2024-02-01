@@ -113,18 +113,20 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	}
 
 	protected override async handleDialogClosed(reason: azdata.window.CloseReason): Promise<any> {
-		// Skip registering a task here if one already gets started in the background, like for the Backup & Restore dialogs
-		if (this.startsTaskSeparately) {
-			await this.saveChangesAndRefresh();
-		} else {
-			azdata.tasks.startBackgroundOperation({
-				displayName: this.saveChangesTaskLabel,
-				description: '',
-				isCancelable: false,
-				operation: async (operation: azdata.BackgroundOperation): Promise<void> => {
-					await this.saveChangesAndRefresh(operation);
-				}
-			});
+		if (reason === 'ok') {
+			// Skip registering a task here if one already gets started in the background, like for the Backup & Restore dialogs
+			if (this.startsTaskSeparately) {
+				await this.saveChangesAndRefresh();
+			} else {
+				azdata.tasks.startBackgroundOperation({
+					displayName: this.saveChangesTaskLabel,
+					description: '',
+					isCancelable: false,
+					operation: async (operation: azdata.BackgroundOperation): Promise<void> => {
+						await this.saveChangesAndRefresh(operation);
+					}
+				});
+			}
 		}
 		let result = await super.handleDialogClosed(reason);
 		return result;
