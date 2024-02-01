@@ -817,7 +817,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				{
 					valueType: azdata.DeclarativeDataType.string,
 					width: 120,
-					isReadOnly: false,
+					isReadOnly: true,
 					displayName: localizedConstants.NameText,
 					headerCssStyles: { ...tableHeader, 'text-align': 'left' },
 				},
@@ -852,11 +852,11 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			],
 			width: DefaultTableWidth,
 			height: getTableHeight(declarativeData.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
+			data: declarativeData,
 			CSSStyles: {
 				'margin-left': '10px'
 			}
 		}).component();
-		this.rowsFilegroupsDeclarativeTable.data = declarativeData;
 		this.rowsFilegroupNameContainer = await this.getFilegroupNameGroup(this.rowsFilegroupsTable, FileGroupType.RowsFileGroup);
 		//this.rowsFilegroupNameDeclarativeContainer = await this.getFilegroupNameGroupDeclarative(this.rowsFilegroupsDeclarativeTable, FileGroupType.RowsFileGroup);
 		const addButtonComponent: DialogButton = {
@@ -1362,12 +1362,15 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		this.objectInfo.filegroups?.map(fileGroup => {
 			const filesCount = this.objectInfo.files?.filter(file => file.fileGroup === fileGroup.name).length;
 			if (filegroupType === FileGroupType.RowsFileGroup && fileGroup.type === filegroupType) {
+				const testObject1 = { value: fileGroup.isReadOnly, enabled: (fileGroup.name !== 'PRIMARY' && filesCount > 0), style: tableRow, ariaLabel: localizedConstants.ReadOnlyText };
+				const testObject2 = { value: fileGroup.isDefault, enabled: filesCount > 0, style: tableRow, ariaLabel: localizedConstants.DefaultText };
+				const testObject3 = { value: fileGroup.autogrowAllFiles, enabled: filesCount > 0, style: tableRow, ariaLabel: localizedConstants.AutogrowAllFilesText };
 				data.push([
-					{ value: fileGroup.name, style: tableRow },
-					{ value: filesCount, style: tableRow },
-					{ ariaLabel: localizedConstants.ReadOnlyText, value: fileGroup.isReadOnly, enabled: (fileGroup.name !== 'PRIMARY' && filesCount > 0), style: tableRow },
-					{ ariaLabel: localizedConstants.DefaultText, value: fileGroup.isDefault, enabled: filesCount > 0, style: tableRow },
-					{ ariaLabel: localizedConstants.AutogrowAllFilesText, value: fileGroup.autogrowAllFiles, enabled: filesCount > 0, style: tableRow }
+					fileGroup.name,
+					filesCount,
+					testObject1,
+					testObject2,
+					testObject3
 				]);
 			}
 		});
