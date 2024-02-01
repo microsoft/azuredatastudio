@@ -83,6 +83,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		return true;
 	}
 
+	protected override get startsTaskSeparately(): boolean {
+		return true;
+	}
+
 	private get restoreDialogDocUrl(): string {
 		let helpUrl = '';
 		switch (this.activeTabId) {

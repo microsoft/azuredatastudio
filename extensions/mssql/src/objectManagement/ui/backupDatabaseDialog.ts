@@ -83,6 +83,10 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		return true;
 	}
 
+	protected override get startsTaskSeparately(): boolean {
+		return true;
+	}
+
 	private get encryptionSupported(): boolean {
 		return this._encryptorOptions.length > 0;
 	}
