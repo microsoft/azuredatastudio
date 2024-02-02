@@ -83,6 +83,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		return true;
 	}
 
+	protected override get startTaskOnApply(): boolean {
+		return false; // The underlying restore operation in the SQL Tools Service starts its own task separately
+	}
+
 	private get restoreDialogDocUrl(): string {
 		let helpUrl = '';
 		switch (this.activeTabId) {

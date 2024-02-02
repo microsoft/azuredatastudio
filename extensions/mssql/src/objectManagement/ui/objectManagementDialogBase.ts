@@ -72,44 +72,67 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		return this.options.isNewObject ? TelemetryActions.CreateObject : TelemetryActions.UpdateObject;
 	}
 
-	protected override async initialize(): Promise<void> {
-		await super.initialize();
-		this.dialogObject.registerOperation({
-			displayName: this.saveChangesTaskLabel,
-			description: '',
-			isCancelable: false,
-			operation: async (operation: azdata.BackgroundOperation): Promise<void> => {
-				try {
-					if (this.isDirty) {
-						const startTime = Date.now();
-						await this.saveChanges(this._contextId, this.objectInfo);
-						if (this.options.objectExplorerContext) {
-							if (this.options.isNewObject) {
-								await refreshNode(this.options.objectExplorerContext);
-							} else {
-								// For edit mode, the node context is the object itself, we need to refresh the parent node to reflect the changes.
-								await refreshParentNode(this.options.objectExplorerContext);
-							}
-						}
+	/**
+	 * Whether to start a background task after clicking OK in the dialog. Some operations, like Backup & Restore,
+	 * start their own background tasks, and so don't need one started directly from the dialog.
+	 */
+	protected get startTaskOnApply(): boolean {
+		return true;
+	}
 
-						TelemetryReporter.sendTelemetryEvent(this.actionName, {
-							objectType: this.options.objectType
-						}, {
-							elapsedTimeMs: Date.now() - startTime
-						});
-						operation.updateStatus(azdata.TaskStatus.Succeeded);
+	private async saveChangesAndRefresh(operation?: azdata.BackgroundOperation): Promise<void> {
+		try {
+			if (this.isDirty) {
+				const startTime = Date.now();
+				await this.saveChanges(this._contextId, this.objectInfo);
+				if (this.options.objectExplorerContext) {
+					if (this.options.isNewObject) {
+						await refreshNode(this.options.objectExplorerContext);
+					} else {
+						// For edit mode, the node context is the object itself, we need to refresh the parent node to reflect the changes.
+						await refreshParentNode(this.options.objectExplorerContext);
 					}
 				}
-				catch (err) {
-					operation.updateStatus(azdata.TaskStatus.Failed, getErrorMessage(err));
-					TelemetryReporter.createErrorEvent2(ObjectManagementViewName, this.actionName, err).withAdditionalProperties({
-						objectType: this.options.objectType
-					}).send();
-				} finally {
-					await this.disposeView();
+
+				TelemetryReporter.sendTelemetryEvent(this.actionName, {
+					objectType: this.options.objectType
+				}, {
+					elapsedTimeMs: Date.now() - startTime
+				});
+				if (operation) {
+					operation.updateStatus(azdata.TaskStatus.Succeeded);
 				}
 			}
-		});
+		}
+		catch (err) {
+			if (operation) {
+				operation.updateStatus(azdata.TaskStatus.Failed, getErrorMessage(err));
+			}
+			TelemetryReporter.createErrorEvent2(ObjectManagementViewName, this.actionName, err).withAdditionalProperties({
+				objectType: this.options.objectType
+			}).send();
+		} finally {
+			await this.disposeView();
+		}
+	}
+
+	protected override async handleDialogClosed(reason: azdata.window.CloseReason): Promise<any> {
+		if (reason === 'ok') {
+			if (this.startTaskOnApply) {
+				azdata.tasks.startBackgroundOperation({
+					displayName: this.saveChangesTaskLabel,
+					description: '',
+					isCancelable: false,
+					operation: async (operation: azdata.BackgroundOperation): Promise<void> => {
+						await this.saveChangesAndRefresh(operation);
+					}
+				});
+			} else {
+				await this.saveChangesAndRefresh();
+			}
+		}
+		let result = await super.handleDialogClosed(reason);
+		return result;
 	}
 
 	protected get viewInfo(): ViewInfoType {
