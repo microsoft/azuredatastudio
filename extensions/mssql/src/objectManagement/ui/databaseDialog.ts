@@ -837,6 +837,28 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		};
 		this.rowsFileGroupButtonContainer = this.addButtonsForDeclarativeTable(this.rowsFilegroupsDeclarativeTable, addButtonComponent, removeButtonComponent);
 		this.disposables.push(
+			this.rowsFilegroupsDeclarativeTable.onDataChanged(async (changedData) => {
+				if (changedData.row !== undefined) {
+					let filegroup = this.rowDataFileGroupsTableRows[changedData.row];
+					// Read-Only column
+					if (changedData.column === 2) {
+						filegroup.isReadOnly = changedData.value;
+					}
+					// Default column
+					if (changedData.column === 3) {
+						this.updateFilegroupsDefaultColumnValuesDeclarative(changedData.value, filegroup, FileGroupType.RowsFileGroup);
+					}
+					// Autogrow all files column
+					if (changedData.column === 4) {
+						filegroup.autogrowAllFiles = changedData.value;
+					}
+
+					// Refresh the table with updated data
+					let data = this.getDeclarativeTableData(FileGroupType.RowsFileGroup);
+					await this.setTableData(this.rowsFilegroupsDeclarativeTable, data);
+					this.onFormFieldChange();
+				}
+			}),
 			this.rowsFilegroupsDeclarativeTable.onRowSelected(async () => {
 				if (this.rowsFilegroupsDeclarativeTable.selectedRow !== -1 && this.rowsFilegroupsDeclarativeTable.selectedRow !== undefined) {
 					const fileGroup = this.rowDataFileGroupsTableRows[this.rowsFilegroupsDeclarativeTable.selectedRow];
@@ -844,37 +866,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					this.rowsFilegroupNameInput.value = fileGroup.name;
 					this.onFormFieldChange();
 				}
-			}),
-			this.rowsFilegroupsTable.onCellAction(async (arg: azdata.ICheckboxCellActionEventArgs) => {
-				let filegroup = this.rowDataFileGroupsTableRows[arg.row];
-				// Read-Only column
-				if (arg.column === 2) {
-					filegroup.isReadOnly = arg.checked;
-				}
-				// Default column
-				if (arg.column === 3) {
-					this.updateFilegroupsDefaultColumnValues(arg, filegroup, FileGroupType.RowsFileGroup);
-				}
-				// Autogrow all files column
-				if (arg.column === 4) {
-					filegroup.autogrowAllFiles = arg.checked;
-				}
-
-				// Refresh the table with updated data
-				let data = this.getTableData(FileGroupType.RowsFileGroup);
-				await this.setTableData(this.rowsFilegroupsTable, data);
-				this.onFormFieldChange();
-			}),
-			this.rowsFilegroupsTable.onRowSelected(
-				async () => {
-					if (this.rowsFilegroupsTable.selectedRows.length === 1) {
-						const fileGroup = this.rowDataFileGroupsTableRows[this.rowsFilegroupsTable.selectedRows[0]];
-						this.rowsFilegroupNameContainer.display = fileGroup.id < 0 ? 'inline-flex' : 'none';
-						this.rowsFilegroupNameInput.value = fileGroup.name;
-						this.onFormFieldChange();
-					}
-				}
-			)
+			})
 		);
 		return this.createGroup(localizedConstants.RowsFileGroupsSectionText, [this.rowsFilegroupsDeclarativeTable, this.rowsFilegroupNameDeclarativeContainer, this.rowsFileGroupButtonContainer], true);
 	}
@@ -1027,6 +1019,24 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			});
 		} else {
 			filegroup.isDefault = arg.checked;
+		}
+	}
+
+	/**
+	 * Update the default value for the filegroup
+	 * @param changedData selected checkbox event
+	 * @param filegroup filegroup object
+	 * @param filegroupType filegroup type
+	 */
+	private updateFilegroupsDefaultColumnValuesDeclarative(changedData: any, filegroup: FileGroup, filegroupType: FileGroupType): void {
+		if (changedData.value) {
+			this.objectInfo.filegroups.forEach(fg => {
+				if (fg.type === filegroupType) {
+					fg.isDefault = fg.name === filegroup.name && fg.id === filegroup.id ? changedData.value : !changedData.value;
+				}
+			});
+		} else {
+			filegroup.isDefault = changedData.value;
 		}
 	}
 
