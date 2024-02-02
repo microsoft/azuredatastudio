@@ -65,7 +65,7 @@ export class S3AddBackupFileDialog extends DialogBase<S3AddBackupFileDialogResul
 
 	protected async initialize(): Promise<void> {
 		this.s3UrlInputBox = this.createInputBox(async (value) => {
-			this.result.s3Url = vscode.Uri.parse(value);
+			this.result.s3Url = vscode.Uri.parse(encodeURI(value));
 			this.regionInputBox.value = this.result.s3Url.toString().split(".")[1];
 			this.enableCredentialButton();
 		}, {
