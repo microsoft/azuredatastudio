@@ -72,8 +72,12 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		return this.options.isNewObject ? TelemetryActions.CreateObject : TelemetryActions.UpdateObject;
 	}
 
-	protected get startsTaskSeparately(): boolean {
-		return false;
+	/**
+	 * Whether to start a background task after clicking OK in the dialog. Some operations, like Backup & Restore,
+	 * start their own background tasks, and so don't need one started directly from the dialog.
+	 */
+	protected get startTaskOnApply(): boolean {
+		return true;
 	}
 
 	private async saveChangesAndRefresh(operation?: azdata.BackgroundOperation): Promise<void> {
@@ -114,10 +118,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 
 	protected override async handleDialogClosed(reason: azdata.window.CloseReason): Promise<any> {
 		if (reason === 'ok') {
-			// Skip registering a task here if one already gets started in the background, like for the Backup & Restore dialogs
-			if (this.startsTaskSeparately) {
-				await this.saveChangesAndRefresh();
-			} else {
+			if (this.startTaskOnApply) {
 				azdata.tasks.startBackgroundOperation({
 					displayName: this.saveChangesTaskLabel,
 					description: '',
@@ -126,6 +127,8 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 						await this.saveChangesAndRefresh(operation);
 					}
 				});
+			} else {
+				await this.saveChangesAndRefresh();
 			}
 		}
 		let result = await super.handleDialogClosed(reason);

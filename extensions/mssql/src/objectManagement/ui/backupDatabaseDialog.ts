@@ -83,8 +83,8 @@ export class BackupDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		return true;
 	}
 
-	protected override get startsTaskSeparately(): boolean {
-		return true;
+	protected override get startTaskOnApply(): boolean {
+		return false; // The underlying backup operation in the SQL Tools Service starts its own task separately
 	}
 
 	private get encryptionSupported(): boolean {
