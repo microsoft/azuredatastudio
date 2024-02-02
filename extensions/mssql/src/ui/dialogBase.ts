@@ -61,11 +61,15 @@ export abstract class DialogBase<DialogResult> {
 		});
 		this._closePromise = new Promise<DialogResult | undefined>(resolve => {
 			this.disposables.push(this.dialogObject.onClosed(async (reason: azdata.window.CloseReason) => {
-				await this.dispose(reason);
-				const result = reason === 'ok' ? this.dialogResult : undefined;
+				let result = await this.handleDialogClosed(reason);
 				resolve(result);
 			}));
 		});
+	}
+
+	protected async handleDialogClosed(reason: azdata.window.CloseReason): Promise<any> {
+		await this.dispose(reason);
+		return reason === 'ok' ? this.dialogResult : undefined;
 	}
 
 	public waitForClose(): Promise<DialogResult | undefined> {

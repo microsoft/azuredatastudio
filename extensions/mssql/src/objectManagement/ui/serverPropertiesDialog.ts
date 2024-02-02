@@ -92,12 +92,15 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
-		this.disposables.push(this.dialogObject.onClosed(async (reason: azdata.window.CloseReason) => {
-			if (reason === 'ok') {
-				// only show message if user apply changes
-				await this.notifyServerRestart();
-			}
-		}));
+	}
+
+	protected override async handleDialogClosed(reason: azdata.window.CloseReason): Promise<any> {
+		if (reason === 'ok') {
+			// only show message if user apply changes
+			await this.notifyServerRestart();
+		}
+		let result = await super.handleDialogClosed(reason);
+		return result;
 	}
 
 	protected override get helpUrl(): string {
