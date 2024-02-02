@@ -1052,7 +1052,7 @@
       <source xml:lang="en">Restore As</source>
     </trans-unit>
     <trans-unit id="objectManagement.restoreDatabaseDialogTitle">
-      <source xml:lang="en">Restore Database - {0} (Preview)</source>
+      <source xml:lang="en">Restore Database (Preview)</source>
     </trans-unit>
     <trans-unit id="objectManagement.restoreDatabase.restoreOptionsText">
       <source xml:lang="en">Restore Options</source>
