@@ -49,6 +49,8 @@
 	right: 0;
 	position: absolute;
 	overflow-y: hidden;
+	overflow-x: auto;
+	display: contents;
 }
 
 .modal.flyout-dialog .modal-dialog.narrow-dialog {
@@ -345,26 +347,4 @@
 
 .modal-dialog form {
 	height: 100%;
-}
-
-.modal.fade.flyout-dialog[aria-label*="Database Properties"] {
-	max-width: 750px;
-	margin-left: auto;
-	margin-right: 0;
-}
-
-.modal.fade.flyout-dialog[aria-label*="Database Properties"] > .modal-dialog {
-	display: contents;
-	overflow-x: auto;
-}
-
-.modal.fade.flyout-dialog[aria-label*="Server Properties"] {
-	max-width: 750px;
-	margin-left: auto;
-	margin-right: 0;
-}
-
-.modal.fade.flyout-dialog[aria-label*="Server Properties"] > .modal-dialog {
-	display: contents;
-	overflow-x: auto;
 }
