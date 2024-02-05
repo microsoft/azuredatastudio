@@ -237,8 +237,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 				this.backupFilePathContainer.display = 'inline-flex';
 				this.restoreDatabase.enabled = false;
 				this.backupFilePathInput.enabled = false;
+				const path = newValue === localizedConstants.RestoreFromUrlText ? this.backupURLPath : this.backupFilePath;
 				await this.backupFilePathInput.updateProperties({
-					value: newValue === localizedConstants.RestoreFromUrlText ? this.backupURLPath : this.backupFilePath
+					value: path,
+					values: [path]
 				});
 			} else if (newValue === localizedConstants.RestoreFromDatabaseOptionText) {
 				this.backupFilePathContainer.display = 'none';
@@ -461,7 +463,8 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		if (filePath?.length > 0) {
 			this.backupFilePath = filePath;
 			await this.backupFilePathInput.updateProperties({
-				value: this.backupFilePath
+				value: this.backupFilePath,
+				values: [this.backupFilePath]
 			});
 		}
 	}
@@ -485,7 +488,8 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		if (backupPath && !backupPath.includes('undefined')) {
 			this.backupURLPath = backupPath;
 			await this.backupFilePathInput.updateProperties({
-				value: this.backupURLPath
+				value: this.backupURLPath,
+				values: [this.backupURLPath]
 			});
 		}
 	}
