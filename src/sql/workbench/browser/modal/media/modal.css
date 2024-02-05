@@ -346,3 +346,25 @@
 .modal-dialog form {
 	height: 100%;
 }
+
+.modal.fade.flyout-dialog[aria-label*="Database Properties"] {
+	max-width: 750px;
+	margin-left: auto;
+	margin-right: 0;
+}
+
+.modal.fade.flyout-dialog[aria-label*="Database Properties"] > .modal-dialog {
+	display: contents;
+	overflow-x: auto;
+}
+
+.modal.fade.flyout-dialog[aria-label*="Server Properties"] {
+	max-width: 750px;
+	margin-left: auto;
+	margin-right: 0;
+}
+
+.modal.fade.flyout-dialog[aria-label*="Server Properties"] > .modal-dialog {
+	display: contents;
+	overflow-x: auto;
+}
