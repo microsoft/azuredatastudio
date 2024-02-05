@@ -10,6 +10,7 @@ import { ConnectParams } from 'dataprotocol-client/lib/protocol';
 import * as mssql from 'mssql';
 import { DatabaseFileData } from 'mssql';
 import { BackupResponse } from 'azdata';
+import { CredentialInfo } from 'azdata';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
 
@@ -1723,6 +1724,23 @@ export namespace PurgeQueryStoreDataRequest {
 export interface PurgeQueryStoreDataRequestParams {
 	connectionUri: string;
 	database: string;
+}
+
+export namespace CreateCredentialRequest {
+	export const type = new RequestType<CreateCredentialRequestParams, void, void, void>('objectManagement/createCredentialRequest');
+}
+
+export interface CreateCredentialRequestParams {
+	credentialInfo: CredentialInfo;
+	connectionUri: string;
+}
+
+export namespace GetCredentialNamesRequest {
+	export const type = new RequestType<GetCredentialNamesRequestParams, string[], void, void>('objectManagement/getCredentialNamesRequest');
+}
+
+export interface GetCredentialNamesRequestParams {
+	connectionUri: string;
 }
 
 // ------------------------------- < Object Management > ------------------------------------

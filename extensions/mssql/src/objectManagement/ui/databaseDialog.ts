@@ -17,7 +17,7 @@ import * as vscode from 'vscode';
 
 const MAXDOP_Max_Limit = 32767;
 const PAUSED_RESUMABLE_INDEX_Max_Limit = 71582;
-const DscTableRowLength = 20;
+const DscTableMaxRowCount = 40;
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
@@ -1566,7 +1566,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				metaData.valueForPrimary,
 				secondaryUnsupportedConfigsSet.has(metaData.id) ? localizedConstants.NotAvailableText : metaData.valueForSecondary]
 			}),
-			height: getTableHeight(this.objectInfo.databaseScopedConfigurations.length, 1, DscTableRowLength),
+			height: getTableHeight(this.objectInfo.databaseScopedConfigurations.length, 1, DscTableMaxRowCount),
 			width: DefaultTableWidth
 		}).component();
 
@@ -1853,7 +1853,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private async updateDscTable(data: any[][], inputToBeFocused: azdata.InputBoxComponent = undefined): Promise<void> {
 		// Set the focus to the selected input box
 		this.setFocusToInput = inputToBeFocused;
-		await this.setTableData(this.dscTable, data, DscTableRowLength);
+		await this.setTableData(this.dscTable, data, DscTableMaxRowCount);
 		// Restore the focus to previously selected row.
 		this.dscTable.setActiveCell(this.currentRowId, 0);
 	}

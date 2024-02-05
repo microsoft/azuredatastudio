@@ -482,13 +482,14 @@ export abstract class DialogBase<DialogResult> {
 		return dropdown;
 	}
 
-	protected createButton(label: string, ariaLabel: string, handler: () => Promise<void>, enabled: boolean = true): azdata.ButtonComponent {
+	protected createButton(label: string, ariaLabel: string, handler: () => Promise<void>, enabled: boolean = true, width?: number): azdata.ButtonComponent {
 		const button = this.modelView.modelBuilder.button().withProps({
 			label: label,
 			ariaLabel: ariaLabel,
 			enabled: enabled,
 			secondary: true,
-			CSSStyles: { 'min-width': '70px', 'margin-left': '5px' }
+			CSSStyles: { 'min-width': '70px', 'margin-left': '5px' },
+			width: width
 		}).component();
 		this.disposables.push(button.onDidClick(async () => {
 			await handler();
