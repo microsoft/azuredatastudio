@@ -328,7 +328,11 @@ export abstract class DialogBase<DialogResult> {
 	}
 
 	protected async setDeclarativeTableData(table: azdata.DeclarativeTableComponent, data: any[][], maxRowCount: number = DefaultMaxTableRowCount): Promise<void> {
+		let currentRowSelect = table.selectedRow;
 		await table.setDataValues(data);
+		if (currentRowSelect !== -1) {
+			table.selectedRow = currentRowSelect;
+		}
 		await table.updateProperties({
 			height: getTableHeight(data?.length, DefaultMinTableRowCount, maxRowCount)
 		});
@@ -425,7 +429,7 @@ export abstract class DialogBase<DialogResult> {
 		let buttonComponents: azdata.ButtonComponent[] = [];
 		const updateButtons = (isRemoveEnabled: boolean = undefined) => {
 			this.onFormFieldChange();
-			const tableSelectedRowsLengthCheck = table.selectedRow !== -1 && table.selectedRow < table.data.length;
+			const tableSelectedRowsLengthCheck = table.selectedRow !== -1 && table.selectedRow < table.dataValues.length;
 			if (editButton !== undefined) {
 				editButtonComponent.enabled = tableSelectedRowsLengthCheck;
 			}
@@ -448,8 +452,8 @@ export abstract class DialogBase<DialogResult> {
 
 		removeButtonComponent = this.createButton(uiLoc.RemoveText, removeButton.buttonAriaLabel, async () => {
 			await removeButton.buttonHandler(removeButtonComponent);
-			if (table.selectedRow >= table.data.length) {
-				table.selectedRow = table.data.length - 1;
+			if (table.selectedRow >= table.dataValues.length) {
+				table.selectedRow = table.dataValues.length - 1;
 			}
 			updateButtons();
 		}, false);

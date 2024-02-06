@@ -1124,7 +1124,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			await this.setDeclarativeTableData(table, newData, DefaultMaxTableRowCount);
 			//TODO, need to handle cell selection, currently declarative table does not have this functionality.
 			// Need to implement function that triggers row select manually.
-			table.selectedRow = table.data?.length - 1;
+			console.log('tableValues are ' + table.dataValues?.length);
+			table.selectedRow = table.dataValues?.length - 1;
 		}
 	}
 
@@ -1303,7 +1304,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				}
 				if (fg !== null && fg.id < 0) {
 					fg.name = value;
-					let data = this.getTableData(filegroupType);
+					let data = this.getDeclarativeTableData(filegroupType);
 					await this.setDeclarativeTableData(table, data);
 					this.updateFileGroupsOptionsAndTableRows();
 				}
@@ -1363,19 +1364,20 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * @returns data view object
 	 */
 	private getDeclarativeTableData(filegroupType: FileGroupType): any[] {
-		return this.objectInfo.filegroups?.map(fileGroup => {
+		let data: any[] = [];
+		this.objectInfo.filegroups?.map(fileGroup => {
 			const filesCount = this.objectInfo.files?.filter(file => file.fileGroup === fileGroup.name).length;
 			if (filegroupType === FileGroupType.RowsFileGroup && fileGroup.type === filegroupType) {
-				return [
+				data.push([
 					{ value: fileGroup.name, style: tableRow },
 					{ value: filesCount, style: tableRow },
 					{ value: fileGroup.isReadOnly, enabled: (fileGroup.name !== 'PRIMARY' && filesCount > 0), style: tableRow, ariaLabel: localizedConstants.ReadOnlyText },
 					{ value: fileGroup.isDefault, enabled: filesCount > 0, style: tableRow, ariaLabel: localizedConstants.DefaultText },
 					{ value: fileGroup.autogrowAllFiles, enabled: filesCount > 0, style: tableRow, ariaLabel: localizedConstants.AutogrowAllFilesText }
-				];
+				]);
 			}
-			return [];
 		});
+		return data;
 	}
 
 	/**
