@@ -429,7 +429,7 @@ export abstract class DialogBase<DialogResult> {
 		let buttonComponents: azdata.ButtonComponent[] = [];
 		const updateButtons = (isRemoveEnabled: boolean = undefined) => {
 			this.onFormFieldChange();
-			const tableSelectedRowsLengthCheck = table.selectedRow !== -1 && table.selectedRow < table.dataValues.length;
+			const tableSelectedRowsLengthCheck = table.selectedRow > -1 && table.selectedRow < table.dataValues.length;
 			if (editButton !== undefined) {
 				editButtonComponent.enabled = tableSelectedRowsLengthCheck;
 			}

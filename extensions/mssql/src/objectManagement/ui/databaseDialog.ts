@@ -691,7 +691,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * Validate the selected row to enable/disable the remove button
 	 * @returns true if the remove button should be enabled, false otherwise
 	 */
-	protected override removeButtonEnabled(table: azdata.TableComponent): boolean {
+	protected override removeButtonEnabled(table: azdata.TableComponent | azdata.DeclarativeTableComponent): boolean {
 		let isEnabled = true;
 		if (table === this.databaseFilesTable && this.databaseFilesTable.selectedRows !== undefined) {
 			const selectedRowId = this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].id;
@@ -709,8 +709,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				});
 			}
 		}
-		else if (table === this.rowsFilegroupsTable && this.rowsFilegroupsTable.selectedRows !== undefined && this.rowsFilegroupsTable.selectedRows.length === 1) {
-			const selectedRow = this.rowDataFileGroupsTableRows[this.rowsFilegroupsTable.selectedRows[0]];
+		else if (table === this.rowsFilegroupsDeclarativeTable && this.rowsFilegroupsDeclarativeTable.selectedRow !== undefined && this.rowsFilegroupsDeclarativeTable.selectedRow > -1) {
+			const selectedRow = this.rowDataFileGroupsTableRows[this.rowsFilegroupsDeclarativeTable.selectedRow];
 			// Cannot delete a row file if the fileGroup is Primary.
 			if (selectedRow.name === 'PRIMARY' && selectedRow.id > 0) {
 				isEnabled = false;
@@ -860,7 +860,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				}
 			}),
 			this.rowsFilegroupsDeclarativeTable.onRowSelected(async () => {
-				if (this.rowsFilegroupsDeclarativeTable.selectedRow !== -1 && this.rowsFilegroupsDeclarativeTable.selectedRow !== undefined) {
+				if (this.rowsFilegroupsDeclarativeTable.selectedRow > -1 && this.rowsFilegroupsDeclarativeTable.selectedRow !== undefined) {
 					const fileGroup = this.rowDataFileGroupsTableRows[this.rowsFilegroupsDeclarativeTable.selectedRow];
 					this.rowsFilegroupNameDeclarativeContainer.display = fileGroup.id < 0 ? 'inline-flex' : 'none';
 					this.rowsFilegroupNameInput.value = fileGroup.name;
@@ -1192,7 +1192,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 */
 	private async onRemoveDatabaseFileGroupsButtonClickedDeclarative(table: azdata.DeclarativeTableComponent): Promise<void> {
 		if (table === this.rowsFilegroupsDeclarativeTable) {
-			if (this.rowsFilegroupsDeclarativeTable.selectedRow !== undefined && this.rowsFilegroupsDeclarativeTable.selectedRow !== -1) {
+			if (this.rowsFilegroupsDeclarativeTable.selectedRow !== undefined && this.rowsFilegroupsDeclarativeTable.selectedRow > -1) {
 				const removeFilegroupIndex = this.objectInfo.filegroups.indexOf(this.rowDataFileGroupsTableRows[this.rowsFilegroupsDeclarativeTable.selectedRow]);
 				this.objectInfo.filegroups?.splice(removeFilegroupIndex, 1);
 				var newData = this.getDeclarativeTableData(FileGroupType.RowsFileGroup);
