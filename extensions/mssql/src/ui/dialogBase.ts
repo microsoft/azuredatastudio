@@ -320,9 +320,16 @@ export abstract class DialogBase<DialogResult> {
 		return declarativeTable;
 	}
 
-	protected async setTableData(table: azdata.TableComponent | azdata.DeclarativeTableComponent, data: any[][], maxRowCount: number = DefaultMaxTableRowCount): Promise<void> {
+	protected async setTableData(table: azdata.TableComponent, data: any[][], maxRowCount: number = DefaultMaxTableRowCount): Promise<void> {
 		await table.updateProperties({
 			data: data,
+			height: getTableHeight(data?.length, DefaultMinTableRowCount, maxRowCount)
+		});
+	}
+
+	protected async setDeclarativeTableData(table: azdata.DeclarativeTableComponent, data: any[][], maxRowCount: number = DefaultMaxTableRowCount): Promise<void> {
+		await table.setDataValues(data);
+		await table.updateProperties({
 			height: getTableHeight(data?.length, DefaultMinTableRowCount, maxRowCount)
 		});
 	}

@@ -677,7 +677,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			let data = this.getTableData(FileGroupType.RowsFileGroup);
 			let declarativeData = this.getDeclarativeTableData(FileGroupType.RowsFileGroup);
 			await this.setTableData(this.rowsFilegroupsTable, data);
-			await this.setTableData(this.rowsFilegroupsDeclarativeTable, declarativeData);
+			await this.setDeclarativeTableData(this.rowsFilegroupsDeclarativeTable, declarativeData);
 		}
 		else if (fileType === localizedConstants.FilestreamFileType) {
 			let data = this.getTableData(FileGroupType.FileStreamDataFileGroup);
@@ -855,7 +855,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 					// Refresh the table with updated data
 					let data = this.getDeclarativeTableData(FileGroupType.RowsFileGroup);
-					await this.setTableData(this.rowsFilegroupsDeclarativeTable, data);
+					await this.setDeclarativeTableData(this.rowsFilegroupsDeclarativeTable, data);
 					this.onFormFieldChange();
 				}
 			}),
@@ -1121,7 +1121,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		if (newData !== undefined) {
 			// Refresh the table with new row data
 			this.updateFileGroupsOptionsAndTableRows();
-			await this.setTableData(table, newData, DefaultMaxTableRowCount);
+			await this.setDeclarativeTableData(table, newData, DefaultMaxTableRowCount);
 			//TODO, need to handle cell selection, currently declarative table does not have this functionality.
 			// Need to implement function that triggers row select manually.
 			table.selectedRow = table.data?.length - 1;
@@ -1201,7 +1201,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Refresh the individual table rows object and table with updated data
 		this.updateFileGroupsOptionsAndTableRows();
 		let selectedRow = table.selectedRow
-		await this.setTableData(table, newData);
+		await this.setDeclarativeTableData(table, newData);
 		if (selectedRow !== undefined && selectedRow !== -1 && selectedRow < table.data?.length) {
 			table.selectedRow = selectedRow;
 		}
@@ -1304,7 +1304,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				if (fg !== null && fg.id < 0) {
 					fg.name = value;
 					let data = this.getTableData(filegroupType);
-					await this.setTableData(table, data);
+					await this.setDeclarativeTableData(table, data);
 					this.updateFileGroupsOptionsAndTableRows();
 				}
 			}
