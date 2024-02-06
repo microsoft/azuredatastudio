@@ -83,7 +83,7 @@ export class BuildHelper {
 	public async ensureScriptDomDllPresence(outputChannel: vscode.OutputChannel): Promise<boolean> {
 		const scriptdomNugetPkgName = 'Microsoft.SqlServer.TransactSql.ScriptDom';
 		const scriptDomDll = 'Microsoft.SqlServer.TransactSql.ScriptDom.dll';
-		const scriptDomNugetVersion = '161.8817.2'; // TODO: make this a configurable setting, like the Microsoft.Build.Sql version
+		const scriptDomNugetVersion = '161.8910.0'; // TODO: make this a configurable setting, like the Microsoft.Build.Sql version
 		const scriptDomDllLocation = path.join('lib', 'netstandard2.1');
 
 		return this.ensureNugetAndFilesPresence(scriptdomNugetPkgName, scriptDomNugetVersion, [scriptDomDll], scriptDomDllLocation, outputChannel);
