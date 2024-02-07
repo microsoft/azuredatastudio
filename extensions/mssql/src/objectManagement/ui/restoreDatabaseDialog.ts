@@ -504,13 +504,15 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		const dialog = new S3AddBackupFileDialog(this.objectManagementService, this.options.connectionUri);
 		await dialog.open();
 		let result = await dialog.waitForClose()
-		this.backupURLPath = result.backupFilePath;
-		const options = this.backupFilePathInput.values.map(s => s.toString());
-		options.push(this.backupURLPath);
-		await this.backupFilePathInput.updateProperties({
-			value: this.backupURLPath,
-			values: options
-		});
+		if (result) {
+			this.backupURLPath = result.backupFilePath;
+			const options = this.backupFilePathInput.values.map(s => s.toString());
+			options.push(this.backupURLPath);
+			await this.backupFilePathInput.updateProperties({
+				value: this.backupURLPath,
+				values: options
+			});
+		}
 	}
 
 	/**
