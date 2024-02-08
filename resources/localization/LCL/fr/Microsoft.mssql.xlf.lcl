@@ -1554,7 +1554,7 @@
           <Str Cat="Text">
             <Val><![CDATA[S3 URL]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[S3 URL]]></Val>
+              <Val><![CDATA[URL S3]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -2073,6 +2073,9 @@
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.InvalidS3UrlError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invalid S3 endpoint]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Point de terminaison S3 non valide]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2106,12 +2109,18 @@
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.SelectBackupFileLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Backup File]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Sélectionner un fichier de sauvegarde]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.SelectS3BucketLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select S3 Bucket]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Sélectionner le compartiment S3]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2191,7 +2200,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Add Credentials]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ajouter des informations d'identification]]></Val>
+            <Val><![CDATA[Ajouter des informations d’identification]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4104,6 +4113,9 @@
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.regionSpecificEndpointLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Region-specific endpoint]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Point de terminaison spécifique à une région]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4296,6 +4308,9 @@
       <Item ItemId=";extensions/Microsoft.mssql/dist/objectManagement/localizedConstants.objectManagement.selectS3BackupFileDialogTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select S3 Storage Backup File]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Sélectionner le fichier de sauvegarde de stockage S3]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
