@@ -75,8 +75,8 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 		// this isn't explicitly necessary
 	}
 
-	async getAssessments(connectionString: string, databases: string[], xEventsFilesFolderPath: string): Promise<contracts.AssessmentResult | undefined> {
-		let params: contracts.SqlMigrationAssessmentParams = { connectionString: connectionString, databases: databases, xEventsFilesFolderPath: xEventsFilesFolderPath };
+	async getAssessments(connectionString: string, databases: string[], xEventsFilesFolderPath: string, collectAdhocQueries: boolean): Promise<contracts.AssessmentResult | undefined> {
+		let params: contracts.SqlMigrationAssessmentParams = { connectionString: connectionString, databases: databases, xEventsFilesFolderPath: xEventsFilesFolderPath, collectAdhocQueries: collectAdhocQueries };
 		try {
 			return this._client.sendRequest(contracts.GetSqlMigrationAssessmentItemsRequest.type, params);
 		}

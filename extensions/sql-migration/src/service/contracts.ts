@@ -14,6 +14,7 @@ export interface SqlMigrationAssessmentParams {
 	connectionString: string;
 	databases: string[];
 	xEventsFilesFolderPath: string;
+	collectAdhocQueries: boolean;
 }
 
 export interface SqlMigrationImpactedObjectInfo {
@@ -535,7 +536,7 @@ export namespace LoginMigrationNotification {
 
 export interface ISqlMigrationService {
 	providerId: string;
-	getAssessments(ownerUri: string, databases: string[], xEventsFilesFolderPath: string): Thenable<AssessmentResult | undefined>;
+	getAssessments(ownerUri: string, databases: string[], xEventsFilesFolderPath: string, collectAdhocQueries: boolean): Thenable<AssessmentResult | undefined>;
 	getSkuRecommendations(dataFolder: string, perfQueryIntervalInSec: number, targetPlatforms: string[], targetSqlInstance: string, targetPercentile: number, scalingFactor: number, startTime: string, endTime: string, includePreviewSkus: boolean, databaseAllowList: string[]): Promise<SkuRecommendationResult | undefined>;
 	startPerfDataCollection(ownerUri: string, dataFolder: string, perfQueryIntervalInSec: number, staticQueryIntervalInSec: number, numberOfIterations: number): Promise<StartPerfDataCollectionResult | undefined>;
 	stopPerfDataCollection(): Promise<StopPerfDataCollectionResult | undefined>;
