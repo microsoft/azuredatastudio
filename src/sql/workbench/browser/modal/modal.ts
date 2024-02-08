@@ -138,6 +138,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _dialogExteriorBorder?: Color;
 	private _dialogShadowColor?: Color;
 
+	private _modalDialogContainer?: HTMLElement;
 	private _modalDialog?: HTMLElement;
 	private _modalContent?: HTMLElement;
 	private _modalHeaderSection?: HTMLElement;
@@ -236,7 +237,8 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 		this._bodyContainer.style.top = `${top}px`;
 		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
-		const formElement = DOM.append(this._modalDialog, DOM.$('form'));
+		this._modalDialogContainer = DOM.append(this._modalDialog, DOM.$('.modal-dialog-container'));
+		const formElement = DOM.append(this._modalDialogContainer, DOM.$('form'));
 
 		if (this._modalOptions.dialogStyle === 'normal') {
 			// set the height based on the available space and the expected height.
