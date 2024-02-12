@@ -473,16 +473,6 @@
           "group": "inline"
         },
         {
-          "command": "notebook.command.searchProvidedBook",
-          "when": "view == providedBooksView && viewItem == providedBook",
-          "group": "inline"
-        },
-        {
-          "command": "notebook.command.saveBook",
-          "when": "view == providedBooksView && viewItem == providedBook",
-          "group": "inline"
-        },
-        {
           "command": "notebook.command.closeBook",
           "when": "view == bookTreeView && viewItem == savedBook && listMultiSelection == false"
         },
@@ -561,10 +551,6 @@
         {
           "id": "bookTreeView",
           "name": "%title.SavedBooks%"
-        },
-        {
-          "id": "providedBooksView",
-          "name": "%title.ProvidedBooks%"
         }
       ]
     },
