@@ -1419,16 +1419,16 @@
           "objectType": null,
           "categoryValues": [
             {
+              "displayName": "%mssql.connectionOptions.encrypt.categoryValues.false%",
+              "name": "false"
+            },
+            {
               "displayName": "%mssql.connectionOptions.encrypt.categoryValues.true%",
               "name": "true"
             },
             {
               "displayName": "%mssql.connectionOptions.encrypt.categoryValues.strict%",
               "name": "strict"
-            },
-            {
-              "displayName": "%mssql.connectionOptions.encrypt.categoryValues.false%",
-              "name": "false"
             }
           ],
           "isRequired": false,
