@@ -50,6 +50,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	// Files Tab
 	private readonly filesTabId: string = 'filesDatabaseId';
 	private databaseFilesTable: azdata.TableComponent;
+	private databaseFilesDeclarativeTable: azdata.DeclarativeTableComponent;
 	private rowDatafileGroupsOptions: string[];
 	private filestreamDatafileGroupsOptions: string[];
 	// fileGroups Tab
@@ -553,6 +554,52 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	}
 
 	private initializeDatabaseFilesSection(): azdata.GroupContainer {
+		this.databaseFilesDeclarativeTable = this.modelView.modelBuilder.declarativeTable().withProps({
+			enableRowSelection: false,
+			columns: [
+				{
+					valueType: azdata.DeclarativeDataType.string,
+					width: 120,
+					isReadOnly: true,
+					displayName: localizedConstants.LogicalNameText,
+					headerCssStyles: { ...tableHeader, 'text-align': 'left' },
+				},
+				{
+					valueType: azdata.DeclarativeDataType.string,
+					width: 60,
+					isReadOnly: true,
+					displayName: localizedConstants.FilesText,
+					headerCssStyles: { ...tableHeader, 'text-align': 'left' },
+				},
+				{
+					valueType: azdata.DeclarativeDataType.boolean,
+					width: 80,
+					displayName: localizedConstants.ReadOnlyText,
+					isReadOnly: false,
+					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
+				},
+				{
+					valueType: azdata.DeclarativeDataType.boolean,
+					width: 80,
+					displayName: localizedConstants.DefaultText,
+					isReadOnly: false,
+					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
+				},
+				{
+					valueType: azdata.DeclarativeDataType.boolean,
+					width: 110,
+					displayName: localizedConstants.AutogrowAllFilesText,
+					isReadOnly: false,
+					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
+				}
+			],
+			height: getTableHeight(this.objectInfo.files?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
+			width: DefaultTableWidth,
+			dataValues: [],
+			CSSStyles: {
+				'margin-left': '10px'
+			}
+		}).component();
 		this.databaseFilesTable = this.modelView.modelBuilder.table().withProps({
 			columns: [{
 				type: azdata.ColumnType.text,
