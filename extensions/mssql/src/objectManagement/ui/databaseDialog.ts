@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultMaxTableRowCount, getTableHeight, DialogButton, tableRow, tableHeader } from '../../ui/dialogBase';
+import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultMaxTableRowCount, getTableHeight, DialogButton } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl, DatabaseFileGroupsPropertiesDocUrl, QueryStorePropertiesDocUrl } from '../constants';
@@ -18,6 +18,13 @@ import * as vscode from 'vscode';
 const MAXDOP_Max_Limit = 32767;
 const PAUSED_RESUMABLE_INDEX_Max_Limit = 71582;
 const DscTableMaxRowCount = 40;
+
+// CSS Styles for databaseDialog tables
+namespace cssStyles {
+	export const text = { 'user-select': 'text', 'cursor': 'text' };
+	export const tableHeader = { ...text, 'text-align': 'left', 'border': 'none', 'font-size': '12px', 'font-weight': 'normal', 'color': '#666666' };
+	export const tableRow = { ...text, 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none', 'font-size': '12px' };
+}
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
@@ -562,35 +569,35 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					width: 64,
 					isReadOnly: true,
 					displayName: localizedConstants.LogicalNameText,
-					headerCssStyles: { ...tableHeader, 'text-align': 'left' },
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'left' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.string,
 					width: 64,
 					isReadOnly: true,
 					displayName: localizedConstants.FilesText,
-					headerCssStyles: { ...tableHeader, 'text-align': 'left' },
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'left' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 64,
 					displayName: localizedConstants.ReadOnlyText,
 					isReadOnly: false,
-					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'center' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 65,
 					displayName: localizedConstants.DefaultText,
 					isReadOnly: false,
-					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'center' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 65,
 					displayName: localizedConstants.AutogrowAllFilesText,
 					isReadOnly: false,
-					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'center' },
 				}
 			],
 			height: getTableHeight(this.objectInfo.files?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
@@ -830,35 +837,35 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					width: 120,
 					isReadOnly: true,
 					displayName: localizedConstants.NameText,
-					headerCssStyles: { ...tableHeader, 'text-align': 'left' },
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'left' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.string,
 					width: 60,
 					isReadOnly: true,
 					displayName: localizedConstants.FilesText,
-					headerCssStyles: { ...tableHeader, 'text-align': 'left' },
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'left' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 80,
 					displayName: localizedConstants.ReadOnlyText,
 					isReadOnly: false,
-					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'center' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 80,
 					displayName: localizedConstants.DefaultText,
 					isReadOnly: false,
-					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'center' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 110,
 					displayName: localizedConstants.AutogrowAllFilesText,
 					isReadOnly: false,
-					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'center' },
 				}
 			],
 			width: DefaultTableWidth,
@@ -927,28 +934,28 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					width: 145,
 					isReadOnly: true,
 					displayName: localizedConstants.NameText,
-					headerCssStyles: { ...tableHeader, 'text-align': 'left' },
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'left' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.string,
 					width: 145,
 					isReadOnly: true,
 					displayName: localizedConstants.FilestreamFilesText,
-					headerCssStyles: { ...tableHeader, 'text-align': 'left' },
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'left' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 80,
 					displayName: localizedConstants.ReadOnlyText,
 					isReadOnly: false,
-					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'center' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 80,
 					displayName: localizedConstants.DefaultText,
 					isReadOnly: false,
-					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
+					headerCssStyles: { ...cssStyles.tableHeader, 'text-align': 'center' },
 				}
 			],
 			width: DefaultTableWidth,
@@ -1379,18 +1386,18 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			const filesCount = this.objectInfo.files?.filter(file => file.fileGroup === fileGroup.name).length;
 			if (filegroupType === FileGroupType.RowsFileGroup && fileGroup.type === filegroupType) {
 				data.push([
-					{ value: fileGroup.name, style: tableRow },
-					{ value: filesCount, style: tableRow },
-					{ value: fileGroup.isReadOnly, enabled: (fileGroup.name !== 'PRIMARY' && filesCount > 0), style: tableRow, ariaLabel: localizedConstants.ReadOnlyText },
-					{ value: fileGroup.isDefault, enabled: filesCount > 0, style: tableRow, ariaLabel: localizedConstants.DefaultText },
-					{ value: fileGroup.autogrowAllFiles, enabled: filesCount > 0, style: tableRow, ariaLabel: localizedConstants.AutogrowAllFilesText }
+					{ value: fileGroup.name, style: cssStyles.tableRow },
+					{ value: filesCount, style: cssStyles.tableRow },
+					{ value: fileGroup.isReadOnly, enabled: (fileGroup.name !== 'PRIMARY' && filesCount > 0), style: cssStyles.tableRow, ariaLabel: localizedConstants.ReadOnlyText },
+					{ value: fileGroup.isDefault, enabled: filesCount > 0, style: cssStyles.tableRow, ariaLabel: localizedConstants.DefaultText },
+					{ value: fileGroup.autogrowAllFiles, enabled: filesCount > 0, style: cssStyles.tableRow, ariaLabel: localizedConstants.AutogrowAllFilesText }
 				]);
 			} else if (fileGroup.type === FileGroupType.FileStreamDataFileGroup && fileGroup.type === filegroupType) {
 				data.push([
-					{ value: fileGroup.name, style: tableRow },
-					{ value: filesCount, style: tableRow },
-					{ value: fileGroup.isReadOnly, enabled: filesCount > 0 && this.serverFilestreamEnabled, style: tableRow, ariaLabel: localizedConstants.ReadOnlyText },
-					{ value: fileGroup.isDefault, enabled: this.serverFilestreamEnabled, style: tableRow, ariaLabel: localizedConstants.DefaultText },
+					{ value: fileGroup.name, style: cssStyles.tableRow },
+					{ value: filesCount, style: cssStyles.tableRow },
+					{ value: fileGroup.isReadOnly, enabled: filesCount > 0 && this.serverFilestreamEnabled, style: cssStyles.tableRow, ariaLabel: localizedConstants.ReadOnlyText },
+					{ value: fileGroup.isDefault, enabled: this.serverFilestreamEnabled, style: cssStyles.tableRow, ariaLabel: localizedConstants.DefaultText },
 				]);
 			}
 		});
