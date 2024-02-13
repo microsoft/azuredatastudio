@@ -2092,6 +2092,11 @@ export class SearchView extends ViewPane {
 	}
 
 	private _saveSearchHistoryService() {
+		// {{SQL CARBON EDIT}}
+		if (!this.searchWidget) {
+			return;
+		}
+
 		const history: ISearchHistoryValues = Object.create(null);
 
 		const searchHistory = this.searchWidget.getSearchHistory();
