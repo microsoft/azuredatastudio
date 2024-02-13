@@ -559,35 +559,35 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			columns: [
 				{
 					valueType: azdata.DeclarativeDataType.string,
-					width: 120,
+					width: 64,
 					isReadOnly: true,
 					displayName: localizedConstants.LogicalNameText,
 					headerCssStyles: { ...tableHeader, 'text-align': 'left' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.string,
-					width: 60,
+					width: 64,
 					isReadOnly: true,
 					displayName: localizedConstants.FilesText,
 					headerCssStyles: { ...tableHeader, 'text-align': 'left' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
-					width: 80,
+					width: 64,
 					displayName: localizedConstants.ReadOnlyText,
 					isReadOnly: false,
 					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
-					width: 80,
+					width: 65,
 					displayName: localizedConstants.DefaultText,
 					isReadOnly: false,
 					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
-					width: 110,
+					width: 65,
 					displayName: localizedConstants.AutogrowAllFilesText,
 					isReadOnly: false,
 					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
@@ -924,14 +924,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			columns: [
 				{
 					valueType: azdata.DeclarativeDataType.string,
-					width: 120,
+					width: 145,
 					isReadOnly: true,
 					displayName: localizedConstants.NameText,
 					headerCssStyles: { ...tableHeader, 'text-align': 'left' },
 				},
 				{
 					valueType: azdata.DeclarativeDataType.string,
-					width: 60,
+					width: 145,
 					isReadOnly: true,
 					displayName: localizedConstants.FilestreamFilesText,
 					headerCssStyles: { ...tableHeader, 'text-align': 'left' },
