@@ -2092,8 +2092,8 @@ export class SearchView extends ViewPane {
 	}
 
 	private _saveSearchHistoryService() {
-		// {{SQL CARBON EDIT}}
-		if (!this.searchWidget) {
+		// {{SQL CARBON EDIT}} Fix imported from VS Code: https://github.com/microsoft/vscode/pull/192489
+		if (this.searchWidget === undefined) {
 			return;
 		}
 
