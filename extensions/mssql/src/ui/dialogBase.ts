@@ -88,9 +88,9 @@ export abstract class DialogBase<DialogResult> {
 
 	protected onFormFieldChange(): void { }
 
-	protected removeButtonEnabled(table: azdata.TableComponent): boolean { return true; }
+	protected removeButtonEnabled(table: azdata.TableComponent | azdata.DeclarativeTableComponent): boolean { return true; }
 
-	protected addButtonEnabled(table: azdata.TableComponent): boolean { return true; }
+	protected addButtonEnabled(table: azdata.TableComponent | azdata.DeclarativeTableComponent): boolean { return true; }
 
 	protected validateInput(): Promise<string[]> { return Promise.resolve([]); }
 
@@ -327,6 +327,17 @@ export abstract class DialogBase<DialogResult> {
 		});
 	}
 
+	protected async setDeclarativeTableData(table: azdata.DeclarativeTableComponent, data: any[][], maxRowCount: number = DefaultMaxTableRowCount): Promise<void> {
+		let currentRowSelect = table.selectedRow;
+		await table.setDataValues(data);
+		if (currentRowSelect !== -1) {
+			table.selectedRow = currentRowSelect;
+		}
+		await table.updateProperties({
+			height: getTableHeight(data?.length, DefaultMinTableRowCount, maxRowCount)
+		});
+	}
+
 	protected getDataForTableList<T>(
 		allItems: T[],
 		selectedItems: T[],
@@ -398,6 +409,51 @@ export abstract class DialogBase<DialogResult> {
 			await removeButton.buttonHandler(removeButtonComponent);
 			if (table.selectedRows.length === 1 && table.selectedRows[0] >= table.data.length) {
 				table.selectedRows = [table.data.length - 1];
+			}
+			updateButtons();
+		}, false);
+		buttonComponents.push(removeButtonComponent);
+
+		this.disposables.push(table.onRowSelected(() => {
+			const isRemoveButtonEnabled = this.removeButtonEnabled(table);
+			updateButtons(isRemoveButtonEnabled);
+		}));
+
+		return this.createButtonContainer(buttonComponents)
+	}
+
+	protected addButtonsForDeclarativeTable(table: azdata.DeclarativeTableComponent, addbutton: DialogButton, removeButton: DialogButton, editButton: DialogButton = undefined): azdata.FlexContainer {
+		let addButtonComponent: azdata.ButtonComponent;
+		let editButtonComponent: azdata.ButtonComponent;
+		let removeButtonComponent: azdata.ButtonComponent;
+		let buttonComponents: azdata.ButtonComponent[] = [];
+		const updateButtons = (isRemoveEnabled: boolean = undefined) => {
+			this.onFormFieldChange();
+			const tableSelectedRowsLengthCheck = table.selectedRow > -1 && table.selectedRow < table.dataValues.length;
+			if (editButton !== undefined) {
+				editButtonComponent.enabled = tableSelectedRowsLengthCheck;
+			}
+			addButtonComponent.enabled = this.addButtonEnabled(table);
+			removeButtonComponent.enabled = !!isRemoveEnabled && tableSelectedRowsLengthCheck;
+		}
+		addButtonComponent = this.createButton(uiLoc.AddText, addbutton.buttonAriaLabel, async () => {
+			await addbutton.buttonHandler(addButtonComponent);
+			updateButtons();
+		}, addbutton.enabled ?? true);
+		buttonComponents.push(addButtonComponent);
+
+		if (editButton !== undefined) {
+			editButtonComponent = this.createButton(uiLoc.EditText, editButton.buttonAriaLabel, async () => {
+				await editButton.buttonHandler(editButtonComponent);
+				updateButtons();
+			}, false);
+			buttonComponents.push(editButtonComponent);
+		}
+
+		removeButtonComponent = this.createButton(uiLoc.RemoveText, removeButton.buttonAriaLabel, async () => {
+			await removeButton.buttonHandler(removeButtonComponent);
+			if (table.selectedRow >= table.dataValues.length) {
+				table.selectedRow = table.dataValues.length - 1;
 			}
 			updateButtons();
 		}, false);
