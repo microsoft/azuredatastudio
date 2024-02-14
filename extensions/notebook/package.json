@@ -171,15 +171,6 @@
         "category": "%books-preview-category%"
       },
       {
-        "command": "notebook.command.saveBook",
-        "title": "%title.saveJupyterBook%",
-        "category": "%books-preview-category%",
-        "icon": {
-          "dark": "resources/dark/save_inverse.svg",
-          "light": "resources/light/save.svg"
-        }
-      },
-      {
         "command": "notebook.command.trustBook",
         "title": "%title.trustBook%",
         "category": "%books-preview-category%",
@@ -190,15 +181,6 @@
       },
       {
         "command": "notebook.command.searchBook",
-        "title": "%title.searchJupyterBook%",
-        "category": "%books-preview-category%",
-        "icon": {
-          "dark": "resources/dark/search_inverse.svg",
-          "light": "resources/light/search.svg"
-        }
-      },
-      {
-        "command": "notebook.command.searchProvidedBook",
         "title": "%title.searchJupyterBook%",
         "category": "%books-preview-category%",
         "icon": {
@@ -373,15 +355,7 @@
           "when": "notebook:pythonInstalled && !notebook:runningOnSAW"
         },
         {
-          "command": "notebook.command.saveBook",
-          "when": "false"
-        },
-        {
           "command": "notebook.command.searchBook",
-          "when": "false"
-        },
-        {
-          "command": "notebook.command.searchProvidedBook",
           "when": "false"
         },
         {
@@ -473,16 +447,6 @@
           "group": "inline"
         },
         {
-          "command": "notebook.command.searchProvidedBook",
-          "when": "view == providedBooksView && viewItem == providedBook",
-          "group": "inline"
-        },
-        {
-          "command": "notebook.command.saveBook",
-          "when": "view == providedBooksView && viewItem == providedBook",
-          "group": "inline"
-        },
-        {
           "command": "notebook.command.closeBook",
           "when": "view == bookTreeView && viewItem == savedBook && listMultiSelection == false"
         },
@@ -561,10 +525,6 @@
         {
           "id": "bookTreeView",
           "name": "%title.SavedBooks%"
-        },
-        {
-          "id": "providedBooksView",
-          "name": "%title.ProvidedBooks%"
         }
       ]
     },

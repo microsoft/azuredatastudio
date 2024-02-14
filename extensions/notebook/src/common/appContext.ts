@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import { NotebookUtils } from './notebookUtils';
 import { BookTreeViewProvider } from '../book/bookTreeView';
-import { NavigationProviders, BOOKS_VIEWID, PROVIDED_BOOKS_VIEWID, PINNED_BOOKS_VIEWID, extensionOutputChannelName } from './constants';
+import { NavigationProviders, BOOKS_VIEWID, PINNED_BOOKS_VIEWID, extensionOutputChannelName } from './constants';
 
 /**
  * Global context for the application
@@ -15,7 +15,6 @@ export class AppContext {
 
 	public readonly notebookUtils: NotebookUtils;
 	public readonly bookTreeViewProvider: BookTreeViewProvider;
-	public readonly providedBookTreeViewProvider: BookTreeViewProvider;
 	public readonly pinnedBookTreeViewProvider: BookTreeViewProvider;
 	public readonly outputChannel: vscode.OutputChannel;
 
@@ -24,7 +23,6 @@ export class AppContext {
 
 		let workspaceFolders = vscode.workspace.workspaceFolders?.slice() ?? [];
 		this.bookTreeViewProvider = new BookTreeViewProvider(workspaceFolders, extensionContext, false, BOOKS_VIEWID, NavigationProviders.NotebooksNavigator);
-		this.providedBookTreeViewProvider = new BookTreeViewProvider([], extensionContext, true, PROVIDED_BOOKS_VIEWID, NavigationProviders.ProvidedBooksNavigator);
 		this.pinnedBookTreeViewProvider = new BookTreeViewProvider([], extensionContext, false, PINNED_BOOKS_VIEWID, NavigationProviders.PinnedNotebooksNavigator);
 		this.outputChannel = vscode.window.createOutputChannel(extensionOutputChannelName);
 	}

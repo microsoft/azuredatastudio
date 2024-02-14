@@ -48,7 +48,6 @@ export const powershellDisplayName = 'PowerShell';
 export const allKernelsName = 'All Kernels';
 
 export const BOOKS_VIEWID = 'bookTreeView';
-export const PROVIDED_BOOKS_VIEWID = 'providedBooksView';
 export const PINNED_BOOKS_VIEWID = 'pinnedBooksView';
 
 export const visitedNotebooksMementoKey = 'notebooks.visited';
