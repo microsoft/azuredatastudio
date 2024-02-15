@@ -385,7 +385,7 @@ export abstract class DialogBase<DialogResult> {
 		const updateButtons = (isRemoveEnabled: boolean = undefined) => {
 			this.onFormFieldChange();
 			const tableSelectedRowsLengthCheck = table.selectedRows?.length === 1 && table.selectedRows[0] !== -1 && table.selectedRows[0] < table.data.length;
-			if (editButton !== undefined) {
+			if (editButton) {
 				editButtonComponent.enabled = tableSelectedRowsLengthCheck;
 			}
 			addButtonComponent.enabled = this.addButtonEnabled(table);
@@ -397,7 +397,7 @@ export abstract class DialogBase<DialogResult> {
 		}, addbutton.enabled ?? true);
 		buttonComponents.push(addButtonComponent);
 
-		if (editButton !== undefined) {
+		if (editButton) {
 			editButtonComponent = this.createButton(uiLoc.EditText, editButton.buttonAriaLabel, async () => {
 				await editButton.buttonHandler(editButtonComponent);
 				updateButtons();
@@ -430,7 +430,7 @@ export abstract class DialogBase<DialogResult> {
 		const updateButtons = (isRemoveEnabled: boolean = undefined) => {
 			this.onFormFieldChange();
 			const tableSelectedRowsLengthCheck = table.selectedRow > -1 && table.selectedRow < table.dataValues.length;
-			if (editButton !== undefined) {
+			if (editButton) {
 				editButtonComponent.enabled = tableSelectedRowsLengthCheck;
 			}
 			addButtonComponent.enabled = this.addButtonEnabled(table);
@@ -442,7 +442,7 @@ export abstract class DialogBase<DialogResult> {
 		}, addbutton.enabled ?? true);
 		buttonComponents.push(addButtonComponent);
 
-		if (editButton !== undefined) {
+		if (editButton) {
 			editButtonComponent = this.createButton(uiLoc.EditText, editButton.buttonAriaLabel, async () => {
 				await editButton.buttonHandler(editButtonComponent);
 				updateButtons();
