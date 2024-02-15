@@ -1096,7 +1096,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			// Refresh the table with new row data
 			this.updateFileGroupsOptionsAndTableRows();
 			await this.setDeclarativeTableData(table, newData, DefaultMaxTableRowCount);
-			console.log('tableValues are ' + table.dataValues?.length);
 			table.selectedRow = table.dataValues?.length - 1;
 		}
 	}
