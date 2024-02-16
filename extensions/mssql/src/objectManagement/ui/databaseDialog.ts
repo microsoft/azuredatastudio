@@ -782,35 +782,35 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					width: 120,
 					isReadOnly: true,
 					displayName: localizedConstants.NameText,
-					headerCssStyles: { ...tableHeader, 'text-align': 'left' },
+					headerCssStyles: tableHeader,
 				},
 				{
 					valueType: azdata.DeclarativeDataType.string,
 					width: 60,
 					isReadOnly: true,
 					displayName: localizedConstants.FilesText,
-					headerCssStyles: { ...tableHeader, 'text-align': 'left' },
+					headerCssStyles: tableHeader,
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 80,
 					displayName: localizedConstants.ReadOnlyText,
 					isReadOnly: false,
-					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
+					headerCssStyles: tableHeader,
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 80,
 					displayName: localizedConstants.DefaultText,
 					isReadOnly: false,
-					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
+					headerCssStyles: tableHeader,
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 110,
 					displayName: localizedConstants.AutogrowAllFilesText,
 					isReadOnly: false,
-					headerCssStyles: { ...tableHeader, 'text-align': 'center' },
+					headerCssStyles: tableHeader,
 				}
 			],
 			width: DefaultTableWidth,
@@ -832,7 +832,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		this.rowsFileGroupButtonContainer = this.addButtonsForDeclarativeTable(this.rowsFilegroupsTable, addButtonComponent, removeButtonComponent);
 		this.disposables.push(
 			this.rowsFilegroupsTable.onDataChanged(async (changedData) => {
-				if (changedData.row && changedData.row > -1) {
+				if (changedData.row > -1) {
 					let filegroup = this.rowDataFileGroupsTableRows[changedData.row];
 					// Read-Only column
 					if (changedData.column === 2) {
@@ -840,7 +840,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					}
 					// Default column
 					if (changedData.column === 3) {
-						this.updateFilegroupsDefaultColumnValuesDeclarative(changedData.value, filegroup, FileGroupType.RowsFileGroup);
+						this.updateFilegroupsDefaultColumnValuesDeclarative(changedData, filegroup, FileGroupType.RowsFileGroup);
 					}
 					// Autogrow all files column
 					if (changedData.column === 4) {
@@ -1092,7 +1092,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			newData = this.getDeclarativeTableData(FileGroupType.RowsFileGroup);
 		}
 
-		if (newData !== undefined) {
+		if (newData) {
 			// Refresh the table with new row data
 			this.updateFileGroupsOptionsAndTableRows();
 			await this.setDeclarativeTableData(table, newData, DefaultMaxTableRowCount);
@@ -1253,7 +1253,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				if (table === this.rowsFilegroupsTable) {
 					fg = this.rowDataFileGroupsTableRows[table.selectedRow];
 				}
-				if (fg !== null && fg.id < 0) {
+				if (fg?.id < 0) {
 					fg.name = value;
 					let data = this.getDeclarativeTableData(filegroupType);
 					await this.setDeclarativeTableData(table, data);
