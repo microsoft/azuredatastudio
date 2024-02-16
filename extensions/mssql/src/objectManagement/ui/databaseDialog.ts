@@ -1023,14 +1023,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * @param filegroupType filegroup type
 	 */
 	private updateFilegroupsDefaultColumnValuesDeclarative(changedData: any, filegroup: FileGroup, filegroupType: FileGroupType): void {
-		if (changedData.value) {
+		if (changedData) {
 			this.objectInfo.filegroups.forEach(fg => {
 				if (fg.type === filegroupType) {
 					fg.isDefault = fg.name === filegroup.name && fg.id === filegroup.id ? changedData.value : !changedData.value;
 				}
 			});
-		} else {
-			filegroup.isDefault = changedData.value;
 		}
 	}
 
