@@ -554,28 +554,37 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.encrypt.categoryValues.false" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Optional (False)]]></Val>
+          <Val><![CDATA[Optional]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[選用 (False)]]></Val>
+            <Val><![CDATA[選擇性]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Optional (False)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.encrypt.categoryValues.strict" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Strict]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Val><![CDATA[Strict (supported for SQL Server 2022 and Azure SQL)]]></Val>
+          <Tgt Cat="Text" Stat="Update" Orig="New">
             <Val><![CDATA[嚴格]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Strict]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.encrypt.categoryValues.true" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Mandatory (True)]]></Val>
+          <Val><![CDATA[Mandatory]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[強制 (True)]]></Val>
+            <Val><![CDATA[強制]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Mandatory (True)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
