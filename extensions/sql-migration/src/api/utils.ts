@@ -18,6 +18,9 @@ import * as styles from '../constants/styles';
 import { SqlMigrationService, getSqlMigrationServiceAuthKeys, regenerateSqlMigrationServiceAuthKey } from './azure';
 import { MigrationStateModel } from '../models/stateMachine';
 import * as contracts from '../service/contracts';
+import { CssStyles } from 'azdata';
+import { DeclarativeTableCellValue } from 'azdata';
+import path = require('path');
 
 export type TargetServerType = azure.SqlVMServer | azureResource.AzureSqlManagedInstance | azure.AzureSqlDatabaseServer;
 
@@ -1190,6 +1193,74 @@ export async function refreshAuthenticationKeyTable(view: ModelView, table: Decl
 	});
 }
 
+//Function that creates stage status table.
+export function createIntegrationRuntimeTable(view: ModelView): DeclarativeTableComponent {
+	const rowCssStyle: CssStyles = {
+		'border': 'none',
+		'text-align': 'left',
+		'box-shadow': 'inset 0px -1px 0px #F3F2F1',
+		'font-size': '13px',
+		'line-height': '18px',
+		'padding': '7px 0px',
+		'margin': '0px',
+	};
+
+	const headerCssStyles: CssStyles = {
+		'border': 'none',
+		'text-align': 'left',
+		'box-shadow': 'inset 0px -1px 0px #F3F2F1',
+		'font-weight': 'bold',
+		'padding-left': '0px',
+		'padding-right': '0px',
+		'font-size': '13px',
+		'line-height': '18px'
+	};
+	const _integrationRuntimeTable: DeclarativeTableComponent = view.modelBuilder.declarativeTable().withProps({
+		columns: [
+			{
+				displayName: 'Node Name',
+				valueType: DeclarativeDataType.string,
+				width: '200px',
+				isReadOnly: true,
+				rowCssStyles: rowCssStyle,
+				headerCssStyles: headerCssStyles
+			},
+			{
+				displayName: 'Status',
+				valueType: DeclarativeDataType.string,
+				width: '120px',
+				isReadOnly: true,
+				rowCssStyles: rowCssStyle,
+				headerCssStyles: headerCssStyles
+			},
+			{
+				displayName: 'IP address',
+				valueType: DeclarativeDataType.string,
+				width: '120px',
+				isReadOnly: true,
+				rowCssStyles: rowCssStyle,
+				headerCssStyles: headerCssStyles
+			},
+			{
+				displayName: 'IR version',
+				valueType: DeclarativeDataType.string,
+				width: '120px',
+				isReadOnly: true,
+				rowCssStyles: rowCssStyle,
+				headerCssStyles: headerCssStyles
+			}
+		],
+		data: [],
+		width: '440px',
+		CSSStyles: {
+			'margin-left': '41px',
+			'margin-top': '16px'
+		}
+	}).component();
+
+	return _integrationRuntimeTable;
+}
+
 export function createRegistrationInstructions(view: ModelView, testConnectionButton: boolean): FlexContainer {
 	const setupIRHeadingText = view.modelBuilder.text().withProps({
 		value: constants.SERVICE_CONTAINER_HEADING,
@@ -1258,6 +1329,15 @@ export function createRegistrationInstructions(view: ModelView, testConnectionBu
 export async function clearDropDown(dropDown: DropDownComponent): Promise<void> {
 	await dropDown.updateProperty('value', undefined);
 	await dropDown.updateProperty('values', []);
+}
+
+export function suggestReportFile(date: number): string {
+	const fileName = `ConfigureIR_${generateDefaultFileName(new Date(date))}.ps1`;
+	return path.join(os.homedir(), fileName);
+}
+
+function generateDefaultFileName(resultDate: Date): string {
+	return `${resultDate.toISOString().replace(/-/g, '').replace('T', '').replace(/:/g, '').split('.')[0]}`;
 }
 
 export async function getRecommendedConfiguration(targetType: MigrationTargetType, model: MigrationStateModel): Promise<string[]> {
@@ -1348,3 +1428,29 @@ export async function promptUserForFile(filters: { [name: string]: string[] }): 
 
 	return '';
 }
+export async function refreshIntegrationRuntimeTable(_view: ModelView, _integrationRuntimeTable: DeclarativeTableComponent,
+	migrationServiceMonitoringStatus: azure.IntegrationRuntimeMonitoringData): Promise<void> {
+	if (migrationServiceMonitoringStatus.nodes.length === 0) {
+		const data: DeclarativeTableCellValue[][] = [
+			[
+				{ value: " " },
+				{ value: "No node found" },
+				{ value: " " },
+				{ value: " " }
+			]
+		];
+		await _integrationRuntimeTable.setDataValues(data);
+	}
+	else {
+		const data = migrationServiceMonitoringStatus.nodes.map(eachNode => {
+			return [
+				{ value: eachNode.nodeName },
+				{ value: eachNode.status },
+				{ value: eachNode.ipAddress === '' ? '--' : eachNode.ipAddress },
+				{ value: eachNode.version }
+			]
+		});
+		await _integrationRuntimeTable.setDataValues(data);
+	}
+}
+

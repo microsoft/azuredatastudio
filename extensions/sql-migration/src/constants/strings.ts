@@ -813,6 +813,14 @@ export function SQL_MIGRATION_SERVICE_DETAILS_HEADER(sqlMigrationServiceName: st
 	return localize('sql.migration.service.header', "Azure Database Migration Service \"{0}\" details:`", sqlMigrationServiceName);
 }
 export const DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS = localize('sql.migration.database.migration.service.authentication.keys', "Database Migration Service authentication keys");
+
+// configure IR dialog
+export const POWERSHELL_SCRIPT_DESCRIPTION = localize('sql.ir.powershellscript.definition', "Once executed in powershell, the unique script shown below will download, and install the Self-hosted integration Runtime and register it with the Azure Database Migration Service. You will need to have PowerShell installed on the target machine.");
+export const SETUP_LOCAL_IR_DESCRIPTION = localize('sql.ir.local.ir.definition', "I want to setup Self-hosted Integration Runtime on my local machine (Machine where Azure Data Studio is running)");
+export const SETUP_REMOTE_IR_DESCRIPTION = localize('sql.ir.local.ir.definition', "I want to setup Self-hosted Integration Runtime on another Windows machine that is not my local machine.");
+export const CONFIGURE_POWERSHELL_SCRIPT = localize('sql.ir.configure.powershellscript', "Configure using PowerShell script ");
+export const CONFIGURE_MANUALLY = localize('sql.ir.configure.manually', "Configure manually ");
+
 // create migration service dialog
 export const CREATE_MIGRATION_SERVICE_TITLE = localize('sql.migration.services.dialog.title', "Create Azure Database Migration Service");
 export const MIGRATION_SERVICE_SUBSCRIPTION_INFO = localize('sql.migration.services.subscription', "Subscription name for your Azure Database Migration Service.");
@@ -828,6 +836,7 @@ export function MIGRATION_SERVICE_DIALOG_DESCRIPTION(networkShareScenario: boole
 export const LOADING_MIGRATION_SERVICES = localize('sql.migration.service.container.loading.help', "Loading Migration Services");
 export const SERVICE_CONTAINER_HEADING = localize('sql.migration.service.container.heading', "Set up integration runtime");
 export const SERVICE_CONTAINER_DESCRIPTION1 = localize('sql.migration.service.container.container.description1', "Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to handle connectivity between source and target and upload backups from an on-premises network file share to Azure (if applicable).");
+export const IR_CONTAINER_DESCRIPTION = localize('sql.migration.ir.container.description', "Azure Database Migration Service leverages Azure Data Factory's Self-hosted Integration Runtime to upload backups from on-premise network file share to Azure. Based on the selections on the previous page you will need to setup an Self-hosted Integration Runtime.");
 export const SERVICE_CONTAINER_DESCRIPTION2 = localize('sql.migration.service.container.container.description2', "Follow the instructions below to set up self-hosted integration runtime.");
 export const SERVICE_STEP1 = localize('sql.migration.ir.setup.step1', "Step 1: {0}");
 export const SERVICE_STEP1_LINK = localize('sql.migration.option', "Download and install integration runtime");
@@ -866,6 +875,10 @@ export function SERVICE_READY(serviceName: string, nodes: string, instructionsBe
 		? localize('sql.migration.service.ready.below', "Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}\n\nFor improved performance and high availability, you can register additional nodes. See below for registration instructions.", serviceName, nodes)
 		: localize('sql.migration.service.ready', "Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}\n\nFor improved performance and high availability, you can register additional nodes.", serviceName, nodes);
 
+}
+export function SERVICE_READY_WITHOUT_NODENAMES(serviceName: string): string {
+	return localize('sql.migration.service.ready.without.nodes',
+		"Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on the following node(s)", serviceName);
 }
 export const INVALID_SERVICE_NAME_ERROR = localize('sql.migration.invalid.service.name.error', "Enter a valid name for the Migration Service.");
 export const SERVICE_NOT_FOUND = localize('sql.migration.service.not.found', "No Migration Services found. To continue, create a new one.");
@@ -1013,6 +1026,7 @@ export const RESOURCE_GROUP = localize('sql.migration.resourceGroups', "Resource
 export const NAME = localize('sql.migration.name', "Name");
 export const LOCATION = localize('sql.migration.location', "Location");
 export const REFRESH = localize('sql.migration.refresh', "Refresh");
+export const CONFIGURE_INTEGRATION_RUNTIME = localize('sql.migration.configure.ir', "Configure Integration Runtime");
 export const CREATE = localize('sql.migration.create', "Create");
 export const IMPORT = localize('sql.migration.import', "Import");
 export const CANCEL = localize('sql.migration.cancel', "Cancel");

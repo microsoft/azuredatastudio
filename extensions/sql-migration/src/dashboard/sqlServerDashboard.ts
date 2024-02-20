@@ -31,6 +31,7 @@ import { getSourceConnectionId, getSourceConnectionProfile } from '../api/sqlUti
 import { openRetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDialog';
 import { ImportAssessmentDialog } from '../dialog/assessment/importAssessmentDialog';
 
+
 export interface MenuCommandArgs {
 	connectionId: string,
 	migrationId: string,

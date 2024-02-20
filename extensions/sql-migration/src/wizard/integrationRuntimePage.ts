@@ -15,6 +15,7 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { logError, TelemetryViews } from '../telemetry';
 import * as utils from '../api/utils';
 import * as styles from '../constants/styles';
+import { ConfigureIRDialog } from '../dialog/configureIR/configureIRDialog';
 
 export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -25,7 +26,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _dmsDropdown!: azdata.DropDownComponent;
 	private _dmsInfoContainer!: azdata.FlexContainer;
 	private _dmsStatusInfoBox!: azdata.InfoBoxComponent;
-	private _authKeyTable!: azdata.DeclarativeTableComponent;
+	private _integrationRuntimeTable!: azdata.DeclarativeTableComponent;
 	private _refreshButton!: azdata.ButtonComponent;
 	private _onlineButton!: azdata.RadioButtonComponent;
 	private _offlineButton!: azdata.RadioButtonComponent;
@@ -475,27 +476,40 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				iconWidth: '18px',
 				iconHeight: '18px',
 				iconPath: IconPathHelper.refresh,
-				height: '18px',
-				width: '18px',
+				height: '40px',
+				width: '60px',
 				ariaLabel: constants.REFRESH,
+				label: constants.REFRESH,
 			}).component();
 
 		this._disposables.push(
 			this._refreshButton.onDidClick(
 				async (e) => await this.loadStatus()));
 
+		const _configureIRButton = this._view.modelBuilder.button()
+			.withProps({
+				iconWidth: '18px',
+				iconHeight: '18px',
+				iconPath: IconPathHelper.settings,
+				height: '40px',
+				width: '180px',
+				ariaLabel: constants.CONFIGURE_INTEGRATION_RUNTIME,
+				label: constants.CONFIGURE_INTEGRATION_RUNTIME,
+			}).component();
+
+		this._disposables.push(
+			_configureIRButton.onDidClick(
+				async (e) => {
+					await this.openIRDialog();
+				}
+			)
+		);
+
 		const connectionLabelContainer = this._view.modelBuilder.flexContainer()
 			.component();
 		connectionLabelContainer.addItem(
 			connectionStatusLabel,
 			{ flex: '0' });
-		connectionLabelContainer.addItem(
-			this._refreshButton,
-			{ flex: '0', CSSStyles: { 'margin-right': '10px' } });
-
-		const statusContainer = this._view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'column' })
-			.component();
 
 		this._dmsStatusInfoBox = this._view.modelBuilder.infoBox()
 			.withProps({
@@ -505,6 +519,20 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
+		const refreshAndConfigureIRcontainer = this._view.modelBuilder.toolbarContainer()
+			.withToolbarItems(
+				[
+					{ component: this._refreshButton },
+					{ component: _configureIRButton }
+				]
+			).component();
+
+		this._integrationRuntimeTable = utils.createIntegrationRuntimeTable(this._view);
+
+		/*const statusContainer = this._view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' })
+			.component();
+
 		const instructions = utils.createRegistrationInstructions(this._view, false);
 
 		this._authKeyTable = utils.createAuthenticationKeyTable(this._view, '50px', '500px');
@@ -512,13 +540,24 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		statusContainer.addItems([
 			this._dmsStatusInfoBox,
 			instructions,
-			this._authKeyTable]);
+			this._authKeyTable
+		]);*/
 
 		container.addItems([
 			connectionLabelContainer,
-			statusContainer]);
+			this._dmsStatusInfoBox,
+			refreshAndConfigureIRcontainer,
+			this._integrationRuntimeTable
+			//statusContainer
+		]);
 
 		return container;
+	}
+
+	// opens IR dialog
+	public async openIRDialog(): Promise<void> {
+		const configureIR = new ConfigureIRDialog(this.migrationStateModel);
+		await configureIR.openDialog();
 	}
 
 	public async loadSubscriptionsDropdown(): Promise<void> {
@@ -643,7 +682,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				const state = migrationService.properties.integrationRuntimeState;
 				if (state === 'Online') {
 					await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
-						text: constants.SERVICE_READY(serviceName, nodeNames.join(', '), true),
+						text: constants.SERVICE_READY_WITHOUT_NODENAMES(serviceName),
 						style: 'success'
 					});
 				} else {
@@ -656,7 +695,9 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				// exit if new call has started
 				if (callSequence !== this._lastIn) { return; }
 
-				await utils.refreshAuthenticationKeyTable(this._view, this._authKeyTable, account, subscription, resourceGroup, location, migrationService);
+				// populate the table with data
+				await utils.refreshIntegrationRuntimeTable(this._view, this._integrationRuntimeTable, migrationServiceMonitoringStatus);
+				// await utils.refreshAuthenticationKeyTable(this._view, this._authKeyTable, account, subscription, resourceGroup, location, migrationService);
 
 				this.migrationStateModel._sqlMigrationService = migrationService;
 				this.migrationStateModel._sqlMigrationServiceSubscription = subscription;
