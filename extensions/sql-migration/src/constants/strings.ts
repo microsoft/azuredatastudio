@@ -1002,6 +1002,18 @@ export function VALIDATE_IR_SQLDB_VALIDATION_RESULT_ERROR(sourceDatabaseName: st
 		error.message);
 }
 
+export const NETWORK_SHARE_USER_ACCOUNT_LABEL = localize('sql.migration.network.share.user.account.label', "User account");
+export const NETWORK_SHARE_PASSWORD_LABEL = localize('sql.migration.network.share.password.label', "Password");
+export const STORAGE_ACCOUNT_RESOURCE_GROUP_LABEL = localize('sql.migration.storage.account.resource.group.label', "Resource group");
+export const STORAGE_ACCOUNT_DETAILS_LABEL = localize('sql.migration.storage.account.details.label', "Storage account");
+export function VALIDATION_IR_BUTTON_MISSING_ERROR_MESSAGE(details: string[]): string {
+	const missingDetails = details.join(', ');
+	return localize(
+		'sql.migration.validate.ir.error.message',
+		"Error: Details for {0} are mandatory and missing.",
+		missingDetails);
+}
+
 // common strings
 export const WARNING = localize('sql.migration.warning', "Warning");
 export const ERROR = localize('sql.migration.error', "Error");
