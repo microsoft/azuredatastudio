@@ -1074,6 +1074,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.objectInfo.filegroups.forEach(fg => {
 				if (fg.type === filegroupType) {
 					fg.isDefault = fg.name === filegroup.name && fg.id === filegroup.id ? changedData.value : !changedData.value;
+					console.log('value of filegroup is ' + fg.isDefault);
 				}
 			});
 		} else {
