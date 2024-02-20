@@ -1010,7 +1010,7 @@ export function VALIDATION_IR_BUTTON_MISSING_ERROR_MESSAGE(details: string[]): s
 	const missingDetails = details.join(', ');
 	return localize(
 		'sql.migration.validate.ir.error.message',
-		"Error: Details for {0} are mandatory and missing.",
+		"Details for {0} are mandatory and missing.",
 		missingDetails);
 }
 
