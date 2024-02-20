@@ -30,6 +30,7 @@ import { ApiType, SqlMigrationService } from '../service/features';
 import { getSourceConnectionId, getSourceConnectionProfile } from '../api/sqlUtils';
 import { openRetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDialog';
 import { ImportAssessmentDialog } from '../dialog/assessment/importAssessmentDialog';
+import { CancelFeedbackDialog } from '../dialog/help/cancelFeedbackDialog';
 
 export interface MenuCommandArgs {
 	connectionId: string,
@@ -288,22 +289,17 @@ export class DashboardWidget {
 						await this.clearError(args.connectionId);
 						const migration = await this._getMigrationById(args.migrationId, args.migrationOperationId);
 						if (migration && canCancelMigration(migration)) {
-							void vscode.window
-								.showInformationMessage(loc.CANCEL_MIGRATION_CONFIRMATION, loc.YES, loc.NO)
-								.then(async (v) => {
-									if (v === loc.YES) {
-										const cutoverDialogModel = new MigrationCutoverDialogModel(
-											await MigrationLocalStorage.getMigrationServiceContext(),
-											migration!);
-										await cutoverDialogModel.fetchStatus();
-										await cutoverDialogModel.cancelMigration();
-
-										if (cutoverDialogModel.CancelMigrationError) {
-											void vscode.window.showErrorMessage(loc.MIGRATION_CANNOT_CANCEL);
-											logError(TelemetryViews.MigrationsTab, MenuCommands.CancelMigration, cutoverDialogModel.CancelMigrationError);
-										}
-									}
-								});
+							const cancelFeedbackDialog = new CancelFeedbackDialog();
+							const cancelReasonsList: string[] = [
+								loc.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
+								loc.WIZARD_CANCEL_REASON_MIGRATION_TAKING_LONGER
+							];
+							cancelFeedbackDialog.updateCancelReasonsList(cancelReasonsList); // Fix: Use the element access expression with an argument
+							await cancelFeedbackDialog.openDialog(async (isCancelled: boolean, cancellationReason: string) => {
+								if (isCancelled) {
+									await this.cancelMigrationAndLogTelemetry(migration, cancellationReason);
+								}
+							});
 						} else {
 							await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_CANCEL);
 						}
@@ -481,6 +477,19 @@ export class DashboardWidget {
 					};
 					return await vscode.commands.executeCommand(actionId, args);
 				}));
+	}
+
+	private async cancelMigrationAndLogTelemetry(migration: DatabaseMigration, cancellationReason: string): Promise<void> {
+		const cutoverDialogModel = new MigrationCutoverDialogModel(
+			await MigrationLocalStorage.getMigrationServiceContext(),
+			migration!);
+		await cutoverDialogModel.fetchStatus();
+		await cutoverDialogModel.cancelMigration(cancellationReason);
+
+		if (cutoverDialogModel.CancelMigrationError) {
+			void vscode.window.showErrorMessage(loc.MIGRATION_CANNOT_CANCEL);
+			logError(TelemetryViews.MigrationsTab, MenuCommands.CancelMigration, cutoverDialogModel.CancelMigrationError);
+		}
 	}
 
 	private async clearError(connectionId: string): Promise<void> {

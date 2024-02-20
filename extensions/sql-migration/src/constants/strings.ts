@@ -408,6 +408,25 @@ export function TIME_IN_MINUTES(val: number): number {
 	return val * 60000;
 }
 
+// Wizard Page Cancellation Dialog
+export const CANCEL_FEEDBACK_DIALOG_TITLE = localize('sql.migration.cancel.feedback.dialog.title', "Cancel migration");
+export const CANCEL_FEEDBACK_DIALOG_DESCRIPTION = localize('sql.migration.cancel.feedback.dialog.description', "Do you want to cancel migration? Your unsaved changes will be discarded.");
+export const CANCEL_FEEDBACK_REASON_CONTAINER_TITLE = localize('sql.migration.cancel.feedback.reason.container.title', "Reason for canceling migration");
+export const CANCEL_FEEDBACK_REASON_CONTAINER_DESCRIPTION = localize('sql.migration.cancel.feedback.reason.container.description', "Please take a moment to tell us the reason for canceling the migration. This will help us improve the experience.");
+export const CANCEL_FEEDBACK_NO_REASON_SELECTED = localize('sql.migration.cancel.feedback.no.reason.selected', "No reason selected");
+export const WIZARD_CANCEL_REASON_OTHERS_INPUT_BOX_NOTE = localize('sql.migration.wizard.cancel.reason.others.input.box.note', "If you selected others, please write a short note.");
+export const WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER = localize('sql.migration.wizard.cancel.reason.continue.with.migration.later', "Continue with migration later");
+export const WIZARD_CANCEL_REASON_CHANGE_SOURCE_SQL_SERVER = localize('sql.migration.wizard.cancel.reason.change.source.sql.server', "Need to change source SQL Server");
+export const WIZARD_CANCEL_REASON_MIGRATION_TAKING_LONGER = localize('sql.migration.wizard.cancel.reason.migration.taking.longer', "Migration taking longer or having issues");
+export const WIZARD_CANCEL_REASON_AZURE_SQL_TARGET_NOT_READY = localize('sql.migration.wizard.cancel.reason.source.azure.sql.target.not.ready', "Azure SQL target not ready");
+export const WIZARD_CANCEL_REASON_NEED_TO_ANALYSE_FINDINGS = localize('sql.migration.wizard.cancel.reason.need.to.analyse.findings', "Need to analyse/fix the findings");
+export const WIZARD_CANCEL_REASON_NEED_TO_EVALUATE_RCOMMENDED_SKU = localize('sql.migration.wizard.cancel.reason.need.to.evaluate.recommended.sku', "Need to evaluate the recommended SKU");
+export const WIZARD_CANCEL_REASON_DMS_SERVICE_OR_IR_NOT_READY = localize('sql.migration.wizard.cancel.reason.dms.service.or.ir.not.ready', "Data Migration Service / IR node not ready");
+export const WIZARD_CANCEL_REASON_BACKUP_LOCATION_NOT_READY = localize('sql.migration.wizard.cancel.reason.backup.location.not.ready', "Backup location not ready");
+export const WIZARD_CANCEL_REASON_WAITING_FOR_DOWNTIME_WINDOW = localize('sql.migration.wizard.cancel.reason.waiting.for.downtime.window', "Waiting for downtime window");
+export const WIZARD_CANCEL_REASON_NEED_TO_REVIEW_TABLE_SELECTION = localize('sql.migration.wizard.cancel.reason.need.to.review.table.selection', "Need to review table selection");
+export const WIZARD_CANCEL_REASON_NEED_TO_REVIEW_LOGIN_SELECTION = localize('sql.migration.wizard.cancel.reason.need.to.review.login.selection', "Need to review login selection");
+
 // Login Migrations
 export function LOGIN_WIZARD_TITLE(instanceName: string): string {
 	return localize('sql-migration.login.wizard.title', "Migrate logins from '{0}' to Azure SQL", instanceName);

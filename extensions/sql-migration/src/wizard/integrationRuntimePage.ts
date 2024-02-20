@@ -9,7 +9,7 @@ import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationMode, MigrationStateModel, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
 import { CreateSqlMigrationServiceDialog } from '../dialog/createSqlMigrationService/createSqlMigrationServiceDialog';
 import * as constants from '../constants/strings';
-import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
+import { WIZARD_INPUT_COMPONENT_WIDTH, WizardController } from './wizardController';
 import { getFullResourceGroupFromId, getSqlMigrationService, getSqlMigrationServiceMonitoringData, SqlVMServer } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { logError, TelemetryViews } from '../telemetry';
@@ -37,7 +37,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _originalMigrationMode!: MigrationMode;
 	private _disposables: vscode.Disposable[] = [];
 
-	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
+	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel, private wizardController: WizardController) {
 		super(wizard, azdata.window.createWizardPage(constants.IR_PAGE_TITLE), migrationStateModel);
 		this.migrationStateModel._databaseBackup.migrationMode =
 			this.migrationStateModel._databaseBackup.migrationMode ||
@@ -207,6 +207,11 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizardController.cancelReasonsList([
+			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
+			constants.WIZARD_CANCEL_REASON_DMS_SERVICE_OR_IR_NOT_READY
+		]);
+
 		const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
 		const isSqlVmTarget = this.migrationStateModel.isSqlVmTarget;
 		const isNetworkShare = this.migrationStateModel.isBackupContainerNetworkShare;

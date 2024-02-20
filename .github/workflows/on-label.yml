@@ -5,6 +5,8 @@ on:
 
 jobs:
   processLabelAction:
+    permissions:
+      issues: write
     name: Process Label Action
     runs-on: ubuntu-latest
     steps:
