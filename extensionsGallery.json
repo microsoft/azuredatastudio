@@ -4914,14 +4914,14 @@
 					},
 					"versions": [
 						{
-							"version": "2.0.2",
-							"lastUpdated": "12/05/2023",
+							"version": "2.0.3",
+							"lastUpdated": "02/20/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ads-extension-mongo-migration/ads-extension-mongo-migration-2.0.2.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ads-extension-mongo-migration/ads-extension-mongo-migration-2.0.3.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
