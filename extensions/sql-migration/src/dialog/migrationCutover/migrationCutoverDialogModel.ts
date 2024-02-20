@@ -62,7 +62,7 @@ export class MigrationCutoverDialogModel {
 		return undefined!;
 	}
 
-	public async cancelMigration(): Promise<void> {
+	public async cancelMigration(cancellationReason: string): Promise<void> {
 		try {
 			this.CancelMigrationError = undefined;
 			if (this.migration) {
@@ -78,6 +78,7 @@ export class MigrationCutoverDialogModel {
 						...this.getTelemetryProps(this.serviceContext, this.migration),
 						'migrationMode': getMigrationMode(this.migration),
 						'cutoverStartTime': cutoverStartTime,
+						'cancellationReason': cancellationReason
 					},
 					{}
 				);
