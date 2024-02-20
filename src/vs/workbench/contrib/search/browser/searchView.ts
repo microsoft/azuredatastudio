@@ -1827,7 +1827,7 @@ export class SearchView extends ViewPane {
 					this.keybindingService.lookupKeybinding(Constants.OpenInEditorCommandId));
 				const openInEditorButton = this.messageDisposables.add(new SearchLinkButton(
 					nls.localize('openInEditor.message', "Open in editor"),
-					() => this.instantiationService.invokeFunction(createEditorFromSearchResult, this.searchResult, this.searchIncludePattern.getValue(), this.searchExcludePattern.getValue(), this.searchIncludePattern.onlySearchInOpenEditors()),
+					() => this.instantiationService.invokeFunction(createEditorFromSearchResult, this.searchResult, this.searchIncludePattern?.getValue(), this.searchExcludePattern?.getValue(), this.searchIncludePattern?.onlySearchInOpenEditors()), // {{SQL CARBON EDIT}} Check for undefined patterns
 					openInEditorTooltip));
 				dom.append(messageEl, openInEditorButton.element);
 			}
