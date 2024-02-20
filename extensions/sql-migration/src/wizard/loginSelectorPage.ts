@@ -15,6 +15,7 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import * as utils from '../api/utils';
 import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
 import { CollectingSourceLoginsFailed, CollectingTargetLoginsFailed } from '../models/loginMigrationModel';
+import { WizardController } from './wizardController';
 
 
 export class LoginSelectorPage extends MigrationWizardPage {
@@ -32,7 +33,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	private _filterTableValue!: string;
 	private _aadDomainNameContainer!: azdata.FlexContainer;
 
-	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
+	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel, private wizardController: WizardController) {
 		super(wizard, azdata.window.createWizardPage(constants.LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE), migrationStateModel);
 		this._isCurrentPage = false;
 	}
@@ -56,6 +57,11 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
+		this.wizardController.cancelReasonsList([
+			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
+			constants.WIZARD_CANCEL_REASON_NEED_TO_REVIEW_LOGIN_SELECTION
+		]);
+
 		this._isCurrentPage = true;
 		this.updateNextButton();
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {

@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationMode, MigrationStateModel, NetworkContainerType, NetworkShare, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
-import { createHeadingTextComponent, createInformationRow, createLabelTextComponent } from './wizardController';
+import { WizardController, createHeadingTextComponent, createInformationRow, createLabelTextComponent } from './wizardController';
 import { getResourceGroupFromId } from '../api/azure';
 import { TargetDatabaseSummaryDialog } from '../dialog/targetDatabaseSummary/targetDatabaseSummaryDialog';
 import * as styles from '../constants/styles';
@@ -19,7 +19,7 @@ export class SummaryPage extends MigrationWizardPage {
 	private _flexContainer!: azdata.FlexContainer;
 	private _disposables: vscode.Disposable[] = [];
 
-	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
+	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel, private wizardController: WizardController) {
 		super(wizard, azdata.window.createWizardPage(constants.SUMMARY_PAGE_TITLE), migrationStateModel);
 	}
 
@@ -41,6 +41,11 @@ export class SummaryPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizardController.cancelReasonsList([
+			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
+			constants.WIZARD_CANCEL_REASON_WAITING_FOR_DOWNTIME_WINDOW
+		]);
+
 		this.wizard.registerNavigationValidator(pageChangeInfo => true);
 
 		const targetDatabaseSummary = new TargetDatabaseSummaryDialog(this.migrationStateModel);

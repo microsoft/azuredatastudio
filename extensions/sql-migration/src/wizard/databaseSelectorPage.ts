@@ -12,6 +12,7 @@ import { debounce, promptUserForFolder } from '../api/utils';
 import * as styles from '../constants/styles';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { getDatabasesList, excludeDatabases, SourceDatabaseInfo, getSourceConnectionProfile } from '../api/sqlUtils';
+import { WizardController } from './wizardController';
 
 export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -27,7 +28,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 
 	private readonly TABLE_WIDTH = 650;
 
-	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
+	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel, private wizardController: WizardController) {
 		super(wizard, azdata.window.createWizardPage(constants.DATABASE_FOR_ASSESSMENT_PAGE_TITLE), migrationStateModel);
 	}
 
@@ -50,6 +51,11 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
+		this.wizardController.cancelReasonsList([
+			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
+			constants.WIZARD_CANCEL_REASON_CHANGE_SOURCE_SQL_SERVER
+		]);
+
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = {
 				text: '',

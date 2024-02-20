@@ -10,7 +10,7 @@ import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
-import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
+import { WIZARD_INPUT_COMPONENT_WIDTH, WizardController } from './wizardController';
 import * as utils from '../api/utils';
 import { MigrationTargetType } from '../api/utils';
 import { azureResource } from 'azurecore';
@@ -51,7 +51,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 	constructor(
 		wizard: azdata.window.Wizard,
-		migrationStateModel: MigrationStateModel) {
+		migrationStateModel: MigrationStateModel,
+		private wizardController: WizardController) {
 		super(
 			wizard,
 			azdata.window.createWizardPage(constants.AZURE_SQL_TARGET_PAGE_TITLE),
@@ -113,6 +114,11 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizardController.cancelReasonsList([
+			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
+			constants.WIZARD_CANCEL_REASON_AZURE_SQL_TARGET_NOT_READY
+		]);
+
 		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].hidden = !this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates();
 		this._updateNextButton();
 		this._updateTdeMigrationButtonStatus();

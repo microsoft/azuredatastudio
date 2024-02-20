@@ -127,7 +127,6 @@ describe('BooksTreeViewTests', function () {
 			appContext = (await vscode.extensions.getExtension('Microsoft.notebook').activate()).getAppContext();
 			should(appContext).not.be.undefined();
 			should(appContext.bookTreeViewProvider).not.be.undefined();
-			should(appContext.providedBookTreeViewProvider).not.be.undefined();
 			should(appContext.pinnedBookTreeViewProvider).not.be.undefined();
 		});
 
@@ -261,89 +260,6 @@ describe('BooksTreeViewTests', function () {
 				notebookUri = vscode.Uri.file(notebook1Path);
 				await azdata.nb.showNotebookDocument(notebookUri);
 				should(azdata.nb.notebookDocuments.find(doc => doc.fileName === notebookUri.fsPath)).not.be.undefined();
-				should(revealActiveDocumentInViewletSpy.calledTwice).be.true('revealActiveDocumentInViewlet should have been called twice');
-			});
-
-			this.afterAll(async () => {
-				await vscode.commands.executeCommand('workbench.action.closeAllEditors');
-			});
-
-		});
-
-		describe('providedBookTreeViewProvider', function (): void {
-			let providedbookTreeViewProvider: BookTreeViewProvider;
-			let book: BookTreeItem;
-			let notebook1: BookTreeItem;
-
-			this.beforeAll(async () => {
-				providedbookTreeViewProvider = appContext.providedBookTreeViewProvider;
-				let errorCase = new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 5000));
-				await Promise.race([providedbookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('ProvidedBooksTreeViewProvider did not initialize in time'); })]);
-				await providedbookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
-			});
-
-			afterEach(function (): void {
-				sinon.restore();
-			});
-
-			it('getChildren should return all book nodes when element is undefined', async function (): Promise<void> {
-				const children = await providedbookTreeViewProvider.getChildren();
-				should(children).be.Array();
-				should(children.length).equal(1);
-				book = children[0];
-				should(book.title).equal(expectedBook.title);
-			});
-
-			it('getChildren should return all page nodes when element is a book', async function (): Promise<void> {
-				const children = await providedbookTreeViewProvider.getChildren(book);
-				should(children).be.Array();
-				should(children.length).equal(3);
-				notebook1 = children[0];
-				const markdown = children[1];
-				const externalLink = children[2];
-				equalBookItems(notebook1, expectedNotebook1);
-				equalBookItems(markdown, expectedMarkdown);
-				equalBookItems(externalLink, expectedExternalLink);
-			});
-
-			it('getChildren should return all sections when element is a notebook', async function (): Promise<void> {
-				const children = await providedbookTreeViewProvider.getChildren(notebook1);
-				should(children).be.Array();
-				should(children.length).equal(2);
-				const notebook2 = children[0];
-				const notebook3 = children[1];
-				equalBookItems(notebook2, expectedNotebook2);
-				equalBookItems(notebook3, expectedNotebook3);
-			});
-
-			it('getNavigation should get previous and next urls correctly from the bookModel', async () => {
-				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
-				let notebook2Path = path.join(rootFolderPath, 'Book', 'content', 'notebook2.ipynb');
-				let notebook3Path = path.join(rootFolderPath, 'Book', 'content', 'notebook3.ipynb');
-				const result = await providedbookTreeViewProvider.getNavigation(vscode.Uri.file(notebook2Path));
-				should(result.hasNavigation).be.true('getNavigation failed to get previous and next urls');
-				should(result.next.fsPath).equal(notebook3Path, 'getNavigation failed to get the next url');
-				should(result.previous.fsPath).equal(notebook1Path, 'getNavigation failed to get the previous url');
-			});
-
-			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
-				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb').replace(/\\/g, '/');
-				let currentSelection = await providedbookTreeViewProvider.findAndExpandParentNode(notebook1Path, true);
-				should(currentSelection).not.be.undefined();
-				equalBookItems(currentSelection, expectedNotebook1);
-			});
-
-			it('revealActiveDocumentInViewlet should be called on showNotebook', async () => {
-				const untitledNotebook1Uri = vscode.Uri.parse(`untitled:notebook1.ipynb`);
-				const untitledNotebook2Uri = vscode.Uri.parse(`untitled:notebook2.ipynb`);
-
-				let revealActiveDocumentInViewletSpy = sinon.spy(providedbookTreeViewProvider, 'revealDocumentInTreeView');
-				await azdata.nb.showNotebookDocument(untitledNotebook1Uri);
-				should(azdata.nb.notebookDocuments.find(doc => doc.fileName === untitledNotebook1Uri.fsPath)).not.be.undefined();
-				should(revealActiveDocumentInViewletSpy.calledOnce).be.true('revealActiveDocumentInViewlet should have been called');
-
-				await azdata.nb.showNotebookDocument(untitledNotebook2Uri);
-				should(azdata.nb.notebookDocuments.find(doc => doc.fileName === untitledNotebook2Uri.fsPath)).not.be.undefined();
 				should(revealActiveDocumentInViewletSpy.calledTwice).be.true('revealActiveDocumentInViewlet should have been called twice');
 			});
 

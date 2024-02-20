@@ -20,7 +20,7 @@ import { MigrationTargetType } from '../../api/utils';
 import { logError, TelemetryViews } from '../../telemetry';
 import { getSourceConnectionProfile } from '../../api/sqlUtils';
 import { IssueCategory } from '../../constants/helper';
-
+import { WizardController } from '../wizardController';
 
 export class SKURecommendationPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -56,7 +56,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _skipAssessmentValid: boolean = false;
 
 
-	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
+	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel, private wizardController: WizardController) {
 		super(wizard, azdata.window.createWizardPage(constants.ASSESSMENT_SUMMARY_AND_RECOMMENDATIONS_PAGE_TITLE), migrationStateModel);
 	}
 
@@ -578,6 +578,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizardController.cancelReasonsList([
+			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
+			constants.WIZARD_CANCEL_REASON_NEED_TO_EVALUATE_RCOMMENDED_SKU
+		]);
+
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = { text: '' };
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
