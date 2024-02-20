@@ -329,6 +329,8 @@ export abstract class DialogBase<DialogResult> {
 
 	protected async setDeclarativeTableData(table: azdata.DeclarativeTableComponent, data: any[][], maxRowCount: number = DefaultMaxTableRowCount): Promise<void> {
 		let currentRowSelect = table.selectedRow;
+		// Need to clear dataValues to undefined to avoid an angular bug that happens when setting data with more than one change.
+		table.dataValues = undefined;
 		await table.setDataValues(data);
 		if (currentRowSelect !== -1) {
 			table.selectedRow = currentRowSelect;
