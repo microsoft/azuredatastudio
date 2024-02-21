@@ -66,8 +66,14 @@
     </trans-unit>
   </body></file>
   <file original="extensions/Microsoft.mssql/dist/objectManagement/localizedConstants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="objectManagement.accessKeyLabel">
+      <source xml:lang="en">Access Key</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.addButton">
       <source xml:lang="en">Add</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.addCredentialsLabel">
+      <source xml:lang="en">Add Credentials</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.addDatabaseFilesText">
       <source xml:lang="en">Add Database file</source>
@@ -675,6 +681,9 @@
     <trans-unit id="objectManagement.databaseProperties.inPercentAutogrowthText">
       <source xml:lang="en">In Percent</source>
     </trans-unit>
+    <trans-unit id="objectManagement.InvalidS3UrlError">
+      <source xml:lang="en">Invalid S3 endpoint</source>
+    </trans-unit>
     <trans-unit id="objectManagement.isClustered">
       <source xml:lang="en">Is Clustered</source>
     </trans-unit>
@@ -1017,6 +1026,12 @@
     <trans-unit id="objectManagement.backupRecoveryLabel">
       <source xml:lang="en">Recovery model</source>
     </trans-unit>
+    <trans-unit id="objectManagement.regionLabel">
+      <source xml:lang="en">Region</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.regionSpecificEndpointLabel">
+      <source xml:lang="en">Region-specific endpoint</source>
+    </trans-unit>
     <trans-unit id="objectManagement.backupReliability">
       <source xml:lang="en">Reliability</source>
     </trans-unit>
@@ -1052,7 +1067,7 @@
       <source xml:lang="en">Restore As</source>
     </trans-unit>
     <trans-unit id="objectManagement.restoreDatabaseDialogTitle">
-      <source xml:lang="en">Restore Database - {0} (Preview)</source>
+      <source xml:lang="en">Restore Database (Preview)</source>
     </trans-unit>
     <trans-unit id="objectManagement.restoreDatabase.restoreOptionsText">
       <source xml:lang="en">Restore Options</source>
@@ -1088,6 +1103,9 @@
     <trans-unit id="objectManagement.databaseProperties.rowsFileGroupsSectionText">
       <source xml:lang="en">Rows</source>
     </trans-unit>
+    <trans-unit id="objectManagement.restoreDatabase.restoreFromS3UrlText">
+      <source xml:lang="en">S3 URL</source>
+    </trans-unit>
     <trans-unit id="objectManagement.login.sqlAuthenticationType">
       <source xml:lang="en">SQL Authentication</source>
     </trans-unit>
@@ -1112,6 +1130,9 @@
     <trans-unit id="objectManagement.SearchTextLabel">
       <source xml:lang="en">Search Text</source>
     </trans-unit>
+    <trans-unit id="objectManagement.secretKeyLabel">
+      <source xml:lang="en">Secret Key</source>
+    </trans-unit>
     <trans-unit id="objectManagement.securablesText">
       <source xml:lang="en">Securables</source>
     </trans-unit>
@@ -1121,6 +1142,9 @@
     <trans-unit id="objectManagement.selectText">
       <source xml:lang="en">Select</source>
     </trans-unit>
+    <trans-unit id="objectManagement.SelectBackupFileLabel">
+      <source xml:lang="en">Select Backup File</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseRole.SelectMemberDialogTitle">
       <source xml:lang="en">Select Database Role Members</source>
     </trans-unit>
@@ -1129,6 +1153,12 @@
     </trans-unit>
     <trans-unit id="objectManagement.labelSelectFolder">
       <source xml:lang="en">Select Folder</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.SelectS3BucketLabel">
+      <source xml:lang="en">Select S3 Bucket</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.selectS3BackupFileDialogTitle">
+      <source xml:lang="en">Select S3 Storage Backup File</source>
     </trans-unit>
     <trans-unit id="objectManagement.selectSecurablesDialogTitle">
       <source xml:lang="en">Select Securables</source>
@@ -1750,7 +1780,7 @@
       <source xml:lang="en">MSSQL configuration</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.true">
-      <source xml:lang="en">Mandatory (True)</source>
+      <source xml:lang="en">Mandatory</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.maxPoolSize.displayName">
       <source xml:lang="en">Max pool size</source>
@@ -1834,7 +1864,7 @@
       <source xml:lang="en">OS Version</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.false">
-      <source xml:lang="en">Optional (False)</source>
+      <source xml:lang="en">Optional</source>
     </trans-unit>
     <trans-unit id="cloud.databaseProperties.owner">
       <source xml:lang="en">Owner</source>
@@ -1963,7 +1993,7 @@
       <source xml:lang="en">Status</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.strict">
-      <source xml:lang="en">Strict</source>
+      <source xml:lang="en">Strict (supported for SQL Server 2022 and Azure SQL)</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.currentLanguage.description">
       <source xml:lang="en">The SQL Server language record name</source>

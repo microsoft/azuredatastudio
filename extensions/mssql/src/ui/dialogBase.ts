@@ -61,11 +61,15 @@ export abstract class DialogBase<DialogResult> {
 		});
 		this._closePromise = new Promise<DialogResult | undefined>(resolve => {
 			this.disposables.push(this.dialogObject.onClosed(async (reason: azdata.window.CloseReason) => {
-				await this.dispose(reason);
-				const result = reason === 'ok' ? this.dialogResult : undefined;
+				let result = await this.handleDialogClosed(reason);
 				resolve(result);
 			}));
 		});
+	}
+
+	protected async handleDialogClosed(reason: azdata.window.CloseReason): Promise<any> {
+		await this.dispose(reason);
+		return reason === 'ok' ? this.dialogResult : undefined;
 	}
 
 	public waitForClose(): Promise<DialogResult | undefined> {
@@ -433,13 +437,14 @@ export abstract class DialogBase<DialogResult> {
 		return dropdown;
 	}
 
-	protected createButton(label: string, ariaLabel: string, handler: () => Promise<void>, enabled: boolean = true): azdata.ButtonComponent {
+	protected createButton(label: string, ariaLabel: string, handler: () => Promise<void>, enabled: boolean = true, width?: number): azdata.ButtonComponent {
 		const button = this.modelView.modelBuilder.button().withProps({
 			label: label,
 			ariaLabel: ariaLabel,
 			enabled: enabled,
 			secondary: true,
-			CSSStyles: { 'min-width': '70px', 'margin-left': '5px' }
+			CSSStyles: { 'min-width': '70px', 'margin-left': '5px' },
+			width: width
 		}).component();
 		this.disposables.push(button.onDidClick(async () => {
 			await handler();

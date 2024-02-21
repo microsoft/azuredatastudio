@@ -1419,16 +1419,16 @@
           "objectType": null,
           "categoryValues": [
             {
+              "displayName": "%mssql.connectionOptions.encrypt.categoryValues.false%",
+              "name": "false"
+            },
+            {
               "displayName": "%mssql.connectionOptions.encrypt.categoryValues.true%",
               "name": "true"
             },
             {
               "displayName": "%mssql.connectionOptions.encrypt.categoryValues.strict%",
               "name": "strict"
-            },
-            {
-              "displayName": "%mssql.connectionOptions.encrypt.categoryValues.false%",
-              "name": "false"
             }
           ],
           "isRequired": false,
@@ -1719,6 +1719,7 @@
     }
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.490.0",
     "@microsoft/ads-extension-telemetry": "^3.0.1",
     "@microsoft/ads-service-downloader": "^1.2.1",
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#2.0.0",

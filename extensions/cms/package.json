@@ -365,16 +365,16 @@
           "objectType": null,
           "categoryValues": [
             {
+              "displayName": "%cms.connectionOptions.encrypt.categoryValues.false%",
+              "name": "false"
+            },
+            {
               "displayName": "%cms.connectionOptions.encrypt.categoryValues.true%",
               "name": "true"
             },
             {
               "displayName": "%cms.connectionOptions.encrypt.categoryValues.strict%",
               "name": "strict"
-            },
-            {
-              "displayName": "%cms.connectionOptions.encrypt.categoryValues.false%",
-              "name": "false"
             }
           ],
           "isRequired": false,

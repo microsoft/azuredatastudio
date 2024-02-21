@@ -3,6 +3,8 @@ on:
   pull_request:
     branches:
       - release/**
+permissions:
+  pull-requests: write
 
 jobs:
   main:

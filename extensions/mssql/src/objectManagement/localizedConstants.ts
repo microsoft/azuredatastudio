@@ -344,6 +344,7 @@ export const RestorePlanSectionText = localize('objectManagement.restoreDatabase
 export const RestoreFromBackupFileOptionText = localize('objectManagement.restoreDatabase.restoreFromBackupFileOptionText', "Backup file");
 export const RestoreFromDatabaseOptionText = localize('objectManagement.restoreDatabase.restoreFromDatabaseOptionText', "Database");
 export const RestoreFromUrlText = localize('objectManagement.restoreDatabase.restoreFromUrlText', "URL");
+export const RestoreFromS3UrlText = localize('objectManagement.restoreDatabase.restoreFromS3UrlText', "S3 URL");
 export const BackupFolderPathTitle = localize('objectManagement.restoreDatabase.backupFolderPathTitle', "Please enter one or more file paths separated by commas");
 export const RestoreDatabaseFilesAsText = localize('objectManagement.restoreDatabase.restoreDatabaseFilesAsText', "Restore database files as");
 export const RestoreDatabaseFileDetailsText = localize('objectManagement.restoreDatabase.restoreDatabaseFileDetailsText', "Restore database file Details");
@@ -599,6 +600,17 @@ export const YesText = localize('objectManagement.databaseProperties.yesText', "
 export const NotAvailableText = localize('objectManagement.databaseProperties.notAvailableText', "N/A");
 export const PurgeQueryStoreDataMessage = (databaseName: string) => localize('objectManagement.databaseProperties.purgeQueryStoreDataMessage', "Are you sure you want to purge the Query Store data from '{0}'?", databaseName);
 export const fileGroupsNameInput = localize('objectManagement.filegroupsNameInput', "Filegroup Name");
+
+// S3 credentials
+export const SelectS3BackupFileDialogTitle = localize('objectManagement.selectS3BackupFileDialogTitle', "Select S3 Storage Backup File");
+export const RegionSpecificEndpointText = localize('objectManagement.regionSpecificEndpointLabel', "Region-specific endpoint");
+export const SecretKeyText = localize('objectManagement.secretKeyLabel', "Secret Key");
+export const AccessKeyText = localize('objectManagement.accessKeyLabel', "Access Key");
+export const RegionText = localize('objectManagement.regionLabel', "Region");
+export const AddCredentialsText = localize('objectManagement.addCredentialsLabel', "Add Credentials");
+export const SelectS3BucketText = localize('objectManagement.SelectS3BucketLabel', "Select S3 Bucket");
+export const SelectBackupFileText = localize('objectManagement.SelectBackupFileLabel', "Select Backup File");
+export const InvalidS3UrlError = localize('objectManagement.InvalidS3UrlError', "Invalid S3 endpoint");
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {

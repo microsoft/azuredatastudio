@@ -12,6 +12,7 @@ import { ObjectManagement, IObjectManagementService, DatabaseFileData, BackupInf
 import { ClientCapabilities } from 'vscode-languageclient';
 import { AppContext } from '../appContext';
 import { BackupResponse } from 'azdata';
+import { CredentialInfo } from 'azdata';
 
 export class ObjectManagementService extends BaseService implements IObjectManagementService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
@@ -105,6 +106,16 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 	async purgeQueryStoreData(connectionUri: string, database: string): Promise<void> {
 		const params: contracts.PurgeQueryStoreDataRequestParams = { connectionUri, database };
 		return this.runWithErrorHandling(contracts.PurgeQueryStoreDataRequest.type, params);
+	}
+
+	async createCredential(connectionUri: string, credentialInfo: azdata.CredentialInfo): Promise<void> {
+		const params: contracts.CreateCredentialRequestParams = { connectionUri, credentialInfo };
+		return this.runWithErrorHandling(contracts.CreateCredentialRequest.type, params);
+	}
+
+	async getCredentialNames(connectionUri: string): Promise<string[]> {
+		const params: contracts.GetCredentialNamesRequestParams = { connectionUri };
+		return this.runWithErrorHandling(contracts.GetCredentialNamesRequest.type, params);
 	}
 }
 
@@ -302,6 +313,14 @@ export class TestObjectManagementService implements IObjectManagementService {
 	}
 
 	async purgeQueryStoreData(connectionUri: string, database: string): Promise<void> {
+		return this.delayAndResolve([]);
+	}
+
+	async createCredential(connectionUri: string, credentialInfo: CredentialInfo): Promise<void> {
+		return this.delayAndResolve();
+	}
+
+	async getCredentialNames(connectionUri: string): Promise<string[]> {
 		return this.delayAndResolve([]);
 	}
 

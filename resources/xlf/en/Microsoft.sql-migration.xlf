@@ -340,6 +340,9 @@
     <trans-unit id="sql.login.migration.target.title">
       <source xml:lang="en">Azure SQL target</source>
     </trans-unit>
+    <trans-unit id="sql.migration.wizard.cancel.reason.source.azure.sql.target.not.ready">
+      <source xml:lang="en">Azure SQL target not ready</source>
+    </trans-unit>
     <trans-unit id="sql.migration.services.target">
       <source xml:lang="en">Azure SQL target selected as default.</source>
     </trans-unit>
@@ -406,6 +409,9 @@
     <trans-unit id="sql.migration.backup.location">
       <source xml:lang="en">Backup location</source>
     </trans-unit>
+    <trans-unit id="sql.migration.wizard.cancel.reason.backup.location.not.ready">
+      <source xml:lang="en">Backup location not ready</source>
+    </trans-unit>
     <trans-unit id="sql.migration.backup.file.backup.size">
       <source xml:lang="en">Backup size (MB)</source>
     </trans-unit>
@@ -467,6 +473,9 @@
       <source xml:lang="en">Cancel</source>
     </trans-unit>
     <trans-unit id="sql.migration.cancel.migration">
+      <source xml:lang="en">Cancel migration</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.cancel.feedback.dialog.title">
       <source xml:lang="en">Cancel migration</source>
     </trans-unit>
     <trans-unit id="sql.migration.state.canceled">
@@ -646,6 +655,9 @@
     <trans-unit id="sql.migration.wizard.target.connection.success">
       <source xml:lang="en">Connection was successful. Target databases found: {0}</source>
     </trans-unit>
+    <trans-unit id="sql.migration.wizard.cancel.reason.continue.with.migration.later">
+      <source xml:lang="en">Continue with migration later</source>
+    </trans-unit>
     <trans-unit id="sql.migration.sqldb.column.copyduration">
       <source xml:lang="en">Copy duration</source>
     </trans-unit>
@@ -720,6 +732,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.sku.data.iops.requirement">
       <source xml:lang="en">Data IOPS requirement</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.wizard.cancel.reason.dms.service.or.ir.not.ready">
+      <source xml:lang="en">Data Migration Service / IR node not ready</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.azureRecommendation.status.stopped">
       <source xml:lang="en">Data collection for Azure recommendations has been stopped.</source>
@@ -891,6 +906,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.sku.storage.dimension">
       <source xml:lang="en">Dimension</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.cancel.feedback.dialog.description">
+      <source xml:lang="en">Do you want to cancel migration? Your unsaved changes will be discarded.</source>
     </trans-unit>
     <trans-unit id="sql.retry.migration.prompt">
       <source xml:lang="en">Do you want to retry the failed table migrations?</source>
@@ -1212,6 +1230,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.empty.table.subtext">
       <source xml:lang="en">If results were expected, verify the connection to the SQL Server instance.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.wizard.cancel.reason.others.input.box.note">
+      <source xml:lang="en">If you selected others, please write a short note.</source>
     </trans-unit>
     <trans-unit id="sql.migration.impact">
       <source xml:lang="en">Impact</source>
@@ -1540,6 +1561,9 @@
     <trans-unit id="sql.migration.tde.migrate.status.details">
       <source xml:lang="en">Migration status: {0}{1}{2}</source>
     </trans-unit>
+    <trans-unit id="sql.migration.wizard.cancel.reason.migration.taking.longer">
+      <source xml:lang="en">Migration taking longer or having issues</source>
+    </trans-unit>
     <trans-unit id="sql.migration.schema.type">
       <source xml:lang="en">Migration type</source>
     </trans-unit>
@@ -1590,6 +1614,21 @@
     </trans-unit>
     <trans-unit id="sql.migration.name.label">
       <source xml:lang="en">Names:</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.wizard.cancel.reason.need.to.analyse.findings">
+      <source xml:lang="en">Need to analyse/fix the findings</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.wizard.cancel.reason.change.source.sql.server">
+      <source xml:lang="en">Need to change source SQL Server</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.wizard.cancel.reason.need.to.evaluate.recommended.sku">
+      <source xml:lang="en">Need to evaluate the recommended SKU</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.wizard.cancel.reason.need.to.review.login.selection">
+      <source xml:lang="en">Need to review login selection</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.wizard.cancel.reason.need.to.review.table.selection">
+      <source xml:lang="en">Need to review table selection</source>
     </trans-unit>
     <trans-unit id="sql.migration.needs.review">
       <source xml:lang="en">Needs review</source>
@@ -1683,6 +1722,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.no.pending.backups">
       <source xml:lang="en">No pending backups. Click refresh to check current status.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.cancel.feedback.no.reason.selected">
+      <source xml:lang="en">No reason selected</source>
     </trans-unit>
     <trans-unit id="sql.migration.wizard.sku.error.noRecommendation">
       <source xml:lang="en">No recommendation available</source>
@@ -1825,6 +1867,9 @@
     <trans-unit id="sql.migration.service.selection.location.msg">
       <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.cancel.feedback.reason.container.description">
+      <source xml:lang="en">Please take a moment to tell us the reason for canceling the migration. This will help us improve the experience.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.port.label">
       <source xml:lang="en">Port</source>
     </trans-unit>
@@ -1893,6 +1938,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.ready.warn">
       <source xml:lang="en">Ready with warnings</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.cancel.feedback.reason.container.title">
+      <source xml:lang="en">Reason for canceling migration</source>
     </trans-unit>
     <trans-unit id="sql.migration.copy.status.rebuildingindexes">
       <source xml:lang="en">Rebuilding indexes</source>
@@ -2949,6 +2997,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.restore.status.waiting">
       <source xml:lang="en">Waiting</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.wizard.cancel.reason.waiting.for.downtime.window">
+      <source xml:lang="en">Waiting for downtime window</source>
     </trans-unit>
     <trans-unit id="waitingForService">
       <source xml:lang="en">Waiting for {0} component to start.</source>

@@ -1038,6 +1038,17 @@ declare module 'mssql' {
 		 * @param database The target database.
 		 */
 		purgeQueryStoreData(connectionUri: string, database: string): Thenable<void>;
+		/**
+		 * Create a new credential
+		 * @param connectionUri The URI of the server connection.
+		 * @param credentialInfo
+		 */
+		createCredential(connectionUri: string, credentialInfo: azdata.CredentialInfo): Thenable<void>;
+		/**
+		 * Gets all the credentials that exist in the current server
+		 * @param connectionUri The URI of the server connection.
+		 */
+		getCredentialNames(connectionUri: string): Thenable<string[]>;
 	}
 
 	/**
