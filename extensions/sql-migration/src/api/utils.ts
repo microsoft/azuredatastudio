@@ -1218,7 +1218,7 @@ export function createIntegrationRuntimeTable(view: ModelView): DeclarativeTable
 	const _integrationRuntimeTable: DeclarativeTableComponent = view.modelBuilder.declarativeTable().withProps({
 		columns: [
 			{
-				displayName: 'Node Name',
+				displayName: constants.NODE_NAME,
 				valueType: DeclarativeDataType.string,
 				width: '200px',
 				isReadOnly: true,
@@ -1226,7 +1226,7 @@ export function createIntegrationRuntimeTable(view: ModelView): DeclarativeTable
 				headerCssStyles: headerCssStyles
 			},
 			{
-				displayName: 'Status',
+				displayName: constants.STATUS,
 				valueType: DeclarativeDataType.string,
 				width: '120px',
 				isReadOnly: true,
@@ -1234,7 +1234,7 @@ export function createIntegrationRuntimeTable(view: ModelView): DeclarativeTable
 				headerCssStyles: headerCssStyles
 			},
 			{
-				displayName: 'IP address',
+				displayName: constants.IP_ADDRESS,
 				valueType: DeclarativeDataType.string,
 				width: '120px',
 				isReadOnly: true,
@@ -1242,7 +1242,7 @@ export function createIntegrationRuntimeTable(view: ModelView): DeclarativeTable
 				headerCssStyles: headerCssStyles
 			},
 			{
-				displayName: 'IR version',
+				displayName: constants.IR_VERSION,
 				valueType: DeclarativeDataType.string,
 				width: '120px',
 				isReadOnly: true,
@@ -1434,7 +1434,7 @@ export async function refreshIntegrationRuntimeTable(_view: ModelView, _integrat
 		const data: DeclarativeTableCellValue[][] = [
 			[
 				{ value: " " },
-				{ value: "No node found" },
+				{ value: constants.NO_NODE_FOUND },
 				{ value: " " },
 				{ value: " " }
 			]

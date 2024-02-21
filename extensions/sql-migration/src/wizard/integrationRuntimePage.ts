@@ -534,20 +534,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		this._integrationRuntimeTable = utils.createIntegrationRuntimeTable(this._view);
 
-		/*const statusContainer = this._view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'column' })
-			.component();
-
-		const instructions = utils.createRegistrationInstructions(this._view, false);
-
-		this._authKeyTable = utils.createAuthenticationKeyTable(this._view, '50px', '500px');
-
-		statusContainer.addItems([
-			this._dmsStatusInfoBox,
-			instructions,
-			this._authKeyTable
-		]);*/
-
 		container.addItems([
 			connectionLabelContainer,
 			this._dmsStatusInfoBox,

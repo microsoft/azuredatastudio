@@ -258,7 +258,7 @@ export class ConfigureIRDialog {
 		}).component();
 
 		const powershellScriptTitle = view.modelBuilder.text().withProps({
-			value: "Configure using PowerShell script ",
+			value: constants.CONFIGURE_POWERSHELL_SCRIPT,
 			height: 18,
 			CSSStyles: {
 				'font-size': '13px',
@@ -271,7 +271,7 @@ export class ConfigureIRDialog {
 		}).component();
 
 		const manualIRTitle = view.modelBuilder.text().withProps({
-			value: "Configure manually ",
+			value: constants.CONFIGURE_MANUALLY,
 			height: 18,
 			CSSStyles: {
 				'font-size': '13px',
@@ -461,8 +461,8 @@ export class ConfigureIRDialog {
 				const value = modifiedScriptContent.toString();
 				await fs.writeFile(choosenPath.fsPath, value);
 				if (await vscode.window.showInformationMessage(
-					"PowerShell script saved",
-					"Open", "Cancel") === "Open") {
+					constants.POWERSHELL_SCRIPT_SAVED,
+					constants.OPEN, constants.CANCEL) === constants.OPEN) {
 					await vscode.env.openExternal(choosenPath);
 				}
 			}
