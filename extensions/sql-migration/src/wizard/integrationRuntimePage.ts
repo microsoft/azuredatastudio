@@ -28,6 +28,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _dmsStatusInfoBox!: azdata.InfoBoxComponent;
 	private _integrationRuntimeTable!: azdata.DeclarativeTableComponent;
 	private _refreshButton!: azdata.ButtonComponent;
+	private _configureIRButton!: azdata.ButtonComponent;
 	private _onlineButton!: azdata.RadioButtonComponent;
 	private _offlineButton!: azdata.RadioButtonComponent;
 	private _modeContainer!: azdata.FlexContainer;
@@ -491,7 +492,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			this._refreshButton.onDidClick(
 				async (e) => await this.loadStatus()));
 
-		const _configureIRButton = this._view.modelBuilder.button()
+		this._configureIRButton = this._view.modelBuilder.button()
 			.withProps({
 				iconWidth: '18px',
 				iconHeight: '18px',
@@ -503,7 +504,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			}).component();
 
 		this._disposables.push(
-			_configureIRButton.onDidClick(
+			this._configureIRButton.onDidClick(
 				async (e) => {
 					await this.openIRDialog();
 				}
@@ -528,7 +529,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			.withToolbarItems(
 				[
 					{ component: this._refreshButton },
-					{ component: _configureIRButton }
+					{ component: this._configureIRButton }
 				]
 			).component();
 
@@ -688,7 +689,25 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 				// populate the table with data
 				await utils.refreshIntegrationRuntimeTable(this._view, this._integrationRuntimeTable, migrationServiceMonitoringStatus);
-				// await utils.refreshAuthenticationKeyTable(this._view, this._authKeyTable, account, subscription, resourceGroup, location, migrationService);
+
+				// based on the data, enable or disable configure ir button
+				if (migrationServiceMonitoringStatus.nodes.length === 4) {
+					this._configureIRButton.enabled = false;
+				}
+				else {
+					this._configureIRButton.enabled = true;
+				}
+
+				// if the versions are mismatched, show a warning
+				let nodeversion = migrationServiceMonitoringStatus.nodes[0].version;
+				migrationServiceMonitoringStatus.nodes.forEach(async node => {
+					if (node.version !== nodeversion && node.status === 'Online') {
+						await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
+							text: constants.VERSION_MISMATCH,
+							style: 'warning'
+						});
+					}
+				});
 
 				this.migrationStateModel._sqlMigrationService = migrationService;
 				this.migrationStateModel._sqlMigrationServiceSubscription = subscription;

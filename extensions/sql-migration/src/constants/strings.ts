@@ -834,7 +834,7 @@ export function SQL_MIGRATION_SERVICE_DETAILS_HEADER(sqlMigrationServiceName: st
 export const DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS = localize('sql.migration.database.migration.service.authentication.keys', "Database Migration Service authentication keys");
 
 // configure IR dialog
-export const POWERSHELL_SCRIPT_DESCRIPTION = localize('sql.ir.powershellscript.definition', "Once executed in powershell, the unique script shown below will download, and install the Self-hosted integration Runtime and register it with the Azure Database Migration Service. You will need to have PowerShell installed on the target machine.");
+export const POWERSHELL_SCRIPT_DESCRIPTION = localize('sql.ir.powershellscript.definition', "Once executed in powershell, the unique script shown below will download, and install the self-hosted integration runtime and register it with the Azure Database Migration Service. You will need to have PowerShell installed on the target machine.");
 export const SETUP_LOCAL_IR_DESCRIPTION = localize('sql.ir.local.ir.definition', "I want to setup self-hosted integration runtime on my local machine (Machine where Azure Data Studio is running)");
 export const SETUP_REMOTE_IR_DESCRIPTION = localize('sql.ir.local.ir.definition', "I want to setup self-hosted integration runtime on another Windows machine that is not my local machine.");
 export const CONFIGURE_POWERSHELL_SCRIPT = localize('sql.ir.configure.powershellscript', "Configure using PowerShell script ");
@@ -844,6 +844,8 @@ export const NODE_NAME = localize('sql.ir.node.name', "Node name");
 export const IP_ADDRESS = localize('sql.ir.ip.address', "IP address");
 export const IR_VERSION = localize('sql.ir.ir.version', "IR version");
 export const POWERSHELL_SCRIPT_SAVED = localize('sql.ir.powershell.script.saved', "PowerShell script saved");
+export const LOCAL_IR_SETUP_NOTE = localize('sql.ir.local.ir.setup.note', "Once executed, the powershell script will download, and install the self-hosted integration runtime and register it with the Azure Database Migration Service. Please click on refresh to see the connection status of the IR with the DMS. ")
+export const VERSION_MISMATCH = localize('sql.ir.version.mismatch', "All nodes should be on the same version to be configured");
 
 // create migration service dialog
 export const CREATE_MIGRATION_SERVICE_TITLE = localize('sql.migration.services.dialog.title', "Create Azure Database Migration Service");

@@ -139,7 +139,7 @@ export class ConfigureIRDialog {
 
 		// a note to user with instrcutions on execution of script
 		const localIRdescription = view.modelBuilder.infoBox().withProps({
-			text: 'local IR setup note',
+			text: constants.LOCAL_IR_SETUP_NOTE,
 			style: 'information',
 			CSSStyles: {
 				...styles.BODY_CSS
@@ -194,7 +194,7 @@ export class ConfigureIRDialog {
 		if (service) {
 			const account = this._migrationStateModel._azureAccount;
 			const subscription = this._migrationStateModel._sqlMigrationServiceSubscription;
-			const resourceGroup = service.properties.resourceGroup;
+			const resourceGroup = this._migrationStateModel._sqlMigrationServiceResourceGroup.name;
 			const location = service.location;
 			const serviceName = service.name;
 			if (service?.properties?.integrationRuntimeState) {
@@ -380,7 +380,7 @@ export class ConfigureIRDialog {
 		if (service) {
 			const account = this._migrationStateModel._azureAccount;
 			const subscription = this._migrationStateModel._sqlMigrationServiceSubscription;
-			const resourceGroup = service.properties.resourceGroup;
+			const resourceGroup = this._migrationStateModel._sqlMigrationServiceResourceGroup.name;
 			const location = service.location;
 			const serviceName = service.name;
 			if (service?.properties?.integrationRuntimeState) {
