@@ -29,8 +29,6 @@ export class CreateSqlMigrationServiceDialog {
 	private _createResourceGroupLink!: azdata.HyperlinkComponent;
 
 	private _statusLoadingComponent!: azdata.LoadingComponent;
-	//private _refreshLoadingComponent!: azdata.LoadingComponent;
-	//private migrationServiceAuthKeyTable!: azdata.DeclarativeTableComponent;
 	private _connectionStatus!: azdata.InfoBoxComponent;
 	private _setupContainer!: azdata.FlexContainer;
 	private _resourceGroupPreset!: string;
@@ -41,7 +39,6 @@ export class CreateSqlMigrationServiceDialog {
 	private _createdMigrationService!: SqlMigrationService;
 	private _resourceGroups!: azureResource.AzureResourceResourceGroup[];
 	private _selectedResourceGroup!: azureResource.AzureResourceResourceGroup;
-	//private _testConnectionButton!: azdata.window.Button;
 
 	private _doneButtonEvent: EventEmitter = new EventEmitter();
 	private _isBlobContainerUsed: boolean = false;
@@ -114,19 +111,7 @@ export class CreateSqlMigrationServiceDialog {
 							};
 						} else {
 							await this.refreshStatus();
-
-							/*await utils.refreshAuthenticationKeyTable(
-								this._view,
-								this.migrationServiceAuthKeyTable,
-								this._model._azureAccount,
-								subscription,
-								resourceGroup.name,
-								location,
-								this._createdMigrationService);*/
-
-
 							this._setupContainer.display = 'inline';
-							// this._testConnectionButton.hidden = false;
 						}
 					} catch (e) {
 						console.log(e);
@@ -177,26 +162,6 @@ export class CreateSqlMigrationServiceDialog {
 			});
 		});
 
-		// remove test connection button
-		/*this._testConnectionButton = azdata.window.createButton(constants.TEST_CONNECTION);
-		this._testConnectionButton.hidden = true;
-		this._disposables.push(this._testConnectionButton.onClick(async (e) => {
-			this._refreshLoadingComponent.loading = true;
-			await this._connectionStatus.updateCssStyles({
-				'display': 'none'
-			});
-			try {
-				await this.refreshStatus();
-			} catch (e) {
-				void vscode.window.showErrorMessage(e);
-			}
-			await this._connectionStatus.updateCssStyles({
-				'display': 'inline'
-			});
-			this._refreshLoadingComponent.loading = false;
-		}));
-		this._dialogObject.customButtons = [this._testConnectionButton];*/
-
 		this._dialogObject.content = [tab];
 		this._dialogObject.okButton.enabled = false;
 		azdata.window.openDialog(this._dialogObject);
@@ -238,20 +203,6 @@ export class CreateSqlMigrationServiceDialog {
 		this._setupContainer = this._view.modelBuilder.flexContainer()
 			.withItems([this._connectionStatus, irConfig])
 			.component();
-
-		/*this._setupContainer = this._view.modelBuilder.flexContainer().withItems(
-			[
-				this._connectionStatus,
-				irConfig,
-				this._refreshLoadingComponent
-			], {
-			CSSStyles: {
-				'margin-bottom': '5px'
-			}
-		}
-		).withLayout({
-			flexFlow: 'column'
-		}).component();*/
 
 		this._setupContainer.display = 'none';
 		return this._setupContainer;
@@ -454,50 +405,6 @@ export class CreateSqlMigrationServiceDialog {
 			this.migrationServiceResourceGroupDropdown.loading = false;
 		}
 	}
-
-	/*private createServiceStatus(): azdata.FlexContainer {
-		const instructions = utils.createRegistrationInstructions(this._view, true);
-
-		this._connectionStatus = this._view.modelBuilder.infoBox().withProps({
-			text: '',
-			style: 'error',
-			CSSStyles: {
-				...styles.BODY_CSS
-			}
-		}).component();
-
-		this._connectionStatus.CSSStyles = {
-			'width': '350px'
-		};
-
-		this._refreshLoadingComponent = this._view.modelBuilder.loadingComponent().withProps({
-			loading: false,
-			CSSStyles: {
-				...styles.BODY_CSS
-			}
-		}).component();
-
-		this.migrationServiceAuthKeyTable = utils.createAuthenticationKeyTable(this._view, '50px', '500px');
-
-		this._setupContainer = this._view.modelBuilder.flexContainer().withItems(
-			[
-				instructions,
-				this.migrationServiceAuthKeyTable,
-				this._connectionStatus,
-				this._refreshLoadingComponent
-			], {
-			CSSStyles: {
-				'margin-bottom': '5px'
-			}
-		}
-		).withLayout({
-			flexFlow: 'column'
-		}).component();
-
-		this._setupContainer.display = 'none';
-		this._testConnectionButton.hidden = true;
-		return this._setupContainer;
-	}*/
 
 	private async refreshStatus(): Promise<void> {
 		const subscription = this._model._sqlMigrationServiceSubscription;
