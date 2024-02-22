@@ -18,6 +18,7 @@
 			"downloadServiceDoneChannelMsg": "已下载 {0}",
 			"downloadingServiceStatusMsg": "正在下载 {0}",
 			"downloadingServiceChannelMsg": "正在下载 {0}",
+			"entryExtractedChannelMsg": "已提取 {0} ({1}/{2})",
 			"failedToStartServiceErrorMsg": "未能启动 {0}",
 			"installedServiceChannelMsg": "安装于 {0}",
 			"installingServiceStatusMsg": "正在安装 {0}",
@@ -80,6 +81,7 @@
 			"kusto.format.alignColumnDefinitionsInColumns": "列定义是否应对齐?",
 			"kusto.format.datatypeCasing": "数据类型应格式化为大写、小写还是无(不格式化)",
 			"kusto.format.keywordCasing": "关键字应格式化为大写、小写还是无(不格式化)",
+			"title.showLogFile": "显示日志文件",
 			"databasesListProperties.size": "大小(MB)",
 			"cloud.databaseProperties.size": "大小(MB)",
 			"kusto.connectionOptions.groupName.source": "源",
@@ -96,7 +98,8 @@
 			"kusto.connectionOptions.userName.displayName": "用户名",
 			"kusto.connectionOptions.workstationId.displayName": "工作站 ID",
 			"kusto.logDebugInfo": "[可选] 将调试输出记录到控制台(“查看”->“输出”)，然后从下拉列表中选择相应的输出通道",
-			"kusto.tracingLevel": "[可选] 后端服务的日志级别。Azure Data Studio 在每次启动时都会生成文件名；如果文件已存在，日志条目将追加到该文件。有关旧日志文件的清理，请参阅 logRetentionMinutes 和 logFilesRemovalLimit 设置。默认 tracingLevel 记录的内容很少。更改详细级别可能提升日志的记录和磁盘空间要求。“错误”包含“严重”，“警告”包含“错误”，“信息”包含“警告”，“详细级别”包含“信息”"
+			"kusto.tracingLevel": "[可选] 后端服务的日志级别。Azure Data Studio 在每次启动时都会生成文件名；如果文件已存在，日志条目将追加到该文件。有关旧日志文件的清理，请参阅 logRetentionMinutes 和 logFilesRemovalLimit 设置。默认 tracingLevel 记录的内容很少。更改详细级别可能提升日志的记录和磁盘空间要求。“错误”包含“严重”，“警告”包含“错误”，“信息”包含“警告”，“详细级别”包含“信息”",
+			"kusto.tracingServer": "[可选]跟踪 Azure Data Studio 与 Kusto 工具服务到 Kusto 工具服务输出通道之间的通信。警告: 启用详细日志记录时，这可能会包含敏感信息。"
 		}
 	}
 }

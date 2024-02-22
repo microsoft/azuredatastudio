@@ -487,6 +487,12 @@ V8: {7}
         <source xml:lang="en">Marketplace</source>
         <target state="translated">Marketplace</target>
       </trans-unit>
+      <trans-unit id="reviewGuidanceLabel">
+        <source xml:lang="en">Before you report an issue here please &lt;a href="https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions" target="_blank"&gt;review the guidance we provide&lt;/a&gt;.</source>
+        <note>{Locked="&lt;a href="https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions" target="_blank"&gt;"}
+{Locked="&lt;/a&gt;"}</note>
+        <target state="translated">Перед тем как сообщить о проблеме, &lt;a href="https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions" target="_blank"&gt;ознакомьтесь с предоставленными инструкциями&lt;/a&gt;.</target>
+      </trans-unit>
       <trans-unit id="scenarioTypeUndefined">
         <source xml:lang="en">The scenario type for extension recommendations must be provided.</source>
         <target state="translated">Необходимо указать тип сценария для рекомендаций по расширениям.</target>
@@ -652,6 +658,10 @@ Default Skipped Commands:
       <trans-unit id="confirmRemoveUserAccountMessage">
         <source xml:lang="en">Are you sure you want to remove '{0}'?</source>
         <target state="translated">Вы действительно хотите удалить "{0}"?</target>
+      </trans-unit>
+      <trans-unit id="githubCopilotSignOut">
+        <source xml:lang="en">Sign out of GitHub Copilot</source>
+        <target state="translated">Выйти из GitHub Copilot</target>
       </trans-unit>
       <trans-unit id="refreshAccount">
         <source xml:lang="en">Refresh your credentials</source>
@@ -2456,9 +2466,19 @@ Default Skipped Commands:
   </file>
   <file original="src/sql/workbench/contrib/connection/browser/connectionStatus" source-language="en" datatype="plaintext" target-language="ru">
     <body>
+      <trans-unit id="status.connection.baseTooltip">
+        <source xml:lang="en">Server: {0}
+Database: {1}</source>
+        <target state="translated">Сервер: {0}
+База данных: {1}</target>
+      </trans-unit>
       <trans-unit id="status.connection.status">
         <source xml:lang="en">Connection Status</source>
         <target state="translated">Состояние подключения</target>
+      </trans-unit>
+      <trans-unit id="status.connection.tooltipLogin">
+        <source xml:lang="en">Login: {0}</source>
+        <target state="translated">Имя для входа: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -3579,6 +3599,18 @@ Default Skipped Commands:
       <trans-unit id="editData.cellWithNullCharMessage">
         <source xml:lang="en">This cell contains the Unicode null character which is currently not supported for editing.</source>
         <target state="translated">Эта ячейка содержит нуль-символ Юникода, который в настоящее время не поддерживается для редактирования.</target>
+      </trans-unit>
+      <trans-unit id="editData.generalSubmitError">
+        <source xml:lang="en">An error occurred while submitting cell change: &lt;{0}&gt;</source>
+        <target state="translated">Произошла ошибка при отправке изменения ячейки: &lt;{0}&gt;</target>
+      </trans-unit>
+      <trans-unit id="editData.newRowSubmitError">
+        <source xml:lang="en">An error occurred while submitting data to new row: &lt;{0}&gt;</source>
+        <target state="translated">Произошла ошибка при отправке данных в новую строку: &lt;{0}&gt;</target>
+      </trans-unit>
+      <trans-unit id="editData.saveViewSubmitError">
+        <source xml:lang="en">An error occurred while saving local uncommitted changes: &lt;{0}&gt;</source>
+        <target state="translated">Произошла ошибка при сохранении локальных незафиксированных изменений: &lt;{0}&gt;</target>
       </trans-unit>
     </body>
   </file>

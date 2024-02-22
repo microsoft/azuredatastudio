@@ -285,7 +285,6 @@
 			"notebook.overrideEditorTheming.description": "Esegue l'override delle impostazioni predefinite dell'editor di Notebook. Le impostazioni includono il colore di sfondo, il colore della riga corrente e il bordo",
 			"title.pinNotebook": "Aggiungi notebook",
 			"title.PinnedBooks": "Notebook aggiunti",
-			"title.ProvidedBooks": "Jupyter Book disponibili",
 			"title.reinstallNotebookDependencies": "Reinstalla dipendenze di Notebook",
 			"title.removeNotebook": "Rimuovere il blocco appunti",
 			"title.revealInBooksViewlet": "Visualizza nei libri",

@@ -186,6 +186,14 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/Microsoft.azurecore/dist/azureResource/providers/cosmosdb/nosql/cosmosDbNoSqlTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.cosmosDbNoSqlContainerLabel">
+        <source xml:lang="en">Azure CosmosDB for NoSQL</source>
+        <target state="translated">適用於 NoSQL 的 Azure CosmosDB</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/Microsoft.azurecore/dist/azureResource/providers/cosmosdb/postgres/cosmosDbPostgresTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.cosmosDbPostgresContainerLabel">
@@ -360,7 +368,7 @@
     <body>
       <trans-unit id="azure.resource.tree.accountTreeNode.noTenantsLabel">
         <source xml:lang="en">No Tenants found.</source>
-        <target state="new">No Tenants found.</target>
+        <target state="translated">找不到任何租用戶。</target>
       </trans-unit>
     </body>
   </file>

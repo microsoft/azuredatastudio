@@ -1032,10 +1032,6 @@
         <source xml:lang="en">Pinned notebooks</source>
         <target state="translated">固定的笔记本</target>
       </trans-unit>
-      <trans-unit id="title.ProvidedBooks">
-        <source xml:lang="en">Provided Jupyter Books</source>
-        <target state="translated">提供的 Jupyter Book</target>
-      </trans-unit>
       <trans-unit id="title.reinstallNotebookDependencies">
         <source xml:lang="en">Reinstall Notebook dependencies</source>
         <target state="translated">重新安装笔记本依赖项</target>

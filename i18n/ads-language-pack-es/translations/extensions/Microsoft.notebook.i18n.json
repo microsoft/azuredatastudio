@@ -285,7 +285,6 @@
 			"notebook.overrideEditorTheming.description": "Invalide la configuración predeterminada del editor en el editor de Notebook. Los ajustes incluyen el color de fondo, el color de la línea actual y el borde",
 			"title.pinNotebook": "Anclado de cuadernos",
 			"title.PinnedBooks": "Cuadernos anclados",
-			"title.ProvidedBooks": "Libros de Jupyter proporcionados",
 			"title.reinstallNotebookDependencies": "Reinstalar dependencias de Notebook",
 			"title.removeNotebook": "Quitar el bloc de notas",
 			"title.revealInBooksViewlet": "Visualización en libros",

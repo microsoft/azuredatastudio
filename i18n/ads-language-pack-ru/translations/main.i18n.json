@@ -12914,6 +12914,7 @@
 			"postUninstallTooltip": "Перезапустите Azure Data Studio, чтобы завершить удаление этого расширения.",
 			"postUpdateTooltip": "Перезапустите Azure Data Studio, чтобы включить обновленное расширение.",
 			"recommendedExtensions": "Marketplace",
+			"reviewGuidanceLabel": "Перед тем как сообщить о проблеме, <a href=\"https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions\" target=\"_blank\">ознакомьтесь с предоставленными инструкциями</a>.",
 			"scenarioTypeUndefined": "Необходимо указать тип сценария для рекомендаций по расширениям.",
 			"showReleaseNotes": "Отображение заметок о выпуске после обновления. Заметки о выпуске будут открыты в новом окне веб-браузера.",
 			"sql.versionMismatch": "Расширение несовместимо с Azure Data Studio {0}. Расширению требуется: {1}.",
@@ -12946,6 +12947,7 @@
 			"addAccount": "Добавить учетную запись",
 			"applyFilters": "Применить фильтры",
 			"confirmRemoveUserAccountMessage": "Вы действительно хотите удалить \"{0}\"?",
+			"githubCopilotSignOut": "Выйти из GitHub Copilot",
 			"refreshAccount": "Обновление учетных данных",
 			"removeAccount": "Удаление учетной записи",
 			"removeAccountFailed": "Не удалось удалить учетную запись"
@@ -13463,7 +13465,9 @@
 			"sql.maxRecentConnectionsDescription": "Максимальное количество недавно использованных подключений для хранения в списке подключений."
 		},
 		"sql/workbench/contrib/connection/browser/connectionStatus": {
-			"status.connection.status": "Состояние подключения"
+			"status.connection.baseTooltip": "Сервер: {0}\r\nБаза данных: {1}",
+			"status.connection.status": "Состояние подключения",
+			"status.connection.tooltipLogin": "Имя для входа: {0}"
 		},
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
 			"schema.azureResource": "Конечная точка ресурса Azure для поставщика.",
@@ -13791,7 +13795,10 @@
 			"revertRow": "Отменить изменения в текущей строке"
 		},
 		"sql/workbench/contrib/editData/browser/editDataGridPanel": {
-			"editData.cellWithNullCharMessage": "Эта ячейка содержит нуль-символ Юникода, который в настоящее время не поддерживается для редактирования."
+			"editData.cellWithNullCharMessage": "Эта ячейка содержит нуль-символ Юникода, который в настоящее время не поддерживается для редактирования.",
+			"editData.generalSubmitError": "Произошла ошибка при отправке изменения ячейки: <{0}>",
+			"editData.newRowSubmitError": "Произошла ошибка при отправке данных в новую строку: <{0}>",
+			"editData.saveViewSubmitError": "Произошла ошибка при сохранении локальных незафиксированных изменений: <{0}>"
 		},
 		"sql/workbench/contrib/editData/browser/gridActions": {
 			"copySelection": "Копировать",
