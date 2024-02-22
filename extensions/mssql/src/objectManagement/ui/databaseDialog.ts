@@ -906,7 +906,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				this.onFormFieldChange();
 			}),
 			this.filestreamFilegroupsTable.onRowSelected(
-				async () => {
+				() => {
 					if (this.filestreamFilegroupsTable.selectedRows.length === 1) {
 						const fileGroup = this.filestreamDataFileGroupsTableRows[this.filestreamFilegroupsTable.selectedRows[0]];
 						this.filestreamFilegroupNameContainer.display = fileGroup.id < 0 ? 'inline-flex' : 'none';
