@@ -327,8 +327,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private _registerSelectionChangeEvents(collections: AdsWidget[][], option: azdata.ConnectionOption, widget: SelectBox) {
 		if (option.onSelectionChange) {
 			option.onSelectionChange.forEach((event) => {
-				this._register(widget.onDidSelect(value => {
-					let selectedValue = value.selected;
+				this._register(widget.onDidSelect(_ => {
+					let selectedValue = widget.value;
 					event?.dependentOptionActions?.forEach((optionAction) => {
 						let defaultValue: string | undefined = this._customOptions.find(o => o.name === optionAction.optionName)?.defaultValue;
 						let widget: AdsWidget | undefined = this._findWidget(collections, optionAction.optionName);
