@@ -487,6 +487,12 @@ OS: {8}</target>
         <source xml:lang="en">Marketplace</source>
         <target state="translated">市场</target>
       </trans-unit>
+      <trans-unit id="reviewGuidanceLabel">
+        <source xml:lang="en">Before you report an issue here please &lt;a href="https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions" target="_blank"&gt;review the guidance we provide&lt;/a&gt;.</source>
+        <note>{Locked="&lt;a href="https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions" target="_blank"&gt;"}
+{Locked="&lt;/a&gt;"}</note>
+        <target state="translated">在此处报告问题之前，请&lt;a href="https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions" target="_blank"&gt;查看我们提供的指南&lt;/a&gt;。</target>
+      </trans-unit>
       <trans-unit id="scenarioTypeUndefined">
         <source xml:lang="en">The scenario type for extension recommendations must be provided.</source>
         <target state="translated">必须提供扩展建议的方案类型。</target>
@@ -652,6 +658,10 @@ Default Skipped Commands:
       <trans-unit id="confirmRemoveUserAccountMessage">
         <source xml:lang="en">Are you sure you want to remove '{0}'?</source>
         <target state="translated">确定要删除 "{0}" 吗?</target>
+      </trans-unit>
+      <trans-unit id="githubCopilotSignOut">
+        <source xml:lang="en">Sign out of GitHub Copilot</source>
+        <target state="translated">注销 GitHub Copilot</target>
       </trans-unit>
       <trans-unit id="refreshAccount">
         <source xml:lang="en">Refresh your credentials</source>
@@ -2456,9 +2466,19 @@ Default Skipped Commands:
   </file>
   <file original="src/sql/workbench/contrib/connection/browser/connectionStatus" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
+      <trans-unit id="status.connection.baseTooltip">
+        <source xml:lang="en">Server: {0}
+Database: {1}</source>
+        <target state="translated">服务器: {0}
+数据库: {1}</target>
+      </trans-unit>
       <trans-unit id="status.connection.status">
         <source xml:lang="en">Connection Status</source>
         <target state="translated">连接状态</target>
+      </trans-unit>
+      <trans-unit id="status.connection.tooltipLogin">
+        <source xml:lang="en">Login: {0}</source>
+        <target state="translated">登录: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -3579,6 +3599,18 @@ Default Skipped Commands:
       <trans-unit id="editData.cellWithNullCharMessage">
         <source xml:lang="en">This cell contains the Unicode null character which is currently not supported for editing.</source>
         <target state="translated">此单元格包含当前不支持进行编辑的 Unicode 空字符。</target>
+      </trans-unit>
+      <trans-unit id="editData.generalSubmitError">
+        <source xml:lang="en">An error occurred while submitting cell change: &lt;{0}&gt;</source>
+        <target state="translated">提交单元格更改时出错: &lt;{0}&gt;</target>
+      </trans-unit>
+      <trans-unit id="editData.newRowSubmitError">
+        <source xml:lang="en">An error occurred while submitting data to new row: &lt;{0}&gt;</source>
+        <target state="translated">将数据提交到新行时出错:&lt;{0}&gt;</target>
+      </trans-unit>
+      <trans-unit id="editData.saveViewSubmitError">
+        <source xml:lang="en">An error occurred while saving local uncommitted changes: &lt;{0}&gt;</source>
+        <target state="translated">保存本地未提交的更改时出错: &lt;{0}&gt;</target>
       </trans-unit>
     </body>
   </file>

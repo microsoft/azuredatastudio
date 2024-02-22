@@ -152,7 +152,7 @@ const textFields = {
     "licenseText": 'SEE MIT License IN LICENSE.txt',
     "updateText": 'cd ../vscode && npm run update-localization-extension ',
     "vscodeVersion": '*',
-    "azdataVersion": '^1.47.0',
+    "azdataVersion": '^1.48.0',
     "gitUrl": 'https://github.com/Microsoft/azuredatastudio'
 };
 //list of extensions from vscode that are to be included with ADS.

@@ -1032,10 +1032,6 @@ Die Datei wurde in "{2}" umbenannt, um einen Datenverlust zu verhindern.</target
         <source xml:lang="en">Pinned notebooks</source>
         <target state="translated">Angeheftete Notebooks</target>
       </trans-unit>
-      <trans-unit id="title.ProvidedBooks">
-        <source xml:lang="en">Provided Jupyter Books</source>
-        <target state="translated">Bereitgestellte Jupyter Books</target>
-      </trans-unit>
       <trans-unit id="title.reinstallNotebookDependencies">
         <source xml:lang="en">Reinstall Notebook dependencies</source>
         <target state="translated">Notebook-Abhängigkeiten neu installieren</target>

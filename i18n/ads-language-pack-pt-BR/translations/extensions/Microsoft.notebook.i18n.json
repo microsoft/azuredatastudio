@@ -285,7 +285,6 @@
 			"notebook.overrideEditorTheming.description": "Substitua as configurações padrão do editor no editor de Notebook. As configurações incluem a cor da tela de fundo, a cor e a borda da linha atual",
 			"title.pinNotebook": "Fixar Notebook",
 			"title.PinnedBooks": "Notebooks fixados",
-			"title.ProvidedBooks": "Livros Jupyter fornecidos",
 			"title.reinstallNotebookDependencies": "Reinstalar as dependências do Notebook",
 			"title.removeNotebook": "Remover Bloco de Anotações",
 			"title.revealInBooksViewlet": "Revelar nos Livros",

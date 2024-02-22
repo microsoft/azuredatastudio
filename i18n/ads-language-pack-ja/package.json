@@ -11,7 +11,7 @@
 	"license": "SEE MIT License IN LICENSE.txt",
 	"engines": {
 		"vscode": "*",
-		"azdata": "^1.47.0"
+		"azdata": "^1.48.0"
 	},
 	"icon": "languagepack.png",
 	"categories": [
