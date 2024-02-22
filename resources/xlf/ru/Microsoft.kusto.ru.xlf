@@ -34,6 +34,10 @@
         <source xml:lang="en">Downloading {0}</source>
         <target state="translated">Идет загрузка {0}</target>
       </trans-unit>
+      <trans-unit id="entryExtractedChannelMsg">
+        <source xml:lang="en">Extracted {0} ({1}/{2})</source>
+        <target state="translated">Извлечено {0} ({1}/{2})</target>
+      </trans-unit>
       <trans-unit id="failedToStartServiceErrorMsg">
         <source xml:lang="en">Failed to start {0}</source>
         <target state="translated">Не удалось запустить {0}</target>
@@ -262,6 +266,10 @@
         <source xml:lang="en">Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)</source>
         <target state="translated">Следует ли форматировать ключевые слова в верхнем регистре, нижнем регистре или оставить без форматирования ("нет")</target>
       </trans-unit>
+      <trans-unit id="title.showLogFile">
+        <source xml:lang="en">Show Log File</source>
+        <target state="translated">Показать файл журнала</target>
+      </trans-unit>
       <trans-unit id="databasesListProperties.size">
         <source xml:lang="en">Size (MB)</source>
         <target state="translated">Размер (МБ)</target>
@@ -329,6 +337,10 @@
       <trans-unit id="kusto.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
         <target state="translated">[Необязательно] Уровень ведения журнала для серверных служб. Azure Data Studio создает имя файла при каждом запуске, а если такой файл уже существует, записи журналов добавляются в него. Для очистки старых файлов журналов см. описание параметров logRetentionMinutes и logFilesRemovalLimit. Параметр tracingLevel по умолчанию регистрирует не слишком многое. Изменение детализации может привести к тому, что журналы будут занимать слишком много места. Ошибка включает критический уровень, предупреждение включает ошибку, информационный уровень включает предупреждение, а подробный уровень включает информационный уровень.</target>
+      </trans-unit>
+      <trans-unit id="kusto.tracingServer">
+        <source xml:lang="en">[Optional] Traces the communication between Azure Data Studio and Kusto Tools Service to the Kusto Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.</source>
+        <target state="translated">[Необязательно] Отслеживает связь между Azure Data Studio и службой инструментов Kusto до выходного канала службы инструментов Kusto. ПРЕДУПРЕЖДЕНИЕ. Если включить режим подробного ведения журнала, в журнале может появляться конфиденциальная информация.</target>
       </trans-unit>
     </body>
   </file>

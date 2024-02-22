@@ -34,6 +34,10 @@
         <source xml:lang="en">Downloading {0}</source>
         <target state="translated">正在下载 {0}</target>
       </trans-unit>
+      <trans-unit id="entryExtractedChannelMsg">
+        <source xml:lang="en">Extracted {0} ({1}/{2})</source>
+        <target state="translated">已提取 {0} ({1}/{2})</target>
+      </trans-unit>
       <trans-unit id="failedToStartServiceErrorMsg">
         <source xml:lang="en">Failed to start {0}</source>
         <target state="translated">未能启动 {0}</target>
@@ -262,6 +266,10 @@
         <source xml:lang="en">Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)</source>
         <target state="translated">关键字应格式化为大写、小写还是无(不格式化)</target>
       </trans-unit>
+      <trans-unit id="title.showLogFile">
+        <source xml:lang="en">Show Log File</source>
+        <target state="translated">显示日志文件</target>
+      </trans-unit>
       <trans-unit id="databasesListProperties.size">
         <source xml:lang="en">Size (MB)</source>
         <target state="translated">大小(MB)</target>
@@ -329,6 +337,10 @@
       <trans-unit id="kusto.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
         <target state="translated">[可选] 后端服务的日志级别。Azure Data Studio 在每次启动时都会生成文件名；如果文件已存在，日志条目将追加到该文件。有关旧日志文件的清理，请参阅 logRetentionMinutes 和 logFilesRemovalLimit 设置。默认 tracingLevel 记录的内容很少。更改详细级别可能提升日志的记录和磁盘空间要求。“错误”包含“严重”，“警告”包含“错误”，“信息”包含“警告”，“详细级别”包含“信息”</target>
+      </trans-unit>
+      <trans-unit id="kusto.tracingServer">
+        <source xml:lang="en">[Optional] Traces the communication between Azure Data Studio and Kusto Tools Service to the Kusto Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.</source>
+        <target state="translated">[可选]跟踪 Azure Data Studio 与 Kusto 工具服务到 Kusto 工具服务输出通道之间的通信。警告: 启用详细日志记录时，这可能会包含敏感信息。</target>
       </trans-unit>
     </body>
   </file>

@@ -39,8 +39,8 @@
         <target state="translated">-- 不可用 --</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.missing.tables">
-        <source xml:lang="en">0 tables found on source database.</source>
-        <target state="translated">源数据库上找到 0 个表。</target>
+        <source xml:lang="en">0 tables on source database found on target database. To migrate the data in the tables select the migrate schema option above.</source>
+        <target state="translated">在目标数据库上找到源数据库上的 0 个表。若要迁移表中的数据，请选择上面的迁移架构选项。</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.step.1">
         <source xml:lang="en">1. Stop all incoming transactions to the source database.</source>
@@ -61,6 +61,10 @@
       <trans-unit id="sql.migration.cutover.step.3.network.share">
         <source xml:lang="en">3. Verify that all log backups have been restored on the target database. The "Log backups pending restore" value should be zero.</source>
         <target state="translated">3. 验证是否已在目标数据库上还原所有日志备份。“等待还原的日志备份”值应为零。</target>
+      </trans-unit>
+      <trans-unit id="sql.schema.migration.min.version">
+        <source xml:lang="en">5.37.8767.4</source>
+        <target state="new">5.37.8767.4</target>
       </trans-unit>
       <trans-unit id="sql.migration.bc.info">
         <source xml:lang="en">A SQL Managed Instance migration cutover to the Business Critical service tier can take significantly longer than General Purpose because three secondary replicas have to be seeded for Always On High Availability group. The duration of the operation depends on the size of the data. Seeding speed in 90% of cases is 220 GB/hour or higher.</source>
@@ -133,6 +137,18 @@
       <trans-unit id="sql.migration.all.fields.required">
         <source xml:lang="en">All fields are required.</source>
         <target state="translated">所有字段均为必填。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.all.source.tables.empty">
+        <source xml:lang="en">All of source tables are empty. No table is available to select for data migration. But they are available for schema migration if they do not exist on target.</source>
+        <target state="translated">所有源表均为空。没有表可供选择以用于数据迁移。但是，如果它们在目标上不存在，则可用于架构迁移。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.unavailable.source.tables.heading">
+        <source xml:lang="en">All of tables below are empty. No table is available to select for data migration. But if they do not exist on target, schema migration is available.</source>
+        <target state="translated">下面的所有表均为空。没有表可供选择以用于数据迁移。但如果目标上不存在它们，则可以使用架构迁移。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.missing.tables.heading">
+        <source xml:lang="en">All of tables below are missing on target. To migrate the data in these tables, select the migrate schema option above.</source>
+        <target state="translated">目标上缺少以下所有表。若要迁移这些表中的数据，请选择上面的迁移架构选项。</target>
       </trans-unit>
       <trans-unit id="sql.migration.multi.step.all.steps.completed.errors">
         <source xml:lang="en">All steps completed with the following error(s):{0}{1}</source>
@@ -326,6 +342,10 @@
         <source xml:lang="en">Authentication type</source>
         <target state="translated">身份验证类型</target>
       </trans-unit>
+      <trans-unit id="sql.migration.available.table.count.on.target">
+        <source xml:lang="en">Available on target ({0})</source>
+        <target state="translated">在目标上提供({0})</target>
+      </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.link.dmsGuide">
         <source xml:lang="en">Azure Database Migration Guides</source>
         <target state="translated">Azure 数据库迁移指南</target>
@@ -446,6 +466,10 @@ See below for registration instructions.</source>
         <source xml:lang="en">Azure SQL target</source>
         <target state="translated">Azure SQL 目标</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.source.azure.sql.target.not.ready">
+        <source xml:lang="en">Azure SQL target not ready</source>
+        <target state="translated">Azure SQL 目标未就绪</target>
+      </trans-unit>
       <trans-unit id="sql.migration.services.target">
         <source xml:lang="en">Azure SQL target selected as default.</source>
         <target state="translated">Azure SQL 目标选择为默认。</target>
@@ -518,9 +542,25 @@ See below for registration instructions.</source>
         <source xml:lang="en">Azure storage subscription</source>
         <target state="translated">Azure 存储订阅</target>
       </trans-unit>
+      <trans-unit id="sql.migration.schema.msdtctransactsql">
+        <source xml:lang="en">BEGIN DISTRIBUTED TRANSACTION</source>
+        <target state="translated">BEGIN DISTRIBUTED TRANSACTION</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.bulkinsert">
+        <source xml:lang="en">BULK INSERT</source>
+        <target state="translated">BULK INSERT</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.backup.restore">
+        <source xml:lang="en">Backup and restore</source>
+        <target state="translated">备份和还原</target>
+      </trans-unit>
       <trans-unit id="sql.migration.backup.location">
         <source xml:lang="en">Backup location</source>
         <target state="translated">备份位置</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.backup.location.not.ready">
+        <source xml:lang="en">Backup location not ready</source>
+        <target state="translated">备份位置未就绪</target>
       </trans-unit>
       <trans-unit id="sql.migration.backup.file.backup.size">
         <source xml:lang="en">Backup size (MB)</source>
@@ -574,9 +614,21 @@ See below for registration instructions.</source>
         <source xml:lang="en">Business critical</source>
         <target state="translated">业务关键</target>
       </trans-unit>
+      <trans-unit id="sql.migration.schema.rule.compute">
+        <source xml:lang="en">COMPUTE</source>
+        <target state="translated">COMPUTE</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.cpu.requirement">
         <source xml:lang="en">CPU requirement</source>
         <target state="translated">CPU 要求</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.rule.crossdatabasereferences">
+        <source xml:lang="en">CROSS DATABASE REFERENCE</source>
+        <target state="translated">CROSS DATABASE REFERENCE</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.cryptographicprovider">
+        <source xml:lang="en">CRYPTOGRAPHIC PROVIDER</source>
+        <target state="translated">CRYPTOGRAPHIC PROVIDER</target>
       </trans-unit>
       <trans-unit id="sql.migration.saved.assessment.cancel">
         <source xml:lang="en">Cancel</source>
@@ -591,6 +643,10 @@ See below for registration instructions.</source>
         <target state="translated">取消</target>
       </trans-unit>
       <trans-unit id="sql.migration.cancel.migration">
+        <source xml:lang="en">Cancel migration</source>
+        <target state="translated">取消迁移</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cancel.feedback.dialog.title">
         <source xml:lang="en">Cancel migration</source>
         <target state="translated">取消迁移</target>
       </trans-unit>
@@ -686,6 +742,10 @@ See below for registration instructions.</source>
         <source xml:lang="en">Choose how you want to provide performance data</source>
         <target state="translated">选择希望如何提供性能数据</target>
       </trans-unit>
+      <trans-unit id="sql.migration.import.assessment.header">
+        <source xml:lang="en">Choose target platform and view assessment results.</source>
+        <target state="translated">选择目标平台并查看评估结果。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.assessment.results.header">
         <source xml:lang="en">Choose target platform, view assessment results and select database(s) for migration.</source>
         <target state="translated">选择目标平台，查看评估结果并选择要迁移的数据库。</target>
@@ -734,6 +794,22 @@ See below for registration instructions.</source>
         <source xml:lang="en">Collecting target login failed with error code {0}</source>
         <target state="translated">收集目标登录失败，错误代码为 {0}</target>
       </trans-unit>
+      <trans-unit id="sql.migration.status.collectioncompleted">
+        <source xml:lang="en">Collection completed</source>
+        <target state="translated">收集已完成</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.collection.ended">
+        <source xml:lang="en">Collection ended</source>
+        <target state="translated">收集已结束</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.collection.started">
+        <source xml:lang="en">Collection started</source>
+        <target state="translated">收集已启动</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.community.support.title">
+        <source xml:lang="en">Community support</source>
+        <target state="translated">社区支持</target>
+      </trans-unit>
       <trans-unit id="sql.migration.data.uploaded.info">
         <source xml:lang="en">Comparison of the actual amount of data read from the source and the actual amount of data uploaded to the target.</source>
         <target state="translated">比较从源读取的实际数据量和上传到目标的实际数据量。</target>
@@ -741,6 +817,10 @@ See below for registration instructions.</source>
       <trans-unit id="sql.migration.complete.cutover">
         <source xml:lang="en">Complete cutover</source>
         <target state="translated">完成直接转换</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.completed">
+        <source xml:lang="en">Completed</source>
+        <target state="translated">已完成</target>
       </trans-unit>
       <trans-unit id="sql.migration.restore.status.completed">
         <source xml:lang="en">Completed</source>
@@ -753,6 +833,10 @@ See below for registration instructions.</source>
       <trans-unit id="sql.login.migration.status.page.description.completed">
         <source xml:lang="en">Completed migrating {0} logins to {1} '{2}'</source>
         <target state="translated">已完成将 {0} 个登录迁移到 {1} "{2}"</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.completedwitherrors">
+        <source xml:lang="en">Completed with errors</source>
+        <target state="translated">已完成，但出现错误</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.completing">
         <source xml:lang="en">Completing</source>
@@ -773,6 +857,10 @@ See below for registration instructions.</source>
       <trans-unit id="sql.migration.connection.label">
         <source xml:lang="en">Connect</source>
         <target state="translated">连接</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.community.support.description">
+        <source xml:lang="en">Connect with Microsoft Community</source>
+        <target state="translated">与 Microsoft Community 联系</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.target.connection.error">
         <source xml:lang="en">Connection error: {0}</source>
@@ -797,6 +885,10 @@ See below for registration instructions.</source>
       <trans-unit id="sql.migration.wizard.target.connection.success">
         <source xml:lang="en">Connection was successful. Target databases found: {0}</source>
         <target state="translated">连接成功。已找到目标数据库: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.continue.with.migration.later">
+        <source xml:lang="en">Continue with migration later</source>
+        <target state="translated">稍后继续迁移</target>
       </trans-unit>
       <trans-unit id="sql.migration.sqldb.column.copyduration">
         <source xml:lang="en">Copy duration</source>
@@ -854,6 +946,10 @@ See below for registration instructions.</source>
         <source xml:lang="en">Create Azure Database Migration Service</source>
         <target state="translated">创建 Azure 数据库迁移服务</target>
       </trans-unit>
+      <trans-unit id="sql.migration.support.request.descrption">
+        <source xml:lang="en">Create a support request</source>
+        <target state="translated">创建支持请求</target>
+      </trans-unit>
       <trans-unit id="sql.migration.create.new">
         <source xml:lang="en">Create new</source>
         <target state="translated">新建</target>
@@ -882,6 +978,10 @@ See below for registration instructions.</source>
         <source xml:lang="en">Cutover in progress for database '{0}'</source>
         <target state="translated">正在对数据库“{0}”进行直接转换</target>
       </trans-unit>
+      <trans-unit id="sql.migration.schema.disabledefcnstchk">
+        <source xml:lang="en">DISABLE_DEF_CNST_CHK</source>
+        <target state="translated">DISABLE_DEF_CNST_CHK</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tab.dashboard.title">
         <source xml:lang="en">Dashboard</source>
         <target state="translated">仪表板</target>
@@ -889,6 +989,10 @@ See below for registration instructions.</source>
       <trans-unit id="sql.migration.sku.data.iops.requirement">
         <source xml:lang="en">Data IOPS requirement</source>
         <target state="translated">数据 IOPS 要求</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.dms.service.or.ir.not.ready">
+        <source xml:lang="en">Data Migration Service / IR node not ready</source>
+        <target state="translated">数据迁移服务/IR 节点未就绪</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.status.stopped">
         <source xml:lang="en">Data collection for Azure recommendations has been stopped.</source>
@@ -902,9 +1006,17 @@ See below for registration instructions.</source>
         <source xml:lang="en">Data collection still in progress. </source>
         <target state="translated">数据收集仍在进行。 </target>
       </trans-unit>
+      <trans-unit id="sql.migration.data.migration.header">
+        <source xml:lang="en">Data migration</source>
+        <target state="translated">数据迁移</target>
+      </trans-unit>
       <trans-unit id="sql.migration.copy.throughput.info">
         <source xml:lang="en">Data movement throughput achieved during the migration of your database backups to Azure. This is the rate of data transfer, calculated by data read divided by duration of backups migration to Azure.</source>
         <target state="translated">将数据库备份迁移到 Azure 期间实现的数据移动吞吐量。这是数据传输速率，计算方式为读取的数据除以备份迁移到 Azure 的持续时间。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.data.only">
+        <source xml:lang="en">Data only</source>
+        <target state="translated">仅限数据</target>
       </trans-unit>
       <trans-unit id="sql.migration.sqldb.column.dataread">
         <source xml:lang="en">Data read</source>
@@ -1046,6 +1158,30 @@ See below for registration instructions.</source>
         <source xml:lang="en">Delete migration</source>
         <target state="translated">删除迁移</target>
       </trans-unit>
+      <trans-unit id="sql.migration.status.deploying.schema">
+        <source xml:lang="en">Deploying schema</source>
+        <target state="translated">正在部署架构</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.deployment.completed">
+        <source xml:lang="en">Deployment completed</source>
+        <target state="translated">部署已完成</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.deployment.count">
+        <source xml:lang="en">Deployment count</source>
+        <target state="translated">部署计数</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.deployment.ended">
+        <source xml:lang="en">Deployment ended</source>
+        <target state="translated">部署已结束</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.deployment.error.count">
+        <source xml:lang="en">Deployment error count</source>
+        <target state="translated">部署错误计数</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.deployment.started">
+        <source xml:lang="en">Deployment started</source>
+        <target state="translated">部署已启动</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tde.validation.description">
         <source xml:lang="en">Description</source>
         <target state="translated">说明</target>
@@ -1085,6 +1221,10 @@ See below for registration instructions.</source>
       <trans-unit id="sql.migration.sku.storage.dimension">
         <source xml:lang="en">Dimension</source>
         <target state="translated">维度</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cancel.feedback.dialog.description">
+        <source xml:lang="en">Do you want to cancel migration? Your unsaved changes will be discarded.</source>
+        <target state="translated">是否要取消迁移?将丢弃未保存的更改。</target>
       </trans-unit>
       <trans-unit id="sql.retry.migration.prompt">
         <source xml:lang="en">Do you want to retry the failed table migrations?</source>
@@ -1162,6 +1302,10 @@ See below for registration instructions.</source>
         <source xml:lang="en">Ensure that the service account running the source SQL Server instance has read privileges on the network share.</source>
         <target state="translated">请确保运行源 SQL Server 实例的服务帐户对网络共享拥有读取权限。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.database.schema.migration.help">
+        <source xml:lang="en">Ensure to migrate the database schema from source to target before starting the migration by using the Database Schema Migration feature ({0}) or {1} or the {2} in Azure Data Studio before selecting the list of tables to migrate.</source>
+        <target state="translated">请在选择要迁移的表列表之前使用数据库架构迁移功能({0})、{1} 或 Azure Data Studio 中的 {2}，在开始迁移前，确保将数据库架构从源迁移到目标。</target>
+      </trans-unit>
       <trans-unit id="sql.login.migration.aad.domain.name.input.box.placeholder">
         <source xml:lang="en">Enter AAD Domain Name</source>
         <target state="translated">输入 AAD 域名</target>
@@ -1226,6 +1370,10 @@ See below for registration instructions.</source>
         <source xml:lang="en">Enter the target password</source>
         <target state="translated">输入目标密码</target>
       </trans-unit>
+      <trans-unit id="sql.migration.port.placeholder">
+        <source xml:lang="en">Enter the target port</source>
+        <target state="translated">输入目标端口</target>
+      </trans-unit>
       <trans-unit id="sql.migration.username.placeholder">
         <source xml:lang="en">Enter the target user name</source>
         <target state="translated">输入目标用户名</target>
@@ -1286,9 +1434,21 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Establishing user mappings failed</source>
         <target state="translated">建立用户映射失败</target>
       </trans-unit>
+      <trans-unit id="sql.migration.support.resources.description">
+        <source xml:lang="en">Explore documentation</source>
+        <target state="translated">浏览文档</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tde.wizard.optionads">
         <source xml:lang="en">Export my certificates and private keys to the target.</source>
         <target state="translated">将我的证书和私钥导出到目标。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.fastfirstrow">
+        <source xml:lang="en">FASTFIRSTROW</source>
+        <target state="translated">FASTFIRSTROW</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.filestream">
+        <source xml:lang="en">FILESTREAM</source>
+        <target state="translated">FILESTREAM</target>
       </trans-unit>
       <trans-unit id="sql.migration.state.failed">
         <source xml:lang="en">Failed</source>
@@ -1430,9 +1590,21 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">General purpose</source>
         <target state="translated">常规用途</target>
       </trans-unit>
+      <trans-unit id="sql.migration.status.generatingscript">
+        <source xml:lang="en">Generating script</source>
+        <target state="translated">正在生成脚本</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.generatingcompleted">
+        <source xml:lang="en">Generating script completed</source>
+        <target state="translated">脚本生成已完成</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.get.recommendation">
         <source xml:lang="en">Get Azure recommendation</source>
         <target state="translated">获取 Azure 建议</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.getdependency">
+        <source xml:lang="en">Get dependency</source>
+        <target state="translated">获取依赖项</target>
       </trans-unit>
       <trans-unit id="sql.migration.recommended.configuration.summary.label.description">
         <source xml:lang="en">Get the right-sized SKU recommendations for Azure SQL Targets.</source>
@@ -1441,6 +1613,18 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.table.selection.status.column">
         <source xml:lang="en">Has rows</source>
         <target state="translated">具有行</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.help.support.title">
+        <source xml:lang="en">Help + Support</source>
+        <target state="translated">帮助和支持</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tab.button.help.support.description">
+        <source xml:lang="en">Help + Support</source>
+        <target state="translated">帮助和支持</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tab.button.help.support.label">
+        <source xml:lang="en">Help + Support</source>
+        <target state="translated">帮助和支持</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.title">
         <source xml:lang="en">Help articles and video links</source>
@@ -1478,6 +1662,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">If results were expected, verify the connection to the SQL Server instance.</source>
         <target state="translated">如果结果在预期内，请验证与 SQL Server 实例的连接。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.others.input.box.note">
+        <source xml:lang="en">If you selected others, please write a short note.</source>
+        <target state="translated">如果选择了“其他”，请撰写简短备注。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.impact">
         <source xml:lang="en">Impact</source>
         <target state="translated">影响</target>
@@ -1489,6 +1677,14 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.import">
         <source xml:lang="en">Import</source>
         <target state="translated">导入</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tab.import.migration.label">
+        <source xml:lang="en">Import assessment</source>
+        <target state="translated">导入评估</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tab.import.migration.description">
+        <source xml:lang="en">Import assessment to Azure SQL</source>
+        <target state="translated">将评估导入到 Azure SQL</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.import.performance.data">
         <source xml:lang="en">Import performance data</source>
@@ -1537,6 +1733,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.instance">
         <source xml:lang="en">Instance</source>
         <target state="translated">实例</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.different.ir.version.error">
+        <source xml:lang="en">Integration Runtime versions [{0}] are not the same. Please have the same version of Integration Runtime across all nodes for consistency and optimal performance.</source>
+        <target state="translated">Integration Runtime 版本 [{0}] 是不同的。请在所有节点上使用具有相同版本的 Integration Runtime，以实现一致性和最佳性能。</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.result.label.shir">
         <source xml:lang="en">Integration runtime connectivity</source>
@@ -1646,13 +1846,13 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Learn more about things you need before starting a migration.</source>
         <target state="translated">在开始迁移之前，请了解有关所需内容的详细信息。</target>
       </trans-unit>
-      <trans-unit id="sql.migration.wizard.troubleshooting">
-        <source xml:lang="en">Learn more: https://aka.ms/dms-migrations-troubleshooting.</source>
-        <target state="translated">了解详细信息: https://aka.ms/dms-migrations-troubleshooting。</target>
-      </trans-unit>
       <trans-unit id="sql.migration.wizard.account.add.button.label">
         <source xml:lang="en">Link account</source>
         <target state="translated">链接帐户</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.load.assessment.report">
+        <source xml:lang="en">Load assessment report</source>
+        <target state="translated">加载评估报告</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.loading.help">
         <source xml:lang="en">Loading Migration Services</source>
@@ -1722,10 +1922,6 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Logs IOPS requirement</source>
         <target state="translated">日志 IOPS 要求</target>
       </trans-unit>
-      <trans-unit id="sql.migration.database.schema.migration.help">
-        <source xml:lang="en">Make sure to migrate the database schema from source to target by using the {0} or the {1} in Azure Data Studio before selecting the list of tables to migrate.</source>
-        <target state="translated">选择要迁移的表列表之前，请确保使用{0}或 Azure Data Studio 中的 {1} 将数据库架构从源迁移到目标。</target>
-      </trans-unit>
       <trans-unit id="sql.migration.field.label.mi.restore.state">
         <source xml:lang="en">Managed instance restore state</source>
         <target state="translated">托管实例还原状态</target>
@@ -1789,6 +1985,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.dashboard.login.migrate.task.button">
         <source xml:lang="en">Migrate logins to Azure SQL</source>
         <target state="translated">将登录迁移到 Azure SQL</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.migration.checkbox.info">
+        <source xml:lang="en">Migrate schema to target</source>
+        <target state="translated">将架构迁移到目标</target>
       </trans-unit>
       <trans-unit id="sql.migration.tab.button.migration.description">
         <source xml:lang="en">Migrate to Azure SQL</source>
@@ -1906,6 +2106,18 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Migration status: {0}{1}{2}</source>
         <target state="translated">迁移状态: {0}{1}{2}</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.migration.taking.longer">
+        <source xml:lang="en">Migration taking longer or having issues</source>
+        <target state="translated">迁移需要更长时间或出现问题</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.type">
+        <source xml:lang="en">Migration type</source>
+        <target state="translated">迁移类型</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.migration.migration.type.tool.tip">
+        <source xml:lang="en">Migration type includes: Schema only migration, Data only migration, Schema and data migration.</source>
+        <target state="translated">迁移类型包括: 仅限架构迁移、仅数据迁移、架构和数据迁移。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tab.migrations.title">
         <source xml:lang="en">Migrations</source>
         <target state="translated">迁移</target>
@@ -1913,6 +2125,14 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.details.breadcrumb.migrations">
         <source xml:lang="en">Migrations</source>
         <target state="translated">迁移</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.missing.count">
+        <source xml:lang="en">Missing on target ({0})</source>
+        <target state="translated">在目标上缺少({0})</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.partial.missing">
+        <source xml:lang="en">Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. No tables selected will migrate missing schema only.</source>
+        <target state="translated">目标上缺少架构。除非选择此选项，否则会禁用某些表且无法迁移。不选择任何表将仅迁移缺少的架构。</target>
       </trans-unit>
       <trans-unit id="sql.migration.mode">
         <source xml:lang="en">Mode</source>
@@ -1958,6 +2178,26 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Names:</source>
         <target state="translated">名称:</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.need.to.analyse.findings">
+        <source xml:lang="en">Need to analyse/fix the findings</source>
+        <target state="translated">需要分析/修复结果</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.change.source.sql.server">
+        <source xml:lang="en">Need to change source SQL Server</source>
+        <target state="translated">需要更改源 SQL Server</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.need.to.evaluate.recommended.sku">
+        <source xml:lang="en">Need to evaluate the recommended SKU</source>
+        <target state="translated">需要评估推荐的 SKU</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.need.to.review.login.selection">
+        <source xml:lang="en">Need to review login selection</source>
+        <target state="translated">需要查看登录选择</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.need.to.review.table.selection">
+        <source xml:lang="en">Need to review table selection</source>
+        <target state="translated">需要查看表选择</target>
+      </trans-unit>
       <trans-unit id="sql.migration.needs.review">
         <source xml:lang="en">Needs review</source>
         <target state="translated">需要审核</target>
@@ -2001,14 +2241,6 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.tab.button.migration.label">
         <source xml:lang="en">New migration</source>
         <target state="translated">新建迁移</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.tab.button.support.description">
-        <source xml:lang="en">New support request</source>
-        <target state="translated">新建支持请求</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.tab.button.support.label">
-        <source xml:lang="en">New support request</source>
-        <target state="translated">新建支持请求</target>
       </trans-unit>
       <trans-unit id="sql.migration.newSupportRequest">
         <source xml:lang="en">New support request</source>
@@ -2090,6 +2322,10 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">No pending backups. Click refresh to check current status.</source>
         <target state="translated">没有挂起的备份。请单击“刷新”以检查当前状态。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.cancel.feedback.no.reason.selected">
+        <source xml:lang="en">No reason selected</source>
+        <target state="translated">未选择原因</target>
+      </trans-unit>
       <trans-unit id="sql.migration.wizard.sku.error.noRecommendation">
         <source xml:lang="en">No recommendation available</source>
         <target state="translated">无可用建议</target>
@@ -2097,6 +2333,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.resource.group.not.found">
         <source xml:lang="en">No resource groups found.</source>
         <target state="translated">未找到资源组。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.full.missing">
+        <source xml:lang="en">No schema was found on target. This option must be selected to migrate this database. No tables selected will migrate missing schema only.</source>
+        <target state="translated">在目标上找不到架构。必须选择此选项才能迁移此数据库。不选择任何表将仅迁移缺少的架构。</target>
       </trans-unit>
       <trans-unit id="sql.migration.no.storageAccount.found">
         <source xml:lang="en">No storage accounts found.</source>
@@ -2134,6 +2374,10 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Not applicable</source>
         <target state="translated">不适用</target>
       </trans-unit>
+      <trans-unit id="sql.migration.not.exist.in.target.table.name.column">
+        <source xml:lang="en">Not exist on target</source>
+        <target state="translated">目标上不存在</target>
+      </trans-unit>
       <trans-unit id="sql.migration.not.ready">
         <source xml:lang="en">Not ready</source>
         <target state="translated">未就绪</target>
@@ -2158,9 +2402,21 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">OK</source>
         <target state="translated">确定</target>
       </trans-unit>
+      <trans-unit id="sql.migration.schema.openrowset.nonazureblob">
+        <source xml:lang="en">OPENROWSET WITH NON-AZURE BLOB</source>
+        <target state="translated">OPENROWSET WITH NON-AZURE BLOB</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.openrowset.provider">
+        <source xml:lang="en">OPENROWSET WITH PROVIDER</source>
+        <target state="translated">OPENROWSET WITH PROVIDER</target>
+      </trans-unit>
       <trans-unit id="sql.migration.object.details">
         <source xml:lang="en">Object details</source>
         <target state="translated">对象详细信息</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.objects.collection">
+        <source xml:lang="en">Objects collected</source>
+        <target state="translated">对象已收集</target>
       </trans-unit>
       <trans-unit id="sql.migration.offline">
         <source xml:lang="en">Offline</source>
@@ -2258,6 +2514,18 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
         <target state="translated">请先选择数据库备份文件的位置，然后再继续。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.cancel.feedback.reason.container.description">
+        <source xml:lang="en">Please take a moment to tell us the reason for canceling the migration. This will help us improve the experience.</source>
+        <target state="translated">请花点时间告诉我们取消迁移的原因。这将有助于我们改进体验。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.port.label">
+        <source xml:lang="en">Port</source>
+        <target state="translated">端口</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.prefetchobjects">
+        <source xml:lang="en">Prefetch objects</source>
+        <target state="translated">预提取对象</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsd">
         <source xml:lang="en">Premium SSD</source>
         <target state="translated">高级 SSD</target>
@@ -2298,6 +2566,10 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Provide the network share location where the backups are stored, and the user credentials used to access the share.</source>
         <target state="translated">提供存储备份的网络共享位置，以及用于访问共享的用户凭据。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.database.schema.migration.public.preview">
+        <source xml:lang="en">Public Preview</source>
+        <target state="translated">公共预览版</target>
+      </trans-unit>
       <trans-unit id="sql.migration.restore.backupset.status.queued">
         <source xml:lang="en">Queued</source>
         <target state="translated">已排队</target>
@@ -2309,6 +2581,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.field.label.queued.files">
         <source xml:lang="en">Queued files</source>
         <target state="translated">排队的文件</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.raiserror">
+        <source xml:lang="en">RAISERROR</source>
+        <target state="translated">RAISERROR</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommended.configuration.summary.label.caps">
         <source xml:lang="en">RECOMMENDED CONFIGURATION</source>
@@ -2333,6 +2609,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.ready.warn">
         <source xml:lang="en">Ready with warnings</source>
         <target state="translated">已准备好，出现警告</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cancel.feedback.reason.container.title">
+        <source xml:lang="en">Reason for canceling migration</source>
+        <target state="translated">取消迁移的原因</target>
       </trans-unit>
       <trans-unit id="sql.migration.copy.status.rebuildingindexes">
         <source xml:lang="en">Rebuilding indexes</source>
@@ -2366,10 +2646,6 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Recommended storage configuration</source>
         <target state="translated">建议的存储配置</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.refine.recommendation">
-        <source xml:lang="en">Refine Azure recommendation</source>
-        <target state="translated">优化 Azure 建议</target>
-      </trans-unit>
       <trans-unit id="sql.migration.status.refresh.label">
         <source xml:lang="en">Refresh</source>
         <target state="translated">刷新</target>
@@ -2386,13 +2662,13 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Refresh</source>
         <target state="translated">刷新</target>
       </trans-unit>
-      <trans-unit id="sql.migration.refresh.sku.label">
-        <source xml:lang="en">Refresh SKU recommendations</source>
-        <target state="translated">刷新 SKU 建议</target>
-      </trans-unit>
       <trans-unit id="sql.migration.refresh.assessment.label">
-        <source xml:lang="en">Refresh assessment</source>
+        <source xml:lang="en">Refresh Assessment</source>
         <target state="translated">刷新评估</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.refresh.sku.label">
+        <source xml:lang="en">Refresh SKU</source>
+        <target state="translated">刷新 SKU</target>
       </trans-unit>
       <trans-unit id="sql.migration.refresh.key1">
         <source xml:lang="en">Refresh key 1</source>
@@ -2401,10 +2677,6 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.refresh.key2">
         <source xml:lang="en">Refresh key 2</source>
         <target state="translated">刷新密钥 2</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.sku.refresh.recommendation">
-        <source xml:lang="en">Refresh recommendation</source>
-        <target state="translated">刷新建议</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.select.in.progress">
         <source xml:lang="en">Refreshing login list from source and target</source>
@@ -2650,6 +2922,78 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Scale factor</source>
         <target state="translated">比例因子</target>
       </trans-unit>
+      <trans-unit id="sql.migration.schema.data">
+        <source xml:lang="en">Schema and data</source>
+        <target state="translated">架构和数据</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.migration.column.label">
+        <source xml:lang="en">Schema migration</source>
+        <target state="translated">架构迁移</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.migration.header">
+        <source xml:lang="en">Schema migration</source>
+        <target state="translated">架构迁移</target>
+      </trans-unit>
+      <trans-unit id="sql.schema.migration.information">
+        <source xml:lang="en">Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [{1}] or higher. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.</source>
+        <target state="translated">架构迁移位于步骤 6 的 {0} 中。它需要 [{1}] 或更高版本的 Integration Runtime。架构部署将尽力部署数据库对象。架构部署错误不会阻止数据迁移。</target>
+      </trans-unit>
+      <trans-unit id="sql.schema.migration.windows.auth.error">
+        <source xml:lang="en">Schema migration is not currently supported for connectivity to source instance using Windows Authentication. Please use SQL Authentication to enable schema migration support.</source>
+        <target state="translated">使用 Windows 身份验证的源实例连接当前不支持架构迁移。请使用 SQL 身份验证启用架构迁移支持。</target>
+      </trans-unit>
+      <trans-unit id="sql.schema.migration.update.ir.version.error">
+        <source xml:lang="en">Schema migration requires an Integration Runtime version of [{0}] or higher. The current node version(s) are: [{1}]. Please install a newer version of the Integration Runtime to enable schema migration support.</source>
+        <target state="translated">架构迁移需要 Integration Runtime 版本为 [{0}] 或更高版本。当前节点版本为: [{1}]。请安装更新版本的 Integration Runtime 以启用架构迁移支持。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.status">
+        <source xml:lang="en">Schema migration status</source>
+        <target state="translated">架构迁移状态</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.only">
+        <source xml:lang="en">Schema only</source>
+        <target state="translated">仅限架构</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.no.missing">
+        <source xml:lang="en">Schema was found on target. Schema migration is not required.</source>
+        <target state="translated">在目标上找到架构。不需要架构迁移。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.deployment">
+        <source xml:lang="en">Script deployment</source>
+        <target state="translated">脚本部署</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.generation">
+        <source xml:lang="en">Script generation</source>
+        <target state="translated">脚本生成</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.count">
+        <source xml:lang="en">Scripted objects count</source>
+        <target state="translated">脚本对象计数</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.ended">
+        <source xml:lang="en">Scripting ended</source>
+        <target state="translated">脚本编写已结束</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.fail.count">
+        <source xml:lang="en">Scripting error count</source>
+        <target state="translated">脚本错误计数</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.scriptindexes">
+        <source xml:lang="en">Scripting indexes</source>
+        <target state="translated">脚本索引</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.scriptobjects">
+        <source xml:lang="en">Scripting objects</source>
+        <target state="translated">编写对象脚本</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.scriptownership">
+        <source xml:lang="en">Scripting ownerships</source>
+        <target state="translated">脚本所有权</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.started">
+        <source xml:lang="en">Scripting started</source>
+        <target state="translated">脚本已启动</target>
+      </trans-unit>
       <trans-unit id="sql.migration.search">
         <source xml:lang="en">Search</source>
         <target state="translated">搜索</target>
@@ -2657,6 +3001,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.restore.status.searching.backups">
         <source xml:lang="en">Searching backups</source>
         <target state="translated">正在搜索备份</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.troubleshooting">
+        <source xml:lang="en">See link for more troubleshooting steps: https://aka.ms/dms-migrations-troubleshooting.</source>
+        <target state="translated">有关更多故障排除步骤，请参阅链接: https://aka.ms/dms-migrations-troubleshooting。</target>
       </trans-unit>
       <trans-unit id="sql.migration.select">
         <source xml:lang="en">Select</source>
@@ -2686,9 +3034,9 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Select a blob container value first.</source>
         <target state="translated">首先选择一个 Blob 容器值。</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.import.performance.data.dialog.open.file">
-        <source xml:lang="en">Select a file</source>
-        <target state="translated">选择文件</target>
+      <trans-unit id="sql.migration.sku.import.performance.data.dialog.open.folder">
+        <source xml:lang="en">Select a folder</source>
+        <target state="translated">选择一个文件夹</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.import.performance.data.dialog.helper.message">
         <source xml:lang="en">Select a folder on your local drive</source>
@@ -2774,6 +3122,10 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Select tables for {0}</source>
         <target state="translated">选择 {0} 的表</target>
       </trans-unit>
+      <trans-unit id="sql.migration.data.migration.info">
+        <source xml:lang="en">Select tables to migrate data to your Azure SQL target</source>
+        <target state="translated">选择表以将数据迁移到 Azure SQL 目标</target>
+      </trans-unit>
       <trans-unit id="sql.migration.select.service.select.target.type.">
         <source xml:lang="en">Select target Azure SQL Type</source>
         <target state="translated">选择目标 Azure SQL 类型</target>
@@ -2809,6 +3161,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.map.target.description">
         <source xml:lang="en">Select the target database where you would like to migrate your source database to.  You can choose a target database for only one source database.</source>
         <target state="translated">选择要将源数据库迁移到的目标数据库。只能为一个源数据库选择目标数据库。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.migration.info">
+        <source xml:lang="en">Select this option to migrate missing tables on your Azure SQL target</source>
+        <target state="translated">选择此选项可迁移 Azure SQL 目标上缺少的表</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.azure.vm">
         <source xml:lang="en">Select your target Azure Subscription and your target SQL Server on Azure Virtual Machine for your target.</source>
@@ -3138,6 +3494,14 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Summary</source>
         <target state="translated">摘要</target>
       </trans-unit>
+      <trans-unit id="sql.migration.support.request.title">
+        <source xml:lang="en">Support request</source>
+        <target state="translated">支持请求</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.support.resources.title">
+        <source xml:lang="en">Support resources</source>
+        <target state="translated">支持资源</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tde.migrate.required">
         <source xml:lang="en">TDE certificate migration must be successful before continuing.</source>
         <target state="translated">必须先成功迁移 TDE 证书，然后才能继续。</target>
@@ -3149,6 +3513,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.table.migration.status.label">
         <source xml:lang="en">Table migration status: {0}</source>
         <target state="translated">表迁移状态: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.unavailable.table.name.column">
+        <source xml:lang="en">Table name</source>
+        <target state="translated">表名</target>
       </trans-unit>
       <trans-unit id="sql.migration.sqldb.column.tablename">
         <source xml:lang="en">Table name</source>
@@ -3165,10 +3533,6 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.database.table.selection.label">
         <source xml:lang="en">Table selection</source>
         <target state="translated">表选择</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.table.missing.count">
-        <source xml:lang="en">Tables missing on target: {0}</source>
-        <target state="translated">目标上缺少的表: {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.target.table.count.name">
         <source xml:lang="en">Tables selected</source>
@@ -3302,6 +3666,14 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">The database is ready to migrate.</source>
         <target state="translated">数据库已准备好迁移。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.schema.assessment.warning.message">
+        <source xml:lang="en">The detected issues shown below might fail the schema migration. Some of them might be entirely unsupported and the others might be partially supported in Azure SQL Database. 
+Therefore, please review the assessment results and make sure all of the issues will not fail the schema migration.
+However, it is allowed to proceed the schema migration and Azure Database Migration Service will migrate the objects as possible as it can.</source>
+        <target state="translated">下面显示的检测到的问题可能会导致架构迁移失败。其中一些可能完全不受支持，而其他的可能在 Azure SQL 数据库中部分受支持。
+因此，请查看评估结果，并确保所有问题都不会导致架构迁移失败。
+但是，它可以继续进行架构迁移，Azure 数据库迁移服务将尽可能地迁移对象。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.database.migration.duration.tool.tip">
         <source xml:lang="en">The duration of the migration</source>
         <target state="translated">迁移的持续时间</target>
@@ -3365,6 +3737,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.sku.azureRecommendation.status.autoRefreshTimer">
         <source xml:lang="en">Time before next SKU recommendation update: {0} minute(s).</source>
         <target state="translated">距离下次 SKU 建议更新: {0} 分钟。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.select.skip.assessment.check.to.continue">
+        <source xml:lang="en">To continue, check skip assessment option.</source>
+        <target state="translated">若要继续，检查“跳过评估”选项。</target>
       </trans-unit>
       <trans-unit id="sql.migration.missing.targetPassword.error">
         <source xml:lang="en">To continue, enter a valid target password.</source>
@@ -3458,6 +3834,10 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">To proceed, press Select button</source>
         <target state="translated">若要继续，请按“选择”按钮</target>
       </trans-unit>
+      <trans-unit id="sql.migration.support.request.note">
+        <source xml:lang="en">To receive assistance from Microsoft customer support, please submit a support request.</source>
+        <target state="translated">若要从 Microsoft 客户支持部门获得帮助，请提交支持请求。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.total.findings.label">
         <source xml:lang="en">Total findings: {0}</source>
         <target state="translated">总结果: {0}</target>
@@ -3505,6 +3885,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.UltraSsd">
         <source xml:lang="en">Ultra SSD</source>
         <target state="translated">超级 SSD</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.unavailable.count">
+        <source xml:lang="en">Unavailable for data migration ({0})</source>
+        <target state="translated">不可用于数据迁移({0})</target>
       </trans-unit>
       <trans-unit id="sql.migration.restore.backuptype.unknown">
         <source xml:lang="en">Unknown</source>
@@ -3646,6 +4030,10 @@ Establishing user mappings.</source>
         <source xml:lang="en">Waiting</source>
         <target state="translated">正在等待</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.waiting.for.downtime.window">
+        <source xml:lang="en">Waiting for downtime window</source>
+        <target state="translated">正在等待故障时间窗口</target>
+      </trans-unit>
       <trans-unit id="waitingForService">
         <source xml:lang="en">Waiting for {0} component to start.</source>
         <target state="translated">正在等待{0}组件启动。</target>
@@ -3722,6 +4110,10 @@ This may take some time.</source>
         <source xml:lang="en">You can also choose to select this data from an existing folder, if you have already collected it previously.</source>
         <target state="translated">如果之前已收集此数据，则还可以选择从现有文件夹中选择此数据。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.community.support.note">
+        <source xml:lang="en">You can post your question with the Microsoft community support through the Q&amp;A channel.</source>
+        <target state="translated">可以通过问答频道向 Microsoft 社区支持人员发布问题。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tde.msg.tde">
         <source xml:lang="en">You have given Azure Data Studio access to migrate the encryption certificates and database.</source>
         <target state="translated">你已授予 Azure Data Studio 迁移加密证书和数据库的访问权限。</target>
@@ -3741,6 +4133,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.sku.resource">
         <source xml:lang="en">Your Azure SQL target resource name</source>
         <target state="translated">Azure SQL 目标资源名称</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.resource.port">
+        <source xml:lang="en">Your Azure SQL target resource port number : 0 - 65535</source>
+        <target state="translated">你的 Azure SQL 目标资源端口号: 0 - 65535</target>
       </trans-unit>
       <trans-unit id="sql.migration.pre.req.4">
         <source xml:lang="en">Your database backup location details, either a network file share or an Azure Blob Storage container (not required for Azure SQL Database targets).</source>
@@ -3918,6 +4314,10 @@ This may take some time.</source>
         <source xml:lang="en">{0} of {1} tables selected</source>
         <target state="translated">已选择 {0} 个表(共 {1} 个)</target>
       </trans-unit>
+      <trans-unit id="sql.migration.table.selection.count.to.target">
+        <source xml:lang="en">{0} of {1} tables selected for migration</source>
+        <target state="translated">已选择 {0} 个表进行迁移，共 {1} 个</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tde.wizard.databases.selected">
         <source xml:lang="en">{0} out of {1} selected database(s) is using transparent data encryption.</source>
         <target state="translated">{1} 中所选 {0} 数据库正在使用透明数据加密。</target>
@@ -4085,6 +4485,10 @@ This may take some time.</source>
       <trans-unit id="database-details-menu">
         <source xml:lang="en">Database details</source>
         <target state="translated">数据库详细信息</target>
+      </trans-unit>
+      <trans-unit id="data-collection-path-description">
+        <source xml:lang="en">Default path to store collected performance data for SKU recommendations.</source>
+        <target state="translated">用于存储收集的性能数据以提供 SKU 建议的默认路径。</target>
       </trans-unit>
       <trans-unit id="delete-migration-menu">
         <source xml:lang="en">Delete migration</source>

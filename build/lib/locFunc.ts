@@ -166,7 +166,7 @@ const textFields = {
 	"licenseText": 'SEE MIT License IN LICENSE.txt',
 	"updateText": 'cd ../vscode && npm run update-localization-extension ',
 	"vscodeVersion": '*',
-	"azdataVersion": '^1.47.0', // Update this to whatever the current version of the product is.
+	"azdataVersion": '^1.48.0', // Update this to whatever the current version of the product is.
 	"gitUrl": 'https://github.com/Microsoft/azuredatastudio'
 };
 

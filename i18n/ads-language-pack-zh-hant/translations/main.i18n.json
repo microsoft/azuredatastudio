@@ -12914,6 +12914,7 @@
 			"postUninstallTooltip": "請重新載入 Azure Data Studio 以完成此延伸模組的解除安裝。",
 			"postUpdateTooltip": "請重新載入 Azure Data Studio 以啟用更新的延伸模組。",
 			"recommendedExtensions": "Marketplace",
+			"reviewGuidanceLabel": "在這裡回報問題之前，請<a href=\"https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions\" target=\"_blank\">檢閱我們提供的指導</a>。",
 			"scenarioTypeUndefined": "必須提供延伸模組建議的案例類型。",
 			"showReleaseNotes": "在更新後顯示版本資訊。版本資訊會在新的網頁瀏覽器視窗中開啟。",
 			"sql.versionMismatch": "延伸模組與 Azure Data Studio {0} 不相容。延伸模組需要: {1}。",
@@ -12946,6 +12947,7 @@
 			"addAccount": "新增帳戶",
 			"applyFilters": "套用篩選條件",
 			"confirmRemoveUserAccountMessage": "您確定要移除 '{0}' 嗎?",
+			"githubCopilotSignOut": "登出 GitHub Copilot",
 			"refreshAccount": "重新整理您的認證",
 			"removeAccount": "移除帳戶",
 			"removeAccountFailed": "移除帳戶失敗"
@@ -13463,7 +13465,9 @@
 			"sql.maxRecentConnectionsDescription": "連線列表內最近使用的連線數上限。"
 		},
 		"sql/workbench/contrib/connection/browser/connectionStatus": {
-			"status.connection.status": "連線狀態"
+			"status.connection.baseTooltip": "伺服器: {0}\r\n資料庫: {1}",
+			"status.connection.status": "連線狀態",
+			"status.connection.tooltipLogin": "登入: {0}"
 		},
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
 			"schema.azureResource": "提供者的 Azure 資源端點。",
@@ -13791,7 +13795,10 @@
 			"revertRow": "還原目前的資料列"
 		},
 		"sql/workbench/contrib/editData/browser/editDataGridPanel": {
-			"editData.cellWithNullCharMessage": "此儲存格包含 Unicode Null 字元，目前不支援編輯。"
+			"editData.cellWithNullCharMessage": "此儲存格包含 Unicode Null 字元，目前不支援編輯。",
+			"editData.generalSubmitError": "提交儲存格變更時發生錯誤: <{0}>",
+			"editData.newRowSubmitError": "將資料提交至新資料列時發生錯誤: <{0}>",
+			"editData.saveViewSubmitError": "儲存未認可的變更時發生錯誤: <{0}>"
 		},
 		"sql/workbench/contrib/editData/browser/gridActions": {
 			"copySelection": "複製",

@@ -18,6 +18,7 @@
 			"downloadServiceDoneChannelMsg": "ダウンロード済み {0}",
 			"downloadingServiceStatusMsg": "{0} のダウンロード中",
 			"downloadingServiceChannelMsg": "{0} のダウンロード中",
+			"entryExtractedChannelMsg": "{0} ({1}/{2}) を抽出しました",
 			"failedToStartServiceErrorMsg": "{0} を開始できませんでした",
 			"installedServiceChannelMsg": "{0} がインストールされました",
 			"installingServiceStatusMsg": "{0} のインストール中",
@@ -80,6 +81,7 @@
 			"kusto.format.alignColumnDefinitionsInColumns": "列定義を揃えるかどうか",
 			"kusto.format.datatypeCasing": "データ型を大文字、小文字、または 'なし' (元のまま) のいずれにフォーマットするか",
 			"kusto.format.keywordCasing": "キーワードを大文字、小文字、または 'なし' (元のまま) のいずれにフォーマットするか",
+			"title.showLogFile": "ログ ファイルの表示",
 			"databasesListProperties.size": "サイズ (MB)",
 			"cloud.databaseProperties.size": "サイズ (MB)",
 			"kusto.connectionOptions.groupName.source": "ソース",
@@ -96,7 +98,8 @@
 			"kusto.connectionOptions.userName.displayName": "ユーザー名",
 			"kusto.connectionOptions.workstationId.displayName": "ワークステーション ID",
 			"kusto.logDebugInfo": "[省略可能] コンソールへのデバッグ出力をログに記録し ([表示] -> [出力])、ドロップダウンから適切な出力チャネルを選択します",
-			"kusto.tracingLevel": "[省略可能] バックエンド サービスのログ レベル。Azure Data Studio は開始のたびにファイル名を生成し、そのファイルが既に存在する場合にはログ エントリが対象ファイルに追加されます。古いログ ファイルのクリーンアップについては、logRetentionMinutes と logFilesRemovalLimit の設定を参照してください。既定の tracingLevel では、ログに記録される数は多くありません。詳細レベルを変更すると、詳細なログが記録され、ログのためのディスク容量が必要になる場合があります。エラーには重大が含まれ、警告にはエラーが含まれ、情報には警告が含まれ、詳細には情報が含まれます"
+			"kusto.tracingLevel": "[省略可能] バックエンド サービスのログ レベル。Azure Data Studio は開始のたびにファイル名を生成し、そのファイルが既に存在する場合にはログ エントリが対象ファイルに追加されます。古いログ ファイルのクリーンアップについては、logRetentionMinutes と logFilesRemovalLimit の設定を参照してください。既定の tracingLevel では、ログに記録される数は多くありません。詳細レベルを変更すると、詳細なログが記録され、ログのためのディスク容量が必要になる場合があります。エラーには重大が含まれ、警告にはエラーが含まれ、情報には警告が含まれ、詳細には情報が含まれます",
+			"kusto.tracingServer": "Azure Data Studio と Kusto Tools Service の間の Kusto Tools Service 出力チャネルへの通信をトレースします。警告: 詳細なログ記録が有効になっている場合、機密情報が含まれる可能性があります。"
 		}
 	}
 }

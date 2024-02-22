@@ -39,8 +39,8 @@
         <target state="translated">-- non disponibile --</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.missing.tables">
-        <source xml:lang="en">0 tables found on source database.</source>
-        <target state="translated">0 tabelle trovate nel database di origine.</target>
+        <source xml:lang="en">0 tables on source database found on target database. To migrate the data in the tables select the migrate schema option above.</source>
+        <target state="translated">0 tabelle nel database di origine trovate nel database di destinazione. Per eseguire la migrazione dei dati nelle tabelle, selezionare l'opzione di migrazione dello schema precedente.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.step.1">
         <source xml:lang="en">1. Stop all incoming transactions to the source database.</source>
@@ -61,6 +61,10 @@
       <trans-unit id="sql.migration.cutover.step.3.network.share">
         <source xml:lang="en">3. Verify that all log backups have been restored on the target database. The "Log backups pending restore" value should be zero.</source>
         <target state="translated">3. Verificare che i tutti i backup del log siano stati ripristinati nel database di destinazione. Il valore "Backup dei log in attesa di ripristino" deve essere zero.</target>
+      </trans-unit>
+      <trans-unit id="sql.schema.migration.min.version">
+        <source xml:lang="en">5.37.8767.4</source>
+        <target state="new">5.37.8767.4</target>
       </trans-unit>
       <trans-unit id="sql.migration.bc.info">
         <source xml:lang="en">A SQL Managed Instance migration cutover to the Business Critical service tier can take significantly longer than General Purpose because three secondary replicas have to be seeded for Always On High Availability group. The duration of the operation depends on the size of the data. Seeding speed in 90% of cases is 220 GB/hour or higher.</source>
@@ -133,6 +137,18 @@
       <trans-unit id="sql.migration.all.fields.required">
         <source xml:lang="en">All fields are required.</source>
         <target state="translated">Tutti i campi sono obbligatori.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.all.source.tables.empty">
+        <source xml:lang="en">All of source tables are empty. No table is available to select for data migration. But they are available for schema migration if they do not exist on target.</source>
+        <target state="translated">Tutte le tabelle di origine sono vuote. Nessuna tabella disponibile per la selezione per la migrazione dei dati. Sono tuttavia disponibili per la migrazione dello schema se non esistono nella destinazione.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.unavailable.source.tables.heading">
+        <source xml:lang="en">All of tables below are empty. No table is available to select for data migration. But if they do not exist on target, schema migration is available.</source>
+        <target state="translated">Tutte le tabelle seguenti sono vuote. Nessuna tabella disponibile per la selezione per la migrazione dei dati. Tuttavia, se non esistono nella destinazione, è disponibile la migrazione dello schema.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.missing.tables.heading">
+        <source xml:lang="en">All of tables below are missing on target. To migrate the data in these tables, select the migrate schema option above.</source>
+        <target state="translated">Nella destinazione mancano tutte le tabelle seguenti. Per eseguire la migrazione dei dati in queste tabelle, selezionare l'opzione di migrazione dello schema precedente.</target>
       </trans-unit>
       <trans-unit id="sql.migration.multi.step.all.steps.completed.errors">
         <source xml:lang="en">All steps completed with the following error(s):{0}{1}</source>
@@ -326,6 +342,10 @@
         <source xml:lang="en">Authentication type</source>
         <target state="translated">Tipo di autenticazione</target>
       </trans-unit>
+      <trans-unit id="sql.migration.available.table.count.on.target">
+        <source xml:lang="en">Available on target ({0})</source>
+        <target state="translated">Disponibile nella destinazione ({0})</target>
+      </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.link.dmsGuide">
         <source xml:lang="en">Azure Database Migration Guides</source>
         <target state="translated">Guide alla migrazione del database di Azure</target>
@@ -446,6 +466,10 @@ Vedere di seguito per le istruzioni di registrazione.</target>
         <source xml:lang="en">Azure SQL target</source>
         <target state="translated">Destinazione di Azure SQL</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.source.azure.sql.target.not.ready">
+        <source xml:lang="en">Azure SQL target not ready</source>
+        <target state="new">Azure SQL target not ready</target>
+      </trans-unit>
       <trans-unit id="sql.migration.services.target">
         <source xml:lang="en">Azure SQL target selected as default.</source>
         <target state="translated">Destinazione Azure SQL selezionata come predefinita.</target>
@@ -518,9 +542,25 @@ Vedere di seguito per le istruzioni di registrazione.</target>
         <source xml:lang="en">Azure storage subscription</source>
         <target state="translated">Sottoscrizione di archiviazione di Azure</target>
       </trans-unit>
+      <trans-unit id="sql.migration.schema.msdtctransactsql">
+        <source xml:lang="en">BEGIN DISTRIBUTED TRANSACTION</source>
+        <target state="translated">INIZIO TRANSAZIONE DISTRIBUITA</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.bulkinsert">
+        <source xml:lang="en">BULK INSERT</source>
+        <target state="translated">BULK INSERT</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.backup.restore">
+        <source xml:lang="en">Backup and restore</source>
+        <target state="translated">Backup e ripristino</target>
+      </trans-unit>
       <trans-unit id="sql.migration.backup.location">
         <source xml:lang="en">Backup location</source>
         <target state="translated">Percorso backup</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.backup.location.not.ready">
+        <source xml:lang="en">Backup location not ready</source>
+        <target state="new">Backup location not ready</target>
       </trans-unit>
       <trans-unit id="sql.migration.backup.file.backup.size">
         <source xml:lang="en">Backup size (MB)</source>
@@ -574,9 +614,21 @@ Vedere di seguito per le istruzioni di registrazione.</target>
         <source xml:lang="en">Business critical</source>
         <target state="translated">Business critical</target>
       </trans-unit>
+      <trans-unit id="sql.migration.schema.rule.compute">
+        <source xml:lang="en">COMPUTE</source>
+        <target state="translated">CALCOLO</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.cpu.requirement">
         <source xml:lang="en">CPU requirement</source>
         <target state="translated">Requisiti CPU</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.rule.crossdatabasereferences">
+        <source xml:lang="en">CROSS DATABASE REFERENCE</source>
+        <target state="translated">RIFERIMENTO A DATABASE INCROCIATI</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.cryptographicprovider">
+        <source xml:lang="en">CRYPTOGRAPHIC PROVIDER</source>
+        <target state="translated">PROVIDER DEL SERVIZIO DI CRITTOGRAFIA</target>
       </trans-unit>
       <trans-unit id="sql.migration.saved.assessment.cancel">
         <source xml:lang="en">Cancel</source>
@@ -591,6 +643,10 @@ Vedere di seguito per le istruzioni di registrazione.</target>
         <target state="translated">Annulla</target>
       </trans-unit>
       <trans-unit id="sql.migration.cancel.migration">
+        <source xml:lang="en">Cancel migration</source>
+        <target state="translated">Annulla migrazione</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cancel.feedback.dialog.title">
         <source xml:lang="en">Cancel migration</source>
         <target state="translated">Annulla migrazione</target>
       </trans-unit>
@@ -686,6 +742,10 @@ Vedere di seguito per le istruzioni di registrazione.</target>
         <source xml:lang="en">Choose how you want to provide performance data</source>
         <target state="translated">Scegliere come fornire i dati delle prestazioni</target>
       </trans-unit>
+      <trans-unit id="sql.migration.import.assessment.header">
+        <source xml:lang="en">Choose target platform and view assessment results.</source>
+        <target state="translated">Scegliere la piattaforma di destinazione e visualizzare i risultati della valutazione.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.assessment.results.header">
         <source xml:lang="en">Choose target platform, view assessment results and select database(s) for migration.</source>
         <target state="translated">Scegliere la piattaforma di destinazione, visualizzare i risultati della valutazione e selezionare i database per la migrazione.</target>
@@ -734,6 +794,22 @@ Vedere di seguito per le istruzioni di registrazione.</target>
         <source xml:lang="en">Collecting target login failed with error code {0}</source>
         <target state="translated">La raccolta dell'accesso di destinazione non è riuscita con codice di errore {0}</target>
       </trans-unit>
+      <trans-unit id="sql.migration.status.collectioncompleted">
+        <source xml:lang="en">Collection completed</source>
+        <target state="translated">Raccolta completata</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.collection.ended">
+        <source xml:lang="en">Collection ended</source>
+        <target state="translated">Raccolta terminata</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.collection.started">
+        <source xml:lang="en">Collection started</source>
+        <target state="translated">Raccolta avviata</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.community.support.title">
+        <source xml:lang="en">Community support</source>
+        <target state="translated">Supporto della community</target>
+      </trans-unit>
       <trans-unit id="sql.migration.data.uploaded.info">
         <source xml:lang="en">Comparison of the actual amount of data read from the source and the actual amount of data uploaded to the target.</source>
         <target state="translated">Confronto tra la quantità effettiva di dati letti dall'origine e la quantità effettiva di dati caricati nella destinazione.</target>
@@ -741,6 +817,10 @@ Vedere di seguito per le istruzioni di registrazione.</target>
       <trans-unit id="sql.migration.complete.cutover">
         <source xml:lang="en">Complete cutover</source>
         <target state="translated">Completa cutover</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.completed">
+        <source xml:lang="en">Completed</source>
+        <target state="translated">Operazione completata</target>
       </trans-unit>
       <trans-unit id="sql.migration.restore.status.completed">
         <source xml:lang="en">Completed</source>
@@ -753,6 +833,10 @@ Vedere di seguito per le istruzioni di registrazione.</target>
       <trans-unit id="sql.login.migration.status.page.description.completed">
         <source xml:lang="en">Completed migrating {0} logins to {1} '{2}'</source>
         <target state="translated">La migrazione degli account di accesso {0} a {1} '{2}' è stata completata</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.completedwitherrors">
+        <source xml:lang="en">Completed with errors</source>
+        <target state="translated">Operazione completata con errori</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.completing">
         <source xml:lang="en">Completing</source>
@@ -773,6 +857,10 @@ Vedere di seguito per le istruzioni di registrazione.</target>
       <trans-unit id="sql.migration.connection.label">
         <source xml:lang="en">Connect</source>
         <target state="translated">Connettere</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.community.support.description">
+        <source xml:lang="en">Connect with Microsoft Community</source>
+        <target state="translated">Entra in contatto con la community Microsoft</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.target.connection.error">
         <source xml:lang="en">Connection error: {0}</source>
@@ -797,6 +885,10 @@ Vedere di seguito per le istruzioni di registrazione.</target>
       <trans-unit id="sql.migration.wizard.target.connection.success">
         <source xml:lang="en">Connection was successful. Target databases found: {0}</source>
         <target state="translated">Connessione riuscita. Database di destinazione trovati: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.continue.with.migration.later">
+        <source xml:lang="en">Continue with migration later</source>
+        <target state="new">Continue with migration later</target>
       </trans-unit>
       <trans-unit id="sql.migration.sqldb.column.copyduration">
         <source xml:lang="en">Copy duration</source>
@@ -854,6 +946,10 @@ Vedere di seguito per le istruzioni di registrazione.</target>
         <source xml:lang="en">Create Azure Database Migration Service</source>
         <target state="translated">Creare Servizio Migrazione del database di Azure</target>
       </trans-unit>
+      <trans-unit id="sql.migration.support.request.descrption">
+        <source xml:lang="en">Create a support request</source>
+        <target state="translated">Creare una richiesta di supporto</target>
+      </trans-unit>
       <trans-unit id="sql.migration.create.new">
         <source xml:lang="en">Create new</source>
         <target state="translated">Crea nuovo</target>
@@ -882,6 +978,10 @@ Vedere di seguito per le istruzioni di registrazione.</target>
         <source xml:lang="en">Cutover in progress for database '{0}'</source>
         <target state="translated">Cutover in corso per il database '{0}'</target>
       </trans-unit>
+      <trans-unit id="sql.migration.schema.disabledefcnstchk">
+        <source xml:lang="en">DISABLE_DEF_CNST_CHK</source>
+        <target state="translated">DISABLE_DEF_CNST_CHK</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tab.dashboard.title">
         <source xml:lang="en">Dashboard</source>
         <target state="translated">Dashboard</target>
@@ -889,6 +989,10 @@ Vedere di seguito per le istruzioni di registrazione.</target>
       <trans-unit id="sql.migration.sku.data.iops.requirement">
         <source xml:lang="en">Data IOPS requirement</source>
         <target state="translated">Requisito operazioni di I/O al secondo dati</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.dms.service.or.ir.not.ready">
+        <source xml:lang="en">Data Migration Service / IR node not ready</source>
+        <target state="new">Data Migration Service / IR node not ready</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.status.stopped">
         <source xml:lang="en">Data collection for Azure recommendations has been stopped.</source>
@@ -902,9 +1006,17 @@ Vedere di seguito per le istruzioni di registrazione.</target>
         <source xml:lang="en">Data collection still in progress. </source>
         <target state="translated">Raccolta dati ancora in corso. </target>
       </trans-unit>
+      <trans-unit id="sql.migration.data.migration.header">
+        <source xml:lang="en">Data migration</source>
+        <target state="translated">Migrazione dei dati</target>
+      </trans-unit>
       <trans-unit id="sql.migration.copy.throughput.info">
         <source xml:lang="en">Data movement throughput achieved during the migration of your database backups to Azure. This is the rate of data transfer, calculated by data read divided by duration of backups migration to Azure.</source>
         <target state="translated">Velocità di spostamento dati raggiunta durante la migrazione dei backup di database ad Azure. Velocità di trasferimento dati, calcolata da dati letti divisi per durata della migrazione dei backup in Azure.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.data.only">
+        <source xml:lang="en">Data only</source>
+        <target state="translated">Solo dati</target>
       </trans-unit>
       <trans-unit id="sql.migration.sqldb.column.dataread">
         <source xml:lang="en">Data read</source>
@@ -1046,6 +1158,30 @@ Vedere di seguito per le istruzioni di registrazione.</target>
         <source xml:lang="en">Delete migration</source>
         <target state="translated">Eliminare migrazione</target>
       </trans-unit>
+      <trans-unit id="sql.migration.status.deploying.schema">
+        <source xml:lang="en">Deploying schema</source>
+        <target state="translated">Distribuzione dello schema</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.deployment.completed">
+        <source xml:lang="en">Deployment completed</source>
+        <target state="translated">Distribuzione completata</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.deployment.count">
+        <source xml:lang="en">Deployment count</source>
+        <target state="translated">Numero di distribuzioni</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.deployment.ended">
+        <source xml:lang="en">Deployment ended</source>
+        <target state="translated">Distribuzione terminata</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.deployment.error.count">
+        <source xml:lang="en">Deployment error count</source>
+        <target state="translated">Conteggio errori di distribuzione</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.deployment.started">
+        <source xml:lang="en">Deployment started</source>
+        <target state="translated">Distribuzione avviata</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tde.validation.description">
         <source xml:lang="en">Description</source>
         <target state="translated">Descrizione</target>
@@ -1085,6 +1221,10 @@ Vedere di seguito per le istruzioni di registrazione.</target>
       <trans-unit id="sql.migration.sku.storage.dimension">
         <source xml:lang="en">Dimension</source>
         <target state="translated">Dimensione</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cancel.feedback.dialog.description">
+        <source xml:lang="en">Do you want to cancel migration? Your unsaved changes will be discarded.</source>
+        <target state="new">Do you want to cancel migration? Your unsaved changes will be discarded.</target>
       </trans-unit>
       <trans-unit id="sql.retry.migration.prompt">
         <source xml:lang="en">Do you want to retry the failed table migrations?</source>
@@ -1162,6 +1302,10 @@ Vedere di seguito per le istruzioni di registrazione.</target>
         <source xml:lang="en">Ensure that the service account running the source SQL Server instance has read privileges on the network share.</source>
         <target state="translated">Assicurarsi che l'account del servizio che esegue l'istanza di SQL Server di origine abbia i privilegi di lettura nella condivisione di rete.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.database.schema.migration.help">
+        <source xml:lang="en">Ensure to migrate the database schema from source to target before starting the migration by using the Database Schema Migration feature ({0}) or {1} or the {2} in Azure Data Studio before selecting the list of tables to migrate.</source>
+        <target state="translated">Assicurati di eseguire la migrazione dello schema del database dall'origine alla destinazione prima di avviare la migrazione usando la funzionalità Migrazione dello schema del database ({0}) o {1} o il {2} in Azure Data Studio prima di selezionare l'elenco delle tabelle di cui eseguire la migrazione.</target>
+      </trans-unit>
       <trans-unit id="sql.login.migration.aad.domain.name.input.box.placeholder">
         <source xml:lang="en">Enter AAD Domain Name</source>
         <target state="translated">Immettere il nome di dominio di AAD</target>
@@ -1226,6 +1370,10 @@ Vedere di seguito per le istruzioni di registrazione.</target>
         <source xml:lang="en">Enter the target password</source>
         <target state="translated">Immettere la password di destinazione</target>
       </trans-unit>
+      <trans-unit id="sql.migration.port.placeholder">
+        <source xml:lang="en">Enter the target port</source>
+        <target state="translated">Immettere la porta di destinazione</target>
+      </trans-unit>
       <trans-unit id="sql.migration.username.placeholder">
         <source xml:lang="en">Enter the target user name</source>
         <target state="translated">Immettere il nome utente di destinazione</target>
@@ -1286,9 +1434,21 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Establishing user mappings failed</source>
         <target state="translated">La definizione dei mapping utente non è riuscita</target>
       </trans-unit>
+      <trans-unit id="sql.migration.support.resources.description">
+        <source xml:lang="en">Explore documentation</source>
+        <target state="translated">Esplora la documentazione</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tde.wizard.optionads">
         <source xml:lang="en">Export my certificates and private keys to the target.</source>
         <target state="translated">Esportare i certificati e le chiavi private nella destinazione.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.fastfirstrow">
+        <source xml:lang="en">FASTFIRSTROW</source>
+        <target state="translated">FASTFIRSTROW</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.filestream">
+        <source xml:lang="en">FILESTREAM</source>
+        <target state="translated">FILESTREAM</target>
       </trans-unit>
       <trans-unit id="sql.migration.state.failed">
         <source xml:lang="en">Failed</source>
@@ -1430,9 +1590,21 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">General purpose</source>
         <target state="translated">Utilizzo generico</target>
       </trans-unit>
+      <trans-unit id="sql.migration.status.generatingscript">
+        <source xml:lang="en">Generating script</source>
+        <target state="translated">Generazione dello script</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.generatingcompleted">
+        <source xml:lang="en">Generating script completed</source>
+        <target state="translated">Generazione dello script completata</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.get.recommendation">
         <source xml:lang="en">Get Azure recommendation</source>
         <target state="translated">Ottieni raccomandazione di Azure</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.getdependency">
+        <source xml:lang="en">Get dependency</source>
+        <target state="translated">Ottenere la dipendenza</target>
       </trans-unit>
       <trans-unit id="sql.migration.recommended.configuration.summary.label.description">
         <source xml:lang="en">Get the right-sized SKU recommendations for Azure SQL Targets.</source>
@@ -1441,6 +1613,18 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.table.selection.status.column">
         <source xml:lang="en">Has rows</source>
         <target state="translated">Contiene righe</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.help.support.title">
+        <source xml:lang="en">Help + Support</source>
+        <target state="translated">Guida e supporto</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tab.button.help.support.description">
+        <source xml:lang="en">Help + Support</source>
+        <target state="translated">Guida e supporto</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tab.button.help.support.label">
+        <source xml:lang="en">Help + Support</source>
+        <target state="translated">Guida e supporto</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.title">
         <source xml:lang="en">Help articles and video links</source>
@@ -1478,6 +1662,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">If results were expected, verify the connection to the SQL Server instance.</source>
         <target state="translated">Se sono previsti risultati, verificare la connessione all'istanza di SQL Server.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.others.input.box.note">
+        <source xml:lang="en">If you selected others, please write a short note.</source>
+        <target state="new">If you selected others, please write a short note.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.impact">
         <source xml:lang="en">Impact</source>
         <target state="translated">Impatto</target>
@@ -1489,6 +1677,14 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.import">
         <source xml:lang="en">Import</source>
         <target state="translated">Importa</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tab.import.migration.label">
+        <source xml:lang="en">Import assessment</source>
+        <target state="translated">Importa valutazione</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tab.import.migration.description">
+        <source xml:lang="en">Import assessment to Azure SQL</source>
+        <target state="translated">Importa valutazione in Azure SQL</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.import.performance.data">
         <source xml:lang="en">Import performance data</source>
@@ -1537,6 +1733,10 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
       <trans-unit id="sql.migration.instance">
         <source xml:lang="en">Instance</source>
         <target state="translated">Istanza</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.different.ir.version.error">
+        <source xml:lang="en">Integration Runtime versions [{0}] are not the same. Please have the same version of Integration Runtime across all nodes for consistency and optimal performance.</source>
+        <target state="translated">Le versioni di Integration Runtime [{0}] non sono uguali. Per garantire coerenza e prestazioni ottimali, è necessario avere la stessa versione di Integration Runtime in tutti i nodi.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.result.label.shir">
         <source xml:lang="en">Integration runtime connectivity</source>
@@ -1646,13 +1846,13 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
         <source xml:lang="en">Learn more about things you need before starting a migration.</source>
         <target state="translated">Altre informazioni sulle operazioni necessarie prima di avviare una migrazione.</target>
       </trans-unit>
-      <trans-unit id="sql.migration.wizard.troubleshooting">
-        <source xml:lang="en">Learn more: https://aka.ms/dms-migrations-troubleshooting.</source>
-        <target state="translated">Altre informazioni: https://aka.ms/dms-migrations-troubleshooting.</target>
-      </trans-unit>
       <trans-unit id="sql.migration.wizard.account.add.button.label">
         <source xml:lang="en">Link account</source>
         <target state="translated">Collega account</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.load.assessment.report">
+        <source xml:lang="en">Load assessment report</source>
+        <target state="translated">Report di valutazione del carico</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.loading.help">
         <source xml:lang="en">Loading Migration Services</source>
@@ -1722,10 +1922,6 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
         <source xml:lang="en">Logs IOPS requirement</source>
         <target state="translated">Requisito operazioni di I/O al secondo dei log</target>
       </trans-unit>
-      <trans-unit id="sql.migration.database.schema.migration.help">
-        <source xml:lang="en">Make sure to migrate the database schema from source to target by using the {0} or the {1} in Azure Data Studio before selecting the list of tables to migrate.</source>
-        <target state="translated">Assicurarsi di eseguire la migrazione dello schema del database dall'origine alla destinazione usando {0} o {1} in Azure Data Studio prima di selezionare l'elenco delle tabelle di cui eseguire la migrazione.</target>
-      </trans-unit>
       <trans-unit id="sql.migration.field.label.mi.restore.state">
         <source xml:lang="en">Managed instance restore state</source>
         <target state="translated">Stato di ripristino dell'istanza gestita</target>
@@ -1789,6 +1985,10 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
       <trans-unit id="sql.migration.dashboard.login.migrate.task.button">
         <source xml:lang="en">Migrate logins to Azure SQL</source>
         <target state="translated">Eseguire la migrazione degli account di accesso a Azure SQL</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.migration.checkbox.info">
+        <source xml:lang="en">Migrate schema to target</source>
+        <target state="translated">Eseguire la migrazione dello schema alla destinazione</target>
       </trans-unit>
       <trans-unit id="sql.migration.tab.button.migration.description">
         <source xml:lang="en">Migrate to Azure SQL</source>
@@ -1906,6 +2106,18 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
         <source xml:lang="en">Migration status: {0}{1}{2}</source>
         <target state="translated">Stato migrazione: {0}{1}{2}</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.migration.taking.longer">
+        <source xml:lang="en">Migration taking longer or having issues</source>
+        <target state="new">Migration taking longer or having issues</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.type">
+        <source xml:lang="en">Migration type</source>
+        <target state="translated">Tipo migrazione</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.migration.migration.type.tool.tip">
+        <source xml:lang="en">Migration type includes: Schema only migration, Data only migration, Schema and data migration.</source>
+        <target state="translated">Il tipo di migrazione include: migrazione solo schema, migrazione solo dati, schema e migrazione dei dati.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tab.migrations.title">
         <source xml:lang="en">Migrations</source>
         <target state="translated">Migrazioni</target>
@@ -1913,6 +2125,14 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
       <trans-unit id="sql.migration.details.breadcrumb.migrations">
         <source xml:lang="en">Migrations</source>
         <target state="translated">Migrazioni</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.missing.count">
+        <source xml:lang="en">Missing on target ({0})</source>
+        <target state="translated">Mancante nella destinazione ({0})</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.partial.missing">
+        <source xml:lang="en">Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. No tables selected will migrate missing schema only.</source>
+        <target state="translated">Schemi mancanti nella destinazione. Alcune tabelle sono disabilitate e non è possibile eseguirne la migrazione a meno che questa opzione sia selezionata. Nessuna tabella selezionata eseguirà la migrazione solo dello schema mancante.</target>
       </trans-unit>
       <trans-unit id="sql.migration.mode">
         <source xml:lang="en">Mode</source>
@@ -1958,6 +2178,26 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
         <source xml:lang="en">Names:</source>
         <target state="translated">Nomi:</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.need.to.analyse.findings">
+        <source xml:lang="en">Need to analyse/fix the findings</source>
+        <target state="new">Need to analyse/fix the findings</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.change.source.sql.server">
+        <source xml:lang="en">Need to change source SQL Server</source>
+        <target state="new">Need to change source SQL Server</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.need.to.evaluate.recommended.sku">
+        <source xml:lang="en">Need to evaluate the recommended SKU</source>
+        <target state="new">Need to evaluate the recommended SKU</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.need.to.review.login.selection">
+        <source xml:lang="en">Need to review login selection</source>
+        <target state="new">Need to review login selection</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.need.to.review.table.selection">
+        <source xml:lang="en">Need to review table selection</source>
+        <target state="new">Need to review table selection</target>
+      </trans-unit>
       <trans-unit id="sql.migration.needs.review">
         <source xml:lang="en">Needs review</source>
         <target state="translated">Verifica necessaria</target>
@@ -2001,14 +2241,6 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
       <trans-unit id="sql.migration.tab.button.migration.label">
         <source xml:lang="en">New migration</source>
         <target state="translated">Nuova migrazione</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.tab.button.support.description">
-        <source xml:lang="en">New support request</source>
-        <target state="translated">Nuova richiesta di supporto</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.tab.button.support.label">
-        <source xml:lang="en">New support request</source>
-        <target state="translated">Nuova richiesta di supporto</target>
       </trans-unit>
       <trans-unit id="sql.migration.newSupportRequest">
         <source xml:lang="en">New support request</source>
@@ -2090,6 +2322,10 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
         <source xml:lang="en">No pending backups. Click refresh to check current status.</source>
         <target state="translated">Nessun backup in sospeso. Fare clic su Aggiorna per controllare lo stato corrente.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.cancel.feedback.no.reason.selected">
+        <source xml:lang="en">No reason selected</source>
+        <target state="new">No reason selected</target>
+      </trans-unit>
       <trans-unit id="sql.migration.wizard.sku.error.noRecommendation">
         <source xml:lang="en">No recommendation available</source>
         <target state="translated">Nessuna raccomandazione disponibile</target>
@@ -2097,6 +2333,10 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
       <trans-unit id="sql.migration.resource.group.not.found">
         <source xml:lang="en">No resource groups found.</source>
         <target state="translated">Non sono stati trovati gruppi di risorse.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.full.missing">
+        <source xml:lang="en">No schema was found on target. This option must be selected to migrate this database. No tables selected will migrate missing schema only.</source>
+        <target state="translated">Non è stato trovato alcuno schema nella destinazione. Questa opzione deve essere selezionata per eseguire la migrazione di questo database. Nessuna tabella selezionata eseguirà la migrazione solo dello schema mancante.</target>
       </trans-unit>
       <trans-unit id="sql.migration.no.storageAccount.found">
         <source xml:lang="en">No storage accounts found.</source>
@@ -2134,6 +2374,10 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
         <source xml:lang="en">Not applicable</source>
         <target state="translated">Non applicabile</target>
       </trans-unit>
+      <trans-unit id="sql.migration.not.exist.in.target.table.name.column">
+        <source xml:lang="en">Not exist on target</source>
+        <target state="translated">Non esiste nella destinazione</target>
+      </trans-unit>
       <trans-unit id="sql.migration.not.ready">
         <source xml:lang="en">Not ready</source>
         <target state="translated">Non pronto</target>
@@ -2158,9 +2402,21 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
         <source xml:lang="en">OK</source>
         <target state="translated">OK</target>
       </trans-unit>
+      <trans-unit id="sql.migration.schema.openrowset.nonazureblob">
+        <source xml:lang="en">OPENROWSET WITH NON-AZURE BLOB</source>
+        <target state="translated">OPENROWSET CON BLOB NON DI AZURE</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.openrowset.provider">
+        <source xml:lang="en">OPENROWSET WITH PROVIDER</source>
+        <target state="translated">OPENROWSET CON PROVIDER</target>
+      </trans-unit>
       <trans-unit id="sql.migration.object.details">
         <source xml:lang="en">Object details</source>
         <target state="translated">Dettagli dell'oggetto</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.objects.collection">
+        <source xml:lang="en">Objects collected</source>
+        <target state="translated">Oggetti raccolti</target>
       </trans-unit>
       <trans-unit id="sql.migration.offline">
         <source xml:lang="en">Offline</source>
@@ -2258,6 +2514,18 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
         <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
         <target state="translated">Selezionare il percorso dei file di backup del database prima di continuare.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.cancel.feedback.reason.container.description">
+        <source xml:lang="en">Please take a moment to tell us the reason for canceling the migration. This will help us improve the experience.</source>
+        <target state="new">Please take a moment to tell us the reason for canceling the migration. This will help us improve the experience.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.port.label">
+        <source xml:lang="en">Port</source>
+        <target state="translated">Porta</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.prefetchobjects">
+        <source xml:lang="en">Prefetch objects</source>
+        <target state="translated">Prelettura oggetti</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsd">
         <source xml:lang="en">Premium SSD</source>
         <target state="translated">Unità SSD Premium</target>
@@ -2298,6 +2566,10 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
         <source xml:lang="en">Provide the network share location where the backups are stored, and the user credentials used to access the share.</source>
         <target state="translated">Specificare il percorso della condivisione di rete in cui sono archiviati i backup e le credenziali utente utilizzate per accedere alla condivisione.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.database.schema.migration.public.preview">
+        <source xml:lang="en">Public Preview</source>
+        <target state="translated">Anteprima pubblica</target>
+      </trans-unit>
       <trans-unit id="sql.migration.restore.backupset.status.queued">
         <source xml:lang="en">Queued</source>
         <target state="translated">In coda</target>
@@ -2309,6 +2581,10 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
       <trans-unit id="sql.migration.field.label.queued.files">
         <source xml:lang="en">Queued files</source>
         <target state="translated">File in coda</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.raiserror">
+        <source xml:lang="en">RAISERROR</source>
+        <target state="translated">RAISERROR</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommended.configuration.summary.label.caps">
         <source xml:lang="en">RECOMMENDED CONFIGURATION</source>
@@ -2333,6 +2609,10 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
       <trans-unit id="sql.migration.ready.warn">
         <source xml:lang="en">Ready with warnings</source>
         <target state="translated">Pronto con avvisi</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cancel.feedback.reason.container.title">
+        <source xml:lang="en">Reason for canceling migration</source>
+        <target state="new">Reason for canceling migration</target>
       </trans-unit>
       <trans-unit id="sql.migration.copy.status.rebuildingindexes">
         <source xml:lang="en">Rebuilding indexes</source>
@@ -2366,10 +2646,6 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
         <source xml:lang="en">Recommended storage configuration</source>
         <target state="translated">Configurazione di archiviazione consigliata</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.refine.recommendation">
-        <source xml:lang="en">Refine Azure recommendation</source>
-        <target state="translated">Affina la raccomandazione di Azure</target>
-      </trans-unit>
       <trans-unit id="sql.migration.status.refresh.label">
         <source xml:lang="en">Refresh</source>
         <target state="translated">Aggiorna</target>
@@ -2386,13 +2662,13 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
         <source xml:lang="en">Refresh</source>
         <target state="translated">Aggiorna</target>
       </trans-unit>
-      <trans-unit id="sql.migration.refresh.sku.label">
-        <source xml:lang="en">Refresh SKU recommendations</source>
-        <target state="translated">Aggiorna raccomandazioni sullo SKU</target>
-      </trans-unit>
       <trans-unit id="sql.migration.refresh.assessment.label">
-        <source xml:lang="en">Refresh assessment</source>
-        <target state="translated">Aggiornare valutazione</target>
+        <source xml:lang="en">Refresh Assessment</source>
+        <target state="translated">Aggiorna valutazione</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.refresh.sku.label">
+        <source xml:lang="en">Refresh SKU</source>
+        <target state="translated">Aggiorna SKU</target>
       </trans-unit>
       <trans-unit id="sql.migration.refresh.key1">
         <source xml:lang="en">Refresh key 1</source>
@@ -2401,10 +2677,6 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
       <trans-unit id="sql.migration.refresh.key2">
         <source xml:lang="en">Refresh key 2</source>
         <target state="translated">Aggiorna chiave 2</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.sku.refresh.recommendation">
-        <source xml:lang="en">Refresh recommendation</source>
-        <target state="translated">Aggiorna raccomandazione</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.select.in.progress">
         <source xml:lang="en">Refreshing login list from source and target</source>
@@ -2650,6 +2922,78 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
         <source xml:lang="en">Scale factor</source>
         <target state="translated">Fattore di scala:</target>
       </trans-unit>
+      <trans-unit id="sql.migration.schema.data">
+        <source xml:lang="en">Schema and data</source>
+        <target state="translated">Schema e dati</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.migration.column.label">
+        <source xml:lang="en">Schema migration</source>
+        <target state="translated">Migrazione dello schema</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.migration.header">
+        <source xml:lang="en">Schema migration</source>
+        <target state="translated">Migrazione dello schema</target>
+      </trans-unit>
+      <trans-unit id="sql.schema.migration.information">
+        <source xml:lang="en">Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [{1}] or higher. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.</source>
+        <target state="translated">La migrazione dello schema è in {0}nel passaggio 6. Richiede una versione del runtime di integrazione di [{1}] o successiva. La distribuzione dello schema farà il massimo per distribuire gli oggetti di database. Gli errori di distribuzione dello schema non impediranno la migrazione dei dati.</target>
+      </trans-unit>
+      <trans-unit id="sql.schema.migration.windows.auth.error">
+        <source xml:lang="en">Schema migration is not currently supported for connectivity to source instance using Windows Authentication. Please use SQL Authentication to enable schema migration support.</source>
+        <target state="translated">La migrazione dello schema non è attualmente supportata per la connettività all’istanza di origine mediante l'autenticazione di Windows. Usare l'autenticazione SQL per abilitare il supporto alla migrazione dello schema.</target>
+      </trans-unit>
+      <trans-unit id="sql.schema.migration.update.ir.version.error">
+        <source xml:lang="en">Schema migration requires an Integration Runtime version of [{0}] or higher. The current node version(s) are: [{1}]. Please install a newer version of the Integration Runtime to enable schema migration support.</source>
+        <target state="translated">La migrazione dello schema richiede una versione Integration Runtime di [{0}] o successiva. Le versioni correnti del nodo sono: [{1}]. Installare una versione più recente di Integration Runtime per abilitare il supporto per la migrazione dello schema.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.status">
+        <source xml:lang="en">Schema migration status</source>
+        <target state="translated">Stato di migrazione dello schema</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.only">
+        <source xml:lang="en">Schema only</source>
+        <target state="translated">Solo schema</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.no.missing">
+        <source xml:lang="en">Schema was found on target. Schema migration is not required.</source>
+        <target state="translated">Lo schema è stato trovato nella destinazione. La migrazione dello schema non è obbligatoria.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.deployment">
+        <source xml:lang="en">Script deployment</source>
+        <target state="translated">Distribuzione script</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.generation">
+        <source xml:lang="en">Script generation</source>
+        <target state="translated">Generazione dello script</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.count">
+        <source xml:lang="en">Scripted objects count</source>
+        <target state="translated">Conteggio oggetti con script</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.ended">
+        <source xml:lang="en">Scripting ended</source>
+        <target state="translated">Scripting terminato</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.fail.count">
+        <source xml:lang="en">Scripting error count</source>
+        <target state="translated">Conteggio errori di scripting</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.scriptindexes">
+        <source xml:lang="en">Scripting indexes</source>
+        <target state="translated">Scripting di indici</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.scriptobjects">
+        <source xml:lang="en">Scripting objects</source>
+        <target state="translated">Inserimento degli oggetti nello script in corso</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.scriptownership">
+        <source xml:lang="en">Scripting ownerships</source>
+        <target state="translated">Proprietà di scripting</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.started">
+        <source xml:lang="en">Scripting started</source>
+        <target state="translated">Scripting avviato</target>
+      </trans-unit>
       <trans-unit id="sql.migration.search">
         <source xml:lang="en">Search</source>
         <target state="translated">Cerca</target>
@@ -2657,6 +3001,10 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
       <trans-unit id="sql.migration.restore.status.searching.backups">
         <source xml:lang="en">Searching backups</source>
         <target state="translated">Ricerca dei backup</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.troubleshooting">
+        <source xml:lang="en">See link for more troubleshooting steps: https://aka.ms/dms-migrations-troubleshooting.</source>
+        <target state="translated">Per altre procedure di risoluzione dei problemi, vedere il collegamento: https://aka.ms/dms-migrations-troubleshooting.</target>
       </trans-unit>
       <trans-unit id="sql.migration.select">
         <source xml:lang="en">Select</source>
@@ -2686,9 +3034,9 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
         <source xml:lang="en">Select a blob container value first.</source>
         <target state="translated">Selezionare prima un valore del contenitore BLOB.</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.import.performance.data.dialog.open.file">
-        <source xml:lang="en">Select a file</source>
-        <target state="translated">Selezionare un file</target>
+      <trans-unit id="sql.migration.sku.import.performance.data.dialog.open.folder">
+        <source xml:lang="en">Select a folder</source>
+        <target state="translated">Selezionare una cartella</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.import.performance.data.dialog.helper.message">
         <source xml:lang="en">Select a folder on your local drive</source>
@@ -2774,6 +3122,10 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
         <source xml:lang="en">Select tables for {0}</source>
         <target state="translated">Selezionare le tabelle per {0}</target>
       </trans-unit>
+      <trans-unit id="sql.migration.data.migration.info">
+        <source xml:lang="en">Select tables to migrate data to your Azure SQL target</source>
+        <target state="translated">Selezionare le tabelle per eseguire la migrazione dei dati alla destinazione Azure SQL</target>
+      </trans-unit>
       <trans-unit id="sql.migration.select.service.select.target.type.">
         <source xml:lang="en">Select target Azure SQL Type</source>
         <target state="translated">Selezionare il tipo di Azure SQL di destinazione</target>
@@ -2809,6 +3161,10 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
       <trans-unit id="sql.migration.map.target.description">
         <source xml:lang="en">Select the target database where you would like to migrate your source database to.  You can choose a target database for only one source database.</source>
         <target state="translated">Selezionare il database di destinazione in cui si vuole eseguire la migrazione del database di origine.  È possibile scegliere un database di destinazione per un solo database di origine.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.migration.info">
+        <source xml:lang="en">Select this option to migrate missing tables on your Azure SQL target</source>
+        <target state="translated">Selezionare questa opzione per eseguire la migrazione delle tabelle mancanti nella destinazione Azure SQL</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.azure.vm">
         <source xml:lang="en">Select your target Azure Subscription and your target SQL Server on Azure Virtual Machine for your target.</source>
@@ -3138,6 +3494,14 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
         <source xml:lang="en">Summary</source>
         <target state="translated">Riepilogo</target>
       </trans-unit>
+      <trans-unit id="sql.migration.support.request.title">
+        <source xml:lang="en">Support request</source>
+        <target state="translated">Richiesta di supporto</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.support.resources.title">
+        <source xml:lang="en">Support resources</source>
+        <target state="translated">Risorse di supporto</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tde.migrate.required">
         <source xml:lang="en">TDE certificate migration must be successful before continuing.</source>
         <target state="translated">La migrazione del certificato TDE deve essere completata prima di continuare.</target>
@@ -3149,6 +3513,10 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
       <trans-unit id="sql.migration.table.migration.status.label">
         <source xml:lang="en">Table migration status: {0}</source>
         <target state="translated">Stato della migrazione della tabella: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.unavailable.table.name.column">
+        <source xml:lang="en">Table name</source>
+        <target state="translated">Nome della tabella</target>
       </trans-unit>
       <trans-unit id="sql.migration.sqldb.column.tablename">
         <source xml:lang="en">Table name</source>
@@ -3165,10 +3533,6 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
       <trans-unit id="sql.migration.database.table.selection.label">
         <source xml:lang="en">Table selection</source>
         <target state="translated">Selezione tabella</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.table.missing.count">
-        <source xml:lang="en">Tables missing on target: {0}</source>
-        <target state="translated">Tabelle mancanti nella destinazione: {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.target.table.count.name">
         <source xml:lang="en">Tables selected</source>
@@ -3302,6 +3666,14 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
         <source xml:lang="en">The database is ready to migrate.</source>
         <target state="translated">Il database è pronto per la migrazione.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.schema.assessment.warning.message">
+        <source xml:lang="en">The detected issues shown below might fail the schema migration. Some of them might be entirely unsupported and the others might be partially supported in Azure SQL Database. 
+Therefore, please review the assessment results and make sure all of the issues will not fail the schema migration.
+However, it is allowed to proceed the schema migration and Azure Database Migration Service will migrate the objects as possible as it can.</source>
+        <target state="translated">I problemi rilevati indicati di seguito potrebbero non riuscire a eseguire la migrazione dello schema. Alcuni potrebbero non essere completamente supportati e gli altri potrebbero essere parzialmente supportati nel database SQL di Azure. 
+Esaminare quindi i risultati della valutazione e assicurarsi che tutti i problemi non interrompano la migrazione dello schema.
+È tuttavia possibile procedere con la migrazione dello schema e Servizio Migrazione del database di Azure eseguirà la migrazione degli oggetti per quanto possibile.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.database.migration.duration.tool.tip">
         <source xml:lang="en">The duration of the migration</source>
         <target state="translated">Durata della migrazione</target>
@@ -3365,6 +3737,10 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
       <trans-unit id="sql.migration.sku.azureRecommendation.status.autoRefreshTimer">
         <source xml:lang="en">Time before next SKU recommendation update: {0} minute(s).</source>
         <target state="translated">Tempo prima del prossimo aggiornamento della raccomandazione sullo SKU: {0} minuto/i.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.select.skip.assessment.check.to.continue">
+        <source xml:lang="en">To continue, check skip assessment option.</source>
+        <target state="translated">Per continuare, selezionare l'opzione per ignorare la valutazione.</target>
       </trans-unit>
       <trans-unit id="sql.migration.missing.targetPassword.error">
         <source xml:lang="en">To continue, enter a valid target password.</source>
@@ -3458,6 +3834,10 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
         <source xml:lang="en">To proceed, press Select button</source>
         <target state="translated">Per continuare, premi il pulsante Seleziona</target>
       </trans-unit>
+      <trans-unit id="sql.migration.support.request.note">
+        <source xml:lang="en">To receive assistance from Microsoft customer support, please submit a support request.</source>
+        <target state="translated">Per ricevere assistenza dal supporto tecnico Microsoft, invia una richiesta di supporto.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.total.findings.label">
         <source xml:lang="en">Total findings: {0}</source>
         <target state="translated">Risultati totali: {0}</target>
@@ -3505,6 +3885,10 @@ Fare clic su "Esegui convalida" per verificare che i requisiti siano soddisfatti
       <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.UltraSsd">
         <source xml:lang="en">Ultra SSD</source>
         <target state="translated">Ultra SSD</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.unavailable.count">
+        <source xml:lang="en">Unavailable for data migration ({0})</source>
+        <target state="translated">Non disponibile per la migrazione dei dati ({0})</target>
       </trans-unit>
       <trans-unit id="sql.migration.restore.backuptype.unknown">
         <source xml:lang="en">Unknown</source>
@@ -3646,6 +4030,10 @@ Definizione dei mapping utente.</target>
         <source xml:lang="en">Waiting</source>
         <target state="translated">In attesa</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.waiting.for.downtime.window">
+        <source xml:lang="en">Waiting for downtime window</source>
+        <target state="new">Waiting for downtime window</target>
+      </trans-unit>
       <trans-unit id="waitingForService">
         <source xml:lang="en">Waiting for {0} component to start.</source>
         <target state="translated">In attesa dell'avvio del componente {0}.</target>
@@ -3722,6 +4110,10 @@ L'operazione potrebbe richiedere qualche minuto.</target>
         <source xml:lang="en">You can also choose to select this data from an existing folder, if you have already collected it previously.</source>
         <target state="translated">È anche possibile scegliere di selezionare questi dati da una cartella esistente, se sono già stati raccolti in precedenza.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.community.support.note">
+        <source xml:lang="en">You can post your question with the Microsoft community support through the Q&amp;A channel.</source>
+        <target state="translated">È possibile pubblicare la propria domanda nel supporto della community Microsoft tramite il canale Microsoft Q&amp;A.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tde.msg.tde">
         <source xml:lang="en">You have given Azure Data Studio access to migrate the encryption certificates and database.</source>
         <target state="translated">È stato concesso l'accesso ad Azure Data Studio per eseguire la migrazione dei certificati di crittografia e del database.</target>
@@ -3741,6 +4133,10 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       <trans-unit id="sql.migration.sku.resource">
         <source xml:lang="en">Your Azure SQL target resource name</source>
         <target state="translated">Nome della risorsa di destinazione Azure SQL</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.resource.port">
+        <source xml:lang="en">Your Azure SQL target resource port number : 0 - 65535</source>
+        <target state="translated">Numero di porta della risorsa di destinazione Azure SQL: 0 - 65535</target>
       </trans-unit>
       <trans-unit id="sql.migration.pre.req.4">
         <source xml:lang="en">Your database backup location details, either a network file share or an Azure Blob Storage container (not required for Azure SQL Database targets).</source>
@@ -3918,6 +4314,10 @@ L'operazione potrebbe richiedere qualche minuto.</target>
         <source xml:lang="en">{0} of {1} tables selected</source>
         <target state="translated">{0} di {1} tabelle selezionate</target>
       </trans-unit>
+      <trans-unit id="sql.migration.table.selection.count.to.target">
+        <source xml:lang="en">{0} of {1} tables selected for migration</source>
+        <target state="translated">{0} di {1} tabelle selezionate per la migrazione</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tde.wizard.databases.selected">
         <source xml:lang="en">{0} out of {1} selected database(s) is using transparent data encryption.</source>
         <target state="translated">{0} dei {1} database selezionati usano Transparent Data Encryption.</target>
@@ -4085,6 +4485,10 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       <trans-unit id="database-details-menu">
         <source xml:lang="en">Database details</source>
         <target state="translated">Dettagli di Database</target>
+      </trans-unit>
+      <trans-unit id="data-collection-path-description">
+        <source xml:lang="en">Default path to store collected performance data for SKU recommendations.</source>
+        <target state="translated">Percorso predefinito per l'archiviazione dei dati sulle prestazioni raccolti per le raccomandazioni sullo SKU.</target>
       </trans-unit>
       <trans-unit id="delete-migration-menu">
         <source xml:lang="en">Delete migration</source>

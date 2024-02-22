@@ -34,6 +34,10 @@
         <source xml:lang="en">Downloading {0}</source>
         <target state="translated">{0} のダウンロード中</target>
       </trans-unit>
+      <trans-unit id="entryExtractedChannelMsg">
+        <source xml:lang="en">Extracted {0} ({1}/{2})</source>
+        <target state="translated">{0} ({1}/{2}) を抽出しました</target>
+      </trans-unit>
       <trans-unit id="failedToStartServiceErrorMsg">
         <source xml:lang="en">Failed to start {0}</source>
         <target state="translated">{0} を開始できませんでした</target>
@@ -262,6 +266,10 @@
         <source xml:lang="en">Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)</source>
         <target state="translated">キーワードを大文字、小文字、または 'なし' (元のまま) のいずれにフォーマットするか</target>
       </trans-unit>
+      <trans-unit id="title.showLogFile">
+        <source xml:lang="en">Show Log File</source>
+        <target state="translated">ログ ファイルの表示</target>
+      </trans-unit>
       <trans-unit id="databasesListProperties.size">
         <source xml:lang="en">Size (MB)</source>
         <target state="translated">サイズ (MB)</target>
@@ -329,6 +337,10 @@
       <trans-unit id="kusto.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
         <target state="translated">[省略可能] バックエンド サービスのログ レベル。Azure Data Studio は開始のたびにファイル名を生成し、そのファイルが既に存在する場合にはログ エントリが対象ファイルに追加されます。古いログ ファイルのクリーンアップについては、logRetentionMinutes と logFilesRemovalLimit の設定を参照してください。既定の tracingLevel では、ログに記録される数は多くありません。詳細レベルを変更すると、詳細なログが記録され、ログのためのディスク容量が必要になる場合があります。エラーには重大が含まれ、警告にはエラーが含まれ、情報には警告が含まれ、詳細には情報が含まれます</target>
+      </trans-unit>
+      <trans-unit id="kusto.tracingServer">
+        <source xml:lang="en">[Optional] Traces the communication between Azure Data Studio and Kusto Tools Service to the Kusto Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.</source>
+        <target state="translated">Azure Data Studio と Kusto Tools Service の間の Kusto Tools Service 出力チャネルへの通信をトレースします。警告: 詳細なログ記録が有効になっている場合、機密情報が含まれる可能性があります。</target>
       </trans-unit>
     </body>
   </file>
