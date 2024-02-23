@@ -285,7 +285,6 @@
 			"notebook.overrideEditorTheming.description": "Переопределите параметры редактора по умолчанию в редакторе Notebook. Параметры включают в себя цвет фона, цвет текущей строки и границу",
 			"title.pinNotebook": "Закрепить записную книжку",
 			"title.PinnedBooks": "Закрепленные записные книжки",
-			"title.ProvidedBooks": "Указанные книги Jupyter",
 			"title.reinstallNotebookDependencies": "Переустановка зависимостей Notebook",
 			"title.removeNotebook": "Удалить записную книжку",
 			"title.revealInBooksViewlet": "Показать в книгах",

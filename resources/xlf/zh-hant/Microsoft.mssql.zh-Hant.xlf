@@ -98,9 +98,17 @@ Note: A self-signed certificate offers only limited protection and is not a reco
   </file>
   <file original="extensions/Microsoft.mssql/dist/objectManagement/localizedConstants" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
+      <trans-unit id="objectManagement.accessKeyLabel">
+        <source xml:lang="en">Access Key</source>
+        <target state="translated">存取金鑰</target>
+      </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.addButton">
         <source xml:lang="en">Add</source>
         <target state="translated">新增</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.addCredentialsLabel">
+        <source xml:lang="en">Add Credentials</source>
+        <target state="translated">新增認證</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.addDatabaseFilesText">
         <source xml:lang="en">Add Database file</source>
@@ -113,6 +121,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.objectSelectionMethodDialogTitle">
         <source xml:lang="en">Add Objects</source>
         <target state="translated">新增物件</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.addBackupFileText">
+        <source xml:lang="en">Add backup files</source>
+        <target state="translated">新增備份檔案</target>
       </trans-unit>
       <trans-unit id="objectManagement.addFileText">
         <source xml:lang="en">Add database files</source>
@@ -129,6 +141,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.advancedSectionHeader">
         <source xml:lang="en">Advanced</source>
         <target state="translated">進階</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupAlgorithm">
+        <source xml:lang="en">Algorithm</source>
+        <target state="translated">演算法</target>
       </trans-unit>
       <trans-unit id="objectManagement.allFiles">
         <source xml:lang="en">All Files</source>
@@ -156,6 +172,11 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <note>{0}: error message.</note>
         <target state="translated">開啟附加資料庫對話方塊時發生錯誤。{0}</target>
       </trans-unit>
+      <trans-unit id="objectManagement.openBackupDatabaseDialogError">
+        <source xml:lang="en">An error occurred while opening the backup database dialog. {0}</source>
+        <note>{0}: error message.</note>
+        <target state="translated">開啟備份資料庫對話方塊時發生錯誤。{0}</target>
+      </trans-unit>
       <trans-unit id="objectManagement.openDetachDatabaseDialogError">
         <source xml:lang="en">An error occurred while opening the detach database dialog. {0}</source>
         <note>{0}: error message.</note>
@@ -176,6 +197,11 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <note>{0} object type, {1}: object name, {2}: error message.</note>
         <target state="translated">開啟 {0} 的內容對話方塊時發生錯誤: {1}。{2}</target>
       </trans-unit>
+      <trans-unit id="objectManagement.openRestoreDatabaseDialogError">
+        <source xml:lang="en">An error occurred while opening the restore database dialog. {0}</source>
+        <note>{0}: error message.</note>
+        <target state="translated">開啟還原資料庫對話方塊時發生錯誤。{0}</target>
+      </trans-unit>
       <trans-unit id="objectManagement.refreshOEError">
         <source xml:lang="en">An error occurred while refreshing the object explorer. {0}</source>
         <note>{0}: error message.</note>
@@ -185,6 +211,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">An error occurred while renaming {0} '{1}' to '{2}'. {3}</source>
         <note>{0} object type, {1}: original name, {2}: new name, {3}: error message.</note>
         <target state="translated">將 {0} '{1}' 重新命名為 '{2}' 時發生錯誤。{3}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.appendToExistingBackup">
+        <source xml:lang="en">Append to the existing backup set</source>
+        <target state="translated">附加至現有的備份組</target>
       </trans-unit>
       <trans-unit id="objectManagement.ApplicationRoleTypeDisplayNameInTitle">
         <source xml:lang="en">Application Role</source>
@@ -206,6 +236,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.associatedDatabaseFiles">
         <source xml:lang="en">Associated Database Files</source>
         <target state="translated">關聯的資料庫檔案</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupAsymmetricKey">
+        <source xml:lang="en">Asymmetric Key</source>
+        <target state="translated">非對稱金鑰</target>
       </trans-unit>
       <trans-unit id="objectManagement.attachButtonLabel">
         <source xml:lang="en">Attach</source>
@@ -283,6 +317,22 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Back</source>
         <target state="translated">上一步</target>
       </trans-unit>
+      <trans-unit id="objectManagement.backupLogTail">
+        <source xml:lang="en">Back up the tail of the log, and leave the database in the restoring state</source>
+        <target state="translated">備份記錄的結尾，並讓資料庫保持在還原中狀態</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupToLabel">
+        <source xml:lang="en">Back up to</source>
+        <target state="translated">備份至</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupAndEraseExisting">
+        <source xml:lang="en">Back up to a new media set, and erase all existing backup sets</source>
+        <target state="translated">備份至新的媒體集，並清除所有現有的備份組</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupToExistingMedia">
+        <source xml:lang="en">Back up to the existing media set</source>
+        <target state="translated">備份至現有的媒體集</target>
+      </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.backupSectionHeader">
         <source xml:lang="en">Backup</source>
         <target state="translated">備份</target>
@@ -291,9 +341,25 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Backup</source>
         <target state="translated">備份</target>
       </trans-unit>
+      <trans-unit id="objectManagement.backupButtonLabel">
+        <source xml:lang="en">Backup</source>
+        <target state="translated">備份</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupDatabaseDialogTitle">
+        <source xml:lang="en">Backup Database - {0} (Preview)</source>
+        <target state="translated">備份資料庫 - {0} (預覽)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupFilesLabel">
+        <source xml:lang="en">Backup Files</source>
+        <target state="translated">備份檔案</target>
+      </trans-unit>
       <trans-unit id="objectManagement.backupRedundancyLabel">
         <source xml:lang="en">Backup Storage Redundancy</source>
         <target state="translated">備份儲存體備援</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupToUrlLabel">
+        <source xml:lang="en">Backup URL</source>
+        <target state="translated">備份 URL</target>
       </trans-unit>
       <trans-unit id="objectManagement.backupAndRestoreText">
         <source xml:lang="en">Backup and Restore</source>
@@ -303,6 +369,31 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Backup checksum</source>
         <target state="translated">備份總和檢查碼</target>
       </trans-unit>
+      <trans-unit id="objectManagement.backupDatabaseOperationName">
+        <source xml:lang="en">Backup database '{0}'</source>
+        <note>{0}: object name.</note>
+        <target state="translated">備份資料庫 '{0}'</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restoreFromBackupFileOptionText">
+        <source xml:lang="en">Backup file</source>
+        <target state="translated">備份檔案</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.backupFilePathText">
+        <source xml:lang="en">Backup file path</source>
+        <target state="translated">備份檔案路徑</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupFailedError">
+        <source xml:lang="en">Backup operation failed.</source>
+        <target state="translated">備份作業失敗。</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupNameLabel">
+        <source xml:lang="en">Backup set name</source>
+        <target state="translated">備份組名稱</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupTypeLabel">
+        <source xml:lang="en">Backup type</source>
+        <target state="translated">備份類型</target>
+      </trans-unit>
       <trans-unit id="objectManagement.blockedProcThresholdLabel">
         <source xml:lang="en">Blocked Process Threshold</source>
         <target state="translated">已封鎖的處理序臨界值</target>
@@ -310,6 +401,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.bothFailedAndSuccessfulLoginsText">
         <source xml:lang="en">Both failed and successful logins</source>
         <target state="translated">失敗和成功的登入</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.browseFilesLabel">
+        <source xml:lang="en">Browse files</source>
+        <target state="translated">瀏覽檔案</target>
       </trans-unit>
       <trans-unit id="objectManagement.browseForOwnerText">
         <source xml:lang="en">Browse for an owner</source>
@@ -331,13 +426,25 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Cannot use empty object names for filegroups.</source>
         <target state="translated">不可將空的物件名稱用於檔案群組。</target>
       </trans-unit>
+      <trans-unit id="objectManagement.backupCertificate">
+        <source xml:lang="en">Certificate or Asymmetric key</source>
+        <target state="translated">憑證或非對稱金鑰</target>
+      </trans-unit>
       <trans-unit id="objectManagement.needToRestartServer">
         <source xml:lang="en">Changes require server restart in order to be effective</source>
         <target state="translated">變更需要重新啟動伺服器才能生效</target>
       </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restorePlan.checkpointLSNText">
+        <source xml:lang="en">Checkpoint LSN</source>
+        <target state="translated">檢查點 LSN</target>
+      </trans-unit>
       <trans-unit id="objectManagement.closeConnections">
         <source xml:lang="en">Close existing connections</source>
         <target state="translated">關閉現有的連接</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.closeExistingConnectionText">
+        <source xml:lang="en">Close existing connections to destination database</source>
+        <target state="translated">關閉目的地資料庫的現有連接</target>
       </trans-unit>
       <trans-unit id="objectManagement.collationLabel">
         <source xml:lang="en">Collation</source>
@@ -347,8 +454,16 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Compatibility Level</source>
         <target state="translated">相容性層級</target>
       </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restorePlan.componentText">
+        <source xml:lang="en">Component</source>
+        <target state="translated">元件</target>
+      </trans-unit>
       <trans-unit id="objectManagement.compressBackupText">
         <source xml:lang="en">Compress Backup</source>
+        <target state="translated">壓縮備份</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.compressBackup">
+        <source xml:lang="en">Compress backup</source>
         <target state="translated">壓縮備份</target>
       </trans-unit>
       <trans-unit id="objectManagement.configureSLOSectionHeader">
@@ -362,6 +477,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.containmentTypeLabel">
         <source xml:lang="en">Containment Type</source>
         <target state="translated">內含項目類型</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupContinueOnError">
+        <source xml:lang="en">Continue on error</source>
+        <target state="translated">錯誤時繼續</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupCopyLabel">
+        <source xml:lang="en">Copy-only backup</source>
+        <target state="translated">僅複製備份</target>
       </trans-unit>
       <trans-unit id="objectManagement.costThresholdParallelismLabel">
         <source xml:lang="en">Cost Threshold Parallelism</source>
@@ -412,6 +535,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Data</source>
         <target state="translated">資料</target>
       </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.dataFileFolderText">
+        <source xml:lang="en">Data File Folder</source>
+        <target state="translated">資料檔案資料夾</target>
+      </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.dataFlushIntervalInMinutesText">
         <source xml:lang="en">Data Flush Interval (Minutes)</source>
         <target state="translated">資料排清間隔 (分鐘)</target>
@@ -424,9 +551,21 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Database</source>
         <target state="translated">資料庫</target>
       </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restoreFromDatabaseOptionText">
+        <source xml:lang="en">Database</source>
+        <target state="translated">資料庫</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.databaseText">
+        <source xml:lang="en">Database</source>
+        <target state="translated">資料庫</target>
+      </trans-unit>
       <trans-unit id="objectManagement.DatabaseDisplayNameInTitle">
         <source xml:lang="en">Database</source>
         <target state="translated">資料庫</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase">
+        <source xml:lang="en">Database '{0}' already exists. Choose a different database name.</source>
+        <target state="translated">資料庫 '{0}' 已存在。請選擇其他資料庫名稱。</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseFilesFilterLabel">
         <source xml:lang="en">Database Data Files</source>
@@ -516,6 +655,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Deny</source>
         <target state="translated">拒絕</target>
       </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.DestinationSectionText">
+        <source xml:lang="en">Destination</source>
+        <target state="translated">目的地</target>
+      </trans-unit>
       <trans-unit id="objectManagement.detachButtonLabel">
         <source xml:lang="en">Detach</source>
         <target state="translated">中斷連結</target>
@@ -532,6 +675,18 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Detach database '{0}'</source>
         <note>{0}: object name.</note>
         <target state="translated">將資料庫 '{0}' 中斷連結</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupDifferential">
+        <source xml:lang="en">Differential</source>
+        <target state="translated">差異</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupDiskLabel">
+        <source xml:lang="en">Disk</source>
+        <target state="translated">磁碟</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.dontCompressBackup">
+        <source xml:lang="en">Do not compress backup</source>
+        <target state="translated">不要壓縮備份</target>
       </trans-unit>
       <trans-unit id="objectManagement.dropButtonLabel">
         <source xml:lang="en">Drop</source>
@@ -586,9 +741,21 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Enabled</source>
         <target state="translated">已啟用</target>
       </trans-unit>
+      <trans-unit id="objectManagement.encryptBackup">
+        <source xml:lang="en">Encrypt backup</source>
+        <target state="translated">加密備份</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupEncryption">
+        <source xml:lang="en">Encryption</source>
+        <target state="translated">加密</target>
+      </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.encryptionEnabledText">
         <source xml:lang="en">Encryption Enabled</source>
         <target state="translated">加密已啟用</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupEncryptNotice">
+        <source xml:lang="en">Encryption options are only available when 'Back up to a new media set' is selected above.</source>
+        <target state="translated">只有在以上選取 [備份至新的媒體集] 時，[加密] 選項才可供使用。</target>
       </trans-unit>
       <trans-unit id="objectManagement.login.enforcePasswordExpirationLabel">
         <source xml:lang="en">Enforce password expiration</source>
@@ -605,6 +772,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.databaseProperties.executionCountText">
         <source xml:lang="en">Execution Count</source>
         <target state="translated">執行計數</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restorePlan.expirationText">
+        <source xml:lang="en">Expiration</source>
+        <target state="translated">到期</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupExpiration">
+        <source xml:lang="en">Expiration</source>
+        <target state="translated">到期日</target>
       </trans-unit>
       <trans-unit id="objectManagement.explicitPermissionsTableLabel">
         <source xml:lang="en">Explicit permissions for selected securable</source>
@@ -686,6 +861,22 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Find</source>
         <target state="translated">尋找</target>
       </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restorePlan.FinishDateText">
+        <source xml:lang="en">Finish Date</source>
+        <target state="translated">完成日期</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restorePlan.firstLSNText">
+        <source xml:lang="en">First LSN</source>
+        <target state="translated">第一個 LSN</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupFull">
+        <source xml:lang="en">Full</source>
+        <target state="translated">完整</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restorePlan.FullLSNText">
+        <source xml:lang="en">Full LSN</source>
+        <target state="translated">完整 LSN</target>
+      </trans-unit>
       <trans-unit id="objectManagement.fullTextUpgradeOptionLabel">
         <source xml:lang="en">Full-Text Upgrade Option</source>
         <target state="translated">全文檢索升級選項</target>
@@ -721,6 +912,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.databaseProperties.inPercentAutogrowthText">
         <source xml:lang="en">In Percent</source>
         <target state="translated">以百分比為單位</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.InvalidS3UrlError">
+        <source xml:lang="en">Invalid S3 endpoint</source>
+        <target state="translated">S3 端點無效</target>
       </trans-unit>
       <trans-unit id="objectManagement.isClustered">
         <source xml:lang="en">Is Clustered</source>
@@ -758,6 +953,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Last Database Log Backup</source>
         <target state="translated">上次資料庫記錄備份</target>
       </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restorePlan.lastLSNText">
+        <source xml:lang="en">Last LSN</source>
+        <target state="translated">最後一個 LSN</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.leaveSourceDBText">
+        <source xml:lang="en">Leave source database in the restoring state (WITH NORECOVERY)</source>
+        <target state="translated">將來源資料庫保持在還原狀態 (WITH NORECOVERY)</target>
+      </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.ledgerSectionHeader">
         <source xml:lang="en">Ledger</source>
         <target state="translated">總帳</target>
@@ -789,6 +992,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.logFileLabel">
         <source xml:lang="en">Log</source>
         <target state="translated">記錄</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.logFileFolderText">
+        <source xml:lang="en">Log File Folder</source>
+        <target state="translated">記錄檔資料夾</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restorePlan.logicalFileNameText">
+        <source xml:lang="en">Logical File Name</source>
+        <target state="translated">邏輯檔案名稱</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.logicalNameText">
         <source xml:lang="en">Logical Name</source>
@@ -918,13 +1129,29 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Name cannot be empty.</source>
         <target state="translated">名稱不能空白。</target>
       </trans-unit>
+      <trans-unit id="objectManagement.backupNewMediaDescription">
+        <source xml:lang="en">New media set description</source>
+        <target state="translated">新增媒體集描述</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupNewMediaName">
+        <source xml:lang="en">New media set name</source>
+        <target state="translated">新增媒體集名稱</target>
+      </trans-unit>
       <trans-unit id="objectManagement.user.noLogin">
         <source xml:lang="en">No Login Access</source>
         <target state="translated">無登入存取權</target>
       </trans-unit>
+      <trans-unit id="objectManagement.noEncryptorWarning">
+        <source xml:lang="en">No certificate or asymmetric key is available</source>
+        <target state="translated">沒有憑證或非對稱金鑰可用</target>
+      </trans-unit>
       <trans-unit id="objectManagement.doDatabaseFilesError">
         <source xml:lang="en">No database files were specified to attach to the server.</source>
         <target state="translated">未指定要附加至伺服器的資料庫檔案。</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.noSecurableObjectsFoundInfoMessage">
+        <source xml:lang="en">No securable objects could be found for the specified selection.</source>
+        <target state="translated">找不到指定選取項目的安全性實體物件。</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.noneText">
         <source xml:lang="en">None</source>
@@ -978,6 +1205,22 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Optimize Ad Hoc Workloads</source>
         <target state="translated">針對臨機工作負載進行最佳化</target>
       </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restorePlan.originalFileNameText">
+        <source xml:lang="en">Original File Name</source>
+        <target state="translated">原始檔案名稱</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.overwriteExistingBackups">
+        <source xml:lang="en">Overwrite all existing backup sets</source>
+        <target state="translated">覆寫所有現有的備份集</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupOverwriteMedia">
+        <source xml:lang="en">Overwrite media</source>
+        <target state="translated">覆寫媒體</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.overwriteTheExistingDatabaseText">
+        <source xml:lang="en">Overwrite the existing database (WITH REPLACE)</source>
+        <target state="translated">覆寫現有的資料庫 (WITH REPLACE)</target>
+      </trans-unit>
       <trans-unit id="objectManagement.user.ownedSchemasLabel">
         <source xml:lang="en">Owned Schemas</source>
         <target state="translated">擁有的結構描述</target>
@@ -1018,6 +1261,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Path</source>
         <target state="translated">路徑</target>
       </trans-unit>
+      <trans-unit id="objectManagement.backupPerformChecksum">
+        <source xml:lang="en">Perform checksum before writing to media</source>
+        <target state="translated">在寫入媒體前執行檢查碼</target>
+      </trans-unit>
       <trans-unit id="objectManagement.permissionColumnHeader">
         <source xml:lang="en">Permission</source>
         <target state="translated">權限</target>
@@ -1029,6 +1276,18 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.platform">
         <source xml:lang="en">Platform</source>
         <target state="translated">平台</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.backupFolderPathTitle">
+        <source xml:lang="en">Please enter one or more file paths separated by commas</source>
+        <target state="translated">請輸入一或多個用逗號分隔的檔案路徑</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restorePlan.positionText">
+        <source xml:lang="en">Position</source>
+        <target state="translated">位置</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.preserveReplicationSettingsText">
+        <source xml:lang="en">Preserve the replication settings (WITH KEEP_REPLICATION)</source>
+        <target state="translated">保留複寫設定 (WITH KEEP_REPLICATION)</target>
       </trans-unit>
       <trans-unit id="objectManagement.processorColumn">
         <source xml:lang="en">Processor</source>
@@ -1053,6 +1312,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.properties">
         <source xml:lang="en">Properties</source>
         <target state="translated">屬性</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.pathAlreadyAddedError">
+        <source xml:lang="en">Provided path has already been added to the files list.</source>
+        <target state="translated">提供的路徑已新增至檔案清單。</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.purgeQueryDataButtonText">
         <source xml:lang="en">Purge Query Store Data</source>
@@ -1102,9 +1365,37 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Recovery Model</source>
         <target state="translated">復原模式</target>
       </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.recoveryStateText">
+        <source xml:lang="en">Recovery State</source>
+        <target state="translated">復原狀態</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupRecoveryLabel">
+        <source xml:lang="en">Recovery model</source>
+        <target state="translated">復原模式</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.regionLabel">
+        <source xml:lang="en">Region</source>
+        <target state="translated">區域</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.regionSpecificEndpointLabel">
+        <source xml:lang="en">Region-specific endpoint</source>
+        <target state="translated">區域特定端點</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupReliability">
+        <source xml:lang="en">Reliability</source>
+        <target state="translated">可靠性</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.relocateAllFilesText">
+        <source xml:lang="en">Relocate All Files</source>
+        <target state="translated">重新放置所有檔案</target>
+      </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.removeButton">
         <source xml:lang="en">Remove</source>
         <target state="translated">移除</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.removeBackupFileText">
+        <source xml:lang="en">Remove backup file</source>
+        <target state="translated">移除備份檔案</target>
       </trans-unit>
       <trans-unit id="objectManagement.removeFileText">
         <source xml:lang="en">Remove database file</source>
@@ -1127,9 +1418,54 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Reserved Storage Size (MB)</source>
         <target state="translated">保留儲存空間大小 (MB)</target>
       </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restorePlan.restoreText">
+        <source xml:lang="en">Restore</source>
+        <target state="translated">還原</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restorePlan.restoreAsText">
+        <source xml:lang="en">Restore As</source>
+        <target state="translated">還原為</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabaseDialogTitle">
+        <source xml:lang="en">Restore Database (Preview)</source>
+        <target state="translated">還原資料庫 (預覽)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restoreOptionsText">
+        <source xml:lang="en">Restore Options</source>
+        <target state="translated">還原選項</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabaseOperationName">
+        <source xml:lang="en">Restore database '{0}'</source>
+        <note>{0}: object name.</note>
+        <target state="translated">還原資料庫 '{0}'</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restoreDatabaseFileDetailsText">
+        <source xml:lang="en">Restore database file Details</source>
+        <target state="translated">還原資料庫檔案詳細資訊</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restoreDatabaseFilesAsText">
+        <source xml:lang="en">Restore database files as</source>
+        <target state="translated">將資料庫檔案還原為</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restoreFromText">
+        <source xml:lang="en">Restore from</source>
+        <target state="translated">還原自</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.RestorePlanSectionText">
+        <source xml:lang="en">Restore plan</source>
+        <target state="translated">還原計劃</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restoreToText">
+        <source xml:lang="en">Restore to</source>
+        <target state="translated">還原至</target>
+      </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.restrictAccessText">
         <source xml:lang="en">Restrict Access</source>
         <target state="translated">限制存取</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restrictAccessToRestoredDBText">
+        <source xml:lang="en">Restrict access to the restored database (WITH RESTRICTED_USER)</source>
+        <target state="translated">限制對還原資料庫的存取 (WITH RESTRICTED_USER)</target>
       </trans-unit>
       <trans-unit id="objectManagement.rootDirectory">
         <source xml:lang="en">Root Directory</source>
@@ -1138,6 +1474,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.databaseProperties.rowsFileGroupsSectionText">
         <source xml:lang="en">Rows</source>
         <target state="translated">資料列</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restoreFromS3UrlText">
+        <source xml:lang="en">S3 URL</source>
+        <target state="translated">S3 URL</target>
       </trans-unit>
       <trans-unit id="objectManagement.login.sqlAuthenticationType">
         <source xml:lang="en">SQL Authentication</source>
@@ -1163,9 +1503,17 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Schema</source>
         <target state="translated">結構描述</target>
       </trans-unit>
+      <trans-unit id="objectManagement.scriptingFailedError">
+        <source xml:lang="en">Script operation failed.</source>
+        <target state="translated">指令碼作業失敗。</target>
+      </trans-unit>
       <trans-unit id="objectManagement.SearchTextLabel">
         <source xml:lang="en">Search Text</source>
         <target state="translated">搜尋文字</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.secretKeyLabel">
+        <source xml:lang="en">Secret Key</source>
+        <target state="translated">祕密金鑰</target>
       </trans-unit>
       <trans-unit id="objectManagement.securablesText">
         <source xml:lang="en">Securables</source>
@@ -1179,6 +1527,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Select</source>
         <target state="translated">選擇</target>
       </trans-unit>
+      <trans-unit id="objectManagement.SelectBackupFileLabel">
+        <source xml:lang="en">Select Backup File</source>
+        <target state="translated">選取備份檔案</target>
+      </trans-unit>
       <trans-unit id="objectManagement.databaseRole.SelectMemberDialogTitle">
         <source xml:lang="en">Select Database Role Members</source>
         <target state="translated">選取資料庫角色成員</target>
@@ -1190,6 +1542,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.labelSelectFolder">
         <source xml:lang="en">Select Folder</source>
         <target state="translated">選取資料夾</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.SelectS3BucketLabel">
+        <source xml:lang="en">Select S3 Bucket</source>
+        <target state="translated">選取 S3 貯體</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.selectS3BackupFileDialogTitle">
+        <source xml:lang="en">Select S3 Storage Backup File</source>
+        <target state="translated">選取 S3 記憶體備份檔</target>
       </trans-unit>
       <trans-unit id="objectManagement.selectSecurablesDialogTitle">
         <source xml:lang="en">Select Securables</source>
@@ -1203,9 +1563,17 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Select Server Role Owner</source>
         <target state="translated">選取伺服器角色擁有者</target>
       </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restorePlan.serverText">
+        <source xml:lang="en">Server</source>
+        <target state="translated">伺服器</target>
+      </trans-unit>
       <trans-unit id="objectManagement.ServerDisplayName">
         <source xml:lang="en">Server</source>
         <target state="translated">伺服器</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupServerCertificate">
+        <source xml:lang="en">Server Certificate</source>
+        <target state="translated">伺服器憑證</target>
       </trans-unit>
       <trans-unit id="objectManagement.serverCollation">
         <source xml:lang="en">Server Collation</source>
@@ -1223,6 +1591,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Server authentication</source>
         <target state="translated">伺服器驗證</target>
       </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restoreServerConnectionsOptionsText">
+        <source xml:lang="en">Server connections</source>
+        <target state="translated">伺服器連線</target>
+      </trans-unit>
       <trans-unit id="objectManagement.serviceTier">
         <source xml:lang="en">Service Tier</source>
         <target state="translated">服務層級</target>
@@ -1231,6 +1603,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Set Secondary same as Primary</source>
         <target state="translated">將次要設定為與主要相同</target>
       </trans-unit>
+      <trans-unit id="objectManagement.backupCompression">
+        <source xml:lang="en">Set backup compression</source>
+        <target state="translated">設定備份壓縮</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.recoveryModelSimple">
+        <source xml:lang="en">Simple</source>
+        <target state="translated">簡單</target>
+      </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.size">
         <source xml:lang="en">Size (MB)</source>
         <target state="translated">大小 (MB)</target>
@@ -1238,6 +1618,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.databaseProperties.sizeBasedCleanupModeText">
         <source xml:lang="en">Size Based Cleanup Mode</source>
         <target state="translated">以大小為基礎的清除模式</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.SourceSectionText">
+        <source xml:lang="en">Source</source>
+        <target state="translated">來源</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.spaceAvailable">
         <source xml:lang="en">Space Available</source>
@@ -1254,6 +1638,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.databaseProperties.staleThresholdText">
         <source xml:lang="en">Stale Threshold</source>
         <target state="translated">過時的閾值</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.standbyFileText">
+        <source xml:lang="en">Standby file</source>
+        <target state="translated">待命資料庫檔案</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restorePlan.startDateText">
+        <source xml:lang="en">Start Date</source>
+        <target state="translated">開始日期</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.stateSectionHeader">
         <source xml:lang="en">State</source>
@@ -1279,9 +1671,25 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Successful logins only</source>
         <target state="translated">僅限成功的登入</target>
       </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.tailLogBackupFileText">
+        <source xml:lang="en">Tail Log Backup File</source>
+        <target state="translated">結尾記錄備份備份</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restoreTailLogBackupOptionsText">
+        <source xml:lang="en">Tail-log backup</source>
+        <target state="translated">結尾記錄備份</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.takeTailLogBackupBeforeRestoreText">
+        <source xml:lang="en">Take tail-log backup before restore</source>
+        <target state="translated">還原前先進行結尾記錄備份</target>
+      </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.targetRecoveryTimeInSecondsText">
         <source xml:lang="en">Target Recovery Time (Seconds)</source>
         <target state="translated">目標復原時間 (秒)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.targetDatabaseText">
+        <source xml:lang="en">Target database</source>
+        <target state="translated">目標資料庫</target>
       </trans-unit>
       <trans-unit id="objectManagement.collationNotValidError">
         <source xml:lang="en">The selected collation '{0}' is not valid. Please choose a different collation.</source>
@@ -1299,6 +1707,18 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Total Execution CPU Time (ms)</source>
         <target state="translated">執行 CPU 時間總計 (毫秒)</target>
       </trans-unit>
+      <trans-unit id="objectManagement.backupTransactionLog">
+        <source xml:lang="en">Transaction Log</source>
+        <target state="translated">交易記錄</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.transactionLogNotice">
+        <source xml:lang="en">Transaction Log options are only available only when Backup Type is set to Tansaction Log above.</source>
+        <target state="translated">只有當以上的 [備份類型] 設定為 [交易記錄] 時，[交易記錄] 選項才可供使用。</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupTruncateLog">
+        <source xml:lang="en">Truncate the transaction log</source>
+        <target state="translated">截斷交易記錄</target>
+      </trans-unit>
       <trans-unit id="objectManagement.twoDigitYearCutoffLabel">
         <source xml:lang="en">Two Digit Year Cutoff</source>
         <target state="translated">兩位數年份的截止</target>
@@ -1307,9 +1727,21 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Type</source>
         <target state="translated">類型</target>
       </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restorePlan.typeText">
+        <source xml:lang="en">Type</source>
+        <target state="translated">類型</target>
+      </trans-unit>
       <trans-unit id="objectManagement.databaseFileType">
         <source xml:lang="en">Type</source>
         <target state="translated">類型</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restoreFromUrlText">
+        <source xml:lang="en">URL</source>
+        <target state="translated">URL</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupUrlLabel">
+        <source xml:lang="en">URL</source>
+        <target state="translated">URL</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseProperties.autoGrowthValueConversion.unlimited">
         <source xml:lang="en">Unlimited</source>
@@ -1332,9 +1764,17 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Use full-text indexing</source>
         <target state="translated">使用全文檢索索引</target>
       </trans-unit>
+      <trans-unit id="objectManagement.backupDefaultSetting">
+        <source xml:lang="en">Use the default server setting</source>
+        <target state="translated">使用預設伺服器設定</target>
+      </trans-unit>
       <trans-unit id="objectManagement.UserTypeDisplayNameInTitle">
         <source xml:lang="en">User</source>
         <target state="translated">使用者</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.restoreDatabase.restorePlan.userNameText">
+        <source xml:lang="en">User Name</source>
+        <target state="translated">使用者名稱</target>
       </trans-unit>
       <trans-unit id="objectManagement.login.mustChangePasswordLabel">
         <source xml:lang="en">User must change password at next login</source>
@@ -1351,6 +1791,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.locksValidation">
         <source xml:lang="en">Value should be greater than {0}. Choose 0 for default settings.</source>
         <target state="translated">值應該大於 {0}。選擇 0 作為預設設定。</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.verifyBackupWhenFinished">
+        <source xml:lang="en">Verify backup when finished</source>
+        <target state="translated">完成後驗證備份</target>
       </trans-unit>
       <trans-unit id="objectManagement.versionText">
         <source xml:lang="en">Version</source>
@@ -1637,6 +2081,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS">
         <source xml:lang="en">Azure Attestation</source>
         <target state="translated">Azure 證明</target>
+      </trans-unit>
+      <trans-unit id="title.backupDatabase">
+        <source xml:lang="en">Backup Database (Preview)</source>
+        <target state="translated">備份資料庫 (預覽)</target>
       </trans-unit>
       <trans-unit id="title.changeNotebookConnection">
         <source xml:lang="en">Change SQL Notebook Connection</source>
@@ -1935,8 +2383,8 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">MSSQL 設定</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.true">
-        <source xml:lang="en">Mandatory (True)</source>
-        <target state="translated">強制 (True)</target>
+        <source xml:lang="en">Mandatory</source>
+        <target state="translated">強制</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.maxPoolSize.displayName">
         <source xml:lang="en">Max pool size</source>
@@ -2047,8 +2495,8 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">作業系統版本</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.false">
-        <source xml:lang="en">Optional (False)</source>
-        <target state="translated">選用 (False)</target>
+        <source xml:lang="en">Optional</source>
+        <target state="translated">選擇性</target>
       </trans-unit>
       <trans-unit id="cloud.databaseProperties.owner">
         <source xml:lang="en">Owner</source>
@@ -2106,6 +2554,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Replication</source>
         <target state="translated">複寫</target>
       </trans-unit>
+      <trans-unit id="title.restoreDatabase">
+        <source xml:lang="en">Restore Database (Preview)</source>
+        <target state="translated">還原資料庫 (預覽)</target>
+      </trans-unit>
       <trans-unit id="mssql.connectionOptions.authType.categoryValues.sqlLogin">
         <source xml:lang="en">SQL Login</source>
         <target state="translated">SQL 登入</target>
@@ -2137,6 +2589,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="mssql.connectionOptions.serverName.displayName">
         <source xml:lang="en">Server</source>
         <target state="translated">伺服器</target>
+      </trans-unit>
+      <trans-unit id="mssql.provider.serverProcessId">
+        <source xml:lang="en">Server Process ID</source>
+        <target state="translated">伺服器處理序識別碼</target>
       </trans-unit>
       <trans-unit id="mssql.query.displayBitAsNumber">
         <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
@@ -2211,8 +2667,8 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">狀態</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.strict">
-        <source xml:lang="en">Strict</source>
-        <target state="translated">嚴格</target>
+        <source xml:lang="en">Strict (supported for SQL Server 2022 and Azure SQL)</source>
+        <target state="new">Strict (supported for SQL Server 2022 and Azure SQL)</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.currentLanguage.description">
         <source xml:lang="en">The SQL Server language record name</source>
@@ -2269,10 +2725,6 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="mssql.objectExplorer.expandTimeout">
         <source xml:lang="en">The timeout in seconds for expanding a node in Object Explorer. The default value is 45 seconds.</source>
         <target state="translated">在物件總管中展開節點的逾時秒數。預設值為 45 秒。</target>
-      </trans-unit>
-      <trans-unit id="mssql.tracing.desc">
-        <source xml:lang="en">Traces the communication between Azure Data Studio and SQL Tools Service to the SQL Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.</source>
-        <target state="translated">追蹤 Azure Data Studio 與 SQL Tools 服務之間的通訊至 SQL Tools 服務輸出通道。警告: 啟用詳細資訊記錄時，這可能包含機密資訊。</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.trustServerCertificate.displayName">
         <source xml:lang="en">Trust server certificate</source>
@@ -2365,6 +2817,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="mssql.piiLogging">
         <source xml:lang="en">[Optional] Should Personally Identifiable Information (PII) be logged in the log file.</source>
         <target state="translated">[選用] 是否應在記錄檔中記錄個人識別資訊 (PII)。</target>
+      </trans-unit>
+      <trans-unit id="mssql.tracing.desc">
+        <source xml:lang="en">[Optional] Traces the communication between Azure Data Studio and SQL Tools Service to the SQL Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.</source>
+        <target state="translated">[選用] 追蹤 Azure Data Studio 與 SQL Tools Service 至 SQL Tools Service 輸出通道之間的通訊。警告: 啟用詳細資訊記錄時，這可能包含敏感性資訊。</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.placeholder">
         <source xml:lang="en">e.g. servername,port</source>

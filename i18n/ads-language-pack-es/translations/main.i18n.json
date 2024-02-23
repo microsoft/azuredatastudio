@@ -12914,6 +12914,7 @@
 			"postUninstallTooltip": "Vuelva a cargar Azure Data Studio para completar la desinstalación de esta extensión.",
 			"postUpdateTooltip": "Vuelva a cargar Azure Data Studio para habilitar la extensión actualizada.",
 			"recommendedExtensions": "Marketplace",
+			"reviewGuidanceLabel": "Antes de informar de un problema aquí <a href=\"https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions\" target=\"_blank\">, revise las instrucciones que proporcionamos</a>.",
 			"scenarioTypeUndefined": "Es necesario proporcionar el tipo de escenario para recibir recomendaciones de extensiones.",
 			"showReleaseNotes": "Mostrar notas de la versión después de una actualización. Las notas de la versión se abren en una nueva ventana del explorador web.",
 			"sql.versionMismatch": "La extensión no es compatible con Azure Data Studio {0}. La extensión requiere: {1}.",
@@ -12946,6 +12947,7 @@
 			"addAccount": "Agregar una cuenta",
 			"applyFilters": "Aplicar filtros",
 			"confirmRemoveUserAccountMessage": "¿Seguro que quiere quitar \"{0}\"?",
+			"githubCopilotSignOut": "Cerrar sesión de GitHub Copilot",
 			"refreshAccount": "Actualizar las credenciales",
 			"removeAccount": "Eliminar cuenta",
 			"removeAccountFailed": "Error al quitar cuenta"
@@ -13463,7 +13465,9 @@
 			"sql.maxRecentConnectionsDescription": "Número máximo de conexiones usadas recientemente que se van a almacenar en la lista de conexiones."
 		},
 		"sql/workbench/contrib/connection/browser/connectionStatus": {
-			"status.connection.status": "Estado de conexión"
+			"status.connection.baseTooltip": "Servidor: {0}\r\nBase de datos: {1}",
+			"status.connection.status": "Estado de conexión",
+			"status.connection.tooltipLogin": "Iniciar sesión: {0}"
 		},
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
 			"schema.azureResource": "Punto de conexión de recursos de Azure para el proveedor.",
@@ -13791,7 +13795,10 @@
 			"revertRow": "Revertir la fila actual"
 		},
 		"sql/workbench/contrib/editData/browser/editDataGridPanel": {
-			"editData.cellWithNullCharMessage": "Esta celda contiene el carácter nulo Unicode, que no se admite actualmente para la edición."
+			"editData.cellWithNullCharMessage": "Esta celda contiene el carácter nulo Unicode, que no se admite actualmente para la edición.",
+			"editData.generalSubmitError": "Error al enviar el cambio de celda: <{0}>",
+			"editData.newRowSubmitError": "Error al enviar datos a la nueva fila: <{0}>",
+			"editData.saveViewSubmitError": "Error al guardar los cambios locales no confirmados: <{0}>"
 		},
 		"sql/workbench/contrib/editData/browser/gridActions": {
 			"copySelection": "Copiar",

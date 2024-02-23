@@ -18,6 +18,7 @@
 			"downloadServiceDoneChannelMsg": "{0} descargado",
 			"downloadingServiceStatusMsg": "Descargando {0}",
 			"downloadingServiceChannelMsg": "Descargando {0}",
+			"entryExtractedChannelMsg": "Elementos extraídos {0} ({1} de {2})",
 			"failedToStartServiceErrorMsg": "No se ha podido iniciar {0}",
 			"installedServiceChannelMsg": "{0} instalado",
 			"installingServiceStatusMsg": "Instalando {0}",
@@ -80,6 +81,7 @@
 			"kusto.format.alignColumnDefinitionsInColumns": "Indica si las definiciones de columna deben alinearse.",
 			"kusto.format.datatypeCasing": "Indica si los tipos de datos deben formatearse como MAYÚSCULAS, minúsculas o nada (sin formato).",
 			"kusto.format.keywordCasing": "Indica si las palabras clave deben formatearse como MAYÚSCULAS, minúsculas o nada (sin formato).",
+			"title.showLogFile": "Mostrar archivo de registro",
 			"databasesListProperties.size": "Tamaño (MB)",
 			"cloud.databaseProperties.size": "Tamaño (MB)",
 			"kusto.connectionOptions.groupName.source": "Origen",
@@ -96,7 +98,8 @@
 			"kusto.connectionOptions.userName.displayName": "Nombre del usuario",
 			"kusto.connectionOptions.workstationId.displayName": "Id. de estación de trabajo",
 			"kusto.logDebugInfo": "[Opcional] Registre la salida de depuración en a la consola (Ver -> Salida) y después seleccione el canal de salida apropiado del menú desplegable",
-			"kusto.tracingLevel": "[Opcional] El nivel de registro para servicios back-end. Azure Data Studio genera un nombre de archivo cada vez que se inicia y, si el archivo ya existe, las entradas de registros se anexan a ese archivo. Para la limpieza de archivos de registro antiguos, consulte la configuración de logRetentionMinutes y logFilesRemovalLimit. El valor predeterminado tracingLevel no registra mucho. El cambio de detalle podría dar lugar a amplios requisitos de registro y espacio en disco para los registros. Error incluye Crítico, Advertencia incluye Error, Información incluye Advertencia y Detallado incluye Información."
+			"kusto.tracingLevel": "[Opcional] El nivel de registro para servicios back-end. Azure Data Studio genera un nombre de archivo cada vez que se inicia y, si el archivo ya existe, las entradas de registros se anexan a ese archivo. Para la limpieza de archivos de registro antiguos, consulte la configuración de logRetentionMinutes y logFilesRemovalLimit. El valor predeterminado tracingLevel no registra mucho. El cambio de detalle podría dar lugar a amplios requisitos de registro y espacio en disco para los registros. Error incluye Crítico, Advertencia incluye Error, Información incluye Advertencia y Detallado incluye Información.",
+			"kusto.tracingServer": "[Opcional] Realiza un seguimiento de la comunicación entre Azure Data Studio y el Servicio de herramientas de Kusto al canal de salida del Servicio de herramientas de Kusto. ADVERTENCIA: esto puede incluir información confidencial cuando está habilitado el registro detallado."
 		}
 	}
 }

@@ -285,7 +285,6 @@
 			"notebook.overrideEditorTheming.description": "覆盖笔记本编辑器中的编辑器默认设置。设置包括背景色、当前线条颜色和边框",
 			"title.pinNotebook": "固定笔记本",
 			"title.PinnedBooks": "固定的笔记本",
-			"title.ProvidedBooks": "提供的 Jupyter Book",
 			"title.reinstallNotebookDependencies": "重新安装笔记本依赖项",
 			"title.removeNotebook": "移除笔记本",
 			"title.revealInBooksViewlet": "在工作簿中展示",

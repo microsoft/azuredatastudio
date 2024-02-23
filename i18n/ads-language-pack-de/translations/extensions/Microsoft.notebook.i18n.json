@@ -285,7 +285,6 @@
 			"notebook.overrideEditorTheming.description": "Hiermit setzen Sie die Editor-Standardeinstellungen im Notebook-Editor außer Kraft. Zu den Einstellungen gehören Hintergrundfarbe, Farbe der aktuellen Zeile und Rahmen.",
 			"title.pinNotebook": "Notebook anheften",
 			"title.PinnedBooks": "Angeheftete Notebooks",
-			"title.ProvidedBooks": "Bereitgestellte Jupyter Books",
 			"title.reinstallNotebookDependencies": "Notebook-Abhängigkeiten neu installieren",
 			"title.removeNotebook": "Notebook entfernen",
 			"title.revealInBooksViewlet": "In Büchern offenlegen",

@@ -63,6 +63,9 @@
 		"dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "Azure CosmosDB для MongoDB"
 		},
+		"dist/azureResource/providers/cosmosdb/nosql/cosmosDbNoSqlTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbNoSqlContainerLabel": "Azure CosmosDB для NoSQL"
+		},
 		"dist/azureResource/providers/cosmosdb/postgres/cosmosDbPostgresTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbPostgresContainerLabel": "Кластер Azure CosmosDB для PostgreSQL"
 		},

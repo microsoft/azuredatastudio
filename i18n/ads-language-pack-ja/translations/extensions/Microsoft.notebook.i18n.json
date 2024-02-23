@@ -285,7 +285,6 @@
 			"notebook.overrideEditorTheming.description": "Notebook エディターの既定の設定をオーバーライドします。設定には、背景色、現在の線の色、境界線が含まれます",
 			"title.pinNotebook": "ノートブックのピン留め",
 			"title.PinnedBooks": "ピン留めされたノートブック",
-			"title.ProvidedBooks": "提供されている Jupyter ブック",
 			"title.reinstallNotebookDependencies": "ノートブック依存関係を再インストール",
 			"title.removeNotebook": "ノートブックの削除",
 			"title.revealInBooksViewlet": "ブックで公開する",

@@ -18,6 +18,7 @@
 			"downloadServiceDoneChannelMsg": "已下載 {0}",
 			"downloadingServiceStatusMsg": "正在下載 {0}",
 			"downloadingServiceChannelMsg": "正在下載 {0}",
+			"entryExtractedChannelMsg": "已擷取 {0} ({1}/{2})",
 			"failedToStartServiceErrorMsg": "無法啟動 {0}",
 			"installedServiceChannelMsg": "已安裝 {0}",
 			"installingServiceStatusMsg": "正在安裝 {0}",
@@ -80,6 +81,7 @@
 			"kusto.format.alignColumnDefinitionsInColumns": "行定義是否一致?",
 			"kusto.format.datatypeCasing": "是否將資料類型轉換為大寫，小寫或無 (不轉換)",
 			"kusto.format.keywordCasing": "是否將關鍵字轉換為大寫，小寫或無 (不轉換)",
+			"title.showLogFile": "顯示記錄檔",
 			"databasesListProperties.size": "大小 (MB)",
 			"cloud.databaseProperties.size": "大小 (MB)",
 			"kusto.connectionOptions.groupName.source": "來源",
@@ -96,7 +98,8 @@
 			"kusto.connectionOptions.userName.displayName": "使用者名稱",
 			"kusto.connectionOptions.workstationId.displayName": "工作站識別碼",
 			"kusto.logDebugInfo": "[選用] 將偵錯記錄輸出至主控台 ([檢視] -> [輸出])，並從下拉式清單選取適當的輸出通道",
-			"kusto.tracingLevel": "[選用] 後端服務的記錄層級。每當 Azure Data Studio 啟動，或是檔案已經有附加至該檔案的記錄項目時，Azure Data Studio 都會產生檔案名稱。如需清除舊記錄檔，請查看 logRetentionMinutes 和 logFilesRemovalLimit 設定。預設 tracingLevel 不會記錄太多項目。變更詳細資訊可能會導致大量記錄和記錄的磁碟空間需求。錯誤包含嚴重，警告包含錯誤，資訊包含警告而詳細資訊包含資訊"
+			"kusto.tracingLevel": "[選用] 後端服務的記錄層級。每當 Azure Data Studio 啟動，或是檔案已經有附加至該檔案的記錄項目時，Azure Data Studio 都會產生檔案名稱。如需清除舊記錄檔，請查看 logRetentionMinutes 和 logFilesRemovalLimit 設定。預設 tracingLevel 不會記錄太多項目。變更詳細資訊可能會導致大量記錄和記錄的磁碟空間需求。錯誤包含嚴重，警告包含錯誤，資訊包含警告而詳細資訊包含資訊",
+			"kusto.tracingServer": "[選用] 追蹤 Azure Data Studio 與 Kusto Tools Service 至 Kusto Tools Service 輸出通道之間的通訊。警告: 啟用詳細資訊記錄時，這可能包含敏感性資訊。"
 		}
 	}
 }
