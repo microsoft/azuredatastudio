@@ -795,16 +795,6 @@
           "command": "mssql.objectProperties",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
           "group": "inline@2"
-        },
-        {
-          "command": "mssql.dropDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
-          "group": "inline@3"
-        },
-        {
-          "command": "mssql.dropObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/)  && config.workbench.enablePreviewFeatures",
-          "group": "inline@3"
         }
       ],
       "dataExplorer/context": [
