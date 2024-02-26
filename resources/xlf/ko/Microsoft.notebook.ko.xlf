@@ -1032,10 +1032,6 @@
         <source xml:lang="en">Pinned notebooks</source>
         <target state="translated">고정된 Notebook</target>
       </trans-unit>
-      <trans-unit id="title.ProvidedBooks">
-        <source xml:lang="en">Provided Jupyter Books</source>
-        <target state="translated">Jupyter Book 제공</target>
-      </trans-unit>
       <trans-unit id="title.reinstallNotebookDependencies">
         <source xml:lang="en">Reinstall Notebook dependencies</source>
         <target state="translated">Notebook 종속성 다시 설치</target>

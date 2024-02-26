@@ -2,7 +2,7 @@
 	"name": "ads-language-pack-zh-hans",
 	"displayName": "Chinese (Simplified) (简体中文) Language Pack for Azure Data Studio",
 	"description": "Language pack extension for Chinese (Simplified)",
-	"version": "1.47.0",
+	"version": "1.48.0",
 	"publisher": "Microsoft",
 	"repository": {
 		"type": "git",

@@ -468,7 +468,7 @@ See below for registration instructions.</source>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.cancel.reason.source.azure.sql.target.not.ready">
         <source xml:lang="en">Azure SQL target not ready</source>
-        <target state="new">Azure SQL target not ready</target>
+        <target state="translated">Azure SQL ターゲットの準備ができていません</target>
       </trans-unit>
       <trans-unit id="sql.migration.services.target">
         <source xml:lang="en">Azure SQL target selected as default.</source>
@@ -560,7 +560,7 @@ See below for registration instructions.</source>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.cancel.reason.backup.location.not.ready">
         <source xml:lang="en">Backup location not ready</source>
-        <target state="new">Backup location not ready</target>
+        <target state="translated">バックアップの場所の準備ができていません</target>
       </trans-unit>
       <trans-unit id="sql.migration.backup.file.backup.size">
         <source xml:lang="en">Backup size (MB)</source>
@@ -648,7 +648,7 @@ See below for registration instructions.</source>
       </trans-unit>
       <trans-unit id="sql.migration.cancel.feedback.dialog.title">
         <source xml:lang="en">Cancel migration</source>
-        <target state="translated">移行のキャンセル</target>
+        <target state="translated">移行を取り消す</target>
       </trans-unit>
       <trans-unit id="sql.migration.state.canceled">
         <source xml:lang="en">Canceled</source>
@@ -888,7 +888,7 @@ See below for registration instructions.</source>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.cancel.reason.continue.with.migration.later">
         <source xml:lang="en">Continue with migration later</source>
-        <target state="new">Continue with migration later</target>
+        <target state="translated">後で移行を続行する</target>
       </trans-unit>
       <trans-unit id="sql.migration.sqldb.column.copyduration">
         <source xml:lang="en">Copy duration</source>
@@ -992,7 +992,7 @@ See below for registration instructions.</source>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.cancel.reason.dms.service.or.ir.not.ready">
         <source xml:lang="en">Data Migration Service / IR node not ready</source>
-        <target state="new">Data Migration Service / IR node not ready</target>
+        <target state="translated">データ移行サービスまたは IR ノードの準備ができていません</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.status.stopped">
         <source xml:lang="en">Data collection for Azure recommendations has been stopped.</source>
@@ -1224,7 +1224,7 @@ See below for registration instructions.</source>
       </trans-unit>
       <trans-unit id="sql.migration.cancel.feedback.dialog.description">
         <source xml:lang="en">Do you want to cancel migration? Your unsaved changes will be discarded.</source>
-        <target state="new">Do you want to cancel migration? Your unsaved changes will be discarded.</target>
+        <target state="translated">移行を取り消しますか?保存されていない変更は破棄されます。</target>
       </trans-unit>
       <trans-unit id="sql.retry.migration.prompt">
         <source xml:lang="en">Do you want to retry the failed table migrations?</source>
@@ -1664,7 +1664,7 @@ Currently, migrating server roles, establishing server mappings and setting perm
       </trans-unit>
       <trans-unit id="sql.migration.wizard.cancel.reason.others.input.box.note">
         <source xml:lang="en">If you selected others, please write a short note.</source>
-        <target state="new">If you selected others, please write a short note.</target>
+        <target state="translated">その他を選択した場合は、短いメモを書いてください。</target>
       </trans-unit>
       <trans-unit id="sql.migration.impact">
         <source xml:lang="en">Impact</source>
@@ -2108,7 +2108,7 @@ Click "Run validation" to check that requirements are met.</source>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.cancel.reason.migration.taking.longer">
         <source xml:lang="en">Migration taking longer or having issues</source>
-        <target state="new">Migration taking longer or having issues</target>
+        <target state="translated">移行に時間がかかっているか、問題が発生しています</target>
       </trans-unit>
       <trans-unit id="sql.migration.schema.type">
         <source xml:lang="en">Migration type</source>
@@ -2180,23 +2180,23 @@ Click "Run validation" to check that requirements are met.</source>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.cancel.reason.need.to.analyse.findings">
         <source xml:lang="en">Need to analyse/fix the findings</source>
-        <target state="new">Need to analyse/fix the findings</target>
+        <target state="translated">検出結果を分析または修正する必要があります</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.cancel.reason.change.source.sql.server">
         <source xml:lang="en">Need to change source SQL Server</source>
-        <target state="new">Need to change source SQL Server</target>
+        <target state="translated">ソース SQL Serverを変更する必要があります</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.cancel.reason.need.to.evaluate.recommended.sku">
         <source xml:lang="en">Need to evaluate the recommended SKU</source>
-        <target state="new">Need to evaluate the recommended SKU</target>
+        <target state="translated">推奨 SKU を評価する必要があります</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.cancel.reason.need.to.review.login.selection">
         <source xml:lang="en">Need to review login selection</source>
-        <target state="new">Need to review login selection</target>
+        <target state="translated">ログインの選択を確認する必要があります</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.cancel.reason.need.to.review.table.selection">
         <source xml:lang="en">Need to review table selection</source>
-        <target state="new">Need to review table selection</target>
+        <target state="translated">テーブルの選択を確認する必要があります</target>
       </trans-unit>
       <trans-unit id="sql.migration.needs.review">
         <source xml:lang="en">Needs review</source>
@@ -2324,7 +2324,7 @@ Click "Run validation" to check that requirements are met.</source>
       </trans-unit>
       <trans-unit id="sql.migration.cancel.feedback.no.reason.selected">
         <source xml:lang="en">No reason selected</source>
-        <target state="new">No reason selected</target>
+        <target state="translated">理由が選択されていません</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.sku.error.noRecommendation">
         <source xml:lang="en">No recommendation available</source>
@@ -2516,7 +2516,7 @@ Click "Run validation" to check that requirements are met.</source>
       </trans-unit>
       <trans-unit id="sql.migration.cancel.feedback.reason.container.description">
         <source xml:lang="en">Please take a moment to tell us the reason for canceling the migration. This will help us improve the experience.</source>
-        <target state="new">Please take a moment to tell us the reason for canceling the migration. This will help us improve the experience.</target>
+        <target state="translated">移行を取り消す理由をお聞かせください。これはエクスペリエンスの向上に役立ちます。</target>
       </trans-unit>
       <trans-unit id="sql.migration.port.label">
         <source xml:lang="en">Port</source>
@@ -2612,7 +2612,7 @@ Click "Run validation" to check that requirements are met.</source>
       </trans-unit>
       <trans-unit id="sql.migration.cancel.feedback.reason.container.title">
         <source xml:lang="en">Reason for canceling migration</source>
-        <target state="new">Reason for canceling migration</target>
+        <target state="translated">移行を取り消す理由</target>
       </trans-unit>
       <trans-unit id="sql.migration.copy.status.rebuildingindexes">
         <source xml:lang="en">Rebuilding indexes</source>
@@ -4032,7 +4032,7 @@ Establishing user mappings.</source>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.cancel.reason.waiting.for.downtime.window">
         <source xml:lang="en">Waiting for downtime window</source>
-        <target state="new">Waiting for downtime window</target>
+        <target state="translated">ダウンタイム ウィンドウを待機しています</target>
       </trans-unit>
       <trans-unit id="waitingForService">
         <source xml:lang="en">Waiting for {0} component to start.</source>
