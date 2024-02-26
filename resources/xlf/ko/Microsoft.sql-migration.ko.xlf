@@ -39,8 +39,8 @@
         <target state="translated">-- 사용할 수 없음 --</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.missing.tables">
-        <source xml:lang="en">0 tables found on source database.</source>
-        <target state="translated">원본 데이터베이스에 테이블이 0개 있습니다.</target>
+        <source xml:lang="en">0 tables on source database found on target database. To migrate the data in the tables select the migrate schema option above.</source>
+        <target state="translated">원본 데이터베이스에 테이블 0개가 대상 데이터베이스에 있습니다. 테이블에서 데이터를 마이그레이션하려면 위의 스키마 마이그레이션 옵션을 선택합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.step.1">
         <source xml:lang="en">1. Stop all incoming transactions to the source database.</source>
@@ -61,6 +61,10 @@
       <trans-unit id="sql.migration.cutover.step.3.network.share">
         <source xml:lang="en">3. Verify that all log backups have been restored on the target database. The "Log backups pending restore" value should be zero.</source>
         <target state="translated">3. 모든 로그 백업이 대상 데이터베이스에서 복원되었는지 확인합니다. "복원 보류 중인 로그 백업" 값은 0이어야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.schema.migration.min.version">
+        <source xml:lang="en">5.37.8767.4</source>
+        <target state="new">5.37.8767.4</target>
       </trans-unit>
       <trans-unit id="sql.migration.bc.info">
         <source xml:lang="en">A SQL Managed Instance migration cutover to the Business Critical service tier can take significantly longer than General Purpose because three secondary replicas have to be seeded for Always On High Availability group. The duration of the operation depends on the size of the data. Seeding speed in 90% of cases is 220 GB/hour or higher.</source>
@@ -133,6 +137,18 @@
       <trans-unit id="sql.migration.all.fields.required">
         <source xml:lang="en">All fields are required.</source>
         <target state="translated">모든 필드가 필수 항목입니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.all.source.tables.empty">
+        <source xml:lang="en">All of source tables are empty. No table is available to select for data migration. But they are available for schema migration if they do not exist on target.</source>
+        <target state="translated">원본 테이블이 모두 비어 있습니다. 데이터 마이그레이션을 위해 선택할 수 있는 테이블이 없습니다. 그러나 대상에 테이블이 없는 경우 스키마 마이그레이션을 사용할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.unavailable.source.tables.heading">
+        <source xml:lang="en">All of tables below are empty. No table is available to select for data migration. But if they do not exist on target, schema migration is available.</source>
+        <target state="translated">아래 테이블이 모두 비어 있습니다. 데이터 마이그레이션을 위해 선택할 수 있는 테이블이 없습니다. 그러나 대상에 테이블이 없는 경우 스키마 마이그레이션을 사용할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.missing.tables.heading">
+        <source xml:lang="en">All of tables below are missing on target. To migrate the data in these tables, select the migrate schema option above.</source>
+        <target state="translated">아래 테이블이 모두 대상에 없습니다. 이러한 테이블의 데이터를 마이그레이션하려면 위의 스키마 마이그레이션 옵션을 선택하세요.</target>
       </trans-unit>
       <trans-unit id="sql.migration.multi.step.all.steps.completed.errors">
         <source xml:lang="en">All steps completed with the following error(s):{0}{1}</source>
@@ -326,6 +342,10 @@
         <source xml:lang="en">Authentication type</source>
         <target state="translated">인증 유형</target>
       </trans-unit>
+      <trans-unit id="sql.migration.available.table.count.on.target">
+        <source xml:lang="en">Available on target ({0})</source>
+        <target state="translated">대상에서 사용 가능({0})</target>
+      </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.link.dmsGuide">
         <source xml:lang="en">Azure Database Migration Guides</source>
         <target state="translated">Azure 데이터베이스 마이그레이션 가이드</target>
@@ -446,6 +466,10 @@ See below for registration instructions.</source>
         <source xml:lang="en">Azure SQL target</source>
         <target state="translated">Azure SQL 대상</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.source.azure.sql.target.not.ready">
+        <source xml:lang="en">Azure SQL target not ready</source>
+        <target state="translated">Azure SQL 대상이 준비되지 않음</target>
+      </trans-unit>
       <trans-unit id="sql.migration.services.target">
         <source xml:lang="en">Azure SQL target selected as default.</source>
         <target state="translated">Azure SQL 대상이 기본값으로 선택됨</target>
@@ -518,9 +542,25 @@ See below for registration instructions.</source>
         <source xml:lang="en">Azure storage subscription</source>
         <target state="translated">Azure Storage 구독</target>
       </trans-unit>
+      <trans-unit id="sql.migration.schema.msdtctransactsql">
+        <source xml:lang="en">BEGIN DISTRIBUTED TRANSACTION</source>
+        <target state="translated">BEGIN DISTRIBUTED TRANSACTION</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.bulkinsert">
+        <source xml:lang="en">BULK INSERT</source>
+        <target state="translated">BULK INSERT</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.backup.restore">
+        <source xml:lang="en">Backup and restore</source>
+        <target state="translated">백업 및 복원</target>
+      </trans-unit>
       <trans-unit id="sql.migration.backup.location">
         <source xml:lang="en">Backup location</source>
         <target state="translated">백업 위치</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.backup.location.not.ready">
+        <source xml:lang="en">Backup location not ready</source>
+        <target state="translated">백업 위치가 준비되지 않음</target>
       </trans-unit>
       <trans-unit id="sql.migration.backup.file.backup.size">
         <source xml:lang="en">Backup size (MB)</source>
@@ -574,9 +614,21 @@ See below for registration instructions.</source>
         <source xml:lang="en">Business critical</source>
         <target state="translated">중요 비즈니스용</target>
       </trans-unit>
+      <trans-unit id="sql.migration.schema.rule.compute">
+        <source xml:lang="en">COMPUTE</source>
+        <target state="translated">COMPUTE</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.cpu.requirement">
         <source xml:lang="en">CPU requirement</source>
         <target state="translated">CPU 요구 사항</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.rule.crossdatabasereferences">
+        <source xml:lang="en">CROSS DATABASE REFERENCE</source>
+        <target state="translated">CROSS DATABASE REFERENCE</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.cryptographicprovider">
+        <source xml:lang="en">CRYPTOGRAPHIC PROVIDER</source>
+        <target state="translated">CRYPTOGRAPHIC PROVIDER</target>
       </trans-unit>
       <trans-unit id="sql.migration.saved.assessment.cancel">
         <source xml:lang="en">Cancel</source>
@@ -591,6 +643,10 @@ See below for registration instructions.</source>
         <target state="translated">취소</target>
       </trans-unit>
       <trans-unit id="sql.migration.cancel.migration">
+        <source xml:lang="en">Cancel migration</source>
+        <target state="translated">마이그레이션 취소</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cancel.feedback.dialog.title">
         <source xml:lang="en">Cancel migration</source>
         <target state="translated">마이그레이션 취소</target>
       </trans-unit>
@@ -686,6 +742,10 @@ See below for registration instructions.</source>
         <source xml:lang="en">Choose how you want to provide performance data</source>
         <target state="translated">성능 데이터를 제공할 방법 선택</target>
       </trans-unit>
+      <trans-unit id="sql.migration.import.assessment.header">
+        <source xml:lang="en">Choose target platform and view assessment results.</source>
+        <target state="translated">대상 플랫폼을 선택하고 평가 결과를 확인하세요..</target>
+      </trans-unit>
       <trans-unit id="sql.migration.assessment.results.header">
         <source xml:lang="en">Choose target platform, view assessment results and select database(s) for migration.</source>
         <target state="translated">대상 플랫폼을 선택하고, 평가 결과를 보고, 마이그레이션할 데이터베이스를 선택합니다.</target>
@@ -734,6 +794,22 @@ See below for registration instructions.</source>
         <source xml:lang="en">Collecting target login failed with error code {0}</source>
         <target state="translated">오류 코드로 대상 로그인을 수집하지 못했습니다. {0}</target>
       </trans-unit>
+      <trans-unit id="sql.migration.status.collectioncompleted">
+        <source xml:lang="en">Collection completed</source>
+        <target state="translated">수집 완료됨</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.collection.ended">
+        <source xml:lang="en">Collection ended</source>
+        <target state="translated">수집 종료됨</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.collection.started">
+        <source xml:lang="en">Collection started</source>
+        <target state="translated">수집 시작됨</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.community.support.title">
+        <source xml:lang="en">Community support</source>
+        <target state="translated">커뮤니티 지원</target>
+      </trans-unit>
       <trans-unit id="sql.migration.data.uploaded.info">
         <source xml:lang="en">Comparison of the actual amount of data read from the source and the actual amount of data uploaded to the target.</source>
         <target state="translated">원본에서 읽은 실제 데이터 양과 대상에 업로드된 실제 데이터 양에 대한 비교입니다.</target>
@@ -741,6 +817,10 @@ See below for registration instructions.</source>
       <trans-unit id="sql.migration.complete.cutover">
         <source xml:lang="en">Complete cutover</source>
         <target state="translated">컷오버 완료</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.completed">
+        <source xml:lang="en">Completed</source>
+        <target state="translated">완료</target>
       </trans-unit>
       <trans-unit id="sql.migration.restore.status.completed">
         <source xml:lang="en">Completed</source>
@@ -753,6 +833,10 @@ See below for registration instructions.</source>
       <trans-unit id="sql.login.migration.status.page.description.completed">
         <source xml:lang="en">Completed migrating {0} logins to {1} '{2}'</source>
         <target state="translated">{0} 로그인을 {1} '{2}'(으)로 마이그레이션 완료</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.completedwitherrors">
+        <source xml:lang="en">Completed with errors</source>
+        <target state="translated">완료되었지만 오류 발생</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.completing">
         <source xml:lang="en">Completing</source>
@@ -773,6 +857,10 @@ See below for registration instructions.</source>
       <trans-unit id="sql.migration.connection.label">
         <source xml:lang="en">Connect</source>
         <target state="translated">연결</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.community.support.description">
+        <source xml:lang="en">Connect with Microsoft Community</source>
+        <target state="translated">Microsoft 커뮤니티와 연결</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.target.connection.error">
         <source xml:lang="en">Connection error: {0}</source>
@@ -797,6 +885,10 @@ See below for registration instructions.</source>
       <trans-unit id="sql.migration.wizard.target.connection.success">
         <source xml:lang="en">Connection was successful. Target databases found: {0}</source>
         <target state="translated">연결에 성공했습니다. 검색된 대상 데이터베이스: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.continue.with.migration.later">
+        <source xml:lang="en">Continue with migration later</source>
+        <target state="translated">마이그레이션 나중에 계속</target>
       </trans-unit>
       <trans-unit id="sql.migration.sqldb.column.copyduration">
         <source xml:lang="en">Copy duration</source>
@@ -854,6 +946,10 @@ See below for registration instructions.</source>
         <source xml:lang="en">Create Azure Database Migration Service</source>
         <target state="translated">Azure Database Migration Service 만들기</target>
       </trans-unit>
+      <trans-unit id="sql.migration.support.request.descrption">
+        <source xml:lang="en">Create a support request</source>
+        <target state="translated">지원 요청 만들기</target>
+      </trans-unit>
       <trans-unit id="sql.migration.create.new">
         <source xml:lang="en">Create new</source>
         <target state="translated">새로 만들기</target>
@@ -882,6 +978,10 @@ See below for registration instructions.</source>
         <source xml:lang="en">Cutover in progress for database '{0}'</source>
         <target state="translated">'{0}' 데이터베이스에 대한 컷오버 진행 중</target>
       </trans-unit>
+      <trans-unit id="sql.migration.schema.disabledefcnstchk">
+        <source xml:lang="en">DISABLE_DEF_CNST_CHK</source>
+        <target state="translated">DISABLE_DEF_CNST_CHK</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tab.dashboard.title">
         <source xml:lang="en">Dashboard</source>
         <target state="translated">대시보드</target>
@@ -889,6 +989,10 @@ See below for registration instructions.</source>
       <trans-unit id="sql.migration.sku.data.iops.requirement">
         <source xml:lang="en">Data IOPS requirement</source>
         <target state="translated">데이터 IOPS 요구 사항</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.dms.service.or.ir.not.ready">
+        <source xml:lang="en">Data Migration Service / IR node not ready</source>
+        <target state="translated">데이터 마이그레이션 서비스/IR 노드가 준비되지 않음</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.status.stopped">
         <source xml:lang="en">Data collection for Azure recommendations has been stopped.</source>
@@ -902,9 +1006,17 @@ See below for registration instructions.</source>
         <source xml:lang="en">Data collection still in progress. </source>
         <target state="translated">데이터 수집이 아직 진행 중입니다. </target>
       </trans-unit>
+      <trans-unit id="sql.migration.data.migration.header">
+        <source xml:lang="en">Data migration</source>
+        <target state="translated">데이터 마이그레이션</target>
+      </trans-unit>
       <trans-unit id="sql.migration.copy.throughput.info">
         <source xml:lang="en">Data movement throughput achieved during the migration of your database backups to Azure. This is the rate of data transfer, calculated by data read divided by duration of backups migration to Azure.</source>
         <target state="translated">데이터베이스 백업을 Azure로 마이그레이션하는 동안 달성된 데이터 이동 처리량입니다. 데이터 읽기를 Azure로의 백업 마이그레이션 기간으로 나눠 계산된 데이터 전송 속도입니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.data.only">
+        <source xml:lang="en">Data only</source>
+        <target state="translated">데이터만</target>
       </trans-unit>
       <trans-unit id="sql.migration.sqldb.column.dataread">
         <source xml:lang="en">Data read</source>
@@ -1046,6 +1158,30 @@ See below for registration instructions.</source>
         <source xml:lang="en">Delete migration</source>
         <target state="translated">마이그레이션 삭제</target>
       </trans-unit>
+      <trans-unit id="sql.migration.status.deploying.schema">
+        <source xml:lang="en">Deploying schema</source>
+        <target state="translated">스키마 배포</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.deployment.completed">
+        <source xml:lang="en">Deployment completed</source>
+        <target state="translated">배포 완료</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.deployment.count">
+        <source xml:lang="en">Deployment count</source>
+        <target state="translated">배포 수</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.deployment.ended">
+        <source xml:lang="en">Deployment ended</source>
+        <target state="translated">배포 종료됨</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.deployment.error.count">
+        <source xml:lang="en">Deployment error count</source>
+        <target state="translated">배포 오류 수</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.deployment.started">
+        <source xml:lang="en">Deployment started</source>
+        <target state="translated">배포 시작됨</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tde.validation.description">
         <source xml:lang="en">Description</source>
         <target state="translated">설명</target>
@@ -1085,6 +1221,10 @@ See below for registration instructions.</source>
       <trans-unit id="sql.migration.sku.storage.dimension">
         <source xml:lang="en">Dimension</source>
         <target state="translated">차원</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cancel.feedback.dialog.description">
+        <source xml:lang="en">Do you want to cancel migration? Your unsaved changes will be discarded.</source>
+        <target state="translated">마이그레이션을 취소하시겠습니까? 저장하지 않은 변경 내용은 취소됩니다.</target>
       </trans-unit>
       <trans-unit id="sql.retry.migration.prompt">
         <source xml:lang="en">Do you want to retry the failed table migrations?</source>
@@ -1162,6 +1302,10 @@ See below for registration instructions.</source>
         <source xml:lang="en">Ensure that the service account running the source SQL Server instance has read privileges on the network share.</source>
         <target state="translated">원본 SQL Server 인스턴스를 실행하는 서비스 계정에 네트워크 공유에 대한 읽기 권한이 있는지 확인합니다.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.database.schema.migration.help">
+        <source xml:lang="en">Ensure to migrate the database schema from source to target before starting the migration by using the Database Schema Migration feature ({0}) or {1} or the {2} in Azure Data Studio before selecting the list of tables to migrate.</source>
+        <target state="translated">마이그레이션할 테이블 목록을 선택하기 전에 데이터베이스 스키마 마이그레이션 기능({0})이나 {1} 또는 Azure Data Studio의 {2}을(를) 사용하여 마이그레이션을 시작하기 전에 원본에서 대상으로 데이터베이스 스키마를 마이그레이션해야 합니다.</target>
+      </trans-unit>
       <trans-unit id="sql.login.migration.aad.domain.name.input.box.placeholder">
         <source xml:lang="en">Enter AAD Domain Name</source>
         <target state="translated">AAD 도메인 이름 입력</target>
@@ -1226,6 +1370,10 @@ See below for registration instructions.</source>
         <source xml:lang="en">Enter the target password</source>
         <target state="translated">대상 암호 입력</target>
       </trans-unit>
+      <trans-unit id="sql.migration.port.placeholder">
+        <source xml:lang="en">Enter the target port</source>
+        <target state="translated">대상 포트 입력</target>
+      </trans-unit>
       <trans-unit id="sql.migration.username.placeholder">
         <source xml:lang="en">Enter the target user name</source>
         <target state="translated">대상 사용자 이름 입력</target>
@@ -1286,9 +1434,21 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">Establishing user mappings failed</source>
         <target state="translated">사용자 매핑을 설정하지 못 함</target>
       </trans-unit>
+      <trans-unit id="sql.migration.support.resources.description">
+        <source xml:lang="en">Explore documentation</source>
+        <target state="translated">설명서 살펴보기</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tde.wizard.optionads">
         <source xml:lang="en">Export my certificates and private keys to the target.</source>
         <target state="translated">내 인증서와 프라이빗 키를 대상으로 내보냅니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.fastfirstrow">
+        <source xml:lang="en">FASTFIRSTROW</source>
+        <target state="translated">FASTFIRSTROW</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.filestream">
+        <source xml:lang="en">FILESTREAM</source>
+        <target state="translated">FILESTREAM</target>
       </trans-unit>
       <trans-unit id="sql.migration.state.failed">
         <source xml:lang="en">Failed</source>
@@ -1430,9 +1590,21 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">General purpose</source>
         <target state="translated">범용</target>
       </trans-unit>
+      <trans-unit id="sql.migration.status.generatingscript">
+        <source xml:lang="en">Generating script</source>
+        <target state="translated">스크립트 생성</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.generatingcompleted">
+        <source xml:lang="en">Generating script completed</source>
+        <target state="translated">스크립트 생성 완료</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.get.recommendation">
         <source xml:lang="en">Get Azure recommendation</source>
         <target state="translated">Azure 권장 사항 가져오기</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.getdependency">
+        <source xml:lang="en">Get dependency</source>
+        <target state="translated">종속성 가져오기</target>
       </trans-unit>
       <trans-unit id="sql.migration.recommended.configuration.summary.label.description">
         <source xml:lang="en">Get the right-sized SKU recommendations for Azure SQL Targets.</source>
@@ -1441,6 +1613,18 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.table.selection.status.column">
         <source xml:lang="en">Has rows</source>
         <target state="translated">행 있음</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.help.support.title">
+        <source xml:lang="en">Help + Support</source>
+        <target state="translated">도움말 + 지원</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tab.button.help.support.description">
+        <source xml:lang="en">Help + Support</source>
+        <target state="translated">도움말 + 지원</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tab.button.help.support.label">
+        <source xml:lang="en">Help + Support</source>
+        <target state="translated">도움말 + 지원</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.title">
         <source xml:lang="en">Help articles and video links</source>
@@ -1478,6 +1662,10 @@ Currently, migrating server roles, establishing server mappings and setting perm
         <source xml:lang="en">If results were expected, verify the connection to the SQL Server instance.</source>
         <target state="translated">결과가 예상되는 경우 SQL Server 인스턴스에 대한 연결을 확인하세요.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.others.input.box.note">
+        <source xml:lang="en">If you selected others, please write a short note.</source>
+        <target state="translated">기타를 선택한 경우 간단히 메모해 주세요.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.impact">
         <source xml:lang="en">Impact</source>
         <target state="translated">영향</target>
@@ -1489,6 +1677,14 @@ Currently, migrating server roles, establishing server mappings and setting perm
       <trans-unit id="sql.migration.import">
         <source xml:lang="en">Import</source>
         <target state="translated">가져오기</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tab.import.migration.label">
+        <source xml:lang="en">Import assessment</source>
+        <target state="translated">평가 가져오기</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.tab.import.migration.description">
+        <source xml:lang="en">Import assessment to Azure SQL</source>
+        <target state="translated">평가를 Azure SQL로 가져오기</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.import.performance.data">
         <source xml:lang="en">Import performance data</source>
@@ -1537,6 +1733,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.instance">
         <source xml:lang="en">Instance</source>
         <target state="translated">인스턴스</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.different.ir.version.error">
+        <source xml:lang="en">Integration Runtime versions [{0}] are not the same. Please have the same version of Integration Runtime across all nodes for consistency and optimal performance.</source>
+        <target state="translated">Integration Runtime 버전 [{0}]이(가) 다릅니다. 일관성과 최적의 성능을 위해 모든 노드에서 동일한 버전의 Integration Runtime을 사용합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.validate.ir.validation.result.label.shir">
         <source xml:lang="en">Integration runtime connectivity</source>
@@ -1646,13 +1846,13 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Learn more about things you need before starting a migration.</source>
         <target state="translated">마이그레이션을 시작하기 전에 필요한 사항에 대해 자세히 알아보세요.</target>
       </trans-unit>
-      <trans-unit id="sql.migration.wizard.troubleshooting">
-        <source xml:lang="en">Learn more: https://aka.ms/dms-migrations-troubleshooting.</source>
-        <target state="translated">자세한 정보: https://aka.ms/dms-migrations-troubleshooting.</target>
-      </trans-unit>
       <trans-unit id="sql.migration.wizard.account.add.button.label">
         <source xml:lang="en">Link account</source>
         <target state="translated">계정 연결</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.load.assessment.report">
+        <source xml:lang="en">Load assessment report</source>
+        <target state="translated">평가 보고서 로드</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.loading.help">
         <source xml:lang="en">Loading Migration Services</source>
@@ -1722,10 +1922,6 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Logs IOPS requirement</source>
         <target state="translated">로그 IOPS 요구 사항</target>
       </trans-unit>
-      <trans-unit id="sql.migration.database.schema.migration.help">
-        <source xml:lang="en">Make sure to migrate the database schema from source to target by using the {0} or the {1} in Azure Data Studio before selecting the list of tables to migrate.</source>
-        <target state="translated">마이그레이션할 테이블 목록을 선택하기 전에 Azure Data Studio에서 {0} 또는 {1}을(를) 사용하여 데이터베이스 스키마를 원본에서 대상으로 마이그레이션해야 합니다.</target>
-      </trans-unit>
       <trans-unit id="sql.migration.field.label.mi.restore.state">
         <source xml:lang="en">Managed instance restore state</source>
         <target state="translated">관리되는 인스턴스 복원 상태</target>
@@ -1789,6 +1985,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.dashboard.login.migrate.task.button">
         <source xml:lang="en">Migrate logins to Azure SQL</source>
         <target state="translated">로그인을 Azure SQL로 마이그레이션</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.migration.checkbox.info">
+        <source xml:lang="en">Migrate schema to target</source>
+        <target state="translated">대상으로 스키마 마이그레이션</target>
       </trans-unit>
       <trans-unit id="sql.migration.tab.button.migration.description">
         <source xml:lang="en">Migrate to Azure SQL</source>
@@ -1906,6 +2106,18 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Migration status: {0}{1}{2}</source>
         <target state="translated">마이그레이션 상태: {0}{1}{2}</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.migration.taking.longer">
+        <source xml:lang="en">Migration taking longer or having issues</source>
+        <target state="translated">마이그레이션 시간이 오래 걸리거나 문제가 있음</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.type">
+        <source xml:lang="en">Migration type</source>
+        <target state="translated">마이그레이션 유형</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.migration.migration.type.tool.tip">
+        <source xml:lang="en">Migration type includes: Schema only migration, Data only migration, Schema and data migration.</source>
+        <target state="translated">마이그레이션 유형에는 스키마만 마이그레이션, 데이터만 마이그레이션, 스키마 및 데이터 마이그레이션이 있습니다.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tab.migrations.title">
         <source xml:lang="en">Migrations</source>
         <target state="translated">마이그레이션</target>
@@ -1913,6 +2125,14 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.details.breadcrumb.migrations">
         <source xml:lang="en">Migrations</source>
         <target state="translated">마이그레이션</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.missing.count">
+        <source xml:lang="en">Missing on target ({0})</source>
+        <target state="translated">대상에 없음({0})</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.partial.missing">
+        <source xml:lang="en">Missing schemas on the target. Some tables are disabled and cannot be migrated unless this option is selected. No tables selected will migrate missing schema only.</source>
+        <target state="translated">대상에 스키마가 없습니다. 일부 테이블이 사용하지 않도록 설정되어 있으며 이 옵션을 선택하지 않으면 마이그레이션할 수 없습니다. 선택한 테이블이 없으면 누락된 스키마만 마이그레이션됩니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.mode">
         <source xml:lang="en">Mode</source>
@@ -1958,6 +2178,26 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Names:</source>
         <target state="translated">이름:</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.need.to.analyse.findings">
+        <source xml:lang="en">Need to analyse/fix the findings</source>
+        <target state="translated">결과를 분석/수정해야 함</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.change.source.sql.server">
+        <source xml:lang="en">Need to change source SQL Server</source>
+        <target state="translated">원본 SQL Server를 변경해야 함</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.need.to.evaluate.recommended.sku">
+        <source xml:lang="en">Need to evaluate the recommended SKU</source>
+        <target state="translated">권장 SKU를 평가해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.need.to.review.login.selection">
+        <source xml:lang="en">Need to review login selection</source>
+        <target state="translated">로그인 선택을 검토해야 함</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.need.to.review.table.selection">
+        <source xml:lang="en">Need to review table selection</source>
+        <target state="translated">테이블 선택을 검토해야 함</target>
+      </trans-unit>
       <trans-unit id="sql.migration.needs.review">
         <source xml:lang="en">Needs review</source>
         <target state="translated">검토 필요</target>
@@ -2001,14 +2241,6 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.tab.button.migration.label">
         <source xml:lang="en">New migration</source>
         <target state="translated">새 마이그레이션</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.tab.button.support.description">
-        <source xml:lang="en">New support request</source>
-        <target state="translated">새 지원 요청</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.tab.button.support.label">
-        <source xml:lang="en">New support request</source>
-        <target state="translated">새 지원 요청</target>
       </trans-unit>
       <trans-unit id="sql.migration.newSupportRequest">
         <source xml:lang="en">New support request</source>
@@ -2090,6 +2322,10 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">No pending backups. Click refresh to check current status.</source>
         <target state="translated">보류 중인 백업이 없습니다. 새로 고침을 클릭하여 현재 상태를 확인합니다.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.cancel.feedback.no.reason.selected">
+        <source xml:lang="en">No reason selected</source>
+        <target state="translated">이유 선택 안 함</target>
+      </trans-unit>
       <trans-unit id="sql.migration.wizard.sku.error.noRecommendation">
         <source xml:lang="en">No recommendation available</source>
         <target state="translated">사용할 수 있는 권장 사항 없음</target>
@@ -2097,6 +2333,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.resource.group.not.found">
         <source xml:lang="en">No resource groups found.</source>
         <target state="translated">리소스 그룹을 찾을 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.full.missing">
+        <source xml:lang="en">No schema was found on target. This option must be selected to migrate this database. No tables selected will migrate missing schema only.</source>
+        <target state="translated">대상에서 스키마를 찾을 수 없습니다. 이 데이터베이스를 마이그레이션하려면 이 옵션을 선택해야 합니다. 선택한 테이블이 없으면 누락된 스키마만 마이그레이션됩니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.no.storageAccount.found">
         <source xml:lang="en">No storage accounts found.</source>
@@ -2134,6 +2374,10 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Not applicable</source>
         <target state="translated">해당 사항 없음</target>
       </trans-unit>
+      <trans-unit id="sql.migration.not.exist.in.target.table.name.column">
+        <source xml:lang="en">Not exist on target</source>
+        <target state="translated">대상에 없음</target>
+      </trans-unit>
       <trans-unit id="sql.migration.not.ready">
         <source xml:lang="en">Not ready</source>
         <target state="translated">준비되지 않음</target>
@@ -2158,9 +2402,21 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">OK</source>
         <target state="translated">확인</target>
       </trans-unit>
+      <trans-unit id="sql.migration.schema.openrowset.nonazureblob">
+        <source xml:lang="en">OPENROWSET WITH NON-AZURE BLOB</source>
+        <target state="translated">OPENROWSET WITH NON-AZURE BLOB</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.openrowset.provider">
+        <source xml:lang="en">OPENROWSET WITH PROVIDER</source>
+        <target state="translated">OPENROWSET WITH PROVIDER</target>
+      </trans-unit>
       <trans-unit id="sql.migration.object.details">
         <source xml:lang="en">Object details</source>
         <target state="translated">개체 세부 정보</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.objects.collection">
+        <source xml:lang="en">Objects collected</source>
+        <target state="translated">수집된 개체</target>
       </trans-unit>
       <trans-unit id="sql.migration.offline">
         <source xml:lang="en">Offline</source>
@@ -2258,6 +2514,18 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
         <target state="translated">계속하기 전에 데이터베이스 백업 파일의 위치를 선택하세요.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.cancel.feedback.reason.container.description">
+        <source xml:lang="en">Please take a moment to tell us the reason for canceling the migration. This will help us improve the experience.</source>
+        <target state="translated">잠시 시간을 내어 마이그레이션을 취소하는 이유를 알려주세요. 이는 환경을 개선하는 데 도움이 됩니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.port.label">
+        <source xml:lang="en">Port</source>
+        <target state="translated">포트</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.prefetchobjects">
+        <source xml:lang="en">Prefetch objects</source>
+        <target state="translated">개체 프리페치</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.PremiumSsd">
         <source xml:lang="en">Premium SSD</source>
         <target state="translated">프리미엄 SSD</target>
@@ -2298,6 +2566,10 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Provide the network share location where the backups are stored, and the user credentials used to access the share.</source>
         <target state="translated">백업이 저장되는 네트워크 공유 위치와 공유에 액세스하는 데 사용되는 사용자 자격 증명을 제공합니다.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.database.schema.migration.public.preview">
+        <source xml:lang="en">Public Preview</source>
+        <target state="translated">공개 미리 보기</target>
+      </trans-unit>
       <trans-unit id="sql.migration.restore.backupset.status.queued">
         <source xml:lang="en">Queued</source>
         <target state="translated">큐에 대기됨</target>
@@ -2309,6 +2581,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.field.label.queued.files">
         <source xml:lang="en">Queued files</source>
         <target state="translated">큐에 대기된 파일</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.raiserror">
+        <source xml:lang="en">RAISERROR</source>
+        <target state="translated">RAISERROR</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommended.configuration.summary.label.caps">
         <source xml:lang="en">RECOMMENDED CONFIGURATION</source>
@@ -2333,6 +2609,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.ready.warn">
         <source xml:lang="en">Ready with warnings</source>
         <target state="translated">경고가 있는 준비 완료</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cancel.feedback.reason.container.title">
+        <source xml:lang="en">Reason for canceling migration</source>
+        <target state="translated">마이그레이션을 취소하는 이유</target>
       </trans-unit>
       <trans-unit id="sql.migration.copy.status.rebuildingindexes">
         <source xml:lang="en">Rebuilding indexes</source>
@@ -2366,10 +2646,6 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Recommended storage configuration</source>
         <target state="translated">맞춤 스토리지 구성</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.refine.recommendation">
-        <source xml:lang="en">Refine Azure recommendation</source>
-        <target state="translated">Azure 권장 사항 상세 검색</target>
-      </trans-unit>
       <trans-unit id="sql.migration.status.refresh.label">
         <source xml:lang="en">Refresh</source>
         <target state="translated">새로 고침</target>
@@ -2386,13 +2662,13 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Refresh</source>
         <target state="translated">새로 고침</target>
       </trans-unit>
-      <trans-unit id="sql.migration.refresh.sku.label">
-        <source xml:lang="en">Refresh SKU recommendations</source>
-        <target state="translated">SKU 권장 사항 새로 고침</target>
-      </trans-unit>
       <trans-unit id="sql.migration.refresh.assessment.label">
-        <source xml:lang="en">Refresh assessment</source>
+        <source xml:lang="en">Refresh Assessment</source>
         <target state="translated">평가 새로 고침</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.refresh.sku.label">
+        <source xml:lang="en">Refresh SKU</source>
+        <target state="translated">SKU 새로 고침</target>
       </trans-unit>
       <trans-unit id="sql.migration.refresh.key1">
         <source xml:lang="en">Refresh key 1</source>
@@ -2401,10 +2677,6 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.refresh.key2">
         <source xml:lang="en">Refresh key 2</source>
         <target state="translated">키 2 새로 고침</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.sku.refresh.recommendation">
-        <source xml:lang="en">Refresh recommendation</source>
-        <target state="translated">권장 사항 새로 고침</target>
       </trans-unit>
       <trans-unit id="sql.login.migration.select.in.progress">
         <source xml:lang="en">Refreshing login list from source and target</source>
@@ -2650,6 +2922,78 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Scale factor</source>
         <target state="translated">배율</target>
       </trans-unit>
+      <trans-unit id="sql.migration.schema.data">
+        <source xml:lang="en">Schema and data</source>
+        <target state="translated">스키마 및 데이터</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.migration.column.label">
+        <source xml:lang="en">Schema migration</source>
+        <target state="translated">스키마 마이그레이션</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.migration.header">
+        <source xml:lang="en">Schema migration</source>
+        <target state="translated">스키마 마이그레이션</target>
+      </trans-unit>
+      <trans-unit id="sql.schema.migration.information">
+        <source xml:lang="en">Schema migration is in {0} in Step 6. It requires an Integration Runtime version of [{1}] or higher. Schema deployment will make a best effort to deploy database objects. Schema deployment errors will not prevent data migration.</source>
+        <target state="translated">스키마 마이그레이션의 {0}/6단계를 진행 중입니다. [{1}] 이상의 Integration Runtime 버전이 필요합니다. 스키마 배포는 데이터베이스 개체를 배포하기 위해 최선을 다합니다. 스키마 배포 오류로 인해 데이터 마이그레이션이 방해되지는 않습니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.schema.migration.windows.auth.error">
+        <source xml:lang="en">Schema migration is not currently supported for connectivity to source instance using Windows Authentication. Please use SQL Authentication to enable schema migration support.</source>
+        <target state="translated">스키마 마이그레이션은 현재 Windows 인증을 사용하여 원본 인스턴스에 연결할 수 없습니다. SQL 인증을 사용하여 스키마 마이그레이션 지원을 사용하세요.</target>
+      </trans-unit>
+      <trans-unit id="sql.schema.migration.update.ir.version.error">
+        <source xml:lang="en">Schema migration requires an Integration Runtime version of [{0}] or higher. The current node version(s) are: [{1}]. Please install a newer version of the Integration Runtime to enable schema migration support.</source>
+        <target state="translated">스키마 마이그레이션에는 [{0}] 이상의 Integration Runtime 버전이 필요합니다. 현재 노드 버전은 [{1}]입니다. 스키마 마이그레이션 지원을 사용하도록 설정하려면 최신 버전의 Integration Runtime을 설치하세요.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.status">
+        <source xml:lang="en">Schema migration status</source>
+        <target state="translated">스키마 마이그레이션 상태</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.only">
+        <source xml:lang="en">Schema only</source>
+        <target state="translated">스키마만</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.no.missing">
+        <source xml:lang="en">Schema was found on target. Schema migration is not required.</source>
+        <target state="translated">대상에서 스키마를 찾았습니다. 스키마 마이그레이션은 필요하지 않습니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.deployment">
+        <source xml:lang="en">Script deployment</source>
+        <target state="translated">스크립트 배포</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.generation">
+        <source xml:lang="en">Script generation</source>
+        <target state="translated">스크립트 생성</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.count">
+        <source xml:lang="en">Scripted objects count</source>
+        <target state="translated">스크립팅된 개체 수</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.ended">
+        <source xml:lang="en">Scripting ended</source>
+        <target state="translated">스크립팅 종료됨</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.fail.count">
+        <source xml:lang="en">Scripting error count</source>
+        <target state="translated">스크립팅 오류 수</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.scriptindexes">
+        <source xml:lang="en">Scripting indexes</source>
+        <target state="translated">인덱스 스크립팅</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.scriptobjects">
+        <source xml:lang="en">Scripting objects</source>
+        <target state="translated">개체 스크립팅</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.scriptownership">
+        <source xml:lang="en">Scripting ownerships</source>
+        <target state="translated">소유권 스크립팅</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.script.started">
+        <source xml:lang="en">Scripting started</source>
+        <target state="translated">스크립팅 시작됨</target>
+      </trans-unit>
       <trans-unit id="sql.migration.search">
         <source xml:lang="en">Search</source>
         <target state="translated">검색</target>
@@ -2657,6 +3001,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.restore.status.searching.backups">
         <source xml:lang="en">Searching backups</source>
         <target state="translated">백업 검색 중</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.troubleshooting">
+        <source xml:lang="en">See link for more troubleshooting steps: https://aka.ms/dms-migrations-troubleshooting.</source>
+        <target state="translated">자세한 문제 해결 단계는 링크: https://aka.ms/dms-migrations-troubleshooting을 참조하세요.</target>
       </trans-unit>
       <trans-unit id="sql.migration.select">
         <source xml:lang="en">Select</source>
@@ -2686,9 +3034,9 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Select a blob container value first.</source>
         <target state="translated">먼저 Blob 컨테이너 값을 선택합니다.</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.import.performance.data.dialog.open.file">
-        <source xml:lang="en">Select a file</source>
-        <target state="translated">파일 선택</target>
+      <trans-unit id="sql.migration.sku.import.performance.data.dialog.open.folder">
+        <source xml:lang="en">Select a folder</source>
+        <target state="translated">폴더 선택</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.import.performance.data.dialog.helper.message">
         <source xml:lang="en">Select a folder on your local drive</source>
@@ -2774,6 +3122,10 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Select tables for {0}</source>
         <target state="translated">{0}에 대한 테이블 선택</target>
       </trans-unit>
+      <trans-unit id="sql.migration.data.migration.info">
+        <source xml:lang="en">Select tables to migrate data to your Azure SQL target</source>
+        <target state="translated">Azure SQL 대상으로 데이터를 마이그레이션할 테이블 선택</target>
+      </trans-unit>
       <trans-unit id="sql.migration.select.service.select.target.type.">
         <source xml:lang="en">Select target Azure SQL Type</source>
         <target state="translated">대상 Azure SQL 유형 선택</target>
@@ -2809,6 +3161,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.map.target.description">
         <source xml:lang="en">Select the target database where you would like to migrate your source database to.  You can choose a target database for only one source database.</source>
         <target state="translated">원본 데이터베이스를 마이그레이션할 대상 데이터베이스를 선택합니다. 하나의 원본 데이터베이스에 대해서만 대상 데이터베이스를 선택할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.schema.migration.info">
+        <source xml:lang="en">Select this option to migrate missing tables on your Azure SQL target</source>
+        <target state="translated">Azure SQL 대상에서 누락된 테이블을 마이그레이션하려면 이 옵션을 선택합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.azure.vm">
         <source xml:lang="en">Select your target Azure Subscription and your target SQL Server on Azure Virtual Machine for your target.</source>
@@ -3138,6 +3494,14 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">Summary</source>
         <target state="translated">요약</target>
       </trans-unit>
+      <trans-unit id="sql.migration.support.request.title">
+        <source xml:lang="en">Support request</source>
+        <target state="translated">지원 요청</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.support.resources.title">
+        <source xml:lang="en">Support resources</source>
+        <target state="translated">지원 리소스</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tde.migrate.required">
         <source xml:lang="en">TDE certificate migration must be successful before continuing.</source>
         <target state="translated">계속하려면 먼저 TDE 인증서 마이그레이션에 성공해야 합니다.</target>
@@ -3149,6 +3513,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.table.migration.status.label">
         <source xml:lang="en">Table migration status: {0}</source>
         <target state="translated">테이블 마이그레이션 상태: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.unavailable.table.name.column">
+        <source xml:lang="en">Table name</source>
+        <target state="translated">테이블 이름</target>
       </trans-unit>
       <trans-unit id="sql.migration.sqldb.column.tablename">
         <source xml:lang="en">Table name</source>
@@ -3165,10 +3533,6 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.database.table.selection.label">
         <source xml:lang="en">Table selection</source>
         <target state="translated">테이블 선택</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.table.missing.count">
-        <source xml:lang="en">Tables missing on target: {0}</source>
-        <target state="translated">대상에 테이블이 없습니다. {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.target.table.count.name">
         <source xml:lang="en">Tables selected</source>
@@ -3302,6 +3666,14 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">The database is ready to migrate.</source>
         <target state="translated">데이터베이스를 마이그레이션할 준비가 완료되었습니다.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.schema.assessment.warning.message">
+        <source xml:lang="en">The detected issues shown below might fail the schema migration. Some of them might be entirely unsupported and the others might be partially supported in Azure SQL Database. 
+Therefore, please review the assessment results and make sure all of the issues will not fail the schema migration.
+However, it is allowed to proceed the schema migration and Azure Database Migration Service will migrate the objects as possible as it can.</source>
+        <target state="translated">아래 표시된 감지된 문제로 인해 스키마 마이그레이션에 실패할 수 있습니다. Azure SQL Database에서 일부 항목은 완전히 지원되지 않을 수 있으며 일부는 부분적으로 지원될 수 있습니다. 
+따라서 평가 결과를 검토하고 모든 문제가 스키마 마이그레이션의 실패를 초래하지 않도록 확인하세요.
+그러나 스키마 마이그레이션을 계속할 수는 있으며 Azure Database Migration Service는 개체를 가능한 한 최대로 마이그레이션합니다.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.database.migration.duration.tool.tip">
         <source xml:lang="en">The duration of the migration</source>
         <target state="translated">마이그레이션 기간</target>
@@ -3365,6 +3737,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.sku.azureRecommendation.status.autoRefreshTimer">
         <source xml:lang="en">Time before next SKU recommendation update: {0} minute(s).</source>
         <target state="translated">다음 SKU 권장 사항 업데이트 전 시간: {0}분</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.select.skip.assessment.check.to.continue">
+        <source xml:lang="en">To continue, check skip assessment option.</source>
+        <target state="translated">계속하려면 평가 건너뛰기 옵션을 선택합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.missing.targetPassword.error">
         <source xml:lang="en">To continue, enter a valid target password.</source>
@@ -3458,6 +3834,10 @@ Click "Run validation" to check that requirements are met.</source>
         <source xml:lang="en">To proceed, press Select button</source>
         <target state="translated">계속하려면 [선택] 단추를 누르세요.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.support.request.note">
+        <source xml:lang="en">To receive assistance from Microsoft customer support, please submit a support request.</source>
+        <target state="translated">Microsoft 고객 지원의 지원을 받으려면 지원 요청을 제출하세요.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.total.findings.label">
         <source xml:lang="en">Total findings: {0}</source>
         <target state="translated">총 결과: {0}</target>
@@ -3505,6 +3885,10 @@ Click "Run validation" to check that requirements are met.</source>
       <trans-unit id="sql.migration.sku.targetStorageConfiguration.disktype.UltraSsd">
         <source xml:lang="en">Ultra SSD</source>
         <target state="translated">울트라 SSD</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.unavailable.count">
+        <source xml:lang="en">Unavailable for data migration ({0})</source>
+        <target state="translated">데이터 마이그레이션에 사용할 수 없음({0})</target>
       </trans-unit>
       <trans-unit id="sql.migration.restore.backuptype.unknown">
         <source xml:lang="en">Unknown</source>
@@ -3646,6 +4030,10 @@ Establishing user mappings.</source>
         <source xml:lang="en">Waiting</source>
         <target state="translated">대기 중</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.cancel.reason.waiting.for.downtime.window">
+        <source xml:lang="en">Waiting for downtime window</source>
+        <target state="translated">가동 중지 시간 기간 대기 중</target>
+      </trans-unit>
       <trans-unit id="waitingForService">
         <source xml:lang="en">Waiting for {0} component to start.</source>
         <target state="translated">{0} 구성 요소가 시작하기를 기다리는 중입니다.</target>
@@ -3722,6 +4110,10 @@ This may take some time.</source>
         <source xml:lang="en">You can also choose to select this data from an existing folder, if you have already collected it previously.</source>
         <target state="translated">이미 데이터를 수집했다면 기존 폴더에서 이 데이터를 선택하도록 선택할 수도 있습니다.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.community.support.note">
+        <source xml:lang="en">You can post your question with the Microsoft community support through the Q&amp;A channel.</source>
+        <target state="translated">질문 및 답변 채널을 통해 Microsoft 커뮤니티 지원에 질문을 게시할 수 있습니다.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tde.msg.tde">
         <source xml:lang="en">You have given Azure Data Studio access to migrate the encryption certificates and database.</source>
         <target state="translated">암호화 인증서 및 데이터베이스를 마이그레이션하기 위한 Azure Data Studio 액세스 권한을 부여받았습니다.</target>
@@ -3741,6 +4133,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.sku.resource">
         <source xml:lang="en">Your Azure SQL target resource name</source>
         <target state="translated">Azure SQL 대상 리소스 이름</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.resource.port">
+        <source xml:lang="en">Your Azure SQL target resource port number : 0 - 65535</source>
+        <target state="translated">Azure SQL 대상 리소스 포트 번호: 0 - 65535</target>
       </trans-unit>
       <trans-unit id="sql.migration.pre.req.4">
         <source xml:lang="en">Your database backup location details, either a network file share or an Azure Blob Storage container (not required for Azure SQL Database targets).</source>
@@ -3918,6 +4314,10 @@ This may take some time.</source>
         <source xml:lang="en">{0} of {1} tables selected</source>
         <target state="translated">{0}/{1} 선택합</target>
       </trans-unit>
+      <trans-unit id="sql.migration.table.selection.count.to.target">
+        <source xml:lang="en">{0} of {1} tables selected for migration</source>
+        <target state="translated">마이그레이션을 위해 테이블 {1}개 중 {0}개 선택됨</target>
+      </trans-unit>
       <trans-unit id="sql.migration.tde.wizard.databases.selected">
         <source xml:lang="en">{0} out of {1} selected database(s) is using transparent data encryption.</source>
         <target state="translated">선택한 데이터베이스 {1}개 중 {0}개가 투명한 데이터 암호화를 사용하고 있습니다.</target>
@@ -4085,6 +4485,10 @@ This may take some time.</source>
       <trans-unit id="database-details-menu">
         <source xml:lang="en">Database details</source>
         <target state="translated">데이터베이스 정보</target>
+      </trans-unit>
+      <trans-unit id="data-collection-path-description">
+        <source xml:lang="en">Default path to store collected performance data for SKU recommendations.</source>
+        <target state="translated">SKU 권장 사항을 위해 수집된 성능 데이터를 저장할 기본 경로입니다.</target>
       </trans-unit>
       <trans-unit id="delete-migration-menu">
         <source xml:lang="en">Delete migration</source>
