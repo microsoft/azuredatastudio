@@ -25,6 +25,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _databaseTableValues!: any[];
 	private _disposables: vscode.Disposable[] = [];
 	private _enableNavigationValidation: boolean = true;
+	private _adhocQueryCollectionCheckbox!: azdata.CheckBoxComponent;
 
 	private readonly TABLE_WIDTH = 650;
 
@@ -89,6 +90,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		}
 
 		this._xEventsFilesFolderPath = this.migrationStateModel._xEventsFilesFolderPath;
+		this._adhocQueryCollectionCheckbox.checked = this.migrationStateModel._collectAdhocQueries;
 	}
 
 	public async onPageLeave(): Promise<void> {
@@ -110,6 +112,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			|| this.migrationStateModel._xEventsFilesFolderPath.toLowerCase() !== this._xEventsFilesFolderPath.toLowerCase();
 
 		this.migrationStateModel._xEventsFilesFolderPath = this._xEventsFilesFolderPath;
+		this.migrationStateModel._collectAdhocQueries = this._adhocQueryCollectionCheckbox.checked ?? false;
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
@@ -304,6 +307,18 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				xEventsFolderPickerClearButton
 			]).component();
 
+		this._adhocQueryCollectionCheckbox = this._view.modelBuilder.checkBox().withProps({
+			label: constants.QDS_ASSESSMENT_LABEL,
+			checked: false,
+			CSSStyles: { ...styles.BODY_CSS, 'margin-bottom': '8px' }
+		}).component();
+
+		const xEventCheckBox = this._view.modelBuilder.checkBox().withProps({
+			label: constants.XEVENTS_LABEL,
+			checked: false,
+			CSSStyles: { ...styles.BODY_CSS }
+		}).component();
+
 		this._xEventsGroup = this._view.modelBuilder.groupContainer()
 			.withLayout({
 				header: constants.XEVENTS_ASSESSMENT_TITLE,
@@ -311,8 +326,11 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				collapsed: true
 			}).withItems([
 				xEventsDescription,
+				this._adhocQueryCollectionCheckbox,
+				xEventCheckBox,
 				xEventsInstructions,
-				xEventsFolderPickerContainer
+				xEventsFolderPickerContainer,
+				this._adhocQueryCollectionCheckbox
 			]).component();
 
 		const flex = view.modelBuilder.flexContainer().withLayout({
