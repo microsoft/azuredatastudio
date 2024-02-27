@@ -5515,6 +5515,67 @@
 					],
 					"statistics": [],
 					"flags": ""
+				},
+				{
+					"extensionId": "108",
+					"extensionName": "ads-column-chooser",
+					"displayName": "Azure Data Studio Column Chooser",
+					"shortDescription": "The Column Chooser extension for Azure Data Studio allows users to easily select and customize columns in SQL SELECT statements.",
+					"publisher": {
+						"displayName": "Sean Stalker",
+						"publisherId": "ssta604",
+						"publisherName": "ssta604"
+					},
+					"versions": [
+						{
+							"version": "0.0.2",
+							"lastUpdated": "02/27/2024",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/ssta604/ads-column-chooser/releases/latest"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/ssta604/ads-column-chooser/main/resources/imgs/logo.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/ssta604/ads-column-chooser/main/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/ssta604/ads-column-chooser/main/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/ssta604/ads-column-chooser/main/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/ssta604/ads-column-chooser"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
@@ -5523,7 +5584,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 90
+							"count": 91
 						}
 					]
 				}
