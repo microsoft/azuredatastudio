@@ -10,7 +10,7 @@ import { MigrationMode, MigrationStateModel, NetworkContainerType, StateChangeEv
 import { CreateSqlMigrationServiceDialog } from '../dialog/createSqlMigrationService/createSqlMigrationServiceDialog';
 import * as constants from '../constants/strings';
 import { WIZARD_INPUT_COMPONENT_WIDTH, WizardController } from './wizardController';
-import { getFullResourceGroupFromId, getSqlMigrationService, getSqlMigrationServiceMonitoringData, SqlVMServer } from '../api/azure';
+import { getFullResourceGroupFromId, getSqlMigrationService, getSqlMigrationServiceMonitoringData, IntegrationRuntimeNode, SqlVMServer } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { logError, TelemetryViews } from '../telemetry';
 import * as utils from '../api/utils';
@@ -679,7 +679,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					});
 				} else {
 					await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
-						text: constants.SERVICE_NOT_READY(serviceName, true),
+						text: constants.SERVICE_NOT_READY(serviceName, false),
 						style: 'error'
 					});
 				}
@@ -691,7 +691,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				await utils.refreshIntegrationRuntimeTable(this._view, this._integrationRuntimeTable, migrationServiceMonitoringStatus);
 
 				// based on the data, enable or disable configure ir button
-				if (migrationServiceMonitoringStatus.nodes.length === 4) {
+				if (migrationServiceMonitoringStatus.nodes.length === 4 &&
+					this.atleastOneNodeOnline(migrationServiceMonitoringStatus.nodes)) {
 					this._configureIRButton.enabled = false;
 				}
 				else {
@@ -699,15 +700,17 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				}
 
 				// if the versions are mismatched, show a warning
-				let nodeversion = migrationServiceMonitoringStatus.nodes[0].version;
-				migrationServiceMonitoringStatus.nodes.forEach(async node => {
-					if (node.version !== nodeversion && node.status === 'Online') {
-						await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
-							text: constants.VERSION_MISMATCH,
-							style: 'warning'
-						});
-					}
-				});
+				if (migrationServiceMonitoringStatus?.nodes.length === 1) {
+					let nodeversion = migrationServiceMonitoringStatus.nodes[0].version;
+					migrationServiceMonitoringStatus.nodes.forEach(async node => {
+						if (node.version !== nodeversion && node.status === 'Online') {
+							await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
+								text: constants.VERSION_MISMATCH,
+								style: 'warning'
+							});
+						}
+					});
+				}
 
 				this.migrationStateModel._sqlMigrationService = migrationService;
 				this.migrationStateModel._sqlMigrationServiceSubscription = subscription;
@@ -725,5 +728,14 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				this._statusLoadingComponent.loading = false;
 			}
 		}
+	}
+
+	private atleastOneNodeOnline(nodes: IntegrationRuntimeNode[]): boolean {
+		let result = false;
+		nodes.forEach(node => {
+			if (node.status === constants.ONLINE)
+				result = true;
+		});
+		return result;
 	}
 }

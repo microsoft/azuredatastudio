@@ -476,10 +476,15 @@ export class ConfigureIRDialog {
 				height: 400,
 				inputType: 'text',
 				display: 'inline-block',
-				CSSStyles: {
-					'overflow': 'hidden auto',
-					'margin': '0px 0px 0px 5px',
-					'background': '#E6E7E7',
+				CSSStyles:
+				{
+					'font': '12px "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New", monospace',
+					'margin': '0',
+					'padding': '8px',
+					'white-space': 'pre',
+					'background-color': '#eeeeee',
+					'overflow-x': 'hidden',
+					'word-break': 'break-all'
 				},
 			})
 			.component();
