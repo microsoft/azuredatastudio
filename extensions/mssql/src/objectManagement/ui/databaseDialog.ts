@@ -922,7 +922,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				this.onFormFieldChange();
 			}),
 			this.filestreamFilegroupsTable.onRowSelected(
-				async () => {
+				() => {
 					if (this.filestreamFilegroupsTable.selectedRows.length === 1) {
 						const fileGroup = this.filestreamDataFileGroupsTableRows[this.filestreamFilegroupsTable.selectedRows[0]];
 						this.filestreamFilegroupNameContainer.display = fileGroup.id < 0 ? 'inline-flex' : 'none';
@@ -971,7 +971,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		this.memoryOptimizedFileGroupButtonContainer = this.addButtonsForTable(this.memoryOptimizedFilegroupsTable, addButtonComponent, removeButtonComponent);
 		this.disposables.push(
 			this.memoryOptimizedFilegroupsTable.onRowSelected(
-				async () => {
+				() => {
 					if (this.memoryOptimizedFilegroupsTable.selectedRows.length === 1) {
 						const fileGroup = this.memoryoptimizedFileGroupsTableRows[this.memoryOptimizedFilegroupsTable.selectedRows[0]];
 						this.memoryOptimizedFilegroupNameContainer.display = fileGroup.id < 0 ? 'inline-flex' : 'none';
@@ -1165,7 +1165,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 		// Refresh the individual table rows object and table with updated data
 		this.updateFileGroupsOptionsAndTableRows();
-		let selectedRow = table.selectedRow
+		let selectedRow = table.selectedRow;
 		await this.setDeclarativeTableData(table, newData);
 		if (selectedRow > -1 && selectedRow < table.dataValues?.length) {
 			table.selectedRow = selectedRow;
