@@ -7,10 +7,12 @@ import * as azdata from 'azdata';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import { MigrationStateModel } from '../../models/stateMachine';
-import { MigrationTargetType } from '../../api/utils';
+import { MigrationTargetType, hasRecommendations } from '../../api/utils';
 import * as utils from '../../api/utils';
 import { IssueCategory } from '../../constants/helper';
 import { IconPathHelper } from '../../constants/iconPathHelper';
+import { SkuRecommendationResultsDialog } from '../../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
+import { GenerateProvisioningScriptDialog } from '../../dialog/skuRecommendationResults/GenerateProvisioningScriptDialog';
 
 interface IActionMetadata {
 	title?: string,
@@ -25,6 +27,10 @@ export class AssessmentDetailsHeader {
 	private _targetTypeContainer!: azdata.FlexContainer;
 	private _noTargetSelectedContainer!: azdata.FlexContainer;
 	private _headerCardsContainer!: azdata.FlexContainer;
+	private _viewDetailsLink!: azdata.HyperlinkComponent;
+	private _saveTemplateLink!: azdata.HyperlinkComponent;
+	private _linksContainer!: azdata.FlexContainer;
+	private _separator!: azdata.TextComponent;
 
 	// public getter for target type selection drop down.
 	public get targetTypeDropdown() {
@@ -158,8 +164,81 @@ export class AssessmentDetailsHeader {
 		}).component();
 
 		cardContainer.addItems([cardHeading, cardText]);
-		this._valueContainers.push(cardText);
 
+		if (linkMetaData.title === constants.RECOMMENDED_CONFIGURATION) {
+			this._linksContainer = this._view.modelBuilder.flexContainer().withProps({
+				CSSStyles: {
+					'display': 'flex',
+					'flex-direction': 'row',
+					'width': '170px'
+				}
+			}).component();
+
+
+			this._viewDetailsLink = this._view.modelBuilder.hyperlink().withProps({
+				label: constants.VIEW_DETAILS,
+				url: '',
+				height: 18,
+				CSSStyles: {
+					'font-size': '13px',
+					'font-weight': '400',
+					'line-height': '18px',
+					'text-decoration': 'none',
+					'display': 'none',
+				}
+			}).component();
+
+
+			this._viewDetailsLink.onDidClick(async () => {
+				if (hasRecommendations(this.migrationStateModel)) {
+					const skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, this.migrationStateModel._targetType);
+					await skuRecommendationResultsDialog.openDialog(
+						this.migrationStateModel._targetType,
+						this.migrationStateModel._skuRecommendationResults.recommendations
+					);
+				}
+			});
+
+			this._saveTemplateLink = this._view.modelBuilder.hyperlink().withProps({
+				label: constants.TARGET_PROVISIONING_TITLE,
+				url: '',
+				height: 18,
+				CSSStyles: {
+					'font-size': '13px',
+					'font-weight': '400',
+					'line-height': '18px',
+					'text-decoration': 'none',
+					'display': 'none',
+				}
+			}).component();
+
+			this._saveTemplateLink.onDidClick(async () => {
+				if (hasRecommendations(this.migrationStateModel)) {
+					const generateProvisioningScriptDialog = new GenerateProvisioningScriptDialog(this.migrationStateModel, this.migrationStateModel._targetType);
+					await generateProvisioningScriptDialog.openDialog(/*
+						this.migrationTargetType,
+						this.migrationStateModel._skuRecommendationResults.recommendations*/
+					);
+				}
+			});
+
+			this._separator = this._view.modelBuilder.text().withProps({
+				value: "|",
+				height: 18,
+				CSSStyles: {
+					'font-size': '15px',
+					'line-height': '18px',
+					'font-weight': '400',
+					'margin': '0px',
+					'display': 'none',
+				},
+			}).component();
+
+			this._linksContainer.addItems([this._viewDetailsLink, this._separator, this._saveTemplateLink]);
+			cardContainer.addItem(this._linksContainer);
+		}
+
+		this._valueContainers.push(cardText);
 		return cardContainer;
 	}
 
@@ -178,6 +257,12 @@ export class AssessmentDetailsHeader {
 			assessmentHeaderValues.push({
 				value: configurationValue
 			})
+
+			if (configurationValue !== "--") {
+				await this._viewDetailsLink.updateCssStyles({ 'display': 'block' });
+				await this._saveTemplateLink.updateCssStyles({ 'display': 'block' });
+				await this._separator.updateCssStyles({ 'display': 'block' });
+			}
 		}
 		assessmentHeaderValues.push(
 			{
