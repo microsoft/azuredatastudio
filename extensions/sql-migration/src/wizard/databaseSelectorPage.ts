@@ -326,11 +326,11 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				collapsed: true
 			}).withItems([
 				xEventsDescription,
-				this._adhocQueryCollectionCheckbox,
-				xEventCheckBox,
+				// TODO: enable when qds is supported
+				//this._adhocQueryCollectionCheckbox,
+				//xEventCheckBox,
 				xEventsInstructions,
-				xEventsFolderPickerContainer,
-				this._adhocQueryCollectionCheckbox
+				xEventsFolderPickerContainer
 			]).component();
 
 		const flex = view.modelBuilder.flexContainer().withLayout({
