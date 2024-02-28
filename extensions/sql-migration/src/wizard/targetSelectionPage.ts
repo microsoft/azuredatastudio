@@ -346,7 +346,15 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					this.migrationStateModel._azureAccount = undefined!;
 				}
 				await utils.clearDropDown(this._accountTenantDropdown);
+				await utils.clearDropDown(this._azureSubscriptionDropdown);
+				await utils.clearDropDown(this._azureLocationDropdown);
+				await utils.clearDropDown(this._azureResourceGroupDropdown);
+				await utils.clearDropDown(this._azureResourceDropdown);
 				await this.populateTenantsDropdown();
+				await this.populateSubscriptionDropdown();
+				await this.populateLocationDropdown();
+				await this.populateResourceGroupDropdown();
+				await this.populateResourceInstanceDropdown();
 			}));
 
 		const linkAccountButton = this._view.modelBuilder.hyperlink()
@@ -361,6 +369,11 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			linkAccountButton.onDidClick(async (event) => {
 				await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
 				await this.populateAzureAccountsDropdown();
+				await this.populateTenantsDropdown();
+				await this.populateSubscriptionDropdown();
+				await this.populateLocationDropdown();
+				await this.populateResourceGroupDropdown();
+				await this.populateResourceInstanceDropdown();
 				this.wizard.message = { text: '' };
 				await this._azureAccountsDropdown.validate();
 			}));
@@ -401,7 +414,13 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					this.migrationStateModel._azureTenant = undefined!;
 				}
 				await utils.clearDropDown(this._azureSubscriptionDropdown);
+				await utils.clearDropDown(this._azureLocationDropdown);
+				await utils.clearDropDown(this._azureResourceGroupDropdown);
+				await utils.clearDropDown(this._azureResourceDropdown);
 				await this.populateSubscriptionDropdown();
+				await this.populateLocationDropdown();
+				await this.populateResourceGroupDropdown();
+				await this.populateResourceInstanceDropdown();
 			}));
 
 		this._accountTenantFlexContainer = this._view.modelBuilder.flexContainer()
@@ -446,7 +465,11 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				}
 				this.migrationStateModel.refreshDatabaseBackupPage = true;
 				await utils.clearDropDown(this._azureLocationDropdown);
+				await utils.clearDropDown(this._azureResourceGroupDropdown);
+				await utils.clearDropDown(this._azureResourceDropdown);
 				await this.populateLocationDropdown();
+				await this.populateResourceGroupDropdown();
+				await this.populateResourceInstanceDropdown();
 			}));
 
 		const azureLocationLabel = this._view.modelBuilder.text()
@@ -479,7 +502,9 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				}
 				this.migrationStateModel.refreshDatabaseBackupPage = true;
 				await utils.clearDropDown(this._azureResourceGroupDropdown);
+				await utils.clearDropDown(this._azureResourceDropdown);
 				await this.populateResourceGroupDropdown();
+				await this.populateResourceInstanceDropdown();
 			}));
 
 		this._resourceSelectionContainer = this._createResourceDropdowns();
