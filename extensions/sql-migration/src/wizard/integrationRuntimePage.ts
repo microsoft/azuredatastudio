@@ -732,6 +732,11 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	}
 
 	private atleastOneNodeOnline(nodes: IntegrationRuntimeNode[]): boolean {
-		return nodes.some(node => node.status === constants.ONLINE);
+		let result = false;
+		nodes.forEach(node => {
+			if (node.status === constants.ONLINE)
+				result = true;
+		});
+		return result;
 	}
 }
