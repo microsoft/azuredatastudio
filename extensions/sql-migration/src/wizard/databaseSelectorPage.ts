@@ -313,11 +313,6 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			CSSStyles: { ...styles.BODY_CSS, 'margin-bottom': '8px' }
 		}).component();
 
-		const xEventCheckBox = this._view.modelBuilder.checkBox().withProps({
-			label: constants.XEVENTS_LABEL,
-			checked: false,
-			CSSStyles: { ...styles.BODY_CSS }
-		}).component();
 
 		this._xEventsGroup = this._view.modelBuilder.groupContainer()
 			.withLayout({
