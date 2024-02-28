@@ -64,7 +64,6 @@ export class GenerateProvisioningScriptDialog {
 			width: '100%',
 			height: '100%',
 			CSSStyles: {
-				'font': '12px "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New", monospace',
 				'margin': '0',
 				'padding': '8px',
 				'white-space': 'pre',
@@ -105,24 +104,14 @@ export class GenerateProvisioningScriptDialog {
 			const folder = await utils.promptUserForFolder();
 			if (folder) {
 				if (this._armTemplateText) {
-					let destinationFilePath: string | undefined;
-					switch (this._targetType) {
-						case utils.MigrationTargetType.SQLMI:
-							destinationFilePath = path.join(folder, 'ARMTemplate-AzureSqlManagedInstance' + new Date().toISOString().split('T')[0] + '.json');
-							break;
-
-						case utils.MigrationTargetType.SQLVM:
-							destinationFilePath = path.join(folder, 'ARMTemplate-AzureSqlVirtualMachine' + new Date().toISOString().split('T')[0] + '.json');
-							break;
-
-						case utils.MigrationTargetType.SQLDB:
-							destinationFilePath = path.join(folder, 'ARMTemplate-AzureSqlDatabase' + new Date().toISOString().split('T')[0] + '.json');
-							break;
+					let templateName = utils.generateTemplatePath(this.model, this._targetType);
+					let destinationFilePath = path.join(folder, templateName);
+					try {
+						fs.writeFileSync(destinationFilePath!, this._armTemplateText);
 					}
-					fs.writeFileSync(destinationFilePath!, this._armTemplateText);
-				} else {
-					console.log(this.model._armTemplateResult.generateTemplateError);
-					// log in telemetry -- TO DO
+					catch (e) {
+						logError(TelemetryViews.ProvisioningScriptWizard, 'ArmTemplateSavetoLocalError', e);
+					}
 				}
 			}
 		});
@@ -179,8 +168,6 @@ export class GenerateProvisioningScriptDialog {
 		this._armTemplateText = (this.model._armTemplateResult.template)!;
 		this._armTemplateTextBox.value = this._armTemplateText;
 	}
-
-
 
 	public async openDialog() {
 		if (!this._isOpen) {

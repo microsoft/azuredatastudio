@@ -13,6 +13,7 @@ import { IssueCategory } from '../../constants/helper';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { SkuRecommendationResultsDialog } from '../../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
 import { GenerateProvisioningScriptDialog } from '../../dialog/skuRecommendationResults/GenerateProvisioningScriptDialog';
+import { logError, TelemetryViews } from '../../telemetry';
 
 interface IActionMetadata {
 	title?: string,
@@ -212,15 +213,17 @@ export class AssessmentDetailsHeader {
 				}
 			}).component();
 
-			this._saveTemplateLink.onDidClick(async () => {
-				if (hasRecommendations(this.migrationStateModel)) {
-					const generateProvisioningScriptDialog = new GenerateProvisioningScriptDialog(this.migrationStateModel, this.migrationStateModel._targetType);
-					await generateProvisioningScriptDialog.openDialog(/*
-						this.migrationTargetType,
-						this.migrationStateModel._skuRecommendationResults.recommendations*/
-					);
-				}
-			});
+			try {
+				this._saveTemplateLink.onDidClick(async () => {
+					if (hasRecommendations(this.migrationStateModel)) {
+						const generateProvisioningScriptDialog = new GenerateProvisioningScriptDialog(this.migrationStateModel, this.migrationStateModel._targetType);
+						await generateProvisioningScriptDialog.openDialog();
+					}
+				});
+			}
+			catch (e) {
+				logError(TelemetryViews.ProvisioningScriptWizard, 'ProvisioningScriptDialogOpenError', e);
+			}
 
 			this._separator = this._view.modelBuilder.text().withProps({
 				value: "|",

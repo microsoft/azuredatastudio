@@ -395,6 +395,8 @@ export class SelectStorageAccountDialog {
 			this._azureAccount = (selectedAccount)
 				? utils.deepClone(selectedAccount)!
 				: undefined!;
+		} catch (e) {
+			logError(TelemetryViews.UploadArmTemplateDialog, '_populateAzureAccountsError', e);
 		} finally {
 			this._azureAccountsDropdown.loading = false;
 		}
@@ -420,6 +422,8 @@ export class SelectStorageAccountDialog {
 				? utils.deepClone(selectedTenant)
 				: undefined!;
 			await this._azureAccountsDropdown.validate();
+		} catch (e) {
+			logError(TelemetryViews.UploadArmTemplateDialog, '_populateTenantsError', e);
 		} finally {
 			this._accountTenantDropdown.loading = false;
 
@@ -445,7 +449,7 @@ export class SelectStorageAccountDialog {
 				: undefined!;
 
 		} catch (e) {
-			console.log(e);
+			logError(TelemetryViews.UploadArmTemplateDialog, '_populateSubscriptionsError', e);
 		} finally {
 			this._azureSubscriptionDropdown.loading = false;
 		}
@@ -471,7 +475,7 @@ export class SelectStorageAccountDialog {
 				? utils.deepClone(selectedLocation)!
 				: undefined!;
 		} catch (e) {
-			console.log(e);
+			logError(TelemetryViews.UploadArmTemplateDialog, '_populateLocationsError', e);
 		} finally {
 			this._azureLocationDropdown.loading = false;
 		}
@@ -497,7 +501,7 @@ export class SelectStorageAccountDialog {
 				? utils.deepClone(selectedResourceGroup)!
 				: undefined!;
 		} catch (e) {
-			console.log(e);
+			logError(TelemetryViews.UploadArmTemplateDialog, '_populateResourceGroupsError', e);
 		} finally {
 			this._azureResourceGroupDropdown.loading = false;
 		}
@@ -529,7 +533,7 @@ export class SelectStorageAccountDialog {
 				: undefined!;
 
 		} catch (error) {
-			logError(TelemetryViews.UploadArmTemplateDialog, '_populateStorageAccount', error);
+			logError(TelemetryViews.UploadArmTemplateDialog, '_populateStorageAccountError', error);
 			void vscode.window.showErrorMessage(
 				constants.SELECT_SERVICE_ERROR,
 				error.message);
@@ -564,7 +568,7 @@ export class SelectStorageAccountDialog {
 
 
 		} catch (error) {
-			logError(TelemetryViews.UploadArmTemplateDialog, '_populateBlobContainer', error);
+			logError(TelemetryViews.UploadArmTemplateDialog, '_populateBlobContainerError', error);
 			void vscode.window.showErrorMessage(
 				constants.SELECT_SERVICE_ERROR,
 				error.message);
@@ -577,8 +581,7 @@ export class SelectStorageAccountDialog {
 		const storageKeys = await getStorageAccountAccessKeys(this._azureAccount, this._targetSubscription, this._storageAccount);
 		const accountName = this._storageAccount.name;
 		const containerName = this._blobContainer.name;
-		const date = new Date().toISOString().slice(0, 10);
-		const blobName = `ARMTemplate-${this._targetType}-${date}.json`;
+		const blobName = utils.generateTemplatePath(this.migrationStateModel, this._targetType);
 
 		const sharedKeyCredential = new StorageSharedKeyCredential(this._storageAccount.name, storageKeys.keyName1);
 
@@ -600,7 +603,6 @@ export class SelectStorageAccountDialog {
 			}
 		}
 		catch (e) {
-			console.log(e);
 			logError(TelemetryViews.UploadArmTemplateDialog, 'ArmTemplateUploadError', e);
 
 		}

@@ -258,9 +258,9 @@ export const IMPORT_PERFORMANCE_DATA = localize('sql.migration.sku.import.perfor
 export const IMPORT_PERFORMANCE_DATA_DIALOG_DESCRIPTION = localize('sql.migration.sku.import.performance.data.dialog.description', "Import this data file from an existing folder, if you have already collected it using Data Migration Assistant.");
 export const IMPORT_PERFORMANCE_DATA_DIALOG_HELPER_MESSAGE = localize('sql.migration.sku.import.performance.data.dialog.helper.message', "Select a folder on your local drive");
 export const IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FOLDER = localize('sql.migration.sku.import.performance.data.dialog.open.folder', "Select a folder");
-export const UPLOAD_TEMPLATE_TO_AZURE = localize('sql.migration.target..upload.to.azure', "Upload to Azure");
+export const UPLOAD_TEMPLATE_TO_AZURE = localize('sql.migration.target.upload.to.azure', "Upload to Azure");
 export const TARGET_PROVISIONING_TITLE = localize('sql.migration.target.provisioning.title', "Save Template");
-export const TARGET_PROVISIONING_DESCRIPTION = localize('sql.migration.target.provisioning.description', "Below is the ARM script for the recommended target SKU.You can save the script as template");
+export const TARGET_PROVISIONING_DESCRIPTION = localize('sql.migration.target.provisioning.description', "Below is the ARM script for the recommended target SKU. You can save the script as template.");
 // allow-any-unicode-next-line
 export const AZURE_RECOMMENDATION_CARD_NOT_ENABLED = localize('sql.migration.sku.card.azureRecommendation.notEnabled', "Azure recommendation is not available. Click 'Start data collection' button above to get started.");
 export const AZURE_RECOMMENDATION_CARD_IN_PROGRESS = localize('sql.migration.sku.card.azureRecommendation.inProgress', "Azure recommendation will be displayed once data collection is complete.");
