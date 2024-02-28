@@ -838,14 +838,21 @@ export const POWERSHELL_SCRIPT_DESCRIPTION = localize('sql.ir.powershellscript.d
 export const SETUP_LOCAL_IR_DESCRIPTION = localize('sql.ir.local.ir.definition', "I want to setup self-hosted integration runtime on my local machine (Machine where Azure Data Studio is running)");
 export const SETUP_REMOTE_IR_DESCRIPTION = localize('sql.ir.local.ir.definition', "I want to setup self-hosted integration runtime on another Windows machine that is not my local machine.");
 export const CONFIGURE_POWERSHELL_SCRIPT = localize('sql.ir.configure.powershellscript', "Configure using PowerShell script ");
+export const POWERSHELL_SCRIPT = localize('sql.ir.powershellscript', "PowerShell script ");
+export const EXECUTE_SCRIPT = localize('sql.ir.powershellscript', "Execute script ");
+export const EXECUTING_POWERSHELLSCRIPT = localize('sql.ir.executing.powershellscript', "Execution started and monitor the PowerShell window opened. ");
 export const CONFIGURE_MANUALLY = localize('sql.ir.configure.manually', "Configure manually ");
 export const NO_NODE_FOUND = localize('sql.ir.no.node.found', "No node found");
 export const NODE_NAME = localize('sql.ir.node.name', "Node name");
 export const IP_ADDRESS = localize('sql.ir.ip.address', "IP address");
 export const IR_VERSION = localize('sql.ir.ir.version', "IR version");
+export const IMPORTANT = localize('sql.ir.important', "Important");
 export const POWERSHELL_SCRIPT_SAVED = localize('sql.ir.powershell.script.saved', "PowerShell script saved");
-export const LOCAL_IR_SETUP_NOTE = localize('sql.ir.local.ir.setup.note', "Once executed, the powershell script will download, and install the self-hosted integration runtime and register it with the Azure Database Migration Service. Please click on refresh to see the connection status of the IR with the DMS. ")
+export const LOCAL_IR_SETUP_NOTE = localize('sql.ir.local.ir.setup.note', "When you click 'execute script', the PowerShell script below will automatically download self-hosted integration runtime software, install, and register it with your Azure Database Migration Service. To check the connection status of the IR, go back to the previous screen and refresh. ");
 export const VERSION_MISMATCH = localize('sql.ir.version.mismatch', "All nodes should be on the same version to be configured");
+export const POWERSHELL_PREREQ = localize('sql.ir.powershell.prereq', "Prerequisite: Need PowerShell with execute as admin privileges. ");
+export const RECOMMENDED_LINK = localize('sql.ir.recommended.link', "Recommendation for using Self-hosted IR");
+export const IR_CONFIG_TYPE = localize('sql.ir.config.type', "IR configuration type");
 
 // create migration service dialog
 export const CREATE_MIGRATION_SERVICE_TITLE = localize('sql.migration.services.dialog.title', "Create Azure Database Migration Service");
