@@ -186,8 +186,8 @@ export class GenerateProvisioningScriptDialog {
 			azdata.window.openDialog(this.dialog);
 			await Promise.all(dialogSetupPromises);
 
-			await this.model.getArmTemplate(this._targetType);
-
+			const skuRecommendationReportFilePath = this.getSkuRecommendationReportFilePath(this._targetType);
+			await this.model.getArmTemplate(skuRecommendationReportFilePath);
 			const error = this.model._armTemplateResult.generateTemplateError;
 
 			if (error) {
@@ -197,6 +197,17 @@ export class GenerateProvisioningScriptDialog {
 				await this.displayArmTemplate();
 			}
 		}
+	}
+
+	private getSkuRecommendationReportFilePath(targetType: string): string {
+		let fileName;
+		this.model._skuRecommendationReportFilePaths.forEach(function (filePath) {
+			if (filePath.includes(targetType)) {
+				fileName = filePath.substring(0, filePath.lastIndexOf(".")) + ".json";
+			}
+		});
+
+		return fileName!;
 	}
 
 	protected async execute() {

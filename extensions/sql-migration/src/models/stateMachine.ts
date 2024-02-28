@@ -471,9 +471,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._assessmentResults;
 	}
 
-	public async getArmTemplate(targetType: string): Promise<ArmTemplate> {
+	public async getArmTemplate(skuRecommendationReportFilePath: string): Promise<ArmTemplate> {
 		try {
-			const response = (await this.migrationService.getArmTemplate(targetType))!
+			const response = (await this.migrationService.getArmTemplate(skuRecommendationReportFilePath))!
 			if (response) {
 				this._armTemplateResult = {
 					template: response
