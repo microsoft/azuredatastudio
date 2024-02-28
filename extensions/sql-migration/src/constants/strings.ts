@@ -849,12 +849,17 @@ export const NODE_NAME = localize('sql.ir.node.name', "Node name");
 export const IP_ADDRESS = localize('sql.ir.ip.address', "IP address");
 export const IR_VERSION = localize('sql.ir.ir.version', "IR version");
 export const IMPORTANT = localize('sql.ir.important', "Important");
+export const SAVE_SCRIPT = localize('sql.ir.save.script', "Save script");
 export const POWERSHELL_SCRIPT_SAVED = localize('sql.ir.powershell.script.saved', "PowerShell script saved");
 export const LOCAL_IR_SETUP_NOTE = localize('sql.ir.local.ir.setup.note', "When you click 'execute script', the PowerShell script below will automatically download self-hosted integration runtime software, install, and register it with your Azure Database Migration Service. To check the connection status of the IR, go back to the previous screen and refresh. ");
 export const VERSION_MISMATCH = localize('sql.ir.version.mismatch', "All nodes should be on the same version to be configured");
 export const POWERSHELL_PREREQ = localize('sql.ir.powershell.prereq', "Prerequisite: Need PowerShell with execute as admin privileges. ");
 export const RECOMMENDED_LINK = localize('sql.ir.recommended.link', "Recommendation for using Self-hosted IR");
 export const IR_CONFIG_TYPE = localize('sql.ir.config.type', "IR configuration type");
+export const PS_SCRIPT_EXPANDED = localize('sql.ir.ps.script.expanded', "Powershell script expanded");
+export const PS_SCRIPT_COLLAPSED = localize('sql.ir.ps.script.collapsed', "Powershell script collapsed");
+export const MANUAL_IR_EXPANDED = localize('sql.ir.manual.ir.expanded', "Manual IR configuration expanded");
+export const MANUAL_IR_COLLAPSED = localize('sql.ir.manual.ir.collapsed', "Manual IR configuration collapsed");
 
 // create migration service dialog
 export const CREATE_MIGRATION_SERVICE_TITLE = localize('sql.migration.services.dialog.title', "Create Azure Database Migration Service");

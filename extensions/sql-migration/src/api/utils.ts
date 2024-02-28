@@ -23,6 +23,7 @@ import * as contracts from '../service/contracts';
 import { CssStyles } from 'azdata';
 import { DeclarativeTableCellValue } from 'azdata';
 import path = require('path');
+import { spawn } from "child_process"
 
 export type TargetServerType = azure.SqlVMServer | azureResource.AzureSqlManagedInstance | azure.AzureSqlDatabaseServer;
 
@@ -738,8 +739,7 @@ export async function retrieveAuthKeys(migrationStateModel: MigrationStateModel)
 // invoke and execute the script
 export async function invokeScript(scriptPath: string): Promise<void> {
 
-	var spawn = require("child_process").spawn, child;
-	child = spawn("powershell.exe", [scriptPath]);
+	var child = spawn("powershell.exe", [scriptPath]);
 	child.stdout.on("data", function (data: string) {
 		console.log("Powershell Data: " + data);
 	});
@@ -768,8 +768,8 @@ export async function createPowershellscriptContentContainer(view: azdata.ModelV
 	}).component();
 
 	const saveScriptButton = view.modelBuilder.button().withProps({
-		label: 'Save script',
-		ariaLabel: 'Save script',
+		label: constants.SAVE_SCRIPT,
+		ariaLabel: constants.SAVE_SCRIPT,
 		iconWidth: '18px',
 		iconHeight: '18px',
 		height: '40px',

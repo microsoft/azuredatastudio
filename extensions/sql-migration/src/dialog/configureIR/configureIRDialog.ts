@@ -204,7 +204,7 @@ export class ConfigureIRDialog {
 		const powershellScriptExpander = view.modelBuilder.button().withProps(
 			{
 				iconPath: IconPathHelper.expandButtonOpen,
-				ariaLabel: 'Powershell script expanded',
+				ariaLabel: constants.PS_SCRIPT_EXPANDED,
 			}
 		).component();
 
@@ -261,13 +261,13 @@ export class ConfigureIRDialog {
 		powershellScriptExpander.onDidClick(() => {
 			if (this.islocalPowershellScriptExpanded === false) {
 				powershellScriptExpander.iconPath = IconPathHelper.expandButtonOpen;
-				powershellScriptExpander.ariaLabel = 'Powershell script expanded';
+				powershellScriptExpander.ariaLabel = constants.PS_SCRIPT_EXPANDED;
 				this.islocalPowershellScriptExpanded = true;
 				container.addItem(scriptBox);
 			}
 			else {
 				powershellScriptExpander.iconPath = IconPathHelper.expandButtonClosed;
-				powershellScriptExpander.ariaLabel = 'Powershell script collapsed';
+				powershellScriptExpander.ariaLabel = constants.PS_SCRIPT_COLLAPSED;
 				this.islocalPowershellScriptExpanded = false;
 				container.removeItem(scriptBox);
 			}
@@ -333,7 +333,7 @@ export class ConfigureIRDialog {
 		const powershellScriptExpander = view.modelBuilder.button().withProps(
 			{
 				iconPath: IconPathHelper.expandButtonOpen,
-				ariaLabel: 'Powershell script expanded',
+				ariaLabel: constants.PS_SCRIPT_EXPANDED,
 			}
 		).component();
 
@@ -372,13 +372,13 @@ export class ConfigureIRDialog {
 		powershellScriptExpander.onDidClick(() => {
 			if (this.isPowershellScriptExpanded === false) {
 				powershellScriptExpander.iconPath = IconPathHelper.expandButtonOpen;
-				powershellScriptExpander.ariaLabel = 'Powershell script expanded';
+				powershellScriptExpander.ariaLabel = constants.PS_SCRIPT_EXPANDED;
 				this.isPowershellScriptExpanded = true;
 				powershellscriptContainer.addItem(powershellscriptContentContainer);
 			}
 			else {
 				powershellScriptExpander.iconPath = IconPathHelper.expandButtonClosed;
-				powershellScriptExpander.ariaLabel = 'Powershell script collapsed';
+				powershellScriptExpander.ariaLabel = constants.PS_SCRIPT_COLLAPSED;
 				this.isPowershellScriptExpanded = false;
 				powershellscriptContainer.removeItem(powershellscriptContentContainer);
 			}
@@ -387,13 +387,13 @@ export class ConfigureIRDialog {
 		manualIRconfigurationExpander.onDidClick(() => {
 			if (this.isConfigureIRmanuallyExpanded === false) {
 				manualIRconfigurationExpander.iconPath = IconPathHelper.expandButtonOpen;
-				manualIRconfigurationExpander.ariaLabel = 'Manual IR configuration expanded';
+				manualIRconfigurationExpander.ariaLabel = constants.MANUAL_IR_EXPANDED;
 				this.isConfigureIRmanuallyExpanded = true;
 				manualIRconfigContainer.addItem(manualIRconfigContentContainer);
 			}
 			else {
 				manualIRconfigurationExpander.iconPath = IconPathHelper.expandButtonClosed;
-				manualIRconfigurationExpander.ariaLabel = 'Manual IR configuration collapsed';
+				manualIRconfigurationExpander.ariaLabel = constants.MANUAL_IR_COLLAPSED;
 				this.isConfigureIRmanuallyExpanded = false;
 				manualIRconfigContainer.removeItem(manualIRconfigContentContainer);
 			}
