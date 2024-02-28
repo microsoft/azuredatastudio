@@ -702,14 +702,15 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				// if the versions are mismatched, show a warning
 				if (migrationServiceMonitoringStatus?.nodes.length === 1) {
 					let nodeversion = migrationServiceMonitoringStatus.nodes[0].version;
-					migrationServiceMonitoringStatus.nodes.forEach(async node => {
+
+					for (const node of migrationServiceMonitoringStatus.nodes) {
 						if (node.version !== nodeversion && node.status === 'Online') {
 							await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
 								text: constants.VERSION_MISMATCH,
 								style: 'warning'
 							});
 						}
-					});
+					}
 				}
 
 				this.migrationStateModel._sqlMigrationService = migrationService;
@@ -731,11 +732,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	}
 
 	private atleastOneNodeOnline(nodes: IntegrationRuntimeNode[]): boolean {
-		let result = false;
-		nodes.forEach(node => {
-			if (node.status === constants.ONLINE)
-				result = true;
-		});
-		return result;
+		return nodes.some(node => node.status === constants.ONLINE);
 	}
 }
