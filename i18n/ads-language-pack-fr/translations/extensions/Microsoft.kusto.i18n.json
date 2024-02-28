@@ -18,6 +18,7 @@
 			"downloadServiceDoneChannelMsg": "Téléchargement {0}",
 			"downloadingServiceStatusMsg": "Téléchargement de {0}",
 			"downloadingServiceChannelMsg": "Téléchargement de {0}",
+			"entryExtractedChannelMsg": "{0} ({1}/{2}) extrait",
 			"failedToStartServiceErrorMsg": "Échec du démarrage de {0}",
 			"installedServiceChannelMsg": "{0} installé",
 			"installingServiceStatusMsg": "Installation de {0}",
@@ -80,6 +81,7 @@
 			"kusto.format.alignColumnDefinitionsInColumns": "Spécifie si les définitions de colonne doivent être alignées",
 			"kusto.format.datatypeCasing": "Spécifie si la mise en forme des types de données est MAJUSCULES, minuscules ou aucune (sans mise en forme)",
 			"kusto.format.keywordCasing": "Spécifie si la mise en forme des mots clés est MAJUSCULES, minuscules ou aucune (sans mise en forme)",
+			"title.showLogFile": "Affichez le fichier journal",
 			"databasesListProperties.size": "Taille (Mo)",
 			"cloud.databaseProperties.size": "Taille (Mo)",
 			"kusto.connectionOptions.groupName.source": "Source",
@@ -96,7 +98,8 @@
 			"kusto.connectionOptions.userName.displayName": "Nom d'utilisateur",
 			"kusto.connectionOptions.workstationId.displayName": "ID de station de travail",
 			"kusto.logDebugInfo": "[Facultatif] Journaliser la sortie de débogage dans la console (Voir -> Sortie) et sélectionner le canal de sortie approprié dans la liste déroulante",
-			"kusto.tracingLevel": "[Facultatif] Niveau de journalisation des services de back-end. Azure Data Studio génère un nom de fichier à chaque démarrage et, si le fichier existe déjà, ajoute les entrées de journal à ce fichier. Pour nettoyer les anciens fichiers journaux, consultez les paramètres logRetentionMinutes et logFilesRemovalLimit. Le niveau de suivi par défaut correspond à une faible journalisation. Si vous changez le niveau de détail, vous pouvez obtenir une journalisation massive nécessitant de l'espace disque pour les journaux. Le niveau Erreur inclut le niveau Critique, le niveau Avertissement inclut le niveau Erreur, le niveau Informations inclut le niveau Avertissement et le niveau Détail inclut le niveau Informations"
+			"kusto.tracingLevel": "[Facultatif] Niveau de journalisation des services de back-end. Azure Data Studio génère un nom de fichier à chaque démarrage et, si le fichier existe déjà, ajoute les entrées de journal à ce fichier. Pour nettoyer les anciens fichiers journaux, consultez les paramètres logRetentionMinutes et logFilesRemovalLimit. Le niveau de suivi par défaut correspond à une faible journalisation. Si vous changez le niveau de détail, vous pouvez obtenir une journalisation massive nécessitant de l'espace disque pour les journaux. Le niveau Erreur inclut le niveau Critique, le niveau Avertissement inclut le niveau Erreur, le niveau Informations inclut le niveau Avertissement et le niveau Détail inclut le niveau Informations",
+			"kusto.tracingServer": "[Facultatif] Trace la communication entre Azure Data Studio et Kusto Tools Service vers le canal de sortie Kusto Tools Service. AVERTISSEMENT : cela peut inclure des informations sensibles lorsque la journalisation détaillée est activée."
 		}
 	}
 }

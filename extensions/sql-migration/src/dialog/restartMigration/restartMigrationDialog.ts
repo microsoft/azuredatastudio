@@ -76,7 +76,8 @@ export class RestartMigrationDialog {
 			sqlMigrationService: serviceContext.migrationService,
 			serviceSubscription: null,
 			serviceResourceGroup: null,
-			xEventsFilesFolderPath: null
+			xEventsFilesFolderPath: null,
+			collectAdhocQueries: null
 		};
 
 		const getStorageAccountResourceGroup = (storageAccountResourceId: string): azureResource.AzureResourceResourceGroup => {

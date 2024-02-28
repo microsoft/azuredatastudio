@@ -287,8 +287,8 @@
         <target state="translated">MSSQL-Konfiguration</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.encrypt.categoryValues.true">
-        <source xml:lang="en">Mandatory (True)</source>
-        <target state="translated">Obligatorisch (WAHR)</target>
+        <source xml:lang="en">Mandatory</source>
+        <target state="translated">Obligatorisch</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.maxPoolSize.displayName">
         <source xml:lang="en">Max pool size</source>
@@ -355,8 +355,8 @@
         <target state="translated">Betriebssystemversion</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.encrypt.categoryValues.false">
-        <source xml:lang="en">Optional (False)</source>
-        <target state="translated">Optional (FALSCH)</target>
+        <source xml:lang="en">Optional</source>
+        <target state="translated">Optional</target>
       </trans-unit>
       <trans-unit id="cloud.databaseProperties.owner">
         <source xml:lang="en">Owner</source>
@@ -479,8 +479,8 @@
         <target state="translated">Gibt die Methode für die Authentifizierung bei SQL Server an.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.encrypt.categoryValues.strict">
-        <source xml:lang="en">Strict</source>
-        <target state="translated">Streng</target>
+        <source xml:lang="en">Strict (supported for SQL Server 2022 and Azure SQL)</source>
+        <target state="translated">Streng (unterstützt für SQL Server 2022 und Azure SQL)</target>
       </trans-unit>
       <trans-unit id="cms.description">
         <source xml:lang="en">Support for managing SQL Server Central Management Servers</source>

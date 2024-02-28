@@ -18,6 +18,7 @@
 			"downloadServiceDoneChannelMsg": "Baixado {0}",
 			"downloadingServiceStatusMsg": "Baixando {0}",
 			"downloadingServiceChannelMsg": "Baixando {0}",
+			"entryExtractedChannelMsg": "Extraído {0} ({1}/{2})",
 			"failedToStartServiceErrorMsg": "Falha ao iniciar o {0}",
 			"installedServiceChannelMsg": "Instalado {0}",
 			"installingServiceStatusMsg": "Instalando {0}",
@@ -80,6 +81,7 @@
 			"kusto.format.alignColumnDefinitionsInColumns": "Definições de coluna devem ser alinhadas?",
 			"kusto.format.datatypeCasing": "Tipos de dados devem ser formatados como letras MAIÚSCULAS, minúsculas ou nenhum (não formatado)?",
 			"kusto.format.keywordCasing": "Palavras-chave devem ser formatadas como letras MAIÚSCULAS, minúsculas ou nenhum (não formatado)?",
+			"title.showLogFile": "Mostrar Arquivo de Log",
 			"databasesListProperties.size": "Tamanho (MB)",
 			"cloud.databaseProperties.size": "Tamanho (MB)",
 			"kusto.connectionOptions.groupName.source": "Origem",
@@ -96,7 +98,8 @@
 			"kusto.connectionOptions.userName.displayName": "Nome do usuário",
 			"kusto.connectionOptions.workstationId.displayName": "ID da estação de trabalho",
 			"kusto.logDebugInfo": "[Opcional] Registre a saída da depuração no console (Exibir -> Saída) e, em seguida, selecione o canal de saída apropriado no menu suspenso",
-			"kusto.tracingLevel": "[Opcional] Registre o nível para serviços de back-end. O Azure Data Studio gera um nome de arquivo sempre que é iniciado e, quando o arquivo já existe, as entradas de logs são acrescentadas a esse arquivo. Para a limpeza de arquivos de log antigos, confira as configurações logRetentionMinutes e logFilesRemovalLimit. O tracingLevel padrão não registra uma grande quantidade de log. A alteração de detalhamento pode levar ao aumento dos requisitos de log e de espaço em disco para os logs. Erro inclui Crítico, Aviso inclui Erro, informações incluem Aviso e Detalhado inclui Informações"
+			"kusto.tracingLevel": "[Opcional] Registre o nível para serviços de back-end. O Azure Data Studio gera um nome de arquivo sempre que é iniciado e, quando o arquivo já existe, as entradas de logs são acrescentadas a esse arquivo. Para a limpeza de arquivos de log antigos, confira as configurações logRetentionMinutes e logFilesRemovalLimit. O tracingLevel padrão não registra uma grande quantidade de log. A alteração de detalhamento pode levar ao aumento dos requisitos de log e de espaço em disco para os logs. Erro inclui Crítico, Aviso inclui Erro, informações incluem Aviso e Detalhado inclui Informações",
+			"kusto.tracingServer": "[Opcional] Rastreia a comunicação entre o Azure Data Studio e o Serviço de Ferramentas do Kusto até o canal de saída do Serviço de Ferramentas do Kusto. AVISO: isso pode incluir informações confidenciais quando o registro detalhado estiver habilitado."
 		}
 	}
 }

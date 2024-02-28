@@ -12914,6 +12914,7 @@
 			"postUninstallTooltip": "请重新加载 Azure Data Studio 以完成此扩展的卸载。",
 			"postUpdateTooltip": "请重新加载 Azure Data Studio 以启用更新的扩展。",
 			"recommendedExtensions": "市场",
+			"reviewGuidanceLabel": "在此处报告问题之前，请<a href=\"https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions\" target=\"_blank\">查看我们提供的指南</a>。",
 			"scenarioTypeUndefined": "必须提供扩展建议的方案类型。",
 			"showReleaseNotes": "更新后显示发行说明。发行说明会在新的 Web 浏览器窗口中打开。",
 			"sql.versionMismatch": "扩展与 Azure Data Studio {0} 不兼容。扩展要求: {1}。",
@@ -12946,6 +12947,7 @@
 			"addAccount": "添加帐户",
 			"applyFilters": "应用筛选器",
 			"confirmRemoveUserAccountMessage": "确定要删除 \"{0}\" 吗?",
+			"githubCopilotSignOut": "注销 GitHub Copilot",
 			"refreshAccount": "刷新凭据",
 			"removeAccount": "删除帐户",
 			"removeAccountFailed": "未能删除帐户"
@@ -13463,7 +13465,9 @@
 			"sql.maxRecentConnectionsDescription": "连接列表中保存的最近使用的连接数量上限"
 		},
 		"sql/workbench/contrib/connection/browser/connectionStatus": {
-			"status.connection.status": "连接状态"
+			"status.connection.baseTooltip": "服务器: {0}\r\n数据库: {1}",
+			"status.connection.status": "连接状态",
+			"status.connection.tooltipLogin": "登录: {0}"
 		},
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
 			"schema.azureResource": "提供程序的 Azure 资源终结点。",
@@ -13791,7 +13795,10 @@
 			"revertRow": "还原当前行"
 		},
 		"sql/workbench/contrib/editData/browser/editDataGridPanel": {
-			"editData.cellWithNullCharMessage": "此单元格包含当前不支持进行编辑的 Unicode 空字符。"
+			"editData.cellWithNullCharMessage": "此单元格包含当前不支持进行编辑的 Unicode 空字符。",
+			"editData.generalSubmitError": "提交单元格更改时出错: <{0}>",
+			"editData.newRowSubmitError": "将数据提交到新行时出错:<{0}>",
+			"editData.saveViewSubmitError": "保存本地未提交的更改时出错: <{0}>"
 		},
 		"sql/workbench/contrib/editData/browser/gridActions": {
 			"copySelection": "复制",

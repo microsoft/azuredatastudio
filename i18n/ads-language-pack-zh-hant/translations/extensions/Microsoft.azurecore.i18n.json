@@ -63,6 +63,9 @@
 		"dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "適用於 MongoDB 的 Azure CosmosDB"
 		},
+		"dist/azureResource/providers/cosmosdb/nosql/cosmosDbNoSqlTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbNoSqlContainerLabel": "適用於 NoSQL 的 Azure CosmosDB"
+		},
 		"dist/azureResource/providers/cosmosdb/postgres/cosmosDbPostgresTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbPostgresContainerLabel": "適用於 PostgreSQL 叢集的 Azure CosmosDB"
 		},
@@ -123,7 +126,7 @@
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "登入 Azure…"
 		},
 		"dist/azureResource/tree/accountTreeNode": {
-			"azure.resource.tree.accountTreeNode.noTenantsLabel": "No Tenants found."
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "找不到任何租用戶。"
 		},
 		"dist/azureResource/tree/connectionDialogTreeProvider": {
 			"azure.resource.tree.treeProvider.accountLoadError": "無法載入某些 Azure 帳戶。{0}",

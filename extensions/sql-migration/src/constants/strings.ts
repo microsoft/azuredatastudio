@@ -91,10 +91,12 @@ export const DATABASE_FOR_ASSESSMENT_PAGE_TITLE = localize('sql.migration.databa
 export const DATABASE_FOR_ASSESSMENT_DESCRIPTION = localize('sql.migration.database.assessment.description', "Select the databases that you want to assess for migration to Azure SQL.");
 
 // XEvents assessment
-export const XEVENTS_ASSESSMENT_TITLE = localize('sql.migration.database.assessment.xevents.title', "Assess extended event sessions");
-export const XEVENTS_ASSESSMENT_DESCRIPTION = localize('sql.migration.database.assessment.xevents.description', "For the selected databases, optionally provide extended event session files to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer. {0}");
+export const XEVENTS_ASSESSMENT_TITLE = localize('sql.migration.database.assessment.xevents.title', "Assess Ad-hoc or dynamic SQL");
+export const XEVENTS_ASSESSMENT_DESCRIPTION = localize('sql.migration.database.assessment.xevents.description', "For the selected databases, optionally provide extended event session files to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer.");
 export const XEVENTS_ASSESSMENT_HELPLINK = localize('sql.migration.database.assessment.xevents.link', "Learn more");
 export const XEVENTS_ASSESSMENT_OPEN_FOLDER = localize('sql.migration.database.assessment.xevents.instructions', "Select a folder where extended events session files (.xel and .xem) are stored");
+export const QDS_ASSESSMENT_LABEL = localize('sql.migration.database.assessment.qds.label', "Using Query Data Store (this option is available for Microsoft SQL Server 2016 and later)");
+export const XEVENTS_LABEL = localize('sql.migration.database.assessment.xevents.label', "Using extended event session");
 
 // Assessment results
 export const ASSESSMENT_RESULTS_PAGE_TITLE = localize('sql.migration.assessment.results.title', "Target platform & assessment results");
@@ -870,6 +872,7 @@ export const LOADING_MIGRATION_SERVICES = localize('sql.migration.service.contai
 export const SERVICE_CONTAINER_HEADING = localize('sql.migration.service.container.heading', "Set up integration runtime");
 export const SERVICE_CONTAINER_DESCRIPTION1 = localize('sql.migration.service.container.container.description1', "Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to handle connectivity between source and target and upload backups from an on-premises network file share to Azure (if applicable).");
 export const IR_CONTAINER_DESCRIPTION = localize('sql.migration.ir.container.description', "Azure Database Migration Service leverages Azure Data Factory's Self-hosted Integration Runtime to upload backups from on-premise network file share to Azure. Based on the selections on the previous page you will need to setup an Self-hosted Integration Runtime.");
+export const IR_CONTAINER_DESCRIPTION = localize('sql.migration.ir.container.description', "Azure Database Migration Service leverages Azure Data Factory's Self-hosted Integration Runtime to upload backups from on-premise network file share to Azure. Based on the selections on the previous page you will need to setup an Self-hosted Integration Runtime.");
 export const SERVICE_CONTAINER_DESCRIPTION2 = localize('sql.migration.service.container.container.description2', "Follow the instructions below to set up self-hosted integration runtime.");
 export const SERVICE_STEP1 = localize('sql.migration.ir.setup.step1', "Step 1: {0}");
 export const SERVICE_STEP1_LINK = localize('sql.migration.option', "Download and install integration runtime");
@@ -908,6 +911,10 @@ export function SERVICE_READY(serviceName: string, nodes: string, instructionsBe
 		? localize('sql.migration.service.ready.below', "Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}\n\nFor improved performance and high availability, you can register additional nodes. See below for registration instructions.", serviceName, nodes)
 		: localize('sql.migration.service.ready', "Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}\n\nFor improved performance and high availability, you can register additional nodes.", serviceName, nodes);
 
+}
+export function SERVICE_READY_WITHOUT_NODENAMES(serviceName: string): string {
+	return localize('sql.migration.service.ready.without.nodes',
+		"Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on the following node(s)", serviceName);
 }
 export function SERVICE_READY_WITHOUT_NODENAMES(serviceName: string): string {
 	return localize('sql.migration.service.ready.without.nodes',
@@ -1048,6 +1055,18 @@ export function VALIDATE_IR_SQLDB_VALIDATION_RESULT_ERROR(sourceDatabaseName: st
 		error.message);
 }
 
+export const NETWORK_SHARE_USER_ACCOUNT_LABEL = localize('sql.migration.network.share.user.account.label', "User account");
+export const NETWORK_SHARE_PASSWORD_LABEL = localize('sql.migration.network.share.password.label', "Password");
+export const STORAGE_ACCOUNT_RESOURCE_GROUP_LABEL = localize('sql.migration.storage.account.resource.group.label', "Resource group");
+export const STORAGE_ACCOUNT_DETAILS_LABEL = localize('sql.migration.storage.account.details.label', "Storage account");
+export function VALIDATION_IR_BUTTON_MISSING_ERROR_MESSAGE(details: string[]): string {
+	const missingDetails = details.join(', ');
+	return localize(
+		'sql.migration.validate.ir.error.message',
+		"Details for {0} are mandatory and missing.",
+		missingDetails);
+}
+
 // common strings
 export const WARNING = localize('sql.migration.warning', "Warning");
 export const ERROR = localize('sql.migration.error', "Error");
@@ -1059,6 +1078,7 @@ export const RESOURCE_GROUP = localize('sql.migration.resourceGroups', "Resource
 export const NAME = localize('sql.migration.name', "Name");
 export const LOCATION = localize('sql.migration.location', "Location");
 export const REFRESH = localize('sql.migration.refresh', "Refresh");
+export const CONFIGURE_INTEGRATION_RUNTIME = localize('sql.migration.configure.ir', "Configure Integration Runtime");
 export const CONFIGURE_INTEGRATION_RUNTIME = localize('sql.migration.configure.ir', "Configure Integration Runtime");
 export const CREATE = localize('sql.migration.create', "Create");
 export const IMPORT = localize('sql.migration.import', "Import");

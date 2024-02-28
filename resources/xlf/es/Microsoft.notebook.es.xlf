@@ -1032,10 +1032,6 @@ Se ha cambiado el nombre del archivo a {2} para evitar la pérdida de datos.</ta
         <source xml:lang="en">Pinned notebooks</source>
         <target state="translated">Cuadernos anclados</target>
       </trans-unit>
-      <trans-unit id="title.ProvidedBooks">
-        <source xml:lang="en">Provided Jupyter Books</source>
-        <target state="translated">Libros de Jupyter proporcionados</target>
-      </trans-unit>
       <trans-unit id="title.reinstallNotebookDependencies">
         <source xml:lang="en">Reinstall Notebook dependencies</source>
         <target state="translated">Reinstalar dependencias de Notebook</target>

@@ -18,6 +18,7 @@
 			"downloadServiceDoneChannelMsg": "{0} wurde heruntergeladen",
 			"downloadingServiceStatusMsg": "\"{0}\" wird heruntergeladen.",
 			"downloadingServiceChannelMsg": "\"{0}\" wird heruntergeladen.",
+			"entryExtractedChannelMsg": "{0} extrahiert ({1}/{2})",
 			"failedToStartServiceErrorMsg": "Fehler beim Starten von \"{0}\".",
 			"installedServiceChannelMsg": "\"{0}\" wurde installiert.",
 			"installingServiceStatusMsg": "\"{0}\" wird installiert.",
@@ -80,6 +81,7 @@
 			"kusto.format.alignColumnDefinitionsInColumns": "Sollen Spaltendefinitionen ausgerichtet werden?",
 			"kusto.format.datatypeCasing": "Gibt an, ob Datentypen in Großbuchstaben, Kleinbuchstaben oder gar nicht formatiert werden sollen.",
 			"kusto.format.keywordCasing": "Gibt an, ob Schlüsselwörter in Großbuchstaben, Kleinbuchstaben oder gar nicht formatiert werden sollen.",
+			"title.showLogFile": "Protokolldatei anzeigen",
 			"databasesListProperties.size": "Größe (MB)",
 			"cloud.databaseProperties.size": "Größe (MB)",
 			"kusto.connectionOptions.groupName.source": "Quelle",
@@ -96,7 +98,8 @@
 			"kusto.connectionOptions.userName.displayName": "Benutzername",
 			"kusto.connectionOptions.workstationId.displayName": "Arbeitsstations-ID",
 			"kusto.logDebugInfo": "[Optional] Protokollieren Sie die Debugausgabe in der Konsole (Ansicht > Ausgabe), und wählen Sie dann in der Dropdownliste den geeigneten Ausgabekanal aus.",
-			"kusto.tracingLevel": "[Optional] Protokolliergrad für Back-End-Dienste. Azure Data Studio generiert bei jedem Start einen Dateinamen, und falls die Datei bereits vorhanden ist, werden die Protokolleinträge an diese Datei angehängt. Zur Bereinigung alter Protokolldateien können die Einstellungen \"logRetentionMinutes\" und \"logFilesRemovalLimit\" verwendet werden. Bei Verwendung des Standardwerts für \"tracingLevel\" werden nur wenige Informationen protokolliert. Eine Änderung der Ausführlichkeit kann zu einem umfangreichen Protokollierungsaufkommen und einem hohen Speicherplatzbedarf für die Protokolle führen. \"Error\" umfasst kritische Meldungen, \"Warning\" umfasst alle Daten aus \"Error\" sowie Warnmeldungen, \"Information\" umfasst alle Daten aus \"Warning\" sowie Informationsmeldungen, \"Verbose\" umfasst ausführliche Informationen."
+			"kusto.tracingLevel": "[Optional] Protokolliergrad für Back-End-Dienste. Azure Data Studio generiert bei jedem Start einen Dateinamen, und falls die Datei bereits vorhanden ist, werden die Protokolleinträge an diese Datei angehängt. Zur Bereinigung alter Protokolldateien können die Einstellungen \"logRetentionMinutes\" und \"logFilesRemovalLimit\" verwendet werden. Bei Verwendung des Standardwerts für \"tracingLevel\" werden nur wenige Informationen protokolliert. Eine Änderung der Ausführlichkeit kann zu einem umfangreichen Protokollierungsaufkommen und einem hohen Speicherplatzbedarf für die Protokolle führen. \"Error\" umfasst kritische Meldungen, \"Warning\" umfasst alle Daten aus \"Error\" sowie Warnmeldungen, \"Information\" umfasst alle Daten aus \"Warning\" sowie Informationsmeldungen, \"Verbose\" umfasst ausführliche Informationen.",
+			"kusto.tracingServer": "[Optional] Verfolgt die Kommunikation zwischen Azure Data Studio und Kusto Tools Service mit dem Kusto Tools Service-Ausgabekanal nach. WARNUNG: Dies kann vertrauliche Informationen enthalten, wenn die ausführliche Protokollierung aktiviert ist."
 		}
 	}
 }

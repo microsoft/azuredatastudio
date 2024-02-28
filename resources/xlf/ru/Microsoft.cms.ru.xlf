@@ -287,8 +287,8 @@
         <target state="translated">Конфигурация MSSQL</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.encrypt.categoryValues.true">
-        <source xml:lang="en">Mandatory (True)</source>
-        <target state="translated">Обязательное (True)</target>
+        <source xml:lang="en">Mandatory</source>
+        <target state="translated">Обязательно</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.maxPoolSize.displayName">
         <source xml:lang="en">Max pool size</source>
@@ -355,8 +355,8 @@
         <target state="translated">Версия ОС</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.encrypt.categoryValues.false">
-        <source xml:lang="en">Optional (False)</source>
-        <target state="translated">Необязательное (False)</target>
+        <source xml:lang="en">Optional</source>
+        <target state="translated">Необязательно</target>
       </trans-unit>
       <trans-unit id="cloud.databaseProperties.owner">
         <source xml:lang="en">Owner</source>
@@ -479,8 +479,8 @@
         <target state="translated">Указывает способ проверки подлинности в SQL Server</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.encrypt.categoryValues.strict">
-        <source xml:lang="en">Strict</source>
-        <target state="translated">Строгое</target>
+        <source xml:lang="en">Strict (supported for SQL Server 2022 and Azure SQL)</source>
+        <target state="translated">Строгое (поддерживается для SQL Server 2022 и Azure SQL)</target>
       </trans-unit>
       <trans-unit id="cms.description">
         <source xml:lang="en">Support for managing SQL Server Central Management Servers</source>

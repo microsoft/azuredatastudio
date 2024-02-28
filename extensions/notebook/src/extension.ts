@@ -65,7 +65,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addMarkdown', (book: BookTreeItem) => bookTreeViewProvider.createMarkdownFile(book)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addSection', (book: BookTreeItem) => bookTreeViewProvider.createSection(book)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.createBook', () => bookTreeViewProvider.createBook()));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openNotebookFolder', (folderPath?: string, urlToOpen?: string, showPreview?: boolean) => bookTreeViewProvider.openNotebookFolder(folderPath, urlToOpen, showPreview)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openNotebookFolder', (book: BookTreeItem, folderPath?: string, urlToOpen?: string, showPreview?: boolean) => bookTreeViewProvider.openNotebookFolder(folderPath, urlToOpen, showPreview)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.pinNotebook', async (book: BookTreeItem) => {
 		await bookTreeViewProvider.pinNotebook(book);
 		await pinnedBookTreeViewProvider.addNotebookToPinnedView(book);

@@ -285,7 +285,6 @@
 			"notebook.overrideEditorTheming.description": "Remplacez les paramètres d'éditeur par défaut dans l'éditeur de notebook. Les paramètres comprennent la couleur d'arrière-plan, la couleur de la ligne actuelle et la bordure",
 			"title.pinNotebook": "Épingler le notebook",
 			"title.PinnedBooks": "Notebooks épinglés",
-			"title.ProvidedBooks": "Jupyter Books fournis",
 			"title.reinstallNotebookDependencies": "Réinstaller les dépendances de notebook",
 			"title.removeNotebook": "Voulez-vous supprimer le bloc-notes",
 			"title.revealInBooksViewlet": "Afficher dans Books",

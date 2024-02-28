@@ -285,7 +285,6 @@
 			"notebook.overrideEditorTheming.description": "覆寫 Notebook 編輯器中的預設設定。設定包含背景色彩、目前的線條色彩和框線",
 			"title.pinNotebook": "釘選筆記本",
 			"title.PinnedBooks": "已釘選的筆記本",
-			"title.ProvidedBooks": "提供的 Jupyter 書籍",
 			"title.reinstallNotebookDependencies": "重新安裝 Notebook 相依性",
 			"title.removeNotebook": "移除筆記本",
 			"title.revealInBooksViewlet": "在書籍中顯示",

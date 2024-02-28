@@ -34,6 +34,10 @@
         <source xml:lang="en">Downloading {0}</source>
         <target state="translated">Descargando {0}</target>
       </trans-unit>
+      <trans-unit id="entryExtractedChannelMsg">
+        <source xml:lang="en">Extracted {0} ({1}/{2})</source>
+        <target state="translated">Elementos extraídos {0} ({1} de {2})</target>
+      </trans-unit>
       <trans-unit id="failedToStartServiceErrorMsg">
         <source xml:lang="en">Failed to start {0}</source>
         <target state="translated">No se ha podido iniciar {0}</target>
@@ -262,6 +266,10 @@
         <source xml:lang="en">Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)</source>
         <target state="translated">Indica si las palabras clave deben formatearse como MAYÚSCULAS, minúsculas o nada (sin formato).</target>
       </trans-unit>
+      <trans-unit id="title.showLogFile">
+        <source xml:lang="en">Show Log File</source>
+        <target state="translated">Mostrar archivo de registro</target>
+      </trans-unit>
       <trans-unit id="databasesListProperties.size">
         <source xml:lang="en">Size (MB)</source>
         <target state="translated">Tamaño (MB)</target>
@@ -329,6 +337,10 @@
       <trans-unit id="kusto.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
         <target state="translated">[Opcional] El nivel de registro para servicios back-end. Azure Data Studio genera un nombre de archivo cada vez que se inicia y, si el archivo ya existe, las entradas de registros se anexan a ese archivo. Para la limpieza de archivos de registro antiguos, consulte la configuración de logRetentionMinutes y logFilesRemovalLimit. El valor predeterminado tracingLevel no registra mucho. El cambio de detalle podría dar lugar a amplios requisitos de registro y espacio en disco para los registros. Error incluye Crítico, Advertencia incluye Error, Información incluye Advertencia y Detallado incluye Información.</target>
+      </trans-unit>
+      <trans-unit id="kusto.tracingServer">
+        <source xml:lang="en">[Optional] Traces the communication between Azure Data Studio and Kusto Tools Service to the Kusto Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.</source>
+        <target state="translated">[Opcional] Realiza un seguimiento de la comunicación entre Azure Data Studio y el Servicio de herramientas de Kusto al canal de salida del Servicio de herramientas de Kusto. ADVERTENCIA: esto puede incluir información confidencial cuando está habilitado el registro detallado.</target>
       </trans-unit>
     </body>
   </file>
