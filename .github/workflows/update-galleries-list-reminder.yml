@@ -5,7 +5,8 @@ on:
       - 'extensionsGallery.json'
     branches:
       - release/extensions
-
+permissions:
+    pull-requests: write
 jobs:
   main:
     runs-on: ubuntu-latest
