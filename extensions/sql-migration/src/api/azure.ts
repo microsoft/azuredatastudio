@@ -928,11 +928,14 @@ export interface IntegrationRuntimeNode {
 	concurrentJobsLimit: number
 	concurrentJobsRunning: number,
 	cpuUtilization: number,
+	ipAddress: string,
+	isActiveDispatcher: boolean,
 	nodeName: string
 	receivedBytes: number
 	sentBytes: number,
 	status: string,
-	version: string
+	version: string,
+	versionStatus: string
 }
 
 export interface StartDatabaseMigrationRequest {
