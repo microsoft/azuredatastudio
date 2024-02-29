@@ -624,7 +624,7 @@ export class CreateSqlMigrationServiceDialog {
 		}).component();
 
 		// get the SHIR script
-		const scriptPath = path.join(__dirname, '../../scripts/SHIR-auto-configuration.ps1');
+		const scriptPath = path.join(__dirname, '../scripts/SHIR-auto-configuration.ps1');
 
 		const scriptContent = await fs.readFile(scriptPath);
 
@@ -634,7 +634,7 @@ export class CreateSqlMigrationServiceDialog {
 			(authKeys.authKey1, authKeys.authKey2, scriptContent.toString());
 
 		// write it back to different file
-		this.modifiedScriptPath = path.join(__dirname, '../../scripts/SHIR-auto-configuration-with-auth-keys.ps1');
+		this.modifiedScriptPath = path.join(__dirname, '../scripts/SHIR-auto-configuration-with-auth-keys.ps1');
 		await fs.writeFile(this.modifiedScriptPath, modifiedScriptContent);
 
 		const powershellScriptExpander = view.modelBuilder.button().withProps(

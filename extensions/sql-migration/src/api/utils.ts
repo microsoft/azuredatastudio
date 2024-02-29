@@ -780,7 +780,7 @@ export async function createPowershellscriptContentContainer(view: azdata.ModelV
 		},
 	}).component();
 
-	const path1 = path.join(__dirname, '../../scripts/SHIR-auto-configuration.ps1');
+	const path1 = path.join(__dirname, '../scripts/SHIR-auto-configuration.ps1');
 
 	const scriptContent = await fs.readFile(path1);
 
@@ -790,7 +790,7 @@ export async function createPowershellscriptContentContainer(view: azdata.ModelV
 		(authKeys.authKey1, authKeys.authKey2, scriptContent.toString());
 
 	// write it back to different file
-	const modifiedScriptPath = path.join(__dirname, '../../scripts/SHIR-auto-configuration-with-auth-keys.ps1');
+	const modifiedScriptPath = path.join(__dirname, '../scripts/SHIR-auto-configuration-with-auth-keys.ps1');
 	await fs.writeFile(modifiedScriptPath, modifiedScriptContent);
 
 	saveScriptButton.onDidClick(async () => {
