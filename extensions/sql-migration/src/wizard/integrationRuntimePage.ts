@@ -641,7 +641,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			if (service) {
 				const account = this.migrationStateModel._azureAccount;
 				const subscription = this.migrationStateModel._sqlMigrationServiceSubscription;
-				const resourceGroup = service.properties.resourceGroup;
+				const resourceGroup = this.migrationStateModel._sqlMigrationServiceResourceGroup?.name;
 				const location = service.location;
 				serviceName = service.name;
 				if (service?.properties?.integrationRuntimeState) {
