@@ -34,6 +34,7 @@ export class CreateSqlMigrationServiceDialog {
 	private _statusLoadingComponent!: azdata.LoadingComponent;
 	private _connectionStatus!: azdata.InfoBoxComponent;
 	private _setupContainer!: azdata.FlexContainer;
+	private _creationStatusContainer!: azdata.FlexContainer;
 	private _resourceGroupPreset!: string;
 
 	private _dialogObject!: azdata.window.Dialog;
@@ -94,6 +95,40 @@ export class CreateSqlMigrationServiceDialog {
 				width: '80px'
 			}).component();
 
+			this._statusLoadingComponent = view.modelBuilder.loadingComponent().withProps({
+				loadingText: constants.LOADING_MIGRATION_SERVICES,
+				loading: false
+			}).component();
+
+			const formBuilder = view.modelBuilder.formContainer().withFormItems(
+				[
+					{
+						component: (await this.migrationServiceDropdownContainer())
+					},
+					{
+						component: this._formSubmitButton
+					},
+					{
+						component: this._statusLoadingComponent
+					},
+				],
+				{
+					horizontal: false
+				}
+			);
+
+			this._connectionStatus = this._view.modelBuilder.infoBox().withProps({
+				text: '',
+				style: 'error',
+				CSSStyles: {
+					...styles.BODY_CSS
+				}
+			}).component();
+
+			this._connectionStatus.CSSStyles = {
+				'width': '350px'
+			};
+
 			this._disposables.push(
 				this._formSubmitButton.onDidClick(async (e) => {
 					utils.clearDialogMessage(this._dialogObject);
@@ -140,6 +175,14 @@ export class CreateSqlMigrationServiceDialog {
 							};
 						} else {
 							await this.refreshStatus();
+							// construct the IR after new DMS is created
+							// with latest values.
+							this._creationStatusContainer = await this.constructIRConfig(view);
+							formBuilder.addFormItem(
+								{
+									component: this._creationStatusContainer
+								}
+							);
 							this._setupContainer.display = 'inline';
 						}
 					} catch (e) {
@@ -150,34 +193,6 @@ export class CreateSqlMigrationServiceDialog {
 						this._statusLoadingComponent.loading = false;
 					}
 				}));
-
-			this._statusLoadingComponent = view.modelBuilder.loadingComponent().withProps({
-				loadingText: constants.LOADING_MIGRATION_SERVICES,
-				loading: false
-			}).component();
-
-			// const creationStatusContainer1 = this.createServiceStatus();
-			const creationStatusContainer = await this.constructIRConfig(view, this._dialogObject);
-
-			const formBuilder = view.modelBuilder.formContainer().withFormItems(
-				[
-					{
-						component: (await this.migrationServiceDropdownContainer())
-					},
-					{
-						component: this._formSubmitButton
-					},
-					{
-						component: this._statusLoadingComponent
-					},
-					{
-						component: creationStatusContainer
-					}
-				],
-				{
-					horizontal: false
-				}
-			);
 
 			const form = formBuilder.withLayout({ width: '100%' }).component();
 
@@ -213,19 +228,7 @@ export class CreateSqlMigrationServiceDialog {
 		});
 	}
 
-	private async constructIRConfig(view: azdata.ModelView, dialog: azdata.window.Dialog) {
-
-		this._connectionStatus = this._view.modelBuilder.infoBox().withProps({
-			text: '',
-			style: 'error',
-			CSSStyles: {
-				...styles.BODY_CSS
-			}
-		}).component();
-
-		this._connectionStatus.CSSStyles = {
-			'width': '350px'
-		};
+	private async constructIRConfig(view: azdata.ModelView) {
 
 		const configcontainer = await this.configContainer(view);
 
@@ -582,6 +585,7 @@ export class CreateSqlMigrationServiceDialog {
 		});
 		if (migrationServiceStatus) {
 			const state = migrationServiceStatus.properties.integrationRuntimeState;
+			this._model._sqlMigrationService = migrationServiceStatus;
 
 			if (state === 'Online') {
 				await this._connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
