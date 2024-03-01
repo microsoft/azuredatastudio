@@ -24,7 +24,7 @@ steps:
 
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: "3"
+      versionSpec: "3.x"
       addToPath: true
 
   - ${{ if ne(parameters.VSCODE_QUALITY, 'oss') }}:
