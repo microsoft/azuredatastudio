@@ -184,6 +184,8 @@ export class CreateSqlMigrationServiceDialog {
 								}
 							);
 							this._setupContainer.display = 'inline';
+							// enable done button after the SHIR details is shown
+							this._dialogObject.okButton.enabled = true;
 						}
 					} catch (e) {
 						console.log(e);
@@ -605,7 +607,6 @@ export class CreateSqlMigrationServiceDialog {
 					}
 				});
 			}
-			this._dialogObject.okButton.enabled = true;
 		}
 	}
 
