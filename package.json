@@ -114,7 +114,7 @@
     "plotly.js-dist-min": "^1.53.0",
     "reflect-metadata": "^0.1.8",
     "rxjs": "5.4.0",
-    "sanitize-html": "1.19.1",
+    "sanitize-html": "2.12.1",
     "semver-umd": "^5.5.7",
     "slickgrid": "github:Microsoft/SlickGrid.ADS#2.3.45",
     "tas-client-umd": "0.1.8",
