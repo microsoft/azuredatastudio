@@ -718,7 +718,7 @@ export async function retrieveAuthKeys(migrationStateModel: MigrationStateModel)
 	if (service) {
 		const account = migrationStateModel._azureAccount;
 		const subscription = migrationStateModel._sqlMigrationServiceSubscription;
-		const resourceGroup = migrationStateModel._sqlMigrationServiceResourceGroup.name;
+		const resourceGroup = service.properties.resourceGroup;
 		const location = service.location;
 		const serviceName = service.name;
 		if (service?.properties?.integrationRuntimeState) {
@@ -780,9 +780,9 @@ export async function createPowershellscriptContentContainer(view: azdata.ModelV
 		},
 	}).component();
 
-	const path1 = path.join(__dirname, '../../scripts/SHIR-auto-configuration.ps1');
+	const scriptpath = path.join(__dirname, '../scripts/SHIR-auto-configuration.ps1');
 
-	const scriptContent = await fs.readFile(path1);
+	const scriptContent = await fs.readFile(scriptpath);
 
 	// inject auth keys in the script
 	const authKeys = await retrieveAuthKeys(migrationStateModel);
@@ -790,7 +790,7 @@ export async function createPowershellscriptContentContainer(view: azdata.ModelV
 		(authKeys.authKey1, authKeys.authKey2, scriptContent.toString());
 
 	// write it back to different file
-	const modifiedScriptPath = path.join(__dirname, '../../scripts/SHIR-auto-configuration-with-auth-keys.ps1');
+	const modifiedScriptPath = path.join(__dirname, '../scripts/SHIR-auto-configuration-with-auth-keys.ps1');
 	await fs.writeFile(modifiedScriptPath, modifiedScriptContent);
 
 	saveScriptButton.onDidClick(async () => {
@@ -875,7 +875,7 @@ export async function createManualIRconfigContentContainer(view: azdata.ModelVie
 	if (service) {
 		const account = migrationStateModel._azureAccount;
 		const subscription = migrationStateModel._sqlMigrationServiceSubscription;
-		const resourceGroup = migrationStateModel._sqlMigrationServiceResourceGroup.name;
+		const resourceGroup = service.properties.resourceGroup;
 		const location = service.location;
 		const serviceName = service.name;
 		if (service?.properties?.integrationRuntimeState) {
