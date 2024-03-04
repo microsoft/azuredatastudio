@@ -630,7 +630,7 @@
     <trans-unit id="objectManagement.databaseProperties.filesText">
       <source xml:lang="en">Files</source>
     </trans-unit>
-    <trans-unit id="objectManagement.optionsSectionHeader">
+    <trans-unit id="objectManagement.filesSectionHeader">
       <source xml:lang="en">Files</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.filestreamFilesText">
@@ -899,6 +899,9 @@
     </trans-unit>
     <trans-unit id="objectManagement.optimizeAdHocWorkloadsLabel">
       <source xml:lang="en">Optimize Ad Hoc Workloads</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.optionsSectionHeader">
+      <source xml:lang="en">Options</source>
     </trans-unit>
     <trans-unit id="objectManagement.restoreDatabase.restorePlan.originalFileNameText">
       <source xml:lang="en">Original File Name</source>
