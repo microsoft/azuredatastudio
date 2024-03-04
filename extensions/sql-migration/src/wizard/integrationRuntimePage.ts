@@ -10,11 +10,12 @@ import { MigrationMode, MigrationStateModel, NetworkContainerType, StateChangeEv
 import { CreateSqlMigrationServiceDialog } from '../dialog/createSqlMigrationService/createSqlMigrationServiceDialog';
 import * as constants from '../constants/strings';
 import { WIZARD_INPUT_COMPONENT_WIDTH, WizardController } from './wizardController';
-import { getFullResourceGroupFromId, getSqlMigrationService, getSqlMigrationServiceMonitoringData, SqlVMServer } from '../api/azure';
+import { getFullResourceGroupFromId, getSqlMigrationService, getSqlMigrationServiceMonitoringData, IntegrationRuntimeNode, SqlVMServer } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { logError, TelemetryViews } from '../telemetry';
 import * as utils from '../api/utils';
 import * as styles from '../constants/styles';
+import { ConfigureIRDialog } from '../dialog/configureIR/configureIRDialog';
 
 export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -25,8 +26,9 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _dmsDropdown!: azdata.DropDownComponent;
 	private _dmsInfoContainer!: azdata.FlexContainer;
 	private _dmsStatusInfoBox!: azdata.InfoBoxComponent;
-	private _authKeyTable!: azdata.DeclarativeTableComponent;
+	private _integrationRuntimeTable!: azdata.DeclarativeTableComponent;
 	private _refreshButton!: azdata.ButtonComponent;
+	private _configureIRButton!: azdata.ButtonComponent;
 	private _onlineButton!: azdata.RadioButtonComponent;
 	private _offlineButton!: azdata.RadioButtonComponent;
 	private _modeContainer!: azdata.FlexContainer;
@@ -480,27 +482,40 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				iconWidth: '18px',
 				iconHeight: '18px',
 				iconPath: IconPathHelper.refresh,
-				height: '18px',
-				width: '18px',
+				height: '40px',
+				width: '60px',
 				ariaLabel: constants.REFRESH,
+				label: constants.REFRESH,
 			}).component();
 
 		this._disposables.push(
 			this._refreshButton.onDidClick(
 				async (e) => await this.loadStatus()));
 
+		this._configureIRButton = this._view.modelBuilder.button()
+			.withProps({
+				iconWidth: '18px',
+				iconHeight: '18px',
+				iconPath: IconPathHelper.settings,
+				height: '40px',
+				width: '180px',
+				ariaLabel: constants.CONFIGURE_INTEGRATION_RUNTIME,
+				label: constants.CONFIGURE_INTEGRATION_RUNTIME,
+			}).component();
+
+		this._disposables.push(
+			this._configureIRButton.onDidClick(
+				async (e) => {
+					await this.openIRDialog();
+				}
+			)
+		);
+
 		const connectionLabelContainer = this._view.modelBuilder.flexContainer()
 			.component();
 		connectionLabelContainer.addItem(
 			connectionStatusLabel,
 			{ flex: '0' });
-		connectionLabelContainer.addItem(
-			this._refreshButton,
-			{ flex: '0', CSSStyles: { 'margin-right': '10px' } });
-
-		const statusContainer = this._view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'column' })
-			.component();
 
 		this._dmsStatusInfoBox = this._view.modelBuilder.infoBox()
 			.withProps({
@@ -510,20 +525,31 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
-		const instructions = utils.createRegistrationInstructions(this._view, false);
+		const refreshAndConfigureIRcontainer = this._view.modelBuilder.toolbarContainer()
+			.withToolbarItems(
+				[
+					{ component: this._refreshButton },
+					{ component: this._configureIRButton }
+				]
+			).component();
 
-		this._authKeyTable = utils.createAuthenticationKeyTable(this._view, '50px', '500px');
-
-		statusContainer.addItems([
-			this._dmsStatusInfoBox,
-			instructions,
-			this._authKeyTable]);
+		this._integrationRuntimeTable = utils.createIntegrationRuntimeTable(this._view);
 
 		container.addItems([
 			connectionLabelContainer,
-			statusContainer]);
+			this._dmsStatusInfoBox,
+			refreshAndConfigureIRcontainer,
+			this._integrationRuntimeTable
+			//statusContainer
+		]);
 
 		return container;
+	}
+
+	// opens IR dialog
+	public async openIRDialog(): Promise<void> {
+		const configureIR = new ConfigureIRDialog(this.migrationStateModel);
+		await configureIR.openDialog();
 	}
 
 	public async loadSubscriptionsDropdown(): Promise<void> {
@@ -615,7 +641,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			if (service) {
 				const account = this.migrationStateModel._azureAccount;
 				const subscription = this.migrationStateModel._sqlMigrationServiceSubscription;
-				const resourceGroup = service.properties.resourceGroup;
+				const resourceGroup = this.migrationStateModel._sqlMigrationServiceResourceGroup?.name;
 				const location = service.location;
 				serviceName = service.name;
 				if (service?.properties?.integrationRuntimeState) {
@@ -648,12 +674,12 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				const state = migrationService.properties.integrationRuntimeState;
 				if (state === 'Online') {
 					await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
-						text: constants.SERVICE_READY(serviceName, nodeNames.join(', '), true),
+						text: constants.SERVICE_READY_WITHOUT_NODENAMES(serviceName),
 						style: 'success'
 					});
 				} else {
 					await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
-						text: constants.SERVICE_NOT_READY(serviceName, true),
+						text: constants.SERVICE_NOT_READY(serviceName, false),
 						style: 'error'
 					});
 				}
@@ -661,7 +687,31 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				// exit if new call has started
 				if (callSequence !== this._lastIn) { return; }
 
-				await utils.refreshAuthenticationKeyTable(this._view, this._authKeyTable, account, subscription, resourceGroup, location, migrationService);
+				// populate the table with data
+				await utils.refreshIntegrationRuntimeTable(this._view, this._integrationRuntimeTable, migrationServiceMonitoringStatus);
+
+				// based on the data, enable or disable configure ir button
+				if (migrationServiceMonitoringStatus.nodes.length === 4 &&
+					this.atleastOneNodeOnline(migrationServiceMonitoringStatus.nodes)) {
+					this._configureIRButton.enabled = false;
+				}
+				else {
+					this._configureIRButton.enabled = true;
+				}
+
+				// if the versions are mismatched, show a warning
+				if (migrationServiceMonitoringStatus?.nodes.length === 1) {
+					let nodeversion = migrationServiceMonitoringStatus.nodes[0].version;
+
+					for (const node of migrationServiceMonitoringStatus.nodes) {
+						if (node.version !== nodeversion && node.status === 'Online') {
+							await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
+								text: constants.VERSION_MISMATCH,
+								style: 'warning'
+							});
+						}
+					}
+				}
 
 				this.migrationStateModel._sqlMigrationService = migrationService;
 				this.migrationStateModel._sqlMigrationServiceSubscription = subscription;
@@ -679,5 +729,14 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				this._statusLoadingComponent.loading = false;
 			}
 		}
+	}
+
+	private atleastOneNodeOnline(nodes: IntegrationRuntimeNode[]): boolean {
+		let result = false;
+		nodes.forEach(node => {
+			if (node.status === constants.ONLINE)
+				result = true;
+		});
+		return result;
 	}
 }

@@ -92,7 +92,7 @@ export const DATABASE_FOR_ASSESSMENT_DESCRIPTION = localize('sql.migration.datab
 
 // XEvents assessment
 export const XEVENTS_ASSESSMENT_TITLE = localize('sql.migration.database.assessment.xevents.title', "Assess Ad-hoc or dynamic SQL");
-export const XEVENTS_ASSESSMENT_DESCRIPTION = localize('sql.migration.database.assessment.xevents.description', "For the selected databases, select the option you want to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer. {0}");
+export const XEVENTS_ASSESSMENT_DESCRIPTION = localize('sql.migration.database.assessment.xevents.description', "For the selected databases, optionally provide extended event session files to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer.");
 export const XEVENTS_ASSESSMENT_HELPLINK = localize('sql.migration.database.assessment.xevents.link', "Learn more");
 export const XEVENTS_ASSESSMENT_OPEN_FOLDER = localize('sql.migration.database.assessment.xevents.instructions', "Select a folder where extended events session files (.xel and .xem) are stored");
 export const QDS_ASSESSMENT_LABEL = localize('sql.migration.database.assessment.qds.label', "Using Query Data Store (this option is available for Microsoft SQL Server 2016 and later)");
@@ -834,6 +834,33 @@ export function SQL_MIGRATION_SERVICE_DETAILS_HEADER(sqlMigrationServiceName: st
 	return localize('sql.migration.service.header', "Azure Database Migration Service \"{0}\" details:`", sqlMigrationServiceName);
 }
 export const DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS = localize('sql.migration.database.migration.service.authentication.keys', "Database Migration Service authentication keys");
+
+// configure IR dialog
+export const POWERSHELL_SCRIPT_DESCRIPTION = localize('sql.ir.powershellscript.definition', "Once executed in powershell, the unique script shown below will download, and install the self-hosted integration runtime and register it with the Azure Database Migration Service. You will need to have PowerShell installed on the target machine.");
+export const SETUP_LOCAL_IR_DESCRIPTION = localize('sql.ir.local.ir.definition', "I want to setup self-hosted integration runtime on my local machine (Machine where Azure Data Studio is running)");
+export const SETUP_REMOTE_IR_DESCRIPTION = localize('sql.ir.local.ir.definition', "I want to setup self-hosted integration runtime on another Windows machine that is not my local machine.");
+export const CONFIGURE_POWERSHELL_SCRIPT = localize('sql.ir.configure.powershellscript', "Configure using PowerShell script ");
+export const POWERSHELL_SCRIPT = localize('sql.ir.powershellscript', "PowerShell script ");
+export const EXECUTE_SCRIPT = localize('sql.ir.powershellscript', "Execute script ");
+export const EXECUTING_POWERSHELLSCRIPT = localize('sql.ir.executing.powershellscript', "Execution started and monitor the PowerShell window opened. ");
+export const CONFIGURE_MANUALLY = localize('sql.ir.configure.manually', "Configure manually ");
+export const NO_NODE_FOUND = localize('sql.ir.no.node.found', "No node found");
+export const NODE_NAME = localize('sql.ir.node.name', "Node name");
+export const IP_ADDRESS = localize('sql.ir.ip.address', "IP address");
+export const IR_VERSION = localize('sql.ir.ir.version', "IR version");
+export const IMPORTANT = localize('sql.ir.important', "Important");
+export const SAVE_SCRIPT = localize('sql.ir.save.script', "Save script");
+export const POWERSHELL_SCRIPT_SAVED = localize('sql.ir.powershell.script.saved', "PowerShell script saved");
+export const LOCAL_IR_SETUP_NOTE = localize('sql.ir.local.ir.setup.note', "When you click 'execute script', the PowerShell script below will automatically download self-hosted integration runtime software, install, and register it with your Azure Database Migration Service. To check the connection status of the IR, go back to the previous screen and refresh. ");
+export const VERSION_MISMATCH = localize('sql.ir.version.mismatch', "All nodes should be on the same version to be configured");
+export const POWERSHELL_PREREQ = localize('sql.ir.powershell.prereq', "Prerequisite: Need PowerShell with execute as admin privileges. ");
+export const RECOMMENDED_LINK = localize('sql.ir.recommended.link', "Note: Refer Self-hosted IR recommendations");
+export const IR_CONFIG_TYPE = localize('sql.ir.config.type', "IR configuration type");
+export const PS_SCRIPT_EXPANDED = localize('sql.ir.ps.script.expanded', "Powershell script expanded");
+export const PS_SCRIPT_COLLAPSED = localize('sql.ir.ps.script.collapsed', "Powershell script collapsed");
+export const MANUAL_IR_EXPANDED = localize('sql.ir.manual.ir.expanded', "Manual IR configuration expanded");
+export const MANUAL_IR_COLLAPSED = localize('sql.ir.manual.ir.collapsed', "Manual IR configuration collapsed");
+
 // create migration service dialog
 export const CREATE_MIGRATION_SERVICE_TITLE = localize('sql.migration.services.dialog.title', "Create Azure Database Migration Service");
 export const MIGRATION_SERVICE_SUBSCRIPTION_INFO = localize('sql.migration.services.subscription', "Subscription name for your Azure Database Migration Service.");
@@ -849,6 +876,7 @@ export function MIGRATION_SERVICE_DIALOG_DESCRIPTION(networkShareScenario: boole
 export const LOADING_MIGRATION_SERVICES = localize('sql.migration.service.container.loading.help', "Loading Migration Services");
 export const SERVICE_CONTAINER_HEADING = localize('sql.migration.service.container.heading', "Set up integration runtime");
 export const SERVICE_CONTAINER_DESCRIPTION1 = localize('sql.migration.service.container.container.description1', "Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to handle connectivity between source and target and upload backups from an on-premises network file share to Azure (if applicable).");
+export const IR_CONTAINER_DESCRIPTION = localize('sql.migration.ir.container.description', "Azure Database Migration Service leverages Azure Data Factory's Self-hosted Integration Runtime to upload backups from on-premise network file share to Azure. Based on the selections on the previous page you will need to setup an Self-hosted Integration Runtime.");
 export const SERVICE_CONTAINER_DESCRIPTION2 = localize('sql.migration.service.container.container.description2', "Follow the instructions below to set up self-hosted integration runtime.");
 export const SERVICE_STEP1 = localize('sql.migration.ir.setup.step1', "Step 1: {0}");
 export const SERVICE_STEP1_LINK = localize('sql.migration.option', "Download and install integration runtime");
@@ -887,6 +915,10 @@ export function SERVICE_READY(serviceName: string, nodes: string, instructionsBe
 		? localize('sql.migration.service.ready.below', "Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}\n\nFor improved performance and high availability, you can register additional nodes. See below for registration instructions.", serviceName, nodes)
 		: localize('sql.migration.service.ready', "Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}\n\nFor improved performance and high availability, you can register additional nodes.", serviceName, nodes);
 
+}
+export function SERVICE_READY_WITHOUT_NODENAMES(serviceName: string): string {
+	return localize('sql.migration.service.ready.without.nodes',
+		"Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on the following node(s)", serviceName);
 }
 export const INVALID_SERVICE_NAME_ERROR = localize('sql.migration.invalid.service.name.error', "Enter a valid name for the Migration Service.");
 export const SERVICE_NOT_FOUND = localize('sql.migration.service.not.found', "No Migration Services found. To continue, create a new one.");
@@ -1023,6 +1055,18 @@ export function VALIDATE_IR_SQLDB_VALIDATION_RESULT_ERROR(sourceDatabaseName: st
 		error.message);
 }
 
+export const NETWORK_SHARE_USER_ACCOUNT_LABEL = localize('sql.migration.network.share.user.account.label', "User account");
+export const NETWORK_SHARE_PASSWORD_LABEL = localize('sql.migration.network.share.password.label', "Password");
+export const STORAGE_ACCOUNT_RESOURCE_GROUP_LABEL = localize('sql.migration.storage.account.resource.group.label', "Resource group");
+export const STORAGE_ACCOUNT_DETAILS_LABEL = localize('sql.migration.storage.account.details.label', "Storage account");
+export function VALIDATION_IR_BUTTON_MISSING_ERROR_MESSAGE(details: string[]): string {
+	const missingDetails = details.join(', ');
+	return localize(
+		'sql.migration.validate.ir.error.message',
+		"Details for {0} are mandatory and missing.",
+		missingDetails);
+}
+
 // common strings
 export const WARNING = localize('sql.migration.warning', "Warning");
 export const ERROR = localize('sql.migration.error', "Error");
@@ -1034,6 +1078,7 @@ export const RESOURCE_GROUP = localize('sql.migration.resourceGroups', "Resource
 export const NAME = localize('sql.migration.name', "Name");
 export const LOCATION = localize('sql.migration.location', "Location");
 export const REFRESH = localize('sql.migration.refresh', "Refresh");
+export const CONFIGURE_INTEGRATION_RUNTIME = localize('sql.migration.configure.ir', "Configure Integration Runtime");
 export const CREATE = localize('sql.migration.create', "Create");
 export const IMPORT = localize('sql.migration.import', "Import");
 export const CANCEL = localize('sql.migration.cancel', "Cancel");

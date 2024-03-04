@@ -32,6 +32,7 @@ import { openRetryMigrationDialog } from '../dialog/retryMigration/retryMigratio
 import { ImportAssessmentDialog } from '../dialog/assessment/importAssessmentDialog';
 import { CancelFeedbackDialog } from '../dialog/help/cancelFeedbackDialog';
 
+
 export interface MenuCommandArgs {
 	connectionId: string,
 	migrationId: string,
