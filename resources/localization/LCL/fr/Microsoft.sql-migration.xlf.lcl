@@ -2725,6 +2725,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.assessment.qds.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Using Query Data Store (this option is available for Microsoft SQL Server 2016 and later)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Utilisation du Magasin de données des requêtes (cette option est disponible pour Microsoft SQL Server 2016 et versions ultérieures)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.assessment.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Databases for assessment]]></Val>
@@ -2736,10 +2745,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.assessment.xevents.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[For the selected databases, optionally provide extended event session files to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer. {0}]]></Val>
+          <Val><![CDATA[For the selected databases, select the option you want to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer. {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Pour les bases de données sélectionnées, fournissez éventuellement des fichiers de session d’événements étendus pour évaluer les requêtes SQL ad hoc ou dynamiques, ou les instructions DML lancées via la couche données de l’application. {0}]]></Val>
+            <Val><![CDATA[Pour les bases de données sélectionnées, sélectionnez l’option que vous souhaitez évaluer les requêtes SQL ad hoc ou dynamiques ou les instructions DML lancées via la couche de données d’application. {0}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[For the selected databases, optionally provide extended event session files to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer. {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2748,6 +2760,15 @@
           <Val><![CDATA[Select a folder where extended events session files (.xel and .xem) are stored]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Sélectionner un dossier où sont stockés les fichiers de session d’événements étendus (.xel et .xem)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.assessment.xevents.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Using extended event session]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Utilisation d’une session d’événements étendue]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2763,10 +2784,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.assessment.xevents.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Assess extended event sessions]]></Val>
+          <Val><![CDATA[Assess Ad-hoc or dynamic SQL]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Évaluer les sessions d’événements étendues]]></Val>
+            <Val><![CDATA[Évaluer SQL ad hoc ou dynamique]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Assess extended event sessions]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

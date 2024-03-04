@@ -2725,6 +2725,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.assessment.qds.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Using Query Data Store (this option is available for Microsoft SQL Server 2016 and later)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[쿼리 데이터 저장소 사용(이 옵션은 Microsoft SQL Server 2016 이상에서 사용할 수 있음)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.assessment.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Databases for assessment]]></Val>
@@ -2736,10 +2745,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.assessment.xevents.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[For the selected databases, optionally provide extended event session files to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer. {0}]]></Val>
+          <Val><![CDATA[For the selected databases, select the option you want to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer. {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[선택한 데이터베이스에 대해 확장 이벤트 세션 파일을 선택적으로 제공하여 임시 또는 동적 SQL 쿼리 또는 응용 프로그램 데이터 계층을 통해 시작된 모든 DML 문을 평가합니다. {0}]]></Val>
+            <Val><![CDATA[선택한 데이터베이스의 경우 임시 또는 동적 SQL 쿼리 또는 애플리케이션 데이터 계층을 통해 시작된 DML 문을 평가할 옵션을 선택하세요. {0}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[For the selected databases, optionally provide extended event session files to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer. {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2748,6 +2760,15 @@
           <Val><![CDATA[Select a folder where extended events session files (.xel and .xem) are stored]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[확장 이벤트 세션 파일(.xel 및 .xem)이 저장된 폴더를 선택하세요.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.assessment.xevents.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Using extended event session]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[확장 이벤트 세션 사용]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2763,10 +2784,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.assessment.xevents.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Assess extended event sessions]]></Val>
+          <Val><![CDATA[Assess Ad-hoc or dynamic SQL]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[확장 이벤트 세션 평가]]></Val>
+            <Val><![CDATA[임시 또는 동적 SQL 평가]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Assess extended event sessions]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
