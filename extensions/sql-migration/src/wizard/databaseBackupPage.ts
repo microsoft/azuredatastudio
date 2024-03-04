@@ -1349,6 +1349,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this.wizard.message = { text: '' };
 		}
 
+		// removing these validations for  sqldb as these fields are not applicable for sqldb
 		if (!this.migrationStateModel.isSqlDbTarget) {
 			const errorDetails: string[] = [];
 			if (this._windowsUserAccountText.value === undefined || this._windowsUserAccountText.value === '') {
