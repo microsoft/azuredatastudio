@@ -1349,27 +1349,29 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this.wizard.message = { text: '' };
 		}
 
-		const errorDetails: string[] = [];
-		if (this._windowsUserAccountText.value === undefined || this._windowsUserAccountText.value === '') {
-			errorDetails.push(constants.NETWORK_SHARE_USER_ACCOUNT_LABEL);
-		}
-		if (this._passwordText.value === undefined || this._passwordText.value === '') {
-			errorDetails.push(constants.NETWORK_SHARE_PASSWORD_LABEL);
-		}
-		if (this._networkShareStorageAccountResourceGroupDropdown.value === undefined || this._networkShareStorageAccountResourceGroupDropdown.value === '') {
-			errorDetails.push(constants.STORAGE_ACCOUNT_RESOURCE_GROUP_LABEL);
-		}
-		if (this._networkShareContainerStorageAccountDropdown.value === undefined || this._networkShareContainerStorageAccountDropdown.value === '') {
-			errorDetails.push(constants.STORAGE_ACCOUNT_DETAILS_LABEL);
-		}
+		if (!this.migrationStateModel.isSqlDbTarget) {
+			const errorDetails: string[] = [];
+			if (this._windowsUserAccountText.value === undefined || this._windowsUserAccountText.value === '') {
+				errorDetails.push(constants.NETWORK_SHARE_USER_ACCOUNT_LABEL);
+			}
+			if (this._passwordText.value === undefined || this._passwordText.value === '') {
+				errorDetails.push(constants.NETWORK_SHARE_PASSWORD_LABEL);
+			}
+			if (this._networkShareStorageAccountResourceGroupDropdown.value === undefined || this._networkShareStorageAccountResourceGroupDropdown.value === '') {
+				errorDetails.push(constants.STORAGE_ACCOUNT_RESOURCE_GROUP_LABEL);
+			}
+			if (this._networkShareContainerStorageAccountDropdown.value === undefined || this._networkShareContainerStorageAccountDropdown.value === '') {
+				errorDetails.push(constants.STORAGE_ACCOUNT_DETAILS_LABEL);
+			}
 
-		if (errorDetails.length > 0) {
-			var errorMessage = constants.VALIDATION_IR_BUTTON_MISSING_ERROR_MESSAGE(errorDetails);
-			this.wizard.message = {
-				text: errorMessage,
-				level: azdata.window.MessageLevel.Error
-			};
-			return;
+			if (errorDetails.length > 0) {
+				var errorMessage = constants.VALIDATION_IR_BUTTON_MISSING_ERROR_MESSAGE(errorDetails);
+				this.wizard.message = {
+					text: errorMessage,
+					level: azdata.window.MessageLevel.Error
+				};
+				return;
+			}
 		}
 
 		const dialog = new ValidateIrDialog(
