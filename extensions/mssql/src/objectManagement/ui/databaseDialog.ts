@@ -1252,6 +1252,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				let fg = null;
 				if (table === this.rowsFilegroupsTable) {
 					fg = this.rowDataFileGroupsTableRows[table.selectedRow];
+				} else if (table === this.filestreamFilegroupsTable) {
+					fg = this.filestreamDataFileGroupsTableRows[table.selectedRow];
 				}
 				if (fg?.id < 0) {
 					fg.name = value;
