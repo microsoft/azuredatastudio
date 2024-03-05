@@ -672,8 +672,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		if (fileType === localizedConstants.RowsDataFileType) {
 			let data = this.getDeclarativeTableData(FileGroupType.RowsFileGroup);
 			await this.setDeclarativeTableData(this.rowsFilegroupsTable, data);
-		}
-		else if (fileType === localizedConstants.FilestreamFileType) {
+		} else if (fileType === localizedConstants.FilestreamFileType) {
 			let data = this.getDeclarativeTableData(FileGroupType.FileStreamDataFileGroup);
 			await this.setDeclarativeTableData(this.filestreamFilegroupsTable, data);
 			data = this.getTableData(FileGroupType.MemoryOptimizedDataFileGroup);
@@ -702,15 +701,13 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					}
 				});
 			}
-		}
-		else if (table === this.rowsFilegroupsTable && this.rowsFilegroupsTable.selectedRow > -1) {
+		} else if (table === this.rowsFilegroupsTable && this.rowsFilegroupsTable.selectedRow > -1) {
 			const selectedRow = this.rowDataFileGroupsTableRows[this.rowsFilegroupsTable.selectedRow];
 			// Cannot delete a row file if the fileGroup is Primary.
 			if (selectedRow.name === 'PRIMARY' && selectedRow.id > 0) {
 				isEnabled = false;
 			}
-		}
-		else if (table === this.filestreamFilegroupsTable && this.filestreamFilegroupsTable.selectedRow > -1) {
+		} else if (table === this.filestreamFilegroupsTable && this.filestreamFilegroupsTable.selectedRow > -1) {
 			// Disable remove button when server filestream access level is disabled.
 			if (!this.serverFilestreamEnabled) {
 				isEnabled = false;
@@ -782,35 +779,35 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					width: 120,
 					isReadOnly: true,
 					displayName: localizedConstants.NameText,
-					headerCssStyles: tableHeader,
+					headerCssStyles: tableHeader
 				},
 				{
 					valueType: azdata.DeclarativeDataType.string,
 					width: 60,
 					isReadOnly: true,
 					displayName: localizedConstants.FilesText,
-					headerCssStyles: tableHeader,
+					headerCssStyles: tableHeader
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 80,
 					displayName: localizedConstants.ReadOnlyText,
 					isReadOnly: false,
-					headerCssStyles: tableHeader,
+					headerCssStyles: tableHeader
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 80,
 					displayName: localizedConstants.DefaultText,
 					isReadOnly: false,
-					headerCssStyles: tableHeader,
+					headerCssStyles: tableHeader
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 110,
 					displayName: localizedConstants.AutogrowAllFilesText,
 					isReadOnly: false,
-					headerCssStyles: tableHeader,
+					headerCssStyles: tableHeader
 				}
 			],
 			width: DefaultTableWidth,
@@ -879,28 +876,28 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					width: 145,
 					isReadOnly: true,
 					displayName: localizedConstants.NameText,
-					headerCssStyles: tableHeader,
+					headerCssStyles: tableHeader
 				},
 				{
 					valueType: azdata.DeclarativeDataType.string,
 					width: 145,
 					isReadOnly: true,
 					displayName: localizedConstants.FilestreamFilesText,
-					headerCssStyles: tableHeader,
+					headerCssStyles: tableHeader
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 80,
 					displayName: localizedConstants.ReadOnlyText,
 					isReadOnly: false,
-					headerCssStyles: tableHeader,
+					headerCssStyles: tableHeader
 				},
 				{
 					valueType: azdata.DeclarativeDataType.boolean,
 					width: 80,
 					displayName: localizedConstants.DefaultText,
 					isReadOnly: false,
-					headerCssStyles: tableHeader,
+					headerCssStyles: tableHeader
 				}
 			],
 			width: DefaultTableWidth,
@@ -1030,8 +1027,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					fg.isDefault = fg.name === filegroup.name && fg.id === filegroup.id ? changedData.value : !changedData.value;
 				}
 			});
-		}
-		else {
+		} else {
 			filegroup.isDefault = changedData.value;
 		}
 	}
@@ -1085,8 +1081,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			newRow.autogrowAllFiles = false
 			this.objectInfo.filegroups?.push(newRow);
 			newData = this.getDeclarativeTableData(FileGroupType.RowsFileGroup);
-		}
-		else if (table === this.filestreamFilegroupsTable) {
+		} else if (table === this.filestreamFilegroupsTable) {
 			newRow.type = FileGroupType.FileStreamDataFileGroup;
 			newRow.isReadOnly = false;
 			newRow.isDefault = false;
@@ -1155,8 +1150,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				var newData = this.getDeclarativeTableData(FileGroupType.RowsFileGroup);
 				this.rowsFilegroupNameContainer.display = 'none';
 			}
-		}
-		else if (table === this.filestreamFilegroupsTable) {
+		} else if (table === this.filestreamFilegroupsTable) {
 			if (this.filestreamFilegroupsTable.selectedRow > -1) {
 				const removeFilegroupIndex = this.objectInfo.filegroups.indexOf(this.filestreamDataFileGroupsTableRows[this.filestreamFilegroupsTable.selectedRow]);
 				this.objectInfo.filegroups?.splice(removeFilegroupIndex, 1);
@@ -1312,8 +1306,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					{ value: fileGroup.isDefault, enabled: filesCount > 0, style: tableRow, ariaLabel: localizedConstants.DefaultText },
 					{ value: fileGroup.autogrowAllFiles, enabled: filesCount > 0, style: tableRow, ariaLabel: localizedConstants.AutogrowAllFilesText }
 				]);
-			}
-			else if (fileGroup.type === FileGroupType.FileStreamDataFileGroup && fileGroup.type === filegroupType) {
+			} else if (fileGroup.type === FileGroupType.FileStreamDataFileGroup && fileGroup.type === filegroupType) {
 				data.push([
 					{ value: fileGroup.name, style: tableRow },
 					{ value: filesCount, style: tableRow },
