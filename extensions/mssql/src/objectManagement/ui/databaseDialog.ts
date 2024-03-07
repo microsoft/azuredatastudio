@@ -1302,16 +1302,16 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				data.push([
 					{ value: fileGroup.name, style: tableRow },
 					{ value: filesCount, style: tableRow },
-					{ value: fileGroup.isReadOnly, enabled: (fileGroup.name !== 'PRIMARY' && filesCount > 0), style: tableRow, ariaLabel: localizedConstants.ReadOnlyText },
-					{ value: fileGroup.isDefault, enabled: filesCount > 0, style: tableRow, ariaLabel: localizedConstants.DefaultText },
-					{ value: fileGroup.autogrowAllFiles, enabled: filesCount > 0, style: tableRow, ariaLabel: localizedConstants.AutogrowAllFilesText }
+					{ value: fileGroup.isReadOnly, enabled: (fileGroup.name !== 'PRIMARY' && filesCount > 0), style: tableRow },
+					{ value: fileGroup.isDefault, enabled: filesCount > 0, style: tableRow },
+					{ value: fileGroup.autogrowAllFiles, enabled: filesCount > 0, style: tableRow }
 				]);
 			} else if (fileGroup.type === FileGroupType.FileStreamDataFileGroup && fileGroup.type === filegroupType) {
 				data.push([
 					{ value: fileGroup.name, style: tableRow },
 					{ value: filesCount, style: tableRow },
-					{ value: fileGroup.isReadOnly, enabled: filesCount > 0 && this.serverFilestreamEnabled, style: tableRow, ariaLabel: localizedConstants.ReadOnlyText },
-					{ value: fileGroup.isDefault, enabled: this.serverFilestreamEnabled, style: tableRow, ariaLabel: localizedConstants.DefaultText },
+					{ value: fileGroup.isReadOnly, enabled: filesCount > 0 && this.serverFilestreamEnabled, style: tableRow },
+					{ value: fileGroup.isDefault, enabled: this.serverFilestreamEnabled, style: tableRow },
 				]);
 			}
 		});
