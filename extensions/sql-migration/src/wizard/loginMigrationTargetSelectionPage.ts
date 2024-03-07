@@ -12,10 +12,11 @@ import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH, WizardController } from './wizardController';
 import * as utils from '../api/utils';
+import * as contracts from '../service/contracts';
 import { MigrationTargetType } from '../api/utils';
 import { azureResource } from 'azurecore';
 import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/azure';
-import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionProfile, isSourceConnectionSysAdmin, LoginTableInfo } from '../api/sqlUtils';
+import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionString, isSourceConnectionSysAdmin, LoginTableInfo } from '../api/sqlUtils';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
 import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
 import { ConnectingToTargetFailed, } from '../models/loginMigrationModel';
@@ -344,10 +345,29 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			await this.populateLocationDropdown();
 
 			// Collect source login info here, as it will speed up loading the next page
-			const sourceLogins: LoginTableInfo[] = [];
+			var sourceLogins: LoginTableInfo[] = [];
 			sourceLogins.push(...await collectSourceLogins(
 				await getSourceConnectionId(),
 				this.migrationStateModel.isWindowsAuthMigrationSupported));
+
+			var validateLoginEligibilityResult: contracts.StartLoginMigrationPreValidationResult | undefined = await this.migrationStateModel.migrationService.validateLoginEligibility(
+				await getSourceConnectionString(),
+				"",
+				sourceLogins.map(row => row.loginName),
+				""
+			);
+
+			var sourceSystemLoginsName: string[] = [];
+
+			if (validateLoginEligibilityResult !== undefined) {
+				sourceSystemLoginsName = Object.keys(validateLoginEligibilityResult.exceptionMap);
+			}
+
+			const sourceSystemLogins: LoginTableInfo[] = sourceLogins.filter(login => sourceSystemLoginsName.includes(login.loginName));
+			sourceLogins = sourceLogins.filter(login => !sourceSystemLoginsName.includes(login.loginName));
+
+			this.migrationStateModel._loginMigrationModel.systemLoginsOnSource = sourceSystemLogins;
+
 			this.migrationStateModel._loginMigrationModel.collectedSourceLogins = true;
 			this.migrationStateModel._loginMigrationModel.loginsOnSource = sourceLogins;
 		}));

@@ -10,13 +10,13 @@ import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { debounce, getLoginStatusImage, getLoginStatusMessage } from '../api/utils';
 import * as styles from '../constants/styles';
-import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, LoginTableInfo } from '../api/sqlUtils';
+import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionString, getTargetConnectionString, LoginTableInfo } from '../api/sqlUtils';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import * as utils from '../api/utils';
+import * as contracts from '../service/contracts';
 import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
 import { CollectingSourceLoginsFailed, CollectingTargetLoginsFailed } from '../models/loginMigrationModel';
 import { WizardController } from './wizardController';
-
 
 export class LoginSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -355,7 +355,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 	private async _getSourceLogins() {
 		const stateMachine: MigrationStateModel = this.migrationStateModel;
-		const sourceLogins: LoginTableInfo[] = [];
+		var sourceLogins: LoginTableInfo[] = [];
 
 		// execute a query against the source to get the logins
 		try {
@@ -463,7 +463,27 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			await this._getTargetLogins();
 		}
 
-		const sourceLogins: LoginTableInfo[] = stateMachine._loginMigrationModel.loginsOnSource;
+		var sourceLogins: LoginTableInfo[] = stateMachine._loginMigrationModel.loginsOnSource;
+
+		var validateLoginEligibilityResult: contracts.StartLoginMigrationPreValidationResult | undefined = await this.migrationStateModel.migrationService.validateLoginEligibility(
+			await getSourceConnectionString(),
+			"",
+			sourceLogins.map(row => row.loginName),
+			""
+		);
+
+		var sourceSystemLoginsName: string[] = [];
+
+		if (validateLoginEligibilityResult !== undefined) {
+			sourceSystemLoginsName = Object.keys(validateLoginEligibilityResult.exceptionMap).map(loginName => loginName.toLocaleLowerCase());
+		}
+
+		const sourceSystemLogins: LoginTableInfo[] = sourceLogins.filter(login => sourceSystemLoginsName.includes(login.loginName.toLocaleLowerCase()));
+		sourceLogins = sourceLogins.filter(login => !sourceSystemLoginsName.includes(login.loginName.toLocaleLowerCase()));
+
+		stateMachine._loginMigrationModel.systemLoginsOnSource = sourceSystemLogins;
+		stateMachine._loginMigrationModel.loginsOnSource = sourceLogins;
+
 		const targetLogins: string[] = stateMachine._loginMigrationModel.loginsOnTarget;
 		this._loginNames = [];
 
