@@ -17,6 +17,7 @@ import * as contracts from '../service/contracts';
 import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
 import { CollectingSourceLoginsFailed, CollectingTargetLoginsFailed } from '../models/loginMigrationModel';
 import { WizardController } from './wizardController';
+import { Tab } from 'azdata';
 
 export class LoginSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -32,6 +33,9 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	private _refreshLoading!: azdata.LoadingComponent;
 	private _filterTableValue!: string;
 	private _aadDomainNameContainer!: azdata.FlexContainer;
+
+	private _tabs!: azdata.TabbedPanelComponent;
+	private _nonSystemloginTablesTab!: Tab;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel, private wizardController: WizardController) {
 		super(wizard, azdata.window.createWizardPage(constants.LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE), migrationStateModel);
@@ -209,7 +213,26 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS, 'display': 'none', }
 			}).component();
 
+		await this._createNonSystemLoginTablesTab(view);
 
+		this._tabs = view.modelBuilder.tabbedPanel()
+			.withTabs([this._nonSystemloginTablesTab])
+			.component();
+
+		const flex = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column',
+			height: '100%',
+		}).withProps({
+			CSSStyles: {
+				'margin': '-20px 28px 0px 28px'
+			}
+		}).component();
+		flex.addItem(this._windowsAuthInfoBox, { flex: '0 0 auto' });
+		flex.addItem(this._tabs, { flex: '0 0 auto' });
+		return flex;
+	}
+
+	private async _createNonSystemLoginTablesTab(view: azdata.ModelView): Promise<void> {
 		this._refreshButton = this._view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
@@ -267,23 +290,47 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			ariaLive: 'polite'
 		}).component();
 
+		this._loginSelectorTable = this._createNonSystemLoginTablesTable(view);
+
+		this._disposables.push(this._loginSelectorTable.onRowSelected(async (e) => {
+			await this.updateValuesOnSelection();
+		}));
+
+		// load unfiltered table list and pre-select list of logins saved in state
+		await this._filterTableList('', this.migrationStateModel._loginMigrationModel.loginsForMigration);
+
+		const flex = view.modelBuilder.flexContainer()
+			.withProps({ CSSStyles: { 'margin': '10px 0 0 15px' } })
+			.withLayout({
+				flexFlow: 'column',
+				height: '100%',
+				width: 550,
+			}).component();
+
+		flex.addItem(refreshContainer, { flex: '0 0 auto' });
+		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
+		flex.addItem(this._loginCount, { flex: '0 0 auto' });
+		flex.addItem(this._loginSelectorTable);
+		flex.addItem(this.createAadDomainNameComponent(), { flex: '0 0 auto', CSSStyles: { 'margin-top': '8px' } });
+
+		this._nonSystemloginTablesTab = {
+			content: flex,
+			id: 'tableSelectionTab',
+			title: 'System Logins',
+		};
+	}
+
+
+	private _createNonSystemLoginTablesTable(view: azdata.ModelView): azdata.TableComponent {
 		const cssClass = 'no-borders';
-		this._loginSelectorTable = this._view.modelBuilder.table()
+		const table = this._view.modelBuilder.table()
 			.withProps({
 				data: [],
 				width: 650,
-				height: '100%',
+				height: '600px',
+				display: 'flex',
 				forceFitColumns: azdata.ColumnSizingMode.ForceFit,
 				columns: [
-					<azdata.CheckboxColumn>{
-						value: '',
-						width: 10,
-						type: azdata.ColumnType.checkBox,
-						action: azdata.ActionOnCellCheckboxCheck.selectRow,
-						resizable: false,
-						cssClass: cssClass,
-						headerCssClass: cssClass,
-					},
 					{
 						name: constants.SOURCE_LOGIN,
 						value: 'sourceLogin',
@@ -327,30 +374,10 @@ export class LoginSelectorPage extends MigrationWizardPage {
 						headerCssClass: cssClass,
 					},
 				]
-			}).component();
+			})
+			.component();
 
-		this._disposables.push(this._loginSelectorTable.onRowSelected(async (e) => {
-			await this.updateValuesOnSelection();
-		}));
-
-		// load unfiltered table list and pre-select list of logins saved in state
-		await this._filterTableList('', this.migrationStateModel._loginMigrationModel.loginsForMigration);
-
-		const flex = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column',
-			height: '100%',
-		}).withProps({
-			CSSStyles: {
-				'margin': '-20px 28px 0px 28px'
-			}
-		}).component();
-		flex.addItem(this._windowsAuthInfoBox, { flex: '0 0 auto' });
-		flex.addItem(refreshContainer, { flex: '0 0 auto' });
-		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
-		flex.addItem(this._loginCount, { flex: '0 0 auto' });
-		flex.addItem(this._loginSelectorTable);
-		flex.addItem(this.createAadDomainNameComponent(), { flex: '0 0 auto', CSSStyles: { 'margin-top': '8px' } });
-		return flex;
+		return table;
 	}
 
 	private async _getSourceLogins() {
