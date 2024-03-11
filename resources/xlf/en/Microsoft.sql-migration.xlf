@@ -103,6 +103,9 @@
     <trans-unit id="sql.migration.all.fields.required">
       <source xml:lang="en">All fields are required.</source>
     </trans-unit>
+    <trans-unit id="sql.ir.version.mismatch">
+      <source xml:lang="en">All nodes should be on the same version to be configured</source>
+    </trans-unit>
     <trans-unit id="sql.migration.all.source.tables.empty">
       <source xml:lang="en">All of source tables are empty. No table is available to select for data migration. But they are available for schema migration if they do not exist on target.</source>
     </trans-unit>
@@ -209,7 +212,7 @@
       <source xml:lang="en">Ascending</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.assessment.xevents.title">
-      <source xml:lang="en">Assess extended event sessions</source>
+      <source xml:lang="en">Assess Ad-hoc or dynamic SQL</source>
     </trans-unit>
     <trans-unit id="sql.migration.assessed.dbs.label">
       <source xml:lang="en">Assessed databases: {0}</source>
@@ -280,6 +283,9 @@
     <trans-unit id="sql.migration.service.ready.below">
       <source xml:lang="en">Azure Database Migration Service &apos;{0}&apos; is connected to self-hosted integration runtime running on node(s) - {1}&#10;&#10;For improved performance and high availability, you can register additional nodes. See below for registration instructions.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.service.ready.without.nodes">
+      <source xml:lang="en">Azure Database Migration Service &apos;{0}&apos; is connected to self-hosted integration runtime running on the following node(s)</source>
+    </trans-unit>
     <trans-unit id="sql.migration.service.header">
       <source xml:lang="en">Azure Database Migration Service &quot;{0}&quot; details:`</source>
     </trans-unit>
@@ -288,6 +294,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.service.not.ready.below">
       <source xml:lang="en">Azure Database Migration Service is not registered. Azure Database Migration Service &apos;{0}&apos; needs to be registered with self-hosted integration runtime on any node.&#10;&#10;See below for registration instructions.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.ir.container.description">
+      <source xml:lang="en">Azure Database Migration Service leverages Azure Data Factory&apos;s Self-hosted Integration Runtime to upload backups from on-premise network file share to Azure. Based on the selections on the previous page you will need to setup an Self-hosted Integration Runtime.</source>
     </trans-unit>
     <trans-unit id="sql.migration.service.container.container.description1">
       <source xml:lang="en">Azure Database Migration Service leverages Azure Data Factory&apos;s self-hosted integration runtime to handle connectivity between source and target and upload backups from an on-premises network file share to Azure (if applicable).</source>
@@ -631,6 +640,15 @@
     <trans-unit id="sql.migration.save.close.popup">
       <source xml:lang="en">Configuration saved. Performance data collection will remain running in the background. You can stop the collection when you want to.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.configure.ir">
+      <source xml:lang="en">Configure Integration Runtime</source>
+    </trans-unit>
+    <trans-unit id="sql.ir.configure.manually">
+      <source xml:lang="en">Configure manually </source>
+    </trans-unit>
+    <trans-unit id="sql.ir.configure.powershellscript">
+      <source xml:lang="en">Configure using PowerShell script </source>
+    </trans-unit>
     <trans-unit id="sql.migration.connection.label">
       <source xml:lang="en">Connect</source>
     </trans-unit>
@@ -889,6 +907,9 @@
     <trans-unit id="sql.migration.details.copied">
       <source xml:lang="en">Details copied</source>
     </trans-unit>
+    <trans-unit id="sql.migration.validate.ir.error.message">
+      <source xml:lang="en">Details for {0} are mandatory and missing.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.field.label.deteected.files">
       <source xml:lang="en">Detected files</source>
     </trans-unit>
@@ -1060,6 +1081,12 @@
     <trans-unit id="sql.login.migration.establish.user.mappings.failed">
       <source xml:lang="en">Establishing user mappings failed</source>
     </trans-unit>
+    <trans-unit id="sql.ir.powershellscript">
+      <source xml:lang="en">Execute script </source>
+    </trans-unit>
+    <trans-unit id="sql.ir.executing.powershellscript">
+      <source xml:lang="en">Execution started and monitor the PowerShell window opened. </source>
+    </trans-unit>
     <trans-unit id="sql.migration.support.resources.description">
       <source xml:lang="en">Explore documentation</source>
     </trans-unit>
@@ -1166,7 +1193,7 @@
       <source xml:lang="en">For target servers running SQL Server 2014 or below, you must store your database backups in an Azure Storage Blob Container instead of uploading them using the network share option. Additionally, you must store the backup files as page blobs, as block blobs are supported only for targets running SQL Server 2016 or later. Learn more: {0}</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.assessment.xevents.description">
-      <source xml:lang="en">For the selected databases, optionally provide extended event session files to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer. {0}</source>
+      <source xml:lang="en">For the selected databases, optionally provide extended event session files to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer.</source>
     </trans-unit>
     <trans-unit id="sql.migration.full.backup.files">
       <source xml:lang="en">Full backup file(s)</source>
@@ -1225,8 +1252,20 @@
     <trans-unit id="sql.migration.tde.wizard.optionmanual">
       <source xml:lang="en">I have already migrated my certificates and private keys to the target.</source>
     </trans-unit>
+    <trans-unit id="sql.ir.local.ir.definition">
+      <source xml:lang="en">I want to setup self-hosted integration runtime on another Windows machine that is not my local machine.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.sku.io.memory.requirement">
       <source xml:lang="en">IO latency requirement</source>
+    </trans-unit>
+    <trans-unit id="sql.ir.ip.address">
+      <source xml:lang="en">IP address</source>
+    </trans-unit>
+    <trans-unit id="sql.ir.config.type">
+      <source xml:lang="en">IR configuration type</source>
+    </trans-unit>
+    <trans-unit id="sql.ir.ir.version">
+      <source xml:lang="en">IR version</source>
     </trans-unit>
     <trans-unit id="sql.migration.empty.table.subtext">
       <source xml:lang="en">If results were expected, verify the connection to the SQL Server instance.</source>
@@ -1254,6 +1293,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.sku.import.performance.data.dialog.description">
       <source xml:lang="en">Import this data file from an existing folder, if you have already collected it using Data Migration Assistant.</source>
+    </trans-unit>
+    <trans-unit id="sql.ir.important">
+      <source xml:lang="en">Important</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.migration.migration.mode.tool.tip">
       <source xml:lang="en">In Azure Database Migration Service, you can migrate your databases offline or while they are online. In an offline migration, application downtime starts when the migration starts. To limit downtime to the time it takes you to cut over to the new environment after the migration, use an online migration.</source>
@@ -1425,6 +1467,12 @@
     </trans-unit>
     <trans-unit id="sql.migration.field.label.mi.restore.state">
       <source xml:lang="en">Managed instance restore state</source>
+    </trans-unit>
+    <trans-unit id="sql.ir.manual.ir.collapsed">
+      <source xml:lang="en">Manual IR configuration collapsed</source>
+    </trans-unit>
+    <trans-unit id="sql.ir.manual.ir.expanded">
+      <source xml:lang="en">Manual IR configuration expanded</source>
     </trans-unit>
     <trans-unit id="sql.migration.map.target.heading">
       <source xml:lang="en">Map selected source databases to target databases for migration</source>
@@ -1720,6 +1768,9 @@
     <trans-unit id="sql.migration.no.managedInstance.found">
       <source xml:lang="en">No managed instances found.</source>
     </trans-unit>
+    <trans-unit id="sql.ir.no.node.found">
+      <source xml:lang="en">No node found</source>
+    </trans-unit>
     <trans-unit id="sql.migration.no.pending.backups">
       <source xml:lang="en">No pending backups. Click refresh to check current status.</source>
     </trans-unit>
@@ -1746,6 +1797,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.no.virtualMachine.found">
       <source xml:lang="en">No virtual machines found.</source>
+    </trans-unit>
+    <trans-unit id="sql.ir.node.name">
+      <source xml:lang="en">Node name</source>
     </trans-unit>
     <trans-unit id="sql.migration.restore.status.none">
       <source xml:lang="en">None</source>
@@ -1774,6 +1828,9 @@
     <trans-unit id="sql.login.migration.steps.not.started">
       <source xml:lang="en">Not started</source>
     </trans-unit>
+    <trans-unit id="sql.ir.recommended.link">
+      <source xml:lang="en">Note: Refer Self-hosted IR recommendations</source>
+    </trans-unit>
     <trans-unit id="sql.migration.backup.file.number.of.stripes">
       <source xml:lang="en">Number of stripes</source>
     </trans-unit>
@@ -1800,6 +1857,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.database.migration.mode.offline.label">
       <source xml:lang="en">Offline migration</source>
+    </trans-unit>
+    <trans-unit id="sql.ir.powershellscript.definition">
+      <source xml:lang="en">Once executed in powershell, the unique script shown below will download, and install the self-hosted integration runtime and register it with the Azure Database Migration Service. You will need to have PowerShell installed on the target machine.</source>
     </trans-unit>
     <trans-unit id="sql.migration.online">
       <source xml:lang="en">Online</source>
@@ -1873,6 +1933,15 @@
     <trans-unit id="sql.migration.port.label">
       <source xml:lang="en">Port</source>
     </trans-unit>
+    <trans-unit id="sql.ir.powershell.script.saved">
+      <source xml:lang="en">PowerShell script saved</source>
+    </trans-unit>
+    <trans-unit id="sql.ir.ps.script.collapsed">
+      <source xml:lang="en">Powershell script collapsed</source>
+    </trans-unit>
+    <trans-unit id="sql.ir.ps.script.expanded">
+      <source xml:lang="en">Powershell script expanded</source>
+    </trans-unit>
     <trans-unit id="sql.migration.status.prefetchobjects">
       <source xml:lang="en">Prefetch objects</source>
     </trans-unit>
@@ -1887,6 +1956,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.copy.status.preparingforcopy">
       <source xml:lang="en">Preparing</source>
+    </trans-unit>
+    <trans-unit id="sql.ir.powershell.prereq">
+      <source xml:lang="en">Prerequisite: Need PowerShell with execute as admin privileges. </source>
     </trans-unit>
     <trans-unit id="sql.login.migration.status.page.previous.button.title">
       <source xml:lang="en">Previous (Disabled)</source>
@@ -2003,6 +2075,9 @@
       <source xml:lang="en">Refreshing login list was successful. Source logins found {0}, Target logins found {1}</source>
     </trans-unit>
     <trans-unit id="sql.migration.resourceGroups">
+      <source xml:lang="en">Resource group</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.storage.account.resource.group.label">
       <source xml:lang="en">Resource group</source>
     </trans-unit>
     <trans-unit id="sql.migration.rg.created">
@@ -2166,6 +2241,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.save.recommendation.report">
       <source xml:lang="en">Save recommendation report</source>
+    </trans-unit>
+    <trans-unit id="sql.ir.save.script">
+      <source xml:lang="en">Save script</source>
     </trans-unit>
     <trans-unit id="sql.migration.saved.assessment.result">
       <source xml:lang="en">Saved session</source>
@@ -2548,6 +2626,9 @@
     <trans-unit id="sql.migration.storage.account">
       <source xml:lang="en">Storage account</source>
     </trans-unit>
+    <trans-unit id="sql.migration.storage.account.details.label">
+      <source xml:lang="en">Storage account</source>
+    </trans-unit>
     <trans-unit id="sql.migration.network.share.azure.header">
       <source xml:lang="en">Storage account details</source>
     </trans-unit>
@@ -2923,8 +3004,17 @@
     <trans-unit id="sql.migration.path.user.account">
       <source xml:lang="en">User account</source>
     </trans-unit>
+    <trans-unit id="sql.migration.network.share.user.account.label">
+      <source xml:lang="en">User account</source>
+    </trans-unit>
     <trans-unit id="sql.migration.username">
       <source xml:lang="en">User name</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.assessment.qds.label">
+      <source xml:lang="en">Using Query Data Store (this option is available for Microsoft SQL Server 2016 and later)</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.assessment.xevents.label">
+      <source xml:lang="en">Using extended event session</source>
     </trans-unit>
     <trans-unit id="sql.migration.starting.login">
       <source xml:lang="en">Validating and migrating logins are in progress</source>
@@ -3036,6 +3126,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.blob.storage.folder.info">
       <source xml:lang="en">When uploading database backups to your blob container, ensure that backup files from different databases are stored in separate folders. Only the root of the container and folders at most one level deep are supported.</source>
+    </trans-unit>
+    <trans-unit id="sql.ir.local.ir.setup.note">
+      <source xml:lang="en">When you click &apos;execute script&apos;, the PowerShell script below will automatically download self-hosted integration runtime software, install, and register it with your Azure Database Migration Service. To check the connection status of the IR, go back to the previous screen and refresh. </source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.azureRecommendation.data.collection.popup.message.label">
       <source xml:lang="en">Where do you want to save collected data?</source>

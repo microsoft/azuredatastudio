@@ -313,11 +313,6 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			CSSStyles: { ...styles.BODY_CSS, 'margin-bottom': '8px' }
 		}).component();
 
-		const xEventCheckBox = this._view.modelBuilder.checkBox().withProps({
-			label: constants.XEVENTS_LABEL,
-			checked: false,
-			CSSStyles: { ...styles.BODY_CSS }
-		}).component();
 
 		this._xEventsGroup = this._view.modelBuilder.groupContainer()
 			.withLayout({
@@ -326,11 +321,11 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				collapsed: true
 			}).withItems([
 				xEventsDescription,
-				this._adhocQueryCollectionCheckbox,
-				xEventCheckBox,
+				// TODO: enable when qds is supported
+				//this._adhocQueryCollectionCheckbox,
+				//xEventCheckBox,
 				xEventsInstructions,
-				xEventsFolderPickerContainer,
-				this._adhocQueryCollectionCheckbox
+				xEventsFolderPickerContainer
 			]).component();
 
 		const flex = view.modelBuilder.flexContainer().withLayout({

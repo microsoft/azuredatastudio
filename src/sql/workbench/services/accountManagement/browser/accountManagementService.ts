@@ -625,7 +625,7 @@ export class AccountManagementService implements IAccountManagementService {
 		let indexToRemove: number = accounts.findIndex(account => {
 			// corner case handling for personal accounts
 			if (account.key.accountId.includes('#') || accountToFind.key.accountId.includes('#')) {
-				return account.displayInfo.email.toLocaleLowerCase() === accountToFind.displayInfo.email.toLocaleLowerCase();
+				return account.displayInfo.email?.toLocaleLowerCase() === accountToFind.displayInfo.email?.toLocaleLowerCase();
 			}
 			// MSAL account added
 			if (accountToFind.key.accountId.includes('.')) {

@@ -59,6 +59,8 @@ export class IconPathHelper {
 	public static encryption: IconPath;
 	public static openFolder: IconPath;
 	public static emptyState: IconPath;
+	public static save: IconPath;
+	public static runScript: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -252,6 +254,14 @@ export class IconPathHelper {
 		IconPathHelper.emptyState = {
 			light: context.asAbsolutePath('images/blankCanvas.svg'),
 			dark: context.asAbsolutePath('images/blankCanvas.svg')
+		};
+		IconPathHelper.save = {
+			light: context.asAbsolutePath('images/save.svg'),
+			dark: context.asAbsolutePath('images/save.svg')
+		};
+		IconPathHelper.runScript = {
+			light: context.asAbsolutePath('images/runScript.svg'),
+			dark: context.asAbsolutePath('images/runScript.svg')
 		};
 	}
 }

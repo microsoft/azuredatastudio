@@ -22,7 +22,7 @@
     "applicationinsights": "1.4.2",
     "angular2-grid": "2.0.6",
     "ansi_up": "^5.1.0",
-    "azdataGraph": "github:Microsoft/azdataGraph#0.0.59",
+    "azdataGraph": "github:Microsoft/azdataGraph#0.0.62",
     "chart.js": "^4.3.0",
     "chartjs-adapter-moment": "^1.0.1",
     "@vscode/windows-process-tree": "^0.5.0",
