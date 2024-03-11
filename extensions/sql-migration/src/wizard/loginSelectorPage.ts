@@ -36,6 +36,9 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 	private _tabs!: azdata.TabbedPanelComponent;
 	private _nonSystemloginTablesTab!: Tab;
+	private _systemLoginTablesTab!: Tab;
+	private _systemLoginTable!: azdata.TableComponent;
+
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel, private wizardController: WizardController) {
 		super(wizard, azdata.window.createWizardPage(constants.LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE), migrationStateModel);
@@ -203,9 +206,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		await this.updateValuesOnSelection();
 	}
 
-
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
-
 		this._windowsAuthInfoBox = this._view.modelBuilder.infoBox()
 			.withProps({
 				style: 'information',
@@ -214,9 +215,10 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			}).component();
 
 		await this._createNonSystemLoginTablesTab(view);
+		await this._createSystemLoginTablesTab(view);
 
 		this._tabs = view.modelBuilder.tabbedPanel()
-			.withTabs([this._nonSystemloginTablesTab])
+			.withTabs([this._nonSystemloginTablesTab, this._systemLoginTablesTab])
 			.component();
 
 		const flex = view.modelBuilder.flexContainer().withLayout({
@@ -316,12 +318,96 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		this._nonSystemloginTablesTab = {
 			content: flex,
 			id: 'tableSelectionTab',
-			title: 'System Logins',
+			title: 'Logins ready for migration',
 		};
 	}
 
+	private async _createSystemLoginTablesTab(view: azdata.ModelView): Promise<void> {
+		const headingText = view.modelBuilder.text()
+			.withProps({ value: constants.UNAVAILABLE_SOURCE_TABLES_HEADING })
+			.component();
+
+		this._systemLoginTable = this._createSystemLoginTablesTable(view);
+
+		const flex = view.modelBuilder.flexContainer()
+			.withItems([
+				headingText,
+				this._systemLoginTable],
+				{ flex: '0 0 auto' })
+			.withProps({ CSSStyles: { 'margin': '10px 0 0 15px' } })
+			.withLayout({
+				flexFlow: 'column',
+				height: '100%',
+				width: 550,
+			}).component();
+
+		this._systemLoginTablesTab = {
+			content: flex,
+			id: 'tableSelectionTab',
+			title: 'System type logins',
+		};
+	}
 
 	private _createNonSystemLoginTablesTable(view: azdata.ModelView): azdata.TableComponent {
+		const cssClass = 'no-borders';
+		const table = this._view.modelBuilder.table()
+			.withProps({
+				data: [],
+				width: 650,
+				height: '600px',
+				display: 'flex',
+				forceFitColumns: azdata.ColumnSizingMode.ForceFit,
+				columns: [
+					{
+						name: constants.SOURCE_LOGIN,
+						value: 'sourceLogin',
+						type: azdata.ColumnType.text,
+						width: 250,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+					{
+						name: constants.LOGIN_TYPE,
+						value: 'loginType',
+						type: azdata.ColumnType.text,
+						width: 90,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+					{
+						name: constants.DEFAULT_DATABASE,
+						value: 'defaultDatabase',
+						type: azdata.ColumnType.text,
+						width: 130,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+					{
+						name: constants.LOGIN_STATUS_COLUMN,
+						value: 'status',
+						type: azdata.ColumnType.text,
+						width: 90,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+					<azdata.HyperlinkColumn>{
+						name: constants.LOGIN_TARGET_STATUS_COLUMN,
+						value: 'targetStatus',
+						width: 150,
+						type: azdata.ColumnType.hyperlink,
+						icon: IconPathHelper.inProgressMigration,
+						showText: true,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+				]
+			})
+			.component();
+
+		return table;
+	}
+
+	private _createSystemLoginTablesTable(view: azdata.ModelView): azdata.TableComponent {
 		const cssClass = 'no-borders';
 		const table = this._view.modelBuilder.table()
 			.withProps({
