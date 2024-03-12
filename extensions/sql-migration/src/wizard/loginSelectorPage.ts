@@ -358,6 +358,15 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				display: 'flex',
 				forceFitColumns: azdata.ColumnSizingMode.ForceFit,
 				columns: [
+					<azdata.CheckboxColumn>{
+						value: '',
+						width: 10,
+						type: azdata.ColumnType.checkBox,
+						action: azdata.ActionOnCellCheckboxCheck.selectRow,
+						resizable: false,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
 					{
 						name: constants.SOURCE_LOGIN,
 						value: 'sourceLogin',
