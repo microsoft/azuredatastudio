@@ -14,7 +14,7 @@ steps:
 
   - task: AzureKeyVault@1
     inputs:
-      azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+      azureSubscription: 'ADS Pipelines'
       KeyVaultName: ado-secrets
       SecretsFilter: 'github-distro-mixin-password,standalone-extensions-uri,esrp-pki,esrp-aad-username,esrp-aad-password'
     displayName: 'Azure Key Vault: Get Secrets'

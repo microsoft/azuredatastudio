@@ -39,7 +39,7 @@ steps:
 - task: AzureKeyVault@1
   displayName: 'Azure Key Vault: SqlToolsSecretStore'
   inputs:
-    azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+    azureSubscription: 'ADS Pipelines'
     KeyVaultName: SqlToolsSecretStore
     SecretsFilter: 'ads-integration-test-azure-server,ads-integration-test-azure-server-password,ads-integration-test-azure-server-username,ads-integration-test-standalone-server,ads-integration-test-standalone-server-password,ads-integration-test-standalone-server-username,ads-integration-test-standalone-server-2019,ads-integration-test-standalone-server-password-2019,ads-integration-test-standalone-server-username-2019'
 
