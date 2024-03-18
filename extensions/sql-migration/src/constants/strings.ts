@@ -260,6 +260,7 @@ export const IMPORT_PERFORMANCE_DATA_DIALOG_HELPER_MESSAGE = localize('sql.migra
 export const IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FOLDER = localize('sql.migration.sku.import.performance.data.dialog.open.folder', "Select a folder");
 export const UPLOAD_TEMPLATE_TO_AZURE = localize('sql.migration.target.upload.to.azure', "Upload to Azure");
 export const TARGET_PROVISIONING_TITLE = localize('sql.migration.target.provisioning.title', "Save Template");
+export const GENERATE_ARM_TEMPLATE = localize('sql.migration.target.provisioning.generate.template', "Generate Template");
 export const TARGET_PROVISIONING_DESCRIPTION = localize('sql.migration.target.provisioning.description', "Below is the ARM script for the recommended target SKU. You can save the script as template.");
 // allow-any-unicode-next-line
 export const AZURE_RECOMMENDATION_CARD_NOT_ENABLED = localize('sql.migration.sku.card.azureRecommendation.notEnabled', "Azure recommendation is not available. Click 'Start data collection' button above to get started.");
@@ -1539,6 +1540,11 @@ export const STORAGE_ACCOUNT_LOCATION = localize('sql.migration.storage.account.
 export const STORAGE_ACCOUNT_RESOURCE_GROUP_INFO = localize('sql.migration.storage.account.location', "Azure region for your Storage Account. Only regions that contain a storage account will be shown.");
 export const SELECT_A_STORAGE_ACCOUNT = localize('sql.migration.select.storage.select.a.storage.account', "Select a Storage Account");
 export const STORAGE_ACCOUNT_SUBSCRIPTION_INFO = localize('sql.migration.storage.account.subscription', "Subscription name for your Storage Account");
+export const SAVE_TEMPLATE_SUCCESS = localize('sql.migration.target.provisioning.save.template.success', "Template saved successfully");
+export const SAVE_TEMPLATE_FAIL = localize('sql.migration.target.provisioning.save.template.fail', "Failed to save ARM Template");
+export const UPLOAD_TEMPLATE_SUCCESS = localize('sql.migration.target.provisioning.upload.template.success', "Template uploaded successfully");
+export const UPLOAD_TEMPLATE_FAIL = localize('sql.migration.target.provisioning.upload.template.fail', "Failed to upload ARM Template");
+
 
 export function MIGRATION_SERVICE_SERVICE_PROMPT(serviceName: string): string {
 	return localize('sql.migration.service.prompt', '{0} (change)', serviceName);

@@ -171,7 +171,7 @@ export class AssessmentDetailsHeader {
 				CSSStyles: {
 					'display': 'flex',
 					'flex-direction': 'row',
-					'width': '170px'
+					'width': '190px'
 				}
 			}).component();
 
@@ -201,7 +201,7 @@ export class AssessmentDetailsHeader {
 			});
 
 			this._saveTemplateLink = this._view.modelBuilder.hyperlink().withProps({
-				label: constants.TARGET_PROVISIONING_TITLE,
+				label: constants.GENERATE_ARM_TEMPLATE,
 				url: '',
 				height: 18,
 				CSSStyles: {

@@ -75,7 +75,7 @@ export class GenerateProvisioningScriptDialog {
 
 		const textContainer = _view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
-			height: 700,
+			height: '100%',
 		}).withProps({
 			CSSStyles: {
 				'overflow': 'auto',
@@ -108,9 +108,11 @@ export class GenerateProvisioningScriptDialog {
 					let destinationFilePath = path.join(folder, templateName);
 					try {
 						fs.writeFileSync(destinationFilePath!, this._armTemplateText);
+						void vscode.window.showInformationMessage(constants.SAVE_TEMPLATE_SUCCESS);
 					}
 					catch (e) {
 						logError(TelemetryViews.ProvisioningScriptWizard, 'ArmTemplateSavetoLocalError', e);
+						void vscode.window.showErrorMessage(constants.SAVE_TEMPLATE_FAIL);
 					}
 				}
 			}
@@ -165,8 +167,9 @@ export class GenerateProvisioningScriptDialog {
 	}
 
 	private async displayArmTemplate(): Promise<void> {
-		this._armTemplateText = (this.model._armTemplateResult.template)!;
-		this._armTemplateTextBox.value = this._armTemplateText;
+		this._armTemplateTextBox.value = this.model._armTemplateResult.template ?
+			this.model._armTemplateResult.template :
+			this.model._armTemplateResult.generateTemplateError?.message;
 	}
 
 	public async openDialog() {
@@ -194,8 +197,10 @@ export class GenerateProvisioningScriptDialog {
 				logError(TelemetryViews.ProvisioningScriptWizard, 'ProvisioningScriptGenerationError', error);
 			}
 			else {
-				await this.displayArmTemplate();
+				this._armTemplateText = this.model._armTemplateResult.template!;
 			}
+
+			await this.displayArmTemplate();
 		}
 	}
 

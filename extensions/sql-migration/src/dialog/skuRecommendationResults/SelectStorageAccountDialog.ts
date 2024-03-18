@@ -600,11 +600,12 @@ export class SelectStorageAccountDialog {
 			const template = this.migrationStateModel._armTemplateResult.template!;
 			if (template) {
 				await blockBlobClient.upload(template, template.length);
+				void vscode.window.showInformationMessage(constants.UPLOAD_TEMPLATE_SUCCESS);
 			}
 		}
 		catch (e) {
 			logError(TelemetryViews.UploadArmTemplateDialog, 'ArmTemplateUploadError', e);
-
+			void vscode.window.showErrorMessage(constants.UPLOAD_TEMPLATE_FAIL);
 		}
 	}
 }
