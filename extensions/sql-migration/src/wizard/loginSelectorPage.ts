@@ -10,7 +10,7 @@ import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { debounce, getLoginStatusImage, getLoginStatusMessage } from '../api/utils';
 import * as styles from '../constants/styles';
-import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionString, getTargetConnectionString, LoginTableInfo } from '../api/sqlUtils';
+import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionString, LoginTableInfo } from '../api/sqlUtils';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import * as utils from '../api/utils';
 import * as contracts from '../service/contracts';
@@ -29,14 +29,14 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	private _refreshLoading!: azdata.LoadingComponent;
 	private _aadDomainNameContainer!: azdata.FlexContainer;
 	private _tabs!: azdata.TabbedPanelComponent;
-
+	// variables for source non-system type logins
 	private _nonSystemloginTablesTab!: Tab;
 	private _loginSelectorTable!: azdata.TableComponent;
 	private _loginNames!: string[];
 	private _loginCount!: azdata.TextComponent;
 	private _loginTableValues!: any[];
 	private _filterTableValue!: string;
-
+	// variables for source system type logins
 	private _systemLoginTablesTab!: Tab;
 	private _systemLoginTable!: azdata.TableComponent;
 	private _systemLoginTableValues!: any[];
@@ -109,7 +109,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		// Refresh login list
 		await this._loadLoginList(false);
 
-		// load unfiltered table list and pre-select list of logins saved in state
+		// load unfiltered table list for both system and non-system and pre-select list of logins saved in state
 		await this._filterTableList('', this.migrationStateModel._loginMigrationModel.loginsForMigration);
 		await this._filterSystemTableList('');
 	}
@@ -617,6 +617,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 		var sourceLogins: LoginTableInfo[] = stateMachine._loginMigrationModel.loginsOnSource;
 
+		// validate Login Eligibility result contains system logins in Exception map from which system login names can be extracted.
+		// These system logins are not to be displayed in the source logins list
 		var validateLoginEligibilityResult: contracts.StartLoginMigrationPreValidationResult | undefined = await this.migrationStateModel.migrationService.validateLoginEligibility(
 			await getSourceConnectionString(),
 			"",
@@ -630,6 +632,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			sourceSystemLoginsName = Object.keys(validateLoginEligibilityResult.exceptionMap).map(loginName => loginName.toLocaleLowerCase());
 		}
 
+		// separate out system logins from non system logins
 		const sourceSystemLogins: LoginTableInfo[] = sourceLogins.filter(login => sourceSystemLoginsName.includes(login.loginName.toLocaleLowerCase()));
 		sourceLogins = sourceLogins.filter(login => !sourceSystemLoginsName.includes(login.loginName.toLocaleLowerCase()));
 

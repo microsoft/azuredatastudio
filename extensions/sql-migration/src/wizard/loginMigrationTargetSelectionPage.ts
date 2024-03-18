@@ -360,11 +360,11 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			var sourceSystemLoginsName: string[] = [];
 
 			if (validateLoginEligibilityResult !== undefined) {
-				sourceSystemLoginsName = Object.keys(validateLoginEligibilityResult.exceptionMap);
+				sourceSystemLoginsName = Object.keys(validateLoginEligibilityResult.exceptionMap).map(loginName => loginName.toLocaleLowerCase());
 			}
 
-			const sourceSystemLogins: LoginTableInfo[] = sourceLogins.filter(login => sourceSystemLoginsName.includes(login.loginName));
-			sourceLogins = sourceLogins.filter(login => !sourceSystemLoginsName.includes(login.loginName));
+			const sourceSystemLogins: LoginTableInfo[] = sourceLogins.filter(login => sourceSystemLoginsName.includes(login.loginName.toLocaleLowerCase()));
+			sourceLogins = sourceLogins.filter(login => !sourceSystemLoginsName.includes(login.loginName.toLocaleLowerCase()));
 
 			this.migrationStateModel._loginMigrationModel.systemLoginsOnSource = sourceSystemLogins;
 
