@@ -567,8 +567,8 @@
       <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.encrypt.categoryValues.strict" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Strict (supported for SQL Server 2022 and Azure SQL)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[嚴格]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[嚴格 (支援 SQL Server 2022 和 Azure SQL)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Strict]]></Val>
