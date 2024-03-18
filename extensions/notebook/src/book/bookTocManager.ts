@@ -267,7 +267,7 @@ export class BookTocManager implements IBookTocManager {
 		this.tableofContents = await this.createTocFromDir(contents, bookContentPath, bookContentPath);
 		await fs.writeFile(path.join(bookContentPath, '_config.yml'), yaml.safeDump({ title: path.basename(bookContentPath) }));
 		await fs.writeFile(path.join(bookContentPath, '_toc.yml'), yaml.safeDump(this.tableofContents, { lineWidth: Infinity }));
-		await vscode.commands.executeCommand('notebook.command.openNotebookFolder', bookContentPath, undefined, true);
+		await vscode.commands.executeCommand('notebook.command.openNotebookFolder', undefined, bookContentPath, undefined, true);
 	}
 
 	/**

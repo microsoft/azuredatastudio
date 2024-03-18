@@ -210,7 +210,7 @@
       <source xml:lang="en">MSSQL configuration</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.encrypt.categoryValues.true">
-      <source xml:lang="en">Mandatory (True)</source>
+      <source xml:lang="en">Mandatory</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.maxPoolSize.displayName">
       <source xml:lang="en">Max pool size</source>
@@ -261,7 +261,7 @@
       <source xml:lang="en">OS Version</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.encrypt.categoryValues.false">
-      <source xml:lang="en">Optional (False)</source>
+      <source xml:lang="en">Optional</source>
     </trans-unit>
     <trans-unit id="cloud.databaseProperties.owner">
       <source xml:lang="en">Owner</source>
@@ -354,7 +354,7 @@
       <source xml:lang="en">Specifies the method of authenticating with SQL Server</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.encrypt.categoryValues.strict">
-      <source xml:lang="en">Strict</source>
+      <source xml:lang="en">Strict (supported for SQL Server 2022 and Azure SQL)</source>
     </trans-unit>
     <trans-unit id="cms.description">
       <source xml:lang="en">Support for managing SQL Server Central Management Servers</source>

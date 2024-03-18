@@ -1,7 +1,7 @@
 ﻿###############################################################################################
-# $Description: This script automatically downloads, installs and configures SHIR to DMS on a Windows machine.
+# $Description: This PowerShell script automatically downloads self-hosted integration runtime software, install it on windows local machine, and register it with your Azure Database Migration Service.
 # $Id: SHIR-auto-configuration.ps1
-# $Author: anjaligoyal $ gasachdeva $
+# $Author: Team - Azure Database Migration Service
 ###############################################################################################
 
 <#
@@ -33,7 +33,7 @@ $timeStamp = [System.DateTime]::Now.ToString("yyyyMMddHHmmss")
 $Global:ScriptId = "Script-$timestamp"
 
 # TODO: Auto populate
-$Global:LatestIRVersion = [Version]"5.35.8686.1"
+$Global:LatestIRVersion = [Version]"5.34.8675.1"
 
 # Minimum NuGet version required to install Az.DataMigration module
 $Global:MinRequiredNuGetVersion = [Version]"2.8.5.201"
@@ -100,11 +100,11 @@ Function Install-IR {
 		Write-OutputAndLog "Integration Runtime found: Version $installedIRVersion is installed on the machine."
 
 		# Perform validation checks for installed IR
-		if ($installedIRVersion -ne $Global:LatestIRVersion) {
-			Write-ErrorAndLog "Installed Integration Runtime's version $($installedIRVersion) does not meet the version $($Global:LatestIRVersion) or above required for configuring."
-			return
-		}
-		Write-OutputAndLog "The installed Integration Runtime satisfies all requirements for successful configuration."
+		# if ($installedIRVersion -ne $Global:LatestIRVersion) {
+		# 	Write-ErrorAndLog "Installed Integration Runtime's version $($installedIRVersion) does not meet the version $($Global:LatestIRVersion) or above required for configuring."
+		# 	return
+		# }
+		# Write-OutputAndLog "The installed Integration Runtime satisfies all requirements for successful configuration."
 
 		if (-not (Test-InternetConnectivity)) {
 			return
@@ -559,7 +559,7 @@ Function Register-IntegrationRuntime {
 			Write-OutputAndLog "Installing Az.DataMigration Module..."
 			$stopwatch = New-Object System.Diagnostics.Stopwatch
 			$stopwatch.Start()
-			Install-Module -Name Az.DataMigration -Force
+			Install-Module -Name Az.DataMigration -Force -AllowClobber
 			$stopwatch.Stop()
 			Write-OutputAndLog "Installation completed in $($stopwatch.Elapsed.ToString("hh\h\:mm\m\:ss\s"))."
 		}

@@ -11,7 +11,7 @@ import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, NetworkContainerType, NetworkShare, StateChangeEvent, ValidateIrState, ValidationResult } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
+import { WIZARD_INPUT_COMPONENT_WIDTH, WizardController } from './wizardController';
 import * as utils from '../api/utils';
 import { MigrationTargetType } from '../api/utils';
 import { logError, TelemetryViews } from '../telemetry';
@@ -83,7 +83,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _migrationTableSection!: azdata.FlexContainer;
 	private _sqlDbWarnings: string[] = [];
 
-	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
+	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel, private wizardController: WizardController) {
 		super(wizard, azdata.window.createWizardPage(constants.DATA_SOURCE_CONFIGURATION_PAGE_TITLE), migrationStateModel);
 	}
 
@@ -744,6 +744,20 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		if (this.migrationStateModel._targetType === MigrationTargetType.SQLDB) {
+			this.wizardController.cancelReasonsList([
+				constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
+				constants.WIZARD_CANCEL_REASON_NEED_TO_REVIEW_TABLE_SELECTION
+			]);
+		}
+		else {
+			this.wizardController.cancelReasonsList([
+				constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
+				constants.WIZARD_CANCEL_REASON_BACKUP_LOCATION_NOT_READY
+			]);
+		}
+
+
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
@@ -1333,6 +1347,32 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async _validateIr(): Promise<void> {
 		if (this._sqlDbWarnings.length === 0) {
 			this.wizard.message = { text: '' };
+		}
+
+		// removing these validations for  sqldb as these fields are not applicable for sqldb
+		if (!this.migrationStateModel.isSqlDbTarget) {
+			const errorDetails: string[] = [];
+			if (this._windowsUserAccountText.value === undefined || this._windowsUserAccountText.value === '') {
+				errorDetails.push(constants.NETWORK_SHARE_USER_ACCOUNT_LABEL);
+			}
+			if (this._passwordText.value === undefined || this._passwordText.value === '') {
+				errorDetails.push(constants.NETWORK_SHARE_PASSWORD_LABEL);
+			}
+			if (this._networkShareStorageAccountResourceGroupDropdown.value === undefined || this._networkShareStorageAccountResourceGroupDropdown.value === '') {
+				errorDetails.push(constants.STORAGE_ACCOUNT_RESOURCE_GROUP_LABEL);
+			}
+			if (this._networkShareContainerStorageAccountDropdown.value === undefined || this._networkShareContainerStorageAccountDropdown.value === '') {
+				errorDetails.push(constants.STORAGE_ACCOUNT_DETAILS_LABEL);
+			}
+
+			if (errorDetails.length > 0) {
+				var errorMessage = constants.VALIDATION_IR_BUTTON_MISSING_ERROR_MESSAGE(errorDetails);
+				this.wizard.message = {
+					text: errorMessage,
+					level: azdata.window.MessageLevel.Error
+				};
+				return;
+			}
 		}
 
 		const dialog = new ValidateIrDialog(

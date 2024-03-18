@@ -43,9 +43,15 @@
 }
 
 /** FLYOUT **/
+.modal.flyout-dialog .modal-dialog .modal-dialog-container {
+	display: contents;
+	overflow-x: auto;
+}
+
 .modal.flyout-dialog .modal-dialog {
-	margin: auto auto auto auto;
+	margin: auto 0 auto auto;
 	height: 100%;
+	max-width: 100%;
 	right: 0;
 	position: absolute;
 	overflow-y: hidden;

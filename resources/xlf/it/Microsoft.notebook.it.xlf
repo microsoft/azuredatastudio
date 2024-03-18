@@ -1032,10 +1032,6 @@
         <source xml:lang="en">Pinned notebooks</source>
         <target state="translated">Notebook aggiunti</target>
       </trans-unit>
-      <trans-unit id="title.ProvidedBooks">
-        <source xml:lang="en">Provided Jupyter Books</source>
-        <target state="translated">Jupyter Book disponibili</target>
-      </trans-unit>
       <trans-unit id="title.reinstallNotebookDependencies">
         <source xml:lang="en">Reinstall Notebook dependencies</source>
         <target state="translated">Reinstalla dipendenze di Notebook</target>

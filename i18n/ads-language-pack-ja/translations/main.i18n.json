@@ -12914,6 +12914,7 @@
 			"postUninstallTooltip": "この拡張機能のアンインストールを完了するには、Azure Data Studio を再度読み込んでください。",
 			"postUpdateTooltip": "更新された拡張機能を有効にするには、Azure Data Studio を再度読み込んでください。",
 			"recommendedExtensions": "マーケット プレース",
+			"reviewGuidanceLabel": "ここで問題を報告する前に、「<a href=\"https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions\" target=\"_blank\">Microsoft が提供するガイダンス</a>」を確認してください。",
 			"scenarioTypeUndefined": "拡張機能の推奨事項のシナリオの種類を指定する必要があります。",
 			"showReleaseNotes": "更新後にリリース ノートを表示します。リリース ノートが新しい Web ブラウザー ウィンドウで開きます。",
 			"sql.versionMismatch": "拡張機能は、Azure Data Studio {0} と互換性がありません。拡張機能には以下が必要です: {1}。",
@@ -12946,6 +12947,7 @@
 			"addAccount": "アカウントを追加します",
 			"applyFilters": "フィルターを適用する",
 			"confirmRemoveUserAccountMessage": "'{0}' を削除してよろしいですか?",
+			"githubCopilotSignOut": "GitHub Copilot からサインアウトする",
 			"refreshAccount": "資格情報を更新する",
 			"removeAccount": "アカウントを削除します",
 			"removeAccountFailed": "アカウントを削除できませんでした"
@@ -13463,7 +13465,9 @@
 			"sql.maxRecentConnectionsDescription": "接続リストに格納する最近使用された接続の最大数。"
 		},
 		"sql/workbench/contrib/connection/browser/connectionStatus": {
-			"status.connection.status": "接続状態"
+			"status.connection.baseTooltip": "サーバー: {0}\r\nデータベース: {1}",
+			"status.connection.status": "接続状態",
+			"status.connection.tooltipLogin": "ログイン: {0}"
 		},
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
 			"schema.azureResource": "プロバイダーの Azure リソース エンドポイント。",
@@ -13791,7 +13795,10 @@
 			"revertRow": "現在の行を元に戻す"
 		},
 		"sql/workbench/contrib/editData/browser/editDataGridPanel": {
-			"editData.cellWithNullCharMessage": "このセルには、現在編集がサポートされていない Unicode NULL 文字が含まれています。"
+			"editData.cellWithNullCharMessage": "このセルには、現在編集がサポートされていない Unicode NULL 文字が含まれています。",
+			"editData.generalSubmitError": "セルの変更の送信中にエラーが発生しました: <{0}>",
+			"editData.newRowSubmitError": "新しい行にデータを送信中にエラーが発生しました: <{0}>",
+			"editData.saveViewSubmitError": "ローカルの確定されていない変更の保存中にエラーが発生しました: <{0}>"
 		},
 		"sql/workbench/contrib/editData/browser/gridActions": {
 			"copySelection": "コピー",

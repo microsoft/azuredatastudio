@@ -487,6 +487,12 @@ Betriebssystem: {8}</target>
         <source xml:lang="en">Marketplace</source>
         <target state="translated">Marketplace</target>
       </trans-unit>
+      <trans-unit id="reviewGuidanceLabel">
+        <source xml:lang="en">Before you report an issue here please &lt;a href="https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions" target="_blank"&gt;review the guidance we provide&lt;/a&gt;.</source>
+        <note>{Locked="&lt;a href="https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions" target="_blank"&gt;"}
+{Locked="&lt;/a&gt;"}</note>
+        <target state="translated">Bevor Sie hier ein Problem melden, &lt;a href="https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions" target="_blank"&gt;lesen Sie die bereitgestellte Anleitung&lt;/a&gt;.</target>
+      </trans-unit>
       <trans-unit id="scenarioTypeUndefined">
         <source xml:lang="en">The scenario type for extension recommendations must be provided.</source>
         <target state="translated">Der Szenariotyp für Erweiterungsempfehlungen muss angegeben werden.</target>
@@ -652,6 +658,10 @@ Die folgende Liste der übersprungenen Standardbefehle wird abgeschnitten, wenn 
       <trans-unit id="confirmRemoveUserAccountMessage">
         <source xml:lang="en">Are you sure you want to remove '{0}'?</source>
         <target state="translated">Möchten Sie "{0}" entfernen?</target>
+      </trans-unit>
+      <trans-unit id="githubCopilotSignOut">
+        <source xml:lang="en">Sign out of GitHub Copilot</source>
+        <target state="translated">Von GitHub Copilot abmelden</target>
       </trans-unit>
       <trans-unit id="refreshAccount">
         <source xml:lang="en">Refresh your credentials</source>
@@ -2456,9 +2466,19 @@ Die folgende Liste der übersprungenen Standardbefehle wird abgeschnitten, wenn 
   </file>
   <file original="src/sql/workbench/contrib/connection/browser/connectionStatus" source-language="en" datatype="plaintext" target-language="de">
     <body>
+      <trans-unit id="status.connection.baseTooltip">
+        <source xml:lang="en">Server: {0}
+Database: {1}</source>
+        <target state="translated">Server: {0}
+Datenbank: {1}</target>
+      </trans-unit>
       <trans-unit id="status.connection.status">
         <source xml:lang="en">Connection Status</source>
         <target state="translated">Verbindungsstatus</target>
+      </trans-unit>
+      <trans-unit id="status.connection.tooltipLogin">
+        <source xml:lang="en">Login: {0}</source>
+        <target state="translated">Anmelden: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -3579,6 +3599,18 @@ Die folgende Liste der übersprungenen Standardbefehle wird abgeschnitten, wenn 
       <trans-unit id="editData.cellWithNullCharMessage">
         <source xml:lang="en">This cell contains the Unicode null character which is currently not supported for editing.</source>
         <target state="translated">Diese Zelle enthält das Unicode-Zeichen für NULL, das derzeit nicht für die Bearbeitung unterstützt wird.</target>
+      </trans-unit>
+      <trans-unit id="editData.generalSubmitError">
+        <source xml:lang="en">An error occurred while submitting cell change: &lt;{0}&gt;</source>
+        <target state="translated">Fehler beim Übermitteln der Zellenänderung: &lt;{0}&gt;</target>
+      </trans-unit>
+      <trans-unit id="editData.newRowSubmitError">
+        <source xml:lang="en">An error occurred while submitting data to new row: &lt;{0}&gt;</source>
+        <target state="translated">Fehler beim Übermitteln von Daten an eine neue Zeile: &lt;{0}&gt;</target>
+      </trans-unit>
+      <trans-unit id="editData.saveViewSubmitError">
+        <source xml:lang="en">An error occurred while saving local uncommitted changes: &lt;{0}&gt;</source>
+        <target state="translated">Fehler beim Speichern lokaler Änderungen ohne Commit: &lt;{0}&gt;</target>
       </trans-unit>
     </body>
   </file>

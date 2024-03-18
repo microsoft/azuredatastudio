@@ -235,7 +235,6 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		// Restore from
 		const restoreFromDropdownOptions = this.isManagedInstance ? [localizedConstants.RestoreFromUrlText, localizedConstants.RestoreFromS3UrlText] : [localizedConstants.RestoreFromDatabaseOptionText, localizedConstants.RestoreFromBackupFileOptionText, localizedConstants.RestoreFromUrlText, localizedConstants.RestoreFromS3UrlText];
 		this.restoreFrom = this.createDropdown(localizedConstants.RestoreFromText, async (newValue) => {
-			this.backupFilePath = this.backupURLPath = '';
 			if (newValue === localizedConstants.RestoreFromBackupFileOptionText || newValue === localizedConstants.RestoreFromUrlText) {
 				this.backupFilePathContainer.display = 'inline-flex';
 				this.restoreDatabase.enabled = false;
@@ -248,8 +247,7 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 			} else if (newValue === localizedConstants.RestoreFromDatabaseOptionText) {
 				this.backupFilePathContainer.display = 'none';
 				this.restoreDatabase.enabled = true;
-			}
-			if (newValue === localizedConstants.RestoreFromS3UrlText) {
+			} else if (newValue === localizedConstants.RestoreFromS3UrlText) {
 				this.backupFilePathInput.enabled = true;
 				this.backupFilePathContainer.display = 'inline-flex';
 				this.restoreDatabase.enabled = false;
@@ -506,13 +504,15 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 		const dialog = new S3AddBackupFileDialog(this.objectManagementService, this.options.connectionUri);
 		await dialog.open();
 		let result = await dialog.waitForClose()
-		this.backupURLPath = result.backupFilePath;
-		const options = this.backupFilePathInput.values.map(s => s.toString());
-		options.push(this.backupURLPath);
-		await this.backupFilePathInput.updateProperties({
-			value: this.backupURLPath,
-			values: options
-		});
+		if (result) {
+			this.backupURLPath = result.backupFilePath;
+			const options = this.backupFilePathInput.values.map(s => s.toString());
+			options.push(this.backupURLPath);
+			await this.backupFilePathInput.updateProperties({
+				value: this.backupURLPath,
+				values: options
+			});
+		}
 	}
 
 	/**
@@ -528,13 +528,16 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 	 */
 	private async updateNewRestorePlanToDialog(): Promise<void> {
 		this.dialogObject.loading = true;
-		// Get the new restore plan for the selected file
-		const restorePlanInfo = this.setRestoreOption();
-		const restorePlan = await this.restoreProvider.getRestorePlan(this.options.connectionUri, restorePlanInfo);
+		try {
+			// Get the new restore plan for the selected file
+			const restorePlanInfo = this.setRestoreOption();
+			const restorePlan = await this.restoreProvider.getRestorePlan(this.options.connectionUri, restorePlanInfo);
 
-		// Update the dialog values with the new restore plan
-		await this.updateRestoreDialog(restorePlan);
-		this.dialogObject.loading = false;
+			// Update the dialog values with the new restore plan
+			await this.updateRestoreDialog(restorePlan);
+		} finally {
+			this.dialogObject.loading = false;
+		}
 	}
 
 	/**
@@ -576,9 +579,10 @@ export class RestoreDatabaseDialog extends ObjectManagementDialogBase<Database, 
 				value: restorePlan.planDetails?.sourceDatabaseName?.currentValue
 			});
 		} else {
+			let sourceDB = restorePlan.planDetails?.sourceDatabaseName?.currentValue ?? '';
 			await this.restoreDatabase.updateProperties({
-				values: [restorePlan.planDetails?.sourceDatabaseName?.currentValue],
-				value: restorePlan.planDetails?.sourceDatabaseName?.currentValue
+				values: [sourceDB],
+				value: sourceDB
 			});
 		}
 

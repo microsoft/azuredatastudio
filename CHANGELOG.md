@@ -1,5 +1,42 @@
 # Change Log
 
+## February 2024
+
+Azure Data Studio 1.48.0 is the latest general availability (GA) release.
+
+- Release number: 1.48.0
+- Release date: February 28, 2024
+ 
+ ### What's new in 1.48.0
+
+| New Item | Details |
+| --- | --- |
+| Backup/Restore | Add restore from S3-compatible storage to restore dialog |
+| Backup/Restore | Add Restore Database option to Database context menu in Object Explorer |
+| Backup/Restore | Add SQL Server Restore from URL to restore dialog |
+| Copilot | Add ability to change github account |
+| Query Editor | Add Session ID / SPID to query editor tabs |
+| Object Explorer | Add ability to enable Ledger in Create Database dialog |
+| Shell | Support Connect command when launching ADS from the command line |
+
+### Bug fixes in 1.48.0
+
+| New Item | Details |
+| --- | --- |
+|Connections | Fixed Azure AD - Universal with MFA support doesn't work on Redhat Linux |
+|Connections | Fixed Error: “Cannot read properties of undefined (reading 'serverInfo')” |
+|Connections | Fixed proxy errors browsing Azure resources |
+|Connections | Fixed Error: “UserName cannot be null or empty when using SqlLogin authentication” message when using ’Active Directory Default' authentication |
+|Edit Data | Deleting row causes focus to be in wrong row |
+|Notebooks | Fixed Installing Notebook dependencies failed with error: Cannot read property 'version' of undefined |
+|Notebooks | Fixed "Open in editor" link in Notebooks search results doesn't work |
+|Object Explorer | Removed the drop database icon from the connection browser menu |
+|Query Editor | Fixed tabs not visible in query editor |
+|Query Editor | Fixed query editor does not display any results when results being with “#” |
+|Query Editor | Improved speed when copying data from results grid to clipboard |
+|Query Editor | Fixed blank/empty results pane after executing a query |
+|Query Editor | Fixed invalid results when field contains HTML or XML |
+
 ## November 2023 Hotfix 1
 
 Azure Data Studio 1.47.1 is the latest general availability (GA) release.

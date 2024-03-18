@@ -12,6 +12,7 @@ import { debounce, promptUserForFolder } from '../api/utils';
 import * as styles from '../constants/styles';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { getDatabasesList, excludeDatabases, SourceDatabaseInfo, getSourceConnectionProfile } from '../api/sqlUtils';
+import { WizardController } from './wizardController';
 
 export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -24,10 +25,11 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _databaseTableValues!: any[];
 	private _disposables: vscode.Disposable[] = [];
 	private _enableNavigationValidation: boolean = true;
+	private _adhocQueryCollectionCheckbox!: azdata.CheckBoxComponent;
 
 	private readonly TABLE_WIDTH = 650;
 
-	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
+	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel, private wizardController: WizardController) {
 		super(wizard, azdata.window.createWizardPage(constants.DATABASE_FOR_ASSESSMENT_PAGE_TITLE), migrationStateModel);
 	}
 
@@ -50,6 +52,11 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
+		this.wizardController.cancelReasonsList([
+			constants.WIZARD_CANCEL_REASON_CONTINUE_WITH_MIGRATION_LATER,
+			constants.WIZARD_CANCEL_REASON_CHANGE_SOURCE_SQL_SERVER
+		]);
+
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = {
 				text: '',
@@ -83,6 +90,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		}
 
 		this._xEventsFilesFolderPath = this.migrationStateModel._xEventsFilesFolderPath;
+		this._adhocQueryCollectionCheckbox.checked = this.migrationStateModel._collectAdhocQueries;
 	}
 
 	public async onPageLeave(): Promise<void> {
@@ -104,6 +112,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			|| this.migrationStateModel._xEventsFilesFolderPath.toLowerCase() !== this._xEventsFilesFolderPath.toLowerCase();
 
 		this.migrationStateModel._xEventsFilesFolderPath = this._xEventsFilesFolderPath;
+		this.migrationStateModel._collectAdhocQueries = this._adhocQueryCollectionCheckbox.checked ?? false;
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
@@ -298,6 +307,13 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				xEventsFolderPickerClearButton
 			]).component();
 
+		this._adhocQueryCollectionCheckbox = this._view.modelBuilder.checkBox().withProps({
+			label: constants.QDS_ASSESSMENT_LABEL,
+			checked: false,
+			CSSStyles: { ...styles.BODY_CSS, 'margin-bottom': '8px' }
+		}).component();
+
+
 		this._xEventsGroup = this._view.modelBuilder.groupContainer()
 			.withLayout({
 				header: constants.XEVENTS_ASSESSMENT_TITLE,
@@ -305,6 +321,9 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				collapsed: true
 			}).withItems([
 				xEventsDescription,
+				// TODO: enable when qds is supported
+				//this._adhocQueryCollectionCheckbox,
+				//xEventCheckBox,
 				xEventsInstructions,
 				xEventsFolderPickerContainer
 			]).component();

@@ -49,7 +49,8 @@ export class S3AddBackupFileDialog extends DialogBase<S3AddBackupFileDialogResul
 		this.connectionUri = connectionUri;
 
 		this.dialogObject.okButton.onClick(async () => {
-			this.result.backupFilePath = `s3://${this.bucketDropdown.value}.s3.${this.regionInputBox.value}.amazonaws.com/${this.backupFilesDropdown.value}`;
+			// s3 objects can contain special characters that may cause issues with http request
+			this.result.backupFilePath = encodeURI(`s3://${this.bucketDropdown.value}.s3.${this.regionInputBox.value}.amazonaws.com/${this.backupFilesDropdown.value}`);
 			this.credentialInfo = {
 				secret: `${this.result.accessKey}:${this.result.secretKey}`,
 				identity: 'S3 Access Key',
@@ -65,7 +66,7 @@ export class S3AddBackupFileDialog extends DialogBase<S3AddBackupFileDialogResul
 
 	protected async initialize(): Promise<void> {
 		this.s3UrlInputBox = this.createInputBox(async (value) => {
-			this.result.s3Url = vscode.Uri.parse(encodeURI(value));
+			this.result.s3Url = vscode.Uri.parse(value);
 			this.regionInputBox.value = this.result.s3Url.toString().split(".")[1];
 			this.enableCredentialButton();
 		}, {
@@ -122,7 +123,7 @@ export class S3AddBackupFileDialog extends DialogBase<S3AddBackupFileDialogResul
 
 	protected override async validateInput(): Promise<string[]> {
 		const errors = await super.validateInput();
-		if (!this.result.s3Url.toString().includes('s3') && (this.result.s3Url.scheme !== 'https' || this.result.s3Url.scheme !== 'https')) {
+		if (this.result.s3Url && !this.result.s3Url.toString().includes('s3') && (this.result.s3Url.scheme !== 'http' && this.result.s3Url.scheme !== 'https')) {
 			errors.push(localizedConstants.InvalidS3UrlError);
 		}
 		return errors;
@@ -132,7 +133,7 @@ export class S3AddBackupFileDialog extends DialogBase<S3AddBackupFileDialogResul
 		this.s3Client = new awsClient.S3Client({
 			forcePathStyle: true,
 			region: this.regionInputBox.value,
-			endpoint: this.result.s3Url.toString(),
+			endpoint: encodeURI(this.result.s3Url.toString()),
 			credentials: {
 				accessKeyId: this.dialogResult.accessKey,
 				secretAccessKey: this.dialogResult.secretKey

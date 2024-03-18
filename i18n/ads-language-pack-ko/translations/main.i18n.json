@@ -12914,6 +12914,7 @@
 			"postUninstallTooltip": "Azure Data Studio를 다시 로드하여 이 확장의 제거를 완료하세요.",
 			"postUpdateTooltip": "업데이트된 확장을 사용하도록 설정하려면 Azure Data Studio를 다시 로드하세요.",
 			"recommendedExtensions": "Marketplace",
+			"reviewGuidanceLabel": "여기에서 문제를 보고하기 전에 <a href=\"https://github.com/microsoft/azuredatastudio/wiki/Submitting-Bugs-and-Suggestions\" target=\"_blank\">제공되는 지침을 검토</a>하세요.",
 			"scenarioTypeUndefined": "확장 권장 사항의 시나리오 유형을 제공해야 합니다.",
 			"showReleaseNotes": "업데이트 후 릴리스 정보를 표시합니다. 릴리스 정보는 새 웹 브라우저 창에서 열립니다.",
 			"sql.versionMismatch": "확장이 Azure Data Studio {0}과(와) 호환되지 않습니다. 확장에 {1}이(가) 필요합니다.",
@@ -12946,6 +12947,7 @@
 			"addAccount": "계정 추가",
 			"applyFilters": "필터 적용",
 			"confirmRemoveUserAccountMessage": "'{0}'을(를) 제거하시겠습니까?",
+			"githubCopilotSignOut": "GitHub Copilot 로그아웃",
 			"refreshAccount": "자격 증명 새로 고침",
 			"removeAccount": "계정 제거",
 			"removeAccountFailed": "계정을 제거하지 못함"
@@ -13463,7 +13465,9 @@
 			"sql.maxRecentConnectionsDescription": "연결 목록에 저장할 최근에 사용한 최대 연결 수입니다."
 		},
 		"sql/workbench/contrib/connection/browser/connectionStatus": {
-			"status.connection.status": "연결 상태"
+			"status.connection.baseTooltip": "서버: {0}\r\n데이터베이스: {1}",
+			"status.connection.status": "연결 상태",
+			"status.connection.tooltipLogin": "로그인: {0}"
 		},
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
 			"schema.azureResource": "공급자의 Azure 리소스 엔드포인트입니다.",
@@ -13791,7 +13795,10 @@
 			"revertRow": "현재 행 되돌리기"
 		},
 		"sql/workbench/contrib/editData/browser/editDataGridPanel": {
-			"editData.cellWithNullCharMessage": "이 셀에는 현재 편집이 지원되지 않는 유니코드 null 문자가 포함되어 있습니다."
+			"editData.cellWithNullCharMessage": "이 셀에는 현재 편집이 지원되지 않는 유니코드 null 문자가 포함되어 있습니다.",
+			"editData.generalSubmitError": "셀 변경을 제출하는 동안 오류가 발생했습니다. <{0}>",
+			"editData.newRowSubmitError": "데이터를 새 행으로 전송하는 동안 오류가 발생했습니다. <{0}>",
+			"editData.saveViewSubmitError": "커밋되지 않은 로컬 변경을 저장하는 동안 오류가 발생했습니다. <{0}>"
 		},
 		"sql/workbench/contrib/editData/browser/gridActions": {
 			"copySelection": "복사",

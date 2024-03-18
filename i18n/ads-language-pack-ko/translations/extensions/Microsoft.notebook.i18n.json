@@ -285,7 +285,6 @@
 			"notebook.overrideEditorTheming.description": "Notebook 편집기에서 편집기 기본 설정을 재정의합니다. 설정에는 배경색, 현재 선 색 및 테두리가 포함됩니다.",
 			"title.pinNotebook": "Notebook 고정",
 			"title.PinnedBooks": "고정된 Notebook",
-			"title.ProvidedBooks": "Jupyter Book 제공",
 			"title.reinstallNotebookDependencies": "Notebook 종속성 다시 설치",
 			"title.removeNotebook": "Notebook 제거",
 			"title.revealInBooksViewlet": "Book에 표시",

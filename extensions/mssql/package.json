@@ -795,16 +795,6 @@
           "command": "mssql.objectProperties",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
           "group": "inline@2"
-        },
-        {
-          "command": "mssql.dropDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
-          "group": "inline@3"
-        },
-        {
-          "command": "mssql.dropObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/)  && config.workbench.enablePreviewFeatures",
-          "group": "inline@3"
         }
       ],
       "dataExplorer/context": [
@@ -1419,16 +1409,16 @@
           "objectType": null,
           "categoryValues": [
             {
+              "displayName": "%mssql.connectionOptions.encrypt.categoryValues.false%",
+              "name": "false"
+            },
+            {
               "displayName": "%mssql.connectionOptions.encrypt.categoryValues.true%",
               "name": "true"
             },
             {
               "displayName": "%mssql.connectionOptions.encrypt.categoryValues.strict%",
               "name": "strict"
-            },
-            {
-              "displayName": "%mssql.connectionOptions.encrypt.categoryValues.false%",
-              "name": "false"
             }
           ],
           "isRequired": false,

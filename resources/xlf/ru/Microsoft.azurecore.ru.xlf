@@ -186,6 +186,14 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/Microsoft.azurecore/dist/azureResource/providers/cosmosdb/nosql/cosmosDbNoSqlTreeDataProvider" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.cosmosDbNoSqlContainerLabel">
+        <source xml:lang="en">Azure CosmosDB for NoSQL</source>
+        <target state="translated">Azure CosmosDB для NoSQL</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/Microsoft.azurecore/dist/azureResource/providers/cosmosdb/postgres/cosmosDbPostgresTreeDataProvider" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.cosmosDbPostgresContainerLabel">

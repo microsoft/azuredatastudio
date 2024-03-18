@@ -34,6 +34,10 @@
         <source xml:lang="en">Downloading {0}</source>
         <target state="translated">Download di {0}</target>
       </trans-unit>
+      <trans-unit id="entryExtractedChannelMsg">
+        <source xml:lang="en">Extracted {0} ({1}/{2})</source>
+        <target state="translated">Estratto {0} ({1}/{2})</target>
+      </trans-unit>
       <trans-unit id="failedToStartServiceErrorMsg">
         <source xml:lang="en">Failed to start {0}</source>
         <target state="translated">Non è stato possibile avviare {0}</target>
@@ -262,6 +266,10 @@
         <source xml:lang="en">Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)</source>
         <target state="translated">Consente di indicare se alle parole chiave deve essere applicata la formattazione in lettere MAIUSCOLE o minuscole oppure se non deve essere applicata alcuna formattazione</target>
       </trans-unit>
+      <trans-unit id="title.showLogFile">
+        <source xml:lang="en">Show Log File</source>
+        <target state="translated">Mostra file di log</target>
+      </trans-unit>
       <trans-unit id="databasesListProperties.size">
         <source xml:lang="en">Size (MB)</source>
         <target state="translated">Dimensioni (MB)</target>
@@ -329,6 +337,10 @@
       <trans-unit id="kusto.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
         <target state="translated">[Facoltativa] Livello di registrazione per i servizi back-end. Azure Data Studio genera un nome file a ogni avvio e, se il file esiste già, le voci del log vengono accodate a tale file. Per la pulizia dei file di log meno recenti, vedere le impostazioni logRetentionMinutes e logFilesRemovalLimit. Con l'impostazione predefinita di tracingLevel, la quantità di dati registrata non è eccessiva. Se si cambia il livello di dettaglio, la registrazione potrebbe diventare eccessiva e richiedere un notevole spazio su disco per i log. Il livello Error include quello Critical, il livello Warning include quello Error, il livello Information include quello Warning e il livello Verbose include quello Information</target>
+      </trans-unit>
+      <trans-unit id="kusto.tracingServer">
+        <source xml:lang="en">[Optional] Traces the communication between Azure Data Studio and Kusto Tools Service to the Kusto Tools Service output channel. WARNING: This may include sensitive information when verbose logging is enabled.</source>
+        <target state="translated">[Facoltativo] Consente di monitorare la comunicazione tra Azure Data Studio e Kusto Tools Service nel canale di output di Kusto Tools Service. AVVISO: potrebbero essere incluse informazioni riservate quando è abilitata la registrazione dettagliata.</target>
       </trans-unit>
     </body>
   </file>
