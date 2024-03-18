@@ -235,34 +235,6 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	}
 
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
-		this._windowsAuthInfoBox = this._view.modelBuilder.infoBox()
-			.withProps({
-				style: 'information',
-				text: constants.LOGIN_MIGRATIONS_SELECT_LOGINS_WINDOWS_AUTH_WARNING,
-				CSSStyles: { ...styles.BODY_CSS, 'display': 'none', }
-			}).component();
-
-		await this._createSystemLoginTablesTab(view);
-		await this._createNonSystemLoginTablesTab(view);
-
-		this._tabs = view.modelBuilder.tabbedPanel()
-			.withTabs([this._nonSystemloginTablesTab, this._systemLoginTablesTab])
-			.component();
-
-		const flex = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column',
-			height: '100%',
-		}).withProps({
-			CSSStyles: {
-				'margin': '-20px 28px 0px 28px'
-			}
-		}).component();
-		flex.addItem(this._windowsAuthInfoBox, { flex: '0 0 auto' });
-		flex.addItem(this._tabs, { flex: '0 0 auto' });
-		return flex;
-	}
-
-	private async _createNonSystemLoginTablesTab(view: azdata.ModelView): Promise<void> {
 		this._refreshButton = this._view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
@@ -308,6 +280,39 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			})
 			.component();
 
+		this._windowsAuthInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				style: 'information',
+				text: constants.LOGIN_MIGRATIONS_SELECT_LOGINS_WINDOWS_AUTH_WARNING,
+				CSSStyles: { ...styles.BODY_CSS, 'display': 'none', }
+			}).component();
+
+		await this._createSystemLoginTablesTab(view);
+		await this._createNonSystemLoginTablesTab(view);
+
+		this._tabs = view.modelBuilder.tabbedPanel()
+			.withTabs([this._nonSystemloginTablesTab, this._systemLoginTablesTab])
+			.withProps({
+				CSSStyles: { 'margin-top': '8px', }
+			})
+			.component();
+
+		const flex = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column',
+			height: '100%',
+		}).withProps({
+			CSSStyles: {
+				'margin': '-20px 28px 0px 28px'
+			}
+		}).component();
+		flex.addItem(this._windowsAuthInfoBox, { flex: '0 0 auto' });
+		flex.addItem(refreshContainer, { flex: '0 0 auto' });
+		flex.addItem(this._tabs, { flex: '0 0 auto' });
+		return flex;
+	}
+
+	private async _createNonSystemLoginTablesTab(view: azdata.ModelView): Promise<void> {
+
 		await this._loadLoginList();
 		this._loginCount = this._view.modelBuilder.text().withProps({
 			value: constants.LOGINS_SELECTED(
@@ -337,7 +342,6 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				width: 550,
 			}).component();
 
-		flex.addItem(refreshContainer, { flex: '0 0 auto' });
 		flex.addItem(this.createSearchComponent(false), { flex: '0 0 auto' });
 		flex.addItem(this._loginCount, { flex: '0 0 auto' });
 		flex.addItem(this._loginSelectorTable);
@@ -493,7 +497,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 						cssClass: cssClass,
 						headerCssClass: cssClass,
 					},
-				]
+				],
+				CSSStyles: { 'margin-top': '8px' }
 			})
 			.component();
 
