@@ -482,7 +482,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		await this._vmRecommendedConfigurationText.updateCssStyles({ 'display': 'none' });
 		await this._viewDetailsLink.updateCssStyles({ 'display': 'none' });
 		await this._saveTemplateLink.updateCssStyles({ 'display': 'none' });
-		await this._saveTemplateLink.updateCssStyles({ 'display': 'none' });
+		await this._separator.updateCssStyles({ 'display': 'none' });
 		await this._azureRecommendationStatusText.updateCssStyles({ 'display': 'block' });
 
 		this._azureRecommendationStatusText.value = status;
