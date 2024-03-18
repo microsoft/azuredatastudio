@@ -214,8 +214,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS, 'display': 'none', }
 			}).component();
 
-		await this._createNonSystemLoginTablesTab(view);
 		await this._createSystemLoginTablesTab(view);
+		await this._createNonSystemLoginTablesTab(view);
 
 		this._tabs = view.modelBuilder.tabbedPanel()
 			.withTabs([this._nonSystemloginTablesTab, this._systemLoginTablesTab])
@@ -323,15 +323,10 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	}
 
 	private async _createSystemLoginTablesTab(view: azdata.ModelView): Promise<void> {
-		const headingText = view.modelBuilder.text()
-			.withProps({ value: constants.UNAVAILABLE_SOURCE_TABLES_HEADING })
-			.component();
-
 		this._systemLoginTable = this._createSystemLoginTablesTable(view);
 
 		const flex = view.modelBuilder.flexContainer()
 			.withItems([
-				headingText,
 				this._systemLoginTable],
 				{ flex: '0 0 auto' })
 			.withProps({ CSSStyles: { 'margin': '10px 0 0 15px' } })
@@ -627,6 +622,23 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		}) || [];
 
 		await this._filterTableList(this._filterTableValue);
+
+		var systemLoginTableValues = sourceSystemLogins.map(row => {
+			const isLoginOnTarget = targetLogins.some(targetLogin => targetLogin.toLowerCase() === row.loginName.toLowerCase());
+			return [
+				row.loginName,
+				row.loginType,
+				row.defaultDatabaseName,
+				row.status,
+				<azdata.HyperlinkColumnCellValue>{
+					icon: getLoginStatusImage(isLoginOnTarget),
+					title: getLoginStatusMessage(isLoginOnTarget),
+				},
+			];
+		}) || [];
+
+		await this._systemLoginTable.updateProperty('data', systemLoginTableValues);
+
 		this._markRefreshDataComplete(sourceLogins.length, targetLogins.length);
 	}
 
