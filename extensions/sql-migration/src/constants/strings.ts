@@ -449,6 +449,8 @@ export const LOGIN_MIGRATIONS_VM_TEXT = localize('sql.login.migration.vm.title',
 export const LOGIN_MIGRATIONS_AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.login.migration.target.title', "Azure SQL target");
 export const LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE = localize('sql.login.migration.select.page.title', "Select login(s) to migrate");
 export const LOGIN_MIGRATIONS_SELECT_LOGINS_WINDOWS_AUTH_WARNING = localize('sql.login.migration.select.logins.windows.auth.warning', "Please note that this wizard does not display windows authentication login types because migrating that type is currently not supported. Capability for migrating windows authentication logins is coming soon.");
+export const LOGIN_MIGRATIONS_SELECT_LOGINS_TAB_NON_SYSTEM_LOGIN_TITLE = localize('sql.login.migration.select.logins.tab.non.system.title', "Logins ready for migration");
+export const LOGIN_MIGRATIONS_SELECT_LOGINS_TAB_SYSTEM_LOGIN_TITLE = localize('sql.login.migration.select.logins.tab.system.title', "System type logins");
 export const LOGIN_MIGRATIONS_STATUS_PAGE_TITLE = localize('sql.login.migration.status.page.title', "Migration Status");
 export function LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
 	return localize('sql.login.migration.status.page.description', "Migrating {0} logins to target {1} '{2}'", numLogins, targetType, targetName);

@@ -350,7 +350,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		this._nonSystemloginTablesTab = {
 			content: flex,
 			id: 'tableSelectionTab',
-			title: 'Logins ready for migration',
+			title: constants.LOGIN_MIGRATIONS_SELECT_LOGINS_TAB_NON_SYSTEM_LOGIN_TITLE,
 		};
 	}
 
@@ -373,7 +373,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		this._systemLoginTablesTab = {
 			content: flex,
 			id: 'tableSelectionTab',
-			title: 'System type logins',
+			title: constants.LOGIN_MIGRATIONS_SELECT_LOGINS_TAB_SYSTEM_LOGIN_TITLE,
 		};
 	}
 
