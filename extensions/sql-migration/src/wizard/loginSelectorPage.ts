@@ -111,6 +111,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 		// load unfiltered table list and pre-select list of logins saved in state
 		await this._filterTableList('', this.migrationStateModel._loginMigrationModel.loginsForMigration);
+		await this._filterSystemTableList('');
 	}
 
 	public async onPageLeave(): Promise<void> {
@@ -351,6 +352,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 	private async _createSystemLoginTablesTab(view: azdata.ModelView): Promise<void> {
 		this._systemLoginTable = this._createSystemLoginTablesTable(view);
+
+		await this._filterSystemTableList('');
 
 		const flex = view.modelBuilder.flexContainer()
 			.withProps({ CSSStyles: { 'margin': '10px 0 0 15px' } })
