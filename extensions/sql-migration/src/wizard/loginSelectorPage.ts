@@ -107,11 +107,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		await utils.updateControlDisplay(this._windowsAuthInfoBox, !this.migrationStateModel.isWindowsAuthMigrationSupported);
 
 		// Refresh login list
-		await this._loadLoginList(false);
-
-		// load unfiltered table list for both system and non-system and pre-select list of logins saved in state
-		await this._filterTableList('', this.migrationStateModel._loginMigrationModel.loginsForMigration);
-		await this._filterSystemTableList('');
+		await this._loadLoginList();
 	}
 
 	public async onPageLeave(): Promise<void> {
@@ -359,6 +355,15 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 		await this._filterSystemTableList('');
 
+		const systemLoginInfoBox = view.modelBuilder.infoBox().withProps({
+			text: constants.LOGIN_MIGRATIONS_SELECT_LOGINS_SYSTEM_LOGIN_INFO_BOX,
+			style: 'information',
+			width: 650,
+			CSSStyles: {
+				...styles.BODY_CSS
+			}
+		}).component();
+
 		const flex = view.modelBuilder.flexContainer()
 			.withProps({ CSSStyles: { 'margin': '10px 0 0 15px' } })
 			.withLayout({
@@ -367,6 +372,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				width: 550,
 			}).component();
 
+		flex.addItem(systemLoginInfoBox, { flex: '0 0 auto' });
 		flex.addItem(this.createSearchComponent(true), { flex: '0 0 auto' });
 		flex.addItem(this._systemLoginTable, { flex: '0 0 auto' });
 
