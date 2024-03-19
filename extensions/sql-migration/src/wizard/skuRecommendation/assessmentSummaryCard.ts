@@ -34,7 +34,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 	private _recommendedConfigurationText!: azdata.TextComponent;
 	private _vmRecommendedConfigurationText!: azdata.TextComponent;
 	private _viewDetailsLink!: azdata.HyperlinkComponent;
-	private _saveTemplateLink!: azdata.HyperlinkComponent;
+	private _generateTemplateLink!: azdata.HyperlinkComponent;
 	private _separator!: azdata.TextComponent;
 
 	// Target Type is passed in constructor to create the summary card based on that.
@@ -407,21 +407,14 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 			}
 		});
 
-		this._saveTemplateLink = view.modelBuilder.hyperlink().withProps({
+		this._generateTemplateLink = view.modelBuilder.hyperlink().withProps({
 			label: constants.GENERATE_ARM_TEMPLATE,
 			url: '',
 			height: 18,
-			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': '400',
-				'line-height': '18px',
-				'text-decoration': 'none',
-				//'margin-right': '8px',
-				'display': 'none',
-			}
+			CSSStyles: styles.VIEW_DETAILS_GENERATE_TEMPLATE_LINK
 		}).component();
 
-		this._saveTemplateLink.onDidClick(async () => {
+		this._generateTemplateLink.onDidClick(async () => {
 			if (hasRecommendations(this.migrationStateModel)) {
 				const generateProvisioningScriptDialog = new GenerateProvisioningScriptDialog(this.migrationStateModel, this.migrationTargetType);
 				await generateProvisioningScriptDialog.openDialog();
@@ -431,13 +424,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		this._separator = view.modelBuilder.text().withProps({
 			value: "|",
 			height: 18,
-			CSSStyles: {
-				'font-size': '15px',
-				'line-height': '18px',
-				'font-weight': '400',
-				'margin': '0px',
-				'display': 'none',
-			},
+			CSSStyles: styles.SEPARATOR,
 		}).component();
 
 
@@ -445,7 +432,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		container.addItem(this._azureRecommendationStatusText)
 		container.addItem(this._recommendedConfigurationText);
 		container.addItem(this._vmRecommendedConfigurationText);
-		linksContainer.addItems([this._viewDetailsLink, this._separator, this._saveTemplateLink]);
+		linksContainer.addItems([this._viewDetailsLink, this._separator, this._generateTemplateLink]);
 		container.addItem(linksContainer);
 
 
@@ -469,7 +456,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		await this._recommendedConfigurationText.updateCssStyles({ 'display': 'block' });
 		await this._vmRecommendedConfigurationText.updateCssStyles({ 'display': 'block' });
 		await this._viewDetailsLink.updateCssStyles({ 'display': 'block' });
-		await this._saveTemplateLink.updateCssStyles({ 'display': 'block' });
+		await this._generateTemplateLink.updateCssStyles({ 'display': 'block' });
 		await this._separator.updateCssStyles({ 'display': 'block' });
 
 		this._recommendedConfigurationText.value = skuRecommendation;
@@ -481,7 +468,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		await this._recommendedConfigurationText.updateCssStyles({ 'display': 'none' });
 		await this._vmRecommendedConfigurationText.updateCssStyles({ 'display': 'none' });
 		await this._viewDetailsLink.updateCssStyles({ 'display': 'none' });
-		await this._saveTemplateLink.updateCssStyles({ 'display': 'none' });
+		await this._generateTemplateLink.updateCssStyles({ 'display': 'none' });
 		await this._separator.updateCssStyles({ 'display': 'none' });
 		await this._azureRecommendationStatusText.updateCssStyles({ 'display': 'block' });
 

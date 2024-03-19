@@ -29,7 +29,7 @@ export class AssessmentDetailsHeader {
 	private _noTargetSelectedContainer!: azdata.FlexContainer;
 	private _headerCardsContainer!: azdata.FlexContainer;
 	private _viewDetailsLink!: azdata.HyperlinkComponent;
-	private _saveTemplateLink!: azdata.HyperlinkComponent;
+	private _generateTemplateLink!: azdata.HyperlinkComponent;
 	private _linksContainer!: azdata.FlexContainer;
 	private _separator!: azdata.TextComponent;
 
@@ -180,13 +180,7 @@ export class AssessmentDetailsHeader {
 				label: constants.VIEW_DETAILS,
 				url: '',
 				height: 18,
-				CSSStyles: {
-					'font-size': '13px',
-					'font-weight': '400',
-					'line-height': '18px',
-					'text-decoration': 'none',
-					'display': 'none',
-				}
+				CSSStyles: styles.VIEW_DETAILS_GENERATE_TEMPLATE_LINK
 			}).component();
 
 
@@ -200,21 +194,15 @@ export class AssessmentDetailsHeader {
 				}
 			});
 
-			this._saveTemplateLink = this._view.modelBuilder.hyperlink().withProps({
+			this._generateTemplateLink = this._view.modelBuilder.hyperlink().withProps({
 				label: constants.GENERATE_ARM_TEMPLATE,
 				url: '',
 				height: 18,
-				CSSStyles: {
-					'font-size': '13px',
-					'font-weight': '400',
-					'line-height': '18px',
-					'text-decoration': 'none',
-					'display': 'none',
-				}
+				CSSStyles: styles.VIEW_DETAILS_GENERATE_TEMPLATE_LINK
 			}).component();
 
 			try {
-				this._saveTemplateLink.onDidClick(async () => {
+				this._generateTemplateLink.onDidClick(async () => {
 					if (hasRecommendations(this.migrationStateModel)) {
 						const generateProvisioningScriptDialog = new GenerateProvisioningScriptDialog(this.migrationStateModel, this.migrationStateModel._targetType);
 						await generateProvisioningScriptDialog.openDialog();
@@ -228,16 +216,10 @@ export class AssessmentDetailsHeader {
 			this._separator = this._view.modelBuilder.text().withProps({
 				value: "|",
 				height: 18,
-				CSSStyles: {
-					'font-size': '15px',
-					'line-height': '18px',
-					'font-weight': '400',
-					'margin': '0px',
-					'display': 'none',
-				},
+				CSSStyles: styles.SEPARATOR,
 			}).component();
 
-			this._linksContainer.addItems([this._viewDetailsLink, this._separator, this._saveTemplateLink]);
+			this._linksContainer.addItems([this._viewDetailsLink, this._separator, this._generateTemplateLink]);
 			cardContainer.addItem(this._linksContainer);
 		}
 
@@ -263,7 +245,7 @@ export class AssessmentDetailsHeader {
 
 			if (configurationValue !== "--") {
 				await this._viewDetailsLink.updateCssStyles({ 'display': 'block' });
-				await this._saveTemplateLink.updateCssStyles({ 'display': 'block' });
+				await this._generateTemplateLink.updateCssStyles({ 'display': 'block' });
 				await this._separator.updateCssStyles({ 'display': 'block' });
 			}
 		}

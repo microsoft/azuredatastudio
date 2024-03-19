@@ -131,3 +131,19 @@ export const TDE_VALIDATION_INFO_TEXT = {
 	'overflow': 'scroll',
 	'display': 'inline-block'
 }
+
+export const SEPARATOR = {
+	'font-size': '15px',
+	'line-height': '18px',
+	'font-weight': '400',
+	'margin': '0px',
+	'display': 'none',
+}
+
+export const VIEW_DETAILS_GENERATE_TEMPLATE_LINK = {
+	'font-size': '13px',
+	'font-weight': '400',
+	'line-height': '18px',
+	'text-decoration': 'none',
+	'display': 'none',
+}

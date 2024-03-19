@@ -263,7 +263,9 @@ export const IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FOLDER = localize('sql.migratio
 export const UPLOAD_TEMPLATE_TO_AZURE = localize('sql.migration.target.upload.to.azure', "Upload to Azure");
 export const TARGET_PROVISIONING_TITLE = localize('sql.migration.target.provisioning.title', "Save Template");
 export const GENERATE_ARM_TEMPLATE = localize('sql.migration.target.provisioning.generate.template', "Generate Template");
+export const CLOSE_DIALOG = localize('sql.migration.target.provisioning.close', "Close");
 export const TARGET_PROVISIONING_DESCRIPTION = localize('sql.migration.target.provisioning.description', "Below is the ARM script for the recommended target SKU. You can save the script as template.");
+
 // allow-any-unicode-next-line
 export const AZURE_RECOMMENDATION_CARD_NOT_ENABLED = localize('sql.migration.sku.card.azureRecommendation.notEnabled', "Azure recommendation is not available. Click 'Start data collection' button above to get started.");
 export const AZURE_RECOMMENDATION_CARD_IN_PROGRESS = localize('sql.migration.sku.card.azureRecommendation.inProgress', "Azure recommendation will be displayed once data collection is complete.");
@@ -1596,10 +1598,11 @@ export const MIGRATION_SERVICE_SELECT_SERVICE_LABEL = localize('sql.migration.se
 export const MIGRATION_SERVICE_SELECT_SERVICE_PROMPT = localize('sql.migration.select.service.prompt', 'Select a Database Migration Service');
 
 // Upload Arm Template Dialog
-export const SELECT_STORAGE_ACCOUNT_TITLE = localize('sql.migration.select.storage.account.title', 'Select Azure Storage Account');
-export const STORAGE_ACCOUNT_SELECT_HEADING = localize('sql.migration.select.storage.account.heading', 'Enter the details below to select the Azure Storage account and save the script as template');
-export const STORAGE_ACCOUNT_SELECT_LABEL = localize('sql.migration.select.storage.account.label', 'Storage Account');
+export const SELECT_STORAGE_ACCOUNT_TITLE = localize('sql.migration.select.storage.account.title', "Select Azure Storage Account");
+export const STORAGE_ACCOUNT_SELECT_HEADING = localize('sql.migration.select.storage.account.heading', "Enter the details below to select the Azure Storage account and save the script as template");
+export const STORAGE_ACCOUNT_SELECT_LABEL = localize('sql.migration.select.storage.account.label', "Storage Account");
 export const SAVE_LABEL = localize('sql.migration.target.provisioning.save', "Save");
+
 export const TARGET_STORAGE_ACCOUNT_INFO = localize('sql.migration.storage.account', "Your Storage Account name");
 export const TARGET_BLOB_CONTAINER_INFO = localize('sql.migration.storage.account.blob.container', "Your Blob Container name");
 export const STORAGE_ACCOUNT_LOCATION = localize('sql.migration.storage.account.location', "Your Storage Account location");

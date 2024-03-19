@@ -16,9 +16,6 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { SelectStorageAccountDialog } from './SelectStorageAccountDialog';
 
 export class GenerateProvisioningScriptDialog {
-
-	private static readonly CloseButtonText: string = 'Close';
-
 	private dialog: azdata.window.Dialog | undefined;
 	private _isOpen: boolean = false;
 
@@ -178,7 +175,7 @@ export class GenerateProvisioningScriptDialog {
 
 			this.dialog = azdata.window.createModelViewDialog(constants.TARGET_PROVISIONING_TITLE, 'ViewArmTemplateDialog', 'medium');
 
-			this.dialog.okButton.label = GenerateProvisioningScriptDialog.CloseButtonText;
+			this.dialog.okButton.label = constants.CLOSE_DIALOG;
 			this.dialog.okButton.position = 'left';
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 			this.dialog.cancelButton.hidden = true;
