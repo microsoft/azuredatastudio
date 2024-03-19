@@ -16,6 +16,7 @@ import * as fs from 'fs';
 import { parseAssessmentReport } from '../dialog/assessment/assessmentUtils';
 import { HelpAndSupportDialog } from '../dialog/help/helpAndSupportDialog';
 import { TelemetryAction, TelemetryViews, logError } from '../telemetry';
+import { LoginPreMigrationValidationDialog } from '../dialog/loginMigration/loginPreMigrationValidationDialog';
 
 export const EmptySettingValue = '-';
 
@@ -193,8 +194,10 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 			}).component();
 		this.disposables.push(
 			newHelpAndSupportButton.onDidClick(async () => {
-				const helpAndSupportDialog = new HelpAndSupportDialog();
-				await helpAndSupportDialog.openDialog();
+				// const helpAndSupportDialog = new HelpAndSupportDialog();
+				// await helpAndSupportDialog.openDialog();
+				const dialog = new LoginPreMigrationValidationDialog();
+				await dialog.openDialog();
 			}));
 		return newHelpAndSupportButton;
 	}

@@ -5,12 +5,18 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import { IconPathHelper } from '../../constants/iconPathHelper';
 
 const DialogName = 'LoginPreMigrationValidationDialog';
 
 export class LoginPreMigrationValidationDialog {
 	private _dialog: azdata.window.Dialog | undefined;
 	private _isOpen: boolean = false;
+
+	private _startButton!: azdata.ButtonComponent;
+	private _revalidationButton!: azdata.ButtonComponent;
+	private _cancelButton!: azdata.ButtonComponent;
+	private _copyButton!: azdata.ButtonComponent;
 
 	private _disposables: vscode.Disposable[] = [];
 
@@ -57,15 +63,54 @@ export class LoginPreMigrationValidationDialog {
 				{ CSSStyles: { 'margin': '8px 16px', 'flex-direction': 'column' } })
 			.component();
 
+		container.addItem(this.createValidationControlsToolbar(_view), { flex: '0 0 auto' });
 		return container;
 	}
 
-	// private createValidation {
-	// const toolbar = view.modelBuilder.toolbarContainer()
-	// 	.withToolbarItems([
-	// 		{ component: this._startButton },
-	// 		{ component: this._cancelButton },
-	// 		{ component: this._revalidationButton },
-	// 		{ component: this._copyButton }])
-	// 	.component();
+	private createValidationControlsToolbar(_view: azdata.ModelView): azdata.ToolbarContainer {
+		this._startButton = _view.modelBuilder.button()
+			.withProps({
+				iconPath: IconPathHelper.restartDataCollection,
+				iconHeight: 18,
+				iconWidth: 18,
+				label: "Start validation",
+			}).component();
+
+		this._cancelButton = _view.modelBuilder.button()
+			.withProps({
+				iconPath: IconPathHelper.stop,
+				iconHeight: 18,
+				iconWidth: 18,
+				label: "Stop validation",
+				enabled: false,
+			}).component();
+
+		this._revalidationButton = _view.modelBuilder.button()
+			.withProps({
+				iconPath: IconPathHelper.redo,
+				iconHeight: 18,
+				iconWidth: 18,
+				label: "Revalidate failed steps",
+				enabled: false,
+			}).component();
+
+		this._copyButton = _view.modelBuilder.button()
+			.withProps({
+				iconPath: IconPathHelper.copy,
+				iconHeight: 18,
+				iconWidth: 18,
+				label: "Copy details",
+				enabled: false,
+			}).component();
+
+		const toolbar = _view.modelBuilder.toolbarContainer()
+			.withToolbarItems([
+				{ component: this._startButton },
+				{ component: this._cancelButton },
+				{ component: this._revalidationButton },
+				{ component: this._copyButton }])
+			.component();
+
+		return toolbar;
+	}
 }
