@@ -7,10 +7,13 @@ import * as azdata from 'azdata';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import { MigrationStateModel } from '../../models/stateMachine';
-import { MigrationTargetType } from '../../api/utils';
+import { MigrationTargetType, hasRecommendations } from '../../api/utils';
 import * as utils from '../../api/utils';
 import { IssueCategory } from '../../constants/helper';
 import { IconPathHelper } from '../../constants/iconPathHelper';
+import { SkuRecommendationResultsDialog } from '../../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
+import { GenerateProvisioningScriptDialog } from '../../dialog/skuRecommendationResults/GenerateProvisioningScriptDialog';
+import { logError, TelemetryViews } from '../../telemetry';
 
 interface IActionMetadata {
 	title?: string,
@@ -25,6 +28,10 @@ export class AssessmentDetailsHeader {
 	private _targetTypeContainer!: azdata.FlexContainer;
 	private _noTargetSelectedContainer!: azdata.FlexContainer;
 	private _headerCardsContainer!: azdata.FlexContainer;
+	private _viewDetailsLink!: azdata.HyperlinkComponent;
+	private _generateTemplateLink!: azdata.HyperlinkComponent;
+	private _linksContainer!: azdata.FlexContainer;
+	private _separator!: azdata.TextComponent;
 
 	// public getter for target type selection drop down.
 	public get targetTypeDropdown() {
@@ -158,8 +165,65 @@ export class AssessmentDetailsHeader {
 		}).component();
 
 		cardContainer.addItems([cardHeading, cardText]);
-		this._valueContainers.push(cardText);
 
+		if (linkMetaData.title === constants.RECOMMENDED_CONFIGURATION) {
+			this._linksContainer = this._view.modelBuilder.flexContainer().withProps({
+				CSSStyles: {
+					'display': 'flex',
+					'flex-direction': 'row',
+					'width': '190px'
+				}
+			}).component();
+
+
+			this._viewDetailsLink = this._view.modelBuilder.hyperlink().withProps({
+				label: constants.VIEW_DETAILS,
+				url: '',
+				height: 18,
+				CSSStyles: styles.VIEW_DETAILS_GENERATE_TEMPLATE_LINK
+			}).component();
+
+
+			this._viewDetailsLink.onDidClick(async () => {
+				if (hasRecommendations(this.migrationStateModel)) {
+					const skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, this.migrationStateModel._targetType);
+					await skuRecommendationResultsDialog.openDialog(
+						this.migrationStateModel._targetType,
+						this.migrationStateModel._skuRecommendationResults.recommendations
+					);
+				}
+			});
+
+			this._generateTemplateLink = this._view.modelBuilder.hyperlink().withProps({
+				label: constants.GENERATE_ARM_TEMPLATE,
+				url: '',
+				height: 18,
+				CSSStyles: styles.VIEW_DETAILS_GENERATE_TEMPLATE_LINK
+			}).component();
+
+			try {
+				this._generateTemplateLink.onDidClick(async () => {
+					if (hasRecommendations(this.migrationStateModel)) {
+						const generateProvisioningScriptDialog = new GenerateProvisioningScriptDialog(this.migrationStateModel, this.migrationStateModel._targetType);
+						await generateProvisioningScriptDialog.openDialog();
+					}
+				});
+			}
+			catch (e) {
+				logError(TelemetryViews.ProvisioningScriptWizard, 'ProvisioningScriptDialogOpenError', e);
+			}
+
+			this._separator = this._view.modelBuilder.text().withProps({
+				value: "|",
+				height: 18,
+				CSSStyles: styles.SEPARATOR,
+			}).component();
+
+			this._linksContainer.addItems([this._viewDetailsLink, this._separator, this._generateTemplateLink]);
+			cardContainer.addItem(this._linksContainer);
+		}
+
+		this._valueContainers.push(cardText);
 		return cardContainer;
 	}
 
@@ -178,6 +242,12 @@ export class AssessmentDetailsHeader {
 			assessmentHeaderValues.push({
 				value: configurationValue
 			})
+
+			if (configurationValue !== "--") {
+				await this._viewDetailsLink.updateCssStyles({ 'display': 'block' });
+				await this._generateTemplateLink.updateCssStyles({ 'display': 'block' });
+				await this._separator.updateCssStyles({ 'display': 'block' });
+			}
 		}
 		assessmentHeaderValues.push(
 			{

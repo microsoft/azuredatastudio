@@ -106,6 +106,10 @@ export namespace GetSqlMigrationAssessmentItemsRequest {
 	export const type = new RequestType<SqlMigrationAssessmentParams, AssessmentResult, void, void>('migration/getassessments');
 }
 
+export namespace GetSqlMigrationGenerateArmTemplateRequest {
+	export const type = new RequestType<string, string, void, void>('migration/getarmtemplate');
+}
+
 export interface SqlMigrationSkuRecommendationsParams {
 	dataFolder: string;
 	perfQueryIntervalInSec: number;
@@ -541,6 +545,7 @@ export interface ISqlMigrationService {
 	startPerfDataCollection(ownerUri: string, dataFolder: string, perfQueryIntervalInSec: number, staticQueryIntervalInSec: number, numberOfIterations: number): Promise<StartPerfDataCollectionResult | undefined>;
 	stopPerfDataCollection(): Promise<StopPerfDataCollectionResult | undefined>;
 	refreshPerfDataCollection(lastRefreshedTime: Date): Promise<RefreshPerfDataCollectionResult | undefined>;
+	getArmTemplate(targetType: string): Promise<string | undefined>;
 	startLoginMigration(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
 	validateLoginMigration(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
 	validateSysAdminPermission(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationPreValidationResult | undefined>;

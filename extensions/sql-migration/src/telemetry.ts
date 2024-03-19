@@ -47,6 +47,8 @@ export enum TelemetryViews {
 	TdeMigrationDialog = 'TdeMigrationDialog',
 	ValidIrDialog = 'validIrDialog',
 	ImportAssessmentDialog = 'ImportAssessmentDialog',
+	UploadArmTemplateDialog = 'UploadArmTemplateDialog',
+	ProvisioningScriptWizard = 'ProvisioningScriptWizard'
 }
 
 export enum TelemetryAction {

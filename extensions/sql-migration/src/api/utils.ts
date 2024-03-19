@@ -1629,6 +1629,20 @@ export async function promptUserForFile(filters: { [name: string]: string[] }): 
 
 	return '';
 }
+
+export function generateTemplatePath(model: MigrationStateModel, targetType: MigrationTargetType): string {
+	let date = new Date().toISOString().split('T')[0];
+	let time = new Date().toLocaleTimeString('it-IT');
+
+	// source instance same would be same across all recommendations MI/DB/VM.
+	let instanceName = model._skuRecommendationResults.recommendations?.sqlMiRecommendationResults[0].sqlInstanceName;
+	let fileName = `ARMTemplate-${targetType}-${instanceName}-${date}-${time}.json`;
+
+	// replacing invalid characters for a file name.
+	fileName = fileName.replace(/[/\\?%*:|"<>]/g, '-');
+	return fileName;
+}
+
 export async function refreshIntegrationRuntimeTable(_view: ModelView, _integrationRuntimeTable: DeclarativeTableComponent,
 	migrationServiceMonitoringStatus: azure.IntegrationRuntimeMonitoringData): Promise<void> {
 	if (migrationServiceMonitoringStatus.nodes.length === 0) {

@@ -18,6 +18,7 @@ import { ColorCodes } from '../../constants/helper';
 import { SKURecommendationPage } from './skuRecommendationPage';
 import { MigrationStateModel } from '../../models/stateMachine';
 import { SkuRecommendationResultsDialog } from '../../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
+import { GenerateProvisioningScriptDialog } from '../../dialog/skuRecommendationResults/GenerateProvisioningScriptDialog';
 
 export class AssessmentSummaryCard implements vscode.Disposable {
 	private _disposables: vscode.Disposable[] = [];
@@ -33,6 +34,8 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 	private _recommendedConfigurationText!: azdata.TextComponent;
 	private _vmRecommendedConfigurationText!: azdata.TextComponent;
 	private _viewDetailsLink!: azdata.HyperlinkComponent;
+	private _generateTemplateLink!: azdata.HyperlinkComponent;
+	private _separator!: azdata.TextComponent;
 
 	// Target Type is passed in constructor to create the summary card based on that.
 	constructor(public skuRecommendationPage: SKURecommendationPage, public migrationTargetType: MigrationTargetType, public migrationStateModel: MigrationStateModel) {
@@ -329,6 +332,16 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 			}
 		}).component();
 
+		const linksContainer =
+			view.modelBuilder.flexContainer().withProps({
+				CSSStyles: {
+					'display': 'flex',
+					'flex-direction': 'row',
+					'width': '213px',
+					'height': '18px',
+				}
+			}).component();
+
 		const recommendedConfigurationLabel = view.modelBuilder.text().withProps({
 			value: constants.RECOMMENDED_CONFIGURATION_SUMMARY_LABEL_CAPS,
 			description: constants.RECOMMENDED_CONFIGURATION_SUMMARY_LABEL_DESCRIPTION,
@@ -379,6 +392,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 				'font-weight': '400',
 				'line-height': '18px',
 				'text-decoration': 'none',
+				'margin-left': '25px',
 				'display': 'none',
 			}
 		}).component();
@@ -393,20 +407,34 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 			}
 		});
 
+		this._generateTemplateLink = view.modelBuilder.hyperlink().withProps({
+			label: constants.GENERATE_ARM_TEMPLATE,
+			url: '',
+			height: 18,
+			CSSStyles: styles.VIEW_DETAILS_GENERATE_TEMPLATE_LINK
+		}).component();
+
+		this._generateTemplateLink.onDidClick(async () => {
+			if (hasRecommendations(this.migrationStateModel)) {
+				const generateProvisioningScriptDialog = new GenerateProvisioningScriptDialog(this.migrationStateModel, this.migrationTargetType);
+				await generateProvisioningScriptDialog.openDialog();
+			}
+		});
+
+		this._separator = view.modelBuilder.text().withProps({
+			value: "|",
+			height: 18,
+			CSSStyles: styles.SEPARATOR,
+		}).component();
+
 
 		container.addItem(recommendedConfigurationLabel);
 		container.addItem(this._azureRecommendationStatusText)
 		container.addItem(this._recommendedConfigurationText);
+		container.addItem(this._vmRecommendedConfigurationText);
+		linksContainer.addItems([this._viewDetailsLink, this._separator, this._generateTemplateLink]);
+		container.addItem(linksContainer);
 
-		switch (this.migrationTargetType) {
-			case MigrationTargetType.SQLVM:
-				container.addItem(this._vmRecommendedConfigurationText);
-				container.addItem(this._viewDetailsLink);
-				break;
-			default:
-				container.addItem(this._viewDetailsLink);
-				container.addItem(this._vmRecommendedConfigurationText);
-		}
 
 		return container;
 	}
@@ -428,6 +456,8 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		await this._recommendedConfigurationText.updateCssStyles({ 'display': 'block' });
 		await this._vmRecommendedConfigurationText.updateCssStyles({ 'display': 'block' });
 		await this._viewDetailsLink.updateCssStyles({ 'display': 'block' });
+		await this._generateTemplateLink.updateCssStyles({ 'display': 'block' });
+		await this._separator.updateCssStyles({ 'display': 'block' });
 
 		this._recommendedConfigurationText.value = skuRecommendation;
 		this._vmRecommendedConfigurationText.value = vmRecommendation;
@@ -438,6 +468,8 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		await this._recommendedConfigurationText.updateCssStyles({ 'display': 'none' });
 		await this._vmRecommendedConfigurationText.updateCssStyles({ 'display': 'none' });
 		await this._viewDetailsLink.updateCssStyles({ 'display': 'none' });
+		await this._generateTemplateLink.updateCssStyles({ 'display': 'none' });
+		await this._separator.updateCssStyles({ 'display': 'none' });
 		await this._azureRecommendationStatusText.updateCssStyles({ 'display': 'block' });
 
 		this._azureRecommendationStatusText.value = status;
