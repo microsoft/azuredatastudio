@@ -13,6 +13,7 @@ export class LoginPreMigrationValidationDialog {
 	private _dialog: azdata.window.Dialog | undefined;
 	private _isOpen: boolean = false;
 
+	private _resultsTable!: azdata.TableComponent;
 	private _startButton!: azdata.ButtonComponent;
 	private _revalidationButton!: azdata.ButtonComponent;
 	private _cancelButton!: azdata.ButtonComponent;
@@ -24,7 +25,7 @@ export class LoginPreMigrationValidationDialog {
 		return new Promise<void>((resolve, reject) => {
 			dialog.registerContent(async (view) => {
 				try {
-					const flex = this.createContainer(view);
+					const flex = await this.createContainer(view);
 
 					this._disposables.push(
 						view.onClosed(e =>
@@ -57,13 +58,16 @@ export class LoginPreMigrationValidationDialog {
 		}
 	}
 
-	private createContainer(_view: azdata.ModelView): azdata.FlexContainer {
+	private async createContainer(_view: azdata.ModelView): Promise<azdata.FlexContainer> {
 		const container = _view.modelBuilder.flexContainer()
 			.withProps(
 				{ CSSStyles: { 'margin': '8px 16px', 'flex-direction': 'column' } })
 			.component();
 
+		this._resultsTable = await this._createResultsTable(_view);
+
 		container.addItem(this.createValidationControlsToolbar(_view), { flex: '0 0 auto' });
+		container.addItem(this._resultsTable, { flex: '0 0 auto' });
 		return container;
 	}
 
@@ -112,5 +116,45 @@ export class LoginPreMigrationValidationDialog {
 			.component();
 
 		return toolbar;
+	}
+
+	private async _createResultsTable(view: azdata.ModelView): Promise<azdata.TableComponent> {
+		return view.modelBuilder.table()
+			.withProps({
+				columns: [
+					{
+						value: 'test',
+						name: "Validation steps",
+						type: azdata.ColumnType.text,
+						width: 380,
+						headerCssClass: 'no-borders',
+						cssClass: 'no-borders align-with-header',
+					},
+					{
+						value: 'image',
+						name: '',
+						type: azdata.ColumnType.icon,
+						width: 20,
+						headerCssClass: 'no-borders display-none',
+						cssClass: 'no-borders align-with-header',
+					},
+					{
+						value: 'message',
+						name: "Status",
+						type: azdata.ColumnType.text,
+						width: 150,
+						headerCssClass: 'no-borders',
+						cssClass: 'no-borders align-with-header',
+					},
+				],
+				data: [],
+				width: 580,
+				height: 300,
+				CSSStyles: {
+					'margin-top': '10px',
+					'margin-bottom': '10px',
+				},
+			})
+			.component();
 	}
 }
