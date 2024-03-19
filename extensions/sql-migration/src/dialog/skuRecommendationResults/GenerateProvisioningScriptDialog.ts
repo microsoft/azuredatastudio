@@ -94,7 +94,7 @@ export class GenerateProvisioningScriptDialog {
 				height: 36,
 				iconHeight: 16,
 				iconWidth: 16,
-				iconPath: IconPathHelper.openFolder,
+				iconPath: IconPathHelper.save,
 				CSSStyles: {
 					...styles.TOOLBAR_CSS
 				}
