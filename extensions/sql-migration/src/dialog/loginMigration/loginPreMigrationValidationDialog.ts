@@ -5,9 +5,35 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as constants from '../../constants/strings';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 
 const DialogName = 'LoginPreMigrationValidationDialog';
+
+enum ValidationResultIndex {
+	message = 0,
+	icon = 1,
+	status = 2,
+	errors = 3,
+	state = 4,
+}
+
+export enum ValidateIrState {
+	Pending = 'Pending',
+	Running = 'Running',
+	Succeeded = 'Succeeded',
+	Failed = 'Failed',
+	Canceled = 'Canceled',
+}
+
+export const ValidationStatusLookup: constants.LookupTable<string | undefined> = {
+	[ValidateIrState.Canceled]: constants.VALIDATION_STATE_CANCELED,
+	[ValidateIrState.Failed]: constants.VALIDATION_STATE_FAILED,
+	[ValidateIrState.Pending]: constants.VALIDATION_STATE_PENDING,
+	[ValidateIrState.Running]: constants.VALIDATION_STATE_RUNNING,
+	[ValidateIrState.Succeeded]: constants.VALIDATION_STATE_SUCCEEDED,
+	default: undefined
+};
 
 export class LoginPreMigrationValidationDialog {
 	private _dialog: azdata.window.Dialog | undefined;
@@ -18,6 +44,8 @@ export class LoginPreMigrationValidationDialog {
 	private _revalidationButton!: azdata.ButtonComponent;
 	private _cancelButton!: azdata.ButtonComponent;
 	private _copyButton!: azdata.ButtonComponent;
+
+	private _validationResult: any[][] = [];
 
 	private _disposables: vscode.Disposable[] = [];
 
@@ -54,7 +82,7 @@ export class LoginPreMigrationValidationDialog {
 			azdata.window.openDialog(this._dialog);
 			await promise;
 
-			return;
+			return this._runValidation();
 		}
 	}
 
@@ -156,5 +184,64 @@ export class LoginPreMigrationValidationDialog {
 				},
 			})
 			.component();
+	}
+
+	private async _runValidation(): Promise<void> {
+		try {
+			// this._startLoader.loading = true;
+			this._startButton.enabled = false;
+			this._revalidationButton.enabled = false;
+			this._cancelButton.enabled = true;
+			this._copyButton.enabled = false;
+			this._dialog!.okButton.enabled = false;
+			this._dialog!.cancelButton.enabled = true;
+			// if (this._model.isIrTargetValidated && results) {
+			// 	await this._initializeResults(results);
+			// } else {
+			await this._validate();
+			// }
+		} finally {
+			// this._startLoader.loading = false;
+			this._startButton.enabled = true;
+			// this._revalidationButton.enabled = !this._model.isIrTargetValidated;
+			this._cancelButton.enabled = false;
+			this._copyButton.enabled = true;
+			// this._dialog!.okButton.enabled = this._model.isIrTargetValidated;
+			// this._dialog!.cancelButton.enabled = !this._model.isIrTargetValidated;
+		}
+	}
+
+	private async _validate(): Promise<void> {
+		// this._canceled = false;
+		await this._initializeResults();
+	}
+
+
+	private async _initializeResults(): Promise<void> {
+		this._validationResult = [];
+
+		this._addValidationResult("Validating the sysadmin permission on source and target");
+		this._addValidationResult("Validating the Azure Active Directory domain name");
+		this._addValidationResult("Validating the user mapping");
+
+		const data = this._validationResult.map(row => [
+			row[ValidationResultIndex.message],
+			row[ValidationResultIndex.icon],
+			"Pending"]);
+
+		await this._resultsTable.updateProperty('data', data);
+	}
+
+
+	private _addValidationResult(message: string): void {
+		this._validationResult.push([
+			message,
+			<azdata.IconColumnCellValue>{
+				icon: IconPathHelper.notStartedMigration,
+				title: ValidationStatusLookup[ValidateIrState.Pending],
+			},
+			ValidationStatusLookup[ValidateIrState.Pending],
+			[],
+			ValidateIrState.Pending]);
 	}
 }
