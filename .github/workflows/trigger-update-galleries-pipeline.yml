@@ -1,0 +1,20 @@
+name: Trigger Update Galleries Pipeline
+
+on:
+  push:
+    branches:
+      - release/extensions
+      - extensions/rc1
+      - kisantia/galleriesPipelineTest
+
+jobs:
+  trigger-update-galleries:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: Azure/pipelines@v1
+      with:
+        azure-devops-project-url: 'https://dev.azure.com/msdata/SQLToolsAndLibraries/_git/AzureDataStudio'
+        azure-pipeline-name: 'Update_AzureDataStudio_Extensions_Gallery' # name of the Azure pipeline to be triggered
+        azure-devops-token: '${{ secrets.ADO_UPDATE_GALLERIES_TOKEN }}'
+        azure-pipeline-variables:  '{"triggeringBranch": "kisantia/galleriesPipelineTest"}' # optional stringified json
+
