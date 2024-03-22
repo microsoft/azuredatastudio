@@ -16,7 +16,7 @@ steps:
   displayName: 'Update extensionsGallery.json'
   inputs:
     SourcePath: extensionsGallery.json
-    azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+    azureSubscription: 'Extension Gallery Update Pipeline'
     Destination: AzureBlob
     storage: sqlopsextensions
     ContainerName: marketplace
@@ -28,7 +28,7 @@ steps:
   displayName: 'Update extensionsGallery-insider.json'
   inputs:
     SourcePath: 'extensionsGallery-insider.json'
-    azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+    azureSubscription: 'Extension Gallery Update Pipeline'
     Destination: AzureBlob
     storage: sqlopsextensions
     ContainerName: marketplace
@@ -45,7 +45,7 @@ steps:
   displayName: 'Update extensionsGallery-test.json'
   inputs:
     SourcePath: extensionsGallery.json
-    azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+    azureSubscription: 'Extension Gallery Update Pipeline'
     Destination: AzureBlob
     storage: sqlopsextensions
     ContainerName: marketplace
