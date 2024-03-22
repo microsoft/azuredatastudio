@@ -18,3 +18,4 @@ jobs:
         azure-devops-token: '${{ secrets.ADO_UPDATE_GALLERIES_TOKEN }}'
         # azure-pipeline-variables:  '{"triggeringBranch": "kisantia/galleriesPipelineTest"}' # optional stringified json
 
+
