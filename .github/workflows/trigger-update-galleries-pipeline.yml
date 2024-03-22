@@ -11,7 +11,7 @@ jobs:
   trigger-update-galleries:
     runs-on: ubuntu-latest
     steps:
-    - uses: Azure/pipelines@v1
+    - uses: Azure/pipelines@v1.2
       with:
         azure-devops-project-url: 'https://dev.azure.com/msdata/SQLToolsAndLibraries/_git/AzureDataStudio'
         azure-pipeline-name: 'Update_AzureDataStudio_Extensions_Gallery' # name of the Azure pipeline to be triggered
