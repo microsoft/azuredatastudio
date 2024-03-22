@@ -123,6 +123,7 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 			includePreviewSkus: includePreviewSkus,
 			databaseAllowList: databaseAllowList,
 			isPremiumSSDV2Enabled: true,
+			isNextGenGPEnabled: true
 		};
 
 		try {
