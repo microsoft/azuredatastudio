@@ -2669,14 +2669,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.3.0",
-							"lastUpdated": "03/21/2024",
+							"version": "1.3.1",
+							"lastUpdated": "03/22/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/intellicode/vscodeintellicode-1.3.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/intellicode/vscodeintellicode-1.3.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
