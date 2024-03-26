@@ -1,0 +1,21 @@
+name: Trigger Update Galleries Pipeline
+
+on:
+  push:
+    branches:
+      - release/extensions
+      - extensions/rc1
+
+jobs:
+  trigger-update-galleries:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Print triggering branch name'
+      run: echo "GITHUB_REF_NAME IS $GITHUB_REF_NAME"
+
+    - uses: Azure/pipelines@v1.2
+      with:
+        azure-devops-project-url: 'https://dev.azure.com/msdata/SQLToolsAndLibraries'
+        azure-pipeline-name: 'Update AzureDataStudio Extensions Gallery' # name of the Azure pipeline to be triggered
+        azure-devops-token: '${{ secrets.ADO_UPDATE_GALLERIES_TOKEN }}'
+        azure-pipeline-variables: '{"githubBranch": "${{ github.ref_name }}"}' # pass branch name to pipeline
