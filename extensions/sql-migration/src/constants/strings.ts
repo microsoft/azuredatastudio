@@ -332,6 +332,7 @@ export function MI_CONFIGURATION_PREVIEW(hardwareType: string, computeTier: stri
 }
 export const GENERAL_PURPOSE = localize('sql.migration.sku.azureConfiguration.generalPurpose', "General purpose");
 export const BUSINESS_CRITICAL = localize('sql.migration.sku.azureConfiguration.businessCritical', "Business critical");
+export const NEXTGEN_GENERAL_PURPOSE = localize('sql.migration.sku.azureConfiguration.nextGenGeneralPurpose', "Next-gen General Purpose");
 export const HYPERSCALE = localize('sql.migration.sku.azureConfiguration.hyperscale', "Hyperscale");
 export const GEN5 = localize('sql.migration.sku.azureConfiguration.gen5', "Gen5");
 export const PREMIUM_SERIES = localize('sql.migration.sku.azureConfiguration.premiumSeries', "Premium-series");

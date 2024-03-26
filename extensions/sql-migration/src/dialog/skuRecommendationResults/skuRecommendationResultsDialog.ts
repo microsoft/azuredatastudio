@@ -120,8 +120,10 @@ export class SkuRecommendationResultsDialog {
 					const serviceTier = recommendation.targetSku.category?.sqlServiceTier === contracts.AzureSqlPaaSServiceTier.GeneralPurpose
 						? constants.GENERAL_PURPOSE
 						: recommendation.targetSku.category?.sqlServiceTier === contracts.AzureSqlPaaSServiceTier.HyperScale
-							? constants.HYPERSCALE
-							: constants.BUSINESS_CRITICAL;
+							? constants.HYPERSCALE :
+							recommendation.targetSku.category?.sqlServiceTier === contracts.AzureSqlPaaSServiceTier.NextGenGeneralPurpose
+								? constants.NEXTGEN_GENERAL_PURPOSE
+								: constants.BUSINESS_CRITICAL;
 
 					const hardwareType = recommendation.targetSku.category?.hardwareType === contracts.AzureSqlPaaSHardwareType.Gen5
 						? constants.GEN5

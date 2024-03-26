@@ -122,6 +122,7 @@ export interface SqlMigrationSkuRecommendationsParams {
 	includePreviewSkus: boolean;
 	databaseAllowList: string[];
 	isPremiumSSDV2Enabled: boolean;
+	isNextGenGPEnabled: boolean;
 }
 
 export interface AzureSqlSkuCategory {
@@ -173,6 +174,8 @@ export interface AzureSqlSku {
 export interface AzureSqlPaaSSku extends AzureSqlSku {
 	category: AzureSqlSkuPaaSCategory;
 	storageMaxSizeInMb: number;
+	maxStorageIops: Float32Array;
+	maxThroughputMBps: Float32Array;
 }
 
 export interface AzureSqlIaaSSku extends AzureSqlSku {
@@ -313,6 +316,7 @@ export const enum AzureSqlPaaSServiceTier {
 	GeneralPurpose = 0,
 	BusinessCritical,
 	HyperScale,
+	NextGenGeneralPurpose
 }
 
 export const enum AzureSqlPaaSHardwareType {
