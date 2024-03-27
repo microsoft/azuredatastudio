@@ -1267,6 +1267,7 @@ export interface BackupFileInfo {
 
 export interface DatabaseMigrationFileShare {
 	path: string;
+	diffAndLogBackupFilePath: string;
 	username: string;
 	password: string;
 }

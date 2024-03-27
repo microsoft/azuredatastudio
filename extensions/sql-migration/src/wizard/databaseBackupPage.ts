@@ -69,6 +69,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _networkShareTargetDatabaseNames: azdata.InputBoxComponent[] = [];
 	private _blobContainerTargetDatabaseNames: azdata.InputBoxComponent[] = [];
 	private _networkShareLocations: azdata.InputBoxComponent[] = [];
+	private _logPathShareLocations: azdata.InputBoxComponent[] = [];
 	private _networkDetailsContainer!: azdata.FlexContainer;
 
 	private _existingDatabases: string[] = [];
@@ -400,7 +401,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL
 					},
 					{
-						displayName: constants.NETWORK_SHARE_PATH,
+						displayName: constants.NETWORK_SHARE_PATH + "1",
+						valueType: azdata.DeclarativeDataType.component,
+						rowCssStyles: rowCssStyle,
+						headerCssStyles: headerCssStyles,
+						isReadOnly: true,
+						width: '300px'
+					},
+					{
+						displayName: constants.NETWORK_SHARE_PATH + "2",
 						valueType: azdata.DeclarativeDataType.component,
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
@@ -943,6 +952,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 				this._networkShareTargetDatabaseNames = [];
 				this._networkShareLocations = [];
+				this._logPathShareLocations = [];
 				this._blobContainerTargetDatabaseNames = [];
 				this._blobContainerResourceGroupDropdowns = [];
 				this._blobContainerStorageAccountDropdowns = [];
@@ -1056,6 +1066,32 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						}));
 					networkShareLocationInput.value = this.migrationStateModel._databaseBackup.networkShares[index]?.networkShareLocation;
 					this._networkShareLocations.push(networkShareLocationInput);
+
+					const logPathShareLocationInput = this._view.modelBuilder.inputBox()
+						.withProps({
+							placeHolder: "Enter path (optional)",
+							validationErrorMessage: "Invalid log path share location format",
+							width: '300px'
+						}).withValidation(c => {
+							if (this.migrationStateModel.isBackupContainerNetworkShare) {
+								if (c.value) {
+									if (!/^[\\\/]{2,}[^\\\/]+[\\\/]+[^\\\/]+/.test(c.value)) {
+										return false;
+									}
+								}
+							}
+							return true;
+						}).component();
+					this._disposables.push(
+						logPathShareLocationInput.onTextChanged(async (value) => {
+							//if (this.migrationStateModel._databaseBackup.logPathShares && this.migrationStateModel._databaseBackup.logPathShares?.length >= index + 1)
+							this.migrationStateModel._databaseBackup.networkShares[index].logSharePath = value.trim();
+							//this._resetValidationUI();
+							//await this.validateFields(networkShareLocationInput);
+						}));
+					//if (this.migrationStateModel._databaseBackup.logPathShares && this.migrationStateModel._databaseBackup.logPathShares?.length >= index + 1)
+					logPathShareLocationInput.value = this.migrationStateModel._databaseBackup?.networkShares[index].logSharePath ?? '';
+					this._logPathShareLocations.push(logPathShareLocationInput);
 
 					const blobTargetDatabaseInput = this._view.modelBuilder.inputBox()
 						.withProps({
@@ -1303,7 +1339,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					.map((db, index) => [
 						{ value: db },
 						{ value: this._networkShareTargetDatabaseNames[index] },
-						{ value: this._networkShareLocations[index] }]);
+						{ value: this._networkShareLocations[index] },
+						{ value: this._logPathShareLocations[index] }]);
 				await this._networkShareTargetDatabaseNamesTable.setDataValues(networkShareTargetData);
 
 				const blobContainerTargetData = this.migrationStateModel._databasesForMigration

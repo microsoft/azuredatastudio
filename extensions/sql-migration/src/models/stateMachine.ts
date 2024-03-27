@@ -114,6 +114,7 @@ export interface DatabaseBackupModel {
 
 export interface NetworkShare {
 	networkShareLocation: string;
+	logSharePath: string;
 	windowsUser: string;
 	password: string;
 	resourceGroup: azurecore.azureResource.AzureResourceResourceGroup;
@@ -1196,6 +1197,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 									fileStorageType: FileStorageType.FileShare,
 									fileShare: {
 										path: this._databaseBackup.networkShares[i].networkShareLocation,
+										diffAndLogBackupFilePath: this._databaseBackup.networkShares[i].logSharePath ?? "",
 										username: this._databaseBackup.networkShares[i].windowsUser,
 										password: this._databaseBackup.networkShares[i].password,
 									}
