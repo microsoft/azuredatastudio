@@ -1738,6 +1738,9 @@
     <trans-unit id="sql.migration.saved.assessment.next">
       <source xml:lang="en">Next</source>
     </trans-unit>
+    <trans-unit id="sql.migration.sku.azureConfiguration.nextGenGeneralPurpose">
+      <source xml:lang="en">Next-gen General Purpose</source>
+    </trans-unit>
     <trans-unit id="sql.migration.no">
       <source xml:lang="en">No</source>
     </trans-unit>
