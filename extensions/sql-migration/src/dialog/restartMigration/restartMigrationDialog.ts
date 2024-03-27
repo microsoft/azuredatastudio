@@ -107,6 +107,7 @@ export class RestartMigrationDialog {
 				{
 					password: '',
 					networkShareLocation: sourceLocation?.fileShare?.path!,
+					logSharePath: sourceLocation?.fileShare?.path!,
 					windowsUser: sourceLocation?.fileShare?.username!,
 					storageAccount: getStorageAccount(storageAccountResourceId!),
 					resourceGroup: getStorageAccountResourceGroup(storageAccountResourceId!),
