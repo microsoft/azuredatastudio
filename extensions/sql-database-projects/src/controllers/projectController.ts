@@ -540,9 +540,11 @@ export class ProjectsController {
 			return undefined; // buildProject() handles displaying the error
 		}
 
-		// copy dacpac to temp location before publishing
-		const tempPath = path.join(os.tmpdir(), `${path.parse(dacpacPath).name}_${new Date().getTime()}${constants.sqlprojExtension}`);
-		await fs.copyFile(dacpacPath, tempPath);
+		// copy entire build output to temp location before publishing
+		const tempDir = path.join(os.tmpdir(), `${path.parse(dacpacPath).name}_${new Date().getTime()}`);
+		await fs.mkdir(tempDir);
+		await fs.cp(path.dirname(dacpacPath), tempDir, { recursive: true });
+		const tempDacpacPath = path.join(tempDir, path.basename(dacpacPath));
 		const dacFxService = await utils.getDacFxService();
 
 		let result: mssql.DacFxResult;
@@ -563,19 +565,19 @@ export class ProjectsController {
 			if (publish) {
 				telemetryProps.publishAction = 'deploy';
 				if (azdataApi) {
-					result = await (dacFxService as mssql.IDacFxService).deployDacpac(tempPath, settings.databaseName, true, settings.connectionUri, azdataApi.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions as mssql.DeploymentOptions);
+					result = await (dacFxService as mssql.IDacFxService).deployDacpac(tempDacpacPath, settings.databaseName, true, settings.connectionUri, azdataApi.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions as mssql.DeploymentOptions);
 				} else {
 					// Have to cast to unknown first to get around compiler error since the mssqlVscode doesn't exist as an actual module at runtime
-					result = await (dacFxService as mssqlVscode.IDacFxService).deployDacpac(tempPath, settings.databaseName, true, settings.connectionUri, TaskExecutionMode.execute as unknown as mssqlVscode.TaskExecutionMode, settings.sqlCmdVariables, settings.deploymentOptions as mssqlVscode.DeploymentOptions);
+					result = await (dacFxService as mssqlVscode.IDacFxService).deployDacpac(tempDacpacPath, settings.databaseName, true, settings.connectionUri, TaskExecutionMode.execute as unknown as mssqlVscode.TaskExecutionMode, settings.sqlCmdVariables, settings.deploymentOptions as mssqlVscode.DeploymentOptions);
 				}
 
 			} else {
 				telemetryProps.publishAction = 'generateScript';
 				if (azdataApi) {
-					result = await (dacFxService as mssql.IDacFxService).generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdataApi.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions as mssql.DeploymentOptions);
+					result = await (dacFxService as mssql.IDacFxService).generateDeployScript(tempDacpacPath, settings.databaseName, settings.connectionUri, azdataApi.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions as mssql.DeploymentOptions);
 				} else {
 					// Have to cast to unknown first to get around compiler error since the mssqlVscode doesn't exist as an actual module at runtime
-					result = await (dacFxService as mssqlVscode.IDacFxService).generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, TaskExecutionMode.script as unknown as mssqlVscode.TaskExecutionMode, settings.sqlCmdVariables, settings.deploymentOptions as mssqlVscode.DeploymentOptions);
+					result = await (dacFxService as mssqlVscode.IDacFxService).generateDeployScript(tempDacpacPath, settings.databaseName, settings.connectionUri, TaskExecutionMode.script as unknown as mssqlVscode.TaskExecutionMode, settings.sqlCmdVariables, settings.deploymentOptions as mssqlVscode.DeploymentOptions);
 				}
 
 			}
