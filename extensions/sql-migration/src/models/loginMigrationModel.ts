@@ -67,6 +67,7 @@ export class LoginMigrationModel {
 	public collectedSourceLogins: boolean = false;
 	public collectedTargetLogins: boolean = false;
 	public loginsOnSource: LoginTableInfo[] = [];
+	public systemLoginsOnSource: LoginTableInfo[] = [];
 	public loginsOnTarget: string[] = [];
 	public loginMigrationsResult!: contracts.StartLoginMigrationResult;
 	public loginMigrationsError: any;
