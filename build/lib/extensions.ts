@@ -297,7 +297,7 @@ const externalExtensions = [
 	'dacpac',
 	'datavirtualization',
 	'import',
-	'kusto',
+	// 'kusto',
 	'machine-learning',
 	'profiler',
 	'query-history',
