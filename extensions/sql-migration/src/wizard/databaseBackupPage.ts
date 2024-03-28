@@ -401,7 +401,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL
 					},
 					{
-						displayName: constants.NETWORK_SHARE_PATH + "1",
+						displayName: "Full backup Path",
 						valueType: azdata.DeclarativeDataType.component,
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
@@ -409,7 +409,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						width: '300px'
 					},
 					{
-						displayName: constants.NETWORK_SHARE_PATH + "2",
+						displayName: "Log backup path",
 						valueType: azdata.DeclarativeDataType.component,
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
