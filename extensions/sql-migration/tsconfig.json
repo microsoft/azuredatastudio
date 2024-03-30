@@ -13,8 +13,5 @@
 		"declaration": false,
 		"strict": true,
 		"noUnusedParameters": false,
-	},
-	"exclude": [
-		"node_modules"
-	]
+	}
 }
