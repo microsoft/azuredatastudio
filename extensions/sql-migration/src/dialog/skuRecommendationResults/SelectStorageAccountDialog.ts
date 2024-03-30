@@ -579,16 +579,16 @@ export class SelectStorageAccountDialog {
 
 	private async uploadTemplate(): Promise<void> {
 		const storageKeys = await getStorageAccountAccessKeys(this._azureAccount, this._targetSubscription, this._storageAccount);
-		console.log(storageKeys);
+		console.log("------" + storageKeys);
 		const accountName = this._storageAccount.name;
-		console.log(accountName);
+		console.log("------" + accountName);
 		const containerName = this._blobContainer.name;
-		console.log(containerName);
+		console.log("------" + containerName);
 		const blobName = utils.generateTemplatePath(this.migrationStateModel, this._targetType);
-		console.log(blobName);
+		console.log("------" + blobName);
 
 		const sharedKeyCredential = new StorageSharedKeyCredential(this._storageAccount.name, storageKeys.keyName1);
-		console.log(sharedKeyCredential);
+		console.log("------" + sharedKeyCredential);
 
 		const sasToken = generateBlobSASQueryParameters({
 			containerName,
@@ -598,17 +598,17 @@ export class SelectStorageAccountDialog {
 		},
 			sharedKeyCredential
 		).toString();
-		console.log(sasToken);
+		console.log("------" + sasToken);
 
 		const sasUrl = `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
 		try {
 			const blockBlobClient = new BlockBlobClient(sasUrl);
-			console.log(blockBlobClient);
+			console.log("------" + blockBlobClient);
 			const template = this.migrationStateModel._armTemplateResult.template!;
-			console.log(template);
+			console.log("------" + template);
 			if (template) {
 				const response = await blockBlobClient.upload(template, template.length);
-				console.log(response);
+				console.log("------" + response);
 				void vscode.window.showInformationMessage(constants.UPLOAD_TEMPLATE_SUCCESS);
 			}
 		}
