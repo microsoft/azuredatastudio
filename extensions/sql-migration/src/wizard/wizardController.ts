@@ -218,11 +218,18 @@ export class WizardController {
 		this._wizardObject.nextButton.secondary = false;
 		this._wizardObject.cancelButton.hidden = true;
 
+		const validateButton = azdata.window.createButton(
+			loc.RUN_VALIDATION,
+			'left');
+		validateButton.secondary = false;
+		validateButton.hidden = true;
+
 		const customCancelButton = azdata.window.createButton(
 			loc.CANCEL,
 			'right');
 		customCancelButton.secondary = true;
-		this._wizardObject.customButtons = [customCancelButton];
+
+		this._wizardObject.customButtons = [validateButton, customCancelButton];
 
 
 		const targetSelectionPage = new LoginMigrationTargetSelectionPage(this._wizardObject, stateModel, this);

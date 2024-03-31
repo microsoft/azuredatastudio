@@ -16,7 +16,9 @@ import * as utils from '../api/utils';
 import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
 import { CollectingSourceLoginsFailed, CollectingTargetLoginsFailed } from '../models/loginMigrationModel';
 import { WizardController } from './wizardController';
+import { LoginPreMigrationValidationDialog } from '../dialog/loginMigration/loginPreMigrationValidationDialog';
 
+const VALIDATE_LOGIN_MIGRATION_CUSTOM_BUTTON_INDEX = 0;
 
 export class LoginSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -48,6 +50,10 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		}).component();
 		flex.addItem(await this.createRootContainer(view), { flex: '1 1 auto' });
 
+		this._disposables.push(
+			this.wizard.customButtons[VALIDATE_LOGIN_MIGRATION_CUSTOM_BUTTON_INDEX].onClick(
+				async e => await this._validateLoginPreMigration()));
+
 		this._disposables.push(this._view.onClosed(e => {
 			this._disposables.forEach(
 				d => { try { d.dispose(); } catch { } });
@@ -64,6 +70,9 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 		this._isCurrentPage = true;
 		this.updateNextButton();
+
+		this.wizard.customButtons[VALIDATE_LOGIN_MIGRATION_CUSTOM_BUTTON_INDEX].hidden = false;
+
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = {
 				text: '',
@@ -104,6 +113,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	}
 
 	public async onPageLeave(): Promise<void> {
+		this.wizard.customButtons[VALIDATE_LOGIN_MIGRATION_CUSTOM_BUTTON_INDEX].hidden = true;
+
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			return true;
 		});
@@ -509,6 +520,13 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		const selectedWindowsLogins = this.migrationStateModel._loginMigrationModel.selectedWindowsLogins;
 		await utils.updateControlDisplay(this._aadDomainNameContainer, selectedWindowsLogins);
 		await this._loginSelectorTable.updateProperty("height", selectedWindowsLogins ? 600 : 650);
+	}
+
+	private async _validateLoginPreMigration(): Promise<void> {
+		const dialog = new LoginPreMigrationValidationDialog();
+		// let results: ValidationResult[] = [];
+		// results = this.migrationStateModel._validateIrSqlDb;
+		await dialog.openDialog();
 	}
 
 	private async updateValuesOnSelection() {
