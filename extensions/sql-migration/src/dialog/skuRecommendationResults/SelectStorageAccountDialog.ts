@@ -278,7 +278,7 @@ export class SelectStorageAccountDialog {
 						? utils.deepClone(selectedLocation)!
 						: undefined!;
 				} else {
-					this.migrationStateModel._location = undefined!;
+					this._location = undefined!;
 				}
 
 				await utils.clearDropDown(this._azureResourceGroupDropdown);
@@ -341,7 +341,7 @@ export class SelectStorageAccountDialog {
 						? utils.deepClone(selectedStorageAccount)!
 						: undefined!;
 				} else {
-					this._serviceContext.migrationService = undefined;
+					this._storageAccount = undefined;
 				}
 				await utils.clearDropDown(this._blobContainerDropdown);
 				await this._populateBlobContainer();
@@ -364,6 +364,18 @@ export class SelectStorageAccountDialog {
 				placeholder: constants.SELECT_BLOB_CONTAINER,
 				CSSStyles: { ...DROPDOWN_CSS },
 			}).component();
+
+		this._disposables.push(
+			this._blobContainerDropdown.onValueChanged(async (value) => {
+				if (value && value !== 'undefined') {
+					const selectedBlobContainer = this._blobContainers?.find(rg => rg.name === (<azdata.CategoryValue>this._blobContainerDropdown.value)?.displayName);
+					this._blobContainer = (selectedBlobContainer)
+						? utils.deepClone(selectedBlobContainer)!
+						: undefined!;
+				} else {
+					this._blobContainer = undefined;
+				}
+			}));
 
 		return this._view.modelBuilder.flexContainer()
 			.withItems([
@@ -579,7 +591,7 @@ export class SelectStorageAccountDialog {
 
 	private async uploadTemplate(): Promise<void> {
 		const storageKeys = await getStorageAccountAccessKeys(this._azureAccount, this._targetSubscription, this._storageAccount);
-		console.log("------" + storageKeys);
+		console.log("------" + storageKeys.keyName1);
 		const accountName = this._storageAccount.name;
 		console.log("------" + accountName);
 		const containerName = this._blobContainer.name;
@@ -588,7 +600,7 @@ export class SelectStorageAccountDialog {
 		console.log("------" + blobName);
 
 		const sharedKeyCredential = new StorageSharedKeyCredential(this._storageAccount.name, storageKeys.keyName1);
-		console.log("------" + sharedKeyCredential);
+		console.log("------" + sharedKeyCredential.accountName);
 
 		const sasToken = generateBlobSASQueryParameters({
 			containerName,
@@ -601,20 +613,17 @@ export class SelectStorageAccountDialog {
 		console.log("------" + sasToken);
 
 		const sasUrl = `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
-		try {
-			const blockBlobClient = new BlockBlobClient(sasUrl);
-			console.log("------" + blockBlobClient);
-			const template = this.migrationStateModel._armTemplateResult.template!;
-			console.log("------" + template);
-			if (template) {
-				const response = await blockBlobClient.upload(template, template.length);
-				console.log("------" + response);
-				void vscode.window.showInformationMessage(constants.UPLOAD_TEMPLATE_SUCCESS);
-			}
-		}
-		catch (e) {
-			logError(TelemetryViews.UploadArmTemplateDialog, 'ArmTemplateUploadError', e);
-			void vscode.window.showErrorMessage(constants.UPLOAD_TEMPLATE_FAIL);
+
+		const blockBlobClient = new BlockBlobClient(sasUrl);
+		console.log("------" + blockBlobClient.accountName);
+		const template = this.migrationStateModel._armTemplateResult.template!;
+		console.log("------" + template);
+		if (template) {
+			const response = await blockBlobClient.upload(template, template.length);
+			console.log("------" + response._response.status);
+			console.log("------" + response.errorCode);
+			console.log("------" + response._response.headers.toJson().toString());
+			console.log("------" + response._response.parsedHeaders.errorCode);
 		}
 	}
 }
