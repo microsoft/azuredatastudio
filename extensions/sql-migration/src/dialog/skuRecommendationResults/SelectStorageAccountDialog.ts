@@ -42,7 +42,6 @@ export class SelectStorageAccountDialog {
 	private _dialog: azdata.window.Dialog;
 	private _view!: azdata.ModelView;
 	private _disposables: vscode.Disposable[] = [];
-	private _serviceContext!: MigrationServiceContext;
 	private _azureAccounts!: azdata.Account[];
 	private _accountTenants!: azurecore.Tenant[];
 	private _azureTenant!: azurecore.Tenant;
@@ -340,8 +339,6 @@ export class SelectStorageAccountDialog {
 					this._storageAccount = (selectedStorageAccount)
 						? utils.deepClone(selectedStorageAccount)!
 						: undefined!;
-				} else {
-					this._storageAccount = undefined;
 				}
 				await utils.clearDropDown(this._blobContainerDropdown);
 				await this._populateBlobContainer();
@@ -372,8 +369,6 @@ export class SelectStorageAccountDialog {
 					this._blobContainer = (selectedBlobContainer)
 						? utils.deepClone(selectedBlobContainer)!
 						: undefined!;
-				} else {
-					this._blobContainer = undefined;
 				}
 			}));
 
