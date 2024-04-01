@@ -1,4 +1,5 @@
 src/**
+out/**
 tsconfig.json
 images/ADSMigration.gif
 tsconfig.json

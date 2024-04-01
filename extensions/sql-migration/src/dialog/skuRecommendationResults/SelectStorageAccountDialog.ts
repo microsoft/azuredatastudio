@@ -6,7 +6,6 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as azurecore from 'azurecore';
-import { MigrationServiceContext } from '../../models/migrationLocalStorage';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import * as utils from '../../api/utils';
