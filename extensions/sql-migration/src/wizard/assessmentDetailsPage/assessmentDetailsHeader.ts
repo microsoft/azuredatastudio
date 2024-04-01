@@ -32,7 +32,7 @@ export class AssessmentDetailsHeader {
 	private _generateTemplateLink!: azdata.HyperlinkComponent;
 	private _linksContainer!: azdata.FlexContainer;
 	private _separator!: azdata.TextComponent;
-	private _azureRecommendationStatusText!: azdata.TextComponent;
+	private _azureRecommendationLoadingText!: azdata.TextComponent;
 
 	// public getter for target type selection drop down.
 	public get targetTypeDropdown() {
@@ -220,7 +220,7 @@ export class AssessmentDetailsHeader {
 				CSSStyles: styles.SEPARATOR,
 			}).component();
 
-			this._azureRecommendationStatusText = this._view.modelBuilder.text().withProps({
+			this._azureRecommendationLoadingText = this._view.modelBuilder.text().withProps({
 				value: constants.LOADING_RECOMMENDATIONS,
 				CSSStyles: {
 					'font-size': '13px',
@@ -231,9 +231,7 @@ export class AssessmentDetailsHeader {
 			}).component();
 
 			this._linksContainer.addItems([this._viewDetailsLink, this._separator, this._generateTemplateLink]);
-			cardContainer.addItem(this._azureRecommendationStatusText);
-			cardContainer.addItem(this._linksContainer);
-
+			cardContainer.addItems([this._azureRecommendationLoadingText, this._linksContainer]);
 		}
 
 		this._valueContainers.push(cardText);
@@ -268,7 +266,7 @@ export class AssessmentDetailsHeader {
 
 		if (!this._readonly) {
 			const recommendedConfigurations = await utils.getRecommendedConfiguration(migrationStateModel._targetType, migrationStateModel);
-			await this._azureRecommendationStatusText.updateCssStyles({ 'display': 'block' });
+			await this._azureRecommendationLoadingText.updateCssStyles({ 'display': 'block' });
 			await this.migrationStateModel.getSkuRecommendations();
 			let configurationValue = recommendedConfigurations[0] ?? "--";
 			if (migrationStateModel._targetType === MigrationTargetType.SQLVM && recommendedConfigurations?.length > 1) {
@@ -283,7 +281,7 @@ export class AssessmentDetailsHeader {
 				await this._separator.updateCssStyles({ 'display': 'block' });
 			}
 
-			await this._azureRecommendationStatusText.updateCssStyles({ 'display': 'none' });
+			await this._azureRecommendationLoadingText.updateCssStyles({ 'display': 'none' });
 		}
 
 	}

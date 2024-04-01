@@ -6,7 +6,6 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as azurecore from 'azurecore';
-import { MigrationServiceContext } from '../../models/migrationLocalStorage';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import * as utils from '../../api/utils';
@@ -42,7 +41,6 @@ export class SelectStorageAccountDialog {
 	private _dialog: azdata.window.Dialog;
 	private _view!: azdata.ModelView;
 	private _disposables: vscode.Disposable[] = [];
-	private _serviceContext!: MigrationServiceContext;
 	private _azureAccounts!: azdata.Account[];
 	private _accountTenants!: azurecore.Tenant[];
 	private _azureTenant!: azurecore.Tenant;
@@ -278,7 +276,7 @@ export class SelectStorageAccountDialog {
 						? utils.deepClone(selectedLocation)!
 						: undefined!;
 				} else {
-					this.migrationStateModel._location = undefined!;
+					this._location = undefined!;
 				}
 
 				await utils.clearDropDown(this._azureResourceGroupDropdown);
@@ -340,8 +338,6 @@ export class SelectStorageAccountDialog {
 					this._storageAccount = (selectedStorageAccount)
 						? utils.deepClone(selectedStorageAccount)!
 						: undefined!;
-				} else {
-					this._serviceContext.migrationService = undefined;
 				}
 				await utils.clearDropDown(this._blobContainerDropdown);
 				await this._populateBlobContainer();
@@ -364,6 +360,16 @@ export class SelectStorageAccountDialog {
 				placeholder: constants.SELECT_BLOB_CONTAINER,
 				CSSStyles: { ...DROPDOWN_CSS },
 			}).component();
+
+		this._disposables.push(
+			this._blobContainerDropdown.onValueChanged(async (value) => {
+				if (value && value !== 'undefined') {
+					const selectedBlobContainer = this._blobContainers?.find(rg => rg.name === (<azdata.CategoryValue>this._blobContainerDropdown.value)?.displayName);
+					this._blobContainer = (selectedBlobContainer)
+						? utils.deepClone(selectedBlobContainer)!
+						: undefined!;
+				}
+			}));
 
 		return this._view.modelBuilder.flexContainer()
 			.withItems([
