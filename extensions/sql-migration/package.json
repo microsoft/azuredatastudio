@@ -178,8 +178,7 @@
     "@microsoft/ads-service-downloader": "^1.2.1",
     "@microsoft/ads-extension-telemetry": "^3.0.1",
     "uuid": "^8.3.2",
-    "vscode-nls": "^4.1.2",
-    "@azure/storage-blob": "^12.13.0"
+    "vscode-nls": "^4.1.2"
   },
   "__metadata": {
     "publisherDisplayName": "Microsoft",
