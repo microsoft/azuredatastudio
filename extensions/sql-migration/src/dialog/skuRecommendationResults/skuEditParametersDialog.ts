@@ -23,7 +23,7 @@ export class SkuEditParametersDialog {
 
 	private _scaleFactorInput!: azdata.InputBoxComponent;
 	private _targetPercentileDropdown!: azdata.DropDownComponent;
-	private _enablePreviewValue!: boolean;
+	private _enablePreviewValue: boolean = true;
 	private _enableElasticRecommendation!: boolean;
 
 	constructor(
