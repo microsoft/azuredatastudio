@@ -7,7 +7,7 @@
 		"Windows_ARM64": "win-arm64-net8.0.zip",
 		"OSX": "osx-x64-net8.0.tar.gz",
 		"OSX_ARM64": "osx-arm64-net8.0.tar.gz",
-		"Linux": "rhel-x64-net8.0.tar.gz"
+		"Linux": "linux-x64-net8.0.tar.gz"
 	},
 	"installDirectory": "./sqltoolsservice/{#platform#}/{#version#}",
 	"executableFiles": [
