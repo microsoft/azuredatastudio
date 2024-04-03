@@ -1,13 +1,13 @@
 {
 	"downloadUrl": "https://github.com/Microsoft/sqltoolsservice/releases/download/{#version#}/microsoft.sqltools.servicelayer-{#fileName#}",
-	"version": "4.11.0.20",
+	"version": "5.0.0.2",
 	"downloadFileNames": {
-		"Windows_86": "win-x86-net7.0.zip",
-		"Windows_64": "win-x64-net7.0.zip",
-		"Windows_ARM64": "win-arm64-net7.0.zip",
-		"OSX": "osx-x64-net7.0.tar.gz",
-		"OSX_ARM64": "osx-arm64-net7.0.tar.gz",
-		"Linux": "rhel-x64-net7.0.tar.gz"
+		"Windows_86": "win-x86-net8.0.zip",
+		"Windows_64": "win-x64-net8.0.zip",
+		"Windows_ARM64": "win-arm64-net8.0.zip",
+		"OSX": "osx-x64-net8.0.tar.gz",
+		"OSX_ARM64": "osx-arm64-net8.0.tar.gz",
+		"Linux": "linux-x64-net8.0.tar.gz"
 	},
 	"installDirectory": "./sqltoolsservice/{#platform#}/{#version#}",
 	"executableFiles": [
