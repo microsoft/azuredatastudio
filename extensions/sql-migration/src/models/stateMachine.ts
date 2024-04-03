@@ -312,7 +312,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 		this._skuScalingFactor = 100;
 		this._skuTargetPercentile = 95;
-		this._skuEnablePreview = false;
+		this._skuEnablePreview = true;
 		this._skuEnableElastic = false;
 		this._loginMigrationModel = new LoginMigrationModel();
 	}
