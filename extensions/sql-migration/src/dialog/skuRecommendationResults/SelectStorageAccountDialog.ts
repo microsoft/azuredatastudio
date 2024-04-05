@@ -363,7 +363,7 @@ export class SelectStorageAccountDialog {
 
 		this._disposables.push(
 			this._blobContainerDropdown.onValueChanged(async (value) => {
-				if (value && value !== 'undefined') {
+				if (value && value !== undefined) {
 					const selectedBlobContainer = this._blobContainers?.find(rg => rg.name === (<azdata.CategoryValue>this._blobContainerDropdown.value)?.displayName);
 					this._blobContainer = (selectedBlobContainer)
 						? utils.deepClone(selectedBlobContainer)!
