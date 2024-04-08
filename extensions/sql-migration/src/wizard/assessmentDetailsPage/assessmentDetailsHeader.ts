@@ -32,6 +32,7 @@ export class AssessmentDetailsHeader {
 	private _generateTemplateLink!: azdata.HyperlinkComponent;
 	private _linksContainer!: azdata.FlexContainer;
 	private _separator!: azdata.TextComponent;
+	private _azureRecommendationLoadingText!: azdata.TextComponent;
 
 	// public getter for target type selection drop down.
 	public get targetTypeDropdown() {
@@ -219,8 +220,18 @@ export class AssessmentDetailsHeader {
 				CSSStyles: styles.SEPARATOR,
 			}).component();
 
+			this._azureRecommendationLoadingText = this._view.modelBuilder.text().withProps({
+				value: constants.LOADING_RECOMMENDATIONS,
+				CSSStyles: {
+					'font-size': '13px',
+					'font-weight': '400',
+					'line-height': '18px',
+					'display': 'none'
+				},
+			}).component();
+
 			this._linksContainer.addItems([this._viewDetailsLink, this._separator, this._generateTemplateLink]);
-			cardContainer.addItem(this._linksContainer);
+			cardContainer.addItems([this._azureRecommendationLoadingText, this._linksContainer]);
 		}
 
 		this._valueContainers.push(cardText);
@@ -232,23 +243,14 @@ export class AssessmentDetailsHeader {
 		// this value is populated to handle the case when user selects a target type and want to resume later.
 		this._targetSelectionDropdown.value = this.getTargetTypeBasedOnModel(migrationStateModel._targetType);
 
-		const assessmentHeaderValues: { value: string | string[] | undefined; }[] = [];
-		if (!this._readonly) {
-			const recommendedConfigurations = await utils.getRecommendedConfiguration(migrationStateModel._targetType, migrationStateModel);
-			let configurationValue = recommendedConfigurations[0] ?? "--";
-			if (migrationStateModel._targetType === MigrationTargetType.SQLVM && recommendedConfigurations?.length > 1) {
-				configurationValue = recommendedConfigurations[0] + "\n" + recommendedConfigurations[1];
-			}
-			assessmentHeaderValues.push({
-				value: configurationValue
-			})
+		await this._viewDetailsLink.updateCssStyles({ 'display': 'none' });
+		await this._generateTemplateLink.updateCssStyles({ 'display': 'none' });
+		await this._separator.updateCssStyles({ 'display': 'none' });
 
-			if (configurationValue !== "--") {
-				await this._viewDetailsLink.updateCssStyles({ 'display': 'block' });
-				await this._generateTemplateLink.updateCssStyles({ 'display': 'block' });
-				await this._separator.updateCssStyles({ 'display': 'block' });
-			}
-		}
+
+
+		const assessmentHeaderValues: { value: string | string[] | undefined; }[] = [];
+		assessmentHeaderValues.push({ value: "" });
 		assessmentHeaderValues.push(
 			{
 				value: String(migrationStateModel._assessmentResults?.databaseAssessments?.length)
@@ -261,6 +263,27 @@ export class AssessmentDetailsHeader {
 		let index = 0;
 		this._valueContainers.forEach((valueContainer) =>
 			valueContainer.value = assessmentHeaderValues[index++].value);
+
+		if (!this._readonly) {
+			const recommendedConfigurations = await utils.getRecommendedConfiguration(migrationStateModel._targetType, migrationStateModel);
+			await this._azureRecommendationLoadingText.updateCssStyles({ 'display': 'block' });
+			await this.migrationStateModel.getSkuRecommendations();
+			let configurationValue = recommendedConfigurations[0] ?? "--";
+			if (migrationStateModel._targetType === MigrationTargetType.SQLVM && recommendedConfigurations?.length > 1) {
+				configurationValue = recommendedConfigurations[0] + "\n" + recommendedConfigurations[1];
+			}
+
+			this._valueContainers[0].value = configurationValue;
+
+			if (configurationValue !== "--") {
+				await this._viewDetailsLink.updateCssStyles({ 'display': 'block' });
+				await this._generateTemplateLink.updateCssStyles({ 'display': 'block' });
+				await this._separator.updateCssStyles({ 'display': 'block' });
+			}
+
+			await this._azureRecommendationLoadingText.updateCssStyles({ 'display': 'none' });
+		}
+
 	}
 
 	// function that create target selection dropdown
