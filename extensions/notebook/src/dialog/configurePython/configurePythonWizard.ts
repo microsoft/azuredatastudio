@@ -22,7 +22,6 @@ export interface ConfigurePythonModel {
 	pythonPathLookup: PythonPathLookup;
 	packagesToInstall: PythonPkgDetails[];
 	installation: JupyterServerInstallation;
-	packageUpgradeOnly: boolean;
 }
 
 export class ConfigurePythonWizard {
@@ -170,8 +169,7 @@ export class ConfigurePythonWizard {
 		// Don't wait on installation, since there's currently no Cancel functionality
 		let installSettings: PythonInstallSettings = {
 			installPath: pythonLocation,
-			packages: this.model.packagesToInstall,
-			packageUpgradeOnly: this.model.packageUpgradeOnly
+			packages: this.model.packagesToInstall
 		};
 		this.jupyterInstallation.startInstallProcess(false, installSettings)
 			.then(() => {

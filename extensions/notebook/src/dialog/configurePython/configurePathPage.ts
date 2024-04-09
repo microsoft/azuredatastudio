@@ -141,9 +141,6 @@ export class ConfigurePathPage extends BasePage {
 			}
 
 			this.model.pythonLocation = pythonLocation;
-			this.model.packageUpgradeOnly = false;
-		} else {
-			this.model.packageUpgradeOnly = true;
 		}
 		return true;
 	}

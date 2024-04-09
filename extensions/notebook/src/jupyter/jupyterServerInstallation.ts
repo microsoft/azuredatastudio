@@ -30,7 +30,6 @@ function msgGetPythonUserDirFailed(errorMessage: string): string { return locali
 export interface PythonInstallSettings {
 	installPath: string;
 	packages: PythonPkgDetails[];
-	packageUpgradeOnly?: boolean;
 }
 export interface IJupyterServerInstallation {
 	/**
@@ -227,10 +226,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 							await vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, constants.CommandContext.NotebookPythonInstalled, true);
 							this._installCompletion.resolve();
 							this._installInProgress = false;
-
-							if (!installSettings.packageUpgradeOnly) {
-								await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions');
-							}
 						})
 						.catch(err => {
 							let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
