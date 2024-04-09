@@ -60,7 +60,7 @@ export class ConfigurePathPage extends BasePage {
 		let selectInstallForm = this.view.modelBuilder.formContainer()
 			.withFormItems([{
 				component: this.pythonDropdownLoader,
-				title: localize('configurePython.locationTextBoxText', "Python Install Location")
+				title: localize('configurePython.locationTextBoxText', "Python Location")
 			}, {
 				component: browseButton,
 				title: ''
