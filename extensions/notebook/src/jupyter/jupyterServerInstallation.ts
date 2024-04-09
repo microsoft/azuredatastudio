@@ -74,7 +74,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private _installInProgress = false;
 	private _installCompletion: Deferred<void>;
 
-	public static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
+	private static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
 
 	private readonly _kernelSetupCache = new Map<string, boolean>();
 	private readonly _requiredKernelPackages = new Map<string, PythonPkgDetails[]>();
@@ -95,8 +95,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			this._pythonInstallationPath = `${vscode.env.appRoot}\\ads-python`;
 		} else if (this._tsgopsweb) {
 			this._pythonInstallationPath = `/usr`;
-		}
-		else {
+		} else {
 			this._pythonInstallationPath = JupyterServerInstallation.getPythonInstallPath();
 		}
 
