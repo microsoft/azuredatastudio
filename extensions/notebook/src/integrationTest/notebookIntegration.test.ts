@@ -12,7 +12,7 @@ import { JupyterController } from '../jupyter/jupyterController';
 import { PythonPkgDetails } from '../jupyter/jupyterServerInstallation';
 import { sortPackageVersions } from '../common/utils';
 
-describe('Notebook Extension Python Installation', function () {
+describe('Notebook Extension Python Package Installation', function () {
 	this.timeout(600000);
 
 	let pythonInstallDir = process.env.PYTHON_TEST_PATH;
