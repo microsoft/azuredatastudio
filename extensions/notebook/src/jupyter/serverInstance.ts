@@ -243,7 +243,7 @@ export class PerFolderServerInstance implements IServerInstance {
 
 		// Execute the command
 		await this.executeStartCommand(startCommand);
-		sendNotebookActionEvent(NbTelemetryView.Jupyter, NbTelemetryAction.JupyterServerStarted, { pythonVersion: this.options.install.installedPythonVersion, usingExistingPython: String(JupyterServerInstallation.getExistingPythonSetting()), usingConda: String(this.options.install.usingConda) });
+		sendNotebookActionEvent(NbTelemetryView.Jupyter, NbTelemetryAction.JupyterServerStarted, { pythonVersion: this.options.install.installedPythonVersion, usingConda: String(this.options.install.usingConda) });
 	}
 
 	private executeStartCommand(startCommand: string): Promise<void> {

@@ -18,8 +18,6 @@ export class ConfigurePathPage extends BasePage {
 
 	private pythonLocationDropdown: azdata.DropDownComponent;
 	private pythonDropdownLoader: azdata.LoadingComponent;
-	private newInstallButton: azdata.RadioButtonComponent;
-	private existingInstallButton: azdata.RadioButtonComponent;
 
 	private selectInstallEnabled: boolean;
 	private usingCustomPath: boolean = false;
@@ -60,16 +58,8 @@ export class ConfigurePathPage extends BasePage {
 			}).component();
 		browseButton.onDidClick(() => this.handleBrowse());
 
-		this.createInstallRadioButtons(this.view.modelBuilder, this.model.useExistingPython);
-
 		let selectInstallForm = this.view.modelBuilder.formContainer()
 			.withFormItems([{
-				component: this.newInstallButton,
-				title: localize('configurePython.installationType', "Installation Type")
-			}, {
-				component: this.existingInstallButton,
-				title: ''
-			}, {
 				component: this.pythonDropdownLoader,
 				title: localize('configurePython.locationTextBoxText', "Python Install Location")
 			}, {
@@ -152,7 +142,6 @@ export class ConfigurePathPage extends BasePage {
 			}
 
 			this.model.pythonLocation = pythonLocation;
-			this.model.useExistingPython = !!this.existingInstallButton.checked;
 			this.model.packageUpgradeOnly = false;
 		} else {
 			this.model.packageUpgradeOnly = true;
@@ -197,37 +186,6 @@ export class ConfigurePathPage extends BasePage {
 			this.instance.wizard.nextButton.enabled = true;
 			this.pythonDropdownLoader.loading = false;
 		}
-	}
-
-	private createInstallRadioButtons(modelBuilder: azdata.ModelBuilder, useExistingPython: boolean): void {
-		let buttonGroup = 'installationType';
-		this.newInstallButton = modelBuilder.radioButton()
-			.withProps({
-				name: buttonGroup,
-				label: localize('configurePython.newInstall', "New Python installation"),
-				checked: !useExistingPython
-			}).component();
-		this.newInstallButton.onDidClick(() => {
-			this.existingInstallButton.checked = false;
-			this.updatePythonPathsDropdown(false)
-				.catch(err => {
-					this.instance.showErrorMessage(utils.getErrorMessage(err));
-				});
-		});
-
-		this.existingInstallButton = modelBuilder.radioButton()
-			.withProps({
-				name: buttonGroup,
-				label: localize('configurePython.existingInstall', "Use existing Python installation"),
-				checked: useExistingPython
-			}).component();
-		this.existingInstallButton.onDidClick(() => {
-			this.newInstallButton.checked = false;
-			this.updatePythonPathsDropdown(true)
-				.catch(err => {
-					this.instance.showErrorMessage(utils.getErrorMessage(err));
-				});
-		});
 	}
 
 	private async handleBrowse(): Promise<void> {

@@ -9,13 +9,12 @@ import * as assert from 'assert';
 import 'mocha';
 
 import { JupyterController } from '../jupyter/jupyterController';
-import { JupyterServerInstallation, PythonPkgDetails } from '../jupyter/jupyterServerInstallation';
-import { executeStreamedCommand, sortPackageVersions } from '../common/utils';
+import { PythonPkgDetails } from '../jupyter/jupyterServerInstallation';
+import { sortPackageVersions } from '../common/utils';
 
 describe('Notebook Extension Python Installation', function () {
 	this.timeout(600000);
 
-	let installComplete = false;
 	let pythonInstallDir = process.env.PYTHON_TEST_PATH;
 	let jupyterController: JupyterController;
 
@@ -35,46 +34,6 @@ describe('Notebook Extension Python Installation', function () {
 		}
 
 		jupyterController = notebookExtension.exports.getJupyterController() as JupyterController;
-
-		console.log('Start Jupyter Installation');
-		await jupyterController.jupyterInstallation.startInstallProcess(false, { installPath: pythonInstallDir, existingPython: false, packages: [] });
-		installComplete = true;
-		console.log('Jupyter Installation is done');
-	});
-
-	it('Verify Python Installation', async function () {
-		should(installComplete).be.true('Python setup did not complete.');
-		let jupyterPath = JupyterServerInstallation.getPythonInstallPath();
-
-		console.log(`Expected python path: '${pythonInstallDir}'; actual: '${jupyterPath}'`);
-		should(jupyterPath).be.equal(pythonInstallDir);
-		should(JupyterServerInstallation.isPythonInstalled()).be.true();
-		should(JupyterServerInstallation.getExistingPythonSetting()).be.false();
-	});
-
-	it('Use Existing Python Installation', async function () {
-		should(installComplete).be.true('Python setup did not complete.');
-
-		console.log('Uninstalling existing pip dependencies');
-		let install = jupyterController.jupyterInstallation;
-		let pythonExe = JupyterServerInstallation.getPythonExePath(pythonInstallDir);
-		let command = `"${pythonExe}" -m pip uninstall -y jupyter`;
-		await executeStreamedCommand(command, { env: install.execOptions.env }, install.outputChannel);
-		console.log('Uninstalling existing pip dependencies is done');
-
-		console.log('Start Existing Python Installation');
-		await install.startInstallProcess(false, { installPath: pythonInstallDir, existingPython: true, packages: [] });
-		should(JupyterServerInstallation.isPythonInstalled()).be.true();
-		should(JupyterServerInstallation.getPythonInstallPath()).be.equal(pythonInstallDir);
-		should(JupyterServerInstallation.getExistingPythonSetting()).be.true();
-
-		// Redo "new" install to restore original settings.
-		// The actual install should get skipped since it already exists.
-		await install.startInstallProcess(false, { installPath: pythonInstallDir, existingPython: false, packages: [] });
-		should(JupyterServerInstallation.isPythonInstalled()).be.true();
-		should(JupyterServerInstallation.getPythonInstallPath()).be.equal(pythonInstallDir);
-		should(JupyterServerInstallation.getExistingPythonSetting()).be.false();
-		console.log('Existing Python Installation is done');
 	});
 
 	it('Pip Install Utilities Test', async function () {

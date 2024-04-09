@@ -55,8 +55,7 @@ export class ConfigurePythonWizard {
 			kernelName: kernelName,
 			pythonPathLookup: new PythonPathLookup(),
 			installation: this.jupyterInstallation,
-			pythonLocation: JupyterServerInstallation.getPythonPathSetting(),
-			useExistingPython: JupyterServerInstallation.getExistingPythonSetting()
+			pythonLocation: JupyterServerInstallation.getPythonPathSetting()
 		};
 		// Default to using existing Python on Mac and Linux, since they have python installed by default
 		if (os.platform() === macPlatform || os.platform() === linuxPlatform) {
@@ -158,20 +157,17 @@ export class ConfigurePythonWizard {
 
 	private async handlePackageInstall(): Promise<boolean> {
 		let pythonLocation = this.model.pythonLocation;
-		let useExistingPython = this.model.useExistingPython;
 		try {
 			let isValid = await this.isFileValid(pythonLocation);
 			if (!isValid) {
 				return false;
 			}
 
-			if (useExistingPython) {
-				let exePath = JupyterServerInstallation.getPythonExePath(pythonLocation);
-				let pythonExists = await utils.exists(exePath);
-				if (!pythonExists) {
-					this.showErrorMessage(this.PythonNotFoundMsg);
-					return false;
-				}
+			let exePath = JupyterServerInstallation.getPythonExePath(pythonLocation);
+			let pythonExists = await utils.exists(exePath);
+			if (!pythonExists) {
+				this.showErrorMessage(this.PythonNotFoundMsg);
+				return false;
 			}
 		} catch (err) {
 			this.showErrorMessage(utils.getErrorMessage(err));
@@ -181,7 +177,6 @@ export class ConfigurePythonWizard {
 		// Don't wait on installation, since there's currently no Cancel functionality
 		let installSettings: PythonInstallSettings = {
 			installPath: pythonLocation,
-			existingPython: useExistingPython,
 			packages: this.model.packagesToInstall,
 			packageUpgradeOnly: this.model.packageUpgradeOnly
 		};
