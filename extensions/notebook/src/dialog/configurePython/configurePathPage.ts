@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { BasePage } from './basePage';
 import * as nls from 'vscode-nls';
-import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
 import * as utils from '../../common/utils';
 
 const localize = nls.loadMessageBundle();
@@ -122,7 +121,7 @@ export class ConfigurePathPage extends BasePage {
 		parentContainer.addItems(allParentItems);
 
 		await this.view.initializeModel(parentContainer);
-		await this.updatePythonPathsDropdown(this.model.useExistingPython);
+		await this.updatePythonPathsDropdown();
 
 		return true;
 	}
@@ -149,31 +148,23 @@ export class ConfigurePathPage extends BasePage {
 		return true;
 	}
 
-	private async updatePythonPathsDropdown(useExistingPython: boolean): Promise<void> {
+	private async updatePythonPathsDropdown(): Promise<void> {
 		this.instance.wizard.nextButton.enabled = false;
 		this.pythonDropdownLoader.loading = true;
 		try {
 			let dropdownValues: azdata.CategoryValue[];
-			if (useExistingPython) {
-				let pythonPaths = await this.model.pythonPathLookup.getSuggestions();
-				if (pythonPaths && pythonPaths.length > 0) {
-					dropdownValues = pythonPaths.map(path => {
-						return {
-							displayName: localize('configurePythyon.dropdownPathLabel', "{0} (Python {1})", path.installDir, path.version),
-							name: path.installDir
-						};
-					});
-				} else {
-					dropdownValues = [{
-						displayName: localize('configurePythyon.noVersionsFound', "No supported Python versions found."),
-						name: ''
-					}];
-				}
+			let pythonPaths = await this.model.pythonPathLookup.getSuggestions();
+			if (pythonPaths && pythonPaths.length > 0) {
+				dropdownValues = pythonPaths.map(path => {
+					return {
+						displayName: localize('configurePythyon.dropdownPathLabel', "{0} (Python {1})", path.installDir, path.version),
+						name: path.installDir
+					};
+				});
 			} else {
-				let defaultPath = JupyterServerInstallation.DefaultPythonLocation;
 				dropdownValues = [{
-					displayName: localize('configurePythyon.defaultPathLabel', "{0} (Default)", defaultPath),
-					name: defaultPath
+					displayName: localize('configurePythyon.noVersionsFound', "No supported Python versions found."),
+					name: ''
 				}];
 			}
 

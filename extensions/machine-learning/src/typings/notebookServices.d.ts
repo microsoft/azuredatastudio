@@ -31,7 +31,7 @@ export interface IJupyterServerInstallation {
 	pythonInstallationPath: string;
 	executeBufferedCommand(command: string): Promise<string>;
 	executeStreamedCommand(command: string): Promise<void>;
-	installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel): Promise<void>;
+	installPythonPackage(backgroundOperation: azdata.BackgroundOperation, pythonInstallationPath: string, outputChannel: vscode.OutputChannel): Promise<void>;
 }
 
 

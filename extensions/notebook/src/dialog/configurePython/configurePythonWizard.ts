@@ -13,15 +13,12 @@ import * as utils from '../../common/utils';
 import { promises as fs } from 'fs';
 import { Deferred } from '../../common/promise';
 import { PythonPathLookup } from '../pythonPathLookup';
-import { linuxPlatform, macPlatform } from '../../common/constants';
-import * as os from 'os';
 
 const localize = nls.loadMessageBundle();
 
 export interface ConfigurePythonModel {
 	kernelName: string;
 	pythonLocation: string;
-	useExistingPython: boolean;
 	pythonPathLookup: PythonPathLookup;
 	packagesToInstall: PythonPkgDetails[];
 	installation: JupyterServerInstallation;
@@ -57,10 +54,6 @@ export class ConfigurePythonWizard {
 			installation: this.jupyterInstallation,
 			pythonLocation: JupyterServerInstallation.getPythonPathSetting()
 		};
-		// Default to using existing Python on Mac and Linux, since they have python installed by default
-		if (os.platform() === macPlatform || os.platform() === linuxPlatform) {
-			this.model.useExistingPython = true;
-		}
 
 		let pages: Map<number, BasePage> = new Map<number, BasePage>();
 
