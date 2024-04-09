@@ -79,7 +79,7 @@ export class ConfigurePathPage extends BasePage {
 				width: '400px'
 			}).component();
 			let editPathButton = this.view.modelBuilder.button().withProps({
-				label: 'Edit',
+				label: localize('configurePython.editLabel', "Edit"),
 				width: '70px',
 				secondary: true
 			}).component();
