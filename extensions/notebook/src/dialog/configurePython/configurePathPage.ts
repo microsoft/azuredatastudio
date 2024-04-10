@@ -45,7 +45,7 @@ export class ConfigurePathPage extends BasePage {
 		this.pythonDropdownLoader = this.view.modelBuilder.loadingComponent()
 			.withItem(this.pythonLocationDropdown)
 			.withProps({
-				loading: false
+				loading: true
 			})
 			.component();
 		let browseButton = this.view.modelBuilder.button()
