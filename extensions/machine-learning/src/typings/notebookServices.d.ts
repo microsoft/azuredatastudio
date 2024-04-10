@@ -12,28 +12,8 @@ import * as azdata from 'azdata';
  * @export
  */
 export interface IExtensionApi {
-	getJupyterController(): IJupyterController;
-	registerPackageManager(providerId: string, packageManagerProvider: IPackageManageProvider): void
-	getPackageManagers(): Map<string, IPackageManageProvider>
+	registerPackageManager(providerId: string, packageManagerProvider: IPackageManageProvider): void;
 }
-
-export interface IJupyterController {
-	jupyterInstallation: IJupyterServerInstallation;
-}
-
-export interface IJupyterServerInstallation {
-	installPipPackages(packages: IPackageDetails[], useMinVersion: boolean): Promise<void>;
-	uninstallPipPackages(packages: IPackageDetails[]): Promise<void>;
-	installCondaPackages(packages: IPackageDetails[], useMinVersion: boolean): Promise<void>;
-	uninstallCondaPackages(packages: IPackageDetails[]): Promise<void>;
-	getInstalledPipPackages(): Promise<IPackageDetails[]>;
-	pythonExecutable: string;
-	pythonInstallationPath: string;
-	executeBufferedCommand(command: string): Promise<string>;
-	executeStreamedCommand(command: string): Promise<void>;
-	installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel): Promise<void>;
-}
-
 
 export interface IPackageDetails {
 	name: string;

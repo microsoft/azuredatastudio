@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { BasePage } from './basePage';
 import * as nls from 'vscode-nls';
-import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
 import * as utils from '../../common/utils';
 
 const localize = nls.loadMessageBundle();
@@ -18,8 +17,6 @@ export class ConfigurePathPage extends BasePage {
 
 	private pythonLocationDropdown: azdata.DropDownComponent;
 	private pythonDropdownLoader: azdata.LoadingComponent;
-	private newInstallButton: azdata.RadioButtonComponent;
-	private existingInstallButton: azdata.RadioButtonComponent;
 
 	private selectInstallEnabled: boolean;
 	private usingCustomPath: boolean = false;
@@ -60,18 +57,10 @@ export class ConfigurePathPage extends BasePage {
 			}).component();
 		browseButton.onDidClick(() => this.handleBrowse());
 
-		this.createInstallRadioButtons(this.view.modelBuilder, this.model.useExistingPython);
-
 		let selectInstallForm = this.view.modelBuilder.formContainer()
 			.withFormItems([{
-				component: this.newInstallButton,
-				title: localize('configurePython.installationType', "Installation Type")
-			}, {
-				component: this.existingInstallButton,
-				title: ''
-			}, {
 				component: this.pythonDropdownLoader,
-				title: localize('configurePython.locationTextBoxText', "Python Install Location")
+				title: localize('configurePython.locationTextBoxText', "Python Location")
 			}, {
 				component: browseButton,
 				title: ''
@@ -90,7 +79,7 @@ export class ConfigurePathPage extends BasePage {
 				width: '400px'
 			}).component();
 			let editPathButton = this.view.modelBuilder.button().withProps({
-				label: 'Edit',
+				label: localize('configurePython.editLabel', "Edit"),
 				width: '70px',
 				secondary: true
 			}).component();
@@ -132,7 +121,7 @@ export class ConfigurePathPage extends BasePage {
 		parentContainer.addItems(allParentItems);
 
 		await this.view.initializeModel(parentContainer);
-		await this.updatePythonPathsDropdown(this.model.useExistingPython);
+		await this.updatePythonPathsDropdown();
 
 		return true;
 	}
@@ -152,39 +141,27 @@ export class ConfigurePathPage extends BasePage {
 			}
 
 			this.model.pythonLocation = pythonLocation;
-			this.model.useExistingPython = !!this.existingInstallButton.checked;
-			this.model.packageUpgradeOnly = false;
-		} else {
-			this.model.packageUpgradeOnly = true;
 		}
 		return true;
 	}
 
-	private async updatePythonPathsDropdown(useExistingPython: boolean): Promise<void> {
+	private async updatePythonPathsDropdown(): Promise<void> {
 		this.instance.wizard.nextButton.enabled = false;
 		this.pythonDropdownLoader.loading = true;
 		try {
 			let dropdownValues: azdata.CategoryValue[];
-			if (useExistingPython) {
-				let pythonPaths = await this.model.pythonPathLookup.getSuggestions();
-				if (pythonPaths && pythonPaths.length > 0) {
-					dropdownValues = pythonPaths.map(path => {
-						return {
-							displayName: localize('configurePythyon.dropdownPathLabel', "{0} (Python {1})", path.installDir, path.version),
-							name: path.installDir
-						};
-					});
-				} else {
-					dropdownValues = [{
-						displayName: localize('configurePythyon.noVersionsFound', "No supported Python versions found."),
-						name: ''
-					}];
-				}
+			let pythonPaths = await this.model.pythonPathLookup.getSuggestions();
+			if (pythonPaths && pythonPaths.length > 0) {
+				dropdownValues = pythonPaths.map(path => {
+					return {
+						displayName: localize('configurePythyon.dropdownPathLabel', "{0} (Python {1})", path.installDir, path.version),
+						name: path.installDir
+					};
+				});
 			} else {
-				let defaultPath = JupyterServerInstallation.DefaultPythonLocation;
 				dropdownValues = [{
-					displayName: localize('configurePythyon.defaultPathLabel', "{0} (Default)", defaultPath),
-					name: defaultPath
+					displayName: localize('configurePythyon.noVersionsFound', "No supported Python versions found."),
+					name: ''
 				}];
 			}
 
@@ -197,37 +174,6 @@ export class ConfigurePathPage extends BasePage {
 			this.instance.wizard.nextButton.enabled = true;
 			this.pythonDropdownLoader.loading = false;
 		}
-	}
-
-	private createInstallRadioButtons(modelBuilder: azdata.ModelBuilder, useExistingPython: boolean): void {
-		let buttonGroup = 'installationType';
-		this.newInstallButton = modelBuilder.radioButton()
-			.withProps({
-				name: buttonGroup,
-				label: localize('configurePython.newInstall', "New Python installation"),
-				checked: !useExistingPython
-			}).component();
-		this.newInstallButton.onDidClick(() => {
-			this.existingInstallButton.checked = false;
-			this.updatePythonPathsDropdown(false)
-				.catch(err => {
-					this.instance.showErrorMessage(utils.getErrorMessage(err));
-				});
-		});
-
-		this.existingInstallButton = modelBuilder.radioButton()
-			.withProps({
-				name: buttonGroup,
-				label: localize('configurePython.existingInstall', "Use existing Python installation"),
-				checked: useExistingPython
-			}).component();
-		this.existingInstallButton.onDidClick(() => {
-			this.newInstallButton.checked = false;
-			this.updatePythonPathsDropdown(true)
-				.catch(err => {
-					this.instance.showErrorMessage(utils.getErrorMessage(err));
-				});
-		});
 	}
 
 	private async handleBrowse(): Promise<void> {

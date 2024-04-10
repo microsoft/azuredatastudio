@@ -13,19 +13,15 @@ import * as utils from '../../common/utils';
 import { promises as fs } from 'fs';
 import { Deferred } from '../../common/promise';
 import { PythonPathLookup } from '../pythonPathLookup';
-import { linuxPlatform, macPlatform } from '../../common/constants';
-import * as os from 'os';
 
 const localize = nls.loadMessageBundle();
 
 export interface ConfigurePythonModel {
 	kernelName: string;
 	pythonLocation: string;
-	useExistingPython: boolean;
 	pythonPathLookup: PythonPathLookup;
 	packagesToInstall: PythonPkgDetails[];
 	installation: JupyterServerInstallation;
-	packageUpgradeOnly: boolean;
 }
 
 export class ConfigurePythonWizard {
@@ -55,13 +51,8 @@ export class ConfigurePythonWizard {
 			kernelName: kernelName,
 			pythonPathLookup: new PythonPathLookup(),
 			installation: this.jupyterInstallation,
-			pythonLocation: JupyterServerInstallation.getPythonPathSetting(),
-			useExistingPython: JupyterServerInstallation.getExistingPythonSetting()
+			pythonLocation: JupyterServerInstallation.getPythonPathSetting()
 		};
-		// Default to using existing Python on Mac and Linux, since they have python installed by default
-		if (os.platform() === macPlatform || os.platform() === linuxPlatform) {
-			this.model.useExistingPython = true;
-		}
 
 		let pages: Map<number, BasePage> = new Map<number, BasePage>();
 
@@ -158,20 +149,17 @@ export class ConfigurePythonWizard {
 
 	private async handlePackageInstall(): Promise<boolean> {
 		let pythonLocation = this.model.pythonLocation;
-		let useExistingPython = this.model.useExistingPython;
 		try {
 			let isValid = await this.isFileValid(pythonLocation);
 			if (!isValid) {
 				return false;
 			}
 
-			if (useExistingPython) {
-				let exePath = JupyterServerInstallation.getPythonExePath(pythonLocation);
-				let pythonExists = await utils.exists(exePath);
-				if (!pythonExists) {
-					this.showErrorMessage(this.PythonNotFoundMsg);
-					return false;
-				}
+			let exePath = JupyterServerInstallation.getPythonExePath(pythonLocation);
+			let pythonExists = await utils.exists(exePath);
+			if (!pythonExists) {
+				this.showErrorMessage(this.PythonNotFoundMsg);
+				return false;
 			}
 		} catch (err) {
 			this.showErrorMessage(utils.getErrorMessage(err));
@@ -181,9 +169,7 @@ export class ConfigurePythonWizard {
 		// Don't wait on installation, since there's currently no Cancel functionality
 		let installSettings: PythonInstallSettings = {
 			installPath: pythonLocation,
-			existingPython: useExistingPython,
-			packages: this.model.packagesToInstall,
-			packageUpgradeOnly: this.model.packageUpgradeOnly
+			packages: this.model.packagesToInstall
 		};
 		this.jupyterInstallation.startInstallProcess(false, installSettings)
 			.then(() => {
