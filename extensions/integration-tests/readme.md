@@ -28,10 +28,6 @@ The integration test suite has been added to ADS windows pipeline to run the tes
 	1. A new window will be opened based on your selection and the new window will have the required environment variables set.
 	2. In the new window navigate to the scripts folder and run sql-test-integration.[bat|sh]
 
-## Skipping Python Installation Tests
-
-The integration tests contain some tests that test the Python installation for Notebooks. This can take a long time to run and so if you do not need to run them you can skip them by setting the `SKIP_PYTHON_INSTALL_TEST` environment variable to `1`
-
 ## How to debug the tests
 1. Set the debug target to `Attach to Extension Host`
 1. Run the script to start the tests
