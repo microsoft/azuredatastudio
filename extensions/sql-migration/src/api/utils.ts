@@ -1640,7 +1640,7 @@ export function generateTemplatePath(model: MigrationStateModel, targetType: Mig
 	// source instance same would be same across all recommendations MI/DB/VM.
 	let instanceName = model._skuRecommendationResults.recommendations?.sqlMiRecommendationResults[0].sqlInstanceName;
 
-	if (model._armTemplateResult.templates?.length! > 1 && model.GetTargetType() === MigrationTargetType.SQLDB) {
+	if (model._armTemplateResult.templates?.length! > 1 && targetType === MigrationTargetType.SQLDB) {
 		fileName = `ARMTemplate-${targetType}-${instanceName}-${date}-${time}-batch${batchNumber}.json`;
 	}
 	else {
