@@ -208,7 +208,7 @@ export class AssessmentDetailsHeader {
 					if (hasRecommendations(this.migrationStateModel)) {
 						const generateProvisioningScriptDialog = new GenerateProvisioningScriptDialog(this.migrationStateModel, this.migrationStateModel._targetType);
 						await generateProvisioningScriptDialog.openDialog();
-						if (this.getTargetTypeBasedOnModel(this.migrationStateModel._targetType) === MigrationTargetType.SQLDB) {
+						if (this.migrationStateModel._targetType === MigrationTargetType.SQLDB) {
 							await vscode.window.showInformationMessage(constants.DISPLAY_ARM_TEMPLATE_LIMIT);
 						}
 					}
