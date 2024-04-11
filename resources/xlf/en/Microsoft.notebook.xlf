@@ -282,11 +282,8 @@
     <trans-unit id="configurePython.browseButtonText">
       <source xml:lang="en">Browse</source>
     </trans-unit>
-    <trans-unit id="configurePython.installationType">
-      <source xml:lang="en">Installation Type</source>
-    </trans-unit>
-    <trans-unit id="configurePython.newInstall">
-      <source xml:lang="en">New Python installation</source>
+    <trans-unit id="configurePython.editLabel">
+      <source xml:lang="en">Edit</source>
     </trans-unit>
     <trans-unit id="configurePythyon.noVersionsFound">
       <source xml:lang="en">No supported Python versions found.</source>
@@ -295,7 +292,7 @@
       <source xml:lang="en">Notebook kernels require a Python runtime to be configured and dependencies to be installed.</source>
     </trans-unit>
     <trans-unit id="configurePython.locationTextBoxText">
-      <source xml:lang="en">Python Install Location</source>
+      <source xml:lang="en">Python Location</source>
     </trans-unit>
     <trans-unit id="configurePython.pythonConfigured">
       <source xml:lang="en">Python runtime configured!</source>
@@ -306,14 +303,8 @@
     <trans-unit id="configurePython.descriptionWithKernel">
       <source xml:lang="en">The &apos;{0}&apos; kernel requires a Python runtime to be configured and dependencies to be installed.</source>
     </trans-unit>
-    <trans-unit id="configurePython.existingInstall">
-      <source xml:lang="en">Use existing Python installation</source>
-    </trans-unit>
     <trans-unit id="configurePythyon.customPathLabel">
       <source xml:lang="en">{0} (Custom)</source>
-    </trans-unit>
-    <trans-unit id="configurePythyon.defaultPathLabel">
-      <source xml:lang="en">{0} (Default)</source>
     </trans-unit>
     <trans-unit id="configurePythyon.dropdownPathLabel">
       <source xml:lang="en">{0} (Python {1})</source>
@@ -492,38 +483,14 @@
     </trans-unit>
   </body></file>
   <file original="extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="msgShutdownNotebookSessions">
-      <source xml:lang="en">Active Python notebook sessions will be shutdown in order to update. Would you like to proceed now?</source>
-    </trans-unit>
     <trans-unit id="msgWaitingForInstall">
       <source xml:lang="en">Another Python installation is currently in progress. Waiting for it to complete.</source>
-    </trans-unit>
-    <trans-unit id="msgPythonRunningError">
-      <source xml:lang="en">Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.</source>
-    </trans-unit>
-    <trans-unit id="dontAskAgain">
-      <source xml:lang="en">Don&apos;t Ask Again</source>
-    </trans-unit>
-    <trans-unit id="msgDownloadPython">
-      <source xml:lang="en">Downloading local python for platform: {0} to {1}</source>
-    </trans-unit>
-    <trans-unit id="msgPythonDownloadPending">
-      <source xml:lang="en">Downloading python package</source>
     </trans-unit>
     <trans-unit id="msgGetPythonUserDirFailed">
       <source xml:lang="en">Encountered an error when getting Python user path: {0}</source>
     </trans-unit>
     <trans-unit id="msgPackageRetrievalFailed">
       <source xml:lang="en">Encountered an error when trying to retrieve list of installed packages: {0}</source>
-    </trans-unit>
-    <trans-unit id="msgPythonDirectoryError">
-      <source xml:lang="en">Error while creating python installation directory</source>
-    </trans-unit>
-    <trans-unit id="msgPythonDownloadError">
-      <source xml:lang="en">Error while downloading python setup</source>
-    </trans-unit>
-    <trans-unit id="msgPythonUnpackError">
-      <source xml:lang="en">Error while unpacking python bundle</source>
     </trans-unit>
     <trans-unit id="msgTaskName">
       <source xml:lang="en">Installing Notebook dependencies</source>
@@ -534,29 +501,11 @@
     <trans-unit id="msgInstallPkgStart">
       <source xml:lang="en">Installing Notebook dependencies, see Tasks view for more information</source>
     </trans-unit>
-    <trans-unit id="no">
-      <source xml:lang="en">No</source>
-    </trans-unit>
     <trans-unit id="msgInstallPkgFinish">
       <source xml:lang="en">Notebook dependencies installation is complete</source>
     </trans-unit>
     <trans-unit id="msgInstallPkgProgress">
       <source xml:lang="en">Notebook dependencies installation is in progress</source>
-    </trans-unit>
-    <trans-unit id="msgPythonDownloadComplete">
-      <source xml:lang="en">Python download is complete</source>
-    </trans-unit>
-    <trans-unit id="msgPythonVersionUpdatePrompt">
-      <source xml:lang="en">Python {0} is now available in Azure Data Studio. The current Python version (3.6.6) will be out of support in December 2021. Would you like to update to Python {0} now?</source>
-    </trans-unit>
-    <trans-unit id="msgPythonVersionUpdateWarning">
-      <source xml:lang="en">Python {0} will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version or may need to be reinstalled. A notebook will be created to help you reinstall all pip packages. Would you like to continue with the update now?</source>
-    </trans-unit>
-    <trans-unit id="msgPythonUnpackPending">
-      <source xml:lang="en">Unpacking python package</source>
-    </trans-unit>
-    <trans-unit id="yes">
-      <source xml:lang="en">Yes</source>
     </trans-unit>
   </body></file>
   <file original="extensions/Microsoft.notebook/dist/jupyter/jupyterServerManager" source-language="en" datatype="plaintext"><body>
